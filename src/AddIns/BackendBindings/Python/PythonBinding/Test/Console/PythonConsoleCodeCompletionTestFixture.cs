@@ -19,34 +19,24 @@ namespace PythonBinding.Tests.Console
 	/// When the dot character is typed in after an object the code completion window should appear.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not implemented")]
 	public class PythonConsoleCodeCompletionTestFixture
 	{
 		MockTextEditor textEditor;
 		PythonConsole console;
 		string prompt = ">>> ";
-		IList<string> expectedMembers;
-		IList<string> completionItems;
 		bool showCompletionWindowCalledBeforeDotTypedIn;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			textEditor = new MockTextEditor();
-			console = new PythonConsole(textEditor);
+			console = new PythonConsole(textEditor, null);
 			console.WriteLine(prompt, Style.Prompt);
 									
-//			expectedMembers = host.GetCommandLine().GetMemberNames("__builtins__");
 			textEditor.RaiseKeyPressEvents("__builtins__");
 			showCompletionWindowCalledBeforeDotTypedIn = textEditor.IsShowCompletionWindowCalled;
 			textEditor.RaiseKeyPressEvent('.');		
 		}
-				
-//		[Test]
-//		public void MoreThanZeroExpectedMembers()
-//		{
-//			Assert.IsTrue(expectedMembers.Count > 0);
-//		}
 		
 		[Test]
 		public void ShowCompletionWindowCalled()
@@ -58,6 +48,12 @@ namespace PythonBinding.Tests.Console
 		public void ShowCompletionWindowNotCalledBeforeDotTypedIn()
 		{
 			Assert.IsFalse(showCompletionWindowCalledBeforeDotTypedIn);
+		}
+		
+		[Test]
+		public void PythonConsoleCompletionDataProviderPassedToShowCompletionWindowMethod()
+		{
+			Assert.IsInstanceOfType(typeof(PythonConsoleCompletionDataProvider), textEditor.CompletionDataProvider);
 		}
 	}
 }

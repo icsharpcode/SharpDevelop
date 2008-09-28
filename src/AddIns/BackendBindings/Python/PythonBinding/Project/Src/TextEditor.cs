@@ -10,6 +10,7 @@ using System.Drawing;
 
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -22,6 +23,8 @@ namespace ICSharpCode.PythonBinding
 		TextArea textArea;
 		Color customLineColour = Color.LightGray;
 		TextMarker readOnlyMarker;
+
+		CodeCompletionWindow completionWindow;
 		
 		public TextEditor(TextEditorControl textEditorControl)
 		{
@@ -137,8 +140,12 @@ namespace ICSharpCode.PythonBinding
 			doc.UndoStack.ClearAll();
 		}
 		
-		public void ShowCompletionWindow()
+		public void ShowCompletionWindow(ICompletionDataProvider completionDataProvider)
 		{
+			completionWindow = CodeCompletionWindow.ShowCompletionWindow(textEditorControl.ParentForm, textEditorControl, String.Empty, completionDataProvider, ' ');
+			if (completionWindow != null) {
+				completionWindow.Closed += CompletionWindowClosed;
+			}
 		}
 		
 		/// <summary>
@@ -158,5 +165,14 @@ namespace ICSharpCode.PythonBinding
 				textEditorControl.IndentStyle = style;
 			}
 		}		
+		
+		void CompletionWindowClosed(object source, EventArgs e)
+		{
+			if (completionWindow != null) {
+				completionWindow.Closed -= CompletionWindowClosed;
+				completionWindow.Dispose();
+				completionWindow = null;
+			}
+		}
 	}
 }

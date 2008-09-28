@@ -69,8 +69,11 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AddInFileTestFixture.cs" />
     <Compile Include="CompilingOptionsPanelTestFixture.cs" />
+    <Compile Include="Console\BuiltinCodeCompletionTestFixture.cs" />
     <Compile Include="Console\DerivedPythonConsoleHost.cs" />
     <Compile Include="Console\DisposedPythonConsoleTestFixture.cs" />
+    <Compile Include="Console\CodeCompletionTests.cs" />
+    <Compile Include="Console\MockMemberProvider.cs" />
     <Compile Include="Console\MockTextEditor.cs" />
     <Compile Include="Console\PythonConsoleCodeCompletionTestFixture.cs" />
     <Compile Include="Console\PythonConsoleCurrentLineTestFixture.cs" />

@@ -29,7 +29,7 @@ namespace PythonBinding.Tests.Console
 		public void Init()
 		{
 			textEditor = new MockTextEditor();
-			pythonConsole = new PythonConsole(textEditor);
+			pythonConsole = new PythonConsole(textEditor, null);
 			pythonConsole.Write(prompt, Style.Prompt);
 		}
 		

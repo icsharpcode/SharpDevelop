@@ -26,8 +26,6 @@ namespace PythonBinding.Tests.Console
 	{
 		DerivedPythonConsoleHost host;
 		TextEditorControl textEditorControl;
-		ScriptEngine engine;
-		ScriptEngine expectedEngine;
 		TextEditor textEditor;
 		
 		[TestFixtureSetUp]
@@ -38,9 +36,6 @@ namespace PythonBinding.Tests.Console
 			host = new DerivedPythonConsoleHost(textEditor);
 			
 			ScriptRuntime runtime = IronPython.Hosting.Python.CreateRuntime();
-//			expectedEngine = runtime.GetEngine(typeof(PythonContext));
-//			host.ScriptEngineToReturn = expectedEngine;
-//			engine = host.CallCreateEngine();
 		}
 		
 		[TestFixtureTearDown]
@@ -81,12 +76,6 @@ namespace PythonBinding.Tests.Console
 		public void PythonContextIsProvider()
 		{
 			Assert.AreEqual(typeof(PythonContext), host.GetProvider());
-		}
-
-		[Test]
-		public void ScriptEngineReturnedFromCreateEngine()
-		{
-			Assert.AreEqual(expectedEngine, engine);
 		}
 		
 		[Test]

@@ -20,14 +20,14 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void PythonConsoleImplementsIDisposable()
 		{
-			PythonConsole console = new PythonConsole(new MockTextEditor());
+			PythonConsole console = new PythonConsole(new MockTextEditor(), null);
 			Assert.IsNotNull(console as IDisposable);
 		}
 		
 		[Test]
 		public void ReadLineReturnsNullWhenConsoleDisposed()
 		{
-			PythonConsole console = new PythonConsole(new MockTextEditor());
+			PythonConsole console = new PythonConsole(new MockTextEditor(), null);
 			console.Dispose();
 			Assert.IsNull(console.ReadLine(0));
 		}
