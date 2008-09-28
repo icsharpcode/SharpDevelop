@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			new string[] {"list type=\"\"", "A list"},
 			new string[] {"listheader", "The header from the list"},
 			new string[] {"item", "A list item"},
+			new string[] {"inheritdoc/", "Inherit documentation from base class"},
 			new string[] {"term", "A term in a list"},
 			new string[] {"description", "A description to a term in a list"},
 			new string[] {"para", "A text paragraph"},
