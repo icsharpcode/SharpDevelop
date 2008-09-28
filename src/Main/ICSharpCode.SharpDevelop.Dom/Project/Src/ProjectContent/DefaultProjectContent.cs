@@ -579,6 +579,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		bool IsAccessibleClass(IClass c)
+		{
+			// check the outermost class (which is either public or internal)
+			while (c.DeclaringType != null)
+				c = c.DeclaringType;
+			return c.IsPublic || c.ProjectContent == this;
+		}
+		
 		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, bool lookInReferences)
 		{
 			IClass c = GetClassInternal(typeName, typeParameterCount, language);
@@ -592,7 +600,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					foreach (IProjectContent content in referencedContents) {
 						IClass contentClass = content.GetClass(typeName, typeParameterCount, language, false);
 						if (contentClass != null) {
-							if (contentClass.TypeParameters.Count == typeParameterCount) {
+							if (contentClass.TypeParameters.Count == typeParameterCount
+							    && IsAccessibleClass(contentClass))
+							{
 								return contentClass;
 							} else {
 								c = contentClass;
@@ -771,6 +781,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return null;
 		}
 		
+		bool MatchesRequest(ref SearchTypeRequest request, IClass c)
+		{
+			return c != null
+				&& c.TypeParameters.Count == request.TypeParameterCount
+				&& IsAccessibleClass(c);
+		}
+		
+		bool MatchesRequest(ref SearchTypeRequest request, IReturnType rt)
+		{
+			if (rt == null)
+				return false;
+			if (rt.TypeArgumentCount != request.TypeParameterCount)
+				return false;
+			IClass c = rt.GetUnderlyingClass();
+			if (c != null)
+				return IsAccessibleClass(c);
+			else
+				return true;
+		}
+		
 		public SearchTypeResult SearchType(SearchTypeRequest request)
 		{
 			string name = request.Name;
@@ -780,7 +810,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			// Try if name is already the full type name
 			IClass c = GetClass(name, request.TypeParameterCount);
-			if (c != null) {
+			if (MatchesRequest(ref request, c)) {
 				return new SearchTypeResult(c);
 			}
 			// fallback-class if the one with the right type parameter count is not found.
@@ -793,7 +823,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					
 					c = GetClass(nameSpace, request.TypeParameterCount);
 					if (c != null) {
-						if (c.TypeParameters.Count == request.TypeParameterCount)
+						if (MatchesRequest(ref request, c))
 							return new SearchTypeResult(c);
 						else
 							fallbackResult = new SearchTypeResult(c);
@@ -814,7 +844,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						if (baseClass.ClassType == ClassType.Class) {
 							foreach (IClass innerClass in baseClass.InnerClasses) {
 								if (language.NameComparer.Equals(innerClass.Name, name)) {
-									if (innerClass.TypeParameters.Count == request.TypeParameterCount) {
+									if (MatchesRequest(ref request, innerClass)) {
 										return new SearchTypeResult(innerClass);
 									} else {
 										fallbackResult = new SearchTypeResult(innerClass);
@@ -830,7 +860,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
 					if (u != null) {
 						foreach (IReturnType r in u.SearchType(name, request.TypeParameterCount)) {
-							if (r.TypeArgumentCount == request.TypeParameterCount) {
+							if (MatchesRequest(ref request, r)) {
 								return new SearchTypeResult(r, u);
 							} else {
 								fallbackResult = new SearchTypeResult(r, u);
@@ -841,7 +871,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (defaultImports != null) {
 				foreach (IReturnType r in defaultImports.SearchType(name, request.TypeParameterCount)) {
-					if (r.TypeArgumentCount == request.TypeParameterCount) {
+					if (MatchesRequest(ref request, r)) {
 						return new SearchTypeResult(r, defaultImports);
 					} else {
 						fallbackResult = new SearchTypeResult(r, defaultImports);
