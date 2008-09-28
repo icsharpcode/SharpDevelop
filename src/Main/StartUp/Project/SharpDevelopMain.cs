@@ -135,6 +135,13 @@ namespace ICSharpCode.SharpDevelop
 				
 				startup.AddAddInsFromDirectory(Path.Combine(startup.ApplicationRootPath, "AddIns"));
 				
+				// allows testing addins without having to install them
+				foreach (string parameter in SplashScreenForm.GetParameterList()) {
+					if (parameter.StartsWith("addindir:", StringComparison.OrdinalIgnoreCase)) {
+						startup.AddAddInsFromDirectory(parameter.Substring(9));
+					}
+				}
+				
 				SharpDevelopHost host = new SharpDevelopHost(AppDomain.CurrentDomain, startup);
 				
 				string[] fileList = SplashScreenForm.GetRequestedFileList();

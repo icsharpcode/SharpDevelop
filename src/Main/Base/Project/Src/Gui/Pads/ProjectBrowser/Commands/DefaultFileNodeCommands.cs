@@ -109,11 +109,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 		
-		void OpenContainingFolderInExplorer(string fileName)
+		public static void OpenContainingFolderInExplorer(string fileName)
 		{
 			if (File.Exists(fileName)) {
-				string folder = Path.GetDirectoryName(fileName);
-				Process.Start(folder);
+				Process.Start("explorer", "/select,\"" + fileName + "\"");
 			}
 		}
 	}

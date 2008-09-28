@@ -84,10 +84,8 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		public override void Run()
 		{
 			IWorkbenchWindow window = Owner as IWorkbenchWindow;
-			if (File.Exists(window.ActiveViewContent.PrimaryFileName)) {
-				string folder = Path.GetDirectoryName(window.ActiveViewContent.PrimaryFileName);
-				Process.Start(folder);
-			}
+			ICSharpCode.SharpDevelop.Project.Commands.OpenFolderContainingFile.OpenContainingFolderInExplorer(
+				window.ActiveViewContent.PrimaryFileName);
 		}
 	}
 }
