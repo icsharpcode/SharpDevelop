@@ -264,6 +264,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void OnIsDirtyChanged(object sender, EventArgs e)
 		{
 			UpdateTitle();
+			CommandManager.InvalidateRequerySuggested();
 		}
 		
 		void UpdateTitle()
