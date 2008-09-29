@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class CodeTemplatePanel : AbstractOptionPanel
+	public class CodeTemplatePanel : XmlFormsOptionPanel
 	{
 		ArrayList templateGroups;
 		int       currentSelectedGroup = -1;

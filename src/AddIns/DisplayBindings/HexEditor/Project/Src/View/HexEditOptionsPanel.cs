@@ -5,19 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace HexEditor.View
 {
-	public class HexEditOptionsPanel : AbstractOptionPanel
+	public class HexEditOptionsPanel : XmlFormsOptionPanel
 	{
 		ComboBox cmbForeColor;
 		ListBox lstElements;

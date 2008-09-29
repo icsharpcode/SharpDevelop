@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Window
-	x:Class="ICSharpCode.SharpDevelop.Gui.GotoDialog" xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	x:Class="ICSharpCode.SharpDevelop.Gui.GotoDialog"
 	Title="{core:Localize Dialog.Goto.DialogName}"
 	Height="298"
 	Width="578"

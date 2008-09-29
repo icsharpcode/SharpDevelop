@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -16,7 +17,7 @@ namespace ICSharpCode.PythonBinding
 	/// <summary>
 	/// Panel that displays the python options.
 	/// </summary>
-	public class PythonOptionsPanel : AbstractOptionPanel
+	public class PythonOptionsPanel : XmlFormsOptionPanel
 	{
 		AddInOptions options;
 		TextBox pythonFileNameTextBox;

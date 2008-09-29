@@ -7,13 +7,13 @@
 
 namespace HtmlHelp2.Environment
 {
+	using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 	using System;
 	using System.Windows.Forms;
 	using System.Xml.Serialization;
-	
 	using ICSharpCode.SharpDevelop.Gui;
 
-	public class HtmlHelp2OptionsPanel : AbstractOptionPanel
+	public class HtmlHelp2OptionsPanel : XmlFormsOptionPanel
 	{
 		ComboBox help2Collections;
 		CheckBox tocPictures;

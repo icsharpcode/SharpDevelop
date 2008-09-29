@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -18,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 	/// <summary>
 	/// Summary description for Form8.
 	/// </summary>
-	public class BehaviorTextEditorPanel : AbstractOptionPanel
+	public class BehaviorTextEditorPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

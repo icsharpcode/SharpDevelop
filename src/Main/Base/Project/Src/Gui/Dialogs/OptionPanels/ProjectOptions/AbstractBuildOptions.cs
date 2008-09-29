@@ -18,7 +18,7 @@ using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class AbstractBuildOptions : AbstractProjectOptionPanel
+	public class AbstractBuildOptions : AbstractXmlFormsProjectOptionPanel
 	{
 		protected void InitBaseIntermediateOutputPath()
 		{
@@ -129,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			RadioButton none, specific, all;
 			Control specificWarningsTextBox;
 			
-			public WarningsAsErrorsBinding(AbstractProjectOptionPanel panel)
+			public WarningsAsErrorsBinding(AbstractXmlFormsProjectOptionPanel panel)
 			{
 				this.none = panel.Get<RadioButton>("none");
 				this.specific = panel.Get<RadioButton>("specificWarnings");

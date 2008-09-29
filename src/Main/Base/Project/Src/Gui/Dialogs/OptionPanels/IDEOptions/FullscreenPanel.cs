@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class FullscreenPanel : AbstractOptionPanel
+	public class FullscreenPanel : XmlFormsOptionPanel
 	{
 		static readonly string fullscreenProperty = "ICSharpCode.SharpDevelop.Gui.FullscreenOptions";
 		

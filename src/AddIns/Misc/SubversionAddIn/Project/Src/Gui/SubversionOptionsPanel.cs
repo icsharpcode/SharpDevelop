@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
@@ -14,7 +15,7 @@ namespace ICSharpCode.Svn.Gui
 	/// <summary>
 	/// The Output Window options panel.
 	/// </summary>
-	public class SubversionOptionsPanel : AbstractOptionPanel
+	public class SubversionOptionsPanel : XmlFormsOptionPanel
 	{
 		public SubversionOptionsPanel()
 		{

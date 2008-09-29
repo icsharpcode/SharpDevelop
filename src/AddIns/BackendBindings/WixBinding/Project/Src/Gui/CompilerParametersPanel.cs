@@ -13,7 +13,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<System.String, System
 
 namespace ICSharpCode.WixBinding
 {
-	public class CompilerParametersPanel : AbstractProjectOptionPanel
+	public class CompilerParametersPanel : AbstractXmlFormsProjectOptionPanel
 	{	
 		public override void LoadPanelContents()
 		{

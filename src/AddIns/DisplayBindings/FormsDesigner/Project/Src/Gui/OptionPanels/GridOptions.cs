@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -12,7 +13,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 {
-	public class GridOptionsPanel : AbstractOptionPanel
+	public class GridOptionsPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

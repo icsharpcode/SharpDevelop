@@ -17,7 +17,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class ApplicationSettings : AbstractProjectOptionPanel
+	public class ApplicationSettings : AbstractXmlFormsProjectOptionPanel
 	{
 		ComboBox applicationManifestComboBox;
 		

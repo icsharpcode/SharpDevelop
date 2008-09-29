@@ -5,17 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-
 using ICSharpCode.SharpDevelop.Gui;
 using NoGoop.ObjBrowser;
 
 namespace ICSharpCode.ComponentInspector.AddIn
 {
-	public class TypeHandlerOptionsPanel : AbstractOptionPanel
+	public class TypeHandlerOptionsPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

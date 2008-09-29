@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
@@ -14,7 +15,7 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// Configuration settings for the xml editor.
 	/// </summary>
-	public class XmlEditorOptionsPanel : AbstractOptionPanel
+	public class XmlEditorOptionsPanel : XmlFormsOptionPanel
 	{
 		static readonly string showAttributesWhenFoldedCheckBoxName = "showAttributesWhenFoldedCheckBox";
 		static readonly string showSchemaAnnotationCheckBoxName = "showSchemaAnnotationCheckBox";

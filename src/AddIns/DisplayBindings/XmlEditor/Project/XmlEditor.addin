@@ -146,11 +146,11 @@
 	
 	<!-- Options panel -->
 	<Path path = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
-		<DialogPanel id = "XmlSchemasPanel"
+		<OptionPanel id = "XmlSchemasPanel"
 		             insertafter = "Markers"
 		             label = "${res:ICSharpCode.XmlEditor.XmlSchemasPanel.Title}"
 		             class = "ICSharpCode.XmlEditor.XmlSchemasPanel" />
-		<DialogPanel id = "XmlEditorOptionsPanel"
+		<OptionPanel id = "XmlEditorOptionsPanel"
 		             insertafter = "Markers"
 		             insertbefore = "XmlSchemasPanel"
 		             label = "${res:ICSharpCode.XmlEditor.XmlEditorOptionsPanel.Title}"

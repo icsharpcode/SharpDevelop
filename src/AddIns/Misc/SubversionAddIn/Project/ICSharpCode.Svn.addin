@@ -173,7 +173,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<DialogPanel id = "SubversionOptionsPanel"
+		<OptionPanel id = "SubversionOptionsPanel"
 		             label = "${res:AddIns.Subversion.Options.Title}"
 		             class = "ICSharpCode.Svn.Gui.SubversionOptionsPanel"/>
 	</Path>

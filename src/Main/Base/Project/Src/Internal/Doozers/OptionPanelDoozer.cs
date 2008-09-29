@@ -14,23 +14,23 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// Creates DefaultDialogPanelDescriptor objects that are used in option dialogs.
+	/// Creates DefaultOptionPanelDescriptor objects that are used in option dialogs.
 	/// </summary>
 	/// <attribute name="class">
-	/// Name of the IDialogPanel class. Optional if the page has subpages.
+	/// Name of the IOptionPanel class. Optional if the page has subpages.
 	/// </attribute>
 	/// <attribute name="label" use="required">
 	/// Caption of the dialog panel.
 	/// </attribute>
-	/// <children childTypes="DialogPanel">
+	/// <children childTypes="IOptionPanel">
 	/// In the SharpDevelop options, option pages can have subpages by specifying them
 	/// as children in the AddInTree.
 	/// </children>
 	/// <usage>In /SharpDevelop/BackendBindings/ProjectOptions/ and /SharpDevelop/Dialogs/OptionsDialog</usage>
 	/// <returns>
-	/// A DefaultDialogPanelDescriptor object.
+	/// A DefaultOptionPanelDescriptor object.
 	/// </returns>
-	public class DialogPanelDoozer : IDoozer
+	public class OptionPanelDoozer : IDoozer
 	{
 		/// <summary>
 		/// Gets if the doozer handles codon conditions on its own.
@@ -52,18 +52,18 @@ namespace ICSharpCode.SharpDevelop
 			
 			if (subItems == null || subItems.Count == 0) {
 				if (codon.Properties.Contains("class")) {
-					return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), codon.AddIn, codon.Properties["class"]);
+					return new DefaultOptionPanelDescriptor(codon.Id, StringParser.Parse(label), codon.AddIn, caller, codon.Properties["class"]);
 				} else {
-					return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label));
+					return new DefaultOptionPanelDescriptor(codon.Id, StringParser.Parse(label));
 				}
 			}
 			
-			List<IDialogPanelDescriptor> newList = new List<IDialogPanelDescriptor>();
-			foreach (IDialogPanelDescriptor d in subItems) {
+			List<IOptionPanelDescriptor> newList = new List<IOptionPanelDescriptor>();
+			foreach (IOptionPanelDescriptor d in subItems) {
 				newList.Add(d);
 			}
 			
-			return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), newList);
+			return new DefaultOptionPanelDescriptor(codon.Id, StringParser.Parse(label), newList);
 		}
 	}
 }

@@ -13,7 +13,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class IDEOptionPanel : AbstractOptionPanel
+	public class IDEOptionPanel : XmlFormsOptionPanel
 	{
 		readonly static string uiLanguageProperty = "CoreProperties.UILanguage";
 		ListView listView = new ListView();
@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		public override bool ReceiveDialogMessage(DialogMessage message)
+/*		public override bool ReceiveDialogMessage(DialogMessage message)
 		{
 			if (message == DialogMessage.OK) {
 				if (SelectedCulture != null) {
@@ -48,6 +48,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 			return true;
 		}
+		*/
 		
 		void ChangeCulture(object sender, EventArgs e)
 		{

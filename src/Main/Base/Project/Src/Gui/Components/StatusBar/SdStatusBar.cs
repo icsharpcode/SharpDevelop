@@ -44,16 +44,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			modeStatusBarPanel.Width = 25;
 			statusProgressBarItem.Visibility = Visibility.Hidden;
 			statusProgressBarItem.Width = 100;
+			statusProgressBarItem.Content = statusProgressBar;
+			statusProgressBarItem.VerticalContentAlignment = VerticalAlignment.Stretch;
+			statusProgressBarItem.HorizontalContentAlignment = HorizontalAlignment.Stretch;
 			
 			DockPanel.SetDock(modeStatusBarPanel, Dock.Right);
 			DockPanel.SetDock(cursorStatusBarPanel, Dock.Right);
 			DockPanel.SetDock(statusProgressBarItem, Dock.Right);
 			DockPanel.SetDock(jobNamePanel, Dock.Right);
 			
-			Items.Add(jobNamePanel);
-			Items.Add(statusProgressBarItem);
-			Items.Add(cursorStatusBarPanel);
 			Items.Add(modeStatusBarPanel);
+			Items.Add(cursorStatusBarPanel);
+			Items.Add(statusProgressBarItem);
+			Items.Add(jobNamePanel);
+			
 			Items.Add(txtStatusBarPanel);
 		}
 		

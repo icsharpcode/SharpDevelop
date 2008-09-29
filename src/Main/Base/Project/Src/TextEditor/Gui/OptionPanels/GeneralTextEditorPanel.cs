@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 	/// <summary>
 	/// General texteditor options panel.
 	/// </summary>
-	public class GeneralTextEditorPanel : AbstractOptionPanel
+	public class GeneralTextEditorPanel : XmlFormsOptionPanel
 	{
 		ComboBox fontListComboBox, fontSizeComboBox;
 		FontSelectionPanelHelper helper;

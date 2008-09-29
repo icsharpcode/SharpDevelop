@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.WixBinding
 {
-	public class PreprocessorVariablesPanel : AbstractProjectOptionPanel
+	public class PreprocessorVariablesPanel : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

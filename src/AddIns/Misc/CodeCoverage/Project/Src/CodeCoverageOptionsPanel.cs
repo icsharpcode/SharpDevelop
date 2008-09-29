@@ -5,16 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.CodeCoverage
 {
-	public class CodeCoverageOptionsPanel : AbstractOptionPanel
+	public class CodeCoverageOptionsPanel : XmlFormsOptionPanel
 	{
 		static readonly string foregroundCustomColourButtonName = "foregroundCustomColourButton";
 		static readonly string backgroundCustomColourButtonName = "backgroundCustomColourButton";

@@ -5,18 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FiletypeRegisterer
 {
-	public partial class RegisterFiletypesPanel : AbstractOptionPanel
+	public partial class RegisterFiletypesPanel : XmlFormsOptionPanel
 	{
 		sealed class ListEntry
 		{

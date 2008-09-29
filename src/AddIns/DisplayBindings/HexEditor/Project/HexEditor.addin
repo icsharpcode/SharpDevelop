@@ -21,7 +21,7 @@
 	</Path>
 	
    	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<DialogPanel id    = "HexEditor"
+		<OptionPanel id    = "HexEditor"
 		             label = "HexEditor"
 		             class = "HexEditor.View.HexEditOptionsPanel"/>
 	</Path>

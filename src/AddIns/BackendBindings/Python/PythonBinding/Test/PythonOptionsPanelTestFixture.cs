@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -52,7 +53,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void PanelIsOptionsPanel()
 		{
-			Assert.IsNotNull(optionsPanel as AbstractOptionPanel);
+			Assert.IsNotNull(optionsPanel as XmlFormsOptionPanel);
 		}
 		
 		[Test]

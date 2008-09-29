@@ -34,7 +34,7 @@
 			
 			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
 			<Doozer name="CustomProperty" class="ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer"/>
-			<Doozer name="DialogPanel" class="ICSharpCode.SharpDevelop.DialogPanelDoozer"/>
+			<Doozer name="OptionPanel" class="ICSharpCode.SharpDevelop.OptionPanelDoozer"/>
 			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.DisplayBindingDoozer"/>
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
@@ -1028,46 +1028,46 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
-		<DialogPanel id    = "UIOptions"
+		<OptionPanel id    = "UIOptions"
 		             label = "${res:Dialog.Options.TreeViewOptions.SharpDevelopOptionsText}">
-			<DialogPanel id    = "SelectCulture"
+			<OptionPanel id    = "SelectCulture"
 			             label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.IDEOptionPanel"/>
-			<DialogPanel id    = "SelectStyle"
+			<OptionPanel id    = "SelectStyle"
 			             label = "${res:Dialog.Options.IDEOptions.SelectVisualStyle.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>
-			<DialogPanel id    = "Fullscreen"
+			<OptionPanel id    = "Fullscreen"
 			             label = "${res:Dialog.Options.IDEOptions.FullScreen.Title}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.FullscreenPanel"/>
-			<DialogPanel id    = "LoadSave"
+			<OptionPanel id    = "LoadSave"
 			             label = "${res:Dialog.Options.IDEOptions.LoadSaveOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.LoadSavePanel"/>
-			<DialogPanel id    = "TaskListOptions"
+			<OptionPanel id    = "TaskListOptions"
 			             label = "${res:Dialog.Options.IDEOptions.TaskListOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.TaskListOptions"/>
-			<DialogPanel id    = "OutputWindowOptions"
+			<OptionPanel id    = "OutputWindowOptions"
 			             label = "${res:Dialog.Options.IDEOptions.OutputPanel.Title}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.OutputWindowOptionsPanel"/>
-			<DialogPanel id    = "ProjectAndSolutionOptions"
+			<OptionPanel id    = "ProjectAndSolutionOptions"
 			             label = "${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ProjectAndSolutionOptionsPanel"/>
-		</DialogPanel>
-		<DialogPanel id    = "CodingOptions"
+		</OptionPanel>
+		<OptionPanel id    = "CodingOptions"
 		             label = "${res:Dialog.Options.IDEOptions.CodingOptionsText}">
-			<DialogPanel id    = "CodeGeneration"
+			<OptionPanel id    = "CodeGeneration"
 			             label = "${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.Title}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CodeGenerationPanel"/>
-			<DialogPanel id    = "EditStandardHeaderPanel"
+			<OptionPanel id    = "EditStandardHeaderPanel"
 			             label = "${res:Dialog.Options.IDEOptions.EditStandardHeaderPanel.Title}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.EditStandardHeaderPanel"/>
-		</DialogPanel>
+		</OptionPanel>
 		
-		<DialogPanel id    = "ToolsOptions"
+		<OptionPanel id    = "ToolsOptions"
 		             label = "${res:Dialog.Options.IDEOptions.ToolsOptionsText}">
-			<DialogPanel id    = "ExternalTools"
+			<OptionPanel id    = "ExternalTools"
 			             label = "${res:Dialog.Options.ExternalToolsText}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPane"/>
-		</DialogPanel>
+		</OptionPanel>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/SharpDevelopSideBar/ContextMenu">
@@ -1661,7 +1661,7 @@
 	<!-- TEXT EDITOR -->
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
-		<DialogPanel id = "CodeTemplates"
+		<OptionPanel id = "CodeTemplates"
 		             label = "${res:Dialog.Options.CodeTemplatesText}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CodeTemplatePanel"/>
 	</Path>
@@ -1936,16 +1936,16 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog">
-		<DialogPanel id = "General"
+		<OptionPanel id = "General"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
 		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
-		<DialogPanel id = "Markers"
+		<OptionPanel id = "Markers"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"
 		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
-		<DialogPanel id = "Behavior"
+		<OptionPanel id = "Behavior"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
 		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
-		<DialogPanel id = "CodeCompletion"
+		<OptionPanel id = "CodeCompletion"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
 		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.CodeCompletionPanel"/>
 	</Path>
@@ -1995,23 +1995,23 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
-		<DialogPanel id    = "TextEditorOptions"
+		<OptionPanel id    = "TextEditorOptions"
 		             insertafter = "CodingOptions"
 		             insertbefore = "ToolsOptions"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditorOptionsText}">
-			<DialogPanel id = "General"
+			<OptionPanel id = "General"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
-			<DialogPanel id = "Markers"
+			<OptionPanel id = "Markers"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
-			<DialogPanel id = "Behavior"
+			<OptionPanel id = "Behavior"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
-			<DialogPanel id = "CodeCompletion"
+			<OptionPanel id = "CodeCompletion"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.CodeCompletionPanel"/>
-		</DialogPanel>
+		</OptionPanel>
 	</Path>
 	
 	<!-- Note : Most actions are put directly into the control, because

@@ -20,7 +20,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
-		<DialogPanel id          = "CodeAnalysis"
+		<OptionPanel id          = "CodeAnalysis"
 		             label       = "${res:ICSharpCode.CodeAnalysis}"
 		             class       = "ICSharpCode.CodeAnalysis.AnalysisProjectOptionsPanel"/>
 	</Path>
@@ -49,7 +49,7 @@
 	
 	<!-- Options panel -->
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<DialogPanel id    = "CodeAnalysisOptionPanel"
+		<OptionPanel id    = "CodeAnalysisOptionPanel"
 		       	     label = "${res:ICSharpCode.CodeAnalysis}"
 		       	     class = "ICSharpCode.CodeAnalysis.AnalysisIdeOptionsPanel"/>
 	</Path>

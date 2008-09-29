@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace VBNetBinding.OptionPanels
 {
-	public class ProjectImports : AbstractProjectOptionPanel
+	public class ProjectImports : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

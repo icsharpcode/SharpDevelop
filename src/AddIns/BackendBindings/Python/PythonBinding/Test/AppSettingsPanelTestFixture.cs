@@ -41,7 +41,7 @@ namespace PythonBinding.Tests
 			project = new PythonProject(info);
 			
 			appSettingsPanel = new DerivedApplicationSettingsPanel();
-			appSettingsPanel.CustomizationObject = project;
+			appSettingsPanel.Owner = project;
 			appSettingsPanel.LoadPanelContents();
 		}
 		

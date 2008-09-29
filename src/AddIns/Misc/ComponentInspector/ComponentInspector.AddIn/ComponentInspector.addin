@@ -44,19 +44,19 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
-		<DialogPanel id="ComponentInspectorOptions"
+		<OptionPanel id="ComponentInspectorOptions"
 		             label="${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}"
 		             insertafter="CodingOptions"
 		             insertbefore="TextEditorOptions">
-			<DialogPanel id="GeneralOptionsPanel"
+			<OptionPanel id="GeneralOptionsPanel"
 			             label="${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
 			             class="ICSharpCode.ComponentInspector.AddIn.GeneralOptionsPanel"/>
-			<DialogPanel id="ObjectTreeOptionsPanel"
+			<OptionPanel id="ObjectTreeOptionsPanel"
 			             label="${res:ComponentInspector.InspectorMenu.ObjectTreeOptionsPanel.Title}"
 			             class="ICSharpCode.ComponentInspector.AddIn.ObjectTreeOptionsPanel"/>
-			<DialogPanel id="TypeHandlerOptionsPanel"
+			<OptionPanel id="TypeHandlerOptionsPanel"
 			             label="${res:ComponentInspector.InspectorMenu.TypeHandlerOptionsPanel.Title}"
 			             class="ICSharpCode.ComponentInspector.AddIn.TypeHandlerOptionsPanel"/>
-		</DialogPanel>
+		</OptionPanel>
 	</Path>
 </AddIn>

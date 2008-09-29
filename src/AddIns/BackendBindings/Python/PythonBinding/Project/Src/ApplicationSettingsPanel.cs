@@ -16,7 +16,7 @@ namespace ICSharpCode.PythonBinding
 	/// <summary>
 	/// Python project's application settings panel.
 	/// </summary>
-	public class ApplicationSettingsPanel : AbstractProjectOptionPanel
+	public class ApplicationSettingsPanel : AbstractXmlFormsProjectOptionPanel
 	{
 		const string AssemblyTextBoxName = "assemblyNameTextBox";
 		const string RootNamespaceTextBoxName = "rootNamespaceTextBox";

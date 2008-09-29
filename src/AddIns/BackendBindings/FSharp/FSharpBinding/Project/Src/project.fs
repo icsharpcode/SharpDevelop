@@ -217,7 +217,7 @@ type MoveDownFileEvent() =
     
  
 type FsOptions() =
-    inherit AbstractProjectOptionPanel()
+    inherit AbstractXmlFormsProjectOptionPanel()
     override x.LoadPanelContents() =
         let this = (typeof<FsOptions>)
         let caller = this.Assembly

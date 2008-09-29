@@ -83,7 +83,7 @@
 	-->
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/UIOptions">
-		<DialogPanel id          = "RegisterFiletypes"
+		<OptionPanel id          = "RegisterFiletypes"
 		             label       = "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.PanelName}"
 		             insertafter = "LoadSave"
 		             class       = "ICSharpCode.FiletypeRegisterer.RegisterFiletypesPanel"/>

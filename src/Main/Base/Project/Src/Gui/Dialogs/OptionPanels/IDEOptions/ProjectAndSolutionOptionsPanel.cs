@@ -14,7 +14,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class ProjectAndSolutionOptionsPanel : AbstractOptionPanel
+	public class ProjectAndSolutionOptionsPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

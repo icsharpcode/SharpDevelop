@@ -111,9 +111,18 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ConvertToMSBuild35Dialog.Designer.cs">
       <DependentUpon>ConvertToMSBuild35Dialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\XmlFormsOptionPanel.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.Designer.cs">
       <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml.cs">
+      <DependentUpon>TabbedOptionsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml.cs">
+      <DependentUpon>TreeViewOptionsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchFolderNode.cs" />
@@ -134,6 +143,7 @@
     <Compile Include="Src\Gui\Workbench\WpfWorkbench.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableProjectEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
+    <Compile Include="Src\Internal\Doozers\IOptionPanel.cs" />
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
     <Compile Include="Src\Internal\Templates\CodeTemplate.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectTemplate.cs" />
@@ -160,10 +170,9 @@
     <Compile Include="Src\Services\File\RecentOpen.cs" />
     <Compile Include="Src\Services\Language\LanguageService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowActiveEvaluator.cs" />
-    <Compile Include="Src\Internal\Doozers\DefaultDialogPanelDescriptor.cs" />
-    <Compile Include="Src\Internal\Doozers\DialogPanelDoozer.cs" />
-    <Compile Include="Src\Internal\Doozers\IDialogPanel.cs" />
-    <Compile Include="Src\Internal\Doozers\IDialogPanelDescriptor.cs" />
+    <Compile Include="Src\Internal\Doozers\DefaultOptionPanelDescriptor.cs" />
+    <Compile Include="Src\Internal\Doozers\OptionPanelDoozer.cs" />
+    <Compile Include="Src\Internal\Doozers\IOptionPanelDescriptor.cs" />
     <Compile Include="Src\Services\File\FileService.cs" />
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
@@ -243,9 +252,6 @@
     <Compile Include="Src\Gui\Dialogs\TabbedOptions.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\WordCountDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -253,9 +259,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\PropertyGridPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.cs">
@@ -286,19 +289,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\WebReference.cs" />
-    <Compile Include="Src\Gui\Dialogs\Wizard\AbstractWizardPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\Wizard\CurrentPanelPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\Wizard\IWizardPanel.cs" />
-    <Compile Include="Src\Gui\Dialogs\Wizard\StatusPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\Wizard\WizardDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Pads\FileScout.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -476,9 +466,7 @@
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
     <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\SelectStylePanel.xfrm" />
-    <EmbeddedResource Include="Resources\TabbedOptionsDialog.xfrm" />
     <EmbeddedResource Include="Resources\TaskListOptions.xfrm" />
-    <EmbeddedResource Include="Resources\TreeViewOptionsDialog.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
     <EmbeddedResource Include="Resources\BehaviorTextEditorPanel.xfrm" />
     <EmbeddedResource Include="Resources\GeneralTextEditorPanel.xfrm" />
@@ -621,7 +609,7 @@
     <Compile Include="Src\Project\Solution\SolutionPreferences.cs" />
     <Compile Include="Src\Project\ConfigurationGuiHelper.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\ICanBeDirty.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractProjectOptionPanel.cs">
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractXmlFormsProjectOptionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKey.cs">
@@ -799,6 +787,8 @@
       <Private>True</Private>
     </ProjectReference>
     <Page Include="Src\Gui\App.xaml" />
+    <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />
+    <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />
     <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
     <Page Include="Src\TextEditor\Gui\Dialogs\GotoDialog.xaml" />
   </ItemGroup>

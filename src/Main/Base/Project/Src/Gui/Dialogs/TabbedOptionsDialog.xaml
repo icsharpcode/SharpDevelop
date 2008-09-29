@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	x:Class="ICSharpCode.SharpDevelop.Gui.TabbedOptionsDialog"
+	Height="425"
+	Width="450"
+	Style="{StaticResource DialogWindow}">
+	<Grid Name="grid">
+		<Grid.RowDefinitions>
+			<RowDefinition
+				Height="1*" />
+			<RowDefinition
+				Height="Auto" />
+		</Grid.RowDefinitions>
+		<Button
+			Content="{core:Localize Global.OKButtonText}"
+			Grid.Column="0"
+			Grid.Row="1"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Stretch"
+			Margin="0,6,117,8"
+			Width="100"
+			IsDefault="True"
+			Name="okButton"
+			Click="okButtonClick" />
+		<Button
+			Content="{core:Localize Global.CancelButtonText}"
+			Grid.Column="0"
+			Grid.Row="1"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Stretch"
+			Margin="0,6,8,8"
+			Width="100"
+			IsCancel="True"
+			Name="cancelButton"
+			Click="cancelButtonClick" />
+	</Grid>
+</Window>

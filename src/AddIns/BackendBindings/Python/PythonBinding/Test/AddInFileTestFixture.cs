@@ -337,7 +337,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void OptionsPanelCodonIsDialogPanel()
 		{
-			Assert.AreEqual("DialogPanel", optionsPanelCodon.Name);
+			Assert.AreEqual("OptionPanel", optionsPanelCodon.Name);
 		}
 		
 		[Test]

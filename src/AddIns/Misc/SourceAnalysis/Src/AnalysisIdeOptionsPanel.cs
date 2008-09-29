@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using System.Diagnostics;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -18,7 +18,7 @@ namespace MattEverson.SourceAnalysis
 	/// <summary>
 	/// Option panel to choose the StyleCop path from.
 	/// </summary>
-	public class AnalysisIdeOptionsPanel : AbstractOptionPanel
+	public class AnalysisIdeOptionsPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

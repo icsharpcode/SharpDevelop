@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// The Output Window options panel.
 	/// </summary>
-	public class OutputWindowOptionsPanel : AbstractOptionPanel
+	public class OutputWindowOptionsPanel : XmlFormsOptionPanel
 	{
 		public static readonly string OutputWindowsProperty = "SharpDevelop.UI.OutputWindowOptions";
 		FontSelectionPanel fontSelectionPanel;

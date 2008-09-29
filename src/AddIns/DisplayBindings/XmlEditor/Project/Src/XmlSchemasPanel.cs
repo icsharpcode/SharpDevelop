@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -19,7 +19,7 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// Shows the xml schemas that SharpDevelop knows about.
 	/// </summary>
-	public class XmlSchemasPanel : AbstractOptionPanel
+	public class XmlSchemasPanel : XmlFormsOptionPanel
 	{		
 		ListBox schemaListBox;
 		Button removeButton;

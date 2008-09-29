@@ -106,7 +106,7 @@ namespace ICSharpCode.Core
 		{
 			IDoozer doozer;
 			if (!AddInTree.Doozers.TryGetValue(Name, out doozer))
-				throw new CoreException("Doozer " + Name + " not found!");
+				throw new CoreException("Doozer " + Name + " not found! " + ToString());
 			
 			if (!doozer.HandleConditions && conditions.Length > 0) {
 				ConditionFailedAction action = GetFailedAction(owner);
@@ -119,8 +119,9 @@ namespace ICSharpCode.Core
 		
 		public override string ToString()
 		{
-			return String.Format("[Codon: name = {0}, addIn={1}]",
+			return String.Format("[Codon: name = {0}, id = {1}, addIn={2}]",
 			                     name,
+			                     Id,
 			                     addIn.FileName);
 		}
 	}

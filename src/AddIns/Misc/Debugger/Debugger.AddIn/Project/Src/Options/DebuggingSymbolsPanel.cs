@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// Options panel which allows user to specify where to look
 	/// for symbols (pdb files) and source codes
 	/// </summary>
-	public partial class DebuggingSymbolsPanel : AbstractOptionPanel
+	public partial class DebuggingSymbolsPanel : XmlFormsOptionPanel
 	{
 		public DebuggingSymbolsPanel()
 		{

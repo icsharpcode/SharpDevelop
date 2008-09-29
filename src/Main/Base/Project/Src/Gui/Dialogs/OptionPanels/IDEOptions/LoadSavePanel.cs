@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Summary description for Form1.
 	/// </summary>
-	public class LoadSavePanel : AbstractOptionPanel
+	public class LoadSavePanel : XmlFormsOptionPanel
 	{
 		const string loadUserDataCheckBox        = "loadUserDataCheckBox";
 		const string createBackupCopyCheckBox    = "createBackupCopyCheckBox";

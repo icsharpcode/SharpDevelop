@@ -13,7 +13,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class TaskListOptions : AbstractOptionPanel
+	public class TaskListOptions : XmlFormsOptionPanel
 	{
 		const string taskListView        = "taskListView";
 		const string nameTextBox         = "nameTextBox";

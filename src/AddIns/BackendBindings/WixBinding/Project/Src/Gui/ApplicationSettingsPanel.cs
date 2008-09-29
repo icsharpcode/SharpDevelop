@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.WixBinding
 {
-	public class ApplicationSettingsPanel : AbstractProjectOptionPanel
+	public class ApplicationSettingsPanel : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

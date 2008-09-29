@@ -14,14 +14,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Base class for project option panels that are using the <see cref="ConfigurationGuiHelper"/>.
 	/// </summary>
-	public abstract class AbstractProjectOptionPanel : AbstractOptionPanel, ICanBeDirty
+	public abstract class AbstractXmlFormsProjectOptionPanel : XmlFormsOptionPanel, ICanBeDirty
 	{
 		protected ConfigurationGuiHelper helper;
 		protected MSBuildBasedProject project;
 		
 		protected void InitializeHelper()
 		{
-			project = (MSBuildBasedProject)CustomizationObject;
+			project = (MSBuildBasedProject)Owner;
 			baseDirectory = project.Directory;
 			helper = new ConfigurationGuiHelper(project, this.ControlDictionary);
 		}

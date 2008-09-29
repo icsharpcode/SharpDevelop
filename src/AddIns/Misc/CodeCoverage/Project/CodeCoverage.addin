@@ -48,7 +48,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<DialogPanel id          = "CodeCoverageOptionsPanel"
+		<OptionPanel id          = "CodeCoverageOptionsPanel"
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             insertafter = "CodeAnalysisOptionPanel"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
@@ -88,7 +88,7 @@
 	</Path>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
-		<DialogPanel id          = "CodeCoverage"
+		<OptionPanel id          = "CodeCoverage"
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageProjectOptionsPanel"/>
 	</Path>

@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Panel for general debugging options
 	/// </summary>
-	public partial class DebuggingOptionsPanel : AbstractOptionPanel
+	public partial class DebuggingOptionsPanel : XmlFormsOptionPanel
 	{
 		public DebuggingOptionsPanel()
 		{

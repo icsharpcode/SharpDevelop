@@ -16,21 +16,25 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public static void ShowTabbedOptions(string dialogTitle, AddInTreeNode node)
 		{
-			using (TabbedOptions o = new TabbedOptions(dialogTitle, node)) {
-				o.Width  = 450;
-				o.Height = 425;
-				o.FormBorderStyle = FormBorderStyle.FixedDialog;
-				o.ShowDialog(WorkbenchSingleton.MainWin32Window);
-			}
+			TabbedOptionsDialog o = new TabbedOptionsDialog(node.BuildChildItems<IOptionPanelDescriptor>(null));
+			o.Title = dialogTitle;
+			o.Owner = WorkbenchSingleton.MainWindow;
+			o.ShowDialog();
+		}
+		
+		public static void ShowTreeOptions(string dialogTitle, AddInTreeNode node)
+		{
+			TreeViewOptionsDialog o = new TreeViewOptionsDialog(node.BuildChildItems<IOptionPanelDescriptor>(null));
+			o.Title = dialogTitle;
+			o.Owner = WorkbenchSingleton.MainWindow;
+			o.ShowDialog();
 		}
 		
 		public override void Run()
 		{
-			using (TreeViewOptions optionsDialog = new TreeViewOptions(AddInTree.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"))) {
-				optionsDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
-				
-				optionsDialog.ShowDialog(WorkbenchSingleton.MainWin32Window);
-			}
+			ShowTreeOptions(
+				ResourceService.GetString("Dialog.Options.TreeViewOptions.DialogName"),
+				AddInTree.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"));
 		}
 	}
 	

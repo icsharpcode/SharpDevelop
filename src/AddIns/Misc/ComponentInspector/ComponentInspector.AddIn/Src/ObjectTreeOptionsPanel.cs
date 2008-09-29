@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
@@ -12,7 +13,7 @@ using NoGoop.ObjBrowser;
 
 namespace ICSharpCode.ComponentInspector.AddIn
 {
-	public class ObjectTreeOptionsPanel : AbstractOptionPanel
+	public class ObjectTreeOptionsPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

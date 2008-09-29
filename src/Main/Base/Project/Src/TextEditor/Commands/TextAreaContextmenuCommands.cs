@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Collections;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Commands;
@@ -22,8 +22,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-			OptionsCommand.ShowTabbedOptions(ResourceService.GetString("Dialog.Options.BufferOptions"),
-			                                 AddInTree.GetTreeNode("/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog"));
+			OptionsCommand.ShowTabbedOptions(
+				ResourceService.GetString("Dialog.Options.BufferOptions"),
+				AddInTree.GetTreeNode("/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog"));
 		}
 	}
 	

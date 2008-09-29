@@ -5,13 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 {
-	public class CodeCompletionPanel : AbstractOptionPanel
+	public class CodeCompletionPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

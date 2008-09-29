@@ -503,36 +503,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 				
-				if (item.Template.WizardPath != null) {
-					Properties customizer = new Properties();
-					customizer.Set("Template", item.Template);
-					customizer.Set("Creator",  this);
-					WizardDialog wizard = new WizardDialog("File Wizard", customizer, item.Template.WizardPath);
-					if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-						DialogResult = DialogResult.OK;
+				foreach (FileDescriptionTemplate newfile in item.Template.FileDescriptionTemplates) {
+					if (!IsFilenameAvailable(StringParser.Parse(newfile.Name))) {
+						MessageService.ShowError("Filename " + StringParser.Parse(newfile.Name) + " is in use.\nChoose another one");
+						return;
 					}
-				} else {
-					foreach (FileDescriptionTemplate newfile in item.Template.FileDescriptionTemplates) {
-						if (!IsFilenameAvailable(StringParser.Parse(newfile.Name))) {
-							MessageService.ShowError("Filename " + StringParser.Parse(newfile.Name) + " is in use.\nChoose another one");
-							return;
-						}
+				}
+				ScriptRunner scriptRunner = new ScriptRunner();
+				
+				foreach (FileDescriptionTemplate newfile in item.Template.FileDescriptionTemplates) {
+					if (newfile.ContentData != null) {
+						SaveFile(newfile, null, newfile.ContentData);
+					} else {
+						SaveFile(newfile, scriptRunner.CompileScript(item.Template, newfile), null);
 					}
-					ScriptRunner scriptRunner = new ScriptRunner();
-					
-					foreach (FileDescriptionTemplate newfile in item.Template.FileDescriptionTemplates) {
-						if (newfile.ContentData != null) {
-							SaveFile(newfile, null, newfile.ContentData);
-						} else {
-							SaveFile(newfile, scriptRunner.CompileScript(item.Template, newfile), null);
-						}
-					}
-					DialogResult = DialogResult.OK;
-					
-					// raise FileCreated event for the new files.
-					foreach (KeyValuePair<string, FileDescriptionTemplate> entry in createdFiles) {
-						FileService.FireFileCreated(entry.Key, false);
-					}
+				}
+				DialogResult = DialogResult.OK;
+				
+				// raise FileCreated event for the new files.
+				foreach (KeyValuePair<string, FileDescriptionTemplate> entry in createdFiles) {
+					FileService.FireFileCreated(entry.Key, false);
 				}
 			}
 		}

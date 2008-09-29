@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
-using System.Windows.Forms;
 using System.ComponentModel.Design.Serialization;
-
+using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -17,7 +17,7 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 	/// <summary>
 	/// Options panel for localization model options.
 	/// </summary>
-	public class LocalizationModelOptionsPanel : AbstractOptionPanel
+	public class LocalizationModelOptionsPanel : XmlFormsOptionPanel
 	{
 		public LocalizationModelOptionsPanel()
 		{

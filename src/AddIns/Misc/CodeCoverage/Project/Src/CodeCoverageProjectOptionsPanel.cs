@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.CodeCoverage
 {
-	public class CodeCoverageProjectOptionsPanel : AbstractProjectOptionPanel
+	public class CodeCoverageProjectOptionsPanel : AbstractXmlFormsProjectOptionPanel
 	{
 		static readonly string IncludeListTextBoxName = "includeListTextBox";
 		static readonly string ExcludeListTextBoxName = "excludeListTextBox";

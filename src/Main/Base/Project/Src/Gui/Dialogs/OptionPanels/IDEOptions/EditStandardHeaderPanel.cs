@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class EditStandardHeaderPanel : AbstractOptionPanel
+	public class EditStandardHeaderPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

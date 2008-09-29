@@ -108,23 +108,23 @@
 	
 	<!-- Options panel -->
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<DialogPanel id="PythonOptionsPanel"
+		<OptionPanel id="PythonOptionsPanel"
 		       	     label="Python"
 		       	     class="ICSharpCode.PythonBinding.PythonOptionsPanel"/>
 	</Path>
 
 	<!-- Project options panels -->
 	<Path path="/SharpDevelop/BackendBindings/ProjectOptions/Python">
-		<DialogPanel id="Application"
+		<OptionPanel id="Application"
 		             label="${res:Dialog.ProjectOptions.ApplicationSettings}"
 		             class="ICSharpCode.PythonBinding.ApplicationSettingsPanel"/>
-		<DialogPanel id="BuildEvents"
+		<OptionPanel id="BuildEvents"
 		             label="${res:Dialog.ProjectOptions.BuildEvents}"
 		             class="ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
-		<DialogPanel id="CompilingOptions"
+		<OptionPanel id="CompilingOptions"
 		             label="${res:Dialog.ProjectOptions.BuildOptions}"
 		             class="ICSharpCode.PythonBinding.CompilingOptionsPanel"/>
-		<DialogPanel id="DebugOptions"
+		<OptionPanel id="DebugOptions"
 		             label="${res:Dialog.ProjectOptions.DebugOptions}"
 		             class="ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
 	</Path>

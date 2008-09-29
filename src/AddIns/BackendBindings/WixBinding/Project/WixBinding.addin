@@ -53,19 +53,19 @@
 	
 	<!-- Project options panels -->
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/Wix">
-		<DialogPanel id = "ApplicationSettings"
+		<OptionPanel id = "ApplicationSettings"
 			         label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 			         class = "ICSharpCode.WixBinding.ApplicationSettingsPanel"/>
-		<DialogPanel id    = "BuildEvents"
+		<OptionPanel id    = "BuildEvents"
 		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
-		<DialogPanel id = "WixCompiler"
+		<OptionPanel id = "WixCompiler"
 			         label = "${res:Dialog.ProjectOptions.BuildOptions}"
 			         class = "ICSharpCode.WixBinding.CompilerParametersPanel"/>
-		<DialogPanel id    = "DebugOptions"
+		<OptionPanel id    = "DebugOptions"
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
-		<DialogPanel id    = "PreprocessorVariables"
+		<OptionPanel id    = "PreprocessorVariables"
 		             label = "${res:ICSharpCode.WixBinding.PreprocessorVariablesPanel}"
 		             class = "ICSharpCode.WixBinding.PreprocessorVariablesPanel"/>
 	</Path>

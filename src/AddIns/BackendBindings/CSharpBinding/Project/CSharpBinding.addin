@@ -64,25 +64,25 @@
 	-->
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
-		<DialogPanel id    = "Application"
+		<OptionPanel id    = "Application"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
-		<DialogPanel id    = "ReferencePaths"
+		<OptionPanel id    = "ReferencePaths"
 		             label = "${res:Dialog.ProjectOptions.ReferencePaths}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>
-		<DialogPanel id    = "Signing"
+		<OptionPanel id    = "Signing"
 		             label = "${res:Dialog.ProjectOptions.Signing}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>
-		<DialogPanel id    = "BuildEvents"
+		<OptionPanel id    = "BuildEvents"
 		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
-		<DialogPanel id    = "BuildOptions"
+		<OptionPanel id    = "BuildOptions"
 		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
 		             class = "CSharpBinding.OptionPanels.BuildOptions"/>
-		<DialogPanel id    = "DebugOptions"
+		<OptionPanel id    = "DebugOptions"
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
-		<!--<DialogPanel id    = "Publish"
+		<!--<OptionPanel id    = "Publish"
 		             label = "${res:Dialog.ProjectOptions.Publish}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>

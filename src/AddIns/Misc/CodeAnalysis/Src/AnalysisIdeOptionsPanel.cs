@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -17,7 +17,7 @@ namespace ICSharpCode.CodeAnalysis
 	/// <summary>
 	/// Option panel to choose the FxCop path from.
 	/// </summary>
-	public class AnalysisIdeOptionsPanel : AbstractOptionPanel
+	public class AnalysisIdeOptionsPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

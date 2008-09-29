@@ -117,7 +117,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string languagename;
 		string description;
 		string icon;
-		string wizardpath;
 		string subcategory;
 		TargetFramework[] supportedTargetFrameworks;
 		
@@ -150,12 +149,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		ProjectDescriptor projectDescriptor = null;
 		
 		#region Template Properties
-		public string WizardPath {
-			get {
-				return wizardpath;
-			}
-		}
-		
 		public string Originator {
 			get {
 				return originator;
@@ -253,10 +246,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				newProjectDialogVisible = false;
 			
 			XmlElement config = templateElement["TemplateConfiguration"];
-			
-			if (config["Wizard"] != null) {
-				wizardpath = config["Wizard"].InnerText;
-			}
 			
 			name         = config["Name"].InnerText;
 			category     = config["Category"].InnerText;
@@ -371,15 +360,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 
 		public string CreateProject(ProjectCreateInformation projectCreateInformation)
 		{
-			if (wizardpath != null) {
-				Properties customizer = new Properties();
-				customizer.Set("ProjectCreateInformation", projectCreateInformation);
-				customizer.Set("ProjectTemplate", this);
-				WizardDialog wizard = new WizardDialog("Project Wizard", customizer, wizardpath);
-				if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) != DialogResult.OK) {
-					return null;
-				}
-			}
 			if (solutionDescriptor != null) {
 				return solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename);
 			} else if (projectDescriptor != null) {

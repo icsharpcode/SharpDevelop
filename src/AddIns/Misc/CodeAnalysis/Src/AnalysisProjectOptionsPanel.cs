@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CodeAnalysis
 {
-	public class AnalysisProjectOptionsPanel : AbstractProjectOptionPanel
+	public class AnalysisProjectOptionsPanel : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

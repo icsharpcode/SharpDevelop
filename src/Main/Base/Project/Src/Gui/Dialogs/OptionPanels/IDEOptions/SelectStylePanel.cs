@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class SelectStylePanel : AbstractOptionPanel
+	public class SelectStylePanel : XmlFormsOptionPanel
 	{
 		CheckBox showExtensionsCheckBox = new CheckBox();
 		

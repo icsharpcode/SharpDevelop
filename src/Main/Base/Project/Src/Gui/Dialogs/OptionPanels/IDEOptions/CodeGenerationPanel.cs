@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class CodeGenerationPanel : AbstractOptionPanel
+	public class CodeGenerationPanel : XmlFormsOptionPanel
 	{
 		static readonly string codeGenerationProperty = "SharpDevelop.UI.CodeGenerationOptions";
 		

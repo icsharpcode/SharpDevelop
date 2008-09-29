@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop
 {
-	public interface IDialogPanelDescriptor
+	public interface IOptionPanelDescriptor
 	{
 		/// <value>
 		/// Returns the ID of the dialog panel codon
@@ -30,14 +30,21 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// The child dialog panels (e.g. for treeviews)
 		/// </summary>
-		IEnumerable<IDialogPanelDescriptor> ChildDialogPanelDescriptors {
+		IEnumerable<IOptionPanelDescriptor> ChildOptionPanelDescriptors {
 			get;
 		}
 		
 		/// <value>
 		/// Returns the dialog panel object
 		/// </value>
-		IDialogPanel DialogPanel {
+		IOptionPanel OptionPanel {
+			get;
+		}
+		
+		/// <summary>
+		/// Gets whether the descriptor has an option panel (as opposed to having only child option panels)
+		/// </summary>
+		bool HasOptionPanel {
 			get;
 		}
 	}

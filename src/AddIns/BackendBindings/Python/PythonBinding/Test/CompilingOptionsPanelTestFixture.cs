@@ -41,7 +41,7 @@ namespace PythonBinding.Tests
 			project = new PythonProject(info);
 			
 			compilingOptionsPanel = new DerivedCompilingOptionsPanel();
-			compilingOptionsPanel.CustomizationObject = project;
+			compilingOptionsPanel.Owner = project;
 			compilingOptionsPanel.LoadPanelContents();
 		}
 		

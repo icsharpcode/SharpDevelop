@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class Signing : AbstractProjectOptionPanel
+	public class Signing : AbstractXmlFormsProjectOptionPanel
 	{
 		ComboBox keyFile;
 		ConfigurationGuiBinding signAssemblyBinding;

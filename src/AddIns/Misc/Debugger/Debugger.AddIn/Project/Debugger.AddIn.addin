@@ -116,15 +116,15 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
-		<DialogPanel id    = "Debugging"
+		<OptionPanel id    = "Debugging"
 		             label = "${res:Dialog.Options.IDEOptions.Debugging}"
 		             insertbefore = "TextEditorOptions">
-			<DialogPanel id    = "General"
+			<OptionPanel id    = "General"
 			             label = "${res:Dialog.Options.IDEOptions.Debugging.General}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingOptionsPanel"/>
-			<DialogPanel id    = "Symbols"
+			<OptionPanel id    = "Symbols"
 			             label = "${res:Dialog.Options.IDEOptions.Debugging.Symbols}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingSymbolsPanel"/>
-		</DialogPanel>
+		</OptionPanel>
 	</Path>
 </AddIn>

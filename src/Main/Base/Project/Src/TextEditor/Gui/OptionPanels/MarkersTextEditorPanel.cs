@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -18,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 	/// <summary>
 	/// Summary description for Form9.
 	/// </summary>
-	public class MarkersTextEditorPanel : AbstractOptionPanel
+	public class MarkersTextEditorPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

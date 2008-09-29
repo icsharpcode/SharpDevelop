@@ -164,7 +164,7 @@
 
 	<!-- Options panel -->
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<DialogPanel id="UnitTestingOptionsPanel"
+		<OptionPanel id="UnitTestingOptionsPanel"
 		       	     label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
 		       	     class="ICSharpCode.UnitTesting.UnitTestingOptionsPanel"/>
 	</Path>
