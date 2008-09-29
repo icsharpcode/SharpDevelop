@@ -110,7 +110,9 @@ namespace ICSharpCode.FormsDesigner.Services
 								throw new InvalidOperationException("The selected resource file '" + projectResource.ResourceFile + "' was not found in the project.");
 							}
 							const string resourceGeneratorToolName = "ResXFileCodeGenerator";
-							if (!String.Equals(resourceGeneratorToolName, fpi.CustomTool, StringComparison.Ordinal)) {
+							const string publicResourceGeneratorToolName = "PublicResXFileCodeGenerator";
+							if (!String.Equals(resourceGeneratorToolName, fpi.CustomTool, StringComparison.Ordinal) &&
+							    !String.Equals(publicResourceGeneratorToolName, fpi.CustomTool, StringComparison.Ordinal)) {
 								fpi.CustomTool = resourceGeneratorToolName;
 							}
 							CustomToolsService.RunCustomTool(fpi, true);
