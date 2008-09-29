@@ -16,6 +16,8 @@ namespace ResourceEditor
 {
 	public class ResourceCodeGeneratorTool : ICustomTool
 	{
+		protected bool createInternalClass = true;
+		
 		public void GenerateCode(FileProjectItem item, CustomToolContext context)
 		{
 			/*context.GenerateCodeDomAsync(item, context.GetOutputFileName(item, ".Designer"),
@@ -27,6 +29,7 @@ namespace ResourceEditor
 			IResourceReader reader;
 			if (string.Equals(Path.GetExtension(inputFilePath), ".resx", StringComparison.OrdinalIgnoreCase)) {
 				reader = new ResXResourceReader(inputFilePath);
+				((ResXResourceReader)reader).BasePath = Path.GetDirectoryName(inputFilePath);
 			} else {
 				reader = new ResourceReader(inputFilePath);
 			}
@@ -47,11 +50,17 @@ namespace ResourceEditor
 					context.OutputNamespace, // generatedCodeNamespace
 					context.OutputNamespace, // resourcesNamespace
 					context.Project.LanguageProperties.CodeDomProvider, // codeProvider
-					true,             // internal class
+					createInternalClass,             // internal class
 					out unmatchable
 				));
 		}
-		
-		
+	}
+	
+	public class PublicResourceCodeGeneratorTool : ResourceCodeGeneratorTool
+	{
+		public PublicResourceCodeGeneratorTool()
+		{
+			base.createInternalClass = false;
+		}
 	}
 }

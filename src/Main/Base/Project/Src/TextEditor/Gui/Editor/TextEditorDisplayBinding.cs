@@ -245,13 +245,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			properties.Set("CaretOffset", textEditorControl.ActiveTextAreaControl.Caret.Offset);
 			properties.Set("VisibleLine", textEditorControl.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine);
 			properties.Set("HighlightingLanguage", textEditorControl.Document.HighlightingStrategy.Name);
-			properties.Set("Foldings", textEditorControl.Document.FoldingManager.SerializeToString());
 			return properties;
 		}
 		
-		public void SetMemento(Properties memento)
+		public void SetMemento(Properties properties)
 		{
-			Properties properties = (Properties)memento;
 			textEditorControl.ActiveTextAreaControl.Caret.Position =  textEditorControl.Document.OffsetToPosition(Math.Min(textEditorControl.Document.TextLength, Math.Max(0, properties.Get("CaretOffset", textEditorControl.ActiveTextAreaControl.Caret.Offset))));
 //			textAreaControl.SetDesiredColumn();
 			
@@ -263,7 +261,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			textEditorControl.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = properties.Get("VisibleLine", 0);
 			
-			textEditorControl.Document.FoldingManager.DeserializeFromString(properties.Get("Foldings", ""));
 //			// insane check for cursor position, may be required for document reload.
 //			int lineNr = textAreaControl.Document.GetLineNumberForOffset(textAreaControl.Document.Caret.Offset);
 //			LineSegment lineSegment = textAreaControl.Document.GetLineSegment(lineNr);
@@ -448,31 +445,31 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
 		public bool EnableCut {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCut;
+				return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCut;
 			}
 		}
 		
 		public bool EnableCopy {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy;
+				return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy;
 			}
 		}
 		
 		public bool EnablePaste {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnablePaste;
+				return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnablePaste;
 			}
 		}
 		
 		public bool EnableDelete {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableDelete;
+				return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableDelete;
 			}
 		}
 		
 		public bool EnableSelectAll {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll;
+				return !this.IsDisposed && textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll;
 			}
 		}
 		

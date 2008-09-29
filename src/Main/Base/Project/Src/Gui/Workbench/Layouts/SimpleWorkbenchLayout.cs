@@ -140,11 +140,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 		}
 		
-		public IWorkbenchWindow ShowView(IViewContent content)
+		public IWorkbenchWindow ShowView(IViewContent content, bool switchToOpenedView)
 		{
 			SimpleDocumentTab sdt = new SimpleDocumentTab();
 			sdt.window.ViewContents.Add(content);
 			documentTabs.TabPages.Add(sdt);
+			if (switchToOpenedView) {
+				documentTabs.SelectedTab = sdt;
+			}
 			return sdt.window;
 		}
 		

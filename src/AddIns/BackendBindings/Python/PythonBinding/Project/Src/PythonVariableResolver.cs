@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Scripting.Compilers;
+using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
+using Microsoft.Scripting.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Scripting;
 using System.Text;
 
 using ICSharpCode.SharpDevelop.Dom;
@@ -51,20 +51,14 @@ namespace ICSharpCode.PythonBinding
 		public string Resolve(string variableName, string fileName, string code)
 		{
 			if (code != null) {
-				ScriptEngine scriptEngine = PythonEngine.CurrentEngine;
+				ScriptEngine scriptEngine = IronPython.Hosting.Python.CreateEngine();
 				PythonCompilerSink sink = new PythonCompilerSink();
 				SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, code);
 				CompilerContext context = new CompilerContext(source, new PythonCompilerOptions(), sink);
-				Parser parser = Parser.CreateParser(context, new PythonEngineOptions());
+				Parser parser = Parser.CreateParser(context, new PythonOptions());
 				PythonAst ast = parser.ParseFile(false);
 
 				return Resolve(variableName, ast);
-				
-				//PythonCompilerSink sink = new PythonCompilerSink();
-				//CompilerContext context = new CompilerContext(null, sink);
-				//Parser parser = Parser.FromString(null, context, code);
-				//Statement statement = parser.ParseFileInput();
-				//return Resolve(variableName, statement);
 			}
 			return null;
 		}

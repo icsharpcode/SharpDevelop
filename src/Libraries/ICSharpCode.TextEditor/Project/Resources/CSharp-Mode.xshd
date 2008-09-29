@@ -323,6 +323,7 @@
 				<Key word = "seealso" />
 				<Key word = "summary" />
 				<Key word = "value" />
+				<Key word = "inheritdoc" />
 				
 				<Key word = "type" />
 				<Key word = "name" />

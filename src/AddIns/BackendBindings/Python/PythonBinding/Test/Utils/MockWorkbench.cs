@@ -52,6 +52,12 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
+		public ICollection<IViewContent> PrimaryViewContents {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
 				throw new NotImplementedException();
@@ -104,6 +110,11 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public void ShowView(IViewContent content)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void ShowView(IViewContent content, bool switchToOpenedView)
 		{
 			throw new NotImplementedException();
 		}

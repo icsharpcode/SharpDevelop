@@ -14,6 +14,7 @@ using System.ComponentModel.Design.Serialization;
 using System.Reflection;
 
 using ICSharpCode.Core;
+using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -122,6 +123,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			CodeDomLocalizationProvider localizationProvider = new CodeDomLocalizationProvider(designerLoaderHost, model);
 			IDesignerSerializationManager manager = (IDesignerSerializationManager)designerLoaderHost.GetService(typeof(IDesignerSerializationManager));
+			manager.AddSerializationProvider(new SharpDevelopSerializationProvider());
 			manager.AddSerializationProvider(localizationProvider);
 			base.Initialize();
 			

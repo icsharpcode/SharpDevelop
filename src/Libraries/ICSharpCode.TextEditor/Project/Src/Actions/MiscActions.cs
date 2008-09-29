@@ -79,7 +79,7 @@ namespace ICSharpCode.TextEditor.Actions
 		/// <param name="textArea">The <see cref="ItextArea"/> which is used for callback purposes</param>
 		public override void Execute(TextArea textArea)
 		{
-			if (textArea.Document.ReadOnly) {
+			if (textArea.SelectionManager.SelectionIsReadonly) {
 				return;
 			}
 			textArea.Document.UndoStack.StartUndoGroup();
@@ -90,7 +90,6 @@ namespace ICSharpCode.TextEditor.Actions
 					if (startLine != endLine) {
 						textArea.BeginUpdate();
 						InsertTabs(textArea.Document, selection, startLine, endLine);
-						textArea.Document.UpdateQueue.Clear();
 						textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.LinesBetween, startLine, endLine));
 						textArea.EndUpdate();
 					} else {
@@ -539,30 +538,6 @@ namespace ICSharpCode.TextEditor.Actions
 			BlockCommentRegion other = obj as BlockCommentRegion;
 			if (other == null) return false;
 			return this.commentStart == other.commentStart && this.commentEnd == other.commentEnd && this.startOffset == other.startOffset && this.endOffset == other.endOffset;
-		}
-	}
-	
-	public class IndentSelection : AbstractEditAction
-	{
-		/// <remarks>
-		/// Executes this edit action
-		/// </remarks>
-		/// <param name="textArea">The <see cref="ItextArea"/> which is used for callback purposes</param>
-		public override void Execute(TextArea textArea)
-		{
-			if (textArea.Document.ReadOnly) {
-				return;
-			}
-			textArea.BeginUpdate();
-			if (textArea.SelectionManager.HasSomethingSelected) {
-				foreach (ISelection selection in textArea.SelectionManager.SelectionCollection) {
-					textArea.Document.FormattingStrategy.IndentLines(textArea, selection.StartPosition.Y, selection.EndPosition.Y);
-				}
-			} else {
-				textArea.Document.FormattingStrategy.IndentLines(textArea, 0, textArea.Document.TotalNumberOfLines - 1);
-			}
-			textArea.EndUpdate();
-			textArea.Refresh();
 		}
 	}
 	

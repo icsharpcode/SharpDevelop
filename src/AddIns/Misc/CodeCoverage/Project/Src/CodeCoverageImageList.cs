@@ -19,7 +19,8 @@ namespace ICSharpCode.CodeCoverage
 		Namespace                 = 2,
 		Class                     = 4,
 		Method                    = 6,
-		MethodWithZeroCoverage    = 7
+		MethodWithZeroCoverage    = 7,
+		Property                  = 8
 	}
 	
 	public class CodeCoverageImageList
@@ -48,6 +49,7 @@ namespace ICSharpCode.CodeCoverage
 			AddBitmap(WinFormsResourceService.GetBitmap("Icons.16x16.NameSpace"), 0.4f);
 			AddBitmap(WinFormsResourceService.GetBitmap("Icons.16x16.Class"), 0.15f);
 			AddBitmap(WinFormsResourceService.GetBitmap("Icons.16x16.Method"), 0.2f);
+			AddBitmap(WinFormsResourceService.GetBitmap("Icons.16x16.Property"), 0.2f);
 		}
 		
 		static void AddBitmap(Bitmap bitmap, float brightness)

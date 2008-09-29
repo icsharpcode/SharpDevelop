@@ -10,17 +10,21 @@ using System.Drawing;
 
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.PythonBinding
 {
 	public class TextEditor : ITextEditor
 	{
 		delegate string GetLineInvoker(int index);
+		delegate void WriteInvoker(string text, Color color);
 
 		TextEditorControl textEditorControl;
 		TextArea textArea;
 		Color customLineColour = Color.LightGray;
 		TextMarker readOnlyMarker;
+
+		CodeCompletionWindow completionWindow;
 		
 		public TextEditor(TextEditorControl textEditorControl)
 		{
@@ -56,8 +60,8 @@ namespace ICSharpCode.PythonBinding
 		public void Write(string text, Color backgroundColour)
 		{
 			if (textEditorControl.InvokeRequired) {
-				Action<string, Color> action = Write;
-				textEditorControl.Invoke(action, new object[] {text, backgroundColour});
+				WriteInvoker invoker = new WriteInvoker(Write);
+				textEditorControl.Invoke(invoker, new object[] {text, backgroundColour});
 			} else {
 				int offset = textEditorControl.Document.PositionToOffset(new TextLocation(Column, Line));
 				textEditorControl.ActiveTextAreaControl.TextArea.InsertString(text);
@@ -136,8 +140,12 @@ namespace ICSharpCode.PythonBinding
 			doc.UndoStack.ClearAll();
 		}
 		
-		public void ShowCompletionWindow()
+		public void ShowCompletionWindow(ICompletionDataProvider completionDataProvider)
 		{
+			completionWindow = CodeCompletionWindow.ShowCompletionWindow(textEditorControl.ParentForm, textEditorControl, String.Empty, completionDataProvider, ' ');
+			if (completionWindow != null) {
+				completionWindow.Closed += CompletionWindowClosed;
+			}
 		}
 		
 		/// <summary>
@@ -157,5 +165,14 @@ namespace ICSharpCode.PythonBinding
 				textEditorControl.IndentStyle = style;
 			}
 		}		
+		
+		void CompletionWindowClosed(object source, EventArgs e)
+		{
+			if (completionWindow != null) {
+				completionWindow.Closed -= CompletionWindowClosed;
+				completionWindow.Dispose();
+				completionWindow = null;
+			}
+		}
 	}
 }

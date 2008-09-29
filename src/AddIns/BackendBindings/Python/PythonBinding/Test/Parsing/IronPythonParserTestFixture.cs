@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Scripting.Compilers;
+using Microsoft.Scripting.Runtime;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;

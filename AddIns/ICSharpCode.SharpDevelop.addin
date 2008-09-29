@@ -1746,6 +1746,7 @@
 		          class = "ICSharpCode.SharpDevelop.Commands.SaveFileAs"/>
 		<MenuItem id = "File"
 		          label = "${res:XML.MainMenu.FileMenu.Close}"
+		          icon  = "Icons.16x16.CloseFileIcon"
 		          class ="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
 		<MenuItem id = "Separator2" type = "Separator" />
 		<MenuItem id = "Comment"

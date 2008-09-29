@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 
 namespace ICSharpCode.CodeCoverage
@@ -103,9 +104,20 @@ namespace ICSharpCode.CodeCoverage
 		
 		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XmlReader reader)
 		{
-			CodeCoverageMethod method = new CodeCoverageMethod(reader.GetAttribute("name"), className);
+			CodeCoverageMethod method = new CodeCoverageMethod(reader.GetAttribute("name"), className, GetMethodAttributes(reader));
 			module.Methods.Add(method);
 			return method;
+		}
+		
+		MethodAttributes GetMethodAttributes(XmlReader reader)
+		{
+			string flags = reader.GetAttribute("flags");
+			if (flags != null) {
+				try {
+					return (MethodAttributes)Enum.Parse(typeof(MethodAttributes), flags);
+				} catch (ArgumentException) { }
+			}
+			return MethodAttributes.Public;
 		}
 		
 		/// <summary>

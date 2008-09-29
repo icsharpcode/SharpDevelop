@@ -322,6 +322,9 @@ namespace ICSharpCode.TextEditor.Document
 								return delimiterSegment;
 							}
 						}
+						#if DATACONSISTENCYTEST
+						Debug.Assert(false, "Found lone \\r, data consistency problems?");
+						#endif
 						goto case '\n';
 					case '\n':
 						delimiterSegment.Offset = i;

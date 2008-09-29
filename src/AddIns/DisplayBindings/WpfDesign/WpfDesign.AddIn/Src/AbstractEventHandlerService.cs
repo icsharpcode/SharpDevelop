@@ -73,13 +73,11 @@ namespace ICSharpCode.WpfDesign.AddIn
 			var item = eventProperty.DesignItem;
 			string handlerName = (string)eventProperty.ValueOnInstance;			
 
-			if (string.IsNullOrEmpty(handlerName))  {
-				string prefix = item.Name;
-				if (string.IsNullOrEmpty(prefix)) {
-					prefix = item.ComponentType.Name;
+			if (string.IsNullOrEmpty(handlerName)) {
+				if (string.IsNullOrEmpty(item.Name)) {
+					GenerateName(eventProperty.DesignItem);
 				}
-
-				handlerName = prefix + eventProperty.Name;
+				handlerName = item.Name + "_" + eventProperty.Name;
 				eventProperty.SetValue(handlerName);
 			}
 			CreateEventHandlerInternal(eventProperty.ReturnType, handlerName);
@@ -96,6 +94,19 @@ namespace ICSharpCode.WpfDesign.AddIn
 				}
 			}
 			return null;
+		}
+
+		void GenerateName(DesignItem item)
+		{	
+			for (int i = 1;; i++) {
+				try {
+					string name = item.ComponentType.Name + i;
+					name = char.ToLower(name[0]) + name.Substring(1);
+					item.Name = name;
+					break;
+				} catch {
+				}
+			}
 		}
 	}
 }

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.CodeCoverage
@@ -17,12 +18,18 @@ namespace ICSharpCode.CodeCoverage
 		string className = String.Empty;
 		string fullClassName = String.Empty;
 		string classNamespace = String.Empty;
+		MethodAttributes methodAttributes;
 		List<CodeCoverageSequencePoint> sequencePoints = new List<CodeCoverageSequencePoint>();
 		
-		public CodeCoverageMethod(string name, string className)
+		public CodeCoverageMethod(string name, string className) : this(name, className, MethodAttributes.Public)
+		{
+		}
+		
+		public CodeCoverageMethod(string name, string className, MethodAttributes methodAttributes)
 		{
 			this.name = name;
 			this.fullClassName = className;
+			this.methodAttributes = methodAttributes;
 			
 			int index = fullClassName.LastIndexOf('.');
 			if (index > 0) {
@@ -51,37 +58,36 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		public string Name {
-			get {
-				return name;
+		/// <summary>
+		/// Returns true if the method is a getter or setter method for a property.
+		/// </summary>
+		public bool IsProperty {
+			get { 
+				return (methodAttributes & MethodAttributes.SpecialName) == MethodAttributes.SpecialName && IsPropertyMethodName(name);
 			}
 		}
 		
+		public string Name {
+			get { return name; }
+		}
+		
 		public string ClassName {
-			get {
-				return className;
-			}
+			get { return className; }
 		}
 		
 		/// <summary>
 		/// Returns the full class name including the namespace prefix.
 		/// </summary>
 		public string FullClassName {
-			get {
-				return fullClassName;
-			}
+			get { return fullClassName; }
 		}
 		
 		public string ClassNamespace {
-			get {
-				return classNamespace;
-			}
+			get { return classNamespace; }
 		}
 		
 		public string RootNamespace {
-			get {
-				return GetRootNamespace(classNamespace);
-			}
+			get { return GetRootNamespace(classNamespace); }
 		}
 		
 		public static string GetRootNamespace(string ns)
@@ -94,9 +100,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public List<CodeCoverageSequencePoint> SequencePoints {
-			get {
-				return sequencePoints;
-			}
+			get { return sequencePoints; }
 		}
 		
 		public int VisitedSequencePointsCount {
@@ -214,6 +218,11 @@ namespace ICSharpCode.CodeCoverage
 				}
 			}
 			return names;
+		}
+		
+		static bool IsPropertyMethodName(string name)
+		{
+			return name.StartsWith("get_") || name.StartsWith("set_");
 		}
 	}
 }

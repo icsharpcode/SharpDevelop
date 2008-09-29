@@ -50,7 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CodeCoveragePropertyCollectionWithGetterAndSetterTestFixture.cs" />
+    <Compile Include="CodeCoveragePropertyTestFixture.cs" />
     <Compile Include="CodeCoverageResultsMissingFileIdTestFixture.cs" />
+    <Compile Include="CodeCoverageResultsPropertyFlagsTestFixture.cs" />
     <Compile Include="CodeCoverageResultsTestFixture.cs" />
     <Compile Include="CodeCoverageTreeViewTestFixture.cs" />
     <Compile Include="DerivedCodeCoverageTreeView.cs" />
@@ -62,6 +65,7 @@
     <Compile Include="PartCoverExitEventArgsTestFixture.cs" />
     <Compile Include="PartCoverSettingsMissingRulePrefixTestFixture.cs" />
     <Compile Include="PartCoverSettingsTestFixture.cs" />
+    <Compile Include="PropertiesInCodeCoverageTreeView.cs" />
     <Compile Include="RemoveCodeCoverageMarkersTestFixture.cs" />
     <Compile Include="CodeCoverageMarkersCoverTwoLinesTestFixture.cs" />
     <Compile Include="CodeCoverageMarkersCoverMultipleLinesTestFixture.cs" />

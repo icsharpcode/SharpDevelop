@@ -140,5 +140,38 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			CheckNamespaceVB("COllEctions.GeNEric", "KeyNotFoundException");
 		}
+		
+		[Test]
+		public void SearchClassPreferVisible()
+		{
+			ICompilationUnit ref1 = Prepare(LanguageProperties.CSharp);
+			ref1.ProjectContent.AddClassToNamespaceList(new DefaultClass(ref1, "ClassName") { Modifiers = ModifierEnum.Internal });
+			ICompilationUnit ref2 = Prepare(LanguageProperties.CSharp);
+			ref2.ProjectContent.AddClassToNamespaceList(new DefaultClass(ref2, "ClassName") { Modifiers = ModifierEnum.Public });
+			
+			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
+			cu.ProjectContent.ReferencedContents.Add(ref1.ProjectContent);
+			cu.ProjectContent.ReferencedContents.Add(ref2.ProjectContent);
+			
+			SearchTypeResult r = cu.ProjectContent.SearchType(new SearchTypeRequest("ClassName", 0, null, cu, 1, 1));
+			Assert.AreEqual(ModifierEnum.Public, r.Result.GetUnderlyingClass().Modifiers);
+		}
+		
+		[Test]
+		public void SearchClassDifferentNamespacePreferVisible()
+		{
+			ICompilationUnit ref1 = Prepare(LanguageProperties.CSharp);
+			ref1.ProjectContent.AddClassToNamespaceList(new DefaultClass(ref1, "NS1.ClassName") { Modifiers = ModifierEnum.Internal });
+			ICompilationUnit ref2 = Prepare(LanguageProperties.CSharp);
+			ref2.ProjectContent.AddClassToNamespaceList(new DefaultClass(ref2, "NS2.ClassName") { Modifiers = ModifierEnum.Public });
+			
+			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
+			cu.ProjectContent.ReferencedContents.Add(ref1.ProjectContent);
+			cu.ProjectContent.ReferencedContents.Add(ref2.ProjectContent);
+			cu.Usings.Add(new DefaultUsing(cu.ProjectContent) { Usings = { "NS1", "NS2" } });
+			
+			SearchTypeResult r = cu.ProjectContent.SearchType(new SearchTypeRequest("ClassName", 0, null, cu, 1, 1));
+			Assert.AreEqual(ModifierEnum.Public, r.Result.GetUnderlyingClass().Modifiers);
+		}
 	}
 }

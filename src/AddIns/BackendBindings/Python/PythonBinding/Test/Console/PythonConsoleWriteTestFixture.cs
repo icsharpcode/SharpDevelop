@@ -27,7 +27,7 @@ namespace PythonBinding.Tests.Console
 		{
 			mockTextEditor = new MockTextEditor();
 			mockTextEditor.Text = String.Empty;			
-			pythonConsole = new PythonConsole(mockTextEditor);
+			pythonConsole = new PythonConsole(mockTextEditor, null);
 		}
 		
 		[Test]

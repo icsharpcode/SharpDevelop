@@ -13,6 +13,8 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
 using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 
@@ -21,13 +23,13 @@ using Reflector.IpcServer;
 namespace ReflectorAddIn
 {
 	/// <summary>
-	/// Controls Lutz Roeders's .NET Reflector.
+	/// Controls .NET Reflector.
 	/// </summary>
 	public static class ReflectorController
 	{
 		#region Connecting
 		
-		public static IReflectorService SafeConnect(System.Windows.Forms.IWin32Window owner)
+		public static IReflectorService SafeConnect(IWin32Window owner)
 		{
 			try {
 				return Connect(owner);
@@ -56,7 +58,7 @@ namespace ReflectorAddIn
 		/// Ensures that an instance of Reflector is running and connects to it.
 		/// </summary>
 		/// <returns>The <see cref="IReflectorService"/> that can be used to control the running instance of Reflector.</returns>
-		public static IReflectorService Connect(System.Windows.Forms.IWin32Window owner)
+		public static IReflectorService Connect(IWin32Window owner)
 		{
 			IReflectorService service = null;
 			try {
@@ -157,7 +159,7 @@ namespace ReflectorAddIn
 		
 		// ********************************************************************************************************************************
 		
-		public static void TryGoTo(CodeElementInfo element, System.Windows.Forms.IWin32Window owner)
+		public static void TryGoTo(CodeElementInfo element, IWin32Window owner)
 		{
 			IReflectorService s = null;
 			try {
@@ -165,9 +167,22 @@ namespace ReflectorAddIn
 				s = SafeConnect(owner);
 				if (s == null) return;
 				
-				s.GoTo(element);
+				DateTime start = DateTime.UtcNow;
+				
+				while (!s.IsReady && (DateTime.UtcNow - start).TotalSeconds < 20) {
+					Application.DoEvents();
+					Thread.Sleep(100);
+				}
+				
+				if (s.IsReady) {
+					s.GoTo(element);
+				} else {
+					MessageService.ShowError("Timed out while waiting for the Reflector service to become ready.");
+				}
 				
 			} catch (System.Runtime.Remoting.RemotingException ex) {
+				ShowRemotingError(ex);
+			} catch (InvalidOperationException ex) {
 				ShowRemotingError(ex);
 			} finally {
 				if (s != null) {

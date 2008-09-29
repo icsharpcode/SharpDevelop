@@ -73,7 +73,7 @@ namespace ICSharpCode.PythonBinding
 		protected override IConsole CreateConsole(ScriptEngine engine, CommandLine commandLine, ConsoleOptions options)
 		{
 			SetOutput(new PythonOutputStream(textEditor));
-			pythonConsole = new PythonConsole(textEditor);
+			pythonConsole = new PythonConsole(textEditor, commandLine);
 			return pythonConsole;
 		}
 		

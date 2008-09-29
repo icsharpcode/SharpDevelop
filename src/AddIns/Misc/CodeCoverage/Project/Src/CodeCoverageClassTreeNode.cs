@@ -20,9 +20,17 @@ namespace ICSharpCode.CodeCoverage
 		public override void ActivateItem()
 		{
 			if (Nodes.Count > 0) {
-				CodeCoverageMethodTreeNode methodNode = (CodeCoverageMethodTreeNode)Nodes[0];
-				if (methodNode.Method.SequencePoints.Count > 0) {
+				CodeCoverageMethodTreeNode methodNode = Nodes[0] as CodeCoverageMethodTreeNode;
+				if (methodNode != null && methodNode.Method.SequencePoints.Count > 0) {
 					FileService.OpenFile(methodNode.Method.SequencePoints[0].Document);
+				}
+				// when the first node is a property:
+				CodeCoverageMethodsTreeNode methodsNode = Nodes[0] as CodeCoverageMethodsTreeNode;
+				if (methodsNode != null && methodsNode.Methods.Count > 0) {
+					var sequencePoints = methodsNode.Methods[0].SequencePoints;
+					if (sequencePoints != null) {
+						FileService.OpenFile(sequencePoints[0].Document);
+					}
 				}
 			}
 		}
@@ -30,8 +38,21 @@ namespace ICSharpCode.CodeCoverage
 		protected override void Initialize()
 		{
 			Nodes.Clear();
+
+			// Add methods.
+			CodeCoveragePropertyCollection properties = new CodeCoveragePropertyCollection();
 			foreach (CodeCoverageMethod method in Methods) {
-				CodeCoverageMethodTreeNode node = new CodeCoverageMethodTreeNode(method);
+				if (method.IsProperty) {
+					properties.Add(method);
+				} else {
+					CodeCoverageMethodTreeNode node = new CodeCoverageMethodTreeNode(method);
+					node.AddTo(this);
+				}
+			}
+			
+			// Add properties.
+			foreach (CodeCoverageProperty property in properties) {
+				CodeCoveragePropertyTreeNode node = new CodeCoveragePropertyTreeNode(property);
 				node.AddTo(this);
 			}
 			

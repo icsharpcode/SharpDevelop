@@ -594,7 +594,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				else
 					return false;
 			} catch (GetValueException e) {
-				throw e;
+				WorkbenchSingleton.SafeThreadAsyncCall(MessageService.ShowError, e);
+				return true;
 			}
 		}
 		

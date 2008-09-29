@@ -19,7 +19,7 @@ using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonConsole : IConsole, IDisposable
+	public class PythonConsole : IConsole, IDisposable, IMemberProvider
 	{
 		ITextEditor textEditor;
 		int lineReceivedEventIndex = 0; // The index into the waitHandles array where the lineReceivedEvent is stored.
@@ -28,10 +28,13 @@ namespace ICSharpCode.PythonBinding
 		WaitHandle[] waitHandles;
 		int promptLength;
 		List<string> previousLines = new List<string>();
+		CommandLine commandLine;
 		
-		public PythonConsole(ITextEditor textEditor)
+		public PythonConsole(ITextEditor textEditor, CommandLine commandLine)
 		{
 			waitHandles = new WaitHandle[] {lineReceivedEvent, disposedEvent};
+			
+			this.commandLine = commandLine;
 			
 			this.textEditor = textEditor;
 			textEditor.KeyPress += ProcessKeyPress;
@@ -68,6 +71,19 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Gets the member names of the specified item.
+		/// </summary>
+		public IList<string> GetMemberNames(string name)
+		{
+			return commandLine.GetMemberNames(name);
+		}
+		
+		public IList<string> GetGlobals(string name)
+		{
+			return commandLine.GetGlobals(name);
+		}
+		
+		/// <summary>
 		/// Returns the next line typed in by the console user. If no line is available this method
 		/// will block.
 		/// </summary>
@@ -89,6 +105,9 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
+		/// <summary>
+		/// Writes text to the console.
+		/// </summary>
 		public void Write(string text, Style style)
 		{
 			Console.WriteLine("PythonConsole.Write(text, style): " + text);
@@ -101,11 +120,17 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 		
+		/// <summary>
+		/// Writes text followed by a newline to the console.
+		/// </summary>
 		public void WriteLine(string text, Style style)
 		{
 			Write(text + Environment.NewLine, style);
 		}
 		
+		/// <summary>
+		/// Writes an empty line to the console.
+		/// </summary>
 		public void WriteLine()
 		{
 			Write(Environment.NewLine, Style.Out);
@@ -173,6 +198,10 @@ namespace ICSharpCode.PythonBinding
 			
 			if (ch == '\n') {
 				OnEnterKeyPressed();
+			}
+			
+			if (ch == '.') {
+				ShowCompletionWindow();
 			}
 			return false;
 		}
@@ -247,6 +276,12 @@ namespace ICSharpCode.PythonBinding
 				int selectionStartIndex = textEditor.SelectionStart - promptLength;
 				return cursorIndex > 0 && selectionStartIndex > 0;
 			}
+		}
+		
+		void ShowCompletionWindow()
+		{
+			PythonConsoleCompletionDataProvider completionProvider = new PythonConsoleCompletionDataProvider(this);
+			textEditor.ShowCompletionWindow(completionProvider);
 		}
 	}
 }

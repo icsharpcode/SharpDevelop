@@ -39,7 +39,7 @@ namespace PythonBinding.Tests.Console
 		public void SetUpFixture()
 		{
 			MockTextEditor textEditor = new MockTextEditor();
-			using (pythonConsole = new PythonConsole(textEditor)) {
+			using (pythonConsole = new PythonConsole(textEditor, null)) {
 
 				textEditor.RaiseKeyPressEvent('a');
 				textEditor.RaiseKeyPressEvent('=');

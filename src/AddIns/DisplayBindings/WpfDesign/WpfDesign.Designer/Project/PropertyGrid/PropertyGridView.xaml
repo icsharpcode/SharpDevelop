@@ -266,7 +266,7 @@
             <Controls:EnterTextBox x:Name="NameTextBox"
                                    x:FieldModifier="public"
                                    Text="{Binding Name}"
-                                   IsEnabled="{Binding SingleItem, Converter={x:Static Converters:FalseWhenNull.Instance}}"
+                                   IsEnabled="{Binding IsNameEnabled}"
                                    Margin="44.033,27.275,6,0"
                                    Height="19.277"
                                    VerticalAlignment="Top">
@@ -280,13 +280,15 @@
                             </DataTrigger>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding CurrentTab}"
-                                           Value="Events" />
-                                <Condition Binding="{Binding Text, RelativeSource={RelativeSource Self}}"
-                                           Value="" />
-                                    </MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsNameEnabled}"
+                                               Value="True" />
+                                    <Condition Binding="{Binding CurrentTab}"
+                                               Value="Events" />
+                                    <Condition Binding="{Binding Text, RelativeSource={RelativeSource Self}}"
+                                               Value="" />
+                                </MultiDataTrigger.Conditions>
                                 <Setter Property="BorderBrush"
-                                        Value="Red"/>
+                                        Value="Red" />
                             </MultiDataTrigger>
                         </Style.Triggers>
                     </Style>

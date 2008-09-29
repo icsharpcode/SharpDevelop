@@ -4,11 +4,12 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 3287 $</version>
 // </file>
-using ICSharpCode.TextEditor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
@@ -16,6 +17,7 @@ using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using SharpRefactoring.Visitors;
 using Dom = ICSharpCode.SharpDevelop.Dom;
@@ -125,22 +127,24 @@ namespace SharpRefactoring
 				builder.AppendLine(GenerateCode(v, false));
 			}
 			
-			this.currentDocument.Replace(this.currentSelection.Offset, this.currentSelection.Length, /*builder.ToString() + "\n" +*/ call);
+			this.currentDocument.Replace(this.currentSelection.Offset, this.currentSelection.Length, builder.ToString() + "\r\n" + call);
 		}
 		
 		public void InsertAfterCurrentMethod()
 		{
 			using (SpecialNodesInserter.Install(this.specialsList, this.output)) {
-				string code = "\n\n" + GenerateCode(this.extractedMethod, true);
+				string code = "\r\n\r\n" + GenerateCode(this.extractedMethod, true);
 
-				code = code.TrimEnd('\n', ' ', '\t');
+				code = code.TrimEnd('\r', '\n', ' ', '\t');
 
 				Dom.IMember p = GetParentMember(this.textEditor, this.currentSelection.StartPosition.Line, this.currentSelection.StartPosition.Column);
+				
+				TextLocation loc = new ICSharpCode.TextEditor.TextLocation(
+					p.BodyRegion.EndColumn - 1, p.BodyRegion.EndLine - 1);
+				
+				int offset = textEditor.Document.PositionToOffset(loc);
 
-				textEditor.Document.Insert(textEditor.Document.PositionToOffset(
-					new ICSharpCode.TextEditor.TextLocation(
-						p.BodyRegion.EndColumn - 1, p.BodyRegion.EndLine - 1)
-				), code);
+				textEditor.Document.Insert(offset, code);
 			}
 		}
 		

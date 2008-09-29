@@ -69,6 +69,7 @@
     <Compile Include="Src\CompilingOptionsPanel.cs" />
     <Compile Include="Src\CSharpToPythonConverter.cs" />
     <Compile Include="Src\GeneratedInitializeComponentMethod.cs" />
+    <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IPadDescriptor.cs" />
     <Compile Include="Src\IProcessRunner.cs" />
     <Compile Include="Src\IsPythonRunningCondition.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Src\PythonCompilerError.cs" />
     <Compile Include="Src\PythonCompilerSink.cs" />
     <Compile Include="Src\PythonConsole.cs" />
+    <Compile Include="Src\PythonConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\PythonConsoleHost.cs" />
     <Compile Include="Src\PythonConsolePad.cs" />
     <Compile Include="Src\PythonDesignerCodeDomGenerator.cs" />

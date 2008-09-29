@@ -69,11 +69,23 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				return singleItem;
 			}
 			private set {
+				if (singleItem != null) {
+					singleItem.NameChanged -= singleItem_NameChanged;
+				}
 				singleItem = value;
+				if (singleItem != null) {
+					singleItem.NameChanged += singleItem_NameChanged;
+				}
 				RaisePropertyChanged("SingleItem");
 				RaisePropertyChanged("Name");
+				RaisePropertyChanged("IsNameEnabled");
 				IsNameCorrect = true;
 			}
+		}
+
+		void singleItem_NameChanged(object sender, EventArgs e)
+		{
+			RaisePropertyChanged("Name");
 		}
 
 		public string Name {
@@ -109,6 +121,12 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			set {
 				isNameCorrect = value;
 				RaisePropertyChanged("IsNameCorrect");
+			}
+		}
+
+		public bool IsNameEnabled {
+		    get {
+				return SingleItem != null;
 			}
 		}
 

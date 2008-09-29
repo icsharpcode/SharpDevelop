@@ -1117,6 +1117,16 @@ class Main {
 			ExpressionResult result = ef.FindFullExpression(program, program.IndexOf("Call"));
 			Assert.AreEqual(" ((TargetType)variable).MethodCall()", result.Expression);
 		}
+		
+		[Test]
+		public void DontCrashOnLoneCarriageReturn()
+		{
+			// the following program was causing an ExpressionFinder crash due to the lone \r
+			string program = "\t\t}\r\t\t\r\n\t\tstatic void SetCaretPosition()\r\n\t\t{\r\n\t\t\tTextLocation newLocation = textArea.Document.GetLocation(newOffset);\r\n}\r\n\t}\r\n}\r\n";
+			for (int i = 0; i < program.Length; i++) {
+				ef.FindFullExpression(program, i);
+			}
+		}
 	}
 }
 

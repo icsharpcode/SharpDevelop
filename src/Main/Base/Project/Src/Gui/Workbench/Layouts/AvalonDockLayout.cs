@@ -176,14 +176,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return false;
 		}
 		
-		public IWorkbenchWindow ShowView(IViewContent content)
+		public IWorkbenchWindow ShowView(IViewContent content, bool switchToOpenedView)
 		{
 			AvalonWorkbenchWindow window = new AvalonWorkbenchWindow(this);
 			workbenchWindows.Add(window);
 			window.ViewContents.Add(content);
 			window.ViewContents.AddRange(content.SecondaryViewContents);
 			documentPane.Items.Add(window);
-			dockingManager.Show(window);
+			if (switchToOpenedView) {
+				dockingManager.Show(window);
+			}
 			window.Closed += window_Closed;
 			return window;
 		}

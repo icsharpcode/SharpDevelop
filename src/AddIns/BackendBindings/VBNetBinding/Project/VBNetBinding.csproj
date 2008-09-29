@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
+    <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
     <Compile Include="Src\VBNetLanguageBinding.cs" />
     <Compile Include="Src\FormattingStrategy\VBNetFormattingStrategy.cs" />
     <Compile Include="Src\OptionPanels\BuildOptions.cs">

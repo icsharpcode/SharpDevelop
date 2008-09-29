@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Microsoft.Scripting;
 using System;
 using System.Collections.Generic;
-using System.Scripting;
 
 namespace ICSharpCode.PythonBinding
 {

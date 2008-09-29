@@ -10,6 +10,7 @@ using System.Drawing;
 
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -86,7 +87,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Shows the code completion window.
 		/// </summary>
-		void ShowCompletionWindow();
+		void ShowCompletionWindow(ICompletionDataProvider completionDataProvider);
 		
 		/// <summary>
 		/// Makes the current text content read only. Text can be entered at the end.

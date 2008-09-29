@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -111,8 +112,7 @@ namespace ReflectorAddIn
 							element.MemberType = MemberType.Property;
 							element.MemberParameters = ConvertParameters(property.Parameters);
 							if (property.IsIndexer) {
-								// TODO: Support indexers with different names using DefaultMemberAttribute
-								element.MemberName = "Item";
+								element.MemberName = GetRealIndexerPropertyName(c, property);
 							}
 						} else {
 							
@@ -142,6 +142,54 @@ namespace ReflectorAddIn
 			} finally {
 				Cursor.Current = Cursors.Default;
 			}
+		}
+		
+		static string GetRealIndexerPropertyName(IClass c, IProperty property)
+		{
+			// Support indexers with different names using IndexerNameAttribute or DefaultMemberAttribute
+			
+			string name = GetSingleAttributeWithStringParameter(c, property.Attributes, "System.Runtime.CompilerServices.IndexerNameAttribute");
+			if (name != null) {
+				LoggingService.Debug("Reflector AddIn: IndexerNameAttribute on property found: '" + name + "'");
+				return name;
+			}
+			
+			name = GetSingleAttributeWithStringParameter(c, c.Attributes, "System.Reflection.DefaultMemberAttribute");
+			if (name != null) {
+				LoggingService.Debug("Reflector AddIn: DefaultMemberAttribute on class with indexer found: '" + name + "'");
+				return name;
+			} else {
+				if (property.Name == "Indexer") {
+					LoggingService.Debug("Reflector AddIn: Neither DefaultMemberAttribute nor IndexerNameAttribute found, assuming default name");
+					return "Item";
+				} else {
+					LoggingService.Debug("Reflector AddIn: Neither DefaultMemberAttribute nor IndexerNameAttribute found, but the property has name '" + property.Name + "', using that");
+					return property.Name;
+				}
+			}
+		}
+		
+		static string GetSingleAttributeWithStringParameter(IClass c, IEnumerable<IAttribute> attributeList, string attributeTypeName)
+		{
+			IReturnType attributeType = GetDomType(attributeTypeName, c.ProjectContent);
+			if (attributeType == null) {
+				return null;
+			}
+			var attributes = attributeList.Where(att => attributeType.Equals(att.AttributeType) && att.PositionalArguments.Count == 1 && att.PositionalArguments[0] is string);
+			if (attributes.Count() == 1) {
+				return (string)attributes.Single().PositionalArguments[0];
+			}
+			return null;
+		}
+		
+		static IReturnType GetDomType(string className, IProjectContent pc)
+		{
+			IClass c = pc.GetClass(className, 0);
+			if (c == null) {
+				LoggingService.Warn("Reflector AddIn: Could not find the class for '" + className + "'");
+				return null;
+			}
+			return c.DefaultReturnType;
 		}
 		
 		static void SetNamespaceAndTypeNames(CodeTypeInfo t, IClass c)

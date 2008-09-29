@@ -63,9 +63,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public bool ShowSourceCodePanel {
-			get {
-				return showSourceCodePanel;
-			}
+			get { return showSourceCodePanel; }
 			set {
 				if (showSourceCodePanel != value) {
 					showSourceCodePanel = value;
@@ -77,9 +75,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public bool ShowVisitCountPanel {
-			get {
-				return showVisitCountPanel;
-			}
+			get { return showVisitCountPanel; }
 			set {
 				if (showVisitCountPanel != value) {
 					showVisitCountPanel = value;
@@ -218,10 +214,15 @@ namespace ICSharpCode.CodeCoverage
 			listView.BeginUpdate();
 			try {
 				listView.Items.Clear();
-				if (node is CodeCoverageClassTreeNode) {
-					AddClass((CodeCoverageClassTreeNode)node);
-				} else if (node is CodeCoverageMethodTreeNode) {
-					AddMethod((CodeCoverageMethodTreeNode)node);
+				CodeCoverageClassTreeNode classNode = node as CodeCoverageClassTreeNode;
+				CodeCoverageMethodTreeNode methodNode = node as CodeCoverageMethodTreeNode;
+				CodeCoveragePropertyTreeNode propertyNode = node as CodeCoveragePropertyTreeNode;
+				if (classNode != null) {
+					AddClassTreeNode(classNode);
+				} else if (methodNode != null) {
+					AddSequencePoints(methodNode.Method.SequencePoints);
+				} else if (propertyNode != null) {
+					AddPropertyTreeNode(propertyNode);
 				}
 			} finally {
 				listView.EndUpdate();
@@ -246,18 +247,38 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		void AddClass(CodeCoverageClassTreeNode node)
+		void AddClassTreeNode(CodeCoverageClassTreeNode node)
 		{
-			foreach (CodeCoverageMethodTreeNode method in node.Nodes) {
-				AddMethod(method);
+			foreach (CodeCoverageTreeNode childNode in node.Nodes) {
+				CodeCoverageMethodTreeNode method = childNode as CodeCoverageMethodTreeNode;
+				CodeCoveragePropertyTreeNode property = childNode as CodeCoveragePropertyTreeNode;
+				if (method != null) {
+					AddSequencePoints(method.Method.SequencePoints);
+				} else {
+					AddPropertyTreeNode(property);
+				}
 			}
 		}
 		
-		void AddMethod(CodeCoverageMethodTreeNode node)
+		void AddPropertyTreeNode(CodeCoveragePropertyTreeNode node)
 		{
-			foreach (CodeCoverageSequencePoint sequencePoint in node.Method.SequencePoints) {
+			AddMethodIfNotNull(node.Property.Getter);
+			AddMethodIfNotNull(node.Property.Setter);
+		}
+		
+		void AddMethodIfNotNull(CodeCoverageMethod method)
+		{
+			if (method != null) {
+				AddSequencePoints(method.SequencePoints);
+			}
+		}
+		
+		void AddSequencePoints(List<CodeCoverageSequencePoint> sequencePoints)
+		{		
+			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
 				AddSequencePoint(sequencePoint);
 			}
+
 		}
 		
 		void AddSequencePoint(CodeCoverageSequencePoint sequencePoint)

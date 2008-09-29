@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.Parser
 		public LiteralFormat literalFormat;
 		public object literalValue;
 		public string val;
-		public Token  next;
+		internal Token next;
 		
 		public Location EndLocation {
 			get {

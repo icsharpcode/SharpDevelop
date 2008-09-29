@@ -225,7 +225,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		}
 		#endregion
 		
-		enum ResourceType {
+		internal enum ResourceType {
 			Resx = 0,
 			Resources = 1
 		};
@@ -312,7 +312,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			return resourceFileName.ToString();
 		}
 		
-		static IResourceReader CreateResourceReader(Stream stream, ResourceType type)
+		internal static IResourceReader CreateResourceReader(Stream stream, ResourceType type)
 		{
 			if (stream.Length == 0)
 				return null;
@@ -322,7 +322,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			return new ResXResourceReader(stream);
 		}
 		
-		static IResourceWriter CreateResourceWriter(Stream stream, ResourceType type)
+		internal static IResourceWriter CreateResourceWriter(Stream stream, ResourceType type)
 		{
 			if (type == ResourceType.Resources) {
 				return new ResourceWriter(stream);
@@ -330,7 +330,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			return new ResXResourceWriter(stream);
 		}
 		
-		static ResourceType GetResourceType(string fileName)
+		internal static ResourceType GetResourceType(string fileName)
 		{
 			if (Path.GetExtension(fileName).ToLowerInvariant() == ".resx") {
 				return ResourceType.Resx;

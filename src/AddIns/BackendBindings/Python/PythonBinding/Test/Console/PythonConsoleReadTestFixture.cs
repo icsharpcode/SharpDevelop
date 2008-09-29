@@ -33,7 +33,7 @@ namespace PythonBinding.Tests.Console
 		public void Init()
 		{
 			mockTextEditor = new MockTextEditor();
-			pythonConsole = new PythonConsole(mockTextEditor);
+			pythonConsole = new PythonConsole(mockTextEditor, null);
 
 			autoIndentSize = initialAutoIndentSize;
 			Thread thread = new Thread(ReadLineFromConsoleOnDifferentThread);
@@ -88,7 +88,7 @@ namespace PythonBinding.Tests.Console
 		public void NoTextWrittenWhenAutoIndentSizeIsZero()
 		{
 			MockTextEditor textEditor = new MockTextEditor();
-			PythonConsole console = new PythonConsole(textEditor);
+			PythonConsole console = new PythonConsole(textEditor, null);
 			textEditor.RaiseKeyPressEvent('a');
 			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
 			

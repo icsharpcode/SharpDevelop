@@ -13,6 +13,7 @@ using System.Text;
 
 using ICSharpCode.PythonBinding;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.TextEditor.Document;
 
 namespace PythonBinding.Tests.Console
@@ -31,6 +32,7 @@ namespace PythonBinding.Tests.Console
 		List<Color> textColors = new List<Color>();
 		bool showCompletionWindowCalled;
 		bool makeReadOnlyCalled;
+		ICompletionDataProvider	completionProvider;
 		
 		public MockTextEditor()
 		{
@@ -68,6 +70,13 @@ namespace PythonBinding.Tests.Console
 		
 		public bool IsMakeCurrentContentReadOnlyCalled {
 			get { return makeReadOnlyCalled; }
+		}
+		
+		/// <summary>
+		/// Returns the code completion data provider passed to the ShowCompletionWindow method.
+		/// </summary>
+		public ICompletionDataProvider CompletionDataProvider {
+			get { return completionProvider; }
 		}
 
 		public string Text {
@@ -192,9 +201,10 @@ namespace PythonBinding.Tests.Console
 			return "aaaa";
 		}
 		
-		public void ShowCompletionWindow()
+		public void ShowCompletionWindow(ICompletionDataProvider completionDataProvider)
 		{
 			showCompletionWindowCalled = true;
+			this.completionProvider = completionDataProvider;
 		}
 		
 		public void MakeCurrentContentReadOnly()

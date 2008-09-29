@@ -127,6 +127,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public ICollection<IViewContent> PrimaryViewContents {
+			get {
+				return (from window in WorkbenchWindowCollection
+				        where window.ViewContents.Count > 0
+				        select window.ViewContents[0]
+				       ).ToList().AsReadOnly();
+			}
+		}
+		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
 				if (workbenchLayout != null)
@@ -255,12 +264,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowView(IViewContent content)
 		{
+			ShowView(content, true);
+		}
+		
+		public void ShowView(IViewContent content, bool switchToOpenedView)
+		{
 			if (content == null)
 				throw new ArgumentNullException("content");
 			System.Diagnostics.Debug.Assert(WorkbenchLayout != null);
 			
-			WorkbenchLayout.ShowView(content);
-			content.WorkbenchWindow.SelectWindow();
+			WorkbenchLayout.ShowView(content, switchToOpenedView);
+			if (switchToOpenedView) {
+				content.WorkbenchWindow.SelectWindow();
+			}
 		}
 		
 		public void ShowPad(PadDescriptor content)

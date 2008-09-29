@@ -173,11 +173,13 @@ namespace ICSharpCode.SharpDevelop
 		
 		internal sealed class LoadFileWrapper
 		{
-			IDisplayBinding binding;
+			readonly IDisplayBinding binding;
+			readonly bool switchToOpenedView;
 			
-			public LoadFileWrapper(IDisplayBinding binding)
+			public LoadFileWrapper(IDisplayBinding binding, bool switchToOpenedView)
 			{
 				this.binding = binding;
+				this.switchToOpenedView = switchToOpenedView;
 			}
 			
 			public void Invoke(string fileName)
@@ -186,7 +188,7 @@ namespace ICSharpCode.SharpDevelop
 				IViewContent newContent = binding.CreateContentForFile(file);
 				if (newContent != null) {
 					DisplayBindingService.AttachSubWindows(newContent, false);
-					WorkbenchSingleton.Workbench.ShowView(newContent);
+					WorkbenchSingleton.Workbench.ShowView(newContent, switchToOpenedView);
 				}
 				file.CloseIfAllViewsClosed();
 			}
@@ -207,21 +209,41 @@ namespace ICSharpCode.SharpDevelop
 			return GetOpenFile(fileName) != null;
 		}
 		
+		/// <summary>
+		/// Opens a view content for the specified file and switches to the opened view
+		/// or switches to and returns the existing view content for the file if it is already open.
+		/// </summary>
+		/// <param name="fileName">The name of the file to open.</param>
+		/// <returns>The existing or opened <see cref="IViewContent"/> for the specified file.</returns>
 		public static IViewContent OpenFile(string fileName)
+		{
+			return OpenFile(fileName, true);
+		}
+		
+		/// <summary>
+		/// Opens a view content for the specified file
+		/// or returns the existing view content for the file if it is already open.
+		/// </summary>
+		/// <param name="fileName">The name of the file to open.</param>
+		/// <param name="switchToOpenedView">Specifies whether to switch to the view for the specified file.</param>
+		/// <returns>The existing or opened <see cref="IViewContent"/> for the specified file.</returns>
+		public static IViewContent OpenFile(string fileName, bool switchToOpenedView)
 		{
 			fileName = FileUtility.NormalizePath(fileName);
 			LoggingService.Info("Open file " + fileName);
 			
 			IViewContent viewContent = GetOpenFile(fileName);
 			if (viewContent != null) {
-				viewContent.WorkbenchWindow.SelectWindow();
+				if (switchToOpenedView) {
+					viewContent.WorkbenchWindow.SelectWindow();
+				}
 				return viewContent;
 			}
 			
 			IDisplayBinding binding = DisplayBindingService.GetBindingPerFileName(fileName);
 			
 			if (binding != null) {
-				if (FileUtility.ObservedLoad(new NamedFileOperationDelegate(new LoadFileWrapper(binding).Invoke), fileName) == FileOperationResult.OK) {
+				if (FileUtility.ObservedLoad(new NamedFileOperationDelegate(new LoadFileWrapper(binding, switchToOpenedView).Invoke), fileName) == FileOperationResult.OK) {
 					FileService.RecentOpen.AddLastFile(fileName);
 				}
 			} else {
@@ -278,7 +300,7 @@ namespace ICSharpCode.SharpDevelop
 			List<string> fileNames = new List<string>();
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				string contentName = content.PrimaryFileName;
-				if (contentName != null)
+				if (contentName != null && !fileNames.Contains(contentName))
 					fileNames.Add(contentName);
 			}
 			return fileNames;

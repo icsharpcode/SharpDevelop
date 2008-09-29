@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
 		
 		List<PadDescriptor> padViewContentCollection = new List<PadDescriptor>();
-		List<IViewContent> viewContentCollection = new List<IViewContent>();
+		List<IViewContent> primaryViewContentCollection = new List<IViewContent>();
 		
 		bool isActiveWindow; // Gets whether SharpDevelop is the active application in Windows
 		
@@ -113,17 +113,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
-				return viewContentCollection.Select(vc => vc.WorkbenchWindow)
+				return primaryViewContentCollection.Select(vc => vc.WorkbenchWindow)
 					.Distinct().ToArray().AsReadOnly();
+			}
+		}
+		
+		public ICollection<IViewContent> PrimaryViewContents {
+			get {
+//				return Linq.ToArray(Linq.Concat(Linq.Select<IWorkbenchWindow, IEnumerable<IViewContent>>(
+//					workbenchWindowCollection, delegate (IWorkbenchWindow w) { return w.ViewContents; }
+//				)));
+				return primaryViewContentCollection.AsReadOnly();
 			}
 		}
 		
 		public ICollection<IViewContent> ViewContentCollection {
 			get {
-//				return Linq.ToArray(Linq.Concat(Linq.Select<IWorkbenchWindow, IEnumerable<IViewContent>>(
-//					workbenchWindowCollection, delegate (IWorkbenchWindow w) { return w.ViewContents; }
-//				)));
-				return viewContentCollection.AsReadOnly();
+				ICollection<IViewContent> primaryContents = PrimaryViewContents;
+				List<IViewContent> contents = new List<IViewContent>(primaryContents);
+				contents.AddRange(primaryContents.SelectMany(vc => vc.SecondaryViewContents));
+				return contents.AsReadOnly();
 			}
 		}
 		
@@ -289,11 +298,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void CloseContent(IViewContent content)
 		{
-//			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
-//				StoreMemento(content);
-//			}
-			if (viewContentCollection.Contains(content)) {
-				viewContentCollection.Remove(content);
+			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+				StoreMemento(content);
+			}
+			if (primaryViewContentCollection.Contains(content)) {
+				primaryViewContentCollection.Remove(content);
 			}
 			OnViewClosed(new ViewContentEventArgs(content));
 			content.Dispose();
@@ -315,21 +324,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowView(IViewContent content)
 		{
+			this.ShowView(content, true);
+		}
+		
+		public void ShowView(IViewContent content, bool switchToOpenedView)
+		{
 			System.Diagnostics.Debug.Assert(layout != null);
-			viewContentCollection.Add(content);
-//			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
-//				try {
-//					Properties memento = GetStoredMemento(content);
-//					if (memento != null) {
-//						((IMementoCapable)content).SetMemento(memento);
-//					}
-//				} catch (Exception e) {
-//					MessageService.ShowError(e, "Can't get/set memento");
-//				}
-//			}
+			primaryViewContentCollection.Add(content);
+			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+				try {
+					Properties memento = GetStoredMemento(content);
+					if (memento != null) {
+						((IMementoCapable)content).SetMemento(memento);
+					}
+				} catch (Exception e) {
+					MessageService.ShowError(e, "Can't get/set memento");
+				}
+			}
 			
-			layout.ShowView(content);
-			content.WorkbenchWindow.SelectWindow();
+			layout.ShowView(content, switchToOpenedView);
+			if (switchToOpenedView) {
+				content.WorkbenchWindow.SelectWindow();
+			}
 			OnViewOpened(new ViewContentEventArgs(content));
 		}
 		
@@ -396,15 +412,55 @@ namespace ICSharpCode.SharpDevelop.Gui
 			StatusBarService.RedrawStatusbar();
 		}
 		
-		string GetMementoFileName(string contentName)
-		{
-			string directory = Path.Combine(PropertyService.ConfigDirectory, "temp");
-			//string directoryName = Path.GetDirectoryName(contentName);
-			return Path.Combine(directory,
-			                    Path.GetFileName(contentName)
-			                    + "." + contentName.ToLowerInvariant().GetHashCode().ToString("x")
-			                    + ".xml");
+		#region Load/save view content mementos
+		
+		string viewContentMementosFileName;
+		
+		string ViewContentMementosFileName {
+			get {
+				if (viewContentMementosFileName == null) {
+					viewContentMementosFileName = Path.Combine(PropertyService.ConfigDirectory, "LastViewStates.xml");
+				}
+				return viewContentMementosFileName;
+			}
 		}
+		
+		Properties LoadOrCreateViewContentMementos()
+		{
+			return Properties.Load(this.ViewContentMementosFileName) ?? new Properties();
+		}
+		
+		static string GetMementoKeyName(IViewContent viewContent)
+		{
+			return String.Concat(viewContent.GetType().FullName.GetHashCode().ToString("x", CultureInfo.InvariantCulture), ":", FileUtility.NormalizePath(viewContent.PrimaryFileName).ToLowerInvariant());
+		}
+		
+		void StoreMemento(IViewContent viewContent)
+		{
+			if (viewContent.PrimaryFileName == null)
+				return;
+			
+			string key = GetMementoKeyName(viewContent);
+			LoggingService.Debug("Saving memento of '" + viewContent.ToString() + "' to key '" + key + "'");
+			
+			Properties memento = ((IMementoCapable)viewContent).CreateMemento();
+			Properties p = this.LoadOrCreateViewContentMementos();
+			p.Set(key, memento);
+			FileUtility.ObservedSave(new NamedFileOperationDelegate(p.Save), this.ViewContentMementosFileName, FileErrorPolicy.Inform);
+		}
+		
+		Properties GetStoredMemento(IViewContent viewContent)
+		{
+			if (viewContent.PrimaryFileName == null)
+				return null;
+			
+			string key = GetMementoKeyName(viewContent);
+			LoggingService.Debug("Trying to restore memento of '" + viewContent.ToString() + "' from key '" + key + "'");
+			
+			return this.LoadOrCreateViewContentMementos().Get<Properties>(key, null);
+		}
+		
+		#endregion
 		
 		// interface IMementoCapable
 		public Properties CreateMemento()

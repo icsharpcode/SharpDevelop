@@ -337,7 +337,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 			{
-				if (this.model == CodeDomLocalizationModel.None && this.inInitMethod) {
+				if (this.model != CodeDomLocalizationModel.PropertyReflection && this.inInitMethod) {
 					IdentifierExpression iex = memberReferenceExpression.TargetObject as IdentifierExpression;
 					if (iex != null && iex.Identifier == "resources") {
 						if (memberReferenceExpression.MemberName == "ApplyResources") {

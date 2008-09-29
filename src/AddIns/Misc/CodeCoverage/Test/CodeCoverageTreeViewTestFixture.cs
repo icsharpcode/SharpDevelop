@@ -20,7 +20,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 	/// itself lazily as it is expanded.
 	/// </summary>
 	[TestFixture]
-	public class NewCodeCoverageTreeViewTestFixture
+	public class CodeCoverageTreeViewTestFixture
 	{
 		TreeNodeCollection nodes;
 		CodeCoverageModuleTreeNode fooModuleNode;

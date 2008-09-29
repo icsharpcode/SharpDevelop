@@ -45,15 +45,7 @@ namespace PythonBinding.Tests.Console
 		{
 			return base.CreateOptionsParser();
 		}
-		
-		/// <summary>
-		/// Script engine to return from base.CreateEngine(Type context).
-		/// </summary>
-		public ScriptEngine ScriptEngineToReturn {
-			get { return engine; }
-			set { engine = value; }
-		}
-		
+				
 		/// <summary>
 		/// Context type passed to base.CreateEngine(Type context).
 		/// </summary>

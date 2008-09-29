@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			int defaultCodonIndex = codons.IndexOf(DisplayBindingService.GetDefaultCodonPerFileName(fileName));
 			using (OpenWithDialog dlg = new OpenWithDialog(codons, defaultCodonIndex, Path.GetExtension(fileName))) {
 				if (dlg.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					FileUtility.ObservedLoad(new FileService.LoadFileWrapper(dlg.SelectedBinding.Binding).Invoke, fileName);
+					FileUtility.ObservedLoad(new FileService.LoadFileWrapper(dlg.SelectedBinding.Binding, true).Invoke, fileName);
 				}
 			}
 		}
@@ -109,11 +109,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 		
-		void OpenContainingFolderInExplorer(string fileName)
+		public static void OpenContainingFolderInExplorer(string fileName)
 		{
 			if (File.Exists(fileName)) {
-				string folder = Path.GetDirectoryName(fileName);
-				Process.Start(folder);
+				Process.Start("explorer", "/select,\"" + fileName + "\"");
 			}
 		}
 	}
