@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -392,7 +393,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				// are closed and their content is no longer found by
 				// the ParserService.
 				LoggingService.Debug("SdiWorkspaceWindow closed with discarding changes, enqueueing files for parsing: " + String.Join(", ", filesToReparse));
-				filesToReparse.Foreach(ParserService.EnqueueForParsing);
+				foreach (string file in filesToReparse) {
+					if (File.Exists(file)) {
+						ParserService.EnqueueForParsing(file);
+					} else {
+						ParserService.ClearParseInformation(file);
+					}
+				}
 			}
 			
 			return true;
