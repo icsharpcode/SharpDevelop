@@ -29,6 +29,12 @@ namespace ICSharpCode.WixBinding
 		/// files could not be read because they contain errors.
 		/// </summary>
 		void ShowSourceFilesContainErrorsMessage();
+		
+		/// <summary>
+		/// Displays a message indicating that no //w:Product/w:Directory[@Id="TARGETDIR"] or 
+		/// //w:DirectoryRef[@Id="TARGETDIR"] element could be found.
+		/// </summary>
+		void ShowNoRootDirectoryFoundMessage();
 				
 		/// <summary>
 		/// Adds the directories that will be displayed. Each directory may contain its

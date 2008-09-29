@@ -81,7 +81,7 @@ namespace ICSharpCode.WixBinding
 				if (errors) {
 					view.ShowSourceFilesContainErrorsMessage();
 				} else if (document == null) {
-					view.ShowNoSourceFileFoundMessage(project.Name);
+					view.ShowNoRootDirectoryFoundMessage();
 				} else {
 					SelectedElementChanged();
 				}
