@@ -699,6 +699,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return resultList;
 			}
 			
+			HashSet<IReturnType> visitedSet = new HashSet<IReturnType>();
 			List<IReturnType> visitedList = new List<IReturnType>();
 			Queue<IReturnType> typesToVisit = new Queue<IReturnType>();
 			bool enqueuedLastBaseType = false;
@@ -708,7 +709,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IReturnType nextType;
 			do {
 				if (currentClass != null) {
-					if (!visitedList.Contains(currentType)) {
+					if (visitedSet.Add(currentType)) {
 						visitedList.Add(currentType);
 						foreach (IReturnType type in currentClass.BaseTypes) {
 							typesToVisit.Enqueue(TranslateIfRequired(currentType, type));

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -41,70 +42,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 				shortName = name.Substring(pos + 1);
 		}
 		
-		// we need to use a static Dictionary as cache to provide a easy was to clear all cached
-		// BaseTypes.
-		// When the cached BaseTypes could not be cleared as soon as the parse information is updated
-		// (in contrast to a check if the parse information was updated when the base type is needed
-		// the next time), we can get a memory leak:
-		// The cached type of a property in Class1 is Class2. Then Class2 is updated, but the property
-		// in Class1 is not needed again -> the reference causes the GC to keep the old version
-		// of Class2 in memory.
-		// The solution is this static cache which is cleared when some parse information updates.
-		// That way, there can never be any reference to an out-of-date class.
-		static Dictionary<SearchClassReturnType, IReturnType> cache = new Dictionary<SearchClassReturnType, IReturnType>(new ReferenceComparer());
+		volatile IReturnType cachedBaseType;
+		int isSearching; // 0=false, 1=true
 		
-		class ReferenceComparer : IEqualityComparer<SearchClassReturnType>
+		void ClearCachedBaseType()
 		{
-			public bool Equals(SearchClassReturnType x, SearchClassReturnType y)
-			{
-				return x == y; // don't use x.Equals(y) - Equals might cause a FullyQualifiedName lookup on its own
-			}
-			
-			public int GetHashCode(SearchClassReturnType obj)
-			{
-				return obj.GetObjectHashCode();
-			}
+			cachedBaseType = null;
 		}
-		
-		/// <summary>
-		/// Clear the static searchclass cache. You should call this method
-		/// whenever the DOM changes.
-		/// </summary>
-		/// <remarks>
-		/// automatically called by DefaultProjectContent.UpdateCompilationUnit
-		/// and DefaultProjectContent.OnReferencedContentsChanged.
-		/// </remarks>
-		internal static void ClearCache()
-		{
-			lock (cache) {
-				cache.Clear();
-			}
-		}
-		
-		bool isSearching;
 		
 		public override IReturnType BaseType {
 			get {
-				IReturnType type;
-				lock (cache) {
-					if (isSearching)
-						return null;
-					
-					if (cache.TryGetValue(this, out type))
-						return type;
-					
-					isSearching = true;
-				}
+				IReturnType type = cachedBaseType;
+				if (type != null)
+					return type;
+				if (Interlocked.CompareExchange(ref isSearching, 1, 0) != 0)
+					return null;
 				try {
 					type = pc.SearchType(new SearchTypeRequest(name, typeParameterCount, declaringClass, caretLine, caretColumn)).Result;
-					lock (cache) {
-						isSearching = false;
-						cache[this] = type;
-					}
+					cachedBaseType = type;
+					if (type != null)
+						DomCache.RegisterForClear(ClearCachedBaseType);
 					return type;
-				} catch {
-					isSearching = false;
-					throw;
+				} finally {
+					isSearching = 0;
 				}
 			}
 		}

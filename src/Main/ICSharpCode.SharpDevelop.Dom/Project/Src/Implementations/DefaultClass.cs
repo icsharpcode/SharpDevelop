@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			copy.UserData = this.UserData;
 			return copy;
 		}
-		*/
+		 */
 		
 		byte flags;
 		const byte hasPublicOrInternalStaticMembersFlag = 0x02;
@@ -348,13 +348,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return CompareTo((IClass)o);
 		}
 		
-		List<IClass> inheritanceTreeCache;
+		volatile List<IClass> inheritanceTreeCache;
 		
 		public IEnumerable<IClass> ClassInheritanceTree {
 			get {
-				if (inheritanceTreeCache != null)
-					return inheritanceTreeCache;
-				List<IClass> visitedList = new List<IClass>();
+				List<IClass> visitedList = inheritanceTreeCache;
+				if (visitedList != null)
+					return visitedList;
+				visitedList = new List<IClass>();
 				Queue<IReturnType> typesToVisit = new Queue<IReturnType>();
 				bool enqueuedLastBaseType = false;
 				IClass currentClass = this;
@@ -378,13 +379,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 						currentClass = nextType.GetUnderlyingClass();
 					}
 				} while (nextType != null);
-				if (UseInheritanceCache)
-					inheritanceTreeCache = visitedList;
+				inheritanceTreeCache = visitedList;
+				if (!KeepInheritanceTree)
+					DomCache.RegisterForClear(delegate { inheritanceTreeCache = null; });
 				return visitedList;
 			}
 		}
 		
-		protected bool UseInheritanceCache = false;
+		/// <summary>
+		/// Specifies whether to keep the inheritance tree when the DomCache is cleared.
+		/// </summary>
+		protected bool KeepInheritanceTree = false;
 		
 		public IReturnType GetBaseType(int index)
 		{

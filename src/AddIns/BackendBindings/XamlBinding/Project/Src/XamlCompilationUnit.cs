@@ -82,7 +82,7 @@ namespace XamlBinding
 				{
 					string namespaceName = att.PositionalArguments[1] as string;
 					if (xmlNamespace.Equals(att.PositionalArguments[0]) && namespaceName != null) {
-						IClass c = projectContent.GetClass(namespaceName + "." + className, 0, LanguageProperties.CSharp, false);
+						IClass c = projectContent.GetClass(namespaceName + "." + className, 0, LanguageProperties.CSharp, GetClassOptions.None);
 						if (c != null)
 							return c.DefaultReturnType;
 					}
