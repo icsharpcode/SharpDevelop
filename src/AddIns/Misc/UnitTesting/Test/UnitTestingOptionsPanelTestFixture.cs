@@ -55,12 +55,6 @@ namespace UnitTesting.Tests
 		{
 			panel.Dispose();
 		}
-		
-		[Test]
-		public void IsAbstractOptionPanel()
-		{
-			Assert.IsInstanceOfType(typeof(AbstractOptionPanel), panel);
-		}
 
 		[Test]
 		public void SetupFromManifestStreamResourceName()
