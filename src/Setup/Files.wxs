@@ -1433,12 +1433,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\FiletypeRegisterer\FiletypeRegisterer.addin" Id="FiletypeRegisterer.addin" Name="FiletypeRegisterer.addin" />
 										</Component>
 									</Directory>
-									<Directory Id="HighlightingEditorFolder" Name="HighlightingEditor">
-										<Component Guid="6F792AF7-4622-40DF-8CE3-270D66A7A7EC" Id="HighlightingEditorFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\HighlightingEditor\HighlightingEditor.addin" Id="HighlightingEditor.addin" Name="HighlightingEditor.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\HighlightingEditor\HighlightingEditor.dll" Id="HighlightingEditor.dll" Name="HighlightingEditor.dll" Assembly=".net" AssemblyApplication="HighlightingEditor.dll" AssemblyManifest="HighlightingEditor.dll" KeyPath="yes" />
-										</Component>
-									</Directory>
 									<Directory Id="HtmlHelpFolder" Name="HtmlHelp2">
 										<Component Guid="C854C30E-1765-4614-8248-F256C761CEE3" Id="HtmlHelp2Files" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\stdole.dll" Name="stdole.dll" Id="stdole.dll" />
