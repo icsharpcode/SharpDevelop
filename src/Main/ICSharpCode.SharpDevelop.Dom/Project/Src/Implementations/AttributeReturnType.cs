@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override IReturnType BaseType {
 			get {
 				IClass class1 = scrt1.GetUnderlyingClass();
-				IClass class2 = scrt1.GetUnderlyingClass();
+				IClass class2 = scrt2.GetUnderlyingClass();
 				if (class1 != null && class2 != null) {
 					if (class1.ClassInheritanceTree.Any(c => c.FullyQualifiedName == "System.Attribute"))
 						return scrt1;
