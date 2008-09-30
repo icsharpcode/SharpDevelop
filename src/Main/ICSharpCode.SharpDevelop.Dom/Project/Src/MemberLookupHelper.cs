@@ -669,6 +669,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		readonly static Dictionary<IReturnType, IEnumerable<IReturnType>> getTypeInheritanceTreeCache = new Dictionary<IReturnType, IEnumerable<IReturnType>>();
+		
+		static void ClearGetTypeInheritanceTreeCache()
+		{
+			lock (getTypeInheritanceTreeCache) {
+				getTypeInheritanceTreeCache.Clear();
+			}
+		}
+		
 		/// <summary>
 		/// Gets all types the specified type inherits from (all classes and interfaces).
 		/// Unlike the class inheritance tree, this method takes care of type arguments and calculates the type
@@ -678,6 +687,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (typeToListInheritanceTreeFor == null)
 				throw new ArgumentNullException("typeToListInheritanceTreeFor");
+			
+			lock (getTypeInheritanceTreeCache) {
+				IEnumerable<IReturnType> result;
+				if (getTypeInheritanceTreeCache.TryGetValue(typeToListInheritanceTreeFor, out result))
+					return result;
+			}
 			
 			IClass classToListInheritanceTreeFor = typeToListInheritanceTreeFor.GetUnderlyingClass();
 			if (classToListInheritanceTreeFor == null)
@@ -727,6 +742,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 					currentClass = nextType.GetUnderlyingClass();
 				}
 			} while (nextType != null);
+			lock (getTypeInheritanceTreeCache) {
+				if (getTypeInheritanceTreeCache.Count == 0) {
+					DomCache.RegisterForClear(ClearGetTypeInheritanceTreeCache);
+				}
+				getTypeInheritanceTreeCache[typeToListInheritanceTreeFor] = visitedList;
+			}
 			return visitedList;
 		}
 		#endregion
