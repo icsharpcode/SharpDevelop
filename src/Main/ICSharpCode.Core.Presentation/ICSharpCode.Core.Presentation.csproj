@@ -70,9 +70,11 @@
     <Compile Include="PixelSnapper.cs" />
     <Compile Include="PresentationResourceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SplitButton.cs" />
     <Compile Include="ToolBar\ToolBarButton.cs" />
     <Compile Include="ToolBar\ToolBarComboBox.cs" />
     <Compile Include="ToolBar\ToolBarService.cs" />
+    <Compile Include="ToolBar\ToolBarSplitButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj">
@@ -81,6 +83,9 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Menu" />
+    <Folder Include="themes" />
     <Folder Include="ToolBar" />
+    <Page Include="themes\Aero.NormalColor.xaml" />
+    <Page Include="themes\generic.xaml" />
   </ItemGroup>
 </Project>

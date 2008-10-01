@@ -5,27 +5,28 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
-	public class NavigationHistoryMenuBuilder : ISubmenuBuilder
+	public class NavigationHistoryMenuBuilder : IMenuItemBuilder
 	{
 		// TODO: refactor BuildSubmenu to add a choice between flat and perfile, eventually per class/method sorting of the list
 		
-		ToolStripItem[] BuildMenuFlat(ICollection<INavigationPoint> points, int additionalItems)
+		/*ToolStripItem[] BuildMenuFlat(ICollection<INavigationPoint> points, int additionalItems)
 		{
 			ToolStripItem[] items = new ToolStripItem[points.Count+additionalItems];
 			MenuCommand cmd = null;
@@ -44,9 +45,10 @@ namespace ICSharpCode.SharpDevelop.Commands
 				items[i++] = cmd;
 			}
 			return items;
-		}
-		ToolStripItem[] BuildMenuByFile(ICollection<INavigationPoint> points, int additionalItems)
+		}*/
+		List<FrameworkElement> BuildMenuByFile(ICollection<INavigationPoint> points)
 		{
+			List<FrameworkElement> items = new List<FrameworkElement>();
 			Dictionary<string, List<INavigationPoint>> files =
 				new Dictionary<string, List<INavigationPoint>>();
 			List<string> fileNames = new List<string>();
@@ -66,25 +68,24 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			fileNames.Sort();
 			
-			ToolStripItem[] items =
-				new ToolStripItem[fileNames.Count + additionalItems];
-			ToolStripMenuItem containerItem = null;
-			MenuCommand cmd = null;
-			int i = 0;
+			MenuItem containerItem = null;
+			MenuItem cmd = null;
 			
 			foreach (string fname in fileNames) {
 				
 				// create a menu bucket
-				containerItem = new ToolStripMenuItem();
-				containerItem.Text = System.IO.Path.GetFileName(fname);
-				containerItem.ToolTipText = fname;
+				containerItem = new MenuItem();
+				containerItem.Header = System.IO.Path.GetFileName(fname);
+				containerItem.ToolTip = fname;
 				
 				// sort and populate the bucket's contents
 //				files[fname].Sort();
 				foreach(INavigationPoint p in files[fname]) {
-					cmd = new MenuCommand(p.Description, new EventHandler(NavigateTo));
+					cmd = new MenuItem();
+					cmd.Header = p.Description;
+					cmd.Click += NavigateTo;
 					cmd.Tag = p;
-					containerItem.DropDownItems.Add(cmd);
+					containerItem.Items.Add(cmd);
 				}
 				
 				// if there's only one nested item, add it
@@ -98,48 +99,40 @@ namespace ICSharpCode.SharpDevelop.Commands
 //					items[i++] = containerItem;
 //				}
 				// add the bucket to the result
-				items[i++] = containerItem;
+				items.Add(containerItem);
 			}
 			
 			return items;
 		}
 
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		public ICollection BuildItems(Codon codon, object owner)
 		{
-			MenuCommand cmd = null;
 			if (NavigationService.CanNavigateBack || NavigationService.CanNavigateForwards) {
 				ICollection<INavigationPoint> points = NavigationService.Points;
 
 				//ToolStripItem[] items = BuildMenuFlat(points, numberOfAdditionalItems);
-				ToolStripItem[] items = BuildMenuByFile(points, numberOfAdditionalItems);
-				
-				int i = items.Length - numberOfAdditionalItems;
+				var result = BuildMenuByFile(points);
 				
 				// additional item 1
-				items[i++] = new ToolStripSeparator();
+				result.Add(new Separator());
 				
 				// additional item 2
-				cmd = new MenuCommand("${res:XML.MainMenu.Navigation.ClearHistory}", new EventHandler(ClearHistory));
-				items[i++] = cmd;
+				MenuItem clearHistory = new MenuItem();
+				clearHistory.Header = StringParser.Parse("${res:XML.MainMenu.Navigation.ClearHistory}");
+				clearHistory.Click += delegate { NavigationService.ClearHistory(); };
+				result.Add(clearHistory);
 				
-				return items;
+				return result;
 			}
 			
 			// default is to disable the dropdown feature...
 			return null;
 		}
-
-		int numberOfAdditionalItems = 2;
 		
 		public void NavigateTo(object sender, EventArgs e)
 		{
-			MenuCommand item = (MenuCommand)sender;
+			MenuItem item = (MenuItem)sender;
 			NavigationService.Go((INavigationPoint)item.Tag);
-		}
-		
-		public void ClearHistory(object sender, EventArgs e)
-		{
-			NavigationService.ClearHistory();
 		}
 	}
 	
@@ -243,7 +236,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			try {
 				if (tool.UseOutputPad) {
 					ProcessRunner processRunner = new ProcessRunner();
-						processRunner.LogStandardOutputAndError = false;
+					processRunner.LogStandardOutputAndError = false;
 					processRunner.ProcessExited += ProcessExitEvent;
 					processRunner.OutputLineReceived += process_OutputLineReceived;
 					processRunner.ErrorLineReceived += process_OutputLineReceived;
@@ -434,32 +427,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 	
-	public abstract class ViewMenuBuilder : ISubmenuBuilder, IMenuItemBuilder
+	public abstract class ViewMenuBuilder : IMenuItemBuilder
 	{
-		class MyMenuItem : MenuCommand
-		{
-			PadDescriptor padDescriptor;
-			
-			public MyMenuItem(PadDescriptor padDescriptor) : base(null, null)
-			{
-				this.padDescriptor = padDescriptor;
-				Text = StringParser.Parse(padDescriptor.Title);
-				
-				if (!string.IsNullOrEmpty(padDescriptor.Icon)) {
-					base.Image = IconService.GetBitmap(padDescriptor.Icon);
-				}
-				
-				if (padDescriptor.Shortcut != null) {
-					ShortcutKeys = MenuCommand.ParseShortcut(padDescriptor.Shortcut);
-				}
-			}
-			
-			protected override void OnClick(EventArgs e)
-			{
-				base.OnClick(e);
-				padDescriptor.BringPadToFront();
-			}
-		}
 		class BringPadToFrontCommand : System.Windows.Input.ICommand
 		{
 			PadDescriptor padDescriptor;
@@ -484,17 +453,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		protected abstract string Category {
 			get;
-		}
-		
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
-		{
-			List<ToolStripItem> items = new List<ToolStripItem>();
-			foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
-				if (padContent.Category == Category) {
-					items.Add(new MyMenuItem(padContent));
-				}
-			}
-			return items.ToArray();
 		}
 		
 		public ICollection BuildItems(Codon codon, object owner)

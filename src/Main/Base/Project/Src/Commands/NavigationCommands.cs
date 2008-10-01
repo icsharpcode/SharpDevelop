@@ -7,13 +7,14 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core.Presentation;
+using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
 	public class NavigateBack : AbstractMenuCommand
 	{
-		ToolBarSplitButton  splitButton = null;
+		SplitButton splitButton = null;
 		
 		public override bool IsEnabled {
 			get {
@@ -33,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			base.OnOwnerChanged(e);
 
 			// grab the owner so we can manipulate the buttons later
-			splitButton = (ToolBarSplitButton)Owner;
+			splitButton = (SplitButton)Owner;
 			
 			// wire up our event handlers
 			NavigationService.HistoryChanged += NavHistoryChanged;
@@ -54,8 +55,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		public void UpdateEnabledState()
 		{
-			splitButton.ButtonEnabled = NavigationService.CanNavigateBack;
-			splitButton.DropDownEnabled = NavigationService.Count>1;
+			CommandManager.InvalidateRequerySuggested();
+			//splitButton.IsEnabled = NavigationService.CanNavigateBack;
+			//splitButton.IsDropDownEnabled = NavigationService.Count>1;
 		}
 	}
 	

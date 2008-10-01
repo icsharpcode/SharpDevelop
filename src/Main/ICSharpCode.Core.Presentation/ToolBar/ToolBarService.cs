@@ -75,8 +75,7 @@ namespace ICSharpCode.Core.Presentation
 					return "DropDownButton";
 					//return new ToolBarDropDownButton(codon, caller, MenuService.CreateMenuItems(descriptor.SubItems));
 				case "SplitButton":
-					return "SplitButton";
-					//return new ToolBarSplitButton(codon, caller, MenuService.CreateMenuItems(descriptor.SubItems));
+					return new ToolBarSplitButton(codon, caller, MenuService.CreateMenuItems(null, descriptor.SubItems));
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:

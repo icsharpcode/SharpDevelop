@@ -35,6 +35,18 @@ namespace ICSharpCode.Core.Presentation
 			return null;
 		}
 		
+		internal static ContextMenu CreateContextMenu(IList subItems)
+		{
+			var contextMenu = new ContextMenu() {
+				ItemsSource = new object[1]
+			};
+			contextMenu.Opened += (sender, args) => {
+				contextMenu.ItemsSource = ExpandMenuBuilders(subItems);
+				args.Handled = true;
+			};
+			return contextMenu;
+		}
+		
 		public static IList CreateMenuItems(UIElement inputBindingOwner, object owner, string addInTreePath)
 		{
 			return CreateMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
@@ -74,7 +86,9 @@ namespace ICSharpCode.Core.Presentation
 			foreach (object o in input) {
 				MenuItemBuilderPlaceholder p = o as MenuItemBuilderPlaceholder;
 				if (p != null) {
-					result.AddRange(p.BuildItems());
+					ICollection c = p.BuildItems();
+					if (c != null)
+						result.AddRange(c);
 				} else {
 					result.Add(o);
 					IStatusUpdate statusUpdate = o as IStatusUpdate;

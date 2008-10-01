@@ -32,6 +32,14 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		public CommandWrapper(Codon codon, object caller, ICommand command)
+		{
+			this.codon = codon;
+			this.caller = caller;
+			this.addInCommand = command;
+			commandCreated = true;
+		}
+		
 		void CreateCommand()
 		{
 			commandCreated = true;
