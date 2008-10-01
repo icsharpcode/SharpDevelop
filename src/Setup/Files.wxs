@@ -1521,14 +1521,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\SearchAndReplace\SearchAndReplace.dll" Id="SearchAndReplace.dll" Name="SearchAndReplace.dll" />
 										</Component>
 									</Directory>
-									<Directory Id="ClassWizard" Name="ClassWizard">
-										<Component Guid="959FE09D-7906-468F-A35D-1963BB11E297" Id="ClassWizardAddin" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\ClassWizard\ClassWizard.addin" Name="ClassWizard.addin" Id="ClassWizard.addin" />
-										</Component>
-										<Component Guid="B0FB6076-A55B-4D65-954B-412B613B7D46" Id="ClassWizardDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\ClassWizard\ClassWizard.dll" Name="ClassWizard.dll" Id="ClassWizard.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassWizard.dll" AssemblyManifest="ClassWizard.dll" />
-										</Component>
-									</Directory>
 									<Directory Id="ReflectorAddInFolder" Name="ReflectorAddIn">
 										<Component Guid="335BC9AF-9425-4D47-A7C5-3EBF231B3160" Id="ReflectorAddInIpcServerAddInDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\ReflectorAddIn\Reflector.IpcServer.AddIn.dll" Name="Reflector.IpcServer.AddIn.dll" Id="Reflector.IpcServer.AddIn.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Reflector.IpcServer.AddIn.dll" AssemblyManifest="Reflector.IpcServer.AddIn.dll" />

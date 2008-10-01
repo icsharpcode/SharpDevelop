@@ -421,8 +421,6 @@
 				<ComponentRef Id="PythonBindingAddin"/>	
 				<ComponentRef Id="PythonBindingDll"/>	
 				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>				
-				<ComponentRef Id="ClassWizardDll"/>	
-				<ComponentRef Id="ClassWizardAddin"/>				
 
 				<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	
