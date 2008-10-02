@@ -41,7 +41,6 @@ namespace ClassDiagramAddin
 			toolstrip.Stretch = true;
 			canvas.Controls.Add(toolstrip);
 			canvas.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/ViewContent/ClassDiagram/ContextMenu");
-			canvas.CanvasItemSelected += HandleItemSelected;
 		}
 		
 		public override Control Control
@@ -155,19 +154,6 @@ namespace ClassDiagramAddin
 		protected void HandleLayoutChange (object sender, EventArgs args)
 		{
 			this.PrimaryFile.MakeDirty();
-		}
-		
-		private void HandleItemSelected (object sender, CanvasItemEventArgs args)
-		{
-			ClassCanvasItem cci = args.CanvasItem as ClassCanvasItem;
-			if (cci != null)
-			{
-				PadDescriptor padDesc = WorkbenchSingleton.Workbench.GetPad(typeof(ClassEditorPad));
-				if (padDesc != null)
-				{
-					((ClassEditor)padDesc.PadContent.Control).SetClass(cci.RepresentedClassType);
-				}
-			}
 		}
 	}
 }

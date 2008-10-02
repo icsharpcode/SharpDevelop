@@ -54,7 +54,6 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\ClassDiagramViewContent.cs" />
-    <Compile Include="Src\ClassEditorPad.cs" />
     <Compile Include="Src\SaveToBitmapCommand.cs" />
     <Compile Include="Src\ShowClassDiagramCommand.cs" />
     <Compile Include="Src\ClassDiagramDisplayBinding.cs" />
@@ -100,10 +99,6 @@
     <ProjectReference Include="..\ClassCanvas\ClassCanvas.csproj">
       <Project>{08F772A1-F0BE-433E-8B37-F6522953DB05}</Project>
       <Name>ClassCanvas</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ClassEditor\ClassEditor.csproj">
-      <Project>{F5E059BB-96C2-4398-BED0-8598CD434173}</Project>
-      <Name>ClassEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\DiagramRouter\Diagrams.csproj">
       <Project>{0991423A-DBF6-4C89-B365-A1DF1EB32E42}</Project>

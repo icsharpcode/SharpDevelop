@@ -1364,9 +1364,6 @@
 										<Component Guid="5F09F966-5605-4381-B346-8231DA0B1C6B" Id="ClassCanvasDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassCanvas.dll" Id="ClassDiagram.ClassCanvas.dll" Name="ClassCanvas.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.ClassCanvas.dll" AssemblyManifest="ClassDiagram.ClassCanvas.dll" />
 										</Component>
-										<Component Guid="C315C474-B72D-4B12-8BB9-545E3A34DA59" Id="ClassEditorDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\ClassEditor.dll" Id="ClassDiagram.ClassEditor.dll" Name="ClassEditor.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.ClassEditor.dll" AssemblyManifest="ClassDiagram.ClassEditor.dll" />
-										</Component>
 										<Component Guid="EF2B150B-B0C4-4884-800C-BE904E520CF4" Id="DiagramsDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Id="ClassDiagram.Diagrams.dll" Name="Diagrams.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.Diagrams.dll" AssemblyManifest="ClassDiagram.Diagrams.dll" />
 										</Component>

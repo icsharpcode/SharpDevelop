@@ -350,7 +350,6 @@
 				<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>
-				<ComponentRef Id="ClassEditorDll"/>
 				<ComponentRef Id="DiagramsDll"/>
 				<ComponentRef Id="XamlBindingFiles"/>
 				<ComponentRef Id="WpfDesignFiles"/>
