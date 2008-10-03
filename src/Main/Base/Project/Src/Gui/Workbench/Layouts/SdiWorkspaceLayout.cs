@@ -234,10 +234,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				try {
 					IWorkbenchWindow activeWindow = this.ActiveWorkbenchWindow;
 					dockPanel.ActiveDocumentChanged -= new EventHandler(ActiveMdiChanged);
+					dockPanel.ActiveContentChanged -= new EventHandler(ActiveContentChanged);
 					
 					DetachPadContents(false);
 					DetachViewContents(false);
 					dockPanel.ActiveDocumentChanged += new EventHandler(ActiveMdiChanged);
+					dockPanel.ActiveContentChanged += new EventHandler(ActiveContentChanged);
 					
 					LoadLayoutConfiguration();
 					ShowPads();
