@@ -25,16 +25,20 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
+				TreeViewAdv ctrl = (TreeViewAdv)pad.Control;
 				
-				((TreeViewAdv)pad.Control).BeginUpdate();
-				TextNode text = new TextNode(MessageService.ShowInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"),
-				                                                         StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"),
-				                                                         ""));
-				TreeViewVarNode node = new TreeViewVarNode(pad.Process, (TreeViewAdv)pad.Control, text);		
-				
-				pad.Watches.Add(text);
-				((TreeViewAdv)pad.Control).Root.Children.Add(node);
-				((TreeViewAdv)pad.Control).EndUpdate();
+				string input = MessageService.ShowInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"),
+				                                           StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"),
+				                                           "");
+				if (!string.IsNullOrEmpty(input)) {
+					((TreeViewAdv)pad.Control).BeginUpdate();
+					TextNode text = new TextNode(input);
+					TreeViewVarNode node = new TreeViewVarNode(pad.Process, (TreeViewAdv)pad.Control, text);
+					
+					pad.Watches.Add(text);
+					((TreeViewAdv)pad.Control).Root.Children.Add(node);
+					((TreeViewAdv)pad.Control).EndUpdate();
+				}
 				
 				((WatchPad)this.Owner).RefreshPad();
 			}
@@ -47,9 +51,7 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-								
-				// TODO : Implement remove
-				
+
 				TreeNodeAdv node = ((TreeViewAdv)pad.Control).SelectedNode;
 				
 				if (node == null)
@@ -85,7 +87,7 @@ namespace Debugger.AddIn
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
 				
-				((TreeViewAdv)pad.Control).BeginUpdate();					
+				((TreeViewAdv)pad.Control).BeginUpdate();
 				pad.Watches.Clear();
 				((TreeViewAdv)pad.Control).Root.Children.Clear();
 				((TreeViewAdv)pad.Control).EndUpdate();

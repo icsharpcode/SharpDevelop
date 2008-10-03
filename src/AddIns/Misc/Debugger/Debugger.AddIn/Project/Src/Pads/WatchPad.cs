@@ -75,6 +75,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
 		{
+			if (args.Node == null) {
+				base.MouseDown(args);
+				return;
+			}
 			AbstractNode content = ((TreeViewVarNode)args.Node).Content;
 			if (content is IContextMenu && args.Button == MouseButtons.Right) {
 				ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
@@ -142,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			watchList.AutoRowHeight = true;
 			
-			watchList.DoubleClick += new EventHandler(watchList_DoubleClick);
+			watchList.MouseDoubleClick += new MouseEventHandler(watchList_DoubleClick);
 			
 			watchList.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
 			
@@ -151,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			RedrawContent();
 		}
 
-		void watchList_DoubleClick(object sender, EventArgs e)
+		void watchList_DoubleClick(object sender, MouseEventArgs e)
 		{
 			if (watchList.SelectedNode == null)
 			{
@@ -162,7 +166,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				watchList.Root.Children.Add(node);
 				watchList.EndUpdate();
 				
+				node.IsSelected = true;
+				
 				this.RefreshPad();
+				
+				foreach (NodeControlInfo nfo in watchList.GetNodeControls(node)) {
+					if (nfo.Control is WatchItemName)
+						((EditableControl)nfo.Control).MouseUp(new TreeNodeAdvMouseEventArgs(e));
+				}
+
 			}
 		}
 		
@@ -211,7 +223,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null)
 				return;
 			
-			using(new PrintTimes("Local Variables refresh")) {
+			using(new PrintTimes("Watch Pad refresh")) {
 				try {
 					watchList.BeginUpdate();
 					Utils.DoEvents(debuggedProcess);
@@ -219,6 +231,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					
 					foreach (TreeViewVarNode nod in this.watchList.Root.Children) {
 						try {
+							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(nod.Content.Name) ? "is null or empty!" : nod.Content.Name));
 							Value val = AstEvaluator.Evaluate(nod.Content.Name, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
 							ValueNode valNode = new ValueNode(val);
 							valNode.SetName(nod.Content.Name);
@@ -234,11 +247,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					foreach (TreeViewVarNode nod in nodes)
 						watchList.Root.Children.Add(nod);
 				} catch(AbortedBecauseDebuggeeResumedException) {
-				} catch(System.Exception) {
+				} catch(System.Exception ex) {
 					if (debuggedProcess == null || debuggedProcess.HasExited) {
 						// Process unexpectedly exited
 					} else {
-						throw;
+						MessageService.ShowError(ex);
 					}
 				}
 			}
