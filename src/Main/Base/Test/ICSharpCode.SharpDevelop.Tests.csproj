@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="AbstractEntityIsOverridableTestFixture.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CheckAssemblyFlags.cs" />
     <Compile Include="CodeConverterTests.cs" />
     <Compile Include="CSharpExpressionFinderTests.cs" />
     <Compile Include="ExceptionClassOverridesTestFixture.cs" />
