@@ -233,6 +233,9 @@ namespace Debugger
 					return false;
 				}
 				throw;
+			} catch (ArgumentException) {
+				// May happen in release code with does not have any symbols
+				return false;
 			}
 			
 			Process.AsyncContinue(DebuggeeStateAction.Keep);
