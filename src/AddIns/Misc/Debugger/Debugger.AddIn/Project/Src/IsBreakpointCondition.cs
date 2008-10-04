@@ -141,8 +141,10 @@ namespace Debugger.AddIn
 				}
 			}
 			
-			foreach (string item in BreakpointAction.GetNames(typeof(BreakpointAction))) {
-				items.Add(MakeItem("${res:MainWindow.Windows.Debug.Conditional.Breakpoints." + item + "}", item, point, point.Action.ToString(), delegate(object sender, EventArgs e) {HandleItem(sender);}));
+			if (point != null) {
+				foreach (string item in BreakpointAction.GetNames(typeof(BreakpointAction))) {
+					items.Add(MakeItem("${res:MainWindow.Windows.Debug.Conditional.Breakpoints." + item + "}", item, point, point.Action.ToString(), delegate(object sender, EventArgs e) {HandleItem(sender);}));
+				}
 			}
 			
 			return items.ToArray();
