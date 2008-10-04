@@ -517,7 +517,7 @@ namespace Aga.Controls.Tree
 			FullUpdate();
 		}
 
-		internal IEnumerable<NodeControlInfo> GetNodeControls(TreeNodeAdv node)
+		public IEnumerable<NodeControlInfo> GetNodeControls(TreeNodeAdv node)
 		{
 			if (node == null)
 				yield break;
