@@ -6,6 +6,7 @@
 	<Runtime>
 		<Import assembly="Debugger.AddIn.dll">
 			<ConditionEvaluator name = "IsBreakpointSet" class = "Debugger.AddIn.IsBreakpointCondition"/>
+			<ConditionEvaluator name = "IsBreakpointActive" class="Debugger.AddIn.IsActiveBreakpointCondition" />
 		</Import>
 		<Import assembly="Debugger.Core.dll"/>
 	</Runtime>
@@ -38,12 +39,28 @@
 			          type = "Separator"/>
 		</Condition>
 		<MenuItem id="BreakpointSeparator" type = "Separator" />
-		<Include id="SetBreakpoint" item="/SharpDevelop/Workbench/MainMenu/Debug/Toggle Breakpoint" />
-		<Condition name="IsBreakpointSet">
-			<MenuItem id="ChangeBreakPoint" label="${res:MainWindow.Windows.Debug.Conditional.Breakpoints.ChangeBreakpoint}" type="Menu">
+		
+		
+		<MenuItem id="ChangeBreakPoint" label="${res:MainWindow.Windows.Debug.Conditional.Breakpoints.Breakpoint}" type="Menu">
+			<Include id="SetBreakpoint" item="/SharpDevelop/Workbench/MainMenu/Debug/Toggle Breakpoint" />
+			<Condition name="IsBreakpointSet">
+				<Condition name="IsBreakpointActive">
+					<MenuItem id="DisableBreakpoint"
+					          class="Debugger.AddIn.DisableBreakpointMenuCommand"
+					          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.DisableBreakpoint}" />
+				</Condition>
+				<ComplexCondition>
+					<Not>
+						<Condition name="IsBreakpointActive" />
+					</Not>
+					<MenuItem id="EnableBreakpoint"
+					          class="Debugger.AddIn.EnableBreakpointMenuCommand"
+					          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint}" />
+				</ComplexCondition>
+				<MenuItem id="BreakpointSeparator" type = "Separator" />
 				<MenuItem id="MenuBuilder" type="Builder" class="Debugger.AddIn.BreakpointChangeMenuBuilder" />
-			</MenuItem>
-		</Condition>
+			</Condition>
+		</MenuItem>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">

@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 namespace ICSharpCode.SharpDevelop.Debugging
 {
 	public enum BreakpointAction {
-		Ask, Break, Continue, Terminate, Trace, Script
+		Break, Trace, Condition
 	}
 	
 	public class BreakpointBookmark : SDMarkerBookmark
@@ -24,8 +24,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		static readonly Color defaultColor = Color.FromArgb(180, 38, 38);
 		
-		BreakpointAction action = BreakpointAction.Ask;
-		string script;
+		BreakpointAction action = BreakpointAction.Break;
+		string condition;
 		string scriptLanguage;
 		
 		public string ScriptLanguage {
@@ -33,9 +33,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			set { scriptLanguage = value; }
 		}
 		
-		public string Script {
-			get { return script; }
-			set { script = value; }
+		public string Condition {
+			get { return condition; }
+			set { condition = value; }
 		}
 		
 		public BreakpointAction Action {
@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			this.action = action;
 			this.scriptLanguage = scriptLanguage;
-			this.script = script;
+			this.condition = script;
 		}
 		
 		public override void Draw(IconBarMargin margin, Graphics g, Point p)

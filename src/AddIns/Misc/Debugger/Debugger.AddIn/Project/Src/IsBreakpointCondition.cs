@@ -45,6 +45,84 @@ namespace Debugger.AddIn
 		}
 	}
 	
+	public class IsActiveBreakpointCondition : IConditionEvaluator
+	{
+		public IsActiveBreakpointCondition()
+		{
+		}
+		
+		public bool IsValid(object caller, Condition condition)
+		{
+			if (WorkbenchSingleton.Workbench == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null)
+				return false;
+			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
+			if (provider == null)
+				return false;
+			if (string.IsNullOrEmpty(provider.TextEditorControl.FileName))
+				return false;
+			
+			BreakpointBookmark point = null;
+			
+			foreach (BreakpointBookmark breakpoint in DebuggerService.Breakpoints) {
+				if ((breakpoint.FileName == provider.TextEditorControl.FileName) &&
+				    (breakpoint.LineNumber == provider.TextEditorControl.ActiveTextAreaControl.Caret.Line)) {
+					point = breakpoint;
+					break;
+				}
+			}
+			
+			if (point != null) {
+				return point.IsEnabled;
+			}
+			
+			return false;
+		}
+	}
+	
+	public class EnableBreakpointMenuCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
+			
+			BreakpointBookmark point = null;
+			
+			foreach (BreakpointBookmark breakpoint in DebuggerService.Breakpoints) {
+				if ((breakpoint.FileName == provider.TextEditorControl.FileName) &&
+				    (breakpoint.LineNumber == provider.TextEditorControl.ActiveTextAreaControl.Caret.Line)) {
+					point = breakpoint;
+					break;
+				}
+			}
+			
+			if (point != null) {
+				point.IsEnabled = true;
+			}
+		}
+	}
+	
+	public class DisableBreakpointMenuCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
+			
+			BreakpointBookmark point = null;
+			
+			foreach (BreakpointBookmark breakpoint in DebuggerService.Breakpoints) {
+				if ((breakpoint.FileName == provider.TextEditorControl.FileName) &&
+				    (breakpoint.LineNumber == provider.TextEditorControl.ActiveTextAreaControl.Caret.Line)) {
+					point = breakpoint;
+					break;
+				}
+			}
+			
+			if (point != null) {
+				point.IsEnabled = false;
+			}
+		}
+	}
+	
 	public class BreakpointChangeMenuBuilder : ISubmenuBuilder
 	{
 		public System.Windows.Forms.ToolStripItem[] BuildSubmenu(Codon codon, object owner)
@@ -80,24 +158,15 @@ namespace Debugger.AddIn
 				BreakpointBookmark bookmark = (BreakpointBookmark)item.Tag;
 				
 				switch (item.Name) {
-					case "Ask":
-						bookmark.Action = BreakpointAction.Ask;
-						break;
 					case "Break":
 						bookmark.Action = BreakpointAction.Break;
 						break;
-					case "Continue":
-						bookmark.Action = BreakpointAction.Continue;
-						break;
-					case "Script":
+					case "Condition":
 						EditBreakpointScriptForm form = new EditBreakpointScriptForm(bookmark);
 						
 						if (form.ShowDialog() == DialogResult.OK) {
 							bookmark = form.Data;
 						}
-						break;
-					case "Terminate":
-						bookmark.Action = BreakpointAction.Terminate;
 						break;
 					case "Trace":
 						bookmark.Action = BreakpointAction.Trace;

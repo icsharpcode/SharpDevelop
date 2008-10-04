@@ -35,9 +35,9 @@ namespace Debugger.AddIn.Service
 			
 			this.data = data;
 			
-			this.data.Action = BreakpointAction.Script;
+			this.data.Action = BreakpointAction.Condition;
 			
-			this.txtCode.Document.TextContent = data.Script;
+			this.txtCode.Document.TextContent = data.Condition;
 			this.cmbLanguage.Items.AddRange(new string[] { "C#", "VBNET" });
 			this.cmbLanguage.SelectedIndex = 
 				(!string.IsNullOrEmpty(data.ScriptLanguage)) ? 
@@ -84,7 +84,7 @@ namespace Debugger.AddIn.Service
 		{
 			if (!this.CheckSyntax())
 				return;
-			this.data.Script = this.txtCode.Document.TextContent;
+			this.data.Condition = this.txtCode.Document.TextContent;
 			this.DialogResult = DialogResult.OK;
 			this.Close();
 		}
