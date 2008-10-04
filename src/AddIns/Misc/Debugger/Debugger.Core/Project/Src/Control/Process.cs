@@ -171,6 +171,31 @@ namespace Debugger
 				}
 			}
 		}
+		
+		/// <summary> Read the specified amount of memory at the given memory address </summary>
+		/// <returns> The content of the memory.  The amount of the read memory may be less then requested. </returns>
+		public unsafe byte[] ReadMemory(ulong address, int size)
+		{
+			byte[] buffer = new byte[size];
+			int readCount;
+			fixed(byte* pBuffer = buffer) {
+				readCount = (int)corProcess.ReadMemory(address, (uint)size, new IntPtr(pBuffer));
+			}
+			if (readCount != size) Array.Resize(ref buffer, readCount);
+			return buffer;
+		}
+		
+		/// <summary> Writes the given buffer at the specified memory address </summary>
+		/// <returns> The number of bytes written </returns>
+		public unsafe int WriteMemory(ulong address, byte[] buffer)
+		{
+			if (buffer.Length == 0) return 0;
+			int written;
+			fixed(byte* pBuffer = buffer) {
+				written = (int)corProcess.WriteMemory(address, (uint)buffer.Length, new IntPtr(pBuffer));
+			}
+			return written;
+		}
 	}
 	
 	[Serializable]

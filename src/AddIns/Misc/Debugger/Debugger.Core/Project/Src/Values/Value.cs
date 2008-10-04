@@ -91,6 +91,16 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary>
+		/// Gets the address in memory where this value is stored
+		/// </summary>
+		[Debugger.Tests.IgnoreAttribute]
+		public ulong Address {
+			get {
+				return corValue.Address;
+			}
+		}
+		
 		/// <summary> Gets value indication whether the value is a reference </summary>
 		/// <remarks> Value types also return true if they are boxed </remarks>
 		public bool IsReference {

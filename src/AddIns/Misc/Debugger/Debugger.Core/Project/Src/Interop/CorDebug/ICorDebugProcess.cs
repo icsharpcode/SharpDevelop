@@ -55,7 +55,7 @@ namespace Debugger.Interop.CorDebug
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void ReadMemory([In] ulong address, [In] uint size, [Out] IntPtr buffer, [ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] out uint read);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void WriteMemory([In] ulong address, [In] uint size, [In] ref byte buffer, [ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] out uint written);
+        void WriteMemory([In] ulong address, [In] uint size, [In] IntPtr buffer, [ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] out uint written);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void ClearCurrentException([In] uint threadID);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
