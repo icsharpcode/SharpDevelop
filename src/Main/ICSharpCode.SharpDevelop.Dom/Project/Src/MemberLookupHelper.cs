@@ -93,7 +93,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 						hashCode *= 1000000579;
 						if (p.IsOut || p.IsRef)
 							hashCode += 1;
-						hashCode += p.ReturnType.GetHashCode();
+						if (p.ReturnType != null) {
+							hashCode += p.ReturnType.GetHashCode();
+						}
 					}
 				}
 				cachedHashes[obj] = hashCode;

@@ -222,8 +222,14 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 
+		/// <summary>
+		/// Gets the name of the content property (the property that contains the logical children)
+		/// </summary>
 		public abstract string ContentPropertyName { get; }
 
+		/// <summary>
+		/// Gets the content property (the property that contains the logical children)
+		/// </summary>
 		public DesignItemProperty ContentProperty {
 			get {
 				if (ContentPropertyName == null) return null;
@@ -231,6 +237,9 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 
+		/// <summary>
+		/// Removes this design item from its parent property/collection.
+		/// </summary>
 		public void Remove()
 		{
 			if (ParentProperty != null) {
@@ -243,9 +252,9 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 
-		public DesignItem Clone()
-		{
-			throw new NotImplementedException();
-		}
+		/// <summary>
+		/// Creates a copy of this design item.
+		/// </summary>
+		public abstract DesignItem Clone();
 	}
 }

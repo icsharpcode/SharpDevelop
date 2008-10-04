@@ -8,8 +8,14 @@ using ICSharpCode.WpfDesign.PropertyGrid;
 
 namespace ICSharpCode.WpfDesign.PropertyGrid
 {
+	/// <summary>
+	/// View-Model class for a property grid category.
+	/// </summary>
 	public class Category : INotifyPropertyChanged
 	{
+		// don't warn on missing XML comments in View-Model
+		#pragma warning disable 1591
+		
 		public Category(string name)
 		{
 			Name = name;

@@ -143,5 +143,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				return XamlObject.ContentPropertyName; 
 			}
 		}
+		
+		public override DesignItem Clone()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

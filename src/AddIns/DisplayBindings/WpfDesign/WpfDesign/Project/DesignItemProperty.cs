@@ -75,6 +75,10 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public abstract event EventHandler ValueChanged;
 
+		/// <summary>
+		/// Is raised when the <see cref="ValueOnInstance"/> property changes.
+		/// This event is not raised when the value is changed without going through the designer infrastructure.
+		/// </summary>
 		public abstract event EventHandler ValueOnInstanceChanged;
 		
 		/// <summary>
@@ -104,18 +108,34 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public abstract void Reset();
 
+		/// <summary>
+		/// Gets the parent design item.
+		/// </summary>
 		public abstract DesignItem DesignItem { get; }
 
+		/// <summary>
+		/// Gets the dependency property, or null if this property does not represent a dependency property.
+		/// </summary>
 		public abstract DependencyProperty DependencyProperty { get; }
 
-		public abstract bool IsAdvanced { get; }		
+		/// <summary>
+		/// Gets if this property is considered "advanced" and should be hidden by default in a property grid.
+		/// </summary>
+		public virtual bool IsAdvanced { get { return false; } }
 
+		/// <summary>
+		/// Gets the full name of the property (DeclaringType.FullName + "." + Name).
+		/// </summary>
 		public string FullName  {
 			get {
 				return DeclaringType.FullName + "." + Name;
 			}
 		}
 
+		/// <summary>
+		/// Gets the full name of the dependency property. Returns the normal FullName if the property
+		/// isn't a dependency property.
+		/// </summary>
 		public string DependencyFullName {
 			get {
 				if (DependencyProperty != null) {

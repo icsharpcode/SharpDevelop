@@ -37,6 +37,9 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		Rect GetPosition(PlacementOperation operation, DesignItem child);
 
+		/// <summary>
+		/// Is called before SetPosition is called for the placed items.
+		/// </summary>
 		void BeforeSetPosition(PlacementOperation operation);
 		
 		/// <summary>

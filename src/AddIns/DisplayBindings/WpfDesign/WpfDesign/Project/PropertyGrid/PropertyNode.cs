@@ -12,8 +12,14 @@ using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.PropertyGrid
 {
+	/// <summary>
+	/// View-Model class for the property grid.
+	/// </summary>
 	public class PropertyNode : INotifyPropertyChanged
 	{
+		// don't warn on missing XML comments in View-Model
+		#pragma warning disable 1591
+		
 		static object Unset = new object();
 
 		public DesignItemProperty[] Properties { get; private set; }
