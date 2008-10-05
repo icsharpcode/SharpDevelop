@@ -41,6 +41,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (rt == null) return false;
 			PointerReturnType prt = rt.CastToDecoratingReturnType<PointerReturnType>();
+			if (prt == null) return false;
 			return baseType.Equals(prt.baseType);
 		}
 		
@@ -71,12 +72,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IMethod> GetMethods()
 		{
-			return base.GetMethods();
+			return new List<IMethod>();
 		}
 		
 		public override List<IProperty> GetProperties()
 		{
-			return base.GetProperties();
+			return new List<IProperty>();
 		}
 		
 		public override IClass GetUnderlyingClass()

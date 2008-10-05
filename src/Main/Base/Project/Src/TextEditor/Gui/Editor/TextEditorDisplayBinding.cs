@@ -508,5 +508,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		Control IToolsHost.ToolsControl {
 			get { return TextEditorSideBar.Instance; }
 		}
+		
+		public override string ToString()
+		{
+			return "[" + GetType().Name + " " + this.PrimaryFileName + "]";
+		}
 	}
 }
