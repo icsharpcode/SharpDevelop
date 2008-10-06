@@ -492,13 +492,14 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					// do not reset context - TrackCurrentContext will take care of this
 					frame.lastExpressionStart = Location.Empty;
 					break;
+				case Tokens.Pointer:
 				case Tokens.Dot:
 				case Tokens.DoubleColon:
 					// let the current expression continue
 					break;
 				default:
 					if (Tokens.IdentifierTokens[token.kind]) {
-						if (lastToken != Tokens.Dot && lastToken != Tokens.DoubleColon) {
+						if (lastToken != Tokens.Dot && lastToken != Tokens.DoubleColon && lastToken != Tokens.Pointer) {
 							if (Tokens.ValidInsideTypeName[lastToken]) {
 								frame.SetDefaultContext();
 							}
@@ -821,7 +822,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						resultStartOffset = lastExpressionStartOffset;
 					if (resultFrame.type == FrameType.Popped ||
 					    lastExpressionStartOffset != resultStartOffset ||
-					    token.kind == Tokens.Dot || token.kind == Tokens.DoubleColon)
+					    token.kind == Tokens.Dot || token.kind == Tokens.DoubleColon || token.kind == Tokens.Pointer)
 					{
 						
 						// now we can change the context based on the next token
@@ -865,7 +866,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				if (token.kind == Tokens.EOF) break;
 				
 				if (frame.parent == null) {
-					if (token.kind == Tokens.Dot || token.kind == Tokens.DoubleColon
+					if (token.kind == Tokens.Dot || token.kind == Tokens.DoubleColon || token.kind == Tokens.Pointer
 					    || token.kind == Tokens.OpenParenthesis || token.kind == Tokens.OpenSquareBracket)
 					{
 						lastValidPos = LocationToOffset(token.Location);
