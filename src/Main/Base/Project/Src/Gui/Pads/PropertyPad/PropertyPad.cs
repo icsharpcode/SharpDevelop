@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
@@ -179,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			comboBox.Dock = DockStyle.Top;
 			comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 			comboBox.DrawMode = DrawMode.OwnerDrawFixed;
-			comboBox.Sorted = true;
+			comboBox.Sorted = false;
 			
 			comboBox.DrawItem += new DrawItemEventHandler(ComboBoxDrawItem);
 			comboBox.MeasureItem += new MeasureItemEventHandler(ComboBoxMeasureItem);
@@ -200,6 +201,45 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// we might display the PropertyPad of a no longer active view content
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
+		}
+		
+		/// <summary>
+		/// Returns a new collection of objects sorted by their ISite name otherwise by their type name.
+		/// </summary>
+		public static ICollection SortObjectsBySiteName(ICollection objects)
+		{
+			List<object> unsortedObjects = new List<object>();
+			foreach (object o in objects) {
+				unsortedObjects.Add(o);
+			}
+			unsortedObjects.Sort(CompareObjectsBySiteName);
+			return unsortedObjects.ToArray();
+		}
+		
+		/// <summary>
+		/// Compares two objects by their ISite name, otherwise by their type name.
+		/// </summary>
+		static int CompareObjectsBySiteName(object x, object y)
+		{
+			return String.Compare(GetObjectSiteName(x), GetObjectSiteName(y));
+		}
+
+		/// <summary>
+		/// Gets the site name otherwise the name of the type.
+		/// </summary>
+		static string GetObjectSiteName(object o)
+		{
+			if(o != null) {
+				IComponent component = o as IComponent;
+				if (component != null) {
+					ISite site = component.Site;
+					if (site != null) {
+						return site.Name;
+					}
+				}
+				return o.GetType().ToString();
+			}
+			return String.Empty;
 		}
 		
 		void SolutionClosedEvent(object sender, EventArgs e)
@@ -368,7 +408,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				comboBox.Items.Clear();
 				if (coll != null) {
-					foreach (object obj in coll) {
+					foreach (object obj in SortObjectsBySiteName(coll)) {
 						comboBox.Items.Add(obj);
 					}
 				}
