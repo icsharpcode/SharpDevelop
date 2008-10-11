@@ -25,8 +25,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 			string corflags = FileUtility.GetSdkPath("corflags.exe");
 			Assert.IsNotNull(corflags, "corflags.exe not found, this test requires the .NET SDK!");
 			ProcessRunner pr = new ProcessRunner();
-			Console.WriteLine(corflags + " " + assembly);
-			pr.Start(corflags, assembly);
+			Console.WriteLine(corflags + " \"" + assembly + "\"");
+			pr.Start(corflags, "\"" + assembly + "\"");
 			if (!pr.WaitForExit(5000)) {
 				pr.Kill();
 				throw new InvalidOperationException("Timeout running corflags");

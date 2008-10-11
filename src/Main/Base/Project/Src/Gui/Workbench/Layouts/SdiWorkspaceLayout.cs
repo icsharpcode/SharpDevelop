@@ -542,7 +542,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow)sender;
 			f.CloseEvent -= CloseWindowEvent;
-			foreach (IViewContent vc in f.ViewContents) {
+			foreach (IViewContent vc in f.ViewContents.ToArray()) {
 				((IWorkbench)wbForm).CloseContent(vc);
 			}
 			if (f == oldSelectedWindow) {

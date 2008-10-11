@@ -57,14 +57,14 @@ namespace ${StandardNamespace}
 			return member.GetHashCode();
 		}
 		
-		public static bool operator ==(${ClassName} lhs, ${ClassName} rhs)
+		public static bool operator ==(${ClassName} left, ${ClassName} right)
 		{
-			return lhs.Equals(rhs);
+			return left.Equals(right);
 		}
 		
-		public static bool operator !=(${ClassName} lhs, ${ClassName} rhs)
+		public static bool operator !=(${ClassName} left, ${ClassName} right)
 		{
-			return !(lhs.Equals(rhs)); // use operator == and negate result
+			return !left.Equals(right);
 		}
 		#endregion
 	}

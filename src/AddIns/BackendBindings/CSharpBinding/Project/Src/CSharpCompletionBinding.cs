@@ -97,9 +97,8 @@ namespace CSharpBinding
 				return true;
 			} else if (ch == '>') {
 				if (IsInComment(editor)) return false;
-				LineSegment segment = editor.Document.GetLineSegmentForOffset(editor.ActiveTextAreaControl.Caret.Offset);
-				TextWord sign = segment.GetWord(editor.ActiveTextAreaControl.Caret.Column - 1);
-				if (sign.Word == "-") {
+				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
+				if (prevChar == '-') {
 					editor.ShowCompletionWindow(new PointerArrowCompletionDataProvider(), ch);
 					
 					return true;
