@@ -474,6 +474,7 @@ namespace ICSharpCode.SharpDevelop
 			IViewContent content = OpenFile(fileName);
 			if (content is IPositionable) {
 				// TODO: enable jumping to a particular view
+				content.WorkbenchWindow.ActiveViewContent = content;
 				((IPositionable)content).JumpTo(Math.Max(0, line), Math.Max(0, column));
 			}
 			
