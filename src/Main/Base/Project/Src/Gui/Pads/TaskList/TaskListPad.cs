@@ -156,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public void UpdateItems()
-		{		
+		{
 			this.taskView.BeginUpdate();
 			
 			this.taskView.ClearTasks();
@@ -182,22 +182,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			IClass current = GetCurrentClass();
 			IClass itemClass = GetCurrentClass(item);
 			
-			switch (this.selectedScopeIndex)
-			{
+			switch (this.selectedScopeIndex) {
 				case 0:
-					foreach (AbstractProject proj in ProjectService.OpenSolution.Projects)
-						if (proj.FindFile(item.FileName) != null)
-						return true;
-					
+					if (ProjectService.OpenSolution != null) {
+						foreach (AbstractProject proj in ProjectService.OpenSolution.Projects) {
+							if (proj.FindFile(item.FileName) != null)
+								return true;
+						}
+					}
 					return false;
 				case 1:
-					return ((WorkbenchSingleton.Workbench.ActiveViewContent != null) && (ProjectService.CurrentProject.FindFile(item.FileName) != null));
+					return ProjectService.CurrentProject != null && ProjectService.CurrentProject.FindFile(item.FileName) != null;
 				case 2:
-					return ((WorkbenchSingleton.Workbench.ActiveViewContent != null) && (WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == item.FileName));
+					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == item.FileName;
 				case 3:
-					return ((current != null) && (itemClass != null) && (current.Namespace == itemClass.Namespace));
+					return current != null && itemClass != null && current.Namespace == itemClass.Namespace;
 				case 4:
-					return ((current != null) && (itemClass != null) && (current == itemClass));
+					return current != null && itemClass != null && current == itemClass;
 			}
 			
 			return true;
@@ -210,10 +211,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ParseInformation parseInfo = ParserService.GetParseInformation(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
 			if (parseInfo != null) {
-				if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextAreaControl)
-				{SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control
-						as SharpDevelopTextAreaControl;
-					IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(ctrl.ActiveTextAreaControl.Caret.Line, ctrl.ActiveTextAreaControl.Caret.Column);
+				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
+				if (positionable != null) {
+					IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(positionable.Line, positionable.Column);
 					if (c != null) return c;
 				}
 			}
