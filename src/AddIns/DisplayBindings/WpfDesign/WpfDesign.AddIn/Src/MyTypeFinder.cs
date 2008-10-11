@@ -18,6 +18,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 	public class MyTypeFinder : XamlTypeFinder
 	{
 		OpenedFile file;
+		readonly TypeResolutionService typeResolutionService = new TypeResolutionService();
 		
 		public static MyTypeFinder Create(OpenedFile file)
 		{
@@ -32,7 +33,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			if (string.IsNullOrEmpty(name)) {
 				IProjectContent pc = GetProjectContent(file);
 				if (pc != null) {
-					return TypeResolutionService.LoadAssembly(pc);
+					return this.typeResolutionService.LoadAssembly(pc);
 				}
 				return null;
 			} else {

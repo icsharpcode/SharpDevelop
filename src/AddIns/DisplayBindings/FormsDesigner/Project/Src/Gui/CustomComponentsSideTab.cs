@@ -137,11 +137,16 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.IsTransient = true;
 		}
 		
-		void Init()
+		void Init(IDesignerHost host)
 		{
 			LoggingService.Debug("Initializing MyToolBoxItem: " + className);
+			if (host == null) throw new ArgumentNullException("host");
 			if (assemblyLocation != null) {
-				Assembly asm = TypeResolutionService.LoadAssembly(assemblyLocation);
+				TypeResolutionService typeResolutionService = host.GetService(typeof(ITypeResolutionService)) as TypeResolutionService;
+				if (typeResolutionService == null) {
+					throw new InvalidOperationException("Cannot initialize CustomComponentToolBoxItem because the designer host does not provide a SharpDevelop TypeResolutionService.");
+				}
+				Assembly asm = typeResolutionService.LoadAssembly(assemblyLocation);
 				if (asm != null && usedAssembly != asm) {
 					Initialize(asm.GetType(className));
 					usedAssembly = asm;
@@ -151,13 +156,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		protected override IComponent[] CreateComponentsCore(IDesignerHost host)
 		{
-			Init();
+			Init(host);
 			return base.CreateComponentsCore(host);
 		}
 		
 		protected override IComponent[] CreateComponentsCore(IDesignerHost host, System.Collections.IDictionary defaultValues)
 		{
-			Init();
+			Init(host);
 			return base.CreateComponentsCore(host, defaultValues);
 		}
 	}
