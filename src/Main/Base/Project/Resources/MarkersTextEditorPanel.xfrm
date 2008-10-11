@@ -1,128 +1,133 @@
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="CreatedObject0" />
-    <DockPadding value="" />
     <ClientSize value="{Width=408, Height=328}" />
     <Controls>
       <System.Windows.Forms.GroupBox>
         <Name value="CreatedObject2" />
-        <TabIndex value="0" />
-        <Location value="{X=8,Y=8}" />
-        <Anchor value="Top, Left, Right" />
-        <Size value="{Width=392, Height=304}" />
+        <Location value="8, 8" />
         <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox}" />
+        <Size value="392, 308" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
         <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showCaretLineCheckBox" />
+            <Location value="8, 68" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.CaretCheckBox}" />
+            <TabIndex value="14" />
+            <Size value="176, 24" />
+          </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.ComboBox>
             <Name value="bracketMatchingStyleComboBox" />
-            <Anchor value="Bottom, Right" />
             <TabIndex value="9" />
-            <Location value="{X=226,Y=178}" />
-            <Size value="{Width=158, Height=21}" />
+            <Location value="236, 186" />
+            <Anchor value="Bottom, Right" />
+            <Size value="148, 21" />
             <DropDownStyle value="DropDownList" />
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.ComboBox>
             <Name value="lineMarkerStyleComboBox" />
-            <DropDownWidth value="168" />
-            <Anchor value="Top, Right" />
             <TabIndex value="5" />
-            <Location value="{X=192,Y=93}" />
-            <Size value="{Width=188, Height=21}" />
+            <Location value="192, 100" />
+            <Anchor value="Top, Right" />
+            <Size value="188, 21" />
             <DropDownStyle value="DropDownList" />
+            <DropDownWidth value="168" />
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.CheckBox>
             <Name value="showLineNumberCheckBox" />
-            <Location value="{X=8,Y=131}" />
-            <Size value="{Width=376, Height=24}" />
+            <Location value="8, 138" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.LineNumberCheckBox}" />
-            <Anchor value="Top, Left, Right" />
             <TabIndex value="6" />
+            <Size value="376, 24" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="showErrorsCheckBox" />
-            <Location value="{X=8,Y=155}" />
-            <Size value="{Width=376, Height=24}" />
+            <Location value="8, 162" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.UnderLineErrorsCheckBox}" />
-            <Anchor value="Top, Left, Right" />
             <TabIndex value="7" />
+            <Size value="376, 24" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="showBracketHighlighterCheckBox" />
-            <Location value="{X=8,Y=179}" />
-            <Size value="{Width=228, Height=24}" />
+            <Location value="8, 186" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox}" />
-            <Anchor value="Top, Left, Right" />
             <TabIndex value="8" />
+            <Size value="222, 24" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="showInvalidLinesCheckBox" />
-            <Location value="{X=8,Y=203}" />
-            <Size value="{Width=376, Height=24}" />
+            <Location value="8, 210" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.InvalidLinesCheckBox}" />
-            <Anchor value="Top, Left, Right" />
             <TabIndex value="10" />
+            <Size value="376, 24" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="showHRulerCheckBox" />
-            <Location value="{X=8,Y=16}" />
-            <Size value="{Width=176, Height=24}" />
+            <Location value="8, 16" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.HorizontalRulerCheckBox}" />
             <TabIndex value="0" />
+            <Size value="176, 24" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="showEOLMarkersCheckBox" />
-            <Location value="{X=8,Y=227}" />
-            <Size value="{Width=376, Height=24}" />
+            <Location value="8, 234" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox}" />
-            <Anchor value="Top, Left, Right" />
             <TabIndex value="11" />
+            <Size value="376, 24" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="showVRulerCheckBox" />
-            <Location value="{X=8,Y=42}" />
-            <Size value="{Width=176, Height=24}" />
+            <Location value="8, 42" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.VerticalRulerCheckBox}" />
             <TabIndex value="1" />
+            <Size value="176, 24" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="showTabCharsCheckBox" />
-            <Location value="{X=8,Y=275}" />
-            <Size value="{Width=376, Height=24}" />
+            <Location value="8, 282" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.TabsCheckBox}" />
-            <Anchor value="Top, Left, Right" />
             <TabIndex value="13" />
+            <Size value="376, 24" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="showSpaceCharsCheckBox" />
-            <Location value="{X=8,Y=251}" />
-            <Size value="{Width=376, Height=24}" />
+            <Location value="8, 258" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox}" />
-            <Anchor value="Top, Left, Right" />
             <TabIndex value="12" />
+            <Size value="376, 24" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.Label>
             <Name value="CreatedObject23" />
+            <Location value="208, 44" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.AtRowLabel}" />
+            <Size value="104, 24" />
             <TextAlign value="MiddleRight" />
             <Anchor value="Top, Right" />
             <TabIndex value="2" />
-            <Size value="{Width=104, Height=24}" />
-            <Location value="{X=208,Y=44}" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.TextBox>
             <Name value="vRulerRowTextBox" />
-            <Anchor value="Top, Right" />
             <TabIndex value="3" />
-            <Location value="{X=312,Y=42}" />
-            <Size value="{Width=64, Height=21}" />
-            <Text value="" />
+            <Location value="312, 43" />
+            <Anchor value="Top, Right" />
+            <Size value="64, 20" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="CreatedObject28" />
+            <Location value="8, 95" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.LineMarkerLabel}" />
+            <Size value="152, 24" />
             <TextAlign value="MiddleLeft" />
             <TabIndex value="4" />
-            <Size value="{Width=152, Height=24}" />
-            <Location value="{X=8,Y=88}" />
           </System.Windows.Forms.Label>
         </Controls>
       </System.Windows.Forms.GroupBox>
