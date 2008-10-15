@@ -110,7 +110,6 @@ namespace B {
 		}
 		
 		[Test]
-		[Ignore("Bugfix needed (this is the cause for SD2-1474).")]
 		public void DerivedClassInheritanceTreeAfterCheckBaseTypesDifferentNamespaceUsing()
 		{
 			Prepare(CodeDifferentNamespaceUsing, "A.Base", "B.Derived");

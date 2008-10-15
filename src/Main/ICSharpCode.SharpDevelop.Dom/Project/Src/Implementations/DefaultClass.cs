@@ -358,6 +358,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				visitedList = new List<IClass>();
 				Queue<IReturnType> typesToVisit = new Queue<IReturnType>();
 				bool enqueuedLastBaseType = false;
+				bool hasErrors = false;
 				IClass currentClass = this;
 				IReturnType nextType;
 				do {
@@ -377,11 +378,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 					if (nextType != null) {
 						currentClass = nextType.GetUnderlyingClass();
+						if (currentClass == null)
+							hasErrors = true;
 					}
 				} while (nextType != null);
-				inheritanceTreeCache = visitedList;
-				if (!KeepInheritanceTree)
-					DomCache.RegisterForClear(delegate { inheritanceTreeCache = null; });
+				
+				
+				// A SearchType request causes the inheritance tree to be generated, but if it was
+				// this classes' base type that caused the SearchType request, the GetUnderlyingClass()
+				// will fail and we will produce an incomplete inheritance tree.
+				// So we don't cache incomplete inheritance trees for parsed classes (fixes SD2-1474).
+				if (!hasErrors || KeepInheritanceTree) {
+					inheritanceTreeCache = visitedList;
+					if (!KeepInheritanceTree)
+						DomCache.RegisterForClear(delegate { inheritanceTreeCache = null; });
+				}
 				return visitedList;
 			}
 		}
