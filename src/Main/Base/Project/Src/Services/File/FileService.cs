@@ -295,6 +295,10 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/// <summary>
+		/// Gets a list of the names of the files that are open as primary files
+		/// in view contents.
+		/// </summary>
 		public static IList<string> GetOpenFiles()
 		{
 			List<string> fileNames = new List<string>();

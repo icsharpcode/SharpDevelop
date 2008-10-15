@@ -27,7 +27,7 @@ using ICSharpCode.TextEditor.Util;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost
+	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost, IFileDocumentProvider
 	{
 		readonly Control pleaseWaitLabel = new Label() {Text=StringParser.Parse("${res:Global.PleaseWait}"), TextAlign=ContentAlignment.MiddleCenter};
 		DesignSurface designSurface;
@@ -91,6 +91,17 @@ namespace ICSharpCode.FormsDesigner
 		
 		public virtual Encoding DesignerCodeFileEncoding {
 			get { return this.designerCodeFileEncoding; }
+		}
+		
+		public IDocument GetDocumentForFile(OpenedFile file)
+		{
+			if (file == this.DesignerCodeFile) {
+				return this.DesignerCodeFileDocument;
+			} else if (file == this.PrimaryFile) {
+				return this.PrimaryFileDocument;
+			} else {
+				return null;
+			}
 		}
 		
 		public IViewContent PrimaryViewContent {

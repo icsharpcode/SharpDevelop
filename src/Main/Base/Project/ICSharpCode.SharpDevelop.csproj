@@ -511,6 +511,7 @@
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CommentCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\TemplateCompletionDataProvider.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\IFileDocumentProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\IndexerInsightDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\MethodInsightDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ErrorDrawer.cs" />

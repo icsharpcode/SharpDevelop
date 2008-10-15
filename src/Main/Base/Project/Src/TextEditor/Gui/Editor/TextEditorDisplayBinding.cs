@@ -78,6 +78,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
+		public IDocument GetDocumentForFile(OpenedFile file)
+		{
+			if (file == this.PrimaryFile) {
+				return this.TextEditorControl.Document;
+			} else {
+				return null;
+			}
+		}
+		
 		public bool EnableUndo {
 			get {
 				return textEditorControl.EnableUndo;

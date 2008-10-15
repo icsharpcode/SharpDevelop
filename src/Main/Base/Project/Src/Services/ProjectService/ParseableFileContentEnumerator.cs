@@ -12,7 +12,9 @@ using System.IO;
 using System.Text;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -82,6 +84,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			// Loading the source files is done asynchronously:
 			// While one file is parsed, the next is already loaded from disk.
+			
+			// Load file from memory if it is open
+			OpenedFile file = FileService.GetOpenedFile(fileName);
+			if (file != null) {
+				string content;
+				if (isOnMainThread) {
+					content = GetFileContentFromFileDocumentProvider(file);
+				} else {
+					content = WorkbenchSingleton.SafeThreadFunction<OpenedFile, string>(GetFileContentFromFileDocumentProvider, file);
+				}
+				if (content != null) {
+					return content;
+				}
+				
+				using(Stream s = file.OpenRead()) {
+					Encoding encoding = defaultEncoding;
+					return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(s, ref encoding);
+				}
+			}
 			
 			// load file
 			return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, defaultEncoding);
@@ -164,6 +185,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				return editable.Text;
 			}
 			return null;
+		}
+		
+		static string GetFileContentFromFileDocumentProvider(OpenedFile file)
+		{
+			IFileDocumentProvider p = file.CurrentView as IFileDocumentProvider;
+			if (p == null) return null;
+			IDocument document = p.GetDocumentForFile(file);
+			if (document == null) return null;
+			return document.TextContent;
 		}
 	}
 }

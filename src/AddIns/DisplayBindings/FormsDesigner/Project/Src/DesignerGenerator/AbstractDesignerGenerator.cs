@@ -192,13 +192,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			if (formClass.Name != this.formClass.Name) {
 				LoggingService.Info("Renaming form to " + formClass.Name);
-				Dictionary<string, IDocument> providedFileDocuments = new Dictionary<string, IDocument>();
-				providedFileDocuments.Add(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument);
-				if (!this.ViewContent.PrimaryFile.Equals(this.ViewContent.DesignerCodeFile)) {
-					System.Diagnostics.Debug.Assert(!this.ViewContent.DesignerCodeFileDocument.Equals(this.ViewContent.PrimaryFileDocument));
-					providedFileDocuments.Add(this.ViewContent.PrimaryFileName, this.ViewContent.PrimaryFileDocument);
-				}
-				ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, formClass.Name, providedFileDocuments);
+				ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, formClass.Name);
 				this.ViewContent.DesignerCodeFile.MakeDirty();
 				this.ViewContent.PrimaryFile.MakeDirty();
 				Reparse();
