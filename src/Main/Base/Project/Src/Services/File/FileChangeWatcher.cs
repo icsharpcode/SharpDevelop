@@ -80,8 +80,8 @@ namespace ICSharpCode.SharpDevelop
 		
 		public bool Enabled {
 			get { return enabled; }
-			set { 
-				enabled = value; 
+			set {
+				enabled = value;
 				SetWatcher();
 			}
 		}
@@ -111,11 +111,12 @@ namespace ICSharpCode.SharpDevelop
 				if (watcher == null) {
 					watcher = new FileSystemWatcher();
 					watcher.SynchronizingObject = WorkbenchSingleton.MainForm;
-					watcher.Changed += new FileSystemEventHandler(this.OnFileChangedEvent);
+					watcher.Changed += OnFileChangedEvent;
+					watcher.Created += OnFileChangedEvent;
+					watcher.Renamed += OnFileChangedEvent;
 				}
 				watcher.Path = Path.GetDirectoryName(fileName);
 				watcher.Filter = Path.GetFileName(fileName);
-				watcher.NotifyFilter = NotifyFilters.LastWrite;
 				watcher.EnableRaisingEvents = true;
 			} catch (PlatformNotSupportedException) {
 				if (watcher != null) {
@@ -127,15 +128,18 @@ namespace ICSharpCode.SharpDevelop
 		
 		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 		{
-			if (e.ChangeType != WatcherChangeTypes.Deleted) {
-				if (file == null)
-					return;
-				LoggingService.Debug("File " + file.FileName + " was changed externally");
+			LoggingService.Debug("File " + file.FileName + " was changed externally: " + e.ChangeType);
+			if (file == null)
+				return;
+			if (!wasChangedExternally) {
 				wasChangedExternally = true;
 				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
-					// delay showing message a bit, prevents showing two messages
-					// when the file changes twice in quick succession
-					WorkbenchSingleton.SafeThreadAsyncCall(MainForm_Activated, this, EventArgs.Empty);
+					// delay reloading message a bit, prevents showing two messages
+					// when the file changes twice in quick succession; and prevents
+					// trying to reload the file while it is still being written
+					WorkbenchSingleton.CallLater(
+						500,
+						delegate { MainForm_Activated(this, EventArgs.Empty); } );
 				}
 			}
 		}
@@ -149,6 +153,8 @@ namespace ICSharpCode.SharpDevelop
 					return;
 				
 				string fileName = file.FileName;
+				if (!File.Exists(fileName))
+					return;
 				
 				string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(fileName)}});
 				if ((AutoLoadExternalChangesOption && file.IsDirty == false)
