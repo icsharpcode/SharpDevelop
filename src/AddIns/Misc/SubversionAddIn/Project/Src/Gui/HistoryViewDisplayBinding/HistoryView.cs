@@ -33,5 +33,9 @@ namespace ICSharpCode.Svn
 		protected override void SaveToPrimary()
 		{
 		}
+		
+		public override bool IsViewOnly {
+			get { return true; }
+		}
 	}
 }
