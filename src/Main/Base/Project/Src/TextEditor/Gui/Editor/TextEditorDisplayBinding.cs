@@ -33,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			HighlightingManager.Manager.AddSyntaxModeFileProvider(new ICSharpCode.SharpDevelop.DefaultEditor.Codons.AddInTreeSyntaxModeProvider());
 			HighlightingManager.Manager.AddSyntaxModeFileProvider(new FileSyntaxModeProvider(Path.Combine(PropertyService.DataDirectory, "modes")));
 			HighlightingManager.Manager.AddSyntaxModeFileProvider(new FileSyntaxModeProvider(modeDir));
+			ClipboardHandling.Initialize();
 		}
 		
 		/// <summary>

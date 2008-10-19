@@ -32,14 +32,33 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+		public delegate bool ClipboardContainsTextDelegate();
+		
+		/// <summary>
+		/// Is called when CachedClipboardContainsText should be updated.
+		/// If this property is null (the default value), the text editor uses
+		/// System.Windows.Forms.Clipboard.ContainsText.
+		/// </summary>
+		/// <remarks>
+		/// This property is useful if you want to prevent the default Clipboard.ContainsText
+		/// behaviour that waits for the clipboard to be available - the clipboard might
+		/// never become available if it is owned by a process that is paused by the debugger.
+		/// </remarks>
+		public static ClipboardContainsTextDelegate GetClipboardContainsText;
+		
 		public bool EnablePaste {
 			get {
 				if (!textArea.EnableCutOrPaste)
 					return false;
-				try {
-					return Clipboard.ContainsText();
-				} catch (ExternalException) {
-					return false;
+				ClipboardContainsTextDelegate d = GetClipboardContainsText;
+				if (d != null) {
+					return d();
+				} else {
+					try {
+						return Clipboard.ContainsText();
+					} catch (ExternalException) {
+						return false;
+					}
 				}
 			}
 		}

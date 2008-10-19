@@ -473,6 +473,7 @@
     <Compile Include="Src\TextEditor\Bookmarks\Bookmark.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkEventHandler.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkManager.cs" />
+    <Compile Include="Src\TextEditor\ClipboardHandling.cs" />
     <Compile Include="Src\TextEditor\Codons\AddInTreeSyntaxModeProvider.cs" />
     <Compile Include="Src\TextEditor\Codons\EditActionDoozer.cs" />
     <Compile Include="Src\TextEditor\Codons\SyntaxModeDoozer.cs" />
