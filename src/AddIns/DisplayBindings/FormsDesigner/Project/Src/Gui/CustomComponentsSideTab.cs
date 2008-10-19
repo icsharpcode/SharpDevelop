@@ -88,8 +88,9 @@ namespace ICSharpCode.FormsDesigner.Gui
 						continue;
 				}
 				foreach (IClass c in pc.Classes) {
-					if (!c.Methods.Any(
-						(IMethod method) => method.IsConstructor && method.IsPublic && method.Parameters.Count == 0
+					var ctors = c.Methods.Where(method => method.IsConstructor);
+					if (ctors.Any() && !ctors.Any(
+						(IMethod method) => method.IsPublic && method.Parameters.Count == 0
 					)) {
 						// do not include classes that don't have a public parameterless constructor
 						continue;
