@@ -22,7 +22,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 		public static void Initialize()
 		{
 			ICSharpCode.TextEditor.TextAreaClipboardHandler.GetClipboardContainsText = GetClipboardContainsText;
-			WorkbenchSingleton.MainForm.Activated += WorkbenchSingleton_MainForm_Activated;
+			if (WorkbenchSingleton.MainForm != null) {
+				WorkbenchSingleton.MainForm.Activated += WorkbenchSingleton_MainForm_Activated;
+			} else {
+				WorkbenchSingleton.WorkbenchCreated += delegate {
+					WorkbenchSingleton.MainForm.Activated += WorkbenchSingleton_MainForm_Activated;
+				};
+			}
 		}
 
 		static void WorkbenchSingleton_MainForm_Activated(object sender, EventArgs e)
@@ -35,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 		public static bool GetClipboardContainsText()
 		{
 			WorkbenchSingleton.DebugAssertMainThread();
-			if (WorkbenchSingleton.Workbench.IsActiveWindow) {
+			if (WorkbenchSingleton.Workbench != null && WorkbenchSingleton.Workbench.IsActiveWindow) {
 				UpdateClipboardContainsText();
 			}
 			return clipboardContainsText;
