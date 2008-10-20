@@ -209,6 +209,18 @@ namespace UnitTesting.Tests
 		{
 			helper.Initialize(project, null, null);
 			Assert.AreSame(project, helper.Project);
+		}
+		
+		[Test]
+		public void TestInnerClassSpecifiedInInitialize()
+		{
+			MockClass testFixture = new MockClass("MyTests.TestFixture.InnerTest", "MyTests.TestFixture+InnerTest");
+			helper.Initialize(project, testFixture, null);
+			helper.NoLogo = false;
+			helper.ShadowCopy = true;
+			
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"MyTests.TestFixture+InnerTest\"";
+			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
 		}		
 	}
 }

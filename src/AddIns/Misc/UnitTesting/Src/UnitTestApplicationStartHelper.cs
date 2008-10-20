@@ -119,7 +119,7 @@ namespace ICSharpCode.UnitTesting
 				NamespaceFilter = namespaceFilter;
 			}
 			if (fixture != null) {
-				Fixture = fixture.FullyQualifiedName;
+				Fixture = fixture.DotNetName;
 				if (test != null) {
 					Test = test.Name;
 				}

@@ -34,9 +34,7 @@ namespace ICSharpCode.UnitTesting
 		/// Returns the underlying project.
 		/// </summary>
 		public IProject Project {
-			get {
-				return project;
-			}
+			get { return project; }
 		}
 		
 		/// <summary>
@@ -114,9 +112,7 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the project's name.
 		/// </summary>
 		public string Name {
-			get {
-				return project.Name;
-			}
+			get { return project.Name; }
 		}
 		
 		/// <summary>
@@ -152,8 +148,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Updates the classes and methods based on the new parse
-		/// information.
+		/// Updates the classes and methods based on the new parse information.
 		/// </summary>
 		/// <param name="oldUnit">The old compiliation unit
 		/// (ParseInformationEventArgs.ParseInformation.BestCompilationUnit as ICompilationUnit)</param>
@@ -165,28 +160,25 @@ namespace ICSharpCode.UnitTesting
 				return;
 			}
 			
-			Dictionary<string, IClass> classDictionary = new Dictionary<string, IClass>();
-			Dictionary<string, bool> wasUpdatedDictionary = new Dictionary<string, bool>();
+			RemovedClasses removedClasses = new RemovedClasses();
 			
 			if (oldUnit != null) {
-				foreach (IClass c in oldUnit.Classes) {
-					classDictionary[c.FullyQualifiedName] = c;
-					wasUpdatedDictionary[c.FullyQualifiedName] = false;
-				}
+				removedClasses.Add(oldUnit.Classes);
 			}
 			if (newUnit != null) {
 				foreach (IClass c in newUnit.Classes) {
 					UpdateTestClass(c);
-					wasUpdatedDictionary[c.FullyQualifiedName] = true;
+					foreach (IClass innerClass in c.InnerClasses) {
+						UpdateTestClass(innerClass);
+						removedClasses.Remove(innerClass);
+					}
+					removedClasses.Remove(c);
 				}
 			}
 			
 			// Remove missing classes.
-			foreach (KeyValuePair<string, bool> entry in wasUpdatedDictionary) {
-				if (!entry.Value) {
-					IClass c = classDictionary[entry.Key];
-					TestClasses.Remove(c.FullyQualifiedName);
-				}
+			foreach (IClass c in removedClasses.GetMissingClasses()) {
+				TestClasses.Remove(c.DotNetName);
 			}
 		}
 		
@@ -224,14 +216,14 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		void UpdateTestClass(IClass c)
 		{
-			if (TestClasses.Contains(c.FullyQualifiedName)) {
+			if (TestClasses.Contains(c.DotNetName)) {
 				if (TestClass.IsTestClass(c)) {
-					TestClass testClass = TestClasses[c.FullyQualifiedName];
+					TestClass testClass = TestClasses[c.DotNetName];
 					testClass.UpdateClass(c);
 				} else {
 					// TestFixture attribute has been removed so
 					// remove the class from the set of TestClasses.
-					TestClasses.Remove(c.FullyQualifiedName);
+					TestClasses.Remove(c.DotNetName);
 				}
 			} else {
 				// TestFixture attribute may have been recently added to
@@ -239,7 +231,7 @@ namespace ICSharpCode.UnitTesting
 				// check if the class is actually a test class since
 				// AddNewTestClass does this anyway.
 				AddNewTestClass(c);
-			}
+			}			
 		}
 		
 		void GetTestClasses()
@@ -249,6 +241,13 @@ namespace ICSharpCode.UnitTesting
 				if (TestClass.IsTestClass(c)) {
 					if (!testClasses.Contains(c.FullyQualifiedName)) {
 						testClasses.Add(new TestClass(c));
+					}
+				}
+				foreach (IClass innerClass in c.InnerClasses) {
+					if (TestClass.IsTestClass(innerClass)) {
+						if (!testClasses.Contains(innerClass.DotNetName)) {
+							testClasses.Add(new TestClass(innerClass));
+						}
 					}
 				}
 			}
@@ -263,6 +262,6 @@ namespace ICSharpCode.UnitTesting
 					rootNamespaces.Add(rootNamespace);
 				}
 			}
-		}
+		}				
 	}
 }

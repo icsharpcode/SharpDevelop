@@ -17,25 +17,36 @@ namespace UnitTesting.Tests.Utils
 		DomRegion region = DomRegion.Empty;
 		IList<IAttribute> attributes = new List<IAttribute>();
 		IList<IMethod> methods = new List<IMethod>();
+		IList<IClass> innerClasses = new List<IClass>();
 		string fullyQualifiedName = String.Empty;
 		string name = String.Empty;
 		string ns = String.Empty;
 		IClass compoundClass;
 		IClass baseClass;
+		string dotNetName = String.Empty;
+		IClass declaringType;
 		
 		public MockClass()
 		{
 		}
 		
-		public MockClass(string fullyQualifiedName)
+		public MockClass(string fullyQualifiedName) : this(fullyQualifiedName, fullyQualifiedName)
+		{
+		}
+		
+		public MockClass(string fullyQualifiedName, string dotNetName)
 		{
 			FullyQualifiedName = fullyQualifiedName;
+			this.dotNetName = dotNetName;
+		}
+		
+		public override string ToString()
+		{
+			return dotNetName;
 		}
 		
 		public string FullyQualifiedName {
-			get {
-				return fullyQualifiedName;
-			}
+			get { return fullyQualifiedName; }
 			set {
 				fullyQualifiedName = value;
 				int index = fullyQualifiedName.LastIndexOf('.');
@@ -49,74 +60,45 @@ namespace UnitTesting.Tests.Utils
 		}
 		
 		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+			get { return name; }
+			set { name = value; }
 		}
 		
 		public string Namespace {
-			get {
-				return ns;
-			}
-			set {
-				ns = value;
-			}
+			get { return ns; }
+			set { ns = value; }
 		}
 		
 		public ClassType ClassType {
-			get {
-				return ClassType.Class;
-			}
+			get { return ClassType.Class; }
 		}
 		
 		public IProjectContent ProjectContent {
-			get {
-				return projectContent;
-			}
-			set {
-				projectContent = value;
-			}
+			get { return projectContent; }
+			set { projectContent = value; }
 		}
 		
 		public DomRegion Region {
-			get {
-				return region;
-			}
-			set {
-				region = value;
-			}
+			get { return region; }
+			set { region = value; }
 		}
 		
 		public IList<IMethod> Methods {
-			get {
-				return methods;
-			}
+			get { return methods; }
 		}
 		
 		public IClass BaseClass {
-			get {
-				return baseClass;
-			}
-			set {
-				baseClass = value;
-			}
+			get { return baseClass; }
+			set { baseClass = value; }
 		}
 		
 		public ModifierEnum Modifiers {
-			get {
-				return ModifierEnum.None;
-			}
-			set {
-			}
+			get { return ModifierEnum.None; }
+			set { }
 		}
 		
 		public IList<IAttribute> Attributes {
-			get {
-				return attributes;
-			}
+			get { return attributes; }
 		}
 		
 		public IClass GetCompoundClass()
@@ -136,9 +118,7 @@ namespace UnitTesting.Tests.Utils
 		}
 		
 		public string DotNetName {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return dotNetName; }
 		}
 		
 		public ICompilationUnit CompilationUnit {
@@ -160,9 +140,7 @@ namespace UnitTesting.Tests.Utils
 		}
 		
 		public IList<IClass> InnerClasses {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return innerClasses; }
 		}
 		
 		public IList<IField> Fields {
@@ -223,9 +201,8 @@ namespace UnitTesting.Tests.Utils
 		}
 		
 		public IClass DeclaringType {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return declaringType; }
+			set { declaringType = value; }
 		}
 		
 		public string Documentation {
