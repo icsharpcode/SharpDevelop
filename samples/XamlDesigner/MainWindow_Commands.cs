@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using System.Windows;
+using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -20,81 +22,122 @@ namespace ICSharpCode.XamlDesigner
 			ApplicationCommands.SaveAs.Text = "Save As...";
 		}
 
-		void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		void RegisterCommandHandlers()
 		{
-			Shell.Instance.New();
+			this.AddCommandHandler(ApplicationCommands.New, Shell.Instance.New);
+			this.AddCommandHandler(ApplicationCommands.Open, Shell.Instance.Open);
+			this.AddCommandHandler(ApplicationCommands.Close, Shell.Instance.CloseCurrentDocument, HasCurrentDocument);
+			this.AddCommandHandler(ApplicationCommands.Save, Shell.Instance.SaveCurrentDocument, HasCurrentDocument);
+			this.AddCommandHandler(ApplicationCommands.SaveAs, Shell.Instance.SaveCurrentDocumentAs, HasCurrentDocument);
+			
+			this.AddCommandHandler(SaveAllCommand, SaveAll, HasCurrentDocument);
+			this.AddCommandHandler(CloseAllCommand, CloseAll, HasCurrentDocument);
+			this.AddCommandHandler(ExitCommand, Shell.Instance.Exit, HasCurrentDocument);
+			this.AddCommandHandler(RefreshCommand, Shell.Instance.Refresh, Shell.Instance.CanRefresh);
+
+			this.AddCommandHandler(ApplicationCommands.Undo, Undo, CanUndo);
+			this.AddCommandHandler(ApplicationCommands.Redo, Redo, CanRedo);
+			this.AddCommandHandler(ApplicationCommands.Copy, Copy, CanCopy);
+			this.AddCommandHandler(ApplicationCommands.Cut, Cut, CanCut);
+			this.AddCommandHandler(ApplicationCommands.Delete, Delete, CanDelete);
+			this.AddCommandHandler(ApplicationCommands.Paste, Paste, CanPaste);
+			this.AddCommandHandler(ApplicationCommands.SelectAll, SelectAll, CanSelectAll);
 		}
 
-		void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		bool HasCurrentDocument()
 		{
-			Shell.Instance.Open();
+			return Shell.Instance.CurrentDocument != null;
 		}
 
-		void CloseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-		{
-			Shell.Instance.CloseCurrentDocument();
-		}
-
-		void CloseCommand_PreviewExecuted(object sender, ExecutedRoutedEventArgs e)
-		{
-			Shell.Instance.CloseCurrentDocument();
-		}
-
-		void CloseAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-		{
-			Shell.Instance.CloseAll();
-		}
-
-		void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-		{
-			Shell.Instance.SaveCurrentDocument();
-		}
-
-		void SaveAsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-		{
-			Shell.Instance.SaveCurrentDocumentAs();
-		}
-
-		void SaveAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		void SaveAll()
 		{
 			Shell.Instance.SaveAll();
 		}
 
-		void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+		void CloseAll()
 		{
-			Shell.Instance.Exit();
+			Shell.Instance.CloseAll();
 		}
 
-		void CurrentDocument_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		ICommandService CurrentCommandService
 		{
-			e.CanExecute = Shell.Instance.CurrentDocument != null;
-		}
-
-		void RouteDesignSurfaceCommands()
-		{
-			RouteDesignSurfaceCommand(ApplicationCommands.Undo);
-			RouteDesignSurfaceCommand(ApplicationCommands.Redo);
-			RouteDesignSurfaceCommand(ApplicationCommands.Copy);
-			RouteDesignSurfaceCommand(ApplicationCommands.Cut);
-			RouteDesignSurfaceCommand(ApplicationCommands.Paste);
-			RouteDesignSurfaceCommand(ApplicationCommands.SelectAll);
-			RouteDesignSurfaceCommand(ApplicationCommands.Delete);
-		}
-
-		void RouteDesignSurfaceCommand(RoutedCommand command)
-		{
-			var cb = new CommandBinding(command);
-			cb.CanExecute += delegate(object sender, CanExecuteRoutedEventArgs e) {
+			get 
+			{
 				if (Shell.Instance.CurrentDocument != null) {
-					Shell.Instance.CurrentDocument.DesignSurface.RaiseEvent(e);
-				}else {
-					e.CanExecute = false;
+					return Shell.Instance.CurrentDocument.Context.CommandService;
 				}
-			};
-			cb.Executed += delegate(object sender, ExecutedRoutedEventArgs e) {
-				Shell.Instance.CurrentDocument.DesignSurface.RaiseEvent(e);
-			};
-			CommandBindings.Add(cb);
+				return null;
+			}
+		}
+
+		void Undo()
+		{
+			CurrentCommandService.Undo();
+		}
+
+		void Redo()
+		{
+			CurrentCommandService.Redo();
+		}
+
+		void Copy()
+		{
+			CurrentCommandService.Copy();
+		}
+
+		void Paste()
+		{
+			CurrentCommandService.Paste();
+		}
+
+		void Cut()
+		{
+			CurrentCommandService.Cut();
+		}
+
+		void SelectAll()
+		{
+			CurrentCommandService.SelectAll();
+		}
+
+		void Delete()
+		{
+			CurrentCommandService.Delete();
+		}
+
+		bool CanUndo()
+		{
+			return CurrentCommandService != null && CurrentCommandService.CanUndo();
+		}
+
+		bool CanRedo()
+		{
+			return CurrentCommandService != null && CurrentCommandService.CanRedo();
+		}
+
+		bool CanCopy()
+		{
+			return CurrentCommandService != null && CurrentCommandService.CanCopy();
+		}
+
+		bool CanPaste()
+		{
+			return CurrentCommandService != null && CurrentCommandService.CanPaste();
+		}
+
+		bool CanCut()
+		{
+			return CurrentCommandService != null && CurrentCommandService.CanCut();
+		}
+
+		bool CanSelectAll()
+		{
+			return CurrentCommandService != null && CurrentCommandService.CanSelectAll();
+		}
+
+		bool CanDelete()
+		{
+			return CurrentCommandService != null && CurrentCommandService.CanDelete();
 		}
 	}
 }

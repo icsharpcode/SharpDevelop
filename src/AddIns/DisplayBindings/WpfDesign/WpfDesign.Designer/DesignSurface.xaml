@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="ICSharpCode.WpfDesign.Designer.DesignSurface"
+             x:Name="root"
+             xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Default="clr-namespace:ICSharpCode.WpfDesign.Designer"
+             xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
+             Background="#888"
+             SnapsToDevicePixels="True">
+
+    <Controls:ZoomControl x:Name="uxZoom"
+                          Content="{Binding Context.DesignPanel, ElementName=root}" />
+
+</UserControl>

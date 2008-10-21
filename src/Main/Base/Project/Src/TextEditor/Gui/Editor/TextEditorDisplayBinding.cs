@@ -49,9 +49,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return true;
 		}
 		
+		protected virtual TextEditorDisplayBindingWrapper CreateWrapper(OpenedFile file)
+		{
+			return new TextEditorDisplayBindingWrapper(file);
+		}
+		
 		public virtual IViewContent CreateContentForFile(OpenedFile file)
 		{
-			TextEditorDisplayBindingWrapper b2 = new TextEditorDisplayBindingWrapper(file);
+			TextEditorDisplayBindingWrapper b2 = CreateWrapper(file);
 			file.ForceInitializeView(b2); // load file to initialize folding etc.
 			
 			b2.textEditorControl.Dock = DockStyle.Fill;

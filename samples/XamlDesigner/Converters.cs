@@ -9,21 +9,21 @@ using System.Collections;
 
 namespace ICSharpCode.XamlDesigner.Converters
 {
-    public class EnumToIntConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (int)value;
-        }
+	public class EnumToIntConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return (int)value;
+		}
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value;
-        }
-    }
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return value;
+		}
+	}
 
 	public class CollapsedWhenFalse : IValueConverter
-    {
+	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			return (bool)value ? Visibility.Visible : Visibility.Collapsed;
@@ -36,7 +36,7 @@ namespace ICSharpCode.XamlDesigner.Converters
 	}
 
 	public class FalseWhenZero : IValueConverter
-    {
+	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			if (value == null || (int)value == 0) {

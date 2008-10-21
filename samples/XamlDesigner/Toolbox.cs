@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Collections.ObjectModel;
-using ICSharpCode.XamlDesigner.Configuration;
+using ICSharpCode.XamlDesigner.Properties;
 using System.Windows;
 using System.Collections.Specialized;
 using ICSharpCode.WpfDesign;
@@ -52,12 +52,15 @@ namespace ICSharpCode.XamlDesigner
 				}			
 				Settings.Default.AssemblyList.Add(path);
 			}
+
+			Shell.Instance.Project.AddReference(assembly);
         }
 
 		public void Remove(AssemblyNode node)
 		{
 			AssemblyNodes.Remove(node);
 			Settings.Default.AssemblyList.Remove(node.Path);
+			Shell.Instance.Project.RemoveReference(node.Assembly);
 		}
 
 		public void LoadSettings()

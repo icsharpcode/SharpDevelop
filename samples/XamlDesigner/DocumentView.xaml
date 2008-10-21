@@ -1,23 +1,23 @@
-﻿<UserControl 
-    x:Class="ICSharpCode.XamlDesigner.DocumentView"
-    xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Integration="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
-    xmlns:TextEditor="clr-namespace:ICSharpCode.TextEditor;assembly=ICSharpCode.TextEditor"
-    xmlns:Default="clr-namespace:ICSharpCode.XamlDesigner"
-    xmlns:DesignerControls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls;assembly=ICSharpCode.WpfDesign.Designer"
-    >
-    
+﻿<UserControl x:Class="ICSharpCode.XamlDesigner.DocumentView"
+             xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Integration="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+             xmlns:Default="clr-namespace:ICSharpCode.XamlDesigner"
+             xmlns:Designer="clr-namespace:ICSharpCode.WpfDesign.Designer;assembly=ICSharpCode.WpfDesign.Designer"
+             xmlns:DesignerControls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls;assembly=ICSharpCode.WpfDesign.Designer">
+
     <DockPanel>
         <DesignerControls:EnumBar Value="{Binding Mode}"
-                                  DockPanel.Dock="Bottom"/>
+                                  DockPanel.Dock="Bottom" />
         <Grid>
             <Integration:WindowsFormsHost Visibility="{Binding InXamlMode, Converter={StaticResource CollapsedWhenFalse}}">
-                <TextEditor:TextEditorControl x:Name="uxTextEditor" />
+                <Default:TextEditorWithoutUndo x:Name="uxTextEditor" />
             </Integration:WindowsFormsHost>
-            <ContentPresenter Content="{Binding DesignSurface}"
-                              Visibility="{Binding InDesignMode, Converter={StaticResource CollapsedWhenFalse}}"/>
+
+            <Designer:DesignSurface x:Name="uxDesignSurface"
+                                    Context="{Binding Context}"
+                                    Visibility="{Binding InDesignMode, Converter={StaticResource CollapsedWhenFalse}}" />
         </Grid>
     </DockPanel>
-    
+
 </UserControl>

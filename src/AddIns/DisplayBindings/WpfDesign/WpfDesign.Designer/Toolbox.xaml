@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="ICSharpCode.WpfDesign.Designer.Toolbox"
+             xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Default="clr-namespace:ICSharpCode.WpfDesign.Designer"
+             xmlns:Outline="clr-namespace:ICSharpCode.WpfDesign.Designer.OutlineView"
+             SnapsToDevicePixels="True">
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type Default:ToolboxItem}">
+            <Outline:IconItem Text="{Binding Type.Name}"
+                              Icon="{Binding Icon}" />
+        </DataTemplate>
+    </UserControl.Resources>
+    <ListBox x:Name="uxList"
+             BorderThickness="0"
+             SelectedValuePath="Type" />
+</UserControl>

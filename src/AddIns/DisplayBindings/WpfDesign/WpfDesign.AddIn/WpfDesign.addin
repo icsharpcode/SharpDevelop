@@ -13,11 +13,14 @@
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<!--<DisplayBinding id    = "WPFDesigner"
+		<DisplayBinding id    = "WPFEditor"
+                    insertbefore = "Text"
+		                type  = "Primary"
 		                class = "ICSharpCode.WpfDesign.AddIn.WpfPrimaryDisplayBinding"
-		                insertbefore    = "Text"
-		                fileNamePattern = "\.xaml$"
-		                title = "WPF designer"/>-->
+		                fileNamePattern = "\.xaml$"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "WPFDesigner"
 		                type  = "Secondary"
 		                class = "ICSharpCode.WpfDesign.AddIn.WpfSecondaryDisplayBinding"

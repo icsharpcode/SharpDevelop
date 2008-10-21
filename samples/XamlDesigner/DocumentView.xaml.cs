@@ -13,6 +13,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ICSharpCode.WpfDesign.Designer.Services;
 using System.Windows.Threading;
+using ICSharpCode.Xaml;
+using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.TextEditor;
+using System.Windows.Forms;
+using ICSharpCode.TextEditor.Document;
+using ICSharpCode.WpfDesign;
+using ICSharpCode.TextEditor.Undo;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -22,21 +29,106 @@ namespace ICSharpCode.XamlDesigner
 		{
 			InitializeComponent();
 
-			Document = doc;
+			ShellDocument = doc;
 			Shell.Instance.Views[doc] = this;			
 
 			uxTextEditor.SetHighlighting("XML");
 			uxTextEditor.DataBindings.Add("Text", doc, "Text", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged);
+			ShellDocument.Context.AddService(typeof(ITextContainer), uxTextEditor);
+
+			uxTextEditor.Document.UndoStack.OperationPushed += UndoStack_OperationPushed;
+			uxTextEditor.Document.DocumentChanged += Document_DocumentChanged;
+			uxTextEditor.Document.DocumentAboutToBeChanged += Document_DocumentAboutToBeChanged;
 		}
 
-		public Document Document { get; private set; }
+		public Document ShellDocument { get; private set; }
 
-		public void JumpToError(XamlError error)
+		IUndoableOperation lastOperation;
+		bool textValid;
+
+		void Document_DocumentAboutToBeChanged(object sender, DocumentEventArgs e)
 		{
-			Document.Mode = DocumentMode.Xaml;
+			textValid = false;
+		}
+
+		void Document_DocumentChanged(object sender, DocumentEventArgs e)
+		{
+			textValid = true;
+			TryUpdateDesignUndoStack();
+		}
+
+		void UndoStack_OperationPushed(object sender, OperationEventArgs e)
+		{
+			lastOperation = e.Operation;
+			TryUpdateDesignUndoStack();
+		}
+
+		void TryUpdateDesignUndoStack()
+		{
+			if (textValid && lastOperation != null) {
+				ShellDocument.Context.UndoService.Done(new TextAction(lastOperation));
+				lastOperation = null;
+			}
+		}
+
+		public DesignSurface DesignSurface
+		{
+			get
+			{
+				return uxDesignSurface;
+			}
+		}
+
+		public void JumpToError(XamlDocumentError error)
+		{
+			ShellDocument.Mode = DocumentMode.Xaml;
 			Dispatcher.BeginInvoke(new Action(delegate {
-				uxTextEditor.ActiveTextAreaControl.JumpTo(error.Line - 1, error.Column - 1);
+				uxTextEditor.ActiveTextAreaControl.JumpTo(error.LineNumber - 1, error.LinePosition - 1);
 			}), DispatcherPriority.Background);
+		}
+	}
+
+	class TextEditorWithoutUndo : TextEditorControl, ITextContainer
+	{
+		public TextEditorWithoutUndo()
+		{
+			editactions.Remove(Keys.Control | Keys.Z);
+			editactions.Remove(Keys.Control | Keys.Y);
+		}
+
+		public override void EndUpdate()
+		{
+			base.EndUpdate();
+		}
+	}
+
+	class TextAction : ITextAction
+	{
+		public TextAction(IUndoableOperation op)
+		{
+			this.op = op;
+		}
+
+		IUndoableOperation op;
+
+		public IEnumerable<DesignItem> AffectedItems
+		{
+			get { yield break; }
+		}
+
+		public string Title
+		{
+			get { return "Text Editing"; }
+		}
+
+		public void Do()
+		{
+			op.Redo();
+		}
+
+		public void Undo()
+		{
+			op.Undo();
 		}
 	}
 }

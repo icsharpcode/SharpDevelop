@@ -28,6 +28,8 @@ namespace ICSharpCode.TextEditor.Undo
 		/// </summary>
 		public event EventHandler ActionRedone;
 		
+		public event OperationEventHandler OperationPushed;
+		
 		/// <summary>
 		/// Gets/Sets if changes to the document are protocolled by the undo stack.
 		/// Used internally to disable the undo stack temporarily while undoing an action.
@@ -89,7 +91,11 @@ namespace ICSharpCode.TextEditor.Undo
 			undoGroupDepth--;
 			//Util.LoggingService.Debug("Close undo group (new depth=" + undoGroupDepth + ")");
 			if (undoGroupDepth == 0 && actionCountInUndoGroup > 1) {
-				undostack.Push(new UndoQueue(undostack, actionCountInUndoGroup));
+				UndoQueue op = new UndoQueue(undostack, actionCountInUndoGroup);
+				undostack.Push(op);
+				if (OperationPushed != null) {
+					OperationPushed(this, new OperationEventArgs(op));
+				}
 			}
 		}
 		
@@ -213,4 +219,22 @@ namespace ICSharpCode.TextEditor.Undo
 			}
 		}
 	}
+		
+	public class OperationEventArgs : EventArgs
+	{
+		public OperationEventArgs(IUndoableOperation op)
+		{
+			this.op = op;
+		}
+		
+		IUndoableOperation op;
+		
+		public IUndoableOperation Operation {
+			get {
+				return op;
+			}
+		}
+	}
+	
+	public delegate void OperationEventHandler(object sender, OperationEventArgs e);
 }
