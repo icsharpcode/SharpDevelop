@@ -1248,7 +1248,7 @@
 									<Directory Id="XamlBinding" Name="XamlBinding">
 										<Component Guid="7A569E59-A93E-43A5-B154-ACEBC868C9F2" Id="XamlBindingFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.addin" Id="XamlBinding.addin" Name="XamlBinding.addin" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.XamlBinding.dll" Id="XamlBinding.dll" Name="XamlBinding.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.XamlBinding.dll" Id="ICSharpCode.XamlBinding.dll" Name="ICSharpCode.XamlBinding.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="PythonBinding" Name="PythonBinding">
