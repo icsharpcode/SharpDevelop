@@ -1248,7 +1248,7 @@
 									<Directory Id="XamlBinding" Name="XamlBinding">
 										<Component Guid="7A569E59-A93E-43A5-B154-ACEBC868C9F2" Id="XamlBindingFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.addin" Id="XamlBinding.addin" Name="XamlBinding.addin" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.dll" Id="XamlBinding.dll" Name="XamlBinding.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.XamlBinding.dll" Id="XamlBinding.dll" Name="XamlBinding.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="PythonBinding" Name="PythonBinding">
@@ -1375,8 +1375,7 @@
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.dll" Id="ICSharpCode.WpfDesign.Designer.dll" Name="ICSharpCode.WpfDesign.Designer.dll" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml" Id="ICSharpCode.WpfDesign.Designer.xml" Name="ICSharpCode.WpfDesign.Designer.xml" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.dll" Id="ICSharpCode.WpfDesign.dll" Name="ICSharpCode.WpfDesign.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.XamlDom.dll" Id="ICSharpCode.WpfDesign.XamlDom.dll" Name="ICSharpCode.WpfDesign.XamlDom.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.XamlDom.xml" Id="ICSharpCode.WpfDesign.XamlDom.xml" Name="ICSharpCode.WpfDesign.XamlDom.xml" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.Xaml.dll" Id="ICSharpCode.Xaml.dll" Name="ICSharpCode.Xaml.dll" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.xml" Id="ICSharpCode.WpfDesign.xml" Name="ICSharpCode.WpfDesign.xml" />
 										</Component>
 									</Directory>
