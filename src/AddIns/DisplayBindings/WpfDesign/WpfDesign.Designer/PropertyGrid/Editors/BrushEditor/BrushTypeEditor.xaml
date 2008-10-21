@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor.BrushTypeEditor"
+             xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Border BorderThickness="1"
+	        BorderBrush="Black"
+	        Background="Transparent"
+	        HorizontalAlignment="Left"
+	        Cursor="Hand"
+	        Width="30"
+            Height="16">
+		<Border Background="{Binding Value}" />
+	</Border>
+</UserControl>
