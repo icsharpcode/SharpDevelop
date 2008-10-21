@@ -1246,7 +1246,7 @@
 										</Directory>
 									</Directory>
 									<Directory Id="XamlBinding" Name="XamlBinding">
-										<Component Guid="7A569E59-A93E-43A5-B154-ACEBC868C9F2" Id="XamlBindingFiles" DiskId="1">
+										<Component Guid="9FEAE5CB-1AF6-4D5D-A2C3-1F92E452299D" Id="XamlBindingFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.addin" Id="XamlBinding.addin" Name="XamlBinding.addin" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.XamlBinding.dll" Id="ICSharpCode.XamlBinding.dll" Name="ICSharpCode.XamlBinding.dll" />
 										</Component>
@@ -1369,14 +1369,20 @@
 										</Component>
 									</Directory>
 									<Directory Id="WpfDesign" Name="WpfDesign">
-										<Component Guid="334A5E49-DF28-4733-9AD8-8381974B099D" Id="WpfDesignFiles" DiskId="1">
+										<Component Guid="977C5C76-AB21-409B-B011-F06AB793607D" Id="WpfDesignAddInFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\WpfDesign.addin" Id="WpfDesign.addin" Name="WpfDesign.addin" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.AddIn.dll" Id="ICSharpCode.WpfDesign.AddIn.dll" Name="ICSharpCode.WpfDesign.AddIn.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.dll" Id="ICSharpCode.WpfDesign.Designer.dll" Name="ICSharpCode.WpfDesign.Designer.dll" />
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.AddIn.dll" Id="ICSharpCode.WpfDesign.AddIn.dll" Name="ICSharpCode.WpfDesign.AddIn.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.WpfDesign.AddIn.dll" AssemblyManifest="ICSharpCode.WpfDesign.AddIn.dll" />
+										</Component>
+										<Component Guid="327338E7-9438-4080-A0D8-12880FD7A801" Id="WpfDesignDesignerFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.dll" Id="ICSharpCode.WpfDesign.Designer.dll" Name="ICSharpCode.WpfDesign.Designer.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.WpfDesign.Designer.dll" AssemblyManifest="ICSharpCode.WpfDesign.Designer.dll" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml" Id="ICSharpCode.WpfDesign.Designer.xml" Name="ICSharpCode.WpfDesign.Designer.xml" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.dll" Id="ICSharpCode.WpfDesign.dll" Name="ICSharpCode.WpfDesign.dll" />
-											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.Xaml.dll" Id="ICSharpCode.Xaml.dll" Name="ICSharpCode.Xaml.dll" />
+										</Component>
+										<Component Guid="592CD7A1-8696-4499-9989-C1301221B805" Id="WpfDesignFiles" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.dll" Id="ICSharpCode.WpfDesign.dll" Name="ICSharpCode.WpfDesign.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.WpfDesign.dll" AssemblyManifest="ICSharpCode.WpfDesign.dll" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.xml" Id="ICSharpCode.WpfDesign.xml" Name="ICSharpCode.WpfDesign.xml" />
+										</Component>
+										<Component Guid="128DB371-040F-4A3A-9983-652CBCDC234C" Id="WpfDesignXamlDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.Xaml.dll" Id="ICSharpCode.Xaml.dll" Name="ICSharpCode.Xaml.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Xaml.dll" AssemblyManifest="ICSharpCode.Xaml.dll" />
 										</Component>
 									</Directory>
 								</Directory>
