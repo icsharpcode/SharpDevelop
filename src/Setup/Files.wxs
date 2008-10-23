@@ -1299,6 +1299,9 @@
 										<Component Guid="DFE90264-F338-41C1-A7BA-7466B33CB044" Id="MicrosoftScriptingDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.dll" AssemblyManifest="Microsoft.Scripting.dll" />
 										</Component>
+										<Component Guid="2B8CBE37-D71F-435C-9B26-70FF69451A6E" Id="MicrosoftScriptingExtensionAttributeDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.ExtensionAttribute.dll" Name="Microsoft.Scripting.ExtensionAttribute.dll" Id="Microsoft.Scripting.ExtensionAttribute.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.ExtensionAttribute.dll" />
+										</Component>
 									</Directory>
 									<Directory Id="FSharpBinding" Name="FSharpBinding">
 										<Component Guid="7C6826BE-C03E-43A4-AD27-17A9325C70DD" Id="FSharpBuildTasksDll" DiskId="1">
