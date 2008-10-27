@@ -73,6 +73,7 @@
     <Compile Include="Console\DerivedPythonConsoleHost.cs" />
     <Compile Include="Console\DisposedPythonConsoleTestFixture.cs" />
     <Compile Include="Console\CodeCompletionTests.cs" />
+    <Compile Include="Console\PythonConsoleHomeKeyTestFixture.cs" />
     <Compile Include="Console\MockMemberProvider.cs" />
     <Compile Include="Console\MockTextEditor.cs" />
     <Compile Include="Console\PythonConsoleCodeCompletionTestFixture.cs" />
