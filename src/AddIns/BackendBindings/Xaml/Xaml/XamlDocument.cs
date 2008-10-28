@@ -75,6 +75,7 @@ namespace ICSharpCode.Xaml
 				}
 			}
 			catch (Exception x) {
+				Errors.Add(new XamlDocumentError { Message = x.ToString() });
 			}
 
 			parsing = false;
