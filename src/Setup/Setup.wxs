@@ -336,10 +336,12 @@
 				<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>
-				<ComponentRef Id="ClassEditorDll"/>
 				<ComponentRef Id="DiagramsDll"/>
 				<ComponentRef Id="XamlBindingFiles"/>
+				<ComponentRef Id="WpfDesignAddInFiles"/>
+				<ComponentRef Id="WpfDesignDesignerFiles"/>
 				<ComponentRef Id="WpfDesignFiles"/>
+				<ComponentRef Id="WpfDesignXamlDll"/>
 				
 				<ComponentRef Id="WorkflowDesignerAddin"/>
 				<ComponentRef Id="WorkflowDesignerDll"/>
@@ -408,12 +410,11 @@
 				<ComponentRef Id="IronPythonDll"/>	
 				<ComponentRef Id="MicrosoftScriptingDll"/>	
 				<ComponentRef Id="MicrosoftScriptingCoreDll"/>	
+				<ComponentRef Id="MicrosoftScriptingExtensionAttributeDll"/>	
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	
 				<ComponentRef Id="PythonBindingDll"/>	
 				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>				
-				<ComponentRef Id="ClassWizardDll"/>	
-				<ComponentRef Id="ClassWizardAddin"/>				
 
 				<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	

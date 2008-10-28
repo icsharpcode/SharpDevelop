@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows;
-using ICSharpCode.XamlDesigner.Configuration;
+using ICSharpCode.XamlDesigner.Properties;
 using System.Windows.Threading;
 using System.Diagnostics;
 

@@ -95,6 +95,14 @@ namespace CSharpBinding
 			} else if (ch == '.') {
 				editor.ShowCompletionWindow(new CSharpCodeCompletionDataProvider(), ch);
 				return true;
+			} else if (ch == '>') {
+				if (IsInComment(editor)) return false;
+				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
+				if (prevChar == '-') {
+					editor.ShowCompletionWindow(new PointerArrowCompletionDataProvider(), ch);
+					
+					return true;
+				}
 			}
 			
 			if (char.IsLetter(ch) && CodeCompletionOptions.CompleteWhenTyping) {
@@ -108,7 +116,7 @@ namespace CSharpBinding
 					ExpressionResult result = ef.FindExpression(editor.Text, cursor);
 					LoggingService.Debug("CC: Beginning to type a word, result=" + result);
 					if (result.Context != ExpressionContext.IdentifierExpected) {
-						editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(result.Context) { 
+						editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(result.Context) {
 						                            	ShowTemplates = true,
 						                            	AllowCompleteExistingExpression = afterUnderscore
 						                            }, '\0');
@@ -128,6 +136,34 @@ namespace CSharpBinding
 				NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.CSharp);
 				resolver.LimitMethodExtractionUntilLine = caretLineNumber;
 				return resolver.Resolve(expressionResult, parseInfo, fileContent);
+			}
+		}
+		
+		class PointerArrowCompletionDataProvider : CodeCompletionDataProvider
+		{
+			protected override ResolveResult Resolve(ExpressionResult expressionResult, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+			{
+				ResolveResult rr = base.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, fileContent);
+				if (rr != null && rr.ResolvedType != null) {
+					PointerReturnType prt = rr.ResolvedType.CastToDecoratingReturnType<PointerReturnType>();
+					if (prt != null)
+						return new ResolveResult(rr.CallingClass, rr.CallingMember, prt.BaseType);
+				}
+				return null;
+			}
+			
+			protected override ExpressionResult GetExpression(ICSharpCode.TextEditor.TextArea textArea)
+			{
+				ICSharpCode.TextEditor.Document.IDocument document = textArea.Document;
+				IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
+				if (expressionFinder == null) {
+					return new ExpressionResult(TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset - 1));
+				} else {
+					ExpressionResult res = expressionFinder.FindExpression(document.GetText(0, textArea.Caret.Offset - 1), textArea.Caret.Offset - 1);
+					if (overrideContext != null)
+						res.Context = overrideContext;
+					return res;
+				}
 			}
 		}
 		

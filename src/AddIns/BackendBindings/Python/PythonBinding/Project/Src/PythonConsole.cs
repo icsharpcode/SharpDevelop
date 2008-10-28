@@ -226,6 +226,9 @@ namespace ICSharpCode.PythonBinding
 			switch (keyData) {
 				case Keys.Back:
 					return !CanBackspace;
+				case Keys.Home:
+					MoveToHomePosition();
+					return true;
 			}
 			return false;
 		}
@@ -282,6 +285,14 @@ namespace ICSharpCode.PythonBinding
 		{
 			PythonConsoleCompletionDataProvider completionProvider = new PythonConsoleCompletionDataProvider(this);
 			textEditor.ShowCompletionWindow(completionProvider);
+		}
+
+		/// <summary>
+		/// The home position is at the start of the line after the prompt.
+		/// </summary>
+		void MoveToHomePosition()
+		{
+			textEditor.Column = promptLength;
 		}
 	}
 }

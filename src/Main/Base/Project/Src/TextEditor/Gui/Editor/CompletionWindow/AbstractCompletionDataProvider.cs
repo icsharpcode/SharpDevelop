@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return completionData.ToArray();
 		}
 		
-		protected ExpressionResult GetExpression(TextArea textArea)
+		protected virtual ExpressionResult GetExpression(TextArea textArea)
 		{
 			IDocument document = textArea.Document;
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);

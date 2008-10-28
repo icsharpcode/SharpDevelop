@@ -90,6 +90,7 @@
     <Compile Include="Tree\RemoveElementTestFixture.cs" />
     <Compile Include="Tree\RemoveTextNodesFromTreeControlTestFixture.cs" />
     <Compile Include="Tree\RemoveTextNodeTestFixture.cs" />
+    <Compile Include="Tree\TextBoxTextChangedBeforeEditorLoadedTestFixture.cs" />
     <Compile Include="Tree\XmlCommentTreeNodeTests.cs" />
     <Compile Include="Tree\XmlTreeViewClipboardHandlerTestFixture.cs" />
     <Compile Include="Tree\XmlTreeViewContainerTestFixture.cs" />

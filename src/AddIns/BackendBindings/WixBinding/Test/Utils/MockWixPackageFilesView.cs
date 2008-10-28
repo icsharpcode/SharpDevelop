@@ -19,6 +19,7 @@ namespace WixBinding.Tests.Utils
 		bool noSourceFileFoundMessageDisplayed;
 		bool sourceFilesContainErrorsMessageDisplayed;
 		bool noDifferencesFoundMessageDisplayed;
+		bool noRootDirectoryFoundMessageDisplayed;
 		string projectName;
 		WixDirectoryElement rootDirectory;
 		bool selectedItemAccessed;
@@ -35,6 +36,11 @@ namespace WixBinding.Tests.Utils
 		
 		public MockWixPackageFilesView()
 		{
+		}
+		
+		public void ShowNoRootDirectoryFoundMessage()
+		{
+			noRootDirectoryFoundMessageDisplayed = true;
 		}
 		
 		public void ShowNoSourceFileFoundMessage(string projectName)
@@ -196,6 +202,12 @@ namespace WixBinding.Tests.Utils
 		public bool IsNoDifferencesFoundMessageDisplayed {
 			get {
 				return noDifferencesFoundMessageDisplayed;
+			}
+		}
+
+		public bool IsNoRootDirectoryFoundMessageDisplayed {
+			get {
+				return noRootDirectoryFoundMessageDisplayed;
 			}
 		}
 		

@@ -27,7 +27,7 @@ using ICSharpCode.TextEditor.Util;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost
+	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost, IFileDocumentProvider
 	{
 		readonly Control pleaseWaitLabel = new Label() {Text=StringParser.Parse("${res:Global.PleaseWait}"), TextAlign=ContentAlignment.MiddleCenter};
 		DesignSurface designSurface;
@@ -39,6 +39,7 @@ namespace ICSharpCode.FormsDesigner
 		readonly IDesignerGenerator generator;
 		readonly ResourceStore resourceStore;
 		FormsDesignerUndoEngine undoEngine;
+		TypeResolutionService typeResolutionService;
 		
 		Encoding primaryFileEncoding;
 		readonly IDocument primaryFileDocument = new DocumentFactory().CreateDocument();
@@ -90,6 +91,17 @@ namespace ICSharpCode.FormsDesigner
 		
 		public virtual Encoding DesignerCodeFileEncoding {
 			get { return this.designerCodeFileEncoding; }
+		}
+		
+		public IDocument GetDocumentForFile(OpenedFile file)
+		{
+			if (file == this.DesignerCodeFile) {
+				return this.DesignerCodeFileDocument;
+			} else if (file == this.PrimaryFile) {
+				return this.PrimaryFileDocument;
+			} else {
+				return null;
+			}
 		}
 		
 		public IViewContent PrimaryViewContent {
@@ -254,7 +266,8 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(this.resourceStore));
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
-			serviceContainer.AddService(typeof(ITypeResolutionService), new TypeResolutionService(this.PrimaryFileName));
+			this.typeResolutionService = new TypeResolutionService(this.PrimaryFileName);
+			serviceContainer.AddService(typeof(ITypeResolutionService), this.typeResolutionService);
 			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
@@ -385,6 +398,7 @@ namespace ICSharpCode.FormsDesigner
 				designSurface = null;
 			}
 			
+			this.typeResolutionService = null;
 			this.loader = null;
 			
 			foreach (KeyValuePair<Type, TypeDescriptionProvider> entry in this.addedTypeDescriptionProviders) {
@@ -557,8 +571,30 @@ namespace ICSharpCode.FormsDesigner
 		void IsActiveViewContentChangedHandler(object sender, EventArgs e)
 		{
 			if (this.IsActiveViewContent) {
+				
 				LoggingService.Debug("FormsDesigner view content activated, setting ActiveDesignSurface to " + ((this.DesignSurface == null) ? "null" : this.DesignSurface.ToString()));
 				designSurfaceManager.ActiveDesignSurface = this.DesignSurface;
+				
+				if (this.DesignSurface != null && this.Host != null) {
+					// Reload designer when a referenced assembly has changed
+					// (the default Load/Save logic using OpenedFile cannot catch this case)
+					if (this.typeResolutionService.ReferencedAssemblyChanged) {
+						IDesignerLoaderService loaderService = this.DesignSurface.GetService(typeof(IDesignerLoaderService)) as IDesignerLoaderService;
+						if (loaderService != null) {
+							if (!this.Host.Loading) {
+								LoggingService.Info("Forms designer reloading due to change in referenced assembly");
+								if (!loaderService.Reload()) {
+									MessageService.ShowMessage("The designer has detected that a referenced assembly has been changed, but the designer loader did not accept the reload command. Please reload the designer manually by closing and reopening this file.");
+								}
+							} else {
+								LoggingService.Debug("Forms designer detected change in referenced assembly, but is in load operation");
+							}
+						} else {
+							MessageService.ShowMessage("The designer has detected that a referenced assembly has been changed, but it cannot reload itself because IDesignerLoaderService is unavailable. Please reload the designer manually by closing and reopening this file.");
+						}
+					}
+				}
+				
 			} else {
 				LoggingService.Debug("FormsDesigner view content deactivated, setting ActiveDesignSurface to null");
 				designSurfaceManager.ActiveDesignSurface = null;

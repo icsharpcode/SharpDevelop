@@ -481,6 +481,7 @@
     <Compile Include="Src\TextEditor\Bookmarks\Bookmark.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkEventHandler.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkManager.cs" />
+    <Compile Include="Src\TextEditor\ClipboardHandling.cs" />
     <Compile Include="Src\TextEditor\Codons\AddInTreeSyntaxModeProvider.cs" />
     <Compile Include="Src\TextEditor\Codons\EditActionDoozer.cs" />
     <Compile Include="Src\TextEditor\Codons\SyntaxModeDoozer.cs" />
@@ -519,6 +520,7 @@
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CommentCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\TemplateCompletionDataProvider.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\IFileDocumentProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\IndexerInsightDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\MethodInsightDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ErrorDrawer.cs" />
@@ -654,7 +656,6 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
-    <Compile Include="Src\Util\HashSet.cs" />
     <Compile Include="Src\Util\NativeMethods.cs" />
     <Compile Include="Src\Util\ProcessRunnerException.cs" />
     <Compile Include="Src\Util\LineReceivedEventArgs.cs" />

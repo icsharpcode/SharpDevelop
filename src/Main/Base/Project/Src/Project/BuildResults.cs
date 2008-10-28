@@ -33,6 +33,10 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		List<BuildError> errors = new List<BuildError>();
 		ReadOnlyCollection<BuildError> readOnlyErrors;
+		
+		List<IBuildable> builtProjects = new List<IBuildable>();
+		ReadOnlyCollection<IBuildable> readOnlyBuiltProjects;
+		
 		BuildResultCode result;
 		int errorCount, warningCount;
 		
@@ -55,6 +59,20 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
+		/// Adds a project to the list of built projects.
+		/// This method is thread-sage.
+		/// </summary>
+		public void AddBuiltProject(IBuildable buildable)
+		{
+			if (buildable == null)
+				throw new ArgumentNullException("buildable");
+			lock (builtProjects) {
+				readOnlyBuiltProjects = null;
+				builtProjects.Add(buildable);
+			}
+		}
+		
+		/// <summary>
 		/// Gets the list of build errors or warnings.
 		/// This property is thread-safe.
 		/// </summary>
@@ -65,6 +83,20 @@ namespace ICSharpCode.SharpDevelop.Project
 						readOnlyErrors = Array.AsReadOnly(errors.ToArray());
 					}
 					return readOnlyErrors;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets the list of projects that were built. This property is thread-safe.
+		/// </summary>
+		public ReadOnlyCollection<IBuildable> BuiltProjects {
+			get { 
+				lock (builtProjects) {
+					if (readOnlyBuiltProjects == null) {
+						readOnlyBuiltProjects = Array.AsReadOnly(builtProjects.ToArray());
+					}
+					return readOnlyBuiltProjects;
 				}
 			}
 		}

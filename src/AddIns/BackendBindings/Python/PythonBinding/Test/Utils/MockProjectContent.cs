@@ -272,7 +272,7 @@ namespace PythonBinding.Tests.Utils
 			return namespaceContents;
 		}
 		
-		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, bool lookInReferences)
+		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, GetClassOptions options)
 		{
 			return GetClass(typeName, typeParameterCount);
 		}

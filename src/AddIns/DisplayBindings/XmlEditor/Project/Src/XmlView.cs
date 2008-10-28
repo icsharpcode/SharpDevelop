@@ -699,6 +699,16 @@ namespace ICSharpCode.XmlEditor
 				return xmlEditor;
 			}
 		}
+		
+		public IDocument GetDocumentForFile(OpenedFile file)
+		{
+			if (file == this.PrimaryFile) {
+				return this.TextEditorControl.Document;
+			} else {
+				return null;
+			}
+		}
+		
 		#endregion
 		
 		#region IPositionable interface

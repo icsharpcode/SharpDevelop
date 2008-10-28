@@ -100,7 +100,7 @@ namespace ICSharpCode.UnitTesting
 		
 		protected override string GetKeyForItem(TestClass item)
 		{
-			return item.Class.FullyQualifiedName;
+			return item.QualifiedName;
 		}
 		
 		protected override void InsertItem(int index, TestClass item)

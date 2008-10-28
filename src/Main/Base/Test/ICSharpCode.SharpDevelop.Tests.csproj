@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="AbstractEntityIsOverridableTestFixture.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CheckAssemblyFlags.cs" />
     <Compile Include="CodeConverterTests.cs" />
     <Compile Include="CSharpExpressionFinderTests.cs" />
     <Compile Include="ExceptionClassOverridesTestFixture.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="CollectionClassOverridesTestFixture.cs" />
     <Compile Include="OverridableMethodsTestFixture.cs" />
     <Compile Include="OverridablePropertiesTestFixture.cs" />
+    <Compile Include="PropertyPadSortingTests.cs" />
     <Compile Include="ReflectionLayerTests.cs" />
     <Compile Include="GenericResolverTests.cs" />
     <Compile Include="InnerClassesResolverTests.cs" />
@@ -74,11 +76,13 @@
     <Compile Include="StringTagProvider\ProjectTagsTestFixture.cs" />
     <Compile Include="Utils\MockAmbience.cs" />
     <Compile Include="Utils\MockClass.cs" />
+    <Compile Include="Utils\MockComponent.cs" />
     <Compile Include="Utils\MockEntity.cs" />
     <Compile Include="Utils\MockDefaultReturnType.cs" />
     <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProperty.cs" />
+    <Compile Include="Utils\MockSite.cs" />
     <Compile Include="VBExpressionFinderTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
     <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />

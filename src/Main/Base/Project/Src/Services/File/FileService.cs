@@ -295,6 +295,10 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		/// <summary>
+		/// Gets a list of the names of the files that are open as primary files
+		/// in view contents.
+		/// </summary>
 		public static IList<string> GetOpenFiles()
 		{
 			List<string> fileNames = new List<string>();
@@ -474,6 +478,7 @@ namespace ICSharpCode.SharpDevelop
 			IViewContent content = OpenFile(fileName);
 			if (content is IPositionable) {
 				// TODO: enable jumping to a particular view
+				content.WorkbenchWindow.ActiveViewContent = content;
 				((IPositionable)content).JumpTo(Math.Max(0, line), Math.Max(0, column));
 			}
 			

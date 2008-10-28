@@ -25,18 +25,22 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
+				TreeViewAdv ctrl = (TreeViewAdv)pad.Content;
 				
-				((TreeViewAdv)pad.Content).BeginUpdate();
-				TextNode text = new TextNode(MessageService.ShowInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"),
-				                                                         StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"),
-				                                                         ""));
-				TreeViewVarNode node = new TreeViewVarNode(pad.Process, (TreeViewAdv)pad.Content, text);		
+				string input = MessageService.ShowInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"),
+				                                           StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"),
+				                                           "");
+				if (!string.IsNullOrEmpty(input)) {
+					ctrl.BeginUpdate();
+					TextNode text = new TextNode(input);
+					TreeViewVarNode node = new TreeViewVarNode(pad.Process, ctrl, text);
+					
+					pad.Watches.Add(text);
+					ctrl.Root.Children.Add(node);
+					ctrl.EndUpdate();
+				}
 				
-				pad.Watches.Add(text);
-				((TreeViewAdv)pad.Content).Root.Children.Add(node);
-				((TreeViewAdv)pad.Content).EndUpdate();
-				
-				((WatchPad)this.Owner).RefreshPad();
+				pad.RefreshPad();
 			}
 		}
 	}
@@ -47,9 +51,7 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-								
-				// TODO : Implement remove
-				
+
 				TreeNodeAdv node = ((TreeViewAdv)pad.Content).SelectedNode;
 				
 				if (node == null)
@@ -85,7 +87,7 @@ namespace Debugger.AddIn
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
 				
-				((TreeViewAdv)pad.Content).BeginUpdate();					
+				((TreeViewAdv)pad.Content).BeginUpdate();
 				pad.Watches.Clear();
 				((TreeViewAdv)pad.Content).Root.Children.Clear();
 				((TreeViewAdv)pad.Content).EndUpdate();

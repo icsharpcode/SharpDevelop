@@ -197,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		void SearchAllClassesWithName(List<IClass> searchResults, IProjectContent pc, string name, LanguageProperties language)
 		{
 			foreach (string ns in pc.NamespaceNames) {
-				IClass c = pc.GetClass(ns + "." + name, 0, language, false);
+				IClass c = pc.GetClass(ns + "." + name, 0, language, GetClassOptions.None);
 				if (c != null)
 					searchResults.Add(c);
 			}

@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override IClass GetUnderlyingClass()
 		{
-			return pc.GetClass("System.Void", 0, LanguageProperties.CSharp, true);
+			return pc.GetClass("System.Void", 0, LanguageProperties.CSharp, GetClassOptions.LookInReferences);
 		}
 		
 		public override List<IMethod> GetMethods()

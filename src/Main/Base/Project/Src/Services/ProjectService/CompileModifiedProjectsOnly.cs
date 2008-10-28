@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			set { PropertyService.Set("BuildOnExecute", value); }
 		}
 		
-		static readonly HashSet<IProject> unmodifiedProjects = new HashSet<IProject>();
+		static readonly Dictionary<IProject, CompilationPass> unmodifiedProjects = new Dictionary<IProject, CompilationPass>();
 		
 		static BuildModifiedProjectsOnlyService()
 		{
@@ -57,14 +57,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void ProjectService_EndBuild(object sender, BuildEventArgs e)
 		{
-			// at the end of an successful build, mark all projects as unmodified
+			// at the end of an successful build, mark all built projects as unmodified
 			if (e.Results.Result == BuildResultCode.Success) {
-				if (ProjectService.OpenSolution != null) {
-					lock (unmodifiedProjects) {
-						unmodifiedProjects.AddRange(ProjectService.OpenSolution.Projects);
+				lock (unmodifiedProjects) {
+					CompilationPass pass = new CompilationPass();
+					foreach (IBuildable b in e.Results.BuiltProjects) {
+						IProject p = GetProjectFromBuildable(b);
+						if (p != null) {
+							unmodifiedProjects[p] = pass;
+						}
 					}
 				}
 			}
+		}
+		
+		static IProject GetProjectFromBuildable(IBuildable b)
+		{
+			while (b is Wrapper)
+				b = ((Wrapper)b).wrapped;
+			return b as IProject;
 		}
 		
 		static void MarkAllForRecompilation(object sender, EventArgs e)
@@ -94,6 +105,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					return new DummyBuildable(buildable);
 				case BuildOnExecuteSetting.BuildModifiedAndDependent:
 				case BuildOnExecuteSetting.BuildOnlyModified:
+					lock (unmodifiedProjects) {
+						foreach (var pair in unmodifiedProjects) {
+							LoggingService.Debug(pair.Key.Name + ": " + pair.Value);
+						}
+					}
 					return new WrapperFactory().GetWrapper(buildable);
 				case BuildOnExecuteSetting.RegularBuild:
 					return buildable;
@@ -129,8 +145,26 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		sealed class CompilationPass
+		{
+			public readonly int Index;
+			
+			static int nextIndex;
+			
+			public CompilationPass()
+			{
+				Index = System.Threading.Interlocked.Increment(ref nextIndex);
+			}
+			
+			public override string ToString()
+			{
+				return "[CompilationPass " + Index + "]";
+			}
+		}
+		
 		sealed class WrapperFactory
 		{
+			public readonly CompilationPass CurrentPass = new CompilationPass();
 			readonly Dictionary<IBuildable, IBuildable> dict = new Dictionary<IBuildable, IBuildable>();
 			
 			public IBuildable GetWrapper(IBuildable wrapped)
@@ -146,8 +180,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		sealed class Wrapper : IBuildable
 		{
-			IBuildable wrapped;
-			WrapperFactory factory;
+			internal readonly IBuildable wrapped;
+			internal readonly WrapperFactory factory;
 			
 			public Wrapper(IBuildable wrapped, WrapperFactory factory)
 			{
@@ -177,7 +211,19 @@ namespace ICSharpCode.SharpDevelop.Project
 				return result;
 			}
 			
-			internal bool wasRecompiled;
+			CompilationPass lastCompilationPass;
+			
+			/// <summary>
+			/// Returns true if "this" was recompiled after "comparisonPass".
+			/// </summary>
+			internal bool WasRecompiledAfter(CompilationPass comparisonPass)
+			{
+				Debug.Assert(comparisonPass != null);
+				
+				if (lastCompilationPass == null)
+					return true;
+				return lastCompilationPass.Index > comparisonPass.Index;
+			}
 			
 			public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
 			{
@@ -185,28 +231,27 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (p == null) {
 					wrapped.StartBuild(buildOptions, feedbackSink);
 				} else {
-					bool isUnmodified;
 					lock (unmodifiedProjects) {
-						isUnmodified = unmodifiedProjects.Contains(p);
-						// mark project as unmodified
-						unmodifiedProjects.Add(p);
+						if (!unmodifiedProjects.TryGetValue(p, out lastCompilationPass)) {
+							lastCompilationPass = null;
+						}
 					}
-					if (isUnmodified && Setting == BuildOnExecuteSetting.BuildModifiedAndDependent) {
+					if (lastCompilationPass != null && Setting == BuildOnExecuteSetting.BuildModifiedAndDependent) {
 						lock (cachedBuildDependencies) {
-							if (cachedBuildDependencies[buildOptions].OfType<Wrapper>().Any(w=>w.wasRecompiled)) {
-								isUnmodified = false;
+							if (cachedBuildDependencies[buildOptions].OfType<Wrapper>().Any(w=>w.WasRecompiledAfter(lastCompilationPass))) {
+								lastCompilationPass = null;
 							}
 						}
 					}
-					if (isUnmodified) {
+					if (lastCompilationPass != null) {
 						feedbackSink.ReportMessage(
 							StringParser.Parse("${res:MainWindow.CompilerMessages.SkipProjectNoChanges}",
 							                   new string[,] {{ "Name", p.Name }})
 						);
 						feedbackSink.Done(true);
 					} else {
-						wasRecompiled = true;
-						wrapped.StartBuild(buildOptions, new BuildFeedbackSink(p, feedbackSink));
+						lastCompilationPass = factory.CurrentPass;
+						wrapped.StartBuild(buildOptions, new BuildFeedbackSink(p, feedbackSink, factory.CurrentPass));
 					}
 				}
 			}
@@ -219,13 +264,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				IProject project;
 				IBuildFeedbackSink sink;
+				CompilationPass currentPass;
 				
-				public BuildFeedbackSink(IProject p, IBuildFeedbackSink sink)
+				public BuildFeedbackSink(IProject p, IBuildFeedbackSink sink, CompilationPass currentPass)
 				{
 					Debug.Assert(p != null);
 					Debug.Assert(sink != null);
+					Debug.Assert(currentPass != null);
 					this.project = p;
 					this.sink = sink;
+					this.currentPass = currentPass;
 				}
 				
 				public void ReportError(BuildError error)
@@ -240,10 +288,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				public void Done(bool success)
 				{
-					if (!success) {
-						// force recompilation if there was a build error
+					if (success) {
 						lock (unmodifiedProjects) {
-							unmodifiedProjects.Remove(project);
+							unmodifiedProjects[project] = currentPass;
 						}
 					}
 					sink.Done(success);

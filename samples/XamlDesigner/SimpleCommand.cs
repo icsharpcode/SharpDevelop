@@ -19,7 +19,7 @@ namespace ICSharpCode.XamlDesigner
 			Text = text;
 		}
 
-		public SimpleCommand(string text, Key key) 
+		public SimpleCommand(string text, Key key)
 			: this(text, ModifierKeys.None, key)
 		{
 		}

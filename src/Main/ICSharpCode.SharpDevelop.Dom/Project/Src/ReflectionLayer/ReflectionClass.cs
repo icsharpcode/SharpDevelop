@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				FullyQualifiedName = fullName;
 			}
 			
-			this.UseInheritanceCache = true;
+			this.KeepInheritanceTree = true;
 			
 			try {
 				AddAttributes(compilationUnit.ProjectContent, this.Attributes, CustomAttributeData.GetCustomAttributes(type));

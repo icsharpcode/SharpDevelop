@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows.Forms;
 
 using Debugger.Expressions;
@@ -68,7 +69,7 @@ namespace Debugger.AddIn.TreeModel
 			
 			canSetText = false;
 			if (val.Type.IsInteger) {
-				canSetText = 
+				canSetText =
 					(val.Expression is LocalVariableIdentifierExpression) ||
 					(val.Expression is ParameterIdentifierExpression) ||
 					(val.Expression is ArrayIndexerExpression) ||
@@ -139,7 +140,17 @@ namespace Debugger.AddIn.TreeModel
 			Value val = null;
 			try {
 				val = this.Expression.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame);
-				val.PrimitiveValue = newText;
+				if (val.Type.IsInteger && newText.StartsWith("0x")) {
+					try {
+						val.PrimitiveValue = long.Parse(newText.Substring(2), NumberStyles.HexNumber);
+					} catch (FormatException) {
+						throw new NotSupportedException();
+					} catch (OverflowException) {
+						throw new NotSupportedException();
+					}
+				} else {
+					val.PrimitiveValue = newText;
+				}
 				this.Text = newText;
 				return true;
 			} catch (NotSupportedException) {

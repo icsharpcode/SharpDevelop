@@ -88,8 +88,9 @@ namespace ICSharpCode.FormsDesigner.Gui
 						continue;
 				}
 				foreach (IClass c in pc.Classes) {
-					if (!c.Methods.Any(
-						(IMethod method) => method.IsConstructor && method.IsPublic && method.Parameters.Count == 0
+					var ctors = c.Methods.Where(method => method.IsConstructor);
+					if (ctors.Any() && !ctors.Any(
+						(IMethod method) => method.IsPublic && method.Parameters.Count == 0
 					)) {
 						// do not include classes that don't have a public parameterless constructor
 						continue;
@@ -137,11 +138,16 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.IsTransient = true;
 		}
 		
-		void Init()
+		void Init(IDesignerHost host)
 		{
 			LoggingService.Debug("Initializing MyToolBoxItem: " + className);
+			if (host == null) throw new ArgumentNullException("host");
 			if (assemblyLocation != null) {
-				Assembly asm = TypeResolutionService.LoadAssembly(assemblyLocation);
+				TypeResolutionService typeResolutionService = host.GetService(typeof(ITypeResolutionService)) as TypeResolutionService;
+				if (typeResolutionService == null) {
+					throw new InvalidOperationException("Cannot initialize CustomComponentToolBoxItem because the designer host does not provide a SharpDevelop TypeResolutionService.");
+				}
+				Assembly asm = typeResolutionService.LoadAssembly(assemblyLocation);
 				if (asm != null && usedAssembly != asm) {
 					Initialize(asm.GetType(className));
 					usedAssembly = asm;
@@ -151,13 +157,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		protected override IComponent[] CreateComponentsCore(IDesignerHost host)
 		{
-			Init();
+			Init(host);
 			return base.CreateComponentsCore(host);
 		}
 		
 		protected override IComponent[] CreateComponentsCore(IDesignerHost host, System.Collections.IDictionary defaultValues)
 		{
-			Init();
+			Init(host);
 			return base.CreateComponentsCore(host, defaultValues);
 		}
 	}

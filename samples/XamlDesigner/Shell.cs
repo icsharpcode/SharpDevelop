@@ -5,12 +5,14 @@ using System.Text;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid;
-using ICSharpCode.XamlDesigner.Configuration;
+using ICSharpCode.XamlDesigner.Properties;
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
 using System.Diagnostics;
 using ICSharpCode.WpfDesign.Designer.Services;
+using ICSharpCode.Xaml;
+using ICSharpCode.WpfDesign.Designer.XamlBackend;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -29,29 +31,52 @@ namespace ICSharpCode.XamlDesigner
 		public const string ApplicationTitle = "Xaml Designer";
 
 		//public Toolbox Toolbox { get; set; }
-        //public SceneTree SceneTree { get; set; }
-        public PropertyGrid PropertyGrid { get; internal set; }
-        //public ErrorList ErrorList { get; set; }
-		
+		//public SceneTree SceneTree { get; set; }
+		public PropertyGrid PropertyGrid { get; internal set; }
+		//public ErrorList ErrorList { get; set; }
+
 		public ObservableCollection<Document> Documents { get; private set; }
-		public ObservableCollection<string> RecentFiles { get; private set; }		
+		public ObservableCollection<string> RecentFiles { get; private set; }
 		public Dictionary<object, FrameworkElement> Views { get; private set; }
+
+		XamlProject project = new DefaultWpfProject();
+
+		public XamlProject Project
+		{
+			get { return project; }
+		}
 
 		Document currentDocument;
 
-		public Document CurrentDocument {
-			get {
+		public Document CurrentDocument
+		{
+			get
+			{
 				return currentDocument;
 			}
-			set {
+			set
+			{
 				currentDocument = value;
 				RaisePropertyChanged("CurrentDocument");
 				RaisePropertyChanged("Title");
 			}
 		}
 
-		public string Title {
-			get {
+		public DocumentView CurrentDocumentView
+		{
+			get
+			{
+				if (CurrentDocument != null) {
+					return Views[CurrentDocument] as DocumentView;
+				}
+				return null;
+			}
+		}
+
+		public string Title
+		{
+			get
+			{
 				if (CurrentDocument != null) {
 					return CurrentDocument.Title + " - " + ApplicationTitle;
 				}
@@ -84,7 +109,7 @@ namespace ICSharpCode.XamlDesigner
 			MessageBox.Show(x.ToString());
 		}
 
-		public void JumpToError(XamlError error)
+		public void JumpToError(XamlDocumentError error)
 		{
 			if (CurrentDocument != null) {
 				(Views[CurrentDocument] as DocumentView).JumpToError(error);
@@ -103,8 +128,10 @@ namespace ICSharpCode.XamlDesigner
 
 		#region Files
 
-		bool IsSomethingDirty {
-			get {
+		bool IsSomethingDirty
+		{
+			get
+			{
 				foreach (var doc in Shell.Instance.Documents) {
 					if (doc.IsDirty) return true;
 				}
@@ -115,22 +142,22 @@ namespace ICSharpCode.XamlDesigner
 		static int nonameIndex = 1;
 
 		public void New()
-        {
-            Document doc = new Document("New" + nonameIndex++, File.ReadAllText("NewFileTemplate.xaml"));
-            Documents.Add(doc);
-            CurrentDocument = doc;
-        }
+		{
+			Document doc = new Document("New" + nonameIndex++, File.ReadAllText("NewFileTemplate.xaml"));
+			Documents.Add(doc);
+			CurrentDocument = doc;
+		}
 
 		public void Open()
-        {
+		{
 			var path = MainWindow.Instance.AskOpenFileName();
 			if (path != null) {
 				Open(path);
 			}
 		}
 
-        public void Open(string path)
-        {
+		public void Open(string path)
+		{
 			path = Path.GetFullPath(path);
 
 			if (RecentFiles.Contains(path)) {
@@ -145,10 +172,10 @@ namespace ICSharpCode.XamlDesigner
 				}
 			}
 
-            var newDoc = new Document(path);
-            Documents.Add(newDoc);
-            CurrentDocument = newDoc;
-		}		
+			var newDoc = new Document(path);
+			Documents.Add(newDoc);
+			CurrentDocument = newDoc;
+		}
 
 		public bool Save(Document doc)
 		{
@@ -165,7 +192,7 @@ namespace ICSharpCode.XamlDesigner
 		{
 			var initName = doc.FileName ?? doc.Name + ".xaml";
 			var path = MainWindow.Instance.AskSaveFileName(initName);
-			if (path != null)  {
+			if (path != null) {
 				doc.SaveAs(path);
 				return true;
 			}
@@ -183,7 +210,7 @@ namespace ICSharpCode.XamlDesigner
 		public bool Close(Document doc)
 		{
 			if (doc.IsDirty) {
-				var result = MessageBox.Show("Save \"" + doc.Name + "\" ?", Shell.ApplicationTitle, 
+				var result = MessageBox.Show("Save \"" + doc.Name + "\" ?", Shell.ApplicationTitle,
 					MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
 
 				if (result == MessageBoxResult.Yes) {
@@ -211,7 +238,7 @@ namespace ICSharpCode.XamlDesigner
 			if (IsSomethingDirty) {
 				var result = MessageBox.Show("Save All?", Shell.ApplicationTitle,
 					MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-				
+
 				if (result == MessageBoxResult.Yes) {
 					if (!SaveAll()) return false;
 				}

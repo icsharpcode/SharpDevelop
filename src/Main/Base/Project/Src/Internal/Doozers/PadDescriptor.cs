@@ -159,6 +159,7 @@ namespace ICSharpCode.SharpDevelop
 				padContentCreated = true;
 				try {
 					if (addIn != null) {
+						LoggingService.Debug("Creating pad " + Class + "...");
 						padContent = (IPadContent)addIn.CreateObject(Class);
 					} else {
 						padContent = (IPadContent)Activator.CreateInstance(padType);

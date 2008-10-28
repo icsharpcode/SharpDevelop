@@ -203,6 +203,7 @@ namespace ICSharpCode.SharpDevelop
 			if (IsUntitled)
 				throw new InvalidOperationException("Cannot save an untitled file to disk!");
 			
+			LoggingService.Debug("Save " + FileName);
 			bool safeSaving = FileService.SaveUsingTemporaryFile && File.Exists(FileName);
 			string saveAs = safeSaving ? FileName + ".bak" : FileName;
 			using (FileStream fs = new FileStream(saveAs, FileMode.Create, FileAccess.Write)) {

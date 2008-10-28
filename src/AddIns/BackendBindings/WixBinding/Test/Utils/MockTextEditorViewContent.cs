@@ -6,9 +6,11 @@
 // </file>
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -30,6 +32,11 @@ namespace WixBinding.Tests.Utils
 			get {
 				return null;
 			}
+		}
+		
+		public IDocument GetDocumentForFile(OpenedFile file)
+		{
+			return null;
 		}
 				
 		#endregion

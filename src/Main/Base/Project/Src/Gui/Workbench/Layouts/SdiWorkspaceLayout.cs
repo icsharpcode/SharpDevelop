@@ -234,10 +234,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				try {
 					IWorkbenchWindow activeWindow = this.ActiveWorkbenchWindow;
 					dockPanel.ActiveDocumentChanged -= new EventHandler(ActiveMdiChanged);
+					dockPanel.ActiveContentChanged -= new EventHandler(ActiveContentChanged);
 					
 					DetachPadContents(false);
 					DetachViewContents(false);
 					dockPanel.ActiveDocumentChanged += new EventHandler(ActiveMdiChanged);
+					dockPanel.ActiveContentChanged += new EventHandler(ActiveContentChanged);
 					
 					LoadLayoutConfiguration();
 					ShowPads();
@@ -540,7 +542,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow)sender;
 			f.CloseEvent -= CloseWindowEvent;
-			foreach (IViewContent vc in f.ViewContents) {
+			foreach (IViewContent vc in f.ViewContents.ToArray()) {
 				((IWorkbench)wbForm).CloseContent(vc);
 			}
 			if (f == oldSelectedWindow) {

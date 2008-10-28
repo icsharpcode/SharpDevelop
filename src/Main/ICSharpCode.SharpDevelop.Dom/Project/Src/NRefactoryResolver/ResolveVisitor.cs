@@ -522,6 +522,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
+			ResolveResult targetRR = Resolve(pointerReferenceExpression.TargetObject);
+			if (targetRR == null || targetRR.ResolvedType == null)
+				return null;
+			PointerReturnType type = targetRR.ResolvedType.CastToDecoratingReturnType<PointerReturnType>();
+			if (type != null) {
+				return resolver.ResolveMember(type.BaseType, pointerReferenceExpression.Identifier,
+				                              pointerReferenceExpression.TypeArguments,
+				                              NRefactoryResolver.IsInvoked(pointerReferenceExpression),
+				                              true, null
+				                             );
+			}
 			return null;
 		}
 		

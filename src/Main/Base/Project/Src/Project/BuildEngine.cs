@@ -468,6 +468,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				node.hasErrors = !success;
 				
 				projectsCurrentlyBuilding.Remove(node);
+				results.AddBuiltProject(node.project);
 				if (progressMonitor != null) {
 					progressMonitor.WorkDone += 1;
 				}

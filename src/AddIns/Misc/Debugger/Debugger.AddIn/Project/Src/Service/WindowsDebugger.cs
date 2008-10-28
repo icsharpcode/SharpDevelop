@@ -523,40 +523,16 @@ namespace ICSharpCode.SharpDevelop.Services
 				new EventHandler<BreakpointEventArgs>(
 					delegate(object sender, BreakpointEventArgs e)
 					{
-						LoggingService.Debug(bookmark.Action + " " + bookmark.ScriptLanguage + " " + bookmark.Script);
+						LoggingService.Debug(bookmark.Action + " " + bookmark.ScriptLanguage + " " + bookmark.Condition);
 						
 						switch (bookmark.Action) {
-							case BreakpointAction.Ask:
-								Bitmap icon = WinFormsResourceService.GetBitmap(false ? "Icons.32x32.Error" : "Icons.32x32.Warning");
-
-								DebuggerEventForm.Result result =
-									DebuggerEventForm.Show(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHit}"),
-									                       string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAt}"), bookmark.LineNumber, bookmark.FileName), icon, true);
-								
-								switch (result) {
-									case DebuggerEventForm.Result.Break:
-										break;
-									case DebuggerEventForm.Result.Continue:
-										this.debuggedProcess.AsyncContinue();
-										break;
-									case DebuggerEventForm.Result.Terminate:
-										this.debuggedProcess.AsyncTerminate();
-										break;
-								}
-								break;
 							case BreakpointAction.Break:
 								break;
-							case BreakpointAction.Continue:
-								this.debuggedProcess.AsyncContinue();
-								break;
-							case BreakpointAction.Script:
-								if (Evaluate(bookmark.Script, bookmark.ScriptLanguage))
-									DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber + 1, bookmark.FileName, bookmark.Script));
+							case BreakpointAction.Condition:
+								if (Evaluate(bookmark.Condition, bookmark.ScriptLanguage))
+									DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber + 1, bookmark.FileName, bookmark.Condition));
 								else
 									this.debuggedProcess.AsyncContinue();
-								break;
-							case BreakpointAction.Terminate:
-								this.debuggedProcess.AsyncTerminate();
 								break;
 							case BreakpointAction.Trace:
 								DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAt}") + "\n", bookmark.LineNumber + 1, bookmark.FileName));

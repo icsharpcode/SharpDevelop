@@ -808,9 +808,11 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		protected void TextBoxTextChanged(object sender, EventArgs e)
 		{
-			bool previousIsDirty = dirty;
-			editor.TextContentChanged();
-			OnXmlChanged(previousIsDirty);
+			if (editor != null) {
+				bool previousIsDirty = dirty;
+				editor.TextContentChanged();
+				OnXmlChanged(previousIsDirty);
+			}
 		}
 		
 		/// <summary>

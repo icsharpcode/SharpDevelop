@@ -132,11 +132,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void RenameClass(IClass c, string newName)
 		{
-			RenameClass(c, newName, null);
-		}
-		
-		public static void RenameClass(IClass c, string newName, IDictionary<string, ICSharpCode.TextEditor.Document.IDocument> providedFileDocuments)
-		{
 			c = c.GetCompoundClass(); // get compound class if class is partial
 			
 			List<Reference> list = RefactoringService.FindReferences(c, null);
@@ -154,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			
-			FindReferencesAndRenameHelper.RenameReferences(list, newName, providedFileDocuments);
+			FindReferencesAndRenameHelper.RenameReferences(list, newName);
 		}
 		
 		static IList<IClass> GetClassParts(IClass c)
@@ -369,25 +364,36 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			SearchResultPanel.Instance.ShowSearchResults(new SearchResult(pattern, results));
 		}
 		
-		public static void RenameReferences(List<Reference> list, string newName)
-		{
-			RenameReferences(list, newName, null);
+		sealed class FileView {
+			public IViewContent ViewContent { get; set; }
+			public OpenedFile OpenedFile { get; set; }
 		}
 		
-		public static void RenameReferences(List<Reference> list, string newName, IDictionary<string, ICSharpCode.TextEditor.Document.IDocument> providedFileDocuments)
+		public static void RenameReferences(List<Reference> list, string newName)
 		{
-			Dictionary<ICSharpCode.TextEditor.Document.IDocument, IViewContent> modifiedDocuments = new Dictionary<ICSharpCode.TextEditor.Document.IDocument, IViewContent>();
+			Dictionary<ICSharpCode.TextEditor.Document.IDocument, FileView> modifiedDocuments = new Dictionary<ICSharpCode.TextEditor.Document.IDocument, FileView>();
 			List<Modification> modifications = new List<Modification>();
 			foreach (Reference r in list) {
-				ICSharpCode.TextEditor.Document.IDocument document;
-				IViewContent viewContent;
+				ICSharpCode.TextEditor.Document.IDocument document = null;
+				IViewContent viewContent = null;
 				
-				if (providedFileDocuments == null || !providedFileDocuments.TryGetValue(FileUtility.NormalizePath(r.FileName), out document)) {
+				OpenedFile file = FileService.GetOpenedFile(r.FileName);
+				if (file != null) {
+					viewContent = file.CurrentView;
+					IFileDocumentProvider p = viewContent as IFileDocumentProvider;
+					if (p != null) {
+						document = p.GetDocumentForFile(file);
+					}
+				}
+				
+				if (document == null) {
 					viewContent = FileService.OpenFile(r.FileName, false);
-					ITextEditorControlProvider p = viewContent as ITextEditorControlProvider;
-					document = (p == null) ? null : p.TextEditorControl.Document;
-				} else {
-					viewContent = null;
+					IFileDocumentProvider p = viewContent as IFileDocumentProvider;
+					if (p != null) {
+						file = FileService.GetOpenedFile(r.FileName);
+						System.Diagnostics.Debug.Assert(file != null, "OpenedFile not found after opening the file.");
+						document = p.GetDocumentForFile(file);
+					}
 				}
 				
 				if (document == null) {
@@ -396,16 +402,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 				
 				if (!modifiedDocuments.ContainsKey(document)) {
-					modifiedDocuments.Add(document, viewContent);
+					modifiedDocuments.Add(document, new FileView() {ViewContent = viewContent, OpenedFile = file});
 					document.UndoStack.StartUndoGroup();
 				}
 				
 				ModifyDocument(modifications, document, r.Offset, r.Length, newName);
 			}
-			foreach (KeyValuePair<ICSharpCode.TextEditor.Document.IDocument, IViewContent> entry in modifiedDocuments) {
+			foreach (KeyValuePair<ICSharpCode.TextEditor.Document.IDocument, FileView> entry in modifiedDocuments) {
 				entry.Key.UndoStack.EndUndoGroup();
-				if (entry.Value != null) {
-					ParserService.ParseViewContent(entry.Value);
+				entry.Value.OpenedFile.MakeDirty();
+				if (entry.Value.ViewContent is IEditable) {
+					ParserService.ParseViewContent(entry.Value.ViewContent);
+				} else {
+					ParserService.ParseFile(entry.Value.OpenedFile.FileName, entry.Key.TextContent, !entry.Value.OpenedFile.IsUntitled);
 				}
 			}
 		}

@@ -184,6 +184,11 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
+		public void ShowNoRootDirectoryFoundMessage()
+		{
+			ShowErrorMessage(StringParser.Parse("${res:ICSharpCode.WixBinding.PackageFilesView.NoRootDirectoryFoundMessage}"));
+		}
+		
 		public void ShowNoSourceFileFoundMessage(string projectName)
 		{
 			ShowErrorMessage(String.Format(StringParser.Parse("${res:ICSharpCode.WixBinding.PackageFilesView.NoWixFileFoundInProjectMessage}"), projectName));

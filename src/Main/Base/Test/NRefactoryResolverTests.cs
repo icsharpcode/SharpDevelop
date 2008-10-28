@@ -2468,5 +2468,20 @@ End Module";
 			result = ResolveVB<TypeResolveResult>(program, "ITest", 5, 40, ExpressionContext.Type);
 			Assert.AreEqual("RootNamespace.ITest", result.ResolvedClass.FullyQualifiedName);
 		}
+		
+		[Test]
+		public void SD2_1384()
+		{
+			string program = @"using System;
+class Flags {
+	[Flags]
+	enum Test { }
+}";
+			TypeResolveResult result = Resolve<TypeResolveResult>(program, "Flags.Test", 3, 1, ExpressionContext.Type);
+			Assert.AreEqual("Flags.Test", result.ResolvedClass.FullyQualifiedName);
+			
+			IReturnType rt = result.ResolvedClass.Attributes[0].AttributeType;
+			Assert.AreEqual("System.FlagsAttribute", rt.FullyQualifiedName);
+		}
 	}
 }

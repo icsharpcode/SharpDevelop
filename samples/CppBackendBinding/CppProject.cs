@@ -215,10 +215,15 @@ namespace CppBackendBinding
 		{
 			string productDir = GetPathFromRegistry(@"SOFTWARE\Microsoft\VisualStudio\9.0\Setup\VC", "ProductDir");
 			
+			string batFile = "vcvars32.bat";
+			if (options.Platform == "x64") {
+				batFile = "vcvars64.bat";
+			}
+			
 			string commonTools =
-				GetFile(productDir != null ? Path.Combine(productDir, "bin\\vcvars32.bat") : null)
-				?? GetFile("%VS90COMNTOOLS%\\vsvars32.bat")
-				??  GetFile("%VS80COMNTOOLS%\\vsvars32.bat");
+				GetFile(productDir != null ? Path.Combine(productDir, "bin\\" + batFile) : null)
+				?? GetFile("%VS90COMNTOOLS%\\" + batFile)
+				??  GetFile("%VS80COMNTOOLS%\\" + batFile);
 			
 			Process p = new Process();
 			p.StartInfo.FileName = "cmd.exe";
@@ -324,6 +329,16 @@ namespace CppBackendBinding
 				};
 			} else {
 				return null;
+			}
+		}
+		
+		public override ICollection<string> PlatformNames {
+			get {
+				List<string> l = new List<string>();
+				foreach (XmlElement platformElement in document.DocumentElement["Platforms"]) {
+					l.Add(platformElement.GetAttribute("Name"));
+				}
+				return l.AsReadOnly();
 			}
 		}
 	}

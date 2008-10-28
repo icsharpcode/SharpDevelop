@@ -35,6 +35,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			((CheckBox)ControlDictionary["showVRulerCheckBox"]).Checked             = properties.ShowVerticalRuler;
 			((CheckBox)ControlDictionary["showTabCharsCheckBox"]).Checked           = properties.ShowTabs;
 			((CheckBox)ControlDictionary["showSpaceCharsCheckBox"]).Checked         = properties.ShowSpaces;
+			((CheckBox)ControlDictionary["showCaretLineCheckBox"]).Checked          = properties.CaretLine;
 			
 			ControlDictionary["vRulerRowTextBox"].Text = properties.VerticalRulerRow.ToString();
 			
@@ -62,6 +63,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			properties.ShowVerticalRuler = ((CheckBox)ControlDictionary["showVRulerCheckBox"]).Checked;
 			properties.ShowTabs = ((CheckBox)ControlDictionary["showTabCharsCheckBox"]).Checked;
 			properties.ShowSpaces = ((CheckBox)ControlDictionary["showSpaceCharsCheckBox"]).Checked;
+			properties.CaretLine = ((CheckBox)ControlDictionary["showCaretLineCheckBox"]).Checked;
 			
 			try {
 				properties.VerticalRulerRow = Int32.Parse(ControlDictionary["vRulerRowTextBox"].Text);

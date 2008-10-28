@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
@@ -62,6 +63,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				else
 					SetText(value);
 			}
+		}
+		
+		public virtual IDocument GetDocumentForFile(OpenedFile file)
+		{
+			return null;
 		}
 		
 		PrintDocument IPrintable.PrintDocument {

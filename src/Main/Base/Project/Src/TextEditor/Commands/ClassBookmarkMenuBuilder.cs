@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 			
 			ParserService.ParseCurrentViewContent();
-			c = c.ProjectContent.GetClass(c.FullyQualifiedName, c.TypeParameters.Count, c.ProjectContent.Language, false);
+			c = c.ProjectContent.GetClass(c.FullyQualifiedName, c.TypeParameters.Count, c.ProjectContent.Language, GetClassOptions.LookForInnerClass);
 			c = GetCurrentPart(c);
 			if (c == null) {
 				return new ToolStripMenuItem[0];

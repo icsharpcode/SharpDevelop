@@ -34,9 +34,9 @@ namespace WixBinding.Tests.PackageFiles
 		}
 		
 		[Test]
-		public void NoSourceFileFound()
+		public void NoRootDirectoryFound()
 		{
-			Assert.IsTrue(view.IsNoSourceFileFoundMessageDisplayed);
+			Assert.IsTrue(view.IsNoRootDirectoryFoundMessageDisplayed);
 		}
 		
 		protected override string GetWixXml()

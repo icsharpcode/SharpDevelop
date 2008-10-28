@@ -289,6 +289,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			workbench.SynchronizingObject.BeginInvoke(method, new object[] { arg1, arg2, arg3 });
 		}
+		
+		/// <summary>
+		/// Calls a method on the GUI thread, but delays the call a bit.
+		/// </summary>
+		public static void CallLater(int delayMilliseconds, Action method)
+		{
+			if (delayMilliseconds <= 0)
+				throw new ArgumentOutOfRangeException("delayMilliseconds", delayMilliseconds, "Value must be positive");
+			if (method == null)
+				throw new ArgumentNullException("method");
+			SafeThreadAsyncCall(
+				delegate {
+					Timer t = new Timer();
+					t.Interval = delayMilliseconds;
+					t.Tick += delegate { 
+						t.Stop();
+						method();
+					};
+					t.Start();
+				});
+		}
 		#endregion
 		
 		static void OnWorkbenchCreated()

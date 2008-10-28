@@ -53,10 +53,10 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/ViewContent/ClassDiagram/ContextMenu">
+		<!--
 		<MenuItem id    = "AddItem"
 		          label = "Add"
 		          type  = "Menu">
-			
 			<MenuItem id = "AddClassItem"
 			          label = "Class"
 			          class = "ClassDiagramAddin.AddClassCommand"/>
@@ -81,6 +81,10 @@
 			          label = "Note"
 			          class = "ClassDiagramAddin.AddNoteCommand"/>
 		</MenuItem>
+		-->
+		<MenuItem id = "AddNoteItem"
+		          label = "Add Note"
+		          class = "ClassDiagramAddin.AddNoteCommand"/>
 		
 		<MenuItem type = "Separator" />
 		
@@ -136,15 +140,6 @@
 		                insertbefore    = "Text"
 		                fileNamePattern = "\.(cd)$"
 		                title = "Class Diagram"/>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Workbench/Pads">
-		<Pad id       = "ClassEditorPad" 
-		     category = "Tools"
-		     title    = "Class Editor"
-		     class    = "ClassDiagramAddin.ClassEditorPad"
-		     icon     = "ClassDiagram.ClassEditor"
-		     defaultPosition = "Right, Hidden" />
 	</Path>
 	
 	<BitmapResources file="Resources\Bitmaps.resources" />

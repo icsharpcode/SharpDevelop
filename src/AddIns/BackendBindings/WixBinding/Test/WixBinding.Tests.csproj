@@ -57,6 +57,7 @@
     <Compile Include="Gui\WixFileTreeNodeTestFixture.cs" />
     <Compile Include="Gui\WixProjectWithWixExtensionItemsTestFixture.cs" />
     <Compile Include="PackageFiles\AddFilesToDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\NoRootDirectoryFoundTestFixture.cs" />
     <Compile Include="Project\AddWixExtensionTestFixture.cs" />
     <Compile Include="Project\AddWixLibraryTestFixture.cs" />
     <Compile Include="Gui\AddWixProjectNodeTestFixture.cs" />

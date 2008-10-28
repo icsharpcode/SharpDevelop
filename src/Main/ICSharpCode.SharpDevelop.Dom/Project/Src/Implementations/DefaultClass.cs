@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			copy.UserData = this.UserData;
 			return copy;
 		}
-		*/
+		 */
 		
 		byte flags;
 		const byte hasPublicOrInternalStaticMembersFlag = 0x02;
@@ -348,15 +348,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return CompareTo((IClass)o);
 		}
 		
-		List<IClass> inheritanceTreeCache;
+		volatile List<IClass> inheritanceTreeCache;
 		
 		public IEnumerable<IClass> ClassInheritanceTree {
 			get {
-				if (inheritanceTreeCache != null)
-					return inheritanceTreeCache;
-				List<IClass> visitedList = new List<IClass>();
+				List<IClass> visitedList = inheritanceTreeCache;
+				if (visitedList != null)
+					return visitedList;
+				visitedList = new List<IClass>();
 				Queue<IReturnType> typesToVisit = new Queue<IReturnType>();
 				bool enqueuedLastBaseType = false;
+				bool hasErrors = false;
 				IClass currentClass = this;
 				IReturnType nextType;
 				do {
@@ -376,15 +378,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 					if (nextType != null) {
 						currentClass = nextType.GetUnderlyingClass();
+						if (currentClass == null)
+							hasErrors = true;
 					}
 				} while (nextType != null);
-				if (UseInheritanceCache)
+				
+				
+				// A SearchType request causes the inheritance tree to be generated, but if it was
+				// this classes' base type that caused the SearchType request, the GetUnderlyingClass()
+				// will fail and we will produce an incomplete inheritance tree.
+				// So we don't cache incomplete inheritance trees for parsed classes (fixes SD2-1474).
+				if (!hasErrors || KeepInheritanceTree) {
 					inheritanceTreeCache = visitedList;
+					if (!KeepInheritanceTree)
+						DomCache.RegisterForClear(delegate { inheritanceTreeCache = null; });
+				}
 				return visitedList;
 			}
 		}
 		
-		protected bool UseInheritanceCache = false;
+		/// <summary>
+		/// Specifies whether to keep the inheritance tree when the DomCache is cleared.
+		/// </summary>
+		protected bool KeepInheritanceTree = false;
 		
 		public IReturnType GetBaseType(int index)
 		{

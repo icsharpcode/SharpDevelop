@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					b.Append('|');
 					b.Append(bbm.ScriptLanguage);
 					b.Append('|');
-					b.Append(bbm.Script);
+					b.Append(bbm.Condition);
 				}
 				return b.ToString();
 			} else {

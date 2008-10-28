@@ -33,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			HighlightingManager.Manager.AddSyntaxModeFileProvider(new ICSharpCode.SharpDevelop.DefaultEditor.Codons.AddInTreeSyntaxModeProvider());
 			HighlightingManager.Manager.AddSyntaxModeFileProvider(new FileSyntaxModeProvider(Path.Combine(PropertyService.DataDirectory, "modes")));
 			HighlightingManager.Manager.AddSyntaxModeFileProvider(new FileSyntaxModeProvider(modeDir));
+			ClipboardHandling.Initialize();
 		}
 		
 		/// <summary>
@@ -48,9 +49,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return true;
 		}
 		
+		protected virtual TextEditorDisplayBindingWrapper CreateWrapper(OpenedFile file)
+		{
+			return new TextEditorDisplayBindingWrapper(file);
+		}
+		
 		public virtual IViewContent CreateContentForFile(OpenedFile file)
 		{
-			TextEditorDisplayBindingWrapper b2 = new TextEditorDisplayBindingWrapper(file);
+			TextEditorDisplayBindingWrapper b2 = CreateWrapper(file);
 			file.ForceInitializeView(b2); // load file to initialize folding etc.
 			
 			b2.textEditorControl.Dock = DockStyle.Fill;
@@ -75,6 +81,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public TextEditorControl TextEditorControl {
 			get {
 				return textEditorControl;
+			}
+		}
+		
+		public IDocument GetDocumentForFile(OpenedFile file)
+		{
+			if (file == this.PrimaryFile) {
+				return this.TextEditorControl.Document;
+			} else {
+				return null;
 			}
 		}
 		
@@ -501,6 +516,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		object IToolsHost.ToolsContent {
 			get { return TextEditorSideBar.Instance; }
+		}
+		
+		public override string ToString()
+		{
+			return "[" + GetType().Name + " " + this.PrimaryFileName + "]";
 		}
 	}
 }

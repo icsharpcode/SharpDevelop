@@ -37,9 +37,7 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the underlying IClass for this test class.
 		/// </summary>
 		public IClass Class {
-			get {
-				return c;
-			}
+			get { return c; }
 		}
 		
 		/// <summary>
@@ -132,7 +130,10 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the name of the class.
 		/// </summary>
 		public string Name {
-			get {
+			get { 
+				if (c.DeclaringType != null) {
+					return String.Concat(c.DeclaringType.Name, "+", c.Name);
+				}
 				return c.Name;
 			}
 		}
@@ -141,16 +142,17 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the fully qualified name of the class.
 		/// </summary>
 		public string QualifiedName {
-			get {
-				return c.FullyQualifiedName;
-			}
+			get { return c.DotNetName; }
 		}
 		
 		/// <summary>
 		/// Gets the namespace of this class.
 		/// </summary>
 		public string Namespace {
-			get {
+			get { 	
+				if (c.DeclaringType != null) {
+					return c.DeclaringType.Namespace;
+				}
 				return c.Namespace;
 			}
 		}
@@ -159,18 +161,14 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the root namespace for this class.
 		/// </summary>
 		public string RootNamespace {
-			get {
-				return GetRootNamespace(c.Namespace);
-			}
+			get { return GetRootNamespace(c.Namespace); }
 		}
 		
 		/// <summary>
 		/// Gets the test result for this class.
 		/// </summary>
 		public TestResultType Result {
-			get {
-				return testResultType;
-			}
+			get { return testResultType; }
 			set {
 				TestResultType previousTestResultType = testResultType;
 				testResultType = value;

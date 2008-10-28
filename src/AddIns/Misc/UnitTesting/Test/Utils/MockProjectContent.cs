@@ -118,7 +118,7 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, bool lookInReferences)
+		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, GetClassOptions options)
 		{
 			throw new NotImplementedException();
 		}

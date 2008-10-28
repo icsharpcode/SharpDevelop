@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using ICSharpCode.Core;
@@ -78,6 +79,11 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		string formSourceFileName;
 		IProjectContent callingProject;
+		/// <summary>
+		/// Dictionary of file name -> hash of loaded assemblies for the currently designed document.
+		/// Used to detect changes in references assemblies.
+		/// </summary>
+		readonly Dictionary<string, string> loadedAssembliesForCurrentDocument = new Dictionary<string, string>(StringComparer.Ordinal);
 		
 		/// <summary>
 		/// Gets the project content of the project that created this TypeResolutionService.
@@ -112,7 +118,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		/// <summary>
 		/// Loads the assembly represented by the project content. Returns null on failure.
 		/// </summary>
-		public static Assembly LoadAssembly(IProjectContent pc)
+		public Assembly LoadAssembly(IProjectContent pc)
 		{
 			// prevent StackOverflow when project contents have cyclic dependencies
 			// Very popular example of cyclic dependency: System <-> System.Xml (yes, really!)
@@ -156,10 +162,24 @@ namespace ICSharpCode.FormsDesigner.Services
 			return Path.GetFileName(fileName).ToLowerInvariant() + File.GetLastWriteTimeUtc(fileName).Ticks.ToString();
 		}
 		
+		static string GetOriginalAssemblyFullPath(Assembly asm)
+		{
+			if (asm == null) throw new ArgumentNullException("asm");
+			try {
+				return new Uri(asm.CodeBase, UriKind.Absolute).LocalPath;
+			} catch (UriFormatException ex) {
+				LoggingService.Warn("Could not determine path for assembly '" + asm.ToString() + "', CodeBase='" + asm.CodeBase + "': " + ex.Message);
+				return asm.Location;
+			} catch (InvalidOperationException ex) {
+				LoggingService.Warn("Could not determine path for assembly '" + asm.ToString() + "', CodeBase='" + asm.CodeBase + "': " + ex.Message);
+				return asm.Location;
+			}
+		}
+		
 		/// <summary>
 		/// Loads the file in none-locking mode. Returns null on failure.
 		/// </summary>
-		public static Assembly LoadAssembly(string fileName)
+		public Assembly LoadAssembly(string fileName)
 		{
 			if (!File.Exists(fileName))
 				return null;
@@ -167,7 +187,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			// FIX for SD2-716, remove when designer gets its own AppDomain
 			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
 				try {
-					if (string.Equals(asm.Location, fileName, StringComparison.InvariantCultureIgnoreCase)) {
+					if (string.Equals(GetOriginalAssemblyFullPath(asm), fileName, StringComparison.OrdinalIgnoreCase)) {
 						RegisterAssembly(asm);
 						return asm;
 					}
@@ -257,17 +277,24 @@ namespace ICSharpCode.FormsDesigner.Services
 					if (!designerAssemblies.Contains(asm))
 						designerAssemblies.Insert(0, asm);
 				}
+				lock (this.loadedAssembliesForCurrentDocument) {
+					this.loadedAssembliesForCurrentDocument[fileName] = hash;
+				}
 				assemblyDict[hash] = asm;
 				return asm;
 			}
 		}
 		
-		public static void RegisterAssembly(Assembly asm)
+		void RegisterAssembly(Assembly asm)
 		{
-			string file = asm.Location;
-			if (file.Length > 0) {
+			string file = GetOriginalAssemblyFullPath(asm);
+			if (!String.IsNullOrEmpty(file)) {
+				string hash = GetHash(file);
 				lock (assemblyDict) {
-					assemblyDict[GetHash(file)] = asm;
+					assemblyDict[hash] = asm;
+				}
+				lock (this.loadedAssembliesForCurrentDocument) {
+					this.loadedAssembliesForCurrentDocument[file] = hash;
 				}
 			}
 			lock (designerAssemblies) {
@@ -286,7 +313,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			return LoadAssembly(name, throwOnError);
 		}
 		
-		static Assembly LoadAssembly(AssemblyName name, bool throwOnError)
+		Assembly LoadAssembly(AssemblyName name, bool throwOnError)
 		{
 			try {
 				Assembly asm = Assembly.Load(name);
@@ -303,7 +330,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			Assembly assembly = GetAssembly(name);
 			if (assembly != null) {
-				return assembly.Location;
+				return GetOriginalAssemblyFullPath(assembly);
 			}
 			return null;
 		}
@@ -370,6 +397,12 @@ namespace ICSharpCode.FormsDesigner.Services
 							LoggingService.Error(e);
 						}
 						if (assembly != null) {
+							string fileName = GetOriginalAssemblyFullPath(assembly);
+							if (!String.IsNullOrEmpty(fileName)) {
+								lock (this.loadedAssembliesForCurrentDocument) {
+									this.loadedAssembliesForCurrentDocument[fileName] = GetHash(fileName);
+								}
+							}
 							lock (designerAssemblies) {
 								if (!designerAssemblies.Contains(assembly))
 									designerAssemblies.Add(assembly);
@@ -405,6 +438,18 @@ namespace ICSharpCode.FormsDesigner.Services
 		public void ReferenceAssembly(AssemblyName name)
 		{
 			ICSharpCode.Core.LoggingService.Warn("TODO: Add Assembly reference : " + name);
+		}
+		
+		/// <summary>
+		/// Gets whether an assembly referenced by the currently designed document
+		/// has been changed since it has been loaded.
+		/// </summary>
+		public bool ReferencedAssemblyChanged {
+			get {
+				return this.loadedAssembliesForCurrentDocument.Any(
+					pair => !File.Exists(pair.Key) || !String.Equals(pair.Value, GetHash(pair.Key), StringComparison.Ordinal)
+				);
+			}
 		}
 		
 		#region VSDesigner workarounds

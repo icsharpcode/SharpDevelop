@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="Src\CSharp\OverloadResolution.cs" />
     <Compile Include="Src\CSharp\TypeInference.cs" />
+    <Compile Include="Src\DomCache.cs" />
     <Compile Include="Src\ExtensionMethods.cs" />
     <Compile Include="Src\Implementations\AbstractEntity.cs" />
     <Compile Include="Src\Implementations\AbstractMember.cs" />

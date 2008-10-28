@@ -229,7 +229,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			lock (namespaces) {
 				AddClassToNamespaceListInternal(addClass);
 			}
-			SearchClassReturnType.ClearCache();
+			DomCache.Clear();
 		}
 		
 		/// <summary>
@@ -462,7 +462,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (IAttribute attr in unit.Attributes)
 					assemblyAttributes.Remove(attr);
 			}
-			SearchClassReturnType.ClearCache();
+			DomCache.Clear();
 		}
 		
 		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName)
@@ -481,7 +481,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				assemblyAttributes.AddRange(parserOutput.Attributes);
 			}
-			SearchClassReturnType.ClearCache();
+			DomCache.Clear();
 		}
 		
 		protected void RemoveClass(IClass @class)
@@ -554,14 +554,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		#region Default Parser Layer dependent functions
-		public IClass GetClass(string typeName)
-		{
-			return GetClass(typeName, 0);
-		}
-		
 		public IClass GetClass(string typeName, int typeParameterCount)
 		{
-			return GetClass(typeName, typeParameterCount, language, true);
+			return GetClass(typeName, typeParameterCount, language, GetClassOptions.Default);
 		}
 		
 		protected IClass GetClassInternal(string typeName, int typeParameterCount, LanguageProperties language)
@@ -587,7 +582,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return c.IsPublic || c.ProjectContent == this;
 		}
 		
-		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, bool lookInReferences)
+		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, GetClassOptions options)
 		{
 			IClass c = GetClassInternal(typeName, typeParameterCount, language);
 			if (c != null && c.TypeParameters.Count == typeParameterCount) {
@@ -595,10 +590,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			// Search in references:
-			if (lookInReferences) {
+			if ((options & GetClassOptions.LookInReferences) != 0) {
 				lock (referencedContents) {
 					foreach (IProjectContent content in referencedContents) {
-						IClass contentClass = content.GetClass(typeName, typeParameterCount, language, false);
+						IClass contentClass = content.GetClass(typeName, typeParameterCount, language, GetClassOptions.None);
 						if (contentClass != null) {
 							if (contentClass.TypeParameters.Count == typeParameterCount
 							    && IsAccessibleClass(contentClass))
@@ -616,19 +611,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return c;
 			}
 			
-			// not found -> maybe nested type -> trying to find class that contains this one.
-			int lastIndex = typeName.LastIndexOf('.');
-			if (lastIndex > 0) {
-				string outerName = typeName.Substring(0, lastIndex);
-				IClass upperClass = GetClass(outerName, typeParameterCount, language, lookInReferences);
-				if (upperClass != null) {
-					foreach (IClass upperBaseClass in upperClass.ClassInheritanceTree) {
-						IList<IClass> innerClasses = upperBaseClass.InnerClasses;
-						if (innerClasses != null) {
-							string innerName = typeName.Substring(lastIndex + 1);
-							foreach (IClass innerClass in innerClasses) {
-								if (language.NameComparer.Equals(innerClass.Name, innerName)) {
-									return innerClass;
+			if ((options & GetClassOptions.LookForInnerClass) != 0) {
+				// not found -> maybe nested type -> trying to find class that contains this one.
+				int lastIndex = typeName.LastIndexOf('.');
+				if (lastIndex > 0) {
+					string outerName = typeName.Substring(0, lastIndex);
+					IClass upperClass = GetClass(outerName, typeParameterCount, language, options);
+					if (upperClass != null) {
+						foreach (IClass upperBaseClass in upperClass.ClassInheritanceTree) {
+							IList<IClass> innerClasses = upperBaseClass.InnerClasses;
+							if (innerClasses != null) {
+								string innerName = typeName.Substring(lastIndex + 1);
+								foreach (IClass innerClass in innerClasses) {
+									if (language.NameComparer.Equals(innerClass.Name, innerName)) {
+										return innerClass;
+									}
 								}
 							}
 						}
@@ -895,9 +892,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				int typeParameterCount = className[className.Length - 1] - '0';
 				if (typeParameterCount < 0) typeParameterCount = 0;
 				className = className.Substring(0, className.Length - 2);
-				return GetClass(className, typeParameterCount, LanguageProperties.CSharp, lookInReferences);
+				return GetClass(className, typeParameterCount, LanguageProperties.CSharp, GetClassOptions.Default);
 			} else {
-				return GetClass(className, 0, LanguageProperties.CSharp, lookInReferences);
+				return GetClass(className, 0, LanguageProperties.CSharp, GetClassOptions.Default);
 			}
 		}
 		
@@ -999,7 +996,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected virtual void OnReferencedContentsChanged(EventArgs e)
 		{
 			systemTypes = null; // re-create system types
-			SearchClassReturnType.ClearCache();
+			DomCache.Clear();
 			if (ReferencedContentsChanged != null) {
 				ReferencedContentsChanged(this, e);
 			}

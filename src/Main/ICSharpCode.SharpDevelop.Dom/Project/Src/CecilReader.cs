@@ -179,7 +179,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				: base(compilationUnit, declaringType)
 			{
 				this.FullyQualifiedName = fullName;
-				this.UseInheritanceCache = true;
+				this.KeepInheritanceTree = true;
 				
 				AddAttributes(compilationUnit.ProjectContent, this.Attributes, td.CustomAttributes);
 				

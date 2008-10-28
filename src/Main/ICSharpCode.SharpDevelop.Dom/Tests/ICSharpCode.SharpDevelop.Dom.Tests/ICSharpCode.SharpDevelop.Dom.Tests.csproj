@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ClassInheritanceTreeTests.cs" />
     <Compile Include="CodeSnippetConverterTests.cs" />
     <Compile Include="NRefactoryAstConverterTests.cs" />
     <Compile Include="NRefactoryRefactoringProviderTests.cs" />

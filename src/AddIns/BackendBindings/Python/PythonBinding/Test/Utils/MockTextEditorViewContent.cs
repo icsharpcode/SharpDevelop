@@ -6,8 +6,10 @@
 // </file>
 
 using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace PythonBinding.Tests.Utils
 {
@@ -26,6 +28,11 @@ namespace PythonBinding.Tests.Utils
 		
 		public TextEditorControl TextEditorControl {
 			get { return textEditor; }
+		}
+		
+		public IDocument GetDocumentForFile(OpenedFile file)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

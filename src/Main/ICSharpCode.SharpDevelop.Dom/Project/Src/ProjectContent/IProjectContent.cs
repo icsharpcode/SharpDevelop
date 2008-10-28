@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool NamespaceExists(string name);
 		ArrayList GetNamespaceContents(string nameSpace);
 		
-		IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, bool lookInReferences);
+		IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, GetClassOptions options);
 		bool NamespaceExists(string name, LanguageProperties language, bool lookInReferences);
 		/// <summary>
 		/// Adds the contents of the specified <paramref name="subNameSpace"/> to the <paramref name="list"/>.
@@ -111,6 +111,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		/// <param name="entity">The entity to get the position from.</param>
 		FilePosition GetPosition(IEntity entity);
+	}
+	
+	[Flags]
+	public enum GetClassOptions
+	{
+		None = 0,
+		/// <summary>
+		/// Also look in referenced project contents.
+		/// </summary>
+		LookInReferences = 1,
+		/// <summary>
+		/// Try if the class is an inner class.
+		/// </summary>
+		LookForInnerClass = 2,
+		/// <summary>
+		/// Default = LookInReferences + LookForInnerClass
+		/// </summary>
+		Default = LookInReferences | LookForInnerClass
 	}
 	
 	public struct SearchTypeRequest

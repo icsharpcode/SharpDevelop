@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.DefaultEditor;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -122,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				get { return comboBox.SelectionLength > 0; }
 			}
 			public bool EnablePaste {
-				get { return ClipboardWrapper.ContainsText; }
+				get { return ClipboardHandling.GetClipboardContainsText(); }
 			}
 			public bool EnableDelete {
 				get { return true; }

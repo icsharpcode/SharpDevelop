@@ -10,13 +10,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using ICSharpCode.XamlDesigner.Configuration;
+using ICSharpCode.XamlDesigner.Properties;
 using System.ComponentModel;
 using Microsoft.Win32;
 using AvalonDock;
 using System.IO;
 using System.Collections.Specialized;
 using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.Xaml;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -27,15 +28,12 @@ namespace ICSharpCode.XamlDesigner
 			Instance = this;
 			DataContext = Shell.Instance;
 			RenameCommands();
-			BasicMetadata.Register();
 
 			InitializeComponent();
 
 			Shell.Instance.PropertyGrid = uxPropertyGridView.PropertyGrid;
 			AvalonDockWorkaround();
-			RouteDesignSurfaceCommands();
-
-			this.AddCommandHandler(RefreshCommand, Shell.Instance.Refresh, Shell.Instance.CanRefresh);			
+			RegisterCommandHandlers();	
 
 			LoadSettings();
 			ProcessPaths(App.Args);
@@ -89,7 +87,7 @@ namespace ICSharpCode.XamlDesigner
                     e.Effects = DragDropEffects.Copy;
                     break;
                 }
-                else if (path.EndsWith(".xaml", StringComparison.InvariantCultureIgnoreCase)) {
+                else if (XamlConstants.HasXamlExtension(path)) {
                     e.Effects = DragDropEffects.Copy;
                     break;
                 }
@@ -99,11 +97,12 @@ namespace ICSharpCode.XamlDesigner
         void ProcessPaths(IEnumerable<string> paths)
         {
             foreach (var path in paths) {
-                if (path.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) ||
-                    path.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)) {
-                    Toolbox.Instance.AddAssembly(path);
-                }
-                else if (path.EndsWith(".xaml", StringComparison.InvariantCultureIgnoreCase)) {
+				//if (path.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) ||
+				//    path.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)) {
+				//    Toolbox.Instance.AddAssembly(path);
+				//}
+                //else 
+				if (XamlConstants.HasXamlExtension(path)) {
                     Shell.Instance.Open(path);
                 }
             }
@@ -148,6 +147,11 @@ namespace ICSharpCode.XamlDesigner
 
 			if (Settings.Default.AvalonDockLayout != null) {
 				uxDockingManager.RestoreLayout(Settings.Default.AvalonDockLayout.ToStream());
+			}
+
+			var toolboxContentPath = "WpfToolbox.xaml";
+			if (File.Exists(toolboxContentPath)) {
+				uxToolbox.Load(File.ReadAllText(toolboxContentPath));
 			}
 		}
 

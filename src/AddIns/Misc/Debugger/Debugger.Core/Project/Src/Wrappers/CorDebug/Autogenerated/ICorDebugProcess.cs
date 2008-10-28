@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -237,10 +237,10 @@ namespace Debugger.Wrappers.CorDebug
 			return read;
 		}
 		
-		public uint WriteMemory(ulong address, uint size, ref byte buffer)
+		public uint WriteMemory(ulong address, uint size, System.IntPtr buffer)
 		{
 			uint written;
-			this.WrappedObject.WriteMemory(address, size, ref buffer, out written);
+			this.WrappedObject.WriteMemory(address, size, buffer, out written);
 			return written;
 		}
 		

@@ -62,6 +62,12 @@
     <Compile Include="NUnitConsoleExeSelectedTestFixture.cs" />
     <Compile Include="Project\AbstractBaseClassWithTestMethodsTestFixture.cs" />
     <Compile Include="Project\BaseTestMethodTestFixture.cs" />
+    <Compile Include="Project\InnerClassMethodRenamedTestFixture.cs" />
+    <Compile Include="Project\InnerClassNameChangesTestFixture.cs" />
+    <Compile Include="Project\InnerClassTestFixture.cs" />
+    <Compile Include="Project\InnerClassTestFixtureAttributeRemovedTestFixture.cs" />
+    <Compile Include="Project\InnerClassTestFixtureBase.cs" />
+    <Compile Include="Project\RemovedClassesTestFixture.cs" />
     <Compile Include="TestableConditionTests.cs" />
     <Compile Include="Tree\MultipleTestProjectsTestFixture.cs" />
     <Compile Include="Tree\TreeNodeContextMenuTestFixture.cs" />

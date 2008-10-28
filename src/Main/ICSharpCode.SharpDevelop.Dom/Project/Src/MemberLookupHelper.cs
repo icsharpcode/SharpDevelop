@@ -93,7 +93,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 						hashCode *= 1000000579;
 						if (p.IsOut || p.IsRef)
 							hashCode += 1;
-						hashCode += p.ReturnType.GetHashCode();
+						if (p.ReturnType != null) {
+							hashCode += p.ReturnType.GetHashCode();
+						}
 					}
 				}
 				cachedHashes[obj] = hashCode;
@@ -669,6 +671,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		readonly static Dictionary<IReturnType, IEnumerable<IReturnType>> getTypeInheritanceTreeCache = new Dictionary<IReturnType, IEnumerable<IReturnType>>();
+		
+		static void ClearGetTypeInheritanceTreeCache()
+		{
+			lock (getTypeInheritanceTreeCache) {
+				getTypeInheritanceTreeCache.Clear();
+			}
+		}
+		
 		/// <summary>
 		/// Gets all types the specified type inherits from (all classes and interfaces).
 		/// Unlike the class inheritance tree, this method takes care of type arguments and calculates the type
@@ -678,6 +689,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (typeToListInheritanceTreeFor == null)
 				throw new ArgumentNullException("typeToListInheritanceTreeFor");
+			
+			lock (getTypeInheritanceTreeCache) {
+				IEnumerable<IReturnType> result;
+				if (getTypeInheritanceTreeCache.TryGetValue(typeToListInheritanceTreeFor, out result))
+					return result;
+			}
 			
 			IClass classToListInheritanceTreeFor = typeToListInheritanceTreeFor.GetUnderlyingClass();
 			if (classToListInheritanceTreeFor == null)
@@ -699,6 +716,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return resultList;
 			}
 			
+			HashSet<IReturnType> visitedSet = new HashSet<IReturnType>();
 			List<IReturnType> visitedList = new List<IReturnType>();
 			Queue<IReturnType> typesToVisit = new Queue<IReturnType>();
 			bool enqueuedLastBaseType = false;
@@ -708,7 +726,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IReturnType nextType;
 			do {
 				if (currentClass != null) {
-					if (!visitedList.Contains(currentType)) {
+					if (visitedSet.Add(currentType)) {
 						visitedList.Add(currentType);
 						foreach (IReturnType type in currentClass.BaseTypes) {
 							typesToVisit.Enqueue(TranslateIfRequired(currentType, type));
@@ -726,6 +744,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 					currentClass = nextType.GetUnderlyingClass();
 				}
 			} while (nextType != null);
+			lock (getTypeInheritanceTreeCache) {
+				if (getTypeInheritanceTreeCache.Count == 0) {
+					DomCache.RegisterForClear(ClearGetTypeInheritanceTreeCache);
+				}
+				getTypeInheritanceTreeCache[typeToListInheritanceTreeFor] = visitedList;
+			}
 			return visitedList;
 		}
 		#endregion
