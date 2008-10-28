@@ -128,9 +128,9 @@ namespace ICSharpCode.SharpDevelop
 		
 		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 		{
-			LoggingService.Debug("File " + file.FileName + " was changed externally: " + e.ChangeType);
 			if (file == null)
 				return;
+			LoggingService.Debug("File " + file.FileName + " was changed externally: " + e.ChangeType);
 			if (!wasChangedExternally) {
 				wasChangedExternally = true;
 				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
