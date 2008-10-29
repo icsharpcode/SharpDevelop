@@ -70,9 +70,13 @@
     <Compile Include="AddInFileTestFixture.cs" />
     <Compile Include="CompilingOptionsPanelTestFixture.cs" />
     <Compile Include="Console\BuiltinCodeCompletionTestFixture.cs" />
+    <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\DerivedPythonConsoleHost.cs" />
     <Compile Include="Console\DisposedPythonConsoleTestFixture.cs" />
     <Compile Include="Console\CodeCompletionTests.cs" />
+    <Compile Include="Console\EmptyCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\OneItemCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\PythonConsoleCommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\PythonConsoleHomeKeyTestFixture.cs" />
     <Compile Include="Console\MockMemberProvider.cs" />
     <Compile Include="Console\MockTextEditor.cs" />

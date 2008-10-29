@@ -317,6 +317,16 @@ namespace PythonBinding.Tests.Console
 			Assert.IsTrue(textEditorControl.TextEditorProperties.SupportReadOnlySegments);
 		}
 		
+		[Test]
+		public void ReplaceText()
+		{
+			textEditorControl.Document.TextContent = "abc\r\ndef";
+			textEditorControl.ActiveTextAreaControl.Caret.Line = 1;
+			
+			textEditor.Replace(1, 1, "test");
+			Assert.AreEqual("abc\r\ndtestf", textEditorControl.Document.TextContent);
+		}
+		
 		/// <summary>
 		/// Run on different thread to set the text editor's indent style.
 		/// </summary>

@@ -201,6 +201,12 @@ namespace PythonBinding.Tests.Console
 			return "aaaa";
 		}
 		
+		public void Replace(int index, int length, string text)
+		{
+			lineBuilder.Remove(index, length);
+			lineBuilder.Insert(index, text);
+		}
+		
 		public void ShowCompletionWindow(ICompletionDataProvider completionDataProvider)
 		{
 			showCompletionWindowCalled = true;
