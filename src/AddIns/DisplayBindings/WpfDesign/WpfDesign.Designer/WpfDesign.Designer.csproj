@@ -10,8 +10,8 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
-    <DocumentationFile>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml</DocumentationFile>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
+    <DocumentationFile>..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -34,15 +34,7 @@
     <BaseAddress>4194304</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
-    <DocumentationFile>..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
-    <DocumentationFile>..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml</DocumentationFile>
-  </PropertyGroup>
+  </PropertyGroup>  
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="PresentationCore">
