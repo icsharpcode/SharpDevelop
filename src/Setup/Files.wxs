@@ -1196,12 +1196,14 @@
 											</Component>
 										</Directory>
 									</Directory>
+									<!--
 									<Directory Id="XamlBinding" Name="XamlBinding">
 										<Component Guid="9FEAE5CB-1AF6-4D5D-A2C3-1F92E452299D" Id="XamlBindingFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.addin" Id="XamlBinding.addin" Name="XamlBinding.addin" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.XamlBinding.dll" Id="ICSharpCode.XamlBinding.dll" Name="ICSharpCode.XamlBinding.dll" />
 										</Component>
 									</Directory>
+									-->
 									<Directory Id="PythonBinding" Name="PythonBinding">
 										<Component Guid="AF97A77A-F986-4284-BC0A-9568B1419FC1" Id="IpyExe" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\ipy.exe" Name="ipy.exe" Id="ipy.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ipy.exe" AssemblyManifest="ipy.exe" />
@@ -1359,6 +1361,7 @@
 											</Directory>
 										</Directory>
 									</Directory>
+									<!--
 									<Directory Id="WpfDesign" Name="WpfDesign">
 										<Component Guid="977C5C76-AB21-409B-B011-F06AB793607D" Id="WpfDesignAddInFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\WpfDesign.addin" Id="WpfDesign.addin" Name="WpfDesign.addin" />
@@ -1376,6 +1379,7 @@
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.Xaml.dll" Id="ICSharpCode.Xaml.dll" Name="ICSharpCode.Xaml.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Xaml.dll" AssemblyManifest="ICSharpCode.Xaml.dll" />
 										</Component>
 									</Directory>
+									-->
 								</Directory>
 								<Directory Id="MiscAddInsFolder" Name="Misc">
 									<Directory Id="AddInManagerFolder" Name="AddInManager">

@@ -337,11 +337,14 @@
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>
 				<ComponentRef Id="DiagramsDll"/>
+				
+				<!--
 				<ComponentRef Id="XamlBindingFiles"/>
 				<ComponentRef Id="WpfDesignAddInFiles"/>
 				<ComponentRef Id="WpfDesignDesignerFiles"/>
 				<ComponentRef Id="WpfDesignFiles"/>
 				<ComponentRef Id="WpfDesignXamlDll"/>
+				-->
 				
 				<ComponentRef Id="WorkflowDesignerAddin"/>
 				<ComponentRef Id="WorkflowDesignerDll"/>
