@@ -216,7 +216,14 @@ namespace ICSharpCode.SharpDevelop
 			if (safeSaving) {
 				DateTime creationTime = File.GetCreationTimeUtc(FileName);
 				File.Delete(FileName);
-				File.Move(saveAs, FileName);
+				try {
+					File.Move(saveAs, FileName);
+				} catch (UnauthorizedAccessException) {
+					// sometime File.Move raise exception (TortoiseSVN, Anti-vir ?)
+					// try again after short delay
+					System.Threading.Thread.Sleep(250);
+					File.Move(saveAs, FileName);
+				}
 				File.SetCreationTimeUtc(FileName, creationTime);
 			}
 			IsDirty = false;
