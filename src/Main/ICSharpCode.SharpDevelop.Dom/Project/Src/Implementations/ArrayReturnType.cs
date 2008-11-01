@@ -42,6 +42,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.dimensions = dimensions;
 		}
 		
+		public override IReturnType GetDirectReturnType()
+		{
+			IReturnType newElementType = elementType.GetDirectReturnType();
+			if (newElementType == elementType)
+				return this;
+			else
+				return new ArrayReturnType(pc, newElementType, dimensions);
+		}
+		
 		public override bool Equals(IReturnType rt)
 		{
 			if (rt == null || !rt.IsArrayReturnType) return false;

@@ -226,5 +226,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return tmp;
 			}
 		}
+		
+		public virtual IReturnType GetDirectReturnType()
+		{
+			IReturnType baseType = BaseType;
+			IReturnType tmp = (baseType != null && TryEnter()) ? baseType.GetDirectReturnType() : UnknownReturnType.Instance;
+			Leave();
+			return tmp;
+		}
 	}
 }

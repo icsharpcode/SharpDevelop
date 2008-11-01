@@ -131,5 +131,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public virtual bool? IsReferenceType { get { return null; } }
+		
+		public virtual IReturnType GetDirectReturnType()
+		{
+			return this;
+		}
 	}
 }

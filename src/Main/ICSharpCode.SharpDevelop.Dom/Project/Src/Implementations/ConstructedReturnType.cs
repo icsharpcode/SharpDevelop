@@ -63,6 +63,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return this.DotNetName.GetHashCode();
 		}
 		
+		public override IReturnType GetDirectReturnType()
+		{
+			IReturnType newBaseType = baseType.GetDirectReturnType();
+			IReturnType[] newTypeArguments = new IReturnType[typeArguments.Count];
+			bool typeArgumentsChanged = false;
+			for (int i = 0; i < typeArguments.Count; i++) {
+				if (typeArguments[i] != null)
+					newTypeArguments[i] = typeArguments[i].GetDirectReturnType();
+				if (typeArguments[i] != newTypeArguments[i])
+					typeArgumentsChanged = true;
+			}
+			if (baseType == newBaseType && !typeArgumentsChanged)
+				return this;
+			else
+				return new ConstructedReturnType(newBaseType, newTypeArguments);
+		}
+		
 		public override IReturnType BaseType {
 			get {
 				return baseType;

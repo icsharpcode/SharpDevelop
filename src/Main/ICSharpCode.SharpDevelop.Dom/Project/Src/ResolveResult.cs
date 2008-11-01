@@ -112,6 +112,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (callingClass == null)
 				throw new ArgumentNullException("callingClass");
 			
+			// convert resolvedType into direct type to speed up the IsApplicable lookups
+			resolvedType = resolvedType.GetDirectReturnType();
+			
 			foreach (IMethodOrProperty mp in CtrlSpaceResolveHelper.FindAllExtensions(language, callingClass)) {
 				TryAddExtension(language, res, mp, resolvedType);
 			}

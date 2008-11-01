@@ -21,6 +21,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.baseType = baseType;
 		}
 		
+		public override IReturnType GetDirectReturnType()
+		{
+			if (baseType == null)
+				return this;
+			IReturnType newBaseType = baseType.GetDirectReturnType();
+			if (newBaseType == baseType)
+				return this;
+			else
+				return new ReferenceReturnType(newBaseType);
+		}
+		
 		public override IReturnType BaseType {
 			get { return baseType; }
 		}
