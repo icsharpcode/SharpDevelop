@@ -1,6 +1,6 @@
 ﻿<Template author="Matt Ward" version="1.0">
 	<Config name      = "${res:Templates.File.WindowsForm.Name}"
-		  icon        = "Icons.32x32.EmptyFileIcon"
+		  icon        = "Python.Template.Form"
 		  category    = "Python"
 		  defaultname = "Form${Number}.py"
 		  language    = "Python"/>
