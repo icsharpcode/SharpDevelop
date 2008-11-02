@@ -60,7 +60,7 @@ namespace PythonBinding.Tests.Console
 		{
 			history.MovePrevious();
 			history.MovePrevious();
-			Assert.IsNull(history.Current);
+			Assert.AreEqual("a", history.Current);
 		}		
 		
 		[Test]
@@ -75,7 +75,7 @@ namespace PythonBinding.Tests.Console
 		{
 			history.MovePrevious();
 			history.MoveNext();
-			Assert.IsNull(history.Current);
+			Assert.AreEqual("a", history.Current);
 		}
 				
 		[Test]

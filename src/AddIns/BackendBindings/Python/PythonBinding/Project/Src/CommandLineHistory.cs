@@ -16,7 +16,7 @@ namespace ICSharpCode.PythonBinding
 	public class CommandLineHistory
 	{
 		List<string> lines = new List<string>();
-		int position = -1;
+		int position;
 		
 		public CommandLineHistory()
 		{
@@ -55,20 +55,26 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Moves to the next command line.
 		/// </summary>
+		/// <returns>False if the current position is at the end of the command line history.</returns>
 		public bool MoveNext()
 		{
-			if (position < lines.Count) {
+			int nextPosition = position + 1;
+			if (nextPosition < lines.Count) {
 				++position;
 			}
-			return position < lines.Count;
+			return nextPosition < lines.Count;
 		}
 		
 		/// <summary>
 		/// Moves to the previous command line.
 		/// </summary>
+		/// <returns>False if the current position is at the start of the command line history.</returns>
 		public bool MovePrevious()
 		{
 			if (position >= 0) {
+				if (position == 0) {
+					return false;
+				}
 				--position;
 			}
 			return position >= 0;

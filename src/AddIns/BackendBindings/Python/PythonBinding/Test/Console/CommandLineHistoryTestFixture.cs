@@ -64,5 +64,19 @@ namespace PythonBinding.Tests.Console
 			history.MovePrevious();
 			Assert.AreEqual("c", history.Current);
 		}
+		
+		/// <summary>
+		/// After trying to move beyond the end of the list moving previous should not show the last
+		/// item again.
+		/// </summary>
+		[Test]
+		public void MovePreviousThenNextTwiceThenPreviousAgain()
+		{
+			history.MovePrevious();
+			history.MoveNext();
+			history.MoveNext();
+			history.MovePrevious();
+			Assert.AreEqual("b", history.Current);
+		}
 	}
 }
