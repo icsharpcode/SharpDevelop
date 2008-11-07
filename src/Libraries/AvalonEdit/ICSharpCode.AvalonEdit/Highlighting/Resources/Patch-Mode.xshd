@@ -1,0 +1,29 @@
+﻿<?xml version="1.0"?>
+<SyntaxDefinition name="Patch" extensions=".patch;.diff" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<RuleSet>
+		<Span foreground="Green" fontWeight="bold">
+			<Begin>Index:\s</Begin>
+		</Span>
+		<Span foreground="DarkRed">
+			<Begin>==</Begin>
+		</Span>
+		<Span foreground="DarkRed">
+			<Begin>---</Begin>
+		</Span>
+		<Span foreground="DarkRed">
+			<Begin>\+\+\+</Begin>
+		</Span>
+		<Span foreground="Purple">
+			<Begin>@</Begin>
+		</Span>
+		<Span foreground="#FF339966">
+			<Begin>-</Begin>
+		</Span>
+		<Span foreground="Navy">
+			<Begin>\+</Begin>
+		</Span>
+		<Span foreground="SystemColors.WindowText">
+			<Begin>\s</Begin>
+		</Span>
+	</RuleSet>
+</SyntaxDefinition>

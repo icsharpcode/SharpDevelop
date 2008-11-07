@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<developerConceptualDocument
+	xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+	
+	<summary>
+		<para>This document describes how the TextView class renders the text, and
+		how you can extend the text rendering process to add new features to the text editor.
+		</para>
+	</summary>
+	
+	<introduction>
+		<para>The text rendering in AvalonEdit involves creating VisualLines for the visible document
+		part.</para>
+	</introduction>
+	
+	<!-- Add one or more top-level section elements.  These are collapsible.
+       If using <autoOutline /> tag, add an address attribute to identify
+       it so that it can be jumped to with a hyperlink. -->
+	<section>
+		<title>Lifetime of VisualLines</title>
+		<content>
+			<para>
+			VisualLines are only created for the visible part of the document.
+			This usually happens in the MeasureOverride of TextView:
+			when the TextView is measured, it uses the height tree to determine the first
+			document line in the visible region. Then, it constructs and measures a VisualLine
+			for that first line, and repeats that with the following lines
+			until the visible region is filled.
+			</para>
+			<para>
+			The TextView caches VisualLines - when the user scrolls down, only the VisualLines
+			coming into view are created, the rest is reused.
+			The VisualLine cache can be manually invalidated using the Redraw method family;
+			moreover, lots of actions cause automatic invalidation:
+			- any change in the document will invalidate the affected VisualLines
+			- changing the width of the TextView invalidates all VisualLines if word-wrap is enabled
+			- changing any text editor settings (word-wrap, font size, etc.) will invalidate all VisualLines
+			- VisualLines leaving the visible area after scrolling will be disposed
+			In general, manual invalidation is required only if you have written a text editor extension
+			(BackgroundRenderer, VisualLineElementGenerator or VisualLineTransformer) that also consumes
+			external data - in that case, you'll have to notify the text editor that VisualLines need
+			to be recreated when your external data changes.
+			</para>
+			<para>
+			Invalidating VisualLines does not cause immediate recreation of the lines!
+			Rather, the VisualLines are recreated when the text view is next re-measured.
+			While measurement in WPF normally happens with DispatcherPriority.Render,
+			the TextView also supports redrawing with a lower priority than that.
+			For example, normal text insertion causes a redraw at background priority, so that
+			in case the user types faster than the text view can redraw, there will be only
+			one redraw for multiple input actions.
+			</para>
+			<para>
+			ALERT: this means you need to ensure that if you access VisualLine, you can cope
+			with the case that the VisualLines you're interested in are not available.
+			You can use GetOrConstructVisualLine to make the text editor re-build the visual line
+			if it does not exist anymore; or you can call EnsureVisualLines() to make the text
+			create all VisualLines in the visible region.
+			</para>
+		</content>
+	</section>
+	<section>
+		<title>Building visual line elements</title>
+		<content>
+			<para>
+			As a first step, the VisualLineElementGenerators are used to produce elements. The
+			room in between the elements returned from the generators is filled with text elements.
+			Then, the VisualLine assigns the VisualColumn and RelativeTextOffset properties of the line elements.
+			</para>
+		</content>
+	</section>
+	<section>
+		<title>Transforming visual line elements</title>
+		<content>
+			<para>
+			After that, the IVisualLineTransformers are used to modify the produced line elements. Transformers
+			must not add elements, but they may split existing elements, e.g. to colorize only parts of an
+			element. When splitting elements (or somehow modifying the elements collection), care must be taken
+			that the VisualColumn,VisualLine,RelativeTextOffset and DocumentLength properties stay correct.
+			The ColorizingTransformer base class can do this so that transformers don't have to implement the
+			splitting themselves.
+			</para>
+		</content>
+	</section>
+	<section>
+		<title>Constructing TextLines</title>
+		<content>
+			<para>
+			After building the visual line elements, the TextLines for the visual line are constructed.
+			A visual line may result in multiple text lines when word wrapping is active or when special visual
+			line elements force a line break.
+			Building text lines:
+			The text line construction is done by a WPF TextFormatter.
+			The VisualLineTextSource will take the visual line elements and build WPF TextRuns from it,
+			while the WPF TextFormatter takes care of word wrapping etc.
+			VisualLineElements are requested to produce TextRuns for their full or a partial length.
+			The TextView will take care to measure any inline UI elements in the visual lines.
+			</para>
+		</content>
+	</section>
+	<section>
+		<title>Rest of the Rendering</title>
+		<content>
+			<para>
+			After the visible region is filled, the TextView updates the heights stored in the document lines to
+			the measured heights. This way, scrolling takes account for word-wrapping.
+			The constructed text lines are stored for the arrange and render steps.
+			Now, finally, the measure step is complete.
+			
+			Arrange:
+			This step will arrange inline UI elements at their position inside the text.
+			
+			Render:
+			First, background renderers are called to draw the background.
+			Then, the TextView draws the TextLines.
+			</para>
+		</content>
+	</section>
+	<relatedTopics>
+		<codeEntityReference>T:ICSharpCode.AvalonEdit.Gui.TextView</codeEntityReference>
+	</relatedTopics>
+</developerConceptualDocument>

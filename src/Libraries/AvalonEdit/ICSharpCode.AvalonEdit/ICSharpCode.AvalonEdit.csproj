@@ -1,0 +1,291 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.AvalonEdit</RootNamespace>
+    <AssemblyName>ICSharpCode.AvalonEdit</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>ICSharpCode.AvalonEdit.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Design#CA1020;-Microsoft.Design#CA1033;-Microsoft.Globalization#CA1308</CodeAnalysisRules>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <DocumentationFile>..\..\..\..\bin\ICSharpCode.AvalonEdit.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE;DATACONSISTENCYTEST</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Document\DocumentChangeOperation.cs">
+      <DependentUpon>UndoStack.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Document\ILineTracker.cs" />
+    <Compile Include="Document\ISegment.cs" />
+    <Compile Include="Document\IUndoableOperation.cs">
+      <DependentUpon>UndoStack.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Document\LineNode.cs">
+      <DependentUpon>DocumentLine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Document\TextDocumentWeakEventManager.cs">
+      <DependentUpon>TextDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Document\TextSegmentCollection.cs" />
+    <Compile Include="Document\TextAnchor.cs" />
+    <Compile Include="Document\TextAnchorNode.cs">
+      <DependentUpon>TextAnchor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Document\TextAnchorTree.cs">
+      <DependentUpon>TextAnchor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Document\TextLocation.cs" />
+    <Compile Include="Document\TextSegment.cs" />
+    <Compile Include="Document\UndoOperationGroup.cs">
+      <DependentUpon>UndoStack.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Document\UndoStack.cs">
+    </Compile>
+    <Compile Include="Document\WeakLineTracker.cs">
+      <DependentUpon>ILineTracker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\AbstractMargin.cs" />
+    <Compile Include="Gui\Caret.cs" />
+    <Compile Include="Gui\CaretAdorner.cs">
+      <DependentUpon>Caret.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\CaretNavigationCommandHandler.cs">
+      <DependentUpon>Caret.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\BackgroundGeometryBuilder.cs">
+      <DependentUpon>IBackgroundRenderer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\DocumentColorizingTransformer.cs">
+      <DependentUpon>IVisualLineTransformer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\EditingCommandHandler.cs" />
+    <Compile Include="Gui\FoldingSection.cs">
+      <DependentUpon>FoldingManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\IBackgroundRenderer.cs" />
+    <Compile Include="Gui\IReadOnlySectionProvider.cs" />
+    <Compile Include="Gui\NoReadOnlySections.cs">
+      <DependentUpon>IReadOnlySectionProvider.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Selection.cs" />
+    <Compile Include="Gui\SelectionColorizer.cs">
+      <DependentUpon>Selection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\SelectionMouseHandler.cs">
+      <DependentUpon>Selection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\TextSegmentReadOnlySectionProvider.cs">
+      <DependentUpon>IReadOnlySectionProvider.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\TextViewPosition.cs" />
+    <Compile Include="Gui\CollapsedLineSection.cs">
+      <DependentUpon>HeightTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\ColorizingTransformer.cs">
+      <DependentUpon>IVisualLineTransformer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\FoldingElementGenerator.cs">
+      <DependentUpon>FoldingManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\FoldingMargin.cs">
+      <DependentUpon>FoldingManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\FoldingMarginMarker.cs">
+      <DependentUpon>FoldingManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\FormattedTextElement.cs" />
+    <Compile Include="Gui\GlobalTextRunProperties.cs">
+      <DependentUpon>TextView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\ITextRunConstructionContext.cs">
+      <DependentUpon>VisualLineElementGenerator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\LineNumberMargin.cs" />
+    <Compile Include="Gui\IVisualLineTransformer.cs" />
+    <Compile Include="Gui\TextViewWeakEventManager.cs">
+      <DependentUpon>TextView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\VisualLineElement.cs" />
+    <Compile Include="Gui\VisualLineElementGenerator.cs">
+    </Compile>
+    <Compile Include="Gui\VisualLineText.cs" />
+    <Compile Include="Gui\VisualLineTextParagraphProperties.cs">
+      <DependentUpon>VisualLine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\VisualLineElementTextRunProperties.cs">
+      <DependentUpon>VisualLine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\VisualLineTextSource.cs">
+      <DependentUpon>VisualLineElementGenerator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\FoldingManager.cs" />
+    <Compile Include="Gui\HeightTree.cs" />
+    <Compile Include="Gui\HeightTreeLineNode.cs">
+      <DependentUpon>HeightTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\HeightTreeNode.cs">
+      <DependentUpon>HeightTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\InlineObjectRun.cs" />
+    <Compile Include="Gui\NewLineElementGenerator.cs" />
+    <Compile Include="Gui\TextArea.cs" />
+    <Compile Include="Gui\TextEditor.cs" />
+    <Compile Include="Gui\TextView.cs" />
+    <Compile Include="Gui\VisualLine.cs" />
+    <Compile Include="Gui\WhitespaceElementGenerator.cs" />
+    <Compile Include="Highlighting\DocumentHighlighter.cs" />
+    <Compile Include="Highlighting\HighlightedLine.cs" />
+    <Compile Include="Highlighting\HighlightedSection.cs" />
+    <Compile Include="Highlighting\HighlightingBrush.cs" />
+    <Compile Include="Highlighting\HighlightingColor.cs" />
+    <Compile Include="Highlighting\HighlightingColorizer.cs" />
+    <Compile Include="Highlighting\HighlightingDefinitionInvalidException.cs" />
+    <Compile Include="Highlighting\HighlightingManager.cs" />
+    <Compile Include="Highlighting\IHighlightingDefinition.cs" />
+    <Compile Include="Highlighting\HighlightingRule.cs" />
+    <Compile Include="Highlighting\Resources\Resources.cs" />
+    <Compile Include="Highlighting\HighlightingRuleSet.cs" />
+    <Compile Include="Highlighting\HighlightingSpan.cs" />
+    <Compile Include="Highlighting\IHighlightingDefinitionReferenceResolver.cs">
+    </Compile>
+    <Compile Include="Highlighting\Xshd\HighlightingLoader.cs" />
+    <Compile Include="Highlighting\Xshd\IXshdVisitor.cs" />
+    <Compile Include="Highlighting\Xshd\SaveXshdVisitor.cs" />
+    <Compile Include="Highlighting\Xshd\V1Loader.cs" />
+    <Compile Include="Highlighting\Xshd\V2Loader.cs" />
+    <Compile Include="Highlighting\Xshd\XmlHighlightingDefinition.cs" />
+    <Compile Include="Highlighting\Xshd\XshdColor.cs" />
+    <Compile Include="Highlighting\Xshd\XshdImport.cs" />
+    <Compile Include="Highlighting\Xshd\XshdReference.cs" />
+    <Compile Include="Highlighting\Xshd\XshdElement.cs" />
+    <Compile Include="Highlighting\Xshd\XshdKeywords.cs" />
+    <Compile Include="Highlighting\Xshd\XshdRule.cs" />
+    <Compile Include="Highlighting\Xshd\XshdRuleSet.cs" />
+    <Compile Include="Highlighting\Xshd\XshdSpan.cs" />
+    <Compile Include="Highlighting\Xshd\XshdSyntaxDefinition.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Document\DocumentChangeEventArgs.cs" />
+    <Compile Include="Document\GapTextBuffer.cs">
+      <DependentUpon>TextDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Document\LineManager.cs">
+      <DependentUpon>TextDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Document\DocumentLine.cs" />
+    <Compile Include="Document\DocumentLineTree.cs">
+      <DependentUpon>DocumentLine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Document\TextDocument.cs" />
+    <Compile Include="Utils\Boxes.cs" />
+    <Compile Include="Utils\CompressingTreeList.cs" />
+    <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\DelayedEvents.cs" />
+    <Compile Include="Utils\Empty.cs" />
+    <Compile Include="Utils\ExtensionMethods.cs" />
+    <Compile Include="Utils\FileReader.cs" />
+    <Compile Include="Utils\ImmutableStack.cs" />
+    <Compile Include="Utils\NullSafeCollection.cs" />
+    <Compile Include="Utils\WeakEventManagerBase.cs" />
+    <Compile Include="Utils\PixelSnapHelpers.cs" />
+    <Compile Include="Utils\ThrowUtil.cs" />
+    <Compile Include="Utils\Win32.cs" />
+    <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
+    <Resource Include="themes\RightArrow.cur" />
+    <EmbeddedResource Include="Highlighting\Resources\ASPX.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\BAT-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\Boo.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\Coco-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\CPP-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\HTML-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\Java-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\JavaScript-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\Patch-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\PHP-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\Tex-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\VBNET-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\XML-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\ModeV1.xsd" />
+    <EmbeddedResource Include="Highlighting\Resources\ModeV2.xsd" />
+    <EmbeddedResource Include="Highlighting\Resources\CSharp-Mode.xshd" />
+    <EmbeddedResource Include="Highlighting\Resources\XmlDoc.xshd" />
+    <None Include="Architecture.txt" />
+    <None Include="documentation\Coordinate Systems.xml" />
+    <None Include="documentation\Introduction.xml" />
+    <None Include="documentation\SyntaxHighlighting.xml" />
+    <None Include="documentation\TextRendering.xml" />
+    <None Include="ICSharpCode.AvalonEdit.shfb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Document" />
+    <Folder Include="documentation" />
+    <Folder Include="Gui" />
+    <Folder Include="Highlighting" />
+    <Folder Include="Highlighting\Xshd" />
+    <Folder Include="Highlighting\Resources" />
+    <Folder Include="Utils" />
+    <Folder Include="themes" />
+    <Page Include="Gui\TextEditor.xaml" />
+    <Page Include="themes\generic.xaml" />
+  </ItemGroup>
+</Project>

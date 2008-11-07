@@ -1678,9 +1678,9 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id    = "Text"
-		                insertafter = "Browser"
-		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.TextEditor}"
+		<DisplayBinding id    = "OldText"
+		                insertafter = "Text"
+		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.TextEditor} (Old)"
 		                class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding" />
 		<DisplayBinding id    = "ShellExecute"
 		                insertafter = "Text"

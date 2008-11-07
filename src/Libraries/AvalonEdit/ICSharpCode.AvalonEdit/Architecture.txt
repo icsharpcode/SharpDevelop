@@ -1,0 +1,11 @@
+﻿
+How foldings work:
+	The FoldingManager maintains a list of foldings. The FoldMargin displays those foldings and provides
+	the UI for collapsing/expanding.
+	Folded foldings cause the FoldingElementGenerator to produce a line element that spans the whole folded
+	text section, causing the text generation for the visual line that contains the folding start to
+	continue after the folding end in another line.
+	To ensure scrolling works correctly in the presence of foldings, lines inside folded regions must not
+	be used as start lines for the visual line generation. This is done by setting the line height of all
+	such lines to 0. To efficiently set the height on a large number of lines and support reverting to the
+	old height when the folding is uncollapsed, a CollapsedLineSection is used.

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<developerConceptualDocument
+	xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+	
+	<introduction>
+		<para>Probably the most important feature for any text editor is syntax highlighting.</para>
+		<para>AvalonEdit has a flexible text rendering model, see "Text Rendering". Among the
+		Text Rendering extension points is the support for "visual line transformers" that
+		can change the display of a visual line after it has been constructed by the "visual element generators".
+		A useful base class implementing IVisualLineTransformer for the purpose of syntax highlighting
+		is DocumentColorizingTransformer. But please take a look at that class' documentation to see
+		how to write fully custom syntax highlighters. This article discusses the XML-driven built-in
+		highlighting engine.
+		</para>
+	</introduction>
+	
+	<section>
+		<title>The highlighting engine</title>
+		<content>
+			<para>
+			The core engine of the higlighting is the class DocumentHighlighter. It tracks changes
+			to a TextDocument and can produce HighlightedLines from DocumentLines.
+			A HighlightedLine is simply a list of (possibly nested) highlighted text sections.
+			</para>
+			<para>The highlighting rules used by the highlighting engine to highlight
+			the document are described by the following classes:
+			- HighlightingRuleSet: describes a set of highlighting spans and rules
+			- HighlightingSpan: consists of Start and End regular expressions, a color, and a
+			child ruleset. The region between Start and End expressions will be
+			assigned the given color, and inside that span, the rules of the child
+			ruleset apply (instead of the default rules).
+			If the child ruleset also has HighlightingSpans, they can be nested,
+			allowing highlighting constructs like nested comments or one language
+			embedded in another.
+			- HighlightingRule: A regular expression with a color. Highlights matches of the
+			regular expression using that color.
+			- HighlightingColor:
+			A highlighting color isn't just a color: it consists of a foreground
+			color, font weight and font style.
+			</para>
+		</content>
+	</section>
+	
+	<section>
+		<title>XML highlighting definitions</title>
+		<content>
+			<para>AvalonEdit supports XML syntax highlighting definitions (.xshd files).</para>
+		</content>
+	</section>
+	
+	<relatedTopics>
+		<codeEntityReference>N:ICSharpCode.AvalonEdit.Highlighting</codeEntityReference>
+	</relatedTopics>
+</developerConceptualDocument>

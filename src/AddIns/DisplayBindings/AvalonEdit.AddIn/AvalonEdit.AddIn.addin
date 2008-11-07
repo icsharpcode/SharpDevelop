@@ -1,0 +1,24 @@
+﻿<AddIn name        = "AvalonEdit.AddIn"
+       author      = "Daniel Grunwald"
+       description = "The main text editor for SharpDevelop">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.AvalonEdit" />
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "ICSharpCode.AvalonEdit.AddIn.dll"/>
+	</Runtime>
+	
+	<!-- Extend the SharpDevelop AddIn-Tree like this:
+	<Path name = ...>
+		<.../>
+	</Path>
+	-->
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id = "Text"
+		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.TextEditor} (AvalonEdit)"
+		                class = "ICSharpCode.AvalonEdit.AddIn.AvalonEditDisplayBinding"/>
+	</Path>
+</AddIn>
