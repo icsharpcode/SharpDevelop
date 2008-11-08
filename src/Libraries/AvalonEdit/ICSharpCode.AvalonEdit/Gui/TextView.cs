@@ -269,6 +269,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		void DisposeVisualLine(VisualLine visualLine)
 		{
+			if (newVisualLines != null && newVisualLines.Contains(visualLine)) {
+				throw new ArgumentException("Cannot dispose visual line because it is in construction!");
+			}
 			visualLine.IsDisposed = true;
 			foreach (TextLine textLine in visualLine.TextLines) {
 				textLine.Dispose();
@@ -284,6 +287,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			VerifyAccess();
 			foreach (VisualLine visualLine in allVisualLines) {
+				Debug.Assert(visualLine.IsDisposed == false);
 				int start = visualLine.FirstDocumentLine.LineNumber;
 				int end = visualLine.LastDocumentLine.LineNumber;
 				if (documentLineNumber >= start && documentLineNumber <= end)
@@ -385,6 +389,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		
 		Size lastAvailableSize;
+		List<VisualLine> newVisualLines;
 		
 		/// <summary>
 		/// Measure implementation.
@@ -411,7 +416,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			clippedPixelsOnTop = scrollOffset.Y - heightTree.GetVisualPosition(firstLineInView);
 			Debug.Assert(clippedPixelsOnTop >= 0);
 			
-			List<VisualLine> newVisualLines = new List<VisualLine>();
+			newVisualLines = new List<VisualLine>();
 			
 			var elementGeneratorsArray = elementGenerators.ToArray();
 			var lineTransformersArray = lineTransformers.ToArray();
@@ -446,13 +451,16 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 			
 			foreach (VisualLine line in allVisualLines) {
+				Debug.Assert(line.IsDisposed == false);
 				if (!newVisualLines.Contains(line))
 					DisposeVisualLine(line);
 			}
 			RemoveInlineObjectsNow();
+			
 			allVisualLines = newVisualLines;
 			// visibleVisualLines = readonly copy of visual lines
 			visibleVisualLines = new ReadOnlyCollection<VisualLine>(newVisualLines.ToArray());
+			newVisualLines = null;
 			
 			if (allVisualLines.Any(line => line.IsDisposed)) {
 				throw new InvalidOperationException("A visual line was disposed even though it is still in use.\n" +

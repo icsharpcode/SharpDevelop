@@ -113,9 +113,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			{
 				base.OnHighlightStateChanged(line, lineNumber);
 				if (colorizer.currentLineEndOffset >= 0) {
-					colorizer.textView.Redraw(colorizer.currentLineEndOffset,
-					                          colorizer.CurrentContext.Document.TextLength - colorizer.currentLineEndOffset,
-					                          DispatcherPriority.Normal);
+					int length = colorizer.CurrentContext.Document.TextLength - colorizer.currentLineEndOffset;
+					if (length != 0) {
+						// don't redraw if length == 0: at the end of the document, this would cause
+						// the last line which was already constructed to be redrawn ->
+						// we would get an exception due to disposing the line that was already constructed
+						colorizer.textView.Redraw(colorizer.currentLineEndOffset, length, DispatcherPriority.Normal);
+					}
 					colorizer.currentLineEndOffset = -1;
 				}
 			}
