@@ -4,285 +4,6 @@
         <name>AvalonDock</name>
     </assembly>
     <members>
-        <member name="T:AvalonDock.AvalonDockBrushes">
-            <summary>
-            Defines a list of brushes used by AvalonDock templates
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AvalonDockBrushes.DockablePaneTitleBackground">
-            <summary>
-            Brush used for the title background of a <see cref="T:AvalonDock.DockablePane"/>.
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AvalonDockBrushes.DockablePaneTitleBackgroundSelected">
-            <summary>
-            Brush used for the title background of a <see cref="T:AvalonDock.DockablePane"/> when is focused.
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AvalonDockBrushes.DockablePaneTitleForeground">
-            <summary>
-            Brush used for the title foreground of a <see cref="T:AvalonDock.DockablePane"/>.
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AvalonDockBrushes.DockablePaneTitleForegroundSelected">
-            <summary>
-            Brush used for the title foreground of a <see cref="T:AvalonDock.DockablePane"/> when is focused.
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AvalonDockBrushes.PaneHeaderCommandBackground">
-            <summary>
-            Brush used for the background of the pane command pins.
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AvalonDockBrushes.PaneHeaderCommandBorderBrush">
-            <summary>
-            Brush used for the border of the pane command pins.
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AvalonDockBrushes.DocumentHeaderBackground">
-            <summary>
-            Brush used for the background of a document header.
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AvalonDockBrushes.DocumentHeaderForeground">
-            <summary>
-            Brush used for the foreground of a document header.
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AvalonDockBrushes.DocumentHeaderBackgroundSelected">
-            <summary>
-            Brush used for the background of a document header when active (<see cref="P:AvalonDock.ManagedContent.IsActiveDocument"/>).
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AvalonDockBrushes.DocumentHeaderBackgroundMouseOver">
-            <summary>
-            Brush used for the background of a document header when mouse is over it.
-            </summary>
-        </member>
-        <member name="T:AvalonDock.ContextMenuElement">
-            <summary>
-            Defines a list of context menu resources
-            </summary>
-        </member>
-        <member name="F:AvalonDock.ContextMenuElement.DockablePane">
-            <summary>
-            Context menu related to a <see cref="F:AvalonDock.ContextMenuElement.DockablePane"/>
-            </summary>
-        </member>
-        <member name="F:AvalonDock.ContextMenuElement.FloatingWindow">
-            <summary>
-            Context menu related to a <see cref="F:AvalonDock.ContextMenuElement.FloatingWindow"/>
-            </summary>
-        </member>
-        <member name="T:AvalonDock.DockableContentState">
-            <summary>
-            Enumerates all the possible states of <see cref="T:AvalonDock.DockableContent"/>
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableContentState.Docked">
-            <summary>
-            Content is docked to a border of a <see cref="T:AvalonDock.ResizingPanel"/> within as <see cref="T:AvalonDock.DockingManager"/> control
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableContentState.AutoHide">
-            <summary>
-            Content is hosted by a flyout window and is visible only when user move mouse over an anchor thumb located to a <see cref="T:AvalonDock.DockingManager"/> controlo border
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableContentState.DockableWindow">
-            <summary>
-            Content is hosted by a floating window and user can redock is on its <see cref="T:AvalonDock.DockingManager"/> container control
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableContentState.FloatingWindow">
-            <summary>
-            Content is hosted by a floating window that can't be docked to a its <see cref="T:AvalonDock.DockingManager"/> container control
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableContentState.Document">
-            <summary>
-            Content is hosted by <see cref="!:DocmumentContent"/> object
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableContentState.Hidden">
-            <summary>
-            Content is hidden
-            </summary>
-        </member>
-        <member name="T:AvalonDock.DockableStyle">
-            <summary>
-            Defines how a dockable content can be dragged over a docking manager
-            </summary>
-            <remarks>This style can be composed with the 'or' operator.</remarks>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.None">
-            <summary>
-            Content is not dockable at all
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.Document">
-            <summary>
-            Dockable as document
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.LeftBorder">
-            <summary>
-            Dockable to the left border of <see cref="T:AvalonDock.DockingManager"/>
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.RightBorder">
-            <summary>
-            Dockable to the right border of <see cref="T:AvalonDock.DockingManager"/>
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.TopBorder">
-            <summary>
-            Dockable to the top border of <see cref="T:AvalonDock.DockingManager"/>
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.BottomBorder">
-            <summary>
-            Dockable to the bottom border of <see cref="T:AvalonDock.DockingManager"/>
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.Floating">
-            <summary>
-            A <see cref="T:AvalonDock.DockableContent"/> with this style can be hosted in a <see cref="T:AvalonDock.FloatingWindow"/>
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.Single">
-            <summary>
-            A <see cref="T:AvalonDock.DockableContent"/> with this style can be the only one content in a <see cref="T:AvalonDock.DockablePane"/> pane (NOT YET SUPPORTED)
-            </summary>
-            <remarks>This style is not compatible with <see cref="F:AvalonDock.DockableStyle.Document"/> style</remarks>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.AutoHide">
-            <summary>
-            A <see cref="!:DockableContet"/> with this style can be autohidden.
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.DockableToBorders">
-            <summary>
-            Dockable only to a border of a <see cref="T:AvalonDock.DockingManager"/>
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.Dockable">
-            <summary>
-            Dockable to a border of a <see cref="T:AvalonDock.DockingManager"/> and into a <see cref="T:AvalonDock.DocumentPane"/>
-            </summary>
-        </member>
-        <member name="F:AvalonDock.DockableStyle.DockableButNotAutoHidden">
-            <summary>
-            Dockable to a border of a <see cref="T:AvalonDock.DockingManager"/> and into a <see cref="T:AvalonDock.DocumentPane"/> but not in autohidden mode (WinForms controls)
-            </summary>
-        </member>
-        <member name="T:AvalonDock.DockableContentStateAndPosition">
-            <summary>
-            Represent a state of a dockable content that can be used to restore it after it's hidden
-            </summary>
-        </member>
-        <member name="T:AvalonDock.DockableContent">
-            <summary>
-            Identifies a content that can be drag over a <see cref="T:AvalonDock.DockingManager"/> control or hosted by a floating window over it (<see cref="T:AvalonDock.FloatingWindow"/>).
-            </summary>
-        </member>
-        <member name="F:AvalonDock.ManagedContent.IconProperty">
-            <summary>
-            Select an icon object for the content
-            </summary>
-        </member>
-        <member name="F:AvalonDock.ManagedContent.DefaultFocusedElementProperty">
-            <summary>
-            Gets or sets an element which is focused by default when content is activated
-            </summary>
-        </member>
-        <member name="M:AvalonDock.ManagedContent.SetAsActive">
-            <summary>
-            Set the content as the active content
-            </summary>
-            <remarks>After this method returns property <see cref="P:AvalonDock.ManagedContent.IsActiveContent"/> returns true.</remarks>
-        </member>
-        <member name="P:AvalonDock.ManagedContent.Icon">
-            <summary>
-            Access to <see cref="F:AvalonDock.ManagedContent.IconProperty"/> dependency property
-            </summary>
-        </member>
-        <member name="P:AvalonDock.ManagedContent.DefaultElement">
-            <summary>
-            Access to <see cref="F:AvalonDock.ManagedContent.DefaultFocusedElementProperty"/>
-            </summary>
-        </member>
-        <member name="P:AvalonDock.ManagedContent.IsActiveContent">
-            <summary>
-            Returns true if the content is the currently active content.
-            </summary>
-            <remarks>Use <see cref="M:AvalonDock.ManagedContent.SetAsActive"/> method to set a content as active.</remarks>
-        </member>
-        <member name="P:AvalonDock.ManagedContent.IsActiveDocument">
-            <summary>
-            Returns true if the document is the currently active document.
-            </summary>
-            <remarks>Use <see cref="M:AvalonDock.ManagedContent.SetAsActive"/> method to set a content as active.</remarks>
-        </member>
-        <member name="M:AvalonDock.DockableContent.DetachFromContainerPane">
-            <summary>
-            Remove this content from its parent container pane
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:AvalonDock.DockableContent.ResetSavedStateAndPosition">
-            <summary>
-            Reset internal state and position of the content
-            </summary>
-            <remarks>After a <see cref="T:AvalonDock.DockableContent"/> is hidden AvalonDock save its state and position in order to
-            restore it correctly when user wants to reshow it calling <see cref="M:AvalonDock.DockingManager.Show(AvalonDock.DocumentContent)"/> function. Call this method
-            if you want to reset these data and provide your state and anchor style calling one of the overloads of the function
-            <see cref="M:AvalonDock.DockingManager.Show(AvalonDock.DocumentContent)"/>.</remarks>
-        </member>
-        <member name="M:AvalonDock.DockableContent.SaveLayout(System.Xml.XmlWriter)">
-            <summary>
-            Save content specific layout settings
-            </summary>
-            <param name="storeWriter">Backend store writer</param>
-            <remarks>Custom derived class can overloads this method to handle custom layout persistence.</remarks>
-        </member>
-        <member name="M:AvalonDock.DockableContent.RestoreLayout(System.Xml.XmlElement)">
-            <summary>
-            Restore content specific layout settings
-            </summary>
-            <param name="storeReader">Saved xml element containg content layout settings</param>
-            <remarks>Custom derived class must overload this method to restore custom layout settings previously saved trought <see cref="M:AvalonDock.DockableContent.SaveLayout(System.Xml.XmlWriter)"/>.</remarks>
-        </member>
-        <member name="P:AvalonDock.DockableContent.DockableStyle">
-            <summary>
-            Get or sets a value that indicates how a dockable content can be dragged over and docked to a <see cref="T:AvalonDock.DockingManager"/>
-            </summary>
-        </member>
-        <member name="T:AvalonDock.AnchorStyle">
-            <summary>
-            Anchor types
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AnchorStyle.Top">
-            <summary>
-            Top border anchor
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AnchorStyle.Left">
-            <summary>
-            Left border anchor
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AnchorStyle.Bottom">
-            <summary>
-            Bottom border anchor
-            </summary>
-        </member>
-        <member name="F:AvalonDock.AnchorStyle.Right">
-            <summary>
-            Right border anchor
-            </summary>
-        </member>
         <member name="T:AvalonDock.IDropSurface">
             <summary>
             Defines an interface that must be implemented by objects that can host dragged panes
@@ -322,6 +43,110 @@
             Gets the sensible area for drop a pane
             </summary>
         </member>
+        <member name="T:AvalonDock.ContextMenuElement">
+            <summary>
+            Defines a list of context menu resources
+            </summary>
+        </member>
+        <member name="F:AvalonDock.ContextMenuElement.DockablePane">
+            <summary>
+            Context menu related to a <see cref="F:AvalonDock.ContextMenuElement.DockablePane"/>
+            </summary>
+        </member>
+        <member name="F:AvalonDock.ContextMenuElement.FloatingWindow">
+            <summary>
+            Context menu related to a <see cref="F:AvalonDock.ContextMenuElement.FloatingWindow"/>
+            </summary>
+        </member>
+        <member name="T:AvalonDock.GreyableImage">
+            <summary>
+            Image control that get's greyed out when disabled.
+            This control is intended to be used for toolbar, menu or button icons where ability of an icon to 
+            grey itself out when disabled is essential.
+            <remarks>
+            1) Greyscale image is created using FormatConvertedBitmap class. Unfortunately when converting the
+               image to greyscale this class does n0t preserve transparency information. To overcome that, there is 
+               an opacity mask created from original image that is applied to greyscale image in order to preserve
+               transparency information. Because of that if an OpacityMask is applied to original image that mask 
+               has to be combined with that special opacity mask of greyscale image in order to make a proper 
+               greyscale image look. If you know how to combine two opacity masks please let me know.
+            2) DrawingImage source is not supported at the moment.
+            3) Have not tried to use any BitmapSource derived sources accept for BitmapImage so it may not be 
+               able to convert some of them to greyscale.
+            4) When specifying source Uri from XAML try to use Absolute Uri otherwise the greyscale image
+               may not be created in some scenarious. There is some code to improve the situation but I cannot 
+               guarantee it will work in all possible scenarious.
+            5) In case the greyscaled version cannot be created for whatever reason the original image with 
+               60% opacity (i.e. dull colours) will be used instead (that will work even with the DrawingImage 
+               source).
+            </remarks>
+            </summary>
+        </member>
+        <member name="M:AvalonDock.GreyableImage.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Overwritten to handle changes of IsEnabled, Source and OpacityMask properties
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:AvalonDock.GreyableImage.SetSources">
+            <summary>
+            Cashes original ImageSource, creates and caches greyscale ImageSource and greyscale opacity mask
+            </summary>
+        </member>
+        <member name="T:AvalonDock.WpfApplication">
+            <summary>
+            Designates a Windows Presentation Foundation application model with added functionalities.
+            </summary>
+        </member>
+        <member name="M:AvalonDock.WpfApplication.DoEvents">
+            <summary>
+            Processes all UI messages currently in the message queue.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:AvalonDock.DockablePaneAnchorTabGroup" -->
+        <!-- Badly formed XML comment ignored for member "T:AvalonDock.ResizingPanelSplitter" -->
+        <member name="F:AvalonDock.ResizingPanel.OrientationProperty">
+            <summary>
+            Give access to Orientation attached property
+            </summary>
+            <remarks>If horizontal oriented children are positioned from left to right and width of each child is computed according to <see cref="!:ResizingWidth"/> attached property value. When vertical oriented children are arranged from top to bottom, according to <see cref="!:ResizingHeight"/> of each child.</remarks>
+        </member>
+        <member name="M:AvalonDock.ResizingPanel.NextChildIsVisible(System.Int32)">
+            <summary>
+            Checks if next child starting from a given index is visible.
+            </summary>
+            <param name="iChild">Starting child index.</param>
+            <returns>Returns true if next child is visible.</returns>
+            <remarks>This method takes in count the flow <see cref="!:ResizingDirection"/> of the children.</remarks>
+        </member>
+        <member name="M:AvalonDock.ResizingPanel.PrevChildIsVisible(System.Int32)">
+            <summary>
+            Checks if previous child starting from a given index is visible.
+            </summary>
+            <param name="iChild">Starting child index.</param>
+            <returns>Returns true if previous child is visible.</returns>
+            <remarks>This method takes in count the flow <see cref="!:ResizingDirection"/> of the children.</remarks>
+        </member>
+        <member name="M:AvalonDock.ResizingPanel.RemoveChild(System.Windows.FrameworkElement)">
+            <summary>
+            Remove a child from children collection
+            </summary>
+            <param name="childToRemove"></param>
+        </member>
+        <member name="M:AvalonDock.ResizingPanel.InsertChildRelativeTo(System.Windows.FrameworkElement,System.Windows.FrameworkElement,System.Boolean)">
+            <summary>
+            Insert a new child element into the children collection.
+            </summary>
+            <param name="childToInsert">New child element to insert.</param>
+            <param name="relativeChild">Child after or before which <see cref="!:childToInsert"/> element must be insert.</param>
+            <param name="next">True if new child must be insert after the <see cref="!:relativeChild"/> element. False otherwise.</param>
+        </member>
+        <member name="P:AvalonDock.ResizingPanel.Orientation">
+            <summary>
+            Gets or sets the orientation of the panel
+            </summary>
+            <remarks>If horizontal oriented children are positioned from left to right and width of each child is computed according to <see cref="!:ResizingWidth"/> attached property value. When vertical oriented children are arranged from top to bottom, according to <see cref="!:ResizingHeight"/> of each child.</remarks>
+        </member>
         <member name="M:AvalonDock.DockablePane.ToggleAutoHide">
             <summary>
             Show/Hide a flyout window containing this pane
@@ -332,8 +157,52 @@
             Close current content
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "T:AvalonDock.DockablePaneAnchorTab" -->
-        <!-- Badly formed XML comment ignored for member "T:AvalonDock.DockablePaneAnchorTabGroup" -->
+        <member name="T:AvalonDock.AnchorStyle">
+            <summary>
+            Anchor types
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AnchorStyle.Top">
+            <summary>
+            Top border anchor
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AnchorStyle.Left">
+            <summary>
+            Left border anchor
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AnchorStyle.Bottom">
+            <summary>
+            Bottom border anchor
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AnchorStyle.Right">
+            <summary>
+            Right border anchor
+            </summary>
+        </member>
+        <member name="T:AvalonDock.DragPaneServices">
+            <summary>
+            Provides drag-drop functionalities for dockable panes
+            </summary>
+        </member>
+        <member name="M:AvalonDock.OverlayWindow.OnDragEnter(AvalonDock.OverlayWindowDockingButton,System.Windows.Point)">
+            <summary>
+            Shows a highlighting rectangle
+            </summary>
+            <param name="overlayWindowDockingButton"></param>
+            <param name="point"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AvalonDock.OverlayWindow.OnDragLeave(AvalonDock.OverlayWindowDockingButton,System.Windows.Point)">
+            <summary>
+            Hides the highlighting rectangle
+            </summary>
+            <param name="overlayWindowDockingButton"></param>
+            <param name="point"></param>
+            <returns></returns>
+        </member>
         <member name="T:AvalonDock.DockingManager">
             <summary>
             Represents a control which manages a dockable layout for its children
@@ -582,6 +451,199 @@
             Returns current overlay window
             </summary>
         </member>
+        <member name="F:AvalonDock.ManagedContent.IconProperty">
+            <summary>
+            Select an icon object for the content
+            </summary>
+        </member>
+        <member name="F:AvalonDock.ManagedContent.DefaultFocusedElementProperty">
+            <summary>
+            Gets or sets an element which is focused by default when content is activated
+            </summary>
+        </member>
+        <member name="M:AvalonDock.ManagedContent.SetAsActive">
+            <summary>
+            Set the content as the active content
+            </summary>
+            <remarks>After this method returns property <see cref="P:AvalonDock.ManagedContent.IsActiveContent"/> returns true.</remarks>
+        </member>
+        <member name="P:AvalonDock.ManagedContent.Icon">
+            <summary>
+            Access to <see cref="F:AvalonDock.ManagedContent.IconProperty"/> dependency property
+            </summary>
+        </member>
+        <member name="P:AvalonDock.ManagedContent.DefaultElement">
+            <summary>
+            Access to <see cref="F:AvalonDock.ManagedContent.DefaultFocusedElementProperty"/>
+            </summary>
+        </member>
+        <member name="P:AvalonDock.ManagedContent.IsActiveContent">
+            <summary>
+            Returns true if the content is the currently active content.
+            </summary>
+            <remarks>Use <see cref="M:AvalonDock.ManagedContent.SetAsActive"/> method to set a content as active.</remarks>
+        </member>
+        <member name="P:AvalonDock.ManagedContent.IsActiveDocument">
+            <summary>
+            Returns true if the document is the currently active document.
+            </summary>
+            <remarks>Use <see cref="M:AvalonDock.ManagedContent.SetAsActive"/> method to set a content as active.</remarks>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:AvalonDock.DockablePaneAnchorTab" -->
+        <member name="T:AvalonDock.DockableContentState">
+            <summary>
+            Enumerates all the possible states of <see cref="T:AvalonDock.DockableContent"/>
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableContentState.Docked">
+            <summary>
+            Content is docked to a border of a <see cref="T:AvalonDock.ResizingPanel"/> within as <see cref="T:AvalonDock.DockingManager"/> control
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableContentState.AutoHide">
+            <summary>
+            Content is hosted by a flyout window and is visible only when user move mouse over an anchor thumb located to a <see cref="T:AvalonDock.DockingManager"/> controlo border
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableContentState.DockableWindow">
+            <summary>
+            Content is hosted by a floating window and user can redock is on its <see cref="T:AvalonDock.DockingManager"/> container control
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableContentState.FloatingWindow">
+            <summary>
+            Content is hosted by a floating window that can't be docked to a its <see cref="T:AvalonDock.DockingManager"/> container control
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableContentState.Document">
+            <summary>
+            Content is hosted by <see cref="!:DocmumentContent"/> object
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableContentState.Hidden">
+            <summary>
+            Content is hidden
+            </summary>
+        </member>
+        <member name="T:AvalonDock.DockableStyle">
+            <summary>
+            Defines how a dockable content can be dragged over a docking manager
+            </summary>
+            <remarks>This style can be composed with the 'or' operator.</remarks>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.None">
+            <summary>
+            Content is not dockable at all
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.Document">
+            <summary>
+            Dockable as document
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.LeftBorder">
+            <summary>
+            Dockable to the left border of <see cref="T:AvalonDock.DockingManager"/>
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.RightBorder">
+            <summary>
+            Dockable to the right border of <see cref="T:AvalonDock.DockingManager"/>
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.TopBorder">
+            <summary>
+            Dockable to the top border of <see cref="T:AvalonDock.DockingManager"/>
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.BottomBorder">
+            <summary>
+            Dockable to the bottom border of <see cref="T:AvalonDock.DockingManager"/>
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.Floating">
+            <summary>
+            A <see cref="T:AvalonDock.DockableContent"/> with this style can be hosted in a <see cref="T:AvalonDock.FloatingWindow"/>
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.Single">
+            <summary>
+            A <see cref="T:AvalonDock.DockableContent"/> with this style can be the only one content in a <see cref="T:AvalonDock.DockablePane"/> pane (NOT YET SUPPORTED)
+            </summary>
+            <remarks>This style is not compatible with <see cref="F:AvalonDock.DockableStyle.Document"/> style</remarks>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.AutoHide">
+            <summary>
+            A <see cref="!:DockableContet"/> with this style can be autohidden.
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.DockableToBorders">
+            <summary>
+            Dockable only to a border of a <see cref="T:AvalonDock.DockingManager"/>
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.Dockable">
+            <summary>
+            Dockable to a border of a <see cref="T:AvalonDock.DockingManager"/> and into a <see cref="T:AvalonDock.DocumentPane"/>
+            </summary>
+        </member>
+        <member name="F:AvalonDock.DockableStyle.DockableButNotAutoHidden">
+            <summary>
+            Dockable to a border of a <see cref="T:AvalonDock.DockingManager"/> and into a <see cref="T:AvalonDock.DocumentPane"/> but not in autohidden mode (WinForms controls)
+            </summary>
+        </member>
+        <member name="T:AvalonDock.DockableContentStateAndPosition">
+            <summary>
+            Represent a state of a dockable content that can be used to restore it after it's hidden
+            </summary>
+        </member>
+        <member name="T:AvalonDock.DockableContent">
+            <summary>
+            Identifies a content that can be drag over a <see cref="T:AvalonDock.DockingManager"/> control or hosted by a window floating over it (<see cref="T:AvalonDock.FloatingWindow"/>).
+            </summary>
+        </member>
+        <member name="M:AvalonDock.DockableContent.DetachFromContainerPane">
+            <summary>
+            Remove this content from its parent container pane
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AvalonDock.DockableContent.ResetSavedStateAndPosition">
+            <summary>
+            Reset internal state and position of the content
+            </summary>
+            <remarks>After a <see cref="T:AvalonDock.DockableContent"/> is hidden AvalonDock save its state and position in order to
+            restore it correctly when user wants to reshow it calling <see cref="M:AvalonDock.DockingManager.Show(AvalonDock.DocumentContent)"/> function. Call this method
+            if you want to reset these data and provide your state and anchor style calling one of the overloads of the function
+            <see cref="M:AvalonDock.DockingManager.Show(AvalonDock.DocumentContent)"/>.</remarks>
+        </member>
+        <member name="M:AvalonDock.DockableContent.SaveLayout(System.Xml.XmlWriter)">
+            <summary>
+            Save content specific layout settings
+            </summary>
+            <param name="storeWriter">Backend store writer</param>
+            <remarks>Custom derived class can overloads this method to handle custom layout persistence.</remarks>
+        </member>
+        <member name="M:AvalonDock.DockableContent.RestoreLayout(System.Xml.XmlElement)">
+            <summary>
+            Restore content specific layout settings
+            </summary>
+            <param name="storeReader">Saved xml element containg content layout settings</param>
+            <remarks>Custom derived class must overload this method to restore custom layout settings previously saved trought <see cref="M:AvalonDock.DockableContent.SaveLayout(System.Xml.XmlWriter)"/>.</remarks>
+        </member>
+        <member name="P:AvalonDock.DockableContent.DockableStyle">
+            <summary>
+            Get or sets a value that indicates how a dockable content can be dragged over and docked to a <see cref="T:AvalonDock.DockingManager"/>
+            </summary>
+        </member>
+        <member name="T:AvalonDock.DocumentContent">
+            <summary>
+            Represent a document which can be host by a <see cref="T:AvalonDock.DocumentPane"/>.
+            </summary>
+            <remarks>A document is always hosted by a <see cref="T:AvalonDock.DocumentPane"/> usually in the central area of <see cref="T:AvalonDock.DockingManager"/>.
+            It has limited dragging features becaus it can be only moved to an other <see cref="T:AvalonDock.DocumentPane"/> and can't float as a separate window.
+            You can access all documents within <see cref="T:AvalonDock.DockingManager"/> with property <see cref="P:AvalonDock.DockingManager.Documents"/>.</remarks>
+        </member>
         <member name="M:AvalonDock.DocumentContent.OnClosing(System.ComponentModel.CancelEventArgs)">
             <summary>
             Ovveride this method to handle <see cref="M:AvalonDock.DocumentContent.OnClosing(System.ComponentModel.CancelEventArgs)"/> event.
@@ -597,7 +659,7 @@
             Close this document removing it from its parent container
             </summary>
             <remarks>Use this function to close a document and remove it from its parent container. Please note
-            that if simply remove it from its parent <see cref="T:AvalonDock.DocumentPane"/> without call this method, events like
+            that if you simply remove it from its parent <see cref="T:AvalonDock.DocumentPane"/> without call this method, events like
             <see cref="M:AvalonDock.DocumentContent.OnClosing(System.ComponentModel.CancelEventArgs)"/>/<see cref="M:AvalonDock.DocumentContent.OnClosed"/> are not called.
             <para>
             Note:<see cref="T:AvalonDock.DockableContent"/> cannot be closed: AvalonDock simply hide a <see cref="T:AvalonDock.DockableContent"/> removing all the reference to it.
@@ -626,70 +688,6 @@
             </summary>
             <remarks>Note that when a document is closed property like <see cref="P:AvalonDock.ManagedContent.ContainerPane"/> or <see cref="P:AvalonDock.ManagedContent.Manager"/> returns null.</remarks>
         </member>
-        <member name="F:AvalonDock.ResizingPanel.OrientationProperty">
-            <summary>
-            Give access to Orientation attached property
-            </summary>
-            <remarks>If horizontal oriented children are positioned from left to right and width of each child is computed according to <see cref="!:ResizingWidth"/> attached property value. When vertical oriented children are arranged from top to bottom, according to <see cref="!:ResizingHeight"/> of each child.</remarks>
-        </member>
-        <member name="M:AvalonDock.ResizingPanel.NextChildIsVisible(System.Int32)">
-            <summary>
-            Checks if next child starting from a given index is visible.
-            </summary>
-            <param name="iChild">Starting child index.</param>
-            <returns>Returns true if next child is visible.</returns>
-            <remarks>This method takes in count the flow <see cref="!:ResizingDirection"/> of the children.</remarks>
-        </member>
-        <member name="M:AvalonDock.ResizingPanel.PrevChildIsVisible(System.Int32)">
-            <summary>
-            Checks if previous child starting from a given index is visible.
-            </summary>
-            <param name="iChild">Starting child index.</param>
-            <returns>Returns true if previous child is visible.</returns>
-            <remarks>This method takes in count the flow <see cref="!:ResizingDirection"/> of the children.</remarks>
-        </member>
-        <member name="M:AvalonDock.ResizingPanel.RemoveChild(System.Windows.FrameworkElement)">
-            <summary>
-            Remove a child from children collection
-            </summary>
-            <param name="childToRemove"></param>
-        </member>
-        <member name="M:AvalonDock.ResizingPanel.InsertChildRelativeTo(System.Windows.FrameworkElement,System.Windows.FrameworkElement,System.Boolean)">
-            <summary>
-            Insert a new child element into the children collection.
-            </summary>
-            <param name="childToInsert">New child element to insert.</param>
-            <param name="relativeChild">Child after or before which <see cref="!:childToInsert"/> element must be insert.</param>
-            <param name="next">True if new child must be insert after the <see cref="!:relativeChild"/> element. False otherwise.</param>
-        </member>
-        <member name="P:AvalonDock.ResizingPanel.Orientation">
-            <summary>
-            Gets or sets the orientation of the panel
-            </summary>
-            <remarks>If horizontal oriented children are positioned from left to right and width of each child is computed according to <see cref="!:ResizingWidth"/> attached property value. When vertical oriented children are arranged from top to bottom, according to <see cref="!:ResizingHeight"/> of each child.</remarks>
-        </member>
-        <member name="T:AvalonDock.DragPaneServices">
-            <summary>
-            Provides drag-drop functionalities for dockable panes
-            </summary>
-        </member>
-        <!-- Badly formed XML comment ignored for member "T:AvalonDock.FlyoutPaneWindow" -->
-        <member name="M:AvalonDock.OverlayWindow.OnDragEnter(AvalonDock.OverlayWindowDockingButton,System.Windows.Point)">
-            <summary>
-            Shows a highlighting rectangle
-            </summary>
-            <param name="overlayWindowDockingButton"></param>
-            <param name="point"></param>
-            <returns></returns>
-        </member>
-        <member name="M:AvalonDock.OverlayWindow.OnDragLeave(AvalonDock.OverlayWindowDockingButton,System.Windows.Point)">
-            <summary>
-            Hides the highlighting rectangle
-            </summary>
-            <param name="overlayWindowDockingButton"></param>
-            <param name="point"></param>
-            <returns></returns>
-        </member>
         <member name="T:AvalonDock.Properties.Resources">
             <summary>
               A strongly-typed resource class, for looking up localized strings, etc.
@@ -706,15 +704,64 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "T:AvalonDock.ResizingPanelSplitter" -->
-        <member name="T:AvalonDock.WpfApplication">
+        <member name="T:AvalonDock.AvalonDockBrushes">
             <summary>
-            Designates a Windows Presentation Foundation application model with added functionalities.
+            Defines a list of brushes used by AvalonDock templates
             </summary>
         </member>
-        <member name="M:AvalonDock.WpfApplication.DoEvents">
+        <member name="F:AvalonDock.AvalonDockBrushes.DefaultBackgroundBrush">
             <summary>
-            Processes all UI messages currently in the message queue.
+            Default brush for DockingManager background
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AvalonDockBrushes.DockablePaneTitleBackground">
+            <summary>
+            Brush used for the title background of a <see cref="T:AvalonDock.DockablePane"/>.
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AvalonDockBrushes.DockablePaneTitleBackgroundSelected">
+            <summary>
+            Brush used for the title background of a <see cref="T:AvalonDock.DockablePane"/> when is focused.
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AvalonDockBrushes.DockablePaneTitleForeground">
+            <summary>
+            Brush used for the title foreground of a <see cref="T:AvalonDock.DockablePane"/>.
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AvalonDockBrushes.DockablePaneTitleForegroundSelected">
+            <summary>
+            Brush used for the title foreground of a <see cref="T:AvalonDock.DockablePane"/> when is focused.
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AvalonDockBrushes.PaneHeaderCommandBackground">
+            <summary>
+            Brush used for the background of the pane command pins.
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AvalonDockBrushes.PaneHeaderCommandBorderBrush">
+            <summary>
+            Brush used for the border of the pane command pins.
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AvalonDockBrushes.DocumentHeaderBackground">
+            <summary>
+            Brush used for the background of a document header.
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AvalonDockBrushes.DocumentHeaderForeground">
+            <summary>
+            Brush used for the foreground of a document header.
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AvalonDockBrushes.DocumentHeaderBackgroundSelected">
+            <summary>
+            Brush used for the background of a document header when active (<see cref="P:AvalonDock.ManagedContent.IsActiveDocument"/>).
+            </summary>
+        </member>
+        <member name="F:AvalonDock.AvalonDockBrushes.DocumentHeaderBackgroundMouseOver">
+            <summary>
+            Brush used for the background of a document header when mouse is over it.
             </summary>
         </member>
         <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">

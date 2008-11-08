@@ -230,10 +230,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (viewTabControl == null) {
 				viewTabControl = new TabControl();
-				viewTabControl.GotFocus += delegate {
-					TabItem page = (TabItem)viewTabControl.SelectedItem;
-					if (!page.IsFocused) page.Focus();
-				};
 				viewTabControl.TabStripPlacement = Dock.Bottom;
 				this.SetContent(viewTabControl);
 				
