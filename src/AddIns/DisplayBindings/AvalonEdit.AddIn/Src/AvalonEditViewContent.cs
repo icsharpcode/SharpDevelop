@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.IO;
+using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Windows.Media;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -25,6 +26,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			this.Files.Add(file);
 			file.ForceInitializeView(this);
+			textEditor.Document.Changed += textEditor_Document_Changed;
+		}
+
+		void textEditor_Document_Changed(object sender, DocumentChangeEventArgs e)
+		{
+			PrimaryFile.IsDirty = true;
 		}
 		
 		public override object Content {

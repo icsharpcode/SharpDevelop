@@ -19,6 +19,8 @@ namespace ICSharpCode.AvalonEdit.Utils
 {
 	static class ExtensionMethods
 	{
+		public const double Epsilon = 1e-8;
+		
 		/// <summary>
 		/// Returns true if the doubles are close (difference smaller than 10^-8).
 		/// </summary>
@@ -26,7 +28,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			if (d1 == d2) // required for infinities
 				return true;
-			return Math.Abs(d1 - d2) < 1e-8;
+			return Math.Abs(d1 - d2) < Epsilon;
 		}
 		
 		/// <summary>

@@ -336,6 +336,13 @@ namespace ICSharpCode.AvalonEdit.Gui
 			return heightTree.CollapseText(start, end);
 		}
 		
+		/// <summary>
+		/// Gets the height of the document.
+		/// </summary>
+		public double DocumentHeight {
+			get { return heightTree.TotalHeight; }
+		}
+		
 		#region Measure
 		TextFormatter formatter;
 		List<VisualLine> allVisualLines = new List<VisualLine>();

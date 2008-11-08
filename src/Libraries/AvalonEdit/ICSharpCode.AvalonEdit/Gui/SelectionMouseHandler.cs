@@ -329,6 +329,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 			if (pos.Y > textView.ActualHeight)
 				pos.Y = textView.ActualHeight;
 			pos += textView.ScrollOffset;
+			if (pos.Y > textView.DocumentHeight)
+				pos.Y = textView.DocumentHeight - ExtensionMethods.Epsilon;
 			VisualLine line = textView.GetVisualLineFromVisualTop(pos.Y);
 			if (line != null) {
 				visualColumn = line.GetVisualColumn(pos);
