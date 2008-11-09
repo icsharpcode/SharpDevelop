@@ -1383,6 +1383,14 @@
 										</Component>
 									</Directory>
 									-->
+									<Directory Id="AvalonEdit" Name="AvalonEdit">
+										<Component Guid="A3376E4E-F07D-4554-ABF5-E91F2DA918E3" Id="AvalonEditAddInAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\AvalonEdit\AvalonEdit.AddIn.addin" Name="AvalonEdit.AddIn.addin" Id="AvalonEdit.AddIn.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="28171341-2A36-49DD-ACBC-815EE648A1DA" Id="ICSharpCodeAvalonEditAddInDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\AvalonEdit\ICSharpCode.AvalonEdit.AddIn.dll" Name="ICSharpCode.AvalonEdit.AddIn.dll" Id="ICSharpCode.AvalonEdit.AddIn.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
 								</Directory>
 								<Directory Id="MiscAddInsFolder" Name="Misc">
 									<Directory Id="AddInManagerFolder" Name="AddInManager">

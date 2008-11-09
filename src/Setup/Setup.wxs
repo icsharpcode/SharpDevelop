@@ -439,6 +439,9 @@
 			
 				<ComponentRef Id="HexEditorAddin"/>
 				<ComponentRef Id="HexEditorDll"/>
+				
+				<ComponentRef Id="AvalonEditAddInAddin"/>
+				<ComponentRef Id="ICSharpCodeAvalonEditAddInDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
