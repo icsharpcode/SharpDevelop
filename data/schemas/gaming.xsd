@@ -64,7 +64,17 @@
                     <xs:documentation>The game's instance ID.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-        </xs:complexType>
+            <xs:attribute name="GdfResourceFile" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Identifier of the file that contains the game's GDF resource, if it doesn't exist in the parent file.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="ExecutableFile" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>Identifier of the file that is the game's executable, if it isn't the parent file.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
     </xs:element>
 
     <xs:element name="PlayTask">

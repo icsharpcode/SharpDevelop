@@ -45,7 +45,6 @@ namespace WixBinding.Tests.PackageFiles
 		}
 		
 		[Test]
-		[Ignore("Src attribute is no longer deprecated")]
 		public void SrcAttributeExcluded()
 		{
 			string[] attributes = schema.GetAttributeNames("Directory");
@@ -56,7 +55,6 @@ namespace WixBinding.Tests.PackageFiles
 		}
 		
 		[Test]
-		[Ignore("No longer deprecated")]
 		public void UpgradeImageDeprecatedAttributes()
 		{
 			string[] attributes = schema.GetDeprecatedAttributes("UpgradeImage");

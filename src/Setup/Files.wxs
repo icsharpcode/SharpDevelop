@@ -401,6 +401,12 @@
 									<Component Guid="A49F5086-079E-4F5D-AD48-81DD1A7CF0BA" Id="WixGamingExtensionDll" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixGamingExtension.dll" Name="WixGamingExtension.dll" Id="WixGamingExtension.dll" KeyPath="yes" />
 									</Component>
+									<Component Guid="EA637AA9-E615-4AC9-A599-600135950415" Id="Difxapp_x64Wixlib" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\difxapp_x64.wixlib" Name="difxapp_x64.wixlib" Id="difxapp_x64.wixlib" KeyPath="yes" />
+									</Component>
+									<Component Guid="686E31B0-4BE9-4AA2-8C04-D17BAF820A86" Id="Difxapp_x86Wixlib" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\difxapp_x86.wixlib" Name="difxapp_x86.wixlib" Id="difxapp_x86.wixlib" KeyPath="yes" />
+									</Component>
 								</Directory>
 								<Directory Id="NUnitFolder" Name="NUnit">
 									<Component Guid="264B36E0-A168-432B-A227-F628D0159370" Id="NUnitCoreExtensionsDll" DiskId="1">
