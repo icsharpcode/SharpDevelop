@@ -269,6 +269,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					if (!reference.HasAttribute("include"))
 						throw new InvalidDataException("Reference without 'include' attribute!");
 					ReferenceProjectItem item = new ReferenceProjectItem(null, reference.GetAttribute("include"));
+					item.SetMetadata("HintPath", reference.GetAttribute("hintPath"));
 					requiredAssemblyReferences.Add(item);
 				}
 			}
