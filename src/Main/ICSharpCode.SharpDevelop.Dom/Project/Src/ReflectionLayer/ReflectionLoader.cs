@@ -18,24 +18,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return "ReflectionLoader in " + AppDomain.CurrentDomain.FriendlyName;
 		}
 		
-		public static Assembly ReflectionLoadGacAssembly(string partialName, bool reflectionOnly)
-		{
-			if (reflectionOnly) {
-				DomAssemblyName name = GacInterop.FindBestMatchingAssemblyName(partialName);
-				if (name == null)
-					return null;
-				return Assembly.ReflectionOnlyLoad(name.FullName);
-			} else {
-				#pragma warning disable 618
-				return Assembly.LoadWithPartialName(partialName);
-				#pragma warning restore 618
-			}
-		}
-		
-		public string LoadAndCreateDatabase(string fileName, string include, string cacheDirectory)
+		public string LoadAndCreateDatabase(string fileName, string cacheDirectory)
 		{
 			try {
-				ReflectionProjectContent content = LoadProjectContent(fileName, include, new ProjectContentRegistry());
+				ReflectionProjectContent content = LoadProjectContent(fileName, new ProjectContentRegistry());
 				if (content == null)
 					return null;
 				return new DomPersistence(cacheDirectory, null).SaveProjectContent(content);
@@ -49,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		ReflectionProjectContent LoadProjectContent(string fileName, string include, ProjectContentRegistry registry)
+		ReflectionProjectContent LoadProjectContent(string fileName, ProjectContentRegistry registry)
 		{
 			fileName = Path.GetFullPath(fileName);
 			LoggingService.Debug("Trying to load " + fileName);
@@ -60,14 +46,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (File.Exists(fileName)) {
 					assembly = Assembly.ReflectionOnlyLoadFrom(fileName);
 					return new ReflectionProjectContent(assembly, fileName, registry);
-				}
-				assembly = ReflectionLoadGacAssembly(include, true);
-				if (assembly != null)
-					return new ReflectionProjectContent(assembly, registry);
-				else
+				} else
 					throw new FileLoadException("Assembly not found.");
 			} catch (BadImageFormatException ex) {
-				LoggingService.Warn("BadImageFormat: " + include);
+				LoggingService.Warn("BadImageFormat: " + fileName);
 				throw new FileLoadException(ex.Message, ex);
 			} finally {
 				AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= AssemblyResolve;

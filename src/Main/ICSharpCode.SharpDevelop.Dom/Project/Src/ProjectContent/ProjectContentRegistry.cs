@@ -56,70 +56,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		/// <summary>
-		/// Load a project content using Reflection in a separate AppDomain.
-		/// This method first tries to load the assembly from the disk cache, if it exists there.
-		/// If it does not exist in disk cache, it creates a new AppDomain, instanciates a ReflectionLoader in it
-		/// and loads the assembly <paramref name="filename"/>.
-		/// If the file does not exist, <paramref name="include"/> is loaded from GAC.
-		/// </summary>
-		protected ReflectionProjectContent ReflectionLoadProjectContent(string filename, string include)
-		{
-			DomPersistence persistence;
-			bool tempPersistence;
-			if (this.persistence == null) {
-				tempPersistence = true;
-				persistence = new DomPersistence(Path.GetTempPath(), this);
-			} else {
-				// non-temp persistence
-				tempPersistence = false;
-				persistence = this.persistence;
-				
-				ReflectionProjectContent pc = persistence.LoadProjectContentByAssemblyName(filename);
-				if (pc != null) {
-					return pc;
-				}
-				pc = persistence.LoadProjectContentByAssemblyName(include);
-				if (pc != null) {
-					return pc;
-				}
-			}
-			
-			AppDomainSetup setup = new AppDomainSetup();
-			setup.DisallowCodeDownload = true;
-			setup.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
-			AppDomain domain = AppDomain.CreateDomain("AssemblyLoadingDomain", AppDomain.CurrentDomain.Evidence, setup);
-			
-			string database;
-			try {
-				object o = domain.CreateInstanceAndUnwrap(typeof(ReflectionLoader).Assembly.FullName, typeof(ReflectionLoader).FullName);
-				ReflectionLoader loader = (ReflectionLoader)o;
-				database = loader.LoadAndCreateDatabase(filename, include, persistence.CacheDirectory);
-			} catch (FileLoadException e) {
-				database = null;
-				HostCallback.ShowAssemblyLoadErrorInternal(filename, include, e.Message);
-			} catch (Exception e) {
-				database = null;
-				HostCallback.ShowError("Error loading code-completion information for " + include + " from " + filename, e);
-			} finally {
-				AppDomain.Unload(domain);
-			}
-			if (database == null) {
-				LoggingService.Debug("AppDomain finished but returned null...");
-				return null;
-			} else {
-				LoggingService.Debug("AppDomain finished, loading cache...");
-				try {
-					return persistence.LoadProjectContent(database);
-				} finally {
-					if (tempPersistence) {
-						try {
-							File.Delete(database);
-						} catch {}
-					}
-				}
-			}
-		}
 		
 		
 		ReflectionProjectContent mscorlibContent;
@@ -373,28 +309,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return MscorlibAssembly;
 				case "System": // System != mscorlib !!!
 					return SystemAssembly;
+				case "System.Core":
+					return typeof(System.Linq.Enumerable).Assembly;
 				case "System.Xml":
 				case "System.XML":
 					return typeof(XmlReader).Assembly;
 				case "System.Data":
-				case "System.Design":
-				case "System.Drawing":
-				case "System.Web.Services":
 				case "System.Windows.Forms":
-				case "System.Web":
+				case "System.Runtime.Remoting":
+					return Assembly.Load(shortName + ", Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+				case "System.Configuration":
+				case "System.Design":
+				case "System.Deployment":
+				case "System.Drawing":
+				case "System.Drawing.Design":
 				case "System.ServiceProcess":
 				case "System.Security":
-				case "System.Runtime.Remoting":
-				case "System.Messaging":
 				case "System.Management":
-				case "System.Drawing.Design":
-				case "System.Deployment":
-				case "System.Configuration":
+				case "System.Messaging":
+				case "System.Web":
+				case "System.Web.Services":
+					return Assembly.Load(shortName + ", Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
 				case "Microsoft.VisualBasic":
-					// Is not necessarily loaded by Dom-using application, but
-					// is a default .NET assembly and should be loaded with
-					// Reflection.
-					return ReflectionLoader.ReflectionLoadGacAssembly(shortName, false);
+					return Assembly.Load("Microsoft.VisualBasic, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
 				default:
 					return null;
 			}
