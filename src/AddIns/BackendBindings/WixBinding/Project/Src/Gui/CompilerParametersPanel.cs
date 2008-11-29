@@ -44,6 +44,7 @@ namespace ICSharpCode.WixBinding
 
 			b = helper.BindString("suppressWarningsTextBox", "SuppressIces", TextBoxEditMode.EditRawProperty);
 			b = helper.BindString("wixVariablesTextBox", "WixVariables", TextBoxEditMode.EditRawProperty);
+			b = helper.BindString("culturesTextBox", "Cultures", TextBoxEditMode.EditRawProperty);
 
 			helper.AddConfigurationSelector(this);
 		}
