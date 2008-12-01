@@ -6,22 +6,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
-
 using Debugger.Util;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui.Pads;
 
 namespace Debugger.AddIn.TreeModel
 {
 	public sealed class ItemIcon: NodeIcon {
-		protected override System.Drawing.Image GetIcon(TreeNodeAdv node)
+		protected override Image GetIcon(TreeNodeAdv node)
 		{
 			return ((TreeViewVarNode)node).Content.Image;
 		}
@@ -118,7 +113,7 @@ namespace Debugger.AddIn.TreeModel
 		static Dictionary<string, bool> expandedNodes = new Dictionary<string, bool>();
 		
 		TreeViewAdv localVarList;
-		Debugger.Process process;
+		Process process;
 		AbstractNode content;
 		
 		bool childsLoaded;
@@ -142,7 +137,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public TreeViewVarNode(Debugger.Process process, TreeViewAdv localVarList, AbstractNode content): base(localVarList, new object())
+		public TreeViewVarNode(Process process, TreeViewAdv localVarList, AbstractNode content): base(localVarList, new object())
 		{
 			this.process = process;
 			this.localVarList = localVarList;
@@ -201,7 +196,7 @@ namespace Debugger.AddIn.TreeModel
 		/// <param name="localVarList"></param>
 		/// <param name="childNodes"></param>
 		/// <param name="contentEnum"></param>
-		private static void SetContentRecursive(Debugger.Process process, TreeViewAdv localVarList, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
+		private static void SetContentRecursive(Process process, TreeViewAdv localVarList, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
 		{
 			contentEnum = contentEnum ?? new AbstractNode[0];
 			
@@ -230,7 +225,7 @@ namespace Debugger.AddIn.TreeModel
 		/// <param name="process">The process that contains the stackframe with the given variables.</param>
 		/// <param name="localVarList">A list of local variables.</param>
 		/// <param name="contentEnum">A list of local variables.</param>
-		public static void SetContentRecursive(Debugger.Process process, TreeViewAdv localVarList, IEnumerable<AbstractNode> contentEnum) {
+		public static void SetContentRecursive(Process process, TreeViewAdv localVarList, IEnumerable<AbstractNode> contentEnum) {
 			IList<TreeNodeAdv> childNodes = localVarList.Root.Children;
 			SetContentRecursive(process, localVarList, childNodes, contentEnum);
 		}

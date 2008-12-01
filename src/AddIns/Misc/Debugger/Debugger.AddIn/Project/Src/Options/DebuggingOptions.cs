@@ -5,18 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Debugger;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
-	public class DebuggingOptions: Debugger.Options
+	public class DebuggingOptions: Options
 	{
 		public static DebuggingOptions Instance {
 			get {

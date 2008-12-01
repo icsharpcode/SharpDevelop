@@ -44,16 +44,16 @@ using System.Text;
 using System.Windows.Forms;
 using Debugger;
 using Debugger.AddIn.TreeModel;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
+using Exception=System.Exception;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public partial class CallStackPad : DebuggerPad
 	{
 		ListView  callStackList;
-		Debugger.Process debuggedProcess;
+		Process debuggedProcess;
 		
 		ColumnHeader name     = new ColumnHeader();
 		ColumnHeader language = new ColumnHeader();
@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 
-		protected override void SelectProcess(Debugger.Process process)
+		protected override void SelectProcess(Process process)
 		{
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused -= debuggedProcess_Paused;
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					List<ListViewItem> items = CreateItems();
 					UpdateItems(items);
 				} catch(AbortedBecauseDebuggeeResumedException) {
-				} catch(System.Exception) {
+				} catch(Exception) {
 					if (debuggedProcess == null || debuggedProcess.HasExited) {
 						// Process unexpectedly exited
 					} else {

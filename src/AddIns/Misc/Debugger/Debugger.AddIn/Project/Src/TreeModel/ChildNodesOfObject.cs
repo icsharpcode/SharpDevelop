@@ -4,11 +4,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Services;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Debugger;
 using Debugger.Expressions;
 using Debugger.MetaData;
 using ICSharpCode.Core;

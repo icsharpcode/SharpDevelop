@@ -38,17 +38,20 @@
 #endregion
 
 using System;
+using System.Threading;
 using System.Windows.Forms;
 using Debugger;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
+using Exception=System.Exception;
+using Thread=Debugger.Thread;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public partial class RunningThreadsPad : DebuggerPad
 	{
 		ListView  runningThreadsList;
-		Debugger.Process debuggedProcess;
+		Process debuggedProcess;
 		
 		ColumnHeader id          = new ColumnHeader();
 		ColumnHeader name        = new ColumnHeader();
@@ -94,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 
-		protected override void SelectProcess(Debugger.Process process)
+		protected override void SelectProcess(Process process)
 		{
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused               -= debuggedProcess_Paused;
@@ -135,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						RefreshThread(t);
 					}
 				} catch(AbortedBecauseDebuggeeResumedException) {
-				} catch(System.Exception) {
+				} catch(Exception) {
 					if (debuggedProcess == null || debuggedProcess.HasExited) {
 						// Process unexpectedly exited
 					} else {
@@ -203,19 +206,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				item.SubItems.Add(ResourceService.GetString("Global.NA"));
 			}
 			switch (thread.Priority) {
-				case System.Threading.ThreadPriority.Highest:
+				case ThreadPriority.Highest:
 					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Highest"));
 					break;
-				case System.Threading.ThreadPriority.AboveNormal:
+				case ThreadPriority.AboveNormal:
 					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.AboveNormal"));
 					break;
-				case System.Threading.ThreadPriority.Normal:
+				case ThreadPriority.Normal:
 					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Normal"));
 					break;
-				case System.Threading.ThreadPriority.BelowNormal:
+				case ThreadPriority.BelowNormal:
 					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.BelowNormal"));
 					break;
-				case System.Threading.ThreadPriority.Lowest:
+				case ThreadPriority.Lowest:
 					item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Lowest"));
 					break;
 				default:

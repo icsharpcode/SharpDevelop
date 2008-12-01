@@ -39,11 +39,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
-
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
@@ -52,12 +52,13 @@ using Debugger.Expressions;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using Bitmap = System.Drawing.Bitmap;
 using BM = ICSharpCode.SharpDevelop.Bookmarks;
+using Process=Debugger.Process;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
@@ -76,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		ICorPublish corPublish;
 		
-		Debugger.Process debuggedProcess;
+		Process debuggedProcess;
 		
 		DynamicTreeDebuggerRow currentTooltipRow;
 		Expression             currentTooltipExpression;
@@ -89,13 +90,13 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public Debugger.Process DebuggedProcess {
+		public Process DebuggedProcess {
 			get {
 				return debuggedProcess;
 			}
 		}
 		
-		public static Debugger.Process CurrentProcess {
+		public static Process CurrentProcess {
 			get {
 				WindowsDebugger dbgr = DebuggerService.CurrentDebugger as WindowsDebugger;
 				if (dbgr != null && dbgr.DebuggedProcess != null) {
@@ -179,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				if (DebugStarting != null)
 					DebugStarting(this, EventArgs.Empty);
 				
-				Debugger.Process process = debugger.Start(processStartInfo.FileName,
+				Process process = debugger.Start(processStartInfo.FileName,
 				                                          processStartInfo.WorkingDirectory,
 				                                          processStartInfo.Arguments);
 				SelectProcess(process);
@@ -212,7 +213,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				if (DebugStarting != null)
 					DebugStarting(this, EventArgs.Empty);
 				
-				Debugger.Process process = debugger.Attach(existingProcess);
+				Process process = debugger.Attach(existingProcess);
 				attached = true;
 				SelectProcess(process);
 			}
@@ -424,7 +425,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		#endregion
 		
-		public event System.EventHandler Initialize;
+		public event EventHandler Initialize;
 		
 		public void InitializeService()
 		{
@@ -540,7 +541,7 @@ namespace ICSharpCode.SharpDevelop.Services
 						}
 					});
 			
-			BM.BookmarkEventHandler bp_bookmarkManager_Removed = null;
+			BookmarkEventHandler bp_bookmarkManager_Removed = null;
 			bp_bookmarkManager_Removed = (sender, e) => {
 				if (bookmark == e.Bookmark) {
 					debugger.RemoveBreakpoint(breakpoint);
@@ -549,14 +550,14 @@ namespace ICSharpCode.SharpDevelop.Services
 					debugger.ProcessStarted -= bp_debugger_ProcessStarted;
 					debugger.ProcessExited -= bp_debugger_ProcessExited;
 					breakpoint.Hit -= bp_debugger_BreakpointHit;
-					BM.BookmarkManager.Removed -= bp_bookmarkManager_Removed;
+					BookmarkManager.Removed -= bp_bookmarkManager_Removed;
 				}
 			};
 			// register the events
 			debugger.ProcessStarted += bp_debugger_ProcessStarted;
 			debugger.ProcessExited += bp_debugger_ProcessExited;
 			breakpoint.Hit += bp_debugger_BreakpointHit;
-			BM.BookmarkManager.Removed += bp_bookmarkManager_Removed;
+			BookmarkManager.Removed += bp_bookmarkManager_Removed;
 		}
 		
 		bool Evaluate(string code, string language)
@@ -607,7 +608,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public void SelectProcess(Debugger.Process process)
+		public void SelectProcess(Process process)
 		{
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused                  -= debuggedProcess_DebuggingPaused;

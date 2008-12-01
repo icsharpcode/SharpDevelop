@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50215</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -21,6 +21,21 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\HP\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <PublishUrl>http://localhost/Debugger.AddIn/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,23 +68,33 @@
     <Compile Include="Src\Expressions\EvaluateAstVisitor.cs" />
     <Compile Include="Src\Expressions\NotImplementedAstVisitor.cs" />
     <Compile Include="Src\Options\DebuggingOptions.cs" />
-    <Compile Include="Src\Options\DebuggingOptionsPanel.cs" />
+    <Compile Include="Src\Options\DebuggingOptionsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Options\DebuggingOptionsPanel.Designer.cs">
       <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Options\DebuggingSymbolsPanel.cs" />
+    <Compile Include="Src\Options\DebuggingSymbolsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Options\DebuggingSymbolsPanel.Designer.cs">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Pads\WatchPadCommands.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
-    <Compile Include="Src\Pads\ConsolePad.cs" />
+    <Compile Include="Src\Pads\ConsolePad.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Pads\LoadedModulesPad.cs" />
     <Compile Include="Src\Pads\LocalVarPad.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.cs" />
-    <Compile Include="Src\Pads\WatchPad.cs" />
-    <Compile Include="Src\Service\AttachToProcessForm.cs" />
+    <Compile Include="Src\Pads\WatchPad.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Service\AttachToProcessForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\Service\DebugeeExceptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,7 +110,9 @@
     <EmbeddedResource Include="Src\Service\DebugeeExceptionForm.resx">
       <DependentUpon>DebugeeExceptionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Src\Service\EditBreakpointScriptForm.cs" />
+    <Compile Include="Src\Service\EditBreakpointScriptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\Service\EditBreakpointScriptForm.Designer.cs">
       <DependentUpon>EditBreakpointScriptForm.cs</DependentUpon>
     </Compile>
@@ -113,7 +140,9 @@
     <Compile Include="Src\Pads\RunningThreadsPad.Menu.cs" />
     <Compile Include="Src\TreeModel\AbstractNode.cs" />
     <Compile Include="Src\TreeModel\Adapters\DynamicTreeDebuggerRow.cs" />
-    <Compile Include="Src\TreeModel\Adapters\TreeViewVarNode.cs" />
+    <Compile Include="Src\TreeModel\Adapters\TreeViewVarNode.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\TreeModel\ArrayRangeNode.cs" />
     <Compile Include="Src\TreeModel\ErrorNode.cs" />
     <Compile Include="Src\TreeModel\ValueNode.cs" />
@@ -170,11 +199,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Src\Expressions" />
-    <Folder Include="Src\Visualizers" />
-    <Folder Include="Src\Options" />
-    <Folder Include="Src\TreeModel" />
-    <Folder Include="Src\TreeModel\Adapters" />
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
@@ -195,6 +219,33 @@
       <Name>ICSharpCode.SharpDevelop.Sda</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="PostBuildEvent.proj" />

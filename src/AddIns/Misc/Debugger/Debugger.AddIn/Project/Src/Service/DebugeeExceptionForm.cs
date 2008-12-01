@@ -39,15 +39,15 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Drawing;
+using System.Windows.Forms;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
-
 using Debugger;
 using Debugger.AddIn.TreeModel;
 using Debugger.Expressions;
 using ICSharpCode.Core;
-
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Services
             // Windows form designer cannot place a component declared in a base class in a container component
             // declared in a child class. Hence we do it manually.
             Controls.Remove(textBox);
-            textBox.Location = new System.Drawing.Point(0, 4);
+            textBox.Location = new Point(0, 4);
             splitContainer.Panel1.Controls.Add(textBox);
             
             // To make the exceptionDetails size properly, it must be rendered full size in the designer.
@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		           
 			splitContainer.SplitterDistance = DebuggingOptions.Instance.DebugeeExceptionSplitterDistance;
 			// Set this here so it doesnt fire on startup replacing the saved value with a default.
-			this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerMoved);
+			this.splitContainer.SplitterMoved += new SplitterEventHandler(this.splitContainerMoved);
 			
 			InitializeExceptionDetails();
 		}
@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			typeColumn.Width = 170;
 		}
 		
-		public static Result Show(Process process, string title, string message, System.Drawing.Bitmap icon, bool canContinue)
+		public static Result Show(Process process, string title, string message, Bitmap icon, bool canContinue)
 		{
 			using (DebugeeExceptionForm form = new DebugeeExceptionForm()) {
 				form.Text = title;
@@ -137,18 +137,18 @@ namespace ICSharpCode.SharpDevelop.Services
 				form.exceptionDetails.Refresh();
 
 				form.buttonContinue.Enabled = canContinue;
-				form.ShowDialog(Gui.WorkbenchSingleton.MainForm);
+				form.ShowDialog(WorkbenchSingleton.MainForm);
 				return form.result;
 			}
 		}
 		
-		void debugeeExceptionFormResize(object sender, System.EventArgs e)
+		void debugeeExceptionFormResize(object sender, EventArgs e)
 		{
 			DebuggingOptions.Instance.DebuggeeExceptionWindowSize = Size;
 			DebuggingOptions.Instance.DebuggeeExceptionWindowState = WindowState;
 		}
 						
-		void linkExceptionDetailLinkClicked(object sender, System.EventArgs e)
+		void linkExceptionDetailLinkClicked(object sender, EventArgs e)
 		{
             splitContainer.Panel2Collapsed = ! splitContainer.Panel2Collapsed;
             DebuggingOptions.Instance.ShowExceptionDetails = ! splitContainer.Panel2Collapsed;
@@ -157,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				: StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails}");
 		}
 		
-		void splitContainerMoved(object sender, System.EventArgs e)
+		void splitContainerMoved(object sender, EventArgs e)
 		{
 			DebuggingOptions.Instance.DebugeeExceptionSplitterDistance = splitContainer.SplitterDistance;
 		}

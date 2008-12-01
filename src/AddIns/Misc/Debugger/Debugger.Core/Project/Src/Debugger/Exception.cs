@@ -5,11 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
-using System.Runtime.InteropServices;
 using System.Text;
-
-using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {	
@@ -103,9 +99,9 @@ namespace Debugger
 	
 	public class ExceptionEventArgs: ProcessEventArgs
 	{
-		Exception exception;
-		ExceptionType exceptionType;
-		bool isUnhandled;
+	    readonly Exception exception;
+	    readonly ExceptionType exceptionType;
+	    readonly bool isUnhandled;
 		
 		public Exception Exception {
 			get { return exception; }

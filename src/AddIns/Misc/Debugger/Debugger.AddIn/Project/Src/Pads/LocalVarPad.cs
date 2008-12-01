@@ -38,21 +38,19 @@
 #endregion
 
 using System.Windows.Forms;
-
-using ICSharpCode.Core;
-
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
-
 using Debugger;
 using Debugger.AddIn.TreeModel;
+using ICSharpCode.Core;
+using Exception=System.Exception;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class LocalVarPad : DebuggerPad
 	{
 		TreeViewAdv localVarList;
-		Debugger.Process debuggedProcess;
+		Process debuggedProcess;
 		
 		readonly TreeColumn nameColumn = new TreeColumn();
 		readonly TreeColumn valColumn  = new TreeColumn();
@@ -112,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			typeColumn.Width = 250;
 		}
 		
-		protected override void SelectProcess(Debugger.Process process)
+		protected override void SelectProcess(Process process)
 		{
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused -= debuggedProcess_Paused;
@@ -142,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					Utils.DoEvents(debuggedProcess);
 					TreeViewVarNode.SetContentRecursive(debuggedProcess, localVarList, new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes);
 				} catch(AbortedBecauseDebuggeeResumedException) {
-				} catch(System.Exception) {
+				} catch(Exception) {
 					if (debuggedProcess == null || debuggedProcess.HasExited) {
 						// Process unexpectedly exited
 					} else {

@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -13,7 +12,6 @@ using Debugger.MetaData;
 using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
-using Debugger.Wrappers.MetaData;
 
 namespace Debugger
 {

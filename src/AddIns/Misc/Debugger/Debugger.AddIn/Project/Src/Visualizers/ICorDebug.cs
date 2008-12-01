@@ -4,9 +4,9 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.MetaData;
 using System;
 using System.Collections.Generic;
+using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger.AddIn.TreeModel

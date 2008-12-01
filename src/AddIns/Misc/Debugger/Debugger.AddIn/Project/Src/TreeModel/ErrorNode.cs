@@ -4,16 +4,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Sda;
-
-using Debugger;
 using Debugger.Expressions;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Sda;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -49,7 +44,7 @@ namespace Debugger.AddIn.TreeModel
 			showError.Checked = false;
 			showError.Click += delegate {
 				using (ExceptionBox box = new ExceptionBox(error, null, false)) {
-					box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+					box.ShowDialog(WorkbenchSingleton.MainForm);
 				}
 			};
 			

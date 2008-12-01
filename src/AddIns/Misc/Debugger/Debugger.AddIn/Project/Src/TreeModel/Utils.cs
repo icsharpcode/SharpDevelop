@@ -6,12 +6,8 @@
 
 using System;
 using System.Windows.Forms;
-
+using Debugger.Util;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Services;
-
-using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -61,12 +57,12 @@ namespace Debugger.AddIn.TreeModel
 		public PrintTime(string text)
 		{
 			this.text = text;
-			this.start = Debugger.Util.HighPrecisionTimer.Now;
+			this.start = HighPrecisionTimer.Now;
 		}
 		
 		public void Dispose()
 		{
-			TimeSpan dur = Debugger.Util.HighPrecisionTimer.Now - start;
+			TimeSpan dur = HighPrecisionTimer.Now - start;
 			LoggingService.InfoFormatted("{0} ({1} ms)", text, dur.TotalMilliseconds);
 		}
 	}

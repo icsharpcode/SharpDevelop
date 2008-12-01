@@ -4,7 +4,6 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 2039 $</version>
 // </file>
-using ICSharpCode.Core.WinForms;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -14,7 +13,9 @@ using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
+using Exception=System.Exception;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -94,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class WatchPad : DebuggerPad
 	{
 		TreeViewAdv watchList;
-		Debugger.Process debuggedProcess;
+		Process debuggedProcess;
 		List<TextNode> watches;
 		
 		public List<TextNode> Watches {
@@ -199,7 +200,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			typeColumn.Width = 250;
 		}
 		
-		protected override void SelectProcess(Debugger.Process process)
+		protected override void SelectProcess(Process process)
 		{
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused -= debuggedProcess_Paused;
@@ -247,7 +248,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					foreach (TreeViewVarNode nod in nodes)
 						watchList.Root.Children.Add(nod);
 				} catch(AbortedBecauseDebuggeeResumedException) {
-				} catch(System.Exception ex) {
+				} catch(Exception ex) {
 					if (debuggedProcess == null || debuggedProcess.HasExited) {
 						// Process unexpectedly exited
 					} else {

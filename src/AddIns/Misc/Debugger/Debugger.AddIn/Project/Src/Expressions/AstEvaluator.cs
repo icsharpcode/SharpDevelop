@@ -4,12 +4,9 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.NRefactory.Ast;
 using System;
-using Debugger;
-using Debugger.AddIn.TreeModel;
-using Debugger.Expressions;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn
 {

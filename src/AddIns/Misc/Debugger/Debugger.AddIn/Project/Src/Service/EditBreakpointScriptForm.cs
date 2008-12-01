@@ -4,14 +4,13 @@
  * Date: 25.08.2008
  * Time: 09:37
  */
-using ICSharpCode.SharpDevelop.Project;
 using System;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace Debugger.AddIn.Service
 {

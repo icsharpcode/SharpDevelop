@@ -4,17 +4,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
-using Debugger;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Services;
-using ICSharpCode.SharpDevelop.Widgets.TreeGrid;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Widgets.TreeGrid;
 
 namespace Debugger.AddIn.TreeModel
 {

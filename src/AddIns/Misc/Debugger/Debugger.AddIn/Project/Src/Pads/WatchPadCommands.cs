@@ -4,18 +4,10 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 2039 $</version>
 // </file>
-using ICSharpCode.SharpDevelop.Gui.Pads;
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using Aga.Controls.Tree;
-using Aga.Controls.Tree.NodeControls;
-using Debugger;
-using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
-using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Gui.Pads;
 
 namespace Debugger.AddIn
 {

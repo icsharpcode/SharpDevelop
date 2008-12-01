@@ -5,9 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
-using System.Collections.Generic;
-
 namespace Debugger.Expressions
 {
 	/// <summary>

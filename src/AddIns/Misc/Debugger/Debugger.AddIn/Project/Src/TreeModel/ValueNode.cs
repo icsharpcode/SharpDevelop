@@ -7,8 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using Debugger.Expressions;
 using Debugger.MetaData;
 using ICSharpCode.Core;
@@ -157,7 +157,7 @@ namespace Debugger.AddIn.TreeModel
 				string format = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CannotSetValue.BadFormat");
 				string msg = String.Format(format, newText, val.Type.PrimitiveType.ToString());
 				MessageService.ShowMessage(msg ,"${res:MainWindow.Windows.Debug.LocalVariables.CannotSetValue.Title}");
-			} catch (System.Runtime.InteropServices.COMException) {
+			} catch (COMException) {
 				// COMException (0x80131330): Cannot perfrom SetValue on non-leaf frames.
 				// Happens if trying to set value after exception is breaked
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.LocalVariables.CannotSetValue.UnknownError}",
