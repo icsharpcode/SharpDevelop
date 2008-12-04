@@ -22,7 +22,7 @@
 		<SyntaxMode id         = "F# Syntax Mode"
 		            name       = "F#"
 		            extensions = ".fs;.fsi"
-		            resource   = "FSharpBindings.Resources.FS-Mode.xshd" />
+		            resource   = "FS-Mode.xshd" />
 	</Path>
 
 	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">

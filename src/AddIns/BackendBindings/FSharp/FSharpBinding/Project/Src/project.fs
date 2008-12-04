@@ -31,7 +31,7 @@ open ICSharpCode.SharpDevelop.Gui
 open ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 type FSharpProject = class
-    inherit CompilableProject as base
+    inherit CompilableProject
     new (engineProvider : IMSBuildEngineProvider, fileName : string, projectName : string ) as x = 
         { inherit CompilableProject(engineProvider) } then 
         base.Name <- projectName
@@ -41,9 +41,9 @@ type FSharpProject = class
         x.Create(info)
         base.AddImport(@"$(FSharpBuildTasksPath)\SharpDevelop.Build.Fsc.Targets", null)
     override x.GetDefaultItemType(fileName : string) = 
-        if string.Equals(".fs", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase) then
+        if String.Equals(".fs", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase) then
             ItemType.Compile
-        else if string.Equals(".fsi", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase) then
+        else if String.Equals(".fsi", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase) then
             ItemType.Compile
         else
             base.GetDefaultItemType(fileName)
@@ -61,7 +61,7 @@ type FSharpProjectNode = class
         { inherit ProjectNode(project) }
     member  x.AddParentFolder((virtualName : string), (relativeDirectoryPath : string), (directoryNodeList :Dictionary<string, DirectoryNode>)) =
         if (relativeDirectoryPath.Length = 0
-            || string.Compare(virtualName, 0, relativeDirectoryPath, 0, relativeDirectoryPath.Length, StringComparison.InvariantCultureIgnoreCase) = 0) then
+            || String.Compare(virtualName, 0, relativeDirectoryPath, 0, relativeDirectoryPath.Length, StringComparison.InvariantCultureIgnoreCase) = 0) then
             let pos = virtualName.IndexOf('/', relativeDirectoryPath.Length + 1)
             if (pos > 0) then
                 let subFolderName = virtualName.Substring(relativeDirectoryPath.Length, pos - relativeDirectoryPath.Length);
@@ -83,7 +83,7 @@ type FSharpProjectNode = class
             if (x.RelativePath.Length > 0) then
                 (x.RelativePath.Replace('\\', '/')) + "/"
             else
-                string.Empty
+                String.Empty
                     
         for item in x.Project.Items do
             match item with
@@ -95,7 +95,7 @@ type FSharpProjectNode = class
                     else
                         virtualName
                 let fileName = Path.GetFileName(virtualName)
-                if (not (string.Equals(virtualName, relativeDirectoryPath + fileName, StringComparison.InvariantCultureIgnoreCase))) then
+                if (not (String.Equals(virtualName, relativeDirectoryPath + fileName, StringComparison.InvariantCultureIgnoreCase))) then
                     x.AddParentFolder(virtualName, relativeDirectoryPath, directoryNodeList);
                     //continue;
                     

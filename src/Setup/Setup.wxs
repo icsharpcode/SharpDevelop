@@ -429,8 +429,6 @@
 
 				<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	
-				<ComponentRef Id="FSharpBuildTasksDll"/>	
-				<ComponentRef Id="SharpDevelopBuildFscTargets"/>	
 				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
 				<ComponentRef Id="FSharpEmptyClassTemplate"/>	
 				

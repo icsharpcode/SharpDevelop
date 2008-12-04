@@ -1310,17 +1310,11 @@
 										</Component>
 									</Directory>
 									<Directory Id="FSharpBinding" Name="FSharpBinding">
-										<Component Guid="7C6826BE-C03E-43A4-AD27-17A9325C70DD" Id="FSharpBuildTasksDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\FSharp.Build.Tasks.dll" Name="FSharp.Build.Tasks.dll" Id="FSharp.Build.Tasks.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="FSharp.Build.Tasks.dll" AssemblyManifest="FSharp.Build.Tasks.dll" />
-										</Component>
 										<Component Guid="6B4F28AF-133C-4FEB-98DB-67A5405AEB12" Id="FSharpBindingAddin" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\FSharpBinding.addin" Name="FSharpBinding.addin" Id="FSharpBinding.addin" KeyPath="yes" />
 										</Component>
 										<Component Guid="810CE373-569B-41C3-ADDA-D2F0E0EFD5DE" Id="FSharpBindingDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\FSharpBinding.dll" Name="FSharpBinding.dll" Id="FSharpBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="FSharpBinding.dll" AssemblyManifest="FSharpBinding.dll" />
-										</Component>
-										<Component Guid="0E893CB2-9662-4507-9745-156CC7B96FBA" Id="SharpDevelopBuildFscTargets" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\SharpDevelop.Build.Fsc.targets" Name="SharpDevelop.Build.Fsc.targets" Id="SharpDevelop.Build.Fsc.targets" KeyPath="yes" />
 										</Component>
 										<Directory Id="FSharpBindingTemplates" Name="Templates">
 											<Component Guid="37A7695A-BA60-45A6-9BDB-FAE663D7A4C0" Id="FSharpConsoleProjectTemplate" DiskId="1">
