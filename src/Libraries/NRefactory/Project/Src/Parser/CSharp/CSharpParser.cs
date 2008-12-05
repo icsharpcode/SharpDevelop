@@ -109,26 +109,27 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (la.kind != Tokens.OpenParenthesis) {
 				return false;
 			}
-			if (IsSimpleTypeCast()) {
-				return true;
-			}
-			return GuessTypeCast();
-		}
-
-		// "(" ( typeKW [ "[" {","} "]" | "*" ] | void  ( "[" {","} "]" | "*" ) ) ")"
-		// only for built-in types, all others use GuessTypeCast!
-		bool IsSimpleTypeCast ()
-		{
-			// assert: la.kind == _lpar
+			bool isPossibleExpression = true;
+			
 			lexer.StartPeek();
 			Token pt = lexer.Peek();
 			
-			if (!IsTypeKWForTypeCast(ref pt)) {
+			if (!IsTypeNameOrKWForTypeCast(ref pt, ref isPossibleExpression)) {
 				return false;
 			}
-			if (pt.kind == Tokens.Question) // TODO: check if IsTypeKWForTypeCast doesn't already to this
+			
+			// ")"
+			if (pt.kind != Tokens.CloseParenthesis) {
+				return false;
+			}
+			if (isPossibleExpression) {
+				// check successor
 				pt = lexer.Peek();
-			return pt.kind == Tokens.CloseParenthesis;
+				return Tokens.CastFollower[pt.kind];
+			} else {
+				// not possibly an expression: don't check cast follower
+				return true;
+			}
 		}
 
 		/* !!! Proceeds from current peek position !!! */
@@ -145,17 +146,25 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		}
 
 		/* !!! Proceeds from current peek position !!! */
+		bool IsTypeNameOrKWForTypeCast(ref Token pt, ref bool isPossibleExpression)
+		{
+			if (Tokens.TypeKW[pt.kind] || pt.kind == Tokens.Void) {
+				isPossibleExpression = false;
+				return IsTypeKWForTypeCast(ref pt);
+			} else {
+				return IsTypeNameForTypeCast(ref pt, ref isPossibleExpression);
+			}
+		}
+		
 		bool IsTypeNameOrKWForTypeCast(ref Token pt)
 		{
-			if (Tokens.TypeKW[pt.kind] || pt.kind == Tokens.Void)
-				return IsTypeKWForTypeCast(ref pt);
-			else
-				return IsTypeNameForTypeCast(ref pt);
+			bool tmp = false;
+			return IsTypeNameOrKWForTypeCast(ref pt, ref tmp);
 		}
 
 		// TypeName = ident [ "::" ident ] { ["<" TypeNameOrKW { "," TypeNameOrKW } ">" ] "." ident } ["?"] PointerOrDims
 		/* !!! Proceeds from current peek position !!! */
-		bool IsTypeNameForTypeCast(ref Token pt)
+		bool IsTypeNameForTypeCast(ref Token pt, ref bool isPossibleExpression)
 		{
 			// ident
 			if (!IsIdentifierToken(pt)) {
@@ -197,29 +206,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				pt = Peek();
 			}
 			if (pt.kind == Tokens.Times || pt.kind == Tokens.OpenSquareBracket) {
+				isPossibleExpression = false;
 				return IsPointerOrDims(ref pt);
 			}
 			return true;
-		}
-
-		// "(" TypeName ")" castFollower
-		bool GuessTypeCast ()
-		{
-			// assert: la.kind == _lpar
-			StartPeek();
-			Token pt = Peek();
-
-			if (!IsTypeNameForTypeCast(ref pt)) {
-				return false;
-			}
-			
-			// ")"
-			if (pt.kind != Tokens.CloseParenthesis) {
-				return false;
-			}
-			// check successor
-			pt = Peek();
-			return Tokens.CastFollower[pt.kind];
 		}
 		// END IsTypeCast
 		

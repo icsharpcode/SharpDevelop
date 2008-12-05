@@ -30,6 +30,17 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void CSharpVoidPointerVariableDeclarationTest()
+		{
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("void *a;");
+			Assert.AreEqual(1, lvd.Variables.Count);
+			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
+			TypeReference type = lvd.GetTypeForVariable(0);
+			Assert.AreEqual("void", type.Type);
+			Assert.AreEqual(1, type.PointerNestingLevel);
+		}
+		
+		[Test]
 		public void CSharpComplexGenericLocalVariableDeclarationTest()
 		{
 			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("Generic<Namespace.Printable, G<Printable[]> > where = new Generic<Namespace.Printable, G<Printable[]>>();");
