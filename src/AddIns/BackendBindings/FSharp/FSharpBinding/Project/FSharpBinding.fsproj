@@ -107,7 +107,6 @@
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')" />
 	<Target Name="Clean" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
 		<!-- F# not found? no need to clean anything -->
 	</Target>
@@ -117,4 +116,5 @@
 	<Target Name="Rebuild" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
 		<Warning Text="Microsoft.FSharp.Targets not found, skipping F# binding"/>
 	</Target>
+  <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')" />
 </Project>
