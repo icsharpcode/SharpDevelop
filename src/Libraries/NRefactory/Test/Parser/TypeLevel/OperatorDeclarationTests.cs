@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsTrue(od.IsConversionOperator);
 			Assert.AreEqual(1, od.Parameters.Count);
 			Assert.AreEqual(ConversionType.Implicit, od.ConversionType);
-			Assert.AreEqual("double", od.TypeReference.Type);
+			Assert.AreEqual("System.Double", od.TypeReference.Type);
 		}
 		
 		[Test]
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsTrue(od.IsConversionOperator);
 			Assert.AreEqual(1, od.Parameters.Count);
 			Assert.AreEqual(ConversionType.Explicit, od.ConversionType);
-			Assert.AreEqual("double", od.TypeReference.Type);
+			Assert.AreEqual("System.Double", od.TypeReference.Type);
 		}
 		
 		[Test]

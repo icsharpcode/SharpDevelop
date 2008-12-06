@@ -114,12 +114,13 @@ namespace NRefactoryASTGenerator.Ast
 		public MemberReferenceExpression(Expression targetObject, string memberName) {}
 	}
 	
+	[IncludeMember("[Obsolete] public string Identifier { get { return MemberName; } set { MemberName = value; } }")]
 	class PointerReferenceExpression : Expression {
 		Expression targetObject;
-		string     identifier;
+		string     memberName;
 		List<TypeReference> typeArguments;
 		
-		public PointerReferenceExpression(Expression targetObject, string identifier) {}
+		public PointerReferenceExpression(Expression targetObject, string memberName) {}
 	}
 	
 	class IdentifierExpression : Expression {
@@ -151,7 +152,7 @@ namespace NRefactoryASTGenerator.Ast
 		public TypeOfExpression(TypeReference typeReference) {}
 	}
 	
-	[IncludeMember("public TypeReferenceExpression(string typeName) : this(new TypeReference(typeName)) {}")]
+	[IncludeMember("[Obsolete] public TypeReferenceExpression(string typeName) : this(new TypeReference(typeName)) {}")]
 	class TypeReferenceExpression : Expression {
 		TypeReference typeReference;
 		

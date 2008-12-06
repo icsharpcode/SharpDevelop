@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ICSharpCode.NRefactory.Ast
@@ -20,11 +21,9 @@ namespace ICSharpCode.NRefactory.Ast
 		public static readonly TypeReference NewConstraint = new TypeReference("constraint: new");
 		
 		string type = "";
-		string systemType = "";
 		int    pointerNestingLevel;
 		int[]  rankSpecifier;
 		List<TypeReference> genericTypes = new List<TypeReference>();
-		bool isGlobal;
 		
 		#region Static primitive type list
 		static Dictionary<string, string> types   = new Dictionary<string, string>();
@@ -129,7 +128,7 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		public virtual TypeReference Clone()
 		{
-			TypeReference c = new TypeReference(type, systemType);
+			TypeReference c = new TypeReference(type);
 			CopyFields(this, c);
 			return c;
 		}
@@ -150,7 +149,8 @@ namespace ICSharpCode.NRefactory.Ast
 			foreach (TypeReference r in from.genericTypes) {
 				to.genericTypes.Add(r.Clone());
 			}
-			to.isGlobal = from.isGlobal;
+			to.IsGlobal = from.IsGlobal;
+			to.IsKeyword = from.IsKeyword;
 		}
 		
 		public string Type {
@@ -159,8 +159,7 @@ namespace ICSharpCode.NRefactory.Ast
 			}
 			set {
 				Debug.Assert(value != null);
-				type = value;
-				systemType = GetSystemType(type);
+				type = value ?? "?";
 			}
 		}
 		
@@ -186,9 +185,10 @@ namespace ICSharpCode.NRefactory.Ast
 			}
 		}
 		
+		[Obsolete("Use 'Type' instead - it now contains the SystemType for primitive types.")]
 		public string SystemType {
 			get {
-				return systemType;
+				return this.Type;
 			}
 		}
 		
@@ -251,12 +251,14 @@ namespace ICSharpCode.NRefactory.Ast
 		/// Gets/Sets if the type reference had a "global::" prefix.
 		/// </summary>
 		public bool IsGlobal {
-			get {
-				return isGlobal;
-			}
-			set {
-				isGlobal = value;
-			}
+			get; set;
+		}
+		
+		/// <summary>
+		/// Gets/Sets if the type reference was using a language keyword.
+		/// </summary>
+		public bool IsKeyword {
+			get; set;
 		}
 		
 		public TypeReference(string type)
@@ -264,10 +266,17 @@ namespace ICSharpCode.NRefactory.Ast
 			this.Type = type;
 		}
 		
+		[Obsolete("Type and SystemType are no longer distinguised - use the (string type, bool isKeyword) constructor instead!")]
 		public TypeReference(string type, string systemType)
 		{
-			this.type       = type;
-			this.systemType = systemType;
+			this.Type = systemType;
+			this.IsKeyword = type != systemType;
+		}
+		
+		public TypeReference(string type, bool isKeyword)
+		{
+			this.Type = type;
+			this.IsKeyword = isKeyword;
 		}
 		
 		public TypeReference(string type, List<TypeReference> genericTypes) : this(type)
@@ -289,7 +298,6 @@ namespace ICSharpCode.NRefactory.Ast
 		{
 			Debug.Assert(type != null);
 			this.type = type;
-			this.systemType = GetSystemType(type);
 			this.pointerNestingLevel = pointerNestingLevel;
 			this.rankSpecifier = rankSpecifier;
 			if (genericTypes != null) {
@@ -338,7 +346,9 @@ namespace ICSharpCode.NRefactory.Ast
 			if (a == null || b == null) return false;
 			if (a is InnerClassTypeReference) a = ((InnerClassTypeReference)a).CombineToNormalTypeReference();
 			if (b is InnerClassTypeReference) b = ((InnerClassTypeReference)b).CombineToNormalTypeReference();
-			if (a.systemType != b.systemType) return false;
+			if (a.type != b.type) return false;
+			if (a.IsKeyword != b.IsKeyword) return false;
+			if (a.IsGlobal != b.IsGlobal) return false;
 			if (a.pointerNestingLevel != b.pointerNestingLevel) return false;
 			if (a.IsArrayType != b.IsArrayType) return false;
 			if (a.IsArrayType) {

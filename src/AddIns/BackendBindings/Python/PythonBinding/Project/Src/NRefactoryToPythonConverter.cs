@@ -729,7 +729,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			// Create variable declaration.
 			VariableDeclaration variableDeclaration = localVariableDeclaration.Variables[0];
-			string variableType = localVariableDeclaration.TypeReference.SystemType;	
+			string variableType = localVariableDeclaration.TypeReference.Type;
 			string variableName = variableDeclaration.Name;
 			CodeVariableDeclarationStatement codeVariableDeclarationStatement = new CodeVariableDeclarationStatement(variableType, variableName);
 			

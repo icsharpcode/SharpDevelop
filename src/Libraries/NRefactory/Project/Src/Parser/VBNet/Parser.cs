@@ -755,7 +755,7 @@ newType);
 #line  526 "VBNET.ATG" 
 			m.Check(Modifiers.VBDelegates);
 			DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);
-			delegateDeclr.ReturnType = new TypeReference("", "System.Void");
+			delegateDeclr.ReturnType = new TypeReference("System.Void", true);
 			delegateDeclr.StartLocation = m.GetDeclarationLocation(t.Location);
 			List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 			
@@ -1151,14 +1151,14 @@ out nestedTypeRef, canBeUnbound);
 			lexer.NextToken();
 
 #line  2448 "VBNET.ATG" 
-			typeref = new TypeReference("System.Object"); 
+			typeref = new TypeReference("System.Object", true); 
 			if (la.kind == 21) {
 				lexer.NextToken();
 
 #line  2452 "VBNET.ATG" 
 				List<TypeReference> typeArguments = new List<TypeReference>(1);
 				if (typeref != null) typeArguments.Add(typeref);
-				typeref = new TypeReference("System.Nullable", typeArguments);
+				typeref = new TypeReference("System.Nullable", typeArguments) { IsKeyword = true };
 				
 			}
 		} else if (StartOf(11)) {
@@ -1167,14 +1167,14 @@ out nestedTypeRef, canBeUnbound);
 out name);
 
 #line  2458 "VBNET.ATG" 
-			typeref = new TypeReference(name); 
+			typeref = new TypeReference(name, true); 
 			if (la.kind == 21) {
 				lexer.NextToken();
 
 #line  2462 "VBNET.ATG" 
 				List<TypeReference> typeArguments = new List<TypeReference>(1);
 				if (typeref != null) typeArguments.Add(typeref);
-				typeref = new TypeReference("System.Nullable", typeArguments);
+				typeref = new TypeReference("System.Nullable", typeArguments) { IsKeyword = true };
 				
 			}
 		} else SynErr(236);
@@ -1501,7 +1501,7 @@ IsMustOverride(m)) {
 					methodDeclaration = new MethodDeclaration {
 					Name = name, Modifier = m.Modifier, Parameters = p, Attributes = attributes,
 					StartLocation = m.GetDeclarationLocation(startPos), EndLocation = endLocation,
-					TypeReference = new TypeReference("", "System.Void"),
+					TypeReference = new TypeReference("System.Void", true),
 					Templates = templates,
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
@@ -1515,7 +1515,7 @@ IsMustOverride(m)) {
 					methodDeclaration = new MethodDeclaration {
 					Name = name, Modifier = m.Modifier, Parameters = p, Attributes = attributes,
 					StartLocation = m.GetDeclarationLocation(startPos), EndLocation = endLocation,
-					TypeReference = new TypeReference("", "System.Void"),
+					TypeReference = new TypeReference("System.Void", true),
 					Templates = templates,
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
@@ -1635,7 +1635,7 @@ out type);
 
 #line  896 "VBNET.ATG" 
 			if(type == null) {
-			type = new TypeReference("System.Object");
+			type = new TypeReference("System.Object", true);
 			}
 			
 			if (la.kind == 121 || la.kind == 123) {
@@ -1952,7 +1952,7 @@ out type);
 
 #line  1073 "VBNET.ATG" 
 			if(type == null) {
-			type = new TypeReference("System.Object");
+			type = new TypeReference("System.Object", true);
 			}
 			
 			if (la.kind == 123) {
@@ -2335,7 +2335,7 @@ p);
 				Modifier = mod.Modifier, 
 				Parameters = p,
 				Attributes = attributes,
-				TypeReference = new TypeReference("", "System.Void"),
+				TypeReference = new TypeReference("System.Void", true),
 				StartLocation = startLocation,
 				EndLocation = t.EndLocation,
 				Templates = templates
@@ -2379,7 +2379,7 @@ out type);
 
 #line  699 "VBNET.ATG" 
 				if(type == null) {
-				type = new TypeReference("System.Object");
+				type = new TypeReference("System.Object", true);
 				}
 				MethodDeclaration md = new MethodDeclaration {
 					Name = name, Modifier = mod.Modifier, 
@@ -2424,7 +2424,7 @@ out type);
 
 #line  726 "VBNET.ATG" 
 				if(type == null) {
-				type = new TypeReference("System.Object");
+				type = new TypeReference("System.Object", true);
 				}
 				
 				EndOfStmt();
@@ -3874,7 +3874,7 @@ out val);
 					lexer.NextToken();
 
 #line  1678 "VBNET.ATG" 
-					val = "Object"; 
+					val = "System.Object"; 
 				} else SynErr(257);
 				Expect(16);
 
@@ -3883,7 +3883,7 @@ out val);
 				Identifier();
 
 #line  1679 "VBNET.ATG" 
-				pexpr = new MemberReferenceExpression(new TypeReferenceExpression(val), t.val); 
+				pexpr = new MemberReferenceExpression(new TypeReferenceExpression(new TypeReference(val, true)), t.val); 
 				break;
 			}
 			case 139: {
@@ -4099,105 +4099,105 @@ out string type) {
 			lexer.NextToken();
 
 #line  3363 "VBNET.ATG" 
-			type = "Boolean"; 
+			type = "System.Boolean"; 
 			break;
 		}
 		case 86: {
 			lexer.NextToken();
 
 #line  3364 "VBNET.ATG" 
-			type = "Date"; 
+			type = "System.DateTime"; 
 			break;
 		}
 		case 69: {
 			lexer.NextToken();
 
 #line  3365 "VBNET.ATG" 
-			type = "Char"; 
+			type = "System.Char"; 
 			break;
 		}
 		case 193: {
 			lexer.NextToken();
 
 #line  3366 "VBNET.ATG" 
-			type = "String"; 
+			type = "System.String"; 
 			break;
 		}
 		case 87: {
 			lexer.NextToken();
 
 #line  3367 "VBNET.ATG" 
-			type = "Decimal"; 
+			type = "System.Decimal"; 
 			break;
 		}
 		case 58: {
 			lexer.NextToken();
 
 #line  3368 "VBNET.ATG" 
-			type = "Byte"; 
+			type = "System.Byte"; 
 			break;
 		}
 		case 186: {
 			lexer.NextToken();
 
 #line  3369 "VBNET.ATG" 
-			type = "Short"; 
+			type = "System.Int16"; 
 			break;
 		}
 		case 128: {
 			lexer.NextToken();
 
 #line  3370 "VBNET.ATG" 
-			type = "Integer"; 
+			type = "System.Int32"; 
 			break;
 		}
 		case 137: {
 			lexer.NextToken();
 
 #line  3371 "VBNET.ATG" 
-			type = "Long"; 
+			type = "System.Int64"; 
 			break;
 		}
 		case 187: {
 			lexer.NextToken();
 
 #line  3372 "VBNET.ATG" 
-			type = "Single"; 
+			type = "System.Single"; 
 			break;
 		}
 		case 96: {
 			lexer.NextToken();
 
 #line  3373 "VBNET.ATG" 
-			type = "Double"; 
+			type = "System.Double"; 
 			break;
 		}
 		case 206: {
 			lexer.NextToken();
 
 #line  3374 "VBNET.ATG" 
-			type = "UInteger"; 
+			type = "System.UInt32"; 
 			break;
 		}
 		case 207: {
 			lexer.NextToken();
 
 #line  3375 "VBNET.ATG" 
-			type = "ULong"; 
+			type = "System.UInt64"; 
 			break;
 		}
 		case 210: {
 			lexer.NextToken();
 
 #line  3376 "VBNET.ATG" 
-			type = "UShort"; 
+			type = "System.UInt16"; 
 			break;
 		}
 		case 181: {
 			lexer.NextToken();
 
 #line  3377 "VBNET.ATG" 
-			type = "SByte"; 
+			type = "System.SByte"; 
 			break;
 		}
 		default: SynErr(261); break;
@@ -4216,112 +4216,112 @@ out TypeReference type) {
 			lexer.NextToken();
 
 #line  1765 "VBNET.ATG" 
-			type = new TypeReference("System.Boolean"); 
+			type = new TypeReference("System.Boolean", true); 
 			break;
 		}
 		case 64: {
 			lexer.NextToken();
 
 #line  1766 "VBNET.ATG" 
-			type = new TypeReference("System.Byte"); 
+			type = new TypeReference("System.Byte", true); 
 			break;
 		}
 		case 77: {
 			lexer.NextToken();
 
 #line  1767 "VBNET.ATG" 
-			type = new TypeReference("System.SByte"); 
+			type = new TypeReference("System.SByte", true); 
 			break;
 		}
 		case 65: {
 			lexer.NextToken();
 
 #line  1768 "VBNET.ATG" 
-			type = new TypeReference("System.Char"); 
+			type = new TypeReference("System.Char", true); 
 			break;
 		}
 		case 66: {
 			lexer.NextToken();
 
 #line  1769 "VBNET.ATG" 
-			type = new TypeReference("System.DateTime"); 
+			type = new TypeReference("System.DateTime", true); 
 			break;
 		}
 		case 68: {
 			lexer.NextToken();
 
 #line  1770 "VBNET.ATG" 
-			type = new TypeReference("System.Decimal"); 
+			type = new TypeReference("System.Decimal", true); 
 			break;
 		}
 		case 67: {
 			lexer.NextToken();
 
 #line  1771 "VBNET.ATG" 
-			type = new TypeReference("System.Double"); 
+			type = new TypeReference("System.Double", true); 
 			break;
 		}
 		case 78: {
 			lexer.NextToken();
 
 #line  1772 "VBNET.ATG" 
-			type = new TypeReference("System.Int16"); 
+			type = new TypeReference("System.Int16", true); 
 			break;
 		}
 		case 70: {
 			lexer.NextToken();
 
 #line  1773 "VBNET.ATG" 
-			type = new TypeReference("System.Int32"); 
+			type = new TypeReference("System.Int32", true); 
 			break;
 		}
 		case 72: {
 			lexer.NextToken();
 
 #line  1774 "VBNET.ATG" 
-			type = new TypeReference("System.Int64"); 
+			type = new TypeReference("System.Int64", true); 
 			break;
 		}
 		case 84: {
 			lexer.NextToken();
 
 #line  1775 "VBNET.ATG" 
-			type = new TypeReference("System.UInt16"); 
+			type = new TypeReference("System.UInt16", true); 
 			break;
 		}
 		case 82: {
 			lexer.NextToken();
 
 #line  1776 "VBNET.ATG" 
-			type = new TypeReference("System.UInt32"); 
+			type = new TypeReference("System.UInt32", true); 
 			break;
 		}
 		case 83: {
 			lexer.NextToken();
 
 #line  1777 "VBNET.ATG" 
-			type = new TypeReference("System.UInt64"); 
+			type = new TypeReference("System.UInt64", true); 
 			break;
 		}
 		case 73: {
 			lexer.NextToken();
 
 #line  1778 "VBNET.ATG" 
-			type = new TypeReference("System.Object"); 
+			type = new TypeReference("System.Object", true); 
 			break;
 		}
 		case 79: {
 			lexer.NextToken();
 
 #line  1779 "VBNET.ATG" 
-			type = new TypeReference("System.Single"); 
+			type = new TypeReference("System.Single", true); 
 			break;
 		}
 		case 80: {
 			lexer.NextToken();
 
 #line  1780 "VBNET.ATG" 
-			type = new TypeReference("System.String"); 
+			type = new TypeReference("System.String", true); 
 			break;
 		}
 		default: SynErr(262); break;

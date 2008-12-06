@@ -602,7 +602,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (resolver.CompilationUnit == null) return null;
 			if (tr.IsNull) return null;
-			IReturnType rt = resolver.SearchType(tr.SystemType, tr.GenericTypes.Count, loc);
+			IReturnType rt = resolver.SearchType(tr.Type, tr.GenericTypes.Count, loc);
 			if (rt != null) {
 				IClass c = rt.GetUnderlyingClass();
 				if (c != null) {

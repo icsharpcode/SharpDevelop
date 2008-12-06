@@ -355,7 +355,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return ((NamespaceResolveResult)rr).Name + "." + fieldReferenceExpression.MemberName;
 				}
 			} else if (expr is TypeReferenceExpression) {
-				return (expr as TypeReferenceExpression).TypeReference.SystemType;
+				return (expr as TypeReferenceExpression).TypeReference.Type;
 			}
 			return null;
 		}

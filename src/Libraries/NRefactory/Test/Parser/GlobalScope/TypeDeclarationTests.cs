@@ -205,7 +205,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			
 			Assert.AreEqual("TestEnum", td.Name);
 			Assert.AreEqual(ClassType.Enum, td.Type);
-			Assert.AreEqual("Byte", td.BaseTypes[0].Type);
+			Assert.AreEqual("System.Byte", td.BaseTypes[0].Type);
 			Assert.AreEqual(0, td.Children.Count);
 		}
 		

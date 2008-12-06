@@ -364,7 +364,7 @@ namespace NRefactoryToBooConverter
 				throw new ApplicationException("ObjectCreateExpression cannot be called with an ArrayType");
 			}
 			// HACK: Tricking out event handlers
-			if (t.SystemType.EndsWith("EventHandler") && objectCreateExpression.Parameters.Count == 1)
+			if (t.Type.EndsWith("EventHandler") && objectCreateExpression.Parameters.Count == 1)
 				return ConvertExpression((Expression)objectCreateExpression.Parameters[0]);
 			
 			B.MethodInvocationExpression mie = new B.MethodInvocationExpression(GetLexicalInfo(objectCreateExpression), MakeReferenceExpression(t));

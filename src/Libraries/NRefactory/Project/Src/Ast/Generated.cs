@@ -2299,12 +2299,11 @@ namespace ICSharpCode.NRefactory.Ast {
 			elseIfSections = new List<ElseIfSection>();
 		}
 		
-
-			public IfElseStatement(Expression condition, Statement trueStatement)
-				: this(condition) {
-				this.trueStatement.Add(Statement.CheckNull(trueStatement));
-				if (trueStatement != null) trueStatement.Parent = this;
+		public bool HasElseIfSections {
+			get {
+				return elseIfSections.Count > 0;
 			}
+		}
 		
 		public bool HasElseStatements {
 			get {
@@ -2312,11 +2311,12 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public bool HasElseIfSections {
-			get {
-				return elseIfSections.Count > 0;
+
+			public IfElseStatement(Expression condition, Statement trueStatement)
+				: this(condition) {
+				this.trueStatement.Add(Statement.CheckNull(trueStatement));
+				if (trueStatement != null) trueStatement.Parent = this;
 			}
-		}
 		
 
 			public IfElseStatement(Expression condition, Statement trueStatement, Statement falseStatement)
@@ -3256,7 +3256,7 @@ public Location ExtendedEndLocation { get; set; }
 		
 		Expression targetObject;
 		
-		string identifier;
+		string memberName;
 		
 		List<TypeReference> typeArguments;
 		
@@ -3270,12 +3270,12 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public string Identifier {
+		public string MemberName {
 			get {
-				return identifier;
+				return memberName;
 			}
 			set {
-				identifier = value ?? "";
+				memberName = value ?? "";
 			}
 		}
 		
@@ -3288,18 +3288,20 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public PointerReferenceExpression(Expression targetObject, string identifier) {
+		public PointerReferenceExpression(Expression targetObject, string memberName) {
 			TargetObject = targetObject;
-			Identifier = identifier;
+			MemberName = memberName;
 			typeArguments = new List<TypeReference>();
 		}
+		
+[Obsolete] public string Identifier { get { return MemberName; } set { MemberName = value; } }
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitPointerReferenceExpression(this, data);
 		}
 		
 		public override string ToString() {
-			return string.Format("[PointerReferenceExpression TargetObject={0} Identifier={1} TypeArguments={2}]", TargetObject, Identifier, GetCollectionString(TypeArguments));
+			return string.Format("[PointerReferenceExpression TargetObject={0} MemberName={1} TypeArguments={2}]", TargetObject, MemberName, GetCollectionString(TypeArguments));
 		}
 	}
 	
@@ -5034,7 +5036,7 @@ public Location ExtendedEndLocation { get; set; }
 			TypeReference = typeReference;
 		}
 		
-public TypeReferenceExpression(string typeName) : this(new TypeReference(typeName)) {}
+[Obsolete] public TypeReferenceExpression(string typeName) : this(new TypeReference(typeName)) {}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitTypeReferenceExpression(this, data);

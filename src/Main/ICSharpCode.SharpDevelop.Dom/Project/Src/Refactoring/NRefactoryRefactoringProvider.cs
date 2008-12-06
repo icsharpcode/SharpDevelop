@@ -368,7 +368,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			
 			public PossibleTypeReference(TypeReference tr)
 			{
-				this.Name = tr.SystemType;
+				this.Name = tr.Type;
 				this.TypeParameterCount = tr.GenericTypes.Count;
 			}
 			

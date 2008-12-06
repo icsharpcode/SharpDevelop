@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 	{
 		void TestDelegateDeclaration(DelegateDeclaration dd)
 		{
-			Assert.AreEqual("System.Void", dd.ReturnType.SystemType);
+			Assert.AreEqual("System.Void", dd.ReturnType.Type);
 			Assert.AreEqual("MyDelegate", dd.Name);
 		}
 		
@@ -25,10 +25,10 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(3, dd.Parameters.Count);
 			
 			Assert.AreEqual("a", ((ParameterDeclarationExpression)dd.Parameters[0]).ParameterName);
-			Assert.AreEqual("System.Int32", ((ParameterDeclarationExpression)dd.Parameters[0]).TypeReference.SystemType);
+			Assert.AreEqual("System.Int32", ((ParameterDeclarationExpression)dd.Parameters[0]).TypeReference.Type);
 			
 			Assert.AreEqual("secondParam", ((ParameterDeclarationExpression)dd.Parameters[1]).ParameterName);
-			Assert.AreEqual("System.Int32", ((ParameterDeclarationExpression)dd.Parameters[1]).TypeReference.SystemType);
+			Assert.AreEqual("System.Int32", ((ParameterDeclarationExpression)dd.Parameters[1]).TypeReference.Type);
 			
 			Assert.AreEqual("lastParam", ((ParameterDeclarationExpression)dd.Parameters[2]).ParameterName);
 			Assert.AreEqual("MyObj", ((ParameterDeclarationExpression)dd.Parameters[2]).TypeReference.Type);
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			string program = "public delegate void(int a, int secondParam, MyObj lastParam);\n";
 			DelegateDeclaration dd = ParseUtilCSharp.ParseGlobal<DelegateDeclaration>(program, true);
-			Assert.AreEqual("System.Void", dd.ReturnType.SystemType);
+			Assert.AreEqual("System.Void", dd.ReturnType.Type);
 			//Assert.AreEqual("?", dd.Name);
 			TestParameters(dd);
 		}

@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsTrue(id.HasSetRegion, "No set region found!");
 			
 			Assert.AreEqual("MyInterface", id.InterfaceImplementations[0].InterfaceType.Type);
-			Assert.AreEqual("System.String", id.InterfaceImplementations[0].InterfaceType.GenericTypes[0].SystemType);
+			Assert.AreEqual("System.String", id.InterfaceImplementations[0].InterfaceType.GenericTypes[0].Type);
 		}
 		#endregion
 		

@@ -484,7 +484,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object VisitTypeReference(TypeReference typeReference, object data)
 		{
 			while (typeReference.PointerNestingLevel > 0) {
-				TypeReference tr = new TypeReference(typeReference.Type, typeReference.SystemType) {
+				TypeReference tr = new TypeReference(typeReference.Type) {
+					IsKeyword = typeReference.IsKeyword,
 					IsGlobal = typeReference.IsGlobal,
 				};
 				tr.GenericTypes.AddRange(typeReference.GenericTypes);

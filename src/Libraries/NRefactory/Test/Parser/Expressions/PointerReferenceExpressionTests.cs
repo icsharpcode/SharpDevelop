@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			PointerReferenceExpression pre = ParseUtilCSharp.ParseExpression<PointerReferenceExpression>("myObj.field->b");
 			Assert.IsTrue(pre.TargetObject is MemberReferenceExpression);
-			Assert.AreEqual("b", pre.Identifier);
+			Assert.AreEqual("b", pre.MemberName);
 		}
 		#endregion
 		

@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			TypeOfIsExpression ce = ParseUtilCSharp.ParseExpression<TypeOfIsExpression>("o is List<string>[]");
 			Assert.AreEqual("List", ce.TypeReference.Type);
-			Assert.AreEqual("string", ce.TypeReference.GenericTypes[0].Type);
+			Assert.AreEqual("System.String", ce.TypeReference.GenericTypes[0].Type);
 			Assert.AreEqual(new int[] { 0 }, ce.TypeReference.RankSpecifier);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 		}
@@ -31,8 +31,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void NullableIsExpression()
 		{
 			TypeOfIsExpression ce = ParseUtilCSharp.ParseExpression<TypeOfIsExpression>("o is int?");
-			Assert.AreEqual("System.Nullable", ce.TypeReference.SystemType);
-			Assert.AreEqual("int", ce.TypeReference.GenericTypes[0].Type);
+			Assert.AreEqual("System.Nullable", ce.TypeReference.Type);
+			Assert.AreEqual("System.Int32", ce.TypeReference.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 		}
 		
@@ -42,8 +42,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			BinaryOperatorExpression boe;
 			boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("o is int? == true");
 			TypeOfIsExpression ce = (TypeOfIsExpression)boe.Left;
-			Assert.AreEqual("System.Nullable", ce.TypeReference.SystemType);
-			Assert.AreEqual("int", ce.TypeReference.GenericTypes[0].Type);
+			Assert.AreEqual("System.Nullable", ce.TypeReference.Type);
+			Assert.AreEqual("System.Int32", ce.TypeReference.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 		}
 		#endregion

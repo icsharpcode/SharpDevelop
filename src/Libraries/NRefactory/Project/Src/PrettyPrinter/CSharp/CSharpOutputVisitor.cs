@@ -24,7 +24,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		Errors                errors             = new Errors();
 		CSharpOutputFormatter outputFormatter;
 		PrettyPrintOptions    prettyPrintOptions = new PrettyPrintOptions();
-		bool printFullSystemType;
 		
 		public string Text {
 			get {
@@ -96,7 +95,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		/// <summary>
-		/// Converts type name to primitive type name. Returns null if typeString is not
+		/// Converts type name to primitive type name. Returns typeString if typeString is not
 		/// a primitive type.
 		/// </summary>
 		static string ConvertTypeString(string typeString)
@@ -160,28 +159,25 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (typeReference.IsGlobal) {
 				outputFormatter.PrintText("global::");
 			}
-			if (typeReference.Type == null || typeReference.Type.Length == 0) {
-				outputFormatter.PrintText("void");
-			} else if (typeReference.SystemType == "System.Nullable" && typeReference.GenericTypes != null
-			           && typeReference.GenericTypes.Count == 1 && !typeReference.IsGlobal)
-			{
-				TrackVisit(typeReference.GenericTypes[0], null);
-				outputFormatter.PrintText("?");
-			} else {
-				if (typeReference.SystemType.Length > 0) {
-					if (printFullSystemType || typeReference.IsGlobal) {
-						outputFormatter.PrintIdentifier(typeReference.SystemType);
-					} else {
-						outputFormatter.PrintText(ConvertTypeString(typeReference.SystemType));
-					}
+			bool printGenerics = true;
+			if (typeReference.IsKeyword) {
+				if (typeReference.Type == "System.Nullable"
+				    && typeReference.GenericTypes != null
+				    && typeReference.GenericTypes.Count == 1)
+				{
+					TrackVisit(typeReference.GenericTypes[0], null);
+					outputFormatter.PrintText("?");
+					printGenerics = false;
 				} else {
-					outputFormatter.PrintText(typeReference.Type);
+					outputFormatter.PrintText(ConvertTypeString(typeReference.Type));
 				}
-				if (typeReference.GenericTypes != null && typeReference.GenericTypes.Count > 0) {
-					outputFormatter.PrintToken(Tokens.LessThan);
-					AppendCommaSeparatedList(typeReference.GenericTypes);
-					outputFormatter.PrintToken(Tokens.GreaterThan);
-				}
+			} else {
+				outputFormatter.PrintIdentifier(typeReference.Type);
+			}
+			if (printGenerics && typeReference.GenericTypes != null && typeReference.GenericTypes.Count > 0) {
+				outputFormatter.PrintToken(Tokens.LessThan);
+				AppendCommaSeparatedList(typeReference.GenericTypes);
+				outputFormatter.PrintToken(Tokens.GreaterThan);
 			}
 			for (int i = 0; i < typeReference.PointerNestingLevel; ++i) {
 				outputFormatter.PrintToken(Tokens.Times);
@@ -286,9 +282,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Assign);
 				outputFormatter.Space();
-				printFullSystemType = true;
 				TrackVisit(@using.Alias, data);
-				printFullSystemType = false;
 			}
 			
 			outputFormatter.PrintToken(Tokens.Semicolon);
@@ -1095,7 +1089,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			// all variables have the same type
 			OutputModifier(localVariableDeclaration.Modifier);
-			TrackVisit(type ?? new TypeReference("object"), data);
+			TrackVisit(type ?? new TypeReference("System.Object", true), data);
 			outputFormatter.Space();
 			AppendCommaSeparatedList(localVariableDeclaration.Variables);
 			outputFormatter.PrintToken(Tokens.Semicolon);
@@ -1111,7 +1105,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Indent();
 				}
 				OutputModifier(localVariableDeclaration.Modifier);
-				TrackVisit(localVariableDeclaration.GetTypeForVariable(i) ?? new TypeReference("object"), data);
+				TrackVisit(localVariableDeclaration.GetTypeForVariable(i) ?? new TypeReference("System.Object", true), data);
 				outputFormatter.Space();
 				TrackVisit(v, data);
 				outputFormatter.PrintToken(Tokens.Semicolon);
@@ -2318,9 +2312,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
-			TrackVisit(pointerReferenceExpression.TargetObject, data);
+			Expression target = pointerReferenceExpression.TargetObject;
+			
+			if (target is BinaryOperatorExpression || target is CastExpression) {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			}
+			TrackVisit(target, data);
+			if (target is BinaryOperatorExpression || target is CastExpression) {
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			}
 			outputFormatter.PrintToken(Tokens.Pointer);
-			outputFormatter.PrintIdentifier(pointerReferenceExpression.Identifier);
+			outputFormatter.PrintIdentifier(pointerReferenceExpression.MemberName);
+			PrintTypeArgumentList(pointerReferenceExpression.TypeArguments);
+			
 			return null;
 		}
 		

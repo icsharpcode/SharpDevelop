@@ -234,13 +234,13 @@ out type, false);
 out name);
 
 #line  591 "cs.ATG" 
-			type = new TypeReference(name); 
+			type = new TypeReference(name, true); 
 		} else if (la.kind == 123) {
 			lexer.NextToken();
 			Expect(6);
 
 #line  592 "cs.ATG" 
-			pointer = 1; type = new TypeReference("void"); 
+			pointer = 1; type = new TypeReference("System.Void", true); 
 		} else SynErr(147);
 		if (la.kind == 12) {
 			NullableQuestionMark(
@@ -849,7 +849,7 @@ templates);
 out name);
 
 #line  436 "cs.ATG" 
-					newType.BaseTypes.Add(new TypeReference(name)); 
+					newType.BaseTypes.Add(new TypeReference(name, true)); 
 				}
 
 #line  438 "cs.ATG" 
@@ -877,7 +877,7 @@ NotVoidPointer()) {
 					Expect(123);
 
 #line  448 "cs.ATG" 
-					delegateDeclr.ReturnType = new TypeReference("void", 0, null); 
+					delegateDeclr.ReturnType = new TypeReference("System.Void", true); 
 				} else if (StartOf(10)) {
 					Type(
 #line  449 "cs.ATG" 
@@ -1159,63 +1159,63 @@ out string name) {
 			lexer.NextToken();
 
 #line  694 "cs.ATG" 
-			name = "sbyte"; 
+			name = "System.SByte"; 
 			break;
 		}
 		case 54: {
 			lexer.NextToken();
 
 #line  695 "cs.ATG" 
-			name = "byte"; 
+			name = "System.Byte"; 
 			break;
 		}
 		case 104: {
 			lexer.NextToken();
 
 #line  696 "cs.ATG" 
-			name = "short"; 
+			name = "System.Int16"; 
 			break;
 		}
 		case 120: {
 			lexer.NextToken();
 
 #line  697 "cs.ATG" 
-			name = "ushort"; 
+			name = "System.UInt16"; 
 			break;
 		}
 		case 82: {
 			lexer.NextToken();
 
 #line  698 "cs.ATG" 
-			name = "int"; 
+			name = "System.Int32"; 
 			break;
 		}
 		case 116: {
 			lexer.NextToken();
 
 #line  699 "cs.ATG" 
-			name = "uint"; 
+			name = "System.UInt32"; 
 			break;
 		}
 		case 87: {
 			lexer.NextToken();
 
 #line  700 "cs.ATG" 
-			name = "long"; 
+			name = "System.Int64"; 
 			break;
 		}
 		case 117: {
 			lexer.NextToken();
 
 #line  701 "cs.ATG" 
-			name = "ulong"; 
+			name = "System.UInt64"; 
 			break;
 		}
 		case 57: {
 			lexer.NextToken();
 
 #line  702 "cs.ATG" 
-			name = "char"; 
+			name = "System.Char"; 
 			break;
 		}
 		default: SynErr(156); break;
@@ -1343,12 +1343,12 @@ out r, canBeUnbound);
 			lexer.NextToken();
 
 #line  688 "cs.ATG" 
-			typeRef = new TypeReference("object"); 
+			typeRef = new TypeReference("System.Object", true); 
 		} else if (la.kind == 108) {
 			lexer.NextToken();
 
 #line  689 "cs.ATG" 
-			typeRef = new TypeReference("string"); 
+			typeRef = new TypeReference("System.String", true); 
 		} else SynErr(159);
 	}
 
@@ -1683,7 +1683,7 @@ p);
 			MethodDeclaration methodDeclaration = new MethodDeclaration {
 			Name = qualident,
 			Modifier = m.Modifier,
-			TypeReference = new TypeReference("void"),
+			TypeReference = new TypeReference("System.Void", true),
 			Parameters = p,
 			Attributes = attributes,
 			StartLocation = m.GetDeclarationLocation(startPos),
@@ -2269,7 +2269,7 @@ templates);
 
 #line  1073 "cs.ATG" 
 			MethodDeclaration md = new MethodDeclaration {
-			Name = name, Modifier = mod, TypeReference = new TypeReference("void"), 
+			Name = name, Modifier = mod, TypeReference = new TypeReference("System.Void", true), 
 			Parameters = parameters, Attributes = attributes, Templates = templates,
 			StartLocation = startLocation, EndLocation = t.EndLocation
 			};
@@ -2437,13 +2437,13 @@ out type, canBeUnbound);
 out name);
 
 #line  564 "cs.ATG" 
-			type = new TypeReference(name); 
+			type = new TypeReference(name, true); 
 		} else if (la.kind == 123) {
 			lexer.NextToken();
 			Expect(6);
 
 #line  565 "cs.ATG" 
-			pointer = 1; type = new TypeReference("void"); 
+			pointer = 1; type = new TypeReference("System.Void", true); 
 		} else SynErr(178);
 
 #line  566 "cs.ATG" 
@@ -2503,22 +2503,22 @@ out name);
 			lexer.NextToken();
 
 #line  607 "cs.ATG" 
-			name = "float"; 
+			name = "System.Single"; 
 		} else if (la.kind == 66) {
 			lexer.NextToken();
 
 #line  608 "cs.ATG" 
-			name = "double"; 
+			name = "System.Double"; 
 		} else if (la.kind == 62) {
 			lexer.NextToken();
 
 #line  609 "cs.ATG" 
-			name = "decimal"; 
+			name = "System.Decimal"; 
 		} else if (la.kind == 52) {
 			lexer.NextToken();
 
 #line  610 "cs.ATG" 
-			name = "bool"; 
+			name = "System.Boolean"; 
 		} else SynErr(180);
 	}
 
@@ -2532,7 +2532,7 @@ ref TypeReference typeRef) {
 
 #line  2283 "cs.ATG" 
 		if (typeRef != null) typeArguments.Add(typeRef);
-		typeRef = new TypeReference("System.Nullable", typeArguments);
+		typeRef = new TypeReference("System.Nullable", typeArguments) { IsKeyword = true };
 		
 	}
 
@@ -4419,118 +4419,118 @@ out expr);
 				lexer.NextToken();
 
 #line  1856 "cs.ATG" 
-				val = "bool"; 
+				val = "System.Boolean"; 
 				break;
 			}
 			case 54: {
 				lexer.NextToken();
 
 #line  1857 "cs.ATG" 
-				val = "byte"; 
+				val = "System.Byte"; 
 				break;
 			}
 			case 57: {
 				lexer.NextToken();
 
 #line  1858 "cs.ATG" 
-				val = "char"; 
+				val = "System.Char"; 
 				break;
 			}
 			case 62: {
 				lexer.NextToken();
 
 #line  1859 "cs.ATG" 
-				val = "decimal"; 
+				val = "System.Decimal"; 
 				break;
 			}
 			case 66: {
 				lexer.NextToken();
 
 #line  1860 "cs.ATG" 
-				val = "double"; 
+				val = "System.Double"; 
 				break;
 			}
 			case 75: {
 				lexer.NextToken();
 
 #line  1861 "cs.ATG" 
-				val = "float"; 
+				val = "System.Single"; 
 				break;
 			}
 			case 82: {
 				lexer.NextToken();
 
 #line  1862 "cs.ATG" 
-				val = "int"; 
+				val = "System.Int32"; 
 				break;
 			}
 			case 87: {
 				lexer.NextToken();
 
 #line  1863 "cs.ATG" 
-				val = "long"; 
+				val = "System.Int64"; 
 				break;
 			}
 			case 91: {
 				lexer.NextToken();
 
 #line  1864 "cs.ATG" 
-				val = "object"; 
+				val = "System.Object"; 
 				break;
 			}
 			case 102: {
 				lexer.NextToken();
 
 #line  1865 "cs.ATG" 
-				val = "sbyte"; 
+				val = "System.SByte"; 
 				break;
 			}
 			case 104: {
 				lexer.NextToken();
 
 #line  1866 "cs.ATG" 
-				val = "short"; 
+				val = "System.Int16"; 
 				break;
 			}
 			case 108: {
 				lexer.NextToken();
 
 #line  1867 "cs.ATG" 
-				val = "string"; 
+				val = "System.String"; 
 				break;
 			}
 			case 116: {
 				lexer.NextToken();
 
 #line  1868 "cs.ATG" 
-				val = "uint"; 
+				val = "System.UInt32"; 
 				break;
 			}
 			case 117: {
 				lexer.NextToken();
 
 #line  1869 "cs.ATG" 
-				val = "ulong"; 
+				val = "System.UInt64"; 
 				break;
 			}
 			case 120: {
 				lexer.NextToken();
 
 #line  1870 "cs.ATG" 
-				val = "ushort"; 
+				val = "System.UInt16"; 
 				break;
 			}
 			case 123: {
 				lexer.NextToken();
 
 #line  1871 "cs.ATG" 
-				val = "void"; 
+				val = "System.Void"; 
 				break;
 			}
 			}
 			MemberAccess(
 #line  1873 "cs.ATG" 
-out pexpr, new TypeReferenceExpression(val) { StartLocation = t.Location, EndLocation = t.EndLocation } );
+out pexpr, new TypeReferenceExpression(new TypeReference(val, true)) { StartLocation = t.Location, EndLocation = t.EndLocation } );
 		} else if (la.kind == 111) {
 			lexer.NextToken();
 
@@ -4554,7 +4554,7 @@ NotVoidPointer()) {
 				Expect(123);
 
 #line  1885 "cs.ATG" 
-				type = new TypeReference("void"); 
+				type = new TypeReference("System.Void", true); 
 			} else if (StartOf(10)) {
 				TypeWithRestriction(
 #line  1886 "cs.ATG" 

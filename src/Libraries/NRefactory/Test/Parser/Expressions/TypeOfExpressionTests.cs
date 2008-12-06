@@ -35,14 +35,14 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpPrimitiveTypeOfExpressionTest()
 		{
 			TypeOfExpression toe = ParseUtilCSharp.ParseExpression<TypeOfExpression>("typeof(int)");
-			Assert.AreEqual("System.Int32", toe.TypeReference.SystemType);
+			Assert.AreEqual("System.Int32", toe.TypeReference.Type);
 		}
 		
 		[Test]
 		public void CSharpVoidTypeOfExpressionTest()
 		{
 			TypeOfExpression toe = ParseUtilCSharp.ParseExpression<TypeOfExpression>("typeof(void)");
-			Assert.AreEqual("System.Void", toe.TypeReference.SystemType);
+			Assert.AreEqual("System.Void", toe.TypeReference.Type);
 		}
 		
 		[Test]
@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			TypeOfExpression toe = ParseUtilCSharp.ParseExpression<TypeOfExpression>("typeof(MyNamespace.N1.MyType<string>)");
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
-			Assert.AreEqual("System.String", toe.TypeReference.GenericTypes[0].SystemType);
+			Assert.AreEqual("System.String", toe.TypeReference.GenericTypes[0].Type);
 		}
 		
 		[Test]
@@ -71,17 +71,17 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			ic = (InnerClassTypeReference)ic.BaseType;
 			Assert.AreEqual("InnerClass", ic.Type);
 			Assert.AreEqual(1, ic.GenericTypes.Count);
-			Assert.AreEqual("System.Int32", ic.GenericTypes[0].SystemType);
+			Assert.AreEqual("System.Int32", ic.GenericTypes[0].Type);
 			Assert.AreEqual("MyType", ic.BaseType.Type);
 			Assert.AreEqual(1, ic.BaseType.GenericTypes.Count);
-			Assert.AreEqual("System.String", ic.BaseType.GenericTypes[0].SystemType);
+			Assert.AreEqual("System.String", ic.BaseType.GenericTypes[0].Type);
 		}
 		
 		[Test]
 		public void CSharpNullableTypeOfExpressionTest()
 		{
 			TypeOfExpression toe = ParseUtilCSharp.ParseExpression<TypeOfExpression>("typeof(MyStruct?)");
-			Assert.AreEqual("System.Nullable", toe.TypeReference.SystemType);
+			Assert.AreEqual("System.Nullable", toe.TypeReference.Type);
 			Assert.AreEqual("MyStruct", toe.TypeReference.GenericTypes[0].Type);
 		}
 		
@@ -115,14 +115,14 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBPrimitiveTypeOfExpressionTest()
 		{
 			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(integer)");
-			Assert.AreEqual("System.Int32", toe.TypeReference.SystemType);
+			Assert.AreEqual("System.Int32", toe.TypeReference.Type);
 		}
 		
 		[Test]
 		public void VBVoidTypeOfExpressionTest()
 		{
 			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(void)");
-			Assert.AreEqual("System.Void", toe.TypeReference.SystemType);
+			Assert.AreEqual("void", toe.TypeReference.Type);
 		}
 		
 		[Test]
@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(MyNamespace.N1.MyType(Of string))");
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
-			Assert.AreEqual("System.String", toe.TypeReference.GenericTypes[0].SystemType);
+			Assert.AreEqual("System.String", toe.TypeReference.GenericTypes[0].Type);
 		}
 		
 		[Test]
@@ -160,10 +160,10 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			ic = (InnerClassTypeReference)ic.BaseType;
 			Assert.AreEqual("InnerClass", ic.Type);
 			Assert.AreEqual(1, ic.GenericTypes.Count);
-			Assert.AreEqual("System.Int32", ic.GenericTypes[0].SystemType);
+			Assert.AreEqual("System.Int32", ic.GenericTypes[0].Type);
 			Assert.AreEqual("MyType", ic.BaseType.Type);
 			Assert.AreEqual(1, ic.BaseType.GenericTypes.Count);
-			Assert.AreEqual("System.String", ic.BaseType.GenericTypes[0].SystemType);
+			Assert.AreEqual("System.String", ic.BaseType.GenericTypes[0].Type);
 		}
 		#endregion
 	}

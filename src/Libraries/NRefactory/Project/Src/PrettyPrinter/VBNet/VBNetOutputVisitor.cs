@@ -25,7 +25,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		VBNetOutputFormatter    outputFormatter;
 		VBNetPrettyPrintOptions prettyPrintOptions = new VBNetPrettyPrintOptions();
 		TypeDeclaration         currentType;
-		bool printFullSystemType;
 		
 		Stack<int> exitTokenStack = new Stack<int>();
 		
@@ -103,14 +102,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		/// <summary>
-		/// Converts type name to primitive type name. Returns null if typeString is not
+		/// Converts type name to primitive type name. Returns typeString if typeString is not
 		/// a primitive type.
 		/// </summary>
 		static string ConvertTypeString(string typeString)
 		{
 			string primitiveType;
-			TypeReference.PrimitiveTypesVBReverse.TryGetValue(typeString, out primitiveType);
-			return primitiveType;
+			if (TypeReference.PrimitiveTypesVBReverse.TryGetValue(typeString, out primitiveType))
+				return primitiveType;
+			else
+				return typeString;
 		}
 
 		public override object TrackedVisitTypeReference(TypeReference typeReference, object data)
@@ -136,19 +137,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Global);
 				outputFormatter.PrintToken(Tokens.Dot);
 			}
-			if (typeReference.Type == null || typeReference.Type.Length ==0) {
-				outputFormatter.PrintText("Void");
-			} else if (printFullSystemType || typeReference.IsGlobal) {
-				outputFormatter.PrintIdentifier(typeReference.SystemType);
+			bool printGenerics = true;
+			if (typeReference.IsKeyword) {
+				outputFormatter.PrintText(ConvertTypeString(typeReference.Type));
 			} else {
-				string shortTypeName = ConvertTypeString(typeReference.SystemType);
-				if (shortTypeName != null) {
-					outputFormatter.PrintText(shortTypeName);
-				} else {
-					outputFormatter.PrintIdentifier(typeReference.Type);
-				}
+				outputFormatter.PrintIdentifier(typeReference.Type);
 			}
-			if (typeReference.GenericTypes != null && typeReference.GenericTypes.Count > 0) {
+			if (printGenerics && typeReference.GenericTypes != null && typeReference.GenericTypes.Count > 0) {
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
 				outputFormatter.PrintToken(Tokens.Of);
 				outputFormatter.Space();
@@ -256,9 +251,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Assign);
 					outputFormatter.Space();
-					printFullSystemType = true;
 					TrackedVisit(((Using)usingDeclaration.Usings[i]).Alias, data);
-					printFullSystemType = false;
 				}
 				if (i + 1 < usingDeclaration.Usings.Count) {
 					outputFormatter.PrintToken(Tokens.Comma);
@@ -430,7 +423,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Delegate);
 			outputFormatter.Space();
 			
-			bool isFunction = (delegateDeclaration.ReturnType.Type != "void");
+			bool isFunction = (delegateDeclaration.ReturnType.Type != "System.Void");
 			if (isFunction) {
 				outputFormatter.PrintToken(Tokens.Function);
 				outputFormatter.Space();
@@ -832,7 +825,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			OutputModifier(methodDeclaration.Modifier);
 			
 			bool isSub = methodDeclaration.TypeReference.IsNull ||
-				methodDeclaration.TypeReference.SystemType == "System.Void";
+				methodDeclaration.TypeReference.Type == "System.Void";
 			
 			if (isSub) {
 				outputFormatter.PrintToken(Tokens.Sub);
@@ -1209,7 +1202,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 			}
 			
-			bool isVoid = declareDeclaration.TypeReference.IsNull || declareDeclaration.TypeReference.SystemType == "System.Void";
+			bool isVoid = declareDeclaration.TypeReference.IsNull || declareDeclaration.TypeReference.Type == "System.Void";
 			if (isVoid) {
 				outputFormatter.PrintToken(Tokens.Sub);
 			} else {
@@ -2489,7 +2482,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (castExpression.CastType == CastType.Cast || castExpression.CastTo.IsArrayType) {
 				return PrintCast(Tokens.DirectCast, castExpression);
 			}
-			switch (castExpression.CastTo.SystemType) {
+			switch (castExpression.CastTo.Type) {
 				case "System.Boolean":
 					outputFormatter.PrintToken(Tokens.CBool);
 					break;

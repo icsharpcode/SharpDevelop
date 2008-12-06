@@ -525,7 +525,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 	(.
 		m.Check(Modifiers.VBDelegates);
 		DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);
-		delegateDeclr.ReturnType = new TypeReference("", "System.Void");
+		delegateDeclr.ReturnType = new TypeReference("System.Void", true);
 		delegateDeclr.StartLocation = m.GetDeclarationLocation(t.Location);
 		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 	.)
@@ -678,7 +678,7 @@ InterfaceMemberDecl
 				Modifier = mod.Modifier, 
 				Parameters = p,
 				Attributes = attributes,
-				TypeReference = new TypeReference("", "System.Void"),
+				TypeReference = new TypeReference("System.Void", true),
 				StartLocation = startLocation,
 				EndLocation = t.EndLocation,
 				Templates = templates
@@ -697,7 +697,7 @@ InterfaceMemberDecl
 		[ "As" { AttributeSection<out returnTypeAttributeSection> } TypeName<out type> ]
 		(.
 			if(type == null) {
-				type = new TypeReference("System.Object");
+				type = new TypeReference("System.Object", true);
 			}
 			MethodDeclaration md = new MethodDeclaration {
 				Name = name, Modifier = mod.Modifier, 
@@ -724,7 +724,7 @@ InterfaceMemberDecl
 		[ "As" TypeName<out type> ]
 		(.
 			if(type == null) {
-				type = new TypeReference("System.Object");
+				type = new TypeReference("System.Object", true);
 			}
 		.)
 		EndOfStmt
@@ -817,7 +817,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				methodDeclaration = new MethodDeclaration {
 					Name = name, Modifier = m.Modifier, Parameters = p, Attributes = attributes,
 					StartLocation = m.GetDeclarationLocation(startPos), EndLocation = endLocation,
-					TypeReference = new TypeReference("", "System.Void"),
+					TypeReference = new TypeReference("System.Void", true),
 					Templates = templates,
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
@@ -830,7 +830,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				methodDeclaration = new MethodDeclaration {
 					Name = name, Modifier = m.Modifier, Parameters = p, Attributes = attributes,
 					StartLocation = m.GetDeclarationLocation(startPos), EndLocation = endLocation,
-					TypeReference = new TypeReference("", "System.Void"),
+					TypeReference = new TypeReference("System.Void", true),
 					Templates = templates,
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
@@ -894,7 +894,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	["As"  { AttributeSection<out returnTypeAttributeSection> } TypeName<out type> ]
 	(.
 		if(type == null) {
-			type = new TypeReference("System.Object");
+			type = new TypeReference("System.Object", true);
 		}
 	.)
 	[
@@ -1071,7 +1071,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	[ "As" TypeName<out type> ]
 	(.
 		if(type == null) {
-			type = new TypeReference("System.Object");
+			type = new TypeReference("System.Object", true);
 		}
 	.)
 	[ ImplementsClause<out implementsClause> ]
@@ -1675,8 +1675,8 @@ SimpleNonInvocationExpression<out Expression pexpr>
 					"(" "Of" TypeArgumentList<((IdentifierExpression)pexpr).TypeArguments> ")"
 				]
 		|	(. string val = String.Empty; .)
-			( PrimitiveTypeName<out val> | "Object" (. val = "Object"; .) )
-			"." (. t.val = ""; .) Identifier (. pexpr = new MemberReferenceExpression(new TypeReferenceExpression(val), t.val); .)
+			( PrimitiveTypeName<out val> | "Object" (. val = "System.Object"; .) )
+			"." (. t.val = ""; .) Identifier (. pexpr = new MemberReferenceExpression(new TypeReferenceExpression(new TypeReference(val, true)), t.val); .)
 		|	"Me"							(. pexpr = new ThisReferenceExpression(); .)
 		|	(. Expression retExpr = null; .)
 			( "MyBase"										(. retExpr = new BaseReferenceExpression(); .)
@@ -1762,22 +1762,22 @@ CastTarget<out TypeReference type>
 	(.
 		type = null;
 	.) =
-	"CBool"		(. type = new TypeReference("System.Boolean"); .)
-	| "CByte"	(. type = new TypeReference("System.Byte"); .)
-	| "CSByte"	(. type = new TypeReference("System.SByte"); .)
-	| "CChar"	(. type = new TypeReference("System.Char"); .)
-	| "CDate"	(. type = new TypeReference("System.DateTime"); .)
-	| "CDec"	(. type = new TypeReference("System.Decimal"); .)
-	| "CDbl"	(. type = new TypeReference("System.Double"); .)
-	| "CShort"	(. type = new TypeReference("System.Int16"); .)
-	| "CInt"	(. type = new TypeReference("System.Int32"); .)
-	| "CLng"	(. type = new TypeReference("System.Int64"); .)
-	| "CUShort"	(. type = new TypeReference("System.UInt16"); .)
-	| "CUInt"	(. type = new TypeReference("System.UInt32"); .)
-	| "CULng"	(. type = new TypeReference("System.UInt64"); .)
-	| "CObj"	(. type = new TypeReference("System.Object"); .)
-	| "CSng"	(. type = new TypeReference("System.Single"); .)
-	| "CStr"	(. type = new TypeReference("System.String"); .)
+	"CBool"		(. type = new TypeReference("System.Boolean", true); .)
+	| "CByte"	(. type = new TypeReference("System.Byte", true); .)
+	| "CSByte"	(. type = new TypeReference("System.SByte", true); .)
+	| "CChar"	(. type = new TypeReference("System.Char", true); .)
+	| "CDate"	(. type = new TypeReference("System.DateTime", true); .)
+	| "CDec"	(. type = new TypeReference("System.Decimal", true); .)
+	| "CDbl"	(. type = new TypeReference("System.Double", true); .)
+	| "CShort"	(. type = new TypeReference("System.Int16", true); .)
+	| "CInt"	(. type = new TypeReference("System.Int32", true); .)
+	| "CLng"	(. type = new TypeReference("System.Int64", true); .)
+	| "CUShort"	(. type = new TypeReference("System.UInt16", true); .)
+	| "CUInt"	(. type = new TypeReference("System.UInt32", true); .)
+	| "CULng"	(. type = new TypeReference("System.UInt64", true); .)
+	| "CObj"	(. type = new TypeReference("System.Object", true); .)
+	| "CSng"	(. type = new TypeReference("System.Single", true); .)
+	| "CStr"	(. type = new TypeReference("System.String", true); .)
 	.
 
 DisjunctionExpr<out Expression outExpr>
@@ -2445,23 +2445,23 @@ NonArrayTypeName<out TypeReference typeref, bool canBeUnbound>
 			(. typeref = new InnerClassTypeReference(typeref, nestedTypeRef.Type, nestedTypeRef.GenericTypes); .)
 		}
 	)
-	| "Object" (. typeref = new TypeReference("System.Object"); .)
+	| "Object" (. typeref = new TypeReference("System.Object", true); .)
 		[
 	  	"?"
 	  	(.
 		  	List<TypeReference> typeArguments = new List<TypeReference>(1);
 		  	if (typeref != null) typeArguments.Add(typeref);
-			typeref = new TypeReference("System.Nullable", typeArguments);
+			typeref = new TypeReference("System.Nullable", typeArguments) { IsKeyword = true };
 		.)			
 	  ]
 	
-	| PrimitiveTypeName<out name> (. typeref = new TypeReference(name); .)
+	| PrimitiveTypeName<out name> (. typeref = new TypeReference(name, true); .)
 	  [
 		"?"
 	  	(.
 		  	List<TypeReference> typeArguments = new List<TypeReference>(1);
 		  	if (typeref != null) typeArguments.Add(typeref);
-			typeref = new TypeReference("System.Nullable", typeArguments);
+			typeref = new TypeReference("System.Nullable", typeArguments) { IsKeyword = true };
 		.)			
 	  ]
 .
@@ -3360,21 +3360,21 @@ IdentifierOrKeyword<out string name>
 /* 7.3 */
 PrimitiveTypeName<out string type>
 	(. type = String.Empty; .) =
-	"Boolean"		(. type = "Boolean"; .)
-	| "Date"		(. type = "Date"; .)
-	| "Char"		(. type = "Char"; .)
-	| "String"		(. type = "String"; .)
-	| "Decimal"		(. type = "Decimal"; .)
-	| "Byte"		(. type = "Byte"; .)
-	| "Short"		(. type = "Short"; .)
-	| "Integer"		(. type = "Integer"; .)
-	| "Long"		(. type = "Long"; .)
-	| "Single"		(. type = "Single"; .)
-	| "Double"		(. type = "Double"; .)
-	| "UInteger"	(. type = "UInteger"; .)
-	| "ULong"		(. type = "ULong"; .)
-	| "UShort"		(. type = "UShort"; .)
-	| "SByte"		(. type = "SByte"; .)
+	"Boolean"		(. type = "System.Boolean"; .)
+	| "Date"		(. type = "System.DateTime"; .)
+	| "Char"		(. type = "System.Char"; .)
+	| "String"		(. type = "System.String"; .)
+	| "Decimal"		(. type = "System.Decimal"; .)
+	| "Byte"		(. type = "System.Byte"; .)
+	| "Short"		(. type = "System.Int16"; .)
+	| "Integer"		(. type = "System.Int32"; .)
+	| "Long"		(. type = "System.Int64"; .)
+	| "Single"		(. type = "System.Single"; .)
+	| "Double"		(. type = "System.Double"; .)
+	| "UInteger"	(. type = "System.UInt32"; .)
+	| "ULong"		(. type = "System.UInt64"; .)
+	| "UShort"		(. type = "System.UInt16"; .)
+	| "SByte"		(. type = "System.SByte"; .)
 	.
 
 ParameterModifier<ParamModifierList m>

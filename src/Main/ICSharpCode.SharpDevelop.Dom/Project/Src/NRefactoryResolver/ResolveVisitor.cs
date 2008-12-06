@@ -527,7 +527,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			PointerReturnType type = targetRR.ResolvedType.CastToDecoratingReturnType<PointerReturnType>();
 			if (type != null) {
-				return resolver.ResolveMember(type.BaseType, pointerReferenceExpression.Identifier,
+				return resolver.ResolveMember(type.BaseType, pointerReferenceExpression.MemberName,
 				                              pointerReferenceExpression.TypeArguments,
 				                              NRefactoryResolver.IsInvoked(pointerReferenceExpression),
 				                              true, null

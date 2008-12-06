@@ -105,7 +105,7 @@ namespace NRefactoryToBooConverter
 			m.ReturnType = ConvertTypeReference(methodDeclaration.TypeReference);
 			m.Body = ConvertMethodBlock(methodDeclaration.Body);
 			if (m.Name == "Main" && m.IsStatic && m.Parameters.Count <= 1 &&
-			    (methodDeclaration.TypeReference.SystemType == "System.Void" || methodDeclaration.TypeReference.SystemType == "System.Int32"))
+			    (methodDeclaration.TypeReference.Type == "System.Void" || methodDeclaration.TypeReference.Type == "System.Int32"))
 			{
 				entryPointMethod = m;
 			}

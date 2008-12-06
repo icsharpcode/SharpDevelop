@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.AstBuilder
 		public static Expression CreateDefaultValueForType(TypeReference type)
 		{
 			if (type != null && !type.IsArrayType) {
-				switch (type.SystemType) {
+				switch (type.Type) {
 					case "System.SByte":
 					case "System.Byte":
 					case "System.Int16":

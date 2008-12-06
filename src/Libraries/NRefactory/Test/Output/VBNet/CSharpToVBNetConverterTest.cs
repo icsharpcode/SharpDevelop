@@ -530,14 +530,14 @@ End Class
 		[Test]
 		public void CSharpLinefeedToVBString()
 		{
-			TestStatement(@"String Test = ""My Test\n"";",
+			TestStatement(@"string Test = ""My Test\n"";",
 			              @"Dim Test As String = ""My Test"" & vbLf");
 		}
 		
 		[Test]
 		public void CSharpTabToVBString()
 		{
-			TestStatement(@"String Test = ""\t\a"";",
+			TestStatement(@"string Test = ""\t\a"";",
 			              @"Dim Test As String = vbTab & ChrW(7)");
 		}
 	}

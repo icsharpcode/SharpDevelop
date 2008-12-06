@@ -433,7 +433,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	                                    newType.Type = Types.Enum;
 	                                  .)
 	Identifier                       (. newType.Name = t.val; .)
-	[ ":" IntegralType<out name>     (. newType.BaseTypes.Add(new TypeReference(name)); .)
+	[ ":" IntegralType<out name>     (. newType.BaseTypes.Add(new TypeReference(name, true)); .)
 	]
 	(. newType.BodyStartLocation = t.EndLocation; .)
 	EnumBody 
@@ -445,7 +445,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	                                    templates = delegateDeclr.Templates;
 	                                    delegateDeclr.StartLocation = m.GetDeclarationLocation(t.Location);
 	                                 .)
-	( IF (NotVoidPointer()) "void"   (. delegateDeclr.ReturnType = new TypeReference("void", 0, null); .)
+	( IF (NotVoidPointer()) "void"   (. delegateDeclr.ReturnType = new TypeReference("System.Void", true); .)
 		| Type<out type>             (. delegateDeclr.ReturnType = type; .)
 	)
 	Identifier                       (. delegateDeclr.Name = t.val; .)
@@ -561,8 +561,8 @@ TypeWithRestriction<out TypeReference type, bool allowNullable, bool canBeUnboun
 .)
 =
 	( ClassType<out type, canBeUnbound>
-	| SimpleType<out name> (. type = new TypeReference(name); .)
-	| "void" "*"                         (. pointer = 1; type = new TypeReference("void"); .)
+	| SimpleType<out name> (. type = new TypeReference(name, true); .)
+	| "void" "*"                         (. pointer = 1; type = new TypeReference("System.Void", true); .)
 	)                                    (. List<int> r = new List<int>(); .)
 	
 	[ IF (allowNullable && la.kind == Tokens.Question) NullableQuestionMark<ref type> ]
@@ -588,8 +588,8 @@ NonArrayType<out TypeReference type>
 .)
 =
 	( ClassType<out type, false>
-	| SimpleType<out name> (. type = new TypeReference(name); .)
-	| "void" "*"           (. pointer = 1; type = new TypeReference("void"); .)
+	| SimpleType<out name> (. type = new TypeReference(name, true); .)
+	| "void" "*"           (. pointer = 1; type = new TypeReference("System.Void", true); .)
 	)
 	
 	[ NullableQuestionMark<ref type> ]
@@ -604,10 +604,10 @@ SimpleType<out string name>
 (. name = String.Empty; .)
 =
 	IntegralType<out name> 
-	| "float"   (. name = "float"; .)
-	| "double"  (. name = "double"; .)
-	| "decimal" (. name = "decimal"; .)
-	| "bool"    (. name = "bool"; .)
+	| "float"   (. name = "System.Single"; .)
+	| "double"  (. name = "System.Double"; .)
+	| "decimal" (. name = "System.Decimal"; .)
+	| "bool"    (. name = "System.Boolean"; .)
 .
 
 
@@ -685,21 +685,21 @@ ClassType<out TypeReference typeRef, bool canBeUnbound>
 (. TypeReference r; typeRef = null; .)
 =
 	TypeName<out r, canBeUnbound> (. typeRef = r; .)
-	| "object"                    (. typeRef = new TypeReference("object"); .)
-	| "string"                    (. typeRef = new TypeReference("string"); .)
+	| "object"                    (. typeRef = new TypeReference("System.Object", true); .)
+	| "string"                    (. typeRef = new TypeReference("System.String", true); .)
 .
 
 IntegralType<out string name>          (. name = ""; .)
 =
-	"sbyte"                            (. name = "sbyte"; .)
-	| "byte"                           (. name = "byte"; .)
-	| "short"                          (. name = "short"; .)
-	| "ushort"                         (. name = "ushort"; .)
-	| "int"                            (. name = "int"; .)
-	| "uint"                           (. name = "uint"; .)
-	| "long"                           (. name = "long"; .)
-	| "ulong"                          (. name = "ulong"; .)
-	| "char"                           (. name = "char"; .)
+	"sbyte"                            (. name = "System.SByte"; .)
+	| "byte"                           (. name = "System.Byte"; .)
+	| "short"                          (. name = "System.Int16"; .)
+	| "ushort"                         (. name = "System.UInt16"; .)
+	| "int"                            (. name = "System.Int32"; .)
+	| "uint"                           (. name = "System.UInt32"; .)
+	| "long"                           (. name = "System.Int64"; .)
+	| "ulong"                          (. name = "System.UInt64"; .)
+	| "char"                           (. name = "System.Char"; .)
 .
 
 MemberModifiers<ModifierList m>
@@ -770,7 +770,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	(.	MethodDeclaration methodDeclaration = new MethodDeclaration {
 			Name = qualident,
 			Modifier = m.Modifier,
-			TypeReference = new TypeReference("void"),
+			TypeReference = new TypeReference("System.Void", true),
 			Parameters = p,
 			Attributes = attributes,
 			StartLocation = m.GetDeclarationLocation(startPos),
@@ -1071,7 +1071,7 @@ InterfaceMemberDecl
 		{ TypeParameterConstraintsClause<templates> }
 		";"
 		(.  MethodDeclaration md = new MethodDeclaration {
-				Name = name, Modifier = mod, TypeReference = new TypeReference("void"), 
+				Name = name, Modifier = mod, TypeReference = new TypeReference("System.Void", true), 
 				Parameters = parameters, Attributes = attributes, Templates = templates,
 				StartLocation = startLocation, EndLocation = t.EndLocation
 			};
@@ -1853,24 +1853,24 @@ PrimaryExpr<out Expression pexpr>
 	
 	| /*--- predefined type member access: */
 		(. string val = null; .)
-		( "bool" (. val = "bool"; .) 
-		| "byte" (. val = "byte"; .)   
-		| "char" (. val = "char"; .)
-		| "decimal" (. val = "decimal"; .)
-		| "double"  (. val = "double"; .)
-		| "float"   (. val = "float"; .)
-		| "int"     (. val = "int"; .)
-		| "long"  (. val = "long"; .)
-		| "object"   (. val = "object"; .)
-		| "sbyte" (. val = "sbyte"; .)
-		| "short"   (. val = "short"; .)
-		| "string"  (. val = "string"; .)
-		| "uint"  (. val = "uint"; .)
-		| "ulong"    (. val = "ulong"; .)
-		| "ushort" (. val = "ushort"; .)
-		| "void" (. val = "void"; .)
+		( "bool" (. val = "System.Boolean"; .) 
+		| "byte" (. val = "System.Byte"; .)   
+		| "char" (. val = "System.Char"; .)
+		| "decimal" (. val = "System.Decimal"; .)
+		| "double"  (. val = "System.Double"; .)
+		| "float"   (. val = "System.Single"; .)
+		| "int"     (. val = "System.Int32"; .)
+		| "long"  (. val = "System.Int64"; .)
+		| "object"   (. val = "System.Object"; .)
+		| "sbyte" (. val = "System.SByte"; .)
+		| "short"   (. val = "System.Int16"; .)
+		| "string"  (. val = "System.String"; .)
+		| "uint"  (. val = "System.UInt32"; .)
+		| "ulong"    (. val = "System.UInt64"; .)
+		| "ushort" (. val = "System.UInt16"; .)
+		| "void" (. val = "System.Void"; .)
 		)
-		MemberAccess<out pexpr, new TypeReferenceExpression(val) { StartLocation = t.Location, EndLocation = t.EndLocation } >
+		MemberAccess<out pexpr, new TypeReferenceExpression(new TypeReference(val, true)) { StartLocation = t.Location, EndLocation = t.EndLocation } >
 		
 		/*--- this access: */
 	|	"this"                              (. pexpr = new ThisReferenceExpression(); .)
@@ -1882,7 +1882,7 @@ PrimaryExpr<out Expression pexpr>
 	
 	|	"typeof" "("
 		(
-			IF (NotVoidPointer()) "void" (. type = new TypeReference("void"); .)
+			IF (NotVoidPointer()) "void" (. type = new TypeReference("System.Void", true); .)
 		|	TypeWithRestriction<out type, true, true>
 		)
 		")"                            (. pexpr = new TypeOfExpression(type); .)
@@ -2281,7 +2281,7 @@ NullableQuestionMark<ref TypeReference typeRef>
 	"?"
 	(.
 		if (typeRef != null) typeArguments.Add(typeRef);
-		typeRef = new TypeReference("System.Nullable", typeArguments);
+		typeRef = new TypeReference("System.Nullable", typeArguments) { IsKeyword = true };
 	.)
 .
 
