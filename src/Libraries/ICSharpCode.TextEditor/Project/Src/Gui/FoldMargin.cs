@@ -44,7 +44,6 @@ namespace ICSharpCode.TextEditor
 				return;
 			}
 			HighlightColor lineNumberPainterColor = textArea.Document.HighlightingStrategy.GetColorFor("LineNumbers");
-			HighlightColor foldLineColor          = textArea.Document.HighlightingStrategy.GetColorFor("FoldLine");
 			
 			
 			for (int y = 0; y < (DrawingPosition.Height + textArea.TextView.VisibleLineDrawingRemainder) / textArea.TextView.FontHeight + 1; ++y) {
@@ -251,19 +250,21 @@ namespace ICSharpCode.TextEditor
 			
 			Rectangle intRect = new Rectangle((int)rectangle.X, (int)rectangle.Y, (int)rectangle.Width, (int)rectangle.Height);
 			g.FillRectangle(BrushRegistry.GetBrush(foldMarkerColor.BackgroundColor), intRect);
-			g.DrawRectangle(BrushRegistry.GetPen(isSelected ? selectedFoldLine.Color : foldMarkerColor.Color), intRect);
+			g.DrawRectangle(BrushRegistry.GetPen(isSelected ? selectedFoldLine.Color : foldLineColor.Color), intRect);
 			
 			int space  = (int)Math.Round(((double)rectangle.Height) / 8d) + 1;
 			int mid    = intRect.Height / 2 + intRect.Height % 2;
 			
-			g.DrawLine(BrushRegistry.GetPen(foldLineColor.BackgroundColor),
+			// draw minus
+			g.DrawLine(BrushRegistry.GetPen(foldMarkerColor.Color),
 			           rectangle.X + space,
 			           rectangle.Y + mid,
 			           rectangle.X + rectangle.Width - space,
 			           rectangle.Y + mid);
 			
+			// draw plus
 			if (!isOpened) {
-				g.DrawLine(BrushRegistry.GetPen(foldLineColor.BackgroundColor),
+				g.DrawLine(BrushRegistry.GetPen(foldMarkerColor.Color),
 				           rectangle.X + mid,
 				           rectangle.Y + space,
 				           rectangle.X + mid,
