@@ -243,11 +243,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#region Common helper functions
 		public static ProvidedDocumentInformation GetDocumentInformation(string fileName)
 		{
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (content is ITextEditorControlProvider &&
-				    FileUtility.IsEqualFileName(content.PrimaryFileName, fileName))
-				{
-					return new ProvidedDocumentInformation(((ITextEditorControlProvider)content).TextEditorControl.Document, fileName, 0);
+			OpenedFile file = FileService.GetOpenedFile(fileName);
+			if (file != null) {
+				IFileDocumentProvider documentProvider = file.CurrentView as IFileDocumentProvider;
+				if (documentProvider != null) {
+					IDocument document = documentProvider.GetDocumentForFile(file);
+					if (document != null) {
+						return new ProvidedDocumentInformation(document, fileName, 0);
+					}
 				}
 			}
 			ITextBufferStrategy strategy = StringTextBufferStrategy.CreateTextBufferFromFile(fileName);
