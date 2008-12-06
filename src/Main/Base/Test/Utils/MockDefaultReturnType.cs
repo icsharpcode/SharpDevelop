@@ -154,5 +154,10 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public IReturnType GetDirectReturnType()
+		{
+			return this;
+		}
 	}
 }

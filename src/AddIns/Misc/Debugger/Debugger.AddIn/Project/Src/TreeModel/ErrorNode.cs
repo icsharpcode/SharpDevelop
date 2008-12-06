@@ -4,15 +4,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
-using ICSharpCode.Core;
-
-using Debugger;
 using Debugger.Expressions;
+using ICSharpCode.Core;
 
 namespace Debugger.AddIn.TreeModel
 {

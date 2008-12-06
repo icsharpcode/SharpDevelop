@@ -493,3 +493,12 @@ Icons.16x16.NavigateForward              = NavigationIcons\Icons.16x16.NavigateF
 #Setup icons (Wix)
 Setup.Icons.16x16.SetupDialogsPad = SetupIcons\Setup.Icons.16x16.SetupDialogsPad.png
 Setup.Icons.16x16.Component = SetupIcons\Setup.Icons.16x16.Component.png
+
+#Python icons
+Python.ProjectBrowser.File                             = backendicons\Python\Python.ProjectBrowser.File.png
+Python.ProjectBrowser.Project                          = backendicons\Python\Python.ProjectBrowser.Project.png
+Python.Template.Class                                  = backendicons\Python\Python.Template.Class.png
+Python.Template.EmptyFile                              = backendicons\Python\Python.Template.EmptyFile.png
+Python.Template.Form                                   = backendicons\Python\Python.Template.Form.png
+Python.Template.ConsoleProject                         = backendicons\Python\Python.Template.ConsoleProject.png
+Python.Template.WinFormsProject                        = backendicons\Python\Python.Template.WinFormsProject.png

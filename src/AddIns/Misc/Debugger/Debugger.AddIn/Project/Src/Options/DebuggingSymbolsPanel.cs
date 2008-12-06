@@ -5,11 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Debugger;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
+using Debugger;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
 

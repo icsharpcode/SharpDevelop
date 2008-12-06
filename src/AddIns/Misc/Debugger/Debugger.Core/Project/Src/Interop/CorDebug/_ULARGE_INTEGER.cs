@@ -9,7 +9,6 @@
 
 namespace Debugger.Interop.CorDebug
 {
-    using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]

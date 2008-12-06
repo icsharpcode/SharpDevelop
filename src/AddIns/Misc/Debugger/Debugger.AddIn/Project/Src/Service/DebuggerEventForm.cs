@@ -38,12 +38,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Debugger;
+using System.Drawing;
 using ICSharpCode.Core;
-
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
@@ -74,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// <param name="icon">Icon to display i nthe dialog box.</param>
 		/// <param name="canContinue">Set to true to enable the continue button on the form.</param>
 		/// <returns></returns>
-		public static Result Show(string title, string message, System.Drawing.Bitmap icon, bool canContinue)
+		public static Result Show(string title, string message, Bitmap icon, bool canContinue)
 		{
 			using (DebuggerEventForm form = new DebuggerEventForm()) {
 				form.Text = title;
@@ -86,19 +83,19 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		private void buttonBreak_Click(object sender, System.EventArgs e)
+		private void buttonBreak_Click(object sender, EventArgs e)
 		{
 			result = Result.Break;
 			Close();
 		}
 
-		private void buttonContinue_Click(object sender, System.EventArgs e)
+		private void buttonContinue_Click(object sender, EventArgs e)
 		{
 			result = Result.Continue;
 			Close();
 		}
 
-		private void buttonTerminate_Click(object sender, System.EventArgs e)
+		private void buttonTerminate_Click(object sender, EventArgs e)
 		{
 			result = Result.Terminate;
 			Close();

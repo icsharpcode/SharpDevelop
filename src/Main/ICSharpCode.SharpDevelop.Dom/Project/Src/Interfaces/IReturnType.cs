@@ -127,6 +127,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool IsConstructedReturnType { get; }
 		ConstructedReturnType CastToConstructedReturnType();
 		
+		/// <summary>
+		/// Gets whether the type is a reference type or value type.
+		/// </summary>
+		/// <returns>
+		/// true, if the type is a reference type.
+		/// false, if the type is a value type.
+		/// null, if the type is not known (e.g. generic type argument or type not found)
+		/// </returns>
 		bool? IsReferenceType { get; }
+		
+		/// <summary>
+		/// Gets an identical return type that binds directly to the underlying class, so
+		/// that repeatedly calling methods does not cause repeated class lookups.
+		/// The direct return type will always point to the old version of the class, so don't
+		/// store direct return types!
+		/// </summary>
+		/// <returns>This method never returns null.</returns>
+		IReturnType GetDirectReturnType();
 	}
 }

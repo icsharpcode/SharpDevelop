@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class LoadedModulesPad : DebuggerPad
 	{
 		ListView  loadedModulesList;
-		Debugger.Process debuggedProcess;
+		Process debuggedProcess;
 		
 		ColumnHeader name        = new ColumnHeader();
 		ColumnHeader address     = new ColumnHeader();
@@ -102,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 		
-		protected override void SelectProcess(Debugger.Process process)
+		protected override void SelectProcess(Process process)
 		{
 			if (debuggedProcess != null) {
 				debuggedProcess.ModuleLoaded -= debuggedProcess_ModuleLoaded;

@@ -37,13 +37,10 @@
 //  
 #endregion
 
-using System;
 using Debugger;
 using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.SharpDevelop.Debugging;
-using System.Windows.Forms;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -77,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override bool ShowBookmarkInThisPad(SDBookmark mark)
 		{
-			return mark.IsVisibleInBookmarkPad && mark is Debugging.BreakpointBookmark;
+			return mark.IsVisibleInBookmarkPad && mark is BreakpointBookmark;
 		}
 	}
 }

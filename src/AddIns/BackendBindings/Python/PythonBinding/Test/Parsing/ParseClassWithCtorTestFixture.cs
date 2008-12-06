@@ -63,14 +63,7 @@ namespace PythonBinding.Tests.Parsing
 			}
 		}
 		
-		/// <summary>
-		/// This tests fails because IronPython returns the correct
-		/// end column for the method body in this case. In general
-		/// it gets it wrong for class and method bodies by being
-		/// one character too long.
-		/// </summary>
 		[Test]
-		[Ignore("Method body region returned is off by one due to bug in IronPython.")]
 		public void MethodBodyRegion()
 		{
 			int startLine = 2;
@@ -82,7 +75,6 @@ namespace PythonBinding.Tests.Parsing
 		}
 		
 		[Test]
-		[Ignore]
 		public void MethodFoldMarkerInnerText()
 		{
 			Assert.AreEqual("\r\n\t\tpass", methodMarker.InnerText);

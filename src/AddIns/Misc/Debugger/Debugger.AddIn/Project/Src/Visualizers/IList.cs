@@ -4,13 +4,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Debugging;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using Debugger.Expressions;
 using Debugger.MetaData;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.TreeModel

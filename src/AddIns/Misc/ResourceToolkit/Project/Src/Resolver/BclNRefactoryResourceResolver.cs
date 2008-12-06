@@ -587,7 +587,7 @@ namespace Hornung.ResourceToolkit.Resolver
 							PrimitiveExpression p = param as PrimitiveExpression;
 							if (p != null) {
 								string pValue = p.Value as string;
-								if (pValue != null) {
+								if (!String.IsNullOrEmpty(pValue)) {
 									
 									#if DEBUG
 									LoggingService.Debug("ResourceToolkit: BclNRefactoryResourceResolver found string parameter: '"+pValue+"'");

@@ -5,10 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
-
-using Debugger.MetaData;
-
 namespace Debugger.Expressions
 {
 	/// <summary>

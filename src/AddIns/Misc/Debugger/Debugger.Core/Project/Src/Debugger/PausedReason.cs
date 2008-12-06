@@ -7,7 +7,7 @@
 
 namespace Debugger
 {
-	public enum PausedReason:int
+	public enum PausedReason : int
 	{
 		EvalComplete,
 		StepComplete,

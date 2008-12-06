@@ -251,6 +251,20 @@ namespace ICSharpCode.TextEditor.Document
 			this.italic       = italic;
 		}
 		
+		/// <summary>
+		/// Creates a new instance of <see cref="HighlightColor"/>
+		/// </summary>
+		public HighlightColor(string systemColor, bool bold, bool italic)
+		{
+			hasForeground = true;
+			
+			this.systemColor  = true;
+			systemColorName   = systemColor;
+			
+			this.bold         = bold;
+			this.italic       = italic;
+		}
+		
 		static Color ParseColor(string c)
 		{
 			int a = 255;

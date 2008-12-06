@@ -4,9 +4,9 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.MetaData;
 using System;
 using System.Collections.Generic;
+using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn
@@ -69,7 +69,7 @@ namespace Debugger.AddIn
 				Value member = context.GetThisValue().GetMemberValue(identifier);
 				if (member != null) return member;
 			} else {
-				MetaData.MemberInfo memberInfo = context.MethodInfo.DeclaringType.GetMember(identifier);
+				MemberInfo memberInfo = context.MethodInfo.DeclaringType.GetMember(identifier);
 				if (memberInfo != null && memberInfo.IsStatic) {
 					return Value.GetMemberValue(null, memberInfo, null);
 				}
@@ -168,10 +168,10 @@ namespace Debugger.AddIn
 				switch (binaryOperatorExpression.Op)
 				{
 					case BinaryOperatorType.Equality :
-						val.PrimitiveValue = object.Equals(right.PrimitiveValue, left.PrimitiveValue);
+						val.PrimitiveValue = Equals(right.PrimitiveValue, left.PrimitiveValue);
 						break;
 					case BinaryOperatorType.InEquality :
-						val.PrimitiveValue = !object.Equals(right.PrimitiveValue, left.PrimitiveValue);
+						val.PrimitiveValue = !Equals(right.PrimitiveValue, left.PrimitiveValue);
 						break;
 //				case BinaryOperatorType.Add :
 //					val.PrimitiveValue = (right.PrimitiveValue.ToString() + left.PrimitiveValue.ToString());

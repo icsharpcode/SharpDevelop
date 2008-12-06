@@ -166,10 +166,15 @@ namespace WorkflowDesigner
 				if (File.Exists(pitem.ReferencedProject.OutputAssemblyFullPath))
 					assembly = appDomain.Load(File.ReadAllBytes(pitem.ReferencedProject.OutputAssemblyFullPath));
 				
-	
+				
 
 			} else if (item is ReferenceProjectItem) {
-				assembly = ReflectionLoader.ReflectionLoadGacAssembly(item.Include, false);
+				ReflectionProjectContent pc = ParserService.GetProjectContentForReference((ReferenceProjectItem)item) as ReflectionProjectContent;
+				if (pc != null) {
+					AssemblyName name = new AssemblyName();
+					name.CodeBase = pc.AssemblyLocation;
+					assembly = appDomain.Load(name);
+				}
 				
 				if (assembly == null) {
 					AssemblyName name = new AssemblyName();

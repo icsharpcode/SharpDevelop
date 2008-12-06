@@ -3,7 +3,7 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.WindowsApplication.Name}</Name>
 		<Category>Python</Category>
-		<Icon>Icons.32x32.EmptyProjectIcon</Icon>
+		<Icon>Python.Template.WinFormsProject</Icon>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
 	</TemplateConfiguration>
 	
@@ -26,6 +26,7 @@
 			<Reference Include="System.Drawing"/>
 			<Reference Include="System.Windows.Forms"/>
 			<Reference Include="System.Xml"/>
+			<Reference Include="$(PythonBinPath)\IronPython.dll"/>
 		</ProjectItems>
 		
 		<Files>

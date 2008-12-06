@@ -767,6 +767,25 @@ namespace Test {
 		
 		// ********************************************************************************************************************************
 		
+		const string CodeEmptyResourceSetName = @"using System.Resources;
+class A {
+	void B()
+	{
+		ResourceManager mgr = new ResourceManager("""", System.Reflection.Assembly.GetExecutingAssembly());
+		mgr.GetString(""TestKey"");
+	}
+}
+";
+		
+		[Test]
+		public void EmptyResourceSetName()
+		{
+			ResourceResolveResult rrr = Resolve(CodeEmptyResourceSetName, 5, 17, null);
+			TestHelper.CheckNoReference(rrr);
+		}
+		
+		// ********************************************************************************************************************************
+		
 		[Test]
 		public void ResolverSupportsCSharpFiles()
 		{

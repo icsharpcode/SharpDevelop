@@ -37,10 +37,9 @@
 //  
 #endregion
 
-using System;
 using Debugger;
-using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -65,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 		}
 		
-		protected virtual void SelectProcess(Debugger.Process process)
+		protected virtual void SelectProcess(Process process)
 		{
 			
 		}

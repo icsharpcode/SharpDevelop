@@ -37,10 +37,8 @@
 //  
 #endregion
 
-using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-
 using Debugger;
 using ICSharpCode.Core;
 

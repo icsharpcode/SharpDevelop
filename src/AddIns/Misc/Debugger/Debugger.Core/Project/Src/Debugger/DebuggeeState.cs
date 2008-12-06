@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
 
 namespace Debugger
 {
@@ -14,15 +13,15 @@ namespace Debugger
 	/// be unchanged.
 	/// </summary>
 	/// <remarks>
-	/// For example, althogh property evaluation can in theory change
-	/// any memory, it is assumed that they behave 'corectly' and thus
+	/// For example, although property evaluation can in theory change
+	/// any memory, it is assumed that they behave 'correctly' and thus
 	/// property evaluation does not change debugger state.
 	/// </remarks>
 	public class DebuggeeState: DebuggerObject
 	{
 		Process process;
 		
-		[Debugger.Tests.Ignore]
+		[Tests.Ignore]
 		public Process Process {
 			get {
 				return process;

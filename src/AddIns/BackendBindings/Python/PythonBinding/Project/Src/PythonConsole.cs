@@ -29,6 +29,7 @@ namespace ICSharpCode.PythonBinding
 		int promptLength;
 		List<string> previousLines = new List<string>();
 		CommandLine commandLine;
+		CommandLineHistory commandLineHistory = new CommandLineHistory();
 		
 		public PythonConsole(ITextEditor textEditor, CommandLine commandLine)
 		{
@@ -229,6 +230,12 @@ namespace ICSharpCode.PythonBinding
 				case Keys.Home:
 					MoveToHomePosition();
 					return true;
+				case Keys.Down:
+					MoveToNextCommandLine();
+					return true;
+				case Keys.Up:
+					MoveToPreviousCommandLine();
+					return true;
 			}
 			return false;
 		}
@@ -245,6 +252,8 @@ namespace ICSharpCode.PythonBinding
 				// Append line.
 				string currentLine = GetCurrentLine();
 				previousLines.Add(currentLine);
+				commandLineHistory.Add(currentLine);
+				
 				lineReceivedEvent.Set();
 			}
 		}
@@ -293,6 +302,38 @@ namespace ICSharpCode.PythonBinding
 		void MoveToHomePosition()
 		{
 			textEditor.Column = promptLength;
+		}
+		
+		/// <summary>
+		/// Shows the previous command line in the command line history.
+		/// </summary>
+		void MoveToPreviousCommandLine()
+		{
+			if (commandLineHistory.MovePrevious()) {
+				ReplaceCurrentLineTextAfterPrompt(commandLineHistory.Current);
+			}
+		}
+		
+		/// <summary>
+		/// Shows the next command line in the command line history.
+		/// </summary>
+		void MoveToNextCommandLine()
+		{
+			if (commandLineHistory.MoveNext()) {
+				ReplaceCurrentLineTextAfterPrompt(commandLineHistory.Current);
+			}
+		}
+		
+		/// <summary>
+		/// Replaces the current line text after the prompt with the specified text.
+		/// </summary>
+		void ReplaceCurrentLineTextAfterPrompt(string text)
+		{
+			string currentLine = GetCurrentLine();
+			textEditor.Replace(promptLength, currentLine.Length, text);
+			
+			// Put cursor at end.
+			textEditor.Column = promptLength + text.Length;
 		}
 	}
 }

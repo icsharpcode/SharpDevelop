@@ -4,18 +4,15 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 2039 $</version>
 // </file>
-using Debugger.AddIn.Service;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Windows.Forms;
+using Debugger.AddIn.Service;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace Debugger.AddIn
 {
@@ -125,7 +122,7 @@ namespace Debugger.AddIn
 	
 	public class BreakpointChangeMenuBuilder : ISubmenuBuilder
 	{
-		public System.Windows.Forms.ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
 			List<ToolStripItem> items = new List<ToolStripItem>();
 			

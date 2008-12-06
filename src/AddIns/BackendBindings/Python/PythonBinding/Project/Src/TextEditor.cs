@@ -123,7 +123,17 @@ namespace ICSharpCode.PythonBinding
 				return textEditorControl.Document.GetText(lineSegment);
 			}
 		}
-
+		
+		/// <summary>
+		/// Replaces the text at the specified index on the current line with the specified text.
+		/// </summary>
+		public void Replace(int index, int length, string text)
+		{
+			int currentLine = textEditorControl.ActiveTextAreaControl.Caret.Line;
+			LineSegment lineSegment = textEditorControl.Document.GetLineSegment(currentLine);
+			textEditorControl.Document.Replace(lineSegment.Offset + index, length, text);
+		}
+	
 		/// <summary>
 		/// Makes the current text read only. Text can still be entered at the end.
 		/// </summary>

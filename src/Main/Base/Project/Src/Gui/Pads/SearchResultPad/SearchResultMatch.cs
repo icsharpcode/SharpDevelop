@@ -64,12 +64,12 @@ namespace SearchAndReplace
 		
 		public virtual TextLocation GetStartPosition(IDocument document)
 		{
-			return document.OffsetToPosition(Offset);
+			return document.OffsetToPosition(Math.Min(Offset, document.TextLength));
 		}
 		
 		public virtual TextLocation GetEndPosition(IDocument document)
 		{
-			return document.OffsetToPosition(Offset + Length);
+			return document.OffsetToPosition(Math.Min(Offset + Length, document.TextLength));
 		}
 		
 		/// <summary>

@@ -9,8 +9,6 @@
 
 namespace Debugger.Interop.CorDebug
 {
-    using System;
-
     public enum CorDebugChainReason
     {
         // Fields

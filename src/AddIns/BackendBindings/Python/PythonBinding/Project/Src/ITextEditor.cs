@@ -55,6 +55,11 @@ namespace ICSharpCode.PythonBinding
 		void Write(string text, Color backgroundColor);
 		
 		/// <summary>
+		/// Replaces the text at the specified index on the current line with the specified text.
+		/// </summary>
+		void Replace(int index, int length, string text);
+		
+		/// <summary>
 		/// Gets or sets the current column position of the cursor on the current line.  This is zero based.
 		/// </summary>
 		int Column {get; set;}

@@ -5,13 +5,8 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-
-using ICSharpCode.Core;
-
-using Debugger;
 using Debugger.Expressions;
 
 namespace Debugger.AddIn.TreeModel

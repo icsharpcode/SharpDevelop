@@ -9,8 +9,6 @@
 
 namespace Debugger.Wrappers.CorDebug
 {
-    using System;
-
     public enum CorDebugExceptionCallbackType
     {
         // Fields

@@ -24,5 +24,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public abstract override T CastToDecoratingReturnType<T>();
+		
+		public override IReturnType GetDirectReturnType()
+		{
+			return this;
+		}
 	}
 }

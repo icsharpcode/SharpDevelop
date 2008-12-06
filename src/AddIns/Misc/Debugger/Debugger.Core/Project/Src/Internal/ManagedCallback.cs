@@ -12,7 +12,6 @@
 // Replace with:
 // \1\2\n\1{\n\1\tEnterCallback(PausedReason.Other, "\3");\n\1\t\n\1\tExitCallback_Continue();\n\1}
 
-using Debugger.MetaData;
 using System;
 using System.Runtime.InteropServices;
 using Debugger.Wrappers.CorDebug;
@@ -492,7 +491,8 @@ namespace Debugger
 			ExitCallback();
 		}
 
-		public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
+	    /// <exception cref="Exception">Unknown callback argument</exception>
+	    public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
 		{
 			if (c.Is<ICorDebugAppDomain>()) {
 				EnterCallback(PausedReason.Other, "MDANotification", c.CastTo<ICorDebugAppDomain>());

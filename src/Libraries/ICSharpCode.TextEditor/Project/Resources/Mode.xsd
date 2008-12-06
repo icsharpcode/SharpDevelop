@@ -43,6 +43,7 @@
 			<xsd:element name="VRuler" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="InvalidLines" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="CaretMarker" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="CaretLine" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
 			
 			<xsd:element name="LineNumbers" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
 			

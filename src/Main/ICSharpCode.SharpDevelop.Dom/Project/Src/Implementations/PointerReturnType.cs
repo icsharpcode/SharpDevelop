@@ -37,6 +37,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public override IReturnType GetDirectReturnType()
+		{
+			IReturnType newBaseType = baseType.GetDirectReturnType();
+			if (newBaseType == baseType)
+				return this;
+			else
+				return new PointerReturnType(newBaseType);
+		}
+		
 		public override bool Equals(IReturnType rt)
 		{
 			if (rt == null) return false;

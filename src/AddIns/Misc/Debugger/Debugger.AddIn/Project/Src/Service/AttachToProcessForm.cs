@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			listView.Items.Clear();
 			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
 			Process currentProcess = Process.GetCurrentProcess();			
-			foreach (System.Diagnostics.Process process in System.Diagnostics.Process.GetProcesses()) {
+			foreach (Process process in Process.GetProcesses()) {
 				try {
 					// Prevent attaching to our own process.
 					if (currentProcess.Id != process.Id) {

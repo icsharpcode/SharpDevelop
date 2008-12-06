@@ -74,9 +74,9 @@ namespace ICSharpCode.TextEditor.Document
 			environmentColors["CaretLine"] = new HighlightBackground("ControlLight", "Window", false, false);
 			environmentColors["LineNumbers"] = new HighlightBackground("ControlDark", "Window", false, false);
 			
-			environmentColors["FoldLine"]         = new HighlightColor(Color.FromArgb(0x80, 0x80, 0x80), Color.Black, false, false);
-			environmentColors["FoldMarker"]       = new HighlightColor(Color.FromArgb(0x80, 0x80, 0x80), Color.White, false, false);
-			environmentColors["SelectedFoldLine"] = new HighlightColor(Color.Black, false, false);
+			environmentColors["FoldLine"]         = new HighlightColor("ControlDark", false, false);
+			environmentColors["FoldMarker"]       = new HighlightColor("WindowText", "Window", false, false);
+			environmentColors["SelectedFoldLine"] = new HighlightColor("WindowText", false, false);
 			environmentColors["EOLMarkers"]       = new HighlightColor("ControlLight", "Window", false, false);
 			environmentColors["SpaceMarkers"]     = new HighlightColor("ControlLight", "Window", false, false);
 			environmentColors["TabMarkers"]       = new HighlightColor("ControlLight", "Window", false, false);

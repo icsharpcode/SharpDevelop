@@ -11,7 +11,6 @@ using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
-using System.Runtime.InteropServices;
 
 namespace Debugger
 {

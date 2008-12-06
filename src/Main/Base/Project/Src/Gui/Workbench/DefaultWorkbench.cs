@@ -427,7 +427,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		Properties LoadOrCreateViewContentMementos()
 		{
-			return Properties.Load(this.ViewContentMementosFileName) ?? new Properties();
+			try {
+				return Properties.Load(this.ViewContentMementosFileName) ?? new Properties();
+			} catch (Exception ex) {
+				LoggingService.Warn("Error while loading the view content memento file. Discarding any saved view states.", ex);
+				return new Properties();
+			}
 		}
 		
 		static string GetMementoKeyName(IViewContent viewContent)

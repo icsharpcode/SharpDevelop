@@ -1886,6 +1886,30 @@ public class MyCollectionType : System.Collections.IEnumerable
 			Assert.IsNotNull(mrr);
 			Assert.AreEqual("Point.X", mrr.ResolvedMember.FullyQualifiedName);
 		}
+		
+		[Test]
+		public void LinqQueryContinuationTest()
+		{
+			string program = @"using System;
+class TestClass {
+	void Test(string[] input) {
+		var r = from x in input
+			select x.GetHashCode() into x
+			where x == 42
+			select x * x;
+		
+	}
+}
+";
+			LocalResolveResult lrr = Resolve<LocalResolveResult>(program, "x", 5, 11, ExpressionContext.Default);
+			Assert.AreEqual("System.String", lrr.ResolvedType.FullyQualifiedName);
+			lrr = Resolve<LocalResolveResult>(program, "x", 6, 10, ExpressionContext.Default);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.FullyQualifiedName);
+			
+			lrr = Resolve<LocalResolveResult>(program, "r", 8);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable", lrr.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual("System.Int32", lrr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].FullyQualifiedName);
+		}
 		#endregion
 		
 		[Test]

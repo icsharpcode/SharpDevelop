@@ -4,10 +4,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
 namespace Debugger.AddIn.TreeModel
 {
 	public interface ISetText

@@ -1,6 +1,6 @@
 ﻿<Template author="Matt Ward" version="1.0">
 	<Config name      = "${res:Templates.File.EmptyClass.Name}"
-		  icon        = "Icons.32x32.EmptyFileIcon"
+		  icon        = "Python.Template.Class"
 		  category    = "Python"
 		  defaultname = "Class${Number}.py"
 		  language    = "Python"/>

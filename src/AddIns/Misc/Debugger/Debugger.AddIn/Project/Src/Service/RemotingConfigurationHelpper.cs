@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public static string GetLoadedAssemblyPath(string assemblyName)
 		{
 			string path = null;
-			foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
 				try {
 					string fullFilename = assembly.Location;
 					if (Path.GetFileName(fullFilename).Equals(assemblyName, StringComparison.OrdinalIgnoreCase)) {
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 			}
 			if (path == null) {
-				throw new System.Exception("Assembly " + assemblyName + " is not loaded");
+				throw new Exception("Assembly " + assemblyName + " is not loaded");
 			}
 			return path;
 		}
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		Assembly AssemblyResolve(object sender, ResolveEventArgs args)
 		{
-			foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
 				try {
 					string fullFilename = assembly.Location;
 					if (Path.GetFileNameWithoutExtension(fullFilename).Equals(args.Name, StringComparison.OrdinalIgnoreCase) ||

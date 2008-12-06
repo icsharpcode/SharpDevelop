@@ -5,15 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System;
 using System.Collections.Generic;
 
 using Debugger.MetaData;
-using Debugger.Wrappers.CorSym;
 
 namespace Debugger.Expressions
 {
-	public partial class Expression: DebuggerObject
+	public partial class Expression : DebuggerObject
 	{
 		public Expression AppendIndexer(params int[] indices)
 		{

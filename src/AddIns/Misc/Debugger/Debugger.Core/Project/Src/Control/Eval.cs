@@ -47,8 +47,9 @@ namespace Debugger
 		ICorDebugEval CorEval {
 			get { return corEval; }
 		}
-		
-		public Value Result {
+
+	    /// <exception cref="GetValueException">Evaluating...</exception>
+	    public Value Result {
 			get {
 				switch(this.State) {
 					case EvalState.Evaluating:            throw new GetValueException("Evaluating...");
@@ -81,8 +82,9 @@ namespace Debugger
 			this.corEval = corEval;
 			this.state = EvalState.Evaluating;
 		}
-		
-		static ICorDebugEval CreateCorEval(Process process)
+
+	    /// <exception cref="GetValueException">Can not evaluate because no thread is selected</exception>
+	    static ICorDebugEval CreateCorEval(Process process)
 		{
 			process.AssertPaused();
 			
@@ -103,8 +105,9 @@ namespace Debugger
 			
 			return targetThread.CorThread.CreateEval();
 		}
-		
-		static Eval CreateEval(Process process, string description, EvalStarter evalStarter)
+
+	    /// <exception cref="GetValueException">Can not evaluate in optimized code</exception>
+	    static Eval CreateEval(Process process, string description, EvalStarter evalStarter)
 		{
 			ICorDebugEval corEval = CreateCorEval(process);
 			
@@ -142,8 +145,10 @@ namespace Debugger
 		{
 			return this.corEval == corEval;
 		}
-		
-		Value WaitForResult()
+
+	    /// <exception cref="DebuggerException">Evaluation can not be stopped</exception>
+	    /// <exception cref="GetValueException">Process exited</exception>
+	    Value WaitForResult()
 		{
 			// Note that aborting is not supported for suspended threads
 			try {
@@ -217,8 +222,9 @@ namespace Debugger
 				}
 			);
 		}
-		
-		static void MethodInvokeStarter(Eval eval, MethodInfo method, Value thisValue, Value[] args)
+
+	    /// <exception cref="GetValueException"><c>GetValueException</c>.</exception>
+	    static void MethodInvokeStarter(Eval eval, MethodInfo method, Value thisValue, Value[] args)
 		{
 			List<ICorDebugValue> corArgs = new List<ICorDebugValue>();
 			args = args ?? new Value[0];
@@ -256,7 +262,8 @@ namespace Debugger
 		// The following function create values only for the purpuse of evalutaion
 		// They actually do not allocate memory on the managed heap
 		// The advantage is that it does not continue the process
-		public static Value CreateValue(Process process, object value)
+	    /// <exception cref="DebuggerException">Can not create string this way</exception>
+	    public static Value CreateValue(Process process, object value)
 		{
 			if (value is string) throw new DebuggerException("Can not create string this way");
 			CorElementType corElemType;
