@@ -381,7 +381,7 @@ namespace NRefactoryASTGenerator
 					p.SetStatements.Add(new CodeSnippetStatement("\t\t\t\tif (!" +field.Name+".IsNull) "+field.Name+".Parent = this;"));
 				}
 			}
-			foreach (ConstructorInfo ctor in type.GetConstructors()) {
+			foreach (ConstructorInfo ctor in type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				CodeConstructor c = new CodeConstructor();
 				if (type.IsAbstract)
 					c.Attributes = MemberAttributes.Family;

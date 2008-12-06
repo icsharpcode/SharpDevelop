@@ -841,14 +841,12 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((queryExpression.FromClause != null));
 			Debug.Assert((queryExpression.MiddleClauses != null));
 			Debug.Assert((queryExpression.SelectOrGroupClause != null));
-			Debug.Assert((queryExpression.IntoClause != null));
 			queryExpression.FromClause.AcceptVisitor(this, data);
 			foreach (QueryExpressionClause o in queryExpression.MiddleClauses) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			queryExpression.SelectOrGroupClause.AcceptVisitor(this, data);
-			return queryExpression.IntoClause.AcceptVisitor(this, data);
+			return queryExpression.SelectOrGroupClause.AcceptVisitor(this, data);
 		}
 		
 		public virtual object VisitQueryExpressionAggregateClause(QueryExpressionAggregateClause queryExpressionAggregateClause, object data) {
@@ -919,12 +917,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 				o.AcceptVisitor(this, data);
 			}
 			return null;
-		}
-		
-		public virtual object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data) {
-			Debug.Assert((queryExpressionIntoClause != null));
-			Debug.Assert((queryExpressionIntoClause.ContinuedQuery != null));
-			return queryExpressionIntoClause.ContinuedQuery.AcceptVisitor(this, data);
 		}
 		
 		public virtual object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data) {

@@ -1573,12 +1573,6 @@ namespace ICSharpCode.NRefactory.Ast {
 			initializer = Expression.Null;
 		}
 		
-		public bool HasAddRegion {
-			get {
-				return !addRegion.IsNull;
-			}
-		}
-		
 		public bool HasRemoveRegion {
 			get {
 				return !removeRegion.IsNull;
@@ -1588,6 +1582,12 @@ namespace ICSharpCode.NRefactory.Ast {
 		public bool HasRaiseRegion {
 			get {
 				return !raiseRegion.IsNull;
+			}
+		}
+		
+		public bool HasAddRegion {
+			get {
+				return !addRegion.IsNull;
 			}
 		}
 		
@@ -2299,18 +2299,6 @@ namespace ICSharpCode.NRefactory.Ast {
 			elseIfSections = new List<ElseIfSection>();
 		}
 		
-		public bool HasElseIfSections {
-			get {
-				return elseIfSections.Count > 0;
-			}
-		}
-		
-		public bool HasElseStatements {
-			get {
-				return falseStatement.Count > 0;
-			}
-		}
-		
 
 			public IfElseStatement(Expression condition, Statement trueStatement)
 				: this(condition) {
@@ -2326,6 +2314,18 @@ namespace ICSharpCode.NRefactory.Ast {
 				if (trueStatement != null) trueStatement.Parent = this;
 				if (falseStatement != null) falseStatement.Parent = this;
 			}
+		
+		public bool HasElseStatements {
+			get {
+				return falseStatement.Count > 0;
+			}
+		}
+		
+		public bool HasElseIfSections {
+			get {
+				return elseIfSections.Count > 0;
+			}
+		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitIfElseStatement(this, data);
@@ -2440,9 +2440,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			setRegion = PropertySetRegion.Null;
 		}
 		
-		public bool IsWriteOnly {
+		public bool IsReadOnly {
 			get {
-				return !HasGetRegion && HasSetRegion;
+				return HasGetRegion && !HasSetRegion;
 			}
 		}
 		
@@ -2458,9 +2458,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public bool IsReadOnly {
+		public bool IsWriteOnly {
 			get {
-				return HasGetRegion && !HasSetRegion;
+				return !HasGetRegion && HasSetRegion;
 			}
 		}
 		
@@ -3368,12 +3368,6 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public bool IsWriteOnly {
-			get {
-				return !HasGetRegion && HasSetRegion;
-			}
-		}
-		
 		public bool HasSetRegion {
 			get {
 				return !setRegion.IsNull;
@@ -3395,6 +3389,12 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			if ((modifier & Modifiers.WriteOnly) != Modifiers.WriteOnly) {
 				this.GetRegion = new PropertyGetRegion(null, null);
+			}
+		}
+		
+		public bool IsWriteOnly {
+			get {
+				return !HasGetRegion && HasSetRegion;
 			}
 		}
 		
@@ -3539,11 +3539,11 @@ public Location ExtendedEndLocation { get; set; }
 		
 		QueryExpressionFromClause fromClause;
 		
+		bool isQueryContinuation;
+		
 		List<QueryExpressionClause> middleClauses;
 		
 		QueryExpressionClause selectOrGroupClause;
-		
-		QueryExpressionIntoClause intoClause;
 		
 		public QueryExpressionFromClause FromClause {
 			get {
@@ -3552,6 +3552,15 @@ public Location ExtendedEndLocation { get; set; }
 			set {
 				fromClause = value ?? QueryExpressionFromClause.Null;
 				if (!fromClause.IsNull) fromClause.Parent = this;
+			}
+		}
+		
+		public bool IsQueryContinuation {
+			get {
+				return isQueryContinuation;
+			}
+			set {
+				isQueryContinuation = value;
 			}
 		}
 		
@@ -3574,21 +3583,10 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public QueryExpressionIntoClause IntoClause {
-			get {
-				return intoClause;
-			}
-			set {
-				intoClause = value ?? QueryExpressionIntoClause.Null;
-				if (!intoClause.IsNull) intoClause.Parent = this;
-			}
-		}
-		
 		public QueryExpression() {
 			fromClause = QueryExpressionFromClause.Null;
 			middleClauses = new List<QueryExpressionClause>();
 			selectOrGroupClause = QueryExpressionClause.Null;
-			intoClause = QueryExpressionIntoClause.Null;
 		}
 		
 		public new static QueryExpression Null {
@@ -3602,8 +3600,8 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[QueryExpression FromClause={0} MiddleClauses={1} SelectOrGroupClause={2} IntoCla" +
-					"use={3}]", FromClause, GetCollectionString(MiddleClauses), SelectOrGroupClause, IntoClause);
+			return string.Format("[QueryExpression FromClause={0} IsQueryContinuation={1} MiddleClauses={2} SelectO" +
+					"rGroupClause={3}]", FromClause, IsQueryContinuation, GetCollectionString(MiddleClauses), SelectOrGroupClause);
 		}
 	}
 	
@@ -3679,6 +3677,9 @@ public Location ExtendedEndLocation { get; set; }
 	}
 	
 	public abstract class QueryExpressionClause : AbstractNode, INullable {
+		
+		protected QueryExpressionClause() {
+		}
 		
 		public virtual bool IsNull {
 			get {
@@ -3799,6 +3800,12 @@ public Location ExtendedEndLocation { get; set; }
 				inExpression = value ?? Expression.Null;
 				if (!inExpression.IsNull) inExpression.Parent = this;
 			}
+		}
+		
+		protected QueryExpressionFromOrJoinClause() {
+			type = TypeReference.Null;
+			identifier = "?";
+			inExpression = Expression.Null;
 		}
 	}
 	
@@ -3929,70 +3936,6 @@ public Location ExtendedEndLocation { get; set; }
 		public override string ToString() {
 			return string.Format("[QueryExpressionGroupVBClause GroupVariables={0} ByVariables={1} IntoVariables={2" +
 					"}]", GetCollectionString(GroupVariables), GetCollectionString(ByVariables), GetCollectionString(IntoVariables));
-		}
-	}
-	
-	public class QueryExpressionIntoClause : QueryExpressionClause {
-		
-		string intoIdentifier;
-		
-		QueryExpression continuedQuery;
-		
-		public string IntoIdentifier {
-			get {
-				return intoIdentifier;
-			}
-			set {
-				intoIdentifier = string.IsNullOrEmpty(value) ? "?" : value;
-			}
-		}
-		
-		public QueryExpression ContinuedQuery {
-			get {
-				return continuedQuery;
-			}
-			set {
-				continuedQuery = value ?? QueryExpression.Null;
-				if (!continuedQuery.IsNull) continuedQuery.Parent = this;
-			}
-		}
-		
-		public QueryExpressionIntoClause() {
-			intoIdentifier = "?";
-			continuedQuery = QueryExpression.Null;
-		}
-		
-		public new static QueryExpressionIntoClause Null {
-			get {
-				return NullQueryExpressionIntoClause.Instance;
-			}
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitQueryExpressionIntoClause(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[QueryExpressionIntoClause IntoIdentifier={0} ContinuedQuery={1}]", IntoIdentifier, ContinuedQuery);
-		}
-	}
-	
-	internal sealed class NullQueryExpressionIntoClause : QueryExpressionIntoClause {
-		
-		internal static NullQueryExpressionIntoClause Instance = new NullQueryExpressionIntoClause();
-		
-		public override bool IsNull {
-			get {
-				return true;
-			}
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return null;
-		}
-		
-		public override string ToString() {
-			return "[NullQueryExpressionIntoClause]";
 		}
 	}
 	
@@ -5416,15 +5359,15 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			Statement = statement;
 		}
 		
-		public bool IsYieldReturn {
-			get {
-				return statement is ReturnStatement;
-			}
-		}
-		
 		public bool IsYieldBreak {
 			get {
 				return statement is BreakStatement;
+			}
+		}
+		
+		public bool IsYieldReturn {
+			get {
+				return statement is ReturnStatement;
 			}
 		}
 		

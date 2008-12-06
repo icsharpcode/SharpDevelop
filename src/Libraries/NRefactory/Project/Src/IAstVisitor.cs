@@ -177,8 +177,6 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data);
 		
-		object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data);
-		
 		object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data);
 		
 		object VisitQueryExpressionJoinConditionVB(QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data);

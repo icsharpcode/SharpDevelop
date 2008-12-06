@@ -34,12 +34,6 @@ namespace NRefactoryToBooConverter
 			return null;
 		}
 		
-		public object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data)
-		{
-			AddError(queryExpressionIntoClause, "QueryExpressionIntoClause is not supported.");
-			return null;
-		}
-		
 		public object VisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data)
 		{
 			AddError(queryExpressionOrderClause, "QueryExpressionOrderClause is not supported.");

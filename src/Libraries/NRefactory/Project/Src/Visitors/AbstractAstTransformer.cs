@@ -1546,7 +1546,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((queryExpression.FromClause != null));
 			Debug.Assert((queryExpression.MiddleClauses != null));
 			Debug.Assert((queryExpression.SelectOrGroupClause != null));
-			Debug.Assert((queryExpression.IntoClause != null));
 			nodeStack.Push(queryExpression.FromClause);
 			queryExpression.FromClause.AcceptVisitor(this, data);
 			queryExpression.FromClause = ((QueryExpressionFromClause)(nodeStack.Pop()));
@@ -1564,9 +1563,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			nodeStack.Push(queryExpression.SelectOrGroupClause);
 			queryExpression.SelectOrGroupClause.AcceptVisitor(this, data);
 			queryExpression.SelectOrGroupClause = ((QueryExpressionClause)(nodeStack.Pop()));
-			nodeStack.Push(queryExpression.IntoClause);
-			queryExpression.IntoClause.AcceptVisitor(this, data);
-			queryExpression.IntoClause = ((QueryExpressionIntoClause)(nodeStack.Pop()));
 			return null;
 		}
 		
@@ -1693,15 +1689,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 				else
 					queryExpressionGroupVBClause.IntoVariables[i] = o;
 			}
-			return null;
-		}
-		
-		public virtual object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data) {
-			Debug.Assert((queryExpressionIntoClause != null));
-			Debug.Assert((queryExpressionIntoClause.ContinuedQuery != null));
-			nodeStack.Push(queryExpressionIntoClause.ContinuedQuery);
-			queryExpressionIntoClause.ContinuedQuery.AcceptVisitor(this, data);
-			queryExpressionIntoClause.ContinuedQuery = ((QueryExpression)(nodeStack.Pop()));
 			return null;
 		}
 		

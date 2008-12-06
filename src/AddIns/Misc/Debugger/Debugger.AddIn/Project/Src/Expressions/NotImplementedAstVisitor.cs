@@ -393,11 +393,6 @@ namespace Debugger.AddIn
 			throw new NotImplementedException("QueryExpressionGroupClause");
 		}
 		
-		public virtual object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data)
-		{
-			throw new NotImplementedException("QueryExpressionIntoClause");
-		}
-		
 		public virtual object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data)
 		{
 			throw new NotImplementedException("QueryExpressionJoinClause");

@@ -4720,10 +4720,12 @@ out fromClause);
 		q.FromClause = fromClause; 
 		QueryExpressionBody(
 #line  2360 "cs.ATG" 
-q);
+ref q);
 
 #line  2361 "cs.ATG" 
 		q.EndLocation = t.EndLocation; 
+		outExpr = q; /* set outExpr to q again if QueryExpressionBody changed it (can happen with 'into' clauses) */ 
+		
 	}
 
 	void ShortedLambdaExpression(
@@ -5511,331 +5513,328 @@ out t);
 	}
 
 	void QueryExpressionFromClause(
-#line  2364 "cs.ATG" 
+#line  2366 "cs.ATG" 
 out QueryExpressionFromClause fc) {
 
-#line  2365 "cs.ATG" 
+#line  2367 "cs.ATG" 
 		fc = new QueryExpressionFromClause(); fc.StartLocation = la.Location; 
 		
 		Expect(137);
 		QueryExpressionFromOrJoinClause(
-#line  2369 "cs.ATG" 
+#line  2371 "cs.ATG" 
 fc);
 
-#line  2370 "cs.ATG" 
+#line  2372 "cs.ATG" 
 		fc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionBody(
-#line  2400 "cs.ATG" 
-QueryExpression q) {
+#line  2402 "cs.ATG" 
+ref QueryExpression q) {
 
-#line  2401 "cs.ATG" 
+#line  2403 "cs.ATG" 
 		QueryExpressionFromClause fromClause;     QueryExpressionWhereClause whereClause;
 		QueryExpressionLetClause letClause;       QueryExpressionJoinClause joinClause;
 		QueryExpressionOrderClause orderClause;
 		QueryExpressionSelectClause selectClause; QueryExpressionGroupClause groupClause;
-		QueryExpressionIntoClause intoClause;
 		
 		while (StartOf(39)) {
 			if (la.kind == 137) {
 				QueryExpressionFromClause(
-#line  2408 "cs.ATG" 
+#line  2409 "cs.ATG" 
 out fromClause);
 
-#line  2408 "cs.ATG" 
+#line  2409 "cs.ATG" 
 				SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, fromClause); 
 			} else if (la.kind == 127) {
 				QueryExpressionWhereClause(
-#line  2409 "cs.ATG" 
+#line  2410 "cs.ATG" 
 out whereClause);
 
-#line  2409 "cs.ATG" 
+#line  2410 "cs.ATG" 
 				SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, whereClause); 
 			} else if (la.kind == 141) {
 				QueryExpressionLetClause(
-#line  2410 "cs.ATG" 
+#line  2411 "cs.ATG" 
 out letClause);
 
-#line  2410 "cs.ATG" 
+#line  2411 "cs.ATG" 
 				SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, letClause); 
 			} else if (la.kind == 142) {
 				QueryExpressionJoinClause(
-#line  2411 "cs.ATG" 
+#line  2412 "cs.ATG" 
 out joinClause);
 
-#line  2411 "cs.ATG" 
+#line  2412 "cs.ATG" 
 				SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, joinClause); 
 			} else {
 				QueryExpressionOrderByClause(
-#line  2412 "cs.ATG" 
+#line  2413 "cs.ATG" 
 out orderClause);
 
-#line  2412 "cs.ATG" 
+#line  2413 "cs.ATG" 
 				SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, orderClause); 
 			}
 		}
 		if (la.kind == 133) {
 			QueryExpressionSelectClause(
-#line  2414 "cs.ATG" 
+#line  2415 "cs.ATG" 
 out selectClause);
 
-#line  2414 "cs.ATG" 
+#line  2415 "cs.ATG" 
 			q.SelectOrGroupClause = selectClause; 
 		} else if (la.kind == 134) {
 			QueryExpressionGroupClause(
-#line  2415 "cs.ATG" 
+#line  2416 "cs.ATG" 
 out groupClause);
 
-#line  2415 "cs.ATG" 
+#line  2416 "cs.ATG" 
 			q.SelectOrGroupClause = groupClause; 
 		} else SynErr(219);
 		if (la.kind == 136) {
 			QueryExpressionIntoClause(
-#line  2417 "cs.ATG" 
-out intoClause);
-
-#line  2417 "cs.ATG" 
-			q.IntoClause = intoClause; 
+#line  2418 "cs.ATG" 
+ref q);
 		}
 	}
 
 	void QueryExpressionFromOrJoinClause(
-#line  2390 "cs.ATG" 
+#line  2392 "cs.ATG" 
 QueryExpressionFromOrJoinClause fjc) {
 
-#line  2391 "cs.ATG" 
+#line  2393 "cs.ATG" 
 		TypeReference type; Expression expr; 
 
-#line  2393 "cs.ATG" 
+#line  2395 "cs.ATG" 
 		fjc.Type = null; 
 		if (
-#line  2394 "cs.ATG" 
+#line  2396 "cs.ATG" 
 IsLocalVarDecl()) {
 			Type(
-#line  2394 "cs.ATG" 
+#line  2396 "cs.ATG" 
 out type);
 
-#line  2394 "cs.ATG" 
+#line  2396 "cs.ATG" 
 			fjc.Type = type; 
 		}
 		Identifier();
 
-#line  2395 "cs.ATG" 
+#line  2397 "cs.ATG" 
 		fjc.Identifier = t.val; 
 		Expect(81);
 		Expr(
-#line  2397 "cs.ATG" 
+#line  2399 "cs.ATG" 
 out expr);
 
-#line  2397 "cs.ATG" 
+#line  2399 "cs.ATG" 
 		fjc.InExpression = expr; 
 	}
 
 	void QueryExpressionJoinClause(
-#line  2373 "cs.ATG" 
+#line  2375 "cs.ATG" 
 out QueryExpressionJoinClause jc) {
 
-#line  2374 "cs.ATG" 
+#line  2376 "cs.ATG" 
 		jc = new QueryExpressionJoinClause(); jc.StartLocation = la.Location; 
 		Expression expr;
 		
 		Expect(142);
 		QueryExpressionFromOrJoinClause(
-#line  2379 "cs.ATG" 
+#line  2381 "cs.ATG" 
 jc);
 		Expect(143);
 		Expr(
-#line  2381 "cs.ATG" 
+#line  2383 "cs.ATG" 
 out expr);
 
-#line  2381 "cs.ATG" 
+#line  2383 "cs.ATG" 
 		jc.OnExpression = expr; 
 		Expect(144);
 		Expr(
-#line  2383 "cs.ATG" 
+#line  2385 "cs.ATG" 
 out expr);
 
-#line  2383 "cs.ATG" 
+#line  2385 "cs.ATG" 
 		jc.EqualsExpression = expr; 
 		if (la.kind == 136) {
 			lexer.NextToken();
 			Identifier();
 
-#line  2385 "cs.ATG" 
+#line  2387 "cs.ATG" 
 			jc.IntoIdentifier = t.val; 
 		}
 
-#line  2387 "cs.ATG" 
+#line  2389 "cs.ATG" 
 		jc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionWhereClause(
-#line  2420 "cs.ATG" 
+#line  2421 "cs.ATG" 
 out QueryExpressionWhereClause wc) {
 
-#line  2421 "cs.ATG" 
+#line  2422 "cs.ATG" 
 		Expression expr; wc = new QueryExpressionWhereClause(); wc.StartLocation = la.Location; 
 		Expect(127);
 		Expr(
-#line  2424 "cs.ATG" 
+#line  2425 "cs.ATG" 
 out expr);
 
-#line  2424 "cs.ATG" 
+#line  2425 "cs.ATG" 
 		wc.Condition = expr; 
 
-#line  2425 "cs.ATG" 
+#line  2426 "cs.ATG" 
 		wc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionLetClause(
-#line  2428 "cs.ATG" 
+#line  2429 "cs.ATG" 
 out QueryExpressionLetClause wc) {
 
-#line  2429 "cs.ATG" 
+#line  2430 "cs.ATG" 
 		Expression expr; wc = new QueryExpressionLetClause(); wc.StartLocation = la.Location; 
 		Expect(141);
 		Identifier();
 
-#line  2432 "cs.ATG" 
+#line  2433 "cs.ATG" 
 		wc.Identifier = t.val; 
 		Expect(3);
 		Expr(
-#line  2434 "cs.ATG" 
+#line  2435 "cs.ATG" 
 out expr);
 
-#line  2434 "cs.ATG" 
+#line  2435 "cs.ATG" 
 		wc.Expression = expr; 
 
-#line  2435 "cs.ATG" 
+#line  2436 "cs.ATG" 
 		wc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionOrderByClause(
-#line  2438 "cs.ATG" 
+#line  2439 "cs.ATG" 
 out QueryExpressionOrderClause oc) {
 
-#line  2439 "cs.ATG" 
+#line  2440 "cs.ATG" 
 		QueryExpressionOrdering ordering; oc = new QueryExpressionOrderClause(); oc.StartLocation = la.Location; 
 		Expect(140);
 		QueryExpressionOrdering(
-#line  2442 "cs.ATG" 
+#line  2443 "cs.ATG" 
 out ordering);
 
-#line  2442 "cs.ATG" 
+#line  2443 "cs.ATG" 
 		SafeAdd(oc, oc.Orderings, ordering); 
 		while (la.kind == 14) {
 			lexer.NextToken();
 			QueryExpressionOrdering(
-#line  2444 "cs.ATG" 
+#line  2445 "cs.ATG" 
 out ordering);
 
-#line  2444 "cs.ATG" 
+#line  2445 "cs.ATG" 
 			SafeAdd(oc, oc.Orderings, ordering); 
 		}
 
-#line  2446 "cs.ATG" 
+#line  2447 "cs.ATG" 
 		oc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionSelectClause(
-#line  2459 "cs.ATG" 
+#line  2460 "cs.ATG" 
 out QueryExpressionSelectClause sc) {
 
-#line  2460 "cs.ATG" 
+#line  2461 "cs.ATG" 
 		Expression expr; sc = new QueryExpressionSelectClause(); sc.StartLocation = la.Location; 
 		Expect(133);
 		Expr(
-#line  2463 "cs.ATG" 
+#line  2464 "cs.ATG" 
 out expr);
 
-#line  2463 "cs.ATG" 
+#line  2464 "cs.ATG" 
 		sc.Projection = expr; 
 
-#line  2464 "cs.ATG" 
+#line  2465 "cs.ATG" 
 		sc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionGroupClause(
-#line  2467 "cs.ATG" 
+#line  2468 "cs.ATG" 
 out QueryExpressionGroupClause gc) {
 
-#line  2468 "cs.ATG" 
+#line  2469 "cs.ATG" 
 		Expression expr; gc = new QueryExpressionGroupClause(); gc.StartLocation = la.Location; 
 		Expect(134);
 		Expr(
-#line  2471 "cs.ATG" 
+#line  2472 "cs.ATG" 
 out expr);
 
-#line  2471 "cs.ATG" 
+#line  2472 "cs.ATG" 
 		gc.Projection = expr; 
 		Expect(135);
 		Expr(
-#line  2473 "cs.ATG" 
+#line  2474 "cs.ATG" 
 out expr);
 
-#line  2473 "cs.ATG" 
+#line  2474 "cs.ATG" 
 		gc.GroupBy = expr; 
 
-#line  2474 "cs.ATG" 
+#line  2475 "cs.ATG" 
 		gc.EndLocation = t.EndLocation; 
 	}
 
 	void QueryExpressionIntoClause(
-#line  2477 "cs.ATG" 
-out QueryExpressionIntoClause ic) {
-
 #line  2478 "cs.ATG" 
-		ic = new QueryExpressionIntoClause(); ic.StartLocation = la.Location; 
+ref QueryExpression q) {
+
+#line  2479 "cs.ATG" 
+		QueryExpression firstQuery = q;
+		QueryExpression continuedQuery = new QueryExpression(); 
+		continuedQuery.StartLocation = q.StartLocation;
+		firstQuery.EndLocation = la.Location;
+		continuedQuery.FromClause = new QueryExpressionFromClause();
+		continuedQuery.FromClause.StartLocation = la.Location;
+		// nest firstQuery inside continuedQuery.
+		continuedQuery.FromClause.InExpression = firstQuery;
+		continuedQuery.IsQueryContinuation = true;
+		q = continuedQuery;
+		
 		Expect(136);
 		Identifier();
 
-#line  2481 "cs.ATG" 
-		ic.IntoIdentifier = t.val; 
+#line  2492 "cs.ATG" 
+		continuedQuery.FromClause.Identifier = t.val; 
 
-#line  2482 "cs.ATG" 
-		ic.ContinuedQuery = new QueryExpression(); 
-
-#line  2483 "cs.ATG" 
-		ic.ContinuedQuery.StartLocation = la.Location; 
+#line  2493 "cs.ATG" 
+		continuedQuery.FromClause.EndLocation = t.EndLocation; 
 		QueryExpressionBody(
-#line  2484 "cs.ATG" 
-ic.ContinuedQuery);
-
-#line  2485 "cs.ATG" 
-		ic.ContinuedQuery.EndLocation = t.EndLocation; 
-
-#line  2486 "cs.ATG" 
-		ic.EndLocation = t.EndLocation; 
+#line  2494 "cs.ATG" 
+ref q);
 	}
 
 	void QueryExpressionOrdering(
-#line  2449 "cs.ATG" 
+#line  2450 "cs.ATG" 
 out QueryExpressionOrdering ordering) {
 
-#line  2450 "cs.ATG" 
+#line  2451 "cs.ATG" 
 		Expression expr; ordering = new QueryExpressionOrdering(); ordering.StartLocation = la.Location; 
 		Expr(
-#line  2452 "cs.ATG" 
+#line  2453 "cs.ATG" 
 out expr);
 
-#line  2452 "cs.ATG" 
+#line  2453 "cs.ATG" 
 		ordering.Criteria = expr; 
 		if (la.kind == 138 || la.kind == 139) {
 			if (la.kind == 138) {
 				lexer.NextToken();
 
-#line  2453 "cs.ATG" 
+#line  2454 "cs.ATG" 
 				ordering.Direction = QueryExpressionOrderingDirection.Ascending; 
 			} else {
 				lexer.NextToken();
 
-#line  2454 "cs.ATG" 
+#line  2455 "cs.ATG" 
 				ordering.Direction = QueryExpressionOrderingDirection.Descending; 
 			}
 		}
 
-#line  2456 "cs.ATG" 
+#line  2457 "cs.ATG" 
 		ordering.EndLocation = t.EndLocation; 
 	}
 

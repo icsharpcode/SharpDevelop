@@ -2618,11 +2618,20 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)
 		{
+			if (queryExpression.IsQueryContinuation) {
+				queryExpression.FromClause.InExpression.AcceptVisitor(this, data);
+			}
 			outputFormatter.IndentationLevel++;
-			queryExpression.FromClause.AcceptVisitor(this, data);
+			if (queryExpression.IsQueryContinuation) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Into);
+				outputFormatter.Space();
+				outputFormatter.PrintIdentifier(queryExpression.FromClause.Identifier);
+			} else {
+				queryExpression.FromClause.AcceptVisitor(this, data);
+			}
 			queryExpression.MiddleClauses.ForEach(PrintClause);
 			PrintClause(queryExpression.SelectOrGroupClause);
-			PrintClause(queryExpression.IntoClause);
 			outputFormatter.IndentationLevel--;
 			return null;
 		}
@@ -2695,15 +2704,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.By);
 			outputFormatter.Space();
 			return groupClause.GroupBy.AcceptVisitor(this, data);
-		}
-		
-		public override object TrackedVisitQueryExpressionIntoClause(QueryExpressionIntoClause intoClause, object data)
-		{
-			outputFormatter.PrintToken(Tokens.Into);
-			outputFormatter.Space();
-			outputFormatter.PrintIdentifier(intoClause.IntoIdentifier);
-			outputFormatter.Space();
-			return intoClause.ContinuedQuery.AcceptVisitor(this, data);
 		}
 		
 		public override object TrackedVisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data)

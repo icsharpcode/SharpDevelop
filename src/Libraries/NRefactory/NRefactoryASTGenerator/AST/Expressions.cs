@@ -261,17 +261,14 @@ namespace NRefactoryASTGenerator.Ast
 		/// </remarks>
 		QueryExpressionFromClause fromClause;
 		
+		bool isQueryContinuation;
+		
 		List<QueryExpressionClause> middleClauses;
 		
 		/// <remarks>
 		/// C# only.
 		/// </remarks>
 		QueryExpressionClause selectOrGroupClause;
-		
-		/// <remarks>
-		/// C# only.
-		/// </remarks>
-		QueryExpressionIntoClause intoClause;
 	}
 	
 	[ImplementNullable]
@@ -377,13 +374,5 @@ namespace NRefactoryASTGenerator.Ast
 	class QueryExpressionGroupJoinVBClause : QueryExpressionClause {
 		QueryExpressionJoinVBClause joinClause;
 		List<ExpressionRangeVariable> intoVariables;
-	}
-	
-	[ImplementNullable(NullableImplementation.Shadow)]
-	class QueryExpressionIntoClause : QueryExpressionClause {
-		[QuestionMarkDefault]
-		string intoIdentifier;
-		
-		QueryExpression continuedQuery;
 	}
 }

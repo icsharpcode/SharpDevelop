@@ -1171,11 +1171,6 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data)
-		{
-			return null;
-		}
-		
 		public object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data)
 		{
 			return null;

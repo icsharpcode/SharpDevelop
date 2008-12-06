@@ -150,9 +150,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		Location GetQueryVariableEndScope(QueryExpression queryExpression)
 		{
-			return queryExpression.IntoClause.IsNull
-				? queryExpression.EndLocation
-				: queryExpression.IntoClause.StartLocation;
+			return queryExpression.EndLocation;
 		}
 		
 		public override object VisitQueryExpressionFromClause(QueryExpressionFromClause fromClause, object data)
@@ -161,26 +159,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			            fromClause.StartLocation, CurrentEndLocation,
 			            false, true, fromClause.InExpression, null);
 			return base.VisitQueryExpressionFromClause(fromClause, data);
-		}
-		
-		public override object VisitQueryExpressionIntoClause(QueryExpressionIntoClause intoClause, object data)
-		{
-			QueryExpression parentExpression = intoClause.Parent as QueryExpression;
-			if (parentExpression != null) {
-				Expression initializer = null;
-				var selectClause = parentExpression.SelectOrGroupClause as QueryExpressionSelectClause;
-				if (selectClause != null) {
-					initializer = selectClause.Projection;
-				} else {
-					var groupByClause = parentExpression.SelectOrGroupClause as QueryExpressionGroupClause;
-					if (groupByClause != null)
-						initializer = groupByClause.Projection;
-				}
-				AddVariable(null, intoClause.IntoIdentifier,
-				            intoClause.StartLocation, GetQueryVariableEndScope(intoClause.ContinuedQuery),
-				            false, false, initializer, null);
-			}
-			return base.VisitQueryExpressionIntoClause(intoClause, data);
 		}
 		
 		public override object VisitQueryExpressionJoinClause(QueryExpressionJoinClause joinClause, object data)

@@ -2357,8 +2357,10 @@ QueryExpression<out Expression outExpr>
 .)
 =
 	QueryExpressionFromClause<out fromClause>  (. q.FromClause = fromClause; .)
-	QueryExpressionBody<q>
-	(. q.EndLocation = t.EndLocation; .)
+	QueryExpressionBody<ref q>
+	(.	q.EndLocation = t.EndLocation; 
+		outExpr = q; /* set outExpr to q again if QueryExpressionBody changed it (can happen with 'into' clauses) */ 
+	.)
 .
 
 QueryExpressionFromClause<out QueryExpressionFromClause fc>
@@ -2397,12 +2399,11 @@ QueryExpressionFromOrJoinClause<QueryExpressionFromOrJoinClause fjc>
 	Expr<out expr> (. fjc.InExpression = expr; .)
 .
 
-QueryExpressionBody<QueryExpression q>
+QueryExpressionBody<ref QueryExpression q>
 (.	QueryExpressionFromClause fromClause;     QueryExpressionWhereClause whereClause;
 	QueryExpressionLetClause letClause;       QueryExpressionJoinClause joinClause;
 	QueryExpressionOrderClause orderClause;
 	QueryExpressionSelectClause selectClause; QueryExpressionGroupClause groupClause;
-	QueryExpressionIntoClause intoClause;
 .)
 =
 	{ (	QueryExpressionFromClause<out fromClause>     (. SafeAdd<QueryExpressionClause>(q, q.MiddleClauses, fromClause); .)
@@ -2414,7 +2415,7 @@ QueryExpressionBody<QueryExpression q>
 	(	QueryExpressionSelectClause<out selectClause> (. q.SelectOrGroupClause = selectClause; .)
 	|	QueryExpressionGroupClause<out groupClause>  (. q.SelectOrGroupClause = groupClause; .)
 	)
-	[ QueryExpressionIntoClause<out intoClause> (. q.IntoClause = intoClause; .) ]
+	[ QueryExpressionIntoClause<ref q> ]
 .
 
 QueryExpressionWhereClause<out QueryExpressionWhereClause wc>
@@ -2474,16 +2475,23 @@ QueryExpressionGroupClause<out QueryExpressionGroupClause gc>
 	(. gc.EndLocation = t.EndLocation; .)
 .
 
-QueryExpressionIntoClause<out QueryExpressionIntoClause ic>
-(.	ic = new QueryExpressionIntoClause(); ic.StartLocation = la.Location; .)
+QueryExpressionIntoClause<ref QueryExpression q>
+(.	QueryExpression firstQuery = q;
+	QueryExpression continuedQuery = new QueryExpression(); 
+	continuedQuery.StartLocation = q.StartLocation;
+	firstQuery.EndLocation = la.Location;
+	continuedQuery.FromClause = new QueryExpressionFromClause();
+	continuedQuery.FromClause.StartLocation = la.Location;
+	// nest firstQuery inside continuedQuery.
+	continuedQuery.FromClause.InExpression = firstQuery;
+	continuedQuery.IsQueryContinuation = true;
+	q = continuedQuery;
+.)
 =
 	"into"
-	Identifier (. ic.IntoIdentifier = t.val; .)
-	(. ic.ContinuedQuery = new QueryExpression(); .)
-	(. ic.ContinuedQuery.StartLocation = la.Location; .)
-	QueryExpressionBody<ic.ContinuedQuery>
-	(. ic.ContinuedQuery.EndLocation = t.EndLocation; .)
-	(. ic.EndLocation = t.EndLocation; .)
+	Identifier (. continuedQuery.FromClause.Identifier = t.val; .)
+	(. continuedQuery.FromClause.EndLocation = t.EndLocation; .)
+	QueryExpressionBody<ref q>
 .
 
 /* allow usage of context sensitive keywords as identifiers */

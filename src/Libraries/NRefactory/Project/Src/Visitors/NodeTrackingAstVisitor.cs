@@ -598,13 +598,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data) {
-			this.BeginVisit(queryExpressionIntoClause);
-			object result = this.TrackedVisitQueryExpressionIntoClause(queryExpressionIntoClause, data);
-			this.EndVisit(queryExpressionIntoClause);
-			return result;
-		}
-		
 		public sealed override object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data) {
 			this.BeginVisit(queryExpressionJoinClause);
 			object result = this.TrackedVisitQueryExpressionJoinClause(queryExpressionJoinClause, data);
@@ -1207,10 +1200,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data) {
 			return base.VisitQueryExpressionGroupVBClause(queryExpressionGroupVBClause, data);
-		}
-		
-		public virtual object TrackedVisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data) {
-			return base.VisitQueryExpressionIntoClause(queryExpressionIntoClause, data);
 		}
 		
 		public virtual object TrackedVisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data) {
