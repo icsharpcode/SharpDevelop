@@ -211,11 +211,13 @@ namespace ICSharpCode.TextEditor.Undo
 			{
 				redoPos = stack.TextEditorControl.ActiveTextAreaControl.Caret.Position;
 				stack.TextEditorControl.ActiveTextAreaControl.Caret.Position = pos;
+				stack.TextEditorControl.ActiveTextAreaControl.SelectionManager.ClearSelection();
 			}
 			
 			public void Redo()
 			{
 				stack.TextEditorControl.ActiveTextAreaControl.Caret.Position = redoPos;
+				stack.TextEditorControl.ActiveTextAreaControl.SelectionManager.ClearSelection();
 			}
 		}
 	}
