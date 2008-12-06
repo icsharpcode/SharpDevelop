@@ -387,6 +387,16 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(1, ic.BaseType.GenericTypes.Count);
 			Assert.AreEqual("System.String", ic.BaseType.GenericTypes[0].Type);
 		}
+		
+		[Test]
+		public void VBNetDimInSingleLineIf()
+		{
+			IfElseStatement ifes = ParseUtilVBNet.ParseStatement<IfElseStatement>("If a Then Dim b As String");
+			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ifes.TrueStatement[0];
+			Assert.AreEqual(1, lvd.Variables.Count);
+			TypeReference type = lvd.GetTypeForVariable(0);
+			Assert.AreEqual("System.String", type.Type);
+		}
 		#endregion
 	}
 }

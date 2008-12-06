@@ -2726,7 +2726,6 @@ Statement
 		.)
 		":" Statement
 		| EmbeddedStatement<out stmt>			(. compilationUnit.AddChild(stmt); .)
-		| LocalDeclarationStatement<out stmt>	(. compilationUnit.AddChild(stmt); .)
 	)
 	(.
 		if (stmt != null) {
@@ -3066,6 +3065,7 @@ EmbeddedStatement<out Statement statement>
 			(. statement = new UsingStatement(new ExpressionStatement(expr), block); .)
 		)
 		"End" "Using"
+	| LocalDeclarationStatement<out statement>
 .
 
 SingleLineStatementList<List<Statement> list>
