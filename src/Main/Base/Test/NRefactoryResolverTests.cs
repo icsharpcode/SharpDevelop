@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
 			pc.ReferencedContents.Add(projectContentRegistry.Mscorlib);
+			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Core", "System.Core"));
 			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
 			HostCallback.GetCurrentProjectContent = delegate {
 				return pc;
@@ -1760,7 +1761,7 @@ public static class XC {
 		[Test]
 		public void SimpleLinqTest()
 		{
-			string program = @"using System;
+			string program = @"using System; using System.Linq;
 class TestClass {
 	void Test(string[] input) {
 		var r = from e in input
@@ -1781,6 +1782,46 @@ class TestClass {
 		}
 		
 		[Test]
+		public void LinqGroupTest()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(string[] input) {
+		var r = from e in input
+			group e.ToUpper() by e.Length;
+		
+	}
+}
+";
+			LocalResolveResult lrr = Resolve<LocalResolveResult>(program, "r", 7);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable", lrr.ResolvedType.FullyQualifiedName);
+			ConstructedReturnType rt = lrr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].CastToConstructedReturnType();
+			Assert.AreEqual("System.Linq.IGrouping", rt.FullyQualifiedName);
+			Assert.AreEqual("System.Int32", rt.TypeArguments[0].FullyQualifiedName);
+			Assert.AreEqual("System.String", rt.TypeArguments[1].FullyQualifiedName);
+		}
+		
+		[Test]
+		public void LinqQueryableGroupTest()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(IQueryable<string> input) {
+		var r = from e in input
+			group e.ToUpper() by e.Length;
+		
+	}
+}
+";
+			LocalResolveResult lrr = Resolve<LocalResolveResult>(program, "r", 7);
+			Assert.AreEqual("System.Linq.IQueryable", lrr.ResolvedType.FullyQualifiedName);
+			ConstructedReturnType rt = lrr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].CastToConstructedReturnType();
+			Assert.AreEqual("System.Linq.IGrouping", rt.FullyQualifiedName);
+			Assert.AreEqual("System.Int32", rt.TypeArguments[0].FullyQualifiedName);
+			Assert.AreEqual("System.String", rt.TypeArguments[1].FullyQualifiedName);
+		}
+		
+		[Test]
 		public void ParenthesizedLinqTest()
 		{
 			string program = @"using System; using System.Linq;
@@ -1796,6 +1837,23 @@ class TestClass {
 			Assert.IsNotNull(rr);
 			Assert.AreEqual("System.Collections.Generic.IEnumerable", rr.ResolvedType.FullyQualifiedName);
 			Assert.AreEqual("System.Int32", rr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].FullyQualifiedName);
+		}
+		
+		[Test]
+		public void LinqSelectReturnTypeTest()
+		{
+			string program = @"using System;
+class TestClass { static void M() {
+	(from a in new XYZ() select a.ToUpper())
+}}
+class XYZ {
+	public int Select<U>(Func<string, U> f) { return 42; }
+}";
+			ResolveResult rr = Resolve(program,
+			                           "(from a in new XYZ() select a.ToUpper())",
+			                           3, 2, ExpressionContext.Default);
+			Assert.IsNotNull(rr);
+			Assert.AreEqual("System.Int32", rr.ResolvedType.FullyQualifiedName);
 		}
 		
 		const string objectInitializerTestProgram = @"using System; using System.Threading;
@@ -1890,7 +1948,7 @@ public class MyCollectionType : System.Collections.IEnumerable
 		[Test]
 		public void LinqQueryContinuationTest()
 		{
-			string program = @"using System;
+			string program = @"using System; using System.Linq;
 class TestClass {
 	void Test(string[] input) {
 		var r = from x in input

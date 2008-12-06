@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
-			TypeReference intReference = new TypeReference("System.Int32");
+			TypeReference intReference = new TypeReference("System.Int32", true);
 			MethodDeclaration method = new MethodDeclaration {
 				Name = "GetHashCode",
 				Modifier = Modifiers.Public | Modifiers.Override,
@@ -90,8 +90,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			method.Body.AddChild(new ReturnStatement(new IdentifierExpression(var.Name)));
 			nodes.Add(method);
 			
-			TypeReference boolReference = new TypeReference("System.Boolean");
-			TypeReference objectReference = new TypeReference("System.Object");
+			TypeReference boolReference = new TypeReference("System.Boolean", true);
+			TypeReference objectReference = new TypeReference("System.Object", true);
 			
 			method = new MethodDeclaration {
 				Name = "Equals",
@@ -186,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				                                    new MemberReferenceExpression(new IdentifierExpression(other), field.Name));
 			} else {
 				InvocationExpression ie = new InvocationExpression(
-					new MemberReferenceExpression(new TypeReferenceExpression("System.Object"), "Equals")
+					new MemberReferenceExpression(new TypeReferenceExpression(new TypeReference("System.Object", true)), "Equals")
 				);
 				ie.Arguments.Add(new MemberReferenceExpression(new ThisReferenceExpression(), field.Name));
 				ie.Arguments.Add(new MemberReferenceExpression(new IdentifierExpression(other), field.Name));
