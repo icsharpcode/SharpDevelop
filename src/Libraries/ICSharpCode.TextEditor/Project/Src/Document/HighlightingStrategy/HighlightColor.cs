@@ -19,12 +19,6 @@ namespace ICSharpCode.TextEditor.Document
 	/// </summary>
 	public class HighlightColor
 	{
-		bool   systemColor     = false;
-		string systemColorName = null;
-		
-		bool   systemBgColor     = false;
-		string systemBgColorName = null;
-		
 		Color  color;
 		Color  backgroundcolor = System.Drawing.Color.WhiteSmoke;
 		
@@ -69,10 +63,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// </value>
 		public Color BackgroundColor {
 			get {
-				if (!systemBgColor) {
-					return backgroundcolor;
-				}
-				return ParseColorString(systemBgColorName);
+				return backgroundcolor;
 			}
 		}
 		
@@ -81,10 +72,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// </value>
 		public Color Color {
 			get {
-				if (!systemColor) {
-					return color;
-				}
-				return ParseColorString(systemColorName);
+				return color;
 			}
 		}
 		
@@ -135,8 +123,7 @@ namespace ICSharpCode.TextEditor.Document
 				if (c[0] == '#') {
 					color = ParseColor(c);
 				} else if (c.StartsWith("SystemColors.")) {
-					systemColor     = true;
-					systemColorName = c.Substring("SystemColors.".Length);
+					color = ParseColorString(c.Substring("SystemColors.".Length));
 				} else {
 					color = (Color)(Color.GetType()).InvokeMember(c, BindingFlags.GetProperty, null, Color, new object[0]);
 				}
@@ -150,8 +137,7 @@ namespace ICSharpCode.TextEditor.Document
 				if (c[0] == '#') {
 					backgroundcolor = ParseColor(c);
 				} else if (c.StartsWith("SystemColors.")) {
-					systemBgColor     = true;
-					systemBgColorName = c.Substring("SystemColors.".Length);
+					backgroundcolor = ParseColorString(c.Substring("SystemColors.".Length));
 				} else {
 					backgroundcolor = (Color)(Color.GetType()).InvokeMember(c, BindingFlags.GetProperty, null, Color, new object[0]);
 				}
@@ -182,8 +168,7 @@ namespace ICSharpCode.TextEditor.Document
 				if (c[0] == '#') {
 					color = ParseColor(c);
 				} else if (c.StartsWith("SystemColors.")) {
-					systemColor     = true;
-					systemColorName = c.Substring("SystemColors.".Length);
+					color = ParseColorString(c.Substring("SystemColors.".Length));
 				} else {
 					color = (Color)(Color.GetType()).InvokeMember(c, BindingFlags.GetProperty, null, Color, new object[0]);
 				}
@@ -197,8 +182,7 @@ namespace ICSharpCode.TextEditor.Document
 				if (c[0] == '#') {
 					backgroundcolor = ParseColor(c);
 				} else if (c.StartsWith("SystemColors.")) {
-					systemBgColor     = true;
-					systemBgColorName = c.Substring("SystemColors.".Length);
+					backgroundcolor = ParseColorString(c.Substring("SystemColors.".Length));
 				} else {
 					backgroundcolor = (Color)(Color.GetType()).InvokeMember(c, BindingFlags.GetProperty, null, Color, new object[0]);
 				}
@@ -241,11 +225,8 @@ namespace ICSharpCode.TextEditor.Document
 			hasForeground = true;
 			hasBackground  = true;
 			
-			this.systemColor  = true;
-			systemColorName   = systemColor;
-			
-			systemBgColor     = true;
-			systemBgColorName = systemBackgroundColor;
+			this.color = ParseColorString(systemColor);
+			this.backgroundcolor = ParseColorString(systemBackgroundColor);
 			
 			this.bold         = bold;
 			this.italic       = italic;
@@ -258,8 +239,7 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			hasForeground = true;
 			
-			this.systemColor  = true;
-			systemColorName   = systemColor;
+			this.color = ParseColorString(systemColor);
 			
 			this.bold         = bold;
 			this.italic       = italic;
