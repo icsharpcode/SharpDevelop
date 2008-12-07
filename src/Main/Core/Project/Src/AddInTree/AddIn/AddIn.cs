@@ -19,8 +19,8 @@ namespace ICSharpCode.Core
 		List<string> bitmapResources = new List<string>();
 		List<string> stringResources = new List<string>();
 		
-		string        addInFileName = null;
-		AddInManifest      manifest = new AddInManifest();
+		internal string addInFileName = null;
+		AddInManifest manifest = new AddInManifest();
 		Dictionary<string, ExtensionPath> paths = new Dictionary<string, ExtensionPath>();
 		AddInAction action = AddInAction.Disable;
 		bool enabled;

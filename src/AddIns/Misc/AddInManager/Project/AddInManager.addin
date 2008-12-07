@@ -38,7 +38,7 @@
 			          label="${res:AddInManager.ActionEnable}"
 			          class="ICSharpCode.AddInManager.EnableCommand"/>
 		</Condition>
-		<Condition name="AddInManagerAddInState" states="Enable,Disable,InstalledTwice,DependencyError">
+		<Condition name="AddInManagerAddInState" states="Enable,Disable,InstalledTwice,DependencyError,CustomError">
 			<MenuItem id="Uninstall"
 			          label="${res:AddInManager.ActionUninstall}"
 			          class="ICSharpCode.AddInManager.UninstallCommand"/>

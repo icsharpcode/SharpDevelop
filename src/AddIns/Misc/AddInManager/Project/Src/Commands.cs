@@ -8,10 +8,9 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 
 #if !STANDALONE
-
+using ICSharpCode.SharpDevelop;
 #endif
 
 namespace ICSharpCode.AddInManager

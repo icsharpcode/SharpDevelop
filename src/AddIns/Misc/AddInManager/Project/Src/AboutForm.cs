@@ -69,7 +69,7 @@ namespace ICSharpCode.AddInManager
 			}
 			
 			titles.Add("AddIn file");
-			values.Add(System.IO.Path.GetFullPath(addIn.FileName));
+			values.Add(FileUtility.NormalizePath(addIn.FileName));
 			
 			titles.Add("Internal name");
 			values.Add(addIn.Manifest.PrimaryIdentity);

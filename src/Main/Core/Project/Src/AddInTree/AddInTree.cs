@@ -356,6 +356,7 @@ namespace ICSharpCode.Core
 						                         + ex.Message);
 					}
 					addIn = new AddIn();
+					addIn.addInFileName = fileName;
 					addIn.CustomErrorMessage = ex.Message;
 				}
 				if (addIn.Action == AddInAction.CustomError) {
