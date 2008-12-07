@@ -407,7 +407,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			base.Initialize();
 		}
-				
+		
 		/// <summary>
 		/// Create's a new FileProjectItem in this DirectoryNode.
 		/// </summary>
@@ -543,11 +543,13 @@ namespace ICSharpCode.SharpDevelop.Project
 					return true;
 				}
 				if (dataObject.GetDataPresent(typeof(FileNode))) {
-					FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(FileNode).ToString());
-					return File.Exists(clipboardObject.FileName);
+					FileOperationClipboardObject clipboardObject = dataObject.GetData(typeof(FileNode).ToString()) as FileOperationClipboardObject;
+					return clipboardObject != null && File.Exists(clipboardObject.FileName);
 				}
 				if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
-					FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(DirectoryNode).ToString());
+					FileOperationClipboardObject clipboardObject = dataObject.GetData(typeof(DirectoryNode).ToString()) as FileOperationClipboardObject;
+					if (clipboardObject == null)
+						return false;
 					if (FileUtility.IsBaseDirectory(clipboardObject.FileName, Directory)) {
 						return false;
 					}

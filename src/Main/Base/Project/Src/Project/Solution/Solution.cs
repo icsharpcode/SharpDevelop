@@ -736,6 +736,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				l.Project.ActiveConfiguration = l.Configuration;
 				l.Project.ActivePlatform = FixPlatformNameForProject(l.Platform);
 			}
+			ProjectService.OnSolutionConfigurationChanged(new SolutionConfigurationEventArgs(this, preferences.ActiveConfiguration));
 		}
 		
 		/// <summary>

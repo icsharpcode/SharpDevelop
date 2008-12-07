@@ -524,14 +524,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void OnProjectConfigurationChanged(ProjectConfigurationEventArgs e)
-		{
-			if (ProjectConfigurationChanged != null) {
-				ProjectConfigurationChanged(null, e);
-			}
-		}
-		
-		static void OnSolutionConfigurationChanged(SolutionConfigurationEventArgs e)
+		internal static void OnSolutionConfigurationChanged(SolutionConfigurationEventArgs e)
 		{
 			if (SolutionConfigurationChanged != null) {
 				SolutionConfigurationChanged(null, e);
@@ -642,7 +635,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static event EventHandler StartBuild;
 		public static event EventHandler<BuildEventArgs> EndBuild;
 		
-		public static event ProjectConfigurationEventHandler ProjectConfigurationChanged;
+		[Obsolete("This event is never raised.")]
+		public static event ProjectConfigurationEventHandler ProjectConfigurationChanged { add {} remove {} }
 		public static event SolutionConfigurationEventHandler SolutionConfigurationChanged;
 		
 		public static event EventHandler<SolutionEventArgs> SolutionCreated;
