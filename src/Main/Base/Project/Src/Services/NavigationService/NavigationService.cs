@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop
 		#region Private members
 		static LinkedList<INavigationPoint> history = new LinkedList<INavigationPoint>();
 		static LinkedListNode<INavigationPoint> currentNode;
-		static bool loggingSuspended;
+		static int loggingSuspendedCount;
 		static bool serviceInitialized;
 		#endregion
 		
@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop
 		/// logging is suspended.
 		/// </summary>
 		public static bool IsLogging {
-			get { return !loggingSuspended;}
+			get { return loggingSuspendedCount == 0;}
 		}
 		#endregion
 
@@ -180,7 +180,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <param name="pointToLog">The point to store.</param>
 		public static void Log(INavigationPoint pointToLog)
 		{
-			if (loggingSuspended) {
+			if (loggingSuspendedCount > 0) {
 				return;
 			}
 			LogInternal(pointToLog);
@@ -347,10 +347,15 @@ namespace ICSharpCode.SharpDevelop
 		/// Suspends logging of navigation so that we don't log intermediate points
 		/// while opening a file, for example.
 		/// </summary>
+		/// <remarks>
+		/// Suspend/resume statements are incremental, i.e. you must call
+		/// <see cref="ResumeLogging"/> once for each time you call
+		/// <see cref="SuspendLogging"/> to resume logging.
+		/// </remarks>
 		public static void SuspendLogging()
 		{
 			LoggingService.Debug("NavigationService -- suspend logging");
-			loggingSuspended = true;
+			System.Threading.Interlocked.Increment(ref loggingSuspendedCount);
 		}
 		
 		/// <summary>
@@ -359,8 +364,10 @@ namespace ICSharpCode.SharpDevelop
 		public static void ResumeLogging()
 		{
 			LoggingService.Debug("NavigationService -- resume logging");
-			loggingSuspended = false;
-			// ENH: possible enhancement: use int instead of bool so resume statements are incremental rather than definitive.
+			if (System.Threading.Interlocked.Decrement(ref loggingSuspendedCount) < 0) {
+				System.Threading.Interlocked.Increment(ref loggingSuspendedCount);
+				LoggingService.Warn("NavigationService -- ResumeLogging called without corresponding SuspendLogging");
+			}
 		}
 		
 		#endregion
