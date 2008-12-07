@@ -56,9 +56,9 @@ namespace ICSharpCode.TextEditor
 					// draw dotted separator line
 					if (textArea.Document.TextEditorProperties.ShowLineNumbers) {
 						g.FillRectangle(BrushRegistry.GetBrush(textArea.Enabled ? lineNumberPainterColor.BackgroundColor : SystemColors.InactiveBorder),
-						                new Rectangle(markerRectangle.X + 1, markerRectangle.Y, markerRectangle.Width - 1, markerRectangle.Height));
+						                markerRectangle);
 						
-						g.DrawLine(BrushRegistry.GetDotPen(lineNumberPainterColor.Color, lineNumberPainterColor.BackgroundColor),
+						g.DrawLine(BrushRegistry.GetDotPen(lineNumberPainterColor.Color),
 						           base.drawingPosition.X,
 						           markerRectangle.Y,
 						           base.drawingPosition.X,
