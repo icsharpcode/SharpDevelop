@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -174,13 +175,21 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			{
 				if (keywords.Words.Count == 0)
 					return Error(keywords, "Keyword group must not be empty.");
-				StringBuilder keyWordRegex = new StringBuilder(@"\b(");
-				for (int i = 0; i < keywords.Words.Count; i++) {
-					if (i > 0)
-						keyWordRegex.Append('|');
-					if (string.IsNullOrEmpty(keywords.Words[i]))
+				foreach (string keyword in keywords.Words) {
+					if (string.IsNullOrEmpty(keyword))
 						throw Error(keywords, "Cannot use empty string as keyword");
-					keyWordRegex.Append(Regex.Escape(keywords.Words[i]));
+				}
+				StringBuilder keyWordRegex = new StringBuilder(@"\b(?>");
+				// (?> = atomic group
+				// atomic groups increase matching performance, but we
+				// must ensure that the keywords are sorted correctly.
+				// "\b(?>in|int)\b" does not match "int" because the atomic group captures "in".
+				// To solve this, we are sorting the keywords by descending length.
+				int i = 0;
+				foreach (string keyword in keywords.Words.OrderByDescending(w=>w.Length)) {
+					if (i++ > 0)
+						keyWordRegex.Append('|');
+					keyWordRegex.Append(Regex.Escape(keyword));
 				}
 				keyWordRegex.Append(@")\b");
 				return new HighlightingRule {
