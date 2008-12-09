@@ -205,7 +205,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				} else if ("global".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new NamespaceResolveResult(null, null, "");
 				}
-			// array
+				// array
 			} else if (language == NR.SupportedLanguage.CSharp && expressionResult.Context.IsTypeContext && !expressionResult.Context.IsObjectCreation) {
 				expr = ParseTypeReference(expression);
 			}
@@ -596,16 +596,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			if (languageProperties.CanImportClasses) {
-				foreach (IUsing @using in cu.Usings) {
-					foreach (string import in @using.Usings) {
-						IClass c = GetClass(import, 0);
-						if (c != null) {
-							ResolveResult rr = ResolveMember(c.DefaultReturnType, identifier,
-							                                 identifierExpression.TypeArguments,
-							                                 IsInvoked(identifierExpression),
-							                                 false, null);
-							if (rr != null && rr.IsValid)
-								return rr;
+				IUsingScope scope = callingClass != null ? callingClass.UsingScope : cu.UsingScope;
+				for (; scope != null; scope = scope.Parent) {
+					foreach (IUsing @using in scope.Usings) {
+						foreach (string import in @using.Usings) {
+							IClass c = GetClass(import, 0);
+							if (c != null) {
+								ResolveResult rr = ResolveMember(c.DefaultReturnType, identifier,
+								                                 identifierExpression.TypeArguments,
+								                                 IsInvoked(identifierExpression),
+								                                 false, null);
+								if (rr != null && rr.IsValid)
+									return rr;
+							}
 						}
 					}
 				}

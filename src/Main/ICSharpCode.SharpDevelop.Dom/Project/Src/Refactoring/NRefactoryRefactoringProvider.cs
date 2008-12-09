@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using ICSharpCode.NRefactory.Ast;
@@ -510,7 +511,8 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				if (tr.ExtensionMethod != null) {
 					// the invocation of an extension method can implicitly use a using
 					StringComparer nameComparer = cu.ProjectContent.Language.NameComparer;
-					foreach (IUsing import in cu.Usings) {
+					// go through all usings in all nested child scopes
+					foreach (IUsing import in cu.GetAllUsings()) {
 						foreach (string i in import.Usings) {
 							if (nameComparer.Equals(tr.ExtensionMethod.DeclaringType.Namespace, i)) {
 								usedUsings.Add(import);
@@ -528,7 +530,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			}
 			
 			List<IUsing> unusedUsings = new List<IUsing>();
-			foreach (IUsing import in cu.Usings) {
+			foreach (IUsing import in cu.GetAllUsings()) {
 				if (!usedUsings.Contains(import)) {
 					if (import.HasAliases) {
 						foreach (string key in import.Aliases.Keys) {

@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (info == null) return;
 			ICompilationUnit cu = info.MostRecentCompilationUnit;
 			
-			List<IUsing> newUsings = new List<IUsing>(cu.Usings);
+			List<IUsing> newUsings = new List<IUsing>(cu.UsingScope.Usings);
 			if (sort) {
 				newUsings.Sort(CompareUsings);
 			}
@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				PutEmptyLineAfterLastSystemNamespace(newUsings);
 			}
 			
-			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new TextEditorDocument(document), cu.Usings, newUsings);
+			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new TextEditorDocument(document), cu.UsingScope.Usings, newUsings);
 		}
 		
 		static void PutEmptyLineAfterLastSystemNamespace(List<IUsing> newUsings)
@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			IUsing newUsingDecl = new DefaultUsing(cu.ProjectContent);
 			newUsingDecl.Usings.Add(newNamespace);
 			
-			List<IUsing> newUsings = new List<IUsing>(cu.Usings);
+			List<IUsing> newUsings = new List<IUsing>(cu.UsingScope.Usings);
 			if (sortExistingUsings) {
 				newUsings.Sort(CompareUsings);
 			}
@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (sortExistingUsings) {
 				PutEmptyLineAfterLastSystemNamespace(newUsings);
 			}
-			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new TextEditorDocument(document), cu.Usings, newUsings);
+			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new TextEditorDocument(document), cu.UsingScope.Usings, newUsings);
 		}
 	}
 }

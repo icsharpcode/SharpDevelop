@@ -287,7 +287,7 @@ namespace ICSharpCode.PythonBinding
 			if (typeName != null) {
 				IClass resolvedClass = GetClass(typeName);
 				if (resolvedClass != null) {
-					DefaultClass dummyClass = new DefaultClass(null, "Global");
+					DefaultClass dummyClass = new DefaultClass(DefaultCompilationUnit.DummyCompilationUnit, "Global");
 					DefaultMethod dummyMethod = new DefaultMethod(dummyClass, String.Empty);
 					DefaultField.LocalVariableField field = new DefaultField.LocalVariableField(resolvedClass.DefaultReturnType, expression, DomRegion.Empty, dummyClass);
 					return new LocalResolveResult(dummyMethod, field);

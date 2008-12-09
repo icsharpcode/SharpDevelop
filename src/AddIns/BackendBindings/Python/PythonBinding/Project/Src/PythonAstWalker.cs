@@ -108,7 +108,7 @@ namespace ICSharpCode.PythonBinding
 				Console.WriteLine("Name: " + name.MakeString());
 				newUsing.Usings.Add(name.MakeString());
 			}
-			compilationUnit.Usings.Add(newUsing);
+			compilationUnit.UsingScope.Usings.Add(newUsing);
 			return false;
 		}
 				

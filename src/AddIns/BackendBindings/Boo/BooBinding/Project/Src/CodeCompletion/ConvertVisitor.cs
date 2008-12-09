@@ -137,7 +137,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				u.Usings.Add(p.Namespace);
 			else
 				u.AddAlias(p.Alias.Name, new GetClassReturnType(_cu.ProjectContent, p.Namespace, 0));
-			_cu.Usings.Add(u);
+			_cu.UsingScope.Usings.Add(u);
 		}
 		
 		private IClass OuterClass {
@@ -503,6 +503,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 			OuterClass.Properties.Add(property);
 			property.UserData = node;
+		}
+		
+		public override void OnNamespaceDeclaration(Boo.Lang.Compiler.Ast.NamespaceDeclaration node)
+		{
+			_cu.UsingScope = new DefaultUsingScope { NamespaceName = node.Name };
+			base.OnNamespaceDeclaration(node);
 		}
 	}
 }

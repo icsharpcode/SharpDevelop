@@ -88,6 +88,7 @@
     <Compile Include="Src\Implementations\DefaultReturnType.cs" />
     <Compile Include="Src\Implementations\DefaultTypeParameter.cs" />
     <Compile Include="Src\Implementations\DefaultUsing.cs" />
+    <Compile Include="Src\Implementations\DefaultUsingScope.cs" />
     <Compile Include="Src\Implementations\ElementReturnType.cs" />
     <Compile Include="Src\Implementations\GenericReturnType.cs" />
     <Compile Include="Src\Implementations\GetClassReturnType.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Src\Interfaces\ExplicitInterfaceImplementation.cs" />
     <Compile Include="Src\Interfaces\IDomProgressMonitor.cs" />
     <Compile Include="Src\Interfaces\IFreezable.cs" />
+    <Compile Include="Src\Interfaces\IUsingScope.cs" />
     <Compile Include="Src\LazyList.cs" />
     <Compile Include="Src\NRefactoryResolver\CodeSnippetConverter.cs" />
     <Compile Include="Src\NRefactoryResolver\CSharpToVBNetConvertVisitor.cs" />

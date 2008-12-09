@@ -89,8 +89,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 			DefaultProjectContent dpc = new DefaultProjectContent();
 			dpc.ReferencedContents.Add(msc);
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(dpc);
-			cu.Usings.Add(new DefaultUsing(dpc, new DomRegion(1,1, 5,5)));
-			cu.Usings[0].Usings.Add("System.Collections.Generic");
+			cu.UsingScope.Usings.Add(new DefaultUsing(dpc, new DomRegion(1,1, 5,5)));
+			cu.UsingScope.Usings[0].Usings.Add("System.Collections.Generic");
 			
 			DefaultClass listDerivingClass = new DefaultClass(cu, "DerivesFromList");
 			cu.Classes.Add(listDerivingClass);
@@ -108,8 +108,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 			DefaultProjectContent dpc = new DefaultProjectContent();
 			dpc.ReferencedContents.Add(msc);
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(dpc);
-			cu.Usings.Add(new DefaultUsing(dpc, new DomRegion(1,1, 5,5)));
-			cu.Usings[0].Usings.Add("System.Collections.Generic");
+			cu.UsingScope.Usings.Add(new DefaultUsing(dpc, new DomRegion(1,1, 5,5)));
+			cu.UsingScope.Usings[0].Usings.Add("System.Collections.Generic");
 			
 			DefaultClass listDerivingClass = new DefaultClass(cu, "DerivesFromList");
 			cu.Classes.Add(listDerivingClass);

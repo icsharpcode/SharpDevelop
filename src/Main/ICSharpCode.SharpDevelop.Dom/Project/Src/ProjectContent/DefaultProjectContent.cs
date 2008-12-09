@@ -238,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		private class GenericClassContainer : DefaultClass
 		{
-			public GenericClassContainer(string fullyQualifiedName) : base(null, fullyQualifiedName) {}
+			public GenericClassContainer(string fullyQualifiedName) : base(DefaultCompilationUnit.DummyCompilationUnit, fullyQualifiedName) {}
 			
 			IClass[] realClasses = new IClass[4];
 			
@@ -744,7 +744,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return null;
 			}
 			
-			foreach (IUsing u in unit.Usings) {
+			foreach (IUsing u in unit.GetAllUsings()) {
 				if (u != null) {
 					string nameSpace = u.SearchNamespace(name);
 					if (nameSpace != null) {
@@ -854,7 +854,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (request.CurrentCompilationUnit != null) {
 				// Combine name with usings
-				foreach (IUsing u in request.CurrentCompilationUnit.Usings) {
+				foreach (IUsing u in request.CurrentCompilationUnit.GetAllUsings()) {
 					if (u != null) {
 						foreach (IReturnType r in u.SearchType(name, request.TypeParameterCount)) {
 							if (MatchesRequest(ref request, r)) {

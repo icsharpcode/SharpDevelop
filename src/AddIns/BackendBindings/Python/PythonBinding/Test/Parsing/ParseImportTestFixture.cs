@@ -38,13 +38,13 @@ namespace PythonBinding.Tests.Parsing
 		[Test]
 		public void OneUsing()
 		{
-			Assert.AreEqual(1, compilationUnit.Usings.Count);
+			Assert.AreEqual(1, compilationUnit.UsingScope.Usings.Count);
 		}
 		
 		[Test]
 		public void UsingSystem()
 		{
-			Assert.AreEqual("System", compilationUnit.Usings[0].Usings[0]);
+			Assert.AreEqual("System", compilationUnit.UsingScope.Usings[0].Usings[0]);
 		}
 	}
 }

@@ -30,7 +30,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		IList<IUsing> Usings {
+		/// <summary>
+		/// Gets the main using scope of the compilation unit.
+		/// That scope usually represents the root namespace.
+		/// </summary>
+		IUsingScope UsingScope {
 			get;
 		}
 		

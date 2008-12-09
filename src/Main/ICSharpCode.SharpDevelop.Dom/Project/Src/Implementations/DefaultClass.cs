@@ -26,6 +26,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IList<IMethod>   methods;
 		IList<IEvent>    events;
 		IList<ITypeParameter> typeParameters;
+		IUsingScope usingScope;
 		
 		protected override void FreezeInternal()
 		{
@@ -119,23 +120,47 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/// <summary>
+		/// Gets the using scope of contains this class.
+		/// </summary>
+		public IUsingScope UsingScope {
+			get { return usingScope; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException("UsingScope");
+				CheckBeforeMutation();
+				usingScope = value;
+			}
+		}
+		
 		public DefaultClass(ICompilationUnit compilationUnit, string fullyQualifiedName) : base(null)
 		{
+			if (compilationUnit == null)
+				throw new ArgumentNullException("compilationUnit");
+			if (fullyQualifiedName == null)
+				throw new ArgumentNullException("fullyQualifiedName");
 			this.compilationUnit = compilationUnit;
 			this.FullyQualifiedName = fullyQualifiedName;
+			this.UsingScope = compilationUnit.UsingScope;
 		}
 		
 		public DefaultClass(ICompilationUnit compilationUnit, IClass declaringType) : base(declaringType)
 		{
+			if (compilationUnit == null)
+				throw new ArgumentNullException("compilationUnit");
 			this.compilationUnit = compilationUnit;
+			this.UsingScope = compilationUnit.UsingScope;
 		}
 		
 		public DefaultClass(ICompilationUnit compilationUnit, ClassType classType, ModifierEnum modifiers, DomRegion region, IClass declaringType) : base(declaringType)
 		{
+			if (compilationUnit == null)
+				throw new ArgumentNullException("compilationUnit");
 			this.compilationUnit = compilationUnit;
 			this.region = region;
 			this.classType = classType;
 			Modifiers = modifiers;
+			this.UsingScope = compilationUnit.UsingScope;
 		}
 		
 		// fields must be volatile to ensure that the optimizer doesn't reorder accesses to it

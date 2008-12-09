@@ -43,6 +43,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the using scope of contains this class.
+		/// </summary>
+		IUsingScope UsingScope {
+			get;
+		}
+		
 		IList<IReturnType> BaseTypes {
 			get;
 		}

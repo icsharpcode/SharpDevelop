@@ -44,7 +44,7 @@ namespace PythonBinding.Tests.Resolver
 			// Add usings.
 			DefaultUsing newUsing = new DefaultUsing(cu.ProjectContent);
 			newUsing.Usings.Add("MyNamespace");
-			cu.Usings.Add(newUsing);
+			cu.UsingScope.Usings.Add(newUsing);
 
 			results = resolver.CtrlSpace(0, "".Length, parseInfo, "", ExpressionContext.Default);
 		}

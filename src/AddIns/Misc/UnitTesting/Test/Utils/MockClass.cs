@@ -127,6 +127,12 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
+		public IUsingScope UsingScope {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public DomRegion BodyRegion {
 			get {
 				throw new NotImplementedException();

@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IProjectContent projectContent = cu.ProjectContent;
 			projectContent.AddNamespaceContents(result, "", projectContent.Language, true);
-			foreach (IUsing u in cu.Usings) {
+			foreach (IUsing u in cu.GetAllUsings()) {
 				AddUsing(result, u, projectContent);
 			}
 			AddUsing(result, projectContent.DefaultImports, projectContent);
