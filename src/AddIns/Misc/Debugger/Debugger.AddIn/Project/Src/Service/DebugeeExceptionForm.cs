@@ -52,9 +52,7 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.SharpDevelop.Services
 {
 	internal sealed partial class DebugeeExceptionForm
-	{		
-		private Result result = Result.Break; // Default
-		
+	{
 		private DebugeeExceptionForm()
 		{
 			InitializeComponent();
