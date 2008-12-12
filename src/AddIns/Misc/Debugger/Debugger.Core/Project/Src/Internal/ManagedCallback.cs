@@ -271,13 +271,20 @@ namespace Debugger
 			string errorText = String.Format("Debugger error: \nHR = 0x{0:X} \nCode = 0x{1:X}", errorHR, errorCode);
 			
 			if ((uint)errorHR == 0x80131C30) {
-				errorText += "\n\nIf you are running a 64-bit system this setting might help:\nProject -> Project Options -> Compiling -> Target CPU = 32-bit Intel";
+				errorText += "\n\nDebugging 64-bit processes is currently not supported.\n" +
+					"If you are running a 64-bit system, this setting might help:\n" +
+					"Project -> Project Options -> Compiling -> Target CPU = 32-bit Intel";
 			}
 			
 			System.Windows.Forms.MessageBox.Show(errorText);
 
-			pauseOnNextExit = true;
-			ExitCallback();
+			try {
+				pauseOnNextExit = true;
+				ExitCallback();
+			} catch (COMException) {
+			} catch (InvalidComObjectException) {
+				// ignore errors during shutdown after debugger error
+			}
 		}
 
 		public void UpdateModuleSymbols(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule, IStream pSymbolStream)
