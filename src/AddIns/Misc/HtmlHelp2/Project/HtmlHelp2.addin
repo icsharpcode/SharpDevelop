@@ -98,4 +98,11 @@
 			             insertafter = "PreviousHelpTopic"/>
 		</Condition>
 	</Path>
+	
+	<!-- Show Error Help item -->
+	<Path name="/SharpDevelop/Pads/ErrorList/TaskContextMenu">
+		<MenuItem id = "ShowHelp"
+		          label = "Show Help"
+		          class = "HtmlHelp2.Commands.ShowErrorHelpCommand"/>
+	</Path>
 </AddIn>
