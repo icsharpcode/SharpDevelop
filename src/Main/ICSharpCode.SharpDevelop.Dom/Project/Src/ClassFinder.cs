@@ -114,12 +114,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IReturnType SearchType(string name, int typeParameterCount)
 		{
-			return projectContent.SearchType(new SearchTypeRequest(name, typeParameterCount, callingClass, cu, caretLine, caretColumn)).Result;
+			return Search(name, typeParameterCount).Result;
+		}
+		
+		public SearchTypeResult Search(string name, int typeParameterCount)
+		{
+			return projectContent.SearchType(new SearchTypeRequest(name, typeParameterCount, callingClass, cu, caretLine, caretColumn));
 		}
 		
 		public string SearchNamespace(string name)
 		{
-			return projectContent.SearchNamespace(name, callingClass, cu, caretLine, caretColumn);
+			return Search(name, 0).NamespaceResult;
 		}
 	}
 }

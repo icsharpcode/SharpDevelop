@@ -1996,6 +1996,101 @@ class TestClass {
 		}
 		
 		[Test]
+		public void ClassNameLookup1()
+		{
+			string program = @"namespace MainNamespace {
+	using Test.Subnamespace;
+	class Program {
+		static void M(Test.TheClass c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Test.TheClass", 4);
+			Assert.AreEqual("Test.Subnamespace.Test.TheClass", trr.ResolvedClass.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ClassNameLookup2()
+		{
+			string program = @"using Test.Subnamespace;
+namespace MainNamespace {
+	class Program {
+		static void M(Test.TheClass c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Test.TheClass", 4);
+			Assert.AreEqual("Test.TheClass", trr.ResolvedClass.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ClassNameLookup3()
+		{
+			string program = @"namespace MainNamespace {
+	using Test.Subnamespace;
+	class Program {
+		static void M(Test c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Test", 4);
+			Assert.AreEqual("Test.Subnamespace.Test", trr.ResolvedClass.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ClassNameLookup4()
+		{
+			string program = @"using Test.Subnamespace;
+namespace MainNamespace {
+	class Program {
+		static void M(Test c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(program, "Test", 4);
+			Assert.AreEqual("Test", nrr.Name);
+		}
+		
+		[Test]
+		public void ClassNameLookup5()
+		{
+			string program = @"namespace MainNamespace {
+	using A;
+	
+	class M {
+		void X(Test a) {}
+	}
+	namespace Test { class B {} }
+}
+
+namespace A {
+	class Test {}
+}";
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(program, "Test", 5);
+			Assert.AreEqual("MainNamespace.Test", nrr.Name);
+		}
+		
+		[Test]
 		public void InvocableRule()
 		{
 			string program = @"using System;

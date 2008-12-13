@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		void CheckNamespace(string @namespace, string className, LanguageProperties language)
 		{
 			ICompilationUnit cu = Prepare(language);
-			string ns = cu.ProjectContent.SearchNamespace(@namespace, null, cu, 1, 1);
+			string ns = cu.ProjectContent.SearchType(new SearchTypeRequest(@namespace, 0, null, cu, 1, 1)).NamespaceResult;
 			Assert.IsNotNull(ns, @namespace + " not found");
 			foreach (object o in cu.ProjectContent.GetNamespaceContents(ns)) {
 				IClass c = o as IClass;
@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public void SearchNestedNamespace()
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
-			string ns = cu.ProjectContent.SearchNamespace("Collections.Generic", null, cu, 1, 1);
+			string ns = cu.ProjectContent.SearchType(new SearchTypeRequest("Collections.Generic", 0, null, cu, 1, 1)).NamespaceResult;
 			Assert.IsNull(ns, "Nested namespaces should not be found in C#");
 		}
 

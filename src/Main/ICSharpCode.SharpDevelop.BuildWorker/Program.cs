@@ -150,6 +150,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			                           | ToolsetDefinitionLocations.ConfigurationFile);
 			
 			engine.RegisterLogger(new ForwardingLogger(this));
+			engine.RegisterLogger(new ConsoleLogger(LoggerVerbosity.Diagnostic));
 			
 			return engine;
 		}

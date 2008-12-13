@@ -96,7 +96,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences);
 		
+		[Obsolete]
 		string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
+		
 		SearchTypeResult SearchType(SearchTypeRequest request);
 		
 		/// <summary>
@@ -139,6 +141,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public readonly IClass CurrentType;
 		public readonly int CaretLine;
 		public readonly int CaretColumn;
+		public readonly IUsingScope CurrentUsingScope;
 		
 		public SearchTypeRequest(string name, int typeParameterCount, IClass currentType, int caretLine, int caretColumn)
 		{
@@ -150,6 +153,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.CurrentType = currentType != null ? currentType.GetCompoundClass() : null;
 			this.CaretLine = caretLine;
 			this.CaretColumn = caretColumn;
+			this.CurrentUsingScope = currentType.UsingScope;
 		}
 		
 		public SearchTypeRequest(string name, int typeParameterCount, IClass currentType, ICompilationUnit currentCompilationUnit, int caretLine, int caretColumn)
@@ -162,15 +166,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.CurrentType = currentType != null ? currentType.GetCompoundClass() : null;
 			this.CaretLine = caretLine;
 			this.CaretColumn = caretColumn;
+			this.CurrentUsingScope = (currentType != null) ? currentType.UsingScope : currentCompilationUnit.UsingScope;
 		}
 	}
 	
 	public struct SearchTypeResult
 	{
-		public static readonly SearchTypeResult Empty = new SearchTypeResult(null, null);
+		public static readonly SearchTypeResult Empty = default(SearchTypeResult);
 		
 		readonly IReturnType result;
 		readonly IUsing usedUsing;
+		readonly string namespaceResult;
 		
 		public SearchTypeResult(IReturnType result) : this(result, null) {}
 		
@@ -180,18 +186,32 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			this.result = result;
 			this.usedUsing = usedUsing;
+			this.namespaceResult = null;
 		}
 		
+		public SearchTypeResult(string namespaceResult, IUsing usedUsing)
+		{
+			this.result = null;
+			this.usedUsing = usedUsing;
+			this.namespaceResult = namespaceResult;
+		}
+		
+		/// <summary>
+		/// Gets the result type.
+		/// </summary>
 		public IReturnType Result {
-			get {
-				return result;
-			}
+			get { return result; }
 		}
 		
+		/// <summary>
+		/// Gets the using that was used for this type lookup.
+		/// </summary>
 		public IUsing UsedUsing {
-			get {
-				return usedUsing;
-			}
+			get { return usedUsing; }
+		}
+		
+		public string NamespaceResult {
+			get { return namespaceResult; }
 		}
 	}
 }

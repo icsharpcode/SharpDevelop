@@ -736,115 +736,48 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
 		{
-			if (NamespaceExists(name)) {
-				return name;
-			}
-			
-			if (unit == null) {
-				return null;
-			}
-			
-			foreach (IUsing u in unit.GetAllUsings()) {
-				if (u != null) {
-					string nameSpace = u.SearchNamespace(name);
-					if (nameSpace != null) {
-						return nameSpace;
-					}
-				}
-			}
-			if (defaultImports != null) {
-				string nameSpace = defaultImports.SearchNamespace(name);
-				if (nameSpace != null) {
-					return nameSpace;
-				}
-			}
-			if (curType != null) {
-				// Try relative to current namespace and relative to parent namespaces
-				string fullname = curType.Namespace;
-				while (fullname != null && fullname.Length > 0) {
-					string nameSpace = fullname + '.' + name;
-					if (NamespaceExists(nameSpace)) {
-						return nameSpace;
-					}
-					
-					int pos = fullname.LastIndexOf('.');
-					if (pos < 0) {
-						fullname = null;
-					} else {
-						fullname = fullname.Substring(0, pos);
-					}
-				}
-			}
-			return null;
+			return SearchType(new SearchTypeRequest(name, 0, curType, unit, caretLine, caretColumn)).NamespaceResult;
 		}
 		
-		bool MatchesRequest(ref SearchTypeRequest request, IClass c)
+		bool MatchesRequest(ref SearchTypeRequest request, ref SearchTypeResult result)
 		{
-			return c != null
-				&& c.TypeParameters.Count == request.TypeParameterCount
-				&& IsAccessibleClass(c);
-		}
-		
-		bool MatchesRequest(ref SearchTypeRequest request, IReturnType rt)
-		{
-			if (rt == null)
-				return false;
-			if (rt.TypeArgumentCount != request.TypeParameterCount)
-				return false;
-			IClass c = rt.GetUnderlyingClass();
-			if (c != null)
-				return IsAccessibleClass(c);
-			else
-				return true;
+			if (result.NamespaceResult != null)
+				return request.TypeParameterCount == 0;
+			else {
+				IReturnType rt = result.Result;
+				if (rt == null)
+					return false;
+				if (rt.TypeArgumentCount != request.TypeParameterCount)
+					return false;
+				IClass c = rt.GetUnderlyingClass();
+				if (c != null)
+					return IsAccessibleClass(c);
+				else
+					return true;
+			}
 		}
 		
 		public SearchTypeResult SearchType(SearchTypeRequest request)
 		{
 			string name = request.Name;
-			if (name == null || name.Length == 0) {
+			if (string.IsNullOrEmpty(name)) {
 				return SearchTypeResult.Empty;
 			}
 			
-			// Try if name is already the full type name
-			IClass c = GetClass(name, request.TypeParameterCount);
-			if (MatchesRequest(ref request, c)) {
-				return new SearchTypeResult(c);
-			}
-			// fallback-class if the one with the right type parameter count is not found.
-			SearchTypeResult fallbackResult = SearchTypeResult.Empty;
-			if (request.CurrentType != null) {
-				// Try parent namespaces of the current class
-				string fullname = request.CurrentType.Namespace;
-				while (fullname != null && fullname.Length > 0) {
-					string nameSpace = fullname + '.' + name;
-					
-					c = GetClass(nameSpace, request.TypeParameterCount);
-					if (c != null) {
-						if (MatchesRequest(ref request, c))
-							return new SearchTypeResult(c);
-						else
-							fallbackResult = new SearchTypeResult(c);
-					}
-					
-					int pos = fullname.LastIndexOf('.');
-					if (pos < 0) {
-						fullname = null;
-					} else {
-						fullname = fullname.Substring(0, pos);
-					}
-				}
-				
-				if (name.IndexOf('.') < 0) {
+			// 'result' holds the fall-back result if no result with the right type parameter count is found.
+			SearchTypeResult result = SearchTypeResult.Empty;
+			
+			if (name.IndexOf('.') < 0) {
+				for (IClass outerClass = request.CurrentType; outerClass != null; outerClass = outerClass.DeclaringType) {
 					// Try inner classes (in full inheritance tree)
 					// Don't use loop with cur = cur.BaseType because of inheritance cycles
-					foreach (IClass baseClass in request.CurrentType.ClassInheritanceTree) {
+					foreach (IClass baseClass in outerClass.ClassInheritanceTree) {
 						if (baseClass.ClassType == ClassType.Class) {
 							foreach (IClass innerClass in baseClass.InnerClasses) {
 								if (language.NameComparer.Equals(innerClass.Name, name)) {
-									if (MatchesRequest(ref request, innerClass)) {
-										return new SearchTypeResult(innerClass);
-									} else {
-										fallbackResult = new SearchTypeResult(innerClass);
+									result = new SearchTypeResult(innerClass);
+									if (MatchesRequest(ref request, ref result)) {
+										return result;
 									}
 								}
 							}
@@ -852,30 +785,55 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 			}
-			if (request.CurrentCompilationUnit != null) {
-				// Combine name with usings
-				foreach (IUsing u in request.CurrentCompilationUnit.GetAllUsings()) {
-					if (u != null) {
-						foreach (IReturnType r in u.SearchType(name, request.TypeParameterCount)) {
-							if (MatchesRequest(ref request, r)) {
-								return new SearchTypeResult(r, u);
-							} else {
-								fallbackResult = new SearchTypeResult(r, u);
-							}
+			
+			for (IUsingScope usingScope = request.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
+				string fullname;
+				if (string.IsNullOrEmpty(usingScope.NamespaceName)) {
+					// Try if name is already the full type name
+					fullname = name;
+				} else {
+					fullname = usingScope.NamespaceName + "." + name;
+				}
+				IClass c = GetClass(fullname, request.TypeParameterCount);
+				if (c != null) {
+					result = new SearchTypeResult(c);
+					if (MatchesRequest(ref request, ref result)) {
+						return result;
+					}
+				}
+				if (NamespaceExists(fullname)) {
+					result = new SearchTypeResult(fullname, null);
+					if (MatchesRequest(ref request, ref result)) {
+						return result;
+					}
+				}
+				
+				foreach (IUsing u in usingScope.Usings) {
+					foreach (IReturnType r in u.SearchType(name, request.TypeParameterCount)) {
+						result = new SearchTypeResult(r, u);
+						if (MatchesRequest(ref request, ref result)) {
+							return result;
+						}
+					}
+					string nsResult = u.SearchNamespace(name);
+					if (nsResult != null) {
+						result = new SearchTypeResult(nsResult, null);
+						if (MatchesRequest(ref request, ref result)) {
+							return result;
 						}
 					}
 				}
 			}
+			
 			if (defaultImports != null) {
 				foreach (IReturnType r in defaultImports.SearchType(name, request.TypeParameterCount)) {
-					if (MatchesRequest(ref request, r)) {
-						return new SearchTypeResult(r, defaultImports);
-					} else {
-						fallbackResult = new SearchTypeResult(r, defaultImports);
+					result = new SearchTypeResult(r, defaultImports);
+					if (MatchesRequest(ref request, ref result)) {
+						return result;
 					}
 				}
 			}
-			return fallbackResult;
+			return result;
 		}
 		
 		/// <summary>

@@ -505,31 +505,27 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			string identifier = expr.Identifier;
 			ResolveResult result2 = null;
 			
-			IReturnType t = SearchType(identifier, expr.TypeArguments.Count, position);
-			if (t != null) {
-				result2 = new TypeResolveResult(callingClass, callingMember, ConstructType(t, expr.TypeArguments));
-			} else {
-				if (callingClass != null) {
-					if (callingMember is IMethod) {
-						foreach (ITypeParameter typeParameter in (callingMember as IMethod).TypeParameters) {
-							if (IsSameName(identifier, typeParameter.Name)) {
-								return new TypeResolveResult(callingClass, callingMember, new GenericReturnType(typeParameter));
-							}
-						}
-					}
-					foreach (ITypeParameter typeParameter in callingClass.TypeParameters) {
+			if (callingClass != null) {
+				if (callingMember is IMethod) {
+					foreach (ITypeParameter typeParameter in (callingMember as IMethod).TypeParameters) {
 						if (IsSameName(identifier, typeParameter.Name)) {
 							return new TypeResolveResult(callingClass, callingMember, new GenericReturnType(typeParameter));
 						}
 					}
 				}
+				foreach (ITypeParameter typeParameter in callingClass.TypeParameters) {
+					if (IsSameName(identifier, typeParameter.Name)) {
+						return new TypeResolveResult(callingClass, callingMember, new GenericReturnType(typeParameter));
+					}
+				}
 			}
 			
-			if (result == null && result2 == null) {
-				string namespaceName = SearchNamespace(identifier, position);
-				if (namespaceName != null && namespaceName.Length > 0) {
-					return new NamespaceResolveResult(callingClass, callingMember, namespaceName);
-				}
+			SearchTypeResult typeResult = SearchType(identifier, expr.TypeArguments.Count, position);
+			IReturnType t = typeResult.Result;
+			if (t != null) {
+				result2 = new TypeResolveResult(callingClass, callingMember, ConstructType(t, expr.TypeArguments));
+			} else if (result == null && typeResult.NamespaceResult != null) {
+				return new NamespaceResolveResult(callingClass, callingMember, typeResult.NamespaceResult);
 			}
 			
 			if (result == null && result2 == null)
@@ -927,7 +923,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// </remarks>
 		public string SearchNamespace(string name, NR.Location position)
 		{
-			return projectContent.SearchNamespace(name, callingClass, cu, position.Line, position.Column);
+			return SearchType(name, 0, position).NamespaceResult;
 		}
 		
 		public IClass GetClass(string fullName, int typeArgumentCount)
@@ -940,16 +936,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// </remarks>
 		public IClass SearchClass(string name, int typeArgumentCount, NR.Location position)
 		{
-			IReturnType t = SearchType(name, typeArgumentCount, position);
+			IReturnType t = SearchType(name, typeArgumentCount, position).Result;
 			return (t != null) ? t.GetUnderlyingClass() : null;
 		}
 		
-		public IReturnType SearchType(string name, int typeArgumentCount, NR.Location position)
+		public SearchTypeResult SearchType(string name, int typeArgumentCount, NR.Location position)
 		{
 			if (position.IsEmpty)
-				return projectContent.SearchType(new SearchTypeRequest(name, typeArgumentCount, callingClass, cu, caretLine, caretColumn)).Result;
+				return projectContent.SearchType(new SearchTypeRequest(name, typeArgumentCount, callingClass, cu, caretLine, caretColumn));
 			else
-				return projectContent.SearchType(new SearchTypeRequest(name, typeArgumentCount, callingClass, cu, position.Line, position.Column)).Result;
+				return projectContent.SearchType(new SearchTypeRequest(name, typeArgumentCount, callingClass, cu, position.Line, position.Column));
 		}
 		
 		public IList<IMethod> SearchExtensionMethods(string name)

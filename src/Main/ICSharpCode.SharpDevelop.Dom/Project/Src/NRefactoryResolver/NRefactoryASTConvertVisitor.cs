@@ -323,11 +323,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object VisitNamespaceDeclaration(AST.NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			DefaultUsingScope oldNamespace = currentNamespace;
-			currentNamespace = new DefaultUsingScope {
-				Parent = oldNamespace,
-				NamespaceName = PrependCurrentNamespace(namespaceDeclaration.Name),
-			};
-			oldNamespace.ChildScopes.Add(currentNamespace);
+			foreach (string name in namespaceDeclaration.Name.Split('.')) {
+				currentNamespace = new DefaultUsingScope {
+					Parent = currentNamespace,
+					NamespaceName = PrependCurrentNamespace(name),
+				};
+				currentNamespace.Parent.ChildScopes.Add(currentNamespace);
+			}
 			object ret = namespaceDeclaration.AcceptChildren(this, data);
 			currentNamespace = oldNamespace;
 			return ret;

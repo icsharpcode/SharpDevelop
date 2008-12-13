@@ -15,6 +15,11 @@ using Microsoft.Build.Framework;
 
 namespace ICSharpCode.CodeAnalysis
 {
+	/// <summary>
+	/// Not all FxCop messages come with correct line number information,
+	/// so this logger fixes the position.
+	/// Additionally, it registers the context menu containing the 'suppress message' command.
+	/// </summary>
 	public class FxCopLogger : IMSBuildAdditionalLogger
 	{
 		public ILogger CreateLogger(MSBuildEngine engineWorker)
