@@ -600,5 +600,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 			}
 		}
+		
+		static void SetParentNonNullable<T>(List<T> list, INode parent) where T : class, INode
+		{
+			if (list != null) {
+				foreach (T x in list) {
+					x.Parent = parent;
+				}
+			}
+		}
 	}
 }

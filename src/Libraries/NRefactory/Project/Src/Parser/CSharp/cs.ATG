@@ -364,7 +364,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier                      (. newType.Name = t.val; .)
 	
 	/* .NET 2.0 */
-	[ TypeParameterList<templates> ]
+	[ TypeParameterList<templates> ] (. SetParentNonNullable(templates, newType); .)
 	
 	[ ClassBase<out names>          (. newType.BaseTypes = names; .) ]
 	
@@ -389,7 +389,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier                       (. newType.Name = t.val; .)
 	
 	/* .NET 2.0 */
-	[ TypeParameterList<templates> ]
+	[ TypeParameterList<templates> ] (. SetParentNonNullable(templates, newType); .)
 	
 	[ StructInterfaces<out names>    (. newType.BaseTypes = names; .) ]
 	
@@ -413,7 +413,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier                        (. newType.Name = t.val; .)
 	
 	/* .NET 2.0 */
-	[ TypeParameterList<templates> ]
+	[ TypeParameterList<templates> ] (. SetParentNonNullable(templates, newType); .)
 	
 	[ InterfaceBase<out names>       (. newType.BaseTypes = names; .) ]
 	
@@ -451,7 +451,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier                       (. delegateDeclr.Name = t.val; .)
 	
 	/* .NET 2.0 */
-	[ TypeParameterList<templates> ]
+	[ TypeParameterList<templates> ] (. SetParentNonNullable(templates, delegateDeclr); .)
 	
 	"(" [ FormalParameterList<p> (. delegateDeclr.Parameters = p; .)
 	] ")"
@@ -778,6 +778,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			Templates = templates,
 			IsExtensionMethod = isExtensionMethod
 		};
+		SetParentNonNullable(templates, methodDeclaration);
 		if (explicitInterface != null)
 			methodDeclaration.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident));
 		compilationUnit.AddChild(methodDeclaration);
@@ -983,6 +984,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					methodDeclaration.EndLocation   = t.EndLocation;
 					methodDeclaration.IsExtensionMethod = isExtensionMethod;
 					methodDeclaration.Templates = templates;
+					SetParentNonNullable(templates, methodDeclaration);
 					compilationUnit.AddChild(methodDeclaration);
 				                                       .)
 				{ TypeParameterConstraintsClause<templates> }
@@ -1075,6 +1077,7 @@ InterfaceMemberDecl
 				Parameters = parameters, Attributes = attributes, Templates = templates,
 				StartLocation = startLocation, EndLocation = t.EndLocation
 			};
+			SetParentNonNullable(templates, md);
 			compilationUnit.AddChild(md);
 		.)
 		| (
@@ -1093,6 +1096,7 @@ InterfaceMemberDecl
 								Parameters = parameters, Attributes = attributes, Templates = templates,
 								StartLocation = startLocation, EndLocation = t.EndLocation
 							};
+							SetParentNonNullable(templates, md);
 							compilationUnit.AddChild(md);
 						.)
 					/*--- interface property declaration: */

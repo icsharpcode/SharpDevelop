@@ -437,7 +437,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 						newType.Type       = ClassType.Class;
 					.)
 	Identifier			 (. newType.Name = t.val; .) 
-	TypeParameterList<newType.Templates>
+	TypeParameterList<newType.Templates> (. SetParent(newType.Templates, newType); .)
 	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	[ ClassBaseType<out typeRef> (. newType.BaseTypes.Add(typeRef); .) ]
@@ -474,7 +474,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 			newType.Type = ClassType.Struct;
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
-	TypeParameterList<newType.Templates>
+	TypeParameterList<newType.Templates>  (. SetParent(newType.Templates, newType); .)
 	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces);.) }
@@ -512,7 +512,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 			newType.Type = ClassType.Interface;
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
-	TypeParameterList<newType.Templates>
+	TypeParameterList<newType.Templates> (. SetParent(newType.Templates, newType); .)
 	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	{ InterfaceBase<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
@@ -531,11 +531,11 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 	.)
 	(
 		"Sub" Identifier (. delegateDeclr.Name = t.val; .)
-		TypeParameterList<delegateDeclr.Templates>
+		TypeParameterList<delegateDeclr.Templates> (. SetParent(delegateDeclr.Templates, delegateDeclr); .)
 		[ "(" [ FormalParameterList<p> ] ")" (. delegateDeclr.Parameters = p; .) ]
 		|
 		"Function" Identifier (. delegateDeclr.Name = t.val; .)
-		TypeParameterList<delegateDeclr.Templates>
+		TypeParameterList<delegateDeclr.Templates> (. SetParent(delegateDeclr.Templates, delegateDeclr); .)
 		[ "(" [ FormalParameterList<p> ] ")" (. delegateDeclr.Parameters = p; .) ]
 		[ "As" (. TypeReference type; .) TypeName<out type> (. delegateDeclr.ReturnType = type; .)]
 	)
@@ -683,6 +683,7 @@ InterfaceMemberDecl
 				EndLocation = t.EndLocation,
 				Templates = templates
 			};
+			SetParent(templates, md);
 			compilationUnit.AddChild(md);
 		.)
 		|
@@ -710,6 +711,7 @@ InterfaceMemberDecl
 			md.StartLocation = startLocation;
 			md.EndLocation = t.EndLocation;
 			md.Templates = templates;
+			SetParent(templates, md);
 			compilationUnit.AddChild(md);
 		.)
 		EndOfStmt
@@ -822,6 +824,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
 				};
+				SetParent(templates, methodDeclaration);
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 		|
@@ -835,6 +838,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
 				};
+				SetParent(templates, methodDeclaration);
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 			
@@ -918,6 +922,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					Templates     = templates,
 					InterfaceImplementations = implementsClause
 				};
+				SetParent(templates, methodDeclaration);
 				if (returnTypeAttributeSection != null) {
 					returnTypeAttributeSection.AttributeTarget = "return";
 					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
@@ -936,6 +941,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
 				};
+				SetParent(templates, methodDeclaration);
 				if (returnTypeAttributeSection != null) {
 					returnTypeAttributeSection.AttributeTarget = "return";
 					methodDeclaration.Attributes.Add(returnTypeAttributeSection);

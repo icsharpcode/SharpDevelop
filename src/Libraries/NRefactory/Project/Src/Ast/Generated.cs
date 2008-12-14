@@ -1515,6 +1515,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				addRegion = value ?? EventAddRegion.Null;
+				if (!addRegion.IsNull) addRegion.Parent = this;
 			}
 		}
 		
@@ -1524,6 +1525,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				removeRegion = value ?? EventRemoveRegion.Null;
+				if (!removeRegion.IsNull) removeRegion.Parent = this;
 			}
 		}
 		
@@ -1533,6 +1535,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				raiseRegion = value ?? EventRaiseRegion.Null;
+				if (!raiseRegion.IsNull) raiseRegion.Parent = this;
 			}
 		}
 		
@@ -2404,6 +2407,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				getRegion = value ?? PropertyGetRegion.Null;
+				if (!getRegion.IsNull) getRegion.Parent = this;
 			}
 		}
 		
@@ -2413,6 +2417,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				setRegion = value ?? PropertySetRegion.Null;
+				if (!setRegion.IsNull) setRegion.Parent = this;
 			}
 		}
 		
@@ -3339,6 +3344,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				getRegion = value ?? PropertyGetRegion.Null;
+				if (!getRegion.IsNull) getRegion.Parent = this;
 			}
 		}
 		
@@ -3348,6 +3354,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				setRegion = value ?? PropertySetRegion.Null;
+				if (!setRegion.IsNull) setRegion.Parent = this;
 			}
 		}
 		
