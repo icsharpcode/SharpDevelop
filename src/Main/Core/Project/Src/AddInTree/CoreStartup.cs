@@ -183,7 +183,12 @@ namespace ICSharpCode.Core
 			// run workspace autostart commands
 			LoggingService.Info("Running autostart commands...");
 			foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/Autostart", null, false)) {
-				command.Run();
+				try {
+					command.Run();
+				} catch (Exception ex) {
+					// allow startup to continue if some commands fail
+					MessageService.ShowError(ex);
+				}
 			}
 		}
 		
