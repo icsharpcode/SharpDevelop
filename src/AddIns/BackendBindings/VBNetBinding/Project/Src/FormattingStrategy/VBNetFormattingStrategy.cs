@@ -209,7 +209,7 @@ namespace VBNetBinding.FormattingStrategy
 					if (doInsertion)
 					{
 						if (Regex.IsMatch(texttoreplace.Trim(), @"^If .*[^_]$", RegexOptions.IgnoreCase)) {
-							if (false == Regex.IsMatch(texttoreplace, @"\bthen\b", RegexOptions.IgnoreCase)) {
+							if (!Regex.IsMatch(texttoreplace, @"\bthen\b", RegexOptions.IgnoreCase)) {
 								string specialThen = "Then"; // do special check in cases like If t = True' comment
 								if (textArea.Document.GetCharAt(lineAbove.Offset + texttoreplace.Length) == '\'')
 									specialThen += " ";
@@ -219,6 +219,12 @@ namespace VBNetBinding.FormattingStrategy
 								textArea.Document.Insert(lineAbove.Offset + texttoreplace.Length, specialThen);
 								texttoreplace += specialThen;
 							}
+						}
+						// check #Region statements
+						if (Regex.IsMatch(texttoreplace.Trim(), @"^#Region", RegexOptions.IgnoreCase) && LookForEndRegion(textArea)) {
+							string indentation = GetIndentation(textArea, lineNr - 1);
+							texttoreplace += indentation + "\r\n" + indentation + "#End Region";
+							textArea.Document.Replace(curLine.Offset, curLine.Length, texttoreplace);
 						}
 						foreach (VBStatement statement_ in statements) {
 							VBStatement statement = statement_; // allow passing statement byref
@@ -311,6 +317,24 @@ namespace VBNetBinding.FormattingStrategy
 					}
 				}
 			}
+		}
+		
+		bool LookForEndRegion(TextArea area)
+		{
+			string lineText = area.Document.GetText(area.Document.GetLineSegment(0));
+			int count = 0;
+			int lineNr = 0;
+			while ((!Regex.IsMatch(lineText, @"^\s*#End\s+Region", RegexOptions.IgnoreCase) || count >= 0) && (lineNr < area.Document.TotalNumberOfLines)) {
+				if (Regex.IsMatch(lineText, @"^\s*#Region", RegexOptions.IgnoreCase))
+					count++;
+				if (Regex.IsMatch(lineText, @"^\s*#End\s+Region", RegexOptions.IgnoreCase))
+					count--;
+				lineNr++;
+				if (lineNr < area.Document.TotalNumberOfLines)
+				lineText = area.Document.GetText(area.Document.GetLineSegment(lineNr));
+			}
+						
+			return (count > 0);
 		}
 		
 		bool IsElseConstruct(string line)
