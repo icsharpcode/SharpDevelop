@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -229,7 +230,7 @@ namespace VBNetBinding.FormattingStrategy
 								for (int i = 0; i < statement.IndentPlus; i++) {
 									indentation += Tab.GetIndentationString(textArea.Document);
 								}
-								
+
 								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation + curLineText.Trim());
 								textArea.Caret.Column = indentation.Length;
 								return;
@@ -347,6 +348,11 @@ namespace VBNetBinding.FormattingStrategy
 			return !inString;
 		}
 		
+		bool IsDeclaration(int type)
+		{
+			return (type == Tokens.Class) || (type == Tokens.Module);
+		}
+		
 		bool IsEndStatementNeeded(TextArea textArea, ref VBStatement statement, int lineNr)
 		{
 			Stack<Token> tokens = new Stack<Token>();
@@ -356,24 +362,24 @@ namespace VBNetBinding.FormattingStrategy
 			
 			Token currentToken = null;
 			Token prevToken = null;
-
+			
 			while ((currentToken = lexer.NextToken()).kind != Tokens.EOF) {
 				if (prevToken == null)
 					prevToken = currentToken;
 				
 				if (IsBlockStart(lexer, currentToken, prevToken)) {
-					tokens.Push(currentToken);
+					if ((tokens.Count > 0 && tokens.Peek().kind != Tokens.Interface) || IsDeclaration(currentToken.kind))
+						tokens.Push(currentToken);
 				}
 				
 				if (IsBlockEnd(currentToken, prevToken)) {
 					while (tokens.Count > 0 && !IsMatchingEnd(tokens.Peek(), currentToken)) {
-						Token t = null;
-						missingEnds.Add(t = tokens.Pop());
+						missingEnds.Add(tokens.Pop());
 					}
-					if (tokens.Count != 0) {
-						if (IsMatchingEnd(tokens.Peek(), currentToken)) {
+					
+					if (tokens.Count > 0) {
+						if (IsMatchingEnd(tokens.Peek(), currentToken))
 							tokens.Pop();
-						}
 					}
 				}
 				
@@ -394,15 +400,16 @@ namespace VBNetBinding.FormattingStrategy
 			foreach (Token t in missingEnds) {
 				if (!IsSingleLine(t.line, textArea)) {
 					if (IsMatchingStatement(t, statement) && ((diff = lineNr - t.line + 1) > -1)) {
-						if (closest == null)
+						if (closest == null) {
 							closest = t;
-						else {
+						} else {
 							if (diff < lineNr - closest.line + 1)
 								closest = t;
 						}
 					}
 				}
 			}
+			
 			return closest;
 		}
 		
