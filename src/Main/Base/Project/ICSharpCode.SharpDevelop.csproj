@@ -54,6 +54,7 @@
     <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Commands\TemplateCommands.cs" />
     <Compile Include="Src\Gui\AbstractSecondaryViewContent.cs" />
     <Compile Include="Src\Gui\AbstractViewContentHandlingLoadErrors.cs" />
     <Compile Include="Src\Gui\AbstractViewContentWithoutFile.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Src\Internal\Templates\Project\ProjectTemplate.cs" />
     <Compile Include="Src\Internal\Templates\File\FileDescriptionTemplate.cs" />
     <Compile Include="Src\Internal\Templates\File\FileTemplate.cs" />
+    <Compile Include="Src\Internal\Templates\TemplateCreator.cs" />
     <Compile Include="Src\Internal\Templates\TextTemplate.cs" />
     <Compile Include="Src\Internal\Templates\File\INewFileCreator.cs" />
     <Compile Include="Src\Internal\Undo\IUndoableOperation.cs" />
