@@ -39,7 +39,7 @@ type FSharpProject = class
     new (info : ProjectCreateInformation) as x = 
         { inherit CompilableProject(info.Solution) } then
         x.Create(info)
-        base.AddImport(@"$(FSharpBuildTasksPath)\SharpDevelop.Build.Fsc.Targets", null)
+        base.AddImport(@"$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets", null)
     override x.GetDefaultItemType(fileName : string) = 
         if String.Equals(".fs", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase) then
             ItemType.Compile

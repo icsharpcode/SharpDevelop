@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-# SharpDevelop 3.0.0.2980
+# SharpDevelop 3.0.0.3280
 Project("{982E8BC1-ACD7-4dbf-96AB-B2CE67D6A008}") = "FSharpBinding", "FSharpBinding\Project\FSharpBinding.fsproj", "{99BAE3A2-C40D-40D2-A7B4-EBB4798F36E4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TextEditor", "..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj", "{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}"
@@ -30,10 +30,6 @@ Global
 		{99BAE3A2-C40D-40D2-A7B4-EBB4798F36E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{99BAE3A2-C40D-40D2-A7B4-EBB4798F36E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{99BAE3A2-C40D-40D2-A7B4-EBB4798F36E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{674D485B-8340-498D-B91F-BE51543386C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{674D485B-8340-498D-B91F-BE51543386C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{674D485B-8340-498D-B91F-BE51543386C8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{674D485B-8340-498D-B91F-BE51543386C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}.Release|Any CPU.Build.0 = Release|Any CPU
