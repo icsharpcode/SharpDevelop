@@ -178,7 +178,12 @@ namespace ICSharpCode.UnitTesting
 			
 			// Remove missing classes.
 			foreach (IClass c in removedClasses.GetMissingClasses()) {
-				TestClasses.Remove(c.DotNetName);
+				IClass existingClass = GetExistingTestClassInProject(c);
+				if (existingClass != null) {
+					UpdateTestClass(existingClass);
+				} else {
+					TestClasses.Remove(c.DotNetName);
+				}
 			}
 		}
 		
@@ -262,6 +267,23 @@ namespace ICSharpCode.UnitTesting
 					rootNamespaces.Add(rootNamespace);
 				}
 			}
-		}				
+		}	
+		
+		/// <summary>
+		/// Gets an existing test class with the same name in the project. This
+		/// method is used to check that we do not remove a class after an existing duplicate class name
+		/// is changed.
+		/// </summary>
+		IClass GetExistingTestClassInProject(IClass c)
+		{
+			foreach (IClass existingClass in projectContent.Classes) {
+				if (TestClass.IsTestClass(existingClass)) {
+					if (existingClass.DotNetName == c.DotNetName) {
+						return existingClass;
+					}
+				}
+			}
+			return null;
+		}
 	}
 }
