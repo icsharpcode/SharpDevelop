@@ -183,7 +183,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			currentNamespace = new DefaultUsingScope();
 			if (!string.IsNullOrEmpty(VBRootNamespace)) {
-				currentNamespace.NamespaceName = VBRootNamespace;
+				foreach (string name in VBRootNamespace.Split('.')) {
+					currentNamespace = new DefaultUsingScope {
+						Parent = currentNamespace,
+						NamespaceName = PrependCurrentNamespace(name),
+					};
+					currentNamespace.Parent.ChildScopes.Add(currentNamespace);
+				}
 			}
 			cu.UsingScope = currentNamespace;
 			compilationUnit.AcceptChildren(this, data);
