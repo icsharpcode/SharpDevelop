@@ -167,7 +167,11 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			/// <summary>
 			/// After a keyword like "if","while","using" etc., but before the embedded statement.
 			/// </summary>
-			StatementWithEmbeddedStatement
+			StatementWithEmbeddedStatement,
+			/// <summary>
+			/// After "using" in global context, but before "=" or ";".
+			/// </summary>
+			UsingNamespace
 		}
 		
 		/// <summary>
@@ -219,6 +223,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					}
 				} else if (state == FrameState.Constraints) {
 					SetContext(ExpressionContext.Constraints);
+				} else if (state == FrameState.UsingNamespace) {
+					SetContext(ExpressionContext.Namespace);
 				} else {
 					switch (type) {
 						case FrameType.Global:
@@ -533,12 +539,18 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					frame.state = FrameState.Normal;
 					frame.ResetCurlyChildType();
 				}
+			} else if (frame.state == FrameState.UsingNamespace) {
+				if (token.kind != Tokens.Identifier && token.kind != Tokens.Dot && token.kind != Tokens.DoubleColon) {
+					frame.state = FrameState.Normal;
+					frame.SetDefaultContext();
+				}
 			}
 			
 			switch (token.kind) {
 				case Tokens.Using:
 					if (frame.type == FrameType.Global) {
-						frame.SetContext(ExpressionContext.Namespace);
+						frame.state = FrameState.UsingNamespace;
+						frame.SetDefaultContext();
 						break;
 					} else {
 						goto case Tokens.For;
@@ -730,7 +742,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						           || frame.type == FrameType.Statements
 						           || frame.type == FrameType.Global)
 						{
-							if (!frame.context.IsObjectCreation) {
+							if (!frame.context.IsObjectCreation && frame.state != FrameState.UsingNamespace) {
 								frame.SetContext(ExpressionContext.IdentifierExpected);
 							}
 						}
