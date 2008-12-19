@@ -59,8 +59,8 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			ProcessStartInfo info = new ProcessStartInfo(typeof(Program).Assembly.Location);
 			info.WorkingDirectory = Path.GetDirectoryName(info.FileName);
 			info.Arguments = "worker";
-			#if RELEASE || !WORKERDEBUG
 			info.UseShellExecute = false;
+			#if RELEASE || !WORKERDEBUG
 			info.CreateNoWindow = true;
 			#endif
 			return info;
@@ -75,6 +75,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		[Conditional("DEBUG")]
 		internal static void Log(string text)
 		{
+			Debug.WriteLine(text);
 			#if WORKERDEBUG
 			DateTime now = DateTime.Now;
 			Console.WriteLine(now.ToString() + "," + now.Millisecond.ToString("d3") + " " + text);

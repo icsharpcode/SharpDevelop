@@ -73,6 +73,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 		
 		public void CallMethodOnHost(string methodName, params object[] args)
 		{
+			Program.Log("CallMethodOnHost: " + methodName);
 			sender.Send(WorkerProcess.SerializeObject(new WorkerProcess.MethodCall(methodName, args)));
 		}
 		

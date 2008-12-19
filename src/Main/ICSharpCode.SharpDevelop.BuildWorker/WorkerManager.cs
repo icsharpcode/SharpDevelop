@@ -102,6 +102,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		{
 			lock (lockObject) {
 				if (freeWorkerProcesses.Count > 0) {
+					Debug.WriteLine("WorkerManager: shutting down free worker");
 					DequeueFreeWorkerProcess().Shutdown();
 				} else {
 					ClearLastBuildDoneTimer();
@@ -126,6 +127,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			
 			public void RaiseError(string message)
 			{
+				Debug.WriteLine(message);
 				RaiseEvent(new BuildErrorEventArgs(null, null, null, -1, -1, -1, -1, message, null, "SharpDevelopBuildWorkerManager"));
 			}
 			
