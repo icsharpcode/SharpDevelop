@@ -1026,6 +1026,15 @@ End Class
 		}
 		
 		[Test]
+		public void GlobalNamelookupVB()
+		{
+			// using an import this way IS possible in VB.NET
+			string program = "Imports System\n";
+			NamespaceResolveResult nrr = ResolveVB<NamespaceResolveResult>(program, "System", 1);
+			Assert.AreEqual("System", nrr.Name);
+		}
+		
+		[Test]
 		public void ImportAliasTest()
 		{
 			string program = @"using COL = System.Collections;

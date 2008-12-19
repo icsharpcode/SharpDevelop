@@ -791,6 +791,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (string.IsNullOrEmpty(usingScope.NamespaceName)) {
 					// Try if name is already the full type name
 					fullname = name;
+					lookedForFullTypeName = true;
 				} else {
 					fullname = usingScope.NamespaceName + "." + name;
 				}
