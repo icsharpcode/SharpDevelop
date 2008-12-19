@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.AstBuilder;
@@ -383,7 +384,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		bool ReplaceWithInvocation(Expression expression, ResolveResult rr)
 		{
-			if (rr is MethodGroupResolveResult
+			// replace with invocation if rr is a method
+			// and were not taking the address and it's not already being invoked
+			MethodGroupResolveResult mgrr = rr as MethodGroupResolveResult;
+			if (mgrr != null
+			    && mgrr.Methods.Any(g=>g.Count>0)
 			    && !(expression.Parent is AddressOfExpression)
 			    && !(NRefactoryResolver.IsInvoked(expression)))
 			{
