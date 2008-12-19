@@ -5,7 +5,7 @@
 
 	<xs:annotation>
 		<xs:documentation>
-			Copyright (C) 2005 Matthew Ward
+			Copyright (C) 2005-2008 Matthew Ward
 		
 			This program is free software; you can redistribute it and/or modify
 			it under the terms of the GNU General Public License as published by
@@ -29,12 +29,16 @@
 				<xs:element name="startup" type="startup" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="runtime" type="runtime" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="system.runtime.remoting" type="system.runtime.remoting" minOccurs="0" maxOccurs="1"/>
-				<xs:element name="system.network" type="system.network" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="system.net" type="system.net" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="uri" type="uri" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="mscorlib" type="mscorlib" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="configSections" type="configSections" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="system.diagnostics" type="system.diagnostics" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="location" type="location" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="system.web" type="system.web" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="system.codedom" type="system.codedom" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="appSettings" type="appSettings" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="connectionStrings" type="connectionStrings" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
@@ -50,6 +54,7 @@
 			<xs:element name="supportedRuntime" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:attribute name="version" type="xs:string"/>
+					<xs:attribute name="sku" type="xs:string"/>
 				</xs:complexType>
 			</xs:element>		
 		</xs:choice>
@@ -57,9 +62,9 @@
 
 	<xs:complexType name="runtime">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="developmentMode" minOccurs="0" maxOccurs="1">
+			<xs:element name="alwaysFlowImpersonationPolicy" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
-					<xs:attribute name="developerInstallation" type="trueFalseEnum"/>				
+					<xs:attribute name="enabled" type="trueFalseEnum" use="required"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="assemblyBinding" minOccurs="0" maxOccurs="1">
@@ -70,10 +75,40 @@
 						<xs:element name="publisherPolicy" type="publisherPolicy" minOccurs="0" maxOccurs="1"/>						
 						<xs:element name="qualifyAssembly" type="qualifyAssembly" minOccurs="0" maxOccurs="1"/>						
 					</xs:choice>
-					<xs:attribute name="appliesTo" type="xs:string" use="required"/>
+					<xs:attribute name="appliesTo" type="xs:string"/>
 				</xs:complexType>				
 			</xs:element>			
+			<xs:element name="bypassTrustedAppStrongNames" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="enabled" type="trueFalseEnum" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="developmentMode" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="developerInstallation" type="trueFalseEnum"/>				
+				</xs:complexType>
+			</xs:element>		
+			<xs:element name="disableCachingBindingFailures" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="enabled" type="zeroOrOneEnum"/>				
+				</xs:complexType>
+			</xs:element>			
 			<xs:element name="gcConcurrent" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="enabled" type="trueFalseEnum" use="required"/>				
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="gcServer" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="enabled" type="trueFalseEnum" use="required"/>				
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="legacyImpersonationPolicy" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="enabled" type="trueFalseEnum" use="required"/>				
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="legacyV1CASPolicy" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:attribute name="enabled" type="trueFalseEnum" use="required"/>				
 				</xs:complexType>
@@ -118,7 +153,7 @@
 		</xs:choice>
 	</xs:complexType>
 	
-	<xs:complexType name="system.network">
+	<xs:complexType name="system.net">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="authenticationModules" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
@@ -149,13 +184,43 @@
 						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>				
 						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
-								<xs:attribute name="name" type="xs:string" use="required"/>
+								<xs:attribute name="address" type="xs:string" use="required"/>
 							</xs:complexType>
 						</xs:element>				
 					</xs:choice>				
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="defaultProxy" type="defaultProxy" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="mailSettings" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="smtp" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="specifiedPickupDirectory">
+										<xs:complexType>
+											<xs:attribute name="pickupDirectoryLocation" type="xs:string"/>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="network">
+										<xs:complexType>
+											<xs:attribute name="password" type="xs:string"/>
+											<xs:attribute name="host" type="xs:string"/>
+											<xs:attribute name="port" type="xs:integer"/>
+											<xs:attribute name="defaultCredentials" type="trueFalseEnum"/>
+											<xs:attribute name="userName" type="xs:string"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:choice>
+								<xs:attribute name="deliveryMethod" type="mailDeliveryMethodEnum"/>
+								<xs:attribute name="from" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="requestCaching" type="requestCaching" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="settings" type="networkSettings" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="webRequestModules" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -176,14 +241,106 @@
 			</xs:element>
 		</xs:choice>
 	</xs:complexType>
+	
+	<xs:complexType name="uri">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="idn">
+				<xs:complexType>
+					<xs:attribute name="enabled" default="None">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="All"/>
+								<xs:enumeration value="AllExceptIntranet"/>
+								<xs:enumeration value="None"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="iriParsing">
+				<xs:complexType>
+					<xs:attribute name="enabled" default="trueFalseEnum"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	
+	<xs:complexType name="networkSettings">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="httpWebRequest">
+				<xs:complexType>
+					<xs:attribute name="maximumResponseHeadersLength" type="xs:integer" default="64"/>
+					<xs:attribute name="maximumErrorResponseLength" type="xs:integer" default="64"/>
+					<xs:attribute name="maximumUnauthorizedUploadLength" type="xs:integer" default="-1"/>
+					<xs:attribute name="useUnsafeHeaderParsing" type="trueFalseEnum" default="false"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ipv6">
+				<xs:complexType>
+					<xs:attribute name="enabled" type="trueFalseEnum"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="servicePointManager">
+				<xs:complexType>
+					<xs:attribute name="checkCertificateName" type="trueFalseEnum"/>
+					<xs:attribute name="checkCertificateRevocationList" type="trueFalseEnum"/>
+					<xs:attribute name="expect100Continue" type="trueFalseEnum"/>
+					<xs:attribute name="useNagleAlgorithm" type="trueFalseEnum"/>
+					<xs:attribute name="enableDnsRoundRobin" type="trueFalseEnum"/>
+					<xs:attribute name="dnsRefreshTimeout" type="trueFalseEnum"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="socket">
+				<xs:complexType>
+					<xs:attribute name="alwaysUseCompletionPortsForConnect" type="trueFalseEnum"/>
+					<xs:attribute name="alwaysUseCompletionPortsForAccept" type="trueFalseEnum"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="webProxyScript">
+				<xs:complexType>
+					<xs:attribute name="downloadTime" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="performanceCounters">
+				<xs:complexType>
+					<xs:attribute name="enabled" type="trueFalseEnum"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	
+	<xs:complexType name="requestCaching">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="defaultHttpCachePolicy" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="policyLevel" type="httpCachePolicyLevelEnum" default="BypassCache"/>
+					<xs:attribute name="maximumAge" type="xs:string"/>
+					<xs:attribute name="maximumStale" type="xs:string"/>
+					<xs:attribute name="minimumFresh" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="defaultFtpCachePolicy" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="policyLevel" type="ftpCachePolicyLevelEnum" default="Default"/>				
+				</xs:complexType>
+			</xs:element>
+		
+		</xs:choice>
+		<xs:attribute name="isPrivateCache" type="trueFalseEnum" default="true"/>
+		<xs:attribute name="disableAllCaching" type="trueFalseEnum"/>
+		<xs:attribute name="defaultPolicyLevel" type="requestCacheLevelEnum"/>
+		<xs:attribute name="unspecifiedMaximumAge" type="xs:string"/>
+	</xs:complexType>
 
 	<xs:complexType name="defaultProxy">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="proxy" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
-					<xs:attribute name="usesystemdefault" type="trueFalseEnum"/>
-					<xs:attribute name="bypassonlocal" type="trueFalseEnum"/>
+					<xs:attribute name="autoDetect" type="trueFalseUnspecifiedEnum" default="unspecified"/>
+					<xs:attribute name="usesystemdefault" type="trueFalseUnspecifiedEnum" default="unspecified"/>
+					<xs:attribute name="bypassonlocal" type="trueFalseUnspecifiedEnum" default="unspecified"/>
 					<xs:attribute name="proxyaddress" type="xs:string"/>
+					<xs:attribute name="scriptLocation" type="xs:string"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="bypasslist" minOccurs="0" maxOccurs="unbounded">				
@@ -208,7 +365,9 @@
 					<xs:attribute name="type" type="xs:string" use="required"/>
 				</xs:complexType>
 			</xs:element>				
-		</xs:choice>				
+		</xs:choice>
+		<xs:attribute name="enabled" type="trueFalseEnum" default="true"/>
+		<xs:attribute name="useDefaultCredentials" type="trueFalseEnum" default="false"/>
 	</xs:complexType>
 	
 	<xs:complexType name="mscorlib">
@@ -242,7 +401,7 @@
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="cryptoClass" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
-								<xs:anyAttribute/>
+								<xs:attribute name="customClassName" type="xs:string" use="required"/>
 							</xs:complexType>
 						</xs:element>
 					</xs:choice>
@@ -267,6 +426,7 @@
 						<xs:element name="section" type="section" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:choice>
 					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute name="type" type="xs:string" use="required"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
@@ -281,24 +441,77 @@
 	<xs:complexType name="section">
 		<xs:attribute name="name" type="xs:string" use="required"/>
 		<xs:attribute name="type" type="xs:string" use="required"/>
+		<xs:attribute name="restartOnExternalChanges" type="trueFalseEnum"/>
 		<xs:attribute name="allowDefinition">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="Everywhere"/>
 					<xs:enumeration value="MachineOnly"/>
+					<xs:enumeration value="MachineToWebRoot"/>
 					<xs:enumeration value="MachineToApplication"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="allowLocation" type="trueFalseEnum"/>	
+		<xs:attribute name="allowExeDefinition">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="MachineOnly"/>
+					<xs:enumeration value="MachineToRoamingUser"/>
+					<xs:enumeration value="MachineToLocalUser"/>
+					<xs:enumeration value="MachineToApplication"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="allowLocation" type="trueFalseEnum" default="true"/>	
 	</xs:complexType>
 	
 	<xs:complexType name="system.diagnostics">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="assert" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
-					<xs:attribute name="assertuienabled" type="trueFalseEnum" default="true"/>
+					<xs:attribute name="assertuienabled" type="trueFalseEnum"/>
 					<xs:attribute name="logfilename" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="performanceCounters" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="fileMappingSize" type="xs:integer" default="524288"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="sharedListeners" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" type="addListener" />
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="sources" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="source">
+							<xs:complexType>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="listeners">
+										<xs:complexType>
+											<xs:choice minOccurs="0" maxOccurs="unbounded">
+												<xs:element name="add" type="addListener"/>
+												<xs:element name="clear"/>
+												<xs:element name="remove">
+													<xs:complexType>
+														<xs:attribute name="name" type="xs:string" use="required"/>
+													</xs:complexType>
+												</xs:element>
+											</xs:choice>
+										</xs:complexType>
+									</xs:element>
+								</xs:choice>
+								<xs:attribute name="name" type="xs:string"/>
+								<xs:attribute name="switchName" type="xs:string"/>
+								<xs:attribute name="switchType" type="xs:string"/>
+								<xs:attribute name="extraAttribute" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="switches" minOccurs="0" maxOccurs="unbounded">
@@ -318,30 +531,32 @@
 					<xs:sequence minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="listeners" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
-							<xs:choice minOccurs="0" maxOccurs="unbounded">
-								<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
-									<xs:complexType>
-										<xs:attribute name="name" type="xs:string"/>
-										<xs:attribute name="type" type="xs:string" use="required"/>							
-										<xs:attribute name="initializeData" type="xs:string"/>							
-									</xs:complexType>
-								</xs:element>
-								<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
-									<xs:complexType>
-										<xs:attribute name="name" type="xs:string" use="required"/>
-									</xs:complexType>
-								</xs:element>
-							</xs:choice>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="add" type="addListener" minOccurs="0" maxOccurs="unbounded"/>
+									<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:attribute name="name" type="xs:string" use="required"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:choice>
 							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
-					<xs:attribute name="autoflush" type="xs:string"/>
-					<xs:attribute name="indentsize" type="xs:string"/>
+					<xs:attribute name="autoflush" type="trueFalseEnum"/>
+					<xs:attribute name="indentsize" type="trueFalseEnum"/>
+					<xs:attribute name="useGlobalLock" type="trueFalseEnum"/>
 				</xs:complexType>
 			</xs:element>
 		</xs:choice>
 	</xs:complexType>
 
+	<xs:complexType name="addListener">
+		<xs:attribute name="type" type="xs:string"/>
+		<xs:attribute name="initializeData" type="xs:string"/>
+		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="traceOutputOptions" type="xs:string"/>
+	</xs:complexType>
+	
 	<xs:complexType name="location">
 		<xs:attribute name="path" type="xs:string"/>
 		<xs:attribute name="allowOverride" type="trueFalseEnum"/>	
@@ -354,6 +569,35 @@
 		</xs:restriction>
 	</xs:simpleType>
 	
+	<xs:simpleType name="trueFalseUnspecifiedEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="true"/>							
+			<xs:enumeration value="false"/>
+			<xs:enumeration value="unspecified"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="mailDeliveryMethodEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="network"/>							
+			<xs:enumeration value="pickupDirectorFromIis"/>
+			<xs:enumeration value="specifiedPickupDirectory"/>
+		</xs:restriction>
+	</xs:simpleType>	
+	
+	<xs:simpleType name="requestCacheLevelEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Default"/>							
+			<xs:enumeration value="BypassCache"/>
+			<xs:enumeration value="CacheOnly"/>
+			<xs:enumeration value="CacheIfAvailable"/>
+			<xs:enumeration value="Revalidate"/>
+			<xs:enumeration value="Reload"/>
+			<xs:enumeration value="NoCacheNoStore"/>
+			<xs:enumeration value="Revalidate"/>
+		</xs:restriction>
+	</xs:simpleType>	
+	
 	<xs:simpleType name="yesNoEnum">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="yes"/>							
@@ -361,29 +605,37 @@
 		</xs:restriction>
 	</xs:simpleType>
 	
+	<xs:simpleType name="zeroOrOneEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="0"/>							
+			<xs:enumeration value="1"/>
+		</xs:restriction>
+	</xs:simpleType>	
+	
 	<xs:complexType name="dependentAssembly">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="assemblyIdentity" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:attribute name="name" type="xs:string" use="required"/>				
 					<xs:attribute name="publicKeyToken" type="xs:string"/>				
-					<xs:attribute name="culture" type="xs:string"/>				
+					<xs:attribute name="culture" type="xs:string"/>	
+					<xs:attribute name="processorArchitecture" type="processorArchitectureEnum"/>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="codeBase" minOccurs="0" maxOccurs="1">
-				<xs:complexType>
-					<xs:attribute name="version" type="xs:string" use="required"/>				
-					<xs:attribute name="href" type="xs:anyURI" use="required"/>				
-				</xs:complexType>
-			</xs:element>
+			<xs:element name="codeBase" minOccurs="0" maxOccurs="1" type="codeBase"/>
 			<xs:element name="bindingRedirect" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:attribute name="oldVersion" type="xs:string" use="required"/>				
 					<xs:attribute name="newVersion" type="xs:string" use="required"/>				
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="publisherPolicy" type="publisherPolicy" minOccurs="0" maxOccurs="1"/>		
+			<xs:element name="publisherPolicy" type="publisherPolicy" minOccurs="0" maxOccurs="1"/>
 		</xs:choice>
+	</xs:complexType>
+	
+	<xs:complexType name="codeBase">
+		<xs:attribute name="version" type="xs:string" use="required"/>				
+		<xs:attribute name="href" type="xs:anyURI" use="required"/>
 	</xs:complexType>
 
 	<xs:complexType name="probing">
@@ -405,24 +657,10 @@
 		<xs:attribute name="renewOnCallTime" type="xs:string" default="2M"/>
 		<xs:attribute name="leaseManagerPollTime" type="xs:string" default="10"/>	
 	</xs:complexType>
-
+	
 	<xs:complexType name="service">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="wellknown" minOccurs="1" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:attribute name="displayName" type="xs:string"/>
-					<xs:attribute name="mode" use="required">
-						<xs:simpleType>
-							<xs:restriction base="xs:string">
-								<xs:enumeration value="Singleton"/>
-								<xs:enumeration value="SingleCall"/>
-							</xs:restriction>
-						</xs:simpleType>
-					</xs:attribute>
-					<xs:attribute name="type" type="xs:string" use="required"/>
-					<xs:attribute name="objectUri" type="xs:string" use="required"/>
-				</xs:complexType>
-			</xs:element>
+			<xs:element name="wellknown" type="wellknown" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element name="activated" type="activated" minOccurs="1" maxOccurs="unbounded"/>
 		</xs:choice>
 	</xs:complexType>
@@ -431,8 +669,11 @@
 		<xs:choice  minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="wellknown" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="1">
+						<xs:element name="wellknown" type="wellknown" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="activated" type="activated" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:choice>
 					<xs:attribute name="displayName" type="xs:string"/>
-					<xs:attribute name="type" type="xs:string" use="required"/>
 					<xs:attribute name="url" type="xs:anyURI" use="required"/>
 				</xs:complexType>
 			</xs:element>
@@ -440,6 +681,20 @@
 		</xs:choice>
 		<xs:attribute name="url" type="xs:string"/>
 		<xs:attribute name="displayName" type="xs:string"/>
+	</xs:complexType>
+	
+	<xs:complexType name="wellknown">
+		<xs:attribute name="displayName" type="xs:string"/>
+		<xs:attribute name="mode" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Singleton"/>
+					<xs:enumeration value="SingleCall"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="type" type="xs:string" use="required"/>
+		<xs:attribute name="objectUri" type="xs:string" use="required"/>
 	</xs:complexType>
 
 	<xs:complexType name="applicationChannels">
@@ -453,8 +708,11 @@
 					<xs:attribute name="ref" type="xs:string"/>
 					<xs:attribute name="displayName" type="xs:string"/>
 					<xs:attribute name="port" type="xs:string"/>
+					<xs:attribute name="portName" type="xs:string"/>
 					<xs:attribute name="type" type="xs:string"/>
 					<xs:attribute name="customChannelProperty" type="xs:string"/>	
+					<xs:attribute name="useIpAddress" type="trueFalseEnum"/>
+					<xs:attribute name="machineName" type="xs:string"/>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
@@ -514,8 +772,8 @@
 	</xs:complexType>
 
 	<xs:complexType name="formatter">
-		<xs:attribute name="ref" type="xs:string"/>
-		<xs:attribute name="type" type="xs:string"/>
+		<xs:attribute name="ref" type="xs:string" use="required"/>
+		<xs:attribute name="type" type="xs:string" use="required"/>
 		<xs:attribute name="customFormatterProperty" type="xs:string"/>
 		<xs:attribute name="includeVersions" type="trueFalseEnum" default="true"/>
 		<xs:attribute name="strictBinding" type="trueFalseEnum" default="false"/>
@@ -529,34 +787,83 @@
 		</xs:restriction>
 	</xs:simpleType>
 	
-	<xs:complexType name="provider">
+	<xs:complexType name="provider" >
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:any minOccurs="0"/>
+		</xs:choice>
 		<xs:attribute name="ref" type="xs:string"/>
 		<xs:attribute name="type" type="xs:string"/>
-		<xs:attribute name="customChannelSinkProperty" type="xs:string"/>		
+		<xs:attribute name="customChannelSinkProperty" type="xs:string"/>
 	</xs:complexType>
 
 	<xs:complexType name="system.web">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="anonymousIdentification" type="anonymousIdentification" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="authentication" type="authentication" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="authorization" type="authorization" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="browserCaps" type="browserCaps" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="caching" type="webCaching" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="clientTarget" type="clientTarget" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="compilation" type="compilation" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="customErrors" type="customErrors" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="deployment" type="webDeployment" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="deviceFilters" type="deviceFilters" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="globalization" type="globalization" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="healthMonitoring" type="healthMonitoring" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="hostingEnvironment" type="hostingEnvironment" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="httpCookies" type="httpCookies" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="httpHandlers" type="httpHandlers" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="httpModules" type="httpModules" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="httpRuntime" type="httpRuntime" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="identity" type="identity" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="machineKey" type="machineKey" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="membership" type="membership" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="pages" type="pages" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="processModel"  type="processModel" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="profile" type="webProfile" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="roleManager" type="roleManager" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="securityPolicy" type="securityPolicy" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="sessionPageState" type="sessionPageState" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="sessionState" type="sessionState" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="siteMap" type="siteMap" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="trace" type="trace" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="trust" type="trust" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="urlMappings" type="urlMappings" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="webControls" type="webControls" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="webParts" type="webParts" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="webServices" type="webServices" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="xhtmlConformance" type="xhtmlConformance" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
+	</xs:complexType>
+	
+	<xs:simpleType name="cookielessEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="UseUri"/>
+			<xs:enumeration value="UseCookies"/>
+			<xs:enumeration value="AutoDetect"/>
+			<xs:enumeration value="UseDeviceProfile"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="cookieProtectionEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="All"/>
+			<xs:enumeration value="Encryption"/>
+			<xs:enumeration value="None"/>
+			<xs:enumeration value="Validation"/>
+		</xs:restriction>
+	</xs:simpleType>	
+	
+	<xs:complexType name="anonymousIdentification">
+		<xs:attribute name="enabled" type="trueFalseEnum" default="false"/>
+		<xs:attribute name="cookieless" type="cookielessEnum" default="UseCookies"/>
+		<xs:attribute name="cookieName" type="xs:string" default=".ASPXANONYMOUS"/>
+		<xs:attribute name="cookiePath" type="xs:string" default="/"/>
+		<xs:attribute name="cookieProtection" type="cookieProtectionEnum" default="Validation"/>
+		<xs:attribute name="cookieRequiresSSL" type="trueFalseEnum" default="false"/>
+		<xs:attribute name="cookieSlidingExpiration" type="trueFalseEnum" default="true"/>
+		<xs:attribute name="cookieTimeout" type="xs:string"/>
+		<xs:attribute name="domain" type="xs:string"/>
 	</xs:complexType>
 
 	<xs:complexType name="authentication">
@@ -573,8 +880,14 @@
 											<xs:attribute name="password" type="xs:string"/>
 										</xs:complexType>
 									</xs:element>
+									<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>
+									<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:attribute name="name" type="xs:string" use="required"/>
+										</xs:complexType>
+									</xs:element>
 								</xs:sequence>
-								<xs:attribute name="passwordFormat">
+								<xs:attribute name="passwordFormat" default="SHA1">
 									<xs:simpleType>
 										<xs:restriction base="xs:string">
 											<xs:enumeration value="Clear"/>
@@ -586,6 +899,17 @@
 							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
+					<xs:attribute name="name" type="xs:string" default=".ASPXAUTH"/>
+					<xs:attribute name="cookieless" type="cookielessEnum" default="UseDeviceProfile"/>
+					<xs:attribute name="defaultUrl" type="xs:string"/>
+					<xs:attribute name="domain" type="xs:string"/>
+					<xs:attribute name="enableCrossAppRedirects" type="trueFalseEnum" default="false"/>
+					<xs:attribute name="loginUrl" type="xs:string"/>
+					<xs:attribute name="path" type="xs:string" default="/"/>
+					<xs:attribute name="protection" type="cookieProtectionEnum"/>
+					<xs:attribute name="requireSSL" type="trueFalseEnum" default="false"/>
+					<xs:attribute name="slidingExpiration" type="trueFalseEnum" default="true"/>
+					<xs:attribute name="timeout" type="xs:string" default="30"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="passport" minOccurs="0" maxOccurs="unbounded">
@@ -594,7 +918,7 @@
 				</xs:complexType>
 			</xs:element>
 		</xs:choice>
-		<xs:attribute name="mode">
+		<xs:attribute name="mode" default="Windows">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="Windows"/>
@@ -619,6 +943,7 @@
 				<xs:complexType>
 					<xs:attribute name="users" type="xs:string"/>
 					<xs:attribute name="roles" type="xs:string"/>
+					<xs:attribute name="verbs" type="xs:string"/>
 				</xs:complexType>
 			</xs:element>		
 		</xs:choice>
@@ -628,7 +953,7 @@
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="use" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType mixed="true">
-					<xs:attribute name="var" type="xs:string"/>
+					<xs:attribute name="var" type="xs:string" default="HTTP_USER_AGENT"/>
 					<xs:attribute name="as" type="xs:string"/>
 				</xs:complexType>
 			</xs:element>
@@ -652,13 +977,106 @@
 				</xs:complexType>
 			</xs:element>			
 		</xs:choice>
+		<xs:attribute name="userAgentCacheKeyLength" type="xs:string" default="64"/>
+	</xs:complexType>
+	
+	<xs:complexType name="webCaching">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="cache" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="disableMemoryCollection" type="trueFalseEnum"/>
+					<xs:attribute name="disableExpiration" type="trueFalseEnum"/>
+					<xs:attribute name="privateBytesLimit" type="xs:integer"/>
+					<xs:attribute name="percentagePhysicalMemoryUsedLimit" type="xs:integer"/>
+					<xs:attribute name="privateBytesPollTime" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="outputCache" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="enableOutputCache" type="trueFalseEnum" default="true"/>
+					<xs:attribute name="enableFragmentCache" type="trueFalseEnum" default="false"/>
+					<xs:attribute name="sendCacheControlHeader" type="trueFalseEnum" default="false"/>
+					<xs:attribute name="omitVaryStar" type="trueFalseEnum" default="false"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="outputCacheSettings" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="outputCacheProfiles" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:attribute name="enabled" type="trueFalseEnum"/>
+											<xs:attribute name="name" type="xs:string" use="required"/>
+											<xs:attribute name="duration" type="xs:string"/>
+											<xs:attribute name="location">
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="Any"/>
+														<xs:enumeration value="Client"/>
+														<xs:enumeration value="Downstream"/>
+														<xs:enumeration value="Server"/>
+														<xs:enumeration value="None"/>
+														<xs:enumeration value="ServerAndClient"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+											<xs:attribute name="sqlDependency" type="xs:string"/>
+											<xs:attribute name="varyByCustom" type="xs:string"/>
+											<xs:attribute name="varyByControl" type="xs:string"/>
+											<xs:attribute name="varyByHeader" type="xs:string"/>
+											<xs:attribute name="varyByParam" type="xs:string"/>
+											<xs:attribute name="noStore" type="trueFalseEnum"/>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:attribute name="name" type="xs:string" use="required"/>
+										</xs:complexType>
+									</xs:element>		
+									<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+								</xs:choice>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="sqlCacheDependency" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="databases" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:attribute name="connectionStringName" type="xs:string" use="required"/>
+											<xs:attribute name="name" type="xs:string" use="required"/>
+											<xs:attribute name="pollTime" type="xs:integer"/>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:attribute name="name" type="xs:string" use="required"/>
+										</xs:complexType>
+									</xs:element>		
+									<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+								</xs:choice>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="enabled" type="trueFalseEnum" use="required"/>
+					<xs:attribute name="polltime" type="xs:integer" default="60000"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
 	</xs:complexType>
 	
 	<xs:complexType name="clientTarget">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
-					<xs:attribute name="add" type="xs:string" use="required"/>
+					<xs:attribute name="alias" type="xs:string" use="required"/>
 					<xs:attribute name="useragent" type="xs:string" use="required"/>
 				</xs:complexType>
 			</xs:element>
@@ -705,29 +1123,78 @@
 					</xs:choice>
 				</xs:complexType>
 			</xs:element>		
+			<xs:element name="buildProviders" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="extension" type="xs:string" use="required"/>
+								<xs:attribute name="type" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="extension" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>		
+			<xs:element name="codeSubDirectories" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="directoryName" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>		
+			<xs:element name="expressionBuilders" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="expressionPrefix" type="xs:string" use="required"/>
+								<xs:attribute name="type" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="expressionPrefix" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>		
 		</xs:choice>
 		<xs:attribute name="debug" type="trueFalseEnum" default="false"/>
 		<xs:attribute name="defaultLanguage" type="xs:string" default="vb"/>
 		<xs:attribute name="explicit" type="trueFalseEnum" default="true"/>
-		<xs:attribute name="batch" type="trueFalseEnum"/>
+		<xs:attribute name="batch" type="trueFalseEnum" default="true"/>
 		<xs:attribute name="batchTimeout" type="xs:string"/>
 		<xs:attribute name="maxBatchGeneratedFileSize" type="xs:string"/>
 		<xs:attribute name="maxBatchFileSize" type="xs:string"/>
-		<xs:attribute name="numRecompilesBeforeApprestart" type="xs:string"/>
+		<xs:attribute name="numRecompilesBeforeAppRestart" type="xs:string"/>
 		<xs:attribute name="strict" type="trueFalseEnum"/>
 		<xs:attribute name="tempDirectory" type="xs:string"/>
+		<xs:attribute name="urlLinePragmas" type="trueFalseEnum"/>
+		<xs:attribute name="assemblyPostProcessorType" type="xs:string"/>
 	</xs:complexType>
 	
 	<xs:complexType name="customErrors">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="error" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
-					<xs:attribute name="StatusCode" type="xs:string"/>
-					<xs:attribute name="Redirect" type="xs:string"/>
+					<xs:attribute name="statusCode" type="xs:string"/>
+					<xs:attribute name="redirect" type="xs:string"/>
 				</xs:complexType>
 			</xs:element>
 		</xs:choice>
-		<xs:attribute name="mode" use="required">
+		<xs:attribute name="mode" default="RemoteOnly">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="On"/>
@@ -739,6 +1206,24 @@
 		<xs:attribute name="defaultRedirect" type="xs:string"/>
 	</xs:complexType>
 	
+	<xs:complexType name="webDeployment">
+		<xs:attribute name="retail" type="trueFalseEnum"/>
+	</xs:complexType>
+
+	<xs:complexType name="deviceFilters">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="filter" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute name="type" type="xs:string"/>
+					<xs:attribute name="method" type="xs:string"/>
+					<xs:attribute name="argument" type="xs:string"/>
+					<xs:attribute name="compare" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	
 	<xs:complexType name="globalization">
 		<xs:attribute name="requestEncoding" type="xs:string"/>
 		<xs:attribute name="responseEncoding" type="xs:string"/>
@@ -746,7 +1231,152 @@
 		<xs:attribute name="culture" type="xs:string"/>
 		<xs:attribute name="uiCulture" type="xs:string"/>
 	</xs:complexType>
+
+	<xs:complexType name="healthMonitoring">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="bufferModes" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+								<xs:attribute name="maxBufferSize" type="xs:integer" use="required"/>
+								<xs:attribute name="maxFlushSize" type="xs:integer" use="required"/>
+								<xs:attribute name="urgentFlushThreshold" type="xs:integer" use="required"/>
+								<xs:attribute name="regularFlushInterval" type="xs:integer" use="required"/>
+								<xs:attribute name="urgentFlushInterval" type="xs:integer" use="required"/>
+								<xs:attribute name="maxBufferThreads" type="xs:integer" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="eventMappings" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+								<xs:attribute name="type" type="xs:string" use="required"/>
+								<xs:attribute name="startEventCode" type="xs:integer"/>
+								<xs:attribute name="endEventCode" type="xs:integer"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="profiles" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+								<xs:attribute name="minimumInstances" type="xs:integer" use="required"/>
+								<xs:attribute name="maximumLimit" type="xs:integer"/>
+								<xs:attribute name="minimumInterval" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="providers" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="bcc" type="xs:string"/>
+								<xs:attribute name="bodyFooter" type="xs:string"/>
+								<xs:attribute name="bodyHeader" type="xs:string"/>
+								<xs:attribute name="buffer" type="trueFalseEnum"/>
+								<xs:attribute name="bufferMode" type="xs:string"/>
+								<xs:attribute name="cc" type="xs:string"/>
+								<xs:attribute name="commandTimeout" type="xs:integer"/>
+								<xs:attribute name="connectionStringName" type="xs:string" use="required"/>
+								<xs:attribute name="detailedTemplateErrors" type="trueFalseEnum"/>
+								<xs:attribute name="from" type="xs:string"/>
+								<xs:attribute name="maxEventDetailLength" type="xs:integer"/>
+								<xs:attribute name="maxEventLengthForSimpleMessage" type="xs:integer"/>
+								<xs:attribute name="maxSizeForSimpleMessage" type="xs:integer"/>
+								<xs:attribute name="maxEventCountForTemplateMessage" type="xs:integer"/>
+								<xs:attribute name="maxMessagesPerNotification" type="xs:integer"/>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+								<xs:attribute name="priority" type="xs:string"/>
+								<xs:attribute name="separator" type="xs:string"/>
+								<xs:attribute name="smtpAddresses" type="xs:string"/>
+								<xs:attribute name="subjectPrefix" type="xs:string"/>
+								<xs:attribute name="template" type="xs:string"/>
+								<xs:attribute name="to" type="xs:string"/>
+								<xs:attribute name="type" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rules" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="eventName" type="xs:string" use="required"/>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+								<xs:attribute name="custom" type="xs:string"/>
+								<xs:attribute name="provider" type="trueFalseEnum"/>
+								<xs:attribute name="profile" type="xs:string"/>
+								<xs:attribute name="minInstances" type="xs:integer"/>
+								<xs:attribute name="maxLimit" type="xs:integer"/>
+								<xs:attribute name="minInterval" type="xs:integer"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="enabled" type="trueFalseEnum" use="required"/>
+		<xs:attribute name="heartbeatInterval" type="xs:string"/>
+	</xs:complexType>
 	
+	<xs:complexType name="hostingEnvironment">
+		<xs:attribute name="idleTimeout" type="xs:string"/>
+		<xs:attribute name="shadowCopyBinAssemblies" type="trueFalseEnum"/>
+		<xs:attribute name="shutdownTimeout" type="xs:string"/>
+	</xs:complexType>
+	
+	<xs:complexType name="httpCookies">
+		<xs:attribute name="domain" type="xs:string"/>
+		<xs:attribute name="httpOnlyCookies" type="trueFalseEnum"/>
+		<xs:attribute name="requireSSL" type="trueFalseEnum"/>
+	</xs:complexType>
+
 	<xs:complexType name="httpHandlers">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
@@ -785,13 +1415,24 @@
 	</xs:complexType>
 	
 	<xs:complexType name="httpRuntime">
+		<xs:attribute name="apartmentThreading" type="trueFalseEnum"/>
 		<xs:attribute name="appRequestQueueLimit" type="xs:string"/>
-		<xs:attribute name="executionTimeout" type="xs:string"/>
-		<xs:attribute name="maxRequestLength" type="xs:string"/>
-		<xs:attribute name="minFreeLocalRequestFreeThreads" type="xs:string"/>
-		<xs:attribute name="minFreeThreads" type="xs:string"/>
+		<xs:attribute name="delayNotificationTimeout" type="xs:integer"/>
+		<xs:attribute name="enable" type="trueFalseEnum"/>
+		<xs:attribute name="enableHeaderChecking" type="trueFalseEnum"/>
+		<xs:attribute name="enableKernelOutputCache" type="trueFalseEnum"/>
+		<xs:attribute name="enableVersionHeader" type="trueFalseEnum"/>
+		<xs:attribute name="executionTimeout" type="xs:integer"/>
+		<xs:attribute name="maxRequestLength" type="xs:integer"/>
+		<xs:attribute name="maxWaitChangeNotification" type="xs:integer"/>
+		<xs:attribute name="minLocalRequestFreeThreads" type="xs:integer"/>
+		<xs:attribute name="minFreeThreads" type="xs:integer"/>
+		<xs:attribute name="requestLengthDiskThreshold" type="xs:integer"/>
+		<xs:attribute name="requireRootedSaveAsPath" type="xs:integer"/>
+		<xs:attribute name="sendCacheControlHeader" type="xs:integer"/>
+		<xs:attribute name="shutdownTimeout" type="xs:integer"/>
 		<xs:attribute name="useFullyQualifiedRedirectUrl" type="trueFalseEnum"/>
-		<xs:attribute name="versionHeader" type="xs:string"/>
+		<xs:attribute name="waitChangeNotification" type="xs:integer"/>
 	</xs:complexType>
 	
 	<xs:complexType name="machineKey">
@@ -803,11 +1444,101 @@
 					<xs:enumeration value="SHA1"/>
 					<xs:enumeration value="MD5"/>
 					<xs:enumeration value="3DES"/>
+					<xs:enumeration value="AES"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="decryption" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Auto"/>
+					<xs:enumeration value="DES"/>
+					<xs:enumeration value="3DES"/>
+					<xs:enumeration value="AES"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
 	</xs:complexType>
 	
+	<xs:complexType name="membership">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="providers" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="applicationName" type="xs:string"/>
+								<xs:attribute name="attributeMapUsername" type="xs:string"/>
+								<xs:attribute name="attributeMapEmail" type="xs:string"/>
+								<xs:attribute name="attributeMapPasswordQuestion" type="xs:string"/>
+								<xs:attribute name="attributeMapPasswordAnswer" type="xs:string"/>
+								<xs:attribute name="attributeMapFailedPasswordAnswerCount" type="xs:string"/>
+								<xs:attribute name="attributeMapFailedPasswordAnswerTime" type="xs:string"/>
+								<xs:attribute name="attributeMapFailedPasswordAnswerLockoutTime" type="xs:string"/>
+								<xs:attribute name="clientSearchTimeout" type="xs:string"/>
+								<xs:attribute name="serverSearchTimeout" type="xs:string"/>
+								<xs:attribute name="commandTimeout" type="xs:string"/>
+								<xs:attribute name="connectionStringName" type="xs:string" use="required"/>
+								<xs:attribute name="connectionUsername" type="xs:string"/>
+								<xs:attribute name="connectionPassword" type="xs:string"/>
+								<xs:attribute name="connectionProtection" type="xs:string"/>
+								<xs:attribute name="description" type="xs:string"/>
+								<xs:attribute name="enablePasswordRetrieval" type="trueFalseEnum"/>
+								<xs:attribute name="enablePasswordReset" type="trueFalseEnum"/>
+								<xs:attribute name="enableSearchMethods" type="trueFalseEnum"/>
+								<xs:attribute name="maxInvalidPasswordAttempts" type="xs:string"/>
+								<xs:attribute name="minRequiredNonalphanumericCharacters" type="xs:string"/>
+								<xs:attribute name="minRequiredPasswordLength" type="xs:string"/>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+								<xs:attribute name="passwordAnswerAttemptLockoutDuration" type="xs:string"/>
+								<xs:attribute name="passwordAttemptWindow" type="xs:string"/>
+								<xs:attribute name="passwordFormat" type="xs:string"/>
+								<xs:attribute name="passwordStrengthRegularExpression" type="xs:string"/>
+								<xs:attribute name="requiresQuestionAndAnswer" type="trueFalseEnum"/>
+								<xs:attribute name="requiresUniqueEmail" type="trueFalseEnum"/>
+								<xs:attribute name="type" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="defaultProvider" type="xs:string"/>
+		<xs:attribute name="userIsOnlineTimeWindow" type="xs:string"/>
+		<xs:attribute name="hashAlgorithmType" type="xs:string"/>
+	</xs:complexType>
+	
+	<xs:complexType name="mobileControls">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="device" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="control" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="adapter" type="xs:string" use="required"/>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute name="inheritsFrom" type="xs:string"/>
+					<xs:attribute name="pageAdapter" type="xs:string"/>
+					<xs:attribute name="predicateClass" type="xs:string"/>
+					<xs:attribute name="predicateMethod" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="allowCustomAttributes" type="trueFalseEnum"/>
+		<xs:attribute name="cookielessDataDictionaryType" type="xs:string"/>
+		<xs:attribute name="sessionStateHistorySize" type="xs:string"/>
+	</xs:complexType>
+
 	<xs:complexType name="identity">
 		<xs:attribute name="impersonate" type="trueFalseEnum" use="required"/>
 		<xs:attribute name="userName" type="xs:string"/>
@@ -815,6 +1546,59 @@
 	</xs:complexType>
 	
 	<xs:complexType name="pages">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="controls" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="assembly" type="xs:string"/>
+								<xs:attribute name="namespace" type="xs:string"/>
+								<xs:attribute name="src" type="xs:string"/>
+								<xs:attribute name="tagName" type="xs:string"/>
+								<xs:attribute name="tagPrefix" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="namespaces" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="namespace" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="namespace" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+					<xs:attribute name="autoImportVBNamespace" type="trueFalseEnum"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="tagMapping" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="tagType" type="xs:string" use="required"/>
+								<xs:attribute name="mappedTagType" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="tagType" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
 		<xs:attribute name="buffer" type="trueFalseEnum"/>
 		<xs:attribute name="enableSessionState">
 			<xs:simpleType>
@@ -825,6 +1609,7 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
+		<xs:attribute name="enableEventValidation" type="trueFalseEnum"/>
 		<xs:attribute name="enableViewState" type="trueFalseEnum"/>
 		<xs:attribute name="enableViewStateMac" type="trueFalseEnum"/>
 		<xs:attribute name="smartNavigation" type="trueFalseEnum"/>
@@ -832,9 +1617,27 @@
 		<xs:attribute name="userControlBaseType" type="xs:string"/>
 		<xs:attribute name="autoEventWireUp" type="trueFalseEnum"/>
 		<xs:attribute name="validateRequest" type="trueFalseEnum" default="true"/>
+		<xs:attribute name="masterPageFile" type="xs:string"/>
+		<xs:attribute name="theme" type="xs:string"/>
+		<xs:attribute name="styleSheetTheme" type="xs:string"/>
+		<xs:attribute name="maxPageStateFieldLength" type="xs:string"/>
+		<xs:attribute name="compilationMode" type="AlwaysAutoNeverEnum"/>
+		<xs:attribute name="pageParserFilterType" type="xs:string"/>
+		<xs:attribute name="viewStateEncryptionMode" type="AlwaysAutoNeverEnum"/>
+		<xs:attribute name="asyncTimeout" type="xs:string"/>
 	</xs:complexType>
 	
+	<xs:simpleType name="AlwaysAutoNeverEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Always"/>
+			<xs:enumeration value="Auto"/>
+			<xs:enumeration value="Never"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
 	<xs:complexType name="processModel">
+		<xs:attribute name="autoConfig" type="trueFalseEnum"/>
+		<xs:attribute name="enable" type="trueFalseEnum"/>
 		<xs:attribute name="clientConnectedCheck" type="xs:string"/>
 		<xs:attribute name="comAuthenticationLevel">
 			<xs:simpleType>
@@ -861,7 +1664,6 @@
 			</xs:simpleType>
 		</xs:attribute>	
 		<xs:attribute name="cpuMask" type="xs:string"/>	
-		<xs:attribute name="enable" type="trueFalseEnum"/>
 		<xs:attribute name="idleTimeout" type="xs:string"/>
 		<xs:attribute name="logLevel">
 			<xs:simpleType>
@@ -874,11 +1676,16 @@
 		</xs:attribute>	
 		<xs:attribute name="maxWorkerThreads" type="xs:integer" default="20"/>
 		<xs:attribute name="maxIoThreads" type="xs:integer" default="20"/>
+		<xs:attribute name="maxAppDomains" type="xs:integer"/>
+		<xs:attribute name="minWorkerThreads" type="xs:integer"/>
+		<xs:attribute name="minIoThreads" type="xs:integer"/>
+		<xs:attribute name="memoryLimit" type="xs:string"/>
 		<xs:attribute name="password" type="xs:string"/>
 		<xs:attribute name="pingFrequency" type="xs:string"/>
 		<xs:attribute name="pingTimeout" type="xs:string" default="5"/>
 		<xs:attribute name="requestLimit" type="xs:string"/>
 		<xs:attribute name="requestQueueLimit" type="xs:string"/>
+		<xs:attribute name="restartQueueLimit" type="xs:string"/>
 		<xs:attribute name="responseDeadlockInterval" type="xs:string"/>
 		<xs:attribute name="responseRestartDeadlockInterval" type="xs:string"/>
 		<xs:attribute name="serverErrorMessageFile" type="xs:string"/>
@@ -887,6 +1694,121 @@
 		<xs:attribute name="userName" type="xs:string"/>
 		<xs:attribute name="webGarden" type="trueFalseEnum"/>
 	</xs:complexType>
+	
+	<xs:complexType name="webProfile">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="properties" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="group" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="add" type="addWebProfile" minOccurs="0" maxOccurs="unbounded"/>
+									<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:attribute name="name" type="xs:string" use="required"/>
+										</xs:complexType>
+									</xs:element>		
+								</xs:choice>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>	
+						</xs:element>
+						<xs:element name="add" type="addWebProfile" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>			
+			</xs:element>
+			<xs:element name="providers" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+								<xs:attribute name="type" type="xs:string" use="required"/>
+								<xs:attribute name="connectionStringName" type="xs:string" use="required"/>
+								<xs:attribute name="commandTimeout" type="xs:string"/>
+								<xs:attribute name="description" type="xs:string"/>
+								<xs:attribute name="applicationName" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>			
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="automaticSaveEnabled" type="trueFalseEnum"/>
+		<xs:attribute name="enabled" type="trueFalseEnum"/>
+		<xs:attribute name="inherits" type="xs:string"/>
+		<xs:attribute name="defaultProvider" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:complexType name="addWebProfile">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="type" type="xs:string" use="required"/>
+		<xs:attribute name="provider" type="xs:string"/>
+		<xs:attribute name="serializeAs">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="String"/>
+					<xs:enumeration value="Xml"/>
+					<xs:enumeration value="Binary"/>
+					<xs:enumeration value="ProviderSpecific"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="allowAnonymous" type="trueFalseEnum"/>
+		<xs:attribute name="readOnly" type="trueFalseEnum"/>
+		<xs:attribute name="defaultValue" type="xs:string"/>
+		<xs:attribute name="customProviderData" type="xs:string"/>
+	</xs:complexType>
+	
+	<xs:complexType name="roleManager">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="providers" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="type" type="xs:string"/>
+								<xs:attribute name="applicationName" type="xs:string"/>
+								<xs:attribute name="description" type="xs:string"/>
+								<xs:attribute name="cacheRefreshInterval" type="xs:string"/>
+								<xs:attribute name="scopeName" type="xs:string"/>
+								<xs:attribute name="commandTimeout" type="xs:integer"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="cacheRolesInCookie" type="trueFalseEnum"/>
+		<xs:attribute name="cookieName" type="xs:string"/>
+		<xs:attribute name="cookiePath" type="xs:string"/>
+		<xs:attribute name="cookieProtection" type="cookieProtectionEnum"/>
+		<xs:attribute name="cookieRequireSSL" type="trueFalseEnum"/>
+		<xs:attribute name="cookieSlidingExpiration" type="trueFalseEnum"/>
+		<xs:attribute name="cookieTimeout" type="xs:string"/>
+		<xs:attribute name="createPersistentCookie" type="trueFalseEnum"/>
+		<xs:attribute name="domain" type="xs:string"/>
+		<xs:attribute name="enabled" type="trueFalseEnum"/>
+		<xs:attribute name="maxCachedResults" type="xs:string"/>
+	</xs:complexType>	
 	
 	<xs:complexType name="securityPolicy">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -905,6 +1827,39 @@
 		</xs:choice>
 	</xs:complexType>
 	
+	<xs:complexType name="sessionPageState">
+		<xs:attribute name="historySize" type="xs:integer"/>
+	</xs:complexType>
+	
+	<xs:simpleType name="processorArchitectureEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="amd64"/>
+			<xs:enumeration value="ia64"/>
+			<xs:enumeration value="msil"/>
+			<xs:enumeration value="x86"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="httpCachePolicyLevelEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BypassCache"/>
+			<xs:enumeration value="Default"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="ftpCachePolicyLevelEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BypassCache"/>
+			<xs:enumeration value="Default"/>
+			<xs:enumeration value="CacheOnly"/>
+			<xs:enumeration value="CacheIfAvailable"/>
+			<xs:enumeration value="Revalidate"/>
+			<xs:enumeration value="Reload"/>
+			<xs:enumeration value="NoCacheNoStore"/>
+			<xs:enumeration value="Revalidate"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
 	<xs:simpleType name="trustLevelEnum">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Full"/>
@@ -916,6 +1871,28 @@
 	</xs:simpleType>
 	
 	<xs:complexType name="sessionState">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="providers" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="type" type="xs:string"/>
+								<xs:attribute name="name" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="allowCustomSqlDatabase" type="trueFalseEnum"/>
+		<xs:attribute name="useHostingIdentity" type="trueFalseEnum"/>
 		<xs:attribute name="mode" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -923,21 +1900,54 @@
 					<xs:enumeration value="InProc"/>
 					<xs:enumeration value="StateServer"/>
 					<xs:enumeration value="SQLServer"/>
+					<xs:enumeration value="Custom"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="cookieless" type="trueFalseEnum"/>
+		<xs:attribute name="cookieless" type="cookielessEnum"/>
+		<xs:attribute name="cookieName" type="xs:string"/>
+		<xs:attribute name="regenerateExpiredSessionId" type="xs:string"/>
 		<xs:attribute name="timeout" type="xs:string"/>
 		<xs:attribute name="stateConnectionString" type="xs:string"/>
-		<xs:attribute name="sqlConnectionString" type="xs:string"/>
 		<xs:attribute name="stateNetworkTimeout" type="xs:string"/>
+		<xs:attribute name="sqlConnectionString" type="xs:string"/>
+		<xs:attribute name="sqlCommandTimeout" type="xs:string"/>
+		<xs:attribute name="customProvider" type="xs:string"/>
 	</xs:complexType>
 	
+	<xs:complexType name="siteMap">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="providers" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="type" type="xs:string"/>
+								<xs:attribute name="name" type="xs:string"/>
+								<xs:attribute name="description" type="xs:string"/>
+								<xs:attribute name="siteMapFile" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="defaultProvider" type="xs:string"/>
+	</xs:complexType>
+
 	<xs:complexType name="trace">
 		<xs:attribute name="enabled" type="trueFalseEnum" default="false"/>
 		<xs:attribute name="localOnly" type="trueFalseEnum" default="true"/>
 		<xs:attribute name="pageOutput" type="trueFalseEnum" default="false"/>
 		<xs:attribute name="requestLimit" type="xs:integer" default="10"/>
+		<xs:attribute name="mostRecent" type="trueFalseEnum"/>
+		<xs:attribute name="writeToDiagnosticsTrace" type="trueFalseEnum"/>
 		<xs:attribute name="traceMode" default="SortByTime">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -951,16 +1961,95 @@
 	<xs:complexType name="trust">
 		<xs:attribute name="level" type="trustLevelEnum" use="required"/>
 		<xs:attribute name="orginUrl" type="xs:string"/>
+		<xs:attribute name="processRequestInApplicationTrust" type="trueFalseEnum"/>
 	</xs:complexType>
-
+	
+	<xs:complexType name="urlMappings">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="mappedUrl" type="xs:string"/>
+					<xs:attribute name="url" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="url" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>		
+			<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+		</xs:choice>
+		<xs:attribute name="enabled" type="trueFalseEnum"/>
+	</xs:complexType>
+	
+	<xs:complexType name="webControls">
+		<xs:attribute name="clientScriptsLocation" type="xs:string"/>
+	</xs:complexType>	
+	
+	<xs:complexType name="webParts">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="authorization" type="authorization" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="transformers" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="name" type="xs:string"/>
+							<xs:attribute name="type" type="xs:string"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="name" type="xs:string" use="required"/>
+						</xs:complexType>
+					</xs:element>		
+					<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>	
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="enableExport" type="trueFalseEnum"/>
+	</xs:complexType>
+		
 	<xs:complexType name="webServices">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="protocols" minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="conformanceWarnings" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
 								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>		
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>		
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="diagnostics" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="supressReturningExceptions" type="trueFalseEnum" default="false"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="protocols" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" use="required">
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:enumeration value="HttpGet"/>
+											<xs:enumeration value="HttpPost"/>
+											<xs:enumeration value="HttpSoap"/>
+											<xs:enumeration value="Documentation"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
@@ -980,18 +2069,63 @@
 								<xs:attribute name="type" type="xs:string" use="required"/>
 							</xs:complexType>
 						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="type" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:choice>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="soapExtensionTypes" type="soapExtension" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="soapExtensionReflectorTypes" type="soapExtension" minOccurs="0" maxOccurs="unbounded"/>	
+			<xs:element name="soapEnvelopeProcessing" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="readTimeout" type="xs:integer" default="2147483647"/>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="soapExtensionImporterTypes" type="soapExtension" minOccurs="0" maxOccurs="unbounded"/>	
+			<xs:element name="soapExtensionReflectorTypes" type="soapExtension" minOccurs="0" maxOccurs="unbounded"/>	
+			<xs:element name="soapExtensionTypes" type="soapExtension" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="soapServerProtocolFactory" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="type" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="soapTransportImporterTypes" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="type" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="type" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="wsdlHelpGenerator" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:attribute name="href" type="xs:anyURI" use="required"/>
 				</xs:complexType>
 			</xs:element>		
 		</xs:choice>
+	</xs:complexType>
+	
+	<xs:complexType name="xhtmlConformance">
+		<xs:attribute name="mode">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Transitional"/>
+					<xs:enumeration value="Strict"/>
+					<xs:enumeration value="Legacy"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 
 	<xs:complexType name="soapExtension">
@@ -1012,4 +2146,59 @@
 		</xs:choice>
 	</xs:complexType>
 
+	<xs:complexType name="system.codedom">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="compilers">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="compiler">
+							<xs:complexType>
+								<xs:attribute name="compilerOptions" type="xs:string"/>
+								<xs:attribute name="extension" type="xs:string" use="required"/>
+								<xs:attribute name="language" type="xs:string" use="required"/>
+								<xs:attribute name="type" type="xs:string" use="required"/>
+								<xs:attribute name="warningLevel" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="appSettings">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="key" type="xs:string" use="required"/>
+					<xs:attribute name="value" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="key" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
+		<xs:attribute name="file" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:complexType name="connectionStrings">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute name="connectionString" type="xs:string" use="required"/>
+					<xs:attribute name="providerName" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="clear" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
 </xs:schema>
