@@ -832,6 +832,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 						return result;
 					}
 				}
+				string nsResult = defaultImports.SearchNamespace(name);
+				if (nsResult != null) {
+					result = new SearchTypeResult(nsResult, null);
+					if (MatchesRequest(ref request, ref result)) {
+						return result;
+					}
+				}
 			}
 			return result;
 		}

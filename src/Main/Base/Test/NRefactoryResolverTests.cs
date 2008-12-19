@@ -1018,6 +1018,8 @@ Class TestClass
 	End Sub
 End Class
 ";
+			NamespaceResolveResult nrr = ResolveVB<NamespaceResolveResult>(program, "Collections", 4);
+			Assert.AreEqual("System.Collections", nrr.Name, "namespace should be resolved");
 			TypeResolveResult type = ResolveVB<TypeResolveResult>(program, "Collections.ArrayList", 4);
 			Assert.AreEqual("System.Collections.ArrayList", type.ResolvedClass.FullyQualifiedName, "TypeResolveResult");
 			LocalResolveResult local = ResolveVB<LocalResolveResult>(program, "a", 5);
@@ -1028,7 +1030,7 @@ End Class
 		[Test]
 		public void GlobalNamelookupVB()
 		{
-			// using an import this way IS possible in VB.NET
+			// test global name lookup (was broken once due to VB's implicit root namespace)
 			string program = "Imports System\n";
 			NamespaceResolveResult nrr = ResolveVB<NamespaceResolveResult>(program, "System", 1);
 			Assert.AreEqual("System", nrr.Name);
