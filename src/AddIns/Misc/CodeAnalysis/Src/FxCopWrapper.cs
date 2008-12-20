@@ -104,7 +104,11 @@ namespace ICSharpCode.CodeAnalysis
 				if (IsFxCopPath(fxCopPath)) {
 					return fxCopPath;
 				}
-				
+
+				fxCopPath = FromRegistry(Registry.ClassesRoot.OpenSubKey(@"FxCop.Project.9.0\Shell\Open\Command"));
+				if (IsFxCopPath(fxCopPath)) {
+					return fxCopPath;
+				}
 				fxCopPath = FromRegistry(Registry.CurrentUser.OpenSubKey(@"Software\Classes\FxCopProject\Shell\Open\Command"));
 				if (IsFxCopPath(fxCopPath)) {
 					return fxCopPath;
