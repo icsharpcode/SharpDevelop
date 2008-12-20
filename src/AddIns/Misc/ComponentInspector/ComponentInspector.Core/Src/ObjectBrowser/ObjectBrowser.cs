@@ -12,6 +12,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using NoGoop.Controls;
 using NoGoop.Obj;
 using NoGoop.ObjBrowser.GuiDesigner;
 using NoGoop.ObjBrowser.Panels;
@@ -185,27 +186,32 @@ namespace NoGoop.ObjBrowser
 		/// <summary>
 		/// Tries to open the specified file into the object browser.
 		/// </summary>
-		public void OpenFile(string fileName)
+		public bool OpenFile(string fileName)
 		{
 			Exception savedException = null;
 
 			try {
 				AssemblySupport.OpenFile(fileName);
-				return;
+				return true;
 			} catch (Exception ex) {
 				savedException = ex;
 			}
 
 			try {
 				ComSupport.OpenFile(fileName);
-				return;
+				return true;
 			} catch (Exception ex) {
 				if (savedException == null)
 					savedException = ex;
 			}
 
 			TraceUtil.WriteLineWarning(null, String.Concat("Error opening file ", fileName, ": " + savedException));
-			throw savedException;
+			ErrorDialog.Show(savedException,
+				 "Error opening file " + fileName + "\n\n" + 
+				 "The Inspector can only open .NET assemblies, ActiveX controls or ActiveX type libraries.",
+				 "Error opening file " + fileName,
+				 MessageBoxIcon.Error);
+			return false;
 		}
 		
 		public void CloseSelectedFile()
