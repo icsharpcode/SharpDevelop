@@ -208,6 +208,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 			_levelSelectNum.Location = new Point(20, 38);
 			_levelSelectNum.Width = 25;
 			_levelSelectNum.Height = 25;
+			_levelSelectNum.Text = "2";
 			panel.Controls.Add(_levelSelectNum);
 
 			label = new Label();
@@ -468,9 +469,13 @@ namespace NoGoop.ObjBrowser.Dialogs
 			int maxLevel;
 			if (_levelAll.Checked)
 				maxLevel = BrowserFinder.ALL_LEVELS;
-			else
-				maxLevel = Convert.ToInt32(_levelSelectNum.Text);
-
+			else if (!Int32.TryParse(_levelSelectNum.Text, out maxLevel)) {
+				ErrorDialog.Show
+					("Please input a valid number for the number of levels to search.",
+					 String.Empty, 
+					 MessageBoxIcon.Error);
+			}
+			
 			_finder = new BrowserFinder
 				((String)_findWhat.Text,
 				 compareType,
