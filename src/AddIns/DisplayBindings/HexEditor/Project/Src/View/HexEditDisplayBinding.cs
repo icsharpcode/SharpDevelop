@@ -6,15 +6,11 @@
 // </file>
 
 using System;
-using System.IO;
-
+using HexEditor.Util;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-
-using System.Diagnostics;
-
-using HexEditor.Util;
+using System.IO;
 
 namespace HexEditor.View
 {
@@ -41,17 +37,8 @@ namespace HexEditor.View
 		
 		string[] GetSupportedBinaryFileExtensions()
 		{
-			if (supportedExtensions == null) {
-				System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-				string configpath = Path.Combine(PropertyService.ConfigDirectory, "hexeditor-config.xml");
-				
-				if (!File.Exists(configpath))
-					return new string[] {".exe",".dll"};
-				
-				doc.Load(configpath);
-				
-				supportedExtensions = Settings.FromXML(doc).FileTypes;
-			}
+			if (supportedExtensions == null)
+				supportedExtensions = Settings.FileTypes;
 			
 			return supportedExtensions;
 		}
@@ -73,7 +60,7 @@ namespace HexEditor.View
 			} catch (IOException ex) {
 				MessageService.ShowError(ex, ex.Message);
 			} catch (Exception ex) {
-				Debug.Print(ex.ToString());
+				System.Diagnostics.Debug.Print(ex.ToString());
 			}
 			return false;
 		}

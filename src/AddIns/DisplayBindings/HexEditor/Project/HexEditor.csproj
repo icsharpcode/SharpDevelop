@@ -83,7 +83,6 @@
     </Compile>
     <Compile Include="Src\View\HexEditDisplayBinding.cs" />
     <Compile Include="Src\View\HexEditOptionsPanel.cs">
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\View\HexEditView.cs" />
     <None Include="changes.txt" />
@@ -102,7 +101,6 @@
     <EmbeddedResource Include="Resources\HexEditOptions.xfrm" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Src\View" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>

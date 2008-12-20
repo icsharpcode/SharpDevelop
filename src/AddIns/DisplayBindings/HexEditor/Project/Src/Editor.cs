@@ -42,9 +42,7 @@ namespace HexEditor
 		bool insertmode, hexinputmode, selectionmode, handled, moved;
 		
 		Point oldMousePos = new Point(0,0);
-		
-		Settings settings;
-		
+				
 		Rectangle[] selregion;
 		Point[] selpoints;
 		BufferManager buffer;
@@ -94,16 +92,14 @@ namespace HexEditor
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			
-			LoadSettings();
-			
+						
 			buffer = new BufferManager(this);
 			selection = new SelectionManager(ref buffer);
 			undoStack = new UndoManager();
 			insertmode = true;
-			underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", this.settings.DataFont);
+			underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", Settings.DataFont);
 			underscorewidth3 = underscorewidth * 3;
-			fontheight = GetFontHeight(this.settings.DataFont);
+			fontheight = GetFontHeight(Settings.DataFont);
 			selregion = new Rectangle[] {};
 			selpoints = new Point[] {};
 			headertext = GetHeaderText();
@@ -116,24 +112,6 @@ namespace HexEditor
 			
 			HexEditSizeChanged(null, EventArgs.Empty);
 			AdjustScrollBar();
-		}
-		
-		/// <summary>
-		/// Loads the settings out of the config file of hexeditor.
-		/// </summary>
-		public void LoadSettings()
-		{
-			string configpath = Path.Combine(PropertyService.ConfigDirectory, "hexeditor-config.xml");
-			
-			if (!File.Exists(configpath)) {
-				this.settings = Settings.CreateDefault();
-				return;
-			}
-			
-			XmlDocument doc = new XmlDocument();
-			doc.Load(configpath);
-			
-			this.settings = Settings.FromXML(doc);
 		}
 
 		#region Measure functions
@@ -251,9 +229,9 @@ namespace HexEditor
 		/// The font used for all data displays in the hex editor.
 		/// </summary>
 		public Font DataFont {
-			get { return this.settings.DataFont; }
+			get { return Settings.DataFont; }
 			set {
-				this.settings.DataFont = value;
+				Settings.DataFont = value;
 				underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", value);
 				underscorewidth3 = underscorewidth * 3;
 				fontheight = GetFontHeight(value);
@@ -265,9 +243,9 @@ namespace HexEditor
 		/// The font used for all offset displays in the hex editor.
 		/// </summary>
 		public Font OffsetFont {
-			get { return this.settings.OffsetFont; }
+			get { return Settings.OffsetFont; }
 			set {
-				this.settings.OffsetFont = value;
+				Settings.OffsetFont = value;
 				underscorewidth = MeasureStringWidth(this.CreateGraphics(), "_", value);
 				underscorewidth3 = underscorewidth * 3;
 				fontheight = GetFontHeight(value);
@@ -525,8 +503,8 @@ namespace HexEditor
 		void PaintHeader(System.Drawing.Graphics g)
 		{
 			g.Clear(Color.White);
-			TextRenderer.DrawText(g, headertext, this.settings.OffsetFont, new Rectangle(1, 1, this.hexView.Width + 5, fontheight),
-			                      this.settings.OffsetForeColor, this.BackColor, TextFormatFlags.Left & TextFormatFlags.Top);
+			TextRenderer.DrawText(g, headertext, Settings.OffsetFont, new Rectangle(1, 1, this.hexView.Width + 5, fontheight),
+			                      Settings.OffsetForeColor, this.BackColor, TextFormatFlags.Left & TextFormatFlags.Top);
 		}
 
 		/// <summary>
@@ -575,8 +553,8 @@ namespace HexEditor
 			text = builder.ToString();
 			builder = null;
 			
-			TextRenderer.DrawText(g, text, this.settings.OffsetFont,this.side.ClientRectangle,
-			                      this.settings.OffsetForeColor, Color.White, TextFormatFlags.Right);
+			TextRenderer.DrawText(g, text, Settings.OffsetFont,this.side.ClientRectangle,
+			                      Settings.OffsetForeColor, Color.White, TextFormatFlags.Right);
 		}
 		
 		/// <summary>
@@ -596,7 +574,7 @@ namespace HexEditor
 				offset = GetOffsetForLine(top + i + 1);
 			}
 
-			TextRenderer.DrawText(g, builder.ToString(), this.settings.DataFont, new Rectangle(0, 0, this.hexView.Width, this.hexView.Height), this.settings.DataForeColor, Color.White, TextFormatFlags.Left & TextFormatFlags.Top);
+			TextRenderer.DrawText(g, builder.ToString(), Settings.DataFont, new Rectangle(0, 0, this.hexView.Width, this.hexView.Height), Settings.DataForeColor, Color.White, TextFormatFlags.Left & TextFormatFlags.Top);
 		}
 		
 		/// <summary>
@@ -616,7 +594,7 @@ namespace HexEditor
 				builder.AppendLine(GetText(buffer.GetBytes(offset, this.BytesPerLine)));
 				offset = GetOffsetForLine(top + i + 1);
 			}
-			TextRenderer.DrawText(g, builder.ToString(), this.settings.DataFont, new Point(0, 0), this.settings.DataForeColor, Color.White);
+			TextRenderer.DrawText(g, builder.ToString(), Settings.DataFont, new Point(0, 0), Settings.DataForeColor, Color.White);
 		}
 		
 		/// <summary>
@@ -842,77 +820,77 @@ namespace HexEditor
 		/// <param name="paintMarker">If true the marker is painted, otherwise not.</param>
 		void PaintSelection(Graphics hexView, Graphics textView, bool paintMarker)
 		{
-			if (!selection.HasSomethingSelected) return;
-			
-			int lines = Math.Abs(GetLineForOffset(selection.End) - GetLineForOffset(selection.Start)) + 1;
-			int start, end;
-			
-			if (selection.End > selection.Start) {
-				start = selection.Start;
-				end = selection.End;
-			} else {
-				start = selection.End;
-				end = selection.Start;
-			}
-			
-			if (start > GetOffsetForLine(topline + GetMaxVisibleLines())) return;
-			
-			if (start < GetOffsetForLine(topline)) start = GetOffsetForLine(topline) - 2;
-			if (end > GetOffsetForLine(topline + GetMaxVisibleLines())) end = GetOffsetForLine(topline + GetMaxVisibleLines() + 1);
-			
-			if (this.activeView == this.hexView) {
-				StringBuilder builder = new StringBuilder();
-				
-				for (int i = GetLineForOffset(start) + 1; i < GetLineForOffset(end); i++) {
-					builder.AppendLine(GetLineHex(i));
-				}
-				
-				if (selregion.Length == 3) {
-					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-					TextRenderer.DrawText(hexView, builder.ToString(), this.settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left);
-					TextRenderer.DrawText(hexView, GetLineHex(GetLineForOffset(end)), this.settings.DataFont, (Rectangle)selregion[2], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-				} else if (selregion.Length == 2) {
-					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-					TextRenderer.DrawText(hexView, GetLineHex(GetLineForOffset(end)), this.settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-				} else {
-					TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-				}
-				
-				if (!paintMarker) return;
-				
-				if ((selregion.Length > 1) && ((int)(Math.Abs(end - start)) <= this.BytesPerLine)) {
-					if (selpoints.Length < 8) return;
-					textView.DrawPolygon(Pens.Black, new Point[] {selpoints[0], selpoints[1], selpoints[6], selpoints[7]});
-					textView.DrawPolygon(Pens.Black, new Point[] {selpoints[4], selpoints[5], selpoints[2], selpoints[3]});
-				} else {
-					textView.DrawPolygon(Pens.Black, selpoints);
-				}
-			} else {
-				StringBuilder builder = new StringBuilder();
-				
-				for (int i = GetLineForOffset(start) + 1; i < GetLineForOffset(end); i++) {
-					builder.AppendLine(GetLineText(i));
-				}
-				
-				if (selregion.Length == 3) {
-					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-					TextRenderer.DrawText(textView, builder.ToString(), this.settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left);
-					TextRenderer.DrawText(textView, GetLineText(GetLineForOffset(end)), this.settings.DataFont, (Rectangle)selregion[2], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-				} else if (selregion.Length == 2) {
-					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-					TextRenderer.DrawText(textView, GetLineText(GetLineForOffset(end)), this.settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-				} else {
-					TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), this.settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
-				}
-				
-				if (!paintMarker) return;
-				if ((selregion.Length > 1) && ((int)(Math.Abs(end - start)) <= this.BytesPerLine)) {
-					hexView.DrawPolygon(Pens.Black, new Point[] {selpoints[0], selpoints[1], selpoints[6], selpoints[7]});
-					hexView.DrawPolygon(Pens.Black, new Point[] {selpoints[4], selpoints[5], selpoints[2], selpoints[3]});
-				} else {
-					hexView.DrawPolygon(Pens.Black, selpoints);
-				}
-			}
+					if (!selection.HasSomethingSelected) return;
+					
+					int lines = Math.Abs(GetLineForOffset(selection.End) - GetLineForOffset(selection.Start)) + 1;
+					int start, end;
+					
+					if (selection.End > selection.Start) {
+						start = selection.Start;
+						end = selection.End;
+					} else {
+						start = selection.End;
+						end = selection.Start;
+					}
+					
+					if (start > GetOffsetForLine(topline + GetMaxVisibleLines())) return;
+					
+					if (start < GetOffsetForLine(topline)) start = GetOffsetForLine(topline) - 2;
+					if (end > GetOffsetForLine(topline + GetMaxVisibleLines())) end = GetOffsetForLine(topline + GetMaxVisibleLines() + 1);
+					
+					if (this.activeView == this.hexView) {
+						StringBuilder builder = new StringBuilder();
+						
+						for (int i = GetLineForOffset(start) + 1; i < GetLineForOffset(end); i++) {
+							builder.AppendLine(GetLineHex(i));
+						}
+						
+						if (selregion.Length == 3) {
+							TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+							TextRenderer.DrawText(hexView, builder.ToString(), Settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left);
+							TextRenderer.DrawText(hexView, GetLineHex(GetLineForOffset(end)), Settings.DataFont, (Rectangle)selregion[2], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+						} else if (selregion.Length == 2) {
+							TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+							TextRenderer.DrawText(hexView, GetLineHex(GetLineForOffset(end)), Settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+						} else {
+							TextRenderer.DrawText(hexView, GetHex(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+						}
+						
+						if (!paintMarker) return;
+						
+						if ((selregion.Length > 1) && ((int)(Math.Abs(end - start)) <= this.BytesPerLine)) {
+							if (selpoints.Length < 8) return;
+							textView.DrawPolygon(Pens.Black, new Point[] {selpoints[0], selpoints[1], selpoints[6], selpoints[7]});
+							textView.DrawPolygon(Pens.Black, new Point[] {selpoints[4], selpoints[5], selpoints[2], selpoints[3]});
+						} else {
+							textView.DrawPolygon(Pens.Black, selpoints);
+						}
+					} else {
+						StringBuilder builder = new StringBuilder();
+						
+						for (int i = GetLineForOffset(start) + 1; i < GetLineForOffset(end); i++) {
+							builder.AppendLine(GetLineText(i));
+						}
+						
+						if (selregion.Length == 3) {
+							TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+							TextRenderer.DrawText(textView, builder.ToString(), Settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left);
+							TextRenderer.DrawText(textView, GetLineText(GetLineForOffset(end)), Settings.DataFont, (Rectangle)selregion[2], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+						} else if (selregion.Length == 2) {
+							TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+							TextRenderer.DrawText(textView, GetLineText(GetLineForOffset(end)), Settings.DataFont, (Rectangle)selregion[1], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+						} else {
+							TextRenderer.DrawText(textView, GetText(buffer.GetBytes(start, this.BytesPerLine)), Settings.DataFont, (Rectangle)selregion[0], Color.White, SystemColors.Highlight, TextFormatFlags.Left & TextFormatFlags.SingleLine);
+						}
+						
+						if (!paintMarker) return;
+						if ((selregion.Length > 1) && ((int)(Math.Abs(end - start)) <= this.BytesPerLine)) {
+							hexView.DrawPolygon(Pens.Black, new Point[] {selpoints[0], selpoints[1], selpoints[6], selpoints[7]});
+							hexView.DrawPolygon(Pens.Black, new Point[] {selpoints[4], selpoints[5], selpoints[2], selpoints[3]});
+						} else {
+							hexView.DrawPolygon(Pens.Black, selpoints);
+						}
+					}
 		}
 		#endregion
 		
@@ -1153,7 +1131,7 @@ namespace HexEditor
 			this.UpdatePainters();
 			
 			int sidetext = this.GetMaxLines() * this.BytesPerLine;
-			int textwidth = MeasureStringWidth(this.textView.CreateGraphics(), new string('_', this.BytesPerLine + 1), this.settings.DataFont);
+			int textwidth = MeasureStringWidth(this.textView.CreateGraphics(), new string('_', this.BytesPerLine + 1), Settings.DataFont);
 			int hexwidth = underscorewidth3 * this.BytesPerLine;
 			int top = hexView.Top;
 			this.hexView.Top = fontheight - 1;
@@ -1195,7 +1173,7 @@ namespace HexEditor
 					break;
 			}
 
-			this.side.Width = MeasureStringWidth(this.side.CreateGraphics(), st, this.settings.OffsetFont);
+			this.side.Width = MeasureStringWidth(this.side.CreateGraphics(), st, Settings.OffsetFont);
 			this.side.Left = 0;
 			this.hexView.Left = this.side.Width + 10;
 
