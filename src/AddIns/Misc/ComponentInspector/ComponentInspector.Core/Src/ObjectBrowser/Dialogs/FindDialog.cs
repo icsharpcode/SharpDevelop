@@ -392,7 +392,7 @@ namespace NoGoop.ObjBrowser.Dialogs
 		{
 			TreeNode node = GetFirstSelectedNode();
 			if (node == null) {
-				Close();
+				Hide();
 				_instance = null;
 				ErrorDialog.Show(StringParser.Parse("${res:ComponentInspector.FindDialog.NoTreeNodeSelectedMessage}"),
 				                 StringParser.Parse("${res:ComponentInspector.FindDialog.NoTreeNodeSelectedDialogTitle}"),
