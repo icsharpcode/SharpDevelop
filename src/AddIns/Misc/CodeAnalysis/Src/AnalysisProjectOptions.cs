@@ -440,8 +440,13 @@ namespace ICSharpCode.CodeAnalysis
 						b.Append(';');
 						b.Append(asm);
 					}
-					this.RuleAssemblies = b.ToString();
-					OnOptionChanged(new EventArgs());
+					bool oldInitSuccess = initSuccess;
+					initSuccess = true;
+					try {
+						this.RuleAssemblies = b.ToString();
+					} finally {
+						initSuccess = oldInitSuccess;
+					}
 				}
 			}
 		}
