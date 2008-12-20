@@ -441,6 +441,7 @@ namespace ICSharpCode.CodeAnalysis
 						b.Append(asm);
 					}
 					this.RuleAssemblies = b.ToString();
+					OnOptionChanged(new EventArgs());
 				}
 			}
 		}
