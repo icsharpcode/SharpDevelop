@@ -93,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (listBox.Items.Count == 1) {
 				MessageService.ShowMessage("${res:Dialog.EditAvailableConfigurationsDialog.CannotDeleteAllConfigurationsOrPlatforms}");
+				return;
 			}
 			string name = listBox.SelectedItem.ToString();
 			if (MessageService.AskQuestionFormatted("${res:Dialog.EditAvailableConfigurationsDialog.ConfirmRemoveConfigurationOrPlatform}",
