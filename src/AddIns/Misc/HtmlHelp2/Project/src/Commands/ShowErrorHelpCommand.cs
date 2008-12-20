@@ -19,7 +19,6 @@ namespace HtmlHelp2.Commands
 	/// </summary>
 	public class ShowErrorHelpCommand : AbstractMenuCommand
 	{
-		AxMSHelpControls.AxHxIndexCtrl indexControl;
 		/// <summary>
 		/// Starts the command
 		/// </summary>
@@ -42,11 +41,24 @@ namespace HtmlHelp2.Commands
 				if (HtmlHelp2.Environment.HtmlHelp2Environment.SessionIsInitialized)
 				{
 					// Get the topic
-					IHxIndex index = HtmlHelp2.Environment.HtmlHelp2Environment.GetIndex(HtmlHelp2.Environment.HtmlHelp2Environment.CurrentFilterQuery);
+					IHxIndex index = HtmlHelp2.Environment.HtmlHelp2Environment.GetIndex("");
+					if (index == null) {
+						MessageService.ShowErrorFormatted("No help available for {0}!", code);
+						return;
+					}
 					int indexSlot = index.GetSlotFromString(code);
-					topic = index.GetTopicsFromSlot(indexSlot).ItemAt(1);
+					IHxTopicList list = index.GetTopicsFromSlot(indexSlot);
+					if (list == null) {
+						MessageService.ShowErrorFormatted("No help available for {0}!", code);
+						return;
+					}
+					topic = list.ItemAt(1);
+					if (topic == null) {
+						MessageService.ShowErrorFormatted("No help available for {0}!", code);
+						return;
+					}
 					string topicTitle = topic.get_Title(HxTopicGetTitleType.HxTopicGetTOCTitle, HxTopicGetTitleDefVal.HxTopicGetTitleFileName);
-					if (!topicTitle.Contains(code)) {
+					if (topicTitle == null || !topicTitle.Contains(code)) {
 						MessageService.ShowErrorFormatted("No help available for {0}!", code);
 						return;
 					}
