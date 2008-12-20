@@ -545,6 +545,12 @@ namespace ICSharpCode.XmlEditor
 		public void Undo()
 		{
 			xmlEditor.Undo();
+			
+			/// If all undos are complete and the file is not untitled (i.e. was loaded from the file system) then
+			/// the file is not dirty.
+			if (PrimaryFile.IsDirty && !EnableUndo && !PrimaryFile.IsUntitled) {
+				PrimaryFile.IsDirty = false;
+			}		
 		}
 		
 		#endregion
