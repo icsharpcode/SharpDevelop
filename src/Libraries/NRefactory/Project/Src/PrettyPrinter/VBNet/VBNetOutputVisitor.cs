@@ -181,7 +181,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (!printAttributeSectionInline)
 				outputFormatter.Indent();
 			outputFormatter.PrintText("<");
-			if (attributeSection.AttributeTarget != null && attributeSection.AttributeTarget.Length > 0) {
+			if (!string.IsNullOrEmpty(attributeSection.AttributeTarget) && !string.Equals(attributeSection.AttributeTarget, "return", StringComparison.OrdinalIgnoreCase)) {
 				outputFormatter.PrintText(char.ToUpperInvariant(attributeSection.AttributeTarget[0]) + attributeSection.AttributeTarget.Substring(1));
 				outputFormatter.PrintToken(Tokens.Colon);
 				outputFormatter.Space();
@@ -400,9 +400,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
 		{
+			VisitAttributes(templateDefinition.Attributes, data);
 			outputFormatter.PrintIdentifier(templateDefinition.Name);
 			if (templateDefinition.Bases.Count > 0) {
 				outputFormatter.PrintText(" As ");
+				VisitReturnTypeAttributes(templateDefinition.Attributes, data);
 				if (templateDefinition.Bases.Count == 1) {
 					TrackedVisit(templateDefinition.Bases[0], data);
 				} else {
@@ -443,6 +445,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
+				VisitReturnTypeAttributes(delegateDeclaration.Attributes, data);
 				TrackedVisit(delegateDeclaration.ReturnType, data);
 			}
 			outputFormatter.NewLine();
@@ -568,6 +571,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
+			VisitReturnTypeAttributes(propertyDeclaration.Attributes, data);
 			TrackedVisit(propertyDeclaration.TypeReference, data);
 			
 			PrintInterfaceImplementations(propertyDeclaration.InterfaceImplementations);
@@ -657,6 +661,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
+			VisitReturnTypeAttributes(eventDeclaration.Attributes, data);
 			TrackedVisit(eventDeclaration.TypeReference, data);
 			
 			PrintInterfaceImplementations(eventDeclaration.InterfaceImplementations);
@@ -809,6 +814,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
+				VisitReturnTypeAttributes(parameterDeclarationExpression.Attributes, data);
 			TrackedVisit(parameterDeclarationExpression.TypeReference, data);
 			return null;
 		}
@@ -845,6 +851,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
+				VisitReturnTypeAttributes(methodDeclaration.Attributes, data);
 				TrackedVisit(methodDeclaration.TypeReference, data);
 			}
 			
@@ -976,6 +983,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
+				VisitReturnTypeAttributes(indexerDeclaration.Attributes, data);
 			TrackedVisit(indexerDeclaration.TypeReference, data);
 			PrintInterfaceImplementations(indexerDeclaration.InterfaceImplementations);
 			
@@ -1161,6 +1169,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
+				VisitReturnTypeAttributes(operatorDeclaration.Attributes, data);
 				TrackedVisit(operatorDeclaration.TypeReference, data);
 			}
 			
@@ -1233,6 +1242,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
+				VisitReturnTypeAttributes(declareDeclaration.Attributes, data);
 				TrackedVisit(declareDeclaration.TypeReference, data);
 			}
 			
@@ -2799,12 +2809,28 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void VisitAttributes(ICollection attributes, object data)
 		{
-			if (attributes == null || attributes.Count <= 0) {
+			if (attributes == null) {
 				return;
 			}
 			foreach (AttributeSection section in attributes) {
+				if (string.Equals(section.AttributeTarget, "return", StringComparison.OrdinalIgnoreCase))
+					continue;
 				TrackedVisit(section, data);
 			}
+		}
+		
+		void VisitReturnTypeAttributes(ICollection attributes, object data)
+		{
+			if (attributes == null) {
+				return;
+			}
+			printAttributeSectionInline = true;
+			foreach (AttributeSection section in attributes) {
+				if (string.Equals(section.AttributeTarget, "return", StringComparison.OrdinalIgnoreCase)) {
+					TrackedVisit(section, data);
+				}
+			}
+			printAttributeSectionInline = false;
 		}
 		
 		public override object TrackedVisitLambdaExpression(LambdaExpression lambdaExpression, object data)

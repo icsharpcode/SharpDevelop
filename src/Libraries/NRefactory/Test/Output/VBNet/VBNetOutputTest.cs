@@ -317,6 +317,13 @@ End Using");
 		}
 		
 		[Test]
+		public void ReturnTypeAttribute()
+		{
+			TestTypeMember("Function A() As <Attribute> String\n" +
+			               "End Function");
+		}
+		
+		[Test]
 		public void AssemblyAttribute()
 		{
 			TestProgram("<Assembly: CLSCompliant>");
