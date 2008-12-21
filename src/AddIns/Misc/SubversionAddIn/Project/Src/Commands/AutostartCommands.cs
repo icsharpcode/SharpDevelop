@@ -221,6 +221,7 @@ namespace ICSharpCode.Svn.Commands
 					switch (status.TextStatus) {
 						case StatusKind.None:
 						case StatusKind.Unversioned:
+						case StatusKind.Ignored:
 							break;
 						default:
 							// must be done using the subversion client, even if
@@ -272,6 +273,7 @@ namespace ICSharpCode.Svn.Commands
 					switch (status.TextStatus) {
 						case StatusKind.None:
 						case StatusKind.Unversioned:
+						case StatusKind.Ignored:
 						case StatusKind.Deleted:
 							return; // nothing to do
 						case StatusKind.Normal:
@@ -360,6 +362,7 @@ namespace ICSharpCode.Svn.Commands
 					switch (status.TextStatus) {
 						case StatusKind.Unversioned:
 						case StatusKind.None:
+						case StatusKind.Ignored:
 							return; // nothing to do
 						case StatusKind.Normal:
 						case StatusKind.Modified:

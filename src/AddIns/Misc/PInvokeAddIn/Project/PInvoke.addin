@@ -2,7 +2,7 @@
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
        description = "PInvoke.Net integration for SharpDevelop.">
-
+	
 	<Manifest>
 		<Identity name = "ICSharpCode.PInvokeAddIn"/>
 		<Dependency addin = "SharpDevelop"/>
@@ -11,38 +11,38 @@
 	<Runtime>
 		<Import assembly="PInvokeAddIn.dll" />
 	</Runtime>
-
+	
 	<!-- Menu options -->
-	<Path name="/Workspace/Tools">
+	<Path name="/SharpDevelop/Workbench/MainMenu/Edit/Insert">
 		<ComplexCondition action = "Disable">
 			<Or>
 				<Condition name = "ActiveContentExtension" activeextension = ".vb"/>
 				<Condition name = "ActiveContentExtension" activeextension = ".cs"/>
 			</Or>
 			<MenuItem id = "InsertPInvoke"
-				  label = "${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel}" 
-				  description = "Insert PInvoke signatures." 
-				  class = "ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesCommand"
+			          label = "${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel}"
+			          description = "Insert PInvoke signatures."
+			          class = "ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesCommand"
 			/>
-		 </ComplexCondition>
+		</ComplexCondition>
 	</Path>
-
+	
 	<!-- Right click in text editor menu option -->
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
-
+		
 		<MenuItem id = "Separator4"
 		          type = "Separator"
 		          insertafter = "Options"/>
-
+		
 		<ComplexCondition action = "Disable">
 			<Or>
 				<Condition name = "ActiveContentExtension" activeextension = ".vb"/>
 				<Condition name = "ActiveContentExtension" activeextension = ".cs"/>
-			</Or>		
+			</Or>
 			<MenuItem id = "InsertPInvoke"
-		              label = "${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel}"
+			          label = "${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel}"
 			          insertafter = "Separator4"
-		              class ="ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesCommand"
+			          class ="ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesCommand"
 			/>
 		</ComplexCondition>
 	</Path>
