@@ -138,12 +138,18 @@ namespace VBNetBinding
 					if (DefaultTargetsFile.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
 						//import.ProjectPath = extendedTargets;
 						MSBuildInternals.SetImportProjectPath(this, import, ExtendedTargetsFile);
+						// Workaround for SD2-1490. It would be better if the project browser could refresh itself
+						// when necessary.
+						ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 						break;
 					}
 				} else {
 					if (ExtendedTargetsFile.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
 						//import.ProjectPath = defaultTargets;
 						MSBuildInternals.SetImportProjectPath(this, import, DefaultTargetsFile);
+						// Workaround for SD2-1490. It would be better if the project browser could refresh itself
+						// when necessary.
+						ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 						break;
 					}
 				}
