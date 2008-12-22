@@ -226,7 +226,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return 0;
 		}
 		
-		protected bool WasLineEnd(char ch)
+		bool WasLineEnd(char ch)
 		{
 			// Handle MS-DOS or MacOS line ends.
 			if (ch == '\r') {

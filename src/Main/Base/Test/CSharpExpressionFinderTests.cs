@@ -1147,6 +1147,20 @@ class Main {
 			Assert.AreEqual("System", result.Expression);
 			Assert.AreEqual(ExpressionContext.Namespace, result.Context);
 		}
+		
+		[Test]
+		public void SD2_1469()
+		{
+			// Test that this doesn't crash
+			const string program = @"class MainWindow
+{
+	'
+	void MainWindowDeleteEvent()
+	{
+	}
+}";
+			ef.FindFullExpression(program, 25);
+		}
 	}
 }
 

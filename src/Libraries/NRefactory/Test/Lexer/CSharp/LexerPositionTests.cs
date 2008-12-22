@@ -29,6 +29,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			Token t = l.NextToken();
 			Assert.AreEqual(new Location(1, 1), t.Location);
 		}
+		
 		[Test]
 		public void Test2()
 		{
@@ -37,6 +38,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Location(8, 1), t.Location);
 		}
+		
 		[Test]
 		public void TestReturn()
 		{
@@ -45,6 +47,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Location(1, 2), t.Location);
 		}
+		
 		[Test]
 		public void TestSpace()
 		{
@@ -52,6 +55,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			Token t = l.NextToken();
 			Assert.AreEqual(new Location(3, 1), t.Location);
 		}
+		
 		[Test]
 		public void TestOctNumber()
 		{
@@ -59,6 +63,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			Token t = l.NextToken();
 			Assert.AreEqual(new Location(1, 1), t.Location);
 		}
+		
 		[Test]
 		public void TestHexNumber()
 		{
@@ -68,6 +73,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Location(7, 1), t.Location);
 		}
+		
 		[Test]
 		public void TestHexNumberChar()
 		{
@@ -77,6 +83,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Location(9, 1), t.Location);
 		}
+		
 		[Test]
 		public void TestFloationPointNumber()
 		{
@@ -86,6 +93,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Location(7, 1), t.Location);
 		}
+		
 		[Test]
 		public void TestVerbatimString()
 		{
@@ -95,6 +103,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Location(9, 1), t.Location);
 		}
+		
 		[Test]
 		public void TestAtIdent()
 		{
@@ -104,6 +113,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Location(9, 1), t.Location);
 		}
+		
 		[Test]
 		public void TestNoFloationPointNumber()
 		{
@@ -115,6 +125,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Location(3, 1), t.Location);
 		}
+		
 		[Test]
 		public void TestNumber()
 		{
@@ -123,6 +134,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Location(1, 2), t.Location);
 		}
+		
 		[Test]
 		public void TestNumber2()
 		{
@@ -131,12 +143,26 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Location(4, 1), t.Location);
 		}
+		
 		[Test]
 		public void TestOperator()
 		{
 			ILexer l = GenerateLexer("<<=");
 			Token t = l.NextToken();
 			Assert.AreEqual(new Location(1, 1), t.Location);
+			Assert.AreEqual(Tokens.EOF, l.NextToken().kind);
+		}
+		
+		[Test]
+		public void TestPositionLineBreakAfterApostrophe()
+		{
+			// see SD2-1469
+			// the expression finder requires correct positions even when there are syntax errors
+			ILexer l = GenerateLexer("'\r\nvoid");
+			Token t = l.NextToken();
+			// the incomplete char literal should not generate a token
+			Assert.AreEqual(Tokens.Void, t.kind);
+			Assert.AreEqual(new Location(1, 2), t.Location);
 			Assert.AreEqual(Tokens.EOF, l.NextToken().kind);
 		}
 	}

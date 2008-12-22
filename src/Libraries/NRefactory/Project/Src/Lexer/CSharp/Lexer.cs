@@ -576,8 +576,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			int x = Col - 1;
 			int y = Line;
 			int nextChar = ReaderRead();
-			if (nextChar == -1) {
-				errors.Error(y, x, String.Format("End of file reached inside character literal"));
+			if (nextChar == -1 || HandleLineEnd((char)nextChar)) {
+				errors.Error(y, x, String.Format("End of line reached inside character literal"));
 				return null;
 			}
 			char ch = (char)nextChar;
