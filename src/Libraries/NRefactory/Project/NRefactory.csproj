@@ -107,6 +107,7 @@
     <Compile Include="Src\Visitors\ConvertVisitorBase.cs" />
     <Compile Include="Src\Visitors\CSharpConstructsConvertVisitor.cs" />
     <Compile Include="Src\Visitors\LookupTableVisitor.cs" />
+    <Compile Include="Src\Visitors\NotImplementedAstVisitor.cs" />
     <Compile Include="Src\Visitors\PrefixFieldsVisitor.cs" />
     <Compile Include="Src\Visitors\RenameIdentifierVisitor.cs" />
     <Compile Include="Src\Visitors\SetParentVisitor.cs" />

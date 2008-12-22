@@ -818,6 +818,12 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
+		public object VisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data)
+		{
+			Console.WriteLine("ExternAliasDirective");
+			return null;
+		}
+		
 		public object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			Console.WriteLine("VisitParameterDeclarationExpression");

@@ -182,7 +182,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public static BitArray KCCTypeDeclarationStart = NewSet(Public, Internal, Class, Interface, Struct, Enum, Delegate, Abstract, Sealed, Static, Unsafe, Partial);
 		public static BitArray KCCMemberVisibilityModifiers = NewSet(Protected, Private, Public, Internal);
 		public static BitArray SimpleTypeName = NewSet(Char, Bool, Object, String, Sbyte, Byte, Short, Ushort, Int, Uint, Long, Ulong, Float, Double, Decimal, Identifier, Partial, Where, Get, Set, Add, Remove, Yield, Select, Group, By, Into, From, Ascending, Descending, Orderby, Let, Join, On, Equals, Void);
-		public static BitArray GlobalLevel = NewSet(Namespace, Using, Public, Internal, Class, Interface, Struct, Enum, Delegate, Abstract, Sealed, Static, Unsafe, Partial);
+		public static BitArray GlobalLevel = NewSet(Namespace, Using, Extern, Public, Internal, Class, Interface, Struct, Enum, Delegate, Abstract, Sealed, Static, Unsafe, Partial);
 		public static BitArray ExpressionStart = NewSet(Base, Delegate, False, New, Null, Sizeof, This, True, Typeof, Checked, Unchecked, From, Default);
 		public static BitArray ExpressionContent = NewSet(As, Is, Out, Ref, In);
 		public static BitArray InterfaceLevel = NewSet(Event);

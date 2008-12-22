@@ -579,5 +579,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			               " group n by n % 5 into g" +
 			               " select new { Remainder = g.Key, Numbers = g }");
 		}
+		
+		[Test]
+		public void ExternAlias()
+		{
+			TestProgram("extern alias Name;");
+		}
 	}
 }

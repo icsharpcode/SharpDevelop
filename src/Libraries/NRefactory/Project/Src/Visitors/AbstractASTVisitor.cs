@@ -414,6 +414,11 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return expressionStatement.Expression.AcceptVisitor(this, data);
 		}
 		
+		public virtual object VisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data) {
+			Debug.Assert((externAliasDirective != null));
+			return null;
+		}
+		
 		public virtual object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data) {
 			Debug.Assert((fieldDeclaration != null));
 			Debug.Assert((fieldDeclaration.Attributes != null));

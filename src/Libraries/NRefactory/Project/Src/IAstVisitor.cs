@@ -97,6 +97,8 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitExpressionStatement(ExpressionStatement expressionStatement, object data);
 		
+		object VisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data);
+		
 		object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data);
 		
 		object VisitFixedStatement(FixedStatement fixedStatement, object data);

@@ -2994,5 +2994,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			return whereClause.Condition.AcceptVisitor(this, data);
 		}
+		
+		public override object TrackedVisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data)
+		{
+			UnsupportedNode(externAliasDirective);
+			return null;
+		}
 	}
 }

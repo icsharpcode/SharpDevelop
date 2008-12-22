@@ -144,6 +144,19 @@ namespace NRefactoryASTGenerator
 				File.WriteAllText(visitorsDir + "NodeTrackingAstVisitor.cs",
 				                  writer.ToString().Replace("public override object", "public sealed override object"));
 			}
+			
+			//NotImplementedAstVisitor
+			ccu = new EasyCompileUnit();
+			cns = ccu.AddNamespace("ICSharpCode.NRefactory.Visitors");
+			cns.AddImport("System");
+			cns.AddImport("ICSharpCode.NRefactory.Ast");
+			cns.Types.Add(CreateNotImplementedAstVisitorClass(nodeTypes));
+			
+			using (StringWriter writer = new StringWriter()) {
+				new Microsoft.CSharp.CSharpCodeProvider().GenerateCodeFromCompileUnit(ccu, writer, settings);
+				File.WriteAllText(visitorsDir + "NotImplementedAstVisitor.cs", writer.ToString());
+			}
+			Debug.WriteLine("AST Generator done!");
 		}
 		
 		static CodeTypeDeclaration CreateAstVisitorInterface(List<Type> nodeTypes)
@@ -516,10 +529,6 @@ namespace NRefactoryASTGenerator
 					
 					CodeExpression var = Easy.Var(GetFieldName(type.Name));
 					
-//					m.Statements.Add(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), "BeginVisit"), new CodeExpression[] { var }));
-//					m.Statements.Add(new CodeVariableDeclarationStatement(new CodeTypeReference(typeof(object)), "result", new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), "TrackedVisit"), new CodeExpression[] { var, new CodeVariableReferenceExpression("data") })));
-//					m.Statements.Add(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeThisReferenceExpression(), "EndVisit"), new CodeExpression[] { var }));
-//					m.Statements.Add(new CodeMethodReturnStatement(new CodeVariableReferenceExpression("result")));
 					m.Body.InvokeMethod(Easy.This, "BeginVisit", var);
 					m.Body.DeclareVariable(typeof(object), "result").InitExpression
 						= Easy.This.InvokeMethod("TrackedVisit" + type.Name, var, Easy.Var("data"));
@@ -537,6 +546,32 @@ namespace NRefactoryASTGenerator
 					m.AddParameter(new CodeTypeReference(typeof(object)), "data");
 					
 					m.Body.Return(Easy.Base.InvokeMethod(VisitPrefix + type.Name, Easy.Var(GetFieldName(type.Name)), Easy.Var("data")));
+				}
+			}
+			
+			return td;
+		}
+		
+		static CodeTypeDeclaration CreateNotImplementedAstVisitorClass(List<Type> nodeTypes)
+		{
+			EasyTypeDeclaration td = new EasyTypeDeclaration("NotImplementedAstVisitor");
+			td.TypeAttributes = TypeAttributes.Public | TypeAttributes.Class;
+			td.BaseTypes.Add(new CodeTypeReference("IAstVisitor"));
+			
+			string comment = "<summary>\n " +
+				"IAstVisitor implementation that always throws NotImplementedExceptions.\n " +
+				"</summary>";
+			td.Comments.Add(new CodeCommentStatement(comment, true));
+			
+			foreach (Type type in nodeTypes) {
+				if (!type.IsAbstract) {
+					
+					EasyMethod m = td.AddMethod(typeof(object), VisitPrefix + type.Name);
+					m.Attributes = MemberAttributes.Public;
+					m.AddParameter(ConvertType(type), GetFieldName(type.Name));
+					m.AddParameter(new CodeTypeReference(typeof(object)), "data");
+					
+					m.Body.Throw(Easy.New(typeof(NotImplementedException), Easy.Prim(type.Name)));
 				}
 			}
 			

@@ -318,6 +318,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data) {
+			this.BeginVisit(externAliasDirective);
+			object result = this.TrackedVisitExternAliasDirective(externAliasDirective, data);
+			this.EndVisit(externAliasDirective);
+			return result;
+		}
+		
 		public sealed override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data) {
 			this.BeginVisit(fieldDeclaration);
 			object result = this.TrackedVisitFieldDeclaration(fieldDeclaration, data);
@@ -1040,6 +1047,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitExpressionStatement(ExpressionStatement expressionStatement, object data) {
 			return base.VisitExpressionStatement(expressionStatement, data);
+		}
+		
+		public virtual object TrackedVisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data) {
+			return base.VisitExternAliasDirective(externAliasDirective, data);
 		}
 		
 		public virtual object TrackedVisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data) {

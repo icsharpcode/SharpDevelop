@@ -25,13 +25,11 @@ namespace ICSharpCode.NRefactory
 		
 		int x, y;
 		
-		[Obsolete("Use Column instead")]
 		public int X {
 			get { return x; }
 			set { x = value; }
 		}
 		
-		[Obsolete("Use Line instead")]
 		public int Y {
 			get { return y; }
 			set { y = value; }

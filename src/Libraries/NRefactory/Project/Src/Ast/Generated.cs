@@ -1835,6 +1835,32 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 	}
 	
+	public class ExternAliasDirective : AbstractNode {
+		
+		string name;
+		
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				name = value ?? "";
+			}
+		}
+		
+		public ExternAliasDirective() {
+			name = "";
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitExternAliasDirective(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[ExternAliasDirective Name={0}]", Name);
+		}
+	}
+	
 	public class FieldDeclaration : AttributedNode {
 		
 		TypeReference typeReference;

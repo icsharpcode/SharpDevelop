@@ -178,6 +178,7 @@ PRODUCTIONS
 CS
 (. lexer.NextToken(); /* get the first token */ .)
 =
+	{ ExternAliasDirective }
 	{ UsingDirective }
 	{ IF (IsGlobalAttrTarget()) GlobalAttributeSection }
 	{ NamespaceMemberDecl }
@@ -332,6 +333,7 @@ NamespaceMemberDecl
 	                                compilationUnit.BlockStart(node);
 	                              .)
 	"{"
+	{ ExternAliasDirective }
 	{ UsingDirective }
 	{ NamespaceMemberDecl }
 	"}"
@@ -339,9 +341,19 @@ NamespaceMemberDecl
 	                                 compilationUnit.BlockEnd();
 	                              .)
 	/*--- type declaration: */
-	| { AttributeSection<out section> (. attributes.Add(section); .) }
+|	{ AttributeSection<out section> (. attributes.Add(section); .) }
 	  { TypeModifier<m> }
 	  TypeDecl<m, attributes>
+.
+
+ExternAliasDirective
+(. ExternAliasDirective ead = new ExternAliasDirective { StartLocation = la.Location }; .)
+=
+	"extern"
+	Identifier (. if (t.val != "alias") Error("Expected 'extern alias'."); .)
+	Identifier (.  ead.Name = t.val; .)
+	";" (. ead.EndLocation = t.EndLocation; .)
+	(. compilationUnit.AddChild(ead); .)
 .
 
 TypeDecl<ModifierList m, List<AttributeSection> attributes>

@@ -298,6 +298,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public override object TrackedVisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data)
+		{
+			outputFormatter.Indent();
+			outputFormatter.PrintText("extern alias ");
+			outputFormatter.PrintIdentifier(externAliasDirective.Name);
+			outputFormatter.PrintToken(Tokens.Semicolon);
+			outputFormatter.NewLine();
+			return null;
+		}
+		
 		public override object TrackedVisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			outputFormatter.Indent();

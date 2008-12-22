@@ -385,6 +385,13 @@ namespace ICSharpCode.EasyCodeDom
 			return st;
 		}
 		
+		public CodeThrowExceptionStatement Throw(CodeExpression expr)
+		{
+			CodeThrowExceptionStatement st = new CodeThrowExceptionStatement(expr);
+			csc.Add(st);
+			return st;
+		}
+		
 		public CodeAssignStatement Assign(CodeExpression lhs, CodeExpression rhs)
 		{
 			CodeAssignStatement st = new CodeAssignStatement(lhs, rhs);

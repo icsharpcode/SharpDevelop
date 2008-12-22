@@ -197,5 +197,11 @@ namespace NRefactoryToBooConverter
 			AddError(optionDeclaration, "Option statement is not supported.");
 			return null;
 		}
+		
+		public object VisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data)
+		{
+			AddError(externAliasDirective, "'extern alias' directive is not supported.");
+			return null;
+		}
 	}
 }
