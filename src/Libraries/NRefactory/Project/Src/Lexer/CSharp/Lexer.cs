@@ -76,6 +76,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 								bool canBeKeyword;
 								token = new Token(Tokens.Identifier, x - 1, y, ReadIdent(ch, out canBeKeyword));
 							} else {
+								HandleLineEnd(ch);
 								errors.Error(y, x, String.Format("Unexpected char in Lexer.Next() : {0}", ch));
 								continue;
 							}
@@ -408,8 +409,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					} else {
 						sb.Append(ch);
 					}
-				} else if (ch == '\n') {
-					HandleLineEnd(ch); // ensure line numbers are still correct after the error
+				} else if (HandleLineEnd(ch)) {
+					// call HandleLineEnd to ensure line numbers are still correct after the error
 					errors.Error(y, x, String.Format("No new line is allowed inside a string literal"));
 					break;
 				} else {
@@ -430,8 +431,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			sb.Length            = 0;
 			originalValue.Length = 0;
 			originalValue.Append("@\"");
-			int x = Col - 2; // @ and " already read
-			int y = Line;
+			Location startLocation = new Location(Col - 2, Line); // @ and " already read
 			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
@@ -454,13 +454,13 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 			
 			if (nextChar == -1) {
-				errors.Error(y, x, String.Format("End of file reached inside verbatim string literal"));
+				errors.Error(startLocation.Line, startLocation.Column, String.Format("End of file reached inside verbatim string literal"));
 			}
 			
-			return new Token(Tokens.Literal, x, y, originalValue.ToString(), sb.ToString(), LiteralFormat.VerbatimStringLiteral);
+			return new Token(Tokens.Literal, startLocation, new Location(Col, Line), originalValue.ToString(), sb.ToString(), LiteralFormat.VerbatimStringLiteral);
 		}
 		
-		char[] escapeSequenceBuffer = new char[12];
+		readonly char[] escapeSequenceBuffer = new char[12];
 		
 		/// <summary>
 		/// reads an escape sequence

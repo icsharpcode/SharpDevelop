@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			ILexer lexer = GenerateLexer(new StringReader(text));
 			Token t = lexer.NextToken();
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind, "Tokens.EOF");
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().Kind, "Tokens.EOF");
 			Assert.AreEqual("", lexer.Errors.ErrorOutput);
 			return t;
 		}
@@ -34,11 +34,11 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		void CheckToken(string text, object val)
 		{
 			Token t = GetSingleToken(text);
-			Assert.AreEqual(Tokens.Literal, t.kind, "Tokens.Literal");
-			Assert.AreEqual(text, t.val, "value");
-			Assert.IsNotNull(t.literalValue, "literalValue is null");
-			Assert.AreEqual(val.GetType(), t.literalValue.GetType(), "literalValue.GetType()");
-			Assert.AreEqual(val, t.literalValue, "literalValue");
+			Assert.AreEqual(Tokens.Literal, t.Kind, "Tokens.Literal");
+			Assert.AreEqual(text, t.Value, "value");
+			Assert.IsNotNull(t.LiteralValue, "literalValue is null");
+			Assert.AreEqual(val.GetType(), t.LiteralValue.GetType(), "literalValue.GetType()");
+			Assert.AreEqual(val, t.LiteralValue, "literalValue");
 		}
 		
 		[Test]
@@ -152,19 +152,19 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			// ensure that line numbers are correct after newline in string
 			ILexer l = GenerateLexer(new StringReader("\"\n\"\n;"));
 			Token t = l.NextToken();
-			Assert.AreEqual(Tokens.Literal, t.kind);
+			Assert.AreEqual(Tokens.Literal, t.Kind);
 			Assert.AreEqual(new Location(1, 1), t.Location);
 			
 			t = l.NextToken();
-			Assert.AreEqual(Tokens.Literal, t.kind);
+			Assert.AreEqual(Tokens.Literal, t.Kind);
 			Assert.AreEqual(new Location(1, 2), t.Location);
 			
 			t = l.NextToken();
-			Assert.AreEqual(Tokens.Semicolon, t.kind);
+			Assert.AreEqual(Tokens.Semicolon, t.Kind);
 			Assert.AreEqual(new Location(1, 3), t.Location);
 			
 			t = l.NextToken();
-			Assert.AreEqual(Tokens.EOF, t.kind);
+			Assert.AreEqual(Tokens.EOF, t.Kind);
 		}
 		
 		[Test]

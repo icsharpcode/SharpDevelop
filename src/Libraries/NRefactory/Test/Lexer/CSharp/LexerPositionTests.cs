@@ -40,12 +40,31 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		}
 		
 		[Test]
-		public void TestReturn()
+		public void TestNewLine()
 		{
 			ILexer l = GenerateLexer("public\nstatic");
 			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.Public, t.Kind);
+			Assert.AreEqual(new Location(1, 1), t.Location);
+			Assert.AreEqual(new Location(7, 1), t.EndLocation);
 			t = l.NextToken();
+			Assert.AreEqual(Tokens.Static, t.Kind);
 			Assert.AreEqual(new Location(1, 2), t.Location);
+			Assert.AreEqual(new Location(7, 2), t.EndLocation);
+		}
+		
+		[Test]
+		public void TestCarriageReturnNewLine()
+		{
+			ILexer l = GenerateLexer("public\r\nstatic");
+			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.Public, t.Kind);
+			Assert.AreEqual(new Location(1, 1), t.Location);
+			Assert.AreEqual(new Location(7, 1), t.EndLocation);
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.Static, t.Kind);
+			Assert.AreEqual(new Location(1, 2), t.Location);
+			Assert.AreEqual(new Location(7, 2), t.EndLocation);
 		}
 		
 		[Test]
@@ -150,7 +169,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			ILexer l = GenerateLexer("<<=");
 			Token t = l.NextToken();
 			Assert.AreEqual(new Location(1, 1), t.Location);
-			Assert.AreEqual(Tokens.EOF, l.NextToken().kind);
+			Assert.AreEqual(Tokens.EOF, l.NextToken().Kind);
 		}
 		
 		[Test]
@@ -161,9 +180,58 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			ILexer l = GenerateLexer("'\r\nvoid");
 			Token t = l.NextToken();
 			// the incomplete char literal should not generate a token
-			Assert.AreEqual(Tokens.Void, t.kind);
+			Assert.AreEqual(Tokens.Void, t.Kind);
 			Assert.AreEqual(new Location(1, 2), t.Location);
-			Assert.AreEqual(Tokens.EOF, l.NextToken().kind);
+			Assert.AreEqual(Tokens.EOF, l.NextToken().Kind);
+		}
+		
+		[Test]
+		public void TestPositionMissingEndApostrophe()
+		{
+			// see SD2-1469
+			// the expression finder requires correct positions even when there are syntax errors
+			ILexer l = GenerateLexer("'a\nvoid");
+			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.Literal, t.Kind);
+			Assert.AreEqual(new Location(1, 1), t.Location);
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.Void, t.Kind);
+			Assert.AreEqual(new Location(1, 2), t.Location);
+			Assert.AreEqual(Tokens.EOF, l.NextToken().Kind);
+		}
+		
+		[Test]
+		public void TestPositionLineBreakAfterAt()
+		{
+			// the expression finder requires correct positions even when there are syntax errors
+			ILexer l = GenerateLexer("@\nvoid");
+			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.Void, t.Kind);
+			Assert.AreEqual(new Location(1, 2), t.Location);
+			Assert.AreEqual(Tokens.EOF, l.NextToken().Kind);
+		}
+		
+		[Test]
+		public void TestPositionLineBreakInsideString()
+		{
+			// the expression finder requires correct positions even when there are syntax errors
+			ILexer l = GenerateLexer("\"\nvoid");
+			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.Literal, t.Kind);
+			Assert.AreEqual(new Location(1, 1), t.Location);
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.Void, t.Kind);
+			Assert.AreEqual(new Location(1, 2), t.Location);
+			Assert.AreEqual(Tokens.EOF, l.NextToken().Kind);
+		}
+		
+		[Test]
+		public void MultilineString()
+		{
+			ILexer l = GenerateLexer("@\"\r\n\"");
+			Token t = l.NextToken();
+			Assert.AreEqual(new Location(1, 1), t.Location);
+			Assert.AreEqual(new Location(2, 2), t.EndLocation);
 		}
 	}
 }

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Parser.VB;
 using System;
 using System.IO;
 using ICSharpCode.NRefactory.Parser;
@@ -21,79 +22,39 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 		
 		[Test]
-		public void Test1()
-		{
-			ILexer l = GenerateLexer("public");
-			Token t = l.NextToken();
-			Assert.AreEqual(new Location(1, 1), t.Location);
-		}
-		[Test]
-		public void Test2()
-		{
-			ILexer l = GenerateLexer("public static");
-			Token t = l.NextToken();
-			t = l.NextToken();
-			Assert.AreEqual(new Location(8, 1), t.Location);
-		}
-		[Test]
-		public void TestReturn()
+		public void TestNewLine()
 		{
 			ILexer l = GenerateLexer("public\nstatic");
 			Token t = l.NextToken();
-			t = l.NextToken();
-			t = l.NextToken();
-			Assert.AreEqual(new Location(1, 2), t.Location);
-		}
-		[Test]
-		public void TestSpace()
-		{
-			ILexer l = GenerateLexer("  public");
-			Token t = l.NextToken();
-			Assert.AreEqual(new Location(3, 1), t.Location);
-		}
-		[Test]
-		public void TestOctNumber()
-		{
-			ILexer l = GenerateLexer("0142");
-			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.Public, t.Kind);
 			Assert.AreEqual(new Location(1, 1), t.Location);
-		}
-		[Test]
-		public void TestFloationPointNumber()
-		{
-			ILexer l = GenerateLexer("0.142 public");
-			Token t = l.NextToken();
-			Assert.AreEqual(new Location(1, 1), t.Location);
+			Assert.AreEqual(new Location(7, 1), t.EndLocation);
 			t = l.NextToken();
+			Assert.AreEqual(Tokens.EOL, t.Kind);
 			Assert.AreEqual(new Location(7, 1), t.Location);
-		}
-		[Test]
-		public void TestNoFloationPointNumber()
-		{
-			ILexer l = GenerateLexer("5.a");
-			Token t = l.NextToken();
-			Assert.AreEqual(new Location(1, 1), t.Location);
+			Assert.AreEqual(new Location(1, 2), t.EndLocation);
 			t = l.NextToken();
-			Assert.AreEqual(new Location(2, 1), t.Location);
-			t = l.NextToken();
-			Assert.AreEqual(new Location(3, 1), t.Location);
-		}
-		[Test]
-		public void TestNumber()
-		{
-			ILexer l = GenerateLexer("142\nstatic");
-			Token t = l.NextToken();
-			t = l.NextToken();
-			t = l.NextToken();
+			Assert.AreEqual(Tokens.Static, t.Kind);
 			Assert.AreEqual(new Location(1, 2), t.Location);
+			Assert.AreEqual(new Location(7, 2), t.EndLocation);
 		}
+		
 		[Test]
-		public void TestNumber2()
+		public void TestCarriageReturnNewLine()
 		{
-			ILexer l = GenerateLexer("14 static");
+			ILexer l = GenerateLexer("public\r\nstatic");
 			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.Public, t.Kind);
+			Assert.AreEqual(new Location(1, 1), t.Location);
+			Assert.AreEqual(new Location(7, 1), t.EndLocation);
 			t = l.NextToken();
-			Assert.AreEqual(new Location(4, 1), t.Location);
+			Assert.AreEqual(Tokens.EOL, t.Kind);
+			Assert.AreEqual(new Location(7, 1), t.Location);
+			Assert.AreEqual(new Location(1, 2), t.EndLocation);
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.Static, t.Kind);
+			Assert.AreEqual(new Location(1, 2), t.Location);
+			Assert.AreEqual(new Location(7, 2), t.EndLocation);
 		}
 	}
 }

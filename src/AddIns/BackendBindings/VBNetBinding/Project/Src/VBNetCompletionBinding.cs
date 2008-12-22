@@ -110,33 +110,33 @@ namespace VBNetBinding
 		{
 			string lineText = editor.Document.GetText(curLine.Offset, curLine.Length);
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new System.IO.StringReader(lineText));
-			if (lexer.NextToken().kind != VBTokens.Dim)
+			if (lexer.NextToken().Kind != VBTokens.Dim)
 				return false;
-			if (lexer.NextToken().kind != VBTokens.Identifier)
+			if (lexer.NextToken().Kind != VBTokens.Identifier)
 				return false;
-			if (lexer.NextToken().kind != VBTokens.As)
+			if (lexer.NextToken().Kind != VBTokens.As)
 				return false;
 			Token t1 = lexer.NextToken();
-			if (t1.kind != VBTokens.QuestionMark)
+			if (t1.Kind != VBTokens.QuestionMark)
 				return false;
 			Token t2 = lexer.NextToken();
-			if (t2.kind != VBTokens.Assign)
+			if (t2.Kind != VBTokens.Assign)
 				return false;
-			string expr = lineText.Substring(t2.col);
+			string expr = lineText.Substring(t2.Location.Column);
 			LoggingService.Debug("DeclarationTypeInference: >" + expr + "<");
 			ResolveResult rr = ParserService.Resolve(new ExpressionResult(expr),
 			                                         editor.ActiveTextAreaControl.Caret.Line + 1,
-			                                         t2.col, editor.FileName,
+			                                         t2.Location.Column, editor.FileName,
 			                                         editor.Document.TextContent);
 			if (rr != null && rr.ResolvedType != null) {
-				ClassFinder context = new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line, t1.col);
+				ClassFinder context = new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line, t1.Location.Column);
 				VBNetAmbience ambience = new VBNetAmbience();
 				if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
 					ambience.ConversionFlags = ConversionFlags.None;
 				else
 					ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames;
 				string typeName = ambience.Convert(rr.ResolvedType);
-				editor.Document.Replace(curLine.Offset + t1.col - 1, 1, typeName);
+				editor.Document.Replace(curLine.Offset + t1.Location.Column - 1, 1, typeName);
 				editor.ActiveTextAreaControl.Caret.Column += typeName.Length - 1;
 				return true;
 			}

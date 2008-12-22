@@ -1682,7 +1682,7 @@ SimpleNonInvocationExpression<out Expression pexpr>
 				]
 		|	(. string val = String.Empty; .)
 			( PrimitiveTypeName<out val> | "Object" (. val = "System.Object"; .) )
-			"." (. t.val = ""; .) Identifier (. pexpr = new MemberReferenceExpression(new TypeReferenceExpression(new TypeReference(val, true)), t.val); .)
+			(. pexpr = new TypeReferenceExpression(new TypeReference(val, true)); .)
 		|	"Me"							(. pexpr = new ThisReferenceExpression(); .)
 		|	(. Expression retExpr = null; .)
 			( "MyBase"										(. retExpr = new BaseReferenceExpression(); .)

@@ -667,13 +667,13 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			int attribStart = csharp ? NR.Parser.CSharp.Tokens.OpenSquareBracket : NR.Parser.VB.Tokens.LessThan;
 			int attribEnd = csharp ? NR.Parser.CSharp.Tokens.CloseSquareBracket : NR.Parser.VB.Tokens.GreaterThan;
 			
-			while (t.kind != eof) {
-				if (t.kind == attribStart)
+			while (t.Kind != eof) {
+				if (t.Kind == attribStart)
 					stack.Push(lastPos);
 				if (t.EndLocation.Y >= type.Region.BeginLine)
 					break;
 				lastPos = t.EndLocation;
-				if (t.kind == attribEnd && stack.Count > 0)
+				if (t.Kind == attribEnd && stack.Count > 0)
 					lastPos = stack.Pop();
 				t = lexer.NextToken();
 			}
@@ -681,7 +681,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			stack = null;
 			
 			// Skip until end of type
-			while (t.kind != eof) {
+			while (t.Kind != eof) {
 				if (t.EndLocation.Y > type.BodyRegion.EndLine)
 					break;
 				t = lexer.NextToken();

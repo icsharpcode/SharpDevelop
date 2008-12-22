@@ -3897,14 +3897,9 @@ out val);
 #line  1684 "VBNET.ATG" 
 					val = "System.Object"; 
 				} else SynErr(257);
-				Expect(16);
 
 #line  1685 "VBNET.ATG" 
-				t.val = ""; 
-				Identifier();
-
-#line  1685 "VBNET.ATG" 
-				pexpr = new MemberReferenceExpression(new TypeReferenceExpression(new TypeReference(val, true)), t.val); 
+				pexpr = new TypeReferenceExpression(new TypeReference(val, true)); 
 				break;
 			}
 			case 139: {

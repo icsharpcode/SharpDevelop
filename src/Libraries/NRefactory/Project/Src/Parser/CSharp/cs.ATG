@@ -1874,7 +1874,7 @@ PrimaryExpr<out Expression pexpr>
 		| "ushort" (. val = "System.UInt16"; .)
 		| "void" (. val = "System.Void"; .)
 		)
-		MemberAccess<out pexpr, new TypeReferenceExpression(new TypeReference(val, true)) { StartLocation = t.Location, EndLocation = t.EndLocation } >
+		(. pexpr = new TypeReferenceExpression(new TypeReference(val, true)) { StartLocation = t.Location, EndLocation = t.EndLocation }; .)
 		
 		/*--- this access: */
 	|	"this"                              (. pexpr = new ThisReferenceExpression(); .)
@@ -1947,7 +1947,6 @@ MemberAccess<out Expression expr, Expression target>
 				target = new TypeReferenceExpression(type) { StartLocation = t.Location, EndLocation = t.EndLocation };
 			}
 		}
-		t.val = ""; // required for TypeReferenceExpressionTests.StandaloneIntReferenceExpression hack
 	.)
 	"."
 	Identifier

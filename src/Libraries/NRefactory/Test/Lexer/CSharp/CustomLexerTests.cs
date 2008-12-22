@@ -26,20 +26,20 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		public void TestEmptyBlock()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("{}+"));
-			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().Kind);
+			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().Kind);
+			Assert.AreEqual(Tokens.Plus, lexer.NextToken().Kind);
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().Kind);
 		}
 		
 		void CheckIdentifier(string text, string actualIdentifier)
 		{
 			ILexer lexer = GenerateLexer(new StringReader(text));
 			Token t = lexer.NextToken();
-			Assert.AreEqual(Tokens.Identifier, t.kind);
-			Assert.AreEqual(actualIdentifier, t.val);
+			Assert.AreEqual(Tokens.Identifier, t.Kind);
+			Assert.AreEqual(actualIdentifier, t.Value);
 			t = lexer.NextToken();
-			Assert.AreEqual(Tokens.EOF, t.kind);
+			Assert.AreEqual(Tokens.EOF, t.Kind);
 			Assert.AreEqual("", lexer.Errors.ErrorOutput);
 		}
 		
@@ -48,9 +48,9 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			ILexer lexer = GenerateLexer(new StringReader("yield"));
 			Token t = lexer.NextToken();
-			Assert.AreEqual(Tokens.Yield, t.kind);
-			Assert.IsTrue(Tokens.IdentifierTokens[t.kind]);
-			Assert.AreEqual("yield", t.val);
+			Assert.AreEqual(Tokens.Yield, t.Kind);
+			Assert.IsTrue(Tokens.IdentifierTokens[t.Kind]);
+			Assert.AreEqual("yield", t.Value);
 		}
 		
 		[Test]
@@ -99,24 +99,24 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		public void TestSkippedEmptyBlock()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("{}+"));
-			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().Kind);
 			lexer.NextToken();
 			lexer.SkipCurrentBlock(Tokens.CloseCurlyBrace);
-			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
-			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.Kind);
+			Assert.AreEqual(Tokens.Plus, lexer.NextToken().Kind);
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().Kind);
 		}
 		
 		[Test]
 		public void TestSkippedNonEmptyBlock()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("{ TestMethod('}'); /* }}} */ while(1) {break;} }+"));
-			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().Kind);
 			lexer.NextToken();
 			lexer.SkipCurrentBlock(Tokens.CloseCurlyBrace);
-			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
-			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.Kind);
+			Assert.AreEqual(Tokens.Plus, lexer.NextToken().Kind);
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().Kind);
 		}
 		
 		[Test]
@@ -124,32 +124,32 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			ILexer lexer = GenerateLexer(new StringReader("{ TestMethod(\"}\"); // }}}\n" +
 			                                              "while(1) {break;} }+"));
-			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().Kind);
 			lexer.NextToken();
 			lexer.StartPeek();
 			lexer.Peek();
 			lexer.Peek();
 			lexer.Peek();
 			lexer.SkipCurrentBlock(Tokens.CloseCurlyBrace);
-			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
-			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.Kind);
+			Assert.AreEqual(Tokens.Plus, lexer.NextToken().Kind);
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().Kind);
 		}
 		
 		[Test]
 		public void TestSkippedEmptyBlockWithPeek()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("{}+"));
-			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().Kind);
 			lexer.NextToken();
 			lexer.StartPeek();
 			lexer.Peek();
 			lexer.Peek();
 			lexer.Peek();
 			lexer.SkipCurrentBlock(Tokens.CloseCurlyBrace);
-			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
-			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.Kind);
+			Assert.AreEqual(Tokens.Plus, lexer.NextToken().Kind);
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().Kind);
 		}
 	}
 }

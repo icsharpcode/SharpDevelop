@@ -121,14 +121,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					InspectedCall call = new InspectedCall(Location.Empty, null);
 					call.parent = call;
 					while ((token = lexer.NextToken()) != null
-					       && token.kind != eofToken
+					       && token.Kind != eofToken
 					       && token.Location < cursorLocation)
 					{
-						if (token.kind == commaToken) {
+						if (token.Kind == commaToken) {
 							call.commas.Add(token.Location);
-						} else if (token.kind == openParensToken || token.kind == openBracketToken || token.kind == openBracesToken) {
+						} else if (token.Kind == openParensToken || token.Kind == openBracketToken || token.Kind == openBracesToken) {
 							call = new InspectedCall(token.Location, call);
-						} else if (token.kind == closeParensToken || token.kind == closeBracketToken || token.kind == closeBracesToken) {
+						} else if (token.Kind == closeParensToken || token.Kind == closeBracketToken || token.Kind == closeBracesToken) {
 							call = call.parent;
 						}
 					}

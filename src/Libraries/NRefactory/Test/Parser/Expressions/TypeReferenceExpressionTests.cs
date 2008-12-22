@@ -53,12 +53,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void StandaloneIntReferenceExpression()
 		{
-			// this is propably not what really should be returned for a standalone int
-			// reference, but it has to stay consistent because NRefactoryResolver depends
-			// on this trick.
-			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("int", true);
-			Assert.AreEqual("", fre.MemberName);
-			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.Type);
+			TypeReferenceExpression tre = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("int");
+			Assert.AreEqual("System.Int32", tre.TypeReference.Type);
 		}
 		#endregion
 		
@@ -74,12 +70,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBStandaloneIntReferenceExpression()
 		{
-			// this is propably not what really should be returned for a standalone int
-			// reference, but it has to stay consistent because NRefactoryResolver depends
-			// on this trick.
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("inTeGer", true);
-			Assert.AreEqual("", fre.MemberName);
-			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.Type);
+			TypeReferenceExpression tre = ParseUtilVBNet.ParseExpression<TypeReferenceExpression>("inTeGer");
+			Assert.AreEqual("System.Int32", tre.TypeReference.Type);
 		}
 		
 		[Test]
@@ -93,12 +85,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBStandaloneObjectReferenceExpression()
 		{
-			// this is propably not what really should be returned for a standalone int
-			// reference, but it has to stay consistent because NRefactoryResolver depends
-			// on this trick.
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("obJeCt", true);
-			Assert.AreEqual("", fre.MemberName);
-			Assert.AreEqual("System.Object", ((TypeReferenceExpression)fre.TargetObject).TypeReference.Type);
+			TypeReferenceExpression tre = ParseUtilVBNet.ParseExpression<TypeReferenceExpression>("obJect");
+			Assert.AreEqual("System.Object", tre.TypeReference.Type);
 		}
 		#endregion
 	}
