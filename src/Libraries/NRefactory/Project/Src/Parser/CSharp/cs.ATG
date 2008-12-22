@@ -364,7 +364,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier                      (. newType.Name = t.val; .)
 	
 	/* .NET 2.0 */
-	[ TypeParameterList<templates> ] (. SetParentNonNullable(templates, newType); .)
+	[ TypeParameterList<templates> ]
 	
 	[ ClassBase<out names>          (. newType.BaseTypes = names; .) ]
 	
@@ -389,7 +389,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier                       (. newType.Name = t.val; .)
 	
 	/* .NET 2.0 */
-	[ TypeParameterList<templates> ] (. SetParentNonNullable(templates, newType); .)
+	[ TypeParameterList<templates> ]
 	
 	[ StructInterfaces<out names>    (. newType.BaseTypes = names; .) ]
 	
@@ -413,7 +413,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier                        (. newType.Name = t.val; .)
 	
 	/* .NET 2.0 */
-	[ TypeParameterList<templates> ] (. SetParentNonNullable(templates, newType); .)
+	[ TypeParameterList<templates> ]
 	
 	[ InterfaceBase<out names>       (. newType.BaseTypes = names; .) ]
 	
@@ -451,7 +451,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier                       (. delegateDeclr.Name = t.val; .)
 	
 	/* .NET 2.0 */
-	[ TypeParameterList<templates> ] (. SetParentNonNullable(templates, delegateDeclr); .)
+	[ TypeParameterList<templates> ]
 	
 	"(" [ FormalParameterList<p> (. delegateDeclr.Parameters = p; .)
 	] ")"
@@ -778,9 +778,8 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			Templates = templates,
 			IsExtensionMethod = isExtensionMethod
 		};
-		SetParentNonNullable(templates, methodDeclaration);
 		if (explicitInterface != null)
-			methodDeclaration.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident));
+			SafeAdd(methodDeclaration, methodDeclaration.InterfaceImplementations, new InterfaceImplementation(explicitInterface, qualident));
 		compilationUnit.AddChild(methodDeclaration);
 		compilationUnit.BlockStart(methodDeclaration);
 	.)
@@ -833,7 +832,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	[                                      (. m.Check(Modifiers.Constructors); .)
 		ConstructorInitializer<out init>
 	] (. 
-	     ConstructorDeclaration cd = new ConstructorDeclaration(name, m.Modifier, p, init, attributes); 
+	     ConstructorDeclaration cd = new ConstructorDeclaration(name, m.Modifier, p, init, attributes);
 	     cd.StartLocation = startPos;
 	     cd.EndLocation   = t.EndLocation;
 	  .)
@@ -865,7 +864,6 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			StartLocation = m.GetDeclarationLocation(startPos),
 			EndLocation = endPos
 		};
-		SetParent(parameters, operatorDeclaration);
 		compilationUnit.AddChild(operatorDeclaration);
 	.)
 	
@@ -892,22 +890,19 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		(. Location endPos = t.Location; .)
 		")" ( Block<out stmt> | ";" )
 		(.
-			List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
-			parameters.Add(new ParameterDeclarationExpression(firstType, firstName));
-			if (secondType != null) {
-				parameters.Add(new ParameterDeclarationExpression(secondType, secondName));
-			}
 			OperatorDeclaration operatorDeclaration = new OperatorDeclaration {
 				Modifier = m.Modifier,
 				Attributes = attributes,
-				Parameters = parameters,
 				TypeReference = type,
 				OverloadableOperator = op,
 				Body = (BlockStatement)stmt,
 				StartLocation = m.GetDeclarationLocation(startPos),
 				EndLocation = endPos
 			};
-			SetParent(parameters, operatorDeclaration);
+			SafeAdd(operatorDeclaration, operatorDeclaration.Parameters, new ParameterDeclarationExpression(firstType, firstName));
+			if (secondType != null) {
+				SafeAdd(operatorDeclaration, operatorDeclaration.Parameters, new ParameterDeclarationExpression(secondType, secondName));
+			}
 			compilationUnit.AddChild(operatorDeclaration);
 		.)
 		
@@ -984,7 +979,6 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					methodDeclaration.EndLocation   = t.EndLocation;
 					methodDeclaration.IsExtensionMethod = isExtensionMethod;
 					methodDeclaration.Templates = templates;
-					SetParentNonNullable(templates, methodDeclaration);
 					compilationUnit.AddChild(methodDeclaration);
 				                                       .)
 				{ TypeParameterConstraintsClause<templates> }
@@ -1016,7 +1010,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			         indexer.StartLocation = m.GetDeclarationLocation(startPos);
 			         indexer.EndLocation   = t.EndLocation;
 			         if (explicitInterface != null)
-						indexer.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, "this"));
+						SafeAdd(indexer, indexer.InterfaceImplementations, new InterfaceImplementation(explicitInterface, "this"));
 			         PropertyGetRegion getRegion;
 			         PropertySetRegion setRegion;
 			       .) 
@@ -1066,7 +1060,7 @@ InterfaceMemberDecl
 	[ "new" (. mod = Modifiers.New; startLocation = t.Location; .) ]
 	(
 		/*--- interface void method (procedure) declaration: */
-		IF (NotVoidPointer()) "void" (. if (startLocation.X == -1) startLocation = t.Location; .)
+		IF (NotVoidPointer()) "void" (. if (startLocation.IsEmpty) startLocation = t.Location; .)
 		Identifier (. name = t.val; .)
 		[ TypeParameterList<templates> ]
 		"(" [ FormalParameterList<parameters> ] ")"
@@ -1077,11 +1071,10 @@ InterfaceMemberDecl
 				Parameters = parameters, Attributes = attributes, Templates = templates,
 				StartLocation = startLocation, EndLocation = t.EndLocation
 			};
-			SetParentNonNullable(templates, md);
 			compilationUnit.AddChild(md);
 		.)
 		| (
-			Type<out type> (. if (startLocation.X == -1) startLocation = t.Location; .)
+			Type<out type> (. if (startLocation.IsEmpty) startLocation = t.Location; .)
 			(
 				Identifier            (. name = t.val; Location qualIdentEndLocation = t.EndLocation; .)
 				(
@@ -1096,26 +1089,37 @@ InterfaceMemberDecl
 								Parameters = parameters, Attributes = attributes, Templates = templates,
 								StartLocation = startLocation, EndLocation = t.EndLocation
 							};
-							SetParentNonNullable(templates, md);
 							compilationUnit.AddChild(md);
 						.)
 					/*--- interface property declaration: */
-					|                   (. PropertyDeclaration pd = new PropertyDeclaration(name, type, mod, attributes); compilationUnit.AddChild(pd); .)
-					"{" (. Location bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. pd.GetRegion = getBlock; pd.SetRegion = setBlock; pd.StartLocation = startLocation; pd.EndLocation = qualIdentEndLocation; pd.BodyStart = bodyStart; pd.BodyEnd = t.EndLocation; .)
+					|
+						(. PropertyDeclaration pd = new PropertyDeclaration(name, type, mod, attributes);
+						   compilationUnit.AddChild(pd); .)
+						"{"
+							(. Location bodyStart = t.Location;.)
+							InterfaceAccessors<out getBlock, out setBlock>
+						"}" (. pd.GetRegion = getBlock; pd.SetRegion = setBlock; pd.StartLocation = startLocation; pd.EndLocation = qualIdentEndLocation; pd.BodyStart = bodyStart; pd.BodyEnd = t.EndLocation; .)
 				)
 				/*--- interface indexer declaration: */
-			|	"this" "[" FormalParameterList<parameters> "]" (.Location bracketEndLocation = t.EndLocation; .)  (. IndexerDeclaration id = new IndexerDeclaration(type, parameters, mod, attributes); compilationUnit.AddChild(id); .)
-				"{" (. Location bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. id.GetRegion = getBlock; id.SetRegion = setBlock; id.StartLocation = startLocation;  id.EndLocation = bracketEndLocation; id.BodyStart = bodyStart; id.BodyEnd = t.EndLocation;.)
+			|	"this" "[" FormalParameterList<parameters> "]"
+				(. Location bracketEndLocation = t.EndLocation; .)
+				(. IndexerDeclaration id = new IndexerDeclaration(type, parameters, mod, attributes);
+				   compilationUnit.AddChild(id); .)
+				"{" (. Location bodyStart = t.Location;.)
+				InterfaceAccessors<out getBlock, out setBlock>
+				"}"
+				(. id.GetRegion = getBlock; id.SetRegion = setBlock; id.StartLocation = startLocation;  id.EndLocation = bracketEndLocation; id.BodyStart = bodyStart; id.BodyEnd = t.EndLocation;.)
 			)
 			/*--- interface event declaration: */
-			|	"event" (. if (startLocation.X == -1) startLocation = t.Location; .)
+			|	"event" (. if (startLocation.IsEmpty) startLocation = t.Location; .)
 				Type<out type> Identifier
 				(.	EventDeclaration ed = new EventDeclaration {
 						TypeReference = type, Name = t.val, Modifier = mod, Attributes = attributes
 					};
 					compilationUnit.AddChild(ed);
 				.)
-			";"                        (. ed.StartLocation = startLocation; ed.EndLocation = t.EndLocation; .)
+			";"
+			(. ed.StartLocation = startLocation; ed.EndLocation = t.EndLocation; .)
 		)
 	)
 .
@@ -1507,7 +1511,6 @@ EmbeddedStatement<out Statement statement>
 		  "{" SwitchSections<switchSections>
 		  "}"
 		(. statement = new SwitchStatement(expr, switchSections); .)
-		(. SetParent(switchSections, statement); .)
 		
 		/*--- iteration statements (while, do, for, foreach): */
 	|	"while" "(" Expr<out expr> ")"
@@ -1523,10 +1526,7 @@ EmbeddedStatement<out Statement statement>
 		  [ Expr<out expr> ] ";"
 		  [ ForIterator<out iterator> ] ")"
 		  EmbeddedStatement<out embeddedStatement> 
-		  (. statement = new ForStatement(initializer, expr, iterator, embeddedStatement); 
-		     SetParent(initializer, statement);
-		     SetParent(iterator, statement);
-		  .)
+		  (. statement = new ForStatement(initializer, expr, iterator, embeddedStatement); .)
 	
 	|	"foreach" "(" Type<out type> Identifier   (. string varName = t.val; .)
 		"in" Expr<out expr> ")"
@@ -1597,8 +1597,6 @@ IfStatement<out Statement statement>
 		                               (elseStatement as IfElseStatement).TrueStatement[0]));
 		(statement as IfElseStatement).ElseIfSections.AddRange((elseStatement as IfElseStatement).ElseIfSections);
 		(statement as IfElseStatement).FalseStatement = (elseStatement as IfElseStatement).FalseStatement;
-		SetParent((statement as IfElseStatement).FalseStatement, statement);
-		SetParent((statement as IfElseStatement).ElseIfSections, statement);
 		}
 	.)
 .
@@ -2049,7 +2047,7 @@ ShortedLambdaExpression<IdentifierExpression ident, out Expression pexpr>
 	/* not an IdentifierExpression, but a short lambda expression*/
 	(.
 		lambda.StartLocation = ident.StartLocation;
-		lambda.Parameters.Add(new ParameterDeclarationExpression(null, ident.Identifier));
+		SafeAdd(lambda, lambda.Parameters, new ParameterDeclarationExpression(null, ident.Identifier));
 		lambda.Parameters[0].StartLocation = ident.StartLocation;
 		lambda.Parameters[0].EndLocation = ident.EndLocation;
 	.)

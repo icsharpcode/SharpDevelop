@@ -19,8 +19,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 	{
 		Stack<INode> nodeStack = new Stack<INode>();
 		
-		public bool StrictCheck;
-		
 		public CheckParentVisitor()
 		{
 			nodeStack.Push(null);
@@ -34,13 +32,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		protected override void EndVisit(INode node)
 		{
 			Assert.AreSame(node, nodeStack.Pop(), "nodeStack was corrupted!");
-			if (StrictCheck
-			    || !(node is TypeReference) && !(node is InterfaceImplementation)
-			    && !(node is ParameterDeclarationExpression)
-			    && !(node is ICSharpCode.NRefactory.Ast.Attribute) && !(node is AttributeSection))
-			{
-				Assert.AreSame(nodeStack.Peek(), node.Parent, "node " + node + " is missing parent: " + nodeStack.Peek());
-			}
+			Assert.AreSame(nodeStack.Peek(), node.Parent, "node " + node + " is missing parent: " + nodeStack.Peek());
 		}
 	}
 }

@@ -377,8 +377,12 @@ namespace NRefactoryASTGenerator
 				else
 					ex = GetDefaultValue("value", field);
 				p.Setter.Assign(Easy.Var(field.Name), ex);
-				if (typeof(INode).IsAssignableFrom(field.FieldType) && typeof(INullable).IsAssignableFrom(field.FieldType)) {
-					p.SetStatements.Add(new CodeSnippetStatement("\t\t\t\tif (!" +field.Name+".IsNull) "+field.Name+".Parent = this;"));
+				if (typeof(INode).IsAssignableFrom(field.FieldType)) {
+					if (typeof(INullable).IsAssignableFrom(field.FieldType)) {
+						p.SetStatements.Add(new CodeSnippetStatement("\t\t\t\tif (!" +field.Name+".IsNull) "+field.Name+".Parent = this;"));
+					} else {
+						p.SetStatements.Add(new CodeSnippetStatement("\t\t\t\t"+field.Name+".Parent = this;"));
+					}
 				}
 			}
 			foreach (ConstructorInfo ctor in type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {

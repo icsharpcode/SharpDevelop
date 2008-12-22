@@ -67,9 +67,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 ";
 			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(program);
-			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
-			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
-			Assert.AreEqual(3, md.StartLocation.X, "StartLocation.X");
+			Assert.AreEqual(2, md.StartLocation.Line, "StartLocation.Y");
+			Assert.AreEqual(2, md.EndLocation.Line, "EndLocation.Y");
+			Assert.AreEqual(3, md.StartLocation.Column, "StartLocation.X");
 			
 			// endLocation.X is currently 20. It should be 18, but that error is not critical
 			//Assert.AreEqual(18, md.EndLocation.X, "EndLocation.X");
@@ -85,9 +85,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 ";
 			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(program);
-			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
-			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
-			Assert.AreEqual(3, md.StartLocation.X, "StartLocation.X");
+			Assert.AreEqual(2, md.StartLocation.Line, "StartLocation.Y");
+			Assert.AreEqual(2, md.EndLocation.Line, "EndLocation.Y");
+			Assert.AreEqual(3, md.StartLocation.Column, "StartLocation.X");
 		}
 		
 		[Test]
@@ -307,9 +307,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			
 			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual(Modifiers.Public | Modifiers.Static, md.Modifier);
-			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
-			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
-			Assert.AreEqual(2, md.StartLocation.X, "StartLocation.X");
+			Assert.AreEqual(2, md.StartLocation.Line, "StartLocation.Y");
+			Assert.AreEqual(2, md.EndLocation.Line, "EndLocation.Y");
+			Assert.AreEqual(2, md.StartLocation.Column, "StartLocation.X");
 		}
 		
 		[Test]

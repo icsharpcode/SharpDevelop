@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Visitors;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
-
+using System.Text;
 using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Parser.VB
@@ -59,6 +59,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			errDist = 0;
 		}
 
+		public override void Parse()
+		{
+			ParseRoot();
+			compilationUnit.AcceptVisitor(new SetParentVisitor(), null);
+		}
+		
 		public override Expression ParseExpression()
 		{
 			lexer.NextToken();
@@ -69,6 +75,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (expr != null) {
 				expr.StartLocation = startLocation;
 				expr.EndLocation = t.EndLocation;
+				expr.AcceptVisitor(new SetParentVisitor(), null);
 			}
 			Expect(Tokens.EOF);
 			return expr;
@@ -88,6 +95,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					st.EndLocation = t.EndLocation;
 				else
 					st.EndLocation = la.Location;
+				st.AcceptVisitor(new SetParentVisitor(), null);
 			}
 			Expect(Tokens.EOF);
 			return st as BlockStatement;
@@ -103,6 +111,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			ClassBody(newType);
 			compilationUnit.BlockEnd();
 			Expect(Tokens.EOF);
+			newType.AcceptVisitor(new SetParentVisitor(), null);
 			return newType.Children;
 		}
 
@@ -304,19 +313,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (item != null) {
 				list.Add(item);
 				item.Parent = parent;
-			}
-		}
-		
-		static void SetParent<T>(List<T> list, INode parent) where T : class, INode
-		{
-			if (list != null) {
-				foreach (T x in list) {
-					
-					INullable xNull = x as INullable;
-					
-					if (xNull == null || !xNull.IsNull)
-						x.Parent = parent;
-				}
 			}
 		}
 	}

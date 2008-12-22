@@ -437,7 +437,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 						newType.Type       = ClassType.Class;
 					.)
 	Identifier			 (. newType.Name = t.val; .) 
-	TypeParameterList<newType.Templates> (. SetParent(newType.Templates, newType); .)
+	TypeParameterList<newType.Templates>
 	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	[ ClassBaseType<out typeRef> (. newType.BaseTypes.Add(typeRef); .) ]
@@ -474,7 +474,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 			newType.Type = ClassType.Struct;
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
-	TypeParameterList<newType.Templates>  (. SetParent(newType.Templates, newType); .)
+	TypeParameterList<newType.Templates>
 	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces);.) }
@@ -512,7 +512,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 			newType.Type = ClassType.Interface;
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
-	TypeParameterList<newType.Templates> (. SetParent(newType.Templates, newType); .)
+	TypeParameterList<newType.Templates>
 	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	{ InterfaceBase<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
@@ -531,11 +531,11 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 	.)
 	(
 		"Sub" Identifier (. delegateDeclr.Name = t.val; .)
-		TypeParameterList<delegateDeclr.Templates> (. SetParent(delegateDeclr.Templates, delegateDeclr); .)
+		TypeParameterList<delegateDeclr.Templates>
 		[ "(" [ FormalParameterList<p> ] ")" (. delegateDeclr.Parameters = p; .) ]
 		|
 		"Function" Identifier (. delegateDeclr.Name = t.val; .)
-		TypeParameterList<delegateDeclr.Templates> (. SetParent(delegateDeclr.Templates, delegateDeclr); .)
+		TypeParameterList<delegateDeclr.Templates>
 		[ "(" [ FormalParameterList<p> ] ")" (. delegateDeclr.Parameters = p; .) ]
 		[ "As" (. TypeReference type; .) TypeName<out type> (. delegateDeclr.ReturnType = type; .)]
 	)
@@ -609,7 +609,6 @@ EnumBody<TypeDeclaration newType>
 	{
 		EnumMemberDecl<out f>
 		(.
-			SetParent(f.Fields, f);
 			compilationUnit.AddChild(f);
 		.)
 		{ EndOfStmt } /* allow empty lines in body */
@@ -683,7 +682,6 @@ InterfaceMemberDecl
 				EndLocation = t.EndLocation,
 				Templates = templates
 			};
-			SetParent(templates, md);
 			compilationUnit.AddChild(md);
 		.)
 		|
@@ -711,7 +709,6 @@ InterfaceMemberDecl
 			md.StartLocation = startLocation;
 			md.EndLocation = t.EndLocation;
 			md.Templates = templates;
-			SetParent(templates, md);
 			compilationUnit.AddChild(md);
 		.)
 		EndOfStmt
@@ -824,7 +821,6 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
 				};
-				SetParent(templates, methodDeclaration);
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 		|
@@ -838,7 +834,6 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
 				};
-				SetParent(templates, methodDeclaration);
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 			
@@ -873,7 +868,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		(. Location endLocation = t.EndLocation; .)
 		EndOfStmt
 		(.
-			ConstructorDeclaration cd = new ConstructorDeclaration("New", m.Modifier, p, attributes); 
+			ConstructorDeclaration cd = new ConstructorDeclaration("New", m.Modifier, p, attributes);
 			cd.StartLocation = m.GetDeclarationLocation(startPos);
 			cd.EndLocation   = constructorEndLocation;
 			cd.Body = (BlockStatement)stmt;
@@ -922,7 +917,6 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					Templates     = templates,
 					InterfaceImplementations = implementsClause
 				};
-				SetParent(templates, methodDeclaration);
 				if (returnTypeAttributeSection != null) {
 					returnTypeAttributeSection.AttributeTarget = "return";
 					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
@@ -941,7 +935,6 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
 				};
-				SetParent(templates, methodDeclaration);
 				if (returnTypeAttributeSection != null) {
 					returnTypeAttributeSection.AttributeTarget = "return";
 					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
@@ -1043,7 +1036,6 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	(.
 		fd.EndLocation = t.EndLocation;
 		fd.Fields = variableDeclarators;
-		SetParent(variableDeclarators, fd);
 		compilationUnit.AddChild(fd);
 	.)
 	| /* 9.4 */
@@ -1425,9 +1417,9 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 		IF (IsObjectCreation()) "As" ObjectCreateExpression<out expr>
 		(.
 			if (expr is ObjectCreateExpression) {
-				type = ((ObjectCreateExpression)expr).CreateType;
+				type = ((ObjectCreateExpression)expr).CreateType.Clone();
 			} else {
-				type = ((ArrayCreateExpression)expr).CreateType;
+				type = ((ArrayCreateExpression)expr).CreateType.Clone();
 			}
 		.)
 	|
@@ -1458,8 +1450,7 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 						rank.Insert(0, dimension.Count - 1);
 						type.RankSpecifier = (int[])rank.ToArray(typeof(int));
 					}
-					expr = new ArrayCreateExpression(type, dimension);
-					SetParent(dimension, expr);
+					expr = new ArrayCreateExpression(type.Clone(), dimension);
 				}
 			} else if (rank != null) {
 				if(type.RankSpecifier != null) {
@@ -1757,7 +1748,6 @@ InvocationExpression<ref Expression pexpr>
 	")"
 	(.
 		pexpr = new InvocationExpression(pexpr, parameters);
-		SetParent(parameters, pexpr);
 	.)
 	(. pexpr.StartLocation = start; pexpr.EndLocation = t.Location; .)
 .
@@ -1965,14 +1955,12 @@ ObjectCreateExpression<out Expression oce>
 	(.
 		if (initializer == null) {
 			oce = new ObjectCreateExpression(type, arguments);
-			SetParent(arguments, oce);
 		} else {
 			if (dimensions == null) dimensions = new ArrayList();
 			dimensions.Insert(0, (arguments == null) ? 0 : Math.Max(arguments.Count - 1, 0));
 			type.RankSpecifier = (int[])dimensions.ToArray(typeof(int));
 			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer as CollectionInitializerExpression);
 			ace.Arguments = arguments;
-			SetParent(arguments, ace);
 			oce = ace;
 		}
 	.)
@@ -2119,10 +2107,6 @@ GroupByQueryOperator<out QueryExpressionGroupVBClause groupByClause>
 	"By" ExpressionRangeVariableDeclarationList<groupByClause.ByVariables>
 	"Into" ExpressionRangeVariableDeclarationList<groupByClause.IntoVariables>
 	(.
-		SetParent(groupByClause.GroupVariables, groupByClause);
-		SetParent(groupByClause.ByVariables, groupByClause);
-		SetParent(groupByClause.IntoVariables, groupByClause);
-		
 		groupByClause.EndLocation = t.EndLocation;
 	.)
 .
@@ -2154,7 +2138,6 @@ SelectQueryOperator<List<QueryExpressionClause> middleClauses>
 	.) =
 	"Select" ExpressionRangeVariableDeclarationList<selectClause.Variables>
 	(.
-		SetParent(selectClause.Variables, selectClause);
 		selectClause.EndLocation = t.Location;
 		middleClauses.Add(selectClause);
 	.)
@@ -2219,10 +2202,8 @@ AggregateQueryOperator<List<QueryExpressionClause> middleClauses>
 	{
 		QueryOperator<aggregateClause.MiddleClauses>
 	}
-	(. SetParent(aggregateClause.MiddleClauses, aggregateClause); .)
 	"Into" ExpressionRangeVariableDeclarationList<aggregateClause.IntoVariables>
 	(.
-		SetParent(aggregateClause.IntoVariables, aggregateClause);
 		aggregateClause.EndLocation = t.EndLocation;
 		middleClauses.Add(aggregateClause);
 	.)
@@ -2570,8 +2551,6 @@ Attribute<out ASTAttribute attribute>
 	[ AttributeArguments<positional, named> ]
 	(.
 		attribute  = new ASTAttribute(name, positional, named);
-		SetParent(positional, attribute);			
-		SetParent(named, attribute);			
 	.)
 .
 
@@ -2769,7 +2748,6 @@ LocalDeclarationStatement<out Statement statement>
 	VariableDeclarator<localVariableDeclaration.Variables>
 	{ "," VariableDeclarator<localVariableDeclaration.Variables> }
 	(.
-		SetParent(localVariableDeclaration.Variables, localVariableDeclaration);
 		statement = localVariableDeclaration;
 	.)
 .
@@ -2815,7 +2793,6 @@ EmbeddedStatement<out Statement statement>
 	[ "(" [ ArgumentList<out p> ] ")" ]
 	(.
 		statement = new RaiseEventStatement(name, p);
-		SetParent(p, statement);
 	.)
 	| /* 10.3 */
 	WithStatement<out statement>
@@ -2920,7 +2897,6 @@ EmbeddedStatement<out Statement statement>
 				EmbeddedStatement = embeddedStatement, 
 				NextExpressions = nextExpressions
 			};
-			SetParent(nextExpressions, statement);
 		.)
 	)
 	| /* 10.10.2.1 */
@@ -2991,9 +2967,6 @@ EmbeddedStatement<out Statement statement>
 			ifStatement.StartLocation = ifStartLocation;
 		.)
 		SingleLineStatementList<ifStatement.TrueStatement>
-		(.
-			SetParent(ifStatement.TrueStatement, ifStatement);
-		.)
 		[
 			"Else"
 			[ SingleLineStatementList<ifStatement.FalseStatement> ]
@@ -3010,7 +2983,6 @@ EmbeddedStatement<out Statement statement>
 		"Case" CaseClauses<out caseClauses> [ IF(IsNotStatementSeparator()) ":" ] EndOfStmt
 		(.
 			SwitchSection selectSection = new SwitchSection(caseClauses);
-			SetParent(caseClauses, selectSection);
 			selectSection.StartLocation = caseLocation;
 		.)
 		Block<out block>
@@ -3022,7 +2994,6 @@ EmbeddedStatement<out Statement statement>
 	}
 	(.
 		statement = new SwitchStatement(expr, selectSections);
-		SetParent(selectSections, statement);
 	.)
 	"End" "Select"
 	| (. OnErrorStatement onErrorStatement = null; .)
@@ -3064,7 +3035,6 @@ EmbeddedStatement<out Statement statement>
 			Block<out block>
 			(.
 				statement = new UsingStatement(resourceAquisition, block);
-				SetParent(resourceAquisition.Variables, resourceAquisition);
 			.)
 		|	Expr<out expr>
 			Block<out block>
@@ -3184,7 +3154,6 @@ ReDimClauseInternal<ref Expression expr>
 	NormalOrReDimArgumentList<out arguments, out canBeNormal, out canBeRedim>
 	")"
 	(.	expr = new InvocationExpression(expr, arguments);
-		SetParent(arguments, expr);
 		if (canBeRedim == false || canBeNormal && (la.kind == Tokens.Dot || la.kind == Tokens.OpenParenthesis)) {
 			if (this.Errors.Count == 0) {
 				// don't recurse on parse errors - could result in endless recursion

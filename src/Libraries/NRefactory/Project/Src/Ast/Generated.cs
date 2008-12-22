@@ -144,6 +144,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				createType = value ?? TypeReference.Null;
+				if (!createType.IsNull) createType.Parent = this;
 			}
 		}
 		
@@ -555,6 +556,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				castTo = value ?? TypeReference.Null;
+				if (!castTo.IsNull) castTo.Parent = this;
 			}
 		}
 		
@@ -613,6 +615,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -1052,6 +1055,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -1086,6 +1090,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -1127,6 +1132,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				returnType = value ?? TypeReference.Null;
+				if (!returnType.IsNull) returnType.Parent = this;
 			}
 		}
 		
@@ -1752,6 +1758,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				type = value ?? TypeReference.Null;
+				if (!type.IsNull) type.Parent = this;
 			}
 		}
 		
@@ -1840,6 +1847,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -1938,6 +1946,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -2057,6 +2066,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -2380,6 +2390,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -2531,6 +2542,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				interfaceType = value ?? TypeReference.Null;
+				if (!interfaceType.IsNull) interfaceType.Parent = this;
 			}
 		}
 		
@@ -2730,6 +2742,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -2949,6 +2962,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				createType = value ?? TypeReference.Null;
+				if (!createType.IsNull) createType.Parent = this;
 			}
 		}
 		
@@ -3138,6 +3152,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -3787,6 +3802,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				type = value ?? TypeReference.Null;
+				if (!type.IsNull) type.Parent = this;
 			}
 		}
 		
@@ -4558,6 +4574,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -4586,6 +4603,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -4914,6 +4932,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -4952,6 +4971,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -4979,6 +4999,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -5143,6 +5164,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				alias = value ?? TypeReference.Null;
+				if (!alias.IsNull) alias.Parent = this;
 			}
 		}
 		
@@ -5264,6 +5286,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		

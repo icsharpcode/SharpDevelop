@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void Error(string text, Location position)
 		{
-			errors.Error(position.Y, position.X, text);
+			errors.Error(position.Line, position.Column, text);
 		}
 		
 		void UnsupportedNode(INode node)

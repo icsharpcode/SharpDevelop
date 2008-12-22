@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		void Error(INode node, string message)
 		{
 			outputFormatter.PrintText(" // ERROR: " + message + Environment.NewLine);
-			errors.Error(node.StartLocation.Y, node.StartLocation.X, message);
+			errors.Error(node.StartLocation.Line, node.StartLocation.Column, message);
 		}
 		
 		void NotSupported(INode node)

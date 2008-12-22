@@ -109,6 +109,7 @@
     <Compile Include="Src\Visitors\LookupTableVisitor.cs" />
     <Compile Include="Src\Visitors\PrefixFieldsVisitor.cs" />
     <Compile Include="Src\Visitors\RenameIdentifierVisitor.cs" />
+    <Compile Include="Src\Visitors\SetParentVisitor.cs" />
     <Compile Include="Src\Visitors\ToCSharpConvertVisitor.cs" />
     <Compile Include="Src\Visitors\ToVBNetConvertVisitor.cs" />
     <Compile Include="Src\Visitors\ToVBNetRenameConflictingVariables.cs" />
@@ -138,7 +139,6 @@
     <Folder Include="Src\Parser" />
     <Folder Include="Src\Parser\CSharp" />
     <Content Include="Src\Parser\CSharp\cs.ATG" />
-    <Content Include="Src\Parser\CSharp\trace.txt" />
     <Folder Include="Src\Parser\Frames" />
     <Content Include="Src\Parser\Frames\Parser.frame" />
     <Content Include="Src\Parser\Frames\Scanner.frame" />

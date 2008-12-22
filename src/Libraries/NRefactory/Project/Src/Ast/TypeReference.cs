@@ -374,6 +374,10 @@ namespace ICSharpCode.NRefactory.Ast
 				return true;
 			}
 		}
+		public override TypeReference Clone()
+		{
+			return this;
+		}
 		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
 			return null;
@@ -402,7 +406,7 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		public override TypeReference Clone()
 		{
-			InnerClassTypeReference c = new InnerClassTypeReference(baseType.Clone(), Type, GenericTypes);
+			InnerClassTypeReference c = new InnerClassTypeReference(baseType.Clone(), Type, new List<TypeReference>());
 			CopyFields(this, c);
 			return c;
 		}
