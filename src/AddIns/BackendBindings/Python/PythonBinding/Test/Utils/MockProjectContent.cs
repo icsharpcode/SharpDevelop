@@ -348,6 +348,11 @@ namespace PythonBinding.Tests.Utils
 			if (ReferencedContentsChanged != null) {
 				ReferencedContentsChanged(this, e);
 			}
-		}		
+		}
+		
+		public bool InternalsVisibleTo(IProjectContent otherProjectContent)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

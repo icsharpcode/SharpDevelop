@@ -35,16 +35,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static List<IList<IMember>> LookupMember(
 			IReturnType type, string name, IClass callingClass,
-			LanguageProperties language, bool isInvocation, bool? isClassInInheritanceTree)
+			LanguageProperties language, bool isInvocation, bool? isAccessThoughReferenceOfCurrentClass)
 		{
 			if (language == null)
 				throw new ArgumentNullException("language");
 			
-			if (isClassInInheritanceTree == null) {
-				isClassInInheritanceTree = false;
+			if (isAccessThoughReferenceOfCurrentClass == null) {
+				isAccessThoughReferenceOfCurrentClass = false;
 				IClass underlyingClass = type.GetUnderlyingClass();
 				if (underlyingClass != null)
-					isClassInInheritanceTree = underlyingClass.IsTypeInInheritanceTree(callingClass);
+					isAccessThoughReferenceOfCurrentClass = underlyingClass.IsTypeInInheritanceTree(callingClass);
 			}
 			
 			IEnumerable<IMember> members;
@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				members = GetAllMembers(type).Where(m => language.NameComparer.Equals(m.Name, name));
 			}
 			
-			return LookupMember(members, callingClass, (bool)isClassInInheritanceTree, isInvocation);
+			return LookupMember(members, callingClass, (bool)isAccessThoughReferenceOfCurrentClass, isInvocation);
 		}
 		
 		class SignatureComparer : IEqualityComparer<IMethod>
@@ -120,14 +120,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static List<IList<IMember>> LookupMember(
 			IEnumerable<IMember> possibleMembers, IClass callingClass,
-			bool isClassInInheritanceTree, bool isInvocation)
+			bool isAccessThoughReferenceOfCurrentClass, bool isInvocation)
 		{
 //			Console.WriteLine("Possible members:");
 //			foreach (IMember m in possibleMembers) {
 //				Console.WriteLine("  " + m.DotNetName);
 //			}
 			
-			IEnumerable<IMember> accessibleMembers = possibleMembers.Where(member => member.IsAccessible(callingClass, isClassInInheritanceTree));
+			IEnumerable<IMember> accessibleMembers = possibleMembers.Where(member => member.IsAccessible(callingClass, isAccessThoughReferenceOfCurrentClass));
 			if (isInvocation) {
 				accessibleMembers = accessibleMembers.Where(IsInvocable);
 			}
@@ -202,24 +202,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public static List<IMember> GetAccessibleMembers(IReturnType rt, IClass callingClass, LanguageProperties language)
 		{
-			bool isClassInInheritanceTree = false;
+			bool isAccessThoughReferenceOfCurrentClass = false;
 			IClass underlyingClass = rt.GetUnderlyingClass();
 			if (underlyingClass != null)
-				isClassInInheritanceTree = underlyingClass.IsTypeInInheritanceTree(callingClass);
-			return GetAccessibleMembers(rt, callingClass, language, isClassInInheritanceTree);
+				isAccessThoughReferenceOfCurrentClass = underlyingClass.IsTypeInInheritanceTree(callingClass);
+			return GetAccessibleMembers(rt, callingClass, language, isAccessThoughReferenceOfCurrentClass);
 		}
 		
 		/// <summary>
 		/// Gets all accessible members, including indexers and constructors.
 		/// </summary>
-		public static List<IMember> GetAccessibleMembers(IReturnType rt, IClass callingClass, LanguageProperties language, bool isClassInInheritanceTree)
+		public static List<IMember> GetAccessibleMembers(IReturnType rt, IClass callingClass, LanguageProperties language, bool isAccessThoughReferenceOfCurrentClass)
 		{
 			if (language == null)
 				throw new ArgumentNullException("language");
 			
 			List<IMember> result = new List<IMember>();
 			foreach (var g in GetAllMembers(rt).GroupBy(m => m.Name, language.NameComparer).OrderBy(g2=>g2.Key)) {
-				foreach (var group in LookupMember(g, callingClass, isClassInInheritanceTree, false)) {
+				foreach (var group in LookupMember(g, callingClass, isAccessThoughReferenceOfCurrentClass, false)) {
 					result.AddRange(group);
 				}
 			}

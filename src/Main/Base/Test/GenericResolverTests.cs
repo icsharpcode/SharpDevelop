@@ -408,13 +408,13 @@ class Program {
 		d.T<char, int>('a', 1);
 		d.T<int, char>('a', 2);
 	}
-	protected virtual void T<A, B>(A a, B b) {
+	public virtual void T<A, B>(A a, B b) {
 	}
-	protected virtual void T<X, Y>(Y a, X b) {
+	public virtual void T<X, Y>(Y a, X b) {
 	}
 }
 class D : Program  {
-	protected override void T<X, Y>(X a, Y b) {
+	public override void T<X, Y>(X a, Y b) {
 		// overrides T<A,B> - type arguments are identified by position
 	}
 }";

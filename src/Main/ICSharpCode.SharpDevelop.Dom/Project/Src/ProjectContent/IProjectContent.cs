@@ -113,6 +113,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		/// <param name="entity">The entity to get the position from.</param>
 		FilePosition GetPosition(IEntity entity);
+		
+		/// <summary>
+		/// Gets whether internals in the project content are visible to the other project content.
+		/// </summary>
+		bool InternalsVisibleTo(IProjectContent otherProjectContent);
 	}
 	
 	[Flags]

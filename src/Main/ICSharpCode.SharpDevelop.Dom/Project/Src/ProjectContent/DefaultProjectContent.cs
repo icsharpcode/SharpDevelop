@@ -579,7 +579,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// check the outermost class (which is either public or internal)
 			while (c.DeclaringType != null)
 				c = c.DeclaringType;
-			return c.IsPublic || c.ProjectContent == this;
+			return c.IsPublic || c.ProjectContent.InternalsVisibleTo(this);
 		}
 		
 		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, GetClassOptions options)
@@ -965,6 +965,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (ReferencedContentsChanged != null) {
 				ReferencedContentsChanged(this, e);
 			}
+		}
+		
+		public bool InternalsVisibleTo(IProjectContent otherProjectContent)
+		{
+			return this == otherProjectContent;
 		}
 		
 		public static readonly IProjectContent DummyProjectContent = new DummyContent();

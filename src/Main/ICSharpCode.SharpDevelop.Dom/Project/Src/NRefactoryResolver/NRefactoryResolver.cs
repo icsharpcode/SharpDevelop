@@ -640,9 +640,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		#region ResolveMember
 		internal ResolveResult ResolveMember(IReturnType declaringType, string memberName,
 		                                     List<TypeReference> typeArguments, bool isInvocation,
-		                                     bool allowExtensionMethods, bool? isClassInInheritanceTree)
+		                                     bool allowExtensionMethods, bool? isAccessThoughReferenceOfCurrentClass)
 		{
-			List<IList<IMember>> members = MemberLookupHelper.LookupMember(declaringType, memberName, callingClass, languageProperties, isInvocation, isClassInInheritanceTree);
+			List<IList<IMember>> members = MemberLookupHelper.LookupMember(declaringType, memberName, callingClass, languageProperties, isInvocation, isAccessThoughReferenceOfCurrentClass);
 			List<IReturnType> typeArgs = null;
 			if (members != null && typeArguments != null && typeArguments.Count != 0) {
 				typeArgs = typeArguments.ConvertAll(r => TypeVisitor.CreateReturnType(r, this));

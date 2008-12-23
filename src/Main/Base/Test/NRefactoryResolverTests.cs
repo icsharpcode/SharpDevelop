@@ -1395,6 +1395,7 @@ class Method { }
 		
 		bool MemberExists(ArrayList members, string name)
 		{
+			Assert.IsNotNull(members);
 			foreach (object o in members) {
 				IMember m = o as IMember;
 				if (m != null && m.Name == name) return true;
@@ -2670,6 +2671,82 @@ class Flags {
 			
 			IReturnType rt = result.ResolvedClass.Attributes[0].AttributeType;
 			Assert.AreEqual("System.FlagsAttribute", rt.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void SD2_1487a()
+		{
+			string program = @"using System;
+class C2 : C1 {
+	public static void M() {
+		
+	}
+}
+class C1 {
+	protected static int Field;
+}";
+			MemberResolveResult mrr;
+			mrr = Resolve<MemberResolveResult>(program, "Field", 4, 1, ExpressionContext.Default);
+			Assert.AreEqual("C1.Field", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "C1.Field", 4, 1, ExpressionContext.Default);
+			Assert.AreEqual("C1.Field", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "C2.Field", 4, 1, ExpressionContext.Default);
+			Assert.AreEqual("C1.Field", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void SD2_1487b()
+		{
+			string program = @"using System;
+class C2 : C1 {
+	public static void M() {
+		
+	}
+}
+class C1 {
+	protected static int Field;
+}";
+			ArrayList arr = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
+			Assert.IsTrue(MemberExists(arr, "Field"));
+			
+			ResolveResult rr = Resolve(program, "C1", 4);
+			arr = rr.GetCompletionData(rr.CallingClass.ProjectContent);
+			Assert.IsTrue(MemberExists(arr, "Field"));
+			
+			rr = Resolve(program, "C2", 4);
+			arr = rr.GetCompletionData(rr.CallingClass.ProjectContent);
+			Assert.IsTrue(MemberExists(arr, "Field"));
+		}
+		
+		[Test]
+		public void ProtectedPrivateVisibilityTest()
+		{
+			string program = @"using System;
+class B : A {
+	void M(C c) {
+		
+	}
+	private int P2;
+	protected int Y;
+}
+class A {
+	private int P1;
+	protected int X;
+}
+class C : B {
+	private int P3;
+	protected int Z;
+}";
+			LocalResolveResult rr = Resolve<LocalResolveResult>(program, "c", 4);
+			ArrayList arr = rr.GetCompletionData(lastPC);
+			Assert.IsFalse(MemberExists(arr, "P1"));
+			Assert.IsTrue(MemberExists(arr, "P2"));
+			Assert.IsFalse(MemberExists(arr, "P3"));
+			Assert.IsTrue(MemberExists(arr, "X"));
+			Assert.IsTrue(MemberExists(arr, "Y"));
+			Assert.IsFalse(MemberExists(arr, "Z"));
 		}
 	}
 }
