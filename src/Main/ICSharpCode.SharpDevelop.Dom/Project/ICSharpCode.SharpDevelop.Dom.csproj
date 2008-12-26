@@ -72,6 +72,7 @@
     <Compile Include="Src\Implementations\AnonymousMethodReturnType.cs" />
     <Compile Include="Src\Implementations\ArrayReturnType.cs" />
     <Compile Include="Src\Implementations\AttributeReturnType.cs" />
+    <Compile Include="Src\Implementations\BoundTypeParameter.cs" />
     <Compile Include="Src\Implementations\CombinedReturnType.cs" />
     <Compile Include="Src\Implementations\CompoundClass.cs" />
     <Compile Include="Src\Implementations\ConstructedReturnType.cs" />

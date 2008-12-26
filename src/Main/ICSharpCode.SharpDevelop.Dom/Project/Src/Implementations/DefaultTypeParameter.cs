@@ -17,10 +17,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public static readonly IList<ITypeParameter> EmptyTypeParameterList = EmptyList<ITypeParameter>.Instance;
 		
-		string name;
-		IMethod method;
-		IClass targetClass;
-		int index;
+		readonly string name;
+		readonly IMethod method;
+		readonly IClass targetClass;
+		readonly int index;
 		IList<IReturnType> constraints = new List<IReturnType>();
 		
 		protected override void FreezeInternal()
@@ -177,6 +177,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 				c.ClassType = ClassType.Interface;
 			}
 			return c;
+		}
+		
+		/// <summary>
+		/// Gets the type that was used to bind this type parameter.
+		/// This property returns null for generic methods/classes, it
+		/// is non-null only for constructed versions of generic methods.
+		/// </summary>
+		public virtual IReturnType BoundTo {
+			get { return null; }
+		}
+		
+		/// <summary>
+		/// If this type parameter was bound, returns the unbound version of it.
+		/// </summary>
+		public virtual ITypeParameter UnboundTypeParameter {
+			get { return this; }
 		}
 	}
 }

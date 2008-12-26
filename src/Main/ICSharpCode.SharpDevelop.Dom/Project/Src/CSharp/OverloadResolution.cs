@@ -151,16 +151,28 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					if (!success) {
 						candidate.Status = CandidateStatus.TypeInferenceFailed;
 					}
-					if (typeArguments != null) {
-						// apply inferred type arguments
-						method = (IMethod)method.CreateSpecializedMember();
-						method.ReturnType = ConstructedReturnType.TranslateType(method.ReturnType, typeArguments, true);
-						for (int i = 0; i < method.Parameters.Count; ++i) {
-							method.Parameters[i].ReturnType = ConstructedReturnType.TranslateType(method.Parameters[i].ReturnType, typeArguments, true);
-						}
-						candidate.Method = method;
-					}
+					candidate.Method = ApplyTypeArgumentsToMethod(method, typeArguments);
 				}
+			}
+		}
+		
+		static IMethod ApplyTypeArgumentsToMethod(IMethod genericMethod, IList<IReturnType> typeArguments)
+		{
+			if (typeArguments != null && typeArguments.Count > 0) {
+				// apply inferred type arguments
+				IMethod method = (IMethod)genericMethod.CreateSpecializedMember();
+				method.ReturnType = ConstructedReturnType.TranslateType(method.ReturnType, typeArguments, true);
+				for (int i = 0; i < method.Parameters.Count; ++i) {
+					method.Parameters[i].ReturnType = ConstructedReturnType.TranslateType(method.Parameters[i].ReturnType, typeArguments, true);
+				}
+				for (int i = 0; i < Math.Min(typeArguments.Count, method.TypeParameters.Count); i++) {
+					var tp = new BoundTypeParameter(method.TypeParameters[i], method.DeclaringType, method);
+					tp.BoundTo = typeArguments[i];
+					method.TypeParameters[i] = tp;
+				}
+				return method;
+			} else {
+				return genericMethod;
 			}
 		}
 		

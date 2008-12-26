@@ -20,6 +20,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		string Name { get; }
 		
+		/// <summary>
+		/// Gets the index of the type parameter in the type parameter list of the owning method/class.
+		/// </summary>
 		int Index { get; }
 		
 		IList<IAttribute> Attributes { get; }
@@ -35,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// When the type parameter is defined for a method, this is the class containing
 		/// that method.
 		/// </summary>
-		IClass Class  { get; }
+		IClass Class { get; }
 		
 		/// <summary>
 		/// Gets the contraints of this type parameter.
@@ -56,5 +59,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets if the type parameter has the 'struct' constraint.
 		/// </summary>
 		bool HasValueTypeConstraint { get; }
+		
+		/// <summary>
+		/// Gets the type that was used to bind this type parameter.
+		/// This property returns null for generic methods/classes, it
+		/// is non-null only for constructed versions of generic methods.
+		/// </summary>
+		IReturnType BoundTo { get; }
+		
+		/// <summary>
+		/// If this type parameter was bound, returns the unbound version of it.
+		/// </summary>
+		ITypeParameter UnboundTypeParameter { get; }
 	}
 }
