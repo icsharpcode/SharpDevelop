@@ -31,7 +31,7 @@ namespace Python.Build.Tasks.Tests
 		bool includeDebugInformation;
 		IList<string> referencedAssemblies;
 		IList<ResourceFile> resourceFiles;
-		
+		Exception throwExceptionAtCompile;
 		
 		public MockPythonCompiler()
 		{
@@ -62,11 +62,23 @@ namespace Python.Build.Tasks.Tests
 		}
 		
 		/// <summary>
+		/// Gets or sets the exception that will be thrown when the Compile method is called.
+		/// </summary>
+		public Exception ThrowExceptionAtCompile {
+			get { return throwExceptionAtCompile; }
+			set { throwExceptionAtCompile = value; }
+		}
+	
+		/// <summary>
 		/// Compiles the source code.
 		/// </summary>
 		public void Compile()
 		{
 			compileCalled = true;
+			
+			if (throwExceptionAtCompile != null) {
+				throw throwExceptionAtCompile;
+			}
 		}
 		
 		/// <summary>

@@ -47,6 +47,12 @@
     <Reference Include="Microsoft.Build.Utilities.v3.5">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Core">
+      <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.Core.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -60,12 +66,14 @@
     <Compile Include="DifferentTargetTypesTestFixture.cs" />
     <Compile Include="DummyPythonCompilerTask.cs" />
     <Compile Include="IncludeDebugInfoTestFixture.cs" />
+    <Compile Include="IOErrorTestFixture.cs" />
     <Compile Include="MainEntryPointTestFixture.cs" />
     <Compile Include="MockPythonCompiler.cs" />
     <Compile Include="CompileSingleSourceFileTestFixture.cs" />
     <Compile Include="PlatformTestFixture.cs" />
     <Compile Include="RelativeReferenceTestFixture.cs" />
     <Compile Include="RelativeResourceFileTestFixture.cs" />
+    <Compile Include="SyntaxErrorTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\Python.Build.Tasks.csproj">

@@ -25,6 +25,7 @@ namespace Python.Build.Tasks.Tests
 		TaskItem systemXmlReferenceTaskItem;
 		TaskItem systemDataReferenceTaskItem;
 		PythonCompilerTask compiler;
+		bool success;
 		
 		[SetUp]
 		public void Init()
@@ -40,7 +41,13 @@ namespace Python.Build.Tasks.Tests
 			systemXmlReferenceTaskItem = new TaskItem(@"C:\Windows\Microsoft.NET\Framework\2.0\System.Xml.dll");
 			compiler.References = new ITaskItem[] {systemDataReferenceTaskItem, systemXmlReferenceTaskItem};
 			
-			compiler.Execute();
+			success = compiler.Execute();
+		}
+		
+		[Test]
+		public void CompilationSucceeded()
+		{
+			Assert.IsTrue(success);
 		}
 		
 		[Test]
