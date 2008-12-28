@@ -12,6 +12,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -645,6 +646,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				if (AddExistingItemsToProject.ShowReplaceExistingFileDialog(null, copiedFileName, false) == AddExistingItemsToProject.ReplaceExistingFile.Yes) {
 					wasFileReplacement = true;
+					IViewContent viewContent = FileService.GetOpenFile(copiedFileName);
+					if (viewContent != null) {
+						viewContent.WorkbenchWindow.CloseWindow(true);
+					}
 				} else {
 					// don't replace file
 					return;
