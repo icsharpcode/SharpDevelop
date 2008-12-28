@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public bool SkipAllComments { get; set; }
 		public bool EvaluateConditionalCompilation { get; set; }
-		public virtual IDictionary<string, object> ConditionalCompilationSymbols { 
+		public virtual IDictionary<string, object> ConditionalCompilationSymbols {
 			get { throw new NotSupportedException(); }
 		}
 		
@@ -59,7 +59,12 @@ namespace ICSharpCode.NRefactory.Parser
 		protected int ReaderRead()
 		{
 			++col;
-			return reader.Read();
+			int val = reader.Read();
+			if ((val == '\r' && reader.Peek() != '\n') || val == '\n') {
+				++line;
+				col = 1;
+			}
+			return val;
 		}
 		protected int ReaderPeek()
 		{
@@ -226,35 +231,32 @@ namespace ICSharpCode.NRefactory.Parser
 			return 0;
 		}
 		
-		protected bool WasLineEnd(char ch)
+		protected bool HandleLineEnd(char ch)
 		{
 			// Handle MS-DOS or MacOS line ends.
 			if (ch == '\r') {
 				if (reader.Peek() == '\n') { // MS-DOS line end '\r\n'
-					ch = (char)reader.Read();
-					++col;
+					ReaderRead();
+					return true;
 				} else { // assume MacOS line end which is '\r'
-					ch = '\n';
+					return true;
 				}
 			}
 			return ch == '\n';
-		}
-		
-		protected bool HandleLineEnd(char ch)
-		{
-			if (WasLineEnd(ch)) {
-				++line;
-				col = 1;
-				return true;
-			}
-			return false;
 		}
 		
 		protected void SkipToEndOfLine()
 		{
 			int nextChar;
 			while ((nextChar = reader.Read()) != -1) {
-				if (HandleLineEnd((char)nextChar)) {
+				if (nextChar == '\r') {
+					if (reader.Peek() == '\n')
+						reader.Read();
+					nextChar = '\n';
+				}
+				if (nextChar == '\n') {
+					++line;
+					col = 1;
 					break;
 				}
 			}
@@ -267,8 +269,15 @@ namespace ICSharpCode.NRefactory.Parser
 			while ((nextChar = reader.Read()) != -1) {
 				char ch = (char)nextChar;
 				
+				if (nextChar == '\r') {
+					if (reader.Peek() == '\n')
+						reader.Read();
+					nextChar = '\n';
+				}
 				// Return read string, if EOL is reached
-				if (HandleLineEnd(ch)) {
+				if (nextChar == '\n') {
+					++line;
+					col = 1;
 					return sb.ToString();
 				}
 				

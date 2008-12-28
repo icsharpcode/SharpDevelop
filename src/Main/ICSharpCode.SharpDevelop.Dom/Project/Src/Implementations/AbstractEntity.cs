@@ -18,9 +18,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		IClass declaringType;
 		
-		string fullyQualifiedName = null;
-		string name               = null;
-		string nspace             = null;
+		string fullyQualifiedName;
+		string name;
+		string nspace;
 		
 		public AbstractEntity(IClass declaringType)
 		{
@@ -29,11 +29,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public AbstractEntity(IClass declaringType, string name)
 		{
-			if (declaringType == null)
-				throw new ArgumentNullException("declaringType");
 			this.declaringType = declaringType;
 			this.name = name;
-			nspace = declaringType.FullyQualifiedName;
+			if (declaringType != null)
+				nspace = declaringType.FullyQualifiedName;
 			
 			// lazy-computing the fully qualified name for class members saves ~7 MB RAM (when loading the SharpDevelop solution).
 			//fullyQualifiedName = nspace + '.' + name;
@@ -259,12 +258,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		[Obsolete("This property does not do what one would expect - it merely checks if protected+internal are set, it is not the equivalent of AssemblyAndFamily in Reflection!")]
 		public bool IsProtectedAndInternal {
 			get {
 				return (modifiers & (ModifierEnum.Internal | ModifierEnum.Protected)) == (ModifierEnum.Internal | ModifierEnum.Protected);
 			}
 		}
 		
+		[Obsolete("This property does not do what one would expect - it merely checks if one of protected+internal is set, it is not the equivalent of AssemblyOrFamily in Reflection!")]
 		public bool IsProtectedOrInternal {
 			get {
 				return IsProtected || IsInternal;
@@ -299,44 +300,32 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
-		bool IsInnerClass(IClass c, IClass possibleInnerClass)
+		public bool IsAccessible(IClass callingClass, bool isAccessThoughReferenceOfCurrentClass)
 		{
-			foreach (IClass inner in c.InnerClasses) {
-				if (inner.FullyQualifiedName == possibleInnerClass.FullyQualifiedName) {
-					return true;
-				}
-				if (IsInnerClass(inner, possibleInnerClass)) {
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		// TODO: check inner classes for protected members too.
-		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
-		{
-			if (IsInternal) {
-				return true;
-			}
 			if (IsPublic) {
 				return true;
+			} else if (IsInternal) {
+				return callingClass != null && this.DeclaringType.ProjectContent.InternalsVisibleTo(callingClass.ProjectContent);
 			}
-			if (isClassInInheritanceTree && IsProtected) {
-				return true;
+			// protected or private:
+			// search in callingClass and, if callingClass is a nested class, in its outer classes
+			while (callingClass != null) {
+				if (IsProtected) {
+					if (!isAccessThoughReferenceOfCurrentClass && !IsStatic)
+						return false;
+					return callingClass.IsTypeInInheritanceTree(this.DeclaringType);
+				} else {
+					// private
+					if (DeclaringType.FullyQualifiedName == callingClass.FullyQualifiedName
+					    && DeclaringType.TypeParameters.Count == callingClass.TypeParameters.Count)
+					{
+						return true;
+					}
+				}
+				
+				callingClass = callingClass.DeclaringType;
 			}
-			
-			return callingClass != null && (DeclaringType.FullyQualifiedName == callingClass.FullyQualifiedName || IsInnerClass(DeclaringType, callingClass));
-		}
-		
-		public bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree)
-		{
-			if (DeclaringType.ClassType == ClassType.Enum) {
-				return true;
-			}
-			if (!showStatic &&  IsStatic || (showStatic && !(IsStatic || IsConst))) { // const is automatically static
-				return false;
-			}
-			return IsAccessible(callingClass, isClassInInheritanceTree);
+			return false;
 		}
 		
 		public virtual int CompareTo(IEntity value)

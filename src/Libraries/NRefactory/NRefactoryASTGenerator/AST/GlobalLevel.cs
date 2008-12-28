@@ -92,4 +92,9 @@ namespace NRefactoryASTGenerator.Ast
 		
 		public OptionDeclaration(OptionType optionType, bool optionValue) {}
 	}
+	
+	class ExternAliasDirective : AbstractNode
+	{
+		string name;
+	}
 }

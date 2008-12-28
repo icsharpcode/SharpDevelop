@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			method.Modifier |= Modifiers.Extern | Modifiers.Static;
 			
 			if (method.TypeReference.IsNull) {
-				method.TypeReference = new TypeReference("System.Void");
+				method.TypeReference = new TypeReference("System.Void", true);
 			}
 			
 			Attribute att = new Attribute("DllImport", null, null);
@@ -233,7 +233,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			
-			if (methodDeclaration.TypeReference.SystemType != "System.Void" && methodDeclaration.Body.Children.Count > 0) {
+			if (methodDeclaration.TypeReference.Type != "System.Void" && methodDeclaration.Body.Children.Count > 0) {
 				if (IsAssignmentTo(methodDeclaration.Body.Children[methodDeclaration.Body.Children.Count - 1], methodDeclaration.Name))
 				{
 					ReturnStatement rs = new ReturnStatement(GetAssignmentFromStatement(methodDeclaration.Body.Children[methodDeclaration.Body.Children.Count - 1]).Right);
@@ -465,7 +465,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			List<Expression> arguments = new List<Expression>();
 			arguments.Add(stringVariable);
 			return new InvocationExpression(
-				new MemberReferenceExpression(new TypeReferenceExpression("System.String"), "IsNullOrEmpty"),
+				new MemberReferenceExpression(new TypeReferenceExpression(new TypeReference("System.String", true)), "IsNullOrEmpty"),
 				arguments);
 		}
 		

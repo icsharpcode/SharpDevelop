@@ -21,7 +21,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpArrayCreateExpressionTest1()
 		{
 			ArrayCreateExpression ace = ParseUtilCSharp.ParseExpression<ArrayCreateExpression>("new int[5]");
-			Assert.AreEqual("int", ace.CreateType.Type);
+			Assert.AreEqual("System.Int32", ace.CreateType.Type);
+			Assert.IsTrue(ace.CreateType.IsKeyword);
 			Assert.AreEqual(1, ace.Arguments.Count);
 			Assert.AreEqual(new int[] {0}, ace.CreateType.RankSpecifier);
 		}
@@ -43,7 +44,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			ArrayCreateExpression ace = ParseUtilVBNet.ParseExpression<ArrayCreateExpression>("new Integer() {1, 2, 3, 4}");
 			
-			Assert.AreEqual("Integer", ace.CreateType.Type);
+			Assert.AreEqual("System.Int32", ace.CreateType.Type);
 			Assert.AreEqual(0, ace.Arguments.Count);
 			Assert.AreEqual(new int[] {0}, ace.CreateType.RankSpecifier);
 		}
@@ -53,7 +54,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			ArrayCreateExpression ace = ParseUtilVBNet.ParseExpression<ArrayCreateExpression>("New Integer(0 To 5){0, 1, 2, 3, 4, 5}");
 			
-			Assert.AreEqual("Integer", ace.CreateType.Type);
+			Assert.AreEqual("System.Int32", ace.CreateType.Type);
 			Assert.AreEqual(1, ace.Arguments.Count);
 			Assert.AreEqual(5, (ace.Arguments[0] as PrimitiveExpression).Value);
 			Assert.AreEqual(new int[] {0}, ace.CreateType.RankSpecifier);

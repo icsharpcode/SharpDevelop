@@ -33,8 +33,8 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			ILexer lexer = GenerateLexer(text);
 			Token token;
 			while ((token = lexer.NextToken()) != null) {
-				list.Add(token.kind);
-				if (token.kind == Tokens.EOF)
+				list.Add(token.Kind);
+				if (token.Kind == Tokens.EOF)
 					break;
 			}
 			Assert.AreEqual("", lexer.Errors.ErrorOutput);
@@ -149,7 +149,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 	,";
 			Assert.AreEqual(new int[] { Tokens.Semicolon, Tokens.Comma, Tokens.EOF }, GetTokenKinds(program));
 			ILexer lexer = GenerateLexer(program);
-			while (lexer.NextToken().kind != Tokens.EOF);
+			while (lexer.NextToken().Kind != Tokens.EOF);
 			List<ISpecial> specials = lexer.SpecialTracker.RetrieveSpecials();
 			
 			Assert.IsTrue(specials[0] is BlankLine);

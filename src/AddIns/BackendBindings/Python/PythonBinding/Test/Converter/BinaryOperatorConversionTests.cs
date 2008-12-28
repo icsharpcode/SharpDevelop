@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
@@ -34,121 +32,123 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void GreaterThan()
 		{
-			string code = GetCode(">");
-			CodeBinaryOperatorExpression expression = GetBinaryOperatorExpression(code);
-			Assert.AreEqual(CodeBinaryOperatorType.GreaterThan, expression.Operator);
+			Assert.AreEqual(">", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.GreaterThan));
 		}
 
 		[Test]
 		public void NotEqual()
 		{
-			string code = GetCode("!=");
-			CodeBinaryOperatorExpression expression = GetBinaryOperatorExpression(code);
-			Assert.AreEqual(CodeBinaryOperatorType.IdentityInequality, expression.Operator);
+			Assert.AreEqual("!=", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.InEquality));
 		}
 		
 		[Test]
 		public void Divide()
 		{
-			string code = GetCode("/ 5 >");
-			CodeBinaryOperatorExpression expression = GetBinaryOperatorExpression(code);
-			CodeBinaryOperatorExpression divideExpression = expression.Left as CodeBinaryOperatorExpression;
-			Assert.AreEqual(CodeBinaryOperatorType.Divide, divideExpression.Operator);
+			Assert.AreEqual("/", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.Divide));
 		}
 		
 		[Test]
 		public void LessThan()
 		{
-			string code = GetCode("<");
-			CodeBinaryOperatorExpression expression = GetBinaryOperatorExpression(code);
-			Assert.AreEqual(CodeBinaryOperatorType.LessThan, expression.Operator);
+			Assert.AreEqual("<", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.LessThan));
 		}
 
 		[Test]
 		public void Equals()
 		{
-			string code = GetCode("==");
-			CodeBinaryOperatorExpression expression = GetBinaryOperatorExpression(code);
-			Assert.AreEqual(CodeBinaryOperatorType.ValueEquality, expression.Operator);
+			string code = GetCode(@"==");
+			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			string pythonCode = converter.Convert(code);
+			string expectedPythonCode = "class Foo(object):\r\n" +
+						"\tdef Run(self, i):\r\n" +
+						"\t\tif i == 0:\r\n" +
+						"\t\t\treturn 10\r\n" +
+						"\t\treturn 0";
+			Assert.AreEqual(expectedPythonCode, pythonCode);
 		}
 
 		[Test]
 		public void LessThanOrEqual()
 		{
-			string code = GetCode("<=");
-			CodeBinaryOperatorExpression expression = GetBinaryOperatorExpression(code);
-			Assert.AreEqual(CodeBinaryOperatorType.LessThanOrEqual, expression.Operator);
+			Assert.AreEqual("<=", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.LessThanOrEqual));
 		}
 
 		[Test]
 		public void GreaterThanOrEqual()
 		{
-			string code = GetCode(">=");
-			CodeBinaryOperatorExpression expression = GetBinaryOperatorExpression(code);
-			Assert.AreEqual(CodeBinaryOperatorType.GreaterThanOrEqual, expression.Operator);
+			Assert.AreEqual(">=", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.GreaterThanOrEqual));
 		}
 		
 		[Test]
 		public void Add()
 		{
-			CodeBinaryOperatorType type = NRefactoryToPythonConverter.ConvertBinaryOperatorType(BinaryOperatorType.Add);
-			Assert.AreEqual(CodeBinaryOperatorType.Add, type);
+			Assert.AreEqual("+", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.Add));
+		}
+		
+		[Test]
+		public void Multiply()
+		{
+			Assert.AreEqual("*", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.Multiply));
 		}
 		
 		[Test]
 		public void BitwiseAnd()
 		{
-			CodeBinaryOperatorType type = NRefactoryToPythonConverter.ConvertBinaryOperatorType(BinaryOperatorType.BitwiseAnd);
-			Assert.AreEqual(CodeBinaryOperatorType.BitwiseAnd, type);
+			Assert.AreEqual("&", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.BitwiseAnd));
 		}
 
 		[Test]
 		public void BitwiseOr()
 		{
-			CodeBinaryOperatorType type = NRefactoryToPythonConverter.ConvertBinaryOperatorType(BinaryOperatorType.BitwiseOr);
-			Assert.AreEqual(CodeBinaryOperatorType.BitwiseOr, type);
+			Assert.AreEqual("|", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.BitwiseOr));
 		}
 
 		[Test]
 		public void BooleanAnd()
 		{
-			CodeBinaryOperatorType type = NRefactoryToPythonConverter.ConvertBinaryOperatorType(BinaryOperatorType.LogicalAnd);
-			Assert.AreEqual(CodeBinaryOperatorType.BooleanAnd, type);
+			Assert.AreEqual("and", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.LogicalAnd));
 		}
 
 		[Test]
 		public void BooleanOr()
 		{
-			CodeBinaryOperatorType type = NRefactoryToPythonConverter.ConvertBinaryOperatorType(BinaryOperatorType.LogicalOr);
-			Assert.AreEqual(CodeBinaryOperatorType.BooleanOr, type);
+			Assert.AreEqual("or", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.LogicalOr));
 		}
 
 		[Test]
 		public void Modulus()
 		{
-			CodeBinaryOperatorType type = NRefactoryToPythonConverter.ConvertBinaryOperatorType(BinaryOperatorType.Modulus);
-			Assert.AreEqual(CodeBinaryOperatorType.Modulus, type);
+			Assert.AreEqual("%", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.Modulus));
 		}
 
 		[Test]
 		public void Subtract()
 		{
-			CodeBinaryOperatorType type = NRefactoryToPythonConverter.ConvertBinaryOperatorType(BinaryOperatorType.Subtract);
-			Assert.AreEqual(CodeBinaryOperatorType.Subtract, type);
+			Assert.AreEqual("-", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.Subtract));
 		}
 		
 		[Test]
 		public void DivideInteger()
 		{
-			CodeBinaryOperatorType type = NRefactoryToPythonConverter.ConvertBinaryOperatorType(BinaryOperatorType.DivideInteger);
-			Assert.AreEqual(CodeBinaryOperatorType.Divide, type);
+			Assert.AreEqual("/", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.DivideInteger));
 		}
 
 		[Test]
 		public void ReferenceEquality()
 		{
-			CodeBinaryOperatorType type = NRefactoryToPythonConverter.ConvertBinaryOperatorType(BinaryOperatorType.ReferenceEquality);
-			Assert.AreEqual(CodeBinaryOperatorType.IdentityEquality, type);
+			Assert.AreEqual("is", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.ReferenceEquality));
+		}
+		
+		[Test]
+		public void BitShiftRight()
+		{
+			Assert.AreEqual(">>", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.ShiftRight));
+		}
+		
+		[Test]
+		public void BitShiftLeft()
+		{
+			Assert.AreEqual("<<", CSharpToPythonConverter.GetBinaryOperator(BinaryOperatorType.ShiftLeft));
 		}
 		
 		/// <summary>
@@ -159,33 +159,5 @@ namespace PythonBinding.Tests.Converter
 		{
 			return csharp.Replace("BINARY_OPERATOR", op);
 		}
-		
-		/// <summary>
-		/// Gets the binary operator for the if statement for this
-		/// test fixture.
-		/// </summary>
-		CodeBinaryOperatorExpression GetBinaryOperatorExpression(string csharpCode)
-		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
-			CodeCompileUnit unit = converter.ConvertToCodeCompileUnit(csharpCode);
-			if (unit.Namespaces.Count > 0) {
-				CodeNamespace ns = unit.Namespaces[0];
-				if (ns.Types.Count > 0) {
-					CodeTypeDeclaration type = ns.Types[0];
-					if (type.Members.Count > 0) {
-						CodeMemberMethod method = type.Members[0] as CodeMemberMethod;
-						if (method != null) {
-							if (method.Statements.Count > 0) {
-								CodeConditionStatement conditionStatement = method.Statements[0] as CodeConditionStatement;
-								if (conditionStatement != null) {
-									return conditionStatement.Condition as CodeBinaryOperatorExpression;
-								}
-							}
-						}
-					}
-				}
-			}
-			return null;
-		}		
 	}
 }

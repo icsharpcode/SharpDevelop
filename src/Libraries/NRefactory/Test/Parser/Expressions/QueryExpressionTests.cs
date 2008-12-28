@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 				"from int c in customers select c"
 			);
 			Assert.AreEqual("c", qe.FromClause.Identifier);
-			Assert.AreEqual("System.Int32", qe.FromClause.Type.SystemType);
+			Assert.AreEqual("System.Int32", qe.FromClause.Type.Type);
 			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
 			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
 		}
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 				"from S<int[]>? c in customers select c"
 			);
 			Assert.AreEqual("c", qe.FromClause.Identifier);
-			Assert.AreEqual("System.Nullable<S<int[]>>", qe.FromClause.Type.ToString());
+			Assert.AreEqual("System.Nullable<S<System.Int32[]>>", qe.FromClause.Type.ToString());
 			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
 			Assert.IsInstanceOfType(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
 		}

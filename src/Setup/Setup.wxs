@@ -290,7 +290,6 @@
 				<ComponentRef Id="EmptyTextFileTemplate"/>
 				<ComponentRef Id="EmptyXMLFileTemplate"/>
 				<ComponentRef Id="SharpDevelopFileTemplates"/>
-				<ComponentRef Id="SharpDevelopReportTemplate"/>
 				<ComponentRef Id="CSharpProjectTemplates"/>
 				<ComponentRef Id="CSharpWebServiceProjectTemplate"/>
 				<ComponentRef Id="CSharpNotifyIconProjectTemplate"/>

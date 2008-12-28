@@ -64,8 +64,11 @@ namespace Debugger.Expressions
 		{
 			if (context.SelectedStackFrame != null) {
 				return Evaluate(context.SelectedStackFrame);
-			} else {
+			} else if (context.SelectedThread.MostRecentStackFrame != null ) {
 				return Evaluate(context.SelectedThread.MostRecentStackFrame);
+			} else {
+				// This can happen when needed 'dll' is missing.  This causes an exception dialog to be shown even before the applicaiton starts
+				throw new GetValueException("Can not evaluate because the process has no managed stack frames");
 			}
 		}
 		

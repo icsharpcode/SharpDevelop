@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			LambdaExpression e = ParseCSharp("(int x) => { return x + 1; }");
 			Assert.AreEqual("x", e.Parameters[0].ParameterName);
-			Assert.AreEqual("int", e.Parameters[0].TypeReference.Type);
+			Assert.AreEqual("System.Int32", e.Parameters[0].TypeReference.Type);
 			Assert.IsTrue(e.StatementBody.Children[0] is ReturnStatement);
 		}
 		
@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			LambdaExpression e = ParseVBNet("Function(x As Boolean) x Or True");
 			Assert.AreEqual(1, e.Parameters.Count);
 			Assert.AreEqual("x", e.Parameters[0].ParameterName);
-			Assert.AreEqual("Boolean", e.Parameters[0].TypeReference.Type);
+			Assert.AreEqual("System.Boolean", e.Parameters[0].TypeReference.Type);
 			Assert.IsTrue(e.ExpressionBody is BinaryOperatorExpression);
 		}
 

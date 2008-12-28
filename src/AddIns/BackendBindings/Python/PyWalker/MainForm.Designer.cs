@@ -37,10 +37,10 @@ namespace PyWalker
 			this.components = new System.ComponentModel.Container();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			this.codeTextBox = new System.Windows.Forms.RichTextBox();
+			this.runCSharpNRefactoryVisitor = new System.Windows.Forms.Button();
 			this.runNRefactoryCSharpCodeDomVisitor = new System.Windows.Forms.Button();
 			this.runCSharpToPythonButton = new System.Windows.Forms.Button();
 			this.runRoundTripButton = new System.Windows.Forms.Button();
-			this.runCodeDomVisitor = new System.Windows.Forms.Button();
 			this.clearButton = new System.Windows.Forms.Button();
 			this.runAstWalkerButton = new System.Windows.Forms.Button();
 			this.walkerOutputTextBox = new System.Windows.Forms.RichTextBox();
@@ -63,10 +63,10 @@ namespace PyWalker
 			// 
 			// splitContainer.Panel2
 			// 
+			this.splitContainer.Panel2.Controls.Add(this.runCSharpNRefactoryVisitor);
 			this.splitContainer.Panel2.Controls.Add(this.runNRefactoryCSharpCodeDomVisitor);
 			this.splitContainer.Panel2.Controls.Add(this.runCSharpToPythonButton);
 			this.splitContainer.Panel2.Controls.Add(this.runRoundTripButton);
-			this.splitContainer.Panel2.Controls.Add(this.runCodeDomVisitor);
 			this.splitContainer.Panel2.Controls.Add(this.clearButton);
 			this.splitContainer.Panel2.Controls.Add(this.runAstWalkerButton);
 			this.splitContainer.Panel2.Controls.Add(this.walkerOutputTextBox);
@@ -85,6 +85,18 @@ namespace PyWalker
 			this.codeTextBox.Text = "";
 			this.codeTextBox.WordWrap = false;
 			// 
+			// runCSharpNRefactoryVisitor
+			// 
+			this.runCSharpNRefactoryVisitor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.runCSharpNRefactoryVisitor.Location = new System.Drawing.Point(261, 218);
+			this.runCSharpNRefactoryVisitor.Name = "runCSharpNRefactoryVisitor";
+			this.runCSharpNRefactoryVisitor.Size = new System.Drawing.Size(117, 23);
+			this.runCSharpNRefactoryVisitor.TabIndex = 8;
+			this.runCSharpNRefactoryVisitor.Text = "Visit C# AST";
+			this.toolTip.SetToolTip(this.runCSharpNRefactoryVisitor, "Walks the NRefactory AST generated from the C# code.");
+			this.runCSharpNRefactoryVisitor.UseVisualStyleBackColor = true;
+			this.runCSharpNRefactoryVisitor.Click += new System.EventHandler(this.RunCSharpNRefactoryVisitorClick);
+			// 
 			// runNRefactoryCSharpCodeDomVisitor
 			// 
 			this.runNRefactoryCSharpCodeDomVisitor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -101,7 +113,7 @@ namespace PyWalker
 			// runCSharpToPythonButton
 			// 
 			this.runCSharpToPythonButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.runCSharpToPythonButton.Location = new System.Drawing.Point(261, 218);
+			this.runCSharpToPythonButton.Location = new System.Drawing.Point(261, 192);
 			this.runCSharpToPythonButton.Name = "runCSharpToPythonButton";
 			this.runCSharpToPythonButton.Size = new System.Drawing.Size(117, 23);
 			this.runCSharpToPythonButton.TabIndex = 6;
@@ -124,18 +136,6 @@ namespace PyWalker
 			this.runRoundTripButton.UseVisualStyleBackColor = true;
 			this.runRoundTripButton.Click += new System.EventHandler(this.RunRoundTripButtonClick);
 			// 
-			// runCodeDomVisitor
-			// 
-			this.runCodeDomVisitor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.runCodeDomVisitor.Location = new System.Drawing.Point(384, 191);
-			this.runCodeDomVisitor.Name = "runCodeDomVisitor";
-			this.runCodeDomVisitor.Size = new System.Drawing.Size(128, 23);
-			this.runCodeDomVisitor.TabIndex = 3;
-			this.runCodeDomVisitor.Text = "Visit Code DOM";
-			this.toolTip.SetToolTip(this.runCodeDomVisitor, "Visits the code dom generated from the python code.");
-			this.runCodeDomVisitor.UseVisualStyleBackColor = true;
-			this.runCodeDomVisitor.Click += new System.EventHandler(this.RunCodeDomVisitorClick);
-			// 
 			// clearButton
 			// 
 			this.clearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -151,9 +151,9 @@ namespace PyWalker
 			// runAstWalkerButton
 			// 
 			this.runAstWalkerButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.runAstWalkerButton.Location = new System.Drawing.Point(261, 191);
+			this.runAstWalkerButton.Location = new System.Drawing.Point(384, 191);
 			this.runAstWalkerButton.Name = "runAstWalkerButton";
-			this.runAstWalkerButton.Size = new System.Drawing.Size(117, 23);
+			this.runAstWalkerButton.Size = new System.Drawing.Size(127, 23);
 			this.runAstWalkerButton.TabIndex = 1;
 			this.runAstWalkerButton.Text = "Visit AST";
 			this.toolTip.SetToolTip(this.runAstWalkerButton, "Walks the python AST generated from the python code.");
@@ -184,11 +184,11 @@ namespace PyWalker
 			this.splitContainer.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Button runCSharpNRefactoryVisitor;
 		private System.Windows.Forms.Button runNRefactoryCSharpCodeDomVisitor;
 		private System.Windows.Forms.Button runCSharpToPythonButton;
 		private System.Windows.Forms.ToolTip toolTip;
 		private System.Windows.Forms.Button runRoundTripButton;
-		private System.Windows.Forms.Button runCodeDomVisitor;
 		private System.Windows.Forms.Button clearButton;
 		private System.Windows.Forms.Button runAstWalkerButton;
 		private System.Windows.Forms.RichTextBox walkerOutputTextBox;

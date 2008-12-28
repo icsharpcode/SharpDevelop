@@ -8,10 +8,15 @@
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
+using System.Windows.Forms;
+
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
@@ -31,7 +36,9 @@ namespace PythonBinding.Tests.Designer
 		MockTypeResolutionService mockTypeResolutionService;
 		MockDesignerLoaderHost mockDesignerLoaderHost;
 		MockExtenderProviderService mockExtenderProviderService;
-			
+		IComponent rootComponent;
+		Form designedForm;
+		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
@@ -50,144 +57,72 @@ namespace PythonBinding.Tests.Designer
 			mockDesignerLoaderHost.AddService(typeof(ITypeResolutionService), mockTypeResolutionService);
 			System.Console.WriteLine("Before BeginLoad");
 			loader.BeginLoad(mockDesignerLoaderHost);
-			System.Console.WriteLine("After BeginLoad");			
+			System.Console.WriteLine("After BeginLoad");
+			rootComponent = mockDesignerLoaderHost.RootComponent;
+			
+			designedForm = new Form();
+			designedForm.Name = "NewMainForm";
+			mockDesignerLoaderHost.RootComponent = designedForm;
+			loader.CallPerformFlush();
 		}
 		
 		[TestFixtureTearDown]
 		public void TearDownFixture()
 		{
 			loader.Dispose();
+			designedForm.Dispose();
 		}
 		
 		[Test]
-		public void IsDerivedFromCodeDomDesignerLoader()
+		public void IsDerivedFromBasicDesignerLoader()
 		{
-			CodeDomDesignerLoader codeDomDesignerLoader = loader as CodeDomDesignerLoader;
-			Assert.IsNotNull(codeDomDesignerLoader);
+			BasicDesignerLoader basicLoader = loader as BasicDesignerLoader;
+			Assert.IsNotNull(basicLoader);
 		}
 		
 		[Test]
-		public void CodeDomProviderIsPythonProvider()
-		{
-//			Assert.IsInstanceOfType(typeof(PythonProvider), loader.GetCodeDomProvider());
+		public void CreateComponent()
+		{			
+			List<CreatedComponent> expectedCreatedComponents = new List<CreatedComponent>();
+			expectedCreatedComponents.Add(new CreatedComponent(typeof(Form).FullName, "MainForm"));
+			                              
+			Assert.AreEqual(expectedCreatedComponents, mockDesignerLoaderHost.CreatedComponents);
 		}
 		
 		[Test]
-		public void LoadingIsFalseBeforeBeginLoad()
+		public void ComponentSerializationServiceCreated()
 		{
-			Assert.IsFalse(loader.IsLoadingBeforeBeginLoad);
-		}
-		
-		/// <summary>
-		/// BeginLoad calls OnEndLoad after completion so 
-		/// Loading should be set to false.
-		/// </summary>
-		[Test]
-		public void LoadingIsFalseAfterBeginLoad()
-		{
-			Assert.IsFalse(loader.IsLoadingAfterBeginLoad);
+			CodeDomComponentSerializationService service = mockDesignerLoaderHost.GetService(typeof(ComponentSerializationService)) as CodeDomComponentSerializationService;
+			Assert.IsNotNull(service);
 		}
 
 		[Test]
-		public void LoadingIsTrueBeforeEndLoad()
+		public void NameCreationServiceCreated()
 		{
-			Assert.IsTrue(loader.IsLoadingBeforeOnEndLoad);
+			XmlDesignerLoader.NameCreationService service = mockDesignerLoaderHost.GetService(typeof(INameCreationService)) as XmlDesignerLoader.NameCreationService;
+			Assert.IsNotNull(service);
 		}
 		
 		[Test]
-		public void LoadingIsFalseAfterEndLoad()
+		public void DesignerSerializationServiceCreated()
 		{
-			Assert.IsFalse(loader.IsLoadingAfterOnEndLoad);
+			DesignerSerializationService service = mockDesignerLoaderHost.GetService(typeof(IDesignerSerializationService)) as DesignerSerializationService;
+			Assert.IsNotNull(service);
 		}
-		
-		[Test]
-		public void TypeResolutionServiceMatchesDesignerHosts()
-		{
-			Assert.AreEqual(mockTypeResolutionService, loader.GetTypeResolutionService());
-		}
-		
-		[Test]
-		public void WriteCompileUnit()
-		{
-			CodeCompileUnit codeCompileUnit = new CodeCompileUnit();
-			loader.CallWrite(codeCompileUnit);
 			
-			Assert.AreSame(codeCompileUnit, generator.CodeCompileUnitMerged);
+		[Test]
+		public void RootDesignerComponentNameIsMainForm()
+		{
+			Form form = rootComponent as Form;
+			Assert.AreEqual("MainForm", form.Name);
 		}
 		
 		[Test]
-		public void CodeDomLocalizationProviderAddedToDesignerSerializationManager()
+		public void PerformFlushUsesDesignedForm()
 		{
-			Assert.IsTrue(mockExtenderProviderService.IsLanguageExtendersAdded);
-//			CodeDomLocalizationProvider localizationProvider = new CodeDomLocalizationProvider(mockDesignerLoaderHost, CodeDomLocalizationModel.PropertyAssignment);
-//			IDesignerSerializationManager manager = (IDesignerSerializationManager)mockDesignerLoaderHost.GetService(typeof(IDesignerSerializationManager));
-//
-//			Assert.IsNotNull(manager.GetSerializer(null, typeof(CodeDomLocalizationProvider)));
+			Assert.AreEqual(designedForm, generator.MergeChangesRootComponent);
 		}
-
-		/// <summary>
-		/// Simple check is to take the code compilation unit generated
-		/// from the DesignerLoader's Parse method and then use the
-		/// PythonProvider to turn it back into code and compare the
-		/// original code. It should be the same.
-		/// </summary>
-		/// <remarks>
-		/// Note the extra \t\r\n\r\n" since the PythonProvider or the
-		/// StringWriter seem to add these to the end of the generated code.
-		/// 
-		/// Also note that the (Form) base class is replaced with the
-		/// fully qualified name. This does not affect the generated code
-		/// since only the InitializeComponents method is replaced.
-		/// </remarks>
-		[Test]
-		public void CodeCompilationUnitTakesCodeFromDocument()
-		{
-//			StringWriter writer = new StringWriter();
-//			CodeGeneratorOptions options = new CodeGeneratorOptions();
-//			options.BlankLinesBetweenMembers = false;
-//			options.IndentString = "\t";
-//			PythonProvider pythonProvider = new PythonProvider();
-//			pythonProvider.GenerateCodeFromCompileUnit(loader.CodeCompileUnit, writer, options);
-//			
-//			string code = GetFormCode() + "\t\r\n\r\n";
-//			code = code.Replace("(Form)", "(System.Windows.Forms.Form)");
-//			Assert.AreEqual(code, writer.ToString());
-		}
-
-		/// <summary>
-		/// We cannot use the CodeDOMGenerator class since the
-		/// the CurrentClass property is never set in the 
-		/// System.CodeDom.CodeGenerator class when the GenerateCodeFromStatement
-		/// method is called. Instead we have to call the GenerateCodeFromType 
-		/// method which creates the full class.
-		/// We cannot use the GenerateCodeFromMember to
-		/// create just the InitializeComponent method since this
-		/// is not supported by the PythonProvider.
-		/// </summary>
-		[Test]
-		public void GenerateCodeUsingPythonProvider()
-		{
-//			GeneratedInitializeComponentMethod initializeComponentMethod = GeneratedInitializeComponentMethod.GetGeneratedInitializeComponentMethod(loader.CodeCompileUnit);
-//
-//			StringWriter writer = new StringWriter();
-//			CodeGeneratorOptions options = new CodeGeneratorOptions();
-//			options.BlankLinesBetweenMembers = false;
-//			options.IndentString = "\t";
-//			PythonProvider pythonProvider = new PythonProvider();
-//			pythonProvider.GenerateCodeFromType(initializeComponentMethod.Type, writer, options);
-//			
-//			string code = "class MainForm(System.Windows.Forms.Form):\r\n" +
-//					"\tdef __init__(self):\r\n" +
-//					"\t\tself.InitializeComponent()\r\n" +
-//					"\t\r\n" +
-//					"\tdef InitializeComponent(self):\r\n" +
-//					"\t\tpass\r\n" +
-//					"\t\r\n" +
-//					"\r\n";
-//
-//			Assert.AreEqual(code, writer.ToString());
-		}
-	
+		
 		/// <summary>
 		/// The code that the designer loader will parse.
 		/// </summary>
@@ -200,7 +135,7 @@ namespace PythonBinding.Tests.Designer
 					"\t\tself.InitializeComponent()\r\n" +
 					"\t\r\n" +
 					"\tdef InitializeComponent(self):\r\n" +
-					"\t\tpass\r\n"; 
+					"\t\tself.Name = 'MainForm'\r\n"; 
 		}
 	}
 }

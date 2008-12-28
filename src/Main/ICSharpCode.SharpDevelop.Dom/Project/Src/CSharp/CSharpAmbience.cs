@@ -160,7 +160,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				builder.Append('<');
 				for (int i = 0; i < c.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
-					builder.Append(c.TypeParameters[i].Name);
+					builder.Append(ConvertTypeParameter(c.TypeParameters[i]));
 				}
 				builder.Append('>');
 			}
@@ -416,7 +416,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				builder.Append('<');
 				for (int i = 0; i < m.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
-					builder.Append(m.TypeParameters[i].Name);
+					builder.Append(ConvertTypeParameter(m.TypeParameters[i]));
 				}
 				builder.Append('>');
 			}
@@ -451,6 +451,14 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				}
 			}
 			return builder.ToString();
+		}
+		
+		string ConvertTypeParameter(ITypeParameter tp)
+		{
+			if (tp.BoundTo != null)
+				return Convert(tp.BoundTo);
+			else
+				return tp.Name;
 		}
 		
 		public override string ConvertEnd(IMethod m)

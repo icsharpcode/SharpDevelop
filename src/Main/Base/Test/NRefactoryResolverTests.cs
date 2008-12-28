@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
 			pc.ReferencedContents.Add(projectContentRegistry.Mscorlib);
+			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Core", "System.Core"));
 			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
 			HostCallback.GetCurrentProjectContent = delegate {
 				return pc;
@@ -1017,11 +1018,22 @@ Class TestClass
 	End Sub
 End Class
 ";
+			NamespaceResolveResult nrr = ResolveVB<NamespaceResolveResult>(program, "Collections", 4);
+			Assert.AreEqual("System.Collections", nrr.Name, "namespace should be resolved");
 			TypeResolveResult type = ResolveVB<TypeResolveResult>(program, "Collections.ArrayList", 4);
 			Assert.AreEqual("System.Collections.ArrayList", type.ResolvedClass.FullyQualifiedName, "TypeResolveResult");
 			LocalResolveResult local = ResolveVB<LocalResolveResult>(program, "a", 5);
 			Assert.AreEqual("System.Collections.ArrayList", local.ResolvedType.FullyQualifiedName,
 			                "the full type should be resolved");
+		}
+		
+		[Test]
+		public void GlobalNamelookupVB()
+		{
+			// test global name lookup (was broken once due to VB's implicit root namespace)
+			string program = "Imports System\n";
+			NamespaceResolveResult nrr = ResolveVB<NamespaceResolveResult>(program, "System", 1);
+			Assert.AreEqual("System", nrr.Name);
 		}
 		
 		[Test]
@@ -1383,6 +1395,7 @@ class Method { }
 		
 		bool MemberExists(ArrayList members, string name)
 		{
+			Assert.IsNotNull(members);
 			foreach (object o in members) {
 				IMember m = o as IMember;
 				if (m != null && m.Name == name) return true;
@@ -1760,7 +1773,7 @@ public static class XC {
 		[Test]
 		public void SimpleLinqTest()
 		{
-			string program = @"using System;
+			string program = @"using System; using System.Linq;
 class TestClass {
 	void Test(string[] input) {
 		var r = from e in input
@@ -1781,6 +1794,46 @@ class TestClass {
 		}
 		
 		[Test]
+		public void LinqGroupTest()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(string[] input) {
+		var r = from e in input
+			group e.ToUpper() by e.Length;
+		
+	}
+}
+";
+			LocalResolveResult lrr = Resolve<LocalResolveResult>(program, "r", 7);
+			Assert.AreEqual("System.Collections.Generic.IEnumerable", lrr.ResolvedType.FullyQualifiedName);
+			ConstructedReturnType rt = lrr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].CastToConstructedReturnType();
+			Assert.AreEqual("System.Linq.IGrouping", rt.FullyQualifiedName);
+			Assert.AreEqual("System.Int32", rt.TypeArguments[0].FullyQualifiedName);
+			Assert.AreEqual("System.String", rt.TypeArguments[1].FullyQualifiedName);
+		}
+		
+		[Test]
+		public void LinqQueryableGroupTest()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	void Test(IQueryable<string> input) {
+		var r = from e in input
+			group e.ToUpper() by e.Length;
+		
+	}
+}
+";
+			LocalResolveResult lrr = Resolve<LocalResolveResult>(program, "r", 7);
+			Assert.AreEqual("System.Linq.IQueryable", lrr.ResolvedType.FullyQualifiedName);
+			ConstructedReturnType rt = lrr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].CastToConstructedReturnType();
+			Assert.AreEqual("System.Linq.IGrouping", rt.FullyQualifiedName);
+			Assert.AreEqual("System.Int32", rt.TypeArguments[0].FullyQualifiedName);
+			Assert.AreEqual("System.String", rt.TypeArguments[1].FullyQualifiedName);
+		}
+		
+		[Test]
 		public void ParenthesizedLinqTest()
 		{
 			string program = @"using System; using System.Linq;
@@ -1796,6 +1849,23 @@ class TestClass {
 			Assert.IsNotNull(rr);
 			Assert.AreEqual("System.Collections.Generic.IEnumerable", rr.ResolvedType.FullyQualifiedName);
 			Assert.AreEqual("System.Int32", rr.ResolvedType.CastToConstructedReturnType().TypeArguments[0].FullyQualifiedName);
+		}
+		
+		[Test]
+		public void LinqSelectReturnTypeTest()
+		{
+			string program = @"using System;
+class TestClass { static void M() {
+	(from a in new XYZ() select a.ToUpper())
+}}
+class XYZ {
+	public int Select<U>(Func<string, U> f) { return 42; }
+}";
+			ResolveResult rr = Resolve(program,
+			                           "(from a in new XYZ() select a.ToUpper())",
+			                           3, 2, ExpressionContext.Default);
+			Assert.IsNotNull(rr);
+			Assert.AreEqual("System.Int32", rr.ResolvedType.FullyQualifiedName);
 		}
 		
 		const string objectInitializerTestProgram = @"using System; using System.Threading;
@@ -1890,7 +1960,7 @@ public class MyCollectionType : System.Collections.IEnumerable
 		[Test]
 		public void LinqQueryContinuationTest()
 		{
-			string program = @"using System;
+			string program = @"using System; using System.Linq;
 class TestClass {
 	void Test(string[] input) {
 		var r = from x in input
@@ -1935,6 +2005,101 @@ class TestClass {
 			
 			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "XX.Test()", 4);
 			Assert.AreEqual("XX.XX.Test", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ClassNameLookup1()
+		{
+			string program = @"namespace MainNamespace {
+	using Test.Subnamespace;
+	class Program {
+		static void M(Test.TheClass c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Test.TheClass", 4);
+			Assert.AreEqual("Test.Subnamespace.Test.TheClass", trr.ResolvedClass.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ClassNameLookup2()
+		{
+			string program = @"using Test.Subnamespace;
+namespace MainNamespace {
+	class Program {
+		static void M(Test.TheClass c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Test.TheClass", 4);
+			Assert.AreEqual("Test.TheClass", trr.ResolvedClass.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ClassNameLookup3()
+		{
+			string program = @"namespace MainNamespace {
+	using Test.Subnamespace;
+	class Program {
+		static void M(Test c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Test", 4);
+			Assert.AreEqual("Test.Subnamespace.Test", trr.ResolvedClass.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ClassNameLookup4()
+		{
+			string program = @"using Test.Subnamespace;
+namespace MainNamespace {
+	class Program {
+		static void M(Test c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(program, "Test", 4);
+			Assert.AreEqual("Test", nrr.Name);
+		}
+		
+		[Test]
+		public void ClassNameLookup5()
+		{
+			string program = @"namespace MainNamespace {
+	using A;
+	
+	class M {
+		void X(Test a) {}
+	}
+	namespace Test { class B {} }
+}
+
+namespace A {
+	class Test {}
+}";
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(program, "Test", 5);
+			Assert.AreEqual("MainNamespace.Test", nrr.Name);
 		}
 		
 		[Test]
@@ -2506,6 +2671,82 @@ class Flags {
 			
 			IReturnType rt = result.ResolvedClass.Attributes[0].AttributeType;
 			Assert.AreEqual("System.FlagsAttribute", rt.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void SD2_1487a()
+		{
+			string program = @"using System;
+class C2 : C1 {
+	public static void M() {
+		
+	}
+}
+class C1 {
+	protected static int Field;
+}";
+			MemberResolveResult mrr;
+			mrr = Resolve<MemberResolveResult>(program, "Field", 4, 1, ExpressionContext.Default);
+			Assert.AreEqual("C1.Field", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "C1.Field", 4, 1, ExpressionContext.Default);
+			Assert.AreEqual("C1.Field", mrr.ResolvedMember.FullyQualifiedName);
+			
+			mrr = Resolve<MemberResolveResult>(program, "C2.Field", 4, 1, ExpressionContext.Default);
+			Assert.AreEqual("C1.Field", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void SD2_1487b()
+		{
+			string program = @"using System;
+class C2 : C1 {
+	public static void M() {
+		
+	}
+}
+class C1 {
+	protected static int Field;
+}";
+			ArrayList arr = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
+			Assert.IsTrue(MemberExists(arr, "Field"));
+			
+			ResolveResult rr = Resolve(program, "C1", 4);
+			arr = rr.GetCompletionData(rr.CallingClass.ProjectContent);
+			Assert.IsTrue(MemberExists(arr, "Field"));
+			
+			rr = Resolve(program, "C2", 4);
+			arr = rr.GetCompletionData(rr.CallingClass.ProjectContent);
+			Assert.IsTrue(MemberExists(arr, "Field"));
+		}
+		
+		[Test]
+		public void ProtectedPrivateVisibilityTest()
+		{
+			string program = @"using System;
+class B : A {
+	void M(C c) {
+		
+	}
+	private int P2;
+	protected int Y;
+}
+class A {
+	private int P1;
+	protected int X;
+}
+class C : B {
+	private int P3;
+	protected int Z;
+}";
+			LocalResolveResult rr = Resolve<LocalResolveResult>(program, "c", 4);
+			ArrayList arr = rr.GetCompletionData(lastPC);
+			Assert.IsFalse(MemberExists(arr, "P1"));
+			Assert.IsTrue(MemberExists(arr, "P2"));
+			Assert.IsFalse(MemberExists(arr, "P3"));
+			Assert.IsTrue(MemberExists(arr, "X"));
+			Assert.IsTrue(MemberExists(arr, "Y"));
+			Assert.IsFalse(MemberExists(arr, "Z"));
 		}
 	}
 }

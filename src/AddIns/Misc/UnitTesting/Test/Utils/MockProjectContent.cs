@@ -175,5 +175,10 @@ namespace UnitTesting.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public bool InternalsVisibleTo(IProjectContent otherProjectContent)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

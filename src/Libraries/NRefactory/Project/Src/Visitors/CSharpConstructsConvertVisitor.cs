@@ -221,7 +221,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				// this code only supports primitive types, user-defined value types are handled by
 				// the DOM-aware CSharpToVBNetConvertVisitor
 				string type;
-				if (TypeReference.PrimitiveTypesCSharpReverse.TryGetValue(castExpression.CastTo.SystemType, out type)) {
+				if (TypeReference.PrimitiveTypesCSharpReverse.TryGetValue(castExpression.CastTo.Type, out type)) {
 					if (type != "object" && type != "string") {
 						// type is value type
 						castExpression.CastType = CastType.Conversion;

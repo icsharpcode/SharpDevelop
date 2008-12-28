@@ -18,8 +18,6 @@ namespace PythonBinding.Tests.Console
 {
 	public class DerivedPythonConsoleHost : PythonConsoleHost
 	{
-		ScriptEngine engine;
-		Type languageContextType;
 		PythonOutputStream outputStream;
 		
 		public DerivedPythonConsoleHost(ITextEditor textEditor) : base(textEditor)
@@ -46,13 +44,6 @@ namespace PythonBinding.Tests.Console
 			return base.CreateOptionsParser();
 		}
 				
-		/// <summary>
-		/// Context type passed to base.CreateEngine(Type context).
-		/// </summary>
-		public Type LanguageContextTypePassedToCreateEngine {
-			get { return languageContextType; }
-		}
-		
 		/// <summary>
 		/// Gets the output stream class passed to SetOutput method.
 		/// </summary>

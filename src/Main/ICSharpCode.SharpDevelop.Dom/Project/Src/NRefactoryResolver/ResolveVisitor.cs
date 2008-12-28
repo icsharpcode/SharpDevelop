@@ -527,7 +527,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			PointerReturnType type = targetRR.ResolvedType.CastToDecoratingReturnType<PointerReturnType>();
 			if (type != null) {
-				return resolver.ResolveMember(type.BaseType, pointerReferenceExpression.Identifier,
+				return resolver.ResolveMember(type.BaseType, pointerReferenceExpression.MemberName,
 				                              pointerReferenceExpression.TypeArguments,
 				                              NRefactoryResolver.IsInvoked(pointerReferenceExpression),
 				                              true, null
@@ -549,22 +549,40 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitQueryExpression(QueryExpression queryExpression, object data)
 		{
-			IReturnType type = null;
 			QueryExpressionSelectClause selectClause = queryExpression.SelectOrGroupClause as QueryExpressionSelectClause;
 			QueryExpressionGroupClause groupClause = queryExpression.SelectOrGroupClause as QueryExpressionGroupClause;
 			if (selectClause != null) {
-				type = ResolveType(selectClause.Projection);
+				// Fake a call to 'Select'
+				var fakeInvocation = new InvocationExpression(new MemberReferenceExpression(
+					queryExpression.FromClause.InExpression, "Select"));
+				
+				var selector = new LambdaExpression();
+				selector.Parameters.Add(new ParameterDeclarationExpression(null, "__rangeVariable"));
+				selector.ExpressionBody = selectClause.Projection;
+				selector.Parent = fakeInvocation;
+				
+				fakeInvocation.Arguments.Add(selector);
+				
+				return CreateResolveResult(ResolveType(fakeInvocation));
 			} else if (groupClause != null) {
-				type = new ConstructedReturnType(
-					new GetClassReturnType(resolver.ProjectContent, "System.Linq.IGrouping", 2),
-					new IReturnType[] { ResolveType(groupClause.GroupBy), ResolveType(groupClause.Projection) }
-				);
-			}
-			if (type != null) {
-				return CreateResolveResult(new ConstructedReturnType(
-					new GetClassReturnType(resolver.ProjectContent, "System.Collections.Generic.IEnumerable", 1),
-					new IReturnType[] { type }
-				));
+				// Fake a call to 'GroupBy'
+				var fakeInvocation = new InvocationExpression(new MemberReferenceExpression(
+					queryExpression.FromClause.InExpression, "GroupBy"));
+				
+				var keySelector = new LambdaExpression();
+				keySelector.Parameters.Add(new ParameterDeclarationExpression(null, "__rangeVariable"));
+				keySelector.ExpressionBody = groupClause.GroupBy;
+				keySelector.Parent = fakeInvocation;
+				
+				var elementSelector = new LambdaExpression();
+				elementSelector.Parameters.Add(new ParameterDeclarationExpression(null, "__rangeVariable"));
+				elementSelector.ExpressionBody = groupClause.Projection;
+				elementSelector.Parent = fakeInvocation;
+				
+				fakeInvocation.Arguments.Add(keySelector);
+				fakeInvocation.Arguments.Add(elementSelector);
+				
+				return CreateResolveResult(ResolveType(fakeInvocation));
 			} else {
 				return null;
 			}

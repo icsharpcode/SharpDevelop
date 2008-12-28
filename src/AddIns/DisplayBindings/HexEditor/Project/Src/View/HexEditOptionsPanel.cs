@@ -6,6 +6,7 @@
 // </file>
 
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using HexEditor.Util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -37,19 +38,8 @@ namespace HexEditor.View
 		List<Color> Colors;
 		Color customFore = Color.Transparent;
 		Color customBack = Color.Transparent;
-		
+				
 		bool fcmanualchange = false;
-		
-		// New values
-		Color OffsetForeColor;
-		Color DataForeColor;
-		
-		bool OffsetBold, OffsetItalic, OffsetUnderline;
-		bool DataBold, DataItalic, DataUnderline;
-		
-		float FontSize = 9.75f;
-		
-		string FontName;
 		
 		public HexEditOptionsPanel()
 		{
@@ -62,138 +52,55 @@ namespace HexEditor.View
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("HexEditor.Resources.HexEditOptions.xfrm"));
 			this.InitializeComponents();
-			string configpath = Path.Combine(PropertyService.ConfigDirectory, "hexeditor-config.xml");
 			
-			if (!File.Exists(configpath)) return;
+			lblOffsetPreview.Font = Settings.OffsetFont;
+			lblDataPreview.Font = Settings.DataFont;
 			
-			XmlDocument file = new XmlDocument();
-			file.Load(configpath);
+			fdSelectFont.Font = new Font(Settings.OffsetFont, FontStyle.Regular);
 			
-			foreach (XmlElement el in file.GetElementsByTagName("Setting")) {
-				switch(el.GetAttribute("Name")) {
-					case "OffsetFore" :
-						OffsetForeColor = Color.FromArgb(int.Parse(el.GetAttribute("R")), int.Parse(el.GetAttribute("G")), int.Parse(el.GetAttribute("B")));
-						break;
-					case "DataFore" :
-						DataForeColor = Color.FromArgb(int.Parse(el.GetAttribute("R")), int.Parse(el.GetAttribute("G")), int.Parse(el.GetAttribute("B")));
-						break;
-					case "OffsetStyle" :
-						OffsetBold = bool.Parse(el.GetAttribute("Bold"));
-						OffsetItalic = bool.Parse(el.GetAttribute("Italic"));
-						OffsetUnderline = bool.Parse(el.GetAttribute("Underline"));
-						break;
-					case "DataStyle" :
-						DataBold = bool.Parse(el.GetAttribute("Bold"));
-						DataItalic = bool.Parse(el.GetAttribute("Italic"));
-						DataUnderline = bool.Parse(el.GetAttribute("Underline"));
-						break;
-					case "Font" :
-						FontName = el.GetAttribute("FontName");
-						FontSize = float.Parse(el.GetAttribute("FontSize"));
-						break;
-					case "TextDisplay":
-						this.cbFitToWidth.Checked = bool.Parse(el.GetAttribute("FitToWidth"));
-						this.nUDBytesPerLine.Value = int.Parse(el.GetAttribute("BytesPerLine"));
-						this.dUDViewModes.SelectedItem = ((HexEditor.Util.ViewMode)HexEditor.Util.ViewMode.Parse(typeof(HexEditor.Util.ViewMode),el.GetAttribute("ViewMode"))).ToString();
-						break;
-					case "FileTypes":
-						txtExtensions.Text = el.GetAttribute("FileTypes");
-						break;
-				}
-			}
-			
-			lblOffsetPreview.Font = new Font(FontName, FontSize);
-			lblDataPreview.Font = new Font(FontName, FontSize);
-			
-			fdSelectFont.Font = new Font(FontName, FontSize);
-			
-			if (OffsetBold) lblOffsetPreview.Font = new Font(lblOffsetPreview.Font, lblOffsetPreview.Font.Style ^ FontStyle.Bold);
-			if (OffsetItalic) lblOffsetPreview.Font = new Font(lblOffsetPreview.Font, lblOffsetPreview.Font.Style ^ FontStyle.Italic);
-			if (OffsetUnderline) lblOffsetPreview.Font = new Font(lblOffsetPreview.Font, lblOffsetPreview.Font.Style ^ FontStyle.Underline);
-			
-			if (DataBold) lblDataPreview.Font = new Font(lblDataPreview.Font, lblDataPreview.Font.Style ^ FontStyle.Bold);
-			if (DataItalic) lblDataPreview.Font = new Font(lblDataPreview.Font, lblDataPreview.Font.Style ^ FontStyle.Italic);
-			if (DataUnderline) lblDataPreview.Font = new Font(lblDataPreview.Font, lblDataPreview.Font.Style ^ FontStyle.Underline);
-			
-			if (IsNamedColor(OffsetForeColor)) {
-				OffsetForeColor = Color.FromName(GetColorName(OffsetForeColor));
+			if (IsNamedColor(Settings.OffsetForeColor)) {
+				Settings.OffsetForeColor = Color.FromName(GetColorName(Settings.OffsetForeColor));
 			} else {
-				customFore = OffsetForeColor;
+				customFore = Settings.OffsetForeColor;
 			}
 			
-			if (IsNamedColor(DataForeColor)) {
-				DataForeColor = Color.FromName(GetColorName(DataForeColor));
+			if (IsNamedColor(Settings.DataForeColor)) {
+				Settings.DataForeColor = Color.FromName(GetColorName(Settings.DataForeColor));
 			} else {
-				customFore = DataForeColor;
+				customFore = Settings.DataForeColor;
 			}
 			
-			if (!OffsetForeColor.IsNamedColor) {
+			if (!Settings.OffsetForeColor.IsNamedColor) {
 				cmbForeColor.SelectedIndex = 0;
 			} else {
-				cmbForeColor.SelectedIndex = cmbForeColor.Items.IndexOf(OffsetForeColor.Name);
+				cmbForeColor.SelectedIndex = cmbForeColor.Items.IndexOf(Settings.OffsetForeColor.Name);
 			}
 			
-			this.cbBold.Checked = OffsetBold;
-			this.cbItalic.Checked = OffsetItalic;
-			this.cbUnderline.Checked = OffsetUnderline;
+			this.cbBold.Checked = Settings.OffsetFont.Bold;
+			this.cbItalic.Checked = Settings.OffsetFont.Italic;
+			this.cbUnderline.Checked = Settings.OffsetFont.Underline;
+			
+			this.cbFitToWidth.Checked = Settings.FitToWidth;
+			
+			this.nUDBytesPerLine.Value = Settings.BytesPerLine;
+			this.dUDViewModes.SelectedIndex = this.dUDViewModes.Items.IndexOf(Settings.ViewMode.ToString());
 		}
 
 		public override bool StorePanelContents()
 		{
-			string configpath = Path.Combine(PropertyService.ConfigDirectory, "hexeditor-config.xml");
-			XmlDocument file = new XmlDocument();
-			file.LoadXml("<Config></Config>");
+			Settings.BytesPerLine = (int)this.nUDBytesPerLine.Value;
 			
-			XmlElement el = file.CreateElement("Setting");
-			el.SetAttribute("Name", "OffsetFore");
-			el.SetAttribute("R", OffsetForeColor.R.ToString());
-			el.SetAttribute("G", OffsetForeColor.G.ToString());
-			el.SetAttribute("B", OffsetForeColor.B.ToString());
-			file.FirstChild.AppendChild(el);
+			Settings.DataFont = this.lblDataPreview.Font;
+			Settings.OffsetFont = this.lblOffsetPreview.Font;
 			
-			el = file.CreateElement("Setting");
-			el.SetAttribute("Name", "DataFore");
-			el.SetAttribute("R", DataForeColor.R.ToString());
-			el.SetAttribute("G", DataForeColor.G.ToString());
-			el.SetAttribute("B", DataForeColor.B.ToString());
-			file.FirstChild.AppendChild(el);
-
-			el = file.CreateElement("Setting");
-			el.SetAttribute("Name", "OffsetStyle");
-			el.SetAttribute("Bold", OffsetBold.ToString());
-			el.SetAttribute("Italic", OffsetItalic.ToString());
-			el.SetAttribute("Underline", OffsetUnderline.ToString());
-			file.FirstChild.AppendChild(el);
+			Settings.FileTypes = this.txtExtensions.Text.Split(new char[] {';', ' '}, StringSplitOptions.RemoveEmptyEntries);
 			
-			el = file.CreateElement("Setting");
-			el.SetAttribute("Name", "DataStyle");
-			el.SetAttribute("Bold", DataBold.ToString());
-			el.SetAttribute("Italic", DataItalic.ToString());
-			el.SetAttribute("Underline", DataUnderline.ToString());
-			file.FirstChild.AppendChild(el);
+			Settings.FitToWidth = this.cbFitToWidth.Checked;
 			
-			el = file.CreateElement("Setting");
-			el.SetAttribute("Name", "Font");
-			el.SetAttribute("FontName", FontName);
-			el.SetAttribute("FontSize", FontSize.ToString());
-			file.FirstChild.AppendChild(el);
+			Settings.OffsetForeColor = this.lblOffsetPreview.ForeColor;
+			Settings.DataForeColor = this.lblDataPreview.ForeColor;
+			Settings.ViewMode = (ViewMode)Enum.Parse(typeof(ViewMode), ((this.dUDViewModes.SelectedItem == null) ? ViewMode.Hexadecimal.ToString() : this.dUDViewModes.SelectedItem.ToString()));
 			
-			el = file.CreateElement("Setting");
-			el.SetAttribute("Name", "TextDisplay");
-			el.SetAttribute("FitToWidth", this.cbFitToWidth.Checked.ToString());
-			el.SetAttribute("BytesPerLine", this.nUDBytesPerLine.Value.ToString());
-			if (this.dUDViewModes.SelectedIndex == -1)
-				el.SetAttribute("ViewMode", HexEditor.Util.ViewMode.Hexadecimal.ToString());
-			else
-				el.SetAttribute("ViewMode", this.dUDViewModes.SelectedItem.ToString());
-			file.FirstChild.AppendChild(el);
-			
-			el = file.CreateElement("Setting");
-			el.SetAttribute("Name", "FileTypes");
-			el.SetAttribute("FileTypes", txtExtensions.Text);
-			file.FirstChild.AppendChild(el);
-			
-			file.Save(configpath);
 			return true;
 		}
 
@@ -261,19 +168,8 @@ namespace HexEditor.View
 		void btnSelectFontClick(object sender, EventArgs e)
 		{
 			if (fdSelectFont.ShowDialog() == DialogResult.OK) {
-				lblOffsetPreview.Font = new Font(fdSelectFont.Font, FontStyle.Regular);
-				lblDataPreview.Font = new Font(fdSelectFont.Font, FontStyle.Regular);
-				
-				FontName = fdSelectFont.Font.Name;
-				FontSize = fdSelectFont.Font.Size;
-				
-				if (OffsetBold) lblOffsetPreview.Font = new Font(lblOffsetPreview.Font, lblOffsetPreview.Font.Style ^ FontStyle.Bold);
-				if (OffsetItalic) lblOffsetPreview.Font = new Font(lblOffsetPreview.Font, lblOffsetPreview.Font.Style ^ FontStyle.Italic);
-				if (OffsetUnderline) lblOffsetPreview.Font = new Font(lblOffsetPreview.Font, lblOffsetPreview.Font.Style ^ FontStyle.Underline);
-				
-				if (DataBold) lblDataPreview.Font = new Font(lblDataPreview.Font, lblDataPreview.Font.Style ^ FontStyle.Bold);
-				if (DataItalic) lblDataPreview.Font = new Font(lblDataPreview.Font, lblDataPreview.Font.Style ^ FontStyle.Italic);
-				if (DataUnderline) lblDataPreview.Font = new Font(lblDataPreview.Font, lblDataPreview.Font.Style ^ FontStyle.Underline);
+				lblOffsetPreview.Font = new Font(fdSelectFont.Font, lblOffsetPreview.Font.Style);
+				lblDataPreview.Font = new Font(fdSelectFont.Font, lblDataPreview.Font.Style);
 			}
 		}
 		
@@ -287,10 +183,10 @@ namespace HexEditor.View
 							customFore = cdColor.Color;
 							switch (lstElements.SelectedIndex) {
 								case 0 :
-									OffsetForeColor = customFore;
+									Settings.OffsetForeColor = customFore;
 									break;
 								case 1 :
-									DataForeColor = customFore;
+									Settings.DataForeColor = customFore;
 									break;
 							}
 						}
@@ -299,17 +195,17 @@ namespace HexEditor.View
 					if (cmbForeColor.SelectedIndex == -1) cmbForeColor.SelectedIndex = 0;
 					switch (lstElements.SelectedIndex) {
 						case 0 :
-							OffsetForeColor = Color.FromName(cmbForeColor.Items[cmbForeColor.SelectedIndex].ToString());
+							Settings.OffsetForeColor = Color.FromName(cmbForeColor.Items[cmbForeColor.SelectedIndex].ToString());
 							break;
 						case 1 :
-							DataForeColor = Color.FromName(cmbForeColor.Items[cmbForeColor.SelectedIndex].ToString());
+							Settings.DataForeColor = Color.FromName(cmbForeColor.Items[cmbForeColor.SelectedIndex].ToString());
 							break;
 					}
 				}
 				
-				lblOffsetPreview.ForeColor = OffsetForeColor;
+				lblOffsetPreview.ForeColor = Settings.OffsetForeColor;
 				
-				lblDataPreview.ForeColor = DataForeColor;
+				lblDataPreview.ForeColor = Settings.DataForeColor;
 			} else {
 				MessageService.ShowError("Please select an element first!");
 			}
@@ -356,12 +252,10 @@ namespace HexEditor.View
 			if (lstElements.SelectedIndex != -1) {
 				switch (lstElements.SelectedIndex) {
 					case 0 :
-						OffsetBold = cbBold.Checked;
 						if ((cbBold.Checked & !lblOffsetPreview.Font.Bold) ^ (!cbBold.Checked & lblOffsetPreview.Font.Bold))
 							lblOffsetPreview.Font = new Font(lblOffsetPreview.Font, lblOffsetPreview.Font.Style ^ FontStyle.Bold);
 						break;
 					case 1 :
-						DataBold = cbBold.Checked;
 						if ((cbBold.Checked & !lblDataPreview.Font.Bold) ^ (!cbBold.Checked & lblDataPreview.Font.Bold))
 							lblDataPreview.Font = new Font(lblDataPreview.Font, lblDataPreview.Font.Style ^ FontStyle.Bold);
 						break;
@@ -376,12 +270,10 @@ namespace HexEditor.View
 			if (lstElements.SelectedIndex != -1) {
 				switch (lstElements.SelectedIndex) {
 					case 0 :
-						OffsetItalic = cbItalic.Checked;
 						if ((cbItalic.Checked & !lblOffsetPreview.Font.Italic) || (!cbItalic.Checked & lblOffsetPreview.Font.Italic))
 							lblOffsetPreview.Font = new Font(lblOffsetPreview.Font, lblOffsetPreview.Font.Style ^ FontStyle.Italic);
 						break;
 					case 1 :
-						DataItalic = cbItalic.Checked;
 						if ((cbItalic.Checked & !lblDataPreview.Font.Italic) || (!cbItalic.Checked & lblDataPreview.Font.Italic))
 							lblDataPreview.Font = new Font(lblDataPreview.Font, lblDataPreview.Font.Style ^ FontStyle.Italic);
 						break;
@@ -396,12 +288,10 @@ namespace HexEditor.View
 			if (lstElements.SelectedIndex != -1) {
 				switch (lstElements.SelectedIndex) {
 					case 0 :
-						OffsetUnderline = cbUnderline.Checked;
 						if ((cbUnderline.Checked & !lblOffsetPreview.Font.Underline) || (!cbUnderline.Checked & lblOffsetPreview.Font.Underline))
 							lblOffsetPreview.Font = new Font(lblOffsetPreview.Font, lblOffsetPreview.Font.Style ^ FontStyle.Underline);
 						break;
 					case 1 :
-						DataUnderline = cbUnderline.Checked;
 						if ((cbUnderline.Checked & !lblDataPreview.Font.Underline) || (!cbUnderline.Checked & lblDataPreview.Font.Underline))
 							lblDataPreview.Font = new Font(lblDataPreview.Font, lblDataPreview.Font.Style ^ FontStyle.Underline);
 						break;
@@ -415,25 +305,25 @@ namespace HexEditor.View
 		{
 			switch (lstElements.SelectedIndex) {
 				case 0 :
-					cbBold.Checked = OffsetBold;
-					cbItalic.Checked = OffsetItalic;
-					cbUnderline.Checked = OffsetUnderline;
+					this.cbBold.Checked = Settings.OffsetFont.Bold;
+					this.cbItalic.Checked = Settings.OffsetFont.Italic;
+					this.cbUnderline.Checked = Settings.OffsetFont.Underline;
 
-					if (OffsetForeColor == customFore) {
+					if (Settings.OffsetForeColor == customFore) {
 						cmbForeColor.SelectedIndex = 0;
 					} else {
-						cmbForeColor.SelectedIndex = cmbForeColor.Items.IndexOf(OffsetForeColor.Name);
+						cmbForeColor.SelectedIndex = cmbForeColor.Items.IndexOf(Settings.OffsetForeColor.Name);
 					}
 					break;
 				case 1 :
-					cbBold.Checked = DataBold;
-					cbItalic.Checked = DataItalic;
-					cbUnderline.Checked = DataUnderline;
+					this.cbBold.Checked = Settings.DataFont.Bold;
+					this.cbItalic.Checked = Settings.DataFont.Italic;
+					this.cbUnderline.Checked = Settings.DataFont.Underline;
 
-					if (DataForeColor == customFore) {
+					if (Settings.DataForeColor == customFore) {
 						cmbForeColor.SelectedIndex = 0;
 					} else {
-						cmbForeColor.SelectedIndex = cmbForeColor.Items.IndexOf(DataForeColor.Name);
+						cmbForeColor.SelectedIndex = cmbForeColor.Items.IndexOf(Settings.DataForeColor.Name);
 					}
 					break;
 			}

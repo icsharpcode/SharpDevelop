@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpSimpleFieldDeclarationTest()
 		{
 			FieldDeclaration fd = ParseUtilCSharp.ParseTypeMember<FieldDeclaration>("int[,,,] myField;");
-			Assert.AreEqual("int", fd.TypeReference.Type);
+			Assert.AreEqual("System.Int32", fd.TypeReference.Type);
 			Assert.AreEqual(new int[] { 3 } , fd.TypeReference.RankSpecifier);
 			Assert.AreEqual(1, fd.Fields.Count);
 			
@@ -34,8 +34,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("myField As Integer(,,,)");
 			Assert.AreEqual(1, fd.Fields.Count);
 			
-			Assert.AreEqual("Integer", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
-			Assert.AreEqual("System.Int32", ((VariableDeclaration)fd.Fields[0]).TypeReference.SystemType);
+			Assert.AreEqual("System.Int32", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
+			Assert.AreEqual("System.Int32", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
 			Assert.AreEqual("myField", ((VariableDeclaration)fd.Fields[0]).Name);
 			Assert.AreEqual(new int[] { 3 } , ((VariableDeclaration)fd.Fields[0]).TypeReference.RankSpecifier);
 		}
@@ -46,9 +46,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("a, b As String");
 			Assert.AreEqual(2, fd.Fields.Count);
 			
-			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
+			Assert.AreEqual("System.String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
 			Assert.IsFalse(((VariableDeclaration)fd.Fields[0]).TypeReference.IsArrayType);
-			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[1]).TypeReference.Type);
+			Assert.AreEqual("System.String", ((VariableDeclaration)fd.Fields[1]).TypeReference.Type);
 			Assert.IsFalse(((VariableDeclaration)fd.Fields[1]).TypeReference.IsArrayType);
 		}
 		
@@ -69,8 +69,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("Dim a, b() As String");
 			Assert.AreEqual(2, fd.Fields.Count);
 			
-			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
-			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[1]).TypeReference.Type);
+			Assert.AreEqual("System.String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
+			Assert.AreEqual("System.String", ((VariableDeclaration)fd.Fields[1]).TypeReference.Type);
 			Assert.IsFalse(((VariableDeclaration)fd.Fields[0]).TypeReference.IsArrayType);
 			Assert.IsTrue(((VariableDeclaration)fd.Fields[1]).TypeReference.IsArrayType);
 		}
@@ -81,8 +81,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("Dim a(), b As String");
 			Assert.AreEqual(2, fd.Fields.Count);
 			
-			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
-			Assert.AreEqual("String", ((VariableDeclaration)fd.Fields[1]).TypeReference.Type);
+			Assert.AreEqual("System.String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
+			Assert.AreEqual("System.String", ((VariableDeclaration)fd.Fields[1]).TypeReference.Type);
 			Assert.IsTrue(((VariableDeclaration)fd.Fields[0]).TypeReference.IsArrayType);
 			Assert.IsFalse(((VariableDeclaration)fd.Fields[1]).TypeReference.IsArrayType);
 		}

@@ -36,10 +36,10 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 	};
 }";
 			BlockStatement blockStmt = ParseUtilCSharp.ParseStatement<BlockStatement>(code);
-			//Assert.AreEqual(1, blockStmt.StartLocation.X); // does not work because ParseStatement inserts special code
-			Assert.AreEqual(1, blockStmt.StartLocation.Y);
-			Assert.AreEqual(2, blockStmt.EndLocation.X);
-			Assert.AreEqual(9, blockStmt.EndLocation.Y);
+			//Assert.AreEqual(1, blockStmt.StartLocation.Column); // does not work because ParseStatement inserts special code
+			Assert.AreEqual(1, blockStmt.StartLocation.Line);
+			Assert.AreEqual(2, blockStmt.EndLocation.Column);
+			Assert.AreEqual(9, blockStmt.EndLocation.Line);
 		}
 
 		#endregion

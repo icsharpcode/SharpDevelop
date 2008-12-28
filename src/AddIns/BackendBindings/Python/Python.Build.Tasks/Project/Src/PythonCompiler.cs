@@ -129,6 +129,9 @@ namespace ICSharpCode.Python.Build.Tasks
 			TypeBuilder typeBuilder = moduleBuilder.DefineType("PythonMain", TypeAttributes.Public);
 			MethodBuilder mainMethod = typeBuilder.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static, typeof(int), new Type[0]);
 			
+			// Mark main method as STA.
+			mainMethod.SetCustomAttribute(typeof(STAThreadAttribute).GetConstructor(Type.EmptyTypes), new byte[0]);
+
 			ILGenerator generator = mainMethod.GetILGenerator();
 			generator.Emit(OpCodes.Ldstr, Path.GetFileName(outputAssemblyDll));
 			generator.EmitCall(OpCodes.Call, typeof(Path).GetMethod("GetFullPath", new Type[] {typeof(String)}, new ParameterModifier[0]), null);

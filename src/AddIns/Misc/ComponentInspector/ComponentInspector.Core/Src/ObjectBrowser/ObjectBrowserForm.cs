@@ -197,18 +197,7 @@ namespace NoGoop.ObjBrowser
 		/// </summary>
 		public bool OpenFile(string fileName)
 		{
-			try {
-				_objectBrowser.OpenFile(fileName);
-				return true;
-			} catch (Exception ex) {
-				ErrorDialog.Show(ex,
-							 "Error opening file " + fileName
-							 + "\n\nThe Inspector can only open .NET "
-							 + "assemblies, ActiveX controls or ActiveX type libraries.",
-							 "Error opening file " + fileName,
-							 MessageBoxIcon.Error);
-				return false;
-			}
+			return _objectBrowser.OpenFile(fileName);
 		}
 		
 		void FindClick(object sender, EventArgs e)

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using ICSharpCode.NRefactory.Ast;
@@ -368,7 +369,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			
 			public PossibleTypeReference(TypeReference tr)
 			{
-				this.Name = tr.SystemType;
+				this.Name = tr.Type;
 				this.TypeParameterCount = tr.GenericTypes.Count;
 			}
 			
@@ -510,7 +511,8 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				if (tr.ExtensionMethod != null) {
 					// the invocation of an extension method can implicitly use a using
 					StringComparer nameComparer = cu.ProjectContent.Language.NameComparer;
-					foreach (IUsing import in cu.Usings) {
+					// go through all usings in all nested child scopes
+					foreach (IUsing import in cu.GetAllUsings()) {
 						foreach (string i in import.Usings) {
 							if (nameComparer.Equals(tr.ExtensionMethod.DeclaringType.Namespace, i)) {
 								usedUsings.Add(import);
@@ -528,7 +530,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			}
 			
 			List<IUsing> unusedUsings = new List<IUsing>();
-			foreach (IUsing import in cu.Usings) {
+			foreach (IUsing import in cu.GetAllUsings()) {
 				if (!usedUsings.Contains(import)) {
 					if (import.HasAliases) {
 						foreach (string key in import.Aliases.Keys) {
@@ -665,13 +667,13 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			int attribStart = csharp ? NR.Parser.CSharp.Tokens.OpenSquareBracket : NR.Parser.VB.Tokens.LessThan;
 			int attribEnd = csharp ? NR.Parser.CSharp.Tokens.CloseSquareBracket : NR.Parser.VB.Tokens.GreaterThan;
 			
-			while (t.kind != eof) {
-				if (t.kind == attribStart)
+			while (t.Kind != eof) {
+				if (t.Kind == attribStart)
 					stack.Push(lastPos);
 				if (t.EndLocation.Y >= type.Region.BeginLine)
 					break;
 				lastPos = t.EndLocation;
-				if (t.kind == attribEnd && stack.Count > 0)
+				if (t.Kind == attribEnd && stack.Count > 0)
 					lastPos = stack.Pop();
 				t = lexer.NextToken();
 			}
@@ -679,7 +681,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			stack = null;
 			
 			// Skip until end of type
-			while (t.kind != eof) {
+			while (t.Kind != eof) {
 				if (t.EndLocation.Y > type.BodyRegion.EndLine)
 					break;
 				t = lexer.NextToken();

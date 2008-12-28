@@ -255,7 +255,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			if (type == null)
 				return;
-			if (type.SystemType != type.Type)
+			if (type.Type != type.Type)
 				return;
 			foreach (TypeReference tref in type.GenericTypes) {
 				FixTypeReference(tref, location, domCu);

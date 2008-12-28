@@ -40,8 +40,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void NullablePrimitiveCastExpression()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(int?)o");
-			Assert.AreEqual("System.Nullable", ce.CastTo.SystemType);
-			Assert.AreEqual("int", ce.CastTo.GenericTypes[0].Type);
+			Assert.AreEqual("System.Nullable", ce.CastTo.Type);
+			Assert.AreEqual("System.Int32", ce.CastTo.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.Cast, ce.CastType);
 		}
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void NullableCastExpression()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyType?)o");
-			Assert.AreEqual("System.Nullable", ce.CastTo.SystemType);
+			Assert.AreEqual("System.Nullable", ce.CastTo.Type);
 			Assert.AreEqual("MyType", ce.CastTo.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.Cast, ce.CastType);
@@ -60,8 +60,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void NullableTryCastExpression()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("o as int?");
-			Assert.AreEqual("System.Nullable", ce.CastTo.SystemType);
-			Assert.AreEqual("int", ce.CastTo.GenericTypes[0].Type);
+			Assert.AreEqual("System.Nullable", ce.CastTo.Type);
+			Assert.IsTrue(ce.CastTo.IsKeyword);
+			Assert.AreEqual("System.Int32", ce.CastTo.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.TryCast, ce.CastType);
 		}
@@ -71,7 +72,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(List<string>)o");
 			Assert.AreEqual("List", ce.CastTo.Type);
-			Assert.AreEqual("string", ce.CastTo.GenericTypes[0].Type);
+			Assert.AreEqual("System.String", ce.CastTo.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.Cast, ce.CastType);
 		}
@@ -81,7 +82,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(List<string>[])o");
 			Assert.AreEqual("List", ce.CastTo.Type);
-			Assert.AreEqual("string", ce.CastTo.GenericTypes[0].Type);
+			Assert.AreEqual("System.String", ce.CastTo.GenericTypes[0].Type);
 			Assert.AreEqual(new int[] { 0 }, ce.CastTo.RankSpecifier);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.Cast, ce.CastType);
@@ -92,7 +93,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("o as List<string>[]");
 			Assert.AreEqual("List", ce.CastTo.Type);
-			Assert.AreEqual("string", ce.CastTo.GenericTypes[0].Type);
+			Assert.AreEqual("System.String", ce.CastTo.GenericTypes[0].Type);
 			Assert.AreEqual(new int[] { 0 }, ce.CastTo.RankSpecifier);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.TryCast, ce.CastType);
@@ -112,7 +113,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpTryCastParenthesizedExpression()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(o) as string");
-			Assert.AreEqual("string", ce.CastTo.ToString());
+			Assert.AreEqual("System.String", ce.CastTo.ToString());
 			Assert.IsTrue(ce.Expression is ParenthesizedExpression);
 			Assert.AreEqual(CastType.TryCast, ce.CastType);
 		}
@@ -121,7 +122,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpCastNegation()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(uint)-negativeValue");
-			Assert.AreEqual("uint", ce.CastTo.ToString());
+			Assert.AreEqual("System.UInt32", ce.CastTo.ToString());
 			Assert.IsTrue(ce.Expression is UnaryOperatorExpression);
 			Assert.AreEqual(CastType.Cast, ce.CastType);
 		}

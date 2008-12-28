@@ -44,7 +44,7 @@ namespace ICSharpCode.TextEditor.Util
 				if (casesensitive) {
 					for (int i = 0; i < length; ++i) {
 						int index = ((int)document.GetCharAt(wordOffset + i)) % 256;
-						next = next.leaf[index];
+						next = next[index];
 						
 						if (next == null) {
 							return null;
@@ -58,7 +58,7 @@ namespace ICSharpCode.TextEditor.Util
 					for (int i = 0; i < length; ++i) {
 						int index = ((int)Char.ToUpper(document.GetCharAt(wordOffset + i))) % 256;
 						
-						next = next.leaf[index];
+						next = next[index];
 						
 						if (next == null) {
 							return null;
@@ -90,15 +90,15 @@ namespace ICSharpCode.TextEditor.Util
 					int index = ((int)keyword[i]) % 256; // index of curchar
 					bool d = keyword[i] == '\\';
 					
-					next = next.leaf[index];             // get node to this index
+					next = next[index];             // get node to this index
 					
 					if (next == null) { // no node created -> insert word here
-						node.leaf[index] = new Node(value, keyword);
+						node[index] = new Node(value, keyword);
 						break;
 					}
 					
 					if (next.word != null && next.word.Length != i) { // node there, take node content and insert them again
-						string tmpword  = next.word;                  // this word will be inserted 1 level deeper (better, don't need too much 
+						string tmpword  = next.word;                  // this word will be inserted 1 level deeper (better, don't need too much
 						object tmpcolor = next.color;                 // string comparisons for finding.)
 						next.color = next.word = null;
 						this[tmpword] = tmpcolor;
@@ -134,7 +134,23 @@ namespace ICSharpCode.TextEditor.Util
 			public string word;
 			public object color;
 			
-			public Node[] leaf = new Node[256];
+			// Lazily initialize children array. Saves 200 KB of memory for the C# highlighting
+			// because we don't have to store the array for leaf nodes.
+			public Node this[int index] {
+				get { 
+					if (children != null)
+						return children[index];
+					else
+						return null;
+				}
+				set {
+					if (children == null)
+						children = new Node[256];
+					children[index] = value;
+				}
+			}
+			
+			private Node[] children;
 		}
 	}
 }

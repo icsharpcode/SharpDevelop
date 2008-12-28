@@ -173,10 +173,32 @@ namespace ICSharpCode.Core.WinForms
 				if (iconobj is Icon) {
 					ico = (Icon)iconobj;
 				} else {
-					ico = Icon.FromHandle(((Bitmap)iconobj).GetHicon());
+					ico = BitmapToIcon((Bitmap)iconobj);
 				}
 				iconCache[name] = ico;
 				return ico;
+			}
+		}
+		
+		/// <summary>
+		/// Converts a bitmap into an icon.
+		/// </summary>
+		public static Icon BitmapToIcon(Bitmap bmp)
+		{
+			IntPtr hIcon = bmp.GetHicon();
+			try {
+				using (Icon tempIco = Icon.FromHandle(hIcon)) {
+					// Icon.FromHandle creates a Icon object that uses the HIcon but does
+					// not own it. We could leak HIcons on language changes.
+					// We have no idea when we may dispose the icons after a language change
+					// (they could still be used), so we'll have to create an owned icon.
+					// Unfortunately, there's no Icon.FromHandle(IntPtr,bool takeOwnership) method.
+					// We could use reflection to set the ownHandle field; or we create a copy of the icon
+					// and immediately destroy the original
+					return new Icon(tempIco, tempIco.Width, tempIco.Height);
+				} // dispose tempico, doesn't do much because the icon isn't owned
+			} finally {
+				NativeMethods.DestroyIcon(hIcon);
 			}
 		}
 		

@@ -12,6 +12,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -407,7 +408,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			base.Initialize();
 		}
-				
+		
 		/// <summary>
 		/// Create's a new FileProjectItem in this DirectoryNode.
 		/// </summary>
@@ -543,11 +544,13 @@ namespace ICSharpCode.SharpDevelop.Project
 					return true;
 				}
 				if (dataObject.GetDataPresent(typeof(FileNode))) {
-					FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(FileNode).ToString());
-					return File.Exists(clipboardObject.FileName);
+					FileOperationClipboardObject clipboardObject = dataObject.GetData(typeof(FileNode).ToString()) as FileOperationClipboardObject;
+					return clipboardObject != null && File.Exists(clipboardObject.FileName);
 				}
 				if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
-					FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(DirectoryNode).ToString());
+					FileOperationClipboardObject clipboardObject = dataObject.GetData(typeof(DirectoryNode).ToString()) as FileOperationClipboardObject;
+					if (clipboardObject == null)
+						return false;
 					if (FileUtility.IsBaseDirectory(clipboardObject.FileName, Directory)) {
 						return false;
 					}
@@ -643,6 +646,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				if (AddExistingItemsToProject.ShowReplaceExistingFileDialog(null, copiedFileName, false) == AddExistingItemsToProject.ReplaceExistingFile.Yes) {
 					wasFileReplacement = true;
+					IViewContent viewContent = FileService.GetOpenFile(copiedFileName);
+					if (viewContent != null) {
+						viewContent.WorkbenchWindow.CloseWindow(true);
+					}
 				} else {
 					// don't replace file
 					return;

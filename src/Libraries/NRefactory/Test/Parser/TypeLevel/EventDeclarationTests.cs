@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsFalse(ed.HasRemoveRegion);
 			
 			Assert.AreEqual("MyInterface", ed.InterfaceImplementations[0].InterfaceType.Type);
-			Assert.AreEqual("System.String", ed.InterfaceImplementations[0].InterfaceType.GenericTypes[0].SystemType);
+			Assert.AreEqual("System.String", ed.InterfaceImplementations[0].InterfaceType.GenericTypes[0].Type);
 			Assert.AreEqual("MyEvent", ed.InterfaceImplementations[0].MemberName);
 		}
 		

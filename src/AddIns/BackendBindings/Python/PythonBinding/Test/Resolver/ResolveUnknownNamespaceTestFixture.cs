@@ -54,9 +54,9 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
-		public void SearchNamespaceCalled()
+		public void NamespaceExistsCalled()
 		{
-			Assert.IsTrue(mockProjectContent.SearchNamespaceCalled);
+			Assert.IsTrue(mockProjectContent.NamespaceExistsCalled);
 		}	
 	}
 }

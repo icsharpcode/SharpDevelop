@@ -16,6 +16,7 @@
 		<DisplayBinding id = "HexEditor"
 		                insertbefore = "Text"
 		                supportedformats = "Binaries"
+		                fileNamePattern="${property:HexEditorOptions/FileTypesAsRegexString??\.(dll|exe)$}"
 		                title = "Hex editor"
 		                class = "HexEditor.View.HexEditDisplayBinding"/>
 	</Path>

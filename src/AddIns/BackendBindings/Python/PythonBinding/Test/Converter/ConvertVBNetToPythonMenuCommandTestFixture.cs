@@ -16,7 +16,6 @@ namespace PythonBinding.Tests.Converter
 	/// Tests the ConvertVBNetToPythonMenuCommand.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
 	public class ConvertVBNetToPythonMenuCommandTestFixture : ConvertToPythonMenuCommand
 	{
 		string newFileText;
@@ -37,13 +36,17 @@ namespace PythonBinding.Tests.Converter
 			window.ActiveViewContent = mockViewContent;
 			workbench.ActiveWorkbenchWindow = window;
 			
-			Run(workbench);
+			MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
+			textEditorProperties.ConvertTabsToSpaces = false;
+			textEditorProperties.IndentationSize = 2;
+			
+			Run(workbench, textEditorProperties);
 		}
 		
 		[Test]
 		public void GeneratedPythonCode()
 		{
-			Assert.AreEqual("class Foo(object): pass", newFileText);
+			Assert.AreEqual("class Foo(object):\r\n\tpass", newFileText);
 		}
 		
 		[Test]

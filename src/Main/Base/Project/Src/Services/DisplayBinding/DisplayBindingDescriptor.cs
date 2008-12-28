@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </remarks>
 		public bool CanOpenFile(string fileName)
 		{
-			string fileNameRegex = this.FileNameRegex;
+			string fileNameRegex = StringParser.Parse(this.FileNameRegex);
 			if (fileNameRegex == null || fileNameRegex.Length == 0) // no regex specified
 				return true;
 			if (fileName == null) // regex specified but file has no name

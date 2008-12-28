@@ -226,10 +226,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			public override string ToString()
 			{
-				if (allowImportClasses)
-					return "[" + GetType().Name + " AllowImportClasses=true]";
-				else
-					return "[" + GetType().Name + "]";
+				return "[" + GetType().Name + " AllowImportClasses=" + allowImportClasses.ToString() + "]";
 			}
 		}
 		#endregion

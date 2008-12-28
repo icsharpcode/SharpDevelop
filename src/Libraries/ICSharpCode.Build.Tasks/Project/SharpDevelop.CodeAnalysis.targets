@@ -23,6 +23,10 @@
 		<PrepareForRunDependsOn>$(PrepareForRunDependsOn);SharpDevelopFxCopRun</PrepareForRunDependsOn>
 	</PropertyGroup>
 	
+	<ItemGroup>
+		<AvailableItemName Include="CodeAnalysisDictionary" />
+	</ItemGroup>
+	
 	<!-- run SharpDevelop FxCop. -->
 	<Target Name="SharpDevelopFxCopRun"
 	        Condition="'$(SharpDevelopRunCodeAnalysis)'=='true'"

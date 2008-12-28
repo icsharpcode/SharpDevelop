@@ -64,6 +64,7 @@
     <Folder Include="FormattingStrategy" />
     <Compile Include="FormattingStrategy\EndOperatorTests.cs" />
     <Compile Include="FormattingStrategy\EndSubTests.cs" />
+    <Compile Include="FormattingStrategy\InterfaceTests.cs" />
     <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

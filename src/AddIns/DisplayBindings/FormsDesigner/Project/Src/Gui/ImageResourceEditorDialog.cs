@@ -480,7 +480,9 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void ProjectResourcesTreeViewAfterSelect(object sender, TreeViewEventArgs e)
 		{
-			this.UpdateOnProjectResourceSelection();
+			if (this.projectResourceRadioButton.Checked) {
+				this.UpdateOnProjectResourceSelection();
+			}
 		}
 		
 		void UpdateOnProjectResourceSelection()

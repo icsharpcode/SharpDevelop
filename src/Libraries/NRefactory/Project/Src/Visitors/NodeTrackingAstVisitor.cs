@@ -318,6 +318,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data) {
+			this.BeginVisit(externAliasDirective);
+			object result = this.TrackedVisitExternAliasDirective(externAliasDirective, data);
+			this.EndVisit(externAliasDirective);
+			return result;
+		}
+		
 		public sealed override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data) {
 			this.BeginVisit(fieldDeclaration);
 			object result = this.TrackedVisitFieldDeclaration(fieldDeclaration, data);
@@ -595,13 +602,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			this.BeginVisit(queryExpressionGroupVBClause);
 			object result = this.TrackedVisitQueryExpressionGroupVBClause(queryExpressionGroupVBClause, data);
 			this.EndVisit(queryExpressionGroupVBClause);
-			return result;
-		}
-		
-		public sealed override object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data) {
-			this.BeginVisit(queryExpressionIntoClause);
-			object result = this.TrackedVisitQueryExpressionIntoClause(queryExpressionIntoClause, data);
-			this.EndVisit(queryExpressionIntoClause);
 			return result;
 		}
 		
@@ -1049,6 +1049,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return base.VisitExpressionStatement(expressionStatement, data);
 		}
 		
+		public virtual object TrackedVisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data) {
+			return base.VisitExternAliasDirective(externAliasDirective, data);
+		}
+		
 		public virtual object TrackedVisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data) {
 			return base.VisitFieldDeclaration(fieldDeclaration, data);
 		}
@@ -1207,10 +1211,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data) {
 			return base.VisitQueryExpressionGroupVBClause(queryExpressionGroupVBClause, data);
-		}
-		
-		public virtual object TrackedVisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data) {
-			return base.VisitQueryExpressionIntoClause(queryExpressionIntoClause, data);
 		}
 		
 		public virtual object TrackedVisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data) {

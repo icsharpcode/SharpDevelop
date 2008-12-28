@@ -19,65 +19,23 @@ namespace PythonBinding.Tests.Converter
 	/// explicit namespace expression.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
 	public class CSharpClassWithNamespaceConversionTestFixture
 	{
-		CSharpToPythonConverter converter;
-		CodeCompileUnit codeCompileUnit;
-		CodeNamespace codeNamespace;
-		CodeTypeDeclaration codeTypeDeclaration;
-		
 		string csharp = "namespace MyNamespace\r\n" +
 						"{\r\n" +
 						"\tclass Foo\r\n" +
 						"\t{\r\n" +
 						"\t}\r\n" +
 						"}";
-
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			converter = new CSharpToPythonConverter();
-			codeCompileUnit = converter.ConvertToCodeCompileUnit(csharp);
-			if (codeCompileUnit.Namespaces.Count > 0) {
-				codeNamespace = codeCompileUnit.Namespaces[0];
-				if (codeNamespace.Types.Count > 0) {
-					codeTypeDeclaration = codeNamespace.Types[0];
-				}
-			}
-		}
 			
 		[Test]
 		public void GeneratedPythonSourceCode()
 		{
+			CSharpToPythonConverter converter = new CSharpToPythonConverter();
 			string python = converter.Convert(csharp);
-			string expectedPython = "class Foo(object): pass";
+			string expectedPython = "class Foo(object):\r\n\tpass";
 			
 			Assert.AreEqual(expectedPython, python);
-		}
-		
-		[Test]
-		public void OneRootNamespace()
-		{
-			Assert.AreEqual(1, codeCompileUnit.Namespaces.Count);
-		}
-		
-		[Test]
-		public void NamespaceHasNoName()
-		{
-			Assert.AreEqual(String.Empty, codeNamespace.Name);
-		}
-		
-		[Test]
-		public void OneClassInRootNamespace()
-		{
-			Assert.AreEqual(1, codeNamespace.Types.Count);
-		}
-		
-		[Test]
-		public void ClassName()
-		{
-			Assert.AreEqual("Foo", codeTypeDeclaration.Name);
 		}
 	}
 }

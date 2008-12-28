@@ -31,11 +31,11 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			const string program = "class MyClass\n{\n}\n";
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
-			Assert.AreEqual(1, td.StartLocation.Y, "StartLocation.Y");
-			Assert.AreEqual(1, td.StartLocation.X, "StartLocation.X");
-			Assert.AreEqual(1, td.BodyStartLocation.Y, "BodyStartLocation.Y");
-			Assert.AreEqual(14, td.BodyStartLocation.X, "BodyStartLocation.X");
-			Assert.AreEqual(3, td.EndLocation.Y, "EndLocation.Y");
+			Assert.AreEqual(1, td.StartLocation.Line, "StartLocation.Y");
+			Assert.AreEqual(1, td.StartLocation.Column, "StartLocation.X");
+			Assert.AreEqual(1, td.BodyStartLocation.Line, "BodyStartLocation.Y");
+			Assert.AreEqual(14, td.BodyStartLocation.Column, "BodyStartLocation.X");
+			Assert.AreEqual(3, td.EndLocation.Line, "EndLocation.Y");
 		}
 		
 		[Test]
@@ -190,10 +190,10 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
-			Assert.AreEqual(1, td.StartLocation.Y, "start line");
-			Assert.AreEqual(1, td.BodyStartLocation.Y, "bodystart line");
-			Assert.AreEqual(16, td.BodyStartLocation.X, "bodystart col");
-			Assert.AreEqual(2, td.EndLocation.Y, "end line");
+			Assert.AreEqual(1, td.StartLocation.Line, "start line");
+			Assert.AreEqual(1, td.BodyStartLocation.Line, "bodystart line");
+			Assert.AreEqual(16, td.BodyStartLocation.Column, "bodystart col");
+			Assert.AreEqual(2, td.EndLocation.Line, "end line");
 		}
 		
 		[Test]
@@ -205,7 +205,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			
 			Assert.AreEqual("TestEnum", td.Name);
 			Assert.AreEqual(ClassType.Enum, td.Type);
-			Assert.AreEqual("Byte", td.BaseTypes[0].Type);
+			Assert.AreEqual("System.Byte", td.BaseTypes[0].Type);
 			Assert.AreEqual(0, td.Children.Count);
 		}
 		
@@ -254,8 +254,8 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
-			Assert.AreEqual(1, td.StartLocation.Y, "start line");
-			Assert.AreEqual(2, td.EndLocation.Y, "end line");
+			Assert.AreEqual(1, td.StartLocation.Line, "start line");
+			Assert.AreEqual(2, td.EndLocation.Line, "end line");
 		}
 		
 		[Test]

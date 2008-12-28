@@ -13,6 +13,7 @@ using System.Reflection.Emit;
 using IronPython.Hosting;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using Microsoft.Scripting;
 
 namespace ICSharpCode.Python.Build.Tasks
 {
@@ -127,9 +128,16 @@ namespace ICSharpCode.Python.Build.Tasks
 				compiler.IncludeDebugInformation = emitDebugInformation;
 				
 				// Compile the code.
-				compiler.Compile();
+				try {
+					compiler.Compile();
+					return true;
+				} catch (SyntaxErrorException ex) {
+					LogSyntaxError(ex);
+				} catch (IOException ex) {
+					LogError(ex.Message);
+				}
 			}
-			return true;
+			return false;
 		}
 
 		/// <summary>
@@ -138,6 +146,41 @@ namespace ICSharpCode.Python.Build.Tasks
 		protected virtual string GetCurrentFolder()
 		{
 			return Directory.GetCurrentDirectory();
+		}
+		
+		/// <summary>
+		/// Logs any error message that occurs during compilation. Default implementation
+		/// is to use the MSBuild task's base.Log.LogError(...)
+		/// </summary>
+		protected virtual void LogError(string message, string errorCode, string file, int lineNumber, int columnNumber, int endLineNumber, int endColumnNumber)
+		{
+			Log.LogError(null, errorCode, null, file, lineNumber, columnNumber, endLineNumber, endColumnNumber, message);
+		}
+		
+		void LogError(string message)
+		{
+			LogError(message, null, null, 0, 0, 0, 0);
+		}
+		
+		void LogSyntaxError(SyntaxErrorException ex)
+		{
+			string fileName = GetFileName(ex, sources);
+			LogError(ex.Message, ex.ErrorCode.ToString(), fileName, ex.Line, ex.Column, ex.RawSpan.End.Line, ex.RawSpan.End.Column);
+		}
+		
+		/// <summary>
+		/// Matches the syntax exception SourcePath against filenames being compiled. The 
+		/// syntax exception only contains the file name without its path and without its file extension.
+		/// </summary>
+		static string GetFileName(SyntaxErrorException ex, ITaskItem[] sources)
+		{
+			foreach (ITaskItem item in sources) {
+				string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(item.ItemSpec);
+				if (fileNameWithoutExtension == ex.SourcePath) {
+					return item.ItemSpec;
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>

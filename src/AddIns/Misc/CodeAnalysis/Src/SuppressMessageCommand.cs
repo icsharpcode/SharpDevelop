@@ -141,10 +141,19 @@ namespace ICSharpCode.CodeAnalysis
 		{
 			if (CheckImports(cu.ProjectContent.DefaultImports))
 				return true;
-			foreach (IUsing u in cu.Usings) {
+			return CheckImports(cu.UsingScope);
+		}
+		
+		static bool CheckImports(IUsingScope scope)
+		{
+			foreach (IUsing u in scope.Usings) {
 				if (CheckImports(u)) {
 					return true;
 				}
+			}
+			foreach (IUsingScope childscope in scope.ChildScopes) {
+				if (CheckImports(childscope))
+					return true;
 			}
 			return false;
 		}

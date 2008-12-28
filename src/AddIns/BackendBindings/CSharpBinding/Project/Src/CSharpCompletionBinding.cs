@@ -106,6 +106,16 @@ namespace CSharpBinding
 			}
 			
 			if (char.IsLetter(ch) && CodeCompletionOptions.CompleteWhenTyping) {
+				if (editor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+					// allow code completion when overwriting an identifier
+					cursor = editor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].Offset;
+					int endOffset = editor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].EndOffset;
+					// but block code completion when overwriting only part of an identifier
+					if (endOffset < editor.Document.TextLength && char.IsLetterOrDigit(editor.Document.GetCharAt(endOffset)))
+						return false;
+					editor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
+					editor.ActiveTextAreaControl.Caret.Position = editor.Document.OffsetToPosition(cursor);
+				}
 				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 				bool afterUnderscore = prevChar == '_';
 				if (afterUnderscore) {

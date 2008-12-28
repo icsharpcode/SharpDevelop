@@ -70,8 +70,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			ConstructorDeclaration cd = ParseUtilVBNet.ParseTypeMember<ConstructorDeclaration>("Sub New(x As Integer, Optional y As String) \nEnd Sub");
 			Assert.AreEqual(2, cd.Parameters.Count);
-			Assert.AreEqual("Integer", cd.Parameters[0].TypeReference.Type);
-			Assert.AreEqual("String", cd.Parameters[1].TypeReference.Type);
+			Assert.AreEqual("System.Int32", cd.Parameters[0].TypeReference.Type);
+			Assert.AreEqual("System.String", cd.Parameters[1].TypeReference.Type);
 			Assert.AreEqual(ParameterModifiers.Optional, cd.Parameters[1].ParamModifier & ParameterModifiers.Optional);
 		}
 		#endregion

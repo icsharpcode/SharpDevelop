@@ -451,7 +451,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		void ComboBoxSelectedIndexChanged(object sender, System.EventArgs e)
 		{
 			ComboBox comboBox = (ComboBox)sender;
-			if (autoselect) {
+			if (autoselect && comboBox.SelectedIndex >= 0) {
 				ComboBoxItem item = (ComboBoxItem)comboBox.Items[comboBox.SelectedIndex];
 				if (item.IsInCurrentPart) {
 					textAreaControl.ActiveTextAreaControl.CenterViewOn(

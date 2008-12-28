@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			"ProjectDir", "ProjectFilename",
 			"CombineDir", "CombineFilename",
 			"SolutionDir", "SolutionFilename",
-			"Startuppath",
+			"Startuppath", "ConfigDirectory",
 			"TaskService.Warnings", "TaskService.Errors", "TaskService.Messages"
 		};
 		
@@ -161,6 +161,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 					break;
 				case "STARTUPPATH":
 					return Application.StartupPath;
+				case "CONFIGDIRECTORY":
+					return PropertyService.ConfigDirectory;
 			}
 			return String.Empty;
 		}

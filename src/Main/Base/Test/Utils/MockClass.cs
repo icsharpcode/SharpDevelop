@@ -61,6 +61,12 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
+		public IUsingScope UsingScope {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public DomRegion Region {
 			get {
 				throw new NotImplementedException();

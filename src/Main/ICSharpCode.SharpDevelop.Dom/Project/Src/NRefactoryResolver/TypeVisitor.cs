@@ -42,14 +42,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			IReturnType t = null;
 			if (callingClass != null && !reference.IsGlobal) {
 				foreach (ITypeParameter tp in callingClass.TypeParameters) {
-					if (languageProperties.NameComparer.Equals(tp.Name, reference.SystemType)) {
+					if (languageProperties.NameComparer.Equals(tp.Name, reference.Type)) {
 						t = new GenericReturnType(tp);
 						break;
 					}
 				}
 				if (t == null && callingMember is IMethod && (callingMember as IMethod).TypeParameters != null) {
 					foreach (ITypeParameter tp in (callingMember as IMethod).TypeParameters) {
-						if (languageProperties.NameComparer.Equals(tp.Name, reference.SystemType)) {
+						if (languageProperties.NameComparer.Equals(tp.Name, reference.Type)) {
 							t = new GenericReturnType(tp);
 							break;
 						}
@@ -57,27 +57,27 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			if (t == null) {
-				if (reference.Type != reference.SystemType) {
+				if (reference.Type != reference.Type) {
 					// keyword-type like void, int, string etc.
-					IClass c = projectContent.GetClass(reference.SystemType, 0);
+					IClass c = projectContent.GetClass(reference.Type, 0);
 					if (c != null)
 						t = c.DefaultReturnType;
 					else
-						t = new GetClassReturnType(projectContent, reference.SystemType, 0);
+						t = new GetClassReturnType(projectContent, reference.Type, 0);
 				} else {
 					int typeParameterCount = reference.GenericTypes.Count;
 					if (useLazyReturnType) {
-						if (reference.IsGlobal)
-							t = new GetClassReturnType(projectContent, reference.SystemType, typeParameterCount);
+						if (reference.IsGlobal || reference.IsKeyword)
+							t = new GetClassReturnType(projectContent, reference.Type, typeParameterCount);
 						else if (callingClass != null)
-							t = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.SystemType, typeParameterCount);
+							t = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.Type, typeParameterCount);
 					} else {
 						IClass c;
-						if (reference.IsGlobal) {
-							c = projectContent.GetClass(reference.SystemType, typeParameterCount);
+						if (reference.IsGlobal || reference.IsKeyword) {
+							c = projectContent.GetClass(reference.Type, typeParameterCount);
 							t = (c != null) ? c.DefaultReturnType : null;
 						} else if (callingClass != null) {
-							t = projectContent.SearchType(new SearchTypeRequest(reference.SystemType, typeParameterCount, callingClass, caretLine, caretColumn)).Result;
+							t = projectContent.SearchType(new SearchTypeRequest(reference.Type, typeParameterCount, callingClass, caretLine, caretColumn)).Result;
 						}
 						if (t == null) {
 							return null;

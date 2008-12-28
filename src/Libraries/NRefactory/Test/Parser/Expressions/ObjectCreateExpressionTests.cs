@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void CSharpNullableObjectCreateExpressionTest()
 		{
 			ObjectCreateExpression oce = ParseUtilCSharp.ParseExpression<ObjectCreateExpression>("new IntPtr?(1)");
-			Assert.AreEqual("System.Nullable", oce.CreateType.SystemType);
+			Assert.AreEqual("System.Nullable", oce.CreateType.Type);
 			Assert.AreEqual(1, oce.CreateType.GenericTypes.Count);
 			Assert.AreEqual("IntPtr", oce.CreateType.GenericTypes[0].Type);
 		}
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			TypeReference typeRef = ((ObjectCreateExpression)expr.Arguments[0]).CreateType;
 			Assert.AreEqual("SomeGenericType", typeRef.Type);
 			Assert.AreEqual(1, typeRef.GenericTypes.Count);
-			Assert.AreEqual("int", typeRef.GenericTypes[0].Type);
+			Assert.AreEqual("System.Int32", typeRef.GenericTypes[0].Type);
 		}
 		
 		Expression CheckPropertyInitializationExpression(Expression e, string name)
@@ -225,7 +225,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			TypeReference typeRef = ((ObjectCreateExpression)expr.Arguments[0]).CreateType;
 			Assert.AreEqual("SomeGenericType", typeRef.Type);
 			Assert.AreEqual(1, typeRef.GenericTypes.Count);
-			Assert.AreEqual("Integer", typeRef.GenericTypes[0].Type);
+			Assert.AreEqual("System.Int32", typeRef.GenericTypes[0].Type);
 		}
 		
 		[Test]
@@ -245,18 +245,18 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBNetNullableObjectCreateExpressionTest()
 		{
 			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New Integer?");
-			Assert.AreEqual("System.Nullable", oce.CreateType.SystemType);
+			Assert.AreEqual("System.Nullable", oce.CreateType.Type);
 			Assert.AreEqual(1, oce.CreateType.GenericTypes.Count);
-			Assert.AreEqual("Integer", oce.CreateType.GenericTypes[0].Type);
+			Assert.AreEqual("System.Int32", oce.CreateType.GenericTypes[0].Type);
 		}
 
 		[Test]
 		public void VBNetNullableObjectArrayCreateExpressionTest()
 		{
 			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New Integer?()");
-			Assert.AreEqual("System.Nullable", oce.CreateType.SystemType);
+			Assert.AreEqual("System.Nullable", oce.CreateType.Type);
 			Assert.AreEqual(1, oce.CreateType.GenericTypes.Count);
-			Assert.AreEqual("Integer", oce.CreateType.GenericTypes[0].Type);
+			Assert.AreEqual("System.Int32", oce.CreateType.GenericTypes[0].Type);
 		}
 		
 		#endregion

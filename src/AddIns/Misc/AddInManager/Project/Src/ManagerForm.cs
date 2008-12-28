@@ -258,7 +258,7 @@ namespace ICSharpCode.AddInManager
 						runActionButton.Enabled = ShowDependencies(selected, ShowDependencyMode.Disable);
 					else
 						runActionButton.Enabled = false;
-					uninstallButton.Enabled = allUninstallable && runActionButton.Enabled;
+					uninstallButton.Enabled = allUninstallable;
 				} else if (allDisabled) {
 					selectedAction = AddInAction.Enable;
 					actionGroupBox.Text = runActionButton.Text = ResourceService.GetString("AddInManager.ActionEnable");

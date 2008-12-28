@@ -970,9 +970,6 @@
 										<Component Guid="4E281CDB-E0FB-4583-9B06-A01C5778DE60" Id="EmptyXMLFileTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyXMLFile.xft" Id="EmptyXMLFile.xft" Name="EmptyXMLFile.xft" />
 										</Component>
-										<Component Guid="4431463D-4FA8-48A5-9D92-D1FDA818B324" Id="SharpDevelopReportTemplate" DiskId="1">
-											<File Source="..\..\data\templates\file\Misc\EmptyReport.xft" Id="EmptyReport.xft" Name="EmptyReport.xft" />
-										</Component>
 										<Component Guid="DC3D0C22-B117-4FD8-AFF9-77B0CB36ECD1" Id="AppConfigFileTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\AppConfigFile.xft" Id="AppConfigFile.xft" Name="AppConfigFile.xft" />
 										</Component>

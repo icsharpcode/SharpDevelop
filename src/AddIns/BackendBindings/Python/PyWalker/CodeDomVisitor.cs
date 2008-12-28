@@ -19,31 +19,7 @@ namespace PyWalker
 	public class CodeDomVisitor
 	{
 		IOutputWriter writer;
-		
-		class Indentation : IDisposable
-		{
-			static int currentLevel;
 			
-			public static int CurrentLevel {
-				get { return currentLevel; }
-			}
-			
-			Indentation()
-			{
-				currentLevel++;
-			}
-			
-			public void Dispose()
-			{
-				currentLevel--;
-			}
-			
-			public static IDisposable IncrementLevel()
-			{
-				return new Indentation();
-			}
-		}
-				
 		public CodeDomVisitor(IOutputWriter writer)
 		{
 			this.writer = writer;

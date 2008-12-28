@@ -46,27 +46,16 @@ namespace HexEditor.View
 			ToolStripControlHost viewMode = new ToolStripControlHost(tCBViewMode);
 			this.toolStrip1.Items.Insert(3, viewMode);
 			
-			
-			
 			tSTBCharsPerLine.Text = hexEditControl.BytesPerLine.ToString();
 			this.hexEditControl.ContextMenuStrip = MenuService.CreateContextMenu(this.hexEditControl, "/AddIns/HexEditor/Editor/ContextMenu");
 			tCBViewMode.SelectedIndex = 0;
-			
-			string configpath = Path.GetDirectoryName(typeof(Editor).Assembly.Location) + Path.DirectorySeparatorChar + "config.xml";
-			
-			if (System.IO.File.Exists(configpath)) {
-				System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-				doc.Load(configpath);
-				
-				Settings settings = Settings.FromXML(doc);
-				
-				tSTBCharsPerLine.Value = settings.BytesPerLine;
-				tCBViewMode.SelectedItem = settings.ViewMode.ToString();
-				hexEditControl.ViewMode = settings.ViewMode;
-				hexEditControl.BytesPerLine = settings.BytesPerLine;
-				tbSizeToFit.Checked = hexEditControl.FitToWindowWidth = settings.FitToWidth;
-				tSTBCharsPerLine.Enabled = !settings.FitToWidth;
-			}
+						
+			tSTBCharsPerLine.Value = Settings.BytesPerLine;
+			tCBViewMode.SelectedItem = Settings.ViewMode.ToString();
+			hexEditControl.ViewMode = Settings.ViewMode;
+			hexEditControl.BytesPerLine = Settings.BytesPerLine;
+			tbSizeToFit.Checked = hexEditControl.FitToWindowWidth = Settings.FitToWidth;
+			tSTBCharsPerLine.Enabled = !Settings.FitToWidth;
 		}
 
 		void TbSizeToFitClick(object sender, EventArgs e)

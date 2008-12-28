@@ -57,20 +57,21 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				return new Token(Tokens.ExclamationMark, Col - 1, Line);
 			}
 			unchecked {
-				int nextChar;
-				while ((nextChar = ReaderRead()) != -1) {
+				while (true) {
+					Location startLocation = new Location(Col, Line);
+					int nextChar = ReaderRead();
+					if (nextChar == -1)
+						return new Token(Tokens.EOF);
 					char ch = (char)nextChar;
 					if (Char.IsWhiteSpace(ch)) {
-						int x = Col - 1;
-						int y = Line;
 						if (HandleLineEnd(ch)) {
 							if (lineEnd) {
 								// second line end before getting to a token
 								// -> here was a blank line
-								specialTracker.AddEndOfLine(new Location(x, y));
+								specialTracker.AddEndOfLine(startLocation);
 							} else {
 								lineEnd = true;
-								return new Token(Tokens.EOL, x, y);
+								return new Token(Tokens.EOL, startLocation, new Location(Col, Line), null, null, LiteralFormat.None);
 							}
 						}
 						continue;
@@ -228,8 +229,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					errors.Error(Line, Col, String.Format("Unknown char({0}) which can't be read", ch));
 				}
-				
-				return new Token(Tokens.EOF);
 			}
 		}
 		
@@ -508,7 +507,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			Location start = new Location(Col - 1, Line);
 			string directive = ReadIdent('#');
 			string argument  = ReadToEndOfLine();
-			this.specialTracker.AddPreprocessingDirective(new PreprocessingDirective(directive, argument.Trim(), start, new Location(start.X + directive.Length + argument.Length, start.Y)));
+			this.specialTracker.AddPreprocessingDirective(new PreprocessingDirective(directive, argument.Trim(), start, new Location(start.Column + directive.Length + argument.Length, start.Line)));
 		}
 		
 		string ReadDate()

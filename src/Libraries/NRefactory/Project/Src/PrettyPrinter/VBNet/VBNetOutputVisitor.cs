@@ -25,7 +25,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		VBNetOutputFormatter    outputFormatter;
 		VBNetPrettyPrintOptions prettyPrintOptions = new VBNetPrettyPrintOptions();
 		TypeDeclaration         currentType;
-		bool printFullSystemType;
 		
 		Stack<int> exitTokenStack = new Stack<int>();
 		
@@ -86,7 +85,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void Error(string text, Location position)
 		{
-			errors.Error(position.Y, position.X, text);
+			errors.Error(position.Line, position.Column, text);
 		}
 		
 		void UnsupportedNode(INode node)
@@ -103,14 +102,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		/// <summary>
-		/// Converts type name to primitive type name. Returns null if typeString is not
+		/// Converts type name to primitive type name. Returns typeString if typeString is not
 		/// a primitive type.
 		/// </summary>
 		static string ConvertTypeString(string typeString)
 		{
 			string primitiveType;
-			TypeReference.PrimitiveTypesVBReverse.TryGetValue(typeString, out primitiveType);
-			return primitiveType;
+			if (TypeReference.PrimitiveTypesVBReverse.TryGetValue(typeString, out primitiveType))
+				return primitiveType;
+			else
+				return typeString;
 		}
 
 		public override object TrackedVisitTypeReference(TypeReference typeReference, object data)
@@ -136,19 +137,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Global);
 				outputFormatter.PrintToken(Tokens.Dot);
 			}
-			if (typeReference.Type == null || typeReference.Type.Length ==0) {
-				outputFormatter.PrintText("Void");
-			} else if (printFullSystemType || typeReference.IsGlobal) {
-				outputFormatter.PrintIdentifier(typeReference.SystemType);
+			bool printGenerics = true;
+			if (typeReference.IsKeyword) {
+				outputFormatter.PrintText(ConvertTypeString(typeReference.Type));
 			} else {
-				string shortTypeName = ConvertTypeString(typeReference.SystemType);
-				if (shortTypeName != null) {
-					outputFormatter.PrintText(shortTypeName);
-				} else {
-					outputFormatter.PrintIdentifier(typeReference.Type);
-				}
+				outputFormatter.PrintIdentifier(typeReference.Type);
 			}
-			if (typeReference.GenericTypes != null && typeReference.GenericTypes.Count > 0) {
+			if (printGenerics && typeReference.GenericTypes != null && typeReference.GenericTypes.Count > 0) {
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
 				outputFormatter.PrintToken(Tokens.Of);
 				outputFormatter.Space();
@@ -186,7 +181,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (!printAttributeSectionInline)
 				outputFormatter.Indent();
 			outputFormatter.PrintText("<");
-			if (attributeSection.AttributeTarget != null && attributeSection.AttributeTarget.Length > 0) {
+			if (!string.IsNullOrEmpty(attributeSection.AttributeTarget) && !string.Equals(attributeSection.AttributeTarget, "return", StringComparison.OrdinalIgnoreCase)) {
 				outputFormatter.PrintText(char.ToUpperInvariant(attributeSection.AttributeTarget[0]) + attributeSection.AttributeTarget.Substring(1));
 				outputFormatter.PrintToken(Tokens.Colon);
 				outputFormatter.Space();
@@ -256,9 +251,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Assign);
 					outputFormatter.Space();
-					printFullSystemType = true;
 					TrackedVisit(((Using)usingDeclaration.Usings[i]).Alias, data);
-					printFullSystemType = false;
 				}
 				if (i + 1 < usingDeclaration.Usings.Count) {
 					outputFormatter.PrintToken(Tokens.Comma);
@@ -407,9 +400,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
 		{
+			VisitAttributes(templateDefinition.Attributes, data);
 			outputFormatter.PrintIdentifier(templateDefinition.Name);
 			if (templateDefinition.Bases.Count > 0) {
 				outputFormatter.PrintText(" As ");
+				VisitReturnTypeAttributes(templateDefinition.Attributes, data);
 				if (templateDefinition.Bases.Count == 1) {
 					TrackedVisit(templateDefinition.Bases[0], data);
 				} else {
@@ -430,7 +425,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Delegate);
 			outputFormatter.Space();
 			
-			bool isFunction = (delegateDeclaration.ReturnType.Type != "void");
+			bool isFunction = (delegateDeclaration.ReturnType.Type != "System.Void");
 			if (isFunction) {
 				outputFormatter.PrintToken(Tokens.Function);
 				outputFormatter.Space();
@@ -450,6 +445,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
+				VisitReturnTypeAttributes(delegateDeclaration.Attributes, data);
 				TrackedVisit(delegateDeclaration.ReturnType, data);
 			}
 			outputFormatter.NewLine();
@@ -575,6 +571,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
+			VisitReturnTypeAttributes(propertyDeclaration.Attributes, data);
 			TrackedVisit(propertyDeclaration.TypeReference, data);
 			
 			PrintInterfaceImplementations(propertyDeclaration.InterfaceImplementations);
@@ -664,6 +661,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
+			VisitReturnTypeAttributes(eventDeclaration.Attributes, data);
 			TrackedVisit(eventDeclaration.TypeReference, data);
 			
 			PrintInterfaceImplementations(eventDeclaration.InterfaceImplementations);
@@ -816,6 +814,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
+				VisitReturnTypeAttributes(parameterDeclarationExpression.Attributes, data);
 			TrackedVisit(parameterDeclarationExpression.TypeReference, data);
 			return null;
 		}
@@ -832,7 +831,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			OutputModifier(methodDeclaration.Modifier);
 			
 			bool isSub = methodDeclaration.TypeReference.IsNull ||
-				methodDeclaration.TypeReference.SystemType == "System.Void";
+				methodDeclaration.TypeReference.Type == "System.Void";
 			
 			if (isSub) {
 				outputFormatter.PrintToken(Tokens.Sub);
@@ -852,6 +851,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
+				VisitReturnTypeAttributes(methodDeclaration.Attributes, data);
 				TrackedVisit(methodDeclaration.TypeReference, data);
 			}
 			
@@ -983,6 +983,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
+				VisitReturnTypeAttributes(indexerDeclaration.Attributes, data);
 			TrackedVisit(indexerDeclaration.TypeReference, data);
 			PrintInterfaceImplementations(indexerDeclaration.InterfaceImplementations);
 			
@@ -1168,6 +1169,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
+				VisitReturnTypeAttributes(operatorDeclaration.Attributes, data);
 				TrackedVisit(operatorDeclaration.TypeReference, data);
 			}
 			
@@ -1209,7 +1211,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 			}
 			
-			bool isVoid = declareDeclaration.TypeReference.IsNull || declareDeclaration.TypeReference.SystemType == "System.Void";
+			bool isVoid = declareDeclaration.TypeReference.IsNull || declareDeclaration.TypeReference.Type == "System.Void";
 			if (isVoid) {
 				outputFormatter.PrintToken(Tokens.Sub);
 			} else {
@@ -1240,6 +1242,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.As);
 				outputFormatter.Space();
+				VisitReturnTypeAttributes(declareDeclaration.Attributes, data);
 				TrackedVisit(declareDeclaration.TypeReference, data);
 			}
 			
@@ -2489,7 +2492,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (castExpression.CastType == CastType.Cast || castExpression.CastTo.IsArrayType) {
 				return PrintCast(Tokens.DirectCast, castExpression);
 			}
-			switch (castExpression.CastTo.SystemType) {
+			switch (castExpression.CastTo.Type) {
 				case "System.Boolean":
 					outputFormatter.PrintToken(Tokens.CBool);
 					break;
@@ -2806,12 +2809,28 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void VisitAttributes(ICollection attributes, object data)
 		{
-			if (attributes == null || attributes.Count <= 0) {
+			if (attributes == null) {
 				return;
 			}
 			foreach (AttributeSection section in attributes) {
+				if (string.Equals(section.AttributeTarget, "return", StringComparison.OrdinalIgnoreCase))
+					continue;
 				TrackedVisit(section, data);
 			}
+		}
+		
+		void VisitReturnTypeAttributes(ICollection attributes, object data)
+		{
+			if (attributes == null) {
+				return;
+			}
+			printAttributeSectionInline = true;
+			foreach (AttributeSection section in attributes) {
+				if (string.Equals(section.AttributeTarget, "return", StringComparison.OrdinalIgnoreCase)) {
+					TrackedVisit(section, data);
+				}
+			}
+			printAttributeSectionInline = false;
 		}
 		
 		public override object TrackedVisitLambdaExpression(LambdaExpression lambdaExpression, object data)
@@ -2855,11 +2874,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)
 		{
+			if (queryExpression.IsQueryContinuation) {
+				queryExpression.FromClause.InExpression.AcceptVisitor(this, data);
+			}
 			outputFormatter.IndentationLevel++;
-			queryExpression.FromClause.AcceptVisitor(this, data);
+			if (queryExpression.IsQueryContinuation) {
+				outputFormatter.PrintToken(Tokens.Into);
+				outputFormatter.PrintIdentifier(queryExpression.FromClause.Identifier);
+			} else {
+				queryExpression.FromClause.AcceptVisitor(this, data);
+			}
 			queryExpression.MiddleClauses.ForEach(PrintClause);
 			PrintClause(queryExpression.SelectOrGroupClause);
-			PrintClause(queryExpression.IntoClause);
 			outputFormatter.IndentationLevel--;
 			return null;
 		}
@@ -2934,15 +2960,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return groupClause.GroupBy.AcceptVisitor(this, data);
 		}
 		
-		public override object TrackedVisitQueryExpressionIntoClause(QueryExpressionIntoClause intoClause, object data)
-		{
-			outputFormatter.PrintText("Into");
-			outputFormatter.Space();
-			outputFormatter.PrintIdentifier(intoClause.IntoIdentifier);
-			outputFormatter.Space();
-			return intoClause.ContinuedQuery.AcceptVisitor(this, data);
-		}
-		
 		public override object TrackedVisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data)
 		{
 			outputFormatter.PrintText("Order By");
@@ -2976,6 +2993,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintText("Where");
 			outputFormatter.Space();
 			return whereClause.Condition.AcceptVisitor(this, data);
+		}
+		
+		public override object TrackedVisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data)
+		{
+			UnsupportedNode(externAliasDirective);
+			return null;
 		}
 	}
 }

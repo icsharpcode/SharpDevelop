@@ -44,7 +44,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			if (returnType is NullReturnType) return TypeReference.Null;
 			
 			TypeReference typeRef;
-			if (context != null && CanUseShortTypeName(returnType, context))
+			if (IsPrimitiveType(returnType))
+				typeRef = new TypeReference(returnType.FullyQualifiedName, true);
+			else if (context != null && CanUseShortTypeName(returnType, context))
 				typeRef = new TypeReference(returnType.Name);
 			else
 				typeRef = new TypeReference(returnType.FullyQualifiedName);
@@ -63,6 +65,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			return typeRef;
 		}
 		
+		static bool IsPrimitiveType(IReturnType returnType)
+		{
+			return TypeReference.PrimitiveTypesCSharpReverse.ContainsKey(returnType.FullyQualifiedName);
+		}
+		
 		/// <summary>
 		/// Returns true if the short name of a type is valid in the given context.
 		/// Returns false for primitive types because they should be passed around using their
@@ -71,25 +78,6 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		/// </summary>
 		public static bool CanUseShortTypeName(IReturnType returnType, ClassFinder context)
 		{
-			switch (returnType.FullyQualifiedName) {
-				case "System.Void":
-				case "System.String":
-				case "System.Char":
-				case "System.Boolean":
-				case "System.Single":
-				case "System.Double":
-				case "System.Decimal":
-				case "System.Byte":
-				case "System.SByte":
-				case "System.Int16":
-				case "System.Int32":
-				case "System.Int64":
-				case "System.UInt16":
-				case "System.UInt32":
-				case "System.UInt64":
-					// don't use short name -> output visitor will use the instrinsic name
-					return false;
-			}
 			int typeArgumentCount = (returnType.IsConstructedReturnType) ? returnType.CastToConstructedReturnType().TypeArguments.Count : 0;
 			IReturnType typeInTargetContext = context.SearchType(returnType.Name, typeArgumentCount);
 			return typeInTargetContext != null && typeInTargetContext.FullyQualifiedName == returnType.FullyQualifiedName;
@@ -611,7 +599,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				MethodDeclaration method = node as MethodDeclaration;
 				if (method != null) {
 					method.Body.Children.Clear();
-					if (method.TypeReference.SystemType == "System.Void") {
+					if (method.TypeReference.Type == "System.Void") {
 						method.Body.AddChild(new ExpressionStatement(CreateForwardingMethodCall(method)));
 					} else {
 						method.Body.AddChild(new ReturnStatement(CreateForwardingMethodCall(method)));

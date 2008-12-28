@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Services
 	{
 		public enum Result {Break, Continue, Terminate};
 		
-		private Result result = Result.Break; // Default
+		protected Result result = Result.Break; // Default
 		
 		protected DebuggerEventForm()
 		{

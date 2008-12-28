@@ -32,14 +32,15 @@ namespace PythonBinding.Tests.Designer
 		public void PythonDesignerLoaderCreated()
 		{
 			DesignerLoader loader = provider.CreateLoader(generator);
-			loader.Dispose();
-			Assert.IsInstanceOfType(typeof(PythonDesignerLoader), loader);
+			using (IDisposable disposable = loader as IDisposable) {
+				Assert.IsInstanceOfType(typeof(PythonDesignerLoader), loader);
+			}
 		}
 		
 		[Test]
-		public void CodeDomProviderIsPython()
+		public void CodeDomProviderIsNull()
 		{
-//			Assert.IsInstanceOfType(typeof(PythonProvider), generator.CodeDomProvider);
+			Assert.IsNull(generator.CodeDomProvider);
 		}
 	}
 }

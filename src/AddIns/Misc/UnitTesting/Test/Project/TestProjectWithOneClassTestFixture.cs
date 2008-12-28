@@ -166,6 +166,7 @@ namespace UnitTesting.Tests.Project
 		public void TestClassInNewCompilationUnitOnly()
 		{
 			// Create old compilation unit.
+			projectContent.Classes.Clear();
 			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
 			
 			// Create new compilation unit with class that 
@@ -216,6 +217,7 @@ namespace UnitTesting.Tests.Project
 		public void TestClassRemovedInParserInfo()
 		{
 			// Create old compilation unit.
+			projectContent.Classes.Clear();
 			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
 			MockClass mockClass = (MockClass)testClass.Class;
 			mockClass.SetCompoundClass(mockClass);
@@ -237,6 +239,7 @@ namespace UnitTesting.Tests.Project
 		public void NewCompilationUnitNull()
 		{
 			// Create old compilation unit.
+			projectContent.Classes.Clear();
 			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
 			MockClass mockClass = (MockClass)testClass.Class;
 			mockClass.SetCompoundClass(mockClass);

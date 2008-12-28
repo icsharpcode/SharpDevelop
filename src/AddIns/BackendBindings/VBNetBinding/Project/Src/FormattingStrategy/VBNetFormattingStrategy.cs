@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -208,7 +209,7 @@ namespace VBNetBinding.FormattingStrategy
 					if (doInsertion)
 					{
 						if (Regex.IsMatch(texttoreplace.Trim(), @"^If .*[^_]$", RegexOptions.IgnoreCase)) {
-							if (false == Regex.IsMatch(texttoreplace, @"\bthen\b", RegexOptions.IgnoreCase)) {
+							if (!Regex.IsMatch(texttoreplace, @"\bthen\b", RegexOptions.IgnoreCase)) {
 								string specialThen = "Then"; // do special check in cases like If t = True' comment
 								if (textArea.Document.GetCharAt(lineAbove.Offset + texttoreplace.Length) == '\'')
 									specialThen += " ";
@@ -218,6 +219,12 @@ namespace VBNetBinding.FormattingStrategy
 								textArea.Document.Insert(lineAbove.Offset + texttoreplace.Length, specialThen);
 								texttoreplace += specialThen;
 							}
+						}
+						// check #Region statements
+						if (Regex.IsMatch(texttoreplace.Trim(), @"^#Region", RegexOptions.IgnoreCase) && LookForEndRegion(textArea)) {
+							string indentation = GetIndentation(textArea, lineNr - 1);
+							texttoreplace += indentation + "\r\n" + indentation + "#End Region";
+							textArea.Document.Replace(curLine.Offset, curLine.Length, texttoreplace);
 						}
 						foreach (VBStatement statement_ in statements) {
 							VBStatement statement = statement_; // allow passing statement byref
@@ -229,7 +236,7 @@ namespace VBNetBinding.FormattingStrategy
 								for (int i = 0; i < statement.IndentPlus; i++) {
 									indentation += Tab.GetIndentationString(textArea.Document);
 								}
-								
+
 								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation + curLineText.Trim());
 								textArea.Caret.Column = indentation.Length;
 								return;
@@ -312,6 +319,24 @@ namespace VBNetBinding.FormattingStrategy
 			}
 		}
 		
+		bool LookForEndRegion(TextArea area)
+		{
+			string lineText = area.Document.GetText(area.Document.GetLineSegment(0));
+			int count = 0;
+			int lineNr = 0;
+			while ((!Regex.IsMatch(lineText, @"^\s*#End\s+Region", RegexOptions.IgnoreCase) || count >= 0) && (lineNr < area.Document.TotalNumberOfLines)) {
+				if (Regex.IsMatch(lineText, @"^\s*#Region", RegexOptions.IgnoreCase))
+					count++;
+				if (Regex.IsMatch(lineText, @"^\s*#End\s+Region", RegexOptions.IgnoreCase))
+					count--;
+				lineNr++;
+				if (lineNr < area.Document.TotalNumberOfLines)
+				lineText = area.Document.GetText(area.Document.GetLineSegment(lineNr));
+			}
+						
+			return (count > 0);
+		}
+		
 		bool IsElseConstruct(string line)
 		{
 			string t = StripComment(line).ToLowerInvariant();
@@ -347,6 +372,11 @@ namespace VBNetBinding.FormattingStrategy
 			return !inString;
 		}
 		
+		bool IsDeclaration(int type)
+		{
+			return (type == Tokens.Class) || (type == Tokens.Module);
+		}
+		
 		bool IsEndStatementNeeded(TextArea textArea, ref VBStatement statement, int lineNr)
 		{
 			Stack<Token> tokens = new Stack<Token>();
@@ -356,24 +386,24 @@ namespace VBNetBinding.FormattingStrategy
 			
 			Token currentToken = null;
 			Token prevToken = null;
-
-			while ((currentToken = lexer.NextToken()).kind != Tokens.EOF) {
+			
+			while ((currentToken = lexer.NextToken()).Kind != Tokens.EOF) {
 				if (prevToken == null)
 					prevToken = currentToken;
 				
 				if (IsBlockStart(lexer, currentToken, prevToken)) {
-					tokens.Push(currentToken);
+					if ((tokens.Count > 0 && tokens.Peek().Kind != Tokens.Interface) || IsDeclaration(currentToken.Kind))
+						tokens.Push(currentToken);
 				}
 				
 				if (IsBlockEnd(currentToken, prevToken)) {
 					while (tokens.Count > 0 && !IsMatchingEnd(tokens.Peek(), currentToken)) {
-						Token t = null;
-						missingEnds.Add(t = tokens.Pop());
+						missingEnds.Add(tokens.Pop());
 					}
-					if (tokens.Count != 0) {
-						if (IsMatchingEnd(tokens.Peek(), currentToken)) {
+					
+					if (tokens.Count > 0) {
+						if (IsMatchingEnd(tokens.Peek(), currentToken))
 							tokens.Pop();
-						}
 					}
 				}
 				
@@ -392,17 +422,18 @@ namespace VBNetBinding.FormattingStrategy
 			int diff = 0;
 			
 			foreach (Token t in missingEnds) {
-				if (!IsSingleLine(t.line, textArea)) {
-					if (IsMatchingStatement(t, statement) && ((diff = lineNr - t.line + 1) > -1)) {
-						if (closest == null)
+				if (!IsSingleLine(t.Location.Line, textArea)) {
+					if (IsMatchingStatement(t, statement) && ((diff = lineNr - t.Location.Line + 1) > -1)) {
+						if (closest == null) {
 							closest = t;
-						else {
-							if (diff < lineNr - closest.line + 1)
+						} else {
+							if (diff < lineNr - closest.Location.Line + 1)
 								closest = t;
 						}
 					}
 				}
 			}
+			
 			return closest;
 		}
 		
@@ -426,13 +457,13 @@ namespace VBNetBinding.FormattingStrategy
 		
 		bool IsMatchingEnd(Token begin, Token end)
 		{
-			if (begin.kind == end.kind)
+			if (begin.Kind == end.Kind)
 				return true;
 			
-			if (begin.kind == Tokens.For && end.kind == Tokens.Next)
+			if (begin.Kind == Tokens.For && end.Kind == Tokens.Next)
 				return true;
 			
-			if (begin.kind == Tokens.Do && end.kind == Tokens.Loop)
+			if (begin.Kind == Tokens.Do && end.Kind == Tokens.Loop)
 				return true;
 			
 			return false;
@@ -442,14 +473,14 @@ namespace VBNetBinding.FormattingStrategy
 		{
 			// funktioniert noch nicht!
 			
-			if (token.val == "For" && statement.EndStatement == "Next")
+			if (token.Kind == Tokens.For && statement.EndStatement == "Next")
 				return true;
 			
-			if (token.val == "Do" && statement.EndStatement.StartsWith("Loop"))
+			if (token.Kind == Tokens.Do && statement.EndStatement.StartsWith("Loop"))
 				return true;
 			
-			bool empty = !string.IsNullOrEmpty(token.val);
-			bool match = statement.EndStatement.IndexOf(token.val, StringComparison.InvariantCultureIgnoreCase) != -1;
+			bool empty = !string.IsNullOrEmpty(token.Value);
+			bool match = statement.EndStatement.IndexOf(token.Value, StringComparison.InvariantCultureIgnoreCase) != -1;
 			
 			return empty && match;
 		}
@@ -500,86 +531,86 @@ namespace VBNetBinding.FormattingStrategy
 			Token currentToken = null;
 			Token prevToken = null;
 			
-			while ((currentToken = lexer.NextToken()).kind != Tokens.EOF) {
+			while ((currentToken = lexer.NextToken()).Kind != Tokens.EOF) {
 				if (prevToken == null)
 					prevToken = currentToken;
 				
-				if (currentToken.kind == Tokens.MustOverride)
+				if (currentToken.Kind == Tokens.MustOverride)
 					isMustOverride = true;
 				
-				if (currentToken.kind == Tokens.Delegate)
+				if (currentToken.Kind == Tokens.Delegate)
 					isDelegate = true;
 				
-				if (currentToken.kind == Tokens.Declare)
+				if (currentToken.Kind == Tokens.Declare)
 					isDeclare = true;
 				
-				if (currentToken.kind == Tokens.EOL)
+				if (currentToken.Kind == Tokens.EOL)
 					isDelegate = isDeclare = isMustOverride = false;
 				
 				if (IsSpecialCase(currentToken, prevToken)) {
-					ApplyToRange(textArea, ref indentation, oldLine, currentToken.line - 1, begin, end);
+					ApplyToRange(textArea, ref indentation, oldLine, currentToken.Location.Line - 1, begin, end);
 					indentation--;
-					ApplyToRange(textArea, ref indentation, currentToken.line - 1, currentToken.line, begin, end);
+					ApplyToRange(textArea, ref indentation, currentToken.Location.Line - 1, currentToken.Location.Line, begin, end);
 					indentation++;
 					
-					oldLine = currentToken.line;
+					oldLine = currentToken.Location.Line;
 				}
 				
 				if (IsBlockEnd(currentToken, prevToken)) {
-					ApplyToRange(textArea, ref indentation, oldLine, currentToken.line - 1, begin, end);
+					ApplyToRange(textArea, ref indentation, oldLine, currentToken.Location.Line - 1, begin, end);
 					
-					if (currentToken.kind == Tokens.Interface)
+					if (currentToken.Kind == Tokens.Interface)
 						inInterface = false;
 					
 					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
 						indentation--;
 						
-						if (currentToken.kind == Tokens.Select)
+						if (currentToken.Kind == Tokens.Select)
 							indentation--;
 					}
 					
-					oldLine = currentToken.line - 1;
+					oldLine = currentToken.Location.Line - 1;
 				}
 				
 				if (IsBlockStart(lexer, currentToken, prevToken)) {
-					ApplyToRange(textArea, ref indentation, oldLine, currentToken.line, begin, end);
+					ApplyToRange(textArea, ref indentation, oldLine, currentToken.Location.Line, begin, end);
 					
 					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
 						indentation++;
 						
-						if (currentToken.kind == Tokens.Select)
+						if (currentToken.Kind == Tokens.Select)
 							indentation++;
 					}
 					
-					if (currentToken.kind == Tokens.Interface)
+					if (currentToken.Kind == Tokens.Interface)
 						inInterface = true;
 					
-					oldLine = currentToken.line;
+					oldLine = currentToken.Location.Line;
 				}
 				
 				prevToken = currentToken;
 			}
 			
 			// do last indent step
-			ApplyToRange(textArea, ref indentation, oldLine, prevToken.line, begin, end);
+			ApplyToRange(textArea, ref indentation, oldLine, prevToken.Location.Line, begin, end);
 			
 			return indentation;
 		}
 		
 		bool IsBlockStart(ILexer lexer, Token current, Token prev)
 		{
-			if (blockTokens.Contains(current.kind)) {
-				if (current.kind == Tokens.If) {
-					if (prev.kind != Tokens.EOL)
+			if (blockTokens.Contains(current.Kind)) {
+				if (current.Kind == Tokens.If) {
+					if (prev.Kind != Tokens.EOL)
 						return false;
 					
 					lexer.StartPeek();
 					
 					Token currentToken = null;
 					
-					while ((currentToken = lexer.Peek()).kind != Tokens.EOL) {
-						if (currentToken.kind == Tokens.Then) {
-							if (lexer.Peek().kind == Tokens.EOL)
+					while ((currentToken = lexer.Peek()).Kind != Tokens.EOL) {
+						if (currentToken.Kind == Tokens.Then) {
+							if (lexer.Peek().Kind == Tokens.EOL)
 								return true;
 							else
 								return false;
@@ -587,47 +618,47 @@ namespace VBNetBinding.FormattingStrategy
 					}
 				}
 				
-				if (current.kind == Tokens.Function) {
+				if (current.Kind == Tokens.Function) {
 					lexer.StartPeek();
 					
-					if (lexer.Peek().kind == Tokens.OpenParenthesis)
+					if (lexer.Peek().Kind == Tokens.OpenParenthesis)
 						return false;
 				}
 				
-				if (current.kind == Tokens.With && prev.kind != Tokens.EOL)
+				if (current.Kind == Tokens.With && prev.Kind != Tokens.EOL)
 					return false;
 				
-				if (current.kind == Tokens.While && (prev.kind == Tokens.Skip || prev.kind == Tokens.Take))
+				if (current.Kind == Tokens.While && (prev.Kind == Tokens.Skip || prev.Kind == Tokens.Take))
 					return false;
 				
-				if (current.kind == Tokens.Select && prev.kind != Tokens.EOL)
+				if (current.Kind == Tokens.Select && prev.Kind != Tokens.EOL)
 					return false;
 				
-				if (current.kind == Tokens.Class || current.kind == Tokens.Structure) {
-					lexer.StartPeek();
-					
-					Token t = lexer.Peek();
-					
-					if (t.kind == Tokens.CloseParenthesis || t.kind == Tokens.CloseCurlyBrace || t.kind == Tokens.Comma)
-						return false;
-				}
-				
-				if (current.kind == Tokens.Module) {
+				if (current.Kind == Tokens.Class || current.Kind == Tokens.Structure) {
 					lexer.StartPeek();
 					
 					Token t = lexer.Peek();
 					
-					if (t.kind == Tokens.Colon)
+					if (t.Kind == Tokens.CloseParenthesis || t.Kind == Tokens.CloseCurlyBrace || t.Kind == Tokens.Comma)
 						return false;
 				}
 				
-				if (prev.kind == Tokens.End ||
-				    prev.kind == Tokens.Loop ||
-				    prev.kind == Tokens.Exit ||
-				    prev.kind == Tokens.Continue ||
-				    prev.kind == Tokens.Resume ||
-				    prev.kind == Tokens.GoTo ||
-				    prev.kind == Tokens.Do)
+				if (current.Kind == Tokens.Module) {
+					lexer.StartPeek();
+					
+					Token t = lexer.Peek();
+					
+					if (t.Kind == Tokens.Colon)
+						return false;
+				}
+				
+				if (prev.Kind == Tokens.End ||
+				    prev.Kind == Tokens.Loop ||
+				    prev.Kind == Tokens.Exit ||
+				    prev.Kind == Tokens.Continue ||
+				    prev.Kind == Tokens.Resume ||
+				    prev.Kind == Tokens.GoTo ||
+				    prev.Kind == Tokens.Do)
 					return false;
 				else
 					return true;
@@ -638,18 +669,18 @@ namespace VBNetBinding.FormattingStrategy
 		
 		bool IsBlockEnd(Token current, Token prev)
 		{
-			if (current.kind == Tokens.Next) {
-				if (prev.kind == Tokens.Resume)
+			if (current.Kind == Tokens.Next) {
+				if (prev.Kind == Tokens.Resume)
 					return false;
 				else
 					return true;
 			}
 			
-			if (current.kind == Tokens.Loop)
+			if (current.Kind == Tokens.Loop)
 				return true;
 			
-			if (blockTokens.Contains(current.kind)) {
-				if (prev.kind == Tokens.End)
+			if (blockTokens.Contains(current.Kind)) {
+				if (prev.Kind == Tokens.End)
 					return true;
 				else
 					return false;
@@ -660,11 +691,11 @@ namespace VBNetBinding.FormattingStrategy
 		
 		bool IsSpecialCase(Token current, Token prev)
 		{
-			switch (current.kind) {
+			switch (current.Kind) {
 				case Tokens.Else:
 					return true;
 				case Tokens.Case:
-					if (prev.kind == Tokens.Select)
+					if (prev.Kind == Tokens.Select)
 						return false;
 					else
 						return true;

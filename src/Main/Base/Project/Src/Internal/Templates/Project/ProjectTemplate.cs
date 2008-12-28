@@ -99,10 +99,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				#if DEBUG
 				// Always reload project templates if debugging.
 				// TODO: Make this a configurable option.
-				LoadProjectTemplates();
+				UpdateTemplates();
 				#else
 				if (projectTemplates == null) {
-					LoadProjectTemplates();
+					UpdateTemplates();
 				}
 				#endif
 				return projectTemplates.AsReadOnly();
@@ -396,7 +396,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public const string TemplatePath = "/SharpDevelop/BackendBindings/Templates";
 		
-		static void LoadProjectTemplates()
+		public static void UpdateTemplates()
 		{
 			projectTemplates = new List<ProjectTemplate>();
 			string dataTemplateDir = FileUtility.Combine(PropertyService.DataDirectory, "templates", "project");

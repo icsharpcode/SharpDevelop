@@ -22,6 +22,7 @@ namespace ICSharpCode.NRefactory.Ast
 			}
 			set {
 				typeReference = TypeReference.CheckNull(value);
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		

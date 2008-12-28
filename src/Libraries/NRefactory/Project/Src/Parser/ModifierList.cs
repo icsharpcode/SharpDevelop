@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public Location GetDeclarationLocation(Location keywordLocation)
 		{
-			if(location.X == -1 && location.Y == -1) {
+			if(location.IsEmpty) {
 				return keywordLocation;
 			}
 			return location;
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public void Add(Modifiers m, Location tokenLocation) 
 		{
-			if(location.X == -1 && location.Y == -1) {
+			if(location.IsEmpty) {
 				location = tokenLocation;
 			}
 			

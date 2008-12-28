@@ -16,7 +16,6 @@ namespace PythonBinding.Tests.Converter
 	/// Tests the ConvertCSharpToPythonMenuCommand.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
 	public class ConvertCSharpToPythonMenuCommandTestFixture : ConvertToPythonMenuCommand
 	{
 		string newFileText;
@@ -36,13 +35,19 @@ namespace PythonBinding.Tests.Converter
 			window.ActiveViewContent = mockViewContent;
 			workbench.ActiveWorkbenchWindow = window;
 			
-			Run(workbench);
+			MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
+			textEditorProperties.IndentationSize = 4;
+			textEditorProperties.ConvertTabsToSpaces = true;
+			
+			Run(workbench, textEditorProperties);
 		}
 		
 		[Test]
 		public void GeneratedPythonCode()
 		{
-			Assert.AreEqual("class Foo(object): pass", newFileText);
+			string code = "class Foo(object):\r\n" +
+						  "    pass";
+			Assert.AreEqual(code, newFileText);
 		}
 		
 		[Test]

@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return this;
 		}
 		
-		IList<IUsing> usings  = new List<IUsing>();
+		IUsingScope usingScope = new DefaultUsingScope();
 		IList<IClass> classes = new List<IClass>();
 		IList<IAttribute> attributes = new List<IAttribute>();
 		IList<FoldingRegion> foldingRegions = new List<FoldingRegion>();
@@ -30,11 +30,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected override void FreezeInternal()
 		{
 			// Deep Freeze: freeze lists and their contents
-			usings = FreezeList(usings);
 			classes = FreezeList(classes);
 			attributes = FreezeList(attributes);
 			foldingRegions = FreezeList(foldingRegions);
 			tagComments = FreezeList(tagComments);
+			usingScope.Freeze();
 			
 			base.FreezeInternal();
 		}
@@ -85,9 +85,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual IList<IUsing> Usings {
-			get {
-				return usings;
+		public virtual IUsingScope UsingScope {
+			get { return usingScope; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException("UsingScope");
+				CheckBeforeMutation();
+				usingScope = value;
 			}
 		}
 

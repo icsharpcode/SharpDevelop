@@ -11,35 +11,27 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
+using System.Windows.Forms;
+
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.PythonBinding;
 
 namespace PythonBinding.Tests.Utils
 {
 	/// <summary>
 	/// Mock IDesignerGenerator class.
 	/// </summary>
-	public class MockDesignerGenerator : IDesignerGenerator
+	public class MockDesignerGenerator : IPythonDesignerGenerator
 	{
-		CodeCompileUnit codeCompileUnit;
 		FormsDesignerViewContent viewContent;
+		IComponent mergeChangesRootComponent;
 		
 		public MockDesignerGenerator()
 		{
 		}
 		
-		/// <summary>
-		/// Gets the code compile unit passed to the MergeFormChanges
-		/// method.
-		/// </summary>
-		public CodeCompileUnit CodeCompileUnitMerged {
-			get { return codeCompileUnit; }
-		}
-		
 		public CodeDomProvider CodeDomProvider {
-			get {
-//				return new IronPython.CodeDom.PythonProvider();
-				return null;
-			}
+			get { return null; }
 		}
 		
 		public FormsDesignerViewContent ViewContent {
@@ -63,7 +55,15 @@ namespace PythonBinding.Tests.Utils
 		
 		public void MergeFormChanges(CodeCompileUnit unit)
 		{
-			codeCompileUnit = unit;
+		}
+		
+		public void MergeRootComponentChanges(IComponent component)
+		{
+			mergeChangesRootComponent = component;
+		}
+		
+		public IComponent MergeChangesRootComponent { 
+			get { return mergeChangesRootComponent; } 
 		}
 		
 		public bool InsertComponentEvent(IComponent component, System.ComponentModel.EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)

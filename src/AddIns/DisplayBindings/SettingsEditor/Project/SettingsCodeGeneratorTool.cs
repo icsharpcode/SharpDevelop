@@ -29,14 +29,14 @@ namespace ICSharpCode.SettingsEditor
 				setDoc.GeneratedClassNamespace = customToolNamespace;
 			}
 			
-			EasyCompileUnit ccu = new EasyCompileUnit();
+			CodeCompileUnit ccu = new CodeCompileUnit();
 			ccu.AddNamespace(setDoc.GeneratedClassNamespace).Types.Add(CreateClass(setDoc));
 			context.WriteCodeDomToFile(item, context.GetOutputFileName(item, ".Designer"), ccu);
 		}
 		
 		public static CodeTypeDeclaration CreateClass(SettingsDocument setDoc)
 		{
-			EasyTypeDeclaration c = new EasyTypeDeclaration(setDoc.GeneratedClassName);
+			CodeTypeDeclaration c = new CodeTypeDeclaration(setDoc.GeneratedClassName);
 			c.AddAttribute(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute));
 			c.AddAttribute(typeof(System.CodeDom.Compiler.GeneratedCodeAttribute),
 			               Easy.Prim(typeof(SettingsCodeGeneratorTool).FullName),
@@ -45,7 +45,7 @@ namespace ICSharpCode.SettingsEditor
 			c.IsPartial = true;
 			c.BaseTypes.Add(Easy.TypeRef(typeof(ApplicationSettingsBase)));
 			
-			EasyField f = c.AddField(Easy.TypeRef(c), "defaultInstance");
+			CodeMemberField f = c.AddField(Easy.TypeRef(c), "defaultInstance");
 			f.Attributes = MemberAttributes.Private | MemberAttributes.Static;
 			f.InitExpression = Easy.Type(typeof(ApplicationSettingsBase))
 				.InvokeMethod("Synchronized", Easy.New(Easy.TypeRef(c)))

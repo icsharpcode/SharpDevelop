@@ -144,6 +144,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				createType = value ?? TypeReference.Null;
+				if (!createType.IsNull) createType.Parent = this;
 			}
 		}
 		
@@ -555,6 +556,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				castTo = value ?? TypeReference.Null;
+				if (!castTo.IsNull) castTo.Parent = this;
 			}
 		}
 		
@@ -613,6 +615,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -1052,6 +1055,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -1086,6 +1090,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -1127,6 +1132,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				returnType = value ?? TypeReference.Null;
+				if (!returnType.IsNull) returnType.Parent = this;
 			}
 		}
 		
@@ -1515,6 +1521,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				addRegion = value ?? EventAddRegion.Null;
+				if (!addRegion.IsNull) addRegion.Parent = this;
 			}
 		}
 		
@@ -1524,6 +1531,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				removeRegion = value ?? EventRemoveRegion.Null;
+				if (!removeRegion.IsNull) removeRegion.Parent = this;
 			}
 		}
 		
@@ -1533,6 +1541,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				raiseRegion = value ?? EventRaiseRegion.Null;
+				if (!raiseRegion.IsNull) raiseRegion.Parent = this;
 			}
 		}
 		
@@ -1573,12 +1582,6 @@ namespace ICSharpCode.NRefactory.Ast {
 			initializer = Expression.Null;
 		}
 		
-		public bool HasAddRegion {
-			get {
-				return !addRegion.IsNull;
-			}
-		}
-		
 		public bool HasRemoveRegion {
 			get {
 				return !removeRegion.IsNull;
@@ -1588,6 +1591,12 @@ namespace ICSharpCode.NRefactory.Ast {
 		public bool HasRaiseRegion {
 			get {
 				return !raiseRegion.IsNull;
+			}
+		}
+		
+		public bool HasAddRegion {
+			get {
+				return !addRegion.IsNull;
 			}
 		}
 		
@@ -1749,6 +1758,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				type = value ?? TypeReference.Null;
+				if (!type.IsNull) type.Parent = this;
 			}
 		}
 		
@@ -1825,6 +1835,32 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 	}
 	
+	public class ExternAliasDirective : AbstractNode {
+		
+		string name;
+		
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				name = value ?? "";
+			}
+		}
+		
+		public ExternAliasDirective() {
+			name = "";
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitExternAliasDirective(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[ExternAliasDirective Name={0}]", Name);
+		}
+	}
+	
 	public class FieldDeclaration : AttributedNode {
 		
 		TypeReference typeReference;
@@ -1837,6 +1873,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -1935,6 +1972,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -2054,6 +2092,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -2306,6 +2345,15 @@ namespace ICSharpCode.NRefactory.Ast {
 				if (trueStatement != null) trueStatement.Parent = this;
 			}
 		
+
+			public IfElseStatement(Expression condition, Statement trueStatement, Statement falseStatement)
+				: this(condition) {
+				this.trueStatement.Add(Statement.CheckNull(trueStatement));
+				this.falseStatement.Add(Statement.CheckNull(falseStatement));
+				if (trueStatement != null) trueStatement.Parent = this;
+				if (falseStatement != null) falseStatement.Parent = this;
+			}
+		
 		public bool HasElseStatements {
 			get {
 				return falseStatement.Count > 0;
@@ -2317,15 +2365,6 @@ namespace ICSharpCode.NRefactory.Ast {
 				return elseIfSections.Count > 0;
 			}
 		}
-		
-
-			public IfElseStatement(Expression condition, Statement trueStatement, Statement falseStatement)
-				: this(condition) {
-				this.trueStatement.Add(Statement.CheckNull(trueStatement));
-				this.falseStatement.Add(Statement.CheckNull(falseStatement));
-				if (trueStatement != null) trueStatement.Parent = this;
-				if (falseStatement != null) falseStatement.Parent = this;
-			}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitIfElseStatement(this, data);
@@ -2377,6 +2416,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -2404,6 +2444,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				getRegion = value ?? PropertyGetRegion.Null;
+				if (!getRegion.IsNull) getRegion.Parent = this;
 			}
 		}
 		
@@ -2413,6 +2454,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				setRegion = value ?? PropertySetRegion.Null;
+				if (!setRegion.IsNull) setRegion.Parent = this;
 			}
 		}
 		
@@ -2440,9 +2482,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			setRegion = PropertySetRegion.Null;
 		}
 		
-		public bool IsWriteOnly {
+		public bool IsReadOnly {
 			get {
-				return !HasGetRegion && HasSetRegion;
+				return HasGetRegion && !HasSetRegion;
 			}
 		}
 		
@@ -2458,9 +2500,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public bool IsReadOnly {
+		public bool IsWriteOnly {
 			get {
-				return HasGetRegion && !HasSetRegion;
+				return !HasGetRegion && HasSetRegion;
 			}
 		}
 		
@@ -2526,6 +2568,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 			set {
 				interfaceType = value ?? TypeReference.Null;
+				if (!interfaceType.IsNull) interfaceType.Parent = this;
 			}
 		}
 		
@@ -2725,6 +2768,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -2944,6 +2988,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				createType = value ?? TypeReference.Null;
+				if (!createType.IsNull) createType.Parent = this;
 			}
 		}
 		
@@ -3133,6 +3178,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -3256,7 +3302,7 @@ public Location ExtendedEndLocation { get; set; }
 		
 		Expression targetObject;
 		
-		string identifier;
+		string memberName;
 		
 		List<TypeReference> typeArguments;
 		
@@ -3270,12 +3316,12 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public string Identifier {
+		public string MemberName {
 			get {
-				return identifier;
+				return memberName;
 			}
 			set {
-				identifier = value ?? "";
+				memberName = value ?? "";
 			}
 		}
 		
@@ -3288,18 +3334,20 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public PointerReferenceExpression(Expression targetObject, string identifier) {
+		public PointerReferenceExpression(Expression targetObject, string memberName) {
 			TargetObject = targetObject;
-			Identifier = identifier;
+			MemberName = memberName;
 			typeArguments = new List<TypeReference>();
 		}
+		
+[Obsolete] public string Identifier { get { return MemberName; } set { MemberName = value; } }
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitPointerReferenceExpression(this, data);
 		}
 		
 		public override string ToString() {
-			return string.Format("[PointerReferenceExpression TargetObject={0} Identifier={1} TypeArguments={2}]", TargetObject, Identifier, GetCollectionString(TypeArguments));
+			return string.Format("[PointerReferenceExpression TargetObject={0} MemberName={1} TypeArguments={2}]", TargetObject, MemberName, GetCollectionString(TypeArguments));
 		}
 	}
 	
@@ -3337,6 +3385,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				getRegion = value ?? PropertyGetRegion.Null;
+				if (!getRegion.IsNull) getRegion.Parent = this;
 			}
 		}
 		
@@ -3346,6 +3395,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				setRegion = value ?? PropertySetRegion.Null;
+				if (!setRegion.IsNull) setRegion.Parent = this;
 			}
 		}
 		
@@ -3363,12 +3413,6 @@ public Location ExtendedEndLocation { get; set; }
 		public bool HasGetRegion {
 			get {
 				return !getRegion.IsNull;
-			}
-		}
-		
-		public bool IsWriteOnly {
-			get {
-				return !HasGetRegion && HasSetRegion;
 			}
 		}
 		
@@ -3393,6 +3437,12 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			if ((modifier & Modifiers.WriteOnly) != Modifiers.WriteOnly) {
 				this.GetRegion = new PropertyGetRegion(null, null);
+			}
+		}
+		
+		public bool IsWriteOnly {
+			get {
+				return !HasGetRegion && HasSetRegion;
 			}
 		}
 		
@@ -3537,11 +3587,11 @@ public Location ExtendedEndLocation { get; set; }
 		
 		QueryExpressionFromClause fromClause;
 		
+		bool isQueryContinuation;
+		
 		List<QueryExpressionClause> middleClauses;
 		
 		QueryExpressionClause selectOrGroupClause;
-		
-		QueryExpressionIntoClause intoClause;
 		
 		public QueryExpressionFromClause FromClause {
 			get {
@@ -3550,6 +3600,15 @@ public Location ExtendedEndLocation { get; set; }
 			set {
 				fromClause = value ?? QueryExpressionFromClause.Null;
 				if (!fromClause.IsNull) fromClause.Parent = this;
+			}
+		}
+		
+		public bool IsQueryContinuation {
+			get {
+				return isQueryContinuation;
+			}
+			set {
+				isQueryContinuation = value;
 			}
 		}
 		
@@ -3572,21 +3631,10 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public QueryExpressionIntoClause IntoClause {
-			get {
-				return intoClause;
-			}
-			set {
-				intoClause = value ?? QueryExpressionIntoClause.Null;
-				if (!intoClause.IsNull) intoClause.Parent = this;
-			}
-		}
-		
 		public QueryExpression() {
 			fromClause = QueryExpressionFromClause.Null;
 			middleClauses = new List<QueryExpressionClause>();
 			selectOrGroupClause = QueryExpressionClause.Null;
-			intoClause = QueryExpressionIntoClause.Null;
 		}
 		
 		public new static QueryExpression Null {
@@ -3600,8 +3648,8 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[QueryExpression FromClause={0} MiddleClauses={1} SelectOrGroupClause={2} IntoCla" +
-					"use={3}]", FromClause, GetCollectionString(MiddleClauses), SelectOrGroupClause, IntoClause);
+			return string.Format("[QueryExpression FromClause={0} IsQueryContinuation={1} MiddleClauses={2} SelectO" +
+					"rGroupClause={3}]", FromClause, IsQueryContinuation, GetCollectionString(MiddleClauses), SelectOrGroupClause);
 		}
 	}
 	
@@ -3677,6 +3725,9 @@ public Location ExtendedEndLocation { get; set; }
 	}
 	
 	public abstract class QueryExpressionClause : AbstractNode, INullable {
+		
+		protected QueryExpressionClause() {
+		}
 		
 		public virtual bool IsNull {
 			get {
@@ -3777,6 +3828,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				type = value ?? TypeReference.Null;
+				if (!type.IsNull) type.Parent = this;
 			}
 		}
 		
@@ -3797,6 +3849,12 @@ public Location ExtendedEndLocation { get; set; }
 				inExpression = value ?? Expression.Null;
 				if (!inExpression.IsNull) inExpression.Parent = this;
 			}
+		}
+		
+		protected QueryExpressionFromOrJoinClause() {
+			type = TypeReference.Null;
+			identifier = "?";
+			inExpression = Expression.Null;
 		}
 	}
 	
@@ -3927,70 +3985,6 @@ public Location ExtendedEndLocation { get; set; }
 		public override string ToString() {
 			return string.Format("[QueryExpressionGroupVBClause GroupVariables={0} ByVariables={1} IntoVariables={2" +
 					"}]", GetCollectionString(GroupVariables), GetCollectionString(ByVariables), GetCollectionString(IntoVariables));
-		}
-	}
-	
-	public class QueryExpressionIntoClause : QueryExpressionClause {
-		
-		string intoIdentifier;
-		
-		QueryExpression continuedQuery;
-		
-		public string IntoIdentifier {
-			get {
-				return intoIdentifier;
-			}
-			set {
-				intoIdentifier = string.IsNullOrEmpty(value) ? "?" : value;
-			}
-		}
-		
-		public QueryExpression ContinuedQuery {
-			get {
-				return continuedQuery;
-			}
-			set {
-				continuedQuery = value ?? QueryExpression.Null;
-				if (!continuedQuery.IsNull) continuedQuery.Parent = this;
-			}
-		}
-		
-		public QueryExpressionIntoClause() {
-			intoIdentifier = "?";
-			continuedQuery = QueryExpression.Null;
-		}
-		
-		public new static QueryExpressionIntoClause Null {
-			get {
-				return NullQueryExpressionIntoClause.Instance;
-			}
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitQueryExpressionIntoClause(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[QueryExpressionIntoClause IntoIdentifier={0} ContinuedQuery={1}]", IntoIdentifier, ContinuedQuery);
-		}
-	}
-	
-	internal sealed class NullQueryExpressionIntoClause : QueryExpressionIntoClause {
-		
-		internal static NullQueryExpressionIntoClause Instance = new NullQueryExpressionIntoClause();
-		
-		public override bool IsNull {
-			get {
-				return true;
-			}
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return null;
-		}
-		
-		public override string ToString() {
-			return "[NullQueryExpressionIntoClause]";
 		}
 	}
 	
@@ -4606,6 +4600,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -4634,6 +4629,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -4962,6 +4958,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -5000,6 +4997,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -5027,6 +5025,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -5034,7 +5033,7 @@ public Location ExtendedEndLocation { get; set; }
 			TypeReference = typeReference;
 		}
 		
-public TypeReferenceExpression(string typeName) : this(new TypeReference(typeName)) {}
+[Obsolete] public TypeReferenceExpression(string typeName) : this(new TypeReference(typeName)) {}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitTypeReferenceExpression(this, data);
@@ -5191,6 +5190,7 @@ public TypeReferenceExpression(string typeName) : this(new TypeReference(typeNam
 			}
 			set {
 				alias = value ?? TypeReference.Null;
+				if (!alias.IsNull) alias.Parent = this;
 			}
 		}
 		
@@ -5312,6 +5312,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			}
 			set {
 				typeReference = value ?? TypeReference.Null;
+				if (!typeReference.IsNull) typeReference.Parent = this;
 			}
 		}
 		
@@ -5414,15 +5415,15 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			Statement = statement;
 		}
 		
-		public bool IsYieldReturn {
-			get {
-				return statement is ReturnStatement;
-			}
-		}
-		
 		public bool IsYieldBreak {
 			get {
 				return statement is BreakStatement;
+			}
+		}
+		
+		public bool IsYieldReturn {
+			get {
+				return statement is ReturnStatement;
 			}
 		}
 		

@@ -227,12 +227,12 @@ namespace NRefactoryToBooConverter
 				return null;
 			B.TypeReference r;
 			if (t.GenericTypes.Count > 0) {
-				r = new B.GenericTypeReference(GetLexicalInfo(t), GetIntrinsicTypeName(t.SystemType));
+				r = new B.GenericTypeReference(GetLexicalInfo(t), GetIntrinsicTypeName(t.Type));
 				foreach (TypeReference ta in t.GenericTypes) {
 					((B.GenericTypeReference)r).GenericArguments.Add(ConvertTypeReference(ta));
 				}
 			} else {
-				r = new B.SimpleTypeReference(GetLexicalInfo(t), GetIntrinsicTypeName(t.SystemType));
+				r = new B.SimpleTypeReference(GetLexicalInfo(t), GetIntrinsicTypeName(t.Type));
 			}
 			if (t.IsArrayType) {
 				for (int i = t.RankSpecifier.Length - 1; i >= 0; --i) {

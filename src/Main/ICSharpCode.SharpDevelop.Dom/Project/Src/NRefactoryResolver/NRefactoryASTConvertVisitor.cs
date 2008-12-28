@@ -19,8 +19,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
 	public class NRefactoryASTConvertVisitor : AbstractAstVisitor
 	{
-		ICompilationUnit cu;
-		Stack<string> currentNamespace = new Stack<string>();
+		DefaultCompilationUnit cu;
+		DefaultUsingScope currentNamespace;
 		Stack<DefaultClass> currentClass = new Stack<DefaultClass>();
 		public string VBRootNamespace { get; set; }
 		
@@ -181,13 +181,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (compilationUnit == null) {
 				return null;
 			}
+			currentNamespace = new DefaultUsingScope();
 			if (!string.IsNullOrEmpty(VBRootNamespace)) {
-				currentNamespace.Push(VBRootNamespace);
-				compilationUnit.AcceptChildren(this, data);
-				currentNamespace.Pop();
-			} else {
-				compilationUnit.AcceptChildren(this, data);
+				foreach (string name in VBRootNamespace.Split('.')) {
+					currentNamespace = new DefaultUsingScope {
+						Parent = currentNamespace,
+						NamespaceName = PrependCurrentNamespace(name),
+					};
+					currentNamespace.Parent.ChildScopes.Add(currentNamespace);
+				}
 			}
+			cu.UsingScope = currentNamespace;
+			compilationUnit.AcceptChildren(this, data);
 			return cu;
 		}
 		
@@ -197,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			foreach (AST.Using u in usingDeclaration.Usings) {
 				u.AcceptVisitor(this, us);
 			}
-			cu.Usings.Add(us);
+			currentNamespace.Usings.Add(us);
 			return data;
 		}
 		
@@ -313,18 +318,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
+		string PrependCurrentNamespace(string name)
+		{
+			if (string.IsNullOrEmpty(currentNamespace.NamespaceName))
+				return name;
+			else
+				return currentNamespace.NamespaceName + "." + name;
+		}
+		
 		public override object VisitNamespaceDeclaration(AST.NamespaceDeclaration namespaceDeclaration, object data)
 		{
-			string name;
-			if (currentNamespace.Count == 0) {
-				name = namespaceDeclaration.Name;
-			} else {
-				name = currentNamespace.Peek() + '.' + namespaceDeclaration.Name;
+			DefaultUsingScope oldNamespace = currentNamespace;
+			foreach (string name in namespaceDeclaration.Name.Split('.')) {
+				currentNamespace = new DefaultUsingScope {
+					Parent = currentNamespace,
+					NamespaceName = PrependCurrentNamespace(name),
+				};
+				currentNamespace.Parent.ChildScopes.Add(currentNamespace);
 			}
-			
-			currentNamespace.Push(name);
 			object ret = namespaceDeclaration.AcceptChildren(this, data);
-			currentNamespace.Pop();
+			currentNamespace = oldNamespace;
 			return ret;
 		}
 		
@@ -364,13 +377,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				cur.InnerClasses.Add(c);
 				c.FullyQualifiedName = cur.FullyQualifiedName + '.' + typeDeclaration.Name;
 			} else {
-				if (currentNamespace.Count == 0) {
-					c.FullyQualifiedName = typeDeclaration.Name;
-				} else {
-					c.FullyQualifiedName = currentNamespace.Peek() + '.' + typeDeclaration.Name;
-				}
+				c.FullyQualifiedName = PrependCurrentNamespace(typeDeclaration.Name);
 				cu.Classes.Add(c);
 			}
+			c.UsingScope = currentNamespace;
 			currentClass.Push(c);
 			
 			ConvertTemplates(typeDeclaration.Templates, c); // resolve constrains in context of the class
@@ -468,13 +478,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				cur.InnerClasses.Add(c);
 				c.FullyQualifiedName = cur.FullyQualifiedName + '.' + name;
 			} else {
-				if (currentNamespace.Count == 0) {
-					c.FullyQualifiedName = name;
-				} else {
-					c.FullyQualifiedName = currentNamespace.Peek() + '.' + name;
-				}
+				c.FullyQualifiedName = PrependCurrentNamespace(name);
 				cu.Classes.Add(c);
 			}
+			c.UsingScope = currentNamespace;
 			currentClass.Push(c); // necessary for CreateReturnType
 			ConvertTemplates(templates, c);
 			

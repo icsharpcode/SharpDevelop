@@ -97,6 +97,8 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitExpressionStatement(ExpressionStatement expressionStatement, object data);
 		
+		object VisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data);
+		
 		object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data);
 		
 		object VisitFixedStatement(FixedStatement fixedStatement, object data);
@@ -176,8 +178,6 @@ namespace ICSharpCode.NRefactory {
 		object VisitQueryExpressionGroupJoinVBClause(QueryExpressionGroupJoinVBClause queryExpressionGroupJoinVBClause, object data);
 		
 		object VisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data);
-		
-		object VisitQueryExpressionIntoClause(QueryExpressionIntoClause queryExpressionIntoClause, object data);
 		
 		object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data);
 		

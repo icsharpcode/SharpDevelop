@@ -26,8 +26,8 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader(text));
 			Token t = lexer.NextToken();
-			Assert.AreEqual(Tokens.EOL, lexer.NextToken().kind, "Tokens.EOL");
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind, "Tokens.EOF");
+			Assert.AreEqual(Tokens.EOL, lexer.NextToken().Kind, "Tokens.EOL");
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().Kind, "Tokens.EOF");
 			Assert.AreEqual("", lexer.Errors.ErrorOutput);
 			return t;
 		}
@@ -35,10 +35,10 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		void CheckToken(string text, int tokenType, object val)
 		{
 			Token t = GetSingleToken(text);
-			Assert.AreEqual(tokenType, t.kind, "Tokens.Literal");
-			Assert.IsNotNull(t.literalValue, "literalValue is null");
-			Assert.AreEqual(val.GetType(), t.literalValue.GetType(), "literalValue.GetType()");
-			Assert.AreEqual(val, t.literalValue, "literalValue");
+			Assert.AreEqual(tokenType, t.Kind, "Tokens.Literal");
+			Assert.IsNotNull(t.LiteralValue, "literalValue is null");
+			Assert.AreEqual(val.GetType(), t.LiteralValue.GetType(), "literalValue.GetType()");
+			Assert.AreEqual(val, t.LiteralValue, "literalValue");
 		}
 		
 		[Test]
@@ -100,12 +100,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("&H\r\nabc"));
 			Token t = lexer.NextToken();
-			Assert.AreEqual(Tokens.LiteralInteger, t.kind);
-			Assert.AreEqual(0, (int)t.literalValue);
-			Assert.AreEqual(Tokens.EOL, lexer.NextToken().kind, "Tokens.EOL (1)");
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().kind, "Tokens.Identifier");
-			Assert.AreEqual(Tokens.EOL, lexer.NextToken().kind, "Tokens.EOL (2)");
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind, "Tokens.EOF");
+			Assert.AreEqual(Tokens.LiteralInteger, t.Kind);
+			Assert.AreEqual(0, (int)t.LiteralValue);
+			Assert.AreEqual(Tokens.EOL, lexer.NextToken().Kind, "Tokens.EOL (1)");
+			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind, "Tokens.Identifier");
+			Assert.AreEqual(Tokens.EOL, lexer.NextToken().Kind, "Tokens.EOL (2)");
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().Kind, "Tokens.EOF");
 			Assert.AreNotEqual("", lexer.Errors.ErrorOutput);
 		}
 		

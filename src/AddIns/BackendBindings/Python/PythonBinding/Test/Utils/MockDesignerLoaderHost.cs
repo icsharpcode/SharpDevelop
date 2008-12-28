@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
@@ -19,7 +20,9 @@ namespace PythonBinding.Tests.Utils
 	public class MockDesignerLoaderHost : IDesignerLoaderHost
 	{
 		ServiceContainer serviceContainer = new ServiceContainer();
-		
+		List<CreatedComponent> createdComponents = new List<CreatedComponent>();
+		IComponent rootComponent;
+				
 		public MockDesignerLoaderHost()
 		{
 			AddService(typeof(IServiceContainer), serviceContainer);
@@ -32,7 +35,14 @@ namespace PythonBinding.Tests.Utils
 		public event DesignerTransactionCloseEventHandler TransactionClosing;
 		public event EventHandler TransactionOpened;
 		public event EventHandler TransactionOpening;
-				
+
+		/// <summary>
+		/// Gets the components created via the CreateComponent method.
+		/// </summary>
+		public List<CreatedComponent> CreatedComponents {
+			get { return createdComponents; }
+		}
+		
 		public bool Loading {
 			get {
 				throw new NotImplementedException();
@@ -52,9 +62,8 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public IComponent RootComponent {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return rootComponent; }
+			set { rootComponent = value; }
 		}
 		
 		public string RootComponentClassName {
@@ -89,7 +98,12 @@ namespace PythonBinding.Tests.Utils
 		
 		public IComponent CreateComponent(Type componentClass, string name)
 		{
-			return null;
+			createdComponents.Add(new CreatedComponent(componentClass.FullName, name));
+			IComponent component = componentClass.Assembly.CreateInstance(componentClass.FullName) as IComponent;
+			if (rootComponent == null) {
+				rootComponent = component;
+			}
+			return component;
 		}
 		
 		public DesignerTransaction CreateTransaction()

@@ -19,6 +19,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		LambdaExpression lambdaExpression;
 		List<Expression> returnExpressions = new List<Expression>();
 		
+		public override bool CanBeConvertedToExpressionTree {
+			get { return lambdaExpression != null; }
+		}
+		
 		internal LambdaReturnType(LambdaExpression expression, NRefactoryResolver resolver)
 			: base(resolver.CompilationUnit)
 		{

@@ -142,8 +142,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				}
 				
 				statements.Add(
-					new EasyExpression(extProvider)
-					.InvokeMethod(
+					extProvider.InvokeMethod(
 						"Set" + propDesc.Name,
 						targetObjectExpr,
 						propRefSource

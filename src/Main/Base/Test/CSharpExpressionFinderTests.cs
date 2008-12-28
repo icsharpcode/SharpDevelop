@@ -1127,6 +1127,40 @@ class Main {
 				ef.FindFullExpression(program, i);
 			}
 		}
+		
+		[Test]
+		public void UsingNamespaceContext1()
+		{
+			const string program = @"using ";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual(null, result.Expression);
+			Assert.AreEqual(ExpressionContext.Namespace, result.Context);
+		}
+		
+		[Test]
+		public void UsingNamespaceContext2()
+		{
+			const string program = @"using System";
+			
+			ExpressionResult result = ef.FindExpression(program, program.Length);
+			Assert.AreEqual("System", result.Expression);
+			Assert.AreEqual(ExpressionContext.Namespace, result.Context);
+		}
+		
+		[Test]
+		public void SD2_1469()
+		{
+			// Test that this doesn't crash
+			const string program = @"class MainWindow
+{
+	'
+	void MainWindowDeleteEvent()
+	{
+	}
+}";
+			ef.FindFullExpression(program, 25);
+		}
 	}
 }
 

@@ -470,22 +470,38 @@ namespace ICSharpCode.SharpDevelop
 		public static IViewContent JumpToFilePosition(string fileName, int line, int column)
 		{
 			LoggingService.InfoFormatted("FileService\n\tJumping to File Position:  [{0} : {1}x{2}]", fileName, line, column);
-			NavigationService.SuspendLogging();
 			
 			if (fileName == null || fileName.Length == 0) {
 				return null;
 			}
-			IViewContent content = OpenFile(fileName);
-			if (content is IPositionable) {
-				// TODO: enable jumping to a particular view
-				content.WorkbenchWindow.ActiveViewContent = content;
-				((IPositionable)content).JumpTo(Math.Max(0, line), Math.Max(0, column));
-			}
 			
-			LoggingService.InfoFormatted("FileService\n\tJumped to File Position:  [{0} : {1}x{2}]", fileName, line, column);
-			NavigationService.ResumeLogging();
-
-			return content;
+			NavigationService.SuspendLogging();
+			bool loggingResumed = false;
+			
+			try {
+			
+				IViewContent content = OpenFile(fileName);
+				if (content is IPositionable) {
+					// TODO: enable jumping to a particular view
+					content.WorkbenchWindow.ActiveViewContent = content;
+					NavigationService.ResumeLogging();
+					loggingResumed = true;
+					((IPositionable)content).JumpTo(Math.Max(0, line), Math.Max(0, column));
+				} else {
+					NavigationService.ResumeLogging();
+					loggingResumed = true;
+					NavigationService.Log(content);
+				}
+				
+				LoggingService.InfoFormatted("FileService\n\tJumped to File Position:  [{0} : {1}x{2}]", fileName, line, column);
+				
+				return content;
+				
+			} finally {
+				if (!loggingResumed) {
+					NavigationService.ResumeLogging();
+				}
+			}
 		}
 		
 		/// <summary>

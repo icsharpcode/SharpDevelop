@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			pc.Language = language;
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(pc);
 			if (usingMode == 1) {
-				cu.Usings.Add(CreateUsing(pc, "syStEm.coLLectIons"));
+				cu.UsingScope.Usings.Add(CreateUsing(pc, "syStEm.coLLectIons"));
 				pc.DefaultImports = new DefaultUsing(pc);
 				pc.DefaultImports.Usings.Add("syStEm");
 				pc.DefaultImports.Usings.Add("syStEm.coLLEctionS.GeNeRic");
@@ -39,9 +39,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 				pc.DefaultImports.Usings.Add("syStEm.coLLEctioNs");
 				pc.DefaultImports.Usings.Add("syStEm.coLLEctionS.GeNeRic");
 			} else { // usingMode == 0
-				cu.Usings.Add(CreateUsing(pc, "System"));
-				cu.Usings.Add(CreateUsing(pc, "System.Collections"));
-				cu.Usings.Add(CreateUsing(pc, "System.Collections.Generic"));
+				cu.UsingScope.Usings.Add(CreateUsing(pc, "System"));
+				cu.UsingScope.Usings.Add(CreateUsing(pc, "System.Collections"));
+				cu.UsingScope.Usings.Add(CreateUsing(pc, "System.Collections.Generic"));
 			}
 			return cu;
 		}

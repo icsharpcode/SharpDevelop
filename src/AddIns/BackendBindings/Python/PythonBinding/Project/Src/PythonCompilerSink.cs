@@ -26,11 +26,23 @@ namespace ICSharpCode.PythonBinding
 		
 		public override void Add(SourceUnit source, string message, SourceSpan span, int errorCode, Severity severity)
 		{
-			errors.Add(new PythonCompilerError(source.Path, message, source.GetCodeLine(span.Start.Line), span, errorCode, severity));
+			int line = GetLine(span.Start.Line);
+			errors.Add(new PythonCompilerError(source.Path, message, source.GetCodeLine(line), span, errorCode, severity));
 		}
 				
 		public List<PythonCompilerError> Errors {
 			get { return errors; }
+		}
+		
+		/// <summary>
+		/// Ensure the line number is valid.
+		/// </summary>
+		static int GetLine(int line)
+		{
+			if (line > 0) {
+				return line;
+			}
+			return 1;
 		}
 	}
 }

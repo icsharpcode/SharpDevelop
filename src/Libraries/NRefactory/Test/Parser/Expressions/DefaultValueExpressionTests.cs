@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(MyNamespace.N1.MyType<string>)");
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
-			Assert.AreEqual("string", toe.TypeReference.GenericTypes[0].Type);
+			Assert.AreEqual("System.String", toe.TypeReference.GenericTypes[0].Type);
 		}
 		
 		[Test]

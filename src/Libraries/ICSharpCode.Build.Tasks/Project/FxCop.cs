@@ -163,15 +163,42 @@ namespace ICSharpCode.Build.Tasks
 		string FindFxCopPath()
 		{
 			// Code duplication: FxCopWrapper.cs in CodeAnalysis addin
-			string fxCopPath = FromRegistry(Registry.CurrentUser.OpenSubKey(@"Software\Classes\FxCopProject\Shell\Open\Command"));
-			if (fxCopPath.Length > 0 && File.Exists(Path.Combine(fxCopPath, ToolName))) {
+			string fxCopPath = null;
+			using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\9.0\Setup\EDev")) {
+				if (key != null) {
+					fxCopPath = key.GetValue("FxCopDir") as string;
+				}
+			}
+			if (IsFxCopPath(fxCopPath)) {
+				return fxCopPath;
+			}
+			using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\8.0\Setup\EDev")) {
+				if (key != null) {
+					fxCopPath = key.GetValue("FxCopDir") as string;
+				}
+			}
+			if (IsFxCopPath(fxCopPath)) {
+				return fxCopPath;
+			}
+
+			fxCopPath = FromRegistry(Registry.ClassesRoot.OpenSubKey(@"FxCop.Project.9.0\Shell\Open\Command"));
+			if (IsFxCopPath(fxCopPath)) {
+				return fxCopPath;
+			}
+			fxCopPath = FromRegistry(Registry.CurrentUser.OpenSubKey(@"Software\Classes\FxCopProject\Shell\Open\Command"));
+			if (IsFxCopPath(fxCopPath)) {
 				return fxCopPath;
 			}
 			fxCopPath = FromRegistry(Registry.ClassesRoot.OpenSubKey(@"FxCopProject\Shell\Open\Command"));
-			if (fxCopPath.Length > 0 && File.Exists(Path.Combine(fxCopPath, ToolName))) {
+			if (IsFxCopPath(fxCopPath)) {
 				return fxCopPath;
 			}
 			return null;
+		}
+		
+		bool IsFxCopPath(string fxCopPath)
+		{
+			return !string.IsNullOrEmpty(fxCopPath) && File.Exists(Path.Combine(fxCopPath, ToolName));
 		}
 		
 		string FromRegistry(RegistryKey key)

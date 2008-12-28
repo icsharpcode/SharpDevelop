@@ -6,93 +6,43 @@
 // </file>
 
 using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
 namespace PythonBinding.Tests.Converter
 {
 	/// <summary>
-	/// Tests the CSharpToPythonConverter class can convert a 
-	/// class constructor.
+	/// Tests the CSharpToPythonConverter class.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
-	public class ClassConstructorConversionTestFixture
+	public class EmptyCSharpClassConversionTestFixture
 	{
-		CSharpToPythonConverter converter;
-		CodeCompileUnit codeCompileUnit;
-		CodeNamespace codeNamespace;
-		CodeTypeDeclaration codeTypeDeclaration;
-		
 		string csharp = "class Foo\r\n" +
 						"{\r\n" +
 						"}";
-
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			converter = new CSharpToPythonConverter();
-			codeCompileUnit = converter.ConvertToCodeCompileUnit(csharp);
-			if (codeCompileUnit.Namespaces.Count > 0) {
-				codeNamespace = codeCompileUnit.Namespaces[0];
-				if (codeNamespace.Types.Count > 0) {
-					codeTypeDeclaration = codeNamespace.Types[0];
-				}
-			}
-		}
-			
+	
 		[Test]
-		public void EmptyClass()
+		public void ConvertedPythonCode()
 		{
+			CSharpToPythonConverter converter = new CSharpToPythonConverter();
 			string python = converter.Convert(csharp);
-			string expectedPython = "class Foo(object): pass";
+			string expectedPython = "class Foo(object):\r\n" +
+									"\tpass";
 			
 			Assert.AreEqual(expectedPython, python);
 		}
 		
 		[Test]
-		public void OneRootNamespace()
+		public void ConvertedPythonCodeUsingFourSpacesAsIndent()
 		{
-			Assert.AreEqual(1, codeCompileUnit.Namespaces.Count);
+			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			converter.IndentString = new String(' ', 4);
+			string python = converter.Convert(csharp);
+			string expectedPython = "class Foo(object):\r\n" +
+									"    pass";
+			
+			Assert.AreEqual(expectedPython, python);
 		}
 		
-		[Test]
-		public void NamespaceHasNoName()
-		{
-			Assert.AreEqual(String.Empty, codeNamespace.Name);
-		}
-		
-		[Test]
-		public void OneClassInRootNamespace()
-		{
-			Assert.AreEqual(1, codeNamespace.Types.Count);
-		}
-		
-		[Test]
-		public void ClassName()
-		{
-			Assert.AreEqual("Foo", codeTypeDeclaration.Name);
-		}
-		
-		[Test]
-		public void ClassIsPrivateAndFinal()
-		{
-			MemberAttributes expectedAttributes = MemberAttributes.Private | MemberAttributes.Final;
-			Assert.AreEqual(expectedAttributes, codeTypeDeclaration.Attributes);
-		}
-		
-		[Test]
-		public void ClassUserDataHasSlotsIsFalse()
-		{
-			Assert.IsFalse((bool)codeTypeDeclaration.UserData["HasSlots"]);
-		}
-		
-		[Test]
-		public void ClassUserDataHasSlotsExists()
-		{
-			Assert.IsTrue(codeTypeDeclaration.UserData.Contains("HasSlots"));
-		}
 	}
 }

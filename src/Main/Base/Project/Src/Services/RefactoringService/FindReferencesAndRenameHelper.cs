@@ -144,7 +144,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			// Add the constructors
 			foreach (IMethod m in c.Methods) {
-				if (m.IsConstructor) {
+				if (m.IsConstructor || (m.Name == "#dtor")) {
 					AddDeclarationAsReference(list, m.DeclaringType.CompilationUnit.FileName, m.Region, c.Name);
 				}
 			}

@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					DelegateDeclaration dd = new DelegateDeclaration(eventDeclaration.Modifier, null);
 					dd.Name = eventDeclaration.Name + "EventHandler";
 					dd.Parameters = eventDeclaration.Parameters;
-					dd.ReturnType = new TypeReference("System.Void");
+					dd.ReturnType = new TypeReference("System.Void", true);
 					dd.Parent = eventDeclaration.Parent;
 					eventDeclaration.Parameters = null;
 					InsertAfterSibling(eventDeclaration, dd);
@@ -88,7 +88,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					foreach (ParameterDeclarationExpression decl in member.Parameters) {
 						callExpression.Arguments.Add(new IdentifierExpression(decl.ParameterName));
 					}
-					if (member.TypeReference.SystemType == "System.Void") {
+					if (member.TypeReference.Type == "System.Void") {
 						newMember.Body.AddChild(new ExpressionStatement(callExpression));
 					} else {
 						newMember.Body.AddChild(new ReturnStatement(callExpression));
