@@ -47,6 +47,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void textArea_DragEnter(object sender, DragEventArgs e)
 		{
 			try {
@@ -56,6 +57,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void textArea_DragOver(object sender, DragEventArgs e)
 		{
 			try {
@@ -92,6 +94,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			e.Handled = true;
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void textArea_Drop(object sender, DragEventArgs e)
 		{
 			try {
@@ -124,7 +127,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			textArea.Dispatcher.BeginInvoke(
 				DispatcherPriority.Normal,
 				new Action(delegate {
-				           	throw new Exception("Exception during drag'n'drop", ex);
+				           	throw new DragDropException("Exception during drag'n'drop", ex);
 				           }));
 		}
 		

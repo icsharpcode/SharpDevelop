@@ -9,6 +9,7 @@
 			<Word>Utils</Word>
 			<Word>Colorizer</Word>
 			<Word>Renderer</Word>
+			<Word>Deletable</Word>
 		</Recognized>
 		<Unrecognized>
 			<!-- Disable Lineup as a single word - LineUp is the spelling used in WPF -->

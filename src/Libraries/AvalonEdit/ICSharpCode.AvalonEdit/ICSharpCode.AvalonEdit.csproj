@@ -117,6 +117,7 @@
     <Compile Include="Gui\DocumentColorizingTransformer.cs">
       <DependentUpon>IVisualLineTransformer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\DragDropException.cs" />
     <Compile Include="Gui\EditingCommandHandler.cs" />
     <Compile Include="Gui\FoldingSection.cs">
       <DependentUpon>FoldingManager.cs</DependentUpon>

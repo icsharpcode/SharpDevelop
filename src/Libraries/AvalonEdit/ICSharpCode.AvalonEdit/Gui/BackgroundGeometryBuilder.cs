@@ -18,7 +18,7 @@ using ICSharpCode.AvalonEdit.Utils;
 namespace ICSharpCode.AvalonEdit.Gui
 {
 	/// <summary>
-	/// Hel create a PathGeometry.
+	/// Helper for creating a PathGeometry.
 	/// </summary>
 	public sealed class BackgroundGeometryBuilder
 	{
