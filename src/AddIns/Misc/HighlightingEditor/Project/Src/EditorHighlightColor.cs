@@ -123,7 +123,11 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 					sysForeColorName = c.Substring("SystemColors.".Length);
 				} else {
 					PropertyInfo myPropInfo = typeof(Color).GetProperty(c, BindingFlags.Public | BindingFlags.Static);
-					foreColor = (Color)myPropInfo.GetValue(null, null);
+					if (myPropInfo != null) {
+						foreColor = (Color)myPropInfo.GetValue(null, null);
+					} else {
+						hasForeColor = false;
+					}
 				}
 			}
 			
@@ -137,7 +141,11 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 					sysBackColorName = c.Substring("SystemColors.".Length);
 				} else {
 					PropertyInfo myPropInfo = typeof(Color).GetProperty(c, BindingFlags.Public | BindingFlags.Static);
-					backColor = (Color)myPropInfo.GetValue(null, null);
+					if (myPropInfo != null) {
+						backColor = (Color)myPropInfo.GetValue(null, null);
+					} else {
+						hasBackColor = false;
+					}
 				}
 			}
 		}
