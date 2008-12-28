@@ -591,10 +591,10 @@ static class TestClass {
 }
 		";
 			var mrr = Resolve<MemberResolveResult>(program, "G(1, 2)", 3);
-			Assert.AreEqual("TestClass.G<T>(int a, int b)", ToCSharp(mrr.ResolvedMember));
+			Assert.AreEqual("TestClass.G<int>(int a, int b)", ToCSharp(mrr.ResolvedMember));
 			
 			mrr = Resolve<MemberResolveResult>(program, "G(1, 2.2)", 3);
-			Assert.AreEqual("TestClass.G<T>(double a, double b)", ToCSharp(mrr.ResolvedMember));
+			Assert.AreEqual("TestClass.G<double>(double a, double b)", ToCSharp(mrr.ResolvedMember));
 			
 			mrr = Resolve<MemberResolveResult>(program, "G(1, \"a\")", 3);
 			Assert.AreEqual("TestClass.G(object obj1, object obj2)", ToCSharp(mrr.ResolvedMember));
