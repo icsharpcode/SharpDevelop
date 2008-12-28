@@ -28,6 +28,7 @@ namespace PythonBinding.Tests.Parsing
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			MSBuildEngineHelper.InitMSBuildEngine();
 			parser = new PythonParser();
 		}
 		

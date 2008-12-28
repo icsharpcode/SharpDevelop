@@ -18,9 +18,7 @@ namespace PythonBinding.Tests.Utils
 	public class MockProjectContent : IProjectContent
 	{
 		bool addNamespaceContentsCalled;
-		bool searchNamespaceCalled;
 		string namespaceAddedName;
-		string searchNamespace;
 		string namespaceSearchedFor;
 		bool lookInReferences;
 		LanguageProperties languagePassedToAddNamespaceContents;
@@ -36,6 +34,8 @@ namespace PythonBinding.Tests.Utils
 		ArrayList namespaceContents = new ArrayList();
 		string namespaceContentsSearched = String.Empty;
 		string classNameForGetClass;
+		bool namespaceExistsReturnValue;
+		bool namespaceExistsCalled;
 		
 		public MockProjectContent()
 		{
@@ -76,18 +76,10 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		/// <summary>
-		/// Gets whether the SearchNamespace method was called.
+		/// Gets whether the NamespaceExists method was called.
 		/// </summary>
-		public bool SearchNamespaceCalled {
-			get { return searchNamespaceCalled; }
-		}
-		
-		/// <summary>
-		/// Gets or sets the namespace to return from the SearchNamespace.
-		/// </summary>
-		public string SearchNamespaceToReturn {
-			get { return searchNamespace; }
-			set { searchNamespace = value; }
+		public bool NamespaceExistsCalled {
+			get { return namespaceExistsCalled; }
 		}
 		
 		/// <summary>
@@ -261,9 +253,16 @@ namespace PythonBinding.Tests.Utils
 			return classToReturnFromGetClass;
 		}
 				
+		public void SetNamespaceExistsReturnValue(bool returnValue)
+		{
+			namespaceExistsReturnValue = returnValue;
+		}
+		
 		public bool NamespaceExists(string name)
 		{
-			throw new NotImplementedException();
+			namespaceExistsCalled = true;
+			namespaceSearchedFor = name;
+			return namespaceExistsReturnValue;
 		}
 		
 		public ArrayList GetNamespaceContents(string nameSpace)
@@ -310,9 +309,10 @@ namespace PythonBinding.Tests.Utils
 		
 		public string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
 		{
-			searchNamespaceCalled = true;
-			namespaceSearchedFor = name;
-			return searchNamespace;
+//			searchNamespaceCalled = true;
+//			namespaceSearchedFor = name;
+//			return searchNamespace;
+			throw new NotImplementedException();
 		}
 		
 		public SearchTypeResult SearchType(SearchTypeRequest request)

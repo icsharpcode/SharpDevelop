@@ -19,7 +19,6 @@ namespace PythonBinding.Tests.Designer
 	/// is designable when the base class is fully qualified.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
 	public class IsFullyQualifiedBaseClassFormDesignableTestFixture : IsFormDesignableTestFixture
 	{						
 		protected override string GetPythonCode()
@@ -47,6 +46,5 @@ namespace PythonBinding.Tests.Designer
 			}
 			Assert.IsNotNull(baseType);
 		}
-		
 	}
 }

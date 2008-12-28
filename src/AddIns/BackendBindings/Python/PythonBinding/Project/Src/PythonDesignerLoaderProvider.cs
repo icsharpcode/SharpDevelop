@@ -21,7 +21,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new PythonDesignerLoader(generator);
+			return new PythonDesignerLoader(generator as IPythonDesignerGenerator);
 		}	
 	}
 }

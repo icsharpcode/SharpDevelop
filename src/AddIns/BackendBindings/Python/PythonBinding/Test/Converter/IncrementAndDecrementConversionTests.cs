@@ -18,10 +18,8 @@ namespace PythonBinding.Tests.Converter
 	/// from C# to Python correctly.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
 	public class IncrementAndDecrementConversionTests
-	{
-		
+	{	
 		[Test]
 		public void PreIncrement()
 		{
@@ -35,13 +33,34 @@ namespace PythonBinding.Tests.Converter
 
 			string expectedPython = "class Foo(object):\r\n" +
 									"\tdef Run(self, i):\r\n" +
-									"\t\ti = i + 1";
+									"\t\ti += 1";
 	
 			CSharpToPythonConverter converter = new CSharpToPythonConverter();
 			string code = converter.Convert(csharp);
 			
 			Assert.AreEqual(expectedPython, code);
 		}
+		
+		[Test]
+		public void PostIncrement()
+		{
+			string csharp = "class Foo\r\n" +
+							"{\r\n" +
+							"\tpublic void Run(int i)\r\n" +
+							"\t{\r\n" +
+							"\t\ti++;\r\n" +
+							"\t}\r\n" +
+							"}";
+
+			string expectedPython = "class Foo(object):\r\n" +
+									"\tdef Run(self, i):\r\n" +
+									"\t\ti += 1";
+	
+			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			string code = converter.Convert(csharp);
+			
+			Assert.AreEqual(expectedPython, code);
+		}		
 		
 		[Test]
 		public void PreDecrement()
@@ -56,7 +75,7 @@ namespace PythonBinding.Tests.Converter
 
 			string expectedPython = "class Foo(object):\r\n" +
 									"\tdef Run(self, i):\r\n" +
-									"\t\ti = i - 1";
+									"\t\ti -= 1";
 	
 			CSharpToPythonConverter converter = new CSharpToPythonConverter();
 			string code = converter.Convert(csharp);
@@ -77,7 +96,7 @@ namespace PythonBinding.Tests.Converter
 
 			string expectedPython = "class Foo(object):\r\n" +
 									"\tdef Run(self, i):\r\n" +
-									"\t\ti = i - 1";
+									"\t\ti -= 1";
 	
 			CSharpToPythonConverter converter = new CSharpToPythonConverter();
 			string code = converter.Convert(csharp);
@@ -119,7 +138,7 @@ namespace PythonBinding.Tests.Converter
 
 			string expectedPython = "class Foo(object):\r\n" +
 									"\tdef Run(self, i):\r\n" +
-									"\t\ti = i + 5";
+									"\t\ti += 5";
 	
 			CSharpToPythonConverter converter = new CSharpToPythonConverter();
 			string code = converter.Convert(csharp);
@@ -161,7 +180,7 @@ namespace PythonBinding.Tests.Converter
 
 			string expectedPython = "class Foo(object):\r\n" +
 									"\tdef Run(self, i):\r\n" +
-									"\t\ti = i - 5";
+									"\t\ti -= 5";
 	
 			CSharpToPythonConverter converter = new CSharpToPythonConverter();
 			string code = converter.Convert(csharp);

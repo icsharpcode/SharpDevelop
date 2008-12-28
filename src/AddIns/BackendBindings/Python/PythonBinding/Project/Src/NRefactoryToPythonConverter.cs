@@ -6,34 +6,56 @@
 // </file>
 
 using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.PythonBinding
 {
 	/// <summary>
-	/// Base class for the CSharpToPythonConverter and
-	/// VBNetToPythonConverter. Used to convert VB.NET and C# to 
-	/// Python.
+	/// Base class for the CSharpToPythonConverter and VBNetToPythonConverter. 
+	/// Used to convert VB.NET and C# to Python.
 	/// </summary>
 	public class NRefactoryToPythonConverter : IAstVisitor
 	{
-		CodeCompileUnit pythonCodeCompileUnit;
-		CodeNamespace currentNamespace;
-		CodeTypeDeclaration currentClass;
-		List<FieldDeclaration> currentClassFields = new List<FieldDeclaration>();
-		List<FieldDeclaration> allCurrentClassFields = new List<FieldDeclaration>();
-		Stack<CodeStatementCollection> statementsStack = new Stack<CodeStatementCollection>();
-		CodeStatementCollection nullStatementCollection = new CodeStatementCollection();
+		int indent;
+		string indentString = "\t";
+		StringBuilder codeBuilder;
+		
+		// Holds the constructor for the class being converted. This used to identify class fields.
+		PythonConstructorInfo constructorInfo;
+		
+		// Holds the parameters of the current method. This is used to identify
+		// references to fields or parameters.
+		List<ParameterDeclarationExpression> methodParameters = new List<ParameterDeclarationExpression>();
 
 		public NRefactoryToPythonConverter()
 		{
 		}
+		
+		/// <summary>
+		/// Gets the indentation string to use in the text editor based on the text editor properties.
+		/// </summary>
+		public static string GetIndentString(ITextEditorProperties textEditorProperties)
+		{
+			if (textEditorProperties.ConvertTabsToSpaces) {
+				return new String(' ', textEditorProperties.IndentationSize);
+			}
+			return "\t";
+		}
+		
+		/// <summary>
+		/// Gets or sets the string that will be used to indent the generated Python code.
+		/// </summary>
+		public string IndentString {
+			get { return indentString; }
+			set { indentString = value; }
+		}		
 
 		/// <summary>
 		/// Generates compilation unit from the code.
@@ -48,93 +70,70 @@ namespace ICSharpCode.PythonBinding
 				return parser.CompilationUnit;
 			}
 		}
-
-		/// <summary>
-		/// Converts a code compile unit to Python source code.
-		/// </summary>
-		public static string ConvertCodeCompileUnitToPython(CodeCompileUnit codeCompileUnit)
-		{
-			//PythonProvider pythonProvider = new PythonProvider();
-			StringWriter writer = new StringWriter();
-			CodeGeneratorOptions options = new CodeGeneratorOptions();
-			options.BlankLinesBetweenMembers = false;
-			options.IndentString = "\t";
-			//pythonProvider.GenerateCodeFromCompileUnit(codeCompileUnit, writer, options);
-			
-			Console.WriteLine("CompileUnit: " + writer.ToString().Trim());
-			
-			return writer.ToString().Trim();
-		}
 		
 		/// <summary>
 		/// Converts the source code to Python.
 		/// </summary>
 		public string Convert(string source, SupportedLanguage language)
 		{
-			CodeCompileUnit pythonCodeCompileUnit = ConvertToCodeCompileUnit(source, language);
-			
-			// Convert to Python source code.
-			return ConvertCodeCompileUnitToPython(pythonCodeCompileUnit);
-		}
-		
-		/// <summary>
-		/// Converts the C# or VB.NET source code to a code DOM that 
-		/// the PythonProvider can use to generate Python. Using the
-		/// NRefactory code DOM (CodeDomVisitor class) does not
-		/// create a code DOM that is easy to convert to Python. 
-		/// </summary>		
-		public CodeCompileUnit ConvertToCodeCompileUnit(string source, SupportedLanguage language)
-		{
-			// Convert to code DOM.
+			// Convert to NRefactory code DOM.
 			CompilationUnit unit = GenerateCompilationUnit(source, language);
 			
-			// Convert to Python code DOM.
-			return (CodeCompileUnit)unit.AcceptVisitor(this, null);			
+			// Convert to Python code.
+			codeBuilder = new StringBuilder();
+			unit.AcceptVisitor(this, null);
+			
+			return codeBuilder.ToString().TrimEnd();
 		}
 
 		/// <summary>
-		/// Converts from the NRefactory's binary operator type to the
-		/// CodeDom's binary operator type.
+		/// Converts from the NRefactory's binary operator type to a string.
 		/// </summary>
-		public static CodeBinaryOperatorType ConvertBinaryOperatorType(BinaryOperatorType binaryOperatorType)
+		public static string GetBinaryOperator(BinaryOperatorType binaryOperatorType)
 		{
 			switch (binaryOperatorType) {
 				case BinaryOperatorType.Add:
-					return CodeBinaryOperatorType.Add;
+					return "+";
 				case BinaryOperatorType.BitwiseAnd:
-					return CodeBinaryOperatorType.BitwiseAnd;
+					return "&";
 				case BinaryOperatorType.BitwiseOr:
-					return CodeBinaryOperatorType.BitwiseOr;
+					return "|";
 				case BinaryOperatorType.Divide:
 				case BinaryOperatorType.DivideInteger:
-					return CodeBinaryOperatorType.Divide;
+					return "/";
+				case BinaryOperatorType.ShiftLeft:
+					return "<<";
+				case BinaryOperatorType.ShiftRight:
+					return ">>";
 				case BinaryOperatorType.GreaterThan:
-					return CodeBinaryOperatorType.GreaterThan;
+					return ">";
 				case BinaryOperatorType.GreaterThanOrEqual:
-					return CodeBinaryOperatorType.GreaterThanOrEqual;
+					return ">=";
 				case BinaryOperatorType.InEquality:
-					return CodeBinaryOperatorType.IdentityInequality;
+					return "!=";
 				case BinaryOperatorType.LessThan:
-					return CodeBinaryOperatorType.LessThan;
+					return "<";
 				case BinaryOperatorType.LessThanOrEqual:
-					return CodeBinaryOperatorType.LessThanOrEqual;
+					return "<=";
 				case BinaryOperatorType.LogicalAnd:
-					return CodeBinaryOperatorType.BooleanAnd;
+					return "and";
 				case BinaryOperatorType.LogicalOr:
-					return CodeBinaryOperatorType.BooleanOr;
+					return "or";
 				case BinaryOperatorType.Modulus:
-					return CodeBinaryOperatorType.Modulus;
+					return "%";
 				case BinaryOperatorType.Multiply:
-					return CodeBinaryOperatorType.Multiply;
+					return "*";
 				case BinaryOperatorType.ReferenceEquality:
-					return CodeBinaryOperatorType.IdentityEquality;
+					return "is";
 				case BinaryOperatorType.Subtract:
-					return CodeBinaryOperatorType.Subtract;
+					return "-";
+				case BinaryOperatorType.Concat:
+					return "+";
 				default:
-					return CodeBinaryOperatorType.ValueEquality;
+					return "==";
 			}
 		}
-		
+	
 		public object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data)
 		{
 			Console.WriteLine("VisitAddHandlerStatement");			
@@ -152,44 +151,79 @@ namespace ICSharpCode.PythonBinding
 			Console.WriteLine("VisitAnonymousMethodExpression");			
 			return null;
 		}
-		
-		/// <summary>
-		/// Converts an NRefactory array creation expression to 
-		/// code dom array creation expression.
-		/// </summary>
+	
 		public object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			CodeArrayCreateExpression codeArrayCreateExpression = new CodeArrayCreateExpression();
-			codeArrayCreateExpression.CreateType.BaseType = arrayCreateExpression.CreateType.Type;
-
-			// Add initializers.
-			foreach (CodeExpression expression in ConvertExpressions(arrayCreateExpression.ArrayInitializer.CreateExpressions)) {
-				codeArrayCreateExpression.Initializers.Add(expression);
+			string arrayType = arrayCreateExpression.CreateType.Type;
+			if (arrayCreateExpression.ArrayInitializer.CreateExpressions.Count == 0) {
+				Append("System.Array.CreateInstance(" + arrayType);
+				if (arrayCreateExpression.Arguments.Count > 0) {
+					foreach (Expression expression in arrayCreateExpression.Arguments) {
+						Append(", ");
+						expression.AcceptVisitor(this, data);
+					}
+					Append(")");
+				} else {
+					Append(", 0)");
+				}
+			} else {
+				Append("System.Array[" + arrayType + "]");
+	
+				// Add initializers.
+				Append("((");
+				bool firstItem = true;
+				foreach (Expression expression in arrayCreateExpression.ArrayInitializer.CreateExpressions) {
+					if (firstItem) {
+						firstItem = false;
+					} else {
+						Append(", ");
+					}
+					expression.AcceptVisitor(this, data);
+				}
+				Append("))");
 			}
-			return codeArrayCreateExpression;
+			return null;
 		}
 				
-		/// <summary>
-		/// Converts an NRefactory's assignment expression to a
-		/// CodeDom's CodeAssignmentStatement.
-		/// </summary>
 		public object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
-			if (IsAddEventHandler(assignmentExpression)) {
-				return CreateAttachEventStatement(assignmentExpression.Left, assignmentExpression.Right);
-			} else if (IsRemoveEventHandler(assignmentExpression)) {
-				return CreateRemoveEventStatement(assignmentExpression.Left, assignmentExpression.Right);
-			} else if (assignmentExpression.Op == AssignmentOperatorType.Add) {
-				return CreateAddAssignmentStatement(assignmentExpression);
-			} else if (assignmentExpression.Op == AssignmentOperatorType.Subtract) {
-				return CreateSubtractAssignmentStatement(assignmentExpression);
+			switch (assignmentExpression.Op) {
+				case AssignmentOperatorType.Assign:
+					return CreateSimpleAssignment(assignmentExpression, "=", data);
+				case AssignmentOperatorType.Add:
+					if (IsAddEventHandler(assignmentExpression)) {
+						return CreateHandlerStatement(assignmentExpression.Left, "+=", assignmentExpression.Right);
+					} 
+					return CreateSimpleAssignment(assignmentExpression, "+=", data);
+				case AssignmentOperatorType.Subtract:
+					if (IsRemoveEventHandler(assignmentExpression)) {
+						return CreateHandlerStatement(assignmentExpression.Left, "-=", assignmentExpression.Right);
+					} 
+					return CreateSimpleAssignment(assignmentExpression, "-=", data);
+				case AssignmentOperatorType.Modulus:
+					return CreateSimpleAssignment(assignmentExpression, "%=", data);
+				case AssignmentOperatorType.Multiply:
+					return CreateSimpleAssignment(assignmentExpression, "*=", data);
+				case AssignmentOperatorType.Divide:
+				case AssignmentOperatorType.DivideInteger:
+					return CreateSimpleAssignment(assignmentExpression, "/=", data);
+				case AssignmentOperatorType.BitwiseAnd:
+					return CreateSimpleAssignment(assignmentExpression, "&=", data);
+				case AssignmentOperatorType.BitwiseOr:
+					return CreateSimpleAssignment(assignmentExpression, "|=", data);
+				case AssignmentOperatorType.ExclusiveOr:
+					return CreateSimpleAssignment(assignmentExpression, "^=", data);
+				case AssignmentOperatorType.ShiftLeft:
+					return CreateSimpleAssignment(assignmentExpression, "<<=", data);
+				case AssignmentOperatorType.ShiftRight:
+					return CreateSimpleAssignment(assignmentExpression, ">>=", data);
+				case AssignmentOperatorType.ConcatString:
+					return CreateSimpleAssignment(assignmentExpression, "+=", data);
+				case AssignmentOperatorType.Power:
+					return CreateSimpleAssignment(assignmentExpression, "**=", data);
 			}
-			
-			// Create a simple assignment
-			CodeAssignStatement codeAssignStatement = new CodeAssignStatement();
-			codeAssignStatement.Left = (CodeExpression)assignmentExpression.Left.AcceptVisitor(this, data);
-			codeAssignStatement.Right = (CodeExpression)assignmentExpression.Right.AcceptVisitor(this, data);
-			return codeAssignStatement;
+					
+			return null;
 		}
 		
 		public object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
@@ -209,20 +243,18 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
 		{
-			return new CodeThisReferenceExpression();
+			Append("self");
+			return null;
 		}
 		
-		/// <summary>
-		/// Converts from the NRefactory's binary operator expression to
-		/// a CodeDom's CodeBinaryOperatorExpression.
-		/// </summary>
 		public object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
-			CodeBinaryOperatorExpression codeBinaryOperatorExpression = new CodeBinaryOperatorExpression();
-			codeBinaryOperatorExpression.Operator = ConvertBinaryOperatorType(binaryOperatorExpression.Op);
-			codeBinaryOperatorExpression.Left = (CodeExpression)binaryOperatorExpression.Left.AcceptVisitor(this, data);
-			codeBinaryOperatorExpression.Right = (CodeExpression)binaryOperatorExpression.Right.AcceptVisitor(this, data);
-			return codeBinaryOperatorExpression;
+			binaryOperatorExpression.Left.AcceptVisitor(this, data);
+			Append(" ");
+			Append(GetBinaryOperator(binaryOperatorExpression.Op));
+			Append(" ");
+			binaryOperatorExpression.Right.AcceptVisitor(this, data);
+			return null;
 		}
 		
 		/// <summary>
@@ -235,13 +267,12 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitBreakStatement(BreakStatement breakStatement, object data)
 		{
-			Console.WriteLine("VisitBreakStatement");
+			AppendIndentedLine("break");
 			return null;
 		}
 		
 		public object VisitCaseLabel(CaseLabel caseLabel, object data)
 		{
-			Console.WriteLine("VisitCaseLabel");
 			return null;
 		}
 
@@ -277,45 +308,39 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		/// <summary>
-		/// Converts from an NRefactory's compilation unit to a code dom's
-		/// compilation unit.
-		/// </summary>
 		public object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
-			// Create  code compile unit with one root namespace
-			// that has no name.	
-			pythonCodeCompileUnit = new CodeCompileUnit();
-			currentNamespace = new CodeNamespace();
-			pythonCodeCompileUnit.Namespaces.Add(currentNamespace);
-			
 			// Visit the child items of the compilation unit.
 			compilationUnit.AcceptChildren(this, data);
-		
-			return pythonCodeCompileUnit;
-		}
-		
-		public object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
-		{
-			Console.WriteLine("VisitConditionalExpression");
 			return null;
 		}
 		
 		/// <summary>
-		/// Adds a CodeMemberMethod to the current class being visited.
+		/// An ternary operator expression:
+		/// 
+		/// string a = test ? "Ape" : "Monkey";
+		/// 
+		/// In Python this gets converted to:
+		/// 
+		/// a = "Ape" if test else "Monkey"
 		/// </summary>
+		public object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
+		{
+			// Add true part.
+			conditionalExpression.TrueExpression.AcceptVisitor(this, data);
+			
+			// Add condition.
+			Append(" if ");
+			conditionalExpression.Condition.AcceptVisitor(this, data);
+			
+			// Add false part.
+			Append(" else ");
+			conditionalExpression.FalseExpression.AcceptVisitor(this, data);
+			return null;
+		}
+		
 		public object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
-			CodeConstructor codeConstructor = new CodeConstructor();
-			codeConstructor.Name = constructorDeclaration.Name;
-			currentClass.Members.Add(codeConstructor);
-			
-			// Add the constructor body.
-			Console.WriteLine(constructorDeclaration.Body.ToString());
-			statementsStack.Push(codeConstructor.Statements);
-			constructorDeclaration.Body.AcceptVisitor(this, data);
-			statementsStack.Pop();
-			
 			return null;
 		}
 		
@@ -327,7 +352,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitContinueStatement(ContinueStatement continueStatement, object data)
 		{
-			Console.WriteLine("VisitContinueStatement");
+			AppendIndentedLine("continue");
 			return null;
 		}
 		
@@ -351,7 +376,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
 		{
-			Console.WriteLine("VisitDestructorDeclaration");
+			AppendIndentedLine("def __del__(self):");
+			IncreaseIndent();
+			destructorDeclaration.Body.AcceptVisitor(this, data);
+			DecreaseIndent();
 			return null;
 		}
 		
@@ -363,39 +391,31 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data)
 		{
-			Console.WriteLine("VisitDoLoopStatement");
+			AppendIndented("while ");
+			doLoopStatement.Condition.AcceptVisitor(this, data);
+			Append(":");
+			AppendNewLine();
+			
+			IncreaseIndent();
+			doLoopStatement.EmbeddedStatement.AcceptVisitor(this, data);
+			DecreaseIndent();
+			
 			return null;
 		}
 
-		/// <summary>
-		/// Converts the else if statement to a code dom statement. The 
-		/// code dom does not support else if directly so we need to
-		/// add the condition to the false statements of the original if.
-		/// 
-		/// if test1
-		/// else if test2
-		/// end if
-		/// 
-		/// converts to:
-		/// 
-		/// if test1
-		/// else
-		/// 	if test 2
-		/// 	end if
-		/// end if
-		/// </summary>
 		public object VisitElseIfSection(ElseIfSection elseIfSection, object data)
 		{
 			// Convert condition.
-			CodeConditionStatement conditionStatement = new CodeConditionStatement();
-			conditionStatement.Condition = (CodeExpression)elseIfSection.Condition.AcceptVisitor(this, data);
+			AppendIndented("elif ");
+			elseIfSection.Condition.AcceptVisitor(this, data);
+			Append(":");
+			AppendNewLine();
 			
 			// Convert else if body statements.
-			statementsStack.Push(conditionStatement.TrueStatements);
+			IncreaseIndent();
 			elseIfSection.EmbeddedStatement.AcceptVisitor(this, data);
-			statementsStack.Pop();
+			DecreaseIndent();
 			
-			AddStatement(conditionStatement);
 			return null;
 		}
 		
@@ -453,36 +473,13 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		/// <summary>
-		/// Visits the expression statement.
-		/// </summary>
-		/// <remarks>
-		/// When converting the ExpressionStatement's expression we
-		/// allow it to be either an Expression or a Statement.
-		/// One example is NRefactory's AssignExpression which 
-		/// is converted to a code dom's CodeAssignStatement. If
-		/// the expression is really an expression then we wrap
-		/// the expression inside a CodeExpressionStatement.
-		/// </remarks>
 		public object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
-			Console.WriteLine("VisitExpressionStatement: " + expressionStatement.ToString());
-			
 			// Convert the expression.
-			// Sometimes an expression is actually a statement
-			object convertedExpression = expressionStatement.Expression.AcceptVisitor(this, data);
-			if (convertedExpression is CodeStatement) {
-				CodeStatement convertedStatement = (CodeStatement)convertedExpression;
-				AddStatement(convertedStatement);
-				return convertedStatement;
-			} 
-			
-			// Create a code expression statement to contain the expression.
-			CodeExpressionStatement createdStatement = new CodeExpressionStatement();
-			createdStatement.Expression = (CodeExpression)convertedExpression;
-			AddStatement(createdStatement);
-			
-			return createdStatement;
+			AppendIndented(String.Empty);
+			expressionStatement.Expression.AcceptVisitor(this, data);
+			AppendNewLine();
+			return null;
 		}
 		
 		/// <summary>
@@ -505,11 +502,9 @@ namespace ICSharpCode.PythonBinding
 		/// class constructor.
 		/// </summary>
 		public object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
-		{
-			// Save the field until the class has been processed.
-			currentClassFields.Add(fieldDeclaration);						
+		{					
 			return null;
-		}
+		}	
 				
 		public object VisitFixedStatement(FixedStatement fixedStatement, object data)
 		{
@@ -517,32 +512,25 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		/// <summary>
-		/// Converts a NRefactory's foreach statement to a CodeDom
-		/// CodeIterationStatement.
-		/// </summary>
 		public object VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			// Convert the for loop's initializers.
-			CodeIterationStatement codeIterationStatement = new CodeIterationStatement();				
-			statementsStack.Push(nullStatementCollection);
-			codeIterationStatement.InitStatement = CreateInitStatement(foreachStatement);
-			statementsStack.Pop();
+			AppendIndented(String.Empty);
+			CreateInitStatement(foreachStatement);
+			AppendNewLine();
 
 			// Convert the for loop's test expression.
-			codeIterationStatement.TestExpression = CreateTestExpression(foreachStatement);
-			
+			AppendIndentedLine("while enumerator.MoveNext():");
+
 			// Move the initializer in the foreach loop to the
-			// first line of the for loop's body since the
-			// code dom does not support multiple InitStatements.
-			codeIterationStatement.Statements.Add(CreateIteratorVariableDeclaration(foreachStatement));
+			// first line of the for loop's body.
+			IncreaseIndent();
+			AppendIndentedLine(foreachStatement.VariableName + " = enumerator.Current");
 			
 			// Visit the for loop's body.
-			statementsStack.Push(codeIterationStatement.Statements);
 			foreachStatement.EmbeddedStatement.AcceptVisitor(this, data);
-			statementsStack.Pop();
-		
-			AddStatement(codeIterationStatement);
+			DecreaseIndent();
+
 			return null;
 		}
 		
@@ -553,36 +541,38 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Converts from an NRefactory for loop to a CodeDOM iteration
-		/// statement.
+		/// Converts from an NRefactory for loop:
+		/// 
+		/// for (int i = 0; i &lt; 5; i = i + 1)
+		/// 
+		/// to Python's:
+		/// 
+		/// i = 0
+		/// while i &lt; 5:
 		/// </summary>
 		public object VisitForStatement(ForStatement forStatement, object data)
-		{
-			CodeIterationStatement codeIterationStatement = new CodeIterationStatement();
-			
+		{		
 			// Convert the for loop's initializers.
-			statementsStack.Push(nullStatementCollection);
 			foreach (Statement statement in forStatement.Initializers) {
-				codeIterationStatement.InitStatement = (CodeStatement)statement.AcceptVisitor(this, data);
+				statement.AcceptVisitor(this, data);
 			}
-			statementsStack.Pop();
 
 			// Convert the for loop's test expression.
-			codeIterationStatement.TestExpression = (CodeExpression)forStatement.Condition.AcceptVisitor(this, data);
-			
-			// Convert the for loop's increment statement.
-			statementsStack.Push(nullStatementCollection);
-			foreach (Statement statement in forStatement.Iterator) {
-				codeIterationStatement.IncrementStatement = (CodeStatement)statement.AcceptVisitor(this, data);
-			}
-			statementsStack.Pop();
-			
+			AppendIndented("while ");
+			forStatement.Condition.AcceptVisitor(this, data);
+			Append(":");
+			AppendNewLine();
+					
 			// Visit the for loop's body.
-			statementsStack.Push(codeIterationStatement.Statements);
+			IncreaseIndent();
 			forStatement.EmbeddedStatement.AcceptVisitor(this, data);
-			statementsStack.Pop();
+		
+			// Convert the for loop's increment statement.
+			foreach (Statement statement in forStatement.Iterator) {
+				statement.AcceptVisitor(this, data);
+			}
+			DecreaseIndent();
 			
-			AddStatement(codeIterationStatement);
 			return null;
 		}
 		
@@ -598,59 +588,48 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		/// <summary>
-		/// Converts from an NRefactory IdentifierExpression to a 
-		/// CodeFieldReferenceExpression if the identifier refers to
-		/// a field. If it refers to a local variable it returns a
-		/// CodeVariableReferenceExpression.
-		/// </summary>
 		public object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			if (IsField(identifierExpression.Identifier)) {	
-				CodeFieldReferenceExpression fieldRef = new CodeFieldReferenceExpression();
-				fieldRef.FieldName = "_" + identifierExpression.Identifier;
-				fieldRef.TargetObject = new CodeThisReferenceExpression();
-				return fieldRef;
+				Append("self._" + identifierExpression.Identifier);
 			} else {
-				CodeVariableReferenceExpression variableRef = new CodeVariableReferenceExpression();
-				variableRef.VariableName = identifierExpression.Identifier;
-				return variableRef;
+				Append(identifierExpression.Identifier);
 			}
+			return null;
 		}
 		
-		/// <summary>
-		/// Converts an NRefactory's if-else statement to a 
-		/// CodeDOM's CodeConditionStatement.
-		/// </summary>
 		public object VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
 			// Convert condition.
-			CodeConditionStatement conditionStatement = new CodeConditionStatement();
-			conditionStatement.Condition = (CodeExpression)ifElseStatement.Condition.AcceptVisitor(this, data);
+			AppendIndented("if ");
+			ifElseStatement.Condition.AcceptVisitor(this, data);
+			Append(":");
+			AppendNewLine();
 			
 			// Convert true statements.
-			statementsStack.Push(conditionStatement.TrueStatements);
+			IncreaseIndent();
 			foreach (Statement statement in ifElseStatement.TrueStatement) {
 				statement.AcceptVisitor(this, data);
 			}
-			statementsStack.Pop();
-			
-			// Convert false statements.
-			statementsStack.Push(conditionStatement.FalseStatements);
-			foreach (Statement statement in ifElseStatement.FalseStatement) {
-				statement.AcceptVisitor(this, data);
-			}
-			statementsStack.Pop();
+			DecreaseIndent();
 
 			// Convert else if sections.
-			statementsStack.Push(conditionStatement.FalseStatements);
-			foreach (ElseIfSection elseIfSection in ifElseStatement.ElseIfSections) {
-				elseIfSection.AcceptVisitor(this, data);
+			if (ifElseStatement.HasElseIfSections) {
+				foreach (ElseIfSection elseIfSection in ifElseStatement.ElseIfSections) {
+					elseIfSection.AcceptVisitor(this, data);
+				}
 			}
-			statementsStack.Pop();
+			
+			// Convert false statements.
+			if (ifElseStatement.HasElseStatements) {
+				AppendIndentedLine("else:");
+				IncreaseIndent();
+				foreach (Statement statement in ifElseStatement.FalseStatement) {
+					statement.AcceptVisitor(this, data);
+				}
+				DecreaseIndent();
+			}
 
-			// Add condition statement to current method.
-			AddStatement(conditionStatement);
 			return null;
 		}
 		
@@ -660,21 +639,18 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		/// <summary>
-		/// Converts from an NRefactory array indexer expression to a
-		/// code dom CodeArrayIndexerExpression.
-		/// </summary>
 		public object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{				
-			CodeArrayIndexerExpression codeArrayIndexerExpression = new CodeArrayIndexerExpression();
-			codeArrayIndexerExpression.TargetObject = (CodeExpression)indexerExpression.TargetObject.AcceptVisitor(this, data);
+			indexerExpression.TargetObject.AcceptVisitor(this, data);
 
 			// Add indices.
-			foreach (CodeExpression expression in ConvertExpressions(indexerExpression.Indexes)) {
-				codeArrayIndexerExpression.Indices.Add(expression);
+			foreach (Expression expression in indexerExpression.Indexes) {
+				Append("[");
+				expression.AcceptVisitor(this, data);
+				Append("]");
 			}
 
-			return codeArrayIndexerExpression;
+			return null;
 		}
 		
 		public object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data)
@@ -689,30 +665,30 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 
-		/// <summary>
-		/// Converts an NRefactory Invocation Expression to a code dom's
-		/// CodeMethodInvokeStatement.
-		/// </summary>
 		public object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{					
-			CodeMethodReferenceExpression methodRef = new CodeMethodReferenceExpression();
-
 			MemberReferenceExpression memberRefExpression = invocationExpression.TargetObject as MemberReferenceExpression;
 			IdentifierExpression identifierExpression = invocationExpression.TargetObject as IdentifierExpression;
 			if (memberRefExpression != null) {
-				methodRef.MethodName = memberRefExpression.MemberName;
-				methodRef.TargetObject = (CodeExpression)memberRefExpression.TargetObject.AcceptVisitor(this, data);
-				
+				memberRefExpression.TargetObject.AcceptVisitor(this, data);
+				Append("." +  memberRefExpression.MemberName);
 			} else if (identifierExpression != null) {
-				methodRef.MethodName = identifierExpression.Identifier;
-				methodRef.TargetObject = new CodeThisReferenceExpression();
+				Append("self." + identifierExpression.Identifier);
 			}
 				
-			// Create method invoke.
-			CodeMethodInvokeExpression methodInvoke = new CodeMethodInvokeExpression();
-			methodInvoke.Parameters.AddRange(ConvertExpressions(invocationExpression.Arguments));
-			methodInvoke.Method = methodRef;
-			return methodInvoke;
+			// Create method parameters
+			Append("(");
+			bool firstParam = true;
+			foreach (Expression param in invocationExpression.Arguments) {
+				if (firstParam) {
+					firstParam = false;
+				} else {
+					Append(", ");
+				}
+				param.AcceptVisitor(this, data);
+			}
+			Append(")");
+			return null;
 		}
 		
 		public object VisitLabelStatement(LabelStatement labelStatement, object data)
@@ -722,24 +698,21 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Adds the local variable declaration to the current method if
-		/// this one exists.
+		/// The variable declaration is not created if the variable has no initializer.
 		/// </summary>
 		public object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
-		{
-			// Create variable declaration.
+		{			
 			VariableDeclaration variableDeclaration = localVariableDeclaration.Variables[0];
-			string variableType = localVariableDeclaration.TypeReference.Type;
-			string variableName = variableDeclaration.Name;
-			CodeVariableDeclarationStatement codeVariableDeclarationStatement = new CodeVariableDeclarationStatement(variableType, variableName);
+			if (!variableDeclaration.Initializer.IsNull) {
+
+				// Create variable declaration.
+				AppendIndented(variableDeclaration.Name + " = ");
 			
-			// Convert the variable initializer from an NRefactory AST 
-			// expression to a code dom expression.
-			codeVariableDeclarationStatement.InitExpression = (CodeExpression)variableDeclaration.Initializer.AcceptVisitor(this, data);
-			
-			// Add variable to current block.
-			AddStatement(codeVariableDeclarationStatement);
-			return codeVariableDeclarationStatement;
+				// Generate the variable initializer.
+				variableDeclaration.Initializer.AcceptVisitor(this, data);
+				AppendNewLine();
+			}
+			return null;
 		}
 		
 		public object VisitLockStatement(LockStatement lockStatement, object data)
@@ -753,32 +726,32 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
-			CodeMemberMethod codeMemberMethod = new CodeMemberMethod();
-			codeMemberMethod.Name = methodDeclaration.Name;
-			codeMemberMethod.Attributes = ConvertMethodModifier(methodDeclaration.Modifier);
-			currentClass.Members.Add(codeMemberMethod);
-			
-			// Set user data so accepts and returns statements
-			// are not added before method.
-			codeMemberMethod.UserData["HasAccepts"] = false;
-			codeMemberMethod.UserData["HasReturns"] = false;
-			
+			// Add method name.
+			AppendIndented("def " + methodDeclaration.Name);
+					
 			// Add the parameters.
-			foreach (ParameterDeclarationExpression parameter in methodDeclaration.Parameters) {
-				codeMemberMethod.Parameters.Add(ConvertParameter(parameter));
+			AddParameters(methodDeclaration.Parameters);
+			methodParameters = methodDeclaration.Parameters;
+			AppendNewLine();
+			
+			IncreaseIndent();
+			if (methodDeclaration.Body.Children.Count > 0) {
+				methodDeclaration.Body.AcceptVisitor(this, data);
+			} else {
+				AppendIndentedPassStatement();
 			}
 			
-			// Add the method body.
-			statementsStack.Push(codeMemberMethod.Statements);
-			methodDeclaration.Body.AcceptVisitor(this, data);
-			statementsStack.Pop();
-				
+			DecreaseIndent();
+			AppendNewLine();
+			
 			return null;
 		}
 		
 		public object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
-			Console.WriteLine("VisitNamedArgumentExpression");
+			Append(namedArgumentExpression.Name);
+			Append(" = ");
+			namedArgumentExpression.Expression.AcceptVisitor(this, data);
 			return null;
 		}
 		
@@ -796,9 +769,30 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			CodeObjectCreateExpression codeObjectCreateExpression = new CodeObjectCreateExpression();
-			codeObjectCreateExpression.CreateType.BaseType = objectCreateExpression.CreateType.Type;
-			return codeObjectCreateExpression;
+			Append(objectCreateExpression.CreateType.Type + "(");
+
+			// Add parameters.
+			bool firstParameter = true;
+			foreach (Expression expression in objectCreateExpression.Parameters) {
+				if (!firstParameter) {
+					Append(", ");
+				}
+				expression.AcceptVisitor(this, data);
+				firstParameter = false;
+			}
+			
+			// Add object initializers.
+			bool firstInitializer = true;
+			foreach (Expression expression in objectCreateExpression.ObjectInitializer.CreateExpressions) {
+				if (!firstInitializer) {
+					Append(", ");
+				}
+				expression.AcceptVisitor(this, data);
+				firstInitializer = false;
+			}
+			
+			Append(")");
+			return null;
 		}
 		
 		public object VisitOnErrorStatement(OnErrorStatement onErrorStatement, object data)
@@ -832,7 +826,9 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
-			Console.WriteLine("VisitParenthesizedExpression");
+			Append("(" );
+			parenthesizedExpression.Expression.AcceptVisitor(this, data);
+			Append(")");
 			return null;
 		}
 		
@@ -842,42 +838,38 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		/// <summary>
-		/// Converts a NRefactory primitive expression to a CodeDom's
-		/// CodePrimitiveExpression.
-		/// </summary>
 		public object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
-			return new CodePrimitiveExpression(primitiveExpression.Value);
+			if (primitiveExpression.LiteralFormat == LiteralFormat.None) {
+				Append("None");
+			} else {
+				Append(primitiveExpression.StringValue);
+			}
+			return null;
 		}
 		
-		/// <summary>
-		/// Converts an NRefactory property declaration to a code dom
-		/// property.
-		/// </summary>
 		public object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
-			CodeMemberProperty property = new CodeMemberProperty();
-			property.Name = propertyDeclaration.Name;
-			property.Attributes = MemberAttributes.Public;
-			
-			// Set user data so accepts and returns statements
-			// are not added before get and set methods.
-			property.UserData["HasAccepts"] = false;
-			property.UserData["HasReturns"] = false;
-		
+			string propertyName = propertyDeclaration.Name;
+
 			// Add get statements.
-			statementsStack.Push(property.GetStatements);
+			AppendIndentedLine("def get_" + propertyName + "(self):");
+			IncreaseIndent();
 			propertyDeclaration.GetRegion.Block.AcceptVisitor(this, data);
-			statementsStack.Pop();
-			
+			DecreaseIndent();
+			AppendNewLine();
+		
 			// Add set statements.
-			statementsStack.Push(property.SetStatements);
+			AppendIndentedLine("def set_" + propertyName + "(self, value):");
+			IncreaseIndent();
 			propertyDeclaration.SetRegion.Block.AcceptVisitor(this, data);
-			statementsStack.Pop();
+			DecreaseIndent();
+			AppendNewLine();
 			
-			// Add the property to the current class.
-			currentClass.Members.Add(property);
+			// Add property definition.
+			AppendIndentedLine(String.Concat(propertyName, " = property(fget=get_", propertyName, ", fset=set_", propertyName, ")"));
+			AppendNewLine();
+			
 			return null;
 		}
 		
@@ -905,11 +897,6 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		/// <summary>
-		/// Converts a NRefactory remove handler statement 
-		/// (e.g. button.Click -= ButtonClick) to a
-		/// code dom statement.
-		/// </summary>
 		public object VisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data)
 		{
 			Console.WriteLine("VisitRemoveHandlerStatement");
@@ -928,9 +915,9 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
-			CodeMethodReturnStatement codeMethodReturnStatement = new CodeMethodReturnStatement();
-			codeMethodReturnStatement.Expression = (CodeExpression)returnStatement.Expression.AcceptVisitor(this, data);
-			AddStatement(codeMethodReturnStatement);
+			AppendIndented("return ");
+			returnStatement.Expression.AcceptVisitor(this, data);
+			AppendNewLine();
 			return null;
 		}
 		
@@ -957,6 +944,18 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitSwitchStatement(SwitchStatement switchStatement, object data)
 		{
+			bool firstSection = true;
+			foreach (SwitchSection section in switchStatement.SwitchSections) {
+				// Create if/elif/else condition.
+				CreateSwitchCaseCondition(switchStatement.SwitchExpression, section, firstSection);
+
+				// Create if/elif/else body.
+				IncreaseIndent();
+				section.AcceptChildren(this, data);
+				DecreaseIndent();
+						
+				firstSection = false;
+			}
 			return null;
 		}
 		
@@ -967,7 +966,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
-			Console.WriteLine("VisitThisReferenceExpression");
+			Append("self");
 			return null;
 		}
 
@@ -976,9 +975,9 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitThrowStatement(ThrowStatement throwStatement, object data)
 		{
-			CodeThrowExceptionStatement codeThrowExceptionStatement = new CodeThrowExceptionStatement();
-			codeThrowExceptionStatement.ToThrow = (CodeExpression)throwStatement.Expression.AcceptVisitor(this, data);
-			AddStatement(codeThrowExceptionStatement);
+			AppendIndented("raise ");
+		 	throwStatement.Expression.AcceptVisitor(this, data);
+		 	AppendNewLine();
 			return null;
 		}
 		
@@ -989,31 +988,30 @@ namespace ICSharpCode.PythonBinding
 		public object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
 		{			
 			// Convert try-catch body.
-			CodeTryCatchFinallyStatement codeTryCatchStatement = new CodeTryCatchFinallyStatement();
-			statementsStack.Push(codeTryCatchStatement.TryStatements);
+			AppendIndentedLine("try:");
+			IncreaseIndent();
 			tryCatchStatement.StatementBlock.AcceptVisitor(this, data);
-			statementsStack.Pop();
+			DecreaseIndent();
 			
 			// Convert catches.
 			foreach (CatchClause catchClause in tryCatchStatement.CatchClauses) {
-				CodeCatchClause codeCatchClause = new CodeCatchClause();
-				codeCatchClause.CatchExceptionType.BaseType = catchClause.TypeReference.Type;
-				codeCatchClause.LocalName = catchClause.VariableName;
-				
+				AppendIndented("except ");
+				Append(catchClause.TypeReference.Type);
+				Append(", " + catchClause.VariableName + ":");
+				AppendNewLine();
+			
 				// Convert catch child statements.
-				statementsStack.Push(codeCatchClause.Statements);
+				IncreaseIndent();
 				catchClause.StatementBlock.AcceptVisitor(this, data);
-				statementsStack.Pop();
-				
-				codeTryCatchStatement.CatchClauses.Add(codeCatchClause);
+				DecreaseIndent();
 			}
 			
 			// Convert finally block.
-			statementsStack.Push(codeTryCatchStatement.FinallyStatements);
+			AppendIndentedLine("finally:");
+			IncreaseIndent();
 			tryCatchStatement.FinallyBlock.AcceptVisitor(this, data);
-			statementsStack.Pop();
+			DecreaseIndent();
 			
-			AddStatement(codeTryCatchStatement);
 			return null;
 		}
 		
@@ -1022,26 +1020,23 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
-			// Create a new type.
-			CodeTypeDeclaration codeTypeDeclaration = new CodeTypeDeclaration(typeDeclaration.Name);
-			currentClass = codeTypeDeclaration;
-
-			// Ensure __slots__ is not added to generated code.
-			codeTypeDeclaration.UserData["HasSlots"] = false;
-
-			// Add the type to the current namespace.
-			currentNamespace.Types.Add(codeTypeDeclaration);
-
-			// Visit the rest of the class.
-			object o = typeDeclaration.AcceptChildren(this, data);
-			
-			// Add any class fields that were found to the constructor.
-			if (currentClassFields.Count > 0) {
-				AddFieldsToConstructor();
-				currentClassFields.Clear();
+			AppendIndentedLine("class " + typeDeclaration.Name + "(object):");
+			IncreaseIndent();
+			if (typeDeclaration.Children.Count > 0) {
+				// Look for fields or a constructor for the type.
+				constructorInfo = PythonConstructorInfo.GetConstructorInfo(typeDeclaration);
+				if (constructorInfo != null) {
+					CreateConstructor(constructorInfo);
+				}
+				
+				// Visit the rest of the class.
+				typeDeclaration.AcceptChildren(this, data);
+			} else {
+				AppendIndentedPassStatement();
 			}
-			
-			return o;
+			DecreaseIndent();
+
+			return null;
 		}
 		
 		public object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
@@ -1075,12 +1070,20 @@ namespace ICSharpCode.PythonBinding
 			switch (unaryOperatorExpression.Op) {
 				case UnaryOperatorType.PostIncrement:
 				case UnaryOperatorType.Increment:
-					// Change i++ or ++i to i = i + 1
+					// Change i++ or ++i to i += 1
 					return CreateIncrementStatement(unaryOperatorExpression);
 				case UnaryOperatorType.Decrement:
 				case UnaryOperatorType.PostDecrement:
-					// Change --i or i-- to i = i - 1.
+					// Change --i or i-- to i -= 1.
 					return CreateDecrementStatement(unaryOperatorExpression);
+				case UnaryOperatorType.Minus:
+					return CreateUnaryOperatorStatement(GetBinaryOperator(BinaryOperatorType.Subtract), unaryOperatorExpression.Expression);
+				case UnaryOperatorType.Plus:
+					return CreateUnaryOperatorStatement(GetBinaryOperator(BinaryOperatorType.Add), unaryOperatorExpression.Expression);
+				case UnaryOperatorType.Not:
+					return CreateUnaryOperatorStatement("not ", unaryOperatorExpression.Expression);
+				case UnaryOperatorType.BitNot:
+					return CreateUnaryOperatorStatement("~", unaryOperatorExpression.Expression);
 			}
 			return null;
 		}
@@ -1110,13 +1113,11 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
+			// Add import statements for each using.
 			foreach (Using @using in usingDeclaration.Usings) {		
-				// Add import statements for each using.
-				CodeNamespaceImport import = new CodeNamespaceImport(@using.Name);
-				currentNamespace.Imports.Add(import);				
+				AppendIndentedLine("import " + @using.Name);
 			}
-			
-			return usingDeclaration.AcceptChildren(this, data);
+			return null;
 		}
 		
 		public object VisitUsingStatement(UsingStatement usingStatement, object data)
@@ -1126,7 +1127,9 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
 		{
-			Console.WriteLine("VisitVariableDeclaration");
+			AppendIndented(variableDeclaration.Name + " = ");
+			variableDeclaration.Initializer.AcceptVisitor(this, data);
+			AppendNewLine();
 			return null;
 		}
 		
@@ -1156,10 +1159,14 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			CodeFieldReferenceExpression codeFieldReferenceExpression = new CodeFieldReferenceExpression();
-			codeFieldReferenceExpression.FieldName = memberReferenceExpression.MemberName;
-			codeFieldReferenceExpression.TargetObject = (CodeExpression)memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
-			return codeFieldReferenceExpression;
+			memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
+			if (memberReferenceExpression.TargetObject is ThisReferenceExpression) {
+				Append("._"); 
+			} else {
+				Append(".");
+			}
+			Append(memberReferenceExpression.MemberName);
+			return null;
 		}
 		
 		public object VisitQueryExpression(QueryExpression queryExpression, object data)
@@ -1256,45 +1263,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			return null;
 		}
-		
-		/// <summary>
-		/// Converts from the NRefactory method modifier to code DOM 
-		/// member attributes.
-		/// </summary>
-		MemberAttributes ConvertMethodModifier(Modifiers modifiers)
-		{
-			MemberAttributes attributes = MemberAttributes.Public;
 			
-//			if (modifiers & Modifiers.Public == Modifiers.Public) {
-//				atributes
-//			}
-			
-			return attributes;
-		}
-		
-		/// <summary>
-		/// Adds fields to the constructor.
-		/// </summary>
-		/// <remarks>
-		/// The fields should be inserted in the same order as they are
-		/// in the currentClassFields collection and they should be
-		/// inserted before any other code in the constructor.
-		/// </remarks>
-		void AddFieldsToConstructor()
-		{
-			CodeConstructor constructor = GetOrCreateConstructor(currentClass);
-			
-			// Add fields to the constructor only if they have
-			// initializers.
-			for (int i = 0; i < currentClassFields.Count; ++i) {
-				FieldDeclaration fieldDeclaration = currentClassFields[i];
-				if (FieldHasInitialValue(fieldDeclaration)) {
-					CodeAssignStatement assignStatement = CreateAssignStatement(fieldDeclaration);
-					constructor.Statements.Insert(i, assignStatement);
-				}
-			}
-		}
-		
 		/// <summary>
 		/// Checks that the field declaration has an initializer that
 		/// sets an initial value.
@@ -1305,136 +1274,39 @@ namespace ICSharpCode.PythonBinding
 			Expression initializer = variableDeclaration.Initializer;
 			return !initializer.IsNull;
 		}
-		
-		/// <summary>
-		/// Converts a field declaration into an assign statement. This
-		/// assign statement should then be added to the class's constructor.
-		/// This method is used when adding field initializer statements
-		/// to the constructor.
-		/// </summary>
-		CodeAssignStatement CreateAssignStatement(FieldDeclaration fieldDeclaration)
-		{					
-			// Create the lhs of the assign statement.
-			CodeAssignStatement assignStatement = new CodeAssignStatement();
-			CodeThisReferenceExpression thisReferenceExpression = new CodeThisReferenceExpression();
-			VariableDeclaration variableDeclaration = fieldDeclaration.Fields[0];			
-			string fieldName = variableDeclaration.Name;
-			CodeFieldReferenceExpression fieldReferenceExpression = new CodeFieldReferenceExpression(thisReferenceExpression, "_" + fieldName);
-			assignStatement.Left = fieldReferenceExpression;
-			
-			// Create the rhs of the assign statement.
-			assignStatement.Right = (CodeExpression)variableDeclaration.Initializer.AcceptVisitor(this, null);
-			
-			return assignStatement;
-		}
-		
-		/// <summary>
-		/// Gets the constructor for the class or creates a new one if
-		/// it does not exist.
-		/// </summary>
-		static CodeConstructor GetOrCreateConstructor(CodeTypeDeclaration typeDeclaration)
-		{
-			// Find an existing constructor.
-			CodeConstructor constructor = GetConstructor(typeDeclaration);
-			if (constructor == null) {
-				// Create a new constructor.
-				constructor = new CodeConstructor();
-				typeDeclaration.Members.Add(constructor);
-			}
-			return constructor;
-		}
-
-		/// <summary>
-		/// Gets the constructor for the class. Returns null if none is
-		/// found.
-		/// </summary>
-		static CodeConstructor GetConstructor(CodeTypeDeclaration typeDeclaration)
-		{
-			foreach (CodeTypeMember member in typeDeclaration.Members) {
-				CodeConstructor constructor = member as CodeConstructor;
-				if (constructor != null) {
-					return constructor;
-				}
-			}
-			return null;
-		}
-				
-		/// <summary>
-		/// Adds the statement to the currently active statement collection.
-		/// </summary>
-		void AddStatement(CodeStatement statement)
-		{
-			CodeStatementCollection currentStatementCollection = statementsStack.Peek();
-			currentStatementCollection.Add(statement);
-		}
-		
-		/// <summary>
-		/// Converts an NRefactory parameter to a CodeDom parameter declaration.
-		/// </summary>
-		CodeParameterDeclarationExpression ConvertParameter(ParameterDeclarationExpression expression)
-		{
-			CodeParameterDeclarationExpression parameter = new CodeParameterDeclarationExpression();
-			parameter.Name = expression.ParameterName;
-			return parameter;
-		}
 
 		/// <summary>
 		/// Converts a post or pre increment expression to an assign statement.
-		/// This converts "i++" and "++i" to "i = i + 1" since the code dom 
+		/// This converts "i++" and "++i" to "i = i + 1" since python
 		/// does not support post increment expressions.
 		/// </summary>
-		CodeAssignStatement CreateIncrementStatement(UnaryOperatorExpression unaryOperatorExpression)
+		object CreateIncrementStatement(UnaryOperatorExpression unaryOperatorExpression)
 		{
-			return CreateIncrementStatement(unaryOperatorExpression, 1, CodeBinaryOperatorType.Add);
+			return CreateIncrementStatement(unaryOperatorExpression, 1, GetBinaryOperator(BinaryOperatorType.Add));
 		}
 
 		/// <summary>
 		/// Converts a post or pre decrement expression to an assign statement.
-		/// This converts "i--" and "--i" to "i = i - 1" since the code dom 
+		/// This converts "i--" and "--i" to "i -= 1" since python 
 		/// does not support post increment expressions.
 		/// </summary>
-		CodeAssignStatement CreateDecrementStatement(UnaryOperatorExpression unaryOperatorExpression)
+		object CreateDecrementStatement(UnaryOperatorExpression unaryOperatorExpression)
 		{
-			return CreateIncrementStatement(unaryOperatorExpression, 1, CodeBinaryOperatorType.Subtract);
+			return CreateIncrementStatement(unaryOperatorExpression, 1, GetBinaryOperator(BinaryOperatorType.Subtract));
 		}
 		
 		/// <summary>
 		/// Converts a post or pre increment expression to an assign statement.
-		/// This converts "i++" and "++i" to "i = i + 1" since the code dom 
+		/// This converts "i++" and "++i" to "i += 1" since python 
 		/// does not support post increment expressions.
 		/// </summary>
-		CodeAssignStatement CreateIncrementStatement(UnaryOperatorExpression unaryOperatorExpression, int increment, CodeBinaryOperatorType binaryOperatorType)
+		object CreateIncrementStatement(UnaryOperatorExpression unaryOperatorExpression, int increment, string binaryOperator)
 		{
-			// Lhs: i
-			CodeExpression expression = (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, null);
-			CodeAssignStatement assignStatement = new CodeAssignStatement();
-			assignStatement.Left = expression;
-
-			// Rhs: i + increment
-			CodeBinaryOperatorExpression binaryExpression = new CodeBinaryOperatorExpression();
-			binaryExpression.Operator = binaryOperatorType;
-			binaryExpression.Left = expression;
-			binaryExpression.Right = new CodePrimitiveExpression(increment);
-			assignStatement.Right = binaryExpression;
-
-			return assignStatement;
-		}
-				
-		/// <summary>
-		/// Creates the code dom's expression for test expression for the
-		/// NRefactory foreach statement. The test expression will be
-		/// "enumerator.MoveNext()" which simulates what happens the test
-		/// condition in a foreach loop.
-		/// </summary>
-		CodeExpression CreateTestExpression(ForeachStatement foreachStatement)
-		{
-			CodeVariableReferenceExpression variableRef = new CodeVariableReferenceExpression();
-			variableRef.VariableName = "enumerator";
+			unaryOperatorExpression.Expression.AcceptVisitor(this, null);
+			Append(" " + binaryOperator + "= ");
+			Append(increment.ToString());
 			
-			CodeMethodInvokeExpression methodInvoke = new CodeMethodInvokeExpression();
-			methodInvoke.Method.MethodName = "MoveNext";
-			methodInvoke.Method.TargetObject = variableRef;
-			return methodInvoke;
+			return null;
 		}
 		
 		/// <summary>
@@ -1442,20 +1314,11 @@ namespace ICSharpCode.PythonBinding
 		/// initialize statement will be "enumerator = variableName.GetEnumerator()"
 		/// which simulates what happens in a foreach loop.
 		/// </summary>
-		CodeStatement CreateInitStatement(ForeachStatement foreachStatement)
+		object CreateInitStatement(ForeachStatement foreachStatement)
 		{
-			CodeVariableReferenceExpression variableRef = new CodeVariableReferenceExpression();
-			variableRef.VariableName = GetForeachVariableName(foreachStatement);
-			
-			CodeMethodInvokeExpression methodInvoke = new CodeMethodInvokeExpression();
-			methodInvoke.Method.MethodName = "GetEnumerator";
-			methodInvoke.Method.TargetObject = variableRef;
+			Append("enumerator = " + GetForeachVariableName(foreachStatement) + ".GetEnumerator()");
 
-			CodeVariableDeclarationStatement variableDeclarationStatement = new CodeVariableDeclarationStatement();	
-			variableDeclarationStatement.InitExpression = methodInvoke;
-			variableDeclarationStatement.Name = "enumerator";
-			
-			return variableDeclarationStatement;
+			return null;
 		}
 		
 		/// <summary>
@@ -1467,25 +1330,6 @@ namespace ICSharpCode.PythonBinding
 			IdentifierExpression identifierExpression = foreachStatement.Expression as IdentifierExpression;
 			return identifierExpression.Identifier;
 		}
-	
-		/// <summary>
-		/// Creates a code variable declaration statement for the iterator
-		/// used in the foreach loop. This statement should be like:
-		/// 
-		/// "i = enumerator.Current"
-		/// </summary>
-		CodeVariableDeclarationStatement CreateIteratorVariableDeclaration(ForeachStatement foreachStatement)
-		{
-			CodePropertyReferenceExpression propertyRef = new CodePropertyReferenceExpression();
-			propertyRef.PropertyName = "Current";
-			propertyRef.TargetObject = new CodeVariableReferenceExpression("enumerator");
-			
-			CodeVariableDeclarationStatement variableDeclaration = new CodeVariableDeclarationStatement();
-			variableDeclaration.Name = foreachStatement.VariableName;
-			variableDeclaration.InitExpression = propertyRef;
-			
-			return variableDeclaration;
-		}
 				
 		/// <summary>
 		/// Determines whether the identifier refers to a field in the
@@ -1493,80 +1337,58 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		bool IsField(string name)
 		{
-			foreach (FieldDeclaration field in currentClassFields) {
-				if (field.Fields[0].Name == name) {
-					return true;
+			// Check the current method's parameters.
+			foreach (ParameterDeclarationExpression param in methodParameters) {
+				if (param.ParameterName == name) {
+					return false;
+				}
+			}
+
+			// Check the current class's fields.
+			if (constructorInfo != null) {
+				foreach (FieldDeclaration field in constructorInfo.Fields) {
+					if (field.Fields[0].Name == name) {
+						return true;
+					}
 				}
 			}
 			return false;
 		}		
 		
 		/// <summary>
-		/// Converts a collection of NRefactory expressions to code dom expressions.
+		/// Creates an attach statement (i.e. button.Click += ButtonClick)
+		/// or remove statement (i.e. button.Click -= ButtonClick)
 		/// </summary>
-		CodeExpression[] ConvertExpressions(List<Expression> expressions)
+		object CreateHandlerStatement(Expression eventExpression, string addRemoveOperator, Expression eventHandlerExpression)
 		{
-			List<CodeExpression> codeExpressions = new List<CodeExpression>();
-			foreach (Expression expression in expressions) {
-				CodeExpression convertedCodeExpression = (CodeExpression)expression.AcceptVisitor(this, null);
-				if (convertedCodeExpression != null) {
-					codeExpressions.Add(convertedCodeExpression);
-				}
-			}
-			return codeExpressions.ToArray();
-		}
-		
-		/// <summary>
-		/// Creates a CodeAttachEventStatement 
-		/// (i.e. button.Click += ButtonClick)
-		/// </summary>
-		CodeAttachEventStatement CreateAttachEventStatement(Expression eventExpression, Expression eventHandlerExpression)
-		{			
-			// Create statement.
-			CodeAttachEventStatement attachEventStatement = new CodeAttachEventStatement();
-			attachEventStatement.Event = CreateEventReferenceExpression(eventExpression);
-			attachEventStatement.Listener = CreateDelegateCreateExpression(eventHandlerExpression);
-			
-			return attachEventStatement;
-		}
-		
-		/// <summary>
-		/// Creates a CodeRemoveEventStatement 
-		/// (i.e. button.Click -= ButtonClick)
-		/// </summary>
-		CodeRemoveEventStatement CreateRemoveEventStatement(Expression eventExpression, Expression eventHandlerExpression)
-		{					
-			// Create statement.
-			CodeRemoveEventStatement removeEventStatement = new CodeRemoveEventStatement();
-			removeEventStatement.Event = CreateEventReferenceExpression(eventExpression);
-			removeEventStatement.Listener = CreateDelegateCreateExpression(eventHandlerExpression);
-			return removeEventStatement;
+			CreateEventReferenceExpression(eventExpression);
+			Append(" " + addRemoveOperator + " ");
+			CreateDelegateCreateExpression(eventHandlerExpression);
+			return null;
 		}
 		
 		/// <summary>
 		/// Converts an expression to a CodeEventReferenceExpression
 		/// (i.e. the "button.Click" part of "button.Click += ButtonClick".
 		/// </summary>
-		CodeEventReferenceExpression CreateEventReferenceExpression(Expression eventExpression)
+		object CreateEventReferenceExpression(Expression eventExpression)
 		{
 			// Create event reference.
 			MemberReferenceExpression memberRef = eventExpression as MemberReferenceExpression;
-			CodeEventReferenceExpression eventRef = new CodeEventReferenceExpression();
-			eventRef.TargetObject = (CodeExpression)memberRef.AcceptVisitor(this, null);
-			return eventRef;
+			memberRef.AcceptVisitor(this, null);
+			return null;
 		}
 		
 		/// <summary>
-		/// Converts an event handler expression to a CodeDelegateCreateExpression.
+		/// Creates an event handler expression
 		/// (i.e. the "ButtonClick" part of "button.Click += ButtonClick")
 		/// </summary>
-		CodeDelegateCreateExpression CreateDelegateCreateExpression(Expression eventHandlerExpression)
+		object CreateDelegateCreateExpression(Expression eventHandlerExpression)
 		{
 			// Create event handler expression.
 			IdentifierExpression identifierExpression = eventHandlerExpression as IdentifierExpression;
-			CodeDelegateCreateExpression listenerExpression = new CodeDelegateCreateExpression();
-			listenerExpression.MethodName = identifierExpression.Identifier;			
-			return listenerExpression;
+			Append(identifierExpression.Identifier);
+			return null;
 		}
 		
 		/// <summary>
@@ -1590,41 +1412,202 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Creates an assignment statement of the form:
-		/// i = i + 10.
+		/// Creates an assign statement with the right hand side of the assignment using a binary operator.
 		/// </summary>
-		CodeAssignStatement CreateAddAssignmentStatement(AssignmentExpression assignmentExpression)
-		{
-			return CreateAssignmentStatementWithBinaryOperatorExpression(assignmentExpression, CodeBinaryOperatorType.Add);
-		}
-	
-		/// <summary>
-		/// Creates an assign statement with the right hand side of the 
-		/// assignment using a binary operator.
-		/// </summary>
-		CodeAssignStatement CreateAssignmentStatementWithBinaryOperatorExpression(AssignmentExpression assignmentExpression, CodeBinaryOperatorType binaryOperatorType)
+		object CreateAssignmentStatementWithBinaryOperatorExpression(AssignmentExpression assignmentExpression, string binaryOperatorType)
 		{
 			// Create the left hand side of the assignment.
-			CodeAssignStatement codeAssignStatement = new CodeAssignStatement();
-			codeAssignStatement.Left = (CodeExpression)assignmentExpression.Left.AcceptVisitor(this, null);
+			assignmentExpression.Left.AcceptVisitor(this, null);
+			
+			Append(" = ");
 
 			// Create the right hand side of the assignment.
-			CodeBinaryOperatorExpression binaryExpression = new CodeBinaryOperatorExpression();
-			binaryExpression.Operator = binaryOperatorType;
-			binaryExpression.Left = codeAssignStatement.Left;
-			binaryExpression.Right = (CodeExpression)assignmentExpression.Right.AcceptVisitor(this, null);
-			codeAssignStatement.Right = binaryExpression;
+			assignmentExpression.Left.AcceptVisitor(this, null);
+			Append(" " + binaryOperatorType + " ");
+			assignmentExpression.Right.AcceptVisitor(this, null);
 
-			return codeAssignStatement;
+			return null;
+		}
+		
+		void Append(string code)
+		{
+			codeBuilder.Append(code);
+		}
+		
+		void AppendIndented(string code)
+		{
+			for (int i = 0; i < indent; ++i) {
+				codeBuilder.Append(indentString);
+			}
+			codeBuilder.Append(code);
+		}
+		
+		void AppendIndentedPassStatement()
+		{
+			AppendIndentedLine("pass");
+		}
+		
+		void AppendIndentedLine(string code)
+		{
+			AppendIndented(code + "\r\n");
+		}
+		
+		void AppendNewLine()
+		{
+			Append("\r\n");
+		}
+		
+		void IncreaseIndent()
+		{
+			++indent;
+		}
+		
+		void DecreaseIndent()
+		{
+			--indent;
+		}
+		
+		void CreateConstructor(PythonConstructorInfo constructorInfo)
+		{
+			if (constructorInfo.Constructor != null) {
+				AppendIndented("def __init__");
+				AddParameters(constructorInfo.Constructor.Parameters);
+				methodParameters = constructorInfo.Constructor.Parameters;
+			} else {
+				AppendIndented("def __init__(self):");
+			}
+			AppendNewLine();
+			
+			// Add fields at start of constructor.
+			IncreaseIndent();
+			if (constructorInfo.Fields.Count > 0) {
+				foreach (FieldDeclaration field in constructorInfo.Fields) {
+					// Ignore field if it has no initializer.
+					if (FieldHasInitialValue(field)) {
+						CreateFieldInitialization(field);
+					}
+				}
+			}  
+			
+			if (!IsEmptyConstructor(constructorInfo.Constructor)) {
+				constructorInfo.Constructor.Body.AcceptVisitor(this, null);
+				AppendNewLine();
+			} else if (constructorInfo.Fields.Count == 0) {
+				AppendIndentedPassStatement();
+			} else {
+				AppendNewLine();
+			}
+			
+			DecreaseIndent();
 		}
 		
 		/// <summary>
-		/// Creates an assignment statement of the form:
-		/// i = i - 10.
+		/// Returns true if the constructor has no statements in its body.
 		/// </summary>
-		CodeAssignStatement CreateSubtractAssignmentStatement(AssignmentExpression assignmentExpression)
+		static bool IsEmptyConstructor(ConstructorDeclaration constructor)
 		{
-			return CreateAssignmentStatementWithBinaryOperatorExpression(assignmentExpression, CodeBinaryOperatorType.Subtract);
-		}		
+			if (constructor != null) {
+				return constructor.Body.Children.Count == 0;
+			}
+			return true;
+		}
+		
+		/// <summary>
+		/// Creates a field initialization statement.
+		/// </summary>
+		void CreateFieldInitialization(FieldDeclaration field)
+		{
+			VariableDeclaration variable = field.Fields[0];
+			string oldVariableName = variable.Name;
+			variable.Name = "self._" + variable.Name;
+			VisitVariableDeclaration(variable, null);
+			variable.Name = oldVariableName;
+		}
+		
+		/// <summary>
+		/// Adds the method or constructor parameters.
+		/// </summary>
+		void AddParameters(List<ParameterDeclarationExpression> parameters)
+		{			
+			if (parameters.Count > 0) {
+				Append("(self");
+				foreach (ParameterDeclarationExpression parameter in parameters) {
+					Append(", " + parameter.ParameterName);
+				}
+				Append("):");
+			} else {
+				Append("(self):");
+			}
+		}
+		
+		/// <summary>
+		/// Creates assignments of the form:
+		/// i = 1
+		/// </summary>
+		object CreateSimpleAssignment(AssignmentExpression assignmentExpression, string op, object data)
+		{
+			assignmentExpression.Left.AcceptVisitor(this, data);
+			Append(" " + op + " ");
+			assignmentExpression.Right.AcceptVisitor(this, data);
+			return null;
+		}
+
+		/// <summary>
+		/// Creates the rhs of expressions such as:
+		/// i = -1
+		/// i = +1
+		/// </summary>
+		object CreateUnaryOperatorStatement(string op, Expression expression)
+		{
+			Append(op);
+			expression.AcceptVisitor(this, null);
+			return null;
+		}
+		
+		/// <summary>
+		/// Converts a switch case statement to an if/elif/else in Python.
+		/// </summary>
+		/// <param name="switchExpression">This contains the item being tested in the switch.</param>
+		/// <param name="section">This contains the switch section currently being converted.</param>
+		/// <param name="firstSection">True if the section is the first in the switch. If true then
+		/// an if statement will be generated, otherwise an elif will be generated.</param>
+		void CreateSwitchCaseCondition(Expression switchExpression, SwitchSection section, bool firstSection)
+		{
+			bool firstLabel = true;
+			foreach (CaseLabel label in section.SwitchLabels) {
+				if (firstLabel) {
+					if (label.IsDefault) {
+						// Create else condition.
+						AppendIndented("else");
+					} else if (firstSection) {
+						// Create if condition.
+						AppendIndented(String.Empty);
+						CreateSwitchCaseCondition("if ", switchExpression, label);
+					} else {
+						// Create elif condition.
+						AppendIndented(String.Empty);
+						CreateSwitchCaseCondition("elif ", switchExpression, label);
+					}
+				} else {
+					CreateSwitchCaseCondition(" or ", switchExpression, label);
+				}	
+				firstLabel = false;
+			}	
+			
+			Append(":");
+			AppendNewLine();
+		}
+		
+		/// <summary>
+		/// Creates the switch test condition
+		/// </summary>
+		/// <param name="prefix">This is a string which is either "if ", "elif ", "else " or " or ".</param>
+		void CreateSwitchCaseCondition(string prefix, Expression switchExpression, CaseLabel label)
+		{
+			Append(prefix);
+			switchExpression.AcceptVisitor(this, null);
+			Append(" == ");
+			label.Label.AcceptVisitor(this, null);
+		}
 	}
 }

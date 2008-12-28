@@ -44,18 +44,10 @@ namespace PythonBinding.Tests.Designer
 //			}
 		}
 		
-		/// <summary>
-		/// The comments are stripped out by the PythonProvider
-		/// when the code is generated.
-		/// </summary>
 		[Test]
 		public void MergedDocumentText()
 		{
 			string expectedText = GetTextEditorCode().Replace(GetTextEditorInitializeComponentMethod(), GetGeneratedInitializeComponentMethod());
-			expectedText = expectedText.Replace("\t\t#\r\n" +
-					"\t\t# MainForm\r\n" +
-					"\t\t#\r\n",
-					String.Empty);
 
 			Assert.AreEqual(expectedText, document.TextContent);
 		}
@@ -82,7 +74,7 @@ namespace PythonBinding.Tests.Designer
 					"\t\tself.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font\r\n" +
 					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
 					"\t\tself.Name = 'MainForm'\r\n" +
-					"\t\tself.ResumeLayout(false)\r\n"; 						
+					"\t\tself.ResumeLayout(False)\r\n"; 						
 		}
 		
 		string GetTextEditorCode()

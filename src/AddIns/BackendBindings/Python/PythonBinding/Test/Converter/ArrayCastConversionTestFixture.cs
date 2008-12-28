@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -17,7 +15,6 @@ namespace PythonBinding.Tests.Converter
 	/// Tests that an array cast is correctly converted to Python.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
 	public class ArrayCastConversionTestFixture
 	{
 		string csharp = "class Foo\r\n" +
@@ -30,39 +27,6 @@ namespace PythonBinding.Tests.Converter
 						"    }\r\n" +
 						"}";
 		
-		CodeExpression expression;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
-			CodeCompileUnit unit = converter.ConvertToCodeCompileUnit(csharp);
-			if (unit.Namespaces.Count > 0) {
-				CodeNamespace ns = unit.Namespaces[0];
-				if (ns.Types.Count > 0) {
-					CodeTypeDeclaration type = ns.Types[0];
-					if (type.Members.Count > 0) {
-						CodeMemberMethod method = type.Members[0] as CodeMemberMethod;
-						if (method != null && method.Statements.Count > 0) {
-							CodeExpressionStatement statement = method.Statements[method.Statements.Count - 1] as CodeExpressionStatement;
-							if (statement != null) {
-								CodeMethodInvokeExpression methodInvokeExpression = statement.Expression as CodeMethodInvokeExpression;
-								if (methodInvokeExpression != null && methodInvokeExpression.Parameters.Count > 0) {
-									expression = methodInvokeExpression.Parameters[0];
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		[Test]
-		public void CodeExpressionExists()
-		{
-			Assert.IsNotNull(expression);
-		}
-		
 		[Test]
 		public void GeneratedPythonSourceCode()
 		{
@@ -70,7 +34,7 @@ namespace PythonBinding.Tests.Converter
 			string python = converter.Convert(csharp);
 			string expectedPython = "class Foo(object):\r\n" +
 				"\tdef Assign(self):\r\n" +
-				"\t\telements = System.Array.CreateInstance(int,0)\r\n" +
+				"\t\telements = System.Array.CreateInstance(System.Int32, 10)\r\n" +
 				"\t\tlist = List()\r\n" +
 				"\t\tlist.Add(elements.Clone())";
 			

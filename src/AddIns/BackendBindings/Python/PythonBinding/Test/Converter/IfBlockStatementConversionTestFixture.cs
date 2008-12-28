@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -18,16 +16,8 @@ namespace PythonBinding.Tests.Converter
 	/// if and else blocks both have more than one statement.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
 	public class IfBlockStatementConversionTestFixture
 	{
-		CSharpToPythonConverter converter;
-		CodeCompileUnit codeCompileUnit;
-		CodeNamespace codeNamespace;
-		CodeTypeDeclaration codeTypeDeclaration;
-		CodeMemberMethod method;
-		CodeConditionStatement ifStatement;
-		
 		string csharp = "class Foo\r\n" +
 						"{\r\n" +
 						"\tint i = 0;\r\n" +
@@ -43,37 +33,15 @@ namespace PythonBinding.Tests.Converter
 						"\t}\r\n" +
 						"}";
 				
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			converter = new CSharpToPythonConverter();
-			codeCompileUnit = converter.ConvertToCodeCompileUnit(csharp);
-			if (codeCompileUnit.Namespaces.Count > 0) {
-				codeNamespace = codeCompileUnit.Namespaces[0];
-				if (codeNamespace.Types.Count > 0) {
-					codeTypeDeclaration = codeNamespace.Types[0];
-					if (codeTypeDeclaration.Members.Count > 0) {
-						foreach (CodeTypeMember member in codeTypeDeclaration.Members) {
-							if ((member is CodeMemberMethod) && (member.Name == "GetCount")) {
-								method = (CodeMemberMethod)member;
-							}
-						}
-						if ((method != null) && (method.Statements.Count > 0)) {
-							ifStatement = method.Statements[0] as CodeConditionStatement;
-						}
-					}
-				}
-			}			
-		}
-		
 		[Test]
 		public void ConvertedPythonCode()
 		{
+			CSharpToPythonConverter converter = new CSharpToPythonConverter();
 			string python = converter.Convert(csharp);
 			string expectedPython = "class Foo(object):\r\n" +
 									"\tdef __init__(self):\r\n" +
 									"\t\tself._i = 0\r\n" +
-									"\t\r\n" +
+									"\r\n" +
 									"\tdef GetCount(self):\r\n" +
 									"\t\tif self._i == 0:\r\n" +
 									"\t\t\tself._i = 10\r\n" +
@@ -83,12 +51,6 @@ namespace PythonBinding.Tests.Converter
 									"\t\t\treturn 4";
 			
 			Assert.AreEqual(expectedPython, python);
-		}
-		
-		[Test]
-		public void IfStatementIsFirstMethodStatement()
-		{
-			Assert.IsInstanceOfType(typeof(CodeConditionStatement), method.Statements[0]);
 		}
 	}
 }

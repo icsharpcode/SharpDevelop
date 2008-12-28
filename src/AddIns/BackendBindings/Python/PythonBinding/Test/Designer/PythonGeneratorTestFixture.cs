@@ -22,14 +22,7 @@ namespace PythonBinding.Tests.Designer
 {
 	[TestFixture]
 	public class PythonGeneratorTestFixture
-	{
-		[Test]
-		public void CodeDomProviderIsPythonProvider()
-		{
-//			PythonDesignerGenerator generator = new PythonDesignerGenerator();
-//			Assert.IsInstanceOfType(typeof(PythonProvider), generator.CodeDomProvider);
-		}
-		
+	{		
 		[Test]
 		public void GetMethodReplaceRegion()
 		{
@@ -39,7 +32,7 @@ namespace PythonBinding.Tests.Designer
 			DomRegion expectedRegion = new DomRegion(bodyRegion.BeginLine + 1, 1, bodyRegion.EndLine + 1, 1);
 			DerivedPythonDesignerGenerator generator = new DerivedPythonDesignerGenerator();
 			
-			Assert.AreEqual(expectedRegion, generator.CallGetBodyRegionInDocument(method));
+			Assert.AreEqual(expectedRegion, PythonDesignerGenerator.GetBodyRegionInDocument(method));
 		}		
 		
 		[Test]

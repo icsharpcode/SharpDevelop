@@ -60,9 +60,8 @@ namespace ICSharpCode.PythonBinding
 			
 			// Search for a namespace.
 			string namespaceExpression = GetNamespaceExpression(expressionResult.Expression);
-			string ns = projectContent.SearchNamespace(namespaceExpression, null, null, 0, 0);
-			if (!String.IsNullOrEmpty(ns)) {
-				return new NamespaceResolveResult(null, null, ns);
+			if (projectContent.NamespaceExists(namespaceExpression)) {
+				return new NamespaceResolveResult(null, null, namespaceExpression);
 			}
 			return null;
 		}

@@ -71,20 +71,9 @@ def main(args):
     code completion after the import is incorrect here. It needs to
     show items that are in the System namespace.
 
-* Python code converter. Initial thought was to convert the NRefactory AST
-  to the code DOM and then have the PythonProvider generate Python code from
-  this. Unfortunately the code DOM is not as rich as the Python AST so some
-  things cannot be created (e.g. from System import *). However this is
-  not a huge problem since the PythonProvider cannot generate code with
-  this since it converts the code dom.
-  
-  So another idea is to convert the NRefactory AST to Python AST. The 
-  problem here is that there is no easy way to convert from Python AST to
-  Python code. IronPython when generating a code dom actually converts the
-  source code to Python AST and then uses a CodeWalker class to convert it
-  to a code DOM. Unfortunately this CodeWalker class is internal. So to use
-  it either requires the source code to be included in the PythonBinding
-  or reflection is used to access the CodeWalker class and use it.
+* Python code converter. 
+
+  More tests...
 
 * The PythonDesignerGenerator inserts an event handler at the end
   of the active document. This is not correct. It should insert it at the 

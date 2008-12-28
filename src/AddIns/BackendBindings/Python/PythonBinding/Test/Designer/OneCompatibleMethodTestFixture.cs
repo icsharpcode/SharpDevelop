@@ -24,7 +24,6 @@ namespace PythonBinding.Tests.Designer
 	/// be used as a event handler.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
 	public class OneCompatibleMethodTestFixture
 	{
 		ICollection compatibleMethods;
@@ -39,7 +38,7 @@ namespace PythonBinding.Tests.Designer
 			
 			// Create parse info.
 			PythonParser parser = new PythonParser();
-			ICompilationUnit unit = parser.Parse(new MockProjectContent(), String.Empty, GetTextEditorCode());
+			ICompilationUnit unit = parser.Parse(new MockProjectContent(), @"C:\Projects\MyProject\test.py", GetTextEditorCode());
 			ParseInformation parseInfo = new ParseInformation();
 			parseInfo.SetCompilationUnit(unit);
 			generator.ParseInfoToReturnFromParseFileMethod = parseInfo;

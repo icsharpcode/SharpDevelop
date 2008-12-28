@@ -10,7 +10,9 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -21,10 +23,10 @@ namespace ICSharpCode.PythonBinding
 	{
 		public override void Run()
 		{
-			Run(WorkbenchSingleton.Workbench);
+			Run(WorkbenchSingleton.Workbench, SharpDevelopTextEditorProperties.Instance);
 		}
 		
-		protected void Run(IWorkbench workbench)
+		protected void Run(IWorkbench workbench, ITextEditorProperties textEditorProperties)
 		{
 			// Get the code to convert.
 			IViewContent viewContent = workbench.ActiveWorkbenchWindow.ActiveViewContent;
@@ -33,11 +35,20 @@ namespace ICSharpCode.PythonBinding
 			// Generate the python code.
 			SupportedLanguage language = GetSupportedLanguage(viewContent.PrimaryFileName);
 			NRefactoryToPythonConverter converter = CreateConverter(language);
+			converter.IndentString = NRefactoryToPythonConverter.GetIndentString(textEditorProperties);
 			string pythonCode = converter.Convert(editable.Text, language);
 			
 			// Show the python code in a new window.
 			NewFile("Generated.py", "Python", pythonCode);
 		}
+		
+		/// <summary>
+		/// Creates a new file using the FileService by default.
+		/// </summary>
+		protected virtual void NewFile(string defaultName, string language, string content)
+		{
+			FileService.NewFile(defaultName, content);
+		}		
 		
 		/// <summary>
 		/// Creates either a VBNet converter or C# converted.
@@ -48,16 +59,8 @@ namespace ICSharpCode.PythonBinding
 				return new VBNetToPythonConverter();
 			}
 			return new CSharpToPythonConverter();
-		}
-				
-		/// <summary>
-		/// Creates a new file using the FileService by default.
-		/// </summary>
-		protected virtual void NewFile(string defaultName, string language, string content)
-		{
-			FileService.NewFile(defaultName, content);
-		}		
-		
+		}	
+			
 		/// <summary>
 		/// Gets the supported language either C# or VB.NET
 		/// </summary>
@@ -65,10 +68,8 @@ namespace ICSharpCode.PythonBinding
 		{
 			string extension = Path.GetExtension(fileName.ToLower());
 			if (extension == ".vb") {
-				Console.WriteLine("VBNet");
 				return SupportedLanguage.VBNet;
 			}
-			Console.WriteLine("C#");
 			return SupportedLanguage.CSharp;
 		}		
 	}

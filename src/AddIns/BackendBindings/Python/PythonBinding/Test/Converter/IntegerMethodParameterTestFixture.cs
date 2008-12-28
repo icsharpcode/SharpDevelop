@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -17,7 +15,6 @@ namespace PythonBinding.Tests.Converter
 	/// Tests that a method call is converted correctly.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
 	public class IntegerMethodParameterTestFixture
 	{
 		string csharp = "class Foo\r\n" +
@@ -28,51 +25,6 @@ namespace PythonBinding.Tests.Converter
 						"        PrintInt(i);\r\n" +
 						"    }\r\n" +
 						"}";
-		
-		CodeMethodReferenceExpression methodRefExpression;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
-			CodeCompileUnit unit = converter.ConvertToCodeCompileUnit(csharp);
-			if (unit.Namespaces.Count > 0) {
-				CodeNamespace ns = unit.Namespaces[0];
-				if (ns.Types.Count > 0) {
-					CodeTypeDeclaration type = ns.Types[0];
-					if (type.Members.Count > 0) {
-						CodeMemberMethod method = type.Members[0] as CodeMemberMethod;
-						if (method != null && method.Statements.Count > 0) {
-							CodeExpressionStatement statement = method.Statements[method.Statements.Count - 1] as CodeExpressionStatement;
-							if (statement != null) {
-								CodeMethodInvokeExpression methodInvokeExpression = statement.Expression as CodeMethodInvokeExpression;
-								if (methodInvokeExpression != null) {
-									methodRefExpression = methodInvokeExpression.Method;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		[Test]
-		public void MethodRefExpressionExists()
-		{
-			Assert.IsNotNull(methodRefExpression);
-		}
-		
-		[Test]
-		public void MethodNameIsPrintInt()
-		{
-			Assert.AreEqual("PrintInt", methodRefExpression.MethodName);
-		}
-		
-		[Test]
-		public void MethodRefTargetObjectIsThisRef()
-		{
-			Assert.IsInstanceOfType(typeof(CodeThisReferenceExpression), methodRefExpression.TargetObject);
-		}
 		
 		[Test]
 		public void GeneratedPythonSourceCode()

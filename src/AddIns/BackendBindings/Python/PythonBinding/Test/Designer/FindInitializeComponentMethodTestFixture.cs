@@ -49,7 +49,7 @@ namespace PythonBinding.Tests.Designer
 			expectedInitializeComponentMethod = GetInitializeComponentMethod(compilationUnit);
 			
 			// Find the InitializeComponent method using the designer generator.			
-			initializeComponentMethod = GeneratedInitializeComponentMethod.GetInitializeComponents(parseInfo);
+			initializeComponentMethod = PythonDesignerGenerator.GetInitializeComponents(parseInfo);
 		}
 		
 		/// <summary>
@@ -73,7 +73,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			ParseInformation parseInfo = new ParseInformation();
 			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(new MockProjectContent()));
-			Assert.IsNull(GeneratedInitializeComponentMethod.GetInitializeComponents(parseInfo));
+			Assert.IsNull(PythonDesignerGenerator.GetInitializeComponents(parseInfo));
 		}		
 		
 		/// <summary>
@@ -91,7 +91,7 @@ namespace PythonBinding.Tests.Designer
 			parseInfo.SetCompilationUnit(compilationUnit);
 			IMethod expectedMethod = GetInitializeComponentMethod(compilationUnit);
 
-			IMethod method = GeneratedInitializeComponentMethod.GetInitializeComponents(parseInfo);
+			IMethod method = PythonDesignerGenerator.GetInitializeComponents(parseInfo);
 
 			Assert.IsNotNull(method);
 			Assert.AreSame(expectedMethod, method);

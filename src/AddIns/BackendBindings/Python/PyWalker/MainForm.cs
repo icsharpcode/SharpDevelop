@@ -16,21 +16,18 @@ using ICSharpCode.PythonBinding;
 using IronPython;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;
+using IronPython.Runtime;
 using Microsoft.CSharp;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Runtime;
 using NRefactory = ICSharpCode.NRefactory;
 
 namespace PyWalker
 {
-	/// <summary>
-	/// Description of MainForm.
-	/// </summary>
 	public partial class MainForm : Form, IOutputWriter
 	{
 		public MainForm()
 		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
 			InitializeComponent();			
 		}
 		
@@ -42,19 +39,22 @@ namespace PyWalker
 		void RunAstWalkerButtonClick(object sender, EventArgs e)
 		{
 			try {
+				IronPython.Hosting.Python.CreateEngine();
 				Clear();
-//				PythonCompilerSink sink = new PythonCompilerSink();
-//				CompilerContext context = new CompilerContext(String.Empty, sink);
-//				Parser parser = Parser.FromString(null, context, codeTextBox.Text);
-//				Statement statement = parser.ParseFileInput();
-//				ResolveWalker walker = new ResolveWalker(this);
-//				statement.Walk(walker);
-//				if (sink.Errors.Count > 0) {
-//					walkerOutputTextBox.Text += "\r\n";
-//					foreach (PythonCompilerError error in sink.Errors) {
-//						walkerOutputTextBox.Text += error.ToString() + "\r\n";
-//					}
-//				}
+				PythonCompilerSink sink = new PythonCompilerSink();
+				SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(@"D:\Temp.py", codeTextBox.Text);
+				CompilerContext context = new CompilerContext(source, new PythonCompilerOptions(), sink);
+				Parser parser = Parser.CreateParser(context, new PythonOptions());
+				PythonAst ast = parser.ParseFile(false);
+				if (sink.Errors.Count == 0) {
+					ResolveWalker walker = new ResolveWalker(this);
+					walker.Walk(ast);
+				} else {
+					walkerOutputTextBox.Text += "\r\n";
+					foreach (PythonCompilerError error in sink.Errors) {
+						walkerOutputTextBox.Text += error.ToString() + "\r\n";
+					}
+				}
 			} catch (Exception ex) {
 				walkerOutputTextBox.Text = ex.ToString();
 			}
@@ -69,20 +69,7 @@ namespace PyWalker
 		{
 			walkerOutputTextBox.Text = String.Empty;
 		}
-		
-		void RunCodeDomVisitorClick(object sender, EventArgs e)
-		{
-			try {
-				Clear();
-//				PythonProvider provider = new PythonProvider();
-//				CodeCompileUnit unit = provider.Parse(new StringReader(codeTextBox.Text));
-//				CodeDomVisitor visitor = new CodeDomVisitor(this);
-//				visitor.Visit(unit);
-			} catch (Exception ex) {
-				walkerOutputTextBox.Text = ex.ToString();
-			}
-		}
-		
+				
 		/// <summary>
 		/// Round trips the Python code through the code DOM and back
 		/// to source code.
@@ -113,21 +100,8 @@ namespace PyWalker
 		{
 			try {
 				Clear();
-				using (NRefactory.IParser parser = NRefactory.ParserFactory.CreateParser(NRefactory.SupportedLanguage.CSharp, new StringReader(codeTextBox.Text))) {
-					parser.ParseMethodBodies = false;
-					parser.Parse();
-					NRefactory.Visitors.CodeDomVisitor visitor = new NRefactory.Visitors.CodeDomVisitor();
-					visitor.VisitCompilationUnit(parser.CompilationUnit, null);
-				
-//					PythonProvider provider = new PythonProvider();
-//					StringWriter writer = new StringWriter();
-//					CodeGeneratorOptions options = new CodeGeneratorOptions();
-//					options.BlankLinesBetweenMembers = false;
-//					options.IndentString = "\t";
-//					provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, writer, options);
-//	
-//					walkerOutputTextBox.Text = writer.ToString();
-				}
+				CSharpToPythonConverter converter = new CSharpToPythonConverter();
+				walkerOutputTextBox.Text = converter.Convert(codeTextBox.Text);
 			} catch (Exception ex) {
 				walkerOutputTextBox.Text = ex.ToString();
 			}			
@@ -153,5 +127,20 @@ namespace PyWalker
 				walkerOutputTextBox.Text = ex.ToString();
 			}			
 		}		
+		
+		void RunCSharpNRefactoryVisitorClick(object sender, EventArgs e)
+		{
+			try {
+				Clear();
+				using (NRefactory.IParser parser = NRefactory.ParserFactory.CreateParser(NRefactory.SupportedLanguage.CSharp, new StringReader(codeTextBox.Text))) {
+					parser.ParseMethodBodies = false;
+					parser.Parse();
+					NRefactoryAstVisitor visitor = new NRefactoryAstVisitor(this);
+					visitor.VisitCompilationUnit(parser.CompilationUnit, null);
+				}
+			} catch (Exception ex) {
+				walkerOutputTextBox.Text = ex.ToString();
+			}			
+		}
 	}
 }

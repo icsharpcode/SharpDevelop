@@ -26,9 +26,6 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class DerivedPythonDesignerGenerator : PythonDesignerGenerator
 	{
-		CodeTypeDeclaration generatedFormClass;
-		CodeMemberMethod generatedInitializeComponent;
-		IMethod methodToReturnFromInitializeComponents;
 		string fileNamePassedToParseFile;
 		string textContentPassedToParseFile;
 		ParseInformation parseInfoToReturnFromParseFile;
@@ -36,27 +33,7 @@ namespace PythonBinding.Tests.Utils
 		public DerivedPythonDesignerGenerator()
 		{
 		}
-				
-		/// <summary>
-		/// Gets the form class found during the MergeFormChanges method.
-		/// </summary>
-		public CodeTypeDeclaration GeneratedFormClass {
-			get { return generatedFormClass; }
-		}
-		
-		/// <summary>
-		/// Get the InitializeComponents Method found during the
-		/// MergeFormChanges call.
-		/// </summary>
-		public CodeMemberMethod GenerateInitializeComponentsMethod {
-			get { return generatedInitializeComponent; }
-		}
-		
-		public DomRegion CallGetBodyRegionInDocument(IMethod method)
-		{
-			return base.GetBodyRegionInDocument(method);
-		}
-						
+								
 		/// <summary>
 		/// Gets the filename passed to the ParseFile method. This is called
 		/// at the start of the GetInitializeComponents method to get the
@@ -91,11 +68,6 @@ namespace PythonBinding.Tests.Utils
 		{
 			return base.ViewContent;
 		}
-		
-		public IMethod MethodToReturnFromInitializeComponents {
-			get { return methodToReturnFromInitializeComponents; }
-			set { methodToReturnFromInitializeComponents = value; }
-		}
 
 		/// <summary>
 		/// Calls the PythonDesignerGenerator's CreateEventHandler method.
@@ -103,13 +75,6 @@ namespace PythonBinding.Tests.Utils
 		public string CallCreateEventHandler(string eventMethodName, string body, string indentation)
 		{
 			return base.CreateEventHandler(eventMethodName, body, indentation);
-		}
-		
-		protected override void MergeFormChanges(GeneratedInitializeComponentMethod generatedInitializeComponent)
-		{
-			this.generatedFormClass = generatedInitializeComponent.Type;
-			this.generatedInitializeComponent = generatedInitializeComponent.Method;
-			base.MergeFormChanges(generatedInitializeComponent);
 		}
 				
 		protected override ParseInformation ParseFile(string fileName, string textContent)

@@ -155,11 +155,11 @@ namespace ICSharpCode.PythonBinding
 		{
 			foreach (Expression expression in baseTypes) {
 				NameExpression nameExpression = expression as NameExpression;
-				//FieldExpression fieldExpression = expression as FieldExpression;
+				MemberExpression memberExpression = expression as MemberExpression;
 				if (nameExpression != null) {
 					AddBaseType(c, nameExpression.Name.ToString());
-				//} else if (fieldExpression != null) {
-				//	AddBaseType(c, fieldExpression.Name.ToString());
+				} else if (memberExpression != null) {
+					AddBaseType(c, memberExpression.Name.ToString());
 				}
 			}
 		}

@@ -10,6 +10,7 @@ using System.Collections;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.IO;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.FormsDesigner;
@@ -22,86 +23,16 @@ namespace PythonBinding.Tests.Utils
 	/// various protected methods so we can use them when testing.
 	/// </summary>
 	public class DerivedPythonDesignerLoader : PythonDesignerLoader
-	{
-		bool loadingBeforeBeginLoad;
-		bool loadingAfterBeginLoad;
-		bool loadingBeforeOnEndLoad;
-		bool loadingAfterOnEndLoad;
-		CodeCompileUnit codeCompileUnit;
-		
-		public DerivedPythonDesignerLoader(IDesignerGenerator generator) : base(generator)
+	{				
+		public DerivedPythonDesignerLoader(IPythonDesignerGenerator generator) : base(generator)
 		{
 		}
-		
-		public bool IsLoadingBeforeBeginLoad {
-			get { return loadingBeforeBeginLoad; }
-		}
-		
-		public bool IsLoadingAfterBeginLoad {
-			get { return loadingAfterBeginLoad; }
-		}
-		
-		public bool IsLoadingBeforeOnEndLoad {
-			get { return loadingBeforeOnEndLoad; }
-		}
-		
-		public bool IsLoadingAfterOnEndLoad {
-			get { return loadingAfterOnEndLoad; }
-		}
-				
-		/// <summary>
-		/// Calls the PythonDesignerLoader's Write method.
-		/// </summary>
-		public void CallWrite(CodeCompileUnit unit)
+
+		public void CallPerformFlush()
 		{
-			base.Write(unit);
+			base.PerformFlush(null);
 		}
-		
-		/// <summary>
-		/// Calls the PythonDesignerLoader's Parse method.
-		/// </summary>
-		public CodeCompileUnit CallParse()
-		{
-			return base.Parse();
-		}
-		
-		/// <summary>
-		/// Gets the last code compile unit returned from the 
-		/// designer loader's Parse method.
-		/// </summary>
-		public CodeCompileUnit CodeCompileUnit {
-			get { return codeCompileUnit; }
-		}
-				
-		public CodeDomProvider GetCodeDomProvider()
-		{
-			return base.CodeDomProvider;
-		}
-		
-		public ITypeResolutionService GetTypeResolutionService()
-		{
-			return TypeResolutionService;
-		}
-				
-		public override void BeginLoad(System.ComponentModel.Design.Serialization.IDesignerLoaderHost host)
-		{
-			loadingBeforeBeginLoad = base.Loading;
-			base.BeginLoad(host);
-			loadingAfterBeginLoad = base.Loading;
-		}
-		
-		protected override void OnBeginUnload()
-		{
-			System.Console.WriteLine("DesignerLoader.OnBeginUnload");
-			base.OnBeginUnload();
-		}
-		
-		protected override void OnModifying()
-		{
-			System.Console.WriteLine("DesignerLoader.OnModifying");
-			base.OnModifying();
-		}
-		
+
 		protected override void OnEndLoad(bool successful, ICollection errors)
 		{
 			System.Console.WriteLine("DesignerLoader.OnEndLoad: successful: " + successful);
@@ -113,9 +44,7 @@ namespace PythonBinding.Tests.Utils
 					}
 				}
 			}
-			loadingBeforeOnEndLoad = base.Loading;
 			base.OnEndLoad(successful, errors);
-			loadingAfterOnEndLoad = base.Loading;
 		}
 		
 		protected override void OnBeginLoad()
@@ -130,21 +59,12 @@ namespace PythonBinding.Tests.Utils
 			base.Initialize();
 		}
 		
-		protected override void PerformLoad(System.ComponentModel.Design.Serialization.IDesignerSerializationManager manager)
+		protected override void PerformLoad(IDesignerSerializationManager manager)
 		{
 			System.Console.WriteLine("DesignerLoader.PerformLoad Before");
 			base.PerformLoad(manager);
 			System.Console.WriteLine("DesignerLoader.PerformLoad After");
 		}
 
-		/// <summary>
-		/// Saves the last CodeCompileUnit created by the
-		/// PythonDesignerLoader.
-		/// </summary>
-		protected override CodeCompileUnit Parse()
-		{
-			codeCompileUnit = base.Parse();
-			return codeCompileUnit;
-		}		
 	}
 }
