@@ -289,9 +289,27 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected void Reparse()
 		{
-			// get new initialize components
-			ParseInformation info = ParserService.ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent, false);
+			// Reparse primary file to update currentClassPart
+			ParseInformation info = ParserService.ParseFile(this.ViewContent.PrimaryFileName, this.ViewContent.PrimaryFileContent, false);
 			ICompilationUnit cu = info.BestCompilationUnit;
+			foreach (IClass c in cu.Classes) {
+				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
+					if (FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c) != null) {
+						this.currentClassPart = c;
+						break;
+					}
+				}
+			}
+			
+			// Reparse designer code file to update initializeComponents,
+			// completeClass and formClass
+			if (this.ViewContent.DesignerCodeFile != this.ViewContent.PrimaryFile) {
+				// Actual parsing is only necessary if the designer code file
+				// is not the same as the primary file. Otherwise we just
+				// reuse the parse info from above.
+				info = ParserService.ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent, false);
+			}
+			cu = info.BestCompilationUnit;
 			foreach (IClass c in cu.Classes) {
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 					this.initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
@@ -338,6 +356,8 @@ namespace ICSharpCode.FormsDesigner
 		{
 			Reparse();
 			
+			LoggingService.Debug("Forms designer: AbstractDesignerGenerator.InsertComponentEvent: eventMethodName=" + eventMethodName);
+			
 			foreach (IMethod method in completeClass.Methods) {
 				if (method.Name == eventMethodName) {
 					file = method.DeclaringType.CompilationUnit.FileName;
@@ -362,6 +382,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			file = currentClassPart.CompilationUnit.FileName;
 			int line = GetEventHandlerInsertionLine(currentClassPart);
+			LoggingService.Debug("-> Inserting new event handler at line " + line.ToString(System.Globalization.CultureInfo.InvariantCulture));
 			
 			int offset = this.viewContent.PrimaryFileDocument.GetLineSegment(line - 1).Offset;
 			
