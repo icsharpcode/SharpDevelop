@@ -440,7 +440,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 	TypeParameterList<newType.Templates>
 	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
-	[ ClassBaseType<out typeRef> (. newType.BaseTypes.Add(typeRef); .) ]
+	[ ClassBaseType<out typeRef> (. SafeAdd(newType, newType.BaseTypes, typeRef); .) ]
 	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
 	ClassBody<newType>
 	"End" "Class" (. newType.EndLocation = t.EndLocation; .)
@@ -494,7 +494,7 @@ NonModuleDeclaration<ModifierList m, List<AttributeSection> attributes>
 			newType.Type = ClassType.Enum;
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
-	[ "As" NonArrayTypeName<out typeRef, false> (. newType.BaseTypes.Add(typeRef); .) ]
+	[ "As" NonArrayTypeName<out typeRef, false> (. SafeAdd(newType, newType.BaseTypes, typeRef); .) ]
 	EndOfStmt
 	(. newType.BodyStartLocation = t.Location; .)
 	EnumBody<newType>
@@ -1540,8 +1540,8 @@ HandlesClause<out List<string> handlesClause>
 		handlesClause = new List<string>();
 		string name;
 	.) =
-	"Handles" EventMemberSpecifier<out name>	(. handlesClause.Add(name); .)
-	{ "," EventMemberSpecifier<out name>		(. handlesClause.Add(name); .) }
+	"Handles" EventMemberSpecifier<out name>	(. if (name != null) handlesClause.Add(name); .)
+	{ "," EventMemberSpecifier<out name>		(. if (name != null) handlesClause.Add(name); .) }
 	.
 
 /* 7.8. */
@@ -1551,10 +1551,10 @@ InterfaceBase <out List<TypeReference> bases>
 		bases = new List<TypeReference>();
 	.) =
 	"Inherits"
-	TypeName<out type> (. bases.Add(type); .)
+	TypeName<out type> (. if (type != null) bases.Add(type); .)
 	{
 		","
-		TypeName<out type> (. bases.Add(type); .)
+		TypeName<out type> (. if (type != null) bases.Add(type); .)
 	}
 	EndOfStmt
 	.
@@ -1567,11 +1567,11 @@ TypeImplementsClause<out List<TypeReference> baseInterfaces>
 	.) =
 	"Implements" TypeName<out type>
 	(.
-		baseInterfaces.Add(type);
+		if (type != null) baseInterfaces.Add(type);
 	.)
 	{
 		"," TypeName<out type>
-		(. baseInterfaces.Add(type); .)
+		(. if (type != null) baseInterfaces.Add(type); .)
 	}
 	EndOfStmt
 	.

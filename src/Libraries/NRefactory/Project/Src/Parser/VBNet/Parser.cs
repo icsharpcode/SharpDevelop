@@ -580,7 +580,7 @@ newType.Templates);
 out typeRef);
 
 #line  443 "VBNET.ATG" 
-				newType.BaseTypes.Add(typeRef); 
+				SafeAdd(newType, newType.BaseTypes, typeRef); 
 			}
 			while (la.kind == 123) {
 				TypeImplementsClause(
@@ -695,7 +695,7 @@ newType);
 out typeRef, false);
 
 #line  497 "VBNET.ATG" 
-				newType.BaseTypes.Add(typeRef); 
+				SafeAdd(newType, newType.BaseTypes, typeRef); 
 			}
 			EndOfStmt();
 
@@ -975,7 +975,7 @@ out List<TypeReference> baseInterfaces) {
 out type);
 
 #line  1570 "VBNET.ATG" 
-		baseInterfaces.Add(type);
+		if (type != null) baseInterfaces.Add(type);
 		
 		while (la.kind == 12) {
 			lexer.NextToken();
@@ -984,7 +984,7 @@ out type);
 out type);
 
 #line  1574 "VBNET.ATG" 
-			baseInterfaces.Add(type); 
+			if (type != null) baseInterfaces.Add(type); 
 		}
 		EndOfStmt();
 	}
@@ -1223,7 +1223,7 @@ out List<TypeReference> bases) {
 out type);
 
 #line  1554 "VBNET.ATG" 
-		bases.Add(type); 
+		if (type != null) bases.Add(type); 
 		while (la.kind == 12) {
 			lexer.NextToken();
 			TypeName(
@@ -1231,7 +1231,7 @@ out type);
 out type);
 
 #line  1557 "VBNET.ATG" 
-			bases.Add(type); 
+			if (type != null) bases.Add(type); 
 		}
 		EndOfStmt();
 	}
@@ -2512,7 +2512,7 @@ out List<string> handlesClause) {
 out name);
 
 #line  1543 "VBNET.ATG" 
-		handlesClause.Add(name); 
+		if (name != null) handlesClause.Add(name); 
 		while (la.kind == 12) {
 			lexer.NextToken();
 			EventMemberSpecifier(
@@ -2520,7 +2520,7 @@ out name);
 out name);
 
 #line  1544 "VBNET.ATG" 
-			handlesClause.Add(name); 
+			if (name != null) handlesClause.Add(name); 
 		}
 	}
 
