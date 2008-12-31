@@ -1,0 +1,78 @@
+﻿<ResourceDictionary x:Class="SharpDevelop.XamlDesigner.PropertyGrid.Editors.EditorTemplates"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:Controls="clr-namespace:SharpDevelop.XamlDesigner.Controls"
+                    xmlns:Converters="clr-namespace:SharpDevelop.XamlDesigner.Converters"
+                    xmlns:Editors="clr-namespace:SharpDevelop.XamlDesigner.PropertyGrid.Editors"
+                    xmlns:BrushEditor="clr-namespace:SharpDevelop.XamlDesigner.PropertyGrid.Editors.BrushEditor"
+                    >
+
+    <DataTemplate x:Key="BoolEditor">
+        <CheckBox Margin="5 0 0 0"
+                  IsChecked="{Binding Value}"
+                  Background="{x:Null}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="NuallableBoolEditor">
+        <CheckBox Margin="5 0 0 0"
+                  IsChecked="{Binding Value}"
+                  Background="{x:Null}"
+                  IsThreeState="True" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="NumberEditor">
+        <Controls:EditSlider Value="{Binding Value, Converter={x:Static Converters:SafeDoubleConverter.Instance}}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="ThicknessEditor">
+        <Editors:ThicknessEditor Value="{Binding Value}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="HorizontalAlignmentEditor">
+        <Controls:EnumListBox EnumValue="{Binding Value}">
+            <ListBoxItem>L</ListBoxItem>
+            <ListBoxItem>C</ListBoxItem>
+            <ListBoxItem>R</ListBoxItem>
+            <ListBoxItem>S</ListBoxItem>
+        </Controls:EnumListBox>
+    </DataTemplate>
+
+    <DataTemplate x:Key="VerticalAlignmentEditor">
+        <Controls:EnumListBox EnumValue="{Binding Value}">
+            <ListBoxItem>T</ListBoxItem>
+            <ListBoxItem>C</ListBoxItem>
+            <ListBoxItem>B</ListBoxItem>
+            <ListBoxItem>S</ListBoxItem>
+        </Controls:EnumListBox>
+    </DataTemplate>
+
+    <DataTemplate x:Key="TextBoxEditor">
+        <Controls:EnterTextBox Text="{Binding ValueString}"
+                               Background="#0000"
+                               BorderThickness="0" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="ComboBoxEditor">
+        <ComboBox SelectedValuePath="Instance"
+                  SelectedValue="{Binding Value}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="EventEditor">
+        <Editors:EventEditor Text="{Binding ValueString}"
+                             Background="#0000"
+                             BorderThickness="0" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="ObjectEditor">
+        <Editors:ObjectEditor />
+    </DataTemplate>
+
+    <DataTemplate x:Key="CollectionEditor">
+        <Editors:CollectionEditor />
+    </DataTemplate>
+    
+    <DataTemplate x:Key="BrushEditor">
+        <BrushEditor:BrushTypeEditor />
+    </DataTemplate>
+
+</ResourceDictionary>

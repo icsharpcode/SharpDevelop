@@ -1,0 +1,48 @@
+﻿<UserControl x:Name="root"
+             x:Class="SharpDevelop.XamlDesigner.DesignView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Default="clr-namespace:SharpDevelop.XamlDesigner"
+             xmlns:Controls="clr-namespace:SharpDevelop.XamlDesigner.Controls"
+             Background="{DynamicResource BackgroundBrush}"
+             SnapsToDevicePixels="True">
+
+    <Grid>
+        <ScrollViewer x:Name="uxScrollViewer"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <AdornerDecorator x:Name="uxAdornerDecorator">
+                    <Default:NoInheritancePanel>
+                        <Border x:Name="uxScrolledLayer">
+                            <Grid x:Name="uxZoomedLayer">
+                                <ContentPresenter Content="{Binding Context.Root.View, ElementName=root}"
+                                                  Margin="20" />
+                                <Canvas x:Name="uxSeparatedItemsLayer" />
+                            </Grid>
+                        </Border>
+                        <Controls:AdvancedThumb x:Name="uxMouseLayer" />
+                    </Default:NoInheritancePanel>
+                </AdornerDecorator>
+                <Canvas x:Name="uxFeedbackLayer"
+                        IsHitTestVisible="False" />
+            </Grid>
+        </ScrollViewer>
+
+        <StackPanel x:Name="uxExceptionInfo"
+                    Visibility="Collapsed"
+                    Margin="30">
+            <TextBlock Text="Exception"
+                       FontSize="20" />
+            <TextBox x:Name="uxExceptionMessage"
+                     Foreground="{DynamicResource Text1Brush}"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     Background="{x:Null}"
+                     BorderThickness="0"                     
+                     Margin="0 11 0 0" />
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

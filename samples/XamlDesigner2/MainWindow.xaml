@@ -1,0 +1,98 @@
+﻿<Window x:Class="SharpDevelop.Samples.XamlDesigner.MainWindow"
+        x:Name="root"
+        xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sd="http://sharpdevelop.net"
+        xmlns:AvalonDock="clr-namespace:AvalonDock;assembly=AvalonDock"
+        xmlns:Default="clr-namespace:SharpDevelop.Samples.XamlDesigner"
+        SnapsToDevicePixels="True"
+        Title="{Binding Title}"
+        FontFamily="Tahoma">
+
+    <DockPanel>
+
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem sd:CommandHelper.Command="New" />
+                <MenuItem sd:CommandHelper.Command="Open" />
+                <Separator />
+                <MenuItem sd:CommandHelper.Command="Close" />
+                <MenuItem sd:CommandHelper.Command="CloseAll" />
+                <Separator />
+                <MenuItem sd:CommandHelper.Command="Save" />
+                <MenuItem sd:CommandHelper.Command="SaveAs" />
+                <MenuItem sd:CommandHelper.Command="SaveAll" />
+                <Separator />
+                <MenuItem Header="Recent Files"
+                          ItemsSource="{Binding RecentFiles}"
+                          IsEnabled="{Binding RecentFiles.Count, Converter={StaticResource FalseWhenZero}}"
+                          Click="RecentFiles_Click" />
+                <Separator />
+                <MenuItem sd:CommandHelper.Command="Exit" />
+            </MenuItem>
+            <MenuItem Header="Edit"
+                      DataContext="{Binding CurrentDocument.Context.DesignCommands}">
+                <MenuItem sd:CommandHelper.Command="Undo" />
+                <MenuItem sd:CommandHelper.Command="Redo" />
+                <Separator />
+                <MenuItem sd:CommandHelper.Command="Cut" />
+                <MenuItem sd:CommandHelper.Command="Copy" />
+                <MenuItem sd:CommandHelper.Command="Paste" />
+                <MenuItem sd:CommandHelper.Command="Delete" />
+                <MenuItem sd:CommandHelper.Command="SelectAll" />
+            </MenuItem>
+            <MenuItem Header="View">
+                <MenuItem Header="Palette"
+                          IsCheckable="True"
+                          IsChecked="{Binding Path=(Default:MainWindow.DockableContentVisibility).IsVisible, ElementName=content1}"/>
+                <MenuItem Header="Outline"
+                          IsCheckable="True"
+                          IsChecked="{Binding Path=(Default:MainWindow.DockableContentVisibility).IsVisible, ElementName=content2}"/>
+                <MenuItem Header="Properties"
+                          IsCheckable="True"
+                          IsChecked="{Binding Path=(Default:MainWindow.DockableContentVisibility).IsVisible, ElementName=content3}"/>
+            </MenuItem>
+        </Menu>
+
+        <AvalonDock:DockingManager x:Name="uxDockingManager">
+            <AvalonDock:ResizingPanel Orientation="Horizontal">
+
+                <AvalonDock:DockablePane AvalonDock:ResizingPanel.ResizeWidth="200">
+                    <AvalonDock:DockableContent x:Name="content2"
+                                                Title="Outline"
+                                                Default:MainWindow.AttachDockableContentVisibility="True">
+                        <sd:OutlineView Context="{Binding CurrentDocument.Context}" />
+                    </AvalonDock:DockableContent>
+                </AvalonDock:DockablePane>
+                
+                <AvalonDock:ResizingPanel Orientation="Vertical">
+                    
+                    <AvalonDock:DockablePane AvalonDock:ResizingPanel.ResizeWidth="200"
+                                             AvalonDock:ResizingPanel.ResizeHeight="160">
+                        <AvalonDock:DockableContent x:Name="content1"
+                                                    Title="Palette"
+                                                    Default:MainWindow.AttachDockableContentVisibility="True">
+                            <sd:PaletteView x:Name="uxPalette"
+                                            Context="{Binding CurrentDocument.Context}" />
+                        </AvalonDock:DockableContent>
+                    </AvalonDock:DockablePane>
+
+                    <AvalonDock:DocumentPane x:Name="uxDocumentPane"
+                                             SelectedValue="{Binding CurrentDocument}"
+                                             SelectedValuePath="DataContext" />
+                    
+                </AvalonDock:ResizingPanel>                
+
+                <AvalonDock:DockablePane AvalonDock:ResizingPanel.ResizeWidth="257">
+                    <AvalonDock:DockableContent x:Name="content3"
+                                                Title="Properties"
+                                                Default:MainWindow.AttachDockableContentVisibility="True">
+                        <sd:PropertyGridView x:Name="uxPropertyGridView"
+                                             Context="{Binding CurrentDocument.Context}" />
+                    </AvalonDock:DockableContent>
+                </AvalonDock:DockablePane>
+
+            </AvalonDock:ResizingPanel>
+        </AvalonDock:DockingManager>
+    </DockPanel>
+</Window>

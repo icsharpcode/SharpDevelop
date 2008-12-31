@@ -1,0 +1,172 @@
+﻿<UserControl x:Name="root"
+             x:Class="SharpDevelop.XamlDesigner.PropertyGrid.Editors.BrushEditor.ColorPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Controls="clr-namespace:SharpDevelop.XamlDesigner.Controls"
+             xmlns:BrushEditor="clr-namespace:SharpDevelop.XamlDesigner.PropertyGrid.Editors.BrushEditor">
+
+    <StackPanel Orientation="Horizontal"
+                VerticalAlignment="Top">
+
+        <Border BorderBrush="{DynamicResource BackgroundBrush}"
+                BorderThickness="1"
+                Width="200"
+                Height="200">
+
+            <BrushEditor:Picker Value="{Binding S, ElementName=root}"
+                                Marker="{Binding ElementName=point}"
+                                ClipToBounds="True">
+                <BrushEditor:Picker Orientation="Vertical"
+                                    Value="{Binding V, ElementName=root}"
+                                    Minimum="100"
+                                    Maximum="0"
+                                    Marker="{Binding ElementName=point}">
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <LinearGradientBrush EndPoint="1 0">
+                                <GradientStop Offset="0"
+                                              Color="White" />
+                                <GradientStop Offset="1"
+                                              Color="{Binding HueColor, ElementName=root}" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <LinearGradientBrush EndPoint="0 1">
+                                <GradientStop Offset="0"
+                                              Color="#0000" />
+                                <GradientStop Offset="1"
+                                              Color="#F000" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Grid x:Name="point"
+                          VerticalAlignment="Top"
+                          HorizontalAlignment="Left"
+                          Width="12"
+                          Height="12"
+                          Margin="-6 -6 0 0">
+                        <Ellipse Stroke="Black"
+                                 IsHitTestVisible="False" />
+                        <Ellipse Stroke="White"
+                                 Margin="1"
+                                 IsHitTestVisible="False" />
+                    </Grid>
+                </BrushEditor:Picker>
+            </BrushEditor:Picker>
+        </Border>
+
+        <Border Margin="10 0 0 0">
+            <BrushEditor:Picker Orientation="Vertical"
+                                Value="{Binding H, ElementName=root}"
+                                Minimum="360"
+                                Maximum="0"
+                                Marker="{Binding ElementName=arrows}"
+                                Width="20">
+                <Border BorderThickness="1"
+                        BorderBrush="{DynamicResource BackgroundBrush}">
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0 1">
+                            <GradientStop Offset="0"
+                                          Color="#F00" />
+                            <GradientStop Offset="0.16"
+                                          Color="#F0F" />
+                            <GradientStop Offset="0.33"
+                                          Color="#00F" />
+                            <GradientStop Offset="0.5"
+                                          Color="#0FF" />
+                            <GradientStop Offset="0.76"
+                                          Color="#0F0" />
+                            <GradientStop Offset="0.85"
+                                          Color="#FF0" />
+                            <GradientStop Offset="1"
+                                          Color="#F00" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+                <Grid x:Name="arrows"
+                      IsHitTestVisible="False"
+                      VerticalAlignment="Top"
+                      Margin="-5">
+                    <Path HorizontalAlignment="Left"
+                          Data="M 0 0 L 5 5 L 0 10 Z"
+                          Fill="Black" />
+                    <Path HorizontalAlignment="Right"
+                          Data="M 0 0 L -5 5 L 0 10 Z"
+                          Fill="Black" />
+                </Grid>
+            </BrushEditor:Picker>
+        </Border>
+
+        <StackPanel VerticalAlignment="Top"
+                    Margin="14 0 0 0">
+
+            <Border Background="{DynamicResource ChessBrush}"
+                    HorizontalAlignment="Right"
+                    BorderBrush="{DynamicResource BackgroundBrush}"
+                    BorderThickness="1"
+                    Height="50"
+                    Width="70">
+                <Rectangle>
+                    <Rectangle.Fill>
+                        <SolidColorBrush Color="{Binding Color, ElementName=root}" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Border>
+
+            <DockPanel Margin="0 5 0 0">
+                <Controls:EnterTextBox Text="{Binding Hex, ElementName=root, UpdateSourceTrigger=PropertyChanged}"
+                                       Width="70"
+                                       Margin="5 0 0 0"
+                                       DockPanel.Dock="Right" />
+                <TextBlock Text="#"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right" />
+            </DockPanel>
+
+            <DockPanel Margin="0 20 0 0">
+                <Controls:EditSlider Value="{Binding R, ElementName=root}"
+                                     Width="70"
+                                     Margin="5 0 0 0"
+                                     DockPanel.Dock="Right" />
+                <TextBlock Text="R"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right" />
+            </DockPanel>
+
+            <DockPanel Margin="0 5 0 0">
+                <Controls:EditSlider Value="{Binding G, ElementName=root}"
+                                     Width="70"
+                                     Margin="5 0 0 0"
+                                     DockPanel.Dock="Right" />
+                <TextBlock Text="G"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right" />
+            </DockPanel>
+
+            <DockPanel Margin="0 5 0 0">
+                <Controls:EditSlider Value="{Binding B, ElementName=root}"
+                                     Width="70"
+                                     Margin="5 0 0 0"
+                                     DockPanel.Dock="Right" />
+                <TextBlock Text="B"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right" />
+            </DockPanel>
+
+            <DockPanel Margin="0 5 0 0">
+                <Controls:EditSlider Value="{Binding A, ElementName=root}"
+                                     Width="70"
+                                     Margin="5 0 0 0"
+                                     DockPanel.Dock="Right" />
+                <TextBlock Text="A"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right" />
+            </DockPanel>
+
+        </StackPanel>
+
+    </StackPanel>
+
+</UserControl>

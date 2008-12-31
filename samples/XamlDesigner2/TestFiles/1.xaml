@@ -1,0 +1,31 @@
+﻿<Window xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="WindowTitle"
+        BorderThickness="10"
+        Width="400"
+        Height="300">
+    <StackPanel>
+        <Canvas Height="50">
+            <Button>CB</Button>
+        </Canvas>
+        <TabControl MinHeight="150">
+            <TabItem Header="StackPanel">
+                <StackPanel>
+                    <Button>a</Button>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Button">
+                <Button>button on page 2</Button>
+            </TabItem>
+            <TabItem Header="Canvas">
+                <Canvas />
+            </TabItem>
+            <TabItem Header="Grid">
+                <Grid />
+            </TabItem>
+            <TabItem Header="DockPanel">
+                <DockPanel />
+            </TabItem>
+        </TabControl>
+    </StackPanel>
+</Window>

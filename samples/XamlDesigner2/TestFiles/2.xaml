@@ -1,0 +1,53 @@
+<Window xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="524"
+        Height="385">
+  <Canvas>
+    <Ellipse Width="146"
+             Height="63"
+             Fill="#FF5DAF05"
+             Stroke="#FF000000"
+             StrokeThickness="8"
+             Canvas.Left="8"
+             Canvas.Top="158.9" />
+    <Grid Width="279"
+          Height="336.99999999999989"
+          Background="#FFFFFFE1"
+          Canvas.Left="226.99999999999994"
+          Canvas.Top="8.0000000000000853">
+      <Panel.Children>
+        <TextBlock Width="59"
+                   Height="39"
+                   Margin="0,10,12,0"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top"
+                   FontSize="33"
+                   Text="Grid"
+                   Grid.Column="0"
+                   Grid.Row="0" />
+      </Panel.Children>
+    </Grid>
+    <GroupBox Content="GroupBox"
+              Width="175.39666666666668"
+              Height="116"
+              Canvas.Left="8"
+              Canvas.Top="8" />
+    <TextBlock Width="66.710000000000008"
+               FontSize="14"
+               Text="StackPanel"
+               Canvas.Left="8"
+               Canvas.Top="133" />
+    <StackPanel Width="209.99999999999994"
+                Height="114.09999999999991"
+                Background="#FFEDEDED"
+                Canvas.Left="8"
+                Canvas.Top="230.90000000000012">
+      <Panel.Children />
+    </StackPanel>
+    <Button Content="bla-blakjh"
+            Width="54.999999999999886"
+            Height="88.900000000000091"
+            Canvas.Left="163.00000000000006"
+            Canvas.Top="133.00000000000003" />
+  </Canvas>
+</Window>

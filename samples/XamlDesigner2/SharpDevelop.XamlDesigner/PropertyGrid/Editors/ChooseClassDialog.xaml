@@ -1,0 +1,53 @@
+﻿<Window x:Class="SharpDevelop.XamlDesigner.PropertyGrid.ChooseClassDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="clr-namespace:SharpDevelop.XamlDesigner.Controls"
+        xmlns:Converters="clr-namespace:SharpDevelop.XamlDesigner.Converters"
+        
+        Icon="../../Images/Class.png"
+        Title="Choose Class"
+        Background="{DynamicResource DialogBackgroundBrush}"
+        SnapsToDevicePixels="True"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        Height="438"
+        Width="488">
+
+    <Control.Resources>
+        <DataTemplate x:Key="TypeTemplate">
+            <Controls:IconItem Icon="../../Images/Class.png"
+                               Text="{Binding Converter={x:Static Converters:FullTypeNameConverter.Instance}}" />
+        </DataTemplate>
+    </Control.Resources>
+
+    <DockPanel Margin="12">
+        <CheckBox DockPanel.Dock="Top"
+                  IsChecked="{Binding ShowSystemClasses}"
+                  Content="Show System Classes" />
+        <DockPanel DockPanel.Dock="Bottom"
+                   LastChildFill="False">
+            <StackPanel DockPanel.Dock="Right"
+                        Orientation="Horizontal"
+                        Margin="0 12 0 0">
+                <Button x:Name="uxOkButton"
+                        Content="OK"
+                        IsDefault="True"
+                        Click="uxOkButton_Click"
+                        IsEnabled="{Binding SelectedClass, Converter={x:Static Converters:FalseWhenNull.Instance}}" />
+                <Button Content="Cancel"
+                        IsCancel="True"
+                        Margin="7 0 0 0" />
+            </StackPanel>
+        </DockPanel>
+        <Controls:FilterDecorator Filter="{Binding Filter}"
+                                  Margin="0 7 0 0">
+            <ListBox x:Name="uxList"
+                     MouseDoubleClick="uxList_MouseDoubleClick"
+                     ItemsSource="{Binding ClassesView}"
+                     ItemTemplate="{StaticResource TypeTemplate}"
+                     SelectedItem="{Binding SelectedClass}"
+                     BorderThickness="0" />
+        </Controls:FilterDecorator>
+    </DockPanel>
+
+</Window>

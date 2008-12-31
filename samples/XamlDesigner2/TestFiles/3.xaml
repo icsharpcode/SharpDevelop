@@ -1,0 +1,16 @@
+<Window xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Name="root"
+        Title="Hydralisk">
+    <Window.Resources>
+        <sys:String x:Key="r1">Title</sys:String>
+        <sys:String x:Key="r2">Width</sys:String>
+    </Window.Resources>
+    <StackPanel>
+        <Button Name="b1"
+                Width="100"
+                Content="Button" />
+        <TextBlock Text="{Binding Path={StaticResource r1}, ElementName=root}" />
+    </StackPanel>
+</Window>
