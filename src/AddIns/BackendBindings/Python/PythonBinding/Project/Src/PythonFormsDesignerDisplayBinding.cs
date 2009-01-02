@@ -7,12 +7,14 @@
 
 using System;
 using System.IO;
+
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -44,8 +46,13 @@ namespace ICSharpCode.PythonBinding
 			}
 			return false;
 		}
-		
+
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
+		{
+			return CreateSecondaryViewContent(viewContent, SharpDevelopTextEditorProperties.Instance);
+		}
+		
+		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent, ITextEditorProperties textEditorProperties)
 		{
 			foreach (IViewContent existingView in viewContent.SecondaryViewContents) {
 				if (existingView.GetType() == typeof(FormsDesignerViewContent)) {
@@ -54,7 +61,7 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			IDesignerLoaderProvider loader = new PythonDesignerLoaderProvider();
-			IDesignerGenerator generator = new PythonDesignerGenerator();
+			IDesignerGenerator generator = new PythonDesignerGenerator(textEditorProperties);
 			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
 		}
 		

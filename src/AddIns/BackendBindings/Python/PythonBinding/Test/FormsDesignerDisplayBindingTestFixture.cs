@@ -120,7 +120,7 @@ namespace PythonBinding.Tests
 		public void CreatesPythonFormsDesigner()
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			IViewContent[] views = displayBinding.CreateSecondaryViewContent(view);
+			IViewContent[] views = displayBinding.CreateSecondaryViewContent(view, new MockTextEditorProperties());
 			Assert.AreEqual(1, views.Length);
 			Assert.IsTrue(views[0] is FormsDesignerViewContent);
 			views[0].Dispose();
@@ -133,7 +133,7 @@ namespace PythonBinding.Tests
 			IViewContent[] views = null;
 			using (FormsDesignerViewContent formsDesigner = new FormsDesignerViewContent(view, new MockOpenedFile("test.py"))) {
 				view.SecondaryViewContents.Add(formsDesigner);
-				views = displayBinding.CreateSecondaryViewContent(view);
+				views = displayBinding.CreateSecondaryViewContent(view, new MockTextEditorProperties());
 			}
 			Assert.AreEqual(0, views.Length);
 		}

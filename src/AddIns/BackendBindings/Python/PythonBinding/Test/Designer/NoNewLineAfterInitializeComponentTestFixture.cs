@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
@@ -21,11 +21,10 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	/// <summary>
-	/// Tests that the GeneratedInitializeComponentMethod class
-	/// can merge the changes into the text editor.
+	/// Tests the code can be generated if there is no new line after the InitializeComponent method.
 	/// </summary>
 	[TestFixture]
-	public class MergeFormTestFixture
+	public class NoNewLineAfterInitializeComponentMethodTestFixture
 	{
 		IDocument document;
 		
@@ -49,36 +48,30 @@ namespace PythonBinding.Tests.Designer
 		}
 		
 		[Test]
-		public void MergedDocumentText()
+		public void GeneratedCode()
 		{
-			string expectedText = GetTextEditorCode().Replace(GetTextEditorInitializeComponentMethod(), GetGeneratedInitializeComponentMethod());
-			Assert.AreEqual(expectedText, document.TextContent);
-		}
-
-		string GetGeneratedCode()
-		{
-			return  "from System.Windows.Forms import Form\r\n" +
-					"\r\n" +
-					"class MainForm(System.Windows.Forms.Form):\r\n" +
-					"\tdef __init__(self):\r\n" +
-					"\t\tself.InitializeComponent()\r\n" +
-					"\t\r\n" +
-					GetGeneratedInitializeComponentMethod();
-		}
-		
-		string GetGeneratedInitializeComponentMethod()
-		{
-			return	"\tdef InitializeComponent(self):\r\n" +
-					"\t\tself.SuspendLayout()\r\n" +
-					"\t\t# \r\n" +
-					"\t\t# MainForm\r\n" +
-					"\t\t# \r\n" + 
-					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
-					"\t\tself.Name = \"MainForm\"\r\n" +
-					"\t\tself.ResumeLayout(False)\r\n" +
-					"\t\tself.PerformLayout()\r\n";						
+			string expectedCode = "from System.Windows.Forms import Form\r\n" +
+									"\r\n" +
+									"class MainForm(Form):\r\n" +
+									"\tdef __init__(self):\r\n" +
+									"\t\tself.InitializeComponent()\r\n" +
+									"\t\r\n" +
+									"\tdef InitializeComponent(self):\r\n" +
+									"\t\tself.SuspendLayout()\r\n" +
+									"\t\t# \r\n" +
+									"\t\t# MainForm\r\n" +
+									"\t\t# \r\n" + 
+									"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
+									"\t\tself.Name = \"MainForm\"\r\n" +
+									"\t\tself.ResumeLayout(False)\r\n" +
+									"\t\tself.PerformLayout()\r\n";
+			
+			Assert.AreEqual(expectedCode, document.TextContent);
 		}
 		
+		/// <summary>
+		/// No new line after the pass statement for InitializeComponent method.
+		/// </summary>
 		string GetTextEditorCode()
 		{
 			return "from System.Windows.Forms import Form\r\n" +
@@ -87,13 +80,8 @@ namespace PythonBinding.Tests.Designer
 					"\tdef __init__(self):\r\n" +
 					"\t\tself.InitializeComponent()\r\n" +
 					"\t\r\n" +
-				GetTextEditorInitializeComponentMethod();
-		}
-		
-		string GetTextEditorInitializeComponentMethod()
-		{
-			return "\tdef InitializeComponent(self):\r\n" +
-					"\t\tpass\r\n"; 						
+					 "\tdef InitializeComponent(self):\r\n" +
+					"\t\tpass"; 						
 		}
 	}
 }

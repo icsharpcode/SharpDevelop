@@ -65,6 +65,7 @@ namespace ICSharpCode.PythonBinding
 			AppendControl(form);
 			
 			AppendIndentedLine("self.ResumeLayout(False)");
+			AppendIndentedLine("self.PerformLayout()");
 		}
 		
 		void AppendControl(Control control)

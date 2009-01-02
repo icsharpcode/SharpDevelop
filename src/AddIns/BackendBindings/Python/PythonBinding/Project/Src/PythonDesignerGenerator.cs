@@ -17,6 +17,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
@@ -39,9 +40,11 @@ namespace ICSharpCode.PythonBinding
 	public class PythonDesignerGenerator : IPythonDesignerGenerator
 	{
 		FormsDesignerViewContent viewContent;
+		ITextEditorProperties textEditorProperties;
 		
-		public PythonDesignerGenerator()
+		public PythonDesignerGenerator(ITextEditorProperties textEditorProperties)
 		{
+			this.textEditorProperties = textEditorProperties;
 		}
 		
 		/// <summary>
@@ -76,7 +79,7 @@ namespace ICSharpCode.PythonBinding
 		public void MergeRootComponentChanges(IComponent component)
 		{
 			ParseInformation parseInfo = ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent);			
-			Merge(component, ViewContent.DesignerCodeFileDocument, parseInfo.BestCompilationUnit);
+			Merge(component, ViewContent.DesignerCodeFileDocument, parseInfo.BestCompilationUnit, textEditorProperties);
 		}
 		
 		/// <summary>
@@ -85,21 +88,21 @@ namespace ICSharpCode.PythonBinding
 		/// <param name="component">The root component in the designer host.</param>
 		/// <param name="document">The document that the generated code will be merged into.</param>
 		/// <param name="parseInfo">The current compilation unit for the <paramref name="document"/>.</param>
-		public static void Merge(IComponent component, IDocument document, ICompilationUnit compilationUnit)
+		public static void Merge(IComponent component, IDocument document, ICompilationUnit compilationUnit, ITextEditorProperties textEditorProperties)
 		{
 			// Get the document's initialize components method.
 			IMethod method = GetInitializeComponents(compilationUnit);
 			
 			// Generate the python source code.
-			PythonForm pythonForm = new PythonForm("\t");
+			PythonForm pythonForm = new PythonForm(NRefactoryToPythonConverter.GetIndentString(textEditorProperties));
 			int indent = method.Region.BeginColumn;
 			string methodBody = pythonForm.GenerateInitializeComponentMethodBody(component as Form, indent);
-			Console.WriteLine("GeneratedCode: " + methodBody);
 			
 			// Merge the code.
 			DomRegion methodRegion = GetBodyRegionInDocument(method);
-			int startOffset = document.PositionToOffset(new TextLocation(methodRegion.BeginColumn - 1, methodRegion.BeginLine - 1));
-			int endOffset   = document.PositionToOffset(new TextLocation(methodRegion.EndColumn - 1, methodRegion.EndLine - 1));
+			int startOffset = GetStartOffset(document, methodRegion);
+			int endOffset = GetEndOffset(document, methodRegion);
+
 			document.Replace(startOffset, endOffset - startOffset, methodBody);
 		}
 		
@@ -231,6 +234,27 @@ namespace ICSharpCode.PythonBinding
 		IClass GetClass(ICompilationUnit unit)
 		{
 			return unit.Classes[0];
+		}
+
+		/// <summary>
+		/// Gets the start offset of the region.
+		/// </summary>
+		static int GetStartOffset(IDocument document, DomRegion region)
+		{
+			return document.PositionToOffset(new TextLocation(region.BeginColumn - 1, region.BeginLine - 1));			
+		}
+		
+		/// <summary>
+		/// Gets the end offset of the region.
+		/// </summary>
+		static int GetEndOffset(IDocument document, DomRegion region)
+		{
+			TextLocation endLocation = new TextLocation(region.EndColumn - 1, region.EndLine - 1);
+			if (endLocation.Line >= document.TotalNumberOfLines) {
+				// At end of document.
+				return document.TextLength;
+			} 
+			return document.PositionToOffset(endLocation);
 		}
 	}
 }

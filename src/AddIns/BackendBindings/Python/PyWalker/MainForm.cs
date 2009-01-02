@@ -48,7 +48,7 @@ namespace PyWalker
 				PythonAst ast = parser.ParseFile(false);
 				if (sink.Errors.Count == 0) {
 					ResolveWalker walker = new ResolveWalker(this);
-					walker.Walk(ast);
+					ast.Walk(walker);
 				} else {
 					walkerOutputTextBox.Text += "\r\n";
 					foreach (PythonCompilerError error in sink.Errors) {
