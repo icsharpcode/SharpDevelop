@@ -49,7 +49,8 @@ namespace PythonBinding.Tests.Designer
 
 				using (Form form = new Form()) {
 					form.Name = "MainForm";
-
+					form.ClientSize = new Size(284, 264);
+					
 					MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
 					textEditorProperties.ConvertTabsToSpaces = true;
 					textEditorProperties.IndentationSize = 1;
