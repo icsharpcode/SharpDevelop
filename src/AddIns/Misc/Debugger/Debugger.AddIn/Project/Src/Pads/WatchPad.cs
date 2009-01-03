@@ -45,6 +45,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 	}
 	
+	public class ErrorInfoNode : ICorDebug.InfoNode
+	{
+		public ErrorInfoNode(string name, string text) : base(name, text)
+		{
+			Image = IconService.GetBitmap("Icons.16x16.Error");
+		}
+	}
+	
 	public sealed class WatchItemName: NodeTextBox {
 		public WatchItemName()
 		{
@@ -239,7 +247,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 							
 							nodes.Add(new TreeViewVarNode(debuggedProcess, watchList, valNode));
 						} catch (GetValueException) {
-							MessageService.ShowError(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), nod.Content.Name));
+							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), nod.Content.Name);
+							ErrorInfoNode infoNode = new ErrorInfoNode(nod.Content.Name, error);
+							nodes.Add(new TreeViewVarNode(debuggedProcess, watchList, infoNode));
 						}
 					}
 					
