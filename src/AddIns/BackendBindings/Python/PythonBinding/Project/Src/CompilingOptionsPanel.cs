@@ -28,6 +28,9 @@ namespace ICSharpCode.PythonBinding
 			
 			b = BindBoolean("debugInfoCheckBox", "DebugInfo", false);
 			CreateLocationButton(b, "debugInfoCheckBox");
+		
+			b = CreatePlatformTargetComboBox();
+			CreateLocationButton(b, "targetCpuComboBox");
 			
 			AddConfigurationSelector(this);
 		}
@@ -81,6 +84,14 @@ namespace ICSharpCode.PythonBinding
 		protected virtual void AddConfigurationSelector(Control control)
 		{
 			helper.AddConfigurationSelector(control);
+		}
+		
+		/// <summary>
+		/// Creates the platform target combo box.
+		/// </summary>
+		protected virtual ConfigurationGuiBinding CreatePlatformTargetComboBox()
+		{
+			return base.CreatePlatformTarget();
 		}
 	}
 }

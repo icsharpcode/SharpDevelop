@@ -197,6 +197,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			b.DefaultLocation = PropertyStorageLocations.PlatformSpecific;
 			b.RegisterLocationButton(advancedLocationButton);
 			
+			b = CreatePlatformTarget();
+			b.RegisterLocationButton(advancedLocationButton);
+		}
+		
+		protected ConfigurationGuiBinding CreatePlatformTarget()
+		{
+			ConfigurationGuiBinding b;
 			b = helper.BindStringEnum("targetCpuComboBox", "PlatformTarget",
 			                          "AnyCPU",
 			                          new StringPair("AnyCPU", "${res:Dialog.ProjectOptions.Build.TargetCPU.Any}"),
@@ -204,9 +211,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			                          new StringPair("x64", "${res:Dialog.ProjectOptions.Build.TargetCPU.x64}"),
 			                          new StringPair("Itanium", "${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}"));
 			b.DefaultLocation = PropertyStorageLocations.PlatformSpecific;
-			b.RegisterLocationButton(advancedLocationButton);
+			return b;
 		}
-		
+
 		void DebugSymbolsLoaded(object sender, EventArgs e)
 		{
 			PropertyStorageLocations location;

@@ -28,6 +28,7 @@ namespace PythonBinding.Tests.Utils
 		Dictionary<string, TextBoxEditMode> boundTextEditModes = new Dictionary<string, TextBoxEditMode>();
 		List<string> locationButtonsCreated = new List<string>();
 		Dictionary<string, BrowseFolderButtonInfo> browseFolderButtons = new Dictionary<string, BrowseFolderButtonInfo>();
+		bool createdTargetCpuComboBox;
 		
 		public DerivedCompilingOptionsPanel()
 		{
@@ -43,6 +44,13 @@ namespace PythonBinding.Tests.Utils
 		/// </summary>
 		public string SetupFromManifestResourceName {
 			get { return setupFromManifestResourceName; }
+		}
+		
+		/// <summary>
+		/// Returns whether the target cpu combo box was created.
+		/// </summary>
+		public bool IsTargetCpuComboBoxCreated {
+			get { return createdTargetCpuComboBox; }
 		}
 		
 		/// <summary>
@@ -140,6 +148,12 @@ namespace PythonBinding.Tests.Utils
 		{
 			locationButtonsCreated.Add(controlName);
 			return base.CreateLocationButton(binding, controlName);
+		}
+		
+		protected override ConfigurationGuiBinding CreatePlatformTargetComboBox()
+		{
+			createdTargetCpuComboBox = true;
+			return base.CreatePlatformTargetComboBox();
 		}
 		
 		/// <summary>
