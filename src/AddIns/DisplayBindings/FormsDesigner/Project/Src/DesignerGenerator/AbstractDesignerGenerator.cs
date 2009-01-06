@@ -289,21 +289,30 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected void Reparse()
 		{
+			ParseInformation info;
+			ICompilationUnit cu;
+			
 			// Reparse primary file to update currentClassPart
-			ParseInformation info = ParserService.ParseFile(this.ViewContent.PrimaryFileName, this.ViewContent.PrimaryFileContent, false);
-			ICompilationUnit cu = info.BestCompilationUnit;
-			foreach (IClass c in cu.Classes) {
-				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
-					if (FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c) != null) {
-						this.currentClassPart = c;
-						break;
+			this.currentClassPart = null;
+			if (!String.IsNullOrEmpty(this.ViewContent.PrimaryFileName)) {
+				info = ParserService.ParseFile(this.ViewContent.PrimaryFileName, this.ViewContent.PrimaryFileContent, false);
+				cu = info.BestCompilationUnit;
+				foreach (IClass c in cu.Classes) {
+					if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
+						if (FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c) != null) {
+							this.currentClassPart = c;
+							break;
+						}
 					}
 				}
+			} else {
+				LoggingService.Debug("AbstractDesignerGenerator.Reparse: Primary file is unavailable");
+				info = null;
 			}
 			
 			// Reparse designer code file to update initializeComponents,
 			// completeClass and formClass
-			if (this.ViewContent.DesignerCodeFile != this.ViewContent.PrimaryFile) {
+			if (info == null || this.ViewContent.DesignerCodeFile != this.ViewContent.PrimaryFile) {
 				// Actual parsing is only necessary if the designer code file
 				// is not the same as the primary file. Otherwise we just
 				// reuse the parse info from above.
