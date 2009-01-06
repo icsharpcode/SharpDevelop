@@ -137,6 +137,8 @@ namespace ICSharpCode.FormsDesigner
 			if (WorkbenchSingleton.Workbench != null) {
 				this.IsActiveViewContentChanged += this.IsActiveViewContentChangedHandler;
 			}
+			
+			FileService.FileRemoving += this.FileServiceFileRemoving;
 		}
 		
 		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
@@ -603,6 +605,8 @@ namespace ICSharpCode.FormsDesigner
 				base.Dispose();
 			} finally {
 				
+				FileService.FileRemoving -= this.FileServiceFileRemoving;
+				
 				this.UnloadDesigner();
 				
 				// null check is required to support running in unit test mode
@@ -809,6 +813,42 @@ namespace ICSharpCode.FormsDesigner
 		
 		public virtual Control ToolsControl {
 			get { return ToolboxProvider.FormsDesignerSideBar; }
+		}
+		
+		void FileServiceFileRemoving(object sender, FileCancelEventArgs e)
+		{
+			if (!e.Cancel && this.DesignerCodeFile != null) {
+				if (WorkbenchSingleton.InvokeRequired) {
+					WorkbenchSingleton.SafeThreadAsyncCall(this.CheckForDesignerCodeFileDeletion, e);
+				} else {
+					this.CheckForDesignerCodeFileDeletion(e);
+				}
+			}
+		}
+		
+		void CheckForDesignerCodeFileDeletion(FileCancelEventArgs e)
+		{
+			if (this.DesignerCodeFile == null || String.IsNullOrEmpty(this.DesignerCodeFile.FileName)) {
+				return;
+			}
+			
+			if ((!e.IsDirectory && FileUtility.IsEqualFileName(this.DesignerCodeFile.FileName, e.FileName)) ||
+			    (e.IsDirectory && FileUtility.IsBaseDirectory(e.FileName, this.DesignerCodeFile.FileName))) {
+				
+				LoggingService.Info("Forms designer: Handling deletion of open designer code file '" + this.DesignerCodeFile.FileName + "'");
+				
+				// When our designer code file is deleted,
+				// unload the designer and remove the file from the
+				// file list so that the primary view is not closed
+				// because of this event.
+				
+				this.UnloadDesigner();
+				this.Files.Remove(this.DesignerCodeFile);
+				this.designerCodeFile = null;
+				this.designerCodeFileDocument = null;
+				this.designerCodeFileEncoding = null;
+				
+			}
 		}
 		
 		#region Design surface manager (static)
