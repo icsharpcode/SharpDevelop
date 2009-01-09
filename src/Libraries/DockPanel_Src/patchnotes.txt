@@ -29,3 +29,7 @@ Patch #5:
 	In DockContentHandler.SetVisible:
 	Ensure pad visibility is set correctly, even when Windows.Forms is "lying" about Form.Visible.
  Committed in revision 3061.
+
+Patch #6:
+	In VS2005DockPaneStrip.cs: fixed SD2-1383
+ Committed in revision 3744.
