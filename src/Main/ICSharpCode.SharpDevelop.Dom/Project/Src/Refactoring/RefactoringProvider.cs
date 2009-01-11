@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
 
@@ -46,8 +47,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			throw new NotSupportedException();
 		}
 		
-		public virtual string AddBaseTypeToClass(string existingCode, string newInterfaceName) {
-			throw new NotSupportedException();
+		public virtual string AddBaseTypeToClass(string existingCode, IClass targetClass, IClass newBaseType)
+		{
+			throw new NotImplementedException();
 		}
 		#endregion
 

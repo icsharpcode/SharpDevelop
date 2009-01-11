@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			LanguageProperties language = c.ProjectContent.Language;
 			string classFileName = c.CompilationUnit.FileName;
 			string existingClassCode = ParserService.GetParseableFileContent(classFileName);
-
+						
 			// build the new interface...
 			string newInterfaceCode =
 				language.RefactoringProvider.GenerateInterfaceForClass(extractInterface.NewInterfaceName,
@@ -83,7 +83,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				// simply update it
 				editable.Text = newInterfaceCode;
 				viewContent.PrimaryFile.SaveToDisk();
-				
 			} else {
 				// create it
 				viewContent = FileService.NewFile(newInterfaceFileName, newInterfaceCode);
@@ -101,9 +100,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			
+			ICompilationUnit newCompilationUnit = ParserService.ParseFile(newInterfaceFileName).MostRecentCompilationUnit;
+			IClass newInterfaceDef = newCompilationUnit.Classes[0];
+			
 			// finally, add the interface to the base types of the class that we're extracting from
 			if (extractInterface.AddInterfaceToClass) {
-				string modifiedClassCode = language.RefactoringProvider.AddBaseTypeToClass(existingClassCode, extractInterface.NewInterfaceName);
+				string modifiedClassCode = language.RefactoringProvider.AddBaseTypeToClass(existingClassCode, c, newInterfaceDef);
 				if (modifiedClassCode == null) {
 					return;
 				}
