@@ -16,7 +16,7 @@ using Microsoft.Win32;
 
 namespace ICSharpCode.CodeAnalysis
 {
-	public static class FxCopWrapper
+	public class FxCopWrapper : MarshalByRefObject
 	{
 		static Dictionary<string[], List<FxCopCategory>> ruleDict = new Dictionary<string[], List<FxCopCategory>>(new ArrayHashCodeProvider());
 		
@@ -178,18 +178,22 @@ namespace ICSharpCode.CodeAnalysis
 			setup.ApplicationBase = fxCopPath;
 			AppDomain domain = AppDomain.CreateDomain("FxCop Rule Loading Domain", AppDomain.CurrentDomain.Evidence, setup);
 			
-			string[][] ruleTextList;
+			ResolveEventHandler onResolve = delegate(object sender, ResolveEventArgs args) {
+				if (args.Name == typeof(FxCopWrapper).Assembly.FullName) {
+					return typeof(FxCopWrapper).Assembly;
+				} else {
+					return null;
+				}
+			};
+			FxCopRule[] ruleList;
 			try {
-				ruleTextList = (string[][])AppDomainLaunchHelper.LaunchInAppDomain(domain, typeof(FxCopWrapper), "GetRuleListInCurrentAppDomain", fxCopPath, ruleAssemblies);
+				AppDomain.CurrentDomain.AssemblyResolve += onResolve;
+				FxCopWrapper wrapper = (FxCopWrapper)domain.CreateInstanceFromAndUnwrap(typeof(FxCopWrapper).Assembly.Location, typeof(FxCopWrapper).FullName);
+				
+				ruleList = wrapper.GetRuleListInstanceMethod(fxCopPath, ruleAssemblies);
 			} finally {
+				AppDomain.CurrentDomain.AssemblyResolve -= onResolve;
 				AppDomain.Unload(domain);
-			}
-			
-			FxCopRule[] ruleList = new FxCopRule[ruleTextList.Length];
-			for (int i = 0; i < ruleTextList.Length; i++) {
-				ruleList[i] = new FxCopRule(ruleTextList[i][0], ruleTextList[i][1],
-				                            ruleTextList[i][2], ruleTextList[i][3],
-				                            ruleTextList[i][4]);
 			}
 			
 			Array.Sort(ruleList);
@@ -236,7 +240,7 @@ namespace ICSharpCode.CodeAnalysis
 				return v.ToString();
 		}
 		
-		public static string[][] GetRuleListInCurrentAppDomain(string fxCopPath, string[] ruleAssemblies)
+		FxCopRule[] GetRuleListInstanceMethod(string fxCopPath, string[] ruleAssemblies)
 		{
 			Assembly asm = Assembly.LoadFrom(Path.Combine(fxCopPath, "FxCopCommon.dll"));
 			
@@ -253,20 +257,21 @@ namespace ICSharpCode.CodeAnalysis
 			
 			object exceptionList = CallMethod(project, "Initialize");
 			foreach (Exception ex in ((IEnumerable)exceptionList)) {
-				LoggingService.Warn(ex);
+				Console.WriteLine(ex.ToString());
 			}
 			
 			IEnumerable ruleList = (IEnumerable)GetProp(GetProp(project, "AllRules"), "Values");
-			List<string[]> rules = new List<string[]>();
+			
+			List<FxCopRule> rules = new List<FxCopRule>();
 			foreach (object ruleContainer in ruleList) {
 				object rule = GetProp(ruleContainer, "IRule");
-				rules.Add(new string[] {
-				          	GetSProp(rule, "CheckId"),
-				          	GetSProp(rule, "Name"),
-				          	GetSProp(rule, "Category"),
-				          	GetSProp(rule, "Description"),
-				          	GetSProp(rule, "Url")
-				          });
+				rules.Add(new FxCopRule(
+					GetSProp(rule, "CheckId"),
+					GetSProp(rule, "Name"),
+					GetSProp(rule, "Category"),
+					GetSProp(rule, "Description"),
+					GetSProp(rule, "Url")
+				));
 			}
 			
 			return rules.ToArray();
