@@ -712,7 +712,6 @@
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
-								<File Source="..\..\doc\AssemblyBaseAddresses.txt" Id="AssemblyBaseAddresses.txt" Name="AssemblyBaseAddresses.txt" />
 								<File Source="..\..\doc\BuiltWithSharpDevelop.png" Id="BuiltWithSharpDevelop.png" Name="BuiltWithSharpDevelop.png" />
 								<File Source="..\..\doc\ChangeLog.xml" Id="ChangeLog.xml" Name="ChangeLog.xml" />
 								<File Source="..\..\doc\copyright.txt" Id="copyright.txt" Name="copyright.txt" />
