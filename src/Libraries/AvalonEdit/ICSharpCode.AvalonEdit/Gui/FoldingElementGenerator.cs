@@ -92,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			public override void Draw(DrawingContext drawingContext, Point origin, bool rightToLeft, bool sideways)
 			{
 				Rect r = ComputeBoundingBox(rightToLeft, sideways);
-				r.Offset(origin.X, origin.Y - element.text.Baseline);
+				r.Offset(origin.X, origin.Y - this.Element.Text.Baseline);
 				drawingContext.DrawRectangle(null, new Pen(Brushes.Gray, 1), r);
 				base.Draw(drawingContext, origin, rightToLeft, sideways);
 			}
