@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-	public class ToolBarCommand : ToolStripMenuItem, IStatusUpdate
+	public class ToolBarCommand : ToolStripButton, IStatusUpdate
 	{
 		object caller;
 		Codon codon;
