@@ -29,6 +29,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				list.Add(o);
 		}
 		
+		/// <summary>
+		/// Converts a recursive data structure into a flat list.
+		/// </summary>
+		/// <param name="input">The root elements of the recursive data structure.</param>
+		/// <param name="recursive">The function that gets the children of an element.</param>
+		/// <returns>Iterator that enumerates the tree structure in preorder.</returns>
 		public static IEnumerable<T> Flatten<T>(this IEnumerable<T> input, Func<T, IEnumerable<T>> recursion)
 		{
 			Stack<IEnumerator<T>> stack = new Stack<IEnumerator<T>>();

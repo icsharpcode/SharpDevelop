@@ -75,7 +75,7 @@
             <TabIndex value="13" />
             <Minimum value="1" />
             <Location value="227, 66" />
-            <Maximum value="8" />
+            <Maximum value="16" />
             <Size value="49, 20" />
           </System.Windows.Forms.NumericUpDown>
           <System.Windows.Forms.Label>

@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		internal static void Save(IWorkbenchWindow window)
 		{
-			window.ViewContents.Foreach(Save);
+			window.ViewContents.ForEach(Save);
 		}
 		
 		internal static void Save(IViewContent content)
@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		internal static void Save(IWorkbenchWindow window)
 		{
-			window.ViewContents.Foreach(Save);
+			window.ViewContents.ForEach(Save);
 		}
 		
 		internal static void Save(IViewContent content)

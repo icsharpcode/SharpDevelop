@@ -333,7 +333,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				node.options.Platform = options.SolutionPlatform;
 			
 			// copy properties to project options
-			options.GlobalAdditionalProperties.Foreach(node.options.Properties.Add);
+			options.GlobalAdditionalProperties.ForEach(node.options.Properties.Add);
 			if (project == rootProject) {
 				foreach (var pair in options.ProjectAdditionalProperties) {
 					node.options.Properties[pair.Key] = pair.Value;
@@ -604,7 +604,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			if (messagesToReport != null) {
-				messagesToReport.Foreach(ReportMessageInternal);
+				messagesToReport.ForEach(ReportMessageInternal);
 			}
 			if (newNodeWithOutputLockAlreadyFinishedBuilding) {
 				// if the node already finished building before it got the output lock, we need
