@@ -33,3 +33,4 @@ Patch #5:
 Patch #6:
 	In VS2005DockPaneStrip.cs: fixed SD2-1383
  Committed in revision 3744.
+ Bug introduced in patch was fixed in revision 3750.
