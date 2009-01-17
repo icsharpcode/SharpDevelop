@@ -774,26 +774,35 @@ namespace ICSharpCode.TextEditor
 			
 			int result;
 			using (Graphics g = textArea.CreateGraphics()) {
-				do {
+				// call GetLogicalColumnInternal to skip over text,
+				// then skip over fold markers
+				// and repeat as necessary.
+				// The loop terminates once the correct logical column is reached in
+				// GetLogicalColumnInternal or inside a fold marker.
+				while (true) {
+					
 					LineSegment line = Document.GetLineSegment(lineNumber);
 					FoldMarker nextFolding = FindNextFoldedFoldingOnLineAfterColumn(lineNumber, start-1);
 					int end = nextFolding != null ? nextFolding.StartColumn : int.MaxValue;
 					result = GetLogicalColumnInternal(g, line, start, end, ref posX, visualPosX);
-					if (result < 0) {
-						// reached fold marker
-						lineNumber = nextFolding.EndLine;
-						start = nextFolding.EndColumn;
-						int newPosX = posX + 1 + MeasureStringWidth(g, nextFolding.FoldText, TextEditorProperties.FontContainer.RegularFont);
-						if (newPosX >= visualPosX) {
-							inFoldMarker = nextFolding;
-							if (IsNearerToAThanB(visualPosX, posX, newPosX))
-								return new TextLocation(nextFolding.StartColumn, nextFolding.StartLine);
-							else
-								return new TextLocation(nextFolding.EndColumn, nextFolding.EndLine);
-						}
-						posX = newPosX;
+					
+					// break when GetLogicalColumnInternal found the result column
+					if (result < end)
+						break;
+					
+					// reached fold marker
+					lineNumber = nextFolding.EndLine;
+					start = nextFolding.EndColumn;
+					int newPosX = posX + 1 + MeasureStringWidth(g, nextFolding.FoldText, TextEditorProperties.FontContainer.RegularFont);
+					if (newPosX >= visualPosX) {
+						inFoldMarker = nextFolding;
+						if (IsNearerToAThanB(visualPosX, posX, newPosX))
+							return new TextLocation(nextFolding.StartColumn, nextFolding.StartLine);
+						else
+							return new TextLocation(nextFolding.EndColumn, nextFolding.EndLine);
 					}
-				} while (result < 0);
+					posX = newPosX;
+				}
 			}
 			return new TextLocation(result, lineNumber);
 		}
@@ -801,7 +810,7 @@ namespace ICSharpCode.TextEditor
 		int GetLogicalColumnInternal(Graphics g, LineSegment line, int start, int end, ref int drawingPos, int targetVisualPosX)
 		{
 			if (start == end)
-				return -1;
+				return end;
 			Debug.Assert(start < end);
 			Debug.Assert(drawingPos < targetVisualPosX);
 			
@@ -824,7 +833,7 @@ namespace ICSharpCode.TextEditor
 			for (int i = 0; i < words.Count; i++) {
 				TextWord word = words[i];
 				if (wordOffset >= end) {
-					return -1;
+					return wordOffset;
 				}
 				if (wordOffset + word.Length >= start) {
 					int newDrawingPos;

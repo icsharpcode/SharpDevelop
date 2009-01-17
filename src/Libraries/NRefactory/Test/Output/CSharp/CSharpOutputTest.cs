@@ -90,6 +90,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void StaticMethod()
+		{
+			TestTypeMember("static void Method() { }");
+		}
+		
+		[Test]
 		public void PartialModifier()
 		{
 			TestProgram("public partial class Foo { }");
