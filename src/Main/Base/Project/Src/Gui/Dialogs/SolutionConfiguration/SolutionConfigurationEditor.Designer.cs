@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.configurationColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.platformColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.panel2 = new System.Windows.Forms.Panel();
-			this.okButton = new System.Windows.Forms.Button();
+			this.closeButton = new System.Windows.Forms.Button();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
 			this.panel2.SuspendLayout();
@@ -118,8 +118,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.grid.Size = new System.Drawing.Size(504, 192);
 			this.grid.TabIndex = 1;
 			this.grid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridCellValueChanged);
-			this.grid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.GridDataError);
 			this.grid.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.GridEditingControlShowing);
+			this.grid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.GridDataError);
 			// 
 			// projectNameColumn
 			// 
@@ -140,27 +140,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// 
 			// panel2
 			// 
-			this.panel2.Controls.Add(this.okButton);
+			this.panel2.Controls.Add(this.closeButton);
 			this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panel2.Location = new System.Drawing.Point(0, 229);
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(504, 30);
 			this.panel2.TabIndex = 2;
 			// 
-			// okButton
+			// closeButton
 			// 
-			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.okButton.Location = new System.Drawing.Point(417, 3);
-			this.okButton.Name = "okButton";
-			this.okButton.Size = new System.Drawing.Size(75, 23);
-			this.okButton.TabIndex = 0;
-			this.okButton.Text = "${res:Global.OKButtonText}";
-			this.okButton.UseVisualStyleBackColor = true;
+			this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.closeButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.closeButton.Location = new System.Drawing.Point(417, 3);
+			this.closeButton.Name = "closeButton";
+			this.closeButton.Size = new System.Drawing.Size(75, 23);
+			this.closeButton.TabIndex = 0;
+			this.closeButton.Text = "${res:Global.CloseButtonText}";
+			this.closeButton.UseVisualStyleBackColor = true;
 			// 
 			// SolutionConfigurationEditor
 			// 
-			this.AcceptButton = this.okButton;
+			this.AcceptButton = this.closeButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(504, 259);
@@ -176,10 +176,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.panel2.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Button closeButton;
 		private System.Windows.Forms.DataGridView grid;
 		private System.Windows.Forms.ComboBox configurationComboBox;
 		private System.Windows.Forms.ComboBox platformComboBox;
-		private System.Windows.Forms.Button okButton;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.DataGridViewComboBoxColumn platformColumn;
 		private System.Windows.Forms.DataGridViewComboBoxColumn configurationColumn;
