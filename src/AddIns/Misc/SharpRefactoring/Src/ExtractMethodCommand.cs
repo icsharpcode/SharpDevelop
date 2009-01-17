@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +19,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using SharpRefactoring.Forms;
 using SharpRefactoring.Transformers;
@@ -54,11 +54,11 @@ namespace SharpRefactoring
 		
 		MethodExtractorBase GetCurrentExtractor(TextEditorControl editor)
 		{
-			switch (ProjectService.CurrentProject.Language) {
+			switch (LanguageBindingService.GetCodonPerCodeFileName(editor.FileName).Language) {
 				case "C#":
 					return new CSharpMethodExtractor(editor, editor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0]);
 				default:
-					MessageService.ShowError(string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.ExtractMethodNotSupported}"), ProjectService.CurrentProject.Language));
+					MessageService.ShowError(string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.ExtractMethodNotSupported}"), LanguageBindingService.GetCodonPerCodeFileName(editor.FileName).Language));
 					return null;
 			}
 		}

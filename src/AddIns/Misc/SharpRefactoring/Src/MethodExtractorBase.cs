@@ -64,7 +64,7 @@ namespace SharpRefactoring
 			Statement caller;
 			InvocationExpression expr = new InvocationExpression(new IdentifierExpression(method.Name), CreateArgumentExpressions(method.Parameters));
 
-			if (method.TypeReference.Type != "void") {
+			if (method.TypeReference.Type != "System.Void") {
 				if (parent is MethodDeclaration) {
 					if (method.TypeReference == (parent as MethodDeclaration).TypeReference)
 						caller = new ReturnStatement(expr);
@@ -100,7 +100,7 @@ namespace SharpRefactoring
 					newMethod.Body.Children.Add(new ReturnStatement(new IdentifierExpression(possibleReturnValues[possibleReturnValues.Count - 1].Name)));
 					this.returnedVariable = possibleReturnValues[possibleReturnValues.Count - 1];
 				} else {
-					newMethod.TypeReference = new TypeReference("void");
+					newMethod.TypeReference = new TypeReference("System.Void", true);
 					this.returnedVariable = null;
 				}
 			}

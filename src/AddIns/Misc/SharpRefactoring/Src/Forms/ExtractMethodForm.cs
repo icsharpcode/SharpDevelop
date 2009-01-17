@@ -8,8 +8,11 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 
 namespace SharpRefactoring.Forms
@@ -54,9 +57,11 @@ namespace SharpRefactoring.Forms
 
             string afterName = text.Substring(text.IndexOf('('));
             
-            string type = text.Split(' ')[0];
+            List<string> list = text.Split(' ').ToList();
+            
+            list.RemoveAt(list.Count - 1);
 
-            this.txtPreview.Text = type + " " + this.txtName.Text + afterName;
+            this.txtPreview.Text = string.Join(" ", list.ToArray()) + " " + this.txtName.Text + afterName;
         }
 	}
 }

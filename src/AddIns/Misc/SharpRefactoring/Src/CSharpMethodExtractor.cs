@@ -125,7 +125,6 @@ namespace SharpRefactoring
 						otherReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.TypeRef));
 					}
 
-					
 					FindReferenceVisitor frv = new FindReferenceVisitor(true, variable.Name, start, end);
 					
 					parentNode.AcceptVisitor(frv, null);
