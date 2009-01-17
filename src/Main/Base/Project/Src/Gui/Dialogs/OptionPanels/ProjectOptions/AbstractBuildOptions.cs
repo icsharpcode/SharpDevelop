@@ -243,7 +243,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ComboBox targetFrameworkComboBox = (ComboBox)ControlDictionary["targetFrameworkComboBox"];
 			
 			if (convertProjectToMSBuild35Button != null) {
-				if (project.MinimumSolutionVersion == Solution.SolutionVersionVS05) {
+				if (project.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
 					// VS05 project
 					targetFrameworkComboBox.Enabled = false;
 					convertProjectToMSBuild35Button.Click += OnConvertProjectToMSBuild35ButtonClick;
@@ -284,7 +284,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					} else {
 						project.ConvertToMSBuild35(dlg.ChangeTargetFramework);
 					}
-					if (project.MinimumSolutionVersion == Solution.SolutionVersionVS05)
+					if (project.MinimumSolutionVersion == Solution.SolutionVersionVS2005)
 						throw new InvalidOperationException("Project did not convert to MSBuild 3.5");
 					ProjectService.SaveSolution();
 					InitTargetFramework();

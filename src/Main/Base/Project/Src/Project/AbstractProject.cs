@@ -455,7 +455,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[Browsable(false)]
 		public virtual int MinimumSolutionVersion {
-			get { return Solution.SolutionVersionVS05; }
+			get { return Solution.SolutionVersionVS2005; }
 		}
 		
 		public virtual void ResolveAssemblyReferences()
@@ -471,19 +471,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
 		{
-			List<IBuildable> result = new List<IBuildable>();
-			foreach (ProjectSection section in this.ProjectSections) {
-				if (section.Name == "ProjectDependencies") {
-					foreach (SolutionItem item in section.Items) {
-						foreach (IProject p in ParentSolution.Projects) {
-							if (p.IdGuid == item.Name) {
-								result.Add(p);
+			lock (SyncRoot) {
+				List<IBuildable> result = new List<IBuildable>();
+				foreach (ProjectSection section in this.ProjectSections) {
+					if (section.Name == "ProjectDependencies") {
+						foreach (SolutionItem item in section.Items) {
+							foreach (IProject p in ParentSolution.Projects) {
+								if (p.IdGuid == item.Name) {
+									result.Add(p);
+								}
 							}
 						}
 					}
 				}
+				return result;
 			}
-			return result;
 		}
 	}
 }

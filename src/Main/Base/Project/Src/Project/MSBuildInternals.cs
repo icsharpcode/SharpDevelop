@@ -309,6 +309,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void EndXmlManipulation(MSBuild.Project project)
 		{
+			MarkProjectAsDirtyForReprocessXml(project);
+		}
+		
+		internal static void MarkProjectAsDirtyForReprocessXml(MSBuild.Project project)
+		{
 			typeof(MSBuild.Project).InvokeMember(
 				"MarkProjectAsDirtyForReprocessXml",
 				BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.NonPublic,
@@ -318,14 +323,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		internal static void ResolveAssemblyReferences(MSBuildBasedProject baseProject, ReferenceProjectItem[] referenceReplacements)
 		{
-			MSBuild.Engine engine;
+			MSBuild.Engine tempEngine;
 			MSBuild.Project tempProject;
 			IEnumerable<ReferenceProjectItem> references;
 			
 			lock (baseProject.SyncRoot) {
 				// create a copy of the project
-				engine = CreateEngine();
-				tempProject = engine.CreateNewProject();
+				tempEngine = CreateEngine();
+				tempProject = tempEngine.CreateNewProject();
 				// tell MSBuild the path so that projects containing <Import Project="relativePath" />
 				// can be loaded
 				tempProject.FullFileName = baseProject.MSBuildProject.FullFileName;
@@ -402,6 +407,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					LoggingService.Warn("Unknown item " + originalInclude);
 				}
 			}
+			
+			tempEngine.UnloadAllProjects(); // unload temp project
 		}
 	}
 }
