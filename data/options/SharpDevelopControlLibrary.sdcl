@@ -3,6 +3,7 @@
     <Assembly assembly="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <Assembly assembly="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <Assembly assembly="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+	<Assembly assembly="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </Assemblies>
   <Categories>
     <Category name="Windows Forms" enabled="True">
@@ -52,10 +53,6 @@
       <ToolComponent class="System.Windows.Forms.ImageList" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.HelpProvider" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.OpenFileDialog" assembly="0" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.PageSetupDialog" assembly="0" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.PrintDialog" assembly="0" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.PrintPreviewControl" assembly="0" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.PrintPreviewDialog" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.SaveFileDialog" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.Timer" assembly="0" enabled="True" />
     </Category>
@@ -80,6 +77,13 @@
       <ToolComponent class="System.Diagnostics.Process" assembly="2" enabled="True" />
       <ToolComponent class="System.IO.Ports.SerialPort" assembly="2" enabled="True" />
       <ToolComponent class="System.Windows.Forms.Timer" assembly="0" enabled="True" />
+    </Category>
+    <Category name="Printing" enabled="True">
+      <ToolComponent class="System.Windows.Forms.PageSetupDialog" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.PrintDialog" assembly="0" enabled="True" />
+      <ToolComponent class="System.Drawing.Printing.PrintDocument" assembly="3" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.PrintPreviewControl" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.PrintPreviewDialog" assembly="0" enabled="True" />
     </Category>
   </Categories>
 </SharpDevelopControlLibrary>
