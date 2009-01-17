@@ -9,14 +9,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using MSBuild = Microsoft.Build.BuildEngine;
-using StringPair = ICSharpCode.SharpDevelop.Pair<System.String, System.String>;
+using StringPair = ICSharpCode.SharpDevelop.Pair<string, string>;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -616,10 +616,10 @@ namespace ICSharpCode.SharpDevelop.Project
 						// Recreate the property using the saved value
 						foreach (KeyValuePair<string, string> pair in oldValuesConf) {
 							if (pair.Value != null) {
-								targetProject.SetProperty(propertyName, pair.Value,
-								                          CreateCondition(pair.Key, null, location),
-								                          propertyInsertionPosition,
-								                          false);
+								MSBuildSetProperty(targetProject, propertyName, pair.Value,
+								                   CreateCondition(pair.Key, null, location),
+								                   propertyInsertionPosition,
+								                   false);
 							}
 						}
 						break;
@@ -636,10 +636,10 @@ namespace ICSharpCode.SharpDevelop.Project
 						// Recreate the property using the saved value
 						foreach (KeyValuePair<string, string> pair in oldValuesPlat) {
 							if (pair.Value != null) {
-								targetProject.SetProperty(propertyName, pair.Value,
-								                          CreateCondition(null, pair.Key, location),
-								                          propertyInsertionPosition,
-								                          false);
+								MSBuildSetProperty(targetProject, propertyName, pair.Value,
+								                   CreateCondition(null, pair.Key, location),
+								                   propertyInsertionPosition,
+								                   false);
 							}
 						}
 						break;
@@ -658,10 +658,10 @@ namespace ICSharpCode.SharpDevelop.Project
 						// Recreate the property using the saved value
 						foreach (KeyValuePair<StringPair, string> pair in oldValues) {
 							if (pair.Value != null) {
-								targetProject.SetProperty(propertyName, pair.Value,
-								                          CreateCondition(pair.Key.First, pair.Key.Second, location),
-								                          propertyInsertionPosition,
-								                          false);
+								MSBuildSetProperty(targetProject, propertyName, pair.Value,
+								                   CreateCondition(pair.Key.First, pair.Key.Second, location),
+								                   propertyInsertionPosition,
+								                   false);
 							}
 						}
 						break;
@@ -687,28 +687,42 @@ namespace ICSharpCode.SharpDevelop.Project
 				args.NewValue = treatPropertyValueAsLiteral ? MSBuildInternals.Escape(newValue) : newValue;
 			}
 			
-			if (newValue == null) {
-				if (existingPropertyGroup != null && existingProperty != null) {
-					args.OldValue = existingProperty.Value;
-					
+			if (existingPropertyGroup != null && existingProperty != null) {
+				// update or delete existing property
+				args.OldValue = existingProperty.Value;
+				MSBuildSetProperty(targetProject, propertyName, newValue ?? "",
+				                   existingPropertyGroup.Condition,
+				                   propertyInsertionPosition,
+				                   treatPropertyValueAsLiteral);
+				if (newValue == null) {
+					// delete existing property
 					existingPropertyGroup.RemoveProperty(existingProperty);
+					
 					if (existingPropertyGroup.Count == 0) {
 						targetProject.RemovePropertyGroup(existingPropertyGroup);
 					}
 				}
-			} else if (existingPropertyGroup != null && existingProperty != null) {
-				args.OldValue = existingProperty.Value;
-				targetProject.SetProperty(propertyName, newValue,
-				                          existingPropertyGroup.Condition,
-				                          propertyInsertionPosition,
-				                          treatPropertyValueAsLiteral);
-			} else {
-				targetProject.SetProperty(propertyName, newValue,
-				                          CreateCondition(configuration, platform, location),
-				                          propertyInsertionPosition,
-				                          treatPropertyValueAsLiteral);
+			} else if (newValue != null) {
+				// create new property
+				MSBuildSetProperty(targetProject, propertyName, newValue,
+				                   CreateCondition(configuration, platform, location),
+				                   propertyInsertionPosition,
+				                   treatPropertyValueAsLiteral);
 			}
 			return args;
+		}
+		
+		void MSBuildSetProperty(MSBuild.Project targetProject, string propertyName, string newValue,
+		                        string groupCondition, MSBuild.PropertyPosition position,
+		                        bool treatPropertyValueAsLiteral)
+		{
+			if (targetProject == project) {
+				project.SetProperty(propertyName, newValue, groupCondition, position, treatPropertyValueAsLiteral);
+			} else if (targetProject == userProject) {
+				project.SetImportedProperty(propertyName, newValue, groupCondition, userProject, position, treatPropertyValueAsLiteral);
+			} else {
+				throw new ArgumentException();
+			}
 		}
 		
 		/// <summary>
@@ -1051,13 +1065,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (base.IdGuid == null) {
 					// Save the GUID in the project if the project does not yet have a GUID.
 					SetPropertyInternal(null, null, ProjectGuidPropertyName, value, PropertyStorageLocations.Base, true);
-					try {
-						// save fixed project
-						project.Save(this.FileName);
-					} catch (IOException) {
-					} catch (AccessViolationException) {
-						// Ignore errors writing the fixed project file
-					}
 				}
 				base.IdGuid = value;
 			}
