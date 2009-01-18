@@ -4,7 +4,7 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 3287 $</version>
 // </file>
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.TextEditor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +15,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.AstBuilder;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor.Document;
@@ -116,13 +117,23 @@ namespace SharpRefactoring
 			Location end = new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1);
 			
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in ltv.Variables) {
-				foreach (LocalLookupVariable variable in pair.Value) {
+				foreach (LocalLookupVariable v in pair.Value) {
+					Variable variable = new Variable(v);
 					if (variable.StartPos > end || variable.EndPos < start)
 						continue;
 					
+					variable.IsReferenceType = true; // TODO : implement check for reference type
+					
+					if (variable.Type.Type == "var") {
+						Dom.ParseInformation info = ParserService.GetParseInformation(this.textEditor.FileName);
+						Dom.ExpressionResult res = new Dom.ExpressionResult(variable.Name, Dom.DomRegion.FromLocation(variable.StartPos, variable.EndPos), Dom.ExpressionContext.Default, null);
+						Dom.ResolveResult result = this.GetResolver().Resolve(res, info, this.textEditor.Document.TextContent);
+						variable.Type = Dom.Refactoring.CodeGenerator.ConvertType(result.ResolvedType, new Dom.ClassFinder(result.CallingMember));
+					}
+					
 					if (IsInSel(variable.StartPos, this.currentSelection) && HasOccurrencesAfter(true, this.parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), variable.Name, variable.StartPos, variable.EndPos)) {
-						possibleReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.TypeRef));
-						otherReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.TypeRef));
+						possibleReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.Type));
+						otherReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.Type));
 					}
 
 					FindReferenceVisitor frv = new FindReferenceVisitor(true, variable.Name, start, end);
@@ -136,18 +147,18 @@ namespace SharpRefactoring
 						bool getsAssigned = pair.Value.Count > 0;
 						
 						if (hasOccurrencesAfter && isInitialized)
-							newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.TypeRef, variable.Name, ParameterModifiers.Ref));
+							newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.Type, variable.Name, ParameterModifiers.Ref));
 						else {
 							if (hasOccurrencesAfter && hasAssignment)
-								newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.TypeRef, variable.Name, ParameterModifiers.Out));
+								newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.Type, variable.Name, ParameterModifiers.Out));
 							else {
 								if (!hasOccurrencesAfter && getsAssigned)
-									newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.TypeRef, variable.Name, ParameterModifiers.None));
+									newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.Type, variable.Name, ParameterModifiers.None));
 								else {
 									if (!hasOccurrencesAfter && !isInitialized)
-										newMethod.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(variable.Name, variable.Initializer, variable.TypeRef)));
+										newMethod.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(variable.Name, variable.Initializer, variable.Type)));
 									else
-										newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.TypeRef, variable.Name, ParameterModifiers.In));
+										newMethod.Parameters.Add(new ParameterDeclarationExpression(variable.Type, variable.Name, ParameterModifiers.In));
 								}
 							}
 						}
@@ -186,6 +197,11 @@ namespace SharpRefactoring
 		public override IOutputAstVisitor GetOutputVisitor()
 		{
 			return new CSharpOutputVisitor();
+		}
+		
+		public override Dom.IResolver GetResolver()
+		{
+			return new NRefactoryResolver(Dom.LanguageProperties.CSharp);
 		}
 	}
 }

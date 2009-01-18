@@ -9,13 +9,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
@@ -260,7 +260,7 @@ namespace SharpRefactoring
 			return false;
 		}
 		
-		protected bool IsInitializedVariable(bool caseSensitive, ParametrizedNode member, LocalLookupVariable variable)
+		protected bool IsInitializedVariable(bool caseSensitive, ParametrizedNode member, Variable variable)
 		{
 			if (!(variable.Initializer.IsNull)) {
 				return true;
@@ -279,9 +279,11 @@ namespace SharpRefactoring
 			return false;
 		}
 		
-		protected static bool HasAssignment(MethodDeclaration method, LocalLookupVariable variable)
+
+		
+		protected static bool HasAssignment(MethodDeclaration method, Variable variable)
 		{
-			HasAssignmentsVisitor hav = new HasAssignmentsVisitor(variable.Name, variable.TypeRef, variable.StartPos, variable.EndPos);
+			HasAssignmentsVisitor hav = new HasAssignmentsVisitor(variable.Name, variable.Type, variable.StartPos, variable.EndPos);
 			
 			method.AcceptVisitor(hav, null);
 			
@@ -291,5 +293,25 @@ namespace SharpRefactoring
 		public abstract IOutputAstVisitor GetOutputVisitor();
 		
 		public abstract bool Extract();
+		
+		public abstract Dom.IResolver GetResolver();
+	}
+	
+	public class Variable {
+		public TypeReference Type { get; set; }
+		public string Name { get; set; }
+		public Location StartPos { get; set; }
+		public Location EndPos { get; set; }
+		public Expression Initializer { get; set; }
+		public bool IsReferenceType { get; set; }
+		
+		public Variable(LocalLookupVariable v)
+		{
+			this.Type = v.TypeRef;
+			this.Name = v.Name;
+			this.StartPos = v.StartPos;
+			this.EndPos = v.EndPos;
+			this.Initializer = v.Initializer;
+		}
 	}
 }
