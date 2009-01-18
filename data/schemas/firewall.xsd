@@ -82,7 +82,7 @@
                 </xs:simpleType>
             </xs:attribute>
 
-            <xs:attribute name="Port" type="xs:integer">
+            <xs:attribute name="Port" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>
                         Port to allow through the firewall for this exception. If you use Port, you 
@@ -96,15 +96,13 @@
                     <xs:documentation>
                         IP protocol used for this firewall exception. If not specified, "tcp" is 
                         assumed. If you use Protocol, you must also specify Port and you cannot 
-                        also use File or Program. Note that using "any" requires Windows Firewall 
-                        with Advanced Security on Windows Vista and will fail on Windows XP.
+                        also use File or Program.
                     </xs:documentation>
                 </xs:annotation>
                 <xs:simpleType>
                     <xs:restriction base="xs:NMTOKEN">
                         <xs:enumeration value="tcp" />
                         <xs:enumeration value="udp" />
-                        <xs:enumeration value="any" />
                     </xs:restriction>
                 </xs:simpleType>
             </xs:attribute>
