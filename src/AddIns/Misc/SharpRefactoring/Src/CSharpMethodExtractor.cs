@@ -27,7 +27,7 @@ namespace SharpRefactoring
 	public class CSharpMethodExtractor : MethodExtractorBase
 	{
 		public CSharpMethodExtractor(ICSharpCode.TextEditor.TextEditorControl textEditor, ISelection selection)
-			: base(textEditor, selection, new CSharpOutputVisitor())
+			: base(textEditor, selection)
 		{
 		}
 		
@@ -176,9 +176,16 @@ namespace SharpRefactoring
 			
 			CreateReturnStatement(newMethod, possibleReturnValues);
 			
+			newMethod.Name = "NewMethod";
+			
 			this.extractedMethod = newMethod;
 			
 			return true;
+		}
+		
+		public override IOutputAstVisitor GetOutputVisitor()
+		{
+			return new CSharpOutputVisitor();
 		}
 	}
 }

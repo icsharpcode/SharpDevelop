@@ -27,7 +27,7 @@ namespace SharpRefactoring
 	/// <summary>
 	/// Description of MethodExtractorBase.
 	/// </summary>
-	public class MethodExtractorBase
+	public abstract class MethodExtractorBase
 	{
 		protected ICSharpCode.TextEditor.TextEditorControl textEditor;
 		protected ISelection currentSelection;
@@ -36,7 +36,6 @@ namespace SharpRefactoring
 		protected ParametrizedNode parentNode;
 		protected Statement caller;
 		protected List<LocalVariableDeclaration> beforeCallDeclarations;
-		protected IOutputAstVisitor output;
 		protected VariableDeclaration returnedVariable;
 		protected List<ISpecial> specialsList;
 		
@@ -51,12 +50,11 @@ namespace SharpRefactoring
 			get { return extractedMethod; }
 		}
 		
-		public MethodExtractorBase(ICSharpCode.TextEditor.TextEditorControl textEditor, ISelection selection, IOutputAstVisitor output)
+		public MethodExtractorBase(ICSharpCode.TextEditor.TextEditorControl textEditor, ISelection selection)
 		{
 			this.currentDocument = textEditor.Document;
 			this.textEditor = textEditor;
 			this.currentSelection = selection;
-			this.output = output;
 		}
 		
 		protected static Statement CreateCaller(ParametrizedNode parent, MethodDeclaration method, VariableDeclaration returnVariable)
@@ -106,18 +104,6 @@ namespace SharpRefactoring
 			}
 		}
 		
-		public string CreatePreview()
-		{
-			BlockStatement body = this.extractedMethod.Body;
-			this.extractedMethod.Body = new BlockStatement();
-
-			this.extractedMethod.AcceptVisitor(output, null);
-			
-			this.extractedMethod.Body = body;
-
-			return output.Text;
-		}
-		
 		public void InsertCall()
 		{
 			string call = GenerateCode(CreateCaller(this.parentNode, this.extractedMethod, this.returnedVariable), false);
@@ -132,7 +118,9 @@ namespace SharpRefactoring
 		
 		public void InsertAfterCurrentMethod()
 		{
-			using (SpecialNodesInserter.Install(this.specialsList, this.output)) {
+			IOutputAstVisitor outputVisitor = this.GetOutputVisitor();
+			
+			using (SpecialNodesInserter.Install(this.specialsList, outputVisitor)) {
 				string code = "\r\n\r\n" + GenerateCode(this.extractedMethod, true);
 
 				code = code.TrimEnd('\r', '\n', ' ', '\t');
@@ -299,13 +287,9 @@ namespace SharpRefactoring
 			
 			return hav.HasAssignment;
 		}
-
 		
-		public virtual bool Extract()
-		{
-			throw new InvalidOperationException("Cannot use plain MethodExtractor, please use a language specific implementation!");
-		}
+		public abstract IOutputAstVisitor GetOutputVisitor();
+		
+		public abstract bool Extract();
 	}
-	
-
 }

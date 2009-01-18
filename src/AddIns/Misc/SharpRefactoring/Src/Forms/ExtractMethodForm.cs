@@ -7,13 +7,14 @@
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
 
+using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-
-using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace SharpRefactoring.Forms
 {
@@ -22,46 +23,59 @@ namespace SharpRefactoring.Forms
 	/// </summary>
 	public partial class ExtractMethodForm : Form
 	{
-		public ExtractMethodForm(string name, string preview)
+		Func<IOutputAstVisitor> generator;
+		MethodDeclaration declaration;
+		BlockStatement body;
+		bool cancelUnload = false;
+		
+		public ExtractMethodForm(MethodDeclaration declaration, Func<IOutputAstVisitor> generator)
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-
-            this.txtName.Text = name;
-            this.txtPreview.Text = preview;
 			
-            txtName_TextChanged(null, EventArgs.Empty);
-            
-            this.txtName.SelectAll();
+			this.declaration = declaration;
+			this.generator = generator;
+			IOutputAstVisitor visitor = this.generator.Invoke();
+			body = declaration.Body;
+			declaration.Body = new BlockStatement();
+			
+			declaration.AcceptVisitor(visitor, null);
+			
+			this.txtName.Text = this.declaration.Name;
+			this.txtPreview.Text = visitor.Text;
+			
+			this.txtName.SelectAll();
 		}
 
-        private void btnOK_Click(object sender, EventArgs e)
-        {
-            this.Text = this.txtName.Text;
-            this.DialogResult = DialogResult.OK;
-        }
+		void btnOKClick(object sender, EventArgs e)
+		{
+			if (FindReferencesAndRenameHelper.CheckName(this.txtName.Text, string.Empty)) {
+				this.Text = this.txtName.Text;
+				this.DialogResult = DialogResult.OK;
+				this.declaration.Body = body;
+				cancelUnload = false;
+			} else
+				cancelUnload = true;
+		}
 
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-        }
+		void btnCancelClick(object sender, EventArgs e)
+		{
+			this.DialogResult = DialogResult.Cancel;
+		}
 
-        private void txtName_TextChanged(object sender, EventArgs e)
-        {
-            string text = this.txtPreview.Text;
-
-            if (string.IsNullOrEmpty(text))
-                return;
-
-            string afterName = text.Substring(text.IndexOf('('));
-            
-            List<string> list = text.Split(' ').ToList();
-            
-            list.RemoveAt(list.Count - 1);
-
-            this.txtPreview.Text = string.Join(" ", list.ToArray()) + " " + this.txtName.Text + afterName;
-        }
+		void txtNameTextChanged(object sender, EventArgs e)
+		{
+			declaration.Name = this.txtName.Text;
+			IOutputAstVisitor visitor = this.generator.Invoke();
+			declaration.AcceptVisitor(visitor, null);
+			this.txtPreview.Text = visitor.Text;
+		}
+		
+		void ExtractMethodFormFormClosing(object sender, FormClosingEventArgs e)
+		{
+			e.Cancel = cancelUnload;
+		}
 	}
 }

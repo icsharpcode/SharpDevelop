@@ -36,7 +36,7 @@ namespace SharpRefactoring
 				MethodExtractorBase extractor = GetCurrentExtractor(textEditor);
 				if (extractor != null) {
 					if (extractor.Extract()) {
-						ExtractMethodForm form = new ExtractMethodForm("NewMethod", extractor.CreatePreview());
+						ExtractMethodForm form = new ExtractMethodForm(extractor.ExtractedMethod, new Func<IOutputAstVisitor>(extractor.GetOutputVisitor));
 						
 						if (form.ShowDialog() == DialogResult.OK) {
 							extractor.ExtractedMethod.Name = form.Text;
