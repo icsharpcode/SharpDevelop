@@ -93,238 +93,43 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			}
 		}
 		
-		class ExtractInterfaceTransformer : NR.Visitors.AbstractAstTransformer
+		public override string GenerateInterfaceForClass(string newInterfaceName, string existingCode, IList<IMember> membersToKeep, IClass sourceClass, bool preserveComments)
 		{
-			string newInterfaceName;
-			string sourceClassName;
-			string sourceNamespace;
-			List<IMember> membersToInclude;
+			Modifiers modifiers = CodeGenerator.ConvertModifier(sourceClass.Modifiers, new ClassFinder(membersToKeep[0]));
+			TypeDeclaration interfaceDef = new TypeDeclaration(modifiers, new List<AttributeSection>());
+			interfaceDef.Name = newInterfaceName;
+			interfaceDef.Type = NR.Ast.ClassType.Interface;
+			interfaceDef.Templates = CodeGenerator.ConvertTemplates(sourceClass.TypeParameters, new ClassFinder(membersToKeep[0]));
 			
-			public ExtractInterfaceTransformer(string newInterfaceName,
-			                                   string sourceNamespace,
-			                                   string sourceClassName,
-			                                   IList<IMember> chosenMembers) {
-				this.newInterfaceName = newInterfaceName;
-				this.sourceNamespace = sourceNamespace;
-				this.sourceClassName = sourceClassName;
-				
-				membersToInclude = chosenMembers.ToList();
-			}
-			
-			public override object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
-			{
-				TypeDeclaration type = LookupTypeDeclaration(namespaceDeclaration.Children, namespaceDeclaration.Name);
-
-				RemoveCurrentNode();
-				
-				if (type != null && namespaceDeclaration.Parent is CompilationUnit)
-					((CompilationUnit)namespaceDeclaration.Parent).AddChild(type);
-				
-				return base.VisitNamespaceDeclaration(namespaceDeclaration, data);
-			}
-			
-			public override object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
-			{
-				RemoveCurrentNode();
-				return base.VisitUsingDeclaration(usingDeclaration, data);
-			}
-			
-			TypeDeclaration LookupTypeDeclaration(List<INode> nodes, string nameSpace)
-			{
-				TypeDeclaration td = null;
-				
-				foreach (INode node in nodes) {
-					if (node is TypeDeclaration) {
-						TypeDeclaration type = node as TypeDeclaration;
-						string name = nameSpace + "." + type.Name;
-						string lookFor = sourceNamespace + "." + sourceClassName;
-						if (lookFor == name)
-							return type;
-						else
-							td = LookupTypeDeclaration(node.Children, name);
-					}
-				}
-				
-				return td;
-			}
-			
-			static bool MethodEquals(MethodDeclaration md1, MethodDeclaration md2)
-			{
-				if (md2 == null)
-					throw new ArgumentNullException("md2");
-				if (md1 == null)
-					throw new ArgumentNullException("md1");
-				
-				// see C# Spec 3, page 65, 3.6
-				
-				return md1.Name == md2.Name &&
-					(MethodDeclaration.GetCollectionString(md1.Parameters) == MethodDeclaration.GetCollectionString(md2.Parameters)) &&
-					(MethodDeclaration.GetCollectionString(md1.Templates) == MethodDeclaration.GetCollectionString(md2.Templates));
-			}
-			
-			static bool PropertyEquals(PropertyDeclaration pd1, PropertyDeclaration pd2)
-			{
-				if (pd1 == null)
-					throw new ArgumentNullException("pd1");
-				if (pd2 == null)
-					throw new ArgumentNullException("pd2");
-				
-				return pd1.Name == pd2.Name;
-			}
-			
-			bool ContainsMethod(MethodDeclaration md)
-			{
-				if (md == null)
-					throw new ArgumentNullException("md");
-				
-				foreach (IMember mem in this.membersToInclude) {
-					if (mem is IMethod && MethodEquals(CodeGenerator.ConvertMember(mem as IMethod, new ClassFinder(mem)) as MethodDeclaration, md))
-						return true;
-				}
-				
-				return false;
-			}
-			
-			bool ContainsProperty(PropertyDeclaration pd)
-			{
-				if (pd == null)
-					throw new ArgumentNullException("pd");
-				
-				foreach (IMember mem in this.membersToInclude) {
-					if (mem is IProperty && PropertyEquals(CodeGenerator.ConvertMember(mem as IProperty, new ClassFinder(mem)) as PropertyDeclaration, pd))
-						return true;
-				}
-				
-				return false;
-			}
-			
-			public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
-			{
-				if (typeDeclaration.Name != sourceClassName) {
-					return base.VisitTypeDeclaration(typeDeclaration, data);
-				}
-				
-				// rewrite the type declaration to an interface
-				typeDeclaration.Attributes.Clear();
-				typeDeclaration.BaseTypes.Clear();
-				
-				typeDeclaration.Type = NR.Ast.ClassType.Interface;
-				typeDeclaration.Name = newInterfaceName;
-				
-				// remove those children who are not explicitly listed in our 'membersToInclude' dictionary
-				// we walk backwards so that deletions don't affect the iteration
-				bool keepIt;
-				MethodDeclaration method;
-				PropertyDeclaration property;
-				object child;
-				for (int i = typeDeclaration.Children.Count-1; i >= 0; i--) {
-					keepIt = false;
-					child = typeDeclaration.Children[i];
-					if (child is MethodDeclaration) {
-						method = (MethodDeclaration)child;
-						if (ContainsMethod(method) && ((method.Modifier & Modifiers.Static) != Modifiers.Static))
-							keepIt = true;
-					} else if (child is PropertyDeclaration) {
-						property = (PropertyDeclaration)child;
-						if (ContainsProperty(property) && ((property.Modifier & Modifiers.Static) != Modifiers.Static))
-							keepIt = true;
-					}
-					
-					if (!keepIt) {
-						typeDeclaration.Children.RemoveAt(i);
-					}
-				}
-
-				// must call the base method to ensure that this type's children get visited
-				return base.VisitTypeDeclaration(typeDeclaration, data);
-			}
-			
-			public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
-			{
-				if (ContainsMethod(methodDeclaration) && ((methodDeclaration.Modifier & Modifiers.Static) != Modifiers.Static)) {
-					// strip out the public modifier...
-					methodDeclaration.Modifier = NR.Ast.Modifiers.None;
-					
-					// ...and the method body
-					methodDeclaration.Body = BlockStatement.Null;
+			foreach (IMember member in membersToKeep) {
+				AttributedNode an = CodeGenerator.ConvertMember(member, new ClassFinder(member));
+				INode node = null;
+				if (an is MethodDeclaration) {
+					MethodDeclaration m = an as MethodDeclaration;
+					m.Body = BlockStatement.Null;
+					m.Modifier = Modifiers.None;
+					node = m;
 				} else {
-					RemoveCurrentNode();
-				}
-
-				return null;
-			}
-			
-			public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
-			{
-				if (ContainsProperty(propertyDeclaration) && ((propertyDeclaration.Modifier & Modifiers.Static) != Modifiers.Static)) {
-					// strip out the public modifiers...
-					propertyDeclaration.Modifier = NR.Ast.Modifiers.None;
-
-					// ... and the body of any get block...
-					if (propertyDeclaration.HasGetRegion) {
-						propertyDeclaration.GetRegion.Block = BlockStatement.Null;
+					if (an is PropertyDeclaration) {
+						PropertyDeclaration p = an as PropertyDeclaration;
+						p.GetRegion.Block = BlockStatement.Null;
+						p.SetRegion.Block= BlockStatement.Null;
+						p.Modifier = Modifiers.None;
+						node = p;
 					}
-
-					// ... and the body of any set block...
-					if (propertyDeclaration.HasSetRegion) {
-						propertyDeclaration.SetRegion.Block = BlockStatement.Null;
-					}
-				} else {
-					RemoveCurrentNode();
 				}
 				
-				return null;
-			}
-		}
-		
-		public override string GenerateInterfaceForClass(string newInterfaceName,
-		                                                 IList<IMember> membersToKeep,
-		                                                 bool preserveComments,
-		                                                 string sourceNamespace,
-		                                                 string sourceClassName,
-		                                                 string existingCode
-		                                                )
-		{
-			string codeForNewInterface = "<insert code for '"+newInterfaceName+"' here>";
-			NR.IParser parser = ParseFile(null, existingCode);
-			if (parser == null) {
-				return null;
-			}
-			// use a custom IAstVisitor to strip our class out of this file,
-			// rewrite it as our desired interface, and strip out every
-			// member except those we want to keep in our new interface.
-			ExtractInterfaceTransformer extractInterfaceTransformer = new ExtractInterfaceTransformer(newInterfaceName,
-			                                                                                          sourceNamespace,
-			                                                                                          sourceClassName,
-			                                                                                          membersToKeep);
-			parser.CompilationUnit.AcceptVisitor(extractInterfaceTransformer, null);
-
-			// now use an output visitor for the appropriate language (based on
-			// extension of the existing code file) to format the new interface.
-			IOutputAstVisitor output = GetOutputVisitor();
-			if (preserveComments) {
-				// run the output visitor with the specials inserter to insert comments
-				// NOTE: *all* comments will be preserved, even for code that has been
-				//       removed to create the interface...
-				// TODO: is it worth enhancing the SpecialsNodeInserter to attach comments directly to code so they can be filtered based on what is preserved after a transformation?
-				using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(), output)) {
-					parser.CompilationUnit.AcceptVisitor(output, null);
-				}
-			} else {
-				// run the output visitor without the specials inserter
-				parser.CompilationUnit.AcceptVisitor(output, null);
+				if (node == null)
+					throw new NotSupportedException();
+				
+				interfaceDef.AddChild(node);
 			}
 			
-			parser.Dispose();
+			IOutputAstVisitor printer = this.GetOutputVisitor();
 			
-			if (output.Errors.Count == 0) {
-				// get the output
-				codeForNewInterface = output.Text;
-			} else {
-				// dump errors into the new interface file...
-				codeForNewInterface = String.Format("{0} {1}",
-				                                    this.CommentToken, output.Errors.ErrorOutput);
-			}
+			interfaceDef.AcceptVisitor(printer, null);
+			
+			string codeForNewInterface = printer.Text;
 
 			// wrap the new code in the same comments/usings/namespace as the the original class file.
 			string newFileContent = CreateNewFileLikeExisting(existingCode, codeForNewInterface);

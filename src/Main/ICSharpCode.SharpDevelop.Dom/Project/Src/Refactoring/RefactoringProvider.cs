@@ -36,13 +36,8 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				return false;
 			}
 		}
-		public virtual string GenerateInterfaceForClass(string newInterfaceName,
-		                                                IList<IMember> membersToExtract,
-		                                                bool preserveComments,
-		                                                string sourceNamespace,
-		                                                string sourceClassName,
-		                                                string existingCode
-		                                               )
+		public virtual string GenerateInterfaceForClass(string newInterfaceName, string existingCode, IList<IMember> membersToKeep, IClass sourceClass, bool preserveComments)
+
 		{
 			throw new NotSupportedException();
 		}

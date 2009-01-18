@@ -62,16 +62,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			LanguageProperties language = c.ProjectContent.Language;
 			string classFileName = c.CompilationUnit.FileName;
 			string existingClassCode = ParserService.GetParseableFileContent(classFileName);
-						
+			
 			// build the new interface...
-			string newInterfaceCode =
-				language.RefactoringProvider.GenerateInterfaceForClass(extractInterface.NewInterfaceName,
-				                                                       extractInterface.ChosenMembers,
-				                                                       extractInterface.IncludeComments,
-				                                                       c.Namespace,
-				                                                       c.Name,
-				                                                       existingClassCode
-				                                                      );
+			string newInterfaceCode = language.RefactoringProvider.GenerateInterfaceForClass(extractInterface.NewInterfaceName,
+			                                                                                 existingClassCode,
+			                                                                                 extractInterface.ChosenMembers,
+			                                                                                 c, extractInterface.IncludeComments);
 			if (newInterfaceCode == null)
 				return;
 			
