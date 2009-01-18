@@ -108,6 +108,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void InterfaceWithOutParameters()
+		{
+			TestProgram("public interface ITest { void Method(out int a, ref double b); }");
+		}
+		
+		[Test]
 		public void GenericClassDefinitionWithBaseType()
 		{
 			TestProgram("public class Foo<T> : BaseClass where T : IDisposable, ICloneable { }");

@@ -13,6 +13,8 @@ using System.Security.Permissions;
 [assembly: CLSCompliant(true)]
 [assembly: StringFreezing()]
 
+[assembly: Dependency("System.Core", LoadHint.Always)]
+
 [assembly: AssemblyTitle("ICSharpCode.SharpDevelop.Dom")]
 [assembly: AssemblyDescription("Code-completion library")]
 [assembly: AssemblyConfiguration("")]

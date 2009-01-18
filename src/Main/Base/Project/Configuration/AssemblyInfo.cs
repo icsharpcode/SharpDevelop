@@ -20,6 +20,7 @@ using System.Runtime.CompilerServices;
 [assembly: Dependency("ICSharpCode.NRefactory", LoadHint.Always)]
 [assembly: Dependency("ICSharpCode.SharpDevelop.Dom", LoadHint.Always)]
 [assembly: Dependency("ICSharpCode.SharpDevelop.Widgets", LoadHint.Always)]
+[assembly: Dependency("System.Core", LoadHint.Always)]
 [assembly: Dependency("System.Drawing", LoadHint.Always)]
 [assembly: Dependency("System.Xml", LoadHint.Always)]
 [assembly: Dependency("System.Windows.Forms", LoadHint.Always)]

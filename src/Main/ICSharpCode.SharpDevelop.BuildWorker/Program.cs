@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			                           | ToolsetDefinitionLocations.ConfigurationFile);
 			
 			engine.RegisterLogger(new ForwardingLogger(this));
-			engine.RegisterLogger(new ConsoleLogger(LoggerVerbosity.Diagnostic));
+			//engine.RegisterLogger(new ConsoleLogger(LoggerVerbosity.Diagnostic));
 			
 			return engine;
 		}
@@ -209,13 +209,16 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 				engine.GlobalProperties.SetProperty(pair.Key, pair.Value);
 			}
 			
+			Log("Loading " + currentJob.ProjectFileName);
 			Project project = LoadProject(engine, currentJob.ProjectFileName);
 			if (project == null)
 				return false;
 			
 			if (string.IsNullOrEmpty(currentJob.Target)) {
+				Log("Building default target in " + currentJob.ProjectFileName);
 				return engine.BuildProject(project);
 			} else {
+				Log("Building target '" + currentJob.Target + "' in " + currentJob.ProjectFileName);
 				return engine.BuildProject(project, currentJob.Target.Split(';'));
 			}
 		}

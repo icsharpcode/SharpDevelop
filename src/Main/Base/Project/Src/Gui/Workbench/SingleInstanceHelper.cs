@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static bool OpenFilesInPreviousInstance(string[] fileList)
 		{
-			LoggingService.Debug("Trying to pass arguments to previous instance...");
+			LoggingService.Info("Trying to pass arguments to previous instance...");
 			int currentProcessId = Process.GetCurrentProcess().Id;
 			string currentFile = Assembly.GetEntryAssembly().Location;
 			int number = new Random().Next();
@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return false;
 			long fileNumber = m.WParam.ToInt64();
 			long openEvenIfProjectIsOpened = m.LParam.ToInt64();
-			LoggingService.Debug("Receiving custom message...");
+			LoggingService.Info("Receiving custom message...");
 			if (openEvenIfProjectIsOpened == 0 && ProjectService.OpenSolution != null) {
 				m.Result = new IntPtr(RESULT_PROJECT_IS_OPEN);
 			} else {

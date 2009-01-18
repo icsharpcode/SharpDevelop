@@ -115,7 +115,7 @@ namespace ICSharpCode.Core.WinForms
 				if (GetVisible() && Enabled) {
 					ICommand cmd = Command;
 					if (cmd != null) {
-						LoggingService.Debug("Run command " + cmd.GetType().FullName);
+						LoggingService.Info("Run command " + cmd.GetType().FullName);
 						cmd.Run();
 					}
 				}
