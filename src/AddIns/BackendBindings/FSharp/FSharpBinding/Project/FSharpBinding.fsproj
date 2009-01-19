@@ -30,6 +30,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <OtherFlags>--standalone</OtherFlags>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Src\project.fs" />
     <Compile Include="Src\languagebinding.fs" />
@@ -56,6 +59,84 @@
       <Name>System.Configuration</Name>
       <AssemblyName>System.configuration.dll</AssemblyName>
     </Reference>
+    <Reference Include="System.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.Security</Name>
+      <AssemblyName>System.Security.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.Web</Name>
+      <AssemblyName>System.Web.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.EnterpriseServices, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.EnterpriseServices</Name>
+      <AssemblyName>System.EnterpriseServices.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>System.Runtime.Remoting</Name>
+      <AssemblyName>System.Runtime.Remoting.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.DirectoryServices, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.DirectoryServices</Name>
+      <AssemblyName>System.DirectoryServices.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.Runtime.Serialization.Formatters.Soap</Name>
+      <AssemblyName>System.Runtime.Serialization.Formatters.Soap.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Transactions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>System.Transactions</Name>
+      <AssemblyName>System.Transactions.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.DirectoryServices.Protocols, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.DirectoryServices.Protocols</Name>
+      <AssemblyName>System.DirectoryServices.Protocols.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Web.RegularExpressions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.Web.RegularExpressions</Name>
+      <AssemblyName>System.Web.RegularExpressions.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.Web.Services</Name>
+      <AssemblyName>System.Web.Services.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>System.Data</Name>
+      <AssemblyName>System.Data.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.Design</Name>
+      <AssemblyName>System.Design.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Drawing.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.Drawing.Design</Name>
+      <AssemblyName>System.Drawing.Design.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.Deployment</Name>
+      <AssemblyName>System.Deployment.dll</AssemblyName>
+    </Reference>
+    <Reference Include="Accessibility, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>Accessibility</Name>
+      <AssemblyName>Accessibility.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Data.OracleClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>System.Data.OracleClient</Name>
+      <AssemblyName>System.Data.OracleClient.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.ServiceProcess, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.ServiceProcess</Name>
+      <AssemblyName>System.ServiceProcess.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System.Configuration.Install, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>System.Configuration.Install</Name>
+      <AssemblyName>System.Configuration.Install.dll</AssemblyName>
+    </Reference>
+
+
+    <Reference Include="Microsoft.VisualC, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>Microsoft.VisualC</Name>
+      <AssemblyName>Microsoft.VisualC.dll</AssemblyName>
+    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -71,6 +152,24 @@
       <Name>System.Xml</Name>
       <AssemblyName>System.XML.dll</AssemblyName>
     </Reference>
+    <Reference Include="log4net">
+      <Name>log4net</Name>
+      <AssemblyName>..\..\..\..\..\Libraries\log4net\log4net.dll</AssemblyName>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <Name>Mono.Cecil</Name>
+      <AssemblyName>..\..\..\..\..\Libraries\Mono.Cecil.dll</AssemblyName>
+    </Reference>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <Name>WeifenLuo.WinFormsUI.Docking</Name>
+      <AssemblyName>..\..\..\..\..\Libraries\SHFB\WeifenLuo.WinFormsUI.Docking.dll</AssemblyName>
+    </Reference>
+
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Name>ICSharpCode.TextEditor</Name>
       <Project>{2d18be89-d210-49eb-a9dd-2246fbb3df6d}</Project>
