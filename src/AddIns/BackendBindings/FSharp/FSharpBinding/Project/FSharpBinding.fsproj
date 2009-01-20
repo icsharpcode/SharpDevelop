@@ -50,9 +50,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\..\..\Libraries\log4net\log4net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Microsoft.Build.Engine, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Name>Microsoft.Build.Engine</Name>
       <AssemblyName>Microsoft.Build.Engine.dll</AssemblyName>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\..\..\..\Libraries\Mono.Cecil\Mono.Cecil.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -131,8 +139,6 @@
       <Name>System.Configuration.Install</Name>
       <AssemblyName>System.Configuration.Install.dll</AssemblyName>
     </Reference>
-
-
     <Reference Include="Microsoft.VisualC, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Name>Microsoft.VisualC</Name>
       <AssemblyName>Microsoft.VisualC.dll</AssemblyName>
@@ -152,68 +158,62 @@
       <Name>System.Xml</Name>
       <AssemblyName>System.XML.dll</AssemblyName>
     </Reference>
-    <Reference Include="log4net">
-      <Name>log4net</Name>
-      <AssemblyName>..\..\..\..\..\Libraries\log4net\log4net.dll</AssemblyName>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <Name>Mono.Cecil</Name>
-      <AssemblyName>..\..\..\..\..\Libraries\Mono.Cecil.dll</AssemblyName>
-    </Reference>
-    <Reference Include="WeifenLuo.WinFormsUI.Docking">
-      <Name>WeifenLuo.WinFormsUI.Docking</Name>
-      <AssemblyName>..\..\..\..\..\Libraries\SHFB\WeifenLuo.WinFormsUI.Docking.dll</AssemblyName>
-    </Reference>
-
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Name>ICSharpCode.Core.WinForms</Name>
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Name>ICSharpCode.TextEditor</Name>
       <Project>{2d18be89-d210-49eb-a9dd-2246fbb3df6d}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Name>NRefactory</Name>
       <Project>{3a9ae6aa-bc07-4a2f-972c-581e3ae2f195}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Name>ICSharpCode.SharpDevelop</Name>
       <Project>{2748ad25-9c63-4e12-877b-4dce96fbed54}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Name>ICSharpCode.Core</Name>
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.BuildWorker\ICSharpCode.SharpDevelop.BuildWorker.csproj">
-      <Name>ICSharpCode.SharpDevelop.BuildWorker</Name>
-      <Project>{c3cbc8e3-81d8-4c5b-9941-dccd12d50b1f}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Project>{924ee450-603d-49c1-a8e5-4afaa31ce6f3}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Project>{8035765f-d51f-4a0c-a746-2fd100e19419}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-	<Target Name="Clean" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
-		<!-- F# not found? no need to clean anything -->
-	</Target>
-	<Target Name="Build" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
-		<Warning Text="Microsoft.FSharp.Targets not found, skipping F# binding"/>
-	</Target>
-	<Target Name="Rebuild" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
-		<Warning Text="Microsoft.FSharp.Targets not found, skipping F# binding"/>
-	</Target>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
+      <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>
+      <Name>WinFormsUI</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.BuildWorker\ICSharpCode.SharpDevelop.BuildWorker.csproj">
+      <Project>{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F}</Project>
+      <Name>ICSharpCode.SharpDevelop.BuildWorker</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Target Name="Clean" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
+    <!-- F# not found? no need to clean anything -->
+  </Target>
+  <Target Name="Build" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
+    <Warning Text="Microsoft.FSharp.Targets not found, skipping F# binding" />
+  </Target>
+  <Target Name="Rebuild" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
+    <Warning Text="Microsoft.FSharp.Targets not found, skipping F# binding" />
+  </Target>
   <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')" />
 </Project>
