@@ -20,24 +20,47 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 	// TODO: Rename this class, the visitor functionality was moved to ResolveVisitor
 	public static class TypeVisitor
 	{
+		[Flags]
+		public enum ReturnTypeOptions
+		{
+			None = 0,
+			Lazy = 1,
+			BaseTypeReference = 2
+		}
+		
 		public static IReturnType CreateReturnType(TypeReference reference, NRefactoryResolver resolver)
 		{
 			return CreateReturnType(reference,
 			                        resolver.CallingClass, resolver.CallingMember,
 			                        resolver.CaretLine, resolver.CaretColumn,
-			                        resolver.ProjectContent, false);
+			                        resolver.ProjectContent, ReturnTypeOptions.None);
+		}
+		
+		[Obsolete("Use the overload with ReturnTypeOptions instead")]
+		public static IReturnType CreateReturnType(TypeReference reference, IClass callingClass,
+		                                           IMember callingMember, int caretLine, int caretColumn,
+		                                           IProjectContent projectContent,
+		                                           bool useLazyReturnType)
+		{
+			return CreateReturnType(reference, callingClass, callingMember, caretLine, caretColumn,
+			                        projectContent,
+			                        useLazyReturnType ? ReturnTypeOptions.Lazy : ReturnTypeOptions.None);
 		}
 		
 		public static IReturnType CreateReturnType(TypeReference reference, IClass callingClass,
 		                                           IMember callingMember, int caretLine, int caretColumn,
 		                                           IProjectContent projectContent,
-		                                           bool useLazyReturnType)
+		                                           ReturnTypeOptions options)
 		{
 			if (reference == null) return null;
 			if (reference.IsNull) return null;
 			if (reference is InnerClassTypeReference) {
 				reference = ((InnerClassTypeReference)reference).CombineToNormalTypeReference();
 			}
+			
+			bool useLazyReturnType = (options & ReturnTypeOptions.Lazy) == ReturnTypeOptions.Lazy;
+			bool isBaseTypeReference = (options & ReturnTypeOptions.BaseTypeReference) == ReturnTypeOptions.BaseTypeReference;
+			
 			LanguageProperties languageProperties = projectContent.Language;
 			IReturnType t = null;
 			if (callingClass != null && !reference.IsGlobal) {
@@ -57,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			if (t == null) {
-				if (reference.Type != reference.Type) {
+				if (reference.IsKeyword) {
 					// keyword-type like void, int, string etc.
 					IClass c = projectContent.GetClass(reference.Type, 0);
 					if (c != null)
@@ -66,11 +89,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						t = new GetClassReturnType(projectContent, reference.Type, 0);
 				} else {
 					int typeParameterCount = reference.GenericTypes.Count;
-					if (useLazyReturnType) {
-						if (reference.IsGlobal || reference.IsKeyword)
+					if (useLazyReturnType || isBaseTypeReference) {
+						if (reference.IsGlobal) {
 							t = new GetClassReturnType(projectContent, reference.Type, typeParameterCount);
-						else if (callingClass != null)
-							t = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.Type, typeParameterCount);
+						} else if (callingClass != null) {
+							SearchClassReturnType scrt = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.Type, typeParameterCount);
+							if (isBaseTypeReference)
+								scrt.LookForInnerClassesInDeclaringClass = false;
+							t = scrt;
+						}
 					} else {
 						IClass c;
 						if (reference.IsGlobal || reference.IsKeyword) {
@@ -88,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (reference.GenericTypes.Count > 0) {
 				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
 				for (int i = 0; i < reference.GenericTypes.Count; ++i) {
-					para.Add(CreateReturnType(reference.GenericTypes[i], callingClass, callingMember, caretLine, caretColumn, projectContent, useLazyReturnType));
+					para.Add(CreateReturnType(reference.GenericTypes[i], callingClass, callingMember, caretLine, caretColumn, projectContent, options));
 				}
 				t = new ConstructedReturnType(t, para);
 			}

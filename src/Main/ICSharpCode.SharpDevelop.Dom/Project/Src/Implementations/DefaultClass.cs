@@ -374,13 +374,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return CompareTo((IClass)o);
 		}
 		
-		sealed class InheritanceTreeCache
-		{
-			internal IClass[] inheritanceTree;
-			internal bool isCreating;
-		}
-		
-		volatile InheritanceTreeCache inheritanceTreeCache;
+		volatile IClass[] inheritanceTreeCache;
 		
 		public IEnumerable<IClass> ClassInheritanceTree {
 			get {
@@ -392,47 +386,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// Especially the recursive calls are tricky, this has caused incorrect behavior (SD2-1474)
 				// or performance problems (SD2-1510) in the past.
 				
-				// get the inheritanceTreeCache, creating it if required
-				// (on demand-creation saves memory - lots of classes never need a ClassInheritanceTree)
-				InheritanceTreeCache inheritanceTreeCache = this.inheritanceTreeCache;
-				if (inheritanceTreeCache == null) {
-					// but ensure only one is created, even when ClassInheritanceTree is called by multiple threads
-					InheritanceTreeCache newCache = new InheritanceTreeCache();
-					#pragma warning disable 420
-					// Warning CS0420: 'ICSharpCode.SharpDevelop.Dom.DefaultClass.inheritanceTreeCache': a reference to a volatile field will not be treated as volatile
-					// We disable this warning because Interlocked.* treats the location as volatile, even though
-					// normally ref-parameters in C# lose the volatile modifier.
-					inheritanceTreeCache = Interlocked.CompareExchange(ref this.inheritanceTreeCache, newCache, null) ?? newCache;
-					#pragma warning restore 420
+				IClass[] inheritanceTree = this.inheritanceTreeCache;
+				if (inheritanceTree != null) {
+					return inheritanceTree;
 				}
 				
-				// now we have the inheritanceTreeCache -> lock on it
-				lock (inheritanceTreeCache) {
-					if (inheritanceTreeCache.inheritanceTree == null) {
-						// inheritance tree does not exist yet
-						if (inheritanceTreeCache.isCreating) {
-							// this is a recursive call -> don't produce inheritance tree
-							return EmptyList<IClass>.Instance;
-						} else {
-							// now produce the actual inheritance tree
-							inheritanceTreeCache.isCreating = true;
-							inheritanceTreeCache.inheritanceTree = CalculateClassInheritanceTree();
-							inheritanceTreeCache.isCreating = false;
-							if (!KeepInheritanceTree)
-								DomCache.RegisterForClear(ClearCachedInheritanceTree);
-						}
-					}
-					
-					return inheritanceTreeCache.inheritanceTree;
-				}
+				inheritanceTree = CalculateClassInheritanceTree();
+				
+				this.inheritanceTreeCache = inheritanceTree;
+				if (!KeepInheritanceTree)
+					DomCache.RegisterForClear(ClearCachedInheritanceTree);
+				
+				return inheritanceTree;
 			}
 		}
 		
 		void ClearCachedInheritanceTree()
 		{
-			lock (inheritanceTreeCache) {
-				inheritanceTreeCache.inheritanceTree = null;
-			}
+			inheritanceTreeCache = null;
 		}
 		
 		IClass[] CalculateClassInheritanceTree()
