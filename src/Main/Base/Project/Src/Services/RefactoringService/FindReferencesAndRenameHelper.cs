@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				                                                     1,
 				                                                     "${res:Global.ReplaceButtonText}",
 				                                                     "${res:Global.AbortButtonText}");
-				if (confirmReplace == 1) {
+				if (confirmReplace != 0) {
 					return;
 				}
 			}

@@ -96,6 +96,10 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		public override string GenerateInterfaceForClass(string newInterfaceName, string existingCode, IList<IMember> membersToKeep, IClass sourceClass, bool preserveComments)
 		{
 			Modifiers modifiers = CodeGenerator.ConvertModifier(sourceClass.Modifiers, new ClassFinder(membersToKeep[0]));
+			// keep only visibility modifiers and 'unsafe' modifier
+			// -> remove abstract,sealed,static
+			modifiers &= Modifiers.Visibility | Modifiers.Unsafe;
+			
 			TypeDeclaration interfaceDef = new TypeDeclaration(modifiers, new List<AttributeSection>());
 			interfaceDef.Name = newInterfaceName;
 			interfaceDef.Type = NR.Ast.ClassType.Interface;
