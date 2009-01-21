@@ -13,7 +13,6 @@ using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
-	/*
 	public class SideBarRenameTabItem : AbstractMenuCommand
 	{
 		public override void Run()
@@ -167,5 +166,4 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 		} 
 	}
-	*/
 }
