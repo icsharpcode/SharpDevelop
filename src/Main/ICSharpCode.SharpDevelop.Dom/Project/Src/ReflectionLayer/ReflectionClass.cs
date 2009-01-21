@@ -105,8 +105,6 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				FullyQualifiedName = fullName;
 			}
 			
-			this.KeepInheritanceTree = true;
-			
 			try {
 				AddAttributes(compilationUnit.ProjectContent, this.Attributes, CustomAttributeData.GetCustomAttributes(type));
 			} catch (Exception ex) {
@@ -184,6 +182,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				}
 			}
 		}
+		
+		protected override bool KeepInheritanceTree {
+			get { return true; }
+		}
 	}
-	
 }

@@ -6,8 +6,9 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -373,59 +374,102 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return CompareTo((IClass)o);
 		}
 		
-		volatile List<IClass> inheritanceTreeCache;
+		sealed class InheritanceTreeCache
+		{
+			internal IClass[] inheritanceTree;
+			internal bool isCreating;
+		}
+		
+		volatile InheritanceTreeCache inheritanceTreeCache;
 		
 		public IEnumerable<IClass> ClassInheritanceTree {
 			get {
-				List<IClass> visitedList = inheritanceTreeCache;
-				if (visitedList != null)
-					return visitedList;
-				visitedList = new List<IClass>();
-				Queue<IReturnType> typesToVisit = new Queue<IReturnType>();
-				bool enqueuedLastBaseType = false;
-				bool hasErrors = false;
-				IClass currentClass = this;
-				IReturnType nextType;
-				do {
-					if (currentClass != null) {
-						if (!visitedList.Contains(currentClass)) {
-							visitedList.Add(currentClass);
-							foreach (IReturnType type in currentClass.BaseTypes) {
-								typesToVisit.Enqueue(type);
-							}
+				// Notes:
+				// the ClassInheritanceTree must work even if the following things happen:
+				// - cyclic inheritance
+				// - multithreaded calls
+				// - recursive calls (the SearchType request done by GetUnderlyingClass() uses ClassInheritanceTree)
+				// Especially the recursive calls are tricky, this has caused incorrect behavior (SD2-1474)
+				// or performance problems (SD2-1510) in the past.
+				
+				// get the inheritanceTreeCache, creating it if required
+				// (on demand-creation saves memory - lots of classes never need a ClassInheritanceTree)
+				InheritanceTreeCache inheritanceTreeCache = this.inheritanceTreeCache;
+				if (inheritanceTreeCache == null) {
+					// but ensure only one is created, even when ClassInheritanceTree is called by multiple threads
+					InheritanceTreeCache newCache = new InheritanceTreeCache();
+					#pragma warning disable 420
+					// Warning CS0420: 'ICSharpCode.SharpDevelop.Dom.DefaultClass.inheritanceTreeCache': a reference to a volatile field will not be treated as volatile
+					// We disable this warning because Interlocked.* treats the location as volatile, even though
+					// normally ref-parameters in C# lose the volatile modifier.
+					inheritanceTreeCache = Interlocked.CompareExchange(ref this.inheritanceTreeCache, newCache, null) ?? newCache;
+					#pragma warning restore 420
+				}
+				
+				// now we have the inheritanceTreeCache -> lock on it
+				lock (inheritanceTreeCache) {
+					if (inheritanceTreeCache.inheritanceTree == null) {
+						// inheritance tree does not exist yet
+						if (inheritanceTreeCache.isCreating) {
+							// this is a recursive call -> don't produce inheritance tree
+							return EmptyList<IClass>.Instance;
+						} else {
+							// now produce the actual inheritance tree
+							inheritanceTreeCache.isCreating = true;
+							inheritanceTreeCache.inheritanceTree = CalculateClassInheritanceTree();
+							inheritanceTreeCache.isCreating = false;
+							if (!KeepInheritanceTree)
+								DomCache.RegisterForClear(ClearCachedInheritanceTree);
 						}
 					}
-					if (typesToVisit.Count > 0) {
-						nextType = typesToVisit.Dequeue();
-					} else {
-						nextType = enqueuedLastBaseType ? null : GetBaseTypeByClassType(this);
-						enqueuedLastBaseType = true;
-					}
-					if (nextType != null) {
-						currentClass = nextType.GetUnderlyingClass();
-						if (currentClass == null)
-							hasErrors = true;
-					}
-				} while (nextType != null);
-				
-				
-				// A SearchType request causes the inheritance tree to be generated, but if it was
-				// this classes' base type that caused the SearchType request, the GetUnderlyingClass()
-				// will fail and we will produce an incomplete inheritance tree.
-				// So we don't cache incomplete inheritance trees for parsed classes (fixes SD2-1474).
-				if (!hasErrors || KeepInheritanceTree) {
-					inheritanceTreeCache = visitedList;
-					if (!KeepInheritanceTree)
-						DomCache.RegisterForClear(delegate { inheritanceTreeCache = null; });
+					
+					return inheritanceTreeCache.inheritanceTree;
 				}
-				return visitedList;
 			}
+		}
+		
+		void ClearCachedInheritanceTree()
+		{
+			lock (inheritanceTreeCache) {
+				inheritanceTreeCache.inheritanceTree = null;
+			}
+		}
+		
+		IClass[] CalculateClassInheritanceTree()
+		{
+			List<IClass> visitedList = new List<IClass>();
+			Queue<IReturnType> typesToVisit = new Queue<IReturnType>();
+			bool enqueuedLastBaseType = false;
+			IClass currentClass = this;
+			IReturnType nextType;
+			do {
+				if (currentClass != null) {
+					if (!visitedList.Contains(currentClass)) {
+						visitedList.Add(currentClass);
+						foreach (IReturnType type in currentClass.BaseTypes) {
+							typesToVisit.Enqueue(type);
+						}
+					}
+				}
+				if (typesToVisit.Count > 0) {
+					nextType = typesToVisit.Dequeue();
+				} else {
+					nextType = enqueuedLastBaseType ? null : GetBaseTypeByClassType(this);
+					enqueuedLastBaseType = true;
+				}
+				if (nextType != null) {
+					currentClass = nextType.GetUnderlyingClass();
+				}
+			} while (nextType != null);
+			return visitedList.ToArray();
 		}
 		
 		/// <summary>
 		/// Specifies whether to keep the inheritance tree when the DomCache is cleared.
 		/// </summary>
-		protected bool KeepInheritanceTree = false;
+		protected virtual bool KeepInheritanceTree {
+			get { return false; }
+		}
 		
 		public IReturnType GetBaseType(int index)
 		{

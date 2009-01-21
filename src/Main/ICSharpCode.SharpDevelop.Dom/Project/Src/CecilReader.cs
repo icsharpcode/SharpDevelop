@@ -174,12 +174,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 						|| type.BaseType.FullName == "System.MulticastDelegate";
 			}
 			
+			protected override bool KeepInheritanceTree {
+				get { return true; }
+			}
+			
 			public CecilClass(ICompilationUnit compilationUnit, IClass declaringType,
 			                  TypeDefinition td, string fullName)
 				: base(compilationUnit, declaringType)
 			{
 				this.FullyQualifiedName = fullName;
-				this.KeepInheritanceTree = true;
 				
 				AddAttributes(compilationUnit.ProjectContent, this.Attributes, td.CustomAttributes);
 				
