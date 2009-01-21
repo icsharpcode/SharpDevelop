@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 				}
 				success = DoBuild();
 			} catch (Exception ex) {
-				host.CallMethodOnHost("ReportException", ex);
+				host.CallMethodOnHost("ReportException", ex.ToString());
 			} finally {
 				Program.Log("BuildDone");
 				

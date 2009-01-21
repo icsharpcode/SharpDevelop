@@ -382,9 +382,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// the ClassInheritanceTree must work even if the following things happen:
 				// - cyclic inheritance
 				// - multithreaded calls
-				// - recursive calls (the SearchType request done by GetUnderlyingClass() uses ClassInheritanceTree)
-				// Especially the recursive calls are tricky, this has caused incorrect behavior (SD2-1474)
+				
+				// Recursive calls are possible if the SearchType request done by GetUnderlyingClass()
+				// uses ClassInheritanceTree.
+				// Such recursive calls are tricky, they have caused incorrect behavior (SD2-1474)
 				// or performance problems (SD2-1510) in the past.
+				// As of revision 3769, NRefactoryAstConvertVisitor sets up the SearchClassReturnType
+				// used for base types so that it does not look up inner classes in the class itself,
+				// so the ClassInheritanceTree is not used created in those cases.
+				// However, other language bindings might not set up base types correctly, so it's
+				// still possible that ClassInheritanceTree is called recursivly.
+				// In that case, we'll return an invalid inheritance tree because of
+				// ProxyReturnType's automatic stack overflow prevention.
+				
+				// We do not use locks to protect against multithreaded calls because
+				// resolving one class's base types can cause getting the inheritance tree
+				// of another class -> beware of deadlocks
 				
 				IClass[] inheritanceTree = this.inheritanceTreeCache;
 				if (inheritanceTree != null) {

@@ -11,6 +11,6 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 {
 	public interface IHostObject
 	{
-		void ReportException(Exception ex);
+		void ReportException(string exceptionText);
 	}
 }

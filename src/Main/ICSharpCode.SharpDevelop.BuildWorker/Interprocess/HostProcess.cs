@@ -98,10 +98,10 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 					mc.CallOn(workerObject);
 				} catch (TargetInvocationException ex) {
 					Program.Log(ex.ToString());
-					CallMethodOnHost("ReportException", ex.InnerException);
+					CallMethodOnHost("ReportException", ex.InnerException.ToString());
 				} catch (Exception ex) {
 					Program.Log(ex.ToString());
-					CallMethodOnHost("ReportException", ex);
+					CallMethodOnHost("ReportException", ex.ToString());
 				}
 			}
 		}
