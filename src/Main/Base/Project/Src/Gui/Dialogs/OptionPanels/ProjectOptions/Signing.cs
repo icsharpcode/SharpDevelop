@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			
 			keyFile = Get<ComboBox>("keyFile");
-			b = helper.BindString(keyFile, "AssemblyOriginatorKeyFile", TextBoxEditMode.EditEvaluatedProperty);
+			b = helper.BindString(keyFile, "AssemblyOriginatorKeyFile", TextBoxEditMode.EditRawProperty);
 			b.RegisterLocationButton(locationButton);
 			FindKeys(baseDirectory);
 			if (keyFile.Text.Length > 0) {
@@ -74,13 +74,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			while (true) {
 				try {
 					foreach (string fileName in Directory.GetFiles(directory, "*.snk")) {
-						keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
+						keyFile.Items.Add(MSBuildInternals.Escape(FileUtility.GetRelativePath(baseDirectory, fileName)));
 					}
 					foreach (string fileName in Directory.GetFiles(directory, "*.pfx")) {
-						keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
+						keyFile.Items.Add(MSBuildInternals.Escape(FileUtility.GetRelativePath(baseDirectory, fileName)));
 					}
 					foreach (string fileName in Directory.GetFiles(directory, "*.key")) {
-						keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
+						keyFile.Items.Add(MSBuildInternals.Escape(FileUtility.GetRelativePath(baseDirectory, fileName)));
 					}
 				} catch {
 					// can happen for networked drives / network locations
@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		void BrowseKeyFile()
 		{
 			keyFile.SelectedIndex = -1;
-			BrowseForFile(ControlDictionary["keyFileComboBox"], "${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditEvaluatedProperty);
+			BrowseForFile(ControlDictionary["keyFileComboBox"], "${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditRawProperty);
 		}
 		
 		void CreateKeyFile()
@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				using (CreateKeyForm createKey = new CreateKeyForm(baseDirectory)) {
 					createKey.KeyFile = project.Name;
 					if (createKey.ShowDialog(WorkbenchSingleton.MainForm) == DialogResult.OK) {
-						keyFile.Text = createKey.KeyFile;
+						keyFile.Text = MSBuildInternals.Escape(createKey.KeyFile);
 						return;
 					}
 				}
