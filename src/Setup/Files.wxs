@@ -1187,6 +1187,9 @@
 										<Component Guid="6AAC2867-DBA1-4AFA-830B-1FE0A918BA11" Id="NRefactoryToBooConverterDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll" Name="NRefactoryToBooConverter.dll" Id="NRefactoryToBooConverter.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NRefactoryToBooConverter.dll" AssemblyManifest="NRefactoryToBooConverter.dll" />
 										</Component>
+										<Component Guid="E80EF895-720E-4F38-AFAF-9E33B3D9415E" Id="BooLangPatternMatchingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.PatternMatching.dll" Name="Boo.Lang.PatternMatching.dll" Id="Boo.Lang.PatternMatching.dll" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="CSharpBindingFolder" Name="CSharpBinding">
 										<Component Guid="1E6F20EC-6BF4-45C0-AE99-319FBF568BD1" Id="CSharpBindingFiles" DiskId="1">

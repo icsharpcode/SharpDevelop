@@ -326,6 +326,7 @@
 				<ComponentRef Id="BooLangCompilerDll"/>
 				<ComponentRef Id="BooLangDll"/>
 				<ComponentRef Id="BooLangExtensionsDll"/>
+				<ComponentRef Id="BooLangPatternMatchingDll"/>
 				<ComponentRef Id="BooLangInterpreterDll"/>
 				<ComponentRef Id="BooLangParserDll"/>
 				<ComponentRef Id="BooLangUsefulDll"/>
