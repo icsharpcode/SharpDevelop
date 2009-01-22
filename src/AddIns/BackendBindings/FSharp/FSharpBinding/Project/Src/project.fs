@@ -221,7 +221,7 @@ type FsOptions() =
     override x.LoadPanelContents() =
         let this = (typeof<FsOptions>)
         let caller = this.Assembly
-        x.SetupFromXmlStream(caller.GetManifestResourceStream("FSharpBindings.Resources.FsOptions.xfrm"))
+        x.SetupFromXmlStream(caller.GetManifestResourceStream("FsOptions.xfrm"))
         x.InitializeHelper()
         x.helper.BindBoolean(x.Get<CheckBox>("standalone"), "Standalone", false) |> ignore
         x.helper.BindBoolean(x.Get<CheckBox>("nomllib"), "NoMLLib", false) |> ignore

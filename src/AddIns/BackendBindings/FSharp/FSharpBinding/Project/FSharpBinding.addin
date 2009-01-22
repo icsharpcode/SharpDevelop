@@ -5,12 +5,14 @@
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.FSharpBinding"/>
+		<Dependency addin = "ICSharpCode.CSharpBinding" requirePreload = "true"/>
 	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "FSharpBinding.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop.Dom"/>
+		<Import assembly = "$ICSharpCode.CSharpBinding/CSharpBinding.dll"/>
 	</Runtime>
  	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
