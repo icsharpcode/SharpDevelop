@@ -64,12 +64,8 @@ namespace ICSharpCode.SharpSnippetCompiler
 		}
 		
 		public IViewContent ActiveViewContent {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
+			get { return null; }
+			set { }
 		}
 		
 		public Icon Icon {

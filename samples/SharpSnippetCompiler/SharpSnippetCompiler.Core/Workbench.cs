@@ -48,6 +48,10 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			get { return views; }
 		}
 		
+		public ICollection<IViewContent> PrimaryViewContents {
+			get { return views.AsReadOnly(); }
+		}
+		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
 				throw new NotImplementedException();
@@ -94,6 +98,11 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		{
 			throw new NotImplementedException();
 		}
+		
+		public void ShowView(IViewContent content, bool switchToOpenedView)
+		{
+			throw new NotImplementedException();
+		}		
 		
 		public void UnloadPad(PadDescriptor content)
 		{

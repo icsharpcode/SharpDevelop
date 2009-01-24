@@ -108,6 +108,11 @@ namespace ICSharpCode.SharpSnippetCompiler
 			throw new NotImplementedException();
 		}
 		
+		public IWorkbenchWindow ShowView(IViewContent content, bool switchToOpenedView)
+		{
+			throw new NotImplementedException();
+		}
+			
 		public void LoadConfiguration()
 		{
 			Console.WriteLine("WorkbenchLayout.LoadConfiguration not implemented");
