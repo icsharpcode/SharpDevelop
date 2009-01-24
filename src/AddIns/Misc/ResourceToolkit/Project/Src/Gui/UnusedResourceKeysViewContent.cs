@@ -389,23 +389,32 @@ namespace Hornung.ResourceToolkit.Gui
 		/// <param name="key">The key to be deleted.</param>
 		protected static void DeleteResourceKey(string fileName, string key)
 		{
-			IResourceFileContent content = ResourceFileContentRegistry.GetResourceFileContent(fileName);
-			if (content != null) {
-				if (content.ContainsKey(key)) {
-					LoggingService.Debug("ResourceToolkit: Remove key '"+key+"' from resource file '"+fileName+"'");
-					content.RemoveKey(key);
+			try {
+				IResourceFileContent content = ResourceFileContentRegistry.GetResourceFileContent(fileName);
+				if (content != null) {
+					if (content.ContainsKey(key)) {
+						LoggingService.Debug("ResourceToolkit: Remove key '"+key+"' from resource file '"+fileName+"'");
+						content.RemoveKey(key);
+					} else {
+						MessageService.ShowWarningFormatted("${res:Hornung.ResourceToolkit.KeyNotFoundWarning}", key, fileName);
+					}
 				} else {
-					MessageService.ShowWarningFormatted("${res:Hornung.ResourceToolkit.KeyNotFoundWarning}", key, fileName);
+					MessageService.ShowWarning("ResoureToolkit: Could not get ResourceFileContent for '"+fileName+"' key +'"+key+"'.");
 				}
-			} else {
-				MessageService.ShowWarning("ResoureToolkit: Could not get ResourceFileContent for '"+fileName+"' key +'"+key+"'.");
+			} catch (Exception ex) {
+				MessageService.ShowWarningFormatted("${res:Hornung.ResourceToolkit.ErrorProcessingResourceFile}" + Environment.NewLine + ex.Message, fileName);
+				return;
 			}
 			
 			foreach (KeyValuePair<string, IResourceFileContent> entry in ResourceFileContentRegistry.GetLocalizedContents(fileName)) {
 				LoggingService.Debug("ResourceToolkit: Looking in localized resource file: '"+entry.Value.FileName+"'");
-				if (entry.Value.ContainsKey(key)) {
-					LoggingService.Debug("ResourceToolkit:   -> Key found, removing.");
-					entry.Value.RemoveKey(key);
+				try {
+					if (entry.Value.ContainsKey(key)) {
+						LoggingService.Debug("ResourceToolkit:   -> Key found, removing.");
+						entry.Value.RemoveKey(key);
+					}
+				} catch (Exception ex) {
+					MessageService.ShowWarningFormatted("${res:Hornung.ResourceToolkit.ErrorProcessingResourceFile}" + Environment.NewLine + ex.Message, entry.Value.FileName);
 				}
 			}
 		}
