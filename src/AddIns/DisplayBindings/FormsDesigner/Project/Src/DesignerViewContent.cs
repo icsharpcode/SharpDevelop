@@ -310,7 +310,7 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(UndoEngine), undoEngine);
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
-			componentChangeService.ComponentChanged += MakeDirty;
+			componentChangeService.ComponentChanged += ComponentChanged;
 			componentChangeService.ComponentAdded   += ComponentListChanged;
 			componentChangeService.ComponentRemoved += ComponentListChanged;
 			componentChangeService.ComponentRename  += ComponentListChanged;
@@ -333,7 +333,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		bool hasUnmergedChanges;
 		
-		void MakeDirty(object sender, ComponentChangedEventArgs args)
+		void MakeDirty()
 		{
 			hasUnmergedChanges = true;
 			this.DesignerCodeFile.MakeDirty();
@@ -352,10 +352,22 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		void ComponentChanged(object sender, ComponentChangedEventArgs e)
+		{
+			bool loading = this.loader != null && this.loader.Loading;
+			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading);
+			if (!loading) {
+				this.MakeDirty();
+			}
+		}
+		
 		void ComponentListChanged(object sender, EventArgs e)
 		{
-			if (this.loader == null || !this.loader.Loading) {
+			bool loading = this.loader != null && this.loader.Loading;
+			LoggingService.Debug("Forms designer: Component added/removed/renamed, Loading=" + loading);
+			if (!loading) {
 				shouldUpdateSelectableObjects = true;
+				this.MakeDirty();
 			}
 		}
 		
@@ -384,7 +396,7 @@ namespace ICSharpCode.FormsDesigner
 				
 				IComponentChangeService componentChangeService = designSurface.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
 				if (componentChangeService != null) {
-					componentChangeService.ComponentChanged -= MakeDirty;
+					componentChangeService.ComponentChanged -= ComponentChanged;
 					componentChangeService.ComponentAdded   -= ComponentListChanged;
 					componentChangeService.ComponentRemoved -= ComponentListChanged;
 					componentChangeService.ComponentRename  -= ComponentListChanged;
