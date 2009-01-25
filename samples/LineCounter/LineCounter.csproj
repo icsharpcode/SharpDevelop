@@ -6,8 +6,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{880A7EAF-D0B4-46AC-A9B6-B6156512037A}</ProjectGuid>
-    <OutputPath>..\..\AddIns\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <OutputPath>..\..\AddIns\Samples\LineCounter</OutputPath>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -18,7 +18,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG,TRACE,IMPR1,IMPR2,IMPR3</DefineConstants>
@@ -27,7 +26,6 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
     <Optimize>True</Optimize>
     <DefineConstants>TRACE,IMPR1,IMPR2,IMPR3</DefineConstants>
