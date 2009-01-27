@@ -104,10 +104,10 @@ namespace NRefactoryToBooConverter
 			macro.Name = name;
 			ConvertExpressions(arguments, macro.Arguments);
 			if (embedded is BlockStatement) {
-				macro.Block = ConvertBlock((BlockStatement)embedded);
+				macro.Body = ConvertBlock((BlockStatement)embedded);
 			} else {
-				macro.Block = new B.Block();
-				macro.Block.Add((B.Statement)embedded.AcceptVisitor(this, null));
+				macro.Body = new B.Block();
+				macro.Body.Add((B.Statement)embedded.AcceptVisitor(this, null));
 			}
 			return macro;
 		}
