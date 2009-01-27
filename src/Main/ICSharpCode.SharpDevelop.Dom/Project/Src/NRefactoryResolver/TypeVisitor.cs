@@ -80,8 +80,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			if (t == null) {
-				if (reference.IsKeyword) {
+				if (reference.IsKeyword && reference.GenericTypes.Count == 0) {
 					// keyword-type like void, int, string etc.
+					// check GenericTypes.Count to prevent use of this code path for nullables
 					IClass c = projectContent.GetClass(reference.Type, 0);
 					if (c != null)
 						t = c.DefaultReturnType;
@@ -90,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				} else {
 					int typeParameterCount = reference.GenericTypes.Count;
 					if (useLazyReturnType || isBaseTypeReference) {
-						if (reference.IsGlobal) {
+						if (reference.IsGlobal || reference.IsKeyword) {
 							t = new GetClassReturnType(projectContent, reference.Type, typeParameterCount);
 						} else if (callingClass != null) {
 							SearchClassReturnType scrt = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.Type, typeParameterCount);
