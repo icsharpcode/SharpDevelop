@@ -413,7 +413,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			MethodDeclaration method = new MethodDeclaration {
 				Name = "On" + e.Name,
 				Modifier = ConvertModifier(modifier, context),
-				TypeReference = new TypeReference("System.Void"),
+				TypeReference = new TypeReference("System.Void", true),
 				Parameters = parameters
 			};
 			

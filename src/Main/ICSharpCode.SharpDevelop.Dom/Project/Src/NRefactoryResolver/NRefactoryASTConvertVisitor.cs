@@ -724,7 +724,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				                                    region, c);
 				del.Modifiers |= ModifierEnum.Synthetic;
 				CreateDelegate(del, eventDeclaration.Name + "EventHandler",
-				               new AST.TypeReference("System.Void"),
+				               new AST.TypeReference("System.Void", true),
 				               new AST.TemplateDefinition[0],
 				               eventDeclaration.Parameters);
 				type = del.DefaultReturnType;
