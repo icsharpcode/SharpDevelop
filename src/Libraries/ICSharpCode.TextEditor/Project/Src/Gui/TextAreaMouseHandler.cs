@@ -454,6 +454,8 @@ namespace ICSharpCode.TextEditor
 		int FindWordEnd(IDocument document, int offset)
 		{
 			LineSegment line   = document.GetLineSegmentForOffset(offset);
+			if (line.Length == 0)
+				return offset;
 			int         endPos = line.Offset + line.Length;
 			offset = Math.Min(offset, endPos - 1);
 			

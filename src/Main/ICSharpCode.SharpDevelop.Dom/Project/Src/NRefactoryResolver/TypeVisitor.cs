@@ -70,8 +70,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						break;
 					}
 				}
-				if (t == null && callingMember is IMethod && (callingMember as IMethod).TypeParameters != null) {
-					foreach (ITypeParameter tp in (callingMember as IMethod).TypeParameters) {
+				IMethod callingMethod = callingMember as IMethod;
+				if (t == null && callingMethod != null) {
+					foreach (ITypeParameter tp in callingMethod.TypeParameters) {
 						if (languageProperties.NameComparer.Equals(tp.Name, reference.Type)) {
 							t = new GenericReturnType(tp);
 							break;
@@ -80,18 +81,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			if (t == null) {
-				if (reference.IsKeyword && reference.GenericTypes.Count == 0) {
+				int typeParameterCount = reference.GenericTypes.Count;
+				if (reference.IsKeyword) {
 					// keyword-type like void, int, string etc.
-					// check GenericTypes.Count to prevent use of this code path for nullables
-					IClass c = projectContent.GetClass(reference.Type, 0);
+					IClass c = projectContent.GetClass(reference.Type, typeParameterCount);
 					if (c != null)
 						t = c.DefaultReturnType;
 					else
-						t = new GetClassReturnType(projectContent, reference.Type, 0);
+						t = new GetClassReturnType(projectContent, reference.Type, typeParameterCount);
 				} else {
-					int typeParameterCount = reference.GenericTypes.Count;
 					if (useLazyReturnType || isBaseTypeReference) {
-						if (reference.IsGlobal || reference.IsKeyword) {
+						if (reference.IsGlobal) {
 							t = new GetClassReturnType(projectContent, reference.Type, typeParameterCount);
 						} else if (callingClass != null) {
 							SearchClassReturnType scrt = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.Type, typeParameterCount);
@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						}
 					} else {
 						IClass c;
-						if (reference.IsGlobal || reference.IsKeyword) {
+						if (reference.IsGlobal) {
 							c = projectContent.GetClass(reference.Type, typeParameterCount);
 							t = (c != null) ? c.DefaultReturnType : null;
 						} else if (callingClass != null) {
@@ -114,9 +114,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			if (reference.GenericTypes.Count > 0) {
-				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
+				IReturnType[] para = new IReturnType[reference.GenericTypes.Count];
 				for (int i = 0; i < reference.GenericTypes.Count; ++i) {
-					para.Add(CreateReturnType(reference.GenericTypes[i], callingClass, callingMember, caretLine, caretColumn, projectContent, options));
+					para[i] = CreateReturnType(reference.GenericTypes[i], callingClass, callingMember, caretLine, caretColumn, projectContent, options);
 				}
 				t = new ConstructedReturnType(t, para);
 			}

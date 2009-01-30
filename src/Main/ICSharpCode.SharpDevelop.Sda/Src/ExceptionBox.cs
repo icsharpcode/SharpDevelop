@@ -155,11 +155,12 @@ namespace ICSharpCode.SharpDevelop.Sda
 		void CopyInfoToClipboard()
 		{
 			if (copyErrorCheckBox.Checked) {
+				string exceptionText = exceptionTextBox.Text;
 				if (Application.OleRequired() == ApartmentState.STA) {
-					ClipboardWrapper.SetText(getClipboardString());
+					ClipboardWrapper.SetText(exceptionText);
 				} else {
 					Thread th = new Thread((ThreadStart)delegate {
-					                       	ClipboardWrapper.SetText(getClipboardString());
+					                       	ClipboardWrapper.SetText(exceptionText);
 					                       });
 					th.Name = "CopyInfoToClipboard";
 					th.SetApartmentState(ApartmentState.STA);

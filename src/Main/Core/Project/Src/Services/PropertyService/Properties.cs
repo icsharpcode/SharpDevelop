@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -64,7 +65,7 @@ namespace ICSharpCode.Core
 		
 		public string this[string property] {
 			get {
-				return Convert.ToString(Get(property));
+				return Convert.ToString(Get(property), CultureInfo.InvariantCulture);
 			}
 			set {
 				Set(property, value);

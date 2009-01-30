@@ -608,12 +608,14 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		static bool IsEndDirective(string trimLine)
 		{
-			return trimLine.StartsWith("#endregion") || trimLine.StartsWith("#endif");
+			return trimLine.StartsWith("#endregion", StringComparison.Ordinal) 
+				|| trimLine.StartsWith("#endif", StringComparison.Ordinal);
 		}
 		
 		static bool IsStartDirective(string trimLine)
 		{
-			return trimLine.StartsWith("#region") || trimLine.StartsWith("#if");
+			return trimLine.StartsWith("#region", StringComparison.Ordinal) 
+				|| trimLine.StartsWith("#if", StringComparison.Ordinal);
 		}
 		#endregion
 	}

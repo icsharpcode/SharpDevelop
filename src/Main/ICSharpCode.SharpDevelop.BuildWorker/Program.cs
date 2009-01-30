@@ -10,12 +10,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.Serialization;
 using System.Threading;
+
 using ICSharpCode.SharpDevelop.BuildWorker.Interprocess;
-using Microsoft.Build.Framework;
 using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Framework;
 
 namespace ICSharpCode.SharpDevelop.BuildWorker
 {
@@ -107,7 +109,8 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		}
 		
 		// Called with CallMethodOnWorker
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		//[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		// TODO: make use of CancelBuild
 		public void CancelBuild()
 		{
 			lock (this) {
@@ -442,6 +445,14 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic")]
 		sealed class BuildCancelException : Exception
 		{
+			public BuildCancelException()
+			{
+			}
+			
+			BuildCancelException(SerializationInfo info, StreamingContext context)
+				: base(info, context)
+			{
+			}
 		}
 	}
 }

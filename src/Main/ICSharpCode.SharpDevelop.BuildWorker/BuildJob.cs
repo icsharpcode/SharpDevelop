@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			get { return additionalImports; }
 		}
 		
-		HashSet<string> interestingTaskNames = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+		HashSet<string> interestingTaskNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		
 		public ICollection<string> InterestingTaskNames {
 			get { return interestingTaskNames; }
