@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 
 namespace Debugger.Wrappers
 {
-	public delegate void UnmanagedStringGetter(uint pStringLenght, out uint stringLenght, System.IntPtr pString);
+	public delegate void UnmanagedStringGetter(uint pStringLength, out uint stringLength, System.IntPtr pString);
 	
 	public static class Util
 	{
@@ -21,25 +21,32 @@ namespace Debugger.Wrappers
 			return GetString(getter, 64, true);
 		}
 		
-		public static string GetString(UnmanagedStringGetter getter, uint defaultLenght, bool trim)
+		public static string GetString(UnmanagedStringGetter getter, uint defaultLength, bool trim)
 		{
+			const uint MAX_LENGTH = 1024 * 1024;
 			string managedString;
 			IntPtr unmanagedString;
-			uint exactLenght;
+			uint exactLength;
 			
 			// First attempt
-			unmanagedString = Marshal.AllocHGlobal((int)defaultLenght * 2 + 2); // + 2 for terminating zero
-			getter(defaultLenght, out exactLenght, defaultLenght > 0 ? unmanagedString : IntPtr.Zero);
+			unmanagedString = Marshal.AllocHGlobal((int)defaultLength * 2 + 2); // + 2 for terminating zero
+			getter(defaultLength, out exactLength, defaultLength > 0 ? unmanagedString : IntPtr.Zero);
 			
-			if(exactLenght > defaultLenght) {
+			exactLength = (exactLength > MAX_LENGTH) ? MAX_LENGTH : exactLength;
+			
+			if(exactLength > defaultLength) {
 				// Second attempt
 				Marshal.FreeHGlobal(unmanagedString);
-				unmanagedString = Marshal.AllocHGlobal((int)exactLenght * 2 + 2); // + 2 for terminating zero
-				getter(exactLenght, out exactLenght, unmanagedString);
+				// TODO: Consider removing "+ 2" for the zero
+				unmanagedString = Marshal.AllocHGlobal((int)exactLength * 2 + 2); // + 2 for terminating zero
+				uint unused;
+				getter(exactLength, out unused, unmanagedString);
 			}
 			
+			// TODO:  Check how the trimming and the last 0 charater works
+			
 			// Return managed string and free unmanaged memory
-			managedString = Marshal.PtrToStringUni(unmanagedString, (int)exactLenght);
+			managedString = Marshal.PtrToStringUni(unmanagedString, (int)exactLength);
 			//Console.WriteLine("Marshaled string from COM: \"" + managedString + "\" lenght=" + managedString.Length + " arrayLenght=" + exactLenght);
 			// The API might or might not include terminating null at the end
 			if (trim) {

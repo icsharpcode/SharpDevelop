@@ -442,11 +442,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					if (currentValue != null) {
 						debuggerCanShowValue = true;
 						b.Append(" = ");
-						if (currentValue.Length > 256) {
-							b.Append(currentValue.Substring(0, 256));
-							b.Append("...");
-						} else
-							b.Append(currentValue);
+						if (currentValue.Length > 256)
+							currentValue = currentValue.Substring(0, 256) + "...";
+						b.Append(currentValue);
 					}
 				}
 				return b.ToString();
