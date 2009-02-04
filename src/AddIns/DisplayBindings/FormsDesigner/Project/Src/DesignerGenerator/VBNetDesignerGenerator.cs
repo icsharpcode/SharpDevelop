@@ -12,6 +12,7 @@ using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
@@ -28,6 +29,24 @@ namespace ICSharpCode.FormsDesigner
 		{
 			DomRegion r = method.BodyRegion;
 			return new DomRegion(r.BeginLine + 1, 1, r.EndLine, 1);
+		}
+		
+		protected override void RemoveFieldDeclaration(ICSharpCode.TextEditor.Document.IDocument document, IField field)
+		{
+			// In VB, the field region begins at the start of the declaration
+			// and ends on the first column of the line following the declaration.
+			int startOffset = document.PositionToOffset(new TextLocation(0, field.Region.BeginLine - 1));
+			int endOffset   = document.PositionToOffset(new TextLocation(0, field.Region.EndLine - 1));
+			document.Remove(startOffset, endOffset - startOffset);
+		}
+		
+		protected override void ReplaceFieldDeclaration(ICSharpCode.TextEditor.Document.IDocument document, IField oldField, string newFieldDeclaration)
+		{
+			// In VB, the field region begins at the start of the declaration
+			// and ends on the first column of the line following the declaration.
+			int startOffset = document.PositionToOffset(new TextLocation(0, oldField.Region.BeginLine - 1));
+			int endOffset   = document.PositionToOffset(new TextLocation(0, oldField.Region.EndLine - 1));
+			document.Replace(startOffset, endOffset - startOffset, tabs + newFieldDeclaration + Environment.NewLine);
 		}
 		
 		protected override string CreateEventHandler(Type eventType, string eventMethodName, string body, string indentation)

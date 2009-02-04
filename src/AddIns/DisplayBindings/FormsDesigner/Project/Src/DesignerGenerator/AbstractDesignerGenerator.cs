@@ -101,9 +101,7 @@ namespace ICSharpCode.FormsDesigner
 				Reparse();
 				IField field = GetField(formClass, fieldName);
 				if (field != null) {
-					int startOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, field.Region.BeginLine - 1));
-					int endOffset   = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, field.Region.EndLine));
-					this.ViewContent.DesignerCodeFileDocument.Remove(startOffset, endOffset - startOffset);
+					this.RemoveFieldDeclaration(this.ViewContent.DesignerCodeFileDocument, field);
 				} else if ((field = GetField(completeClass, fieldName)) != null) {
 					// TODO: Remove the field in the part where it is declared
 					LoggingService.Warn("Removing field declaration in non-designer part currently not supported");
@@ -138,9 +136,7 @@ namespace ICSharpCode.FormsDesigner
 				Reparse();
 				IField oldField = GetField(formClass, newField.Name);
 				if (oldField != null) {
-					int startOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, oldField.Region.BeginLine - 1));
-					int endOffset   = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, oldField.Region.EndLine));
-					this.ViewContent.DesignerCodeFileDocument.Replace(startOffset, endOffset - startOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
+					this.ReplaceFieldDeclaration(this.ViewContent.DesignerCodeFileDocument, oldField, GenerateFieldDeclaration(domGenerator, newField));
 				} else {
 					if ((oldField = GetField(completeClass, newField.Name)) != null) {
 						// TODO: Replace the field in the part where it is declared
@@ -158,6 +154,36 @@ namespace ICSharpCode.FormsDesigner
 		protected abstract System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider();
 		
 		protected abstract DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method);
+		
+		/// <summary>
+		/// Removes a field declaration from the source code document.
+		/// </summary>
+		/// <remarks>
+		/// The default implementation assumes that the field region starts at the very beginning
+		/// of the line of the field declaration and ends at the end of that line.
+		/// Override this method if that is not the case in a specific language.
+		/// </remarks>
+		protected virtual void RemoveFieldDeclaration(IDocument document, IField field)
+		{
+			int startOffset = document.PositionToOffset(new TextLocation(0, field.Region.BeginLine - 1));
+			int endOffset   = document.PositionToOffset(new TextLocation(0, field.Region.EndLine));
+			document.Remove(startOffset, endOffset - startOffset);
+		}
+		
+		/// <summary>
+		/// Replaces a field declaration in the source code document.
+		/// </summary>
+		/// <remarks>
+		/// The default implementation assumes that the field region starts at the very beginning
+		/// of the line of the field declaration and ends at the end of that line.
+		/// Override this method if that is not the case in a specific language.
+		/// </remarks>
+		protected virtual void ReplaceFieldDeclaration(IDocument document, IField oldField, string newFieldDeclaration)
+		{
+			int startOffset = document.PositionToOffset(new TextLocation(0, oldField.Region.BeginLine - 1));
+			int endOffset   = document.PositionToOffset(new TextLocation(0, oldField.Region.EndLine));
+			document.Replace(startOffset, endOffset - startOffset, tabs + newFieldDeclaration + Environment.NewLine);
+		}
 		
 		protected virtual void FixGeneratedCode(IClass formClass, CodeMemberMethod code)
 		{
