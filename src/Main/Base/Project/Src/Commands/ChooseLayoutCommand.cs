@@ -116,6 +116,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				frm.MinimizeBox = false;
 				frm.ClientSize = new System.Drawing.Size(400, 300);
 				frm.StartPosition = FormStartPosition.CenterParent;
+				frm.ShowInTaskbar = false;
 				
 				if (frm.ShowDialog(WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					IList<string> oldNames = new List<string>(CustomLayoutNames);

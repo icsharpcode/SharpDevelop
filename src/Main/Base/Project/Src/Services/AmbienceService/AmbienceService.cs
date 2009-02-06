@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		/// <summary>
 		/// Gets the current ambience.
-		/// Might return a new ambience object, or use an existing. Not thread-safe.
+		/// Might return a new ambience object, or use an existing. Use this method only on the main thread.
 		/// </summary>
 		public static IAmbience GetCurrentAmbience()
 		{

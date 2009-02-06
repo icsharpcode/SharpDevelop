@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 			return clipboardContainsText;
 		}
 		
-		static Thread updateThread;
+		static volatile Thread updateThread;
 		
 		static void UpdateClipboardContainsText()
 		{
@@ -56,6 +56,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 			Thread t = new Thread(new ThreadStart(DoUpdate));
 			t.SetApartmentState(ApartmentState.STA);
 			t.IsBackground = true;
+			t.Name = "clipboard access";
 			updateThread = t;
 			t.Start();
 			t.Join(50); // wait a few ms in case the clipboard can be accessed without problems

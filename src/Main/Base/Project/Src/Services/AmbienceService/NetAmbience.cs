@@ -240,14 +240,17 @@ namespace ICSharpCode.SharpDevelop
 			if (returnType == null) {
 				return String.Empty;
 			}
+			
 			StringBuilder builder = new StringBuilder();
 			
 			string name = returnType.DotNetName;
 			if (UseFullyQualifiedTypeNames) {
 				builder.Append(name);
 			} else {
-				int pos = returnType.Namespace.Length;
-				builder.Append(name, pos, name.Length - pos);
+				string rtNamespace = returnType.Namespace;
+				if (name.StartsWith(rtNamespace, StringComparison.Ordinal)) {
+					builder.Append(name, rtNamespace.Length, name.Length - rtNamespace.Length);
+				}
 			}
 			
 			return builder.ToString();

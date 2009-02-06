@@ -20,15 +20,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public class CodeCompletionData : ICompletionData
 	{
-		IAmbience ambience;
+		IEntity entity;
 		int      imageIndex;
 		int      overloads;
 		string   text;
-		string   description;
-		string   documentation;
-		IClass   c;
-		IMember  member;
-		bool     convertedDocumentation = false;
+		string description;
+		string documentation;
 		double priority;
 		
 		/// <summary>
@@ -37,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		public IClass Class {
 			get {
-				return c;
+				return entity as IClass;
 			}
 		}
 		
@@ -47,7 +44,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		public IMember Member {
 			get {
-				return member;
+				return entity as IMember;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the class or member this CodeCompletionData object was created for.
+		/// </summary>
+		public IEntity Entity {
+			get {
+				return entity;
 			}
 		}
 		
@@ -93,9 +99,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (description.Length == 0 && (documentation == null || documentation.Length == 0)) {
 					return "";
 				}
-				if (!convertedDocumentation && documentation != null) {
-					convertedDocumentation = true;
-					documentation = GetDocumentation(documentation);
+				if (documentation == null) {
+					if (entity != null)
+						documentation = ConvertDocumentation(entity.Documentation);
+					else
+						documentation = "";
 				}
 				
 				return description + (overloads > 0 ? " " + StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.OverloadsCounter}", new string[,] {{"NumOverloads", overloads.ToString()}}) : String.Empty) + "\n" + documentation;
@@ -107,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		string dotnetName;
 		
-		void GetPriority(string dotnetName)
+		void InitializePriority(string dotnetName)
 		{
 			this.dotnetName = dotnetName;
 			priority = CodeCompletionDataUsageCache.GetPriority(dotnetName, true);
@@ -115,77 +123,51 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public CodeCompletionData(string s, int imageIndex)
 		{
-			ambience = AmbienceService.GetCurrentAmbience();
 			description = documentation = String.Empty;
 			text = s;
 			this.imageIndex = imageIndex;
-			GetPriority(s);
+			InitializePriority(s);
 		}
 		
 		public CodeCompletionData(IClass c)
 		{
-			ambience = AmbienceService.GetCurrentAmbience();
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			// save class (for the delegate description shortcut)
-			this.c = c;
+			this.entity = c;
 			imageIndex = ClassBrowserIconService.GetIcon(c);
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			text = ambience.Convert(c);
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.UseFullyQualifiedMemberNames;
 			description = ambience.Convert(c);
-			documentation = c.Documentation;
-			GetPriority(c.DotNetName);
+			InitializePriority(c.DotNetName);
 		}
 		
-		public CodeCompletionData(IMethod method)
+		public CodeCompletionData(IMember member)
 		{
-			member = method;
-			imageIndex  = ClassBrowserIconService.GetIcon(method);
-			ambience = AmbienceService.GetCurrentAmbience();
+			this.entity = member;
+			imageIndex  = ClassBrowserIconService.GetIcon(member);
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.None;
-			text = ambience.Convert(method);
+			text = ambience.Convert(member);
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-			description = ambience.Convert(method);
-			documentation = method.Documentation;
-			GetPriority(method.DotNetName);
+			description = ambience.Convert(member);
+			InitializePriority(member.DotNetName);
 		}
 		
-		public CodeCompletionData(IField field)
+		public CodeCompletionData(IMethod method) : this((IMember)method)
 		{
-			member = field;
-			ambience = AmbienceService.GetCurrentAmbience();
-			imageIndex  = ClassBrowserIconService.GetIcon(field);
-			ambience.ConversionFlags = ConversionFlags.None;
-			text = ambience.Convert(field);
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-			description = ambience.Convert(field);
-			documentation = field.Documentation;
-			GetPriority(field.DotNetName);
 		}
 		
-		public CodeCompletionData(IProperty property)
+		public CodeCompletionData(IField field) : this((IMember)field)
 		{
-			member = property;
-			ambience = AmbienceService.GetCurrentAmbience();
-			imageIndex  = ClassBrowserIconService.GetIcon(property);
-			ambience.ConversionFlags = ConversionFlags.None;
-			text = ambience.Convert(property);
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-			description = ambience.Convert(property);
-			documentation = property.Documentation;
-			GetPriority(property.DotNetName);
 		}
 		
-		public CodeCompletionData(IEvent e)
+		public CodeCompletionData(IProperty property) : this((IMember)property)
 		{
-			member = e;
-			ambience = AmbienceService.GetCurrentAmbience();
-			imageIndex  = ClassBrowserIconService.GetIcon(e);
-			ambience.ConversionFlags = ConversionFlags.None;
-			text = ambience.Convert(e);
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-			description = ambience.Convert(e);
-			documentation = e.Documentation;
-			GetPriority(e.DotNetName);
+		}
+		
+		public CodeCompletionData(IEvent e) : this((IMember)e)
+		{
 		}
 		
 		public bool InsertAction(TextArea textArea, char ch)
@@ -193,6 +175,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (dotnetName != null) {
 				CodeCompletionDataUsageCache.IncrementUsage(dotnetName);
 			}
+			IClass c = this.Class;
 			if (c != null && text.Length > c.Name.Length) {
 				textArea.InsertString(text.Substring(0, c.Name.Length + 1));
 				TextLocation start = textArea.Caret.Position;
@@ -218,13 +201,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return false;
 		}
 		
-		internal static Regex whitespace = new Regex(@"\s+");
+		[Obsolete("Use 'ConvertDocumentation' instead.")]
+		public static string GetDocumentation(string doc)
+		{
+			return ConvertDocumentation(doc);
+		}
+		
+		static readonly Regex whitespace = new Regex(@"\s+");
 		
 		/// <summary>
 		/// Converts the xml documentation string into a plain text string.
 		/// </summary>
-		public static string GetDocumentation(string doc)
+		public static string ConvertDocumentation(string doc)
 		{
+			if (string.IsNullOrEmpty(doc))
+				return string.Empty;
+			
 			System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
 			XmlTextReader xml   = new XmlTextReader(reader);
 			StringBuilder ret   = new StringBuilder();

@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// A case-sensitive dummy language that returns false for all Supports.. properties,
 		/// uses a dummy code generator and refactoring provider and returns null for CodeDomProvider.
 		/// </summary>
-		public readonly static LanguageProperties None = new LanguageProperties(StringComparer.InvariantCulture);
+		public readonly static LanguageProperties None = new LanguageProperties(StringComparer.Ordinal);
 		
 		/// <summary>
 		/// C# 3.0 language properties.
@@ -248,7 +248,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region CSharpProperties
 		internal sealed class CSharpProperties : LanguageProperties
 		{
-			public CSharpProperties() : base(StringComparer.InvariantCulture) {}
+			public CSharpProperties() : base(StringComparer.Ordinal) {}
 			
 			public override RefactoringProvider RefactoringProvider {
 				get {
@@ -315,7 +315,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region VBNetProperties
 		internal sealed class VBNetProperties : LanguageProperties
 		{
-			public VBNetProperties() : base(StringComparer.InvariantCultureIgnoreCase) {}
+			public VBNetProperties() : base(StringComparer.OrdinalIgnoreCase) {}
 			
 			public override bool ShowMember(IMember member, bool showStatic)
 			{

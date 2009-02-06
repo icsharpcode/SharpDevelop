@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			conv.ConversionFlags = ConversionFlags.StandardConversionFlags| ConversionFlags.UseFullyQualifiedMemberNames;
 			string documentation = method.Documentation;
 			string text = conv.Convert(method);
-			return text + "\n" + CodeCompletionData.GetDocumentation(documentation);
+			return text + "\n" + CodeCompletionData.ConvertDocumentation(documentation);
 		}
 		
 		int lookupOffset;

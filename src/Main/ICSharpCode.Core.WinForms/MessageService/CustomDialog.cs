@@ -137,6 +137,7 @@ namespace ICSharpCode.Core.WinForms
 			this.DockPadding.Right = 4;
 			this.DockPadding.Top = 4;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.ShowInTaskbar = false;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "CustomDialog";

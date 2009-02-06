@@ -113,7 +113,9 @@ namespace CSharpBinding
 					newHandlerTextBuilder.ToString(),
 					2+newHandlerName.Length,
 					newHandlerName.Length,
-					"new " + eventHandlerFullyQualifiedTypeName + "(" + newHandlerName +StringParser.Parse(")\n${res:CSharpBinding.GenerateNewHandlerInstructions}\n") + CodeCompletionData.GetDocumentation(resolvedClass.Documentation),
+					"new " + eventHandlerFullyQualifiedTypeName + 
+					"(" + newHandlerName + StringParser.Parse(")\n${res:CSharpBinding.GenerateNewHandlerInstructions}\n")
+					+ CodeCompletionData.ConvertDocumentation(resolvedClass.Documentation),
 					resolveResult,
 					newHandlerCodeBuilder.ToString()
 				));
