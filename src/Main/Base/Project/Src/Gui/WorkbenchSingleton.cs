@@ -104,6 +104,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Project.CustomToolsService.Initialize();
 			Project.BuildModifiedProjectsOnlyService.Initialize();
 			
+			workbench.MainForm.CreateControl(); // ensure the control is created so Invoke can work
 			WinFormsMessageService.DialogOwner = workbench.MainForm;
 			WinFormsMessageService.DialogSynchronizeInvoke = workbench.MainForm;
 			
@@ -327,6 +328,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					t.Interval = delayMilliseconds;
 					t.Tick += delegate { 
 						t.Stop();
+						t.Dispose();
 						method();
 					};
 					t.Start();
