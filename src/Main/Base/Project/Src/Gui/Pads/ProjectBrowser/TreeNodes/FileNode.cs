@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -328,16 +329,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		void DeleteChildNodes()
 		{
-			if (Nodes.Count == 0) return;
-			
-			foreach (TreeNode node in Nodes) {
-				FileNode fileNode = node as FileNode;
-				if (fileNode != null) {
-					fileNode.DeleteChildNodes(); // delete recursively
-					FileService.RemoveFile(fileNode.FileName, false);
-				} else {
-					LoggingService.Warn("FileNode.DeleteChildren. Child is not a FileNode.");
-				}
+			foreach (FileNode fileNode in Nodes.OfType<FileNode>().ToList()) {
+				fileNode.DeleteChildNodes(); // delete recursively
+				FileService.RemoveFile(fileNode.FileName, false);
 			}
 		}
 	}

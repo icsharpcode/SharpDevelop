@@ -472,7 +472,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		void CreateDelegate(DefaultClass c, string name, AST.TypeReference returnType, IList<AST.TemplateDefinition> templates, IList<AST.ParameterDeclarationExpression> parameters)
 		{
-			c.BaseTypes.Add(c.ProjectContent.SystemTypes.Delegate);
+			c.BaseTypes.Add(c.ProjectContent.SystemTypes.MulticastDelegate);
 			if (currentClass.Count > 0) {
 				DefaultClass cur = GetCurrentClass();
 				cur.InnerClasses.Add(c);
