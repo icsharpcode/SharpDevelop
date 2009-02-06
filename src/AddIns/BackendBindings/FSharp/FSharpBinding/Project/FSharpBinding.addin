@@ -100,7 +100,6 @@
 		     category = "Main"
 		     title    = "F# Interactive"
 		     icon     = "F#.ProjectIcon"
-		     shortcut = "Control|Shift|B"
 		     class    = "FSharpBinding.FSharpInteractive"/>
 	</Path>
 

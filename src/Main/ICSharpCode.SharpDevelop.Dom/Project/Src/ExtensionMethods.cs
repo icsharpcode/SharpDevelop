@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 							stack.Push(children.GetEnumerator());
 						}
 					}
-					stack.Pop();
+					stack.Pop().Dispose();
 				}
 			} finally {
 				while (stack.Count > 0) {
