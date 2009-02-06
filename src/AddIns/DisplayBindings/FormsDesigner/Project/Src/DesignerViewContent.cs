@@ -13,6 +13,7 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -23,7 +24,6 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Util;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -41,11 +41,7 @@ namespace ICSharpCode.FormsDesigner
 		FormsDesignerUndoEngine undoEngine;
 		TypeResolutionService typeResolutionService;
 		
-		Encoding primaryFileEncoding;
-		readonly IDocument primaryFileDocument = new DocumentFactory().CreateDocument();
-		Encoding designerCodeFileEncoding;
-		OpenedFile designerCodeFile;
-		IDocument designerCodeFileDocument;
+		readonly DesignerSourceCodeStorage sourceCodeStorage;
 		
 		readonly Dictionary<Type, TypeDescriptionProvider> addedTypeDescriptionProviders = new Dictionary<Type, TypeDescriptionProvider>();
 		
@@ -64,11 +60,11 @@ namespace ICSharpCode.FormsDesigner
 		}
 		
 		public OpenedFile DesignerCodeFile {
-			get { return this.designerCodeFile; }
+			get { return this.sourceCodeStorage.DesignerCodeFile; }
 		}
 		
-		public virtual IDocument PrimaryFileDocument {
-			get { return this.primaryFileDocument; }
+		public IDocument PrimaryFileDocument {
+			get { return this.sourceCodeStorage[this.PrimaryFile]; }
 		}
 		
 		public string PrimaryFileContent {
@@ -76,12 +72,14 @@ namespace ICSharpCode.FormsDesigner
 			set { this.PrimaryFileDocument.TextContent = value; }
 		}
 		
-		public virtual Encoding PrimaryFileEncoding {
-			get { return this.primaryFileEncoding; }
-		}
-		
-		public virtual IDocument DesignerCodeFileDocument {
-			get { return this.designerCodeFileDocument; }
+		public IDocument DesignerCodeFileDocument {
+			get {
+				if (this.sourceCodeStorage.DesignerCodeFile == null) {
+					return null;
+				} else {
+					return this.sourceCodeStorage[this.sourceCodeStorage.DesignerCodeFile];
+				}
+			}
 		}
 		
 		public string DesignerCodeFileContent {
@@ -89,19 +87,17 @@ namespace ICSharpCode.FormsDesigner
 			set { this.DesignerCodeFileDocument.TextContent = value; }
 		}
 		
-		public virtual Encoding DesignerCodeFileEncoding {
-			get { return this.designerCodeFileEncoding; }
-		}
-		
 		public IDocument GetDocumentForFile(OpenedFile file)
 		{
-			if (file == this.DesignerCodeFile) {
-				return this.DesignerCodeFileDocument;
-			} else if (file == this.PrimaryFile) {
-				return this.PrimaryFileDocument;
-			} else {
-				return null;
-			}
+			return this.sourceCodeStorage[file];
+		}
+		
+		public IEnumerable<KeyValuePair<OpenedFile, IDocument>> SourceFiles {
+			get { return this.sourceCodeStorage; }
+		}
+		
+		protected DesignerSourceCodeStorage SourceCodeStorage {
+			get { return this.sourceCodeStorage; }
 		}
 		
 		public IViewContent PrimaryViewContent {
@@ -131,6 +127,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			this.UserControl = this.pleaseWaitLabel;
 			
+			this.sourceCodeStorage = new DesignerSourceCodeStorage();
 			this.resourceStore = new ResourceStore(this);
 			
 			// null check is required to support running in unit test mode
@@ -162,58 +159,72 @@ namespace ICSharpCode.FormsDesigner
 		public FormsDesignerViewContent(IViewContent primaryViewContent, OpenedFile mockFile)
 			: this(primaryViewContent)
 		{
-			this.primaryFileDocument = new DocumentFactory().CreateDocument();
-			this.designerCodeFileDocument = this.primaryFileDocument;
-			this.designerCodeFileEncoding = System.Text.Encoding.UTF8;
-			this.designerCodeFile = mockFile;
+			this.sourceCodeStorage.AddFile(mockFile, Encoding.UTF8);
+			this.sourceCodeStorage.DesignerCodeFile = mockFile;
 		}
+		
+		bool inMasterLoadOperation;
 		
 		protected override void LoadInternal(OpenedFile file, System.IO.Stream stream)
 		{
-			LoggingService.Debug("Forms designer: Load " + file.FileName);
+			LoggingService.Debug("Forms designer: Load " + file.FileName + "; inMasterLoadOperation=" + this.inMasterLoadOperation);
 			
-			if (file == this.PrimaryFile) {
+			if (inMasterLoadOperation) {
 				
-				this.primaryFileEncoding = ParserService.DefaultFileEncoding;
-				this.primaryFileDocument.TextContent = FileReader.ReadFileContent(stream, ref this.primaryFileEncoding);
-				
-				LoggingService.Debug("Forms designer: Determining designer code file for " + file.FileName);
-				OpenedFile newDesignerCodeFile = this.generator.DetermineDesignerCodeFile();
-				if (newDesignerCodeFile == null) {
-					throw new InvalidOperationException("The designer code file could not be determined.");
+				if (this.sourceCodeStorage.ContainsFile(file)) {
+					LoggingService.Debug("Forms designer: Loading " + file.FileName + " in source code storage");
+					this.sourceCodeStorage.LoadFile(file, stream);
+				} else {
+					LoggingService.Debug("Forms designer: Loading " + file.FileName + " in resource store");
+					this.resourceStore.Load(file, stream);
 				}
 				
-				if (this.designerCodeFile != null && newDesignerCodeFile != this.designerCodeFile) {
-					this.Files.Remove(this.designerCodeFile);
-				}
-				this.designerCodeFile = newDesignerCodeFile;
+			} else if (file == this.PrimaryFile || this.sourceCodeStorage.ContainsFile(file)) {
 				
-				if (this.designerCodeFile == this.PrimaryFile) {
-					
-					LoggingService.Debug("Forms designer: Designer code file is equal to primary file. Reloading designer.");
-					
+				if (this.loader != null && this.loader.Loading) {
+					throw new InvalidOperationException("Designer loading a source code file while DesignerLoader is loading and the view is not in a master load operation. This must not happen.");
+				}
+				
+				if (this.designSurface != null) {
 					this.UnloadDesigner();
-					this.designerCodeFileEncoding = this.PrimaryFileEncoding;
-					this.designerCodeFileDocument = this.PrimaryFileDocument;
+				}
+				
+				this.inMasterLoadOperation = true;
+				
+				try {
+					
+					this.sourceCodeStorage.LoadFile(file, stream);
+					
+					LoggingService.Debug("Forms designer: Determining designer source files for " + file.FileName);
+					OpenedFile newDesignerCodeFile;
+					IEnumerable<OpenedFile> sourceFiles = this.generator.GetSourceFiles(out newDesignerCodeFile);
+					if (sourceFiles == null || newDesignerCodeFile == null) {
+						throw new FormsDesignerLoadException("The designer source files could not be determined.");
+					}
+					
+					// Unload all source files from the view which are no longer in the returned collection
+					foreach (OpenedFile f in this.Files.Except(sourceFiles).ToArray()) {
+						// Ensure that we only unload source files, but not resource files.
+						if (this.sourceCodeStorage.ContainsFile(f)) {
+							LoggingService.Debug("Forms designer: Unloading file '" + f.FileName + "' because it no longer belongs to the designed form");
+							this.Files.Remove(f);
+							this.sourceCodeStorage.RemoveFile(f);
+						}
+					}
+					
+					// Load all files which are new in the returned collection
+					foreach (OpenedFile f in sourceFiles.Except(this.Files).ToArray()) {
+						this.sourceCodeStorage.AddFile(f);
+						this.Files.Add(f);
+					}
+					
+					this.sourceCodeStorage.DesignerCodeFile = newDesignerCodeFile;
+					
 					this.LoadAndDisplayDesigner();
 					
-				} else if (!this.Files.Contains(this.designerCodeFile)) {
-					LoggingService.Debug("Forms designer: Adding designer code file " + this.designerCodeFile.FileName);
-					this.Files.Insert(1, this.designerCodeFile);
-				} else if (this.HasLoadError || this.designSurface == null || !this.designSurface.IsLoaded) {
-					LoggingService.Debug("Forms designer: Having a load error. Reloading designer.");
-					this.ReloadDesignerFromMemory();
+				} finally {
+					this.inMasterLoadOperation = false;
 				}
-				
-			} else if (file == this.DesignerCodeFile) {
-				
-				LoggingService.Debug("Forms designer: Reloading designer because of LoadInternal on DesignerCodeFile");
-				
-				this.UnloadDesigner();
-				this.designerCodeFileEncoding = ParserService.DefaultFileEncoding;
-				this.designerCodeFileDocument = new DocumentFactory().CreateDocument();
-				this.designerCodeFileDocument.TextContent = FileReader.ReadFileContent(stream, ref this.designerCodeFileEncoding);
-				this.LoadAndDisplayDesigner();
 				
 			} else {
 				
@@ -224,13 +235,19 @@ namespace ICSharpCode.FormsDesigner
 					LoggingService.Debug("Forms designer: Reloading designer because of LoadInternal on resource file");
 					this.UnloadDesigner();
 					mustReload = true;
+					this.inMasterLoadOperation = true;
 				} else {
 					mustReload = false;
 				}
-				LoggingService.Debug("Forms designer: Loading " + file.FileName + " in resource store");
-				this.resourceStore.Load(file, stream);
-				if (mustReload) {
-					this.LoadAndDisplayDesigner();
+				
+				try {
+					LoggingService.Debug("Forms designer: Loading " + file.FileName + " in resource store");
+					this.resourceStore.Load(file, stream);
+					if (mustReload) {
+						this.LoadAndDisplayDesigner();
+					}
+				} finally {
+					this.inMasterLoadOperation = false;
 				}
 				
 			}
@@ -242,14 +259,8 @@ namespace ICSharpCode.FormsDesigner
 			if (hasUnmergedChanges) {
 				this.MergeFormChanges();
 			}
-			if (file == this.DesignerCodeFile) {
-				using(StreamWriter writer = new StreamWriter(stream, this.DesignerCodeFileEncoding)) {
-					writer.Write(this.DesignerCodeFileContent);
-				}
-			} else if (file == this.PrimaryFile) {
-				using(StreamWriter writer = new StreamWriter(stream, this.PrimaryFileEncoding)) {
-					writer.Write(this.PrimaryFileContent);
-				}
+			if (this.sourceCodeStorage.ContainsFile(file)) {
+				this.sourceCodeStorage.SaveFile(file, stream);
 			} else {
 				this.resourceStore.Save(file, stream);
 			}
@@ -516,6 +527,7 @@ namespace ICSharpCode.FormsDesigner
 		void DesignerFlushed(object sender, EventArgs e)
 		{
 			this.resourceStore.CommitAllResourceChanges();
+			this.hasUnmergedChanges = false;
 		}
 		
 		static string FormatLoadErrors(DesignSurface designSurface)
@@ -530,8 +542,11 @@ namespace ICSharpCode.FormsDesigner
 		
 		public virtual void MergeFormChanges()
 		{
-			if (this.HasLoadError) {
+			if (this.HasLoadError || this.designSurface == null) {
+				LoggingService.Debug("Forms designer: Cannot merge form changes because the designer is not loaded successfully or not loaded at all");
 				return;
+			} else if (this.DesignerCodeFile == null) {
+				throw new InvalidOperationException("Cannot merge form changes without a designer code file.");
 			}
 			bool isDirty = this.DesignerCodeFile.IsDirty;
 			LoggingService.Info("Merging form changes...");
@@ -816,7 +831,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected void ReloadDesignerFromMemory()
 		{
-			using(MemoryStream ms = new MemoryStream(this.DesignerCodeFileEncoding.GetBytes(this.DesignerCodeFileContent), false)) {
+			using(MemoryStream ms = new MemoryStream(this.sourceCodeStorage.GetFileEncoding(this.DesignerCodeFile).GetBytes(this.DesignerCodeFileContent), false)) {
 				this.Load(this.DesignerCodeFile, ms);
 			}
 			
@@ -829,7 +844,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		void FileServiceFileRemoving(object sender, FileCancelEventArgs e)
 		{
-			if (!e.Cancel && this.DesignerCodeFile != null) {
+			if (!e.Cancel) {
 				if (WorkbenchSingleton.InvokeRequired) {
 					WorkbenchSingleton.SafeThreadAsyncCall(this.CheckForDesignerCodeFileDeletion, e);
 				} else {
@@ -840,27 +855,33 @@ namespace ICSharpCode.FormsDesigner
 		
 		void CheckForDesignerCodeFileDeletion(FileCancelEventArgs e)
 		{
-			if (this.DesignerCodeFile == null || String.IsNullOrEmpty(this.DesignerCodeFile.FileName)) {
-				return;
+			OpenedFile file;
+			
+			if (e.IsDirectory) {
+				file = this.Files.SingleOrDefault(
+					f => FileUtility.IsBaseDirectory(e.FileName, f.FileName)
+				);
+			} else {
+				file = this.Files.SingleOrDefault(
+					f => FileUtility.IsEqualFileName(f.FileName, e.FileName)
+				);
 			}
 			
-			if ((!e.IsDirectory && FileUtility.IsEqualFileName(this.DesignerCodeFile.FileName, e.FileName)) ||
-			    (e.IsDirectory && FileUtility.IsBaseDirectory(e.FileName, this.DesignerCodeFile.FileName))) {
-				
-				LoggingService.Info("Forms designer: Handling deletion of open designer code file '" + this.DesignerCodeFile.FileName + "'");
-				
-				// When our designer code file is deleted,
-				// unload the designer and remove the file from the
-				// file list so that the primary view is not closed
-				// because of this event.
-				
+			if (file == null || file == this.PrimaryFile)
+				return;
+			
+			LoggingService.Info("Forms designer: Handling deletion of open designer code file '" + file.FileName + "'");
+			
+			if (file == this.sourceCodeStorage.DesignerCodeFile) {
 				this.UnloadDesigner();
-				this.Files.Remove(this.DesignerCodeFile);
-				this.designerCodeFile = null;
-				this.designerCodeFileDocument = null;
-				this.designerCodeFileEncoding = null;
-				
+				this.sourceCodeStorage.DesignerCodeFile = null;
 			}
+			
+			// When any of our designer code files is deleted,
+			// remove the file from the file list so that
+			// the primary view is not closed because of this event.
+			this.Files.Remove(file);
+			this.sourceCodeStorage.RemoveFile(file);
 		}
 		
 		#region Design surface manager (static)

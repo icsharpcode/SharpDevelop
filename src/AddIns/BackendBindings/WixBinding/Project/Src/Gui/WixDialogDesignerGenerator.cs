@@ -9,6 +9,7 @@ using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
@@ -58,9 +59,10 @@ namespace ICSharpCode.WixBinding
 			get { return this.view; }
 		}
 		
-		public OpenedFile DetermineDesignerCodeFile()
+		public IEnumerable<OpenedFile> GetSourceFiles(out OpenedFile designerCodeFile)
 		{
-			return this.view.PrimaryFile;
+			designerCodeFile = this.view.PrimaryFile;
+			return new [] {designerCodeFile};
 		}
 		
 		public void Attach(FormsDesignerViewContent viewContent)

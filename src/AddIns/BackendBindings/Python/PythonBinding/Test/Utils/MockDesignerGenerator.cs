@@ -48,9 +48,10 @@ namespace PythonBinding.Tests.Utils
 			this.viewContent = null;
 		}
 		
-		public ICSharpCode.SharpDevelop.OpenedFile DetermineDesignerCodeFile()
+		public System.Collections.Generic.IEnumerable<ICSharpCode.SharpDevelop.OpenedFile> GetSourceFiles(out ICSharpCode.SharpDevelop.OpenedFile designerCodeFile)
 		{
-			return this.viewContent.DesignerCodeFile;
+			designerCodeFile = this.viewContent.DesignerCodeFile;
+			return new [] {designerCodeFile};
 		}
 		
 		public void MergeFormChanges(CodeCompileUnit unit)

@@ -9,6 +9,7 @@ using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
@@ -64,9 +65,10 @@ namespace ICSharpCode.PythonBinding
 			this.viewContent = null;
 		}
 		
-		public OpenedFile DetermineDesignerCodeFile()
+		public IEnumerable<OpenedFile> GetSourceFiles(out OpenedFile designerCodeFile)
 		{
-			return this.ViewContent.PrimaryFile;
+			designerCodeFile = this.ViewContent.PrimaryFile;
+			return new [] {designerCodeFile};
 		}
 		
 		public void MergeFormChanges(CodeCompileUnit unit)

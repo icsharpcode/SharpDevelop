@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Xml;
 
@@ -18,7 +17,6 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.WixBinding
 {
@@ -61,28 +59,6 @@ namespace ICSharpCode.WixBinding
 			return null;
 		}
 		
-		// The FormsDesignerViewContent normally operates independently of any
-		// text editor. The following overrides connect the forms designer
-		// directly to the underlying XML text editor so that the caret positioning
-		// and text selection operations done by the WiX designer actually
-		// become visible in the text editor.
-		
-		public override IDocument PrimaryFileDocument {
-			get { return ((ITextEditorControlProvider)this.PrimaryViewContent).TextEditorControl.Document; }
-		}
-		
-		public override IDocument DesignerCodeFileDocument {
-			get { return this.PrimaryFileDocument; }
-		}
-		
-		public override System.Text.Encoding PrimaryFileEncoding {
-			get { return ((ITextEditorControlProvider)this.PrimaryViewContent).TextEditorControl.Encoding; }
-		}
-		
-		public override System.Text.Encoding DesignerCodeFileEncoding {
-			get { return this.PrimaryFileEncoding; }
-		}
-		
 		/// <summary>
 		/// Attempts to open the Wix dialog from the document currently
 		/// associated with this designer.
@@ -106,6 +82,16 @@ namespace ICSharpCode.WixBinding
 		protected override void LoadInternal(OpenedFile file, Stream stream)
 		{
 			if (file == this.PrimaryFile) {
+				// The FormsDesignerViewContent normally operates independently of any
+				// text editor. The following statements connect the forms designer
+				// directly to the underlying XML text editor so that the caret positioning
+				// and text selection operations done by the WiX designer actually
+				// become visible in the text editor.
+				if (!this.SourceCodeStorage.ContainsFile(file)) {
+					TextEditorControl editor = ((ITextEditorControlProvider)this.PrimaryViewContent).TextEditorControl;
+					this.SourceCodeStorage.AddFile(file, editor.Document, editor.Encoding ?? ParserService.DefaultFileEncoding, true);
+				}
+				
 				try {
 					if (!ignoreDialogIdSelectedInTextEditor) {
 						string dialogId = GetDialogIdSelectedInTextEditor();
