@@ -281,17 +281,17 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		LocalResolveResult GetLocalVariable(string expression, string fileName, string fileContent)
 		{
-			PythonVariableResolver resolver = new PythonVariableResolver();
-			string typeName = resolver.Resolve(expression, fileName, fileContent);
-			if (typeName != null) {
-				IClass resolvedClass = GetClass(typeName);
-				if (resolvedClass != null) {
-					DefaultClass dummyClass = new DefaultClass(DefaultCompilationUnit.DummyCompilationUnit, "Global");
-					DefaultMethod dummyMethod = new DefaultMethod(dummyClass, String.Empty);
-					DefaultField.LocalVariableField field = new DefaultField.LocalVariableField(resolvedClass.DefaultReturnType, expression, DomRegion.Empty, dummyClass);
-					return new LocalResolveResult(dummyMethod, field);
-				}
-			}
+//			PythonVariableResolver resolver = new PythonVariableResolver();
+//			string typeName = resolver.Resolve(expression, fileName, fileContent);
+//			if (typeName != null) {
+//				IClass resolvedClass = GetClass(typeName);
+//				if (resolvedClass != null) {
+//					DefaultClass dummyClass = new DefaultClass(DefaultCompilationUnit.DummyCompilationUnit, "Global");
+//					DefaultMethod dummyMethod = new DefaultMethod(dummyClass, String.Empty);
+//					DefaultField.LocalVariableField field = new DefaultField.LocalVariableField(resolvedClass.DefaultReturnType, expression, DomRegion.Empty, dummyClass);
+//					return new LocalResolveResult(dummyMethod, field);
+//				}
+//			}
 			return null;
 		}
 	}
