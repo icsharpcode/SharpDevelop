@@ -136,6 +136,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			FileService.FileRemoving += this.FileServiceFileRemoving;
+			ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting += this.DebugStarting;
 		}
 		
 		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
@@ -366,8 +367,8 @@ namespace ICSharpCode.FormsDesigner
 		void ComponentChanged(object sender, ComponentChangedEventArgs e)
 		{
 			bool loading = this.loader != null && this.loader.Loading;
-			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading);
-			if (!loading) {
+			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
+			if (!loading && !unloading) {
 				this.MakeDirty();
 			}
 		}
@@ -375,8 +376,8 @@ namespace ICSharpCode.FormsDesigner
 		void ComponentListChanged(object sender, EventArgs e)
 		{
 			bool loading = this.loader != null && this.loader.Loading;
-			LoggingService.Debug("Forms designer: Component added/removed/renamed, Loading=" + loading);
-			if (!loading) {
+			LoggingService.Debug("Forms designer: Component added/removed/renamed, Loading=" + loading + ", Unloading=" + this.unloading);
+			if (!loading && !unloading) {
 				shouldUpdateSelectableObjects = true;
 				this.MakeDirty();
 			}
@@ -485,6 +486,8 @@ namespace ICSharpCode.FormsDesigner
 		void DesignerLoading(object sender, EventArgs e)
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader loading...");
+			this.reloadPending = false;
+			this.unloading = false;
 			this.UserControl = this.pleaseWaitLabel;
 			Application.DoEvents();
 		}
@@ -492,16 +495,22 @@ namespace ICSharpCode.FormsDesigner
 		void DesingerUnloading(object sender, EventArgs e)
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader unloading...");
+			this.unloading = true;
 			if (!this.disposing) {
 				this.UserControl = this.pleaseWaitLabel;
 				Application.DoEvents();
 			}
 		}
 		
+		bool reloadPending;
+		bool unloading;
+		
 		void DesignerLoaded(object sender, LoadedEventArgs e)
 		{
 			// This method is called when the designer has loaded.
 			LoggingService.Debug("Forms designer: DesignerLoader loaded, HasSucceeded=" + e.HasSucceeded.ToString());
+			this.reloadPending = false;
+			this.unloading = false;
 			
 			if (e.HasSucceeded) {
 				// Display the designer on the view content
@@ -605,7 +614,9 @@ namespace ICSharpCode.FormsDesigner
 						if (loaderService != null) {
 							if (!this.Host.Loading) {
 								LoggingService.Info("Forms designer reloading due to change in referenced assembly");
+								this.reloadPending = true;
 								if (!loaderService.Reload()) {
+									this.reloadPending = false;
 									MessageService.ShowMessage("The designer has detected that a referenced assembly has been changed, but the designer loader did not accept the reload command. Please reload the designer manually by closing and reopening this file.");
 								}
 							} else {
@@ -632,6 +643,7 @@ namespace ICSharpCode.FormsDesigner
 				base.Dispose();
 			} finally {
 				
+				ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting -= this.DebugStarting;
 				FileService.FileRemoving -= this.FileServiceFileRemoving;
 				
 				this.UnloadDesigner();
@@ -891,6 +903,35 @@ namespace ICSharpCode.FormsDesigner
 		public static DesignSurface CreateDesignSurface(IServiceProvider serviceProvider)
 		{
 			return designSurfaceManager.CreateDesignSurface(serviceProvider);
+		}
+		
+		#endregion
+		
+		#region Debugger event handling (to prevent designer reload while debugger is starting)
+		
+		void DebugStarting(object sender, EventArgs e)
+		{
+			if (designSurfaceManager.ActiveDesignSurface != this.DesignSurface ||
+			    !this.reloadPending)
+				return;
+			
+			// The designer loader does not reload immediately,
+			// but only when the Application.Idle event is raised.
+			// When the IsActiveViewContentChangedHandler has been called because of the
+			// layout change prior to starting the debugger, and it has
+			// initiated a reload because of a changed referenced assembly,
+			// the reload can interrupt the starting of the debugger.
+			// To prevent this, we explicitly raise the Idle event here.
+			LoggingService.Debug("Forms designer: DebugStarting raises the Idle event to force pending reload now");
+			Application.DoEvents();
+			Cursor oldCursor = Cursor.Current;
+			Cursor.Current = Cursors.WaitCursor;
+			try {
+				Application.RaiseIdle(EventArgs.Empty);
+				Application.DoEvents();
+			} finally {
+				Cursor.Current = oldCursor;
+			}
 		}
 		
 		#endregion
