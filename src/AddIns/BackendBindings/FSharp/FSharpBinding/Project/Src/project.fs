@@ -10,7 +10,6 @@ namespace FSharpBinding
 
 //Global todos
 //TODO add "compiling" dialog to output the correct directory
-//TODO output to correct directory :)
 //TODO copy all config to the correct locations
 //TODO add directory structure
 
