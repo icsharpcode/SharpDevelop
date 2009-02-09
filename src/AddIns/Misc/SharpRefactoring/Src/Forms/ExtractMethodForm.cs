@@ -1,13 +1,10 @@
-/*
- * Erstellt mit SharpDevelop.
- * Benutzer: HP
- * Datum: 12.11.2007
- * Zeit: 18:46
- * 
- * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
- */
-
-using ICSharpCode.SharpDevelop.Refactoring;
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
+//     <version>$Revision$</version>
+// </file>
+using ICSharpCode.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +12,7 @@ using System.Windows.Forms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace SharpRefactoring.Forms
 {
@@ -35,6 +33,8 @@ namespace SharpRefactoring.Forms
 			//
 			InitializeComponent();
 			
+			SetTranslation(this);
+			
 			this.declaration = declaration;
 			this.generator = generator;
 			IOutputAstVisitor visitor = this.generator.Invoke();
@@ -47,6 +47,13 @@ namespace SharpRefactoring.Forms
 			this.txtPreview.Text = visitor.Text;
 			
 			this.txtName.SelectAll();
+		}
+		
+		void SetTranslation(Control c)
+		{
+			c.Text = StringParser.Parse(c.Text);
+			foreach (Control ctrl in c.Controls)
+				SetTranslation(ctrl);
 		}
 
 		void btnOKClick(object sender, EventArgs e)

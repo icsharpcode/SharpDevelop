@@ -4,15 +4,13 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 3287 $</version>
 // </file>
-using ICSharpCode.TextEditor;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.AstBuilder;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
@@ -50,7 +48,7 @@ namespace SharpRefactoring
 				parser.Parse();
 				
 				if (parser.Errors.Count > 0) {
-					MessageService.ShowError("Errors occured during parsing! Cannot extract a new method!");
+					MessageService.ShowError("${res:AddIns.SharpRefactoring.ExtractMethod.ParseErrors}");
 					
 					return false;
 				}
@@ -73,7 +71,7 @@ namespace SharpRefactoring
 			this.parentNode = GetParentMember(this.currentSelection.StartPosition.Line, this.currentSelection.StartPosition.Column, this.currentSelection.EndPosition.Line, this.currentSelection.EndPosition.Column);
 			
 			if (parentNode == null) {
-				MessageService.ShowError("Invalid selection! Please select a valid range.");
+				MessageService.ShowError("${res:AddIns.SharpRefactoring.ExtractMethod.InvalidSelection}");
 				return false;
 			}
 			

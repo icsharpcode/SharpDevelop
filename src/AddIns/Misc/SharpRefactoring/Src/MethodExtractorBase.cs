@@ -159,7 +159,7 @@ namespace SharpRefactoring
 				parser.Parse();
 				
 				if (parser.Errors.Count > 0) {
-					MessageService.ShowError("Invalid selection! Please select a valid range!");
+					MessageService.ShowError("${res:AddIns.SharpRefactoring.ExtractMethod.InvalidSelection}");
 				}
 				
 				MethodDeclaration method = (MethodDeclaration)(parser.CompilationUnit.Children[0].Children[0]);
@@ -278,8 +278,6 @@ namespace SharpRefactoring
 			
 			return false;
 		}
-		
-
 		
 		protected static bool HasAssignment(MethodDeclaration method, Variable variable)
 		{

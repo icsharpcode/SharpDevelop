@@ -1,11 +1,9 @@
-﻿/*
- * Erstellt mit SharpDevelop.
- * Benutzer: HP
- * Datum: 12.11.2007
- * Zeit: 18:46
- * 
- * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
+//     <version>$Revision$</version>
+// </file>
 namespace SharpRefactoring.Forms
 {
 	partial class ExtractMethodForm
@@ -54,7 +52,7 @@ namespace SharpRefactoring.Forms
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(167, 13);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "Enter a name for the new method:";
+			this.label1.Text = "${res:AddIns.SharpRefactoring.ExtractMethod.EnterName}:";
 			// 
 			// label2
 			// 
@@ -66,7 +64,7 @@ namespace SharpRefactoring.Forms
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(48, 13);
 			this.label2.TabIndex = 1;
-			this.label2.Text = "Preview:";
+			this.label2.Text = "${res:AddIns.SharpRefactoring.ExtractMethod.Preview}:";
 			// 
 			// txtName
 			// 
@@ -100,7 +98,7 @@ namespace SharpRefactoring.Forms
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 4;
-			this.btnCancel.Text = "Cancel";
+			this.btnCancel.Text = "${res:Global.CancelButtonText}";
 			this.btnCancel.UseVisualStyleBackColor = true;
 			this.btnCancel.Click += new System.EventHandler(this.btnCancelClick);
 			// 
@@ -111,7 +109,7 @@ namespace SharpRefactoring.Forms
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
 			this.btnOK.TabIndex = 5;
-			this.btnOK.Text = "OK";
+			this.btnOK.Text = "${res:Global.OKButtonText}";
 			this.btnOK.UseVisualStyleBackColor = true;
 			this.btnOK.Click += new System.EventHandler(this.btnOKClick);
 			// 
@@ -135,7 +133,7 @@ namespace SharpRefactoring.Forms
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Extract Method";
+			this.Text = "${res:AddIns.SharpRefactoring.ExtractMethod}";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ExtractMethodFormFormClosing);
 			this.ResumeLayout(false);
 			this.PerformLayout();
