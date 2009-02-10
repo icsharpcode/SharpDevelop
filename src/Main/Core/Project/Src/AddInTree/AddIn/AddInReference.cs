@@ -98,6 +98,15 @@ namespace ICSharpCode.Core
 				} else {
 					reference.maximumVersion = reference.minimumVersion = ParseVersion(version, hintPath);
 				}
+				
+				if (reference.Name == "SharpDevelop") {
+					// HACK: SD 3.0 AddIns work with SharpDevelop 3.1
+					// Because some 3.0 AddIns restrict themselves to SD 3.0, we extend the
+					// supported SD range.
+					if (reference.maximumVersion == new Version("3.0")) {
+						reference.maximumVersion = new Version("3.1");
+					}
+				}
 			}
 			reference.requirePreload = string.Equals(properties["requirePreload"], "true", StringComparison.OrdinalIgnoreCase);
 			return reference;

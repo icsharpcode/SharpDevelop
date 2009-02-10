@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop
 				string configDirectory = ConfigurationManager.AppSettings["settingsPath"];
 				if (String.IsNullOrEmpty(configDirectory)) {
 					startup.ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-					                                       "ICSharpCode/SharpDevelop" + RevisionClass.MainVersion);
+					                                       "ICSharpCode/SharpDevelop3.0");
 				} else {
 					startup.ConfigDirectory = Path.Combine(Path.GetDirectoryName(exe.Location), configDirectory);
 				}
