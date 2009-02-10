@@ -10,7 +10,6 @@ namespace FSharpBinding
 
 //Global todos
 //TODO add "compiling" dialog to output the correct directory
-//TODO output to correct directory :)
 //TODO copy all config to the correct locations
 //TODO add directory structure
 
@@ -221,7 +220,7 @@ type FsOptions() =
     override x.LoadPanelContents() =
         let this = (typeof<FsOptions>)
         let caller = this.Assembly
-        x.SetupFromXmlStream(caller.GetManifestResourceStream("FSharpBindings.Resources.FsOptions.xfrm"))
+        x.SetupFromXmlStream(caller.GetManifestResourceStream("FsOptions.xfrm"))
         x.InitializeHelper()
         x.helper.BindBoolean(x.Get<CheckBox>("standalone"), "Standalone", false) |> ignore
         x.helper.BindBoolean(x.Get<CheckBox>("nomllib"), "NoMLLib", false) |> ignore

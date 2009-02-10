@@ -117,6 +117,18 @@ namespace PythonBinding.Tests
 			Assert.IsTrue(compilingOptionsPanel.ConfigurationSelectorAddedToControl);
 		}		
 		
+		[Test]
+		public void TargetCpuComboxBoxAdded()
+		{
+			Assert.IsTrue(compilingOptionsPanel.IsTargetCpuComboBoxCreated);
+		}
+		
+		[Test]
+		public void TargetCpuComboxBoxLocationButtonCreated()
+		{
+			Assert.IsTrue(compilingOptionsPanel.IsLocationButtonCreated("targetCpuComboBox"));
+		}	
+
 		BrowseFolderButtonInfo GetOutputPathBrowseFolderInfo()
 		{
 			return compilingOptionsPanel.GetBrowseFolderButtonInfo("outputPathBrowseButton");

@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				EventHandler eh = null;
 				lock (lockObject) {
 					if (isCancelAllowed && !isCancelled) {
-						ICSharpCode.Core.LoggingService.Debug("Cancel build");
+						ICSharpCode.Core.LoggingService.Info("Cancel build");
 						isCancelled = true;
 						eh = Cancelled;
 					}
@@ -259,6 +259,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				this.engine = engine;
 				this.project = project;
+			}
+			
+			public void DoStartBuild(object state)
+			{
+				project.StartBuild(options, this);
 			}
 			
 			public void ReportError(BuildError error)
@@ -416,7 +421,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						hasDependencyErrors |= n.hasErrors;
 					}
 					
-					ICSharpCode.Core.LoggingService.Debug("Start building " + node.project.Name);
+					ICSharpCode.Core.LoggingService.Info("Start building " + node.project.Name);
 					runningWorkers++;
 					projectsCurrentlyBuilding.Add(node);
 					if (hasDependencyErrors) {
@@ -424,7 +429,8 @@ namespace ICSharpCode.SharpDevelop.Project
 						node.hasErrors = true;
 						node.Done(false);
 					} else {
-						node.project.StartBuild(node.options, node);
+						// do not run "DoStartBuild" inside lock - run it async on the thread pool
+						System.Threading.ThreadPool.QueueUserWorkItem(node.DoStartBuild);
 					}
 				}
 			}
@@ -458,7 +464,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void OnBuildFinished(BuildNode node, bool success)
 		{
-			ICSharpCode.Core.LoggingService.Debug("Finished building " + node.project.Name);
+			ICSharpCode.Core.LoggingService.Info("Finished building " + node.project.Name);
 			lock (this) {
 				if (node.buildFinished) {
 					throw new InvalidOperationException("This node already finished building, do not call IBuildFeedbackSink.Done() multiple times!");

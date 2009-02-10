@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
-			TypeReference stringReference = new TypeReference("System.String");
+			TypeReference stringReference = new TypeReference("System.String", true);
 			MethodDeclaration method = new MethodDeclaration {
 				Name = "ToString",
 				Modifier = Modifiers.Public | Modifiers.Override,

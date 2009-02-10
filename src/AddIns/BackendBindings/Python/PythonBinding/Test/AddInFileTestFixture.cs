@@ -45,6 +45,8 @@ namespace PythonBinding.Tests
 		Runtime formsDesignerRuntime;
 		Codon displayBindingCodon;
 		Codon convertCodeCodon;
+		Codon pythonFileIconCodon;
+		Codon pythonProjectIconCodon;
 		
 		[TestFixtureSetUp]
 		public void SetupFixture()
@@ -72,6 +74,8 @@ namespace PythonBinding.Tests
 				compilingOptionsCodon = GetCodon("/SharpDevelop/BackendBindings/ProjectOptions/Python", "CompilingOptions");
 				debugOptionsCodon = GetCodon("/SharpDevelop/BackendBindings/ProjectOptions/Python", "DebugOptions");
 				convertCodeCodon = GetCodon("/SharpDevelop/Workbench/MainMenu/Tools/ConvertCode", "ConvertToPython");
+				pythonFileIconCodon = GetCodon("/Workspace/Icons", "PythonFileIcon");
+				pythonProjectIconCodon = GetCodon("/Workspace/Icons", "PythonProjectIcon");
 				
 				// Get the PythonBinding runtime.
 				foreach (Runtime runtime in addin.Runtimes) {
@@ -610,7 +614,43 @@ namespace PythonBinding.Tests
 			Assert.AreEqual(".cs", csharpCondition["activeextension"]);
 			Assert.AreEqual(".vb", vbnetCondition["activeextension"]);
 		}
+		
+		[Test]
+		public void PythonFileIconCodonExists()
+		{
+			Assert.IsNotNull(pythonFileIconCodon);
+		}
 
+		[Test]
+		public void PythonFileIconCodonExtensions()
+		{
+			Assert.AreEqual(".py", pythonFileIconCodon["extensions"]);
+		}
+		
+		[Test]
+		public void PythonFileIconCodonResource()
+		{
+			Assert.AreEqual("Python.ProjectBrowser.File", pythonFileIconCodon["resource"]);
+		}
+		
+		[Test]
+		public void PythonProjectIconCodonExists()
+		{
+			Assert.IsNotNull(pythonProjectIconCodon);
+		}
+
+		[Test]
+		public void PythonProjectIconCodonLanguage()
+		{
+			Assert.AreEqual("Python", pythonProjectIconCodon["language"]);
+		}
+		
+		[Test]
+		public void PythonProjectIconCodonResource()
+		{
+			Assert.AreEqual("Python.ProjectBrowser.Project", pythonProjectIconCodon["resource"]);
+		}		
+				
 		/// <summary>
 		/// Gets the codon with the specified extension path and name.
 		/// </summary>

@@ -197,6 +197,14 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		}
 		
 		[Test]
+		public void VBNetMissingBaseClassTest()
+		{
+			// SD2-1499: test that this invalid code doesn't crash
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>("public class test inherits", true);
+			Assert.AreEqual(0, td.BaseTypes.Count);
+		}
+		
+		[Test]
 		public void VBNetEnumWithBaseClassDeclarationTest()
 		{
 			string program = "Enum TestEnum As Byte\n" +

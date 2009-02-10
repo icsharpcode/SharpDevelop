@@ -25,7 +25,7 @@ namespace PythonBinding.Tests.Designer
 		public void SetUpFixture()
 		{
 			provider = new PythonDesignerLoaderProvider();
-			generator = new PythonDesignerGenerator();
+			generator = new PythonDesignerGenerator(null);
 		}
 		
 		[Test]

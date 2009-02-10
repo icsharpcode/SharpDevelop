@@ -93,195 +93,47 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			}
 		}
 		
-		private class ExtractInterfaceVisitor : NR.Visitors.AbstractAstVisitor
+		public override string GenerateInterfaceForClass(string newInterfaceName, string existingCode, IList<IMember> membersToKeep, IClass sourceClass, bool preserveComments)
 		{
-			string newInterfaceName;
-			string sourceClassName;
-			string sourceNamespace;
-			Dictionary<string, IMember> membersToInclude;
+			Modifiers modifiers = CodeGenerator.ConvertModifier(sourceClass.Modifiers, new ClassFinder(membersToKeep[0]));
+			// keep only visibility modifiers and 'unsafe' modifier
+			// -> remove abstract,sealed,static
+			modifiers &= Modifiers.Visibility | Modifiers.Unsafe;
 			
-			public ExtractInterfaceVisitor(string newInterfaceName,
-			                               string sourceNamespace,
-			                               string sourceClassName,
-			                               IList<IMember> chosenMembers) {
-				this.newInterfaceName = newInterfaceName;
-				this.sourceNamespace = sourceNamespace;
-				this.sourceClassName = sourceClassName;
-				
-				// store the chosen members in a dictionary for easy lookup
-				membersToInclude = new Dictionary<string, IMember>();
-				foreach(IMember m in chosenMembers) {
-					membersToInclude.Add(m.Name, m);
-				}
-			}
-
-			public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
-			{
-				// strip out any usings & extract our TypeReference from the NameSpace
-				// we walk backwards so that deletions don't affect the iteration
-				NamespaceDeclaration ns;
-				TypeDeclaration td;
-				object child;
-				object nsChild;
-				for(int i = compilationUnit.Children.Count-1; i>=0; i--) {
-					child = compilationUnit.Children[i];
-					if (child is UsingDeclaration) {
-						// we don't want our usings here...
-						compilationUnit.Children.RemoveAt(i);
-					}
-					else if (child is NamespaceDeclaration) {
-						ns = (NamespaceDeclaration)child;
-						if (ns.Name != this.sourceNamespace) {
-							// we're not interested in this namespace...
-							compilationUnit.Children.RemoveAt(i);
-						} else {
-							
-							// this NamespaceDeclaration presumably contains our source class
-							// walk its children backwards to that removing them won't break the iteration
-							for(int j = ns.Children.Count-1; j>=0; j--) {
-								nsChild = ns.Children[j];
-								if (nsChild is TypeDeclaration) {
-									td = (TypeDeclaration)nsChild;
-									
-									if (td.Name == this.sourceClassName) {
-										// keep it, and substitute it for the current NamespaceDeclaration
-										compilationUnit.Children[i] = td;
-									} else {
-										// it's not the class we're extracting from
-										ns.Children.RemoveAt(j);
-									}
-								} else {
-									// it's not even a class... (e.g. using, etc)
-									ns.Children.RemoveAt(j);
-								}
-							}
-						}
-					} else {
-						// we don't actually want to throw an exception here just because we havn't forseen the node type...
-						//throw new NotSupportedException("trimming "+compilationUnit.Children[i].ToString()+" is not supported.");
+			TypeDeclaration interfaceDef = new TypeDeclaration(modifiers, new List<AttributeSection>());
+			interfaceDef.Name = newInterfaceName;
+			interfaceDef.Type = NR.Ast.ClassType.Interface;
+			interfaceDef.Templates = CodeGenerator.ConvertTemplates(sourceClass.TypeParameters, new ClassFinder(membersToKeep[0]));
+			
+			foreach (IMember member in membersToKeep) {
+				AttributedNode an = CodeGenerator.ConvertMember(member, new ClassFinder(member));
+				INode node = null;
+				if (an is MethodDeclaration) {
+					MethodDeclaration m = an as MethodDeclaration;
+					m.Body = BlockStatement.Null;
+					m.Modifier = Modifiers.None;
+					node = m;
+				} else {
+					if (an is PropertyDeclaration) {
+						PropertyDeclaration p = an as PropertyDeclaration;
+						p.GetRegion.Block = BlockStatement.Null;
+						p.SetRegion.Block= BlockStatement.Null;
+						p.Modifier = Modifiers.None;
+						node = p;
 					}
 				}
-				return base.VisitCompilationUnit(compilationUnit, data);
+				
+				if (node == null)
+					throw new NotSupportedException();
+				
+				interfaceDef.AddChild(node);
 			}
 			
-			public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
-			{
-				// rewrite the type declaration to an interface
-				typeDeclaration.Attributes.Clear();
-				typeDeclaration.BaseTypes.Clear();
-				
-				typeDeclaration.Type = NR.Ast.ClassType.Interface;
-				typeDeclaration.Name = newInterfaceName;
-				
-				// remove those children who are not explicitly listed in our 'membersToInclude' dictionary
-				// we walk backwards so that deletions don't affect the iteration
-				bool keepIt;
-				MethodDeclaration method;
-				PropertyDeclaration property;
-				object child;
-				for (int i = typeDeclaration.Children.Count-1; i >= 0; i--) {
-					keepIt = false;
-					child = typeDeclaration.Children[i];
-					if (child is MethodDeclaration) {
-						method = (MethodDeclaration)child;
-						if (membersToInclude.ContainsKey(method.Name)
-						    && ((method.Modifier & Modifiers.Static) == Modifiers.None)) {
-							keepIt = true;
-						}
-					} else if (child is PropertyDeclaration) {
-						property = (PropertyDeclaration)child;
-						if (membersToInclude.ContainsKey(property.Name)
-						    && ((property.Modifier & Modifiers.Static) == Modifiers.None)) {
-							keepIt = true;
-						}
-					}
-					
-					if (!keepIt) {
-						typeDeclaration.Children.RemoveAt(i);
-					}
-				}
-
-				// must call the base method to ensure that this type's children get visited
-				return base.VisitTypeDeclaration(typeDeclaration, data);
-			}
+			IOutputAstVisitor printer = this.GetOutputVisitor();
 			
-			public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
-			{
-				// strip out the public modifier...
-				methodDeclaration.Modifier = NR.Ast.Modifiers.None;
-				
-				// ...and the method body
-				methodDeclaration.Body = BlockStatement.Null;
-
-				return null;
-			}
+			interfaceDef.AcceptVisitor(printer, null);
 			
-			public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
-			{
-				// strip out the public modifiers...
-				propertyDeclaration.Modifier = NR.Ast.Modifiers.None;
-
-				// ... and the body of any get block...
-				if (propertyDeclaration.HasGetRegion) {
-					propertyDeclaration.GetRegion.Block = BlockStatement.Null;
-				}
-
-				// ... and the body of any set block...
-				if (propertyDeclaration.HasSetRegion) {
-					propertyDeclaration.SetRegion.Block = BlockStatement.Null;
-				}
-				
-				return null;
-			}
-		}
-		
-		public override string GenerateInterfaceForClass(string newInterfaceName,
-		                                                 IList<IMember> membersToKeep,
-		                                                 bool preserveComments,
-		                                                 string sourceNamespace,
-		                                                 string sourceClassName,
-		                                                 string existingCode
-		                                                )
-		{
-			string codeForNewInterface = "<insert code for '"+newInterfaceName+"' here>";
-			NR.IParser parser = ParseFile(null, existingCode);
-			if (parser == null) {
-				return null;
-			}
-			// use a custom IAstVisitor to strip our class out of this file,
-			// rewrite it as our desired interface, and strip out every
-			// member except those we want to keep in our new interface.
-			ExtractInterfaceVisitor extractInterfaceVisitor = new ExtractInterfaceVisitor(newInterfaceName,
-			                                                                              sourceNamespace,
-			                                                                              sourceClassName,
-			                                                                              membersToKeep);
-			parser.CompilationUnit.AcceptVisitor(extractInterfaceVisitor, null);
-
-			// now use an output visitor for the appropriate language (based on
-			// extension of the existing code file) to format the new interface.
-			IOutputAstVisitor output = GetOutputVisitor();
-			if (preserveComments) {
-				// run the output visitor with the specials inserter to insert comments
-				// NOTE: *all* comments will be preserved, even for code that has been
-				//       removed to create the interface...
-				// TODO: is it worth enhancing the SpecialsNodeInserter to attach comments directly to code so they can be filtered based on what is preserved after a transformation?
-				using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(), output)) {
-					parser.CompilationUnit.AcceptVisitor(output, null);
-				}
-			} else {
-				// run the output visitor without the specials inserter
-				parser.CompilationUnit.AcceptVisitor(output, null);
-			}
-			parser.Dispose();
-			
-			if (output.Errors.Count == 0) {
-				// get the output
-				codeForNewInterface = output.Text;
-			} else {
-				// dump errors into the new interface file...
-				codeForNewInterface = String.Format("{0} {1}",
-				                                    this.CommentToken, output.Errors.ErrorOutput);
-			}
+			string codeForNewInterface = printer.Text;
 
 			// wrap the new code in the same comments/usings/namespace as the the original class file.
 			string newFileContent = CreateNewFileLikeExisting(existingCode, codeForNewInterface);
@@ -289,13 +141,14 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			return newFileContent;
 		}
 		
-		private class AddTypeToBaseTypesVisitor : NR.Visitors.AbstractAstVisitor
+		class AddTypeToBaseTypesVisitor : NR.Visitors.AbstractAstVisitor
 		{
-			private TypeReference typeReference;
+			IClass target, newBaseType;
 			
-			public AddTypeToBaseTypesVisitor(string newTypeName)
+			public AddTypeToBaseTypesVisitor(IClass target, IClass newBaseType)
 			{
-				this.typeReference = new TypeReference(newTypeName);
+				this.target = target;
+				this.newBaseType = newBaseType;
 			}
 			
 			public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
@@ -303,29 +156,32 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				// test the Type string property explicitly (rather than .BaseTypes.Contains())
 				// to ensure that a matching type name is enough to prevent adding a second
 				// reference.
+				
+				if (typeDeclaration.Name != target.Name)
+					return base.VisitTypeDeclaration(typeDeclaration, data);
+				
 				bool exists = false;
 				foreach(TypeReference type in typeDeclaration.BaseTypes) {
-					if (type.Type == this.typeReference.Type) {
+					if (type.Type == this.newBaseType.Name) {
 						exists = true;
 						break;
 					}
 				}
 				if (!exists) {
-					typeDeclaration.BaseTypes.Add(this.typeReference);
+					typeDeclaration.BaseTypes.Add(new TypeReference(newBaseType.Name, newBaseType.TypeParameters.Select(p => new TypeReference(p.Name)).ToList()));
 				}
 				return base.VisitTypeDeclaration(typeDeclaration, data);
 			}
 		}
 		
-		public override string AddBaseTypeToClass(string existingCode, string newInterfaceName)
+		public override string AddBaseTypeToClass(string existingCode, IClass targetClass, IClass newBaseType)
 		{
-			string newCode = existingCode;
 			NR.IParser parser = ParseFile(null, existingCode);
 			if (parser == null) {
 				return null;
 			}
 
-			AddTypeToBaseTypesVisitor addTypeToBaseTypesVisitor = new AddTypeToBaseTypesVisitor(newInterfaceName);
+			AddTypeToBaseTypesVisitor addTypeToBaseTypesVisitor = new AddTypeToBaseTypesVisitor(targetClass, newBaseType);
 
 			parser.CompilationUnit.AcceptVisitor(addTypeToBaseTypesVisitor, null);
 
@@ -752,12 +608,14 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		static bool IsEndDirective(string trimLine)
 		{
-			return trimLine.StartsWith("#endregion") || trimLine.StartsWith("#endif");
+			return trimLine.StartsWith("#endregion", StringComparison.Ordinal) 
+				|| trimLine.StartsWith("#endif", StringComparison.Ordinal);
 		}
 		
 		static bool IsStartDirective(string trimLine)
 		{
-			return trimLine.StartsWith("#region") || trimLine.StartsWith("#if");
+			return trimLine.StartsWith("#region", StringComparison.Ordinal) 
+				|| trimLine.StartsWith("#if", StringComparison.Ordinal);
 		}
 		#endregion
 	}

@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		internal static void Save(IViewContent content)
 		{
-			if (content != null) {
+			if (content != null && content.IsDirty) {
 				if (content is ICustomizedCommands) {
 					if (((ICustomizedCommands)content).SaveCommand()) {
 						return;
@@ -84,7 +84,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 				
 				foreach (OpenedFile file in content.Files.ToArray()) {
-					Save(file);
+					if (file.IsDirty)
+						Save(file);
 				}
 			}
 		}
@@ -144,11 +145,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		internal static void Save(IViewContent content)
 		{
-			if (content != null && !content.IsViewOnly) {
+			if (content != null) {
 				if (content is ICustomizedCommands) {
 					if (((ICustomizedCommands)content).SaveAsCommand()) {
 						return;
 					}
+				}
+				if (content.IsViewOnly) {
+					return;
 				}
 				// save the primary file only
 				if (content.PrimaryFile != null) {

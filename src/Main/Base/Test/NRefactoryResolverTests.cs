@@ -2748,5 +2748,19 @@ class C : B {
 			Assert.IsTrue(MemberExists(arr, "Y"));
 			Assert.IsFalse(MemberExists(arr, "Z"));
 		}
+		
+		[Test]
+		public void NullableValue()
+		{
+			string program = @"using System;
+class Test {
+	public static void M(int? a) {
+		
+	}
+}";
+			MemberResolveResult rr = Resolve<MemberResolveResult>(program, "a.Value", 4);
+			Assert.AreEqual("System.Nullable.Value", rr.ResolvedMember.FullyQualifiedName);
+			Assert.AreEqual("System.Int32", rr.ResolvedMember.ReturnType.FullyQualifiedName);
+		}
 	}
 }

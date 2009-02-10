@@ -388,7 +388,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (c.ClassType != ClassType.Enum && typeDeclaration.BaseTypes != null) {
 				foreach (AST.TypeReference type in typeDeclaration.BaseTypes) {
-					IReturnType rt = CreateReturnType(type);
+					IReturnType rt = CreateReturnType(type, null, TypeVisitor.ReturnTypeOptions.BaseTypeReference);
 					if (rt != null) {
 						c.BaseTypes.Add(rt);
 					}
@@ -472,7 +472,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		void CreateDelegate(DefaultClass c, string name, AST.TypeReference returnType, IList<AST.TemplateDefinition> templates, IList<AST.ParameterDeclarationExpression> parameters)
 		{
-			c.BaseTypes.Add(c.ProjectContent.SystemTypes.Delegate);
+			c.BaseTypes.Add(c.ProjectContent.SystemTypes.MulticastDelegate);
 			if (currentClass.Count > 0) {
 				DefaultClass cur = GetCurrentClass();
 				cur.InnerClasses.Add(c);
@@ -508,7 +508,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		internal static IParameter CreateParameter(AST.ParameterDeclarationExpression par, IMethod method, IClass currentClass, ICompilationUnit cu)
 		{
-			IReturnType parType = CreateReturnType(par.TypeReference, method, currentClass, cu);
+			IReturnType parType = CreateReturnType(par.TypeReference, method, currentClass, cu, TypeVisitor.ReturnTypeOptions.None);
 			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, GetRegion(par.StartLocation, par.EndLocation));
 			p.Modifiers = (ParameterModifiers)par.ParamModifier;
 			return p;
@@ -524,7 +524,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			method.IsExtensionMethod = methodDeclaration.IsExtensionMethod;
 			method.Documentation = GetDocumentation(region.BeginLine, methodDeclaration.Attributes);
 			ConvertTemplates(methodDeclaration.Templates, method);
-			method.ReturnType = CreateReturnType(methodDeclaration.TypeReference, method);
+			method.ReturnType = CreateReturnType(methodDeclaration.TypeReference, method, TypeVisitor.ReturnTypeOptions.None);
 			ConvertAttributes(methodDeclaration, method);
 			if (methodDeclaration.Parameters.Count > 0) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
@@ -559,7 +559,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			method.Documentation = GetDocumentation(region.BeginLine, declareDeclaration.Attributes);
 			method.Modifiers |= ModifierEnum.Extern | ModifierEnum.Static;
 			
-			method.ReturnType = CreateReturnType(declareDeclaration.TypeReference, method);
+			method.ReturnType = CreateReturnType(declareDeclaration.TypeReference, method, TypeVisitor.ReturnTypeOptions.None);
 			ConvertAttributes(declareDeclaration, method);
 			
 			foreach (AST.ParameterDeclarationExpression par in declareDeclaration.Parameters) {
@@ -724,7 +724,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				                                    region, c);
 				del.Modifiers |= ModifierEnum.Synthetic;
 				CreateDelegate(del, eventDeclaration.Name + "EventHandler",
-				               new AST.TypeReference("System.Void"),
+				               new AST.TypeReference("System.Void", true),
 				               new AST.TemplateDefinition[0],
 				               eventDeclaration.Parameters);
 				type = del.DefaultReturnType;
@@ -753,23 +753,23 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		IReturnType CreateReturnType(AST.TypeReference reference, IMethod method)
+		IReturnType CreateReturnType(AST.TypeReference reference, IMethod method, TypeVisitor.ReturnTypeOptions options)
 		{
-			return CreateReturnType(reference, method, GetCurrentClass(), cu);
+			return CreateReturnType(reference, method, GetCurrentClass(), cu, options);
 		}
 		
-		static IReturnType CreateReturnType(AST.TypeReference reference, IMethod method, IClass currentClass, ICompilationUnit cu)
+		static IReturnType CreateReturnType(AST.TypeReference reference, IMethod method, IClass currentClass, ICompilationUnit cu, TypeVisitor.ReturnTypeOptions options)
 		{
 			if (currentClass == null) {
-				return TypeVisitor.CreateReturnType(reference, new DefaultClass(cu, "___DummyClass"), method, 1, 1, cu.ProjectContent, true);
+				return TypeVisitor.CreateReturnType(reference, new DefaultClass(cu, "___DummyClass"), method, 1, 1, cu.ProjectContent, options | TypeVisitor.ReturnTypeOptions.Lazy);
 			} else {
-				return TypeVisitor.CreateReturnType(reference, currentClass, method, currentClass.Region.BeginLine + 1, 1, cu.ProjectContent, true);
+				return TypeVisitor.CreateReturnType(reference, currentClass, method, currentClass.Region.BeginLine + 1, 1, cu.ProjectContent, options | TypeVisitor.ReturnTypeOptions.Lazy);
 			}
 		}
 		
 		IReturnType CreateReturnType(AST.TypeReference reference)
 		{
-			return CreateReturnType(reference, null);
+			return CreateReturnType(reference, null, TypeVisitor.ReturnTypeOptions.None);
 		}
 	}
 }

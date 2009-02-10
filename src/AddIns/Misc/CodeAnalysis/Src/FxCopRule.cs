@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.CodeAnalysis
 {
+	[Serializable]
 	public class FxCopRule : IComparable
 	{
 		readonly string checkId;
@@ -73,6 +74,7 @@ namespace ICSharpCode.CodeAnalysis
 		}
 	}
 	
+	[Serializable]
 	public class FxCopCategory
 	{
 		readonly string name;

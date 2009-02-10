@@ -22,7 +22,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		protected string key;
 		
-		public override object ProvideValue(IServiceProvider sp)
+		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
 			return PresentationResourceService.GetBitmapSource(key);
 		}

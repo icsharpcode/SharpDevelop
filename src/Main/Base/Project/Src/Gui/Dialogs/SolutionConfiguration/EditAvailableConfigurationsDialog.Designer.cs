@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		private void InitializeComponent()
 		{
 			this.listBox = new System.Windows.Forms.ListBox();
-			this.okButton = new System.Windows.Forms.Button();
+			this.closeButton = new System.Windows.Forms.Button();
 			this.removeButton = new System.Windows.Forms.Button();
 			this.renameButton = new System.Windows.Forms.Button();
 			this.addButton = new System.Windows.Forms.Button();
@@ -56,14 +56,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// 
 			// okButton
 			// 
-			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.okButton.Location = new System.Drawing.Point(222, 111);
-			this.okButton.Name = "okButton";
-			this.okButton.Size = new System.Drawing.Size(75, 23);
-			this.okButton.TabIndex = 1;
-			this.okButton.Text = "${res:Global.OKButtonText}";
-			this.okButton.UseVisualStyleBackColor = true;
+			this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.closeButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.closeButton.Location = new System.Drawing.Point(222, 111);
+			this.closeButton.Name = "closeButton";
+			this.closeButton.Size = new System.Drawing.Size(75, 23);
+			this.closeButton.TabIndex = 1;
+			this.closeButton.Text = "${res:Global.CloseButtonText}";
+			this.closeButton.UseVisualStyleBackColor = true;
 			// 
 			// removeButton
 			// 
@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Controls.Add(this.addButton);
 			this.Controls.Add(this.renameButton);
 			this.Controls.Add(this.removeButton);
-			this.Controls.Add(this.okButton);
+			this.Controls.Add(this.closeButton);
 			this.Controls.Add(this.listBox);
 			this.MinimumSize = new System.Drawing.Size(230, 165);
 			this.Name = "EditAvailableConfigurationsDialog";
@@ -119,6 +119,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		private System.Windows.Forms.Button renameButton;
 		private System.Windows.Forms.Button removeButton;
 		private System.Windows.Forms.ListBox listBox;
-		private System.Windows.Forms.Button okButton;
+		private System.Windows.Forms.Button closeButton;
 	}
 }

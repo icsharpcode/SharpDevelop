@@ -52,7 +52,7 @@ namespace ExtractInterface.Tests {
 		string Configure {set;}
 
 		IList<int> GetRange(string subject);
-		int MultiplyBy5(int x, 
+		int MultiplyBy5(int x,
                         out bool success);
 
 		event EventHandler<UnhandledExceptionEventArgs> ConfigurationChanged;
@@ -60,17 +60,17 @@ namespace ExtractInterface.Tests {
 }
 ";
 		}
-	
+		
 		private class TestClass {
 			public const string FileName = "TestCase.cs";
-	
+			
 			// TODO: write TestClass.FileContent to refactor the string literal code blocks
 			//       from the following tests.
 			public const string FileContent = @"";
 		}
 		
 		#region Sanity Test
-	
+		
 		[Test]
 		/// <summary>
 		/// ensures that the custom assertions in this test fixture are working properly
@@ -151,12 +151,8 @@ namespace ExtractInterfaceImplicitPropertyTest {
 			string sourceClassName = c.Name;
 			string sourceNamespace = c.Namespace;
 			
-			string interfaceCode = csharpRefactoringProvider.GenerateInterfaceForClass(interfaceName,
-			                                                                           membersToExtract,
-			                                                                           false,
-			                                                                           sourceNamespace,
-			                                                                           sourceClassName,
-			                                                                           fileContent);
+			string interfaceCode = csharpRefactoringProvider.GenerateInterfaceForClass(
+				interfaceName, fileContent, membersToExtract, c, false);
 
 			ICompilationUnit icu = helper.Parse(TestClass.FileName, interfaceCode);
 			IClass i = icu.Classes[0];
@@ -206,12 +202,8 @@ namespace ExtractInterfaceImplicitPropertyTest {
 			string sourceClassName = c.Name;
 			string sourceNamespace = c.Namespace;
 			
-			string interfaceCode = csharpRefactoringProvider.GenerateInterfaceForClass(interfaceName,
-			                                                                           membersToExtract,
-			                                                                           false,
-			                                                                           sourceNamespace,
-			                                                                           sourceClassName,
-			                                                                           fileContent);
+			string interfaceCode = csharpRefactoringProvider.GenerateInterfaceForClass(
+				interfaceName, fileContent, membersToExtract, c, false);
 
 			ICompilationUnit icu = helper.Parse(TestClass.FileName, interfaceCode);
 			IClass i = icu.Classes[0];
@@ -265,12 +257,8 @@ namespace ExtractInterfaceImplicitPropertyTest {
 			string sourceClassName = c.Name;
 			string sourceNamespace = c.Namespace;
 			
-			string interfaceCode = csharpRefactoringProvider.GenerateInterfaceForClass(interfaceName,
-			                                                                           membersToExtract,
-			                                                                           false,
-			                                                                           sourceNamespace,
-			                                                                           sourceClassName,
-			                                                                           fileContent);
+			string interfaceCode = csharpRefactoringProvider.GenerateInterfaceForClass(
+				interfaceName, fileContent, membersToExtract, c, false);
 
 			ICompilationUnit icu = helper.Parse(ITestClass.FileName, interfaceCode);
 			IClass i = icu.Classes[0];
@@ -331,12 +319,8 @@ namespace ExtractInterfaceImplicitPropertyTest {
 			string sourceClassName = c.Name;
 			string sourceNamespace = c.Namespace;
 			
-			string interfaceCode = csharpRefactoringProvider.GenerateInterfaceForClass(interfaceName,
-			                                                                           membersToExtract,
-			                                                                           false,
-			                                                                           sourceNamespace,
-			                                                                           sourceClassName,
-			                                                                           fileContent);
+			string interfaceCode = csharpRefactoringProvider.GenerateInterfaceForClass(
+				interfaceName, fileContent, membersToExtract, c, false);
 
 			ICompilationUnit icu = helper.Parse(ITestClass.FileName, interfaceCode);
 			IClass i = icu.Classes[0];
@@ -354,6 +338,8 @@ namespace ExtractInterfaceImplicitPropertyTest {
 		}
 		
 		[Test]
+		[Ignore("This test is not necessary: we shouldn't require that GenerateInterfaceForClass ignores static methods, " +
+		        "they cannot be selected as memberToExtract in the UI anyways.")]
 		public void GenerateInterfaceWithStaticMethodsTest() {
 			string fileContent = @"
 using System;
@@ -390,12 +376,8 @@ namespace ExtractInterfaceImplicitPropertyTest {
 			string sourceClassName = c.Name;
 			string sourceNamespace = c.Namespace;
 			
-			string interfaceCode = csharpRefactoringProvider.GenerateInterfaceForClass(interfaceName,
-			                                                                           membersToExtract,
-			                                                                           false,
-			                                                                           sourceNamespace,
-			                                                                           sourceClassName,
-			                                                                           fileContent);
+			string interfaceCode = csharpRefactoringProvider.GenerateInterfaceForClass(
+				interfaceName, fileContent, membersToExtract, c, false);
 
 			ICompilationUnit icu = helper.Parse(ITestClass.FileName, interfaceCode);
 			IClass i = icu.Classes[0];

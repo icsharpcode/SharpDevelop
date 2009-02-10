@@ -11,7 +11,7 @@ using System.Collections;
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// Description of IMenuItemBuilder.
+	/// Used to include a dynamically built list of menu items.
 	/// </summary>
 	public interface IMenuItemBuilder
 	{

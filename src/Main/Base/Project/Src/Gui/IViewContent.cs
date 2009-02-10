@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		/// <summary>
 		/// Gets the list of files that are being edited using this view content.
-		/// The returned collection normally is readonly.
+		/// The returned collection usually is read-only.
 		/// </summary>
 		IList<OpenedFile> Files { get; }
 		

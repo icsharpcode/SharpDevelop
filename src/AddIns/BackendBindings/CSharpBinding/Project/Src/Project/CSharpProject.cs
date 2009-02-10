@@ -88,7 +88,7 @@ namespace CSharpBinding
 		
 		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
-			if (this.MinimumSolutionVersion == 9) {
+			if (this.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
 				MSBuildEngine.StartBuild(this,
 				                         options,
 				                         feedbackSink,

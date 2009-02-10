@@ -53,14 +53,13 @@ namespace ICSharpCode.Core
 			action = properties.Get("action", ConditionFailedAction.Exclude);
 		}
 		
-		public bool IsValid(object caller)
+		public bool IsValid(object owner)
 		{
 			try {
-				return AddInTree.ConditionEvaluators[name].IsValid(caller, this);
+				return AddInTree.ConditionEvaluators[name].IsValid(owner, this);
 			} catch (KeyNotFoundException) {
 				throw new CoreException("Condition evaluator " + name + " not found!");
 			}
-
 		}
 		
 		public static ICondition Read(XmlReader reader)

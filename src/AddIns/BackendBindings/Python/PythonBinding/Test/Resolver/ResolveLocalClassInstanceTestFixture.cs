@@ -23,6 +23,7 @@ namespace PythonBinding.Tests.Resolver
 	/// Check that the type of "a" can be obtained by the resolver.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Disabled local variable resolution for SD 3.0")]
 	public class ResolveLocalClassInstanceTestFixture
 	{
 		PythonResolver resolver;

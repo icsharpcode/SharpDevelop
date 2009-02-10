@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Configuration / Platform management
 		/// <summary>
-		/// Gets/Sets the active configuration. MSBuild properties
+		/// Gets/Sets the active configuration.
 		/// </summary>
 		string ActiveConfiguration {
 			get;
@@ -188,6 +188,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the list of available platform names.
 		/// </summary>
 		ICollection<string> PlatformNames { get; }
+		
+		/// <summary>
+		/// Is raised after the ActiveConfiguration property has changed.
+		/// </summary>
+		event EventHandler ActiveConfigurationChanged;
+		
+		/// <summary>
+		/// Is raised after the ActivePlatform property has changed.
+		/// </summary>
+		event EventHandler ActivePlatformChanged;
 		#endregion
 		
 		/// <summary>

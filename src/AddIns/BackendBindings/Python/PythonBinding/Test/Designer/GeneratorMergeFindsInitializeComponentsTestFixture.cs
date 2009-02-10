@@ -35,6 +35,7 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
 			generator = new DerivedPythonDesignerGenerator();
 			mockViewContent = new MockTextEditorViewContent();
 			viewContent = new FormsDesignerViewContent(mockViewContent, new MockOpenedFile("Test.py"));
@@ -95,7 +96,9 @@ namespace PythonBinding.Tests.Designer
 					"\t\t# \r\n" +
 					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
 					"\t\tself.Name = \"MainForm\"\r\n" +
-					"\t\tself.ResumeLayout(False)\r\n";					
+					"\t\tself.ResumeLayout(False)\r\n" +
+					"\t\tself.PerformLayout()\r\n";
+			
 			Assert.AreEqual(expectedText, viewContent.DesignerCodeFileContent);
 		}
 		
@@ -123,7 +126,8 @@ namespace PythonBinding.Tests.Designer
 					"\t\tself.SuspendLayout()\r\n" +
 					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
 					"\t\tself.Name = 'MainForm'\r\n" +
-					"\t\tself.ResumeLayout(False)\r\n"; 						
+					"\t\tself.ResumeLayout(False)\r\n" +
+					"\t\tself.PerformLayout()\r\n";						
 		}
 	}
 }

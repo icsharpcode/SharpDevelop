@@ -32,7 +32,9 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static ContextMenu CreateContextMenu(object owner, string addInTreePath)
 		{
-			return null;
+			ContextMenu menu = new ContextMenu();
+			menu.ItemsSource = CreateMenuItems(menu, owner, addInTreePath);
+			return menu;
 		}
 		
 		internal static ContextMenu CreateContextMenu(IList subItems)

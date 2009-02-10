@@ -501,6 +501,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (node.Setter != null && node.Setter.Body != null) {
 				property.SetterRegion = GetClientRegion(node.Setter);
 			}
+			property.IsIndexer = (node.Name == "self");
 			OuterClass.Properties.Add(property);
 			property.UserData = node;
 		}

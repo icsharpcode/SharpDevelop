@@ -14,6 +14,6 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public interface IConditionEvaluator
 	{
-		bool IsValid(object caller, Condition condition);
+		bool IsValid(object owner, Condition condition);
 	}
 }

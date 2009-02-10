@@ -131,8 +131,16 @@ type SentToFSharpInteractive = class
                 match window.ActiveViewContent :> obj with
                 | :? ITextEditorControlProvider as textArea ->
                     let textArea = textArea.TextEditorControl.ActiveTextAreaControl.TextArea
-                    for selection in textArea.SelectionManager.SelectionCollection do
-                        TheControl.fsiProcess.StandardInput.WriteLine(selection.SelectedText)
+                    let pad = WorkbenchSingleton.Workbench.GetPad(typeof<FSharpInteractive>)
+                    pad.BringPadToFront()
+                    if textArea.SelectionManager.HasSomethingSelected then
+                        for selection in textArea.SelectionManager.SelectionCollection do
+                            TheControl.fsiProcess.StandardInput.WriteLine(selection.SelectedText)
+                    else
+                        let line = textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset)
+                        let lineSegment = textArea.Document.GetLineSegment(line)
+                        let lineText = textArea.Document.GetText(lineSegment.Offset, lineSegment.TotalLength)
+                        TheControl.fsiProcess.StandardInput.WriteLine(lineText)
                     TheControl.fsiProcess.StandardInput.WriteLine(";;")
                 | _ -> ()
 end

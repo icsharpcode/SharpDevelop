@@ -100,7 +100,7 @@ namespace ICSharpCode.Core
 			StringBuilder output = null; // don't use StringBuilder if input is a single property
 			do {
 				int oldPos = pos;
-				pos = input.IndexOf("${", pos);
+				pos = input.IndexOf("${", pos, StringComparison.Ordinal);
 				if (pos < 0) {
 					if (output == null) {
 						return input;
@@ -149,7 +149,7 @@ namespace ICSharpCode.Core
 			// most properties start with res: in lowercase,
 			// so we can save 2 string allocations here, in addition to all the jumps
 			// All other prefixed properties {prefix:Key} shoulg get handled in the switch below.
-			if (propertyName.StartsWith("res:")) {
+			if (propertyName.StartsWith("res:", StringComparison.OrdinalIgnoreCase)) {
 				try {
 					return Parse(ResourceService.GetString(propertyName.Substring(4)), customTags);
 				} catch (ResourceNotFoundException) {
@@ -235,7 +235,7 @@ namespace ICSharpCode.Core
 		static string GetProperty(string propertyName)
 		{
 			string defaultValue = "";
-			int pos = propertyName.LastIndexOf("??");
+			int pos = propertyName.LastIndexOf("??", StringComparison.Ordinal);
 			if (pos >= 0) {
 				defaultValue = propertyName.Substring(pos + 2);
 				propertyName = propertyName.Substring(0, pos);

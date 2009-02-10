@@ -15,6 +15,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public readonly IReturnType Void;
 		public readonly IReturnType Object;
 		public readonly IReturnType Delegate;
+		public readonly IReturnType MulticastDelegate;
 		public readonly IReturnType ValueType;
 		public readonly IReturnType Enum;
 		
@@ -39,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Void      = new VoidReturnType(pc);
 			Object    = CreateFromName("System.Object");
 			Delegate  = CreateFromName("System.Delegate");
+			MulticastDelegate = CreateFromName("System.MulticastDelegate");
 			ValueType = CreateFromName("System.ValueType");
 			Enum      = CreateFromName("System.Enum");
 			
@@ -53,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Exception     = CreateFromName("System.Exception");
 			AsyncCallback = CreateFromName("System.AsyncCallback");
 			IAsyncResult  = CreateFromName("System.IAsyncResult");
-			IAsyncResult  = CreateFromName("System.IDisposable");
+			IDisposable = CreateFromName("System.IDisposable");
 		}
 		
 		IReturnType CreateFromName(string name)

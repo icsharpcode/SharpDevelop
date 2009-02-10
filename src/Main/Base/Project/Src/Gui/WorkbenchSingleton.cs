@@ -305,6 +305,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					t.Interval = delayMilliseconds;
 					t.Tick += delegate { 
 						t.Stop();
+						t.Dispose();
 						method();
 					};
 					t.Start();

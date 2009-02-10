@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using ICSharpCode.Core;
@@ -70,7 +71,7 @@ namespace ICSharpCode.FormsDesigner
 			this.viewContent = null;
 		}
 		
-		public OpenedFile DetermineDesignerCodeFile()
+		public IEnumerable<OpenedFile> GetSourceFiles(out OpenedFile designerCodeFile)
 		{
 			// get new initialize components
 			ParseInformation info = ParserService.ParseFile(this.viewContent.PrimaryFileName, this.viewContent.PrimaryFileContent, false);
@@ -80,9 +81,20 @@ namespace ICSharpCode.FormsDesigner
 					this.currentClassPart = c;
 					this.initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
 					if (this.initializeComponents != null) {
-						string designerFile = this.initializeComponents.DeclaringType.CompilationUnit.FileName;
-						if (designerFile != null) {
-							return FileService.GetOrCreateOpenedFile(designerFile);
+						string designerFileName = this.initializeComponents.DeclaringType.CompilationUnit.FileName;
+						if (designerFileName != null) {
+							
+							designerCodeFile = FileService.GetOrCreateOpenedFile(designerFileName);
+							
+							CompoundClass compound = c.GetCompoundClass() as CompoundClass;
+							if (compound == null) {
+								return new [] {designerCodeFile};
+							} else {
+								return compound.Parts
+									.Select(cl => FileService.GetOrCreateOpenedFile(cl.CompilationUnit.FileName))
+									.Distinct();
+							}
+							
 						}
 					}
 				}
@@ -99,14 +111,20 @@ namespace ICSharpCode.FormsDesigner
 			try {
 				LoggingService.Info("Remove field declaration: "+fieldName);
 				Reparse();
-				IField field = GetField(formClass, fieldName);
+				
+				IField field = GetField(completeClass, fieldName);
 				if (field != null) {
-					int startOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, field.Region.BeginLine - 1));
-					int endOffset   = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, field.Region.EndLine));
-					this.ViewContent.DesignerCodeFileDocument.Remove(startOffset, endOffset - startOffset);
-				} else if ((field = GetField(completeClass, fieldName)) != null) {
-					// TODO: Remove the field in the part where it is declared
-					LoggingService.Warn("Removing field declaration in non-designer part currently not supported");
+					string fileName = field.DeclaringType.CompilationUnit.FileName;
+					LoggingService.Debug("-> Field is declared in file '" + fileName + "', Region: " + field.Region.ToString());
+					OpenedFile file = FileService.GetOpenedFile(fileName);
+					if (file == null) throw new InvalidOperationException("The file where the field is declared is not open, although it belongs to the class.");
+					IDocument doc = this.ViewContent.GetDocumentForFile(file);
+					if (doc == null) throw new InvalidOperationException("Could not get document for file '" + file.FileName + "'.");
+					
+					this.RemoveFieldDeclaration(doc, field);
+					file.MakeDirty();
+				} else {
+					LoggingService.Warn("-> Field '" + fieldName + "' not found in class");
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
@@ -136,19 +154,19 @@ namespace ICSharpCode.FormsDesigner
 		{
 			try {
 				Reparse();
-				IField oldField = GetField(formClass, newField.Name);
+				IField oldField = GetField(completeClass, newField.Name);
 				if (oldField != null) {
-					int startOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, oldField.Region.BeginLine - 1));
-					int endOffset   = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, oldField.Region.EndLine));
-					this.ViewContent.DesignerCodeFileDocument.Replace(startOffset, endOffset - startOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
+					string fileName = oldField.DeclaringType.CompilationUnit.FileName;
+					LoggingService.Debug("-> Old field is declared in file '" + fileName + "', Region: " + oldField.Region.ToString());
+					OpenedFile file = FileService.GetOpenedFile(fileName);
+					if (file == null) throw new InvalidOperationException("The file where the field is declared is not open, although it belongs to the class.");
+					IDocument doc = this.ViewContent.GetDocumentForFile(file);
+					if (doc == null) throw new InvalidOperationException("Could not get document for file '" + file.FileName + "'.");
+					this.ReplaceFieldDeclaration(doc, oldField, GenerateFieldDeclaration(domGenerator, newField));
+					file.MakeDirty();
 				} else {
-					if ((oldField = GetField(completeClass, newField.Name)) != null) {
-						// TODO: Replace the field in the part where it is declared
-						LoggingService.Warn("Field declaration replacement in non-designer part currently not supported");
-					} else {
-						int endOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, initializeComponents.BodyRegion.EndLine));
-						this.ViewContent.DesignerCodeFileDocument.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
-					}
+					int endOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, initializeComponents.BodyRegion.EndLine));
+					this.ViewContent.DesignerCodeFileDocument.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
@@ -158,6 +176,36 @@ namespace ICSharpCode.FormsDesigner
 		protected abstract System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider();
 		
 		protected abstract DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method);
+		
+		/// <summary>
+		/// Removes a field declaration from the source code document.
+		/// </summary>
+		/// <remarks>
+		/// The default implementation assumes that the field region starts at the very beginning
+		/// of the line of the field declaration and ends at the end of that line.
+		/// Override this method if that is not the case in a specific language.
+		/// </remarks>
+		protected virtual void RemoveFieldDeclaration(IDocument document, IField field)
+		{
+			int startOffset = document.PositionToOffset(new TextLocation(0, field.Region.BeginLine - 1));
+			int endOffset   = document.PositionToOffset(new TextLocation(0, field.Region.EndLine));
+			document.Remove(startOffset, endOffset - startOffset);
+		}
+		
+		/// <summary>
+		/// Replaces a field declaration in the source code document.
+		/// </summary>
+		/// <remarks>
+		/// The default implementation assumes that the field region starts at the very beginning
+		/// of the line of the field declaration and ends at the end of that line.
+		/// Override this method if that is not the case in a specific language.
+		/// </remarks>
+		protected virtual void ReplaceFieldDeclaration(IDocument document, IField oldField, string newFieldDeclaration)
+		{
+			int startOffset = document.PositionToOffset(new TextLocation(0, oldField.Region.BeginLine - 1));
+			int endOffset   = document.PositionToOffset(new TextLocation(0, oldField.Region.EndLine));
+			document.Replace(startOffset, endOffset - startOffset, tabs + newFieldDeclaration + Environment.NewLine);
+		}
 		
 		protected virtual void FixGeneratedCode(IClass formClass, CodeMemberMethod code)
 		{
@@ -289,9 +337,49 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected void Reparse()
 		{
-			// get new initialize components
-			ParseInformation info = ParserService.ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent, false);
-			ICompilationUnit cu = info.BestCompilationUnit;
+			Dictionary<OpenedFile, ParseInformation> parsings = new Dictionary<OpenedFile, ParseInformation>();
+			ParseInformation info;
+			ICompilationUnit cu;
+			
+			// Reparse all source files for the designed form
+			foreach (KeyValuePair<OpenedFile, IDocument> entry in this.ViewContent.SourceFiles) {
+				parsings.Add(entry.Key, ParserService.ParseFile(entry.Key.FileName, entry.Value.TextContent, false));
+			}
+			
+			// Update currentClassPart from PrimaryFile
+			this.currentClassPart = null;
+			if (this.ViewContent.PrimaryFile != null && parsings.TryGetValue(this.ViewContent.PrimaryFile, out info)) {
+				cu = info.BestCompilationUnit;
+				foreach (IClass c in cu.Classes) {
+					if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
+						if (FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c) != null) {
+							this.currentClassPart = c;
+							break;
+						}
+					}
+				}
+				if (this.currentClassPart == null) {
+					LoggingService.Warn("AbstractDesignerGenerator.Reparse: Could not find designed class in primary file '" + this.ViewContent.PrimaryFile.FileName + "'");
+				}
+			} else {
+				LoggingService.Debug("AbstractDesignerGenerator.Reparse: Primary file is unavailable");
+			}
+			
+			// Update initializeComponents, completeClass and formClass
+			// from designer code file
+			this.completeClass = null;
+			this.formClass = null;
+			this.initializeComponents = null;
+			if (this.ViewContent.DesignerCodeFile == null ||
+			    !parsings.TryGetValue(this.ViewContent.DesignerCodeFile, out info)) {
+				LoggingService.Warn("AbstractDesignerGenerator.Reparse: Designer source code file is unavailable");
+				if (this.currentClassPart != null) {
+					this.completeClass = this.currentClassPart.GetCompoundClass();
+				}
+				return;
+			}
+			
+			cu = info.BestCompilationUnit;
 			foreach (IClass c in cu.Classes) {
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 					this.initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
@@ -308,6 +396,10 @@ namespace ICSharpCode.FormsDesigner
 						break;
 					}
 				}
+			}
+			
+			if (this.completeClass == null || this.formClass == null) {
+				LoggingService.Warn("AbstractDesignerGenerator.Reparse: Could not find InitializeComponents in designer source code file '" + this.ViewContent.DesignerCodeFile.FileName + "'");
 			}
 		}
 		
@@ -338,13 +430,15 @@ namespace ICSharpCode.FormsDesigner
 		{
 			Reparse();
 			
+			LoggingService.Debug("Forms designer: AbstractDesignerGenerator.InsertComponentEvent: eventMethodName=" + eventMethodName);
+			
 			foreach (IMethod method in completeClass.Methods) {
 				if (method.Name == eventMethodName) {
 					file = method.DeclaringType.CompilationUnit.FileName;
-					if (FileUtility.IsEqualFileName(file, this.ViewContent.PrimaryFileName)) {
-						position = GetCursorLine(this.ViewContent.PrimaryFileDocument, method);
-					} else if (FileUtility.IsEqualFileName(file, this.ViewContent.DesignerCodeFile.FileName)) {
-						position = GetCursorLine(this.ViewContent.DesignerCodeFileDocument, method);
+					OpenedFile openedFile = FileService.GetOpenedFile(file);
+					IDocument doc;
+					if (openedFile != null && (doc = this.ViewContent.GetDocumentForFile(openedFile)) != null) {
+						position = GetCursorLine(doc, method);
 					} else {
 						try {
 							position = GetCursorLine(FindReferencesAndRenameHelper.GetDocumentInformation(file).CreateDocument(), method);
@@ -362,6 +456,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			file = currentClassPart.CompilationUnit.FileName;
 			int line = GetEventHandlerInsertionLine(currentClassPart);
+			LoggingService.Debug("-> Inserting new event handler at line " + line.ToString(System.Globalization.CultureInfo.InvariantCulture));
 			
 			int offset = this.viewContent.PrimaryFileDocument.GetLineSegment(line - 1).Offset;
 			

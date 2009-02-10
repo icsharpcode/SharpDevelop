@@ -94,7 +94,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			XshdRuleSet ruleSet = new XshdRuleSet();
 			SetPosition(ruleSet, reader);
 			ruleSet.Name = reader.GetAttribute("name");
-			ruleSet.IgnoreCase = GetBoolAttribute(reader, "ignoreCase");
+			ruleSet.IgnoreCase = reader.GetBoolAttribute("ignoreCase");
 			
 			CheckElementName(reader, ruleSet.Name);
 			ParseElements(ruleSet.Elements, reader);
@@ -139,21 +139,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			return import;
 		}
 		
-		static bool? GetBoolAttribute(XmlReader reader, string attributeName)
-		{
-			if (reader.GetAttribute(attributeName) == null)
-				return null;
-			else
-				return string.Equals(reader.GetAttribute(attributeName), "true", StringComparison.OrdinalIgnoreCase);
-		}
-		
 		static XshdSpan ParseSpan(XmlReader reader)
 		{
 			XshdSpan span = new XshdSpan();
 			SetPosition(span, reader);
 			span.BeginRegex = reader.GetAttribute("begin");
 			span.EndRegex = reader.GetAttribute("end");
-			span.Multiline = GetBoolAttribute(reader, "multiline") ?? false;
+			span.Multiline = reader.GetBoolAttribute("multiline") ?? false;
 			span.SpanColorReference = ParseColorReference(reader);
 			span.RuleSetReference = ParseRuleSetReference(reader);
 			if (!reader.IsEmptyElement) {
@@ -275,9 +267,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			return color;
 		}
 		
-		internal static ColorConverter ColorConverter = new ColorConverter();
-		internal static FontWeightConverter FontWeightConverter = new FontWeightConverter();
-		internal static FontStyleConverter FontStyleConverter = new FontStyleConverter();
+		internal readonly static ColorConverter ColorConverter = new ColorConverter();
+		internal readonly static FontWeightConverter FontWeightConverter = new FontWeightConverter();
+		internal readonly static FontStyleConverter FontStyleConverter = new FontStyleConverter();
 		
 		static HighlightingBrush ParseForeground(IXmlLineInfo lineInfo, string foreground)
 		{

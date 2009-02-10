@@ -431,6 +431,7 @@
                 Used to install and unintall certificates.
             </xs:documentation>
             <xs:appinfo>
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Component" />
                 <xse:seeAlso ref="CertificateRef"/>
             </xs:appinfo>
         </xs:annotation>
@@ -740,7 +741,22 @@
             <xs:attribute name="Id" use="required" type="xs:string"/>
             <xs:attribute name="IP" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>For IP address "All Unassigned", do not specify this attribute or specify its value as "*".</xs:documentation>
+                    <xs:documentation>
+                      The IP address to locate an existing WebSite or create a new WebSite. When the WebAddress is part of a WebSite element
+                      used to locate an existing web site the following rules are used:
+                      <html:ul>
+                      <html:li>When this attribute is not specified only the “All Unassigned” IP address will be located.</html:li>
+                      <html:li>When this attribute is explicitly specified only the specified IP address will be located.</html:li>
+                      <html:li>When this attribute has the value “*” then any IP address including the “All Unassigned” IP address will be located</html:li>
+                      </html:ul>
+                      When the WebAddress is part of a WebSite element used to create a new web site the following rules are used:
+                      <html:ul>
+                      <html:li>When this attribute is not specified or the value is "*" the "All Unassigned" IP address will be used.</html:li>
+                      <html:li>When this attribute is explicitly specified the IP address will use that value.</html:li>
+                      </html:ul>
+                      The IP attribute can contain a formatted string that is processed at install time to insert the values of properties using
+                      [PropertyName] syntax. 
+                    </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Port" use="required" type="xs:string"/>
@@ -918,7 +934,14 @@
             </xs:attribute>
             <xs:attribute name="SiteId" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>Optional attribute to directly specify the site id of the WebSite.  Use this to ensure all web sites in a web garden get the same site id.  Be sure the site id is unique.  Must be a number or a formatted value that resolves to a number or blank.</xs:documentation>
+                    <xs:documentation>
+                      Optional attribute to directly specify the site id of the WebSite.  Use this to ensure all web
+                      sites in a web garden get the same site id.  If a number is provided, the site id must be unique
+                      on all target machines.  If "*" is used, the Description attribute will be hashed to create a unique
+                      value for the site id. This value must be a positive number or a "*" or a formatted value that resolves
+                      to "-1" (for the same behavior as "*") or a positive number or blank.  If this attribute is absent then
+                      the web site will be located using the WebAddress element associated with the web site.
+                    </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="StartOnInstall" type="YesNoType">

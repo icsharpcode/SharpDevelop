@@ -7,7 +7,10 @@
 
 using System;
 using System.CodeDom;
+using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
+
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
@@ -22,7 +25,6 @@ namespace PythonBinding.Tests.Designer
 	/// can merge the changes into the text editor.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Not ported")]
 	public class MergeFormTestFixture
 	{
 		IDocument document;
@@ -30,25 +32,26 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-//			using (TextEditorControl textEditor = new TextEditorControl()) {
-//				document = textEditor.Document;
-//				textEditor.Text = GetTextEditorCode();
-//
-//				PythonParser parser = new PythonParser();
-//				ICompilationUnit textEditorCompileUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.TextContent);
-//				
-//				PythonProvider provider = new PythonProvider();
-//				CodeCompileUnit unit = provider.Parse(new StringReader(GetGeneratedCode()));
-//				GeneratedInitializeComponentMethod initComponentMethod = GeneratedInitializeComponentMethod.GetGeneratedInitializeComponentMethod(unit);
-//				initComponentMethod.Merge(document, textEditorCompileUnit);
-//			}
+			using (TextEditorControl textEditor = new TextEditorControl()) {
+				document = textEditor.Document;
+				textEditor.Text = GetTextEditorCode();
+
+				PythonParser parser = new PythonParser();
+				ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.TextContent);
+
+				using (Form form = new Form()) {
+					form.Name = "MainForm";
+					form.ClientSize = new Size(499, 309);
+					
+					PythonDesignerGenerator.Merge(form, document, compilationUnit, new MockTextEditorProperties());
+				}
+			}
 		}
 		
 		[Test]
 		public void MergedDocumentText()
 		{
 			string expectedText = GetTextEditorCode().Replace(GetTextEditorInitializeComponentMethod(), GetGeneratedInitializeComponentMethod());
-
 			Assert.AreEqual(expectedText, document.TextContent);
 		}
 
@@ -67,14 +70,13 @@ namespace PythonBinding.Tests.Designer
 		{
 			return	"\tdef InitializeComponent(self):\r\n" +
 					"\t\tself.SuspendLayout()\r\n" +
-					"\t\t#\r\n" +
+					"\t\t# \r\n" +
 					"\t\t# MainForm\r\n" +
-					"\t\t#\r\n" + 
-					"\t\tself.AutoScaleDimensions = System.Drawing.SizeF(6, 13)\r\n" +
-					"\t\tself.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font\r\n" +
+					"\t\t# \r\n" + 
 					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
-					"\t\tself.Name = 'MainForm'\r\n" +
-					"\t\tself.ResumeLayout(False)\r\n"; 						
+					"\t\tself.Name = \"MainForm\"\r\n" +
+					"\t\tself.ResumeLayout(False)\r\n" +
+					"\t\tself.PerformLayout()\r\n";						
 		}
 		
 		string GetTextEditorCode()

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Xml;
 
 namespace ICSharpCode.Core
@@ -40,15 +41,15 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public List<AddInReference> Dependencies {
+		public ReadOnlyCollection<AddInReference> Dependencies {
 			get {
-				return dependencies;
+				return dependencies.AsReadOnly();
 			}
 		}
 		
-		public List<AddInReference> Conflicts {
+		public ReadOnlyCollection<AddInReference> Conflicts {
 			get {
-				return conflicts;
+				return conflicts.AsReadOnly();
 			}
 		}
 		

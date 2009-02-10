@@ -40,6 +40,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		
 		public string Guid {
 			get {
 				return codon.Properties["guid"];

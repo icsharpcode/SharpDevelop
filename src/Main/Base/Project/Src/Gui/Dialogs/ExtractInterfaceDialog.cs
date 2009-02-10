@@ -33,7 +33,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			//
 			InitializeComponent();
 			
-			this.TopMost = true;
 			this.possibleInterfaceMembers = new List<IMember>();
 			this.hasSetFilenameExplicitly = false;
 			
@@ -145,6 +144,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.options.ChosenMembers.Clear();
 			foreach (int i in selectMembersListBox.CheckedIndices) {
 				this.options.ChosenMembers.Add(this.possibleInterfaceMembers[i]);
+			}
+			if (this.options.ChosenMembers.Count == 0) {
+				MessageService.ShowError("Please select at least one member from the list!");
+				return;
 			}
 			this.options.IncludeComments = cbIncludeComments.CheckState == CheckState.Checked;
 			this.options.AddInterfaceToClass = cbAddToClass.CheckState == CheckState.Checked;

@@ -93,9 +93,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				return null;
 			XshdColor color = new XshdColor();
 			if (element.HasAttribute("bold"))
-				color.FontWeight = bool.Parse(element.GetAttribute("bold")) ? FontWeights.Bold : FontWeights.Normal;
+				color.FontWeight = XmlConvert.ToBoolean(element.GetAttribute("bold")) ? FontWeights.Bold : FontWeights.Normal;
 			if (element.HasAttribute("italic"))
-				color.FontStyle = bool.Parse(element.GetAttribute("italic")) ? FontStyles.Italic : FontStyles.Normal;
+				color.FontStyle = XmlConvert.ToBoolean(element.GetAttribute("italic")) ? FontStyles.Italic : FontStyles.Normal;
 			if (element.HasAttribute("color"))
 				color.Foreground = ParseColor(element.GetAttribute("color"));
 			return color;

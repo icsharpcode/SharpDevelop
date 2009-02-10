@@ -17,6 +17,7 @@ using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace PythonBinding.Tests.Utils
 {
@@ -29,8 +30,13 @@ namespace PythonBinding.Tests.Utils
 		string fileNamePassedToParseFile;
 		string textContentPassedToParseFile;
 		ParseInformation parseInfoToReturnFromParseFile;
+
+		public DerivedPythonDesignerGenerator() : this(new MockTextEditorProperties())
+		{
+		}
 		
-		public DerivedPythonDesignerGenerator()
+		public DerivedPythonDesignerGenerator(ITextEditorProperties textEditorProperties) 
+			: base(textEditorProperties)
 		{
 		}
 								

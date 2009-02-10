@@ -200,5 +200,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public event SideTabEventHandler SideTabDeleted;
+		
+		
+		public Point SideBarMousePosition { get; private set; }
+		
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+			this.SideBarMousePosition = new Point(e.X, e.Y);
+		}
 	}
 }

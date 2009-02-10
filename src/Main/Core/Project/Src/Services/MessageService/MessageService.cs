@@ -142,7 +142,7 @@ namespace ICSharpCode.Core
 		/// Use -1 if you don't want to have a cancel button.
 		/// </param>
 		/// <param name="buttontexts">The captions of the buttons.</param>
-		/// <returns>The number of the button that was clicked.</returns>
+		/// <returns>The number of the button that was clicked, or -1 if the dialog was closed  without clicking a button.</returns>
 		public static int ShowCustomDialog(string caption, string dialogText, int acceptButtonIndex, int cancelButtonIndex, params string[] buttontexts)
 		{
 			return ServiceManager.MessageService.ShowCustomDialog(caption, dialogText, acceptButtonIndex, cancelButtonIndex, buttontexts);

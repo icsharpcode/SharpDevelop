@@ -12,6 +12,7 @@ namespace ICSharpCode.Core
 	public abstract class AbstractComboBoxCommand : AbstractCommand, IComboBoxCommand
 	{
 		bool isEnabled = true;
+		object comboBox;
 		
 		public virtual bool IsEnabled {
 			get {
@@ -22,10 +23,21 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public virtual object ComboBox {
+			get { return comboBox; }
+			set { 
+				comboBox = value;
+				OnComboBoxChanged();
+			}
+		}
+		
+		protected virtual void OnComboBoxChanged()
+		{
+		}
+		
 		public override void Run()
 		{
 			
 		}
-		
 	}
 }

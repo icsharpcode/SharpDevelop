@@ -61,7 +61,7 @@ namespace SearchAndReplace
 		protected override void OnOwnerChanged(EventArgs e)
 		{
 			base.OnOwnerChanged(e);
-			comboBox = (ComboBox)Owner;
+			comboBox = (ComboBox)base.ComboBox;
 			comboBox.IsEditable = true;
 			comboBox.KeyDown += OnKeyPress;
 			comboBox.Width = 130;

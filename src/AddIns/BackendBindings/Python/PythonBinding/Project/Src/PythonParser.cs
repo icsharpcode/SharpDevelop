@@ -76,29 +76,34 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Parses a python file and creates a PythonAst.
+		/// </summary>
+		public PythonAst CreateAst(string fileName, string fileContent)
+		{
+			if (scriptEngine == null) {
+				scriptEngine = IronPython.Hosting.Python.CreateEngine();
+			}
+
+			PythonCompilerSink sink = new PythonCompilerSink();
+			SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, fileContent);
+			CompilerContext context = new CompilerContext(source, new PythonCompilerOptions(), sink);
+			using (Parser parser = Parser.CreateParser(context, new PythonOptions())) {
+				return parser.ParseFile(false);	
+			}
+		}
+		
+		/// <summary>
 		/// Parses the python code and returns an ICompilationUnit.
 		/// </summary>
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			if (fileContent != null) {
-			//	try {
-				if (scriptEngine == null) {
-					scriptEngine = IronPython.Hosting.Python.CreateEngine();
-				}
-
-				PythonCompilerSink sink = new PythonCompilerSink();
-				SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, fileContent);
-				CompilerContext context = new CompilerContext(source, new PythonCompilerOptions(), sink);
-				Parser parser = Parser.CreateParser(context, new PythonOptions());
-				PythonAst ast = parser.ParseFile(false);
-
+				PythonAst ast = CreateAst(fileName, fileContent);
 				PythonAstWalker walker = new PythonAstWalker(projectContent, fileName);
 				walker.Walk(ast);
 				return walker.CompilationUnit;
-			//	} catch (PythonSyntaxErrorException) { 
-					// Ignore parsing errors
-			//	}
 			}
+			
 			DefaultCompilationUnit compilationUnit = new DefaultCompilationUnit(projectContent);
 			compilationUnit.FileName = fileName;
 			return compilationUnit;

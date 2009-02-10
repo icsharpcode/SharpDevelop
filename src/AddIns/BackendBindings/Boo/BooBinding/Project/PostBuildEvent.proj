@@ -7,6 +7,7 @@
 		<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\RequiredLibraries\*.targets" />
 		<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\RequiredLibraries\Boo.Microsoft.Build.Tasks.dll" />
 		<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\RequiredLibraries\Boo.Lang.Extensions.dll" />
+		<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\RequiredLibraries\Boo.Lang.PatternMatching.dll" />
 	</ItemGroup>
 	<Target Name="MyPostBuildTarget">
 		<Copy SourceFiles="@(MyCopyItem)" DestinationFolder="$(OutputPath)" />

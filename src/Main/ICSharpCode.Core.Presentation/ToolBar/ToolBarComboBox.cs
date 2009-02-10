@@ -13,8 +13,6 @@ namespace ICSharpCode.Core.Presentation
 {
 	sealed class ToolBarComboBox : ComboBox
 	{
-//		readonly Codon codon;
-//		readonly object caller;
 		IComboBoxCommand menuCommand;
 		
 		public ToolBarComboBox(Codon codon, object caller)
@@ -23,7 +21,8 @@ namespace ICSharpCode.Core.Presentation
 				throw new ArgumentNullException("codon");
 			this.IsEditable = false;
 			menuCommand = (IComboBoxCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
-			menuCommand.Owner = this;
+			menuCommand.ComboBox = this;
+			menuCommand.Owner = caller;
 			
 			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.ComboBoxStyleKey);
 		}

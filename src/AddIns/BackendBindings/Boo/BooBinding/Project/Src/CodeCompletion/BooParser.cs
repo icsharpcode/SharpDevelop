@@ -158,7 +158,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		private ICompilationUnit Parse(IProjectContent projectContent, string fileName, int[] lineLength, BooCompiler compiler)
 		{
 			compiler.Parameters.OutputWriter = new StringWriter();
-			compiler.Parameters.TraceSwitch.Level = System.Diagnostics.TraceLevel.Off;
+			compiler.Parameters.TraceLevel = System.Diagnostics.TraceLevel.Off;
 			
 			Compile compilePipe = new Compile();
 			BooParsingStep parsingStep = (BooParsingStep)compilePipe[0];

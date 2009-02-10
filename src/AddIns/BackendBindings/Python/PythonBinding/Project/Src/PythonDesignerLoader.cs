@@ -7,6 +7,7 @@
 
 using System;
 using System.CodeDom;
+using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Security.Permissions;
@@ -26,7 +27,8 @@ namespace ICSharpCode.PythonBinding
 	public class PythonDesignerLoader : BasicDesignerLoader, IComponentCreator
 	{
 		IPythonDesignerGenerator generator;
-		
+		IDesignerSerializationManager serializationManager;
+	
 		public PythonDesignerLoader(IPythonDesignerGenerator generator)
 		{
 			if (generator == null) {
@@ -53,6 +55,30 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Adds a component.
+		/// </summary>
+		public void Add(IComponent component, string name)
+		{
+			base.LoaderHost.Container.Add(component, name);
+		}
+		
+		/// <summary>
+		/// Creates a new instance of the specified type.
+		/// </summary>
+		public object CreateInstance(Type type, ICollection arguments, string name, bool addToContainer)
+		{
+			return serializationManager.CreateInstance(type, arguments, name, addToContainer);
+		}
+
+		/// <summary>
+		/// Gets the type given its name.
+		/// </summary>
+		public Type GetType(string typeName)
+		{
+			return serializationManager.GetType(typeName);
+		}
+		
+		/// <summary>
 		/// Passes the designer host's root component to the generator so it can update the
 		/// source code with changes made at design time.
 		/// </summary>
@@ -64,8 +90,9 @@ namespace ICSharpCode.PythonBinding
 		protected override void PerformLoad(IDesignerSerializationManager serializationManager)
 		{
 			// Create designer root object.
-			PythonFormVisitor visitor = new PythonFormVisitor();
-			visitor.CreateForm("abc", this);
+			this.serializationManager = serializationManager;
+			PythonFormWalker visitor = new PythonFormWalker(this);
+			visitor.CreateForm(generator.ViewContent.DesignerCodeFileContent);
 		}		
 	}
 }

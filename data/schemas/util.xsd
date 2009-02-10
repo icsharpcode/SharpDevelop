@@ -124,6 +124,13 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
+            <xs:attribute name="KeyPath" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Marks the EventSource registry as the key path of the component it belongs to.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
             <xs:attribute name="Log" type="xs:string" use="required">
                 <xs:annotation>
                     <xs:documentation>Name of the event source's log.</xs:documentation>
@@ -291,12 +298,28 @@
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Module" />
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Product" />
             </xs:appinfo>
-            <xs:documentation>Group for all kinds of things</xs:documentation>
+            <xs:documentation>
+                Finds user groups on the local machine or specified Active Directory domain. The local machine will be
+                searched for the group first then fallback to looking in Active Directory. This element is not capable
+                of creating new groups but can be used to add new or existing users to an existing group.
+            </xs:documentation>
         </xs:annotation>
         <xs:complexType>
-            <xs:attribute name="Id" type="xs:string" use="required"/>
-            <xs:attribute name="Name" type="xs:string" use="required"/>
-            <xs:attribute name="Domain" type="xs:string"/>
+            <xs:attribute name="Id" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>Unique identifier in your installation package for this group.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>A <html:a href='http://msdn.microsoft.com/library/aa368609.aspx' target='_blank'>Formatted</html:a> string that contains the name of the group to be found.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Domain" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>An optional <html:a href='http://msdn.microsoft.com/library/aa368609.aspx' target='_blank'>Formatted</html:a> string that specifies the domain for the group.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 
@@ -460,6 +483,7 @@
         <xs:annotation>
             <xs:appinfo>
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="File" />
+                <xse:deprecated ref="PerformanceCounter" />
             </xs:appinfo>
             <xs:documentation>Used to install Perfmon counters.</xs:documentation>
         </xs:annotation>
@@ -657,6 +681,8 @@
         <xs:annotation>
             <xs:documentation>Service configuration information for failure actions.</xs:documentation>
             <xs:appinfo>
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Component" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="ServiceInstall" />
                 <xse:remarks>
                     <html:dl>
                         <html:dd>Nesting a ServiceConfig element under a ServiceInstall element will result in the service being installed to be configured.</html:dd>
@@ -751,19 +777,33 @@
             </xs:sequence>
             <xs:attribute name="Id" type="xs:string" use="required"/>
             <xs:attribute name="Name" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>A <a href="http://msdn2.microsoft.com/library/aa368609.aspx" target="_blank">Formatted</a> string that contains the name of the user account.</xs:documentation>
+                </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Domain" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>A <a href="http://msdn2.microsoft.com/library/aa368609.aspx" target="_blank">Formatted</a> string that contains the local machine or Active Directory domain for the user.</xs:documentation>
+                </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Password" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>Usually a Property that is passed in on the command-line to keep it more secure.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="PasswordNeverExpires" type="YesNoType"/>
-            <xs:attribute name="CanNotChangePassword" type="YesNoType"/>
+            <xs:attribute name="PasswordNeverExpires" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>The account's password never expires. Equivalent to UF_DONT_EXPIRE_PASSWD.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="CanNotChangePassword" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>The user cannot change the account's password. Equivalent to UF_PASSWD_CANT_CHANGE.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
             <xs:attribute name="RemoveOnUninstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Indicates whether the user account should be left behind on uninstall.</xs:documentation>
+                    <xs:documentation>Indicates whether the user account should be removed or left behind on uninstall.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="FailIfExists" type="YesNoType">
@@ -786,7 +826,11 @@
                     <xs:documentation>Indicates whether the user must change their password on their first login.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Disabled" type="YesNoType"/>
+            <xs:attribute name="Disabled" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>The account is disabled. Equivalent to UF_ACCOUNTDISABLE.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
             <xs:attribute name="CreateUser" type="YesNoType">
                 <xs:annotation>
                     <xs:documentation>Indicates whether or not to create the user.  User creation can be skipped if all that is desired is to join a user to groups.</xs:documentation>
@@ -812,7 +856,7 @@
             </xs:attribute>
             <xs:attribute name="ElementPath" use="required" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>The XPath of the element to be modified.  Note that this is a formatted field and therefore, square brackets in the XPath must be escapted.</xs:documentation>
+                    <xs:documentation>The XPath of the element to be modified.  Note that this is a formatted field and therefore, square brackets in the XPath must be escaped.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="File" use="required" type="xs:string">

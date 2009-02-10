@@ -138,15 +138,34 @@ namespace ICSharpCode.SharpDevelop.Dom
 		Default = LookInReferences | LookForInnerClass
 	}
 	
-	public struct SearchTypeRequest
+	public sealed class SearchTypeRequest
 	{
-		public readonly string Name;
-		public readonly int TypeParameterCount;
-		public readonly ICompilationUnit CurrentCompilationUnit;
-		public readonly IClass CurrentType;
-		public readonly int CaretLine;
-		public readonly int CaretColumn;
-		public readonly IUsingScope CurrentUsingScope;
+		IUsingScope currentUsingScope;
+		ICompilationUnit currentCompilationUnit;
+		
+		public string Name { get; set; }
+		public int TypeParameterCount { get; set; }
+		public IClass CurrentType { get; set; }
+		public int CaretLine { get; set; }
+		public int CaretColumn { get; set; }
+		
+		public ICompilationUnit CurrentCompilationUnit {
+			get { return currentCompilationUnit; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException("CurrentCompilationUnit");
+				currentCompilationUnit = value;
+			}
+		}
+		
+		public IUsingScope CurrentUsingScope {
+			get { return currentUsingScope; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException("CurrentUsingScope");
+				currentUsingScope = value;
+			}
+		}
 		
 		public SearchTypeRequest(string name, int typeParameterCount, IClass currentType, int caretLine, int caretColumn)
 		{

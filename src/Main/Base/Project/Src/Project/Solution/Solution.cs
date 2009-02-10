@@ -28,7 +28,12 @@ namespace ICSharpCode.SharpDevelop.Project
 	
 	public class Solution : SolutionFolder, IDisposable, IMSBuildEngineProvider, IBuildable
 	{
+		public const int SolutionVersionVS2005 = 9;
+		public const int SolutionVersionVS2008 = 10;
+		
+		[Obsolete("Use SolutionVersionVS2005 instead")]
 		public const int SolutionVersionVS05 = 9;
+		[Obsolete("Use SolutionVersionVS2008 instead")]
 		public const int SolutionVersionVS08 = 10;
 		
 		/// <summary>contains &lt;GUID, (IProject/ISolutionFolder)&gt; pairs.</summary>
@@ -351,16 +356,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			// we need to specify UTF8 because MSBuild needs the BOM
 			using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8)) {
 				sw.WriteLine();
-				int versionNumber = SolutionVersionVS05;
+				int versionNumber = SolutionVersionVS2005;
 				foreach (IProject p in this.Projects) {
 					if (p.MinimumSolutionVersion > versionNumber)
 						versionNumber = p.MinimumSolutionVersion;
 				}
 				
 				sw.WriteLine("Microsoft Visual Studio Solution File, Format Version " + versionNumber + ".00");
-				if (versionNumber == SolutionVersionVS05) {
+				if (versionNumber == SolutionVersionVS2005) {
 					sw.WriteLine("# Visual Studio 2005");
-				} else if (versionNumber == SolutionVersionVS08) {
+				} else if (versionNumber == SolutionVersionVS2008) {
 					sw.WriteLine("# Visual Studio 2008");
 				}
 				sw.WriteLine("# SharpDevelop " + RevisionClass.FullVersion);

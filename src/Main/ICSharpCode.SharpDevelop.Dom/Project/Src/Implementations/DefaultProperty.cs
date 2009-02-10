@@ -94,25 +94,25 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		
 		public DomRegion GetterRegion {
 			get { return getterRegion; }
-			set { 
+			set {
 				CheckBeforeMutation();
-				getterRegion = value; 
+				getterRegion = value;
 			}
 		}
 		
 		public DomRegion SetterRegion {
 			get { return setterRegion; }
-			set { 
+			set {
 				CheckBeforeMutation();
-				setterRegion = value; 
+				setterRegion = value;
 			}
 		}
 		
 		public ModifierEnum GetterModifiers {
 			get { return getterModifiers; }
-			set { 
+			set {
 				CheckBeforeMutation();
-				getterModifiers = value; 
+				getterModifiers = value;
 			}
 		}
 		
@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			get { return setterModifiers; }
 			set {
 				CheckBeforeMutation();
-				setterModifiers = value; 
+				setterModifiers = value;
 			}
 		}
 		
@@ -138,13 +138,9 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		
 		public virtual int CompareTo(IProperty value)
 		{
-			int cmp;
-			
-			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
+			int cmp = string.CompareOrdinal(this.FullyQualifiedName, value.FullyQualifiedName);
+			if (cmp != 0) {
+				return cmp;
 			}
 			
 			return DiffUtility.Compare(Parameters, value.Parameters);

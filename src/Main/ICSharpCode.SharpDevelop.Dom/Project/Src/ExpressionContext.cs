@@ -62,104 +62,104 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region C# specific contexts (public static fields) * MOVE TO ANOTHER CLASS *
 		/// <summary>The context expects a new identifier</summary>
 		/// <example>class *expr* {}; string *expr*;</example>
-		public static ExpressionContext IdentifierExpected = new DefaultExpressionContext("IdentifierExpected");
+		public readonly static ExpressionContext IdentifierExpected = new DefaultExpressionContext("IdentifierExpected");
 		
 		/// <summary>The context is outside of any type declaration, expecting a global-level keyword.</summary>
-		public static ExpressionContext Global = new DefaultExpressionContext("Global");
+		public readonly static ExpressionContext Global = new DefaultExpressionContext("Global");
 		
 		/// <summary>The context is the body of a property declaration.</summary>
 		/// <example>string Name { *expr* }</example>
-		public static ExpressionContext PropertyDeclaration = new DefaultExpressionContext("PropertyDeclaration");
+		public readonly static ExpressionContext PropertyDeclaration = new DefaultExpressionContext("PropertyDeclaration");
 		
 		/// <summary>The context is the body of a property declaration inside an interface.</summary>
 		/// <example>string Name { *expr* }</example>
-		public static ExpressionContext InterfacePropertyDeclaration = new DefaultExpressionContext("InterfacePropertyDeclaration");
+		public readonly static ExpressionContext InterfacePropertyDeclaration = new DefaultExpressionContext("InterfacePropertyDeclaration");
 		
 		/// <summary>The context is the body of a event declaration.</summary>
 		/// <example>event EventHandler NameChanged { *expr* }</example>
-		public static ExpressionContext EventDeclaration = new DefaultExpressionContext("EventDeclaration");
+		public readonly static ExpressionContext EventDeclaration = new DefaultExpressionContext("EventDeclaration");
 		
 		/// <summary>The context is the body of a method.</summary>
 		/// <example>void Main () { *expr* }</example>
-		public static ExpressionContext MethodBody = new DefaultExpressionContext("MethodBody");
+		public readonly static ExpressionContext MethodBody = new DefaultExpressionContext("MethodBody");
 		
 		/// <summary>The context is after the type parameters of a type/method declaration.
 		/// The only valid keyword is "where"</summary>
 		/// <example>class &lt;T&gt; *expr*</example>
-		public static ExpressionContext ConstraintsStart = new DefaultExpressionContext("ConstraintsStart");
+		public readonly static ExpressionContext ConstraintsStart = new DefaultExpressionContext("ConstraintsStart");
 		
 		/// <summary>The context is after the 'where' of a constraints list.</summary>
 		/// <example>class &lt;T&gt; where *expr*</example>
-		public static ExpressionContext Constraints = new NonStaticTypeExpressionContext("Constraints", false);
+		public readonly static ExpressionContext Constraints = new NonStaticTypeExpressionContext("Constraints", false);
 		
 		
 		/// <summary>The context is the body of a type declaration.</summary>
-		public static ExpressionContext TypeDeclaration = new NonStaticTypeExpressionContext("TypeDeclaration", true);
+		public readonly static ExpressionContext TypeDeclaration = new NonStaticTypeExpressionContext("TypeDeclaration", true);
 		
 		/// <summary>The context is the body of an interface declaration.</summary>
-		public static ExpressionContext InterfaceDeclaration = new NonStaticTypeExpressionContext("InterfaceDeclaration", true);
+		public readonly static ExpressionContext InterfaceDeclaration = new NonStaticTypeExpressionContext("InterfaceDeclaration", true);
 		
 		/// <summary>Context expects "base" or "this".</summary>
 		/// <example>public ClassName() : *expr*</example>
-		public static ExpressionContext BaseConstructorCall = new DefaultExpressionContext("BaseConstructorCall");
+		public readonly static ExpressionContext BaseConstructorCall = new DefaultExpressionContext("BaseConstructorCall");
 		
 		/// <summary>The first parameter</summary>
 		/// <example>void MethodName(*expr*)</example>
-		public static ExpressionContext FirstParameterType = new NonStaticTypeExpressionContext("FirstParameterType", false);
+		public readonly static ExpressionContext FirstParameterType = new NonStaticTypeExpressionContext("FirstParameterType", false);
 		
 		/// <summary>Another parameter</summary>
 		/// <example>void MethodName(..., *expr*)</example>
-		public static ExpressionContext ParameterType = new NonStaticTypeExpressionContext("ParameterType", false);
+		public readonly static ExpressionContext ParameterType = new NonStaticTypeExpressionContext("ParameterType", false);
 		
 		/// <summary>Context expects a fully qualified type name.</summary>
 		/// <example>using Alias = *expr*;</example>
-		public static ExpressionContext FullyQualifiedType = new DefaultExpressionContext("FullyQualifiedType");
+		public readonly static ExpressionContext FullyQualifiedType = new DefaultExpressionContext("FullyQualifiedType");
 		
 		/// <summary>Context expects is a property name in an object initializer.</summary>
 		/// <example>new *type* [(args)] { *expr* = ... }</example>
-		public static ExpressionContext ObjectInitializer = new DefaultExpressionContext("ObjectInitializer");
+		public readonly static ExpressionContext ObjectInitializer = new DefaultExpressionContext("ObjectInitializer");
 		#endregion
 		
 		#region Default contexts (public static fields)
 		/// <summary>Default/unknown context</summary>
-		public static ExpressionContext Default = new DefaultExpressionContext("Default");
+		public readonly static ExpressionContext Default = new DefaultExpressionContext("Default");
 		
 		/// <summary>The context expects the base type of an enum.</summary>
 		/// <example>enum Name : *expr* {}</example>
-		public static ExpressionContext EnumBaseType = new EnumBaseTypeExpressionContext();
+		public readonly static ExpressionContext EnumBaseType = new EnumBaseTypeExpressionContext();
 		
 		/// <summary>Context expects a non-sealed type or interface</summary>
 		/// <example>class C : *expr* {}</example>
-		public static ExpressionContext InheritableType = new InheritableTypeExpressionContext();
+		public readonly static ExpressionContext InheritableType = new InheritableTypeExpressionContext();
 		
 		/// <summary>Context expects a namespace name</summary>
 		/// <example>using *expr*;</example>
-		public static ExpressionContext Namespace = new ImportableExpressionContext(false);
+		public readonly static ExpressionContext Namespace = new ImportableExpressionContext(false);
 		
 		/// <summary>Context expects an importable type (namespace or class with public static members)</summary>
 		/// <example>Imports *expr*;</example>
-		public static ExpressionContext Importable = new ImportableExpressionContext(true);
+		public readonly static ExpressionContext Importable = new ImportableExpressionContext(true);
 		
 		/// <summary>Context expects a type name</summary>
 		/// <example>typeof(*expr*)</example>
-		public static ExpressionContext Type = new TypeExpressionContext(null, false, true);
+		public readonly static ExpressionContext Type = new TypeExpressionContext(null, false, true);
 		
 		/// <summary>Context expects the name of a non-static, non-void type</summary>
 		/// <example>is *expr*, *expr* variableName</example>
-		public static ExpressionContext NonStaticNonVoidType = new NonStaticTypeExpressionContext("NonStaticType", false);
+		public readonly static ExpressionContext NonStaticNonVoidType = new NonStaticTypeExpressionContext("NonStaticType", false);
 		
 		/// <summary>Context expects a non-abstract type that has accessible constructors</summary>
 		/// <example>new *expr*();</example>
 		/// <remarks>When using this context, a resolver should treat the expression as object creation,
 		/// even when the keyword "new" is not part of the expression.</remarks>
-		public static ExpressionContext ObjectCreation = new TypeExpressionContext(null, true, true);
+		public readonly static ExpressionContext ObjectCreation = new TypeExpressionContext(null, true, true);
 		
 		/// <summary>Context expects a type deriving from System.Attribute.</summary>
 		/// <example>[*expr*()]</example>
 		/// <remarks>When using this context, a resolver should try resolving typenames with an
 		/// appended "Attribute" suffix and treat "invocations" of the attribute type as
 		/// object creation.</remarks>
-		public static ExpressionContext Attribute = new AttributeExpressionContext();
+		public readonly static ExpressionContext Attribute = new AttributeExpressionContext();
 		
 		/// <summary>Context expects a type name which has special base type</summary>
 		/// <param name="baseClass">The class the expression must derive from.</param>
@@ -173,11 +173,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>Context expects an interface</summary>
 		/// <example>interface C : *expr* {}</example>
 		/// <example>Implements *expr*</example>
-		public static ExpressionContext Interface = new ClassTypeExpressionContext(ClassType.Interface);
+		public readonly static ExpressionContext Interface = new ClassTypeExpressionContext(ClassType.Interface);
 		
 		/// <summary>Context expects a delegate</summary>
 		/// <example>public event *expr*</example>
-		public static ExpressionContext DelegateType = new ClassTypeExpressionContext(ClassType.Delegate);
+		public readonly static ExpressionContext DelegateType = new ClassTypeExpressionContext(ClassType.Delegate);
 		
 		#endregion
 		

@@ -195,13 +195,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public virtual int CompareTo(IMethod value)
 		{
-			int cmp;
-			
-			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
+			int cmp = string.CompareOrdinal(this.FullyQualifiedName, value.FullyQualifiedName);
+			if (cmp != 0) {
+				return cmp;
 			}
 			
 			cmp = this.TypeParameters.Count - value.TypeParameters.Count;

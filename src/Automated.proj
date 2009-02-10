@@ -106,6 +106,10 @@
 		
 		<Move SourceFiles="$(SharpDevelopSrc)\setup\bin\SharpDevelop.msi"
 		      DestinationFiles="$(ArtefactsOutputDir)\$(ArtefactPrefix)$(BuildNumber).msi"/>
+
+		<RemoveDir
+		      Directories="$(SharpDevelopSrc)\setup\bin" />
+
 	</Target>
 	
 	<Target Name="zipsource">

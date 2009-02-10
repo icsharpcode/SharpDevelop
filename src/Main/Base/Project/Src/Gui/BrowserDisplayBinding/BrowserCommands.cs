@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		protected override void OnOwnerChanged(EventArgs e)
 		{
 			base.OnOwnerChanged(e);
-			ToolBarComboBox toolbarItem = (ToolBarComboBox)Owner;
+			ToolBarComboBox toolbarItem = (ToolBarComboBox)base.ComboBox;
 			toolbarItem.ComboBox.Width *= 3;
 			((HtmlViewPane)toolbarItem.Caller).SetUrlComboBox(toolbarItem.ComboBox);
 		}

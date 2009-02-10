@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Notifies the build engine that the build of a project has finished.
-		/// You sould not call any methods after the Done() call.
+		/// You should not call any methods after the Done() call.
 		/// This member is thread-safe.
 		/// </summary>
 		void Done(bool success);

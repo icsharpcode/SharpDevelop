@@ -24,6 +24,7 @@ namespace ICSharpCode.Core.Presentation
 			= DependencyProperty.Register("DropDownMenu", typeof(ContextMenu),
 			                              typeof(SplitButton), new FrameworkPropertyMetadata(null));
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		protected static readonly DependencyPropertyKey IsDropDownMenuOpenPropertyKey
 			= DependencyProperty.RegisterReadOnly("IsDropDownMenuOpen", typeof(bool),
 			                                      typeof(SplitButton), new FrameworkPropertyMetadata(false));

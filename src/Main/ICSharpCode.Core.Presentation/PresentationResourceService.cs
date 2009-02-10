@@ -93,13 +93,10 @@ namespace ICSharpCode.Core.Presentation
 					bs.Freeze();
 					bitmapCache[name] = bs;
 				} finally {
-					DeleteObject(hBitmap);
+					NativeMethods.DeleteObject(hBitmap);
 				}
 				return bs;
 			}
 		}
-		
-		[DllImport("gdi32.dll")]
-		static extern bool DeleteObject(IntPtr hObject);
 	}
 }

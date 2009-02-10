@@ -36,6 +36,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		[Obsolete("Use ForEach instead.")]
+		public static void Foreach<T>(this IEnumerable<T> input, Action<T> action)
+		{
+			ForEach(input, action);
+		}
+		
 		/// <summary>
 		/// Adds all <paramref name="elements"/> to <paramref name="list"/>.
 		/// </summary>

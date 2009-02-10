@@ -671,6 +671,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						ResetIndex();
 						return;
 					}
+					helper.Project.Save();
 				}
 				helper.Configuration = (string)configurationComboBox.SelectedItem;
 				helper.Platform      = (string)platformComboBox.SelectedItem;

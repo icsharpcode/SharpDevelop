@@ -202,9 +202,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					fs.Position = index[m].FileLocation;
 					string keyInFile = loader.ReadString();
 					if (keyInFile == key) {
+						//LoggingService.Debug("Got XML documentation for " + key);
 						resultDocu = loader.ReadString();
 						break;
 					} else {
+						// this is a harmless hash collision, just continue reading
 						LoggingService.Warn("Found " + keyInFile + " instead of " + key);
 					}
 				}

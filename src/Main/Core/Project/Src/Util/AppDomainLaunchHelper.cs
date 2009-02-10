@@ -35,10 +35,11 @@ namespace ICSharpCode.Core
 	///  [Serializable] class Request { ... }  // must be serializable !!!
 	///  [Serializable] class ResultClass { ... }  // must be serializable !!!
 	/// </code></example>
+	[Obsolete("This class is broken, serialization does not work and addin dependencies are not loaded in the AppDomain")]
 	public class AppDomainLaunchHelper : MarshalByRefObject
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public object LaunchMethod(string assemblyFile, string typeName, string methodName, object[] arguments)
+		object LaunchMethod(string assemblyFile, string typeName, string methodName, object[] arguments)
 		{
 			Type t = Assembly.LoadFrom(assemblyFile).GetType(typeName);
 			return t.InvokeMember(methodName, (BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod), null, null, arguments, CultureInfo.InvariantCulture);

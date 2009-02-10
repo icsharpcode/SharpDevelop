@@ -308,23 +308,38 @@ namespace Hornung.ResourceToolkit.Refactoring
 				monitor.BeginTask(null, 0, false);
 			}
 			
+			try {
+				// rename definition (if present)
+				if (rrr.ResourceFileContent.ContainsKey(rrr.Key)) {
+					rrr.ResourceFileContent.RenameKey(rrr.Key, newKey);
+				} else {
+					if (monitor != null) monitor.ShowingDialog = true;
+					MessageService.ShowWarning("${res:Hornung.ResourceToolkit.RenameKeyDefinitionNotFoundWarning}");
+					if (monitor != null) monitor.ShowingDialog = false;
+				}
+			} catch (Exception ex) {
+				if (monitor != null) monitor.ShowingDialog = true;
+				MessageService.ShowWarningFormatted("${res:Hornung.ResourceToolkit.ErrorProcessingResourceFile}" + Environment.NewLine + ex.Message, rrr.ResourceFileContent.FileName);
+				if (monitor != null) monitor.ShowingDialog = false;
+				if (monitor != null) monitor.Done();
+				// Do not rename the references when renaming the definition failed.
+				return;
+			}
+			
 			// rename references
 			// FIXME: RenameReferences does not enforce escaping rules. May be a problem if someone uses double-quotes in the new resource key name.
 			FindReferencesAndRenameHelper.RenameReferences(references, newKey);
 			
-			// rename definition (if present)
-			if (rrr.ResourceFileContent.ContainsKey(rrr.Key)) {
-				rrr.ResourceFileContent.RenameKey(rrr.Key, newKey);
-			} else {
-				if (monitor != null) monitor.ShowingDialog = true;
-				MessageService.ShowWarning("${res:Hornung.ResourceToolkit.RenameKeyDefinitionNotFoundWarning}");
-				if (monitor != null) monitor.ShowingDialog = false;
-			}
-			
 			// rename definitions in localized resource files
 			foreach (KeyValuePair<string, IResourceFileContent> entry in ResourceFileContentRegistry.GetLocalizedContents(rrr.FileName)) {
-				if (entry.Value.ContainsKey(rrr.Key)) {
-					entry.Value.RenameKey(rrr.Key, newKey);
+				try {
+					if (entry.Value.ContainsKey(rrr.Key)) {
+						entry.Value.RenameKey(rrr.Key, newKey);
+					}
+				} catch (Exception ex) {
+					if (monitor != null) monitor.ShowingDialog = true;
+					MessageService.ShowWarningFormatted("${res:Hornung.ResourceToolkit.ErrorProcessingResourceFile}" + Environment.NewLine + ex.Message, entry.Value.FileName);
+					if (monitor != null) monitor.ShowingDialog = false;
 				}
 			}
 			

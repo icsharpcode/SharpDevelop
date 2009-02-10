@@ -15,5 +15,10 @@ namespace ICSharpCode.Core
 			get;
 			set;
 		}
+		
+		object ComboBox {
+			get;
+			set;
+		}
 	}
 }

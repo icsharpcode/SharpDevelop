@@ -98,7 +98,7 @@ namespace ICSharpCode.Core.Presentation
 		// Gets the matrix that will convert a point from "above" the
 		// coordinate space of a visual into the the coordinate space
 		// "below" the visual.
-		private Matrix GetVisualTransform(Visual v)
+		static Matrix GetVisualTransform(Visual v)
 		{
 			if (v != null) {
 				Matrix m = Matrix.Identity;
@@ -117,7 +117,7 @@ namespace ICSharpCode.Core.Presentation
 			return Matrix.Identity;
 		}
 		
-		private Point ApplyVisualTransform(Point point, Visual v, bool inverse)
+		static Point ApplyVisualTransform(Point point, Visual v, bool inverse)
 		{
 			if (v != null) {
 				Matrix visualTransform = GetVisualTransform(v);
@@ -154,12 +154,12 @@ namespace ICSharpCode.Core.Presentation
 			return pixelOffset;
 		}
 		
-		private bool AreClose(Point point1, Point point2)
+		static bool AreClose(Point point1, Point point2)
 		{
 			return AreClose(point1.X, point2.X) && AreClose(point1.Y, point2.Y);
 		}
 		
-		private bool AreClose(double value1, double value2)
+		static bool AreClose(double value1, double value2)
 		{
 			if (value1 == value2)
 			{

@@ -9,13 +9,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
@@ -27,7 +27,7 @@ namespace SharpRefactoring
 	/// <summary>
 	/// Description of MethodExtractorBase.
 	/// </summary>
-	public class MethodExtractorBase
+	public abstract class MethodExtractorBase
 	{
 		protected ICSharpCode.TextEditor.TextEditorControl textEditor;
 		protected ISelection currentSelection;
@@ -36,7 +36,6 @@ namespace SharpRefactoring
 		protected ParametrizedNode parentNode;
 		protected Statement caller;
 		protected List<LocalVariableDeclaration> beforeCallDeclarations;
-		protected IOutputAstVisitor output;
 		protected VariableDeclaration returnedVariable;
 		protected List<ISpecial> specialsList;
 		
@@ -51,12 +50,11 @@ namespace SharpRefactoring
 			get { return extractedMethod; }
 		}
 		
-		public MethodExtractorBase(ICSharpCode.TextEditor.TextEditorControl textEditor, ISelection selection, IOutputAstVisitor output)
+		public MethodExtractorBase(ICSharpCode.TextEditor.TextEditorControl textEditor, ISelection selection)
 		{
 			this.currentDocument = textEditor.Document;
 			this.textEditor = textEditor;
 			this.currentSelection = selection;
-			this.output = output;
 		}
 		
 		protected static Statement CreateCaller(ParametrizedNode parent, MethodDeclaration method, VariableDeclaration returnVariable)
@@ -64,7 +62,7 @@ namespace SharpRefactoring
 			Statement caller;
 			InvocationExpression expr = new InvocationExpression(new IdentifierExpression(method.Name), CreateArgumentExpressions(method.Parameters));
 
-			if (method.TypeReference.Type != "void") {
+			if (method.TypeReference.Type != "System.Void") {
 				if (parent is MethodDeclaration) {
 					if (method.TypeReference == (parent as MethodDeclaration).TypeReference)
 						caller = new ReturnStatement(expr);
@@ -100,22 +98,10 @@ namespace SharpRefactoring
 					newMethod.Body.Children.Add(new ReturnStatement(new IdentifierExpression(possibleReturnValues[possibleReturnValues.Count - 1].Name)));
 					this.returnedVariable = possibleReturnValues[possibleReturnValues.Count - 1];
 				} else {
-					newMethod.TypeReference = new TypeReference("void");
+					newMethod.TypeReference = new TypeReference("System.Void", true);
 					this.returnedVariable = null;
 				}
 			}
-		}
-		
-		public string CreatePreview()
-		{
-			BlockStatement body = this.extractedMethod.Body;
-			this.extractedMethod.Body = new BlockStatement();
-
-			this.extractedMethod.AcceptVisitor(output, null);
-			
-			this.extractedMethod.Body = body;
-
-			return output.Text;
 		}
 		
 		public void InsertCall()
@@ -132,7 +118,9 @@ namespace SharpRefactoring
 		
 		public void InsertAfterCurrentMethod()
 		{
-			using (SpecialNodesInserter.Install(this.specialsList, this.output)) {
+			IOutputAstVisitor outputVisitor = this.GetOutputVisitor();
+			
+			using (SpecialNodesInserter.Install(this.specialsList, outputVisitor)) {
 				string code = "\r\n\r\n" + GenerateCode(this.extractedMethod, true);
 
 				code = code.TrimEnd('\r', '\n', ' ', '\t');
@@ -171,7 +159,7 @@ namespace SharpRefactoring
 				parser.Parse();
 				
 				if (parser.Errors.Count > 0) {
-					MessageService.ShowError("Invalid selection! Please select a valid range!");
+					MessageService.ShowError("${res:AddIns.SharpRefactoring.ExtractMethod.InvalidSelection}");
 				}
 				
 				MethodDeclaration method = (MethodDeclaration)(parser.CompilationUnit.Children[0].Children[0]);
@@ -272,7 +260,7 @@ namespace SharpRefactoring
 			return false;
 		}
 		
-		protected bool IsInitializedVariable(bool caseSensitive, ParametrizedNode member, LocalLookupVariable variable)
+		protected bool IsInitializedVariable(bool caseSensitive, ParametrizedNode member, Variable variable)
 		{
 			if (!(variable.Initializer.IsNull)) {
 				return true;
@@ -291,21 +279,37 @@ namespace SharpRefactoring
 			return false;
 		}
 		
-		protected static bool HasAssignment(MethodDeclaration method, LocalLookupVariable variable)
+		protected static bool HasAssignment(MethodDeclaration method, Variable variable)
 		{
-			HasAssignmentsVisitor hav = new HasAssignmentsVisitor(variable.Name, variable.TypeRef, variable.StartPos, variable.EndPos);
+			HasAssignmentsVisitor hav = new HasAssignmentsVisitor(variable.Name, variable.Type, variable.StartPos, variable.EndPos);
 			
 			method.AcceptVisitor(hav, null);
 			
 			return hav.HasAssignment;
 		}
-
 		
-		public virtual bool Extract()
-		{
-			throw new InvalidOperationException("Cannot use plain MethodExtractor, please use a language specific implementation!");
-		}
+		public abstract IOutputAstVisitor GetOutputVisitor();
+		
+		public abstract bool Extract();
+		
+		public abstract Dom.IResolver GetResolver();
 	}
 	
-
+	public class Variable {
+		public TypeReference Type { get; set; }
+		public string Name { get; set; }
+		public Location StartPos { get; set; }
+		public Location EndPos { get; set; }
+		public Expression Initializer { get; set; }
+		public bool IsReferenceType { get; set; }
+		
+		public Variable(LocalLookupVariable v)
+		{
+			this.Type = v.TypeRef;
+			this.Name = v.Name;
+			this.StartPos = v.StartPos;
+			this.EndPos = v.EndPos;
+			this.Initializer = v.Initializer;
+		}
+	}
 }

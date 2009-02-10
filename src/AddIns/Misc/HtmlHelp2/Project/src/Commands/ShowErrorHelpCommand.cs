@@ -4,6 +4,7 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 3555 $</version>
 // </file>
+
 using MSHelpServices;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace HtmlHelp2.Commands
 {
 	/// <summary>
-	/// Description of ShowErrorHelpCommand
+	/// Shows help information for an error in the Errors window.
 	/// </summary>
 	public class ShowErrorHelpCommand : AbstractMenuCommand
 	{
@@ -27,8 +28,7 @@ namespace HtmlHelp2.Commands
 			ICSharpCode.SharpDevelop.Gui.TaskView view = (ICSharpCode.SharpDevelop.Gui.TaskView)Owner;
 			
 			// Search all selected tasks
-			foreach (Task t in new List<Task>(view.SelectedTasks))
-			{
+			foreach (Task t in new List<Task>(view.SelectedTasks)) {
 				string code = t.BuildError.ErrorCode;
 				
 				if (string.IsNullOrEmpty(code))
@@ -38,8 +38,7 @@ namespace HtmlHelp2.Commands
 				MSHelpServices.IHxTopic topic;
 				
 				// If HtmlHelp2 AddIn is initialised correctly we can start!
-				if (HtmlHelp2.Environment.HtmlHelp2Environment.SessionIsInitialized)
-				{
+				if (HtmlHelp2.Environment.HtmlHelp2Environment.SessionIsInitialized) {
 					// Get the topic
 					IHxIndex index = HtmlHelp2.Environment.HtmlHelp2Environment.GetIndex("");
 					if (index == null) {
@@ -47,6 +46,10 @@ namespace HtmlHelp2.Commands
 						return;
 					}
 					int indexSlot = index.GetSlotFromString(code);
+					if (indexSlot <= 0) {
+						MessageService.ShowErrorFormatted("No help available for {0}!", code);
+						return;
+					}
 					IHxTopicList list = index.GetTopicsFromSlot(indexSlot);
 					if (list == null) {
 						MessageService.ShowErrorFormatted("No help available for {0}!", code);
@@ -62,9 +65,7 @@ namespace HtmlHelp2.Commands
 						MessageService.ShowErrorFormatted("No help available for {0}!", code);
 						return;
 					}
-				}
-				else // Otherwise we have to show an Error message ...
-				{
+				} else { // Otherwise we have to show an Error message ...
 					LoggingService.Error("Couldn't initialize help database");
 					return;
 				}

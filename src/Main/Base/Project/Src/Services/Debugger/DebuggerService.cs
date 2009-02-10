@@ -442,11 +442,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					if (currentValue != null) {
 						debuggerCanShowValue = true;
 						b.Append(" = ");
-						if (currentValue.Length > 256) {
-							b.Append(currentValue.Substring(0, 256));
-							b.Append("...");
-						} else
-							b.Append(currentValue);
+						if (currentValue.Length > 256)
+							currentValue = currentValue.Substring(0, 256) + "...";
+						b.Append(currentValue);
 					}
 				}
 				return b.ToString();
@@ -510,7 +508,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			string documentation = member.Documentation;
 			if (documentation != null && documentation.Length > 0) {
 				text.Append('\n');
-				text.Append(ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.GetDocumentation(documentation));
+				text.Append(ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(documentation));
 			}
 			return text.ToString();
 		}

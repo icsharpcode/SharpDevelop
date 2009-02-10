@@ -266,7 +266,7 @@ namespace ICSharpCode.NRefactory.Ast
 			this.Type = type;
 		}
 		
-		[Obsolete("Type and SystemType are no longer distinguised - use the (string type, bool isKeyword) constructor instead!")]
+		[Obsolete("Type and SystemType are no longer distinguished - use the (string type, bool isKeyword) constructor instead!")]
 		public TypeReference(string type, string systemType)
 		{
 			this.Type = systemType;

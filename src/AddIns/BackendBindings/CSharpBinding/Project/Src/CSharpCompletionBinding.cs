@@ -307,7 +307,7 @@ namespace CSharpBinding
 			public RenamedClass(IClass c, string newName) : base(c.CompilationUnit, c.ClassType, c.Modifiers, c.Region, c.DeclaringType)
 			{
 				this.newName = newName;
-				this.Documentation = c.Documentation;
+				CopyDocumentationFrom(c);
 				this.FullyQualifiedName = c.FullyQualifiedName;
 			}
 			

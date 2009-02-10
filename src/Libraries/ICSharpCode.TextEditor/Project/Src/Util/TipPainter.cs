@@ -15,7 +15,6 @@ namespace ICSharpCode.TextEditor.Util
 	{
 		const float HorizontalBorder = 2;
 		const float VerticalBorder   = 1;
-		static RectangleF workingArea = RectangleF.Empty;
 		
 		//static StringFormat centerTipFormat = CreateTipStringFormat();
 		
@@ -24,19 +23,22 @@ namespace ICSharpCode.TextEditor.Util
 			return GetTipSize(control, graphics, new TipText (graphics, font, description));
 		}
 		
+		static Rectangle GetWorkingArea(Control control)
+		{
+			Form ownerForm = control.FindForm();
+			if (ownerForm.Owner != null) {
+				ownerForm = ownerForm.Owner;
+			}
+			
+			return Screen.GetWorkingArea(ownerForm);
+		}
+		
 		public static Size GetTipSize(Control control, Graphics graphics, TipSection tipData)
 		{
 			Size tipSize = Size.Empty;
 			SizeF tipSizeF = SizeF.Empty;
 			
-			if (workingArea == RectangleF.Empty) {
-				Form ownerForm = control.FindForm();
-				if (ownerForm.Owner != null) {
-					ownerForm = ownerForm.Owner;
-				}
-				
-				workingArea = Screen.GetWorkingArea(ownerForm);
-			}
+			RectangleF workingArea = GetWorkingArea(control);
 			
 			PointF screenLocation = control.PointToScreen(Point.Empty);
 			
@@ -68,14 +70,7 @@ namespace ICSharpCode.TextEditor.Util
 			Size tipSize = Size.Empty;
 			SizeF tipSizeF = SizeF.Empty;
 			
-			if (workingArea == RectangleF.Empty) {
-				Form ownerForm = control.FindForm();
-				if (ownerForm.Owner != null) {
-					ownerForm = ownerForm.Owner;
-				}
-				
-				workingArea = Screen.GetWorkingArea(ownerForm);
-			}
+			RectangleF workingArea = GetWorkingArea(control);
 			
 			PointF screenLocation = p;
 			
@@ -110,14 +105,7 @@ namespace ICSharpCode.TextEditor.Util
 			
 			PointF screenLocation = control.PointToScreen(Point.Empty);
 			
-			if (workingArea == RectangleF.Empty) {
-				Form ownerForm = control.FindForm();
-				if (ownerForm.Owner != null) {
-					ownerForm = ownerForm.Owner;
-				}
-				
-				workingArea = Screen.GetWorkingArea(ownerForm);
-			}
+			RectangleF workingArea = GetWorkingArea(control);
 			
 			SizeF maxLayoutSize = new SizeF(workingArea.Right - screenLocation.X - HorizontalBorder * 2,
 			                                workingArea.Bottom - screenLocation.Y - VerticalBorder * 2);
@@ -163,14 +151,7 @@ namespace ICSharpCode.TextEditor.Util
 			
 			PointF screenLocation = control.PointToScreen(new Point(control.Width, 0));
 			
-			if (workingArea == RectangleF.Empty) {
-				Form ownerForm = control.FindForm();
-				if (ownerForm.Owner != null) {
-					ownerForm = ownerForm.Owner;
-				}
-				
-				workingArea = Screen.GetWorkingArea(ownerForm);
-			}
+			RectangleF workingArea = GetWorkingArea(control);
 			
 			SizeF maxLayoutSize = new SizeF(screenLocation.X - HorizontalBorder * 2,
 			                                workingArea.Bottom - screenLocation.Y - VerticalBorder * 2);

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-	public class ToolBarCommand : ToolStripMenuItem, IStatusUpdate
+	public class ToolBarCommand : ToolStripButton, IStatusUpdate
 	{
 		object caller;
 		Codon codon;
@@ -45,7 +45,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 			if (menuCommand != null) {
 				menuCommand.Owner = caller;
-				LoggingService.Debug("Run command " + menuCommand.GetType().FullName);
+				LoggingService.Info("Run command " + menuCommand.GetType().FullName);
 				menuCommand.Run();
 			}
 		}

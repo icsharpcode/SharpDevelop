@@ -24,6 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string name;
 		string shortName;
 		int typeParameterCount;
+		bool lookForInnerClassesInDeclaringClass = true;
 		
 		public SearchClassReturnType(IProjectContent projectContent, IClass declaringClass, int caretLine, int caretColumn, string name, int typeParameterCount)
 		{
@@ -42,6 +43,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 				shortName = name.Substring(pos + 1);
 		}
 		
+		/// <summary>
+		/// Gets/Sets whether to look for inner classes in the declaring class.
+		/// The default is true.
+		/// Set this property to false for return types that are used as base type references.
+		/// </summary>
+		public bool LookForInnerClassesInDeclaringClass {
+			get { return lookForInnerClassesInDeclaringClass; }
+			set {
+				lookForInnerClassesInDeclaringClass = value;
+				ClearCachedBaseType();
+			}
+		}
+		
 		volatile IReturnType cachedBaseType;
 		int isSearching; // 0=false, 1=true
 		
@@ -58,7 +72,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (Interlocked.CompareExchange(ref isSearching, 1, 0) != 0)
 					return null;
 				try {
-					type = pc.SearchType(new SearchTypeRequest(name, typeParameterCount, declaringClass, caretLine, caretColumn)).Result;
+					SearchTypeRequest request = new SearchTypeRequest(name, typeParameterCount, declaringClass, caretLine, caretColumn);
+					if (!lookForInnerClassesInDeclaringClass) {
+						// skip looking for inner classes by adjusting the CurrentType for the lookup
+						request.CurrentType = declaringClass.DeclaringType;
+					}
+					type = pc.SearchType(request).Result;
 					cachedBaseType = type;
 					if (type != null)
 						DomCache.RegisterForClear(ClearCachedBaseType);

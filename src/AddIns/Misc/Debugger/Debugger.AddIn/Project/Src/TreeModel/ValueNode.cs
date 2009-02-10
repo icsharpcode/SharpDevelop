@@ -88,6 +88,8 @@ namespace Debugger.AddIn.TreeModel
 				this.Text = val.AsString;
 			}
 			
+			this.Text = (this.Text.Length > 256) ? this.Text.Substring(0, 256) + "..." : this.Text;
+			
 			if (val.Type != null) {
 				this.Type = val.Type.Name;
 			} else {

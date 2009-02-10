@@ -63,7 +63,7 @@ namespace ICSharpCode.Core
 					} else if (assembly[0] == '$') {
 						int pos = assembly.IndexOf('/');
 						if (pos < 0)
-							throw new ApplicationException("Expected '/' in path beginning with '$'!");
+							throw new CoreException("Expected '/' in path beginning with '$'!");
 						string referencedAddIn = assembly.Substring(1, pos - 1);
 						foreach (AddIn addIn in AddInTree.AddIns) {
 							if (addIn.Enabled && addIn.Manifest.Identities.ContainsKey(referencedAddIn)) {

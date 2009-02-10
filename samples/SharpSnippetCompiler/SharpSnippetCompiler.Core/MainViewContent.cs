@@ -215,6 +215,11 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		{
 		}
 		
+		public IDocument GetDocumentForFile(OpenedFile file)
+		{
+			return null;
+		}		
+		
 		public void JumpTo(int line, int column)
 		{
 			textEditor.ActiveTextAreaControl.JumpTo(line, column);

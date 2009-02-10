@@ -32,8 +32,8 @@ namespace ICSharpCode.Core
 					int conditionInt = Int32.Parse(conditionEnum.ToString("D"));
 					
 					return (stateInt & conditionInt) > 0;
-				} catch (Exception) {
-					throw new ApplicationException("can't parse '" + condition.Properties["state"] + "'. Not a valid value.");
+				} catch (Exception ex) {
+					throw new CoreException("can't parse '" + condition.Properties["state"] + "'. Not a valid value.", ex);
 				}
 			}
 			return false;

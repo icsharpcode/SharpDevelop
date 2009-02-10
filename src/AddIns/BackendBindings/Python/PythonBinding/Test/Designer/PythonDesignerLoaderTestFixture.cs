@@ -132,9 +132,9 @@ namespace PythonBinding.Tests.Designer
 					"\r\n" +
 					"class MainForm(Form):\r\n" +
 					"\tdef __init__(self):\r\n" +
-					"\t\tself.InitializeComponent()\r\n" +
+					"\t\tself.InitializeComponents()\r\n" +
 					"\t\r\n" +
-					"\tdef InitializeComponent(self):\r\n" +
+					"\tdef InitializeComponents(self):\r\n" +
 					"\t\tself.Name = 'MainForm'\r\n"; 
 		}
 	}

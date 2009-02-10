@@ -119,6 +119,10 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 			}
 		}
 		
+		public event EventHandler ActiveConfigurationChanged { add {} remove {} }
+		
+		public event EventHandler ActivePlatformChanged { add {} remove {} }
+		
 		public ICollection<string> ConfigurationNames {
 			get {
 				throw new NotImplementedException();

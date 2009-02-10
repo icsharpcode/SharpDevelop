@@ -18,6 +18,8 @@
     <AssemblyOriginatorKeyFile>..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Performance#CA1810</CodeAnalysisRules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -67,6 +69,7 @@
     <Compile Include="Menu\MenuCommand.cs" />
     <Compile Include="Menu\MenuService.cs" />
     <Compile Include="Menu\CoreMenuItem.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="PixelSnapper.cs" />
     <Compile Include="PresentationResourceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

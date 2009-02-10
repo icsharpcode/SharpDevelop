@@ -473,6 +473,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			if (returnType == null) {
 				return String.Empty;
 			}
+			
+			returnType = returnType.GetDirectReturnType();
+			
 			StringBuilder builder = new StringBuilder();
 			
 			string fullName = returnType.FullyQualifiedName;

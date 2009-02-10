@@ -22,6 +22,10 @@
     <BaseAddress>108003328</BaseAddress>
     <FileAlignment>4096</FileAlignment>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\..\Main\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>True</Optimize>
@@ -60,6 +64,7 @@
     <Compile Include="Src\DesignerLoader\AbstractCodeDomDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\NRefactoryDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\XmlDesignerLoader.cs" />
+    <Compile Include="Src\DesignerSourceCodeStorage.cs" />
     <Compile Include="Src\Gui\ImageResourceEditorDialog.cs" />
     <Compile Include="Src\Gui\ImageResourceEditorDialog.Designer.cs">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>

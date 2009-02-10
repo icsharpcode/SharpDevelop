@@ -2415,9 +2415,10 @@
             </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
-            <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element ref="Icon" minOccurs="0" />
-            </xs:sequence>
+                <xs:element ref="ShortcutProperty" minOccurs="0" />
+            </xs:choice>
 
             <xs:attribute name="Id" type="xs:string" use="required">
                 <xs:annotation><xs:documentation>Unique identifier for the shortcut. This value will serve as the primary key for the row.</xs:documentation></xs:annotation>
@@ -2581,6 +2582,27 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="ShortcutProperty">
+        <xs:annotation>
+            <xs:appinfo>
+                <xse:seeAlso ref="Shortcut"/>
+                <xse:msiRef table="MsiShortcutProperty" />
+            </xs:appinfo>
+            <xs:documentation>Property values for a shortcut.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType mixed="true">
+            <xs:attribute name="Id" type="xs:string">
+                <xs:annotation><xs:documentation>Unique identifier for MsiShortcutProperty table. If omitted, a stable identifier will be generated from the parent shortcut identifier and Key value.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Key" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>Sets a default value for the property.  The value will be overwritten if the Property is used for a search.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Value" type="xs:string">
+                <xs:annotation><xs:documentation>Sets a default value for the property.  The value will be overwritten if the Property is used for a search.</xs:documentation></xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="Permission">
         <xs:annotation>
             <xs:documentation>
@@ -2658,6 +2680,41 @@
             </xs:attribute>
             <xs:attribute name="GenericRead" type="YesNoType">
                 <xs:annotation><xs:documentation>specifying this will fail to grant read access</xs:documentation></xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="PermissionEx">
+        <xs:annotation>
+            <xs:documentation>
+                Sets ACLs on File, Registry, or CreateFolder.  When under a Registry element, this cannot be used
+                if the Action attribute's value is remove or removeKeyOnInstall.  This element is only available
+                when installing with MSI 5.0.  For downlevel support, see the PermissionEx element from the
+                WixUtilExtension.
+            </xs:documentation>
+            <xs:appinfo>
+                <xse:msiRef table="MsiLockPermissionsEx" href="http://msdn.microsoft.com/library/aa369774.aspx"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Condition" minOccurs="0">
+                    <xs:annotation><xs:documentation>
+                        Optional condition that controls whether the permissions are applied.
+                    </xs:documentation></xs:annotation>
+                </xs:element>
+            </xs:sequence>
+
+            <xs:attribute name="Id" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    Primary key used to identify this particular entry. If this is not specified the parent element's Id attribute
+                    will be used instead.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Sddl" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>
+                    Security descriptor to apply to parent object.
+                </xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -2790,6 +2847,9 @@
                 <xs:element ref="Permission">
                     <xs:annotation><xs:documentation>Used to configure the ACLs for this file.</xs:documentation></xs:annotation>
                 </xs:element>
+                <xs:element ref="PermissionEx">
+                    <xs:annotation><xs:documentation>Can also configure the ACLs for this file.</xs:documentation></xs:annotation>
+                </xs:element>
                 <xs:element ref="CopyFile">
                     <xs:annotation><xs:documentation>Used to create a duplicate of this file elsewhere.</xs:documentation></xs:annotation>
                 </xs:element>
@@ -2919,7 +2979,7 @@
                 <xs:annotation>
                     <xs:documentation>
                         Specifies if this File is a Win32 Assembly or .NET Assembly that needs to be installed into the 
-                        Global Assembly Cache.  If the value is '.net' or 'win32', this file must also be the key path of the Component.
+                        Global Assembly Cache (GAC).  If the value is '.net' or 'win32', this file must also be the key path of the Component.
                     </xs:documentation>
                 </xs:annotation>
                 <xs:simpleType>
@@ -2962,7 +3022,7 @@
                     <xs:documentation>
                         Specifies the file identifier of the application file.  This assembly will be isolated
                         to the same directory as the application file.
-                        If this attribute is absent, the assembly will be installed to the Global Assembly Cache.
+                        If this attribute is absent, the assembly will be installed to the Global Assembly Cache (GAC).
                         This attribute may only be specified if the Assembly attribute is set to '.net' or 'win32'.
                     </xs:documentation>
                 </xs:annotation>
@@ -3006,7 +3066,7 @@
                 <xs:annotation><xs:documentation>Specifies the Media this File should be sourced on.  This attribute overrides the default DiskId attribute from the parent Component element.  If no DiskId attribute is specifed, the default is "1".</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Source" type="xs:string">
-                <xs:annotation><xs:documentation>Specifies the path to the File in the build process.  This attribute must be set if no source information can be gathered from parent directories.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Specifies the path to the File in the build process. Overrides default source path set by parent directories and Name attribute. This attribute must be set if no source information can be gathered from parent directories. For more information, see <a href="\html\specifying_source_files.htm">Specifying source files</a>.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
@@ -3071,6 +3131,9 @@
                 <xs:element ref="RegistryValue"/>
                 <xs:element ref="Permission" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation><xs:documentation>ACL permission</xs:documentation></xs:annotation>
+                </xs:element>
+                <xs:element ref="PermissionEx">
+                    <xs:annotation><xs:documentation>Can also configure the ACLs for this registry key.</xs:documentation></xs:annotation>
                 </xs:element>
                 <xs:any namespace="##other" processContents="lax">
                     <xs:annotation>
@@ -3158,6 +3221,9 @@
         <xs:complexType mixed="true">
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element ref="Permission"/>
+                <xs:element ref="PermissionEx">
+                    <xs:annotation><xs:documentation>Can also configure the ACLs for this registry value.</xs:documentation></xs:annotation>
+                </xs:element>
                 <xs:element ref="MultiStringValue"/>
                 <xs:any namespace="##other" processContents="lax">
                     <xs:annotation>
@@ -3422,6 +3488,9 @@
         <xs:complexType>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element ref="Permission"/>
+                <xs:element ref="PermissionEx">
+                    <xs:annotation><xs:documentation>Can also configure the ACLs for this registry key.</xs:documentation></xs:annotation>
+                </xs:element>
                 <xs:element ref="RegistryValue"/>
                 <xs:element ref="Registry"/>
                 <xs:any namespace="##other" processContents="lax">
@@ -3768,6 +3837,9 @@
                 </xs:element>
                 <xs:element ref="Permission" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation><xs:documentation>ACL permission</xs:documentation></xs:annotation>
+                </xs:element>
+                <xs:element ref="PermissionEx">
+                    <xs:annotation><xs:documentation>Can also configure the ACLs for this folder.</xs:documentation></xs:annotation>
                 </xs:element>
                 <xs:any namespace="##other" processContents="lax">
                     <xs:annotation>
@@ -4486,8 +4558,12 @@
             <xs:attribute name="Id" type="Guid" use="required">
                 <xs:annotation><xs:documentation>The Class identifier (CLSID) of a COM server.</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Context" use="required">
-                <xs:annotation><xs:documentation>The server context(s) for this server.</xs:documentation></xs:annotation>
+            <xs:attribute name="Context">
+                <xs:annotation><xs:documentation>
+                  The server context(s) for this COM server. This attribute is optional for VB6 libraries that are marked "PublicNotCreateable".
+                  Class elements marked Advertised must specify at least one server context. It is most common for there to be a single value
+                  for the Context attribute.
+                </xs:documentation></xs:annotation>
                 <xs:simpleType>
                     <xs:list>
                         <xs:simpleType>
@@ -4659,6 +4735,9 @@
             <xs:attribute name="Name" type="xs:string" use="required">
                 <xs:annotation><xs:documentation>Name for COM Interface.</xs:documentation></xs:annotation>
             </xs:attribute>
+            <xs:attribute name="BaseInterface" type="Guid">
+                <xs:annotation><xs:documentation>Identifies the interface from which the current interface is derived.</xs:documentation></xs:annotation>
+            </xs:attribute>
             <xs:attribute name="ProxyStubClassId" type="Guid">
                 <xs:annotation><xs:documentation>GUID CLSID for proxy stub to COM Interface.</xs:documentation></xs:annotation>
             </xs:attribute>
@@ -4741,6 +4820,8 @@
                 <xs:element ref="ServiceDependency">
                     <xs:annotation><xs:documentation>ordered list of dependencies when installing services</xs:documentation></xs:annotation>
                 </xs:element>
+                <xs:element ref="ServiceConfig"/>
+                <xs:element ref="ServiceConfigFailureActions"/>
                 <xs:any namespace="##other" processContents="lax">
                     <xs:annotation>
                         <xs:documentation>
@@ -4750,8 +4831,11 @@
                     </xs:annotation>
                 </xs:any>
             </xs:choice>
-            <xs:attribute name="Id" type="xs:string" use="required">
-                <xs:annotation><xs:documentation>Unique identifier for this service.</xs:documentation></xs:annotation>
+            <xs:attribute name="Id" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    Unique identifier for this service configuration. This value will default to the Name attribute if not
+                    specified.
+                </xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Name" type="xs:string" use="required">
                 <xs:annotation><xs:documentation>This column is the string that gives the service name to install.</xs:documentation></xs:annotation>
@@ -5011,6 +5095,177 @@
             </xs:attribute>
             <xs:attribute name="Wait" type="YesNoType">
                 <xs:annotation><xs:documentation>Specifies whether or not to wait for the service to complete before continuing.</xs:documentation></xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="RequiredPrivilege" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>
+                Privilege required by service configured by ServiceConfig parent. Valid values are a <a href="http://msdn.microsoft.com/en-us/library/bb530716.aspx">privilege constant</a> or a
+                Formatted property that resolves to a privilege constant.
+            </xs:documentation>
+            <xs:appinfo>
+                <xse:msiRef table="MsiServiceConfig" href="http://msdn.microsoft.com/library/aa371634.aspx"/>
+            </xs:appinfo>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="ServiceConfig">
+        <xs:annotation>
+            <xs:documentation>
+                Configures a service being installed or one that already exists.
+            </xs:documentation>
+            <xs:appinfo>
+                <xse:msiRef table="MsiServiceConfig" href="http://msdn.microsoft.com/library/aa371637.aspx"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="RequiredPrivilege">
+                    <xs:annotation><xs:documentation>List of privileges to apply to service.</xs:documentation></xs:annotation>
+                </xs:element>
+            </xs:choice>
+
+            <xs:attribute name="Id" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    Unique identifier for this service configuration. This value will default to the ServiceName attribute if not
+                    specified.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="DelayedAutoStart" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    This attribute specifies whether an auto-start service should delay its start until after all other auto-start
+                    services. This attribute only affects auto-start services. Allowed values are "yes", "no" or a Formatted property that
+                    resolves to "1" (for "yes") or "0" (for "no"). If this attribute is not present the setting is not configured.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="FailureActionsWhen" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    This attribute specifies when failure actions should be applied. Allowed values are "failedToStop", "failedToStopOrReturnedError"
+                    or a Formatted property that resolves to "1" (for "failedToStopOrReturnedError") or "0" (for "failedToStop").  If this attribute
+                    is not present the setting is not configured.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="PreShutdownDelay" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    This attribute specifies time in milliseconds that the Service Control Manager (SCM) waits after notifying the service of a system
+                    shutdown.  If this attribute is not present the default value, 3 minutes, is used.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="OnInstall" type="YesNoType">
+                <xs:annotation><xs:documentation>
+                    Specifies whether to configure the service when the parent Component is installed. This attribute may be combined with OnReinstall
+                    and OnUninstall.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="OnReinstall" type="YesNoType">
+                <xs:annotation><xs:documentation>
+                    Specifies whether to configure the service when the parent Component is reinstalled. This attribute may be combined with OnInstall
+                    and OnUninstall.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="OnUninstall" type="YesNoType">
+                <xs:annotation><xs:documentation>
+                    Specifies whether to configure the service when the parent Component is uninstalled. This attribute may be combined with OnInstall
+                    and OnReinstall.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="ServiceName" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    Specifies the name of the service to configure. This value will default to the ServiceInstall/@Name attribute when nested under
+                    a ServiceInstall element.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="ServiceSid" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    Specifies the service SID to apply to the service. Valid values are "none", "restricted", "unrestricted" or a Formatted property
+                    that resolves to "0" (for "none"), "3" (for "restricted") or "1" (for "unrestricted"). If this attribute is not present the
+                    setting is not configured.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Failure">
+        <xs:annotation><xs:documentation>Failure action for a ServiceConfigFailureActions element.</xs:documentation></xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="Action" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>
+                    Specifies the action to take when the service fails. Valid values are "none", "restartComputer", "restartService", "runCommand" or a Formatted property
+                    that resolves to "0" (for "none"), "1" (for "restartService"), "2" (for "restartComputer") or "3" (for "runCommand").
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Delay" type="xs:string" use="required">
+                <xs:annotation><xs:documentation>
+                    Specifies the time in milliseconds to wait before performing the value from the Action attribute.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ServiceConfigFailureActions">
+        <xs:annotation>
+            <xs:documentation>
+                Configures the failure actions for a service being installed or one that already exists.
+            </xs:documentation>
+            <xs:appinfo>
+                <xse:msiRef table="MsiServiceConfigFailureActions" href="http://msdn.microsoft.com/library/aa371637.aspx"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="Failure">
+                    <xs:annotation><xs:documentation>Ordered list of failure actions to apply to service.</xs:documentation></xs:annotation>
+                </xs:element>
+            </xs:choice>
+
+            <xs:attribute name="Id" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    Unique identifier for this service configuration. This value will default to the ServiceName attribute if not
+                    specified.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Command" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    This attribute specifies command to execute when a "runCommand" failure action hit.  If an empty string is provided it clears
+                    the existing command. If this attribute is not present the setting is not changed.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="OnInstall" type="YesNoType">
+                <xs:annotation><xs:documentation>
+                    Specifies whether to configure the service when the parent Component is installed. This attribute may be combined with OnReinstall
+                    and OnUninstall.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="OnReinstall" type="YesNoType">
+                <xs:annotation><xs:documentation>
+                    Specifies whether to configure the service when the parent Component is reinstalled. This attribute may be combined with OnInstall
+                    and OnUninstall.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="OnUninstall" type="YesNoType">
+                <xs:annotation><xs:documentation>
+                    Specifies whether to configure the service when the parent Component is uninstalled. This attribute may be combined with OnInstall
+                    and OnReinstall.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="RebootMessage" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    Specifies the message to show for a reboot failure action. If an empty string is provided it clears any existing reboot message. If this
+                    attribute is not present the setting is not changed.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="ResetPeriod" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    Specifies the time in seconds to reset the failure count. If this attribute is not present the failure count will not be reset.
+                </xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="ServiceName" type="xs:string">
+                <xs:annotation><xs:documentation>
+                    Specifies the name of the service to configure. This value will default to the ServiceInstall/@Name attribute when nested under
+                    a ServiceInstall element.
+                </xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -5281,6 +5536,8 @@
                 <xs:element ref="RemoveRegistryValue"/>
                 <xs:element ref="ReserveCost"/>
                 <xs:element ref="ServiceControl"/>
+                <xs:element ref="ServiceConfig"/>
+                <xs:element ref="ServiceConfigFailureActions"/>
                 <xs:element ref="ServiceInstall"/>
                 <xs:element ref="Shortcut"/>
                 <xs:element ref="SymbolPath"/>
@@ -5736,7 +5993,7 @@
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="FileSource" type="xs:string">
-                <xs:annotation><xs:documentation>Used to set the file system source for this directory's child elements.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Used to set the file system source for this directory's child elements. For more information, see <a href="\html\specifying_source_files.htm">Specifying source files</a>.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="LongName" type="LongFileNameType">
                 <xs:annotation>
@@ -5855,7 +6112,7 @@
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="FileSource" type="xs:string">
-                <xs:annotation><xs:documentation>Used to set the file system source for this DirectoryRef's child elements.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Used to set the file system source for this DirectoryRef's child elements. For more information, see <a href="\html\specifying_source_files.htm">Specifying source files</a>.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
@@ -8480,6 +8737,7 @@
                                 If the Property attribute is specified, set the value of this attribute to the new value for the property.
                                 To set a property to null, do not set this attribute (the ControlEvent Argument column will be set to '{}').
                                 Otherwise, this attribute's value should be the argument for the event specified in the Event attribute.
+                                If the event doesn't take an attribute, a common value to use is "0".
                             </xs:documentation>
                         </xs:annotation>
                     </xs:attribute>
@@ -9300,6 +9558,7 @@
                         <xs:enumeration value="DefaultDir"/>
                         <xs:enumeration value="RegPath"/>
                         <xs:enumeration value="Formatted"/>
+                        <xs:enumeration value="FormattedSddl"/>
                         <xs:enumeration value="Template"/>
                         <xs:enumeration value="Condition"/>
                         <xs:enumeration value="Guid"/>

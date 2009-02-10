@@ -90,6 +90,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void StaticMethod()
+		{
+			TestTypeMember("static void Method() { }");
+		}
+		
+		[Test]
 		public void PartialModifier()
 		{
 			TestProgram("public partial class Foo { }");
@@ -99,6 +105,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void GenericClassDefinition()
 		{
 			TestProgram("public class Foo<T> where T : IDisposable, ICloneable { }");
+		}
+		
+		[Test]
+		public void InterfaceWithOutParameters()
+		{
+			TestProgram("public interface ITest { void Method(out int a, ref double b); }");
 		}
 		
 		[Test]

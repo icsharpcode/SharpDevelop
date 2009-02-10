@@ -51,9 +51,9 @@
                 <xs:annotation>
                     <xs:documentation>
                         The identifier of the directory to use for locating dependent assemblies.
-                        For DLL assemblies and assemblies installed to the GAC, this attribute
-                        should be set to the directory of the application which loads this assembly.
-                        For EXE assemblies, this attribute does not need to be set because NGen
+                        For DLL assemblies and assemblies installed to the Global Assembly Cache (GAC),
+                        this attribute should be set to the directory of the application which loads this
+                        assembly.  For EXE assemblies, this attribute does not need to be set because NGen
                         will use the directory of the assembly file by default.
                     </xs:documentation>
                 </xs:annotation>

@@ -86,13 +86,15 @@
     <Compile Include="Src\PythonConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\PythonConsoleHost.cs" />
     <Compile Include="Src\PythonConsolePad.cs" />
+    <Compile Include="Src\PythonControlFieldExpression.cs" />
     <Compile Include="Src\PythonDesignerGenerator.cs" />
     <Compile Include="Src\PythonDesignerLoader.cs" />
     <Compile Include="Src\PythonDesignerLoaderProvider.cs" />
     <Compile Include="Src\PythonExpressionFinder.cs" />
     <Compile Include="Src\PythonForm.cs" />
     <Compile Include="Src\PythonFormsDesignerDisplayBinding.cs" />
-    <Compile Include="Src\PythonFormVisitor.cs" />
+    <Compile Include="Src\PythonFormWalker.cs" />
+    <Compile Include="Src\PythonFormWalkerException.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
     <Compile Include="Src\PythonOptionsPanel.cs" />
     <Compile Include="Src\PythonOutputStream.cs" />

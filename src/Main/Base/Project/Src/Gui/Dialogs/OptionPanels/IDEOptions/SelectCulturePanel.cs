@@ -75,6 +75,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			listView.Activation = ItemActivation.OneClick;
 			listView.Anchor = (System.Windows.Forms.AnchorStyles.Top | 
 			                  (System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
+			listView.MultiSelect = false;
 			
 			foreach (Language language in LanguageService.Languages) {
 				listView.Items.Add(new ListViewItem(new string[] {language.Name, language.Code}, language.ImageIndex));

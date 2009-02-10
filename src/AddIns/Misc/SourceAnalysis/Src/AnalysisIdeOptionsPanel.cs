@@ -62,7 +62,7 @@ namespace MattEverson.SourceAnalysis
 		void ModifyStyleCopSettingsClick(object sender, EventArgs e)
 		{
 		    var executable = Path.Combine(StyleCopWrapper.FindStyleCopPath(), "StyleCopSettingsEditor.exe");
-		    var parameters = StyleCopWrapper.GetMasterSettingsFile();
+		    var parameters = "\"" + StyleCopWrapper.GetMasterSettingsFile() + "\"";
 
             if (!File.Exists(executable)) {
             	LoggingService.Debug("StyleCopSettingsEditor.exe: " + executable);
