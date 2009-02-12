@@ -1,7 +1,8 @@
 ﻿<AddIn name        = "Python Binding"
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Backend binding for IronPython">
+       description = "Backend binding for IronPython"
+       addInManagerHidden="preinstalled">
 	
 	<Manifest>
 		<Identity name="ICSharpCode.PythonBinding"/>
@@ -15,14 +16,14 @@
 			<ConditionEvaluator name="IsPythonRunning" class="ICSharpCode.PythonBinding.IsPythonRunningCondition"/>
 		</Import>
 	</Runtime>
-
+	
 	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
-		<SyntaxMode id="Python.SyntaxMode" 
-		            extensions=".py" 
+		<SyntaxMode id="Python.SyntaxMode"
+		            extensions=".py"
 		            name="Python"
 		            resource="ICSharpCode.PythonBinding.Resources.Python.xshd"/>
 	</Path>
-
+	
 	<!-- Add the "Python" entry to the Open File Dialog -->
 	<Path name="/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id="Python"
@@ -31,7 +32,7 @@
 		            name="Python Files (*.py)"
 		            extensions="*.py"/>
 	</Path>
-
+	
 	<!-- Add the "Python" entry to the Open Project Dialog -->
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id="PythonProject"
@@ -45,14 +46,14 @@
 	<Path name="/SharpDevelop/BackendBindings/Templates">
 		<Directory id="Python" path="./Templates" />
 	</Path>
-
+	
 	<!-- Python menu -->
 	<Path name="/SharpDevelop/Workbench/MainMenu">
 		<Condition name="ActiveContentExtension" activeextension=".py">
-			<MenuItem id="Python" 
-		              insertafter="Search" 
-			          insertbefore="Tools" 
-			          label="&amp;Python" 
+			<MenuItem id="Python"
+			          insertafter="Search"
+			          insertbefore="Tools"
+			          label="&amp;Python"
 			          type="Menu">
 				<ComplexCondition action="Disable">
 					<Not>
@@ -61,7 +62,7 @@
 					<MenuItem id="Run"
 					          icon="Icons.16x16.RunProgramIcon"
 					          class="ICSharpCode.PythonBinding.RunPythonCommand"
-						      label="&amp;Run"
+					          label="&amp;Run"
 					          shortcut="Control|Shift|R"/>
 				</ComplexCondition>
 				<Condition name="IsPythonRunning" action="Disable">
@@ -93,26 +94,26 @@
 	
 	<!-- The Python code completion binding -->
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
-		<CodeCompletionBinding id="Python" 
-			                   extensions=".py" 
-			                   class="ICSharpCode.PythonBinding.PythonCodeCompletionBinding"/>
+		<CodeCompletionBinding id="Python"
+			extensions=".py"
+			class="ICSharpCode.PythonBinding.PythonCodeCompletionBinding"/>
 	</Path>
 	
-	<!-- 
+	<!--
 		Register path to SharpDevelop.Build.Python.targets for the MSBuild engine.
 		SharpDevelop.Build.Python.targets is in the PythonBinding AddIn directory 
 	-->
 	<Path name="/SharpDevelop/MSBuildEngine/AdditionalProperties">
 		<String id="PythonBinPath" text="${AddInPath:ICSharpCode.PythonBinding}"/>
-	</Path>	
+	</Path>
 	
 	<!-- Options panel -->
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id="PythonOptionsPanel"
-		       	     label="Python"
-		       	     class="ICSharpCode.PythonBinding.PythonOptionsPanel"/>
+		             label="Python"
+		             class="ICSharpCode.PythonBinding.PythonOptionsPanel"/>
 	</Path>
-
+	
 	<!-- Project options panels -->
 	<Path path="/SharpDevelop/BackendBindings/ProjectOptions/Python">
 		<DialogPanel id="Application"
@@ -128,7 +129,7 @@
 		             label="${res:Dialog.ProjectOptions.DebugOptions}"
 		             class="ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
 	</Path>
-
+	
 	<!-- Python display binding -->
 	<!--<Path name="/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id="PythonDisplayBinding"
@@ -137,7 +138,7 @@
 		                languagePattern="^Python$"
 		                class="ICSharpCode.PythonBinding.PythonFormsDesignerDisplayBinding" />
 	</Path>-->
-
+	
 	<!--<Path name="/SharpDevelop/Workbench/MainMenu/Tools/ConvertCode">
 		<ComplexCondition action="Disable">
 			<Or>
@@ -151,7 +152,7 @@
 			          class="ICSharpCode.PythonBinding.ConvertToPythonMenuCommand"/>
 		</ComplexCondition>
 	</Path>-->
-
+	
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id           = "PythonConsole"
 		     category     = "Tools"
@@ -161,7 +162,7 @@
 		     icon         = "PadIcons.Output"
 		     class        = "ICSharpCode.PythonBinding.PythonConsolePad"/>
 	</Path>
-
+	
 	<Path name = "/Workspace/Icons">
 		<Icon id         = "PythonFileIcon"
 		      extensions = ".py"

@@ -1,10 +1,12 @@
 <AddIn name        = "Filetype Registerer"
        author      = "Georg Brandl"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Registers files in the Windows Explorer for #Develop">
+       description = "Registers files in the Windows Explorer for #Develop"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.FiletypeRegisterer"/>
+		<Dependency addin="SharpDevelop"/>
 	</Manifest>
 	
 	<Runtime>

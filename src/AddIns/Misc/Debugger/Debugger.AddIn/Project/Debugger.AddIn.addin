@@ -1,4 +1,9 @@
-﻿<AddIn name="Debugger" author="David Srbecký" copyright="prj:///doc/copyright.txt" description="SharpDevelop Managed Debugger">
+﻿<AddIn name="Debugger"
+       author="David Srbecký"
+       copyright="prj:///doc/copyright.txt"
+       description="SharpDevelop Managed Debugger"
+       addInManagerHidden = "preinstalled">
+	
 	<Manifest>
 		<Identity name = "ICSharpCode.Debugger"/>
 	</Manifest>

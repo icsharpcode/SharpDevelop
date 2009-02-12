@@ -1,7 +1,8 @@
 ﻿<AddIn name        = "IconViewerAddIn"
        author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Allows viewing .ico files inside SharpDevelop">
+       description = "Allows viewing .ico files inside SharpDevelop"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.IconEditor"/>

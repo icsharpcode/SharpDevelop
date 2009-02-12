@@ -2,15 +2,15 @@
        author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
        url         = "http://boo.codehaus.org/Boo+AddIn+For+SharpDevelop"
-       description = "Backing binding for Boo">
+       description = "Backing binding for Boo"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.BooBinding"/>
-		<Dependency addin = "ICSharpCode.FormsDesigner"/>
+		<Dependency addin = "ICSharpCode.FormsDesigner" requirePreload="true"/>
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "$ICSharpCode.FormsDesigner/FormsDesigner.dll"/>
 		<Import assembly = "BooBinding.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>

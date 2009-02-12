@@ -1,7 +1,8 @@
 ﻿<AddIn name        = "SourceAnalysis"
        author      = "Matt Everson"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Integrates StyleCop code analysis">
+       description = "Integrates StyleCop code analysis"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "MattEverson.SourceAnalysis"/>

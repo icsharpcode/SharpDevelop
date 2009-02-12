@@ -1,7 +1,8 @@
 <AddIn name        = "F# Binding"
        author      = "Robert Pickering"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Backend binding for F#">
+       description = "Backend binding for F#"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.FSharpBinding"/>

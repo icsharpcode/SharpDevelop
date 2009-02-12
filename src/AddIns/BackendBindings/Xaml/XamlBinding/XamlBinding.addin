@@ -2,7 +2,8 @@
        author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
        url         = "http://icsharpcode.net"
-       description = "Enables code-completion for xaml files.">
+       description = "Enables code-completion for xaml files."
+       addInManagerHidden = "preinstalled">
 	
 	<!--
 		This file is unrelated to the WPF Designer, it is a language binding for .xaml files.

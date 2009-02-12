@@ -2,7 +2,8 @@
 <AddIn name        = "Class Diagram"
        author      = "Itai Bar-Haim"
        url         = "http://sdclassdiagram.sf.net"
-       description = "Shows a visual class diagram of the project.">
+       description = "Shows a visual class diagram of the project."
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name="ClassDiagram" />

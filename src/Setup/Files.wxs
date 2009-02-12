@@ -1443,7 +1443,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\stdole.dll" Name="stdole.dll" Id="stdole.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\HtmlHelp2.addin" Id="HtmlHelp2.addin" Name="HtmlHelp2.addin" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\HtmlHelp2.dll" Id="HtmlHelp2.dll" Name="HtmlHelp2.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\HtmlHelp2.DynamicHelp.addin" Id="HtmlHelp2.DynamicHelp.addin" Name="HtmlHelp2.DynamicHelp.addin" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\HtmlHelp2JScriptGlobals.dll" Id="HtmlHelp2JScriptGlobals.dll" Name="HtmlHelp2JScriptGlobals.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\MSHelpControls.dll" Id="MSHelpControls.dll" Name="MSHelpControls.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\MSHelpServices.dll" Id="MSHelpServices.dll" Name="MSHelpServices.dll" />

@@ -1,5 +1,6 @@
 ﻿<AddIn name        = "Search &amp; Replace"
-       description = "Implements the Search &amp; Replace feature for the text editor">
+       description = "Implements the Search &amp; Replace feature for the text editor"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name="ICSharpCode.SearchAndReplace"/>

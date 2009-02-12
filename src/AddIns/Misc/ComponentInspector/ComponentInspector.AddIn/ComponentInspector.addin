@@ -2,7 +2,8 @@
        author="Matt Ward"
        url="http://oaklandsoftware.com/"
        copyright="prj:///doc/copyright.txt"
-       description="Component Inspector AddIn for SharpDevelop">
+       description="Component Inspector AddIn for SharpDevelop"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name="ICSharpCode.ComponentInspector"/>

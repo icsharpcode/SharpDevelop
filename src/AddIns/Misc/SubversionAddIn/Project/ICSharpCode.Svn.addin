@@ -1,7 +1,8 @@
 <AddIn name        = "Subversion AddIn"
        author      = "Mike Krueger"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Adds support for Subversion to the project browser">
+       description = "Adds support for Subversion to the project browser"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.Svn"/>

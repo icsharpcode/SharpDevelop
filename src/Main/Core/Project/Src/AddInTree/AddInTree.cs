@@ -44,16 +44,20 @@ namespace ICSharpCode.Core
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			foreach (AddIn addIn in AddIns) {
-				if (!FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, addIn.FileName)) {
-					if (sb.Length > 0) sb.Append(", ");
-					sb.Append("[");
-					sb.Append(addIn.Name);
-					sb.Append(", Enabled=");
-					sb.Append(addIn.Enabled);
-					sb.Append(", Action=");
-					sb.Append(addIn.Action.ToString());
-					sb.Append("]");
+				// Skip preinstalled AddIns (show only third party AddIns)
+				if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, addIn.FileName)) {
+					string hidden = addIn.Properties["addInManagerHidden"];
+					if (string.Equals(hidden, "true", StringComparison.OrdinalIgnoreCase) || string.Equals(hidden, "preinstalled", StringComparison.OrdinalIgnoreCase))
+						continue;
 				}
+				if (sb.Length > 0) sb.Append(", ");
+				sb.Append("[");
+				sb.Append(addIn.Name);
+				sb.Append(", Enabled=");
+				sb.Append(addIn.Enabled);
+				sb.Append(", Action=");
+				sb.Append(addIn.Action.ToString());
+				sb.Append("]");
 			}
 			return sb.ToString();
 		}

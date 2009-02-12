@@ -1,7 +1,8 @@
 ﻿<AddIn name        = "Hornung.ResourceToolkit"
        author      = "Christian Hornung"
        copyright   = "2006-2008 Christian Hornung"
-       description = "Provides tooltips and code completion for resource entries to simplify working with localizable resources using the standard .NET framework classes or ICSharpCode.Core.">
+       description = "Provides tooltips and code completion for resource entries to simplify working with localizable resources using the standard .NET framework classes or ICSharpCode.Core."
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name="Hornung.ResourceToolkit"/>
@@ -12,7 +13,6 @@
 		<Import assembly = "Hornung.ResourceToolkit.dll">
 			<ConditionEvaluator name="SolutionContainsProjectOrReference" class="Hornung.ResourceToolkit.Conditions.SolutionContainsProjectOrReferenceConditionEvaluator"/>
 		</Import>
-		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
 	<!-- Code completion -->

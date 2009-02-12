@@ -1,10 +1,12 @@
 <AddIn name        = "Highlighting Editor"
        author      = "Georg Brandl"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Editor for syntax highlighting styles for the text editor">
+       description = "Editor for syntax highlighting styles for the text editor"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.HighlightingEditor"/>
+		<Dependency addin="SharpDevelop"/>
 	</Manifest>
 	
 	<Runtime>

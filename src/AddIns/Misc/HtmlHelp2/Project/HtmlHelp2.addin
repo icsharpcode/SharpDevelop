@@ -1,10 +1,11 @@
 <AddIn name        = "Help 2.0 Environment for SharpDevelop"
        author      = "Mathias Simmack"
        description = "integrates Microsoft's Help 2.0 Environment"
-       addInManagerHidden = "true">
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.HtmlHelp2"/>
+		<Dependency addin="SharpDevelop"/>
 	</Manifest>
 	
 	<Runtime>
@@ -14,11 +15,11 @@
 	<Path name = "/SharpDevelop/Views/Browser/SchemeExtensions">
 		<BrowserSchemeExtension id = "ms-help" class = "HtmlHelp2.BrowserScheme"/>
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/Services/HelpProvider">
 		<Class id = "HtmlHelp2" class = "HtmlHelp2.MSHelpProvider"/>
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id       = "TocPad"
 		     category = "Help2"
@@ -40,6 +41,11 @@
 		     title    = "${res:AddIns.HtmlHelp2.IndexResults}"
 		     icon     = "HtmlHelp2.16x16.IndexResults"
 		     class    = "HtmlHelp2.HtmlHelp2IndexResultsPad"/>
+		<Pad id       = "DynamicHelpPad"
+		     category = "Help2"
+		     title    = "${res:AddIns.HtmlHelp2.DynamicHelp}"
+		     icon     = "HtmlHelp2.16x16.DynamicHelp"
+		     class    = "HtmlHelp2.HtmlHelp2DynamicHelpPad"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
@@ -77,6 +83,12 @@
 		          class        = "HtmlHelp2.ShowIndexResultsMenuCommand"
 		          insertafter  = "SearchPadCommand"
 		          insertbefore = "Separator1"/>
+		<MenuItem id           = "DynamicHelpPadCommand"
+		          insertbefore = "TocPadCommand"
+		          label        = "${res:AddIns.HtmlHelp2.DynamicHelp}"
+		          icon         = "HtmlHelp2.16x16.DynamicHelp"
+		          shortcut     = "Control|F1"
+		          class        = "HtmlHelp2.ShowDynamicHelpMenuCommand"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/Browser/Toolbar">

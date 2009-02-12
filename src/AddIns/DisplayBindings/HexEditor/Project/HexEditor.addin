@@ -1,10 +1,11 @@
 <AddIn name        = "HexEditor"
        author      = "Siegfried Pammer"
        url         = ""
-       description = "Hexadecimal Editor DisplayBinding">
+       description = "Hexadecimal Editor DisplayBinding"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
-		<Identity name="SiegfriedPammer.HexEditor" version="0.0.2" />
+		<Identity name="SiegfriedPammer.HexEditor" />
 		<Dependency addin="SharpDevelop" version="3.0"/>
 	</Manifest>
 	

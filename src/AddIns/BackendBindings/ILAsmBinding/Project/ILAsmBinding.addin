@@ -1,7 +1,8 @@
 <AddIn name        = "ILAsm binding"
        author      = "Mike Krueger"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Backing binding for IL Assembler">
+       description = "Backing binding for IL Assembler"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.ILAsmBinding"/>

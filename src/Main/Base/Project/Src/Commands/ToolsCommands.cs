@@ -30,7 +30,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 				optionsDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
 				
 				optionsDialog.Owner = WorkbenchSingleton.MainForm;
-				optionsDialog.ShowDialog(WorkbenchSingleton.MainForm);
+				if (optionsDialog.ShowDialog(WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					PropertyService.Save();
+				}
 			}
 		}
 	}
