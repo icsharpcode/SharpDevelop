@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop
 		public bool IsValid(object caller, Condition condition)
 		{
 			IProject project = (caller as IProject) ?? ProjectService.CurrentProject;
-			return !project.ReadOnly;
+			return project != null && !project.ReadOnly;
 		}
 	}
 }
