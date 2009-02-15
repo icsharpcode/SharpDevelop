@@ -169,7 +169,6 @@
     <Compile Include="Expressions\RemoveLastPartTests.cs" />
     <Compile Include="FormsDesignerDisplayBindingTestFixture.cs" />
     <Compile Include="FromImportCompletion.cs">
-      <DependentUpon>AddInOptionsTestFixture.cs</DependentUpon>
     </Compile>
     <Compile Include="ImportCompletionTestFixture.cs" />
     <Compile Include="LanguageBindingTestFixture.cs" />

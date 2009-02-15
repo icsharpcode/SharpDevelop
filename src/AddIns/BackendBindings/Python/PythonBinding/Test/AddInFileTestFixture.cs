@@ -495,84 +495,72 @@ namespace PythonBinding.Tests
 		}
 		
 		[Test]
-		[Ignore("Not ported")]
 		public void PythonDisplayBindingExists()
 		{
 			Assert.IsNotNull(displayBindingCodon);
 		}
 		
 		[Test]
-		[Ignore("Not ported")]
 		public void PythonDisplayBindingIsSecondary()
 		{
 			Assert.AreEqual("Secondary", displayBindingCodon["type"]);
 		}
 		
 		[Test]
-		[Ignore("Not ported")]
 		public void PythonDisplayBindingFileNamePattern()
 		{
 			Assert.AreEqual(@"\.py$", displayBindingCodon["fileNamePattern"]);
 		}
 		
 		[Test]
-		[Ignore("Not ported")]
 		public void PythonDisplayBindingLanguagePattern()
 		{
 			Assert.AreEqual(@"^Python$", displayBindingCodon["languagePattern"]);
 		}
 		
 		[Test]
-		[Ignore("Not ported")]
 		public void PythonDisplayBindingClass()
 		{
 			Assert.AreEqual("ICSharpCode.PythonBinding.PythonFormsDesignerDisplayBinding", displayBindingCodon["class"]);
 		}
 
 		[Test]
-		[Ignore("Not ported")]
 		public void ConvertCodeCodonExists()
 		{
 			Assert.IsNotNull(convertCodeCodon);
 		}
 		
 		[Test]
-		[Ignore("Not ported")]
 		public void ConvertCodeCodonIsMenuItem()
 		{
 			Assert.AreEqual("MenuItem", convertCodeCodon.Name);
 		}
 		
 		[Test]
-		[Ignore("Not ported")]
 		public void ConvertCodeCodonInsertedAfterCSharp()
 		{
 			Assert.AreEqual("CSharp", convertCodeCodon.InsertAfter);
 		}
 
 		[Test]
-		[Ignore("Not ported")]
 		public void ConvertCodeCodonInsertedBeforeVBNet()
 		{
 			Assert.AreEqual("VBNet", convertCodeCodon.InsertBefore);
 		}
 
 		[Test]
-		[Ignore("Not ported")]
 		public void ConvertCodeCodonLabel()
 		{
 			Assert.AreEqual("Python", convertCodeCodon["label"]);
 		}
 
 		[Test]
-		[Ignore("Not ported")]
 		public void ConvertCodeCodonClass()
 		{
 			Assert.AreEqual("ICSharpCode.PythonBinding.ConvertToPythonMenuCommand", convertCodeCodon["class"]);
 		}
 		
 		[Test]
-		[Ignore("Not ported")]
 		public void ConvertCodeMenuConditionAction()
 		{
 			ICondition condition = convertCodeCodon.Conditions[0];
@@ -580,7 +568,6 @@ namespace PythonBinding.Tests
 		}		
 
 		[Test]
-		[Ignore("Not ported")]
 		public void ConvertCodeMenuConditionName()
 		{
 			ICondition condition = convertCodeCodon.Conditions[0];
@@ -588,7 +575,6 @@ namespace PythonBinding.Tests
 		}
 
 		[Test]
-		[Ignore("Not ported")]
 		public void ConvertCodeMenuConditionIsOrCondition()
 		{
 			OrCondition orCondition = convertCodeCodon.Conditions[0] as OrCondition;
@@ -596,7 +582,6 @@ namespace PythonBinding.Tests
 		}
 		
 		[Test]
-		[Ignore("Not ported")]
 		public void ConvertCodeMenuConditionActiveExtension()
 		{			
 			OrCondition orCondition = convertCodeCodon.Conditions[0] as OrCondition;

@@ -131,15 +131,15 @@
 	</Path>
 	
 	<!-- Python display binding -->
-	<!--<Path name="/SharpDevelop/Workbench/DisplayBindings">
+	<Path name="/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id="PythonDisplayBinding"
 		                type="Secondary"
 		                fileNamePattern="\.py$"
 		                languagePattern="^Python$"
 		                class="ICSharpCode.PythonBinding.PythonFormsDesignerDisplayBinding" />
-	</Path>-->
+	</Path>
 	
-	<!--<Path name="/SharpDevelop/Workbench/MainMenu/Tools/ConvertCode">
+	<Path name="/SharpDevelop/Workbench/MainMenu/Tools/ConvertCode">
 		<ComplexCondition action="Disable">
 			<Or>
 				<Condition name="ActiveContentExtension" activeextension=".cs"/>
@@ -151,7 +151,7 @@
 			          label="Python"
 			          class="ICSharpCode.PythonBinding.ConvertToPythonMenuCommand"/>
 		</ComplexCondition>
-	</Path>-->
+	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id           = "PythonConsole"
