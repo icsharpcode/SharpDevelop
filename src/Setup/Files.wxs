@@ -1549,7 +1549,7 @@
 								</Directory>
 							</Directory>
 						</Directory>
-						<Component Guid="5212F79E-568F-426D-AFD2-FC93914D5CE9" Id="SharpDevelopWebsiteShortcut" DiskId="1">
+						<Component Guid="542E5AE1-286C-4CE6-8800-F3AFBB24531D" Id="SharpDevelopWebsiteShortcut" DiskId="1">
 							<!--
 								The choice here is to either useW the IniFile element to
  								generate the two website shortcuts or create a 
@@ -1602,8 +1602,8 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="Programs">
-				<Directory Id="SharpDevelopProgramMenuFolder" Name="SharpDevelop 3.0">
-					<Component Id="SharpDevelopProgramMenuItems" Guid="AB3D8418-BD70-4EB8-8659-8ED3CEC83FEC">
+				<Directory Id="SharpDevelopProgramMenuFolder" Name="SharpDevelop 3.1">
+					<Component Id="SharpDevelopProgramMenuItems" Guid="4CD92F25-B435-4639-A9B0-FF8704791CBB">
 						<!--
 							Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 							http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
@@ -1621,13 +1621,13 @@
 			</Directory>
 			<!-- Desktop shortcuts -->
 			<Directory Id="DesktopFolder" Name="Desktop">
-				<Component Id="DesktopFolderItems" Guid="0B7F764F-19C0-401A-889E-3A9E482CA234">
+				<Component Id="DesktopFolderItems" Guid="056E643A-40A3-4D29-9E43-FAC178033AD1">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
 					-->
 					<RegistryValue Id="SharpDevelopExeDesktopShortcutRegistryKey" Type="string" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop3" Name="DesktopShortcut" Value="1" />
-					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDevelop 3.0" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
+					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDevelop 3.1" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
 				</Component>
 			</Directory>
 		</DirectoryRef>
