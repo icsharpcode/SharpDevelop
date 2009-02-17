@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop
 	/// Display binding for opening a file in an external process.
 	/// </summary>
 	[TypeConverter(typeof(ExternalProcessDisplayBindingConverter))]
-	sealed class ExternalProcessDisplayBinding : IDisplayBinding
+	public sealed class ExternalProcessDisplayBinding : IDisplayBinding
 	{
 		public string FileExtension { get; set; }
 		public string CommandLine { get; set; }

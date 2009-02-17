@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		
 		#if DEBUG
-		public bool DebugMode = false;
+		internal bool DebugMode = false;
 		#endif
 		
 		protected void GenerateCompletionData(TextArea textArea, ExpressionResult expressionResult)

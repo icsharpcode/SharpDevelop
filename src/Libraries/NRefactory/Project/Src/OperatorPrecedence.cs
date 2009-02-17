@@ -73,8 +73,8 @@ namespace ICSharpCode.NRefactory
 		
 		public static int ComparePrecedenceCSharp(BinaryOperatorType op1, BinaryOperatorType op2)
 		{
-			int p1 = GetOperatorPrecedence(vbDict, op1);
-			int p2 = GetOperatorPrecedence(vbDict, op2);
+			int p1 = GetOperatorPrecedence(csharpDict, op1);
+			int p2 = GetOperatorPrecedence(csharpDict, op2);
 			return p1.CompareTo(p2);
 		}
 		

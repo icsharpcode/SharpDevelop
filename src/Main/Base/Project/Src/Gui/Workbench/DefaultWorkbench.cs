@@ -329,7 +329,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowView(IViewContent content, bool switchToOpenedView)
 		{
-			System.Diagnostics.Debug.Assert(layout != null);
+			if (content == null)
+				throw new ArgumentNullException("content");
+			if (content.WorkbenchWindow != null)
+				throw new ArgumentException("Cannot show view content that is already visible in another workbench window");
+			
+			if (layout == null)
+				throw new InvalidOperationException("No layout is attached.");
+			
 			primaryViewContentCollection.Add(content);
 			if (PropertyService.Get("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
 				try {

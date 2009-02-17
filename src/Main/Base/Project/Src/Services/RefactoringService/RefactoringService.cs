@@ -159,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					progressMonitor.BeginTask("${res:SharpDevelop.Refactoring.FindingReferences}", files.Count, true);
 				}
 				#if DEBUG
-				if (System.Windows.Forms.Control.ModifierKeys == System.Windows.Forms.Keys.Control) {
+				if (System.Windows.Forms.Control.ModifierKeys == DefaultEditor.Gui.Editor.SharpDevelopTextAreaControl.DebugBreakModifiers) {
 					System.Diagnostics.Debugger.Break();
 				}
 				#endif
