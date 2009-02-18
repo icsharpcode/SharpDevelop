@@ -70,6 +70,7 @@
     <Compile Include="AddInFileTestFixture.cs" />
     <Compile Include="CompilingOptionsPanelTestFixture.cs" />
     <Compile Include="Console\BuiltinCodeCompletionTestFixture.cs" />
+    <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
     <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\DerivedPythonConsoleHost.cs" />
     <Compile Include="Console\DisposedPythonConsoleTestFixture.cs" />

@@ -212,6 +212,10 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		bool ProcessDialogKeyPress(Keys keyData)
 		{
+			if (textEditor.IsCompletionWindowDisplayed) {
+				return false;
+			}
+			
 			if (IsInReadOnlyRegion) {
 				switch (keyData) {
 					case Keys.Left:
