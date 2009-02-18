@@ -104,7 +104,6 @@ namespace NRefactoryASTGenerator.Ast
 		public CastExpression(TypeReference castTo, Expression expression, CastType castType) {}
 	}
 	
-	[IncludeMember("[Obsolete] public string FieldName { get { return MemberName; } set { MemberName = value; } }")]
 	class MemberReferenceExpression : Expression
 	{
 		Expression targetObject;
@@ -114,7 +113,6 @@ namespace NRefactoryASTGenerator.Ast
 		public MemberReferenceExpression(Expression targetObject, string memberName) {}
 	}
 	
-	[IncludeMember("[Obsolete] public string Identifier { get { return MemberName; } set { MemberName = value; } }")]
 	class PointerReferenceExpression : Expression {
 		Expression targetObject;
 		string     memberName;
@@ -152,7 +150,6 @@ namespace NRefactoryASTGenerator.Ast
 		public TypeOfExpression(TypeReference typeReference) {}
 	}
 	
-	[IncludeMember("[Obsolete] public TypeReferenceExpression(string typeName) : this(new TypeReference(typeName)) {}")]
 	class TypeReferenceExpression : Expression {
 		TypeReference typeReference;
 		

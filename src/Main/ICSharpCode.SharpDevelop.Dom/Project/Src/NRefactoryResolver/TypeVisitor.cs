@@ -36,17 +36,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			                        resolver.ProjectContent, ReturnTypeOptions.None);
 		}
 		
-		[Obsolete("Use the overload with ReturnTypeOptions instead")]
-		public static IReturnType CreateReturnType(TypeReference reference, IClass callingClass,
-		                                           IMember callingMember, int caretLine, int caretColumn,
-		                                           IProjectContent projectContent,
-		                                           bool useLazyReturnType)
-		{
-			return CreateReturnType(reference, callingClass, callingMember, caretLine, caretColumn,
-			                        projectContent,
-			                        useLazyReturnType ? ReturnTypeOptions.Lazy : ReturnTypeOptions.None);
-		}
-		
 		public static IReturnType CreateReturnType(TypeReference reference, IClass callingClass,
 		                                           IMember callingMember, int caretLine, int caretColumn,
 		                                           IProjectContent projectContent,

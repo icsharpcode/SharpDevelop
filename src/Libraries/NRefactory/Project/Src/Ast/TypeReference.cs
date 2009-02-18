@@ -185,13 +185,6 @@ namespace ICSharpCode.NRefactory.Ast
 			}
 		}
 		
-		[Obsolete("Use 'Type' instead - it now contains the SystemType for primitive types.")]
-		public string SystemType {
-			get {
-				return this.Type;
-			}
-		}
-		
 		public int PointerNestingLevel {
 			get {
 				return pointerNestingLevel;
@@ -264,13 +257,6 @@ namespace ICSharpCode.NRefactory.Ast
 		public TypeReference(string type)
 		{
 			this.Type = type;
-		}
-		
-		[Obsolete("Type and SystemType are no longer distinguished - use the (string type, bool isKeyword) constructor instead!")]
-		public TypeReference(string type, string systemType)
-		{
-			this.Type = systemType;
-			this.IsKeyword = type != systemType;
 		}
 		
 		public TypeReference(string type, bool isKeyword)

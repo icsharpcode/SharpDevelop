@@ -36,12 +36,6 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		[Obsolete("Use ForEach instead.")]
-		public static void Foreach<T>(this IEnumerable<T> input, Action<T> action)
-		{
-			ForEach(input, action);
-		}
-		
 		/// <summary>
 		/// Adds all <paramref name="elements"/> to <paramref name="list"/>.
 		/// </summary>
@@ -111,7 +105,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		sealed class Win32WindowAdapter : WinForms.IWin32Window
 		{
-			System.Windows.Interop.IWin32Window window;
+			readonly System.Windows.Interop.IWin32Window window;
 			
 			public Win32WindowAdapter(System.Windows.Interop.IWin32Window window)
 			{

@@ -649,8 +649,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static event EventHandler StartBuild;
 		public static event EventHandler<BuildEventArgs> EndBuild;
 		
-		[Obsolete("This event is never raised.")]
-		public static event ProjectConfigurationEventHandler ProjectConfigurationChanged { add {} remove {} }
 		public static event SolutionConfigurationEventHandler SolutionConfigurationChanged;
 		
 		public static event EventHandler<SolutionEventArgs> SolutionCreated;

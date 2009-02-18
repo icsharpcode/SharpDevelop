@@ -272,7 +272,7 @@ namespace WorkflowDesigner.Loaders
 		{
 			if (type == null)
 				return;
-			if (type.SystemType != type.Type)
+			if (type.IsKeyword)
 				return;
 			foreach (TypeReference tref in type.GenericTypes) {
 				FixTypeReference(tref, location, domCu);

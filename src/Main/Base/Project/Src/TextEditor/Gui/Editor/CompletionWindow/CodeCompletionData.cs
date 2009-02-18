@@ -201,12 +201,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return false;
 		}
 		
-		[Obsolete("Use 'ConvertDocumentation' instead.")]
-		public static string GetDocumentation(string doc)
-		{
-			return ConvertDocumentation(doc);
-		}
-		
 		static readonly Regex whitespace = new Regex(@"\s+");
 		
 		/// <summary>

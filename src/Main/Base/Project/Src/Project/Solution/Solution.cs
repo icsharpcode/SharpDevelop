@@ -31,11 +31,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		public const int SolutionVersionVS2005 = 9;
 		public const int SolutionVersionVS2008 = 10;
 		
-		[Obsolete("Use SolutionVersionVS2005 instead")]
-		public const int SolutionVersionVS05 = 9;
-		[Obsolete("Use SolutionVersionVS2008 instead")]
-		public const int SolutionVersionVS08 = 10;
-		
 		/// <summary>contains &lt;GUID, (IProject/ISolutionFolder)&gt; pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		

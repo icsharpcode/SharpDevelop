@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public System.Windows.Forms.IWin32Window MainWin32Window { get; private set; }
-		public ISynchronizeInvoke SynchronizingObject { get; set; }
+		public ISynchronizeInvoke SynchronizingObject { get; private set; }
 		public Window MainWindow { get { return this; } }
 		
 		List<PadDescriptor> padViewContentCollection = new List<PadDescriptor>();
