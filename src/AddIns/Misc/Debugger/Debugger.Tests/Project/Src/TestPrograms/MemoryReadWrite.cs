@@ -74,8 +74,8 @@ namespace Debugger.Tests {
     <ModuleLoaded>MemoryReadWrite.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
     <DebuggingPaused>Break MemoryReadWrite.cs:18,4-18,40</DebuggingPaused>
-    <hello>EC 8 33 79 6 0 0 0 5 0 0 0 48 0 65 0 6C 0 6C 0 6F 0 </hello>
-    <world>EC 8 33 79 7 0 0 0 6 0 0 0 20 0 20 0 20 0 20 0 20 0 21 0 </world>
+    <hello>0 A 33 79 6 0 0 0 5 0 0 0 48 0 65 0 6C 0 6C 0 6F 0 </hello>
+    <world>0 A 33 79 7 0 0 0 6 0 0 0 20 0 20 0 20 0 20 0 20 0 21 0 </world>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>

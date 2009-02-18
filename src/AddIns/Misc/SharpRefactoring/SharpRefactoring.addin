@@ -1,6 +1,7 @@
 <AddIn name        = "SharpRefactoring"
        author      = "Siegfried Pammer"
-       description = "Provides refactorings in SharpDevelop">
+       description = "Provides refactorings in SharpDevelop"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name="ICSharpCode.SharpRefactoring"/>

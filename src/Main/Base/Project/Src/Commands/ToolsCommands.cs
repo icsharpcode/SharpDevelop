@@ -14,27 +14,31 @@ namespace ICSharpCode.SharpDevelop.Commands
 {
 	public class OptionsCommand : AbstractMenuCommand
 	{
-		public static void ShowTabbedOptions(string dialogTitle, AddInTreeNode node)
+		public static bool? ShowTabbedOptions(string dialogTitle, AddInTreeNode node)
 		{
 			TabbedOptionsDialog o = new TabbedOptionsDialog(node.BuildChildItems<IOptionPanelDescriptor>(null));
 			o.Title = dialogTitle;
 			o.Owner = WorkbenchSingleton.MainWindow;
-			o.ShowDialog();
+			return o.ShowDialog();
 		}
 		
-		public static void ShowTreeOptions(string dialogTitle, AddInTreeNode node)
+		public static bool? ShowTreeOptions(string dialogTitle, AddInTreeNode node)
 		{
 			TreeViewOptionsDialog o = new TreeViewOptionsDialog(node.BuildChildItems<IOptionPanelDescriptor>(null));
 			o.Title = dialogTitle;
 			o.Owner = WorkbenchSingleton.MainWindow;
-			o.ShowDialog();
+			return o.ShowDialog();
 		}
 		
 		public override void Run()
 		{
-			ShowTreeOptions(
+			bool? result = ShowTreeOptions(
 				ResourceService.GetString("Dialog.Options.TreeViewOptions.DialogName"),
 				AddInTree.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"));
+			if (result ?? false) {
+				// save properties after changing options
+				PropertyService.Save();
+			}
 		}
 	}
 	

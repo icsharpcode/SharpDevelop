@@ -1,7 +1,8 @@
 <AddIn name        = "Xml Editor"
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Xml Editor">
+       description = "Xml Editor"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.XmlEditor"/>

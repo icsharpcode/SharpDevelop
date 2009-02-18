@@ -90,10 +90,14 @@ namespace ICSharpCode.AddInManager
 			addInList.Sort(delegate(AddIn a, AddIn b) {
 			               	return a.Name.CompareTo(b.Name);
 			               });
+			bool hasPreinstalledAddIns = false;
 			foreach (AddIn addIn in addInList) {
-				string identity = addIn.Manifest.PrimaryIdentity;
-				if (addIn.Properties["addInManagerHidden"] == "true")
+				if (string.Equals(addIn.Properties["addInManagerHidden"], "true", StringComparison.OrdinalIgnoreCase)
+				    && IsInstalledInApplicationRoot(addIn))
+				{
+					hasPreinstalledAddIns = true;
 					continue;
+				}
 				addInControl = new AddInControl(addIn);
 				addInControl.Dock = DockStyle.Top;
 				addInControl.TabIndex = index++;
@@ -105,10 +109,9 @@ namespace ICSharpCode.AddInManager
 				splitContainer.Panel1.Controls.Add(stack.Pop());
 			}
 			ShowPreinstalledAddInsCheckBoxCheckedChanged(null, null);
-			#if SHOWALLADDINS
-			showPreinstalledAddInsCheckBox.Visible = false;
-			showPreinstalledAddInsCheckBox.Checked = true;
-			#endif
+			if (!hasPreinstalledAddIns) {
+				showPreinstalledAddInsCheckBox.Visible = false;
+			}
 			splitContainer.Panel2Collapsed = true;
 		}
 		
@@ -144,13 +147,22 @@ namespace ICSharpCode.AddInManager
 				} else {
 					if (ctl == oldFocus)
 						oldFocus = null;
-					visible = !FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, ctl.AddIn.FileName);
+					if (IsInstalledInApplicationRoot(ctl.AddIn)) {
+						visible = !string.Equals(ctl.AddIn.Properties["addInManagerHidden"], "preinstalled", StringComparison.OrdinalIgnoreCase);
+					} else {
+						visible = true;
+					}
 				}
 				if (visible)
 					visibleAddInCount += 1;
 				ctl.Visible = visible;
 			}
 			UpdateActionBox();
+		}
+		
+		static bool IsInstalledInApplicationRoot(AddIn addin)
+		{
+			return FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, addin.FileName);
 		}
 		
 		void OnControlClick(object sender, EventArgs e)
@@ -245,7 +257,7 @@ namespace ICSharpCode.AddInManager
 					allInstalling   &= addIn.Action == AddInAction.Install;
 					allUninstalling &= addIn.Action == AddInAction.Uninstall;
 					if (allUninstallable) {
-						if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, addIn.FileName)) {
+						if (IsInstalledInApplicationRoot(addIn)) {
 							allUninstallable = false;
 						}
 					}

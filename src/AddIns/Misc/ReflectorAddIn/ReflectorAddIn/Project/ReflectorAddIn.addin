@@ -1,15 +1,16 @@
 ﻿<AddIn name        = "ReflectorAddIn"
        author      = "Christian Hornung"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Can open Red Gate's .NET Reflector on a selected class or member.">
+       description = "Can open Red Gate's .NET Reflector on a selected class or member."
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
-		<Identity name="ReflectorAddIn" />
+		<Identity name="ICSharpCode.ReflectorAddIn" />
+		<Dependency addin="SharpDevelop"/>
 	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "ReflectorAddIn.dll"/>
-		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
 	<!-- Text editor context menu -->

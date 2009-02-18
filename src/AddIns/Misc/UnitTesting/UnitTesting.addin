@@ -1,10 +1,12 @@
 ﻿<AddIn name        = "Unit Testing Addin"
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Runs NUnit tests inside #Develop">
+       description = "Runs NUnit tests inside #Develop"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.UnitTesting"/>
+		<Dependency addin="SharpDevelop"/>
 	</Manifest>
 	
 	<Runtime>

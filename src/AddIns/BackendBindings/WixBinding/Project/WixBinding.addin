@@ -2,7 +2,8 @@
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
        url         = "http://icsharpcode.net"
-       description = "Binding for the WiX installer.">
+       description = "Binding for the WiX installer."
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.WixBinding"/>

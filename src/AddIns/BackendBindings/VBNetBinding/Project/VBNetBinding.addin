@@ -1,7 +1,8 @@
 <AddIn name        = "VB Binding"
        author      = "Mike Krueger, Markus Palme"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Backing binding for VB.NET">
+       description = "Backing binding for VB.NET"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.VBNetBinding"/>

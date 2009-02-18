@@ -2,7 +2,8 @@
        author      = "Satguru P Srivastava"
        copyright   = "prj:///doc/copyright.txt"
        url         = "http://home.mchsi.com/~ssatguru"
-       description = "Display AddIn Information">
+       description = "Display AddIn Information"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.AddInScout"/>

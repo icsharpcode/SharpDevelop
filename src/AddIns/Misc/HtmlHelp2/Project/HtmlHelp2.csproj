@@ -107,9 +107,6 @@
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Toc.png" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Index.png" />
     <Compile Include="src\Service\SharpDevLanguageClass.cs" />
-    <None Include="HtmlHelp2.DynamicHelp.addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>

@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop
 	/// This class handles the installed display bindings
 	/// and provides a simple access point to these bindings.
 	/// </summary>
-	internal static class DisplayBindingService
+	public static class DisplayBindingService
 	{
 		const string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
 		
@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static DisplayBindingDescriptor AddExternalProcessDisplayBinding(ExternalProcessDisplayBinding binding)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			if (binding == null)
 				throw new ArgumentNullException("binding");
 			DisplayBindingDescriptor descriptor = AddExternalProcessDisplayBindingInternal(binding);
@@ -64,6 +65,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void RemoveExternalProcessDisplayBinding(ExternalProcessDisplayBinding binding)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			if (binding == null)
 				throw new ArgumentNullException("binding");
 			if (!externalProcessDisplayBindings.Remove(binding))
@@ -83,6 +85,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static IDisplayBinding GetBindingPerFileName(string filename)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			DisplayBindingDescriptor codon = GetDefaultCodonPerFileName(filename);
 			return codon == null ? null : codon.Binding;
 		}
@@ -92,6 +95,8 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static DisplayBindingDescriptor GetDefaultCodonPerFileName(string filename)
 		{
+			WorkbenchSingleton.AssertMainThread();
+			
 			string defaultCommandID = displayBindingServiceProperties.Get("Default" + Path.GetExtension(filename).ToLowerInvariant()) as string;
 			if (!string.IsNullOrEmpty(defaultCommandID)) {
 				foreach (DisplayBindingDescriptor binding in bindings) {
@@ -113,11 +118,12 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void SetDefaultCodon(string extension, DisplayBindingDescriptor bindingDescriptor)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			if (bindingDescriptor == null)
 				throw new ArgumentNullException("bindingDescriptor");
 			if (extension == null)
 				throw new ArgumentNullException("extension");
-			if (!extension.StartsWith("."))
+			if (!extension.StartsWith(".", StringComparison.Ordinal))
 				throw new ArgumentException("extension must start with '.'");
 			
 			displayBindingServiceProperties.Set("Default" + extension.ToLowerInvariant(), bindingDescriptor.Id);
@@ -128,6 +134,8 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static IList<DisplayBindingDescriptor> GetCodonsPerFileName(string filename)
 		{
+			WorkbenchSingleton.AssertMainThread();
+			
 			List<DisplayBindingDescriptor> list = new List<DisplayBindingDescriptor>();
 			foreach (DisplayBindingDescriptor binding in bindings) {
 				if (IsPrimaryBindingValidForFileName(binding, filename)) {
@@ -154,6 +162,10 @@ namespace ICSharpCode.SharpDevelop
 		/// <param name="isReattaching">This is a reattaching pass</param>
 		public static void AttachSubWindows(IViewContent viewContent, bool isReattaching)
 		{
+			WorkbenchSingleton.AssertMainThread();
+			if (viewContent == null)
+				throw new ArgumentNullException("viewContent");
+			
 			foreach (DisplayBindingDescriptor binding in bindings) {
 				if (binding.IsSecondary && binding.CanOpenFile(viewContent.PrimaryFileName)) {
 					ISecondaryDisplayBinding displayBinding = binding.SecondaryBinding;

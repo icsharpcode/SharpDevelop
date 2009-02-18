@@ -1,7 +1,8 @@
 ﻿<AddIn name        = "AddInManager"
        author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Can install, enable, disable and uninstall AddIns">
+       description = "Can install, enable, disable and uninstall AddIns"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.AddInManager"/>

@@ -331,9 +331,9 @@ namespace VBNetBinding.FormattingStrategy
 					count--;
 				lineNr++;
 				if (lineNr < area.Document.TotalNumberOfLines)
-				lineText = area.Document.GetText(area.Document.GetLineSegment(lineNr));
+					lineText = area.Document.GetText(area.Document.GetLineSegment(lineNr));
 			}
-						
+			
 			return (count > 0);
 		}
 		

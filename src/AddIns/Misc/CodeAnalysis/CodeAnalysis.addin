@@ -1,7 +1,8 @@
 ﻿<AddIn name        = "CodeAnalysis"
        author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Integrates FxCop code analysis">
+       description = "Integrates FxCop code analysis"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.CodeAnalysis"/>

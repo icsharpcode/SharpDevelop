@@ -1,7 +1,8 @@
 <AddIn name        = "HexEditor"
        author      = "Siegfried Pammer"
        url         = ""
-       description = "Hexadecimal Editor DisplayBinding">
+       description = "Hexadecimal Editor DisplayBinding"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name="SiegfriedPammer.HexEditor" />

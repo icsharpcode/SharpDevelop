@@ -1457,7 +1457,6 @@
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\stdole.dll" Name="stdole.dll" Id="stdole.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\HtmlHelp2.addin" Id="HtmlHelp2.addin" Name="HtmlHelp2.addin" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\HtmlHelp2.dll" Id="HtmlHelp2.dll" Name="HtmlHelp2.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\HtmlHelp2.DynamicHelp.addin" Id="HtmlHelp2.DynamicHelp.addin" Name="HtmlHelp2.DynamicHelp.addin" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\HtmlHelp2JScriptGlobals.dll" Id="HtmlHelp2JScriptGlobals.dll" Name="HtmlHelp2JScriptGlobals.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\MSHelpControls.dll" Id="MSHelpControls.dll" Name="MSHelpControls.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\HtmlHelp2\MSHelpServices.dll" Id="MSHelpServices.dll" Name="MSHelpServices.dll" />
@@ -1564,7 +1563,7 @@
 								</Directory>
 							</Directory>
 						</Directory>
-						<Component Guid="5212F79E-568F-426D-AFD2-FC93914D5CE9" Id="SharpDevelopWebsiteShortcut" DiskId="1">
+						<Component Guid="542E5AE1-286C-4CE6-8800-F3AFBB24531D" Id="SharpDevelopWebsiteShortcut" DiskId="1">
 							<!--
 								The choice here is to either useW the IniFile element to
  								generate the two website shortcuts or create a 

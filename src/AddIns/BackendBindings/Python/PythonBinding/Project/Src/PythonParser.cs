@@ -98,10 +98,14 @@ namespace ICSharpCode.PythonBinding
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			if (fileContent != null) {
-				PythonAst ast = CreateAst(fileName, fileContent);
-				PythonAstWalker walker = new PythonAstWalker(projectContent, fileName);
-				walker.Walk(ast);
-				return walker.CompilationUnit;
+				try { 
+					PythonAst ast = CreateAst(fileName, fileContent);
+					PythonAstWalker walker = new PythonAstWalker(projectContent, fileName);
+					walker.Walk(ast);
+					return walker.CompilationUnit;
+				} catch (InvalidCastException) {
+					// Ignore.
+				}
 			}
 			
 			DefaultCompilationUnit compilationUnit = new DefaultCompilationUnit(projectContent);

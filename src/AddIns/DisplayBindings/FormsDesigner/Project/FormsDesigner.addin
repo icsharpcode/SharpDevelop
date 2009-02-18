@@ -1,7 +1,8 @@
 <AddIn name        = "Forms Designer"
        author      = "Mike Krueger"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Windows Forms Designer">
+       description = "Windows Forms Designer"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.FormsDesigner"/>
