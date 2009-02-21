@@ -808,6 +808,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return false;
 				}
 			}
+			IField f1 = member1 as IField;
+			IField f2 = member2 as IField;
+			if (f1 != null || f2 != null) {
+				if (f1 != null && f2 != null) {
+					if (f1.IsLocalVariable != f2.IsLocalVariable || f1.IsParameter != f2.IsParameter)
+						return false;
+				} else {
+					return false;
+				}
+			}
 			return true;
 		}
 		
