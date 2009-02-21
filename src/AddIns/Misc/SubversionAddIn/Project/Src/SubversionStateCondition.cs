@@ -47,7 +47,7 @@ namespace ICSharpCode.Svn
 				if (condition.Properties["item"] == "Folder") {
 					return false;
 				}
-				return Test(condition, node.FileName);
+				return Test(condition, node.FileName, false);
 			}
 			DirectoryNode dir = ProjectBrowserPad.Instance.SelectedNode as DirectoryNode;
 			if (dir != null) {
@@ -58,7 +58,7 @@ namespace ICSharpCode.Svn
 					// Directories are not checked recursively yet.
 					return true;
 				}
-				return Test(condition, dir.Directory);
+				return Test(condition, dir.Directory, true);
 			}
 			SolutionNode sol = ProjectBrowserPad.Instance.SelectedNode as SolutionNode;
 			if (sol != null) {
@@ -69,19 +69,21 @@ namespace ICSharpCode.Svn
 					// Directories are not checked recursively yet.
 					return true;
 				}
-				return Test(condition, sol.Solution.Directory);
+				return Test(condition, sol.Solution.Directory, true);
 			}
 			return false;
 		}
 		
-		bool Test(Condition condition, string fileName)
+		bool Test(Condition condition, string fileName, bool isDirectory)
 		{
 			string[] allowedStatus = condition.Properties["state"].Split(';');
 			if (allowedStatus.Length == 0 || (allowedStatus.Length == 1 && allowedStatus[0].Length == 0)) {
 				return true;
 			}
 			string status;
-			if (RegisterEventsCommand.CanBeVersionControlledFile(fileName)) {
+			if (isDirectory ? RegisterEventsCommand.CanBeVersionControlledDirectory(fileName)
+			    : RegisterEventsCommand.CanBeVersionControlledFile(fileName))
+			{
 				status = OverlayIconManager.GetStatus(fileName).ToString();
 			} else {
 				status = "Unversioned";

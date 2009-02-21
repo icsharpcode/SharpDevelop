@@ -1,5 +1,5 @@
 <AddIn name        = "Subversion AddIn"
-       author      = "Mike Krueger"
+       author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
        description = "Adds support for Subversion to the project browser"
        addInManagerHidden = "preinstalled">
