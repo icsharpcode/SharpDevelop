@@ -130,6 +130,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "AddOpenWithEntryDialog";
+			this.ShowInTaskbar = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "${res:Gui.ProjectBrowser.OpenWith.AddProgram.DialogTitle}";
 			this.ResumeLayout(false);
 			this.PerformLayout();

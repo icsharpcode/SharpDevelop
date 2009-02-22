@@ -143,6 +143,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(292, 186);
 			this.Name = "OpenWithDialog";
+			this.ShowInTaskbar = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "${res:Gui.ProjectBrowser.OpenWith.DialogTitle}";
 			this.ResumeLayout(false);
 		}
