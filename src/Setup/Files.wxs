@@ -709,6 +709,9 @@
 							<Component Guid="2EC34D8A-CF14-4E1F-A512-9A596A1C256D" Id="ICSharpCodeCoreWinFormsDll" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Core.WinForms.dll" Name="ICSharpCode.Core.WinForms.dll" Id="ICSharpCode.Core.WinForms.dll" KeyPath="yes" />
 							</Component>
+							<Component Guid="A567716C-7776-4A03-87EB-68818CB36D14" Id="ICSharpCodeCorePresentationDll" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.Core.Presentation.dll" Name="ICSharpCode.Core.Presentation.dll" Id="ICSharpCode.Core.Presentation.dll" KeyPath="yes" />
+							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
