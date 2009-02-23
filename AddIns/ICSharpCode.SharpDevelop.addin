@@ -2233,8 +2233,8 @@
 		<Condition name = "ProjectItem" itemType = "EmbeddedResource">
 			<CustomProperty id = "EmbeddedResourceLogicalName"
 			                name = "LogicalName"
-			                displayName = "Logical Name"
-			                description = "The name of the embedded resource. If left empty, the name is automatically generated." />
+			                displayName = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.LogicalName}"
+			                description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.LogicalName.Description}" />
 		</Condition>
 	</Path>
 </AddIn>

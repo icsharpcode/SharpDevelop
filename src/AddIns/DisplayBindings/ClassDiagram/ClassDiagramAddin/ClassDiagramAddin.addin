@@ -15,7 +15,7 @@
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
 		<MenuItem id    = "ShowClassDiagram"
-		          label = "Show Class Diagram"
+		          label = "${res:AddIns.ClassDiagram.ShowClassDiagram}"
 		          class = "ClassDiagramAddin.ShowClassDiagramCommand"
 		          icon  = "ClassDiagram.ShowClassDiagram"/>
 	</Path>

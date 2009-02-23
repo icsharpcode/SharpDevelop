@@ -76,7 +76,7 @@
 					          class = "ICSharpCode.Svn.Commands.RevisionGraphCommand"/>
 					<MenuItem id = "Sep1" type = "Separator"/>
 					<MenuItem id = "SvnUpdate"
-					          label = "Update"
+					          label = "${res:AddIns.Subversion.Update}"
 					          icon  = "Svn.Update"
 					          class = "ICSharpCode.Svn.Commands.UpdateCommand"/>
 					<MenuItem id = "SvnUpdateToRev"

@@ -371,6 +371,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 
 		public string CreateProject(ProjectCreateInformation projectCreateInformation)
 		{
+			LoggingService.Info("Creating project from template '" + this.Category + "/" + this.Subcategory + "/" + this.Name + "'");
 			if (wizardpath != null) {
 				Properties customizer = new Properties();
 				customizer.Set("ProjectCreateInformation", projectCreateInformation);

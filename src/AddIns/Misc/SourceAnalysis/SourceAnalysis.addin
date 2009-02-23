@@ -23,20 +23,20 @@
 	
 	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<DialogPanel id          = "SourceAnalysis"
-		             label       = "Source Analysis"
+		             label       = "${res:AddIns.SourceAnalysis.Title}"
 		             class       = "MattEverson.SourceAnalysis.AnalysisProjectOptionsPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
 		<MenuItem id    = "CheckWithStyleCop"
-		          label = "Check with StyleCop"
+		          label = "${res:AddIns.SourceAnalysis.CheckWithStyleCop}"
 		          class = "MattEverson.SourceAnalysis.CheckCurrentProjectCommand"/>
 	</Path>
 	
 	<!-- Options panel -->
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id    = "SourceAnalysisOptionPanel"
-		       	     label = "Source Analysis"
+		       	     label = "${res:AddIns.SourceAnalysis.Title}"
 		       	     class = "MattEverson.SourceAnalysis.AnalysisIdeOptionsPanel"/>
 	</Path>
 </AddIn>
