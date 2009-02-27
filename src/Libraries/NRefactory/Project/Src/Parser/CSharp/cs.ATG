@@ -1875,17 +1875,9 @@ PrimaryExpr<out Expression pexpr>
 	| IF (StartOfQueryExpression())
 		QueryExpression<out pexpr>
 	| IF (IdentAndDoubleColon())
-		Identifier (. string namespaceAlias = t.val; .)
-		"::"
-		TypeName<out type, true> (.
-			if (namespaceAlias == "global") {
-				type.IsGlobal = true; 
-			} else {
-				type.Type = namespaceAlias + "." + type.Type;
-			}
-			pexpr = new TypeReferenceExpression(type);
-			pexpr.StartLocation = startLocation;
-		.)
+		Identifier (. type = new TypeReference(t.val); .)
+		"::" (. pexpr = new TypeReferenceExpression(type); .)
+		Identifier (. if (type.Type == "global") { type.IsGlobal = true; type.Type = t.val ?? "?"; } else type.Type += "." + (t.val ?? "?"); .)
 
 		/*--- simple name (IdentifierExpression): */
 	|	Identifier
