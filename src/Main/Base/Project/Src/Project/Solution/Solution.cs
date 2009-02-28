@@ -219,8 +219,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		public bool ReadOnly {
 			get
 			{
-				FileAttributes attributes = File.GetAttributes(fileName);
-				return ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly);
+				try {
+					FileAttributes attributes = File.GetAttributes(fileName);
+					return ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly);
+				} catch (FileNotFoundException) {
+					return false;
+				} catch (DirectoryNotFoundException) {
+					return true;
+				}
 			}
 		}
 		#endregion
@@ -502,7 +508,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
-						
+			
 			if (!newSolution.ReadOnly && (newSolution.FixSolutionConfiguration(newSolution.Projects) || needsConversion)) {
 				// save in new format
 				newSolution.Save();

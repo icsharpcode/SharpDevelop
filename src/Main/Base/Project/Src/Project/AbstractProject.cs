@@ -129,11 +129,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		[ReadOnly(true)]
 		public virtual bool ReadOnly {
 			get {
-				if (File.Exists(FileName)) {
+				try {
 					FileAttributes attributes = File.GetAttributes(FileName);
 					return ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly);
+				} catch (FileNotFoundException) {
+					return false;
+				} catch (DirectoryNotFoundException) {
+					return true;
 				}
-				return false;
 			}
 		}
 		
