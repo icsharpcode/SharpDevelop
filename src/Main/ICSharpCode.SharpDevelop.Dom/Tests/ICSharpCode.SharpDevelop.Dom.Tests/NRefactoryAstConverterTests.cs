@@ -119,5 +119,37 @@ namespace X
 ");
 			Assert.AreEqual(SurroundWithSummaryTags("This is the comment"), cu.Classes[0].Documentation);
 		}
+		
+		[Test]
+		public void GenericMethodWithConstraintsTest()
+		{
+			// Test that constaints can reference other type parameters.
+			ICompilationUnit cu = Parse(@"
+using System;
+
+class X {
+	public static A Method<A, B>(A p1, B p2) where A : IComparable<B> where B : IComparable<A> { }
+}
+");
+			IMethod method = cu.Classes[0].Methods[0];
+			Assert.AreEqual(2, method.TypeParameters.Count);
+			
+			ITypeParameter a = method.TypeParameters[0];
+			ITypeParameter b = method.TypeParameters[1];
+			
+			Assert.AreSame(a, method.ReturnType.CastToGenericReturnType().TypeParameter);
+			Assert.AreSame(a, method.Parameters[0].ReturnType.CastToGenericReturnType().TypeParameter);
+			Assert.AreSame(b, method.Parameters[1].ReturnType.CastToGenericReturnType().TypeParameter);
+			
+			Assert.AreEqual(1, a.Constraints.Count);
+			ConstructedReturnType crt = a.Constraints[0].CastToConstructedReturnType();
+			Assert.AreEqual("IComparable", crt.Name);
+			Assert.AreSame(b, crt.TypeArguments[0].CastToGenericReturnType().TypeParameter);
+			
+			Assert.AreEqual(1, b.Constraints.Count);
+			crt = b.Constraints[0].CastToConstructedReturnType();
+			Assert.AreEqual("IComparable", crt.Name);
+			Assert.AreSame(a, crt.TypeArguments[0].CastToGenericReturnType().TypeParameter);
+		}
 	}
 }

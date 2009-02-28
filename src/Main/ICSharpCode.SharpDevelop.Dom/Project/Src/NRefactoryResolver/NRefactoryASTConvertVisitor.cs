@@ -422,8 +422,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (templateList.Count == 0) {
 				c.TypeParameters = DefaultTypeParameter.EmptyTypeParameterList;
 			} else {
+				Debug.Assert(c.TypeParameters.Count == 0);
 				foreach (AST.TemplateDefinition template in templateList) {
-					c.TypeParameters.Add(ConvertConstraints(template, new DefaultTypeParameter(c, template.Name, index++)));
+					c.TypeParameters.Add(new DefaultTypeParameter(c, template.Name, index++));
+				}
+				// converting the constraints requires that the type parameters are already present
+				for (int i = 0; i < templateList.Count; i++) {
+					ConvertConstraints(templateList[i], (DefaultTypeParameter)c.TypeParameters[i]);
 				}
 			}
 		}
@@ -434,13 +439,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (templateList.Count == 0) {
 				m.TypeParameters = DefaultTypeParameter.EmptyTypeParameterList;
 			} else {
+				Debug.Assert(m.TypeParameters.Count == 0);
 				foreach (AST.TemplateDefinition template in templateList) {
-					m.TypeParameters.Add(ConvertConstraints(template, new DefaultTypeParameter(m, template.Name, index++)));
+					m.TypeParameters.Add(new DefaultTypeParameter(m, template.Name, index++));
+				}
+				// converting the constraints requires that the type parameters are already present
+				for (int i = 0; i < templateList.Count; i++) {
+					ConvertConstraints(templateList[i], (DefaultTypeParameter)m.TypeParameters[i]);
 				}
 			}
 		}
 		
-		DefaultTypeParameter ConvertConstraints(AST.TemplateDefinition template, DefaultTypeParameter typeParameter)
+		void ConvertConstraints(AST.TemplateDefinition template, DefaultTypeParameter typeParameter)
 		{
 			foreach (AST.TypeReference typeRef in template.Bases) {
 				if (typeRef == AST.TypeReference.NewConstraint) {
@@ -450,13 +460,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				} else if (typeRef == AST.TypeReference.StructConstraint) {
 					typeParameter.HasValueTypeConstraint = true;
 				} else {
-					IReturnType rt = CreateReturnType(typeRef);
+					IReturnType rt = CreateReturnType(typeRef, typeParameter.Method, TypeVisitor.ReturnTypeOptions.None);
 					if (rt != null) {
 						typeParameter.Constraints.Add(rt);
 					}
 				}
 			}
-			return typeParameter;
 		}
 		
 		public override object VisitDelegateDeclaration(AST.DelegateDeclaration delegateDeclaration, object data)

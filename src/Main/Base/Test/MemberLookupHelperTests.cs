@@ -319,11 +319,13 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void NoConversionExistsFromStringToDisposableT()
 		{
-			Assert.IsFalse(IsApplicable(msc.SystemTypes.String,
-			                            CreateTWithDisposableConstraint()));
-			
+			// no conversion exists
 			Assert.IsFalse(MemberLookupHelper.ConversionExists(msc.SystemTypes.String,
 			                                                   CreateTWithDisposableConstraint()));
+			
+			// but it is applicable (applicability ignores constraints)
+			Assert.IsTrue(IsApplicable(msc.SystemTypes.String,
+			                           CreateTWithDisposableConstraint()));
 		}
 		
 		[Test]

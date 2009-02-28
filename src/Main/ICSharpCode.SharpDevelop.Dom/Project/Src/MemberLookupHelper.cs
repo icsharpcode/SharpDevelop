@@ -470,7 +470,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		static bool IsConstructedConversionToGenericReturnType(IReturnType from, IReturnType to, IMethod allowGenericTargetsOnThisMethod)
 		{
 			// null could be passed when type arguments could not be resolved/inferred
-			if (from == null && to == null)
+			if (from == to) // both are null or
 				return true;
 			if (from == null || to == null)
 				return false;
@@ -483,14 +483,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			if (to.IsGenericReturnType) {
 				ITypeParameter typeParameter = to.CastToGenericReturnType().TypeParameter;
-				if (typeParameter.Method != allowGenericTargetsOnThisMethod)
-					return false;
-				foreach (IReturnType constraintType in typeParameter.Constraints) {
-					if (!ConversionExistsInternal(from, constraintType, allowGenericTargetsOnThisMethod)) {
-						return false;
-					}
-				}
-				return true;
+				if (typeParameter.Method == allowGenericTargetsOnThisMethod)
+					return true;
+				// applicability ignores constraints
+//				foreach (IReturnType constraintType in typeParameter.Constraints) {
+//					if (!ConversionExistsInternal(from, constraintType, allowGenericTargetsOnThisMethod)) {
+//						return false;
+//					}
+//				}
+				return false;
 			}
 			
 			// for conversions like from IEnumerable<string> to IEnumerable<T>, where T is a GenericReturnType
