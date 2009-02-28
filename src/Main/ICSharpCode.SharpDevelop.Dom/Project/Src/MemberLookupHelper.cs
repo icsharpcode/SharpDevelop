@@ -135,7 +135,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// base most member => most derived member
 			//Dictionary<IMember, IMember> overrideDict = new Dictionary<IMember, IMember>();
 			
-			bool handledNonMethod = false;
 			HashSet<IMethod> handledMethods = new HashSet<IMethod>(new SignatureComparer());
 			Dictionary<IMethod, IMethod> overrideMethodDict = new Dictionary<IMethod, IMethod>(new SignatureComparer());
 			IMember nonMethodOverride = null;
@@ -171,8 +170,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 								}
 							}
 						} else {
-							if (!handledNonMethod) {
-								handledNonMethod = true;
+							// non-methods are only available if they aren't hidden by something else
+							if (allResults.Count == 0) {
 								results.Add(nonMethodOverride ?? m);
 							}
 						}

@@ -70,7 +70,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public ReflectionProjectContent LoadProjectContent(string cacheFileName)
 		{
-			using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read)) {
+			using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read,
+			                                      FileShare.Read | FileShare.Delete, 4096, FileOptions.SequentialScan)) {
 				return LoadProjectContent(fs);
 			}
 		}

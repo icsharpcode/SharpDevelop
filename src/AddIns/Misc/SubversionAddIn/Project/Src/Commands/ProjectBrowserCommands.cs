@@ -229,6 +229,14 @@ namespace ICSharpCode.Svn.Commands
 		}
 	}
 	
+	public class LockCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Lock(filename, null);
+		}
+	}
+	
 	public class BlameCommand : SubversionCommand
 	{
 		protected override void Run(string filename)

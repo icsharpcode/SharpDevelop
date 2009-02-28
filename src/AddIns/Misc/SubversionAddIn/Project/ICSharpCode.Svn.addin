@@ -126,6 +126,11 @@
 					          class = "ICSharpCode.Svn.Commands.UnignoreCommand"/>
 				</Condition>
 				<Condition name = "SubversionState" state = "Modified;Normal" item = "File">
+					<MenuItem id = "SvnLock"
+					          label = "${res:AddIns.Subversion.Lock}..."
+					          class = "ICSharpCode.Svn.Commands.LockCommand"/>
+				</Condition>
+				<Condition name = "SubversionState" state = "Modified;Normal" item = "File">
 					<MenuItem id = "SvnBlame"
 					          label = "${res:AddIns.Subversion.Blame}..."
 					          class = "ICSharpCode.Svn.Commands.BlameCommand"/>

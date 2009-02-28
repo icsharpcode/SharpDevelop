@@ -204,6 +204,11 @@ namespace ICSharpCode.Svn
 			Proc("copy", fileName, callback);
 		}
 		
+		public static void Lock(string fileName, MethodInvoker callback)
+		{
+			Proc("lock", fileName, callback);
+		}
+		
 		public static void Blame(string fileName, MethodInvoker callback)
 		{
 			Proc("blame", fileName, callback);
