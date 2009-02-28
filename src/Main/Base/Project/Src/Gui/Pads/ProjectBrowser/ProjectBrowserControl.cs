@@ -65,7 +65,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public AbstractProjectBrowserTreeNode RootNode {
 			get {
-				return treeView.Nodes[0] as AbstractProjectBrowserTreeNode;
+				if (treeView.Nodes.Count > 0)
+					return treeView.Nodes[0] as AbstractProjectBrowserTreeNode;
+				else
+					return null;
 			}
 		}
 		

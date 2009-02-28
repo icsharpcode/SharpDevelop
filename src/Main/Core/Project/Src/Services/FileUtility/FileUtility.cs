@@ -552,7 +552,7 @@ namespace ICSharpCode.Core
 						ServiceManager.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
 						break;
 					case FileErrorPolicy.ProvideAlternative:
-						ChooseSaveErrorResult r = ServiceManager.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, false);
+						ChooseSaveErrorResult r = ServiceManager.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, true);
 						if (r.IsRetry) {
 							return ObservedSave(saveFileAs, fileName, message, policy);
 						} else if (r.IsIgnore) {

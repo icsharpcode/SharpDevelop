@@ -68,11 +68,15 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public static void AddProject(ISolutionFolderNode solutionFolderNode, string fileName)
 		{
+			if (solutionFolderNode == null)
+				throw new ArgumentNullException("solutionFolderNode");
 			AddProject(solutionFolderNode, LanguageBindingService.LoadProject(solutionFolderNode.Solution, fileName, Path.GetFileNameWithoutExtension(fileName)));
 		}
 		
 		public static void AddProject(ISolutionFolderNode solutionFolderNode, IProject newProject)
 		{
+			if (solutionFolderNode == null)
+				throw new ArgumentNullException("solutionFolderNode");
 			if (newProject != null) {
 				newProject.Location = FileUtility.GetRelativePath(solutionFolderNode.Solution.Directory, newProject.FileName);
 				ProjectService.AddProject(solutionFolderNode, newProject);
