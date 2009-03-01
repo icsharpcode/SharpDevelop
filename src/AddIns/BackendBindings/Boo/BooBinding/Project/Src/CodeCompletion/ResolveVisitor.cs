@@ -192,9 +192,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 			}
 			
-			string namespaceName = projectContent.SearchNamespace(identifier, callingClass, cu, resolver.CaretLine, resolver.CaretColumn);
-			if (namespaceName != null && namespaceName.Length > 0) {
-				MakeNamespaceResult(namespaceName);
+			SearchTypeResult searchTypeResult = projectContent.SearchType(new SearchTypeRequest(identifier, 0, callingClass, cu, resolver.CaretLine, resolver.CaretColumn));
+			if (!string.IsNullOrEmpty(searchTypeResult.NamespaceResult)) {
+				MakeNamespaceResult(searchTypeResult.NamespaceResult);
 				return true;
 			}
 			

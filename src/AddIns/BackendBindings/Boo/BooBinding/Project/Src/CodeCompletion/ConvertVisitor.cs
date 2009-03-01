@@ -506,9 +506,23 @@ namespace Grunwald.BooBinding.CodeCompletion
 			property.UserData = node;
 		}
 		
+		string PrependCurrentNamespace(string name)
+		{
+			if (string.IsNullOrEmpty(_cu.UsingScope.NamespaceName))
+				return name;
+			else
+				return _cu.UsingScope.NamespaceName + "." + name;
+		}
+		
 		public override void OnNamespaceDeclaration(Boo.Lang.Compiler.Ast.NamespaceDeclaration node)
 		{
-			_cu.UsingScope = new DefaultUsingScope { NamespaceName = node.Name };
+			string[] namespaceName = node.Name.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach (string namePart in namespaceName) {
+				_cu.UsingScope = new DefaultUsingScope {
+					NamespaceName = PrependCurrentNamespace(namePart),
+					Parent = _cu.UsingScope
+				};
+			}
 			base.OnNamespaceDeclaration(node);
 		}
 	}

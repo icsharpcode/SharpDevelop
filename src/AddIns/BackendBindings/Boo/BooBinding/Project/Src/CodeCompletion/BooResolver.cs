@@ -221,7 +221,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (mie != null)
 					expr = mie.Target;
 				string name = expr.ToCodeString();
-				IReturnType rt = pc.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, caretLine, caretColumn)).Result;
+				SearchTypeResult searchTypeResult = pc.SearchType(new SearchTypeRequest(name, 0, callingClass, cu, caretLine, caretColumn));
+				IReturnType rt = searchTypeResult.Result;
 				if (rt != null && rt.GetUnderlyingClass() != null)
 					return new TypeResolveResult(callingClass, callingMember, rt);
 				rt = pc.SearchType(new SearchTypeRequest(name + "Attribute", 0, callingClass, cu, caretLine, caretColumn)).Result;
@@ -232,7 +233,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					if (c != null)
 						return new TypeResolveResult(callingClass, callingMember, c);
 				}
-				string namespaceName = pc.SearchNamespace(name, callingClass, cu, caretLine, caretColumn);
+				string namespaceName = searchTypeResult.NamespaceResult;
 				if (namespaceName != null) {
 					return new NamespaceResolveResult(callingClass, callingMember, namespaceName);
 				}
