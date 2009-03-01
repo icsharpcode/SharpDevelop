@@ -1082,6 +1082,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					userProject.Save(userFile);
 				}
 			}
+			FileUtility.RaiseFileSaved(new FileNameEventArgs(fileName));
 		}
 		#endregion
 		

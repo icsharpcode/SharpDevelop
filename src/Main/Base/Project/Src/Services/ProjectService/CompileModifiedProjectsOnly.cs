@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject p in ProjectService.OpenSolution.Projects) {
-					if (p.FindFile(e.FileName) != null) {
+					if (p.FindFile(e.FileName) != null || FileUtility.IsEqualFileName(p.FileName, e.FileName)) {
 						lock (unmodifiedProjects) {
 							unmodifiedProjects.Remove(p);
 						}
