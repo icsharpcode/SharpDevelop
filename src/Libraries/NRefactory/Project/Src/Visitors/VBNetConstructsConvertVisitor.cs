@@ -236,9 +236,9 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (methodDeclaration.TypeReference.Type != "System.Void" && methodDeclaration.Body.Children.Count > 0) {
 				if (IsAssignmentTo(methodDeclaration.Body.Children[methodDeclaration.Body.Children.Count - 1], methodDeclaration.Name))
 				{
-					ReturnStatement rs = new ReturnStatement(GetAssignmentFromStatement(methodDeclaration.Body.Children[methodDeclaration.Body.Children.Count - 1]).Right);
+					Expression returnValue = GetAssignmentFromStatement(methodDeclaration.Body.Children[methodDeclaration.Body.Children.Count - 1]).Right;
 					methodDeclaration.Body.Children.RemoveAt(methodDeclaration.Body.Children.Count - 1);
-					methodDeclaration.Body.AddChild(rs);
+					methodDeclaration.Body.Return(returnValue);
 				} else {
 					ReturnStatementForFunctionAssignment visitor = new ReturnStatementForFunctionAssignment(methodDeclaration.Name);
 					methodDeclaration.Body.AcceptVisitor(visitor, null);
@@ -247,7 +247,7 @@ namespace ICSharpCode.NRefactory.Visitors
 						init = ExpressionBuilder.CreateDefaultValueForType(methodDeclaration.TypeReference);
 						methodDeclaration.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(FunctionReturnValueName, init, methodDeclaration.TypeReference)));
 						methodDeclaration.Body.Children[0].Parent = methodDeclaration.Body;
-						methodDeclaration.Body.AddChild(new ReturnStatement(new IdentifierExpression(FunctionReturnValueName)));
+						methodDeclaration.Body.Return(new IdentifierExpression(FunctionReturnValueName));
 					}
 				}
 			}

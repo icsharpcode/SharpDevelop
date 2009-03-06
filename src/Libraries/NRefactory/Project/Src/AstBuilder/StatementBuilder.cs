@@ -11,7 +11,6 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.AstBuilder
 {
-	#if NET35
 	/// <summary>
 	/// Extension methods for NRefactory.Ast.Expression.
 	/// </summary>
@@ -57,5 +56,4 @@ namespace ICSharpCode.NRefactory.AstBuilder
 			AddStatement(block, new AssignmentExpression(left, AssignmentOperatorType.Assign, right));
 		}
 	}
-	#endif
 }

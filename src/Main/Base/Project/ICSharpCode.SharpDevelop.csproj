@@ -497,6 +497,7 @@
     <Compile Include="Src\TextEditor\Commands\GenerateCodeCommand.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Src\TextEditor\Commands\PasteAsCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\SearchCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\TextAreaContextmenuCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />

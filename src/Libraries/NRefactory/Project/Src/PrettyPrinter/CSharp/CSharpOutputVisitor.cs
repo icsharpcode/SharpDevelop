@@ -1748,69 +1748,68 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
+			outputFormatter.PrintText(ToCSharpString(primitiveExpression));
+			return null;
+		}
+		
+		internal static string ToCSharpString(PrimitiveExpression primitiveExpression)
+		{
 			if (primitiveExpression.Value == null) {
-				outputFormatter.PrintToken(Tokens.Null);
-				return null;
+				return "null";
 			}
 			
 			object val = primitiveExpression.Value;
 			
 			if (val is bool) {
 				if ((bool)val) {
-					outputFormatter.PrintToken(Tokens.True);
+					return "true";
 				} else {
-					outputFormatter.PrintToken(Tokens.False);
+					return "false";
 				}
-				return null;
 			}
 			
 			if (val is string) {
-				outputFormatter.PrintText('"' + ConvertString(val.ToString()) + '"');
-				return null;
+				return "\"" + ConvertString(val.ToString()) + "\"";
 			}
 			
 			if (val is char) {
-				outputFormatter.PrintText("'" + ConvertCharLiteral((char)val) + "'");
-				return null;
+				return "'" + ConvertCharLiteral((char)val) + "'";
 			}
 			
 			if (val is decimal) {
-				outputFormatter.PrintText(((decimal)val).ToString(NumberFormatInfo.InvariantInfo) + "m");
-				return null;
+				return ((decimal)val).ToString(NumberFormatInfo.InvariantInfo) + "m";
 			}
 			
 			if (val is float) {
-				outputFormatter.PrintText(((float)val).ToString(NumberFormatInfo.InvariantInfo) + "f");
-				return null;
+				return ((float)val).ToString(NumberFormatInfo.InvariantInfo) + "f";
 			}
 			
 			if (val is double) {
 				string text = ((double)val).ToString(NumberFormatInfo.InvariantInfo);
 				if (text.IndexOf('.') < 0 && text.IndexOf('E') < 0)
-					outputFormatter.PrintText(text + ".0");
+					return text + ".0";
 				else
-					outputFormatter.PrintText(text);
-				return null;
+					return text;
 			}
 			
 			if (val is IFormattable) {
+				StringBuilder b = new StringBuilder();
 				if (primitiveExpression.LiteralFormat == LiteralFormat.HexadecimalNumber) {
-					outputFormatter.PrintText("0x");
-					outputFormatter.PrintText(((IFormattable)val).ToString("x", NumberFormatInfo.InvariantInfo));
+					b.Append("0x");
+					b.Append(((IFormattable)val).ToString("x", NumberFormatInfo.InvariantInfo));
 				} else {
-					outputFormatter.PrintText(((IFormattable)val).ToString(null, NumberFormatInfo.InvariantInfo));
+					b.Append(((IFormattable)val).ToString(null, NumberFormatInfo.InvariantInfo));
 				}
 				if (val is uint || val is ulong) {
-					outputFormatter.PrintText("u");
+					b.Append("u");
 				}
 				if (val is long || val is ulong) {
-					outputFormatter.PrintText("L");
+					b.Append("L");
 				}
+				return b.ToString();
 			} else {
-				outputFormatter.PrintText(val.ToString());
+				return val.ToString();
 			}
-			
-			return null;
 		}
 		
 		static bool IsNullLiteralExpression(Expression expr)

@@ -83,6 +83,16 @@ namespace ICSharpCode.NRefactory.AstBuilder
 				return new PrimitiveExpression(null, "null");
 			}
 		}
+		
+		/// <summary>
+		/// Just calls the BinaryOperatorExpression constructor,
+		/// but being an extension method; this allows for a nicer
+		/// infix syntax in some cases.
+		/// </summary>
+		public static BinaryOperatorExpression Operator(this Expression left, BinaryOperatorType op, Expression right)
+		{
+			return new BinaryOperatorExpression(left, op, right);
+		}
 	}
 	#endif
 }
