@@ -154,7 +154,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 				if (mode != SelectionMode.None || !AllowTextDragDrop) {
 					e.Cursor = Cursors.IBeam;
 					e.Handled = true;
-				} else {
+				} else if (textArea.TextView.VisualLinesValid) {
+					// Only query the cursor if the visual lines are valid.
+					// If they are invalid, the cursor will get re-queried when the visual lines
+					// get refreshed.
 					Point p = e.GetPosition(textArea.TextView);
 					if (p.X >= 0 && p.Y >= 0 && p.X <= textArea.TextView.ActualWidth && p.Y <= textArea.TextView.ActualHeight) {
 						int visualColumn;
@@ -281,7 +284,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextView textView = textArea.TextView;
 			if (textView == null) return SimpleSegment.Invalid;
-			textView.EnsureVisualLines();
 			Point pos = e.GetPosition(textView);
 			if (pos.Y < 0)
 				pos.Y = 0;
@@ -325,7 +327,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			visualColumn = 0;
 			TextView textView = textArea.TextView;
-			textView.EnsureVisualLines();
 			Point pos = positionRelativeToTextView;
 			if (pos.Y < 0)
 				pos.Y = 0;
@@ -348,17 +349,11 @@ namespace ICSharpCode.AvalonEdit.Gui
 				return;
 			if (mode == SelectionMode.Normal || mode == SelectionMode.WholeWord) {
 				e.Handled = true;
-				int oldOffset = textArea.Caret.Offset;
-				SetCaretOffsetToMousePosition(e);
-				if (mode == SelectionMode.Normal) {
-					textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldOffset, textArea.Caret.Offset);
-				} else if (mode == SelectionMode.WholeWord) {
-					var newWord = GetWordAtMousePosition(e);
-					if (newWord != SimpleSegment.Invalid) {
-						textArea.Selection = new SimpleSelection(
-							Math.Min(newWord.Offset, startWord.Offset),
-							Math.Max(newWord.GetEndOffset(), startWord.GetEndOffset()));
-					}
+				if (textArea.TextView.VisualLinesValid) {
+					// If the visual lines are not valid, don't extend the selection.
+					// Extending the selection forces a VisualLine refresh, and it is sufficient
+					// to do that on MouseUp, we don't have to do it every MouseMove.
+					ExtendSelectionToMouse(e);
 				}
 			} else if (mode == SelectionMode.PossibleDragStart) {
 				e.Handled = true;
@@ -367,6 +362,20 @@ namespace ICSharpCode.AvalonEdit.Gui
 				    || Math.Abs(mouseMovement.Y) > SystemParameters.MinimumVerticalDragDistance)
 				{
 					StartDrag();
+				}
+			}
+		}
+		
+		void ExtendSelectionToMouse(MouseEventArgs e)
+		{
+			int oldOffset = textArea.Caret.Offset;
+			SetCaretOffsetToMousePosition(e);
+			if (mode == SelectionMode.Normal) {
+				textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldOffset, textArea.Caret.Offset);
+			} else if (mode == SelectionMode.WholeWord) {
+				var newWord = GetWordAtMousePosition(e);
+				if (newWord != SimpleSegment.Invalid) {
+					textArea.Selection = new SimpleSelection(Math.Min(newWord.Offset, startWord.Offset), Math.Max(newWord.GetEndOffset(), startWord.GetEndOffset()));
 				}
 			}
 		}
@@ -380,6 +389,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 				// -> this was not a drag start (mouse didn't move after mousedown)
 				SetCaretOffsetToMousePosition(e);
 				textArea.Selection = Selection.Empty;
+			} else if (mode == SelectionMode.Normal || mode == SelectionMode.WholeWord) {
+				ExtendSelectionToMouse(e);
 			}
 			mode = SelectionMode.None;
 			textArea.ReleaseMouseCapture();

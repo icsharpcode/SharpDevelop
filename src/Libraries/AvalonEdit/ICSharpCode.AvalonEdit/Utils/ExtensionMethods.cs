@@ -58,22 +58,6 @@ namespace ICSharpCode.AvalonEdit.Utils
 			                    (FontStretch)fe.GetValue(TextBlock.FontStretchProperty));
 		}
 		
-		/// <summary>
-		/// Runs all outstanding dispatcher tasks with a priority higher or equal to <paramref name="priority"/>.
-		/// </summary>
-		public static void DoEvents(this Dispatcher dispatcher, DispatcherPriority priority)
-		{
-			dispatcher.VerifyAccess();
-			DispatcherFrame frame = new DispatcherFrame();
-			dispatcher.BeginInvoke(
-				priority, new DispatcherOperationCallback(
-					delegate {
-						frame.Continue = false;
-						return null;
-					}), null);
-			Dispatcher.PushFrame(frame);
-		}
-		
 		public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> elements)
 		{
 			foreach (T e in elements)

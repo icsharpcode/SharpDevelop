@@ -99,6 +99,9 @@ namespace ICSharpCode.AvalonEdit
 					value = string.Empty;
 				TextDocument document = GetOrCreateDocument();
 				document.Text = value;
+				// after replacing the full text, the caret is positioned at the end of the document
+				// - reset it to the beginning.
+				this.CaretOffset = 0;
 				document.UndoStack.ClearAll();
 			}
 		}

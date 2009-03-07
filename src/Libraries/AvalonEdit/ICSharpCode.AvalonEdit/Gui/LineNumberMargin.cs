@@ -69,7 +69,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextView textView = this.TextView;
 			Size renderSize = this.RenderSize;
-			if (textView != null) {
+			if (textView != null && textView.VisualLinesValid) {
 				var foreground = (Brush)GetValue(Control.ForegroundProperty);
 				foreach (VisualLine line in textView.VisualLines) {
 					int lineNumber = line.FirstDocumentLine.LineNumber;
@@ -170,7 +170,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		SimpleSegment GetTextLineSegment(MouseEventArgs e)
 		{
-			TextView.EnsureVisualLines();
 			Point pos = e.GetPosition(TextView);
 			pos.X = 0;
 			pos.Y += TextView.VerticalOffset;

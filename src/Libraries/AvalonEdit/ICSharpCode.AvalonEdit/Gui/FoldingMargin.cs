@@ -75,7 +75,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 			markers.Clear();
 			InvalidateVisual();
-			if (TextView != null && FoldingManager != null) {
+			if (TextView != null && FoldingManager != null && TextView.VisualLinesValid) {
 				foreach (VisualLine line in TextView.VisualLines) {
 					FoldingSection fs = FoldingManager.GetNextFolding(line.FirstDocumentLine.Offset);
 					if (fs == null)
@@ -113,6 +113,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <inheritdoc/>
 		protected override void OnRender(DrawingContext drawingContext)
 		{
+			if (!TextView.VisualLinesValid)
+				return;
 			if (TextView.VisualLines.Count == 0 || FoldingManager == null)
 				return;
 			

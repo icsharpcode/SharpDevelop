@@ -242,17 +242,15 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		/// <summary>
 		/// Waits for the visual lines to be built.
-		/// Warning: this methods runs all operations with priority &gt;= Render
 		/// </summary>
-		public void EnsureVisualLines()
+		private void EnsureVisualLines()
 		{
 			Dispatcher.VerifyAccess();
 			if (visibleVisualLines == null) {
-				if (invalidateMeasureOperation != null) {
-					// increase priority
-					InvalidateMeasure(DispatcherPriority.Normal);
-				}
-				Dispatcher.DoEvents(DispatcherPriority.Render);
+				// increase priority for real Redraw
+				InvalidateMeasure(DispatcherPriority.Normal);
+				// force immediate re-measure
+				UpdateLayout();
 			}
 		}
 		
@@ -285,7 +283,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public VisualLine GetVisualLine(int documentLineNumber)
 		{
-			VerifyAccess();
+			// TODO: EnsureVisualLines() ?
 			foreach (VisualLine visualLine in allVisualLines) {
 				Debug.Assert(visualLine.IsDisposed == false);
 				int start = visualLine.FirstDocumentLine.LineNumber;
@@ -355,13 +353,21 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		/// <summary>
 		/// Gets the currently visible visual lines.
-		/// Is empty when the visual lines are not available
-		/// (when one or more of the visual lines need to be regenerated).
 		/// </summary>
 		public ReadOnlyCollection<VisualLine> VisualLines {
 			get {
-				return visibleVisualLines ?? Empty<VisualLine>.ReadOnlyCollection;
+				EnsureVisualLines();
+				return visibleVisualLines;
 			}
+		}
+		
+		/// <summary>
+		/// Gets whether the visual lines are valid.
+		/// Will return false after a call to Redraw(). Accessing the visual lines property
+		/// will force immediate regeneration of valid lines.
+		/// </summary>
+		public bool VisualLinesValid {
+			get { return visibleVisualLines != null; }
 		}
 		
 		/// <summary>
@@ -398,10 +404,21 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			if (!canHorizontallyScroll && !availableSize.Width.IsClose(lastAvailableSize.Width))
 				ClearVisualLines();
-			
-			RemoveInlineObjectsNow();
-			
 			lastAvailableSize = availableSize;
+			return DoMeasure(availableSize);
+		}
+		
+		/// <summary>
+		/// Immediately performs the text creation.
+		/// </summary>
+		/// <param name="availableSize">The size of the text view.</param>
+		/// <returns></returns>
+		Size DoMeasure(Size availableSize)
+		{
+			bool isRealMeasure = true;
+			if (isRealMeasure)
+				RemoveInlineObjectsNow();
+			
 			if (document == null)
 				return Size.Empty;
 			
@@ -455,7 +472,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 				if (!newVisualLines.Contains(line))
 					DisposeVisualLine(line);
 			}
-			RemoveInlineObjectsNow();
+			if (isRealMeasure)
+				RemoveInlineObjectsNow();
 			
 			allVisualLines = newVisualLines;
 			// visibleVisualLines = readonly copy of visual lines
@@ -1032,7 +1050,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public VisualLine GetVisualLineFromVisualTop(double visualTop)
 		{
-			VerifyAccess();
 			foreach (VisualLine vl in this.VisualLines) {
 				if (visualTop < vl.VisualTop)
 					continue;

@@ -37,7 +37,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		#region Insert Text
 		public void InsertText(int offset, int length)
 		{
-			Log("InsertText(" + offset + ", " + length + ")");
+			//Log("InsertText(" + offset + ", " + length + ")");
 			if (length == 0 || root == null || offset > root.totalLength)
 				return;
 			
@@ -139,7 +139,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		#region Remove Text
 		public void RemoveText(int offset, int length, DelayedEvents delayedEvents)
 		{
-			Log("RemoveText(" + offset + ", " + length + ")");
+			//Log("RemoveText(" + offset + ", " + length + ")");
 			if (length == 0 || root == null || offset >= root.totalLength)
 				return;
 			TextAnchorNode node = FindNode(ref offset);
