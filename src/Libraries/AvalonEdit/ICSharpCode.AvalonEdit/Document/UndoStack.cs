@@ -49,6 +49,20 @@ namespace ICSharpCode.AvalonEdit.Document
 		int undoGroupDepth;
 		int actionCountInUndoGroup;
 		int optionalActionCount;
+		object lastGroupDescriptor;
+		
+		/// <summary>
+		/// If an undo group is open, gets the group descriptor of the current top-level
+		/// undo group.
+		/// If no undo group is open, gets the group descriptor from the previous undo group.
+		/// </summary>
+		/// <remarks>The group descriptor can be used to join adjacent undo groups:
+		/// use a group descriptor to mark your changes, and on the second action,
+		/// compare LastGroupDescriptor and use <see cref="StartContinuedUndoGroup"/> if you
+		/// want to join the undo groups.</remarks>
+		public object LastGroupDescriptor {
+			get { return lastGroupDescriptor; }
+		}
 		
 		/// <summary>
 		/// Starts grouping changes.
@@ -56,12 +70,43 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public void StartUndoGroup()
 		{
+			StartUndoGroup(null);
+		}
+		
+		/// <summary>
+		/// Starts grouping changes.
+		/// Maintains a counter so that nested calls are possible.
+		/// </summary>
+		/// <param name="groupDescriptor">An object that is stored with the undo group.
+		/// If this is not a top-level undo group, the parameter is ignored.</param>
+		public void StartUndoGroup(object groupDescriptor)
+		{
 			if (undoGroupDepth == 0) {
 				actionCountInUndoGroup = 0;
 				optionalActionCount = 0;
+				lastGroupDescriptor = groupDescriptor;
 			}
 			undoGroupDepth++;
 			//Util.LoggingService.Debug("Open undo group (new depth=" + undoGroupDepth + ")");
+		}
+		
+		/// <summary>
+		/// Starts grouping changes, continuing with the previously closed undo group.
+		/// Maintains a counter so that nested calls are possible.
+		/// If the call to StartContinuedUndoGroup is a nested call, it behaves exactly
+		/// as <see cref="StartUndoGroup()"/>, only top-level calls can continue existing undo groups.
+		/// </summary>
+		/// <param name="groupDescriptor">An object that is stored with the undo group.
+		/// If this is not a top-level undo group, the parameter is ignored.</param>
+		public void StartContinuedUndoGroup(object groupDescriptor)
+		{
+			if (undoGroupDepth == 0) {
+				actionCountInUndoGroup = undostack.Count > 0 ? 1 : 0;
+				optionalActionCount = 0;
+				lastGroupDescriptor = groupDescriptor;
+			}
+			undoGroupDepth++;
+			//Util.LoggingService.Debug("Continue undo group (new depth=" + undoGroupDepth + ")");
 		}
 		
 		/// <summary>
@@ -102,6 +147,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			VerifyNoUndoGroupOpen();
 			if (undostack.Count > 0) {
+				lastGroupDescriptor = null;
 				acceptChanges = false;
 				IUndoableOperation uedit = undostack.Pop();
 				redostack.Push(uedit);
@@ -121,6 +167,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			VerifyNoUndoGroupOpen();
 			if (redostack.Count > 0) {
+				lastGroupDescriptor = null;
 				acceptChanges = false;
 				IUndoableOperation uedit = redostack.Pop();
 				undostack.Push(uedit);
@@ -195,6 +242,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			VerifyNoUndoGroupOpen();
 			if (undostack.Count != 0) {
+				lastGroupDescriptor = null;
 				undostack.Clear();
 				NotifyPropertyChanged("CanUndo");
 			}

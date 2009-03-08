@@ -31,21 +31,21 @@ namespace ICSharpCode.AvalonEdit.Tests
 		{
 			bool collectedTextView = false;
 			TextDocument textDocument = new TextDocument();
-			Assert.AreEqual(0, textDocument.LineTracker.Count);
+			Assert.AreEqual(0, textDocument.LineTrackers.Count);
 			
 			TextView textView = new TextViewWithGCCallback(delegate { collectedTextView = true; });
 			textView.Document = textDocument;
-			Assert.AreEqual(1, textDocument.LineTracker.Count);
+			Assert.AreEqual(1, textDocument.LineTrackers.Count);
 			textView = null;
 			
 			GarbageCollect();
 			Assert.IsTrue(collectedTextView);
 			// document cannot immediately clear the line tracker
-			Assert.AreEqual(1, textDocument.LineTracker.Count);
+			Assert.AreEqual(1, textDocument.LineTrackers.Count);
 			
 			// but it should clear it on the next change
 			textDocument.Insert(0, "a");
-			Assert.AreEqual(0, textDocument.LineTracker.Count);
+			Assert.AreEqual(0, textDocument.LineTrackers.Count);
 		}
 		
 		[Test]

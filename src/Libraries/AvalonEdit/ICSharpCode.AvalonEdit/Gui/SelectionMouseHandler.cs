@@ -164,8 +164,16 @@ namespace ICSharpCode.AvalonEdit.Gui
 							e.Effects = DragDropEffects.None;
 						} else {
 							Debug.WriteLine("Drop: insert at " + start);
-							textArea.Document.Insert(start, text);
-							textArea.Selection = new SimpleSelection(start, start + text.Length);
+							// Mark the undo group with the currentDragDescriptor, if the drag
+							// is originating from the same control. This allows combining
+							// the undo groups when text is moved.
+							textArea.Document.UndoStack.StartUndoGroup(this.currentDragDescriptor);
+							try {
+								textArea.Document.Insert(start, text);
+								textArea.Selection = new SimpleSelection(start, start + text.Length);
+							} finally {
+								textArea.Document.UndoStack.EndUndoGroup();
+							}
 						}
 					}
 				}
@@ -206,6 +214,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 		#endregion
 		
 		#region Start Drag
+		object currentDragDescriptor;
+		
 		void StartDrag()
 		{
 			// prevent nested StartDrag calls
@@ -219,14 +229,21 @@ namespace ICSharpCode.AvalonEdit.Gui
 			dataObject.SetText(text);
 			
 			DragDropEffects allowedEffects = DragDropEffects.All;
-			List<AnchorSegment> deleteOnMove;
-			deleteOnMove = textArea.Selection.Segments.Select(s => new AnchorSegment(textArea.Document, s)).ToList();
+			var deleteOnMove = textArea.Selection.Segments.Select(s => new AnchorSegment(textArea.Document, s)).ToList();
+			
+			object dragDescriptor = new object();
+			this.currentDragDescriptor = dragDescriptor;
 			
 			Debug.WriteLine("DoDragDrop with allowedEffects=" + allowedEffects);
 			DragDropEffects resultEffect = DragDrop.DoDragDrop(textArea, dataObject, allowedEffects);
 			Debug.WriteLine("DoDragDrop done, resultEffect=" + resultEffect);
 			
+			this.currentDragDescriptor = null;
+			
 			if (deleteOnMove != null && resultEffect == DragDropEffects.Move) {
+				bool draggedInsideSingleDocument = (dragDescriptor == textArea.Document.UndoStack.LastGroupDescriptor);
+				if (draggedInsideSingleDocument)
+					textArea.Document.UndoStack.StartContinuedUndoGroup(null);
 				textArea.Document.BeginUpdate();
 				try {
 					foreach (ISegment s in deleteOnMove) {
@@ -234,6 +251,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 					}
 				} finally {
 					textArea.Document.EndUpdate();
+					if (draggedInsideSingleDocument)
+						textArea.Document.UndoStack.EndUndoGroup();
 				}
 			}
 		}

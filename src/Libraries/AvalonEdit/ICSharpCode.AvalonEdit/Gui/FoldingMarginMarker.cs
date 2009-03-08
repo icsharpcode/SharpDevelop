@@ -38,6 +38,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			if (!e.Handled) {
 				if (e.ChangedButton == MouseButton.Left) {
 					IsExpanded = !IsExpanded;
+				e.Handled = true;
 				}
 			}
 		}
