@@ -29,7 +29,6 @@ namespace ICSharpCode.AvalonEdit
 	[Localizability(LocalizationCategory.Text), ContentProperty("Text")]
 	public class TextEditor : Control
 	{
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static TextEditor()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(TextEditor),

@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		void Deregister()
 		{
-			textDocument.LineTracker.Remove(this);
+			textDocument.LineTrackers.Remove(this);
 		}
 		
 		public void BeforeRemoveLine(DocumentLine line)

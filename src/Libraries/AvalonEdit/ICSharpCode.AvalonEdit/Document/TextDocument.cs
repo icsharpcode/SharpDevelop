@@ -74,8 +74,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			//parserManager = new ParserManager(this);
 			lineTree = new DocumentLineTree(this);
 			lineManager = new LineManager(textBuffer, lineTree, this);
-			lineTracker.CollectionChanged += delegate { 
-				lineManager.lineTracker = lineTracker.ToArray();
+			lineTrackers.CollectionChanged += delegate { 
+				lineManager.lineTrackers = lineTrackers.ToArray();
 			};
 			
 			anchorTree = new TextAnchorTree(this);
@@ -445,15 +445,15 @@ namespace ICSharpCode.AvalonEdit.Document
 			return new TextLocation(line.LineNumber, offset - line.Offset + 1);
 		}
 		
-		readonly ObservableCollection<ILineTracker> lineTracker = new ObservableCollection<ILineTracker>();
+		readonly ObservableCollection<ILineTracker> lineTrackers = new ObservableCollection<ILineTracker>();
 		
 		/// <summary>
-		/// Gets the list of <see cref="ILineTracker"/> attached to this document.
+		/// Gets the list of <see cref="ILineTracker"/>s attached to this document.
 		/// </summary>
-		public IList<ILineTracker> LineTracker {
+		public IList<ILineTracker> LineTrackers {
 			get {
 				VerifyAccess();
-				return lineTracker;
+				return lineTrackers;
 			}
 		}
 		

@@ -28,7 +28,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	
 	/// <summary>
 	/// Represents a simple segment (Offset,Length pair) that is not automatically updated
-	/// on document changed.
+	/// on document changes.
 	/// </summary>
 	struct SimpleSegment : IEquatable<SimpleSegment>, ISegment
 	{

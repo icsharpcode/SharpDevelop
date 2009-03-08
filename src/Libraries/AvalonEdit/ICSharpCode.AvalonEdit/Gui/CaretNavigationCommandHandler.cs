@@ -44,7 +44,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 			InputBindings.Add(new KeyBinding(command, key, modifiers));
 		}
 		
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static CaretNavigationCommandHandler()
 		{
 			const ModifierKeys None = ModifierKeys.None;

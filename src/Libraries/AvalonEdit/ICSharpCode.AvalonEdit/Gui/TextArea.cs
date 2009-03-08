@@ -30,7 +30,6 @@ namespace ICSharpCode.AvalonEdit
 	public class TextArea : Control, IScrollInfo, IWeakEventListener
 	{
 		#region Constructor
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static TextArea()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(TextArea),

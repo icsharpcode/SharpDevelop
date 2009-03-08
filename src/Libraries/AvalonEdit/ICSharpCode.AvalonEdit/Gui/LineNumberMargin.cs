@@ -23,7 +23,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 	/// </summary>
 	public class LineNumberMargin : AbstractMargin, IWeakEventListener
 	{
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static LineNumberMargin()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(LineNumberMargin),
@@ -226,7 +225,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <inheritdoc/>
 		protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
 		{
-			// accept clicks even when clicking on the backgroudn
+			// accept clicks even when clicking on the background
 			return new PointHitTestResult(this, hitTestParameters.HitPoint);
 		}
 	}

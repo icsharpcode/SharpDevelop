@@ -7,7 +7,6 @@
 
 using System;
 using System.Linq;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -28,7 +27,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 			InputBindings.Add(new KeyBinding(command, key, modifiers));
 		}
 		
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EditingCommandHandler()
 		{
 			CommandBindings.Add(new CommandBinding(ApplicationCommands.Delete, OnDelete(ApplicationCommands.NotACommand), HasSomethingSelected));
@@ -198,7 +196,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				Clipboard.SetText(textArea.Selection.GetText(textArea.Document));
+				CopySelectedText(textArea);
 				args.Handled = true;
 			}
 		}
@@ -207,11 +205,18 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				Clipboard.SetText(textArea.Selection.GetText(textArea.Document));
+				CopySelectedText(textArea);
 				textArea.RemoveSelectedText();
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;
 			}
+		}
+		
+		static void CopySelectedText(TextArea textArea)
+		{
+			string text = textArea.Selection.GetText(textArea.Document);
+			// ensure we use the appropriate newline sequence for the OS
+			Clipboard.SetText(NewLineFinder.NormalizeNewLines(text, Environment.NewLine));
 		}
 		
 		static void CanPaste(object target, CanExecuteRoutedEventArgs args)
@@ -228,8 +233,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				// TODO: normalize newlines on paste
-				textArea.ReplaceSelectionWithText(Clipboard.GetText());
+				// convert text back to correct newlines for this document
+				string newLine = GetLineDelimiter(textArea.Document, textArea.Caret.Line);
+				string text = NewLineFinder.NormalizeNewLines(Clipboard.GetText(), newLine);
+				textArea.ReplaceSelectionWithText(text);
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;
 			}

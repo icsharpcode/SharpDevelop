@@ -18,7 +18,7 @@
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <RunCodeAnalysis>False</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1020;-Microsoft.Design#CA1033</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1020;-Microsoft.Design#CA1033;-Microsoft.Performance#CA1810</CodeAnalysisRules>
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <DocumentationFile>..\..\..\..\bin\ICSharpCode.AvalonEdit.xml</DocumentationFile>
   </PropertyGroup>
@@ -82,6 +82,7 @@
     <Compile Include="Document\LineNode.cs">
       <DependentUpon>DocumentLine.cs</DependentUpon>
     </Compile>
+    <Compile Include="Document\NewLineFinder.cs" />
     <Compile Include="Document\TextDocumentWeakEventManager.cs">
       <DependentUpon>TextDocument.cs</DependentUpon>
     </Compile>

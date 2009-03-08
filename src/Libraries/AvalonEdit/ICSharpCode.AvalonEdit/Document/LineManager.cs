@@ -26,14 +26,14 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// A copy of the line trackers. We need a copy so that line trackers may remove themselves
 		/// while being notified (used e.g. by WeakLineTracker)
 		/// </summary>
-		internal ILineTracker[] lineTracker;
+		internal ILineTracker[] lineTrackers;
 		
 		public LineManager(GapTextBuffer textBuffer, DocumentLineTree documentLineTree, TextDocument document)
 		{
 			this.document = document;
 			this.textBuffer = textBuffer;
 			this.documentLineTree = documentLineTree;
-			this.lineTracker = document.LineTracker.ToArray();
+			this.lineTrackers = document.LineTrackers.ToArray();
 		}
 		#endregion
 		
@@ -87,24 +87,24 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			// keep the first document line
 			DocumentLine ls = documentLineTree.GetByNumber(1);
-			DelimiterSegment ds = NextDelimiter(text, 0);
+			SimpleSegment ds = NewLineFinder.NextNewLine(text, 0);
 			List<DocumentLine> lines = new List<DocumentLine>();
 			int lastDelimiterEnd = 0;
-			while (ds != null) {
+			while (ds != SimpleSegment.Invalid) {
 				ls.TotalLength = ds.Offset + ds.Length - lastDelimiterEnd;
 				ls.DelimiterLength = ds.Length;
 				lastDelimiterEnd = ds.Offset + ds.Length;
 				lines.Add(ls);
 				
 				ls = new DocumentLine(document);
-				ds = NextDelimiter(text, lastDelimiterEnd);
+				ds = NewLineFinder.NextNewLine(text, lastDelimiterEnd);
 			}
 			ls.ResetLine();
 			ls.TotalLength = text.Length - lastDelimiterEnd;
 			lines.Add(ls);
 			documentLineTree.RebuildTree(lines);
-			foreach (ILineTracker lt in lineTracker)
-				lt.RebuildDocument();
+			foreach (ILineTracker lineTracker in lineTrackers)
+				lineTracker.RebuildDocument();
 		}
 		#endregion
 		
@@ -168,7 +168,7 @@ namespace ICSharpCode.AvalonEdit.Document
 
 		void RemoveLine(DocumentLine lineToRemove)
 		{
-			foreach (ILineTracker lt in lineTracker)
+			foreach (ILineTracker lt in lineTrackers)
 				lt.BeforeRemoveLine(lineToRemove);
 			documentLineTree.RemoveLine(lineToRemove);
 //			foreach (ILineTracker lt in lineTracker)
@@ -197,8 +197,8 @@ namespace ICSharpCode.AvalonEdit.Document
 				line = SetLineLength(line, 1);
 			}
 			
-			DelimiterSegment ds = NextDelimiter(text, 0);
-			if (ds == null) {
+			SimpleSegment ds = NewLineFinder.NextNewLine(text, 0);
+			if (ds == SimpleSegment.Invalid) {
 				// no newline is being inserted, all text is inserted in a single line
 				//line.InsertedLinePart(offset - line.Offset, text.Length);
 				SetLineLength(line, line.TotalLength + text.Length);
@@ -207,7 +207,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			//DocumentLine firstLine = line;
 			//firstLine.InsertedLinePart(offset - firstLine.Offset, ds.Offset);
 			int lastDelimiterEnd = 0;
-			while (ds != null) {
+			while (ds != SimpleSegment.Invalid) {
 				// split line segment at line delimiter
 				int lineBreakOffset = offset + ds.Offset + ds.Length;
 				lineOffset = line.Offset;
@@ -219,7 +219,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				line = newLine;
 				lastDelimiterEnd = ds.Offset + ds.Length;
 				
-				ds = NextDelimiter(text, lastDelimiterEnd);
+				ds = NewLineFinder.NextNewLine(text, lastDelimiterEnd);
 			}
 			//firstLine.SplitTo(line);
 			// insert rest after last delimiter
@@ -232,7 +232,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		DocumentLine InsertLineAfter(DocumentLine line, int length)
 		{
 			DocumentLine newLine = documentLineTree.InsertLineAfter(line, length);
-			foreach (ILineTracker lt in lineTracker)
+			foreach (ILineTracker lt in lineTrackers)
 				lt.LineInserted(line, newLine);
 			return newLine;
 		}
@@ -252,7 +252,7 @@ namespace ICSharpCode.AvalonEdit.Document
 //			deletedOrChangedLines.Add(line);
 			int delta = newTotalLength - line.TotalLength;
 			if (delta != 0) {
-				foreach (ILineTracker lt in lineTracker)
+				foreach (ILineTracker lt in lineTrackers)
 					lt.SetLineLength(line, newTotalLength);
 				line.TotalLength = newTotalLength;
 				DocumentLineTree.UpdateAfterChildrenChange(line);
@@ -282,39 +282,6 @@ namespace ICSharpCode.AvalonEdit.Document
 				}
 			}
 			return line;
-		}
-		#endregion
-		
-		#region Delimiter
-		sealed class DelimiterSegment
-		{
-			internal int Offset;
-			internal int Length;
-		}
-		
-		// always use the same DelimiterSegment object for the NextDelimiter
-		DelimiterSegment delimiterSegment = new DelimiterSegment();
-		
-		DelimiterSegment NextDelimiter(string text, int offset)
-		{
-			for (int i = offset; i < text.Length; i++) {
-				switch (text[i]) {
-					case '\r':
-						if (i + 1 < text.Length) {
-							if (text[i + 1] == '\n') {
-								delimiterSegment.Offset = i;
-								delimiterSegment.Length = 2;
-								return delimiterSegment;
-							}
-						}
-						goto case '\n';
-					case '\n':
-						delimiterSegment.Offset = i;
-						delimiterSegment.Length = 1;
-						return delimiterSegment;
-				}
-			}
-			return null;
 		}
 		#endregion
 	}

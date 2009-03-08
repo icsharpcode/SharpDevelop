@@ -39,7 +39,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				throw new ArgumentNullException("baseRuleSet");
 			this.document = document;
 			this.baseRuleSet = baseRuleSet;
-			document.LineTracker.Add(new WeakLineTracker(document, this));
+			document.LineTrackers.Add(new WeakLineTracker(document, this));
 			InvalidateHighlighting();
 		}
 		

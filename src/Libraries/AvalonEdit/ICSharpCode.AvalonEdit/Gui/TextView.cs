@@ -36,7 +36,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 	public class TextView : FrameworkElement, IScrollInfo, IWeakEventListener
 	{
 		#region Constructor
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static TextView()
 		{
 			ClipToBoundsProperty.OverrideMetadata(typeof(TextView), new FrameworkPropertyMetadata(true));
@@ -341,6 +340,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// or use the <see cref="EnsureVisualLines()"/> method to force creating the visual lines
 		/// when they are invalid.
 		/// </exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
 		public ReadOnlyCollection<VisualLine> VisualLines {
 			get {
 				if (visibleVisualLines == null)
