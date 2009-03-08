@@ -7,7 +7,9 @@
 
 using System;
 using System.Drawing;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -16,7 +18,7 @@ using ICSharpCode.TextEditor.Document;
 namespace ICSharpCode.PythonBinding
 {
 	/// <summary>
-	/// Represents a form in the designer. Used to generate a form for the forms designer and generate
+	/// Represents a form in the designer. Used to generate
 	/// Python code after the form has been changed in the designer.
 	/// </summary>
 	public class PythonForm
@@ -24,10 +26,16 @@ namespace ICSharpCode.PythonBinding
 		StringBuilder codeBuilder;
 		string indentString = String.Empty;
 		int indent;
+		PythonControlDefaultPropertyValues defaultPropertyValues = new PythonControlDefaultPropertyValues();		
+		
+		public PythonForm() 
+			: this("\t")
+		{
+		}
 		
 		public PythonForm(string indentString)
 		{
-			this.indentString = indentString;
+			this.indentString = indentString;			
 		}
 		
 		/// <summary>
@@ -58,32 +66,96 @@ namespace ICSharpCode.PythonBinding
 			return codeBuilder.ToString();
 		}
 
+		/// <summary>
+		/// Should serialize a property if:
+		/// 
+		/// 1) It has a different value to its default. 
+		/// 2) DesignerSerializationVisibility is set to Hidden. 
+		/// </summary>
+		public bool ShouldSerialize(object obj, PropertyDescriptor propertyDescriptor)
+		{		
+			if (propertyDescriptor.DesignTimeOnly) {
+				return false;
+			}
+			
+			// Is default value?
+			bool serialize = !defaultPropertyValues.IsDefaultValue(propertyDescriptor, obj);
+			
+			// Is visible to designer?
+			if (serialize) {
+				serialize = propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible;
+				if (!serialize) {
+					serialize = (propertyDescriptor.Name == "AutoScaleMode");
+				}
+			}
+			
+			// Is browsable?
+			if (serialize) {
+				// Always serialize the Name.
+				if (propertyDescriptor.Name != "Name" && propertyDescriptor.Name != "AutoScaleMode" && propertyDescriptor.Name != "ClientSize") {
+					serialize = propertyDescriptor.IsBrowsable;
+				}
+			}
+			return serialize;
+		}		
+		
 		void GenerateInitializeComponentMethodBodyInternal(Form form)
 		{			
 			// Add method body.
 			AppendIndentedLine("self.SuspendLayout()");
-			AppendControl(form);
+			
+			AppendForm(form);
 			
 			AppendIndentedLine("self.ResumeLayout(False)");
 			AppendIndentedLine("self.PerformLayout()");
 		}
 		
-		void AppendControl(Control control)
+		/// <summary>
+		/// Generates python code for the form's InitializeComponent method.
+		/// </summary>
+		/// <remarks>
+		/// Note that when the form is loaded in the designer the Name property appears twice:
+		/// 
+		/// Property.ComponentType: System.Windows.Forms.Design.DesignerExtenders+NameExtenderProvider
+		/// Property.SerializationVisibility: Hidden
+		/// Property.IsBrowsable: True
+		/// 
+		/// Property.ComponentType: System.Windows.Forms.Design.ControlDesigner
+		/// Property.SerializationVisibility: Visible
+		/// Property.IsBrowsable: False
+		/// </remarks>
+		void AppendForm(Form form)
 		{
-			AppendComment(control.Name);
-			AppendSize("ClientSize", control.ClientSize);
-			AppendIndentedLine("self.Name = \"" +  control.Name + "\"");
+			AppendComment(form.Name);
+			
+			PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(form);
+			foreach (PropertyDescriptor property in properties) {
+				if (property.SerializationVisibility == DesignerSerializationVisibility.Hidden && property.Name == "Name") {
+					// Skip the duplicate Name property.
+				} else {
+					AppendProperty(form, property);
+				}
+			}
 		}
 		
-		void AppendSize(string name, Size size)
-		{
-			AppendIndented("self.");
-			Append(name + " = ");
-			Append(size.GetType().FullName);
-			Append("(" + size.Width + ", " + size.Height + ")");
-			AppendLine();
+		/// <summary>
+		/// Appends a property to the InitializeComponents method.
+		/// </summary>
+		void AppendProperty(object obj, PropertyDescriptor propertyDescriptor)
+		{			
+			if (propertyDescriptor.Name == "RightToLeft") {
+				Console.WriteLine("ImeMode");
+			}
+			object propertyValue = propertyDescriptor.GetValue(obj);
+			if (propertyValue == null) {
+				return;
+			}
+			
+			if (ShouldSerialize(obj, propertyDescriptor)) {
+				AppendIndentedLine("self." + propertyDescriptor.Name + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
+			}
 		}
-		
+				
 		/// <summary>
 		/// Appends the comment lines before the control has its properties set.
 		/// </summary>
@@ -94,6 +166,9 @@ namespace ICSharpCode.PythonBinding
 			AppendIndentedLine("# ");
 		}
 		
+		/// <summary>
+		/// Increases the indent of any append lines.
+		/// </summary>
 		void IncreaseIndent()
 		{
 			++indent;

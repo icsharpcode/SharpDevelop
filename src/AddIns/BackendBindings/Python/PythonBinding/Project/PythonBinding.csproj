@@ -86,7 +86,15 @@
     <Compile Include="Src\PythonConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\PythonConsoleHost.cs" />
     <Compile Include="Src\PythonConsolePad.cs" />
+    <Compile Include="Src\PythonControlAutoScaleModeProperty.cs" />
+    <Compile Include="Src\PythonControlAutoValidateProperty.cs" />
+    <Compile Include="Src\PythonControlBooleanProperty.cs" />
+    <Compile Include="Src\PythonControlDefaultPropertyValues.cs" />
     <Compile Include="Src\PythonControlFieldExpression.cs" />
+    <Compile Include="Src\PythonControlImeModeProperty.cs" />
+    <Compile Include="Src\PythonControlProperty.cs" />
+    <Compile Include="Src\PythonControlRightToLeftProperty.cs" />
+    <Compile Include="Src\PythonControlTextProperty.cs" />
     <Compile Include="Src\PythonDesignerGenerator.cs" />
     <Compile Include="Src\PythonDesignerLoader.cs" />
     <Compile Include="Src\PythonDesignerLoaderProvider.cs" />
@@ -102,6 +110,7 @@
     <Compile Include="Src\PythonParser.cs" />
     <Compile Include="Src\PythonProcessRunner.cs" />
     <Compile Include="Src\PythonProject.cs" />
+    <Compile Include="Src\PythonPropertyValueAssignment.cs" />
     <Compile Include="Src\PythonResolver.cs" />
     <Compile Include="Src\RunPythonCommand.cs" />
     <Compile Include="Src\StandardPythonModules.cs" />
