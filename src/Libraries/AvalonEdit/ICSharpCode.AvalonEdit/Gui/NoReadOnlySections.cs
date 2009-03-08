@@ -12,6 +12,9 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.AvalonEdit.Gui
 {
+	/// <summary>
+	/// <see cref="IReadOnlySectionProvider"/> that has no read-only sections; all text is editable.
+	/// </summary>
 	sealed class NoReadOnlySections : IReadOnlySectionProvider
 	{
 		public static readonly NoReadOnlySections Instance = new NoReadOnlySections();

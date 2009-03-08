@@ -168,6 +168,7 @@
     <Compile Include="Gui\VisualLineElement.cs" />
     <Compile Include="Gui\VisualLineElementGenerator.cs">
     </Compile>
+    <Compile Include="Gui\VisualLinesInvalidException.cs" />
     <Compile Include="Gui\VisualLineText.cs" />
     <Compile Include="Gui\VisualLineTextParagraphProperties.cs">
       <DependentUpon>VisualLine.cs</DependentUpon>

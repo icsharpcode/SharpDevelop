@@ -26,9 +26,13 @@ namespace ICSharpCode.AvalonEdit.Gui
 {
 	/// <summary>
 	/// A virtualizing panel producing+showing <see cref="VisualLine"/>s for a <see cref="TextDocument"/>.
+	/// 
+	/// This is the heart of the text editor, this class controls the text rendering process.
+	/// 
+	/// Taken as a standalone control, it's a text viewer without any editing capability.
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
-	                                                 Justification = "The user usually doesn't work with TextView but with TextEditor; nulling the Document property is sufficient to dispose everything.")]
+	                                                 Justification = "The user usually doesn't work with TextView but with TextEditor; and nulling the Document property is sufficient to dispose everything.")]
 	public class TextView : FrameworkElement, IScrollInfo, IWeakEventListener
 	{
 		#region Constructor
@@ -50,7 +54,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		#endregion
 		
-		#region Properties
+		#region Document Property
 		/// <summary>
 		/// Document property.
 		/// </summary>
@@ -119,6 +123,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		#endregion
 		
+		#region Collection Properties
 		readonly ObservableCollection<VisualLineElementGenerator> elementGenerators = new ObservableCollection<VisualLineElementGenerator>();
 		
 		/// <summary>
@@ -145,13 +150,15 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public UIElementCollection Adorners {
 			get { return adorners; }
 		}
+		#endregion
 		
+		#region Redraw methods / VisualLine invalidation
 		/// <summary>
 		/// Causes the text editor to regenerate all visual lines.
 		/// </summary>
 		public void Redraw()
 		{
-			Redraw(DispatcherPriority.Render);
+			Redraw(DispatcherPriority.Normal);
 		}
 		
 		/// <summary>
@@ -183,22 +190,20 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public void Redraw(int offset, int length, DispatcherPriority redrawPriority)
 		{
 			VerifyAccess();
-			if (allVisualLines.Count != 0 || visibleVisualLines != null) {
-				bool removedLine = false;
-				for (int i = 0; i < allVisualLines.Count; i++) {
-					VisualLine visualLine = allVisualLines[i];
-					int lineStart = visualLine.FirstDocumentLine.Offset;
-					int lineEnd = visualLine.LastDocumentLine.Offset + visualLine.LastDocumentLine.TotalLength;
-					if (!(lineEnd < offset || lineStart > offset + length)) {
-						removedLine = true;
-						allVisualLines.RemoveAt(i--);
-						DisposeVisualLine(visualLine);
-					}
+			bool removedLine = false;
+			for (int i = 0; i < allVisualLines.Count; i++) {
+				VisualLine visualLine = allVisualLines[i];
+				int lineStart = visualLine.FirstDocumentLine.Offset;
+				int lineEnd = visualLine.LastDocumentLine.Offset + visualLine.LastDocumentLine.TotalLength;
+				if (!(lineEnd < offset || lineStart > offset + length)) {
+					removedLine = true;
+					allVisualLines.RemoveAt(i--);
+					DisposeVisualLine(visualLine);
 				}
-				if (removedLine) {
-					visibleVisualLines = null;
-					InvalidateMeasure(redrawPriority);
-				}
+			}
+			if (removedLine) {
+				visibleVisualLines = null;
+				InvalidateMeasure(redrawPriority);
 			}
 		}
 		
@@ -213,6 +218,36 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 		}
 		
+		/// <summary>
+		/// Invalidates all visual lines.
+		/// The caller of ClearVisualLines() must also call InvalidateMeasure() to ensure
+		/// that the visual lines will be recreated.
+		/// </summary>
+		void ClearVisualLines()
+		{
+			visibleVisualLines = null;
+			if (allVisualLines.Count != 0) {
+				foreach (VisualLine visualLine in allVisualLines) {
+					DisposeVisualLine(visualLine);
+				}
+				allVisualLines.Clear();
+			}
+		}
+		
+		void DisposeVisualLine(VisualLine visualLine)
+		{
+			if (newVisualLines != null && newVisualLines.Contains(visualLine)) {
+				throw new ArgumentException("Cannot dispose visual line because it is in construction!");
+			}
+			visualLine.IsDisposed = true;
+			foreach (TextLine textLine in visualLine.TextLines) {
+				textLine.Dispose();
+			}
+			RemoveInlineObjects(visualLine);
+		}
+		#endregion
+		
+		#region InvalidateMeasure(DispatcherPriority)
 		DispatcherOperation invalidateMeasureOperation;
 		
 		void InvalidateMeasure(DispatcherPriority priority)
@@ -239,44 +274,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 				}
 			}
 		}
+		#endregion
 		
-		/// <summary>
-		/// Waits for the visual lines to be built.
-		/// </summary>
-		private void EnsureVisualLines()
-		{
-			Dispatcher.VerifyAccess();
-			if (visibleVisualLines == null) {
-				// increase priority for real Redraw
-				InvalidateMeasure(DispatcherPriority.Normal);
-				// force immediate re-measure
-				UpdateLayout();
-			}
-		}
-		
-		void ClearVisualLines()
-		{
-			visibleVisualLines = null;
-			if (allVisualLines.Count != 0) {
-				foreach (VisualLine visualLine in allVisualLines) {
-					DisposeVisualLine(visualLine);
-				}
-				allVisualLines.Clear();
-			}
-		}
-		
-		void DisposeVisualLine(VisualLine visualLine)
-		{
-			if (newVisualLines != null && newVisualLines.Contains(visualLine)) {
-				throw new ArgumentException("Cannot dispose visual line because it is in construction!");
-			}
-			visualLine.IsDisposed = true;
-			foreach (TextLine textLine in visualLine.TextLines) {
-				textLine.Dispose();
-			}
-			RemoveInlineObjects(visualLine);
-		}
-		
+		#region Get(OrConstruct)VisualLine
 		/// <summary>
 		/// Gets the visual line that contains the document line with the specified number.
 		/// Returns null if the document line is outside the visible range.
@@ -324,39 +324,27 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 			return l;
 		}
+		#endregion
 		
-		/// <summary>
-		/// Collapses lines for the purpose of scrolling. This method is meant for
-		/// <see cref="VisualLineElementGenerator"/>s that cause <see cref="VisualLine"/>s to span
-		/// multiple <see cref="DocumentLine"/>s. Do not call it without providing a corresponding
-		/// <see cref="VisualLineElementGenerator"/>.
-		/// If you want to create collapsible text sections, see <see cref="FoldingManager"/>.
-		/// </summary>
-		public CollapsedLineSection CollapseLines(DocumentLine start, DocumentLine end)
-		{
-			VerifyAccess();
-			return heightTree.CollapseText(start, end);
-		}
-		
-		/// <summary>
-		/// Gets the height of the document.
-		/// </summary>
-		public double DocumentHeight {
-			get { return heightTree.TotalHeight; }
-		}
-		
-		#region Measure
-		TextFormatter formatter;
+		#region Visual Lines (fields and properties)
 		List<VisualLine> allVisualLines = new List<VisualLine>();
 		ReadOnlyCollection<VisualLine> visibleVisualLines;
 		double clippedPixelsOnTop;
+		List<VisualLine> newVisualLines;
 		
 		/// <summary>
 		/// Gets the currently visible visual lines.
 		/// </summary>
+		/// <exception cref="VisualLinesInvalidException">
+		/// Gets thrown if there are invalid visual lines when this property is accessed.
+		/// You can use the <see cref="VisualLinesValid"/> property to check for this case,
+		/// or use the <see cref="EnsureVisualLines()"/> method to force creating the visual lines
+		/// when they are invalid.
+		/// </exception>
 		public ReadOnlyCollection<VisualLine> VisualLines {
 			get {
-				EnsureVisualLines();
+				if (visibleVisualLines == null)
+					throw new VisualLinesInvalidException();
 				return visibleVisualLines;
 			}
 		}
@@ -375,56 +363,75 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public event EventHandler VisualLinesChanged;
 		
-		TextRunProperties CreateGlobalTextRunProperties()
-		{
-			return new GlobalTextRunProperties {
-				typeface = this.CreateTypeface(),
-				fontRenderingEmSize = LineHeight,
-				foregroundBrush = (Brush)GetValue(Control.ForegroundProperty),
-				cultureInfo = CultureInfo.CurrentCulture
-			};
-		}
-		
-		TextParagraphProperties CreateParagraphProperties(TextRunProperties defaultTextRunProperties)
-		{
-			return new VisualLineTextParagraphProperties {
-				defaultTextRunProperties = defaultTextRunProperties,
-				textWrapping = canHorizontallyScroll ? TextWrapping.NoWrap : TextWrapping.Wrap,
-				tabSize = 4 * WideSpaceWidth
-			};
-		}
-		
-		Size lastAvailableSize;
-		List<VisualLine> newVisualLines;
-		
 		/// <summary>
-		/// Measure implementation.
+		/// If the visual lines are invalid, creates new visual lines for the visible part
+		/// of the document.
+		/// If all visual lines are valid, this method does nothing.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">The visual line build process is already running.
+		/// It is not allowed to call this method during the construction of a visual line.</exception>
+		public void EnsureVisualLines()
+		{
+			Dispatcher.VerifyAccess();
+			if (inMeasure)
+				throw new InvalidOperationException("The visual line build process is already running! Cannot EnsureVisualLines() during Measure!");
+			if (visibleVisualLines == null) {
+				// increase priority for re-measure
+				InvalidateMeasure(DispatcherPriority.Normal);
+				// force immediate re-measure
+				UpdateLayout();
+			}
+		}
+		#endregion
+		
+		#region Measure
+		Size lastAvailableSize;
+		bool inMeasure;
+		
+		/// <inheritdoc/>
 		protected override Size MeasureOverride(Size availableSize)
 		{
 			if (!canHorizontallyScroll && !availableSize.Width.IsClose(lastAvailableSize.Width))
 				ClearVisualLines();
 			lastAvailableSize = availableSize;
-			return DoMeasure(availableSize);
-		}
-		
-		/// <summary>
-		/// Immediately performs the text creation.
-		/// </summary>
-		/// <param name="availableSize">The size of the text view.</param>
-		/// <returns></returns>
-		Size DoMeasure(Size availableSize)
-		{
-			bool isRealMeasure = true;
-			if (isRealMeasure)
-				RemoveInlineObjectsNow();
+			
+			RemoveInlineObjectsNow();
 			
 			if (document == null)
 				return Size.Empty;
 			
+			InvalidateVisual(); // = InvalidateArrange+InvalidateRender
+			
+			double maxWidth;
+			inMeasure = true;
+			try {
+				maxWidth = CreateAndMeasureVisualLines(availableSize);
+			} finally {
+				inMeasure = false;
+			}
+			
+			RemoveInlineObjectsNow();
+			
+			SetScrollData(availableSize,
+			              new Size(maxWidth, heightTree.TotalHeight),
+			              scrollOffset);
+			if (VisualLinesChanged != null)
+				VisualLinesChanged(this, EventArgs.Empty);
+			if (canHorizontallyScroll) {
+				return availableSize;
+			} else {
+				return new Size(maxWidth, availableSize.Height);
+			}
+		}
+		
+		/// <summary>
+		/// Build all VisualLines in the visible range.
+		/// </summary>
+		/// <returns>Width the longest line</returns>
+		double CreateAndMeasureVisualLines(Size availableSize)
+		{
 			TextRunProperties globalTextRunProperties = CreateGlobalTextRunProperties();
 			TextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
-			InvalidateVisual(); // = InvalidateArrange+InvalidateRender
 			
 			Debug.WriteLine("Measure availableSize=" + availableSize + ", scrollOffset=" + scrollOffset);
 			var firstLineInView = heightTree.GetLineByVisualPosition(scrollOffset.Y);
@@ -472,8 +479,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 				if (!newVisualLines.Contains(line))
 					DisposeVisualLine(line);
 			}
-			if (isRealMeasure)
-				RemoveInlineObjectsNow();
 			
 			allVisualLines = newVisualLines;
 			// visibleVisualLines = readonly copy of visual lines
@@ -485,17 +490,30 @@ namespace ICSharpCode.AvalonEdit.Gui
 				                                    "This can happen when Redraw() is called during measure for lines " +
 				                                    "that are already constructed.");
 			}
-			
-			SetScrollData(availableSize,
-			              new Size(maxWidth, heightTree.TotalHeight),
-			              scrollOffset);
-			if (VisualLinesChanged != null)
-				VisualLinesChanged(this, EventArgs.Empty);
-			if (canHorizontallyScroll) {
-				return availableSize;
-			} else {
-				return new Size(maxWidth, availableSize.Height);
-			}
+			return maxWidth;
+		}
+		#endregion
+		
+		#region BuildVisualLine
+		TextFormatter formatter;
+		
+		TextRunProperties CreateGlobalTextRunProperties()
+		{
+			return new GlobalTextRunProperties {
+				typeface = this.CreateTypeface(),
+				fontRenderingEmSize = LineHeight,
+				foregroundBrush = (Brush)GetValue(Control.ForegroundProperty),
+				cultureInfo = CultureInfo.CurrentCulture
+			};
+		}
+		
+		TextParagraphProperties CreateParagraphProperties(TextRunProperties defaultTextRunProperties)
+		{
+			return new VisualLineTextParagraphProperties {
+				defaultTextRunProperties = defaultTextRunProperties,
+				textWrapping = canHorizontallyScroll ? TextWrapping.NoWrap : TextWrapping.Wrap,
+				tabSize = 4 * WideSpaceWidth
+			};
 		}
 		
 		VisualLine BuildVisualLine(DocumentLine documentLine,
@@ -969,17 +987,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		#endregion
 		
-		/// <summary>
-		/// Gets the document line at the specified visual position.
-		/// </summary>
-		public DocumentLine GetDocumentLineByVisualTop(double visualTop)
-		{
-			VerifyAccess();
-			if (heightTree == null)
-				throw new InvalidOperationException();
-			return heightTree.GetLineByVisualPosition(visualTop);
-		}
-		
 		#region Visual element mouse handling
 		/// <inheritdoc/>
 		protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
@@ -1041,15 +1048,17 @@ namespace ICSharpCode.AvalonEdit.Gui
 				}
 			}
 		}
+		#endregion
 		
+		#region Getting elements from Visual Position
 		/// <summary>
 		/// Gets the visual line at the specified document position (relative to start of document).
 		/// Returns null if there is no visual line for the position (e.g. the position is outside the visible
 		/// text area).
-		/// You may want to call <see cref="EnsureVisualLines"/>() before calling this method.
 		/// </summary>
 		public VisualLine GetVisualLineFromVisualTop(double visualTop)
 		{
+			EnsureVisualLines();
 			foreach (VisualLine vl in this.VisualLines) {
 				if (visualTop < vl.VisualTop)
 					continue;
@@ -1074,5 +1083,36 @@ namespace ICSharpCode.AvalonEdit.Gui
 			return null;
 		}
 		#endregion
+		
+		/// <summary>
+		/// Collapses lines for the purpose of scrolling. This method is meant for
+		/// <see cref="VisualLineElementGenerator"/>s that cause <see cref="VisualLine"/>s to span
+		/// multiple <see cref="DocumentLine"/>s. Do not call it without providing a corresponding
+		/// <see cref="VisualLineElementGenerator"/>.
+		/// If you want to create collapsible text sections, see <see cref="FoldingManager"/>.
+		/// </summary>
+		public CollapsedLineSection CollapseLines(DocumentLine start, DocumentLine end)
+		{
+			VerifyAccess();
+			return heightTree.CollapseText(start, end);
+		}
+		
+		/// <summary>
+		/// Gets the height of the document.
+		/// </summary>
+		public double DocumentHeight {
+			get { return heightTree.TotalHeight; }
+		}
+		
+		/// <summary>
+		/// Gets the document line at the specified visual position.
+		/// </summary>
+		public DocumentLine GetDocumentLineByVisualTop(double visualTop)
+		{
+			VerifyAccess();
+			if (heightTree == null)
+				throw new InvalidOperationException();
+			return heightTree.GetLineByVisualPosition(visualTop);
+		}
 	}
 }

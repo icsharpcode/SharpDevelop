@@ -8,6 +8,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -126,6 +127,7 @@ namespace ICSharpCode.AvalonEdit
 		}
 		#endregion
 		
+		#region Caret handling on document changes
 		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextDocumentWeakEventManager.Changing)) {
@@ -181,17 +183,36 @@ namespace ICSharpCode.AvalonEdit
 				Undo();
 			}
 		}
+		#endregion
 		
-		readonly Caret caret;
+		#region TextView property
+		readonly TextView textView;
+		IScrollInfo scrollInfo;
+
+		/// <summary>
+		/// Gets the text view used to display text in this text area.
+		/// </summary>
+		public TextView TextView {
+			get {
+				return textView;
+			}
+		}
+		/// <inheritdoc/>
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+			scrollInfo = textView;
+			ApplyScrollInfo();
+		}
+		#endregion
+		
+		#region Selection property
+		Selection selection = Selection.Empty;
 		
 		/// <summary>
-		/// Gets the Caret used for this text area.
+		/// Occurs when the selection has changed.
 		/// </summary>
-		public Caret Caret {
-			get { return caret; }
-		}
-		
-		Selection selection = Selection.Empty;
+		public event EventHandler SelectionChanged;
 		
 		/// <summary>
 		/// Gets/Sets the selection in this text area.
@@ -213,30 +234,16 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
+		#endregion
+		
+		#region Properties
+		readonly Caret caret;
 		
 		/// <summary>
-		/// Occurs when the selection has changed.
+		/// Gets the Caret used for this text area.
 		/// </summary>
-		public event EventHandler SelectionChanged;
-		
-		readonly TextView textView;
-		IScrollInfo scrollInfo;
-
-		/// <inheritdoc/>
-		public override void OnApplyTemplate()
-		{
-			base.OnApplyTemplate();
-			scrollInfo = textView;
-			ApplyScrollInfo();
-		}
-		
-		/// <summary>
-		/// Gets the text view used to display text in this text area.
-		/// </summary>
-		public TextView TextView {
-			get {
-				return textView;
-			}
+		public Caret Caret {
+			get { return caret; }
 		}
 		
 		ObservableCollection<UIElement> leftMargins = new ObservableCollection<UIElement>();
@@ -249,6 +256,21 @@ namespace ICSharpCode.AvalonEdit
 				return leftMargins;
 			}
 		}
+		
+		IReadOnlySectionProvider readOnlySectionProvider = NoReadOnlySections.Instance;
+		
+		/// <summary>
+		/// Gets/Sets an object that provides read-only sections for the text area.
+		/// </summary>
+		public IReadOnlySectionProvider ReadOnlySectionProvider {
+			get { return readOnlySectionProvider; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				readOnlySectionProvider = value;
+			}
+		}
+		#endregion
 		
 		#region Undo / Redo
 		UndoStack GetUndoStack()
@@ -432,6 +454,7 @@ namespace ICSharpCode.AvalonEdit
 		}
 		#endregion
 		
+		#region Focus Handling (Show/Hide Caret)
 		/// <inheritdoc/>
 		protected override void OnMouseDown(MouseButtonEventArgs e)
 		{
@@ -454,21 +477,9 @@ namespace ICSharpCode.AvalonEdit
 			caret.Hide();
 			e.Handled = true;
 		}
+		#endregion
 		
-		IReadOnlySectionProvider readOnlySectionProvider = NoReadOnlySections.Instance;
-		
-		/// <summary>
-		/// Gets/Sets an object that provides read-only sections for the text area.
-		/// </summary>
-		public IReadOnlySectionProvider ReadOnlySectionProvider {
-			get { return readOnlySectionProvider; }
-			set {
-				if (value == null)
-					throw new ArgumentNullException("value");
-				readOnlySectionProvider = value;
-			}
-		}
-		
+		#region OnTextInput / RemoveSelectedText / ReplaceSelectionWithText
 		/// <inheritdoc/>
 		protected override void OnTextInput(TextCompositionEventArgs e)
 		{
@@ -476,14 +487,7 @@ namespace ICSharpCode.AvalonEdit
 			if (!e.Handled) {
 				TextDocument document = this.Document;
 				if (document != null) {
-					document.BeginUpdate();
-					try {
-						RemoveSelectedText();
-						if (readOnlySectionProvider.CanInsert(caret.Offset))
-							document.Insert(caret.Offset, e.Text);
-					} finally {
-						document.EndUpdate();
-					}
+					ReplaceSelectionWithText(e.Text);
 					caret.BringCaretToView();
 					e.Handled = true;
 				}
@@ -495,7 +499,9 @@ namespace ICSharpCode.AvalonEdit
 			selection.RemoveSelectedText(this);
 			#if DEBUG
 			if (!selection.IsEmpty) {
-				// TODO: assert that the remaining selection is read-only
+				foreach (ISegment s in selection.Segments) {
+					Debug.Assert(ReadOnlySectionProvider.GetDeletableSegments(s).Count() == 0);
+				}
 			}
 			#endif
 		}
@@ -512,5 +518,6 @@ namespace ICSharpCode.AvalonEdit
 				Document.EndUpdate();
 			}
 		}
+		#endregion
 	}
 }

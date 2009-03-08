@@ -23,8 +23,43 @@ namespace ICSharpCode.AvalonEdit.Gui
 	/// </summary>
 	sealed class SelectionMouseHandler
 	{
+		#region enum SelectionMode
+		enum SelectionMode
+		{
+			/// <summary>
+			/// no selection (no mouse button down)
+			/// </summary>
+			None,
+			/// <summary>
+			/// left mouse button down on selection, might be normal click
+			/// or might be drag'n'drop
+			/// </summary>
+			PossibleDragStart,
+			/// <summary>
+			/// dragging text
+			/// </summary>
+			Drag,
+			/// <summary>
+			/// normal selection (click+drag)
+			/// </summary>
+			Normal,
+			/// <summary>
+			/// whole-word selection (double click+drag)
+			/// </summary>
+			WholeWord
+		}
+		#endregion
+		
+		// TODO: allow disabling text drag'n'drop
+		const bool AllowTextDragDrop = true;
+		
 		readonly TextArea textArea;
 		
+		SelectionMode mode;
+		AnchorSegment startWord;
+		Point possibleDragStartMousePos;
+		
+		#region Constructor + Attach + Detach
 		public SelectionMouseHandler(TextArea textArea)
 		{
 			this.textArea = textArea;
@@ -46,7 +81,27 @@ namespace ICSharpCode.AvalonEdit.Gui
 				textArea.Drop += textArea_Drop;
 			}
 		}
-
+		
+		public void Detach()
+		{
+			mode = SelectionMode.None;
+			textArea.MouseLeftButtonDown -= textArea_MouseLeftButtonDown;
+			textArea.MouseMove -= textArea_MouseMove;
+			textArea.MouseLeftButtonUp -= textArea_MouseLeftButtonUp;
+			textArea.QueryCursor -= textArea_QueryCursor;
+			if (AllowTextDragDrop) {
+				textArea.AllowDrop = false;
+				textArea.GiveFeedback -= textArea_GiveFeedback;
+				textArea.QueryContinueDrag -= textArea_QueryContinueDrag;
+				textArea.DragEnter -= textArea_DragEnter;
+				textArea.DragOver -=  textArea_DragOver;
+				textArea.DragLeave -= textArea_DragLeave;
+				textArea.Drop -= textArea_Drop;
+			}
+		}
+		#endregion
+		
+		#region Dropping text
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void textArea_DragEnter(object sender, DragEventArgs e)
 		{
@@ -131,22 +186,60 @@ namespace ICSharpCode.AvalonEdit.Gui
 				           }));
 		}
 		
-		public void Detach()
+		void textArea_GiveFeedback(object sender, GiveFeedbackEventArgs e)
 		{
-			mode = SelectionMode.None;
-			textArea.MouseLeftButtonDown -= textArea_MouseLeftButtonDown;
-			textArea.MouseMove -= textArea_MouseMove;
-			textArea.MouseLeftButtonUp -= textArea_MouseLeftButtonUp;
-			textArea.QueryCursor -= textArea_QueryCursor;
-			if (AllowTextDragDrop) {
-				textArea.GiveFeedback -= textArea_GiveFeedback;
-				textArea.QueryContinueDrag -= textArea_QueryContinueDrag;
-			}
+			e.UseDefaultCursors = true;
+			e.Handled = true;
 		}
 		
-		// TODO: allow disabling text drag'n'drop
-		const bool AllowTextDragDrop = true;
+		void textArea_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
+		{
+			if (e.EscapePressed) {
+				e.Action = DragAction.Cancel;
+			} else if ((e.KeyStates & DragDropKeyStates.LeftMouseButton) != DragDropKeyStates.LeftMouseButton) {
+				e.Action = DragAction.Drop;
+			} else {
+				e.Action = DragAction.Continue;
+			}
+			e.Handled = true;
+		}
+		#endregion
 		
+		#region Start Drag
+		void StartDrag()
+		{
+			// prevent nested StartDrag calls
+			mode = SelectionMode.Drag;
+			
+			// mouse capture and Drag'n'Drop doesn't mix
+			textArea.ReleaseMouseCapture();
+			
+			string text = textArea.Selection.GetText(textArea.Document);
+			DataObject dataObject = new DataObject();
+			dataObject.SetText(text);
+			
+			DragDropEffects allowedEffects = DragDropEffects.All;
+			List<AnchorSegment> deleteOnMove;
+			deleteOnMove = textArea.Selection.Segments.Select(s => new AnchorSegment(textArea.Document, s)).ToList();
+			
+			Debug.WriteLine("DoDragDrop with allowedEffects=" + allowedEffects);
+			DragDropEffects resultEffect = DragDrop.DoDragDrop(textArea, dataObject, allowedEffects);
+			Debug.WriteLine("DoDragDrop done, resultEffect=" + resultEffect);
+			
+			if (deleteOnMove != null && resultEffect == DragDropEffects.Move) {
+				textArea.Document.BeginUpdate();
+				try {
+					foreach (ISegment s in deleteOnMove) {
+						textArea.Document.Remove(s.Offset, s.Length);
+					}
+				} finally {
+					textArea.Document.EndUpdate();
+				}
+			}
+		}
+		#endregion
+		
+		#region QueryCursor
 		// provide the IBeam Cursor for the text area
 		void textArea_QueryCursor(object sender, QueryCursorEventArgs e)
 		{
@@ -171,7 +264,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 				}
 			}
 		}
+		#endregion
 		
+		#region ContainsOffset helper methods
 		static bool SelectionContains(Selection selection, int offset)
 		{
 			if (selection.IsEmpty)
@@ -194,36 +289,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 			int end = start + segment.Length;
 			return offset >= start && offset <= end;
 		}
+		#endregion
 		
-		enum SelectionMode
-		{
-			/// <summary>
-			/// no selection (no mouse button down)
-			/// </summary>
-			None,
-			/// <summary>
-			/// left mouse button down on selection, might be normal click
-			/// or might be drag'n'drop
-			/// </summary>
-			PossibleDragStart,
-			/// <summary>
-			/// dragging text
-			/// </summary>
-			Drag,
-			/// <summary>
-			/// normal selection (click+drag)
-			/// </summary>
-			Normal,
-			/// <summary>
-			/// whole-word selection (double click+drag)
-			/// </summary>
-			WholeWord
-		}
-		
-		SelectionMode mode;
-		AnchorSegment startWord;
-		Point possibleDragStartMousePos;
-		
+		#region LeftButtonDown
 		void textArea_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			mode = SelectionMode.None;
@@ -279,7 +347,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 			e.Handled = true;
 		}
+		#endregion
 		
+		#region Mouse Position <-> Text coordinates
 		SimpleSegment GetWordAtMousePosition(MouseEventArgs e)
 		{
 			TextView textView = textArea.TextView;
@@ -308,16 +378,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 		}
 		
-		void SetCaretOffsetToMousePosition(MouseEventArgs e)
-		{
-			int visualColumn;
-			int offset = GetOffsetFromMousePosition(e, out visualColumn);
-			if (offset >= 0) {
-				textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(offset), visualColumn);
-				textArea.Caret.DesiredXPos = double.NaN;
-			}
-		}
-		
 		int GetOffsetFromMousePosition(MouseEventArgs e, out int visualColumn)
 		{
 			return GetOffsetFromMousePosition(e.GetPosition(textArea.TextView), out visualColumn);
@@ -342,7 +402,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 			return -1;
 		}
+		#endregion
 		
+		#region MouseMove
 		void textArea_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (e.Handled)
@@ -365,6 +427,18 @@ namespace ICSharpCode.AvalonEdit.Gui
 				}
 			}
 		}
+		#endregion
+		
+		#region ExtendSelection
+		void SetCaretOffsetToMousePosition(MouseEventArgs e)
+		{
+			int visualColumn;
+			int offset = GetOffsetFromMousePosition(e, out visualColumn);
+			if (offset >= 0) {
+				textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(offset), visualColumn);
+				textArea.Caret.DesiredXPos = double.NaN;
+			}
+		}
 		
 		void ExtendSelectionToMouse(MouseEventArgs e)
 		{
@@ -379,7 +453,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 				}
 			}
 		}
+		#endregion
 		
+		#region MouseLeftButtonUp
 		void textArea_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			if (mode == SelectionMode.None || e.Handled)
@@ -395,55 +471,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 			mode = SelectionMode.None;
 			textArea.ReleaseMouseCapture();
 		}
-		
-		void StartDrag()
-		{
-			// prevent nested StartDrag calls
-			mode = SelectionMode.Drag;
-			
-			// mouse capture and Drag'n'Drop doesn't mix
-			textArea.ReleaseMouseCapture();
-			
-			string text = textArea.Selection.GetText(textArea.Document);
-			DataObject dataObject = new DataObject();
-			dataObject.SetText(text);
-			
-			DragDropEffects allowedEffects = DragDropEffects.All;
-			List<AnchorSegment> deleteOnMove;
-			deleteOnMove = textArea.Selection.Segments.Select(s => new AnchorSegment(textArea.Document, s)).ToList();
-			
-			Debug.WriteLine("DoDragDrop with allowedEffects=" + allowedEffects);
-			DragDropEffects resultEffect = DragDrop.DoDragDrop(textArea, dataObject, allowedEffects);
-			Debug.WriteLine("DoDragDrop done, resultEffect=" + resultEffect);
-			
-			if (deleteOnMove != null && resultEffect == DragDropEffects.Move) {
-				textArea.Document.BeginUpdate();
-				try {
-					foreach (ISegment s in deleteOnMove) {
-						textArea.Document.Remove(s.Offset, s.Length);
-					}
-				} finally {
-					textArea.Document.EndUpdate();
-				}
-			}
-		}
-
-		void textArea_GiveFeedback(object sender, GiveFeedbackEventArgs e)
-		{
-			e.UseDefaultCursors = true;
-			e.Handled = true;
-		}
-		
-		void textArea_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
-		{
-			if (e.EscapePressed) {
-				e.Action = DragAction.Cancel;
-			} else if ((e.KeyStates & DragDropKeyStates.LeftMouseButton) != DragDropKeyStates.LeftMouseButton) {
-				e.Action = DragAction.Drop;
-			} else {
-				e.Action = DragAction.Continue;
-			}
-			e.Handled = true;
-		}
+		#endregion
 	}
 }

@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.AvalonEdit.Document;
+using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.Gui
 {
@@ -40,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 							collapsedSection = null;
 						}
 					}
-					manager.textView.Redraw();
+					manager.textView.Redraw(this, DispatcherPriority.Normal);
 				}
 			}
 		}
