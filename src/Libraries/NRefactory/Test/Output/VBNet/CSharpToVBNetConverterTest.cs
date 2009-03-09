@@ -71,45 +71,45 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void MoveImportsStatement()
 		{
 			TestProgram("namespace test { using SomeNamespace; }",
-			            "Imports SomeNamespace\r\n" +
-			            "Namespace test\r\n" +
-			            "End Namespace\r\n");
+			            "Imports SomeNamespace" + Environment.NewLine +
+			            "Namespace test" + Environment.NewLine +
+			            "End Namespace" + Environment.NewLine);
 		}
 		
 		[Test]
 		public void ClassImplementsInterface()
 		{
 			TestProgram("class test : IComparable { }",
-			            "Class test\r\n" +
-			            "  Implements IComparable\r\n" +
-			            "End Class\r\n");
+			            "Class test" + Environment.NewLine +
+			            "  Implements IComparable" + Environment.NewLine +
+			            "End Class" + Environment.NewLine);
 		}
 		
 		[Test]
 		public void ClassImplementsInterface2()
 		{
 			TestProgram("class test : System.IComparable { }",
-			            "Class test\r\n" +
-			            "  Implements System.IComparable\r\n" +
-			            "End Class\r\n");
+			            "Class test" + Environment.NewLine +
+			            "  Implements System.IComparable" + Environment.NewLine +
+			            "End Class" + Environment.NewLine);
 		}
 		
 		[Test]
 		public void ClassInheritsClass()
 		{
 			TestProgram("class test : InvalidDataException { }",
-			            "Class test\r\n" +
-			            "  Inherits InvalidDataException\r\n" +
-			            "End Class\r\n");
+			            "Class test" + Environment.NewLine +
+			            "  Inherits InvalidDataException" + Environment.NewLine +
+			            "End Class"+ Environment.NewLine);
 		}
 		
 		[Test]
 		public void ClassInheritsClass2()
 		{
 			TestProgram("class test : System.IO.InvalidDataException { }",
-			            "Class test\r\n" +
-			            "  Inherits System.IO.InvalidDataException\r\n" +
-			            "End Class\r\n");
+			            "Class test" + Environment.NewLine +
+			            "  Inherits System.IO.InvalidDataException" + Environment.NewLine +
+			            "End Class" + Environment.NewLine);
 		}
 		
 		[Test]
@@ -227,9 +227,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void PInvoke()
 		{
-			TestMember("[DllImport(\"user32.dll\", CharSet = CharSet.Auto)]\n" +
+			TestMember("[DllImport(\"user32.dll\", CharSet = CharSet.Auto)]" + Environment.NewLine +
 			           "public static extern int MessageBox(IntPtr hwnd, string t, string caption, UInt32 t2);",
-			           "<DllImport(\"user32.dll\", CharSet := CharSet.Auto)> _\n" +
+			           "<DllImport(\"user32.dll\", CharSet := CharSet.Auto)> _" + Environment.NewLine +
 			           "Public Shared Function MessageBox(ByVal hwnd As IntPtr, ByVal t As String, ByVal caption As String, ByVal t2 As UInt32) As Integer\n" +
 			           "End Function");
 			
@@ -406,7 +406,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void ImportAliasPrimitiveType()
 		{
-			TestProgram("using T = System.Boolean;", "Imports T = System.Boolean\r\n");
+			TestProgram("using T = System.Boolean;", "Imports T = System.Boolean"+ Environment.NewLine);
 		}
 		
 		[Test]
@@ -418,11 +418,10 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void StaticClass()
 		{
-			TestProgram("public static class Test {}", @"Public NotInheritable Class Test
-  Private Sub New()
-  End Sub
-End Class
-");
+			TestProgram("public static class Test {}", @"Public NotInheritable Class Test" + Environment.NewLine +
+"  Private Sub New()" + Environment.NewLine +
+"  End Sub" + Environment.NewLine +
+"End Class" + Environment.NewLine);
 		}
 		
 		[Test]
@@ -500,19 +499,18 @@ End Class
 		public void InlineAssignment()
 		{
 			TestProgram(@"public class Convert { void Run(string s) { char c; if ((c = s[0]) == '\n') { c = ' '; } } }",
-			            @"Public Class Convert
-  Private Sub Run(ByVal s As String)
-    Dim c As Char
-    If (InlineAssignHelper(c, s(0))) = ControlChars.Lf Then
-      c = "" ""C
-    End If
-  End Sub
-  Private Shared Function InlineAssignHelper(Of T)(ByRef target As T, ByVal value As T) As T
-    target = value
-    Return value
-  End Function
-End Class
-");
+			            @"Public Class Convert" + Environment.NewLine +
+"  Private Sub Run(ByVal s As String)" + Environment.NewLine +
+"    Dim c As Char" + Environment.NewLine +
+"    If (InlineAssignHelper(c, s(0))) = ControlChars.Lf Then" + Environment.NewLine +
+"      c = \" \"C" + Environment.NewLine +
+"    End If" + Environment.NewLine +
+"  End Sub" + Environment.NewLine +
+"  Private Shared Function InlineAssignHelper(Of T)(ByRef target As T, ByVal value As T) As T" + Environment.NewLine +
+"    target = value" + Environment.NewLine +
+"    Return value" + Environment.NewLine +
+"  End Function" + Environment.NewLine +
+"End Class" + Environment.NewLine);
 		}
 		
 		[Test]
