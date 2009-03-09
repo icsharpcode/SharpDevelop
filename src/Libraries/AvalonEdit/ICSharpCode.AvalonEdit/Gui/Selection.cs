@@ -122,6 +122,25 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		/// <inheritdoc/>
 		public abstract override int GetHashCode();
+		
+		/// <summary>
+		/// Gets whether the specified offset is included in the selection.
+		/// </summary>
+		/// <returns>True, if the selection contains the offset (selection borders inclusive);
+		/// otherwise, false.</returns>
+		public bool Contains(int offset)
+		{
+			if (this.IsEmpty)
+				return false;
+			if (this.SurroundingSegment.Contains(offset)) {
+				foreach (ISegment s in this.Segments) {
+					if (s.Contains(offset)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 	
 	/// <summary>
@@ -177,13 +196,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			if (!IsEmpty) {
 				var segmentsToDelete = textArea.ReadOnlySectionProvider.GetDeletableSegments(this).ToList();
-				textArea.Document.BeginUpdate();
-				try {
+				using (textArea.Document.RunUpdate()) {
 					for (int i = segmentsToDelete.Count - 1; i >= 0; i--) {
 						textArea.Document.Remove(segmentsToDelete[i].Offset, segmentsToDelete[i].Length);
 					}
-				} finally {
-					textArea.Document.EndUpdate();
 				}
 			}
 		}

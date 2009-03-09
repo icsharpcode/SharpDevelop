@@ -162,7 +162,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 					string text = e.Data.GetData(DataFormats.UnicodeText, true) as string;
 					if (text != null) {
 						int start = textArea.Caret.Offset;
-						if (mode == SelectionMode.Drag && Contains(textArea.Selection.SurroundingSegment, start)) {
+						if (mode == SelectionMode.Drag && textArea.Selection.Contains(start)) {
 							Debug.WriteLine("Drop: did not drop: drop target is inside selection");
 							e.Effects = DragDropEffects.None;
 						} else {
@@ -244,14 +244,21 @@ namespace ICSharpCode.AvalonEdit.Gui
 			this.currentDragDescriptor = dragDescriptor;
 			
 			DragDropEffects resultEffect;
-			try {
-				Debug.WriteLine("DoDragDrop with allowedEffects=" + allowedEffects);
-				resultEffect = DragDrop.DoDragDrop(textArea, dataObject, allowedEffects);
-				Debug.WriteLine("DoDragDrop done, resultEffect=" + resultEffect);
-			} catch (COMException ex) {
-				// ignore COM errors - don't crash on badly implemented drop targets
-				Debug.WriteLine("DoDragDrop failed: " + ex.ToString());
-				return;
+			using (textArea.AllowCaretOutsideSelection()) {
+				var oldCaretPosition = textArea.Caret.Position;
+				try {
+					Debug.WriteLine("DoDragDrop with allowedEffects=" + allowedEffects);
+					resultEffect = DragDrop.DoDragDrop(textArea, dataObject, allowedEffects);
+					Debug.WriteLine("DoDragDrop done, resultEffect=" + resultEffect);
+				} catch (COMException ex) {
+					// ignore COM errors - don't crash on badly implemented drop targets
+					Debug.WriteLine("DoDragDrop failed: " + ex.ToString());
+					return;
+				}
+				if (resultEffect == DragDropEffects.None) {
+					// reset caret if drag was aborted
+					textArea.Caret.Position = oldCaretPosition;
+				}
 			}
 			
 			this.currentDragDescriptor = null;
@@ -290,7 +297,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 					if (p.X >= 0 && p.Y >= 0 && p.X <= textArea.TextView.ActualWidth && p.Y <= textArea.TextView.ActualHeight) {
 						int visualColumn;
 						int offset = GetOffsetFromMousePosition(e, out visualColumn);
-						if (SelectionContains(textArea.Selection, offset))
+						if (textArea.Selection.Contains(offset))
 							e.Cursor = Cursors.Arrow;
 						else
 							e.Cursor = Cursors.IBeam;
@@ -298,31 +305,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 					}
 				}
 			}
-		}
-		#endregion
-		
-		#region ContainsOffset helper methods
-		static bool SelectionContains(Selection selection, int offset)
-		{
-			if (selection.IsEmpty)
-				return false;
-			if (offset >= 0 && Contains(selection.SurroundingSegment, offset)) {
-				foreach (ISegment s in selection.Segments) {
-					if (Contains(s, offset)) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		
-		static bool Contains(ISegment segment, int offset)
-		{
-			if (segment == null)
-				return false;
-			int start = segment.Offset;
-			int end = start + segment.Length;
-			return offset >= start && offset <= end;
 		}
 		#endregion
 		
@@ -335,7 +317,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 				if (AllowTextDragDrop && e.ClickCount == 1 && !shift) {
 					int visualColumn;
 					int offset = GetOffsetFromMousePosition(e, out visualColumn);
-					if (SelectionContains(textArea.Selection, offset)) {
+					if (textArea.Selection.Contains(offset)) {
 						if (textArea.CaptureMouse()) {
 							mode = SelectionMode.PossibleDragStart;
 							possibleDragStartMousePos = e.GetPosition(textArea);

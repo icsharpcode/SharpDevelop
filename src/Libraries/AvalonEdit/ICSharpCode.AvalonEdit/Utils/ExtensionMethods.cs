@@ -109,5 +109,20 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			return segment.Offset + segment.Length;
 		}
+		
+		/// <summary>
+		/// Gets whether the segment contains the offset.
+		/// </summary>
+		/// <returns>
+		/// True, if offset is between segment.Start and segment.End (inclusive); otherwise, false.
+		/// </returns>
+		public static bool Contains(this ISegment segment, int offset)
+		{
+			if (segment == null)
+				return false;
+			int start = segment.Offset;
+			int end = start + segment.Length;
+			return offset >= start && offset <= end;
+		}
 	}
 }

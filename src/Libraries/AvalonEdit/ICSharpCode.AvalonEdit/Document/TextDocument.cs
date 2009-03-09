@@ -217,8 +217,19 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
+		/// Immediately calls <see cref="BeginUpdate()"/>,
+		/// and returns an IDisposable that calls <see cref="EndUpdate()"/>.
+		/// </summary>
+		public IDisposable RunUpdate()
+		{
+			BeginUpdate();
+			return new CallbackOnDispose(EndUpdate);
+		}
+		
+		/// <summary>
 		/// Begins a group of document changes.
-		/// DocumentParsers and some events are suspended until EndUpdate is called.
+		/// Some events are suspended until EndUpdate is called, and the <see cref="UndoStack"/> will
+		/// group all changes into a single action.
 		/// Calling BeginUpdate several times increments a counter, only after the appropriate number
 		/// of EndUpdate calls the DocumentParsers and events resume their work.
 		/// </summary>

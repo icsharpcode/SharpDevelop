@@ -72,8 +72,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				textArea.Document.BeginUpdate();
-				try {
+				using (textArea.Document.RunUpdate()) {
 					if (textArea.Selection.GetIsMultiline(textArea.Document)) {
 						DocumentLine start = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.Offset);
 						DocumentLine end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.GetEndOffset());
@@ -88,8 +87,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 					} else {
 						textArea.ReplaceSelectionWithText(indentationString);
 					}
-				} finally {
-					textArea.Document.EndUpdate();
 				}
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;
@@ -100,8 +97,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				textArea.Document.BeginUpdate();
-				try {
+				using (textArea.Document.RunUpdate()) {
 					DocumentLine start, end;
 					if (textArea.Selection.IsEmpty) {
 						start = end = textArea.Document.GetLineByNumber(textArea.Caret.Line);
@@ -122,8 +118,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 							break;
 						start = textArea.Document.GetLineByNumber(start.LineNumber + 1);
 					}
-				} finally {
-					textArea.Document.EndUpdate();
 				}
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;
@@ -159,9 +153,13 @@ namespace ICSharpCode.AvalonEdit.Gui
 			return (target, args) => {
 				TextArea textArea = GetTextArea(target);
 				if (textArea != null && textArea.Document != null) {
-					if (textArea.Selection.IsEmpty)
-						selectingCommand.Execute(args.Parameter, textArea);
-					textArea.RemoveSelectedText();
+					// call BeginUpdate before running the 'selectingCommand'
+					// so that undoing the delete does not select the deleted character
+					using (textArea.Document.RunUpdate()) {
+						if (textArea.Selection.IsEmpty)
+							selectingCommand.Execute(args.Parameter, textArea);
+						textArea.RemoveSelectedText();
+					}
 					textArea.Caret.BringCaretToView();
 					args.Handled = true;
 				}

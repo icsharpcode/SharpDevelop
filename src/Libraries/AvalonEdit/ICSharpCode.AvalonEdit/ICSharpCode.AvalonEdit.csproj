@@ -254,6 +254,7 @@
     <Compile Include="Utils\CompressingTreeList.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Utils\DelayedEvents.cs" />
+    <Compile Include="Utils\CallbackOnDispose.cs" />
     <Compile Include="Utils\Empty.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\FileReader.cs" />

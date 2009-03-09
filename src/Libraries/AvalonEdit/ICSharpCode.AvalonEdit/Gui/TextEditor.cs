@@ -246,23 +246,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public IDisposable DeclareChangeBlock()
 		{
-			return new ChangeBlock(GetOrCreateDocument());
-		}
-		
-		sealed class ChangeBlock : IDisposable
-		{
-			TextDocument document;
-			
-			public ChangeBlock(TextDocument document)
-			{
-				this.document = document;
-				document.BeginUpdate();
-			}
-			
-			public void Dispose()
-			{
-				document.EndUpdate();
-			}
+			return GetOrCreateDocument().RunUpdate();
 		}
 		
 		/// <summary>
@@ -510,13 +494,10 @@ namespace ICSharpCode.AvalonEdit
 					throw new ArgumentNullException("value");
 				TextArea textArea = this.TextArea;
 				if (textArea != null && textArea.Document != null) {
-					textArea.Document.BeginUpdate();
-					try {
+					using (textArea.Document.RunUpdate()) {
 						textArea.RemoveSelectedText();
 						if (textArea.ReadOnlySectionProvider.CanInsert(textArea.Caret.Offset))
 							textArea.Document.Insert(textArea.Caret.Offset, value);
-					} finally {
-						textArea.Document.EndUpdate();
 					}
 				}
 			}

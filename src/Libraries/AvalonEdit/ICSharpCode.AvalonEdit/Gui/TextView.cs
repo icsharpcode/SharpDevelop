@@ -39,7 +39,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		#region Constructor
 		static TextView()
 		{
-			ClipToBoundsProperty.OverrideMetadata(typeof(TextView), new FrameworkPropertyMetadata(true));
+			ClipToBoundsProperty.OverrideMetadata(typeof(TextView), new FrameworkPropertyMetadata(Boxes.True));
 		}
 		
 		/// <summary>

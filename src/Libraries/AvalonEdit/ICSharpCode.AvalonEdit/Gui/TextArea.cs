@@ -76,6 +76,7 @@ namespace ICSharpCode.AvalonEdit
 			textView.InsertLayer(new SelectionLayer(this), KnownLayer.Selection, LayerInsertionPosition.Replace);
 			
 			caret = new Caret(this);
+			caret.PositionChanged += (sender, e) => RequestSelectionValidation();
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, ExecuteUndo, CanExecuteUndo));
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, ExecuteRedo, CanExecuteRedo));
 			
@@ -231,6 +232,63 @@ namespace ICSharpCode.AvalonEdit
 						SelectionChanged(this, EventArgs.Empty);
 				}
 			}
+		}
+		#endregion
+		
+		#region Force caret to stay inside selection
+		bool ensureSelectionValidRequested;
+		int allowCaretOutsideSelection;
+		
+		void RequestSelectionValidation()
+		{
+			if (!ensureSelectionValidRequested && allowCaretOutsideSelection == 0) {
+				ensureSelectionValidRequested = true;
+				Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(EnsureSelectionValid));
+			}
+		}
+		
+		/// <summary>
+		/// Code that updates only the caret but not the selection can cause confusion when
+		/// keys like 'Delete' delete the (possibly invisible) selected text and not the
+		/// text around the caret (where the will jump to).
+		/// 
+		/// So we'll ensure that the caret is inside the selection.
+		/// (when the caret is not in the selection, we'll clear the selection)
+		/// 
+		/// This method is invoked using the Dispatcher so that code may temporarily violate this rule
+		/// (e.g. most 'exten selection' methods work by first setting the caret, then the selection),
+		/// it's sufficient to fix it after any event handlers have run.
+		/// </summary>
+		void EnsureSelectionValid()
+		{
+			ensureSelectionValidRequested = false;
+			if (allowCaretOutsideSelection == 0) {
+				if (!selection.Contains(caret.Offset))
+					this.Selection = Selection.Empty;
+			}
+		}
+		
+		/// <summary>
+		/// Temporarily allows positioning the caret outside the selection.
+		/// Dispose the returned IDisposable to revert the allowance.
+		/// </summary>
+		/// <remarks>
+		/// The text area only forces the caret to be inside the selection when other events
+		/// have finished running (using the dispatcher), so you don't have to use this method
+		/// for temporarily positioning the caret in event handlers.
+		/// This method is only necessary if you want to run the WPF dispatcher, e.g. if you
+		/// perform a drag'n'drop operation.
+		/// </remarks>
+		public IDisposable AllowCaretOutsideSelection()
+		{
+			VerifyAccess();
+			allowCaretOutsideSelection++;
+			return new CallbackOnDispose(
+				delegate {
+					VerifyAccess();
+					allowCaretOutsideSelection--;
+					RequestSelectionValidation();
+				});
 		}
 		#endregion
 		
@@ -483,6 +541,12 @@ namespace ICSharpCode.AvalonEdit
 		{
 			base.OnTextInput(e);
 			if (!e.Handled) {
+				if (e.Text == "\x1b") {
+					// ASCII 0x1b = ESC.
+					// WPF produces a TextInput event with that old ASCII control char
+					// when Escape is pressed. We'll just ignore it.
+					return;
+				}
 				TextDocument document = this.Document;
 				if (document != null) {
 					ReplaceSelectionWithText(e.Text);
@@ -506,14 +570,11 @@ namespace ICSharpCode.AvalonEdit
 		
 		internal void ReplaceSelectionWithText(string newText)
 		{
-			Document.BeginUpdate();
-			try {
+			using (Document.RunUpdate()) {
 				RemoveSelectedText();
 				if (ReadOnlySectionProvider.CanInsert(Caret.Offset)) {
 					Document.Insert(Caret.Offset, newText);
 				}
-			} finally {
-				Document.EndUpdate();
 			}
 		}
 		#endregion
