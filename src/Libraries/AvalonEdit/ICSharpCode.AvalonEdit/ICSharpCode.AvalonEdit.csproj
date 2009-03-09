@@ -106,7 +106,7 @@
     </Compile>
     <Compile Include="Gui\AbstractMargin.cs" />
     <Compile Include="Gui\Caret.cs" />
-    <Compile Include="Gui\CaretAdorner.cs">
+    <Compile Include="Gui\CaretLayer.cs">
       <DependentUpon>Caret.cs</DependentUpon>
     </Compile>
     <Compile Include="Gui\CaretNavigationCommandHandler.cs">
@@ -125,6 +125,12 @@
     </Compile>
     <Compile Include="Gui\IBackgroundRenderer.cs" />
     <Compile Include="Gui\IReadOnlySectionProvider.cs" />
+    <Compile Include="Gui\Layer.cs">
+      <DependentUpon>TextView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\LayerPosition.cs">
+      <DependentUpon>TextView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\NoReadOnlySections.cs">
       <DependentUpon>IReadOnlySectionProvider.cs</DependentUpon>
     </Compile>
@@ -132,8 +138,14 @@
     <Compile Include="Gui\SelectionColorizer.cs">
       <DependentUpon>Selection.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\SelectionLayer.cs">
+      <DependentUpon>Selection.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\SelectionMouseHandler.cs">
       <DependentUpon>Selection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\TextLayer.cs">
+      <DependentUpon>TextView.cs</DependentUpon>
     </Compile>
     <Compile Include="Gui\TextSegmentReadOnlySectionProvider.cs">
       <DependentUpon>IReadOnlySectionProvider.cs</DependentUpon>

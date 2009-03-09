@@ -72,9 +72,8 @@ namespace ICSharpCode.AvalonEdit
 			                	Margin = new Thickness(2, 0, 2, 0)
 			                });
 			
-			SelectionColorizer sc = new SelectionColorizer(this);
-			textView.LineTransformers.Add(sc);
-			textView.BackgroundRenderer.Add(sc);
+			textView.LineTransformers.Add(new SelectionColorizer(this));
+			textView.InsertLayer(new SelectionLayer(this), KnownLayer.Selection, LayerInsertionPosition.Replace);
 			
 			caret = new Caret(this);
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, ExecuteUndo, CanExecuteUndo));

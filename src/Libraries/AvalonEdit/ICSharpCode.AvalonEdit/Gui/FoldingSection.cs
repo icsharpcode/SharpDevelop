@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using ICSharpCode.AvalonEdit.Document;
 using System.Windows.Threading;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Gui
 {

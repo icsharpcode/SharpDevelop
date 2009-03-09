@@ -55,24 +55,11 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				string newLine = GetLineDelimiter(textArea.Document, textArea.Caret.Line);
+				string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
 				textArea.ReplaceSelectionWithText(newLine);
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;
 			}
-		}
-		
-		static string GetLineDelimiter(TextDocument document, int lineNumber)
-		{
-			DocumentLine line = document.GetLineByNumber(lineNumber);
-			if (line.DelimiterLength == 0) {
-				// TODO: add line delimiter setting
-				if (lineNumber > 1)
-					line = document.GetLineByNumber(lineNumber - 1);
-				else
-					return Environment.NewLine;
-			}
-			return document.GetText(line.Offset + line.Length, line.DelimiterLength);
 		}
 		#endregion
 		
@@ -234,7 +221,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
 				// convert text back to correct newlines for this document
-				string newLine = GetLineDelimiter(textArea.Document, textArea.Caret.Line);
+				string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
 				string text = NewLineFinder.NormalizeNewLines(Clipboard.GetText(), newLine);
 				textArea.ReplaceSelectionWithText(text);
 				textArea.Caret.BringCaretToView();

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -46,10 +47,12 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public TextView()
 		{
+			textLayer = new TextLayer(this);
 			elementGenerators.CollectionChanged += delegate { Redraw(); };
 			lineTransformers.CollectionChanged += delegate { Redraw(); };
 			backgroundRenderer.CollectionChanged += delegate { InvalidateVisual(); };
-			adorners = new UIElementCollection(this, this);
+			layers = new UIElementCollection(this, this);
+			InsertLayer(textLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
 		}
 		#endregion
 		
@@ -122,7 +125,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		#endregion
 		
-		#region Collection Properties
+		#region ElementGenerators+LineTransformers Properties
 		readonly ObservableCollection<VisualLineElementGenerator> elementGenerators = new ObservableCollection<VisualLineElementGenerator>();
 		
 		/// <summary>
@@ -140,14 +143,75 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public ObservableCollection<IVisualLineTransformer> LineTransformers {
 			get { return lineTransformers; }
 		}
+		#endregion
 		
-		readonly UIElementCollection adorners;
+		#region Layers
+		internal readonly TextLayer textLayer;
+		readonly UIElementCollection layers;
 		
 		/// <summary>
-		/// Gets a collection where text view adorners can be added.
+		/// Gets the list of layers displayed in the text view.
 		/// </summary>
-		public UIElementCollection Adorners {
-			get { return adorners; }
+		public UIElementCollection Layers {
+			get { return layers; }
+		}
+		
+		/// <summary>
+		/// Inserts a new layer at a position specified relative to an existing layer.
+		/// </summary>
+		/// <param name="layer">The new layer to insert.</param>
+		/// <param name="referencedLayer">The existing layer</param>
+		/// <param name="position">Specifies whether</param>
+		public void InsertLayer(UIElement layer, KnownLayer referencedLayer, LayerInsertionPosition position)
+		{
+			if (layer == null)
+				throw new ArgumentNullException("layer");
+			if (!Enum.IsDefined(typeof(KnownLayer), referencedLayer))
+				throw new InvalidEnumArgumentException("referencedLayer", (int)referencedLayer, typeof(KnownLayer));
+			if (!Enum.IsDefined(typeof(LayerInsertionPosition), position))
+				throw new InvalidEnumArgumentException("position", (int)position, typeof(LayerInsertionPosition));
+			if (referencedLayer == KnownLayer.Background && position != LayerInsertionPosition.Above)
+				throw new InvalidOperationException("Cannot replace or insert below the background layer.");
+			
+			LayerPosition newPosition = new LayerPosition(referencedLayer, position);
+			LayerPosition.SetLayerPosition(layer, newPosition);
+			for (int i = 0; i < layers.Count; i++) {
+				LayerPosition p = LayerPosition.GetLayerPosition(layers[i]);
+				if (p != null) {
+					if (p.KnownLayer == referencedLayer && p.Position == LayerInsertionPosition.Replace) {
+						// found the referenced layer
+						switch (position) {
+							case LayerInsertionPosition.Below:
+								layers.Insert(i, layer);
+								return;
+							case LayerInsertionPosition.Above:
+								layers.Insert(i + 1, layer);
+								return;
+							case LayerInsertionPosition.Replace:
+								layers[i] = layer;
+								return;
+						}
+					} else if (p.KnownLayer == referencedLayer && p.Position == LayerInsertionPosition.Above
+					           || p.KnownLayer > referencedLayer) {
+						// we skipped the insertion position (referenced layer does not exist?)
+						layers.Insert(i, layer);
+						return;
+					}
+				}
+			}
+			// inserting after all existing layers:
+			layers.Add(layer);
+		}
+		
+		/// <inheritdoc/>
+		protected override int VisualChildrenCount {
+			get { return layers.Count; }
+		}
+		
+		/// <inheritdoc/>
+		protected override Visual GetVisualChild(int index)
+		{
+			return layers[index];
 		}
 		#endregion
 		
@@ -242,7 +306,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			foreach (TextLine textLine in visualLine.TextLines) {
 				textLine.Dispose();
 			}
-			RemoveInlineObjects(visualLine);
+			textLayer.RemoveInlineObjects(visualLine);
 		}
 		#endregion
 		
@@ -395,12 +459,16 @@ namespace ICSharpCode.AvalonEdit.Gui
 				ClearVisualLines();
 			lastAvailableSize = availableSize;
 			
-			RemoveInlineObjectsNow();
+			textLayer.RemoveInlineObjectsNow();
+			
+			foreach (UIElement layer in layers) {
+				layer.Measure(availableSize);
+			}
+			InvalidateVisual(); // = InvalidateArrange+InvalidateRender
+			textLayer.InvalidateVisual();
 			
 			if (document == null)
 				return Size.Empty;
-			
-			InvalidateVisual(); // = InvalidateArrange+InvalidateRender
 			
 			double maxWidth;
 			inMeasure = true;
@@ -410,7 +478,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 				inMeasure = false;
 			}
 			
-			RemoveInlineObjectsNow();
+			textLayer.RemoveInlineObjectsNow();
 			
 			SetScrollData(availableSize,
 			              new Size(maxWidth, heightTree.TotalHeight),
@@ -569,76 +637,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		#endregion
 		
-		#region Inline object handling
-		List<InlineObjectRun> inlineObjects = new List<InlineObjectRun>();
-		
-		/// <summary>
-		/// Adds a new inline object.
-		/// </summary>
-		internal void AddInlineObject(InlineObjectRun inlineObject)
-		{
-			inlineObjects.Add(inlineObject);
-			AddVisualChild(inlineObject.Element);
-			inlineObject.Element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-		}
-		
-		List<VisualLine> visualLinesWithOutstandingInlineObjects = new List<VisualLine>();
-		
-		void RemoveInlineObjects(VisualLine visualLine)
-		{
-			// Delay removing inline objects:
-			// A document change immediately invalidates affected visual lines, but it does not
-			// cause an immediate redraw.
-			// To prevent inline objects from flickering when they are recreated, we delay removing
-			// inline objects until the next redraw.
-			visualLinesWithOutstandingInlineObjects.Add(visualLine);
-		}
-		
-		void RemoveInlineObjectsNow()
-		{
-			inlineObjects.RemoveAll(
-				ior => {
-					if (visualLinesWithOutstandingInlineObjects.Contains(ior.VisualLine)) {
-						ior.VisualLine = null;
-						RemoveVisualChild(ior.Element);
-						return true;
-					}
-					return false;
-				});
-			visualLinesWithOutstandingInlineObjects.Clear();
-		}
-		
-		/// <summary>
-		/// Removes the inline object that displays the specified UIElement.
-		/// </summary>
-		public void RemoveInlineObject(UIElement element)
-		{
-			inlineObjects.RemoveAll(
-				ior => {
-					if (ior.Element == element) {
-						ior.VisualLine = null;
-						RemoveVisualChild(ior.Element);
-						return true;
-					}
-					return false;
-				});
-		}
-		
-		/// <inheritdoc/>
-		protected override int VisualChildrenCount {
-			get { return inlineObjects.Count + adorners.Count; }
-		}
-		
-		/// <inheritdoc/>
-		protected override Visual GetVisualChild(int index)
-		{
-			if (index < inlineObjects.Count)
-				return inlineObjects[index].Element;
-			else
-				return adorners[index - inlineObjects.Count];
-		}
-		#endregion
-		
 		#region Arrange
 		/// <summary>
 		/// Arrange implementation.
@@ -663,7 +661,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			
 //			double maxWidth = 0;
 			
-			foreach (UIElement adorner in adorners) {
+			foreach (UIElement adorner in layers) {
 				adorner.Arrange(new Rect(new Point(0, 0), finalSize));
 			}
 			
@@ -675,7 +673,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 						foreach (var span in textLine.GetTextRunSpans()) {
 							InlineObjectRun inline = span.Value as InlineObjectRun;
 							if (inline != null && inline.VisualLine != null) {
-								Debug.Assert(inlineObjects.Contains(inline));
+								Debug.Assert(textLayer.inlineObjects.Contains(inline));
 								double distance = textLine.GetDistanceFromCharacterHit(new CharacterHit(offset, 0));
 								inline.Element.Arrange(new Rect(new Point(pos.X + distance, pos.Y), inline.Element.DesiredSize));
 							}
@@ -695,7 +693,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		readonly ObservableCollection<IBackgroundRenderer> backgroundRenderer = new ObservableCollection<IBackgroundRenderer>();
 		
 		/// <summary>
-		/// Gets a collection where line transformers can be registered.
+		/// Gets the list of background renderers.
 		/// </summary>
 		public ObservableCollection<IBackgroundRenderer> BackgroundRenderer {
 			get { return backgroundRenderer; }
@@ -704,8 +702,20 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <inheritdoc/>
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			foreach (IBackgroundRenderer r in backgroundRenderer)
-				r.Draw(drawingContext);
+			RenderBackground(drawingContext, KnownLayer.Background);
+		}
+		
+		internal void RenderBackground(DrawingContext drawingContext, KnownLayer layer)
+		{
+			foreach (IBackgroundRenderer bg in backgroundRenderer) {
+				if (bg.Layer == layer) {
+					bg.Draw(drawingContext);
+				}
+			}
+		}
+		
+		internal void RenderTextLayer(DrawingContext drawingContext)
+		{
 			Point pos = new Point(-scrollOffset.X, -clippedPixelsOnTop);
 			foreach (VisualLine visualLine in allVisualLines) {
 				foreach (TextLine textLine in visualLine.TextLines) {

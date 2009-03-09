@@ -6,17 +6,12 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.TextFormatting;
-
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Gui
 {
-	sealed class SelectionColorizer : ColorizingTransformer, IBackgroundRenderer
+	sealed class SelectionColorizer : ColorizingTransformer
 	{
 		TextArea textArea;
 		
@@ -47,22 +42,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 						element.TextRunProperties.SetForegroundBrush(SystemColors.HighlightTextBrush);
 						//element.TextRunProperties.SetBackgroundBrush(SystemColors.HighlightBrush);
 					});
-			}
-		}
-		
-		public void Draw(DrawingContext dc)
-		{
-			BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder();
-			geoBuilder.AddSegments(textArea.TextView, textArea.Selection.Segments);
-			PathGeometry geometry = geoBuilder.CreateGeometry();
-			if (geometry != null) {
-				SolidColorBrush lightHighlightBrush = new SolidColorBrush(SystemColors.HighlightColor);
-				lightHighlightBrush.Opacity = 0.7;
-				lightHighlightBrush.Freeze();
-				Pen pen = new Pen(SystemColors.HighlightBrush, 1);
-				//pen.LineJoin = PenLineJoin.Round;
-				pen.Freeze();
-				dc.DrawGeometry(lightHighlightBrush, pen, geometry);
 			}
 		}
 	}

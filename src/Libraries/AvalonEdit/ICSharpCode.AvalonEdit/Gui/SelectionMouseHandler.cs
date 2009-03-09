@@ -6,15 +6,15 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
-using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.Gui
 {
@@ -107,6 +107,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			try {
 				e.Effects = GetEffect(e);
+				textArea.Caret.Show();
 			} catch (Exception ex) {
 				OnDragException(ex);
 			}
@@ -147,6 +148,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 		void textArea_DragLeave(object sender, DragEventArgs e)
 		{
 			e.Handled = true;
+			if (!textArea.IsKeyboardFocusWithin)
+				textArea.Caret.Hide();
 		}
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -164,6 +167,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 							e.Effects = DragDropEffects.None;
 						} else {
 							Debug.WriteLine("Drop: insert at " + start);
+							
+							string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
+							text = NewLineFinder.NormalizeNewLines(text, newLine);
+							
 							// Mark the undo group with the currentDragDescriptor, if the drag
 							// is originating from the same control. This allows combining
 							// the undo groups when text is moved.
@@ -225,8 +232,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 			textArea.ReleaseMouseCapture();
 			
 			string text = textArea.Selection.GetText(textArea.Document);
-			DataObject dataObject = new DataObject();
-			dataObject.SetText(text);
+			text = NewLineFinder.NormalizeNewLines(text, Environment.NewLine);
+			DataObject dataObject = new DataObject(text);
+			// we cannot use DataObject.SetText - then we cannot drag to SciTe
+			// (but dragging to Word works in both cases)
 			
 			DragDropEffects allowedEffects = DragDropEffects.All;
 			var deleteOnMove = textArea.Selection.Segments.Select(s => new AnchorSegment(textArea.Document, s)).ToList();
@@ -234,9 +243,16 @@ namespace ICSharpCode.AvalonEdit.Gui
 			object dragDescriptor = new object();
 			this.currentDragDescriptor = dragDescriptor;
 			
-			Debug.WriteLine("DoDragDrop with allowedEffects=" + allowedEffects);
-			DragDropEffects resultEffect = DragDrop.DoDragDrop(textArea, dataObject, allowedEffects);
-			Debug.WriteLine("DoDragDrop done, resultEffect=" + resultEffect);
+			DragDropEffects resultEffect;
+			try {
+				Debug.WriteLine("DoDragDrop with allowedEffects=" + allowedEffects);
+				resultEffect = DragDrop.DoDragDrop(textArea, dataObject, allowedEffects);
+				Debug.WriteLine("DoDragDrop done, resultEffect=" + resultEffect);
+			} catch (COMException ex) {
+				// ignore COM errors - don't crash on badly implemented drop targets
+				Debug.WriteLine("DoDragDrop failed: " + ex.ToString());
+				return;
+			}
 			
 			this.currentDragDescriptor = null;
 			

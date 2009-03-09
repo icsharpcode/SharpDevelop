@@ -23,7 +23,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 	{
 		readonly TextArea textArea;
 		readonly TextView textView;
-		CaretAdorner caretAdorner;
+		CaretLayer caretAdorner;
 		bool visible;
 		
 		internal Caret(TextArea textArea)
@@ -32,8 +32,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 			this.textView = textArea.TextView;
 			position = new TextViewPosition(1, 1, 0);
 			
-			caretAdorner = new CaretAdorner(textView);
-			textView.Adorners.Add(caretAdorner);
+			caretAdorner = new CaretLayer(textView);
+			textView.InsertLayer(caretAdorner, KnownLayer.Caret, LayerInsertionPosition.Replace);
 			textView.VisualLinesChanged += TextView_VisualLinesChanged;
 			textView.ScrollOffsetChanged += TextView_ScrollOffsetChanged;
 		}

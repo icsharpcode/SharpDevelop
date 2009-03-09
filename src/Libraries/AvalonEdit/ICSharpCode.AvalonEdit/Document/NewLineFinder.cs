@@ -67,5 +67,20 @@ namespace ICSharpCode.AvalonEdit.Document
 			b.Append(input, lastEndOffset, input.Length - lastEndOffset);
 			return b.ToString();
 		}
+		
+		/// <summary>
+		/// Gets the newline sequence used in the document at the specified line.
+		/// </summary>
+		public static string GetNewLineFromDocument(TextDocument document, int lineNumber)
+		{
+			DocumentLine line = document.GetLineByNumber(lineNumber);
+			if (line.DelimiterLength == 0) {
+				if (lineNumber > 1)
+					line = document.GetLineByNumber(lineNumber - 1);
+				else
+					return Environment.NewLine;
+			}
+			return document.GetText(line.Offset + line.Length, line.DelimiterLength);
+		}
 	}
 }

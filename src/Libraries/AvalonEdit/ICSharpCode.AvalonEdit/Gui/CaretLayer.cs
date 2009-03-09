@@ -14,19 +14,15 @@ using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Gui
 {
-	sealed class CaretAdorner : FrameworkElement
+	sealed class CaretLayer : Layer
 	{
-		TextView textView;
 		bool isVisible;
 		Rect caretRectangle;
 		
 		DoubleAnimationUsingKeyFrames blinkAnimation;
 		
-		public CaretAdorner(TextView textView)
+		public CaretLayer(TextView textView) : base(textView, KnownLayer.Caret)
 		{
-			this.textView = textView;
-			this.IsHitTestVisible = false;
-			
 			blinkAnimation = new DoubleAnimationUsingKeyFrames();
 			blinkAnimation.KeyFrames.Add(new DiscreteDoubleKeyFrame(1, KeyTime.FromPercent(0)));
 			blinkAnimation.KeyFrames.Add(new DiscreteDoubleKeyFrame(0, KeyTime.FromPercent(0.5)));
@@ -64,11 +60,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		void StopBlinkAnimation()
 		{
 			BeginAnimation(OpacityProperty, null);
-		}
-		
-		protected override Size MeasureOverride(Size constraint)
-		{
-			return caretRectangle.Size;
 		}
 		
 		protected override void OnRender(DrawingContext drawingContext)

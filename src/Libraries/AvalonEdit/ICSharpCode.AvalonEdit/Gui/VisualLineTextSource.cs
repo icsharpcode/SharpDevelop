@@ -46,7 +46,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 						InlineObjectRun inlineRun = run as InlineObjectRun;
 						if (inlineRun != null) {
 							inlineRun.VisualLine = VisualLine;
-							TextView.AddInlineObject(inlineRun);
+							TextView.textLayer.AddInlineObject(inlineRun);
 						}
 						return run;
 					}
