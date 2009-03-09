@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			if (!LastCharacterIsWhiteSpace)
 				Space();
-			PrintText("_\r\n");
+			PrintText("_" + Environment.NewLine);
 		}
 	}
 }
