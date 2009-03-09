@@ -935,6 +935,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			if (!scrollOffset.X.IsClose(offset)) {
 				SetScrollOffset(new Vector(offset, scrollOffset.Y));
 				InvalidateVisual();
+				textLayer.InvalidateVisual();
 			}
 		}
 		

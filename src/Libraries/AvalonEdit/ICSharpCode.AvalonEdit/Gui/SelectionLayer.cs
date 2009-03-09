@@ -17,13 +17,18 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		public SelectionLayer(TextArea textArea) : base(textArea.TextView, KnownLayer.Selection)
 		{
+			this.IsHitTestVisible = false;
+			
 			this.textArea = textArea;
 			TextViewWeakEventManager.VisualLinesChanged.AddListener(textView, this);
+			TextViewWeakEventManager.ScrollOffsetChanged.AddListener(textView, this);
 		}
 		
 		public bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
-			if (managerType == typeof(TextViewWeakEventManager.VisualLinesChanged)) {
+			if (managerType == typeof(TextViewWeakEventManager.VisualLinesChanged)
+			    || managerType == typeof(TextViewWeakEventManager.ScrollOffsetChanged))
+			{
 				InvalidateVisual();
 				return true;
 			}

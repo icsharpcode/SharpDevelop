@@ -23,6 +23,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		public CaretLayer(TextView textView) : base(textView, KnownLayer.Caret)
 		{
+			this.IsHitTestVisible = false;
+			
 			blinkAnimation = new DoubleAnimationUsingKeyFrames();
 			blinkAnimation.KeyFrames.Add(new DiscreteDoubleKeyFrame(1, KeyTime.FromPercent(0)));
 			blinkAnimation.KeyFrames.Add(new DiscreteDoubleKeyFrame(0, KeyTime.FromPercent(0.5)));

@@ -25,8 +25,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 			Debug.Assert(textView != null);
 			this.textView = textView;
 			this.knownLayer = knownLayer;
-			
-			this.IsHitTestVisible = false;
 		}
 		
 		protected override GeometryHitTestResult HitTestCore(GeometryHitTestParameters hitTestParameters)

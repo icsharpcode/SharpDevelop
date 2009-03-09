@@ -52,5 +52,24 @@ namespace ICSharpCode.AvalonEdit.Gui
 				source.VisualLinesChanged -= DeliverEvent;
 			}
 		}
+		
+		/// <summary>
+		/// Weak event manager for the <see cref="TextView.ScrollOffsetChanged"/> event.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+		public sealed class ScrollOffsetChanged : WeakEventManagerBase<ScrollOffsetChanged, TextView>
+		{
+			/// <inheritdoc/>
+			protected override void StartListening(TextView source)
+			{
+				source.ScrollOffsetChanged += DeliverEvent;
+			}
+			
+			/// <inheritdoc/>
+			protected override void StopListening(TextView source)
+			{
+				source.ScrollOffsetChanged -= DeliverEvent;
+			}
+		}
 	}
 }
