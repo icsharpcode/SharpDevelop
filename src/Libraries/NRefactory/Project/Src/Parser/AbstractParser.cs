@@ -63,6 +63,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public abstract void Parse();
 		
+		public abstract TypeReference ParseTypeReference ();
 		public abstract Expression ParseExpression();
 		public abstract BlockStatement ParseBlock();
 		public abstract List<INode> ParseTypeMembers();

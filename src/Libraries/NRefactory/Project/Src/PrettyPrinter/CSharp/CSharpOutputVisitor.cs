@@ -2607,6 +2607,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return node.AcceptVisitor(this, data);
 		}
 		
+		/// <summary>
+		/// Resets the output formatter, sets Text to string.Empty.
+		/// </summary>
+		public void Reset ()
+		{
+			outputFormatter.Reset ();
+		}
+		
 		public void AppendCommaSeparatedList<T>(ICollection<T> list) where T : class, INode
 		{
 			if (list != null) {

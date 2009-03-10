@@ -15,6 +15,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 {
 	internal sealed class Lexer : AbstractLexer
 	{
+		bool isAtLineBegin = true;
+		
 		public Lexer(TextReader reader) : base(reader)
 		{
 		}
@@ -24,7 +26,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			int nextChar;
 			char ch;
 			bool hadLineEnd = false;
-			if (Line == 1 && Col == 1) hadLineEnd = true; // beginning of document
+			if (Line == 1 && Col == 1) {
+				isAtLineBegin = true;
+				hadLineEnd = true; // beginning of document
+			}
 			
 			while ((nextChar = ReaderRead()) != -1) {
 				Token token;
@@ -42,6 +47,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						}
 						HandleLineEnd((char)nextChar);
 						hadLineEnd = true;
+						isAtLineBegin = true;
 						continue;
 					case '/':
 						int peek = ReaderPeek();
@@ -49,19 +55,24 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 							ReadComment();
 							continue;
 						} else {
+							isAtLineBegin = false;
 							token = ReadOperator('/');
 						}
 						break;
 					case '#':
 						ReadPreProcessingDirective();
+						isAtLineBegin = false;
 						continue;
 					case '"':
 						token = ReadString();
+						isAtLineBegin = false;
 						break;
 					case '\'':
 						token = ReadChar();
+						isAtLineBegin = false;
 						break;
 					case '@':
+						isAtLineBegin = false;
 						int next = ReaderRead();
 						if (next == -1) {
 							errors.Error(Line, Col, String.Format("EOF after @"));
@@ -82,7 +93,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 							}
 						}
 						break;
-					default:
+					default: 
+						isAtLineBegin = false; // non-ws chars are handled here
 						ch = (char)nextChar;
 						if (Char.IsLetter(ch) || ch == '_' || ch == '\\') {
 							int x = Col - 1; // Col was incremented above, but we want the start of the identifier
@@ -780,6 +792,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			switch (ReaderRead()) {
 				case '*':
 					ReadMultiLineComment();
+					isAtLineBegin = false;
 					break;
 				case '/':
 					if (ReaderPeek() == '/') {
@@ -788,6 +801,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					} else {
 						ReadSingleLineComment(CommentType.SingleLine);
 					}
+					isAtLineBegin = true;
 					break;
 				default:
 					errors.Error(Line, Col, String.Format("Error while reading comment"));
@@ -820,7 +834,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					if (specialCommentHash.ContainsKey(tag)) {
 						Location p = new Location(Col, Line);
 						string comment = ch + ReadToEndOfLine();
-						this.TagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
+						this.TagComments.Add(new TagComment(tag, comment, isAtLineBegin, p, new Location(Col, Line)));
 						sb.Append(comment);
 						break;
 					}
@@ -834,7 +848,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (this.SkipAllComments) {
 				SkipToEndOfLine();
 			} else {
-				specialTracker.StartComment(commentType, new Location(Col, Line));
+				specialTracker.StartComment(commentType, isAtLineBegin, new Location(Col, Line));
 				specialTracker.AddString(ReadCommentToEOL());
 				specialTracker.FinishComment(new Location(Col, Line));
 			}
@@ -854,7 +868,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 				}
 			} else {
-				specialTracker.StartComment(CommentType.Block, new Location(Col, Line));
+				specialTracker.StartComment(CommentType.Block, isAtLineBegin, new Location(Col, Line));
 				
 				// sc* = special comment handling (TO DO markers)
 				string scTag = null; // is set to non-null value when we are inside a comment marker
@@ -866,7 +880,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					
 					if (HandleLineEnd(ch)) {
 						if (scTag != null) {
-							this.TagComments.Add(new TagComment(scTag, scCurWord.ToString(), scStartLocation, new Location(Col, Line)));
+							this.TagComments.Add(new TagComment(scTag, scCurWord.ToString(), isAtLineBegin, scStartLocation, new Location(Col, Line)));
 							scTag = null;
 						}
 						scCurWord.Length = 0;
@@ -877,7 +891,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					// End of multiline comment reached ?
 					if (ch == '*' && ReaderPeek() == '/') {
 						if (scTag != null) {
-							this.TagComments.Add(new TagComment(scTag, scCurWord.ToString(), scStartLocation, new Location(Col, Line)));
+							this.TagComments.Add(new TagComment(scTag, scCurWord.ToString(), isAtLineBegin, scStartLocation, new Location(Col, Line)));
 						}
 						ReaderRead();
 						specialTracker.FinishComment(new Location(Col, Line));
@@ -919,13 +933,16 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				lastToken = curToken;
 				curToken = curToken.next;
 			}
+			isAtLineBegin = true;
 			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {
 				switch (nextChar) {
 					case '{':
+						isAtLineBegin = false;
 						braceCount++;
 						break;
 					case '}':
+						isAtLineBegin = false;
 						if (--braceCount < 0) {
 							curToken = new Token(Tokens.CloseCurlyBrace, Col - 1, Line);
 							return;
@@ -936,19 +953,24 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						if (peek == '/' || peek == '*') {
 							ReadComment();
 						}
+						isAtLineBegin = false;
 						break;
 					case '#':
 						ReadPreProcessingDirective();
+						isAtLineBegin = false;
 						break;
 					case '"':
 						ReadString();
+						isAtLineBegin = false;
 						break;
 					case '\'':
 						ReadChar();
+						isAtLineBegin = false;
 						break;
 					case '\r':
 					case '\n':
 						HandleLineEnd((char)nextChar);
+						isAtLineBegin = true;
 						break;
 					case '@':
 						int next = ReaderRead();
@@ -957,6 +979,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						} else if (next == '"') {
 							ReadVerbatimString();
 						}
+						isAtLineBegin = false;
 						break;
 				}
 			}
@@ -1072,7 +1095,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 					SkipToEndOfLine(); // skip comment
 				}
-				return new PreprocessingDirective(directive, null, start, endLocation) { Expression = expr };
+				return new PreprocessingDirective(directive, null, start, endLocation) { Expression = expr, LastLineEnd = lastLineEnd };
 			} else {
 				Location endLocation = new Location(Col, Line);
 				string arg = ReadToEndOfLine();
@@ -1081,7 +1104,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				if (pos >= 0)
 					arg = arg.Substring(0, pos);
 				arg = arg.Trim();
-				return new PreprocessingDirective(directive, arg, start, endLocation);
+				return new PreprocessingDirective(directive, arg, start, endLocation) { LastLineEnd = lastLineEnd };
 			}
 		}
 		

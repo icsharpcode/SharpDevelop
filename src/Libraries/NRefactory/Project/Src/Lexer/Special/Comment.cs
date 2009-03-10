@@ -32,11 +32,21 @@ namespace ICSharpCode.NRefactory
 			}
 		}
 		
-		public Comment(CommentType commentType, string comment, Location startPosition, Location endPosition)
+		/// <value>
+		/// Is true, when the comment is at line start or only whitespaces
+		/// between line and comment start.
+		/// </value>
+		public bool CommentStartsLine {
+			get;
+			set;
+		}
+		
+		public Comment(CommentType commentType, string comment, bool commentStartsLine, Location startPosition, Location endPosition)
 			: base(startPosition, endPosition)
 		{
 			this.commentType   = commentType;
 			this.comment       = comment;
+			this.CommentStartsLine = commentStartsLine;
 		}
 		
 		public override string ToString()

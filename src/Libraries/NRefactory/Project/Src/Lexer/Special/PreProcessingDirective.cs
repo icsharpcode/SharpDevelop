@@ -128,6 +128,16 @@ namespace ICSharpCode.NRefactory
 			set { expression = value ?? Ast.Expression.Null; }
 		}
 		
+		/// <value>
+		/// The end position of the pre processor directive line.
+		/// May be != EndPosition.
+		/// </value>
+		public Location LastLineEnd {
+			get;
+			set;
+		}
+		
+				
 		public override string ToString()
 		{
 			return String.Format("[PreProcessingDirective: Cmd = {0}, Arg = {1}]",
