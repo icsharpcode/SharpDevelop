@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Reflection;
 using System.Text;
@@ -28,10 +29,12 @@ namespace ICSharpCode.PythonBinding
 		bool walkingAssignment;
 		Dictionary<string, object> createdObjects = new Dictionary<string, object>();
 		string formName = String.Empty;
+		PythonCodeDeserializer deserializer;
 		
-		public PythonFormWalker(IComponentCreator componentCreator)
+		public PythonFormWalker(IComponentCreator componentCreator, IDesignerHost designerHost)
 		{
 			this.componentCreator = componentCreator;
+			deserializer = new PythonCodeDeserializer(designerHost);
 		}		
 		
 		/// <summary>
@@ -78,8 +81,11 @@ namespace ICSharpCode.PythonBinding
 					
 					MemberExpression rhsMemberExpression = node.Right as MemberExpression;
 					if (rhsMemberExpression != null) {
-						string name = PythonControlFieldExpression.GetMemberName(rhsMemberExpression);
-						SetPropertyValue(fieldExpression.MemberName, name);
+						object propertyValue = deserializer.Deserialize(rhsMemberExpression);
+						if (propertyValue == null) {
+							propertyValue = PythonControlFieldExpression.GetMemberName(rhsMemberExpression);
+						}
+						SetPropertyValue(fieldExpression.MemberName, propertyValue);
 					} else {
 						walkingAssignment = true;
 						node.Right.Walk(this);
@@ -174,8 +180,8 @@ namespace ICSharpCode.PythonBinding
 			if (propertyDescriptor.PropertyType != propertyValue.GetType()) {
 				if (propertyDescriptor.PropertyType.IsEnum) {
 					return Enum.Parse(propertyDescriptor.PropertyType, GetUnqualifiedEnumValue(propertyValue as String));
-				}
-				return Convert.ChangeType(propertyValue, propertyDescriptor.PropertyType);
+				} 
+				return propertyDescriptor.Converter.ConvertFrom(propertyValue);
 			}
 			return propertyValue;
 		}

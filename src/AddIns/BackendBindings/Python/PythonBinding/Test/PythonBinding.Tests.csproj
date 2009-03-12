@@ -145,11 +145,13 @@
     <Compile Include="Converter\VBClassConversionTestFixture.cs" />
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
+    <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
     <Compile Include="Designer\EnabledSetUsingPropertyDescriptorTestFixture.cs" />
     <Compile Include="Designer\FindInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\GenerateAccessibleRoleFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAutoScaleModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateRightToLeftFormTestFixture.cs" />
@@ -160,6 +162,7 @@
     <Compile Include="Designer\IsDefaultPropertyValueTests.cs" />
     <Compile Include="Designer\IsFullyQualifiedBaseClassFormDesignableTestFixture.cs" />
     <Compile Include="Designer\LoadAccessibleRoleTestFixture.cs" />
+    <Compile Include="Designer\LoadCursorTestFixture.cs" />
     <Compile Include="Designer\LoadFormTestFixtureBase.cs" />
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />
@@ -168,6 +171,7 @@
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
+    <Compile Include="Designer\PythonCodeDeserializerTests.cs" />
     <Compile Include="Designer\PythonGeneratorTestFixture.cs" />
     <Compile Include="Designer\IsFormDesignableTestFixture.cs" />
     <Compile Include="Designer\NullGeneratorPassedToLoader.cs" />

@@ -8,6 +8,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -39,8 +40,21 @@ namespace ICSharpCode.PythonBinding
 				return size.GetType().FullName + "(" + size.Width + ", " + size.Height + ")";
 			} else if (propertyType.IsEnum) {
 				return propertyType.FullName + "." + propertyValue.ToString();
+			} else if (propertyType == typeof(Cursor)) {
+				return GetCursorToString(propertyValue as Cursor);
 			}
 			return propertyValue.ToString();
+		}
+		
+		static string GetCursorToString(Cursor cursor)
+		{
+			foreach (PropertyInfo propertyInfo in typeof(Cursors).GetProperties(BindingFlags.Public | BindingFlags.Static)) {
+				Cursor standardCursor = (Cursor)propertyInfo.GetValue(null, null);
+				if (standardCursor == cursor) {
+					return typeof(Cursors).FullName + "." + propertyInfo.Name;
+				}
+			}
+			return String.Empty;
 		}
 	}
 }

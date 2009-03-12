@@ -37,7 +37,7 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			PythonFormWalker walker = new PythonFormWalker(this);
+			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
 			form = walker.CreateForm(pythonCode);
 			
 			if (CreatedComponents.Count > 0) {

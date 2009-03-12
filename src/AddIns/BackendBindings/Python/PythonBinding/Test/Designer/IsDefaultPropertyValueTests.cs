@@ -110,5 +110,19 @@ namespace PythonBinding.Tests.Designer
 
 			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("DoubleBuffered", form));
 		}		
+		
+		[Test]
+		public void CursorDefaultIsCursorsDefault()
+		{
+			form.Cursor = Cursors.Default;
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("Cursor", form));
+		}
+		
+		[Test]
+		public void HelpCursorIsNotDefaultValue()
+		{
+			form.Cursor = Cursors.Help;
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("Cursor", form));
+		}				
 	}
 }

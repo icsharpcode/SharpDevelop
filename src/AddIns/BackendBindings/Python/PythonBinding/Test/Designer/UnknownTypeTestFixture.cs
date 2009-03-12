@@ -38,7 +38,7 @@ namespace PythonBinding.Tests.Designer
 		[ExpectedException(typeof(PythonFormWalkerException))]
 		public void PythonFormWalkerExceptionThrown()
 		{
-			PythonFormWalker walker = new PythonFormWalker(this);
+			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
 			walker.CreateForm(pythonCode);
 			Assert.Fail("Exception should have been thrown before this.");
 		}

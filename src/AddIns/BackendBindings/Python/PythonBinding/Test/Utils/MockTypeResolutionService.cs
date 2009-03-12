@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace PythonBinding.Tests.Utils
 {
@@ -16,8 +17,17 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class MockTypeResolutionService : ITypeResolutionService
 	{
+		string lastTypeNameResolved;
+		
 		public MockTypeResolutionService()
 		{
+		}
+		
+		/// <summary>
+		/// Returns the last type name passed to the GetType method.
+		/// </summary>
+		public string LastTypeNameResolved {
+			get { return lastTypeNameResolved; }
 		}
 		
 		public Assembly GetAssembly(AssemblyName name)
@@ -33,9 +43,16 @@ namespace PythonBinding.Tests.Utils
 		public Type GetType(string name)
 		{
 			System.Console.WriteLine("TypeResolutionService.GetType: " + name);
+			lastTypeNameResolved = name;
 			if (name == "Form") {
-				return typeof(System.Windows.Forms.Form);
+				return typeof(Form);
+			} 
+			
+			Type type = typeof(Form).Assembly.GetType(name, false);
+			if (type != null) {
+				return type;
 			}
+			
 			return Type.GetType(name);
 		}
 		

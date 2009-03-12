@@ -143,7 +143,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void AppendProperty(object obj, PropertyDescriptor propertyDescriptor)
 		{			
-			if (propertyDescriptor.Name == "RightToLeft") {
+			if (propertyDescriptor.Name == "Cursor") {
 				Console.WriteLine("ImeMode");
 			}
 			object propertyValue = propertyDescriptor.GetValue(obj);

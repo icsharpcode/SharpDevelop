@@ -30,6 +30,7 @@ namespace ICSharpCode.PythonBinding
 			defaultPropertyValues.Add("DoubleBuffered", new PythonControlBooleanProperty(false));
 			defaultPropertyValues.Add("ImeMode",  new PythonControlImeModeProperty());
 			defaultPropertyValues.Add("RightToLeft",  new PythonControlRightToLeftProperty());
+			defaultPropertyValues.Add("Cursor", new PythonControlCursorProperty());
 		}
 		
 		/// <summary>
@@ -114,9 +115,6 @@ namespace ICSharpCode.PythonBinding
 			} else if (propertyInfo.Name == "HorizontalScroll") {
 				return true;	
 			} else if (propertyInfo.Name == "VerticalScroll") {
-				return true;	
-			} else if (propertyInfo.Name == "Cursor") {
-				// Cursors.Default
 				return true;	
 			} else if (propertyInfo.Name == "Font") {
 				// Default is Control.DefaultFont

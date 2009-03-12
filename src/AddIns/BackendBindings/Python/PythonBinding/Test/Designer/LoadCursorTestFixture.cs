@@ -6,19 +6,19 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
+
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Designer
 {
-	/// <summary>
-	/// Tests that the Form's AccessibleRole property can be loaded into the designer.
-	/// </summary>
 	[TestFixture]
-	public class LoadAccessibleRoleTestFixture : LoadFormTestFixtureBase
+	public class LoadCursorTestFixture : LoadFormTestFixtureBase
 	{		
 		string pythonCode = "class TestForm(System.Windows.Forms.Form):\r\n" +
 							"    def InitializeComponent(self):\r\n" +
@@ -26,7 +26,7 @@ namespace PythonBinding.Tests.Designer
 							"        # \r\n" +
 							"        # TestForm\r\n" +
 							"        # \r\n" +
-							"        self.AccessibleRole = System.Windows.Forms.AccessibleRole.None\r\n" +
+							"        self.Cursor = System.Windows.Forms.Cursors.Hand\r\n" +
 							"        self.Name = \"TestForm\"\r\n" +
 							"        self.ResumeLayout(False)\r\n";
 		Form form;
@@ -45,9 +45,9 @@ namespace PythonBinding.Tests.Designer
 		}
 								
 		[Test]
-		public void AccessibleRoleIsNone()
+		public void FormCursorIsHand()
 		{
-			Assert.AreEqual(AccessibleRole.None, form.AccessibleRole);
+			Assert.AreEqual(Cursors.Hand, form.Cursor);
 		}
 	}
 }
