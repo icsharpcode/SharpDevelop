@@ -56,6 +56,7 @@ namespace PythonBinding.Tests.Designer
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
+								"    self.Visible = False\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

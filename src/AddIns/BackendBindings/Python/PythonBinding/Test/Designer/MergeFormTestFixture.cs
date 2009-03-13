@@ -75,6 +75,7 @@ namespace PythonBinding.Tests.Designer
 					"\t\t# \r\n" + 
 					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
 					"\t\tself.Name = \"MainForm\"\r\n" +
+					"\t\tself.Visible = False\r\n" +
 					"\t\tself.ResumeLayout(False)\r\n" +
 					"\t\tself.PerformLayout()\r\n";						
 		}

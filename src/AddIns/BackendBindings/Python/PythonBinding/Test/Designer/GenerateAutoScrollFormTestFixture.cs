@@ -44,6 +44,7 @@ namespace PythonBinding.Tests.Designer
 								"    self.AutoScroll = True\r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
+								"    self.Visible = False\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

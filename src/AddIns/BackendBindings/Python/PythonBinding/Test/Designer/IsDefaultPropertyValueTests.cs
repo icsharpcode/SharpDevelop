@@ -124,5 +124,22 @@ namespace PythonBinding.Tests.Designer
 			form.Cursor = Cursors.Help;
 			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("Cursor", form));
 		}				
+		
+		[Test]
+		public void VisiblePropertyDefaultIsTrue()
+		{
+			PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
+			PropertyDescriptor namePropertyDescriptor = descriptors.Find("Visible", false);
+			namePropertyDescriptor.SetValue(form, true);
+
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("Visible", form));
+		}
+
+		[Test]
+		public void VisiblePropertyIsFalse()
+		{
+			form.Visible = false;
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("Visible", form));
+		}		
 	}
 }

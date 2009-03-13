@@ -26,6 +26,7 @@ namespace ICSharpCode.PythonBinding
 			defaultPropertyValues.Add("Text", new PythonControlTextProperty());
 			defaultPropertyValues.Add("AutoValidate", new PythonControlAutoValidateProperty());
 			defaultPropertyValues.Add("Enabled", new PythonControlBooleanProperty(true));
+			defaultPropertyValues.Add("Visible", new PythonControlBooleanProperty(true));
 			defaultPropertyValues.Add("AutoScaleMode",  new PythonControlAutoScaleModeProperty());
 			defaultPropertyValues.Add("DoubleBuffered", new PythonControlBooleanProperty(false));
 			defaultPropertyValues.Add("ImeMode",  new PythonControlImeModeProperty());
@@ -92,8 +93,6 @@ namespace ICSharpCode.PythonBinding
 
 			if (propertyInfo.Name == "BackColor") {
 				// Default is Control.DefaultBackColor
-				return true;
-			} else if (propertyInfo.Name == "Visible") {
 				return true;
 			} else if (propertyInfo.Name == "Icon") {
 				return true;	
