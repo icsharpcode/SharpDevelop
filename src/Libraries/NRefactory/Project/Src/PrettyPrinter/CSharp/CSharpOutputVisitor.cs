@@ -551,7 +551,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			OutputModifier(propertyGetRegion.Modifier);
 			outputFormatter.PrintText("get");
-			OutputBlockAllowInline(propertyGetRegion.Block, prettyPrintOptions.PropertyGetBraceStyle);
+			if (prettyPrintOptions.AllowPropertyGetBlockInline) {
+				OutputBlockAllowInline(propertyGetRegion.Block, prettyPrintOptions.PropertyGetBraceStyle);
+			} else {
+				OutputBlock(propertyGetRegion.Block, prettyPrintOptions.PropertyGetBraceStyle);
+			}
 			return null;
 		}
 		
@@ -561,7 +565,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			OutputModifier(propertySetRegion.Modifier);
 			outputFormatter.PrintText("set");
-			OutputBlockAllowInline(propertySetRegion.Block, prettyPrintOptions.PropertySetBraceStyle);
+			if (prettyPrintOptions.AllowPropertySetBlockInline) {
+				OutputBlockAllowInline(propertySetRegion.Block, prettyPrintOptions.PropertySetBraceStyle);
+			} else {
+				OutputBlock(propertySetRegion.Block, prettyPrintOptions.PropertySetBraceStyle);
+			}
 			return null;
 		}
 		
@@ -606,7 +614,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			VisitAttributes(eventAddRegion.Attributes, data);
 			outputFormatter.Indent();
 			outputFormatter.PrintText("add");
-			OutputBlockAllowInline(eventAddRegion.Block, prettyPrintOptions.EventAddBraceStyle);
+			if (prettyPrintOptions.AllowEventAddBlockInline) {
+				OutputBlockAllowInline(eventAddRegion.Block, prettyPrintOptions.EventAddBraceStyle);
+			} else {
+				OutputBlock(eventAddRegion.Block, prettyPrintOptions.EventAddBraceStyle);
+			}
 			return null;
 		}
 		
@@ -615,7 +627,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			VisitAttributes(eventRemoveRegion.Attributes, data);
 			outputFormatter.Indent();
 			outputFormatter.PrintText("remove");
-			OutputBlockAllowInline(eventRemoveRegion.Block, prettyPrintOptions.EventRemoveBraceStyle);
+			if (prettyPrintOptions.AllowEventRemoveBlockInline) {
+				OutputBlockAllowInline(eventRemoveRegion.Block, prettyPrintOptions.EventRemoveBraceStyle);
+			} else {
+				OutputBlock(eventRemoveRegion.Block, prettyPrintOptions.EventRemoveBraceStyle);
+			}
 			return null;
 		}
 		
