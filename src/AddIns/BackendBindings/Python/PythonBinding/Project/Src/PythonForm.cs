@@ -142,10 +142,7 @@ namespace ICSharpCode.PythonBinding
 		/// Appends a property to the InitializeComponents method.
 		/// </summary>
 		void AppendProperty(object obj, PropertyDescriptor propertyDescriptor)
-		{			
-			if (propertyDescriptor.Name == "Cursor") {
-				Console.WriteLine("ImeMode");
-			}
+		{
 			object propertyValue = propertyDescriptor.GetValue(obj);
 			if (propertyValue == null) {
 				return;

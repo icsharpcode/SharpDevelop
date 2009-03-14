@@ -35,6 +35,7 @@ namespace ICSharpCode.PythonBinding
 			defaultPropertyValues.Add("MinimumSize", new PythonControlSizeProperty(0, 0));
 			defaultPropertyValues.Add("AutoScrollMinSize", new PythonControlSizeProperty(0, 0));
 			defaultPropertyValues.Add("AutoScrollMargin", new PythonControlSizeProperty(0, 0));
+			defaultPropertyValues.Add("Location", new PythonControlPointProperty(0, 0));
 		}
 		
 		/// <summary>
@@ -99,9 +100,6 @@ namespace ICSharpCode.PythonBinding
 				return true;
 			} else if (propertyInfo.Name == "Icon") {
 				return true;	
-			} else if (propertyInfo.Name == "Location") {
-				// 0, 0
-				return true;
 			} else if (propertyInfo.Name == "TransparencyKey") {
 				return true;	
 			} else if (propertyInfo.Name == "Font") {

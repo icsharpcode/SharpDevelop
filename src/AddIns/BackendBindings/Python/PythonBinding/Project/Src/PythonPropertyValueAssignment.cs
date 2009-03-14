@@ -42,6 +42,9 @@ namespace ICSharpCode.PythonBinding
 				return propertyType.FullName + "." + propertyValue.ToString();
 			} else if (propertyType == typeof(Cursor)) {
 				return GetCursorToString(propertyValue as Cursor);
+			} else if (propertyType == typeof(Point)) {
+				Point point = (Point)propertyValue;
+				return point.GetType().FullName + "(" + point.X + ", " + point.Y + ")";
 			}
 			return propertyValue.ToString();
 		}

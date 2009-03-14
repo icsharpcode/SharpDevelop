@@ -183,5 +183,19 @@ namespace PythonBinding.Tests.Designer
 			form.AutoScrollMargin = new Size(100, 100);
 			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("AutoScrollMargin", form));
 		}		
+		
+		[Test]
+		public void LocationDefaultIsEmpty()
+		{
+			form.Location = new Point(0, 0);
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("Location", form));
+		}
+
+		[Test]
+		public void NonDefaultLocation()
+		{
+			form.Location = new Point(10, 20);
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("Location", form));
+		}			
 	}
 }

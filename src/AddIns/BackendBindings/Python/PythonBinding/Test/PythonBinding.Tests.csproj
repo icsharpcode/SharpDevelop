@@ -153,6 +153,7 @@
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
     <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateFormLocationTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateRightToLeftFormTestFixture.cs" />
