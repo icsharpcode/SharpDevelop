@@ -154,6 +154,7 @@
     <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateRightToLeftFormTestFixture.cs" />
     <Compile Include="Designer\GenerateSimpleFormTestFixture.cs" />
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />

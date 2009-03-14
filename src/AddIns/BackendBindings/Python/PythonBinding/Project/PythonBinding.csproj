@@ -96,6 +96,7 @@
     <Compile Include="Src\PythonControlImeModeProperty.cs" />
     <Compile Include="Src\PythonControlProperty.cs" />
     <Compile Include="Src\PythonControlRightToLeftProperty.cs" />
+    <Compile Include="Src\PythonControlSizeProperty.cs" />
     <Compile Include="Src\PythonControlTextProperty.cs" />
     <Compile Include="Src\PythonDesignerGenerator.cs" />
     <Compile Include="Src\PythonDesignerLoader.cs" />

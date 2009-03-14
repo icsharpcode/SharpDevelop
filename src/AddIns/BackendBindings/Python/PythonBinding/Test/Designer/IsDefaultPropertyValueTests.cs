@@ -140,6 +140,48 @@ namespace PythonBinding.Tests.Designer
 		{
 			form.Visible = false;
 			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("Visible", form));
+		}
+		
+		[Test]
+		public void MinFormSizeDefaultIsEmpty()
+		{
+			form.MinimumSize = new Size(0, 0);
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("MinimumSize", form));
+		}
+
+		[Test]
+		public void NonDefaultMinFormSize()
+		{
+			form.MinimumSize = new Size(100, 100);
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("MinimumSize", form));
+		}
+		
+		[Test]
+		public void AutoScrollSizeDefaultIsEmpty()
+		{
+			form.AutoScrollMinSize = new Size(0, 0);
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("AutoScrollMinSize", form));
+		}
+
+		[Test]
+		public void NonDefaultAutoScrollMinSize()
+		{
+			form.AutoScrollMinSize = new Size(100, 100);
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("AutoScrollMinSize", form));
+		}
+		
+		[Test]
+		public void AutoScrollMarginDefaultIsEmpty()
+		{
+			form.AutoScrollMargin = new Size(0, 0);
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("AutoScrollMargin", form));
+		}
+
+		[Test]
+		public void NonDefaultAutoScrollMargin()
+		{
+			form.AutoScrollMargin = new Size(100, 100);
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("AutoScrollMargin", form));
 		}		
 	}
 }

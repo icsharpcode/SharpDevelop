@@ -32,6 +32,9 @@ namespace ICSharpCode.PythonBinding
 			defaultPropertyValues.Add("ImeMode",  new PythonControlImeModeProperty());
 			defaultPropertyValues.Add("RightToLeft",  new PythonControlRightToLeftProperty());
 			defaultPropertyValues.Add("Cursor", new PythonControlCursorProperty());
+			defaultPropertyValues.Add("MinimumSize", new PythonControlSizeProperty(0, 0));
+			defaultPropertyValues.Add("AutoScrollMinSize", new PythonControlSizeProperty(0, 0));
+			defaultPropertyValues.Add("AutoScrollMargin", new PythonControlSizeProperty(0, 0));
 		}
 		
 		/// <summary>
@@ -98,22 +101,8 @@ namespace ICSharpCode.PythonBinding
 				return true;	
 			} else if (propertyInfo.Name == "Location") {
 				// 0, 0
-				return true;	
-			} else if (propertyInfo.Name == "Margin") {
-				// Padding.DefaultMargin.
-				return true;	
-			} else if (propertyInfo.Name == "MinimumSize") {
-				// 0, 0
 				return true;
 			} else if (propertyInfo.Name == "TransparencyKey") {
-				return true;	
-			} else if (propertyInfo.Name == "AutoScrollMargin") {
-				return true;	
-			} else if (propertyInfo.Name == "AutoScrollMinSize") {
-				return true;	
-			} else if (propertyInfo.Name == "HorizontalScroll") {
-				return true;	
-			} else if (propertyInfo.Name == "VerticalScroll") {
 				return true;	
 			} else if (propertyInfo.Name == "Font") {
 				// Default is Control.DefaultFont
