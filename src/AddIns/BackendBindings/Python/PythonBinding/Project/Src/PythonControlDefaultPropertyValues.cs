@@ -19,23 +19,24 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonControlDefaultPropertyValues
 	{
-		Dictionary<string, PythonControlProperty> defaultPropertyValues = new Dictionary<string, PythonControlProperty>();
-			
+		Dictionary<string, object> defaultPropertyValues = new Dictionary<string, object>();
+		
 		public PythonControlDefaultPropertyValues()
 		{
-			defaultPropertyValues.Add("Text", new PythonControlTextProperty());
-			defaultPropertyValues.Add("AutoValidate", new PythonControlAutoValidateProperty());
-			defaultPropertyValues.Add("Enabled", new PythonControlBooleanProperty(true));
-			defaultPropertyValues.Add("Visible", new PythonControlBooleanProperty(true));
-			defaultPropertyValues.Add("AutoScaleMode",  new PythonControlAutoScaleModeProperty());
-			defaultPropertyValues.Add("DoubleBuffered", new PythonControlBooleanProperty(false));
-			defaultPropertyValues.Add("ImeMode",  new PythonControlImeModeProperty());
-			defaultPropertyValues.Add("RightToLeft",  new PythonControlRightToLeftProperty());
-			defaultPropertyValues.Add("Cursor", new PythonControlCursorProperty());
-			defaultPropertyValues.Add("MinimumSize", new PythonControlSizeProperty(0, 0));
-			defaultPropertyValues.Add("AutoScrollMinSize", new PythonControlSizeProperty(0, 0));
-			defaultPropertyValues.Add("AutoScrollMargin", new PythonControlSizeProperty(0, 0));
-			defaultPropertyValues.Add("Location", new PythonControlPointProperty(0, 0));
+			defaultPropertyValues.Add("Text", String.Empty);
+			defaultPropertyValues.Add("AutoValidate", AutoValidate.EnablePreventFocusChange);
+			defaultPropertyValues.Add("Enabled", true);
+			defaultPropertyValues.Add("Visible", true);
+			defaultPropertyValues.Add("AutoScaleMode",  AutoScaleMode.Inherit);
+			defaultPropertyValues.Add("DoubleBuffered", false);
+			defaultPropertyValues.Add("ImeMode", ImeMode.NoControl);
+			defaultPropertyValues.Add("RightToLeft", RightToLeft.No);
+			defaultPropertyValues.Add("Cursor", Cursors.Default);
+			defaultPropertyValues.Add("MinimumSize", new Size(0, 0));
+			defaultPropertyValues.Add("AutoScrollMinSize", new Size(0, 0));
+			defaultPropertyValues.Add("AutoScrollMargin", new Size(0, 0));
+			defaultPropertyValues.Add("Location", new Point(0, 0));
+			defaultPropertyValues.Add("Padding", Padding.Empty);
 		}
 		
 		/// <summary>
@@ -90,9 +91,9 @@ namespace ICSharpCode.PythonBinding
 				return defaultValueAttribute.Value == propertyValue;
 			}
 			
-			PythonControlProperty controlProperty = null;
-			if (defaultPropertyValues.TryGetValue(propertyInfo.Name, out controlProperty)) {
-			    return controlProperty.IsDefaultValue(propertyValue);
+			object defaultPropertyValue = null;
+			if (defaultPropertyValues.TryGetValue(propertyInfo.Name, out defaultPropertyValue)) {
+			    return defaultPropertyValue.Equals(propertyValue);
 			}
 
 			if (propertyInfo.Name == "BackColor") {
@@ -108,11 +109,7 @@ namespace ICSharpCode.PythonBinding
 			} else if (propertyInfo.Name == "ForeColor") {
 				// Default is Control.DefaultForeColor
 				return true;	
-			} else if (propertyInfo.Name == "Padding") {
-				// Padding.Empty.
-				return true;	
 			}
-		
 			return false;
 		}
 	}

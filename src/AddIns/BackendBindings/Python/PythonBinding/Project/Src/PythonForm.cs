@@ -143,6 +143,10 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void AppendProperty(object obj, PropertyDescriptor propertyDescriptor)
 		{
+			if (propertyDescriptor.Name == "Text") {
+				Console.WriteLine("asfads");
+			}
+			
 			object propertyValue = propertyDescriptor.GetValue(obj);
 			if (propertyValue == null) {
 				return;

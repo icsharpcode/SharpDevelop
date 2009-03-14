@@ -196,6 +196,20 @@ namespace PythonBinding.Tests.Designer
 		{
 			form.Location = new Point(10, 20);
 			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("Location", form));
-		}			
+		}
+		
+		[Test]
+		public void PaddingPropertyDefaultIsPaddingEmpty()
+		{
+			form.Padding = Padding.Empty;
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("Padding", form));
+		}
+
+		[Test]
+		public void NonDefaultPaddingProperty()
+		{
+			form.Padding = new Padding(10, 10, 10, 10);
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("Padding", form));
+		}		
 	}
 }

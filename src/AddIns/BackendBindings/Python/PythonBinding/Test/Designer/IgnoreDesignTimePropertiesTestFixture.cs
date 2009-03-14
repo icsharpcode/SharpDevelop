@@ -37,7 +37,7 @@ namespace PythonBinding.Tests.Designer
 		/// add design time properties and does not throw a null reference exception.
 		/// </summary>
 		[Test]
-		public void DesignTimePropertyIsIgnore()
+		public void DesignTimePropertyIsIgnored()
 		{
 			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
 				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));

@@ -45,6 +45,9 @@ namespace ICSharpCode.PythonBinding
 			} else if (propertyType == typeof(Point)) {
 				Point point = (Point)propertyValue;
 				return point.GetType().FullName + "(" + point.X + ", " + point.Y + ")";
+			} else if (propertyType == typeof(Padding)) {
+				Padding padding = (Padding)propertyValue;
+				return padding.GetType().FullName + "(" + padding.Left + ", " + padding.Top + ", " + padding.Right + ", " + padding.Bottom + ")";
 			}
 			return propertyValue.ToString();
 		}
