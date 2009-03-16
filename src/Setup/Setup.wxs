@@ -441,6 +441,14 @@
 			
 				<ComponentRef Id="HexEditorAddin"/>
 				<ComponentRef Id="HexEditorDll"/>
+				
+				<ComponentRef Id="Hook32Dll"/>
+				<ComponentRef Id="Hook64Dll"/>
+				<ComponentRef Id="ICSharpCodeProfilerAddInAddin"/>
+				<ComponentRef Id="ICSharpCodeProfilerAddInDll"/>
+				<ComponentRef Id="ICSharpCodeProfilerControllerDll"/>
+				<ComponentRef Id="ICSharpCodeProfilerControlsDll"/>
+				<ComponentRef Id="SystemDataSQLiteDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
