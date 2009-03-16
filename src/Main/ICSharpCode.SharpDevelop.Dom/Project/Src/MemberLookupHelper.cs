@@ -823,11 +823,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static IMember FindSimilarMember(IClass type, IMember member)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			StringComparer nameComparer = type.ProjectContent.Language.NameComparer;
 			member = GetGenericMember(member);
 			if (member is IMethod) {
 				IMethod parentMethod = (IMethod)member;
 				foreach (IMethod m in type.Methods) {
-					if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
+					if (nameComparer.Equals(parentMethod.Name, m.Name)) {
 						if (m.IsStatic == parentMethod.IsStatic) {
 							if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
 								return m;
@@ -838,7 +841,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else if (member is IProperty) {
 				IProperty parentMethod = (IProperty)member;
 				foreach (IProperty m in type.Properties) {
-					if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
+					if (nameComparer.Equals(parentMethod.Name, m.Name)) {
 						if (m.IsStatic == parentMethod.IsStatic) {
 							if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
 								return m;

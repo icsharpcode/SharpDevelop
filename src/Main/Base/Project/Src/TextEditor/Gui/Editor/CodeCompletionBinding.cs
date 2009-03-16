@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			string ext = Path.GetExtension(editor.FileName);
 			foreach (string extension in extensions) {
-				if (ext.Equals(extension, StringComparison.InvariantCultureIgnoreCase)) {
+				if (ext.Equals(extension, StringComparison.OrdinalIgnoreCase)) {
 					if (binding == null) {
 						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
 					}
@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			string ext = Path.GetExtension(editor.FileName);
 			foreach (string extension in extensions) {
-				if (ext.Equals(extension, StringComparison.InvariantCultureIgnoreCase)) {
+				if (ext.Equals(extension, StringComparison.OrdinalIgnoreCase)) {
 					if (binding == null) {
 						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
 					}

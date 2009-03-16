@@ -492,7 +492,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					bool changes = false;
 					foreach (ReferenceProjectItem reference in item.Template.RequiredAssemblyReferences) {
 						IEnumerable<ProjectItem> refs = ProjectService.CurrentProject.GetItemsOfType(ItemType.Reference);
-						if (!refs.Any(projItem => string.Equals(projItem.Include, reference.Include, StringComparison.InvariantCultureIgnoreCase))) {
+						if (!refs.Any(projItem => string.Equals(projItem.Include, reference.Include, StringComparison.OrdinalIgnoreCase))) {
 							ReferenceProjectItem projItem = (ReferenceProjectItem)reference.CloneFor(ProjectService.CurrentProject);
 							ProjectService.AddProjectItem(ProjectService.CurrentProject, projItem);
 							changes = true;

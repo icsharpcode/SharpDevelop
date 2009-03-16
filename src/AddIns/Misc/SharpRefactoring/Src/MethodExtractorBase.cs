@@ -245,9 +245,9 @@ namespace SharpRefactoring
 			}
 		}
 		
-		protected static bool HasOccurrencesAfter(bool caseSensitive, ParametrizedNode member, Location location, string name, Location start, Location end)
+		protected static bool HasOccurrencesAfter(StringComparer nameComparer, ParametrizedNode member, Location location, string name, Location start, Location end)
 		{
-			FindReferenceVisitor frv = new FindReferenceVisitor(caseSensitive, name, start, end);
+			FindReferenceVisitor frv = new FindReferenceVisitor(nameComparer, name, start, end);
 			
 			member.AcceptVisitor(frv, null);
 			
@@ -260,12 +260,12 @@ namespace SharpRefactoring
 			return false;
 		}
 		
-		protected bool IsInitializedVariable(bool caseSensitive, ParametrizedNode member, Variable variable)
+		protected bool IsInitializedVariable(StringComparer nameComparer, ParametrizedNode member, Variable variable)
 		{
 			if (!(variable.Initializer.IsNull)) {
 				return true;
 			} else {
-				FindReferenceVisitor frv = new FindReferenceVisitor(caseSensitive, variable.Name, variable.StartPos, variable.EndPos);
+				FindReferenceVisitor frv = new FindReferenceVisitor(nameComparer, variable.Name, variable.StartPos, variable.EndPos);
 				
 				member.AcceptVisitor(frv, null);
 				

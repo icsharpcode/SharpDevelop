@@ -840,7 +840,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			List<ProjectConfigurationPlatformMatching> results = new List<ProjectConfigurationPlatformMatching>();
 			ProjectSection prjSec = GetProjectConfigurationsSection();
-			Dictionary<string, SolutionItem> dict = new Dictionary<string, SolutionItem>(StringComparer.InvariantCultureIgnoreCase);
+			Dictionary<string, SolutionItem> dict = new Dictionary<string, SolutionItem>(StringComparer.OrdinalIgnoreCase);
 			foreach (SolutionItem item in prjSec.Items) {
 				dict[item.Name] = item;
 			}

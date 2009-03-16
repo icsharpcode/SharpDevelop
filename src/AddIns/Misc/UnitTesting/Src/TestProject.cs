@@ -65,7 +65,7 @@ namespace ICSharpCode.UnitTesting
 		public static bool IsTestFrameworkReference(ReferenceProjectItem referenceProjectItem)
 		{
 			if (referenceProjectItem != null) {
-				return string.Equals(referenceProjectItem.ShortName, "NUnit.Framework", StringComparison.InvariantCultureIgnoreCase);
+				return string.Equals(referenceProjectItem.ShortName, "NUnit.Framework", StringComparison.OrdinalIgnoreCase);
 			}
 			return false;
 		}

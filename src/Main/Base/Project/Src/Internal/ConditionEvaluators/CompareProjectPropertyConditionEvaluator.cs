@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop
 	/// </attribute>
 	/// <attribute name="comparisonType">
 	/// The mode of the comparison: a field of the System.StringComparison enumeration. The default is
-	/// 'InvariantCultureIgnoreCase'.
+	/// 'OrdinalIgnoreCase'.
 	/// </attribute>
 	/// <example title="Check if the project output type in the active configuration is a Windows Application">
 	/// &lt;Condition name = "CompareProjectProperty" property = "OutputType" equals = "WinExe"&gt;
@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop
 			string comparisonTypeText = condition.Properties["comparisonType"];
 			StringComparison comparisonType;
 			if (string.IsNullOrEmpty(comparisonTypeText))
-				comparisonType = StringComparison.InvariantCultureIgnoreCase;
+				comparisonType = StringComparison.OrdinalIgnoreCase;
 			else
 				comparisonType = (StringComparison)Enum.Parse(typeof(StringComparison), comparisonTypeText);
 			

@@ -151,7 +151,7 @@ namespace ICSharpCode.Svn
 		
 		AprPoolHandle memoryPool;
 		SvnClient client;
-		Dictionary<string, Status> statusCache = new Dictionary<string, Status>(StringComparer.InvariantCultureIgnoreCase);
+		Dictionary<string, Status> statusCache = new Dictionary<string, Status>(StringComparer.OrdinalIgnoreCase);
 		
 		public SvnClientWrapper()
 		{
@@ -359,7 +359,7 @@ namespace ICSharpCode.Svn
 							TextStatus = ToStatusKind(status.TextStatus)
 						};
 						statusCache[dir] = s;
-						if (StringComparer.InvariantCultureIgnoreCase.Equals(filename, dir)) {
+						if (StringComparer.OrdinalIgnoreCase.Equals(filename, dir)) {
 							result = s;
 						}
 					},

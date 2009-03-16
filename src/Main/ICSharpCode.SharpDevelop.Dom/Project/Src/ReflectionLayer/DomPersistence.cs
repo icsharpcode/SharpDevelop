@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		Dictionary<string, string> LoadCacheIndex()
 		{
 			string indexFile = GetIndexFileName();
-			Dictionary<string, string> list = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+			Dictionary<string, string> list = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			if (File.Exists(indexFile)) {
 				try {
 					using (FileStream fs = new FileStream(indexFile, FileMode.Open, FileAccess.Read)) {
@@ -213,13 +213,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override bool Equals(object obj) {
 				if (!(obj is ClassNameTypeCountPair)) return false;
 				ClassNameTypeCountPair myClassNameTypeCountPair = (ClassNameTypeCountPair)obj;
-				if (!ClassName.Equals(myClassNameTypeCountPair.ClassName, StringComparison.InvariantCultureIgnoreCase)) return false;
+				if (ClassName != myClassNameTypeCountPair.ClassName) return false;
 				if (TypeParameterCount != myClassNameTypeCountPair.TypeParameterCount) return false;
 				return true;
 			}
 			
 			public override int GetHashCode() {
-				return StringComparer.InvariantCultureIgnoreCase.GetHashCode(ClassName) ^ ((int)TypeParameterCount * 5);
+				return ClassName.GetHashCode() ^ ((int)TypeParameterCount * 5);
 			}
 		}
 		

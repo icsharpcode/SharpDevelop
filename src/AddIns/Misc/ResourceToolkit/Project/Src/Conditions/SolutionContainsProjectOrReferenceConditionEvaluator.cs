@@ -33,7 +33,7 @@ namespace Hornung.ResourceToolkit.Conditions
 			foreach (IProject p in ProjectService.OpenSolution.Projects) {
 				
 				// Check project name
-				if (p.Name.Equals(condition.Properties["itemName"], StringComparison.InvariantCultureIgnoreCase)) {
+				if (p.Name.Equals(condition.Properties["itemName"], StringComparison.OrdinalIgnoreCase)) {
 					return true;
 				}
 				
@@ -41,7 +41,7 @@ namespace Hornung.ResourceToolkit.Conditions
 				foreach (ProjectItem pi in p.Items) {
 					ReferenceProjectItem rpi = pi as ReferenceProjectItem;
 					if (rpi != null) {
-						if (rpi.Name.Equals(condition.Properties["itemName"], StringComparison.InvariantCultureIgnoreCase)) {
+						if (rpi.Name.Equals(condition.Properties["itemName"], StringComparison.OrdinalIgnoreCase)) {
 							return true;
 						}
 					}

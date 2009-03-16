@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			foreach (ProjectItem item in project.Items) {
 				if (item.ItemType == ItemType.Reference && item.Include != null) {
-					if (item.Include.Trim().StartsWith("System.Web.Services", StringComparison.InvariantCultureIgnoreCase)) {
+					if (item.Include.Trim().StartsWith("System.Web.Services", StringComparison.OrdinalIgnoreCase)) {
 						return true;
 					}
 				}

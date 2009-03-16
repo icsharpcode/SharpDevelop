@@ -27,7 +27,7 @@ namespace HexEditor.View
 			if (fileName != null) {
 				string extension = Path.GetExtension(fileName);
 				foreach (string supportedExtension in GetSupportedBinaryFileExtensions()) {
-					if (String.Compare(supportedExtension, extension, StringComparison.InvariantCultureIgnoreCase) == 0) {
+					if (String.Compare(supportedExtension, extension, StringComparison.OrdinalIgnoreCase) == 0) {
 						return true;
 					}
 				}

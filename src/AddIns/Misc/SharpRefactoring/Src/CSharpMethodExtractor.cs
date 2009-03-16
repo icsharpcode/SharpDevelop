@@ -25,6 +25,8 @@ namespace SharpRefactoring
 {
 	public class CSharpMethodExtractor : MethodExtractorBase
 	{
+		static readonly StringComparer CSharpNameComparer = StringComparer.Ordinal;
+		
 		public CSharpMethodExtractor(ICSharpCode.TextEditor.TextEditorControl textEditor, ISelection selection)
 			: base(textEditor, selection)
 		{
@@ -84,7 +86,7 @@ namespace SharpRefactoring
 			
 			foreach (ParameterDeclarationExpression pde in parentNode.Parameters)
 			{
-				FindReferenceVisitor frv = new FindReferenceVisitor(true, pde.ParameterName, newMethod.Body.StartLocation, newMethod.Body.EndLocation);
+				FindReferenceVisitor frv = new FindReferenceVisitor(CSharpNameComparer, pde.ParameterName, newMethod.Body.StartLocation, newMethod.Body.EndLocation);
 				
 				newMethod.AcceptVisitor(frv, null);
 				
@@ -99,7 +101,7 @@ namespace SharpRefactoring
 						possibleReturnValues.Add(new VariableDeclaration(pde.ParameterName, null, pde.TypeReference));
 					}
 					
-					bool hasOccurrences = HasOccurrencesAfter(true, parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), pde.ParameterName, newMethod.Body.StartLocation, newMethod.Body.EndLocation);
+					bool hasOccurrences = HasOccurrencesAfter(CSharpNameComparer, parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), pde.ParameterName, newMethod.Body.StartLocation, newMethod.Body.EndLocation);
 					if (hasOccurrences)
 						newMethod.Parameters.Add(new ParameterDeclarationExpression(pde.TypeReference, pde.ParameterName, ParameterModifiers.Ref));
 					else
@@ -129,18 +131,18 @@ namespace SharpRefactoring
 						variable.Type = Dom.Refactoring.CodeGenerator.ConvertType(result.ResolvedType, new Dom.ClassFinder(result.CallingMember));
 					}
 					
-					if (IsInSel(variable.StartPos, this.currentSelection) && HasOccurrencesAfter(true, this.parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), variable.Name, variable.StartPos, variable.EndPos)) {
+					if (IsInSel(variable.StartPos, this.currentSelection) && HasOccurrencesAfter(CSharpNameComparer, this.parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), variable.Name, variable.StartPos, variable.EndPos)) {
 						possibleReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.Type));
 						otherReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.Type));
 					}
 
-					FindReferenceVisitor frv = new FindReferenceVisitor(true, variable.Name, start, end);
+					FindReferenceVisitor frv = new FindReferenceVisitor(CSharpNameComparer, variable.Name, start, end);
 					
 					parentNode.AcceptVisitor(frv, null);
 					
 					if ((frv.Identifiers.Count > 0) && (!(IsInSel(variable.StartPos, this.currentSelection) || IsInSel(variable.EndPos, this.currentSelection)))) {
-						bool hasOccurrencesAfter = HasOccurrencesAfter(true, this.parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), variable.Name, variable.StartPos, variable.EndPos);
-						bool isInitialized = IsInitializedVariable(true, this.parentNode, variable);
+						bool hasOccurrencesAfter = HasOccurrencesAfter(CSharpNameComparer, this.parentNode, new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1), variable.Name, variable.StartPos, variable.EndPos);
+						bool isInitialized = IsInitializedVariable(CSharpNameComparer, this.parentNode, variable);
 						bool hasAssignment = HasAssignment(newMethod, variable);
 						bool getsAssigned = pair.Value.Count > 0;
 						

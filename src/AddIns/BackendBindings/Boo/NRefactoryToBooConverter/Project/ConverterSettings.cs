@@ -26,15 +26,15 @@ namespace NRefactoryToBooConverter
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			if (System.IO.Path.GetExtension(fileName).ToLowerInvariant() == ".vb")
-				return StringComparer.InvariantCultureIgnoreCase;
+			if (string.Equals(System.IO.Path.GetExtension(fileName), ".vb", StringComparison.OrdinalIgnoreCase))
+				return StringComparer.OrdinalIgnoreCase;
 			else
-				return StringComparer.InvariantCulture;
+				return StringComparer.Ordinal;
 		}
 		
 		public bool IsVisualBasic {
 			get {
-				return System.IO.Path.GetExtension(fileName).ToLowerInvariant() == ".vb";
+				return string.Equals(System.IO.Path.GetExtension(fileName), ".vb", StringComparison.OrdinalIgnoreCase);
 			}
 		}
 		

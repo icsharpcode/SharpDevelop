@@ -258,7 +258,7 @@ namespace ICSharpCode.Svn.Commands
 					using (StringReader r = new StringReader(propertyValue)) {
 						string line;
 						while ((line = r.ReadLine()) != null) {
-							if (!string.Equals(line, shortFileName, StringComparison.InvariantCultureIgnoreCase)) {
+							if (!string.Equals(line, shortFileName, StringComparison.OrdinalIgnoreCase)) {
 								b.AppendLine(line);
 							}
 						}

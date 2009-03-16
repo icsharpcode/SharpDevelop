@@ -32,9 +32,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		public override bool IsEnabledForFile(string fileName)
 		{
 			string extension = Path.GetExtension(fileName);
-			if (extension.Equals(".cs", StringComparison.InvariantCultureIgnoreCase))
+			if (extension.Equals(".cs", StringComparison.OrdinalIgnoreCase))
 				return language == NR.SupportedLanguage.CSharp;
-			else if (extension.Equals(".vb", StringComparison.InvariantCultureIgnoreCase))
+			else if (extension.Equals(".vb", StringComparison.OrdinalIgnoreCase))
 				return language == NR.SupportedLanguage.VBNet;
 			else
 				return false;

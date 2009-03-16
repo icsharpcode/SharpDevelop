@@ -365,7 +365,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
-		/// Returns true, if a specific file (given by it's name) is inside this project.
+		/// Returns true, if a specific file is inside this project.
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
@@ -392,7 +392,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			lock (SyncRoot) {
 				if (findFileCache == null) {
-					findFileCache = new Dictionary<string, FileProjectItem>(StringComparer.InvariantCultureIgnoreCase);
+					findFileCache = new Dictionary<string, FileProjectItem>(StringComparer.OrdinalIgnoreCase);
 					foreach (ProjectItem item in this.Items) {
 						FileProjectItem fileItem = item as FileProjectItem;
 						if (fileItem != null) {

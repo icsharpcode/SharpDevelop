@@ -302,7 +302,7 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			string coreAssemblyFullPath = null;
 			
-			if (sourceProject.Name.Equals("ICSharpCode.Core", StringComparison.InvariantCultureIgnoreCase)) {
+			if (sourceProject.Name.Equals("ICSharpCode.Core", StringComparison.OrdinalIgnoreCase)) {
 				
 				// This is the ICSharpCode.Core project itself.
 				coreAssemblyFullPath = sourceProject.OutputAssemblyFullPath;
@@ -314,7 +314,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					ProjectReferenceProjectItem prpi = item as ProjectReferenceProjectItem;
 					if (prpi != null) {
 						if (prpi.ReferencedProject != null) {
-							if (prpi.ReferencedProject.Name.Equals("ICSharpCode.Core", StringComparison.InvariantCultureIgnoreCase) && prpi.ReferencedProject.OutputAssemblyFullPath != null) {
+							if (prpi.ReferencedProject.Name.Equals("ICSharpCode.Core", StringComparison.OrdinalIgnoreCase) && prpi.ReferencedProject.OutputAssemblyFullPath != null) {
 								coreAssemblyFullPath = prpi.ReferencedProject.OutputAssemblyFullPath;
 								break;
 							}
@@ -322,7 +322,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					}
 					ReferenceProjectItem rpi = item as ReferenceProjectItem;
 					if (rpi != null) {
-						if (rpi.Name.Equals("ICSharpCode.Core", StringComparison.InvariantCultureIgnoreCase) && rpi.FileName != null) {
+						if (rpi.Name.Equals("ICSharpCode.Core", StringComparison.OrdinalIgnoreCase) && rpi.FileName != null) {
 							coreAssemblyFullPath = rpi.FileName;
 							break;
 						}

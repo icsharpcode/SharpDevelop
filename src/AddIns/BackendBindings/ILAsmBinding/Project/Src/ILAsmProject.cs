@@ -39,7 +39,7 @@ namespace ICSharpCode.ILAsmBinding
 		
 		public override ItemType GetDefaultItemType(string fileName)
 		{
-			if (string.Equals(".il", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase))
+			if (string.Equals(".il", Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase))
 				return ItemType.Compile;
 			else
 				return base.GetDefaultItemType(fileName);

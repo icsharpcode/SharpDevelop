@@ -43,7 +43,7 @@ namespace ICSharpCode.XamlBinding
 
 		public bool CanParse(string fileName)
 		{
-			return Path.GetExtension(fileName).Equals(".xaml", StringComparison.InvariantCultureIgnoreCase);
+			return Path.GetExtension(fileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase);
 		}
 
 		public bool CanParse(ICSharpCode.SharpDevelop.Project.IProject project)

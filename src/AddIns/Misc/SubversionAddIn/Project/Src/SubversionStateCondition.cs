@@ -96,7 +96,7 @@ namespace ICSharpCode.Svn
 						using (StreamReader r = new StreamReader(new MemoryStream(p.Data))) {
 							string line;
 							while ((line = r.ReadLine()) != null) {
-								if (string.Equals(line, shortFileName, StringComparison.InvariantCultureIgnoreCase)) {
+								if (string.Equals(line, shortFileName, StringComparison.OrdinalIgnoreCase)) {
 									status = "Ignored";
 									break;
 								}

@@ -259,7 +259,7 @@ namespace ICSharpCode.Core
 			baseDirectory = NormalizePath(baseDirectory) + Path.DirectorySeparatorChar;
 			testDirectory = NormalizePath(testDirectory) + Path.DirectorySeparatorChar;
 			
-			return testDirectory.StartsWith(baseDirectory, StringComparison.InvariantCultureIgnoreCase);
+			return testDirectory.StartsWith(baseDirectory, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public static string RenameBaseDirectory(string fileName, string oldDirectory, string newDirectory)
