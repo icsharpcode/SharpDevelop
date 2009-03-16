@@ -64,6 +64,7 @@ void* fastAllocator::malloc(size_t bytes)
 	}
 }
 
+#pragma warning(disable : 4100)
 void fastAllocator::free(void* memory, size_t bytes)
 {
 	assert(memory != nullptr);
@@ -72,6 +73,7 @@ void fastAllocator::free(void* memory, size_t bytes)
 	assert(((size_t*)memory)[-1] == bytes);
 	#endif
 }
+#pragma warning(default : 4100)
 
 template<class T> void freeListAllocator<T>::initialize(void* pos, void* endPos)
 {

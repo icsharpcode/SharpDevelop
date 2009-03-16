@@ -13,7 +13,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <OutputPath>..\..\bin\</OutputPath>
+    <OutputPath>..\..\bin</OutputPath>
     <StartAction>Program</StartAction>
     <StartProgram>$(SharpDevelopBinPath)\SharpDevelop.exe</StartProgram>
     <StartArguments>/addindir:$(MSBuildProjectDirectory)\$(OutputPath)</StartArguments>
@@ -43,15 +43,19 @@
   <ItemGroup>
     <Reference Include="ICSharpCode.Core">
       <HintPath>..\..\..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.Core.Presentation">
       <HintPath>..\..\..\..\..\..\bin\ICSharpCode.Core.Presentation.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
       <HintPath>..\..\..\..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop.Dom">
       <HintPath>..\..\..\..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
