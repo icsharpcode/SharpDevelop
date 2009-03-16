@@ -228,12 +228,32 @@ namespace ICSharpCode.SharpDevelop.Project
 				return text;
 		}
 		
+		[Obsolete("Override CreateStartInfo instead of using Start()")]
 		protected void Start(string program, bool withDebugging)
+		{
+			ProcessStartInfo psi;
+			try {
+				psi = CreateStartInfo();
+			} catch (ProjectStartException ex) {
+				MessageService.ShowError(ex.Message);
+				return;
+			}
+			if (withDebugging) {
+				DebuggerService.CurrentDebugger.Start(psi);
+			} else {
+				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
+			}
+		}
+		
+		/// <summary>
+		/// Creates a <see cref="ProcessStartInfo"/> for the specified program, using
+		/// arguments and working directory from the project options.
+		/// </summary>
+		protected ProcessStartInfo CreateStartInfo(string program)
 		{
 			program = RemoveQuotes(program);
 			if (!FileUtility.IsValidPath(program)) {
-				MessageService.ShowError(program + " is not a valid path; the process cannot be started.");
-				return;
+				throw new ProjectStartException(program + " is not a valid path; the process cannot be started.");
 			}
 			ProcessStartInfo psi = new ProcessStartInfo();
 			psi.FileName = Path.Combine(Directory, program);
@@ -245,41 +265,33 @@ namespace ICSharpCode.SharpDevelop.Project
 				workingDir = RemoveQuotes(workingDir);
 				
 				if (!FileUtility.IsValidPath(workingDir)) {
-					MessageService.ShowError("Working directory " + workingDir + " is invalid; the process cannot be started. You can specify the working directory in the project options.");
-					return;
+					throw new ProjectStartException("Working directory '" + workingDir + "' is invalid; the process cannot be started. You can specify the working directory in the project options.");
 				}
 				psi.WorkingDirectory = Path.Combine(Directory, workingDir);
 			}
 			psi.Arguments = StringParser.Parse(this.StartArguments);
 			
 			if (!File.Exists(psi.FileName)) {
-				MessageService.ShowError(psi.FileName + " does not exist and cannot be started.");
-				return;
+				throw new ProjectStartException(psi.FileName + " does not exist and cannot be started.");
 			}
 			if (!System.IO.Directory.Exists(psi.WorkingDirectory)) {
-				MessageService.ShowError("Working directory " + psi.WorkingDirectory + " does not exist; the process cannot be started. You can specify the working directory in the project options.");
-				return;
+				throw new ProjectStartException("Working directory " + psi.WorkingDirectory + " does not exist; the process cannot be started. You can specify the working directory in the project options.");
 			}
-			
-			if (withDebugging) {
-				DebuggerService.CurrentDebugger.Start(psi);
-			} else {
-				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
-			}
+			return psi;
 		}
 		
-		public override void Start(bool withDebugging)
+		public override ProcessStartInfo CreateStartInfo()
 		{
 			switch (this.StartAction) {
 				case StartAction.Project:
-					Start(this.OutputAssemblyFullPath, withDebugging);
-					break;
+					return CreateStartInfo(this.OutputAssemblyFullPath);
 				case StartAction.Program:
-					Start(this.StartProgram, withDebugging);
-					break;
+					return CreateStartInfo(this.StartProgram);
 				case StartAction.StartURL:
-					FileService.OpenFile("browser://" + this.StartUrl);
-					break;
+					string url = this.StartUrl;
+					if (!FileUtility.IsUrl(url))
+						url = "http://" + url;
+					return new ProcessStartInfo(url);
 				default:
 					throw new System.ComponentModel.InvalidEnumArgumentException("StartAction", (int)this.StartAction, typeof(StartAction));
 			}

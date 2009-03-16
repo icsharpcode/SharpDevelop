@@ -148,7 +148,7 @@ namespace ICSharpCode.Core
 		
 		public static bool IsUrl(string path)
 		{
-			return path.IndexOf(':') >= 2;
+			return path.IndexOf("://", StringComparison.Ordinal) > 0;
 		}
 		
 		public static string GetCommonBaseDirectory(string dir1, string dir2)

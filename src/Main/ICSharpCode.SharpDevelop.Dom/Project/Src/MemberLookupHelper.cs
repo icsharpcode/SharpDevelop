@@ -825,7 +825,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			StringComparer nameComparer = type.ProjectContent.Language.NameComparer;
+			StringComparer nameComparer = member.DeclaringType.ProjectContent.Language.NameComparer;
 			member = GetGenericMember(member);
 			if (member is IMethod) {
 				IMethod parentMethod = (IMethod)member;

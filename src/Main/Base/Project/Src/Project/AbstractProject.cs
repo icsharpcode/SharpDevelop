@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -360,6 +361,28 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public virtual void Start(bool withDebugging)
+		{
+			ProcessStartInfo psi;
+			try {
+				psi = CreateStartInfo();
+			} catch (ProjectStartException ex) {
+				MessageService.ShowError(ex.Message);
+				return;
+			}
+			if (withDebugging && !FileUtility.IsUrl(psi.FileName)) {
+				DebuggerService.CurrentDebugger.Start(psi);
+			} else {
+				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
+			}
+		}
+		
+		/// <summary>
+		/// Creates the start info used to start the project.
+		/// </summary>
+		/// <exception cref="ProjectStartException">Occurs when the project cannot be started.</exception>
+		/// <returns>ProcessStartInfo used to start the project.
+		/// Note: this can be a ProcessStartInfo with a URL as filename!</returns>
+		public virtual ProcessStartInfo CreateStartInfo()
 		{
 			throw new NotSupportedException();
 		}
