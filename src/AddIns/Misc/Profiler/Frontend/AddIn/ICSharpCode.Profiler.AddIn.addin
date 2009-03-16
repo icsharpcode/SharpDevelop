@@ -1,0 +1,83 @@
+﻿<AddIn name        = "Profiler.AddIn"
+       author      = "Siegfried Pammer"
+       url         = ""
+       description = "Integrates a Profiler with GUI into SharpDevelop"
+       addInManagerHidden = "preinstalled">
+	
+	<Runtime>
+		<Import assembly="ICSharpCode.Profiler.AddIn.dll" />
+	</Runtime>
+	
+	<Path name="/SharpDevelop/Workbench/MainMenu">
+		<MenuItem id="Profile" label="Profile" insertbefore="Debug" type="Menu">
+			<ComplexCondition action="Disable">
+				<And>
+					<Condition name = "ProjectActive" activeproject="*" />
+				</And>
+				<MenuItem
+					id="ProfileProject"
+					class="ICSharpCode.Profiler.AddIn.Commands.ProfileProject"
+					label="Profile current project ..."
+				/>
+			</ComplexCondition>
+<!--			<MenuItem
+				id="ProfileExecutable"
+				class="ICSharpCode.Profiler.AddIn.Commands.ProfileExecutable"
+				label="Select executable to profile"
+			/>-->
+		</MenuItem>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id = "ProfilerDisplayBinding"
+		                insertbefore="Text"
+		                fileNamePattern=".sdps"
+		                title = "Profiler View"
+		                class = "ICSharpCode.Profiler.AddIn.Views.ProfilerDisplayBinding"/>
+	</Path>
+	
+	<Path name="/AddIns/Profiler/QueryView/ContextMenu">
+		<MenuItem
+			id="GoToDefinition"
+			label="Go to definition"
+			class="ICSharpCode.Profiler.AddIn.Commands.GoToDefinition" />
+		<MenuItem
+			id="SetAsRoot"
+			label="Set as root"
+			class="ICSharpCode.Profiler.AddIn.Commands.SetAsRoot" />
+		<MenuItem
+			id="FindCallsOfSelected"
+			label="Find calls of selected functions"
+			class="ICSharpCode.Profiler.AddIn.Commands.FindCallsOfSelected" />
+		<MenuItem
+			id="ShowFunctions"
+			label="Show functions"
+			class="ICSharpCode.Profiler.AddIn.Commands.ShowFunctions" />
+		<MenuItem type="Separator" id="Separator1" />
+		<MenuItem
+			id="CopyStackTrace"
+			label="Copy stacktrace"
+			class="ICSharpCode.Profiler.AddIn.Commands.CopyStacktrace" />
+		<MenuItem
+			id="CopySelectedData"
+			label="Copy selected data"
+			class="ICSharpCode.Profiler.AddIn.Commands.CopySelectedData" />
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "SharpDevelopProfingSession"
+		            insertbefore="AllFiles"
+		            name = "SharpDevelop Profiling Session"
+		            extensions = "*.sdps"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog">
+		<DialogPanel id    = "Profiling"
+		             label = "${res:Dialog.Options.IDEOptions.Profiling}"
+		             insertbefore = "TextEditorOptions">
+			<DialogPanel id    = "General"
+			             label = "${res:Dialog.Options.IDEOptions.Profiling.General}"
+			             class = "ICSharpCode.Profiler.AddIn.OptionsPanels.General"/>
+		</DialogPanel>
+	</Path>
+</AddIn>

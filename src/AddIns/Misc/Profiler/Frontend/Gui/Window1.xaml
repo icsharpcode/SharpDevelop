@@ -1,0 +1,26 @@
+﻿<Window x:Class="ICSharpCode.Profiler.Frontend.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:y="clr-namespace:ICSharpCode.Profiler.Controls;assembly=ICSharpCode.Profiler.Controls"
+        Height="799" Width="963" Title="ProfilerFrontend">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="203*" />
+			<RowDefinition Height="80*" />
+			<RowDefinition Height="283*" />
+		</Grid.RowDefinitions>
+		<Button Height="23" HorizontalAlignment="Left" Margin="10,9,0,0" Name="btnRun" VerticalAlignment="Top" Width="98" Click="btnRun_Click">Run and Profile</Button>
+		<Button Height="23" HorizontalAlignment="Left" Margin="118,9,0,0" Name="btnStop" VerticalAlignment="Top" Width="111" Click="btnStop_Click">Stop and Shutdown</Button>
+		<TextBox Margin="10,39,12,4" Name="txtOutput" VerticalScrollBarVisibility="Visible" />
+		<GridSplitter Height="2" VerticalAlignment="Bottom" Grid.Row="1" />
+		<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+			<y:TimeLineControl x:Name="timeLine" RangeChanged="timeLine_RangeChanged" />
+		</ScrollViewer>
+		<TabControl Name="tabView" HorizontalAlignment="Stretch" Grid.Row="2">
+			<TabItem Header="Overview">
+				<y:QueryView x:Name="treeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" View="Overview" CurrentQuery="from t in Threads select t" />
+			</TabItem>
+		</TabControl>
+		<Button Height="23" Margin="235,9,0,0" Name="btnLoadSession" VerticalAlignment="Top" HorizontalAlignment="Left" Width="87" Click="btnLoadSession_Click">Load session</Button>
+	</Grid>
+</Window>

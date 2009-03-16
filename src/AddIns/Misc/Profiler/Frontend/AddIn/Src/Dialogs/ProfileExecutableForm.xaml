@@ -1,0 +1,34 @@
+﻿<Window x:Class="ICSharpCode.Profiler.AddIn.Dialogs.ProfileExecutableForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Height="510" Width="621" Title="Profile executable">
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel>
+			<Expander Header="General Information" Name="expander1">
+				<Grid Height="103">
+					<Label HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" Width="112" Height="24" VerticalAlignment="Top">Path to executable:</Label>
+					<TextBox Margin="124,6,50,0" Name="textBox1" Height="26" VerticalAlignment="Top" />
+					<Button Height="26" Margin="0,6,6,0" Name="button1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="38">...</Button>
+					<Label Height="26" HorizontalAlignment="Left" Margin="6,36,0,0" Name="label2" VerticalAlignment="Top" Width="112">Working directory:</Label>
+					<TextBox Height="26" Margin="124,36,50,0" Name="textBox2" VerticalAlignment="Top" />
+					<Button Height="26" HorizontalAlignment="Right" Margin="0,36,6,0" Name="button2" VerticalAlignment="Top" Width="38">...</Button>
+					<Label Height="26" HorizontalAlignment="Left" Margin="6,68,0,0" Name="label3" VerticalAlignment="Top" Width="112">Arguments:</Label>
+					<TextBox Height="26" Margin="124,68,6,0" Name="textBox3" VerticalAlignment="Top" />
+				</Grid>
+			</Expander>
+			<Expander Header="Select Profiler Mode" Name="expander2">
+				<Grid Height="60">
+					<RadioButton HorizontalAlignment="Left" Margin="6,6,0,0" Name="radioButton1" Width="175" Height="20" VerticalAlignment="Top">Performance Profiling</RadioButton>
+					<RadioButton HorizontalAlignment="Left" Margin="6,0,0,6" Name="radioButton2" Width="175" Height="22" VerticalAlignment="Bottom" IsEnabled="False">Memory Profiling</RadioButton>
+				</Grid>
+			</Expander>
+			<Expander Header="Choose Output" Name="expander3">
+				<Grid Height="226">
+					<RadioButton Margin="6,6,134,201" Name="radioButton3">Use custom directory:</RadioButton>
+					<TextBox Height="26" Margin="21,31,0,0" Name="textBox4" VerticalAlignment="Top" HorizontalAlignment="Left" Width="526" IsEnabled="{Binding IsChecked, ElementName=radioButton3}" />
+					<Button Height="26" HorizontalAlignment="Right" Margin="0,31,6,0" Name="button3" VerticalAlignment="Top" Width="38">...</Button>
+				</Grid>
+			</Expander>
+		</StackPanel>
+	</ScrollViewer>
+</Window>

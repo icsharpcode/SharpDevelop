@@ -1,0 +1,47 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+	
+	<PropertyGroup>
+		<Configuration Condition="'$(Configuration)'==''">Release</Configuration>
+		<ProfilerProjectDir>$(MSBuildProjectDirectory)</ProfilerProjectDir>
+		<ProfilerHookDir>$(ProfilerProjectDir)\Hook</ProfilerHookDir>
+		
+		<CppBatch32>call "$(PROGRAMFILES)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat"</CppBatch32>
+		<CppBatch64Native>$(PROGRAMFILES)\Microsoft Visual Studio 9.0\VC\bin\vcvars64.bat</CppBatch64Native>
+		<CppBatch64Cross>$(PROGRAMFILES)\Microsoft Visual Studio 9.0\VC\bin\vcvarsx86_amd64.bat</CppBatch64Cross>
+		<CppBatch64 Condition="Exists('$(CppBatch64Native)')">call "$(CppBatch64Native)"</CppBatch64>
+		<CppBatch64 Condition="'$(CppBatch64)'==''">call "$(CppBatch64Cross)"</CppBatch64>
+		<VcBuildArguments>/showenv "$(ProfilerHookDir)\Hook.vcproj" $(Configuration)</VcBuildArguments>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<X64ConverterProject Include="X64Converter\X64Converter.csproj"/>
+		<MSBuildProjects Include="Controller\Controller.csproj"/>
+		<MSBuildProjects Include="Frontend\Controls\Controls.csproj"/>
+		<MSBuildProjects Include="Frontend\AddIn\AddIn.csproj"/>
+		<MSBuildProjects Include="Frontend\Gui\Gui.csproj"/>
+	</ItemGroup>
+	
+	<Target Name="Build">
+		<Error Text="SharpDevelopBinPath not set" Condition="'$(SharpDevelopBinPath)'==''"/>
+		<MSBuild Projects="@(X64ConverterProject)" Properties="Configuration=$(Configuration);Platform=AnyCPU;SharpDevelopBinPath=$(SharpDevelopBinPath)"/>
+		<Exec WorkingDirectory="$(ProfilerHookDir)"
+		      Command="$(CppBatch32) &amp;&amp; vcbuild /platform:Win32 $(VcBuildArguments)"/>
+		<Exec WorkingDirectory="$(ProfilerHookDir)"
+		      Command="$(CppBatch64) &amp;&amp; vcbuild /platform:x64 $(VcBuildArguments)"/>
+		<MSBuild Projects="@(MSBuildProjects)" Properties="Configuration=$(Configuration);Platform=AnyCPU;SharpDevelopBinPath=$(SharpDevelopBinPath)"/>
+	</Target>
+	
+	<Target Name="Rebuild">
+		<CallTarget Targets="Clean"/>
+		<CallTarget Targets="Build"/>
+	</Target>
+	
+	<Target Name="Clean">
+		<Exec WorkingDirectory="$(ProfilerHookDir)"
+		      Command="$(CppBatch32) &amp;&amp; vcbuild /c /platform:Win32 $(VcBuildCommandLine)"/>
+		<Exec WorkingDirectory="$(ProfilerHookDir)"
+		      Command="$(CppBatch64) &amp;&amp; vcbuild /c /platform:x64 $(VcBuildCommandLine)"/>
+		<MSBuild Projects="@(MSBuildProjects)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=AnyCPU;SharpDevelopBinPath=$(SharpDevelopBinPath)"/>
+		<MSBuild Projects="@(X64ConverterProject)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=AnyCPU;SharpDevelopBinPath=$(SharpDevelopBinPath)"/>
+	</Target>
+</Project>
