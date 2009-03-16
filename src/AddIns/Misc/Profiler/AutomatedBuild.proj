@@ -5,11 +5,11 @@
 		<ProfilerProjectDir>$(MSBuildProjectDirectory)</ProfilerProjectDir>
 		<ProfilerHookDir>$(ProfilerProjectDir)\Hook</ProfilerHookDir>
 		
-		<CppBatch32>call "$(PROGRAMFILES)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat"</CppBatch32>
+		<CppBatch32>$(PROGRAMFILES)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat</CppBatch32>
 		<CppBatch64Native>$(PROGRAMFILES)\Microsoft Visual Studio 9.0\VC\bin\vcvars64.bat</CppBatch64Native>
 		<CppBatch64Cross>$(PROGRAMFILES)\Microsoft Visual Studio 9.0\VC\bin\vcvarsx86_amd64.bat</CppBatch64Cross>
-		<CppBatch64 Condition="Exists('$(CppBatch64Native)')">call "$(CppBatch64Native)"</CppBatch64>
-		<CppBatch64 Condition="'$(CppBatch64)'==''">call "$(CppBatch64Cross)"</CppBatch64>
+		<CppBatch64 Condition="Exists('$(CppBatch64Native)')">$(CppBatch64Native)</CppBatch64>
+		<CppBatch64 Condition="'$(CppBatch64)'==''">$(CppBatch64Cross)</CppBatch64>
 		<VcBuildArguments>/showenv "$(ProfilerHookDir)\Hook.vcproj" $(Configuration)</VcBuildArguments>
 	</PropertyGroup>
 	
@@ -19,16 +19,24 @@
 		<MSBuildProjects Include="Frontend\Controls\Controls.csproj"/>
 		<MSBuildProjects Include="Frontend\AddIn\AddIn.csproj"/>
 		<MSBuildProjects Include="Frontend\Gui\Gui.csproj"/>
+		
+		<CleanupDirectories Include="bin"/>
 	</ItemGroup>
 	
 	<Target Name="Build">
-		<Error Text="SharpDevelopBinPath not set" Condition="'$(SharpDevelopBinPath)'==''"/>
-		<MSBuild Projects="@(X64ConverterProject)" Properties="Configuration=$(Configuration);Platform=AnyCPU;SharpDevelopBinPath=$(SharpDevelopBinPath)"/>
+		<MSBuild Projects="@(X64ConverterProject)" Properties="Configuration=$(Configuration);Platform=AnyCPU"/>
 		<Exec WorkingDirectory="$(ProfilerHookDir)"
-		      Command="$(CppBatch32) &amp;&amp; vcbuild /platform:Win32 $(VcBuildArguments)"/>
+		      Command='call "$(CppBatch32)" &amp;&amp; vcbuild /platform:Win32 $(VcBuildArguments)'
+		      Condition="Exists('$(CppBatch32)')"/>
+		<Warning Text="$(CppBatch32) not found, skipped compiling profiler" Condition="!Exists('$(CppBatch32)')"/>
+
 		<Exec WorkingDirectory="$(ProfilerHookDir)"
-		      Command="$(CppBatch64) &amp;&amp; vcbuild /platform:x64 $(VcBuildArguments)"/>
-		<MSBuild Projects="@(MSBuildProjects)" Properties="Configuration=$(Configuration);Platform=AnyCPU;SharpDevelopBinPath=$(SharpDevelopBinPath)"/>
+		      Command='call "$(CppBatch64)" &amp;&amp; vcbuild /platform:x64 $(VcBuildArguments)'
+			  Condition="Exists('$(CppBatch64)')"/>
+		<Warning Text="$(CppBatch64) not found, skipped compiling 64-bit profiler" Condition="!Exists('$(CppBatch64)')"/>
+		
+		<!-- compile C# part of profiler -->
+		<MSBuild Projects="@(MSBuildProjects)" Properties="Configuration=$(Configuration);Platform=AnyCPU" Condition="Exists('$(CppBatch32)')"/>
 	</Target>
 	
 	<Target Name="Rebuild">
@@ -38,10 +46,13 @@
 	
 	<Target Name="Clean">
 		<Exec WorkingDirectory="$(ProfilerHookDir)"
-		      Command="$(CppBatch32) &amp;&amp; vcbuild /c /platform:Win32 $(VcBuildCommandLine)"/>
+		      Command='call "$(CppBatch32)" &amp;&amp; vcbuild /c /platform:Win32 $(VcBuildCommandLine)'
+		      Condition="Exists('$(CppBatch32)')"/>
 		<Exec WorkingDirectory="$(ProfilerHookDir)"
-		      Command="$(CppBatch64) &amp;&amp; vcbuild /c /platform:x64 $(VcBuildCommandLine)"/>
-		<MSBuild Projects="@(MSBuildProjects)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=AnyCPU;SharpDevelopBinPath=$(SharpDevelopBinPath)"/>
-		<MSBuild Projects="@(X64ConverterProject)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=AnyCPU;SharpDevelopBinPath=$(SharpDevelopBinPath)"/>
+		      Command='call "$(CppBatch64)" &amp;&amp; vcbuild /c /platform:x64 $(VcBuildCommandLine)'
+		      Condition="Exists('$(CppBatch64)')"/>
+		<MSBuild Projects="@(MSBuildProjects)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=AnyCPU"/>
+		<MSBuild Projects="@(X64ConverterProject)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=AnyCPU"/>
+		<RemoveDir Directories="@(CleanupDirectories)" />
 	</Target>
 </Project>

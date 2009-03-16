@@ -13,7 +13,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <OutputPath>..\..\bin</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Profiler\</OutputPath>
     <StartAction>Program</StartAction>
     <StartProgram>$(SharpDevelopBinPath)\SharpDevelop.exe</StartProgram>
     <StartArguments>/addindir:$(MSBuildProjectDirectory)\$(OutputPath)</StartArguments>
@@ -39,7 +39,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="ICSharpCode.Core">
       <HintPath>..\..\..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
@@ -137,4 +136,6 @@
       <Name>Controls</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="BuildEvents.proj" />
 </Project>
