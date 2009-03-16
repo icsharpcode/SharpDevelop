@@ -1282,8 +1282,18 @@
 			          type = "Item"
 			          loadclasslazy = "false"
 			          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
+			<MenuItem id = "Separator2" type = "Separator"  />
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
 				<MenuItem id = "Insert" label = "${res:XML.MainMenu.EditMenu.Insert}" type="Menu">
+					<MenuItem id = "PasteAsComment"
+					          label = "${res:XML.MainMenu.EditMenu.Paste.AsComment}"
+					          class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.PasteAsCommentCommand"/>
+					<MenuItem id = "PasteAsString"
+					          label = "${res:XML.MainMenu.EditMenu.Paste.AsString}"
+					          class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.PasteAsStringCommand"/>
+					
+					<MenuItem id="Separator1" type="Separator"/>
+					
 					<MenuItem id = "InsertColor"
 					          label = "${res:XML.MainMenu.ToolMenu.InsColor}"
 					          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowColorDialog"/>
