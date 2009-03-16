@@ -21,6 +21,9 @@
 		<MSBuildProjects Include="Frontend\Gui\Gui.csproj"/>
 		
 		<CleanupDirectories Include="bin"/>
+		<CleanupDirectories Include="X64Converter\bin"/>
+		<CleanupDirectories Include="Hook\Win32"/>
+		<CleanupDirectories Include="Hook\x64"/>
 	</ItemGroup>
 	
 	<Target Name="Build">

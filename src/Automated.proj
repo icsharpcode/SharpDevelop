@@ -38,7 +38,7 @@
 		<Message Text="ArtefactsOutputDir=$(ArtefactsOutputDir)" Importance="high"/>
 		<Message Text="BuildProperties=$(BuildProperties)" Importance="high"/>
 		
-		<CallTarget Targets="clean"/>
+		<CallTarget Targets="clean1"/>
 		
 		<CallTarget Targets="build"/>
 		<CallTarget Targets="createsetup"/>
@@ -46,7 +46,7 @@
 		<CallTarget Targets="buildunittests"/>
 		<CallTarget Targets="rununittests"/>
 		
-		<CallTarget Targets="clean"/>
+		<CallTarget Targets="clean2"/>
 		<CallTarget Targets="zipsource"/>
 	</Target>
 	
@@ -90,7 +90,16 @@
 		       ToolPath="$(NUnitToolPath)"/>
 	</Target>
 	
-	<Target Name="clean">
+	<!-- Yes, apparently we really need two identical clean tasks. MSBuild won't run the same task twice. -->
+	<Target Name="clean1">
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln /t:Clean $(BuildProperties)"/>
+		<Exec WorkingDirectory="$(ProfilerSrc)"
+		      Command="$(MSBuildExecutable) AutomatedBuild.proj /t:Clean $(BuildProperties)"/>
+	</Target>
+	<Target Name="clean2">
 		<Exec WorkingDirectory="$(SharpDevelopSrc)"
 		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
 		<Exec WorkingDirectory="$(SharpDevelopSrc)"
