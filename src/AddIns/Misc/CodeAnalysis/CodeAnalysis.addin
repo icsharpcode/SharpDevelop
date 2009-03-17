@@ -32,6 +32,17 @@
 		          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/QualityTools">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name = "ProjectActive" activeproject="*" />
+			</And>
+			<MenuItem id    = "CheckWithFxCop"
+			          label = "Check current project with FxCop"
+			          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"/>
+		</ComplexCondition>
+	</Path>
+	
 	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalLoggers">
 		<TaskBoundAdditionalLogger
 			id = "FxCopLogger"
@@ -51,7 +62,7 @@
 	<!-- Options panel -->
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id    = "CodeAnalysisOptionPanel"
-		       	     label = "${res:ICSharpCode.CodeAnalysis}"
-		       	     class = "ICSharpCode.CodeAnalysis.AnalysisIdeOptionsPanel"/>
+		             label = "${res:ICSharpCode.CodeAnalysis}"
+		             class = "ICSharpCode.CodeAnalysis.AnalysisIdeOptionsPanel"/>
 	</Path>
 </AddIn>

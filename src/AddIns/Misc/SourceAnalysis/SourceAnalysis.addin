@@ -33,10 +33,21 @@
 		          class = "MattEverson.SourceAnalysis.CheckCurrentProjectCommand"/>
 	</Path>
 	
+	<Path name="/SharpDevelop/Workbench/MainMenu/QualityTools">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name = "ProjectActive" activeproject="*" />
+			</And>
+			<MenuItem id    = "CheckWithStyleCop"
+			          label = "Check current project with StyleCop"
+			          class = "MattEverson.SourceAnalysis.CheckCurrentProjectCommand"/>
+		</ComplexCondition>
+	</Path>
+	
 	<!-- Options panel -->
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id    = "SourceAnalysisOptionPanel"
-		       	     label = "${res:AddIns.SourceAnalysis.Title}"
-		       	     class = "MattEverson.SourceAnalysis.AnalysisIdeOptionsPanel"/>
+		             label = "${res:AddIns.SourceAnalysis.Title}"
+		             class = "MattEverson.SourceAnalysis.AnalysisIdeOptionsPanel"/>
 	</Path>
 </AddIn>

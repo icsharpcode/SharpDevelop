@@ -2134,6 +2134,14 @@
 		</MenuItem>
 	</Path>
 	
+	<Path name="/SharpDevelop/Workbench/MainMenu">
+		<MenuItem id="QualityTools" label="Quality Tools" insertbefore="Tools" type="Menu">
+			<MenuItem id="Profiler" label="Profiler" type="Menu" />
+			<MenuItem id="Test" label="Test" type="Menu" />
+			<MenuItem id="Separator1" type="Separator" />
+		</MenuItem>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Views/ProjectBrowser/NodeBuilders">
 		<Class id = "DefaultBuilder"
 		       class = "ICSharpCode.SharpDevelop.Project.DefaultDotNetNodeBuilder"/>
