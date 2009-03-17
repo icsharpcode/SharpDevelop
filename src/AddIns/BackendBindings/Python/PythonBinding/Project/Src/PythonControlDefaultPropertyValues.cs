@@ -37,6 +37,8 @@ namespace ICSharpCode.PythonBinding
 			defaultPropertyValues.Add("AutoScrollMargin", new Size(0, 0));
 			defaultPropertyValues.Add("Location", new Point(0, 0));
 			defaultPropertyValues.Add("Padding", Padding.Empty);
+			defaultPropertyValues.Add("BackColor", Control.DefaultBackColor);
+			defaultPropertyValues.Add("ForeColor", Control.DefaultForeColor);
 		}
 		
 		/// <summary>
@@ -96,18 +98,12 @@ namespace ICSharpCode.PythonBinding
 			    return defaultPropertyValue.Equals(propertyValue);
 			}
 
-			if (propertyInfo.Name == "BackColor") {
-				// Default is Control.DefaultBackColor
-				return true;
-			} else if (propertyInfo.Name == "Icon") {
+			if (propertyInfo.Name == "Icon") {
 				return true;	
 			} else if (propertyInfo.Name == "TransparencyKey") {
 				return true;	
 			} else if (propertyInfo.Name == "Font") {
 				// Default is Control.DefaultFont
-				return true;	
-			} else if (propertyInfo.Name == "ForeColor") {
-				// Default is Control.DefaultForeColor
 				return true;	
 			}
 			return false;

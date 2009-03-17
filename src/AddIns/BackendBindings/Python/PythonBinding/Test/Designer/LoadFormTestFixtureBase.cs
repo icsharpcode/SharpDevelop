@@ -88,6 +88,10 @@ namespace PythonBinding.Tests.Designer
 		protected List<string> TypeNames {
 			get { return typeNames; }
 		}
+
+		protected string LastTypeNameResolved {
+			get { return TypeNames[TypeNames.Count - 1]; }
+		}
 		
 		protected CreatedInstance GetCreatedInstance(Type type)
 		{

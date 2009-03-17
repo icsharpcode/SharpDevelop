@@ -14,14 +14,14 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	[TestFixture]
-	public class PythonCodeDeserializerTests
+	public class PythonCodeDeserializerTests : LoadFormTestFixtureBase
 	{
 		PythonCodeDeserializer deserializer;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			deserializer = new PythonCodeDeserializer(new MockDesignerLoaderHost());
+			deserializer = new PythonCodeDeserializer(this);
 		}
 		
 		[Test]
@@ -47,6 +47,18 @@ namespace PythonBinding.Tests.Designer
 		public void UnknownPropertyName()
 		{
 			string pythonCode = "self.Cursors = System.Windows.Forms.Cursors.UnknownCursorsProperty";
+			PythonParser parser = new PythonParser();
+			PythonAst ast = parser.CreateAst(@"snippet.py", pythonCode);
+			SuiteStatement suiteStatement = (SuiteStatement)ast.Body;
+			AssignmentStatement assignment = suiteStatement.Statements[0] as AssignmentStatement;
+			
+			Assert.IsNull(deserializer.Deserialize(assignment.Right));
+		}
+		
+		[Test]
+		public void UnknownTypeNameInCallExpression()
+		{
+			string pythonCode = "self.Cursors = System.Windows.Forms.UnknownType.CreateDefaultCursor()";
 			PythonParser parser = new PythonParser();
 			PythonAst ast = parser.CreateAst(@"snippet.py", pythonCode);
 			SuiteStatement suiteStatement = (SuiteStatement)ast.Body;

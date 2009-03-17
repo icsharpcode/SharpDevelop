@@ -38,7 +38,7 @@ namespace PythonBinding.Tests.Designer
 		[ExpectedException(typeof(PythonFormWalkerException))]
 		public void PythonFormWalkerExceptionThrown()
 		{
-			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
+			PythonFormWalker walker = new PythonFormWalker(this);
 			walker.CreateForm(pythonCode);
 			Assert.Fail("Exception should have been thrown before this.");
 		}
@@ -50,7 +50,7 @@ namespace PythonBinding.Tests.Designer
 		public void ClassWithNoBody()
 		{
 			ClassDefinition classDef = new ClassDefinition(new SymbolId(10), null, null);
-			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
+			PythonFormWalker walker = new PythonFormWalker(this);
 			walker.Walk(classDef);
 		}
 		
@@ -63,7 +63,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			List<Expression> lhs = new List<Expression>();
 			AssignmentStatement assign = new AssignmentStatement(lhs.ToArray(), null);
-			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
+			PythonFormWalker walker = new PythonFormWalker(this);
 			walker.Walk(assign);
 		}
 	}

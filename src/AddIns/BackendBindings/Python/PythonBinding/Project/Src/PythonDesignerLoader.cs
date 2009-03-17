@@ -91,7 +91,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			// Create designer root object.
 			this.serializationManager = serializationManager;
-			PythonFormWalker visitor = new PythonFormWalker(this, base.LoaderHost);
+			PythonFormWalker visitor = new PythonFormWalker(this);
 			visitor.CreateForm(generator.ViewContent.DesignerCodeFileContent);
 		}		
 	}

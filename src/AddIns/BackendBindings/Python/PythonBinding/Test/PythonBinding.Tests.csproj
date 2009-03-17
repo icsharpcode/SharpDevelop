@@ -146,6 +146,8 @@
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
+    <Compile Include="Designer\DeserializeAssignmentTestFixtureBase.cs" />
+    <Compile Include="Designer\DeserializeColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\EnabledSetUsingPropertyDescriptorTestFixture.cs" />
     <Compile Include="Designer\FindInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\GenerateAccessibleRoleFormTestFixture.cs" />
@@ -153,6 +155,7 @@
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
     <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateFormColorTestFixture.cs" />
     <Compile Include="Designer\GenerateFormLocationTestFixture.cs" />
     <Compile Include="Designer\GenerateFormPaddingTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
@@ -165,6 +168,7 @@
     <Compile Include="Designer\IsDefaultPropertyValueTests.cs" />
     <Compile Include="Designer\IsFullyQualifiedBaseClassFormDesignableTestFixture.cs" />
     <Compile Include="Designer\LoadAccessibleRoleTestFixture.cs" />
+    <Compile Include="Designer\LoadColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\LoadCursorTestFixture.cs" />
     <Compile Include="Designer\LoadFormTestFixtureBase.cs" />
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />

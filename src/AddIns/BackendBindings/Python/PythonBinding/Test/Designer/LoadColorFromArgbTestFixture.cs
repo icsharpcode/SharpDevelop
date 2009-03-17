@@ -18,7 +18,7 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	[TestFixture]
-	public class LoadCursorTestFixture : LoadFormTestFixtureBase
+	public class LoadColorFromArgbTestFixture : LoadFormTestFixtureBase
 	{		
 		string pythonCode = "class TestForm(System.Windows.Forms.Form):\r\n" +
 							"    def InitializeComponent(self):\r\n" +
@@ -26,7 +26,7 @@ namespace PythonBinding.Tests.Designer
 							"        # \r\n" +
 							"        # TestForm\r\n" +
 							"        # \r\n" +
-							"        self.Cursor = System.Windows.Forms.Cursors.Hand\r\n" +
+							"        self.BackColor = System.Drawing.Color.FromArgb(10, 190, 0)\r\n" +
 							"        self.Name = \"TestForm\"\r\n" +
 							"        self.ResumeLayout(False)\r\n";
 		Form form;
@@ -45,9 +45,9 @@ namespace PythonBinding.Tests.Designer
 		}
 								
 		[Test]
-		public void FormCursorIsHand()
+		public void FormBackColor()
 		{
-			Assert.AreEqual(Cursors.Hand, form.Cursor);
+			Assert.AreEqual(Color.FromArgb(10, 190, 0), form.BackColor);
 		}
 	}
 }

@@ -210,6 +210,34 @@ namespace PythonBinding.Tests.Designer
 		{
 			form.Padding = new Padding(10, 10, 10, 10);
 			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("Padding", form));
+		}
+		
+		[Test]
+		public void BackColorPropertyDefaultIsControlDefaultBackColor()
+		{
+			form.BackColor = Control.DefaultBackColor;
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("BackColor", form));
+		}
+
+		[Test]
+		public void NonDefaultBackColorProperty()
+		{
+			form.BackColor = Color.Blue;
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("BackColor", form));
+		}
+		
+		[Test]
+		public void ForeColorPropertyDefaultIsControlDefaultForeColor()
+		{
+			form.ForeColor = Control.DefaultForeColor;
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("ForeColor", form));
+		}
+
+		[Test]
+		public void NonDefaultForeColorProperty()
+		{
+			form.ForeColor = Color.Blue;
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("ForeColor", form));
 		}		
 	}
 }

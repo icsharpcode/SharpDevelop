@@ -18,27 +18,28 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	/// <summary>
-	/// Tests that the string "System.Windows.Forms.Cursors.AppStarting" can be resolved by the 
+	/// Tests that the string "System.Drawing.Color.FromArgb(0, 192, 10)" can be converted to an object by the 
 	/// PythonCodeDeserializer.
 	/// </summary>
 	[TestFixture]
-	public class CursorTypeResolutionTestFixture : DeserializeAssignmentTestFixtureBase
-	{
+	public class DeserializeColorFromArgbTestFixture : DeserializeAssignmentTestFixtureBase
+	{		
 		public override string GetPythonCode()
 		{
-			return "self.Cursors = System.Windows.Forms.Cursors.AppStarting";
+			return "self.BackColor = System.Drawing.Color.FromArgb(0, 192, 10)";
 		}
 		
 		[Test]
-		public void DeserializedObjectIsCursorsAppStarting()
+		public void DeserializedObjectIsExpectedCustomColor()
 		{
-			Assert.AreEqual(Cursors.AppStarting, deserializedObject);
+			Color customColor = Color.FromArgb(0, 192, 10);
+			Assert.AreEqual(customColor, deserializedObject);
 		}
 		
 		[Test]
-		public void CursorsTypeResolved()
+		public void ColorTypeResolved()
 		{
-			Assert.AreEqual("System.Windows.Forms.Cursors", base.LastTypeNameResolved);
+			Assert.AreEqual("System.Drawing.Color", LastTypeNameResolved);
 		}
 	}
 }

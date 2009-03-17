@@ -41,7 +41,7 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
+			PythonFormWalker walker = new PythonFormWalker(this);
 			form = walker.CreateForm(pythonCode);
 			if (form.Controls.Count > 0) {
 				textBox = form.Controls[0] as TextBox;

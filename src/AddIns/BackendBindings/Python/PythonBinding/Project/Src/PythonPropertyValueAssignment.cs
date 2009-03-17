@@ -41,23 +41,49 @@ namespace ICSharpCode.PythonBinding
 			} else if (propertyType.IsEnum) {
 				return propertyType.FullName + "." + propertyValue.ToString();
 			} else if (propertyType == typeof(Cursor)) {
-				return GetCursorToString(propertyValue as Cursor);
+				return GetCursorAsString(propertyValue as Cursor);
 			} else if (propertyType == typeof(Point)) {
 				Point point = (Point)propertyValue;
 				return point.GetType().FullName + "(" + point.X + ", " + point.Y + ")";
 			} else if (propertyType == typeof(Padding)) {
 				Padding padding = (Padding)propertyValue;
 				return padding.GetType().FullName + "(" + padding.Left + ", " + padding.Top + ", " + padding.Right + ", " + padding.Bottom + ")";
+			} else if (propertyType == typeof(Color)) {
+				Color color = (Color)propertyValue;
+				return GetColorAsString(color);
 			}
 			return propertyValue.ToString();
 		}
 		
-		static string GetCursorToString(Cursor cursor)
+		static string GetCursorAsString(Cursor cursor)
 		{
 			foreach (PropertyInfo propertyInfo in typeof(Cursors).GetProperties(BindingFlags.Public | BindingFlags.Static)) {
 				Cursor standardCursor = (Cursor)propertyInfo.GetValue(null, null);
 				if (standardCursor == cursor) {
 					return typeof(Cursors).FullName + "." + propertyInfo.Name;
+				}
+			}
+			return String.Empty;
+		}
+		
+		static string GetColorAsString(Color color)
+		{
+			if (color.IsSystemColor) {
+				return GetColorAsString(color, typeof(SystemColors));
+			} else if (color.IsNamedColor) {
+				return GetColorAsString(color, typeof(Color));
+			} 
+			
+			// Custom color.
+			return color.GetType().FullName + ".FromArgb(" + color.R + ", " + color.G + ", " + color.B + ")";
+		}
+		
+		static string GetColorAsString(Color color, Type type)
+		{
+			foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Static)) {
+				Color standardColor = (Color)property.GetValue(null, null);
+				if (color == standardColor) {
+					return type.FullName + "." + standardColor.Name;
 				}
 			}
 			return String.Empty;

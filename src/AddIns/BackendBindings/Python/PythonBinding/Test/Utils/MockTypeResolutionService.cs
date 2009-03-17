@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel.Design;
+using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -49,6 +50,11 @@ namespace PythonBinding.Tests.Utils
 			} 
 			
 			Type type = typeof(Form).Assembly.GetType(name, false);
+			if (type != null) {
+				return type;
+			}
+			
+			type = typeof(Color).Assembly.GetType(name, false);
 			if (type != null) {
 				return type;
 			}
