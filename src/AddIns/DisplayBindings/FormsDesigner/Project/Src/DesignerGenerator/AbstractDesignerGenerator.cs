@@ -305,9 +305,9 @@ namespace ICSharpCode.FormsDesigner
 		static bool FieldChanged(IField oldField, CodeMemberField newField)
 		{
 			// compare types
-			if (oldField.ReturnType != null && oldField.ReturnType.GetUnderlyingClass() != null) { // ignore type changes to untyped VB fields
-				if (oldField.ReturnType.GetUnderlyingClass().DotNetName != newField.Type.BaseType) {
-					LoggingService.Debug("FieldChanged: "+oldField.Name+", "+oldField.ReturnType.FullyQualifiedName+" -> "+newField.Type.BaseType);
+			if (oldField.ReturnType != null && newField.Type != null) {
+				if (AreTypesDifferent(oldField.ReturnType, newField.Type)) {
+					LoggingService.Debug("FieldChanged (type): "+oldField.Name+", "+oldField.ReturnType.FullyQualifiedName+" -> "+newField.Type.BaseType);
 					return true;
 				}
 			}
@@ -330,6 +330,40 @@ namespace ICSharpCode.FormsDesigner
 				if ((oldModifiers  == sdModifiers[i]) ^ (newModifiers  == cdModifiers[i])) {
 					return true;
 				}
+			}
+			
+			return false;
+		}
+		
+		static bool AreTypesDifferent(IReturnType oldType, CodeTypeReference newType)
+		{
+			IClass oldClass = oldType.GetUnderlyingClass();
+			if (oldClass == null) {
+				// ignore type changes to untyped VB fields
+				return false;
+			}
+			
+			ArrayReturnType oldArray = oldType.IsArrayReturnType ? oldType.CastToArrayReturnType() : null;
+			if (oldArray == null ^ newType.ArrayRank < 1)
+			{
+				return true;
+			}
+			
+			if (oldArray == null) {
+				
+				if (oldClass.DotNetName != newType.BaseType) {
+					return true;
+				}
+				
+			} else {
+				
+				if (oldArray.ArrayDimensions != newType.ArrayRank) {
+					return true;
+				}
+				if (AreTypesDifferent(oldArray.ArrayElementType, newType.ArrayElementType)) {
+					return true;
+				}
+				
 			}
 			
 			return false;

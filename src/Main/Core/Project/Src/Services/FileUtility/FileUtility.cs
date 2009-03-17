@@ -148,7 +148,7 @@ namespace ICSharpCode.Core
 		
 		public static bool IsUrl(string path)
 		{
-			return path.IndexOf(':') >= 2;
+			return path.IndexOf("://", StringComparison.Ordinal) > 0;
 		}
 		
 		public static string GetCommonBaseDirectory(string dir1, string dir2)
@@ -259,7 +259,7 @@ namespace ICSharpCode.Core
 			baseDirectory = NormalizePath(baseDirectory) + Path.DirectorySeparatorChar;
 			testDirectory = NormalizePath(testDirectory) + Path.DirectorySeparatorChar;
 			
-			return testDirectory.StartsWith(baseDirectory, StringComparison.InvariantCultureIgnoreCase);
+			return testDirectory.StartsWith(baseDirectory, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public static string RenameBaseDirectory(string fileName, string oldDirectory, string newDirectory)
@@ -502,7 +502,7 @@ namespace ICSharpCode.Core
 			System.Diagnostics.Debug.Assert(IsValidPath(fileName));
 			try {
 				saveFile();
-				OnFileSaved(new FileNameEventArgs(fileName));
+				RaiseFileSaved(new FileNameEventArgs(fileName));
 				return FileOperationResult.OK;
 			} catch (Exception e) {
 				switch (policy) {
@@ -544,7 +544,7 @@ namespace ICSharpCode.Core
 					Directory.CreateDirectory(directory);
 				}
 				saveFileAs(fileName);
-				OnFileSaved(new FileNameEventArgs(fileName));
+				RaiseFileSaved(new FileNameEventArgs(fileName));
 				return FileOperationResult.OK;
 			} catch (Exception e) {
 				switch (policy) {
@@ -552,7 +552,7 @@ namespace ICSharpCode.Core
 						ServiceManager.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
 						break;
 					case FileErrorPolicy.ProvideAlternative:
-						ChooseSaveErrorResult r = ServiceManager.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, false);
+						ChooseSaveErrorResult r = ServiceManager.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, true);
 						if (r.IsRetry) {
 							return ObservedSave(saveFileAs, fileName, message, policy);
 						} else if (r.IsIgnore) {
@@ -634,14 +634,15 @@ namespace ICSharpCode.Core
 			return ObservedLoad(saveFileAs, fileName, FileErrorPolicy.Inform);
 		}
 		
-		static  void OnFileLoaded(FileNameEventArgs e)
+		static void OnFileLoaded(FileNameEventArgs e)
 		{
 			if (FileLoaded != null) {
 				FileLoaded(null, e);
 			}
 		}
 		
-		static void OnFileSaved(FileNameEventArgs e) {
+		public static void RaiseFileSaved(FileNameEventArgs e)
+		{
 			if (FileSaved != null) {
 				FileSaved(null, e);
 			}

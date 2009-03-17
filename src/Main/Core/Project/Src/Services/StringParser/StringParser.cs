@@ -39,8 +39,8 @@ namespace ICSharpCode.Core
 		
 		static StringParser()
 		{
-			properties         = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-			stringTagProviders = new Dictionary<string, IStringTagProvider>(StringComparer.InvariantCultureIgnoreCase);
+			properties         = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			stringTagProviders = new Dictionary<string, IStringTagProvider>(StringComparer.OrdinalIgnoreCase);
 			propertyObjects    = new Dictionary<string, object>();
 			
 			// entryAssembly == null might happen in unit test mode

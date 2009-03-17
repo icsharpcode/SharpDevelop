@@ -173,10 +173,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		bool EnsureCorrectName(ref string newName)
 		{
 			newName = newName.Trim();
-			if (editPlatforms && string.Equals(newName, "AnyCPU", StringComparison.InvariantCultureIgnoreCase))
+			if (editPlatforms && string.Equals(newName, "AnyCPU", StringComparison.OrdinalIgnoreCase))
 				newName = "Any CPU";
 			foreach (string item in listBox.Items) {
-				if (string.Equals(item, newName, StringComparison.InvariantCultureIgnoreCase)) {
+				if (string.Equals(item, newName, StringComparison.OrdinalIgnoreCase)) {
 					MessageService.ShowMessage("${res:Dialog.EditAvailableConfigurationsDialog.DuplicateName}");
 					return false;
 				}

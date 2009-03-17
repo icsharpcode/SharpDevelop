@@ -1,0 +1,12 @@
+TODO list:
+
+HIGH PRIORITY
+
+LOW PRIORITY
+- handle Tailcalls differently
+
+NEW FEATURES
+- Implement an exception tracer
+- Implement a memory profiler
+
+API CLEANUP

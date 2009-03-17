@@ -33,6 +33,7 @@ namespace PythonBinding.Tests.Console
 		bool showCompletionWindowCalled;
 		bool makeReadOnlyCalled;
 		ICompletionDataProvider	completionProvider;
+		bool completionWindowDisplayed;
 		
 		public MockTextEditor()
 		{
@@ -210,7 +211,13 @@ namespace PythonBinding.Tests.Console
 		public void ShowCompletionWindow(ICompletionDataProvider completionDataProvider)
 		{
 			showCompletionWindowCalled = true;
+			completionWindowDisplayed = true;
 			this.completionProvider = completionDataProvider;
+		}
+		
+		public bool IsCompletionWindowDisplayed {
+			get { return completionWindowDisplayed; }
+			set { completionWindowDisplayed = value; }
 		}
 		
 		public void MakeCurrentContentReadOnly()

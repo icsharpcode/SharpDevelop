@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<PropertyGroup>
+		<PrepareForRunDependsOn>$(PrepareForRunDependsOn);MyPostBuildTarget</PrepareForRunDependsOn>
+	</PropertyGroup>
+	<Target Name="MyPostBuildTarget">
+		<Copy SourceFiles="..\Hook\Win32\$(Configuration)\Hook.dll"  DestinationFiles="$(OutputPath)\Hook32.dll" Condition="Exists('..\Hook\Win32\$(Configuration)\Hook.dll')" SkipUnchangedFiles="false" />
+		<Copy SourceFiles="..\Hook\Win32\$(Configuration)\Hook.pdb" DestinationFiles="$(OutputPath)\Hook32.pdb" Condition="Exists('..\Hook\Win32\$(Configuration)\Hook.pdb')" SkipUnchangedFiles="false" />
+		
+		<Copy SourceFiles="..\Hook\x64\$(Configuration)\Hook.dll"  DestinationFiles="$(OutputPath)\Hook64.dll" Condition="Exists('..\Hook\x64\$(Configuration)\Hook.dll')" SkipUnchangedFiles="false" />
+		<Copy SourceFiles="..\Hook\x64\$(Configuration)\Hook.pdb" DestinationFiles="$(OutputPath)\Hook64.pdb" Condition="Exists('..\Hook\x64\$(Configuration)\Hook.pdb')" SkipUnchangedFiles="false" />
+	</Target>
+</Project>

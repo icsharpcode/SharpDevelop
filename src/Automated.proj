@@ -13,6 +13,7 @@
 		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
 		<ArtefactPrefix>SharpDevelop_4.0.0.</ArtefactPrefix>
 		<NUnitToolPath>$(MSBuildProjectDirectory)\Tools\NUnit</NUnitToolPath>
+		<ProfilerSrc>$(SharpDevelopSrc)\AddIns\Misc\Profiler</ProfilerSrc>
 		
 		<!-- we cannot use <MSBuild> to build a solution because -->
 		<!-- A) passing properties to a solution called with <MSBuild> doesn't make the
@@ -37,20 +38,15 @@
 		<Message Text="ArtefactsOutputDir=$(ArtefactsOutputDir)" Importance="high"/>
 		<Message Text="BuildProperties=$(BuildProperties)" Importance="high"/>
 		
-		<CallTarget Targets="cleanunittests"/>
-		
-		<Exec WorkingDirectory="$(SharpDevelopSrc)"
-		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
+		<CallTarget Targets="clean1"/>
 		
 		<CallTarget Targets="build"/>
 		<CallTarget Targets="createsetup"/>
+		
 		<CallTarget Targets="buildunittests"/>
 		<CallTarget Targets="rununittests"/>
-		<CallTarget Targets="cleanunittests"/>
 		
-		<Exec WorkingDirectory="$(SharpDevelopSrc)"
-		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
-		
+		<CallTarget Targets="clean2"/>
 		<CallTarget Targets="zipsource"/>
 	</Target>
 	
@@ -73,6 +69,8 @@
 		
 		<Exec WorkingDirectory="$(SharpDevelopSrc)"
 		      Command="$(MSBuildExecutable) SharpDevelop.sln $(BuildProperties)"/>
+		<Exec WorkingDirectory="$(ProfilerSrc)"
+		      Command="$(MSBuildExecutable) AutomatedBuild.proj $(BuildProperties)"/>
 	</Target>
 	
 	<Target Name="buildunittests">
@@ -92,9 +90,22 @@
 		       ToolPath="$(NUnitToolPath)"/>
 	</Target>
 	
-	<Target Name="cleanunittests">
+	<!-- Yes, apparently we really need two identical clean tasks. MSBuild won't run the same task twice. -->
+	<Target Name="clean1">
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
 		<Exec WorkingDirectory="$(SharpDevelopSrc)"
 		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln /t:Clean $(BuildProperties)"/>
+		<Exec WorkingDirectory="$(ProfilerSrc)"
+		      Command="$(MSBuildExecutable) AutomatedBuild.proj /t:Clean $(BuildProperties)"/>
+	</Target>
+	<Target Name="clean2">
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
+		<Exec WorkingDirectory="$(SharpDevelopSrc)"
+		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln /t:Clean $(BuildProperties)"/>
+		<Exec WorkingDirectory="$(ProfilerSrc)"
+		      Command="$(MSBuildExecutable) AutomatedBuild.proj /t:Clean $(BuildProperties)"/>
 	</Target>
 	
 	<Target Name="createsetup">

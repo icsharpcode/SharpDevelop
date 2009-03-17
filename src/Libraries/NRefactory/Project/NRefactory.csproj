@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -26,18 +27,19 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <Optimize>False</Optimize>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <Optimize>false</Optimize>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <DefineConstants>TEST;DEBUG;NET35</DefineConstants>
     <OutputPath>..\..\..\..\bin\</OutputPath>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <Optimize>true</Optimize>
     <DefineConstants>TEST;NET35</DefineConstants>
     <OutputPath>..\..\..\..\bin\</OutputPath>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>Full</DebugType>
@@ -77,9 +79,6 @@
     <Compile Include="Src\Lexer\VBNet\Lexer.cs" />
     <Compile Include="Src\Lexer\VBNet\Tokens.cs" />
     <Compile Include="Src\Lexer\Special\ISpecial.cs" />
-    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Src\OperatorPrecedence.cs" />
     <Compile Include="Src\Parser\CSharp\CSharpParser.cs" />
     <Compile Include="Src\Parser\CSharp\Parser.cs" />
@@ -137,26 +136,24 @@
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />
     <Content Include="Src\Lexer\VBNet\KeywordList.txt" />
-    <Folder Include="Src\Parser" />
-    <Folder Include="Src\Parser\CSharp" />
+    <Folder Include="Src\" />
+    <Folder Include="Src\Parser\" />
     <Content Include="Src\Parser\CSharp\cs.ATG" />
-    <Folder Include="Src\Parser\Frames" />
+    <Folder Include="Src\Parser\" />
     <Content Include="Src\Parser\Frames\Parser.frame" />
     <Content Include="Src\Parser\Frames\Scanner.frame" />
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />
     <Content Include="Src\Parser\Frames\trace.txt" />
-    <Folder Include="Src\Parser\VBNet" />
+    <Folder Include="Src\Parser\" />
     <Content Include="Src\Parser\VBNet\VBNET.ATG" />
     <Content Include="Src\Parser\gen.bat" />
-    <Folder Include="Src\PrettyPrinter" />
-    <Folder Include="Src\PrettyPrinter\CSharp" />
-    <Folder Include="Src\PrettyPrinter\VBNet" />
-    <Folder Include="Src\Visitors" />
-    <Folder Include="Src\Ast" />
-    <Folder Include="Src\Ast\General" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Src\AstBuilder" />
+    <Folder Include="Src\" />
+    <Folder Include="Src\PrettyPrinter\" />
+    <Folder Include="Src\PrettyPrinter\" />
+    <Folder Include="Src\" />
+    <Folder Include="Src\" />
+    <Folder Include="Src\Ast\" />
+    <Folder Include="Src\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

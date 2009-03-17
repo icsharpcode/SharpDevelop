@@ -76,11 +76,10 @@ namespace ICSharpCode.SharpDevelop.Sda
 		{
 			try {
 				using (ExceptionBox box = new ExceptionBox(exception, message, mustTerminate)) {
-					try {
-						box.ShowDialog(WorkbenchSingleton.MainWin32Window);
-					} catch (InvalidOperationException) {
+					if (ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.InvokeRequired)
 						box.ShowDialog();
-					}
+					else
+						box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window);
 				}
 			} catch (Exception ex) {
 				LoggingService.Warn("Error showing ExceptionBox", ex);

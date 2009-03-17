@@ -31,7 +31,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 			int i;
 			
 			foreach (string pattern in GetPossiblePatternsForFile(fileName)) {
-				if ((i = fileContent.IndexOf(pattern, prevOffset+1, StringComparison.InvariantCultureIgnoreCase)) >= 0) {
+				if ((i = fileContent.IndexOf(pattern, prevOffset+1, StringComparison.OrdinalIgnoreCase)) >= 0) {
 					if (pos == -1 || i < pos) {
 						pos = i;
 					}

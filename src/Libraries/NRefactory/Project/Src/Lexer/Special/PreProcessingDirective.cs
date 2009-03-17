@@ -39,6 +39,13 @@ namespace ICSharpCode.NRefactory
 				cmd = "#if";
 				if (arg.ToLowerInvariant().EndsWith(" then"))
 					arg = arg.Substring(0, arg.Length - 5);
+			} else if (cmd.Equals("#Else", StringComparison.InvariantCultureIgnoreCase)) {
+				if (dir.Expression != null)
+					cmd = "#elif";
+				else
+					cmd = "#else";
+			} else if (cmd.Equals("#ElseIf", StringComparison.InvariantCultureIgnoreCase)) {
+				cmd = "#elif";
 			}
 			return new PreprocessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition) {
 				Expression = dir.Expression
@@ -121,6 +128,16 @@ namespace ICSharpCode.NRefactory
 			set { expression = value ?? Ast.Expression.Null; }
 		}
 		
+		/// <value>
+		/// The end position of the pre processor directive line.
+		/// May be != EndPosition.
+		/// </value>
+		public Location LastLineEnd {
+			get;
+			set;
+		}
+		
+				
 		public override string ToString()
 		{
 			return String.Format("[PreProcessingDirective: Cmd = {0}, Arg = {1}]",

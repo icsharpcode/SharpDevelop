@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="ICSharpCode.Profiler.AddIn.Views.ProfilerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:y="clr-namespace:ICSharpCode.Profiler.Controls;assembly=ICSharpCode.Profiler.Controls"
+             xmlns:local="clr-namespace:ICSharpCode.Profiler.AddIn.Views">
+	<UserControl.Resources>
+		<Style x:Key="CloseButton" TargetType="{x:Type Button}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Button}">
+					<Grid>
+						<Rectangle Height="12" Width="12" Stroke="Black" StrokeThickness="1" Fill="Transparent" />
+						<Line X1="3" Y1="3" X2="9" Y2="9" Stroke="Black" StrokeThickness="1" />
+						<Line X1="9" Y1="3" X2="3" Y2="9" Stroke="Black" StrokeThickness="1" />
+					</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="Width"
+			        Value="12"/>
+			<Setter Property="Height"
+			        Value="12"/>
+		</Style>
+	</UserControl.Resources>
+	<Grid>
+		<GridSplitter Width="0" Margin="0,202.5,0,204.5" />
+		<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,30,0,0" Height="90.5" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+			<y:TimeLineControl Name="timeLine" RangeChanged="timeLine_RangeChanged" />
+		</ScrollViewer>
+		<ToolBar Height="27" Name="toolBar1" VerticalAlignment="Top">
+			<Menu>
+				<MenuItem Name="mnuQueryHistory" Header="Query History">
+					<MenuItem Name="mnuClearQueryHistory" Header="Clear History" Click="mnuClearQueryHistoryClick" />
+					<Separator />
+				</MenuItem>
+			</Menu>
+		</ToolBar>
+		<TabControl Name="tabView" HorizontalAlignment="Stretch" Margin="0,120,0,0" SelectionChanged="tabView_SelectionChanged">
+			<TabItem Header="Overview">
+				<y:QueryView x:Name="treeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" CurrentQuery="from t in Threads select t" IsQueryModifiable="False" />
+			</TabItem>
+			<TabItem Header="Top 20">
+				<y:QueryView x:Name="top20View" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" CurrentQuery="(from f in Functions where f.CallCount > 0 orderby f.CpuCyclesSpent descending select f).Take(20)" IsQueryModifiable="False" />
+			</TabItem>
+			<TabItem Name="dummyTab" Header="">
+			</TabItem>
+		</TabControl>
+	</Grid>
+</UserControl>

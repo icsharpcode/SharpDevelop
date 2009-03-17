@@ -367,7 +367,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <returns>The full path and name of the resource file that contains the specified resources, or <c>null</c> if no suitable resource file is found.</returns>
 		static string TryGetResourceFileNameFromProjectDirect(string resourceName, IProject p)
 		{
-			if (!resourceName.StartsWith(p.RootNamespace + ".", StringComparison.InvariantCultureIgnoreCase)) {
+			if (!resourceName.StartsWith(p.RootNamespace + ".", StringComparison.OrdinalIgnoreCase)) {
 				return null;
 			}
 			
@@ -451,9 +451,9 @@ namespace Hornung.ResourceToolkit.Resolver
 		public static SupportedLanguage? GetFileLanguage(string fileName)
 		{
 			string ext = Path.GetExtension(fileName);
-			if (ext.Equals(".cs", StringComparison.InvariantCultureIgnoreCase))
+			if (ext.Equals(".cs", StringComparison.OrdinalIgnoreCase))
 				return SupportedLanguage.CSharp;
-			if (ext.Equals(".vb", StringComparison.InvariantCultureIgnoreCase))
+			if (ext.Equals(".vb", StringComparison.OrdinalIgnoreCase))
 				return SupportedLanguage.VBNet;
 			return null;
 		}

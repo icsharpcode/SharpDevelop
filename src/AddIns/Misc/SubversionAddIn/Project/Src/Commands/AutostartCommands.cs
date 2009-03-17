@@ -237,10 +237,10 @@ namespace ICSharpCode.Svn.Commands
 								if (ex.ErrorCode == CannotDeleteFileWithLocalModifications
 								    || ex.ErrorCode == CannotDeleteFileNotUnderVersionControl)
 								{
-									if (MessageService.ShowCustomDialog("Delete directory",
-									                                    "Error deleting " + fullName + ":\n" +
+									if (MessageService.ShowCustomDialog("${res:AddIns.Subversion.DeleteDirectory}",
+									                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n", new string[,] { { "File", fullName } }) +
 									                                    ex.Message, 0, 1,
-									                                    "Force delete", "${res:Global.CancelButtonText}")
+									                                    "${res:AddIns.Subversion.ForceDelete}", "${res:Global.CancelButtonText}")
 									    == 0)
 									{
 										try {
@@ -281,7 +281,7 @@ namespace ICSharpCode.Svn.Commands
 							break;
 						case StatusKind.Modified:
 						case StatusKind.Replaced:
-							if (MessageService.AskQuestion("The file has local modifications. Do you really want to remove it?")) {
+							if (MessageService.AskQuestion("${res:AddIns.Subversion.RevertLocalModifications}")) {
 								// modified files cannot be deleted, so we need to revert the changes first
 								client.Revert(new string[] { fullName }, e.IsDirectory ? Recurse.Full : Recurse.None);
 							} else {
@@ -291,7 +291,7 @@ namespace ICSharpCode.Svn.Commands
 							break;
 						case StatusKind.Added:
 							if (status.Copied) {
-								if (!MessageService.AskQuestion("The file has just been moved to this location, do you really want to remove it?")) {
+								if (!MessageService.AskQuestion("${res:AddIns.Subversion.RemoveMovedFile}")) {
 									e.Cancel = true;
 									return;
 								}
@@ -299,7 +299,7 @@ namespace ICSharpCode.Svn.Commands
 							client.Revert(new string[] { fullName }, e.IsDirectory ? Recurse.Full : Recurse.None);
 							return;
 						default:
-							MessageService.ShowError("The file/directory cannot be removed because it is in subversion status '" + status.TextStatus + "'.");
+							MessageService.ShowErrorFormatted("${res:AddIns.Subversion.CannotRemoveError}", status.TextStatus.ToString());
 							e.Cancel = true;
 							return;
 					}
@@ -333,7 +333,7 @@ namespace ICSharpCode.Svn.Commands
 							// copy without problem
 							break;
 						default:
-							MessageService.ShowError("The file/directory cannot be copied because it is in subversion status '" + status.TextStatus + "'.");
+							MessageService.ShowErrorFormatted("${res:AddIns.Subversion.CannotCopyError}", status.TextStatus.ToString());
 							e.Cancel = true;
 							return;
 					}
@@ -371,7 +371,7 @@ namespace ICSharpCode.Svn.Commands
 							// rename without problem
 							break;
 						default:
-							MessageService.ShowError("The file/directory cannot be renamed because it is in subversion status '" + status.TextStatus + "'.");
+							MessageService.ShowErrorFormatted("${res:AddIns.Subversion.CannotMoveError}", status.TextStatus.ToString());
 							e.Cancel = true;
 							return;
 					}

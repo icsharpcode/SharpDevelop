@@ -51,10 +51,10 @@ namespace PythonBinding.Tests.Designer
 	
 			// Begin load.
 			mockDesignerLoaderHost = new MockDesignerLoaderHost();
+			mockTypeResolutionService = mockDesignerLoaderHost.TypeResolutionService;
+
 			mockExtenderProviderService = new MockExtenderProviderService();
 			mockDesignerLoaderHost.AddService(typeof(IExtenderProviderService), mockExtenderProviderService);
-			mockTypeResolutionService = new MockTypeResolutionService();
-			mockDesignerLoaderHost.AddService(typeof(ITypeResolutionService), mockTypeResolutionService);
 			System.Console.WriteLine("Before BeginLoad");
 			loader.BeginLoad(mockDesignerLoaderHost);
 			System.Console.WriteLine("After BeginLoad");

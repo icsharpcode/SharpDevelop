@@ -80,12 +80,14 @@
     <Compile Include="Src\NRefactoryToPythonConverterOld.cs" />
     <Compile Include="Src\PythonAstWalker.cs" />
     <Compile Include="Src\PythonCodeCompletionBinding.cs" />
+    <Compile Include="Src\PythonCodeDeserializer.cs" />
     <Compile Include="Src\PythonCompilerError.cs" />
     <Compile Include="Src\PythonCompilerSink.cs" />
     <Compile Include="Src\PythonConsole.cs" />
     <Compile Include="Src\PythonConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\PythonConsoleHost.cs" />
     <Compile Include="Src\PythonConsolePad.cs" />
+    <Compile Include="Src\PythonControlDefaultPropertyValues.cs" />
     <Compile Include="Src\PythonControlFieldExpression.cs" />
     <Compile Include="Src\PythonDesignerGenerator.cs" />
     <Compile Include="Src\PythonDesignerLoader.cs" />
@@ -102,6 +104,7 @@
     <Compile Include="Src\PythonParser.cs" />
     <Compile Include="Src\PythonProcessRunner.cs" />
     <Compile Include="Src\PythonProject.cs" />
+    <Compile Include="Src\PythonPropertyValueAssignment.cs" />
     <Compile Include="Src\PythonResolver.cs" />
     <Compile Include="Src\RunPythonCommand.cs" />
     <Compile Include="Src\StandardPythonModules.cs" />

@@ -63,6 +63,7 @@ namespace ICSharpCode.NRefactory.Parser
 			if ((val == '\r' && reader.Peek() != '\n') || val == '\n') {
 				++line;
 				col = 1;
+				LineBreak ();
 			}
 			return val;
 		}
@@ -230,19 +231,30 @@ namespace ICSharpCode.NRefactory.Parser
 			errors.Error(line, col, String.Format("Invalid hex number '" + digit + "'"));
 			return 0;
 		}
-		
+		protected Location lastLineEnd = new Location (1, 1);
+		protected Location curLineEnd = new Location (1, 1);
+		protected void LineBreak ()
+		{
+			lastLineEnd = curLineEnd;
+			curLineEnd = new Location (col - 1, line);
+		}
 		protected bool HandleLineEnd(char ch)
 		{
 			// Handle MS-DOS or MacOS line ends.
 			if (ch == '\r') {
 				if (reader.Peek() == '\n') { // MS-DOS line end '\r\n'
-					ReaderRead();
+					ReaderRead(); // LineBreak (); called by ReaderRead ();
 					return true;
 				} else { // assume MacOS line end which is '\r'
+					LineBreak ();
 					return true;
 				}
 			}
-			return ch == '\n';
+			if (ch == '\n') {
+				LineBreak ();
+				return true;
+			}
+			return false;
 		}
 		
 		protected void SkipToEndOfLine()

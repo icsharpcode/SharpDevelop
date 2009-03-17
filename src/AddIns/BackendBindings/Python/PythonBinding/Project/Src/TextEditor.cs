@@ -158,6 +158,10 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 		
+		public bool IsCompletionWindowDisplayed {
+			get { return completionWindow != null; }
+		}
+		
 		/// <summary>
 		/// Gets the range of the currently selected text.
 		/// </summary>

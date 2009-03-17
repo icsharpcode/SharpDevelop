@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.Tests.Output
 			node.AcceptVisitor(new ToVBNetConvertVisitor(), null);
 
 			VBNetOutputVisitor output = new VBNetOutputVisitor();
+			
 			using (SpecialNodesInserter.Install(parser.Specials, output)) {
 				node.AcceptVisitor(output, null);
 			}
@@ -66,38 +67,38 @@ namespace ICSharpCode.NRefactory.Tests.Output
 		public void CompilationUnitCS2VB()
 		{
 			CS2VB(
-				@"using System;
+			@"using System;" + Environment.NewLine +
+"" + Environment.NewLine +
+"public class MyClass" + Environment.NewLine +
+"{" + Environment.NewLine +
+"   string abc;" + Environment.NewLine +
+"" + Environment.NewLine +
+"   public string Abc { get { return abc; } }" + Environment.NewLine +
+"" + Environment.NewLine +
+"    // This is a test method" + Environment.NewLine +
+"    static void M<T>(params T[] args) where T : IDisposable" + Environment.NewLine +
+"    {" + Environment.NewLine +
+"       Console.WriteLine(\"Hello!\");" + Environment.NewLine +
+"    }" + Environment.NewLine +
+"}",
 
-public class MyClass
-{
-   string abc;
-
-   public string Abc { get { return abc; } }
-
-    // This is a test method
-    static void M<T>(params T[] args) where T : IDisposable
-    {
-       Console.WriteLine(""Hello!"");
-    }
-}",
-
-				@"Imports System
-
-Public Class [MyClass]
-	Private m_abc As String
-
-	Public ReadOnly Property Abc() As String
-		Get
-			Return m_abc
-		End Get
-	End Property
-
-	' This is a test method
-	Private Shared Sub M(Of T As IDisposable)(ParamArray args As T())
-		Console.WriteLine(""Hello!"")
-	End Sub
-End Class
-"
+				@"Imports System" + Environment.NewLine +
+"" + Environment.NewLine +
+"Public Class [MyClass]" + Environment.NewLine +
+"	Private m_abc As String" + Environment.NewLine +
+"" + Environment.NewLine +
+"	Public ReadOnly Property Abc() As String" + Environment.NewLine +
+"		Get" + Environment.NewLine +
+"			Return m_abc" + Environment.NewLine +
+"		End Get" + Environment.NewLine +
+"	End Property" + Environment.NewLine +
+"" + Environment.NewLine +
+"	' This is a test method" + Environment.NewLine +
+"	Private Shared Sub M(Of T As IDisposable)(ParamArray args As T())" + Environment.NewLine +
+"		Console.WriteLine(\"Hello!\")" + Environment.NewLine +
+"	End Sub" + Environment.NewLine +
+"End Class" + Environment.NewLine +
+""
 			);
 		}
 		
@@ -108,14 +109,14 @@ End Class
 		public void TypeMembersCS2VB()
 		{
 			CS2VB(
-				"void Test() {}\n" +
+				"void Test() {}" + Environment.NewLine +
 				"void Test2() {}",
 
-				@"Private Sub Test()
-End Sub
-Private Sub Test2()
-End Sub
-"
+				@"Private Sub Test()" + Environment.NewLine +
+"End Sub" + Environment.NewLine +
+"Private Sub Test2()" + Environment.NewLine +
+"End Sub" + Environment.NewLine 
+
 			);
 		}
 		
@@ -123,12 +124,11 @@ End Sub
 		public void StatementsCS2VB()
 		{
 			CS2VB(
-				"int a = 3;\n" +
+				"int a = 3;" + Environment.NewLine +
 				"a++;",
 
-				@"Dim a As Integer = 3
-a += 1
-"
+				@"Dim a As Integer = 3" + Environment.NewLine +
+"a += 1" + Environment.NewLine 
 			);
 		}
 		
@@ -137,18 +137,17 @@ a += 1
 		public void TypeMembersVB2CS()
 		{
 			VB2CS(
-				@"Sub Test()
-End Sub
-Sub Test2()
-End Sub
-",
-				@"public void Test()
-{
-}
-public void Test2()
-{
-}
-"
+				@"Sub Test()" + Environment.NewLine +
+"End Sub" + Environment.NewLine +
+"Sub Test2()" + Environment.NewLine +
+"End Sub" + Environment.NewLine,
+				@"public void Test()" + Environment.NewLine +
+"{" + Environment.NewLine +
+"}" + Environment.NewLine +
+"public void Test2()" + Environment.NewLine +
+"{" + Environment.NewLine +
+"}" + Environment.NewLine 
+
 			);
 		}
 		
@@ -156,11 +155,10 @@ public void Test2()
 		public void StatementsVB2CS()
 		{
 			VB2CS(
-				@"Dim a As Integer = 3
-a += 1
-",
-				"int a = 3;\r\n" +
-				"a += 1;\r\n"
+				@"Dim a As Integer = 3" + Environment.NewLine +
+"a += 1" + Environment.NewLine,
+				"int a = 3;" + Environment.NewLine +
+				"a += 1;" + Environment.NewLine 
 			);
 		}
 	}

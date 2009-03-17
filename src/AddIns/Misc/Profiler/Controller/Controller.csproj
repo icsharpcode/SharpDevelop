@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{72FFB35A-C9E2-4A31-B4FA-E3E3E28DED5F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ICSharpCode.Profiler.Controller</RootNamespace>
+    <AssemblyName>ICSharpCode.Profiler.Controller</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\bin\</OutputPath>
+    <UseHostCompilerIfAvailable>false</UseHostCompilerIfAvailable>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Design#CA1020;-Microsoft.Design#CA1063;-Microsoft.Usage#CA1816</CodeAnalysisRules>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>ICSharpCode.Profiler.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <DocumentationFile>..\bin\ICSharpCode.Profiler.Controller.xml</DocumentationFile>
+    <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\HP\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\ProfilingDataProvider.cs" />
+    <Compile Include="Data\CallTreeNode.cs" />
+    <Compile Include="Data\IProfilingDataSet.cs" />
+    <Compile Include="Data\IProfilingDataWriter.cs" />
+    <Compile Include="Data\NameMapping.cs" />
+    <Compile Include="Data\ProfilingDataSQLiteProvider.cs" />
+    <Compile Include="Data\ProfilingDataSQLiteWriter.cs">
+    </Compile>
+    <Compile Include="Data\SQLiteCallTreeNode.cs" />
+    <Compile Include="Data\TempFileDatabase.cs" />
+    <Compile Include="Data\UnmanagedCallTreeNode.cs" />
+    <Compile Include="Data\UnmanagedCallTreeNode64.cs">
+      <DependentUpon>UnmanagedCallTreeNode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data\UnmanagedProfilingDataSet.cs" />
+    <Compile Include="ExtendedRegistry.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Interprocess\AtomicBoolean.cs" />
+    <Compile Include="ProfilerException.cs" />
+    <Compile Include="ProfilerOptions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queries\NodePath.cs" />
+    <Compile Include="Queries\QueryBase.cs" />
+    <Compile Include="Queries\QueryCompiler.cs" />
+    <Compile Include="Registrar.cs" />
+    <Compile Include="structs.cs" />
+    <Compile Include="structs64.cs">
+      <DependentUpon>structs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DetectBinaryType.cs" />
+    <Compile Include="Interprocess\MemoryMappedFile.cs" />
+    <Compile Include="Interprocess\UnmanagedCircularBuffer.cs" />
+    <Compile Include="Interprocess\UnmanagedMemory.cs" />
+    <Compile Include="Profiler.cs" />
+    <Compile Include="Profiler64.cs">
+      <DependentUpon>Profiler.cs</DependentUpon>
+    </Compile>
+    <None Include="BuildEvents.proj" />
+    <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="BuildEvents.proj" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PreBuildEvent>..\X64Converter\bin\X64Converter.exe</PreBuildEvent>
+  </PropertyGroup>
+</Project>

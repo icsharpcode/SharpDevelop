@@ -125,9 +125,9 @@ namespace ICSharpCode.Build.Tasks
 			CommandLineBuilder commandLine = new CommandLineBuilder();
 			if (((OutputAssembly == null) && (Sources != null)) && ((Sources.Length > 0))) {
 				OutputAssembly = new TaskItem(Path.GetFileNameWithoutExtension(this.Sources[0].ItemSpec));
-				if (string.Equals(this.TargetType, "library", StringComparison.InvariantCultureIgnoreCase)) {
+				if (string.Equals(this.TargetType, "library", StringComparison.OrdinalIgnoreCase)) {
 					OutputAssembly.ItemSpec += ".dll";
-				} else if (string.Equals(this.TargetType, "module", StringComparison.InvariantCultureIgnoreCase)) {
+				} else if (string.Equals(this.TargetType, "module", StringComparison.OrdinalIgnoreCase)) {
 					OutputAssembly.ItemSpec += ".netmodule";
 				} else {
 					OutputAssembly.ItemSpec += ".exe";
@@ -157,9 +157,9 @@ namespace ICSharpCode.Build.Tasks
 			
 			commandLine.AppendSwitchIfNotNull("/OUTPUT=", this.OutputAssembly);
 			
-			if (string.Equals(this.TargetType, "library", StringComparison.InvariantCultureIgnoreCase)) {
+			if (string.Equals(this.TargetType, "library", StringComparison.OrdinalIgnoreCase)) {
 				commandLine.AppendSwitch("/DLL");
-			} else if (string.Equals(this.TargetType, "module", StringComparison.InvariantCultureIgnoreCase)) {
+			} else if (string.Equals(this.TargetType, "module", StringComparison.OrdinalIgnoreCase)) {
 				commandLine.AppendSwitch("/DLL");
 			}
 			

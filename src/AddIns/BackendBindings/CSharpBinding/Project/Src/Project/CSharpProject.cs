@@ -114,7 +114,7 @@ namespace CSharpBinding
 			
 			foreach (Microsoft.Build.BuildEngine.Import import in MSBuildProject.Imports) {
 				if (needExtensions) {
-					if (DefaultTargetsFile.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
+					if (DefaultTargetsFile.Equals(import.ProjectPath, StringComparison.OrdinalIgnoreCase)) {
 						//import.ProjectPath = extendedTargets;
 						MSBuildInternals.SetImportProjectPath(this, import, ExtendedTargetsFile);
 						// Workaround for SD2-1490. It would be better if the project browser could refresh itself
@@ -123,7 +123,7 @@ namespace CSharpBinding
 						break;
 					}
 				} else {
-					if (ExtendedTargetsFile.Equals(import.ProjectPath, StringComparison.InvariantCultureIgnoreCase)) {
+					if (ExtendedTargetsFile.Equals(import.ProjectPath, StringComparison.OrdinalIgnoreCase)) {
 						//import.ProjectPath = defaultTargets;
 						MSBuildInternals.SetImportProjectPath(this, import, DefaultTargetsFile);
 						// Workaround for SD2-1490. It would be better if the project browser could refresh itself

@@ -567,6 +567,7 @@ Type<out TypeReference type>
 
 TypeWithRestriction<out TypeReference type, bool allowNullable, bool canBeUnbound>
 (.
+	Location startPos = la.Location;
 	string name;
 	int pointer = 0;
 	type = null;
@@ -585,15 +586,18 @@ TypeWithRestriction<out TypeReference type, bool allowNullable, bool canBeUnboun
 		)
 	}
 	(. if (type != null) {
-		type.RankSpecifier = r.ToArray();
-		type.PointerNestingLevel = pointer;
-	   }
+			type.RankSpecifier = r.ToArray();
+			type.PointerNestingLevel = pointer;
+			type.EndLocation = t.EndLocation;
+			type.StartLocation = startPos;
+		}
 	.)
 .
 
 
 NonArrayType<out TypeReference type>
 (.
+	Location startPos = la.Location;
 	string name;
 	int pointer = 0;
 	type = null;
@@ -609,7 +613,12 @@ NonArrayType<out TypeReference type>
 	{ IF (IsPointer())
 		"*" (. ++pointer; .)
 	}
-	(. if (type != null) { type.PointerNestingLevel = pointer; } .)
+	(.if (type != null) {
+		type.PointerNestingLevel = pointer; 
+		type.EndLocation = t.EndLocation;
+		type.StartLocation = startPos;
+		} 
+	.)
 .
 
 SimpleType<out string name>
@@ -653,7 +662,7 @@ FixedParameter<out ParameterDeclarationExpression p>
 (.
 	TypeReference type;
 	ParameterModifiers mod = ParameterModifiers.In;
-	Location start = t.Location;
+	Location start = la.Location;
 .)
 =
 	[
@@ -697,8 +706,8 @@ ClassType<out TypeReference typeRef, bool canBeUnbound>
 (. TypeReference r; typeRef = null; .)
 =
 	TypeName<out r, canBeUnbound> (. typeRef = r; .)
-	| "object"                    (. typeRef = new TypeReference("System.Object", true); .)
-	| "string"                    (. typeRef = new TypeReference("System.String", true); .)
+	| "object"                    (. typeRef = new TypeReference("System.Object", true); typeRef.StartLocation = t.Location; .)
+	| "string"                    (. typeRef = new TypeReference("System.String", true); typeRef.StartLocation = t.Location; .)
 .
 
 IntegralType<out string name>          (. name = ""; .)
@@ -753,13 +762,17 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	Type<out type> Identifier              (. FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier | Modifiers.Const);
 	                                          fd.StartLocation = m.GetDeclarationLocation(startPos);
 	                                          VariableDeclaration f = new VariableDeclaration(t.val);
+	                                          f.StartLocation = t.Location;
+	                                          f.TypeReference = type;
 	                                          SafeAdd(fd, fd.Fields, f);
 	                                       .)
 	"=" Expr<out expr>                     (. f.Initializer = expr; .)
 	{ "," Identifier                       (. f = new VariableDeclaration(t.val);
+	                                          f.StartLocation = t.Location;
+	                                          f.TypeReference = type;
 	                                          SafeAdd(fd, fd.Fields, f);
 	                                       .)
-		"=" Expr<out expr>                 (. f.Initializer = expr; .)
+		"=" Expr<out expr>                 (. f.EndLocation = t.EndLocation; f.Initializer = expr; .)
 	} ";"                                  (. fd.EndLocation = t.EndLocation; compilationUnit.AddChild(fd); .)
 	
 	
@@ -1042,7 +1055,7 @@ ClassMemberDecl<ModifierList m, List<AttributeSection> attributes>
 (. Statement stmt = null; .)
 =
 	StructMemberDecl<m, attributes>
-	| /*--- destructor declaration: */ (. m.Check(Modifiers.Destructors); Location startPos = t.Location; .)
+	| /*--- destructor declaration: */ (. m.Check(Modifiers.Destructors); Location startPos = la.Location; .)
 	"~" Identifier                     (. DestructorDeclaration d = new DestructorDeclaration(t.val, m.Modifier, attributes); 
 	                                      d.Modifier = m.Modifier;
 	                                      d.StartLocation = m.GetDeclarationLocation(startPos);
@@ -1149,6 +1162,7 @@ EnumMemberDecl<out FieldDeclaration f>
 	                                   varDecl         = new VariableDeclaration(t.val);
 	                                   f.Fields.Add(varDecl);
 	                                   f.StartLocation = t.Location;
+	                                   f.EndLocation = t.EndLocation;
 	                                .)
 	[ "=" Expr<out expr> (. varDecl.Initializer = expr; .) ]
 .
@@ -1265,9 +1279,9 @@ InterfaceAccessors<out PropertyGetRegion getBlock, out PropertySetRegion setBloc
 VariableDeclarator<FieldDeclaration parentFieldDeclaration>
 (. Expression expr = null; .)
 =
-	Identifier                            (. VariableDeclaration f = new VariableDeclaration(t.val); .)
+	Identifier                            (. VariableDeclaration f = new VariableDeclaration(t.val); f.StartLocation = t.Location; .)
 	[ "=" VariableInitializer<out expr>   (. f.Initializer = expr; .) ]
-	(. SafeAdd(parentFieldDeclaration, parentFieldDeclaration.Fields, f); .)
+	(. f.EndLocation = t.EndLocation; SafeAdd(parentFieldDeclaration, parentFieldDeclaration.Fields, f); .)
 .
 
 Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
@@ -1444,19 +1458,21 @@ LocalVariableDecl<out Statement stmt>
 	TypeReference type;
 	VariableDeclaration      var = null;
 	LocalVariableDeclaration localVariableDeclaration; 
+	Location startPos = la.Location;
 .)
 =
-	Type<out type> (. localVariableDeclaration = new LocalVariableDeclaration(type); localVariableDeclaration.StartLocation = t.Location; .)
+	Type<out type> (. localVariableDeclaration = new LocalVariableDeclaration(type); localVariableDeclaration.StartLocation = startPos; .)
 	LocalVariableDeclarator<out var> (. SafeAdd(localVariableDeclaration, localVariableDeclaration.Variables, var); .)
 	{ "," LocalVariableDeclarator<out var> (. SafeAdd(localVariableDeclaration, localVariableDeclaration.Variables, var); .) }
-	(. stmt = localVariableDeclaration; .)
+	(. stmt = localVariableDeclaration; stmt.EndLocation = t.EndLocation; .)
 .
 
 LocalVariableDeclarator<out VariableDeclaration var>
 (. Expression expr = null; .)
 =
-	Identifier (. var = new VariableDeclaration(t.val); .)
+	Identifier (. var = new VariableDeclaration(t.val); var.StartLocation = t.Location; .)
 	[ "=" VariableInitializer<out expr> (. var.Initializer = expr; .) ]
+	(. var.EndLocation = t.EndLocation; .)
 .
 
 Statement
@@ -1474,10 +1490,24 @@ Statement
 		":" Statement
 		/*--- local constant declaration: */
 		| "const" Type<out type> (. LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifiers.Const); string ident = null; var.StartLocation = t.Location; .) 
-		  Identifier (. ident = t.val; .)
-		  "=" Expr<out expr> (. SafeAdd(var, var.Variables, new VariableDeclaration(ident, expr)); .)
-		  { "," Identifier (. ident = t.val; .) "=" Expr<out expr> (. SafeAdd(var, var.Variables, new VariableDeclaration(ident, expr)); .) }
-		  ";" (. compilationUnit.AddChild(var); .)
+		  Identifier (. ident = t.val; Location varStart = t.Location; .)
+		  "=" Expr<out expr> 
+		  (.
+			SafeAdd(var, var.Variables, new VariableDeclaration(ident, expr) {
+				StartLocation = varStart,
+				EndLocation = t.EndLocation,
+				TypeReference = type
+			}); 
+		  .)
+		  { "," Identifier (. ident = t.val; .) "=" Expr<out expr> 
+		  (.
+			SafeAdd(var, var.Variables, new VariableDeclaration(ident, expr) {
+				StartLocation = varStart,
+				EndLocation = t.EndLocation,
+				TypeReference = type
+			});
+		  .) }
+		  ";" (. var.EndLocation = t.EndLocation; compilationUnit.AddChild(var); .)
 
 		/*--- local variable declaration: */
 	|	IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. compilationUnit.AddChild(stmt); .)
@@ -1846,8 +1876,8 @@ PrimaryExpr<out Expression pexpr>
 		QueryExpression<out pexpr>
 	| IF (IdentAndDoubleColon())
 		Identifier (. type = new TypeReference(t.val); .)
-		"::"  (. pexpr = new TypeReferenceExpression(type); .)
-		Identifier (. if (type.Type == "global") { type.IsGlobal = true; type.Type = (t.val ?? "?"); } else type.Type += "." + (t.val ?? "?"); .)
+		"::" (. pexpr = new TypeReferenceExpression(type); .)
+		Identifier (. if (type.Type == "global") { type.IsGlobal = true; type.Type = t.val ?? "?"; } else type.Type += "." + (t.val ?? "?"); .)
 
 		/*--- simple name (IdentifierExpression): */
 	|	Identifier
@@ -1887,9 +1917,9 @@ PrimaryExpr<out Expression pexpr>
 		(. pexpr = new TypeReferenceExpression(new TypeReference(val, true)) { StartLocation = t.Location, EndLocation = t.EndLocation }; .)
 		
 		/*--- this access: */
-	|	"this"                              (. pexpr = new ThisReferenceExpression(); .)
+	|	"this"                              (. pexpr = new ThisReferenceExpression(); pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
 		/*--- base access: */
-	|	"base"                              (. pexpr = new BaseReferenceExpression(); .)
+	|	"base"                              (. pexpr = new BaseReferenceExpression(); pexpr.StartLocation = t.Location; pexpr.EndLocation = t.EndLocation; .)
 	
 		/* new ... - ObjectCreationExpression or ArrayCreateExpression */
 	|	NewExpression<out pexpr>
@@ -1908,8 +1938,10 @@ PrimaryExpr<out Expression pexpr>
 	|	"delegate" AnonymousMethodExpr<out expr> (. pexpr = expr; .)
 	)
 	(.	if (pexpr != null) {
-			pexpr.StartLocation = startLocation;
-			pexpr.EndLocation = t.EndLocation;
+			if (pexpr.StartLocation.IsEmpty)
+				pexpr.StartLocation = startLocation;
+			if (pexpr.EndLocation.IsEmpty)
+				pexpr.EndLocation = t.EndLocation;
 		}
 	.)
 	{
@@ -1960,7 +1992,7 @@ MemberAccess<out Expression expr, Expression target>
 	.)
 	"."
 	Identifier
-	(. expr = new MemberReferenceExpression(target, t.val); .)
+	(. expr = new MemberReferenceExpression(target, t.val); expr.StartLocation = t.Location; expr.EndLocation = t.EndLocation; .)
 	[ IF (IsGenericInSimpleNameOrMemberAccess())
 		TypeArgumentList<out typeList, false>
 		(. ((MemberReferenceExpression)expr).TypeArguments = typeList; .)
@@ -1972,7 +2004,7 @@ PointerMemberAccess<out Expression expr, Expression target>
 =
 	"->"
 	Identifier
-	(. expr = new PointerReferenceExpression(target, t.val); .)
+	(. expr = new PointerReferenceExpression(target, t.val); expr.StartLocation = t.Location; expr.EndLocation = t.EndLocation; .)
 	[ IF (IsGenericInSimpleNameOrMemberAccess())
 		TypeArgumentList<out typeList, false>
 		(. ((MemberReferenceExpression)expr).TypeArguments = typeList; .)
@@ -2261,6 +2293,7 @@ TypeName<out TypeReference typeRef, bool canBeUnbound>
 (.	List<TypeReference> typeArguments = null;
 	string alias = null;
 	string qualident;
+	Location startLocation = la.Location;
 .)
 =
 	[ IF (IdentAndDoubleColon())
@@ -2285,6 +2318,7 @@ TypeName<out TypeReference typeRef, bool canBeUnbound>
 		[TypeArgumentList<out typeArguments, canBeUnbound>]
 		(. typeRef = new InnerClassTypeReference(typeRef, qualident, typeArguments); .)
 	}
+	(. typeRef.StartLocation = startLocation; .)
 .
 
 

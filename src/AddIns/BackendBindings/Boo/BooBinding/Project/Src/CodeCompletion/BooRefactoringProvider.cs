@@ -17,7 +17,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override bool IsEnabledForFile(string fileName)
 		{
-			return ".boo".Equals(Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase);
+			return ".boo".Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

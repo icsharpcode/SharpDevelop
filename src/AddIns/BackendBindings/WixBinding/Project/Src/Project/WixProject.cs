@@ -57,14 +57,16 @@ namespace ICSharpCode.WixBinding
 		
 		public override void Start(bool withDebugging)
 		{
-			withDebugging = false;
+			base.Start(false); // debugging not supported
+		}
+		
+		public override System.Diagnostics.ProcessStartInfo CreateStartInfo()
+		{
 			switch (StartAction) {
 				case StartAction.Project:
-					Start(InstallerFullPath, withDebugging);
-					break;
+					return CreateStartInfo(InstallerFullPath);
 				default:
-					base.Start(withDebugging);
-					break;
+					return base.CreateStartInfo();
 			}
 		}
 		

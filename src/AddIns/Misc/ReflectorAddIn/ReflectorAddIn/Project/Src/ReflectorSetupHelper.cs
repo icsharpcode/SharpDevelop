@@ -89,7 +89,7 @@ namespace ReflectorAddIn
 				if (m != null && m.Success) {
 					
 					foreach (Capture c in m.Groups[1].Captures) {
-						if (String.Equals(c.Value, ipcServerAddInDllTargetPath, StringComparison.InvariantCultureIgnoreCase)) {
+						if (String.Equals(c.Value, ipcServerAddInDllTargetPath, StringComparison.OrdinalIgnoreCase)) {
 							ipcServerAddInFound = true;
 						}
 						insertionIndex = c.Index + c.Length + 1;

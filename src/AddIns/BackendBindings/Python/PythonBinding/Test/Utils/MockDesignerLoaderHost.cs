@@ -22,10 +22,12 @@ namespace PythonBinding.Tests.Utils
 		ServiceContainer serviceContainer = new ServiceContainer();
 		List<CreatedComponent> createdComponents = new List<CreatedComponent>();
 		IComponent rootComponent;
+		MockTypeResolutionService typeResolutionService = new MockTypeResolutionService();
 				
 		public MockDesignerLoaderHost()
 		{
 			AddService(typeof(IServiceContainer), serviceContainer);
+			AddService(typeof(ITypeResolutionService), typeResolutionService);
 		}
 		
 		public event EventHandler Activated;
@@ -41,6 +43,10 @@ namespace PythonBinding.Tests.Utils
 		/// </summary>
 		public List<CreatedComponent> CreatedComponents {
 			get { return createdComponents; }
+		}
+		
+		public MockTypeResolutionService TypeResolutionService {
+			get { return typeResolutionService; }
 		}
 		
 		public bool Loading {
@@ -128,10 +134,7 @@ namespace PythonBinding.Tests.Utils
 		public Type GetType(string typeName)
 		{
 			System.Console.WriteLine("DesignerLoaderHost.GetType: " + typeName);
-			if (typeName == "Form") {
-				return typeof(System.Windows.Forms.Form);
-			}
-			return Type.GetType(typeName);
+			return typeResolutionService.GetType(typeName);
 		}
 		
 		public void AddService(Type serviceType, object serviceInstance)

@@ -138,11 +138,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Controls.Add(this.addButton);
 			this.Controls.Add(this.programListBox);
 			this.Controls.Add(this.label1);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.MinimumSize = new System.Drawing.Size(292, 186);
+			this.MinimumSize = new System.Drawing.Size(292, 196);
 			this.Name = "OpenWithDialog";
+			this.ShowInTaskbar = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "${res:Gui.ProjectBrowser.OpenWith.DialogTitle}";
 			this.ResumeLayout(false);
 		}

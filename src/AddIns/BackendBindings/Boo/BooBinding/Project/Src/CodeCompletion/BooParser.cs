@@ -46,7 +46,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public bool CanParse(string fileName)
 		{
-			return string.Equals(Path.GetExtension(fileName), ".boo", StringComparison.InvariantCultureIgnoreCase);
+			return string.Equals(Path.GetExtension(fileName), ".boo", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public bool CanParse(IProject project)

@@ -135,7 +135,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// base most member => most derived member
 			//Dictionary<IMember, IMember> overrideDict = new Dictionary<IMember, IMember>();
 			
-			bool handledNonMethod = false;
 			HashSet<IMethod> handledMethods = new HashSet<IMethod>(new SignatureComparer());
 			Dictionary<IMethod, IMethod> overrideMethodDict = new Dictionary<IMethod, IMethod>(new SignatureComparer());
 			IMember nonMethodOverride = null;
@@ -171,8 +170,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 								}
 							}
 						} else {
-							if (!handledNonMethod) {
-								handledNonMethod = true;
+							// non-methods are only available if they aren't hidden by something else
+							if (allResults.Count == 0) {
 								results.Add(nonMethodOverride ?? m);
 							}
 						}
@@ -470,7 +469,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		static bool IsConstructedConversionToGenericReturnType(IReturnType from, IReturnType to, IMethod allowGenericTargetsOnThisMethod)
 		{
 			// null could be passed when type arguments could not be resolved/inferred
-			if (from == null && to == null)
+			if (from == to) // both are null or
 				return true;
 			if (from == null || to == null)
 				return false;
@@ -483,14 +482,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			if (to.IsGenericReturnType) {
 				ITypeParameter typeParameter = to.CastToGenericReturnType().TypeParameter;
-				if (typeParameter.Method != allowGenericTargetsOnThisMethod)
-					return false;
-				foreach (IReturnType constraintType in typeParameter.Constraints) {
-					if (!ConversionExistsInternal(from, constraintType, allowGenericTargetsOnThisMethod)) {
-						return false;
-					}
-				}
-				return true;
+				if (typeParameter.Method == allowGenericTargetsOnThisMethod)
+					return true;
+				// applicability ignores constraints
+//				foreach (IReturnType constraintType in typeParameter.Constraints) {
+//					if (!ConversionExistsInternal(from, constraintType, allowGenericTargetsOnThisMethod)) {
+//						return false;
+//					}
+//				}
+				return false;
 			}
 			
 			// for conversions like from IEnumerable<string> to IEnumerable<T>, where T is a GenericReturnType
@@ -808,16 +808,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return false;
 				}
 			}
+			IField f1 = member1 as IField;
+			IField f2 = member2 as IField;
+			if (f1 != null || f2 != null) {
+				if (f1 != null && f2 != null) {
+					if (f1.IsLocalVariable != f2.IsLocalVariable || f1.IsParameter != f2.IsParameter)
+						return false;
+				} else {
+					return false;
+				}
+			}
 			return true;
 		}
 		
 		public static IMember FindSimilarMember(IClass type, IMember member)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			StringComparer nameComparer = member.DeclaringType.ProjectContent.Language.NameComparer;
 			member = GetGenericMember(member);
 			if (member is IMethod) {
 				IMethod parentMethod = (IMethod)member;
 				foreach (IMethod m in type.Methods) {
-					if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
+					if (nameComparer.Equals(parentMethod.Name, m.Name)) {
 						if (m.IsStatic == parentMethod.IsStatic) {
 							if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
 								return m;
@@ -828,7 +841,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else if (member is IProperty) {
 				IProperty parentMethod = (IProperty)member;
 				foreach (IProperty m in type.Properties) {
-					if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
+					if (nameComparer.Equals(parentMethod.Name, m.Name)) {
 						if (m.IsStatic == parentMethod.IsStatic) {
 							if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
 								return m;

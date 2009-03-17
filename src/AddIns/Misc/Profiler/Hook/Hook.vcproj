@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9,00"
+	Name="Hook"
+	ProjectGUID="{68D5EE3B-0C35-4DF1-BD29-6606851A02C1}"
+	RootNamespace="ProfilerCore"
+	TargetFrameworkVersion="0">
+	<Platforms>
+		<Platform
+			Name="Win32" />
+		<Platform
+			Name="x64" />
+	</Platforms>
+	<ToolFiles></ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2">
+			<Tool
+				Name="VCPreBuildEventTool"
+				Description=""
+				CommandLine="" />
+			<Tool
+				Name="VCCustomBuildTool" />
+			<Tool
+				Name="VCXMLDataGeneratorTool" />
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool" />
+			<Tool
+				Name="VCMIDLTool" />
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				PreprocessorDefinitions="DEBUG"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="false"
+				AssemblerOutput="0"
+				WarningLevel="4"
+				DebugInformationFormat="4" />
+			<Tool
+				Name="VCManagedResourceCompilerTool" />
+			<Tool
+				Name="VCResourceCompilerTool" />
+			<Tool
+				Name="VCPreLinkEventTool" />
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="corguids.lib"
+				ShowProgress="0"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
+				LinkIncremental="2"
+				ModuleDefinitionFile=".\Hook.def"
+				GenerateDebugInformation="true"
+				TargetMachine="1" />
+			<Tool
+				Name="VCALinkTool" />
+			<Tool
+				Name="VCManifestTool" />
+			<Tool
+				Name="VCXDCMakeTool" />
+			<Tool
+				Name="VCBscMakeTool" />
+			<Tool
+				Name="VCFxCopTool" />
+			<Tool
+				Name="VCAppVerifierTool" />
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="" />
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2">
+			<Tool
+				Name="VCPreBuildEventTool" />
+			<Tool
+				Name="VCCustomBuildTool" />
+			<Tool
+				Name="VCXMLDataGeneratorTool" />
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool" />
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3" />
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				PreprocessorDefinitions="DEBUG"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="false"
+				AssemblerOutput="0"
+				WarningLevel="4"
+				DebugInformationFormat="3" />
+			<Tool
+				Name="VCManagedResourceCompilerTool" />
+			<Tool
+				Name="VCResourceCompilerTool" />
+			<Tool
+				Name="VCPreLinkEventTool"
+				CommandLine="ml64 Callback.x64.asm /c" />
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="corguids.lib Callback.x64.obj"
+				ShowProgress="0"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
+				LinkIncremental="2"
+				ModuleDefinitionFile=".\Hook.def"
+				GenerateDebugInformation="true"
+				TargetMachine="17" />
+			<Tool
+				Name="VCALinkTool" />
+			<Tool
+				Name="VCManifestTool" />
+			<Tool
+				Name="VCXDCMakeTool" />
+			<Tool
+				Name="VCBscMakeTool" />
+			<Tool
+				Name="VCFxCopTool" />
+			<Tool
+				Name="VCAppVerifierTool" />
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="" />
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2"
+			WholeProgramOptimization="1">
+			<Tool
+				Name="VCPreBuildEventTool" />
+			<Tool
+				Name="VCCustomBuildTool" />
+			<Tool
+				Name="VCXMLDataGeneratorTool" />
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool" />
+			<Tool
+				Name="VCMIDLTool" />
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				PreprocessorDefinitions="NDEBUG"
+				StringPooling="true"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="false"
+				RuntimeTypeInfo="false"
+				AssemblerOutput="4"
+				WarningLevel="4"
+				DebugInformationFormat="3" />
+			<Tool
+				Name="VCManagedResourceCompilerTool" />
+			<Tool
+				Name="VCResourceCompilerTool" />
+			<Tool
+				Name="VCPreLinkEventTool" />
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="corguids.lib"
+				ModuleDefinitionFile=".\Hook.def"
+				GenerateDebugInformation="false"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1" />
+			<Tool
+				Name="VCALinkTool" />
+			<Tool
+				Name="VCManifestTool" />
+			<Tool
+				Name="VCXDCMakeTool" />
+			<Tool
+				Name="VCBscMakeTool" />
+			<Tool
+				Name="VCFxCopTool" />
+			<Tool
+				Name="VCAppVerifierTool" />
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="" />
+		</Configuration>
+		<Configuration
+			Name="Release|x64"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2"
+			WholeProgramOptimization="1">
+			<Tool
+				Name="VCPreBuildEventTool" />
+			<Tool
+				Name="VCCustomBuildTool" />
+			<Tool
+				Name="VCXMLDataGeneratorTool" />
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool" />
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3" />
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				PreprocessorDefinitions="NDEBUG"
+				StringPooling="true"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="false"
+				RuntimeTypeInfo="false"
+				AssemblerOutput="4"
+				WarningLevel="4"
+				DebugInformationFormat="3" />
+			<Tool
+				Name="VCManagedResourceCompilerTool" />
+			<Tool
+				Name="VCResourceCompilerTool" />
+			<Tool
+				Name="VCPreLinkEventTool"
+				CommandLine="ml64 Callback.x64.asm /c" />
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="corguids.lib Callback.x64.obj"
+				ModuleDefinitionFile=".\Hook.def"
+				GenerateDebugInformation="false"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="17" />
+			<Tool
+				Name="VCALinkTool" />
+			<Tool
+				Name="VCManifestTool" />
+			<Tool
+				Name="VCXDCMakeTool" />
+			<Tool
+				Name="VCBscMakeTool" />
+			<Tool
+				Name="VCFxCopTool" />
+			<Tool
+				Name="VCAppVerifierTool" />
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="" />
+		</Configuration>
+	</Configurations>
+	<References></References>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			<File
+				RelativePath="allocator.cpp"></File>
+			<File
+				RelativePath="Callback.cpp"></File>
+			<File
+				RelativePath="Callback.x64.asm"></File>
+			<File
+				RelativePath="CircularBuffer.cpp"></File>
+			<File
+				RelativePath="CorProfilerCallbackImpl.cpp"></File>
+			<File
+				RelativePath="EventWaitHandle.cpp"></File>
+			<File
+				RelativePath="FunctionInfo.cpp"></File>
+			<File
+				RelativePath="Hook.cpp"></File>
+			<File
+				RelativePath="Hook.def"></File>
+			<File
+				RelativePath="LightweightList.cpp"></File>
+			<File
+				RelativePath="main.cpp"></File>
+			<File
+				RelativePath="Profiler.cpp"></File>
+			<File
+				RelativePath="ProfilerMetaData.cpp"></File>
+			<File
+				RelativePath="SharedMemory.cpp"></File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="allocator.h"></File>
+			<File
+				RelativePath="Callback.h"></File>
+			<File
+				RelativePath="CircularBuffer.h"></File>
+			<File
+				RelativePath="CorProfilerCallbackImpl.h"></File>
+			<File
+				RelativePath="CriticalSection.h"></File>
+			<File
+				RelativePath="EventWaitHandle.h"></File>
+			<File
+				RelativePath="FunctionInfo.h"></File>
+			<File
+				RelativePath="global.h"></File>
+			<File
+				RelativePath="LightweightList.h"></File>
+			<File
+				RelativePath="LightweightStack.h"></File>
+			<File
+				RelativePath="main.h"></File>
+			<File
+				RelativePath="Profiler.h"></File>
+			<File
+				RelativePath="ProfilerFactory.h"></File>
+			<File
+				RelativePath="ProfilerMetaData.h"></File>
+			<File
+				RelativePath="SharedMemory.h"></File>
+		</Filter>
+	</Files>
+	<Globals></Globals>
+</VisualStudioProject>

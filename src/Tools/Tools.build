@@ -74,6 +74,7 @@
 		<CleanupDirectories Include="..\..\bin\Tools"/>
 		<CleanupDirectories Include="..\..\bin\setup\help"/>
 		<CleanupDirectories Include="..\..\AddIns\Addins"/>
+		<CleanupDirectories Include="..\setup\bin"/>
 	</ItemGroup>
 	
 	<Target Name="Clean">

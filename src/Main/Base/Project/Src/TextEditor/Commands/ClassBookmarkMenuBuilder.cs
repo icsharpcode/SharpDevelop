@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				if (c.DeclaringType == null &&
 				    !c.BodyRegion.IsEmpty &&
 				    !c.Name.Equals(Path.GetFileNameWithoutExtension(c.CompilationUnit.FileName),
-				                   StringComparison.InvariantCultureIgnoreCase))
+				                   StringComparison.OrdinalIgnoreCase))
 				{
 					// File name does not match class name
 					string correctFileName = Path.Combine(Path.GetDirectoryName(c.CompilationUnit.FileName),

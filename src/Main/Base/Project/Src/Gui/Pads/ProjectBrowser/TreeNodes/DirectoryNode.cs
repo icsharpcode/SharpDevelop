@@ -282,9 +282,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			LoggingService.Info("Initialize DirectoryNode " + Directory);
 			
 			Dictionary<string, FileNode> fileNodeDictionary
-				= new Dictionary<string, FileNode>(StringComparer.InvariantCultureIgnoreCase);
+				= new Dictionary<string, FileNode>(StringComparer.OrdinalIgnoreCase);
 			Dictionary<FileNode, string> dependendFileDictionary = new Dictionary<FileNode, string>();
-			Dictionary<string, DirectoryNode> directoryNodeList = new Dictionary<string, DirectoryNode>(StringComparer.InvariantCultureIgnoreCase);
+			Dictionary<string, DirectoryNode> directoryNodeList = new Dictionary<string, DirectoryNode>(StringComparer.OrdinalIgnoreCase);
 			
 			// Add files found in file system
 			
@@ -331,7 +331,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (virtualName.EndsWith("/"))
 					virtualName = virtualName.Substring(0, virtualName.Length - 1);
 				string fileName = Path.GetFileName(virtualName);
-				if (!string.Equals(virtualName, relativeDirectoryPath + fileName, StringComparison.InvariantCultureIgnoreCase)) {
+				if (!string.Equals(virtualName, relativeDirectoryPath + fileName, StringComparison.OrdinalIgnoreCase)) {
 					AddParentFolder(virtualName, relativeDirectoryPath, directoryNodeList);
 					continue;
 				}
@@ -427,7 +427,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		void AddParentFolder(string virtualName, string relativeDirectoryPath, Dictionary<string, DirectoryNode> directoryNodeList)
 		{
 			if (relativeDirectoryPath.Length == 0
-			    || string.Compare(virtualName, 0, relativeDirectoryPath, 0, relativeDirectoryPath.Length, StringComparison.InvariantCultureIgnoreCase) == 0)
+			    || string.Compare(virtualName, 0, relativeDirectoryPath, 0, relativeDirectoryPath.Length, StringComparison.OrdinalIgnoreCase) == 0)
 			{
 				// virtualName is a file in this folder, so we have to add its containing folder
 				// to the project

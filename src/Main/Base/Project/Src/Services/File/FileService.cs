@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		#region OpenedFile
-		static Dictionary<string, OpenedFile> openedFileDict = new Dictionary<string, OpenedFile>(StringComparer.InvariantCultureIgnoreCase);
+		static Dictionary<string, OpenedFile> openedFileDict = new Dictionary<string, OpenedFile>(StringComparer.OrdinalIgnoreCase);
 		
 		/// <summary>
 		/// Gets a collection containing all currently opened files.

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Reflection;
 using System.Text;
@@ -27,10 +28,13 @@ namespace ICSharpCode.PythonBinding
 		IComponentCreator componentCreator;
 		bool walkingAssignment;
 		Dictionary<string, object> createdObjects = new Dictionary<string, object>();
+		string formName = String.Empty;
+		PythonCodeDeserializer deserializer;
 		
-		public PythonFormWalker(IComponentCreator componentCreator)
+		public PythonFormWalker(IComponentCreator componentCreator, IDesignerHost designerHost)
 		{
 			this.componentCreator = componentCreator;
+			deserializer = new PythonCodeDeserializer(designerHost);
 		}		
 		
 		/// <summary>
@@ -52,6 +56,7 @@ namespace ICSharpCode.PythonBinding
 
 		public override bool Walk(ClassDefinition node)
 		{
+			formName = node.Name.ToString();
 			if (node.Body != null) {
 				node.Body.Walk(this);
 			}
@@ -61,7 +66,7 @@ namespace ICSharpCode.PythonBinding
 		public override bool Walk(FunctionDefinition node)
 		{
 			if (IsInitializeComponentMethod(node)) {			
-				form = (Form)componentCreator.CreateComponent(typeof(Form), "MainForm");
+				form = (Form)componentCreator.CreateComponent(typeof(Form), formName);
 				node.Body.Walk(this);
 			}
 			return false;
@@ -70,13 +75,22 @@ namespace ICSharpCode.PythonBinding
 		public override bool Walk(AssignmentStatement node)
 		{			
 			if (node.Left.Count > 0) {
-				MemberExpression memberExpression = node.Left[0] as MemberExpression;
-				if (memberExpression != null) {
-					fieldExpression = PythonControlFieldExpression.Create(memberExpression);
+				MemberExpression lhsMemberExpression = node.Left[0] as MemberExpression;
+				if (lhsMemberExpression != null) {
+					fieldExpression = PythonControlFieldExpression.Create(lhsMemberExpression);
 					
-					walkingAssignment = true;
-					node.Right.Walk(this);
-					walkingAssignment = false;
+					MemberExpression rhsMemberExpression = node.Right as MemberExpression;
+					if (rhsMemberExpression != null) {
+						object propertyValue = deserializer.Deserialize(rhsMemberExpression);
+						if (propertyValue == null) {
+							propertyValue = PythonControlFieldExpression.GetMemberName(rhsMemberExpression);
+						}
+						SetPropertyValue(fieldExpression.MemberName, propertyValue);
+					} else {
+						walkingAssignment = true;
+						node.Right.Walk(this);
+						walkingAssignment = false;
+					}
 				}	
 			}
 			return false;
@@ -84,18 +98,8 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(ConstantExpression node)
 		{
-			Control control = GetCurrentControl();
-			SetPropertyValue(control, fieldExpression.MemberName, node.Value);
+			SetPropertyValue(fieldExpression.MemberName, node.Value);
 			return false;
-		}
-		
-		Control GetCurrentControl()
-		{
-			string variableName = PythonControlFieldExpression.GetVariableNameFromSelfReference(fieldExpression.FullMemberName);
-			if (variableName.Length > 0) {
-				return GetControl(variableName);
-			}
-			return form;
 		}
 		
 		public override bool Walk(CallExpression node)
@@ -118,6 +122,12 @@ namespace ICSharpCode.PythonBinding
 			return false;
 		}
 		
+		public override bool Walk(NameExpression node)
+		{
+			SetPropertyValue(fieldExpression.MemberName, node.Name.ToString());
+			return false;
+		}
+				
 		/// <summary>
 		/// Gets the arguments passed to the call expression.
 		/// </summary>
@@ -138,20 +148,44 @@ namespace ICSharpCode.PythonBinding
 			string name = node.Name.ToString().ToLowerInvariant();
 			return name == "initializecomponent" || name == "initializecomponents";
 		}
+
+		/// <summary>
+		/// Sets the value of a property on the current control.
+		/// </summary>
+		bool SetPropertyValue(string name, object propertyValue)
+		{
+			Control control = GetCurrentControl();
+			return SetPropertyValue(control, name, propertyValue);
+		}
 		
 		/// <summary>
-		/// Sets the value of a form's property.
+		/// Sets the value of a property on the control.
 		/// </summary>
-		bool SetPropertyValue(Control control, string name, object @value)
+		bool SetPropertyValue(Control control, string name, object propertyValue)
 		{
-			PropertyInfo propertyInfo = control.GetType().GetProperty(name);
-			if (propertyInfo != null) {
-				propertyInfo.SetValue(control, @value, null);
+			PropertyDescriptor property = TypeDescriptor.GetProperties(control).Find(name, true);
+			if (property != null) {
+				propertyValue = ConvertPropertyValue(property, propertyValue);
+				property.SetValue(control, propertyValue);
 				return true;
 			}
 			return false;
 		}
-				
+
+		/// <summary>
+		/// Converts the value to the property's type if required.
+		/// </summary>
+		static object ConvertPropertyValue(PropertyDescriptor propertyDescriptor, object propertyValue)
+		{
+			if (propertyDescriptor.PropertyType != propertyValue.GetType()) {
+				if (propertyDescriptor.PropertyType.IsEnum) {
+					return Enum.Parse(propertyDescriptor.PropertyType, GetUnqualifiedEnumValue(propertyValue as String));
+				} 
+				return propertyDescriptor.Converter.ConvertFrom(propertyValue);
+			}
+			return propertyValue;
+		}
+		
 		Type GetType(string typeName)
 		{
 			Type type = componentCreator.GetType(typeName);
@@ -191,6 +225,27 @@ namespace ICSharpCode.PythonBinding
 				return args[0] as String;
 			}
 			return null;
+		}
+		
+		Control GetCurrentControl()
+		{
+			string variableName = PythonControlFieldExpression.GetVariableNameFromSelfReference(fieldExpression.FullMemberName);
+			if (variableName.Length > 0) {
+				return GetControl(variableName);
+			}
+			return form;
+		}
+		
+		/// <summary>
+		/// Gets the unqualified enum value from a fully qualified value.
+		/// </summary>
+		static string GetUnqualifiedEnumValue(string fullyQualifiedEnumValue)
+		{
+			int index = fullyQualifiedEnumValue.LastIndexOf('.');
+			if (index > 0) {
+				return fullyQualifiedEnumValue.Substring(index + 1);
+			}
+			return fullyQualifiedEnumValue;
 		}
 	}
 }

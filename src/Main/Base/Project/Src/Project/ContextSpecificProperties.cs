@@ -151,14 +151,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			string itemType = condition.Properties["itemType"];
 			if (!string.IsNullOrEmpty(itemType)) {
-				if (!string.Equals(p.ItemType.ItemName, itemType, StringComparison.InvariantCultureIgnoreCase))
+				if (!string.Equals(p.ItemType.ItemName, itemType, StringComparison.OrdinalIgnoreCase))
 					return false;
 			}
 			
 			string propName = condition.Properties["property"];
 			string value = condition.Properties["value"];
 			if (!string.IsNullOrEmpty(propName)) {
-				if (!string.Equals(p.GetEvaluatedMetadata(propName) ?? "", value ?? "", StringComparison.InvariantCultureIgnoreCase))
+				if (!string.Equals(p.GetEvaluatedMetadata(propName) ?? "", value ?? "", StringComparison.OrdinalIgnoreCase))
 					return false;
 			}
 			return true;

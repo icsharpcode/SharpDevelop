@@ -93,7 +93,10 @@ namespace ICSharpCode.NRefactory.Visitors
 				t.TypeArguments.Add(ConvType(gt));
 			}
 			if (type.IsArrayType) {
-				t = new CodeTypeReference(t, type.RankSpecifier.Length);
+				for (int i = type.RankSpecifier.Length - 1; i >= 0; --i)
+				{
+					t = new CodeTypeReference(t, type.RankSpecifier[i] + 1);
+				}
 			}
 			
 			return t;
@@ -1439,7 +1442,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			if (arrayCreateExpression.ArrayInitializer == null) {
+			if (arrayCreateExpression.ArrayInitializer.IsNull) {
 				return new CodeArrayCreateExpression(ConvType(arrayCreateExpression.CreateType),
 				                                     arrayCreateExpression.Arguments[0].AcceptVisitor(this, data) as CodeExpression);
 			}

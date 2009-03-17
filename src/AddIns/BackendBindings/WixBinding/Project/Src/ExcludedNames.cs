@@ -79,7 +79,7 @@ namespace ICSharpCode.WixBinding
 			if (ContainsWildcard(excludedName)) {
 				return IsWildcardMatch(excludedName, name);
 			} else {
-				return excludedName.Equals(name, StringComparison.InvariantCultureIgnoreCase);
+				return excludedName.Equals(name, StringComparison.OrdinalIgnoreCase);
 			}
 		}
 		

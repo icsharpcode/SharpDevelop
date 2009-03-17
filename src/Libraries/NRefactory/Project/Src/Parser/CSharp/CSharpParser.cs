@@ -56,6 +56,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			compilationUnit.AcceptVisitor(new SetParentVisitor(), null);
 		}
 		
+		public override TypeReference ParseTypeReference ()
+		{
+			lexer.NextToken();
+			TypeReference type;
+			Type(out type);
+			return type;
+		}
+
 		public override Expression ParseExpression()
 		{
 			lexer.NextToken();

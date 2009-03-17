@@ -450,5 +450,25 @@ namespace Grunwald.BooBinding.Tests
 			CtrlSpace(prog, "x", "bar", "i");
 		}
 		#endregion
+		
+		[Test]
+		public void SystemNamespaceInFileWithNamespace()
+		{
+			string prog =
+				"namespace Test\n" +
+				"/*mark*/";
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(prog, "System", "/*mark*/");
+			Assert.AreEqual("System", nrr.Name);
+		}
+		
+		[Test]
+		public void ClassInParentNamespace()
+		{
+			string prog =
+				"namespace System.Collections.CustomSubNamespace\n" +
+				"/*mark*/";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(prog, "ICollection", "/*mark*/");
+			Assert.AreEqual("System.Collections.ICollection", trr.ResolvedClass.FullyQualifiedName);
+		}
 	}
 }

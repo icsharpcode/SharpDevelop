@@ -117,7 +117,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 									// The actual location of the key string may be after 'pos' because
 									// the resolvers may find an expression just before it.
 									string keyString = rrr.Key;
-									int keyPos = fileContent.IndexOf(keyString, pos, StringComparison.InvariantCultureIgnoreCase);
+									int keyPos = fileContent.IndexOf(keyString, pos, StringComparison.OrdinalIgnoreCase);
 									
 									if (keyPos < pos) {
 										// The key may be escaped in some way in the document.
@@ -253,7 +253,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 				#endif
 				foreach (KeyValuePair<string, object> entry in ResourceFileContentRegistry.GetResourceFileContent(fileName).Data) {
 					if (!referencedKeys[fileName].Contains(entry.Key) &&
-					    !referencedPrefixes[fileName].Any(prefix => entry.Key.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))) {
+					    !referencedPrefixes[fileName].Any(prefix => entry.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))) {
 						unused.Add(new ResourceItem(fileName, entry.Key));
 					}
 				}
@@ -462,7 +462,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 					if (code.EndsWith("\"") || code.EndsWith("'")) {
 						code = code.Remove(code.Length-1);
 					}
-					return fileContent.IndexOf(code, startOffset, StringComparison.InvariantCultureIgnoreCase);
+					return fileContent.IndexOf(code, startOffset, StringComparison.OrdinalIgnoreCase);
 				}
 				
 			}

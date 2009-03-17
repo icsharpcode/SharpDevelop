@@ -360,6 +360,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 
 		public string CreateProject(ProjectCreateInformation projectCreateInformation)
 		{
+			LoggingService.Info("Creating project from template '" + this.Category + "/" + this.Subcategory + "/" + this.Name + "'");
 			if (solutionDescriptor != null) {
 				return solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename);
 			} else if (projectDescriptor != null) {

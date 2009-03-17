@@ -1,5 +1,5 @@
 <AddIn name        = "Subversion AddIn"
-       author      = "Mike Krueger"
+       author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
        description = "Adds support for Subversion to the project browser"
        addInManagerHidden = "preinstalled">
@@ -76,7 +76,7 @@
 					          class = "ICSharpCode.Svn.Commands.RevisionGraphCommand"/>
 					<MenuItem id = "Sep1" type = "Separator"/>
 					<MenuItem id = "SvnUpdate"
-					          label = "Update"
+					          label = "${res:AddIns.Subversion.Update}"
 					          icon  = "Svn.Update"
 					          class = "ICSharpCode.Svn.Commands.UpdateCommand"/>
 					<MenuItem id = "SvnUpdateToRev"
@@ -124,6 +124,11 @@
 					<MenuItem id = "SvnIgnore"
 					          label = "${res:AddIns.Subversion.RemoveFromIgnoreList}"
 					          class = "ICSharpCode.Svn.Commands.UnignoreCommand"/>
+				</Condition>
+				<Condition name = "SubversionState" state = "Modified;Normal" item = "File">
+					<MenuItem id = "SvnLock"
+					          label = "${res:AddIns.Subversion.Lock}..."
+					          class = "ICSharpCode.Svn.Commands.LockCommand"/>
 				</Condition>
 				<Condition name = "SubversionState" state = "Modified;Normal" item = "File">
 					<MenuItem id = "SvnBlame"

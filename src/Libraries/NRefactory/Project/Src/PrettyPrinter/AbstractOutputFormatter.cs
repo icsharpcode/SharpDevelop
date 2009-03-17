@@ -89,6 +89,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
+		public void Reset ()
+		{
+			text.Length = 0;
+		}
+		
 		public void Space()
 		{
 			text.Append(' ');

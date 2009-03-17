@@ -2762,5 +2762,27 @@ class Test {
 			Assert.AreEqual("System.Nullable.Value", rr.ResolvedMember.FullyQualifiedName);
 			Assert.AreEqual("System.Int32", rr.ResolvedMember.ReturnType.FullyQualifiedName);
 		}
+		
+		
+		[Test]
+		public void MethodHidesEvent()
+		{
+			// see SD2-1542
+			string program = @"using System;
+class Test : Form {
+	public Test() {
+		
+	}
+	void KeyDown(object sender, EventArgs e) {}
+}
+class Form {
+	public event EventHandler KeyDown;
+}";
+			var mrr = Resolve<MemberResolveResult>(program, "base.KeyDown", 4);
+			Assert.AreEqual("Form.KeyDown", mrr.ResolvedMember.FullyQualifiedName);
+			
+			var mgrr = Resolve<MethodGroupResolveResult>(program, "this.KeyDown", 4);
+			Assert.AreEqual("Test.KeyDown", mgrr.GetMethodIfSingleOverload().FullyQualifiedName);
+		}
 	}
 }

@@ -29,10 +29,16 @@ namespace ICSharpCode.PythonBinding
 			this.fullMemberName = fullMemberName;
 		}
 		
+		/// <summary>
+		/// From a member expression of the form: self._textBox1.Name this property will return "Name".
+		/// </summary>
 		public string MemberName {
 			get { return memberName; }
 		}
 				
+		/// <summary>
+		/// From a member expression of the form: self._textBox1.Name this property will return "self._textBox1.Name".
+		/// </summary>
 		public string FullMemberName {
 			get { return fullMemberName; }
 		}
@@ -67,6 +73,19 @@ namespace ICSharpCode.PythonBinding
 					return GetVariableName(name.Substring(0, endIndex));
 				}
 				return String.Empty;
+			}
+			return name;
+		}
+		
+		/// <summary>
+		/// From a name such as "System.Windows.Forms.Cursors.AppStarting" this method returns:
+		/// "System.Windows.Forms.Cursors"
+		/// </summary>
+		public static string GetPrefix(string name)
+		{
+			int index = name.LastIndexOf('.');
+			if (index > 0) {
+				return name.Substring(0, index);
 			}
 			return name;
 		}

@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			void OnTaskStarted(object sender, TaskStartedEventArgs e)
 			{
-				if (desc.taskname.Equals(e.TaskName, StringComparison.InvariantCultureIgnoreCase)) {
+				if (desc.taskname.Equals(e.TaskName, StringComparison.OrdinalIgnoreCase)) {
 					CreateBaseLogger();
 					if (baseLogger != null) {
 						baseLogger.Initialize(eventSource);

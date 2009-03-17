@@ -625,7 +625,7 @@ static int static_Test2_j = 0;");
 		[Test]
 		public void ImportAliasPrimitiveType()
 		{
-			TestProgram("Imports T = System.Boolean", "using T = System.Boolean;\r\n");
+			TestProgram("Imports T = System.Boolean", "using T = System.Boolean;" + Environment.NewLine);
 		}
 		
 		[Test]
@@ -696,10 +696,10 @@ static int static_Test2_j = 0;");
 		public void ConstModuleMember()
 		{
 			TestProgram("Module Test : Public Const C As Integer = 0 : End Module",
-			            "static class Test\r\n" +
-			            "{\r\n" +
-			            "  public const int C = 0;\r\n" +
-			            "}\r\n");
+			            "static class Test" + Environment.NewLine +
+			            "{" + Environment.NewLine +
+			            "  public const int C = 0;" + Environment.NewLine +
+			            "}" + Environment.NewLine);
 		}
 	}
 }

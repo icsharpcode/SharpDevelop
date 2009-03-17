@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.PrettyPrinter;
 using System;
 
 namespace ICSharpCode.NRefactory.Ast
@@ -18,11 +19,19 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		public string StringValue {
 			get {
-				return stringValue;
+				if (stringValue == null)
+					return CSharpOutputVisitor.ToCSharpString(this);
+				else
+					return stringValue;
 			}
 			set {
 				stringValue = value == null ? String.Empty : value;
 			}
+		}
+		
+		public PrimitiveExpression(object val)
+		{
+			this.Value = val;
 		}
 		
 		public PrimitiveExpression(object val, string stringValue)
@@ -39,9 +48,9 @@ namespace ICSharpCode.NRefactory.Ast
 		public override string ToString()
 		{
 			return String.Format("[PrimitiveExpression: Value={1}, ValueType={2}, StringValue={0}]",
-			                     stringValue,
-			                     Value,
-			                     Value == null ? "null" : Value.GetType().FullName
+			                     this.StringValue,
+			                     this.Value,
+			                     this.Value == null ? "null" : this.Value.GetType().FullName
 			                    );
 		}
 	}

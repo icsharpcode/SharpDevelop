@@ -73,18 +73,17 @@
 	
 	<Import Project="$(MSBuildBinPath)\Microsoft.Common.targets"/>
 	
-    <PropertyGroup Condition="'$(OutputType)'=='exe' Or '$(OutputType)'=='winexe'">
+    <PropertyGroup>
         <PrepareForRunDependsOn>
             CopyFilesToOutputDirectory;CopyIntermediateAssemblyDllToOutputDirectory
         </PrepareForRunDependsOn>
     </PropertyGroup>
     <Target 
 		Name="PrepareForRun"
-	    Condition="'$(OutputType)'=='exe' Or '$(OutputType)'=='winexe'"
 	    DependsOnTargets="$(PrepareForRunDependsOn)"
 	/>
 	
-	<ItemGroup Condition="'$(OutputType)'=='exe' Or '$(OutputType)'=='winexe'">
+	<ItemGroup>
 		<IntermediateAssemblyDll Include="$(IntermediateOutputPath)$(TargetName).dll"/>
 	</ItemGroup>
 
@@ -92,12 +91,12 @@
 		be copied to the output folder -->
 	<Target 
 		Name="CopyIntermediateAssemblyDllToOutputDirectory"
-		Condition="'$(OutputType)'=='exe' Or '$(OutputType)'=='winexe'"
 	>
         <Copy SourceFiles="@(IntermediateAssemblyDll)"
 		      DestinationFolder="$(OutDir)"
               SkipUnchangedFiles="true"
-              OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)">
+              OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
+			  Condition="'$(OutputType)'=='exe' Or '$(OutputType)'=='winexe'">
 			<Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
 		</Copy>
 	</Target>

@@ -1,0 +1,43 @@
+﻿OVERVIEW OF THE PROFILER ARCHITECTURE
+
+TABLE OF CONTENTS
+I. Terms And Definitions
+II. Basic Information About Data Storage
+
+I. TERMS AND DEFINITIONS
+
+In the following terms used in this document are defined to make the reader
+aware of their meaning.
+
+	Profiler: The system consisting of a Hook and a Controller and different
+ProfilingDataWriters and ProfilingDataProviders, which access and create
+ProfilingSessions.
+	ProfilingSession: A ProfilingSession is a list of ProfilingDataSets,
+NameMappings plus various meta data, such as version number, processor frequency
+of the CPU of the system, on which the ProfilingSession was recorded. Please
+note that a ProfilingSession is represented by a ProfilingDataWriter and a
+ProfilingDataProvider in the Object Model, there is no ProfilingSession object 
+as such.
+	ProfilingDataWriter: Provides functionality to write profiling data, in
+particular ProfilingDataSets and NameMappings.
+	ProfilingDataProvider: Provides functionality to read profiling data, get
+and set meta data properties.
+	ProfilingDataSet: It is a container for the data collected by the profiler
+in a certain time period. The collected data includes the tree-structure of
+all calls in the time period and the CPU usage at the end of the period.
+	Controller: The managed part of the profiler. It is responsible for memory
+and data storage management, preparation of the profiler environment and
+controlling the profiling process.
+	NameMapping: A set of strings describing a FunctionInfo. Each NameMapping
+consists of a fully qualified method name, return type and parameter list. If
+the name is the name of a CallTreeNode with a special role (like thread nodes)
+then some information might be missing (for example: thread nodes do not contain
+information about a return type or parameter list).
+	CallTreeNode: A node of the call tree created by the profiler.
+	Hook: The unmanaged part of the profiler running inside the Profilee. It
+receives and handles callbacks from the Common Language Runtime (CLR).
+	Profilee: The process/program being profiled.
+
+BASIC INFORMATION ABOUT DATA STORAGE
+
+The data collected by the Hook is made available to the Controller by storing it into a memory mapped file in the system's page file. 

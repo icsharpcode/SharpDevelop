@@ -11,12 +11,12 @@ using System.IO;
 using System.Windows.Forms;
 
 using ClassDiagram;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
+using System.Xml;
 
 namespace ClassDiagramAddin
 {
@@ -50,14 +50,23 @@ namespace ClassDiagramAddin
 				}
 				
 				classcanvas.AutoArrange();
-				classcanvas.WriteToXml().Save(filename);
-				FileProjectItem fpi = new FileProjectItem(p, ItemType.Content);
-				fpi.FileName = filename;
-				ProjectService.AddProjectItem(p, fpi);
-				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
-				p.Save();
-				FileService.OpenFile(filename);
+				XmlDocument xmlDocument = classcanvas.WriteToXml();
+				FileUtility.ObservedSave(
+					newFileName => SaveAndOpenNewClassDiagram(p, newFileName, xmlDocument),
+					filename, FileErrorPolicy.ProvideAlternative
+				);
 			}
+		}
+
+		void SaveAndOpenNewClassDiagram(IProject p, string filename, XmlDocument xmlDocument)
+		{
+			xmlDocument.Save(filename);
+			FileProjectItem fpi = new FileProjectItem(p, ItemType.Content);
+			fpi.FileName = filename;
+			ProjectService.AddProjectItem(p, fpi);
+			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+			p.Save();
+			FileService.OpenFile(filename);
 		}
 	}
 

@@ -175,7 +175,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		static string GetNamespaceExpression(string importString, string expression)
 		{
-			int index = expression.IndexOf(importString, StringComparison.InvariantCultureIgnoreCase);
+			int index = expression.IndexOf(importString, StringComparison.OrdinalIgnoreCase);
 			if (index >= 0) {
 				return expression.Substring(index + importString.Length);
 			}

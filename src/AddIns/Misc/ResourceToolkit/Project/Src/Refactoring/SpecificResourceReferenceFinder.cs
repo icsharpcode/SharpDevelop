@@ -53,7 +53,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 			int pos = ResourceRefactoringService.FindStringLiteral(fileName, fileContent, this.Key, prevOffset+1, out code);
 			if (pos == -1) {
 				// if the code generator search fails, try a direct search
-				pos = fileContent.IndexOf(this.Key, prevOffset+1, StringComparison.InvariantCultureIgnoreCase);
+				pos = fileContent.IndexOf(this.Key, prevOffset+1, StringComparison.OrdinalIgnoreCase);
 			}
 			return pos;
 		}
@@ -65,7 +65,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 		public bool IsReferenceToResource(ResourceResolveResult result)
 		{
 			return FileUtility.IsEqualFileName(this.ResourceFileName, result.FileName) &&
-				this.Key.Equals(result.Key, StringComparison.InvariantCultureIgnoreCase);
+				this.Key.Equals(result.Key, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		// ********************************************************************************************************************************

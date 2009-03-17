@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class ProjectContentRegistry : IDisposable
 	{
 		internal DomPersistence persistence;
-		Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.InvariantCultureIgnoreCase);
+		Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.OrdinalIgnoreCase);
 		
 		/// <summary>
 		/// Disposes all project contents stored in this registry.

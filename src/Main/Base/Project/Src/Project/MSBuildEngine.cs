@@ -361,7 +361,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			// TODO: Add XmlDocBloc to MSBuildError.AppendError()
 			void AppendError(string file, int lineNumber, int columnNumber, string code, string message, bool isWarning)
 			{
-				if (string.Equals(file, activeTaskName, StringComparison.InvariantCultureIgnoreCase)) {
+				if (string.Equals(file, activeTaskName, StringComparison.OrdinalIgnoreCase)) {
 					file = "";
 				} else if (FileUtility.IsValidPath(file)) {
 					bool isShortFileName = file == Path.GetFileNameWithoutExtension(file);

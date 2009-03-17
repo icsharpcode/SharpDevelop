@@ -1560,6 +1560,29 @@
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.dll" Name="HexEditor.dll" Id="HexEditor.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="HexEditor.dll" AssemblyManifest="HexEditor.dll" />
 										</Component>
 									</Directory>
+									<Directory Id="Profiler" Name="Profiler">
+										<Component Guid="C46A4B2C-D5DE-4548-B4A9-4B0AB8C105F3" Id="Hook32Dll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\Profiler\Hook32.dll" Name="Hook32.dll" Id="Hook32.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="AC57D4D8-C5CE-4905-BB9E-D7DD2E1F218B" Id="Hook64Dll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\Profiler\Hook64.dll" Name="Hook64.dll" Id="Hook64.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="FFFF6CFB-4C20-4934-85CA-51EE4BBAB219" Id="ICSharpCodeProfilerAddInAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\Profiler\ICSharpCode.Profiler.AddIn.addin" Name="ICSharpCode.Profiler.AddIn.addin" Id="ICSharpCode.Profiler.AddIn.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="39658202-7209-4C48-BD2F-426B5115C640" Id="ICSharpCodeProfilerAddInDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\Profiler\ICSharpCode.Profiler.AddIn.dll" Name="ICSharpCode.Profiler.AddIn.dll" Id="ICSharpCode.Profiler.AddIn.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="A4130504-0AB7-4ACA-BC43-61BBD2D88415" Id="ICSharpCodeProfilerControllerDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\Profiler\ICSharpCode.Profiler.Controller.dll" Name="ICSharpCode.Profiler.Controller.dll" Id="ICSharpCode.Profiler.Controller.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="AF6BA5E6-0EF1-40D4-B78A-D97100F57E0F" Id="ICSharpCodeProfilerControlsDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\Profiler\ICSharpCode.Profiler.Controls.dll" Name="ICSharpCode.Profiler.Controls.dll" Id="ICSharpCode.Profiler.Controls.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="30373CF2-3D49-41E1-987F-5C870531FB75" Id="SystemDataSQLiteDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\Profiler\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="System.Data.SQLite.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 						</Directory>

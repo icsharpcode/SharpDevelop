@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<PropertyGroup>
+		<PrepareForRunDependsOn>$(PrepareForRunDependsOn);MyPostBuildTarget</PrepareForRunDependsOn>
+	</PropertyGroup>
+	<ItemGroup>
+		<CopyHook Include="..\..\bin\Hook*" />
+	</ItemGroup>
+	<Target Name="MyPostBuildTarget">
+		<Copy SourceFiles="@(CopyHook)" DestinationFolder="$(OutputPath)" />
+	</Target>
+</Project>

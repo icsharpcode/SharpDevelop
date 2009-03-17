@@ -43,13 +43,11 @@ namespace ICSharpCode.Svn.Commands
 						}
 					}
 					if (unsavedFiles.Count > 0) {
-						// TODO: Translate
 						if (MessageService.ShowCustomDialog(
 							MessageService.DefaultMessageBoxTitle,
-							"The version control operation would affect files with unsaved modifications.\n" +
-							"You have to save those files before running the operation.",
+							"${res:AddIns.Subversion.SVNRequiresSavingFiles}",
 							0, 1,
-							"Save files", "Cancel")
+							"${res:AddIns.Subversion.SaveFiles}", "${res:Global.CancelButtonText}")
 						    == 0)
 						{
 							// Save
@@ -155,11 +153,9 @@ namespace ICSharpCode.Svn.Commands
 					// if at least one project was changed:
 					if (MessageService.ShowCustomDialog(
 						MessageService.DefaultMessageBoxTitle,
-						"SharpDevelop detected that the version control operation changed " +
-						"project files.\n" +
-						"You should reload the solution.",
+						"${res:AddIns.Subversion.ReloadSolutionAfterProjectChanges}",
 						0, 1,
-						"Reload solution", "Keep old solution open")
+						"${res:AddIns.Subversion.ReloadSolution}", "${res:AddIns.Subversion.KeepOldSolution}")
 					    == 0)
 					{
 						ProjectService.LoadSolution(solution.FileName);
@@ -233,6 +229,14 @@ namespace ICSharpCode.Svn.Commands
 		}
 	}
 	
+	public class LockCommand : SubversionCommand
+	{
+		protected override void Run(string filename)
+		{
+			SvnGuiWrapper.Lock(filename, null);
+		}
+	}
+	
 	public class BlameCommand : SubversionCommand
 	{
 		protected override void Run(string filename)
@@ -254,13 +258,13 @@ namespace ICSharpCode.Svn.Commands
 					using (StringReader r = new StringReader(propertyValue)) {
 						string line;
 						while ((line = r.ReadLine()) != null) {
-							if (!string.Equals(line, shortFileName, StringComparison.InvariantCultureIgnoreCase)) {
+							if (!string.Equals(line, shortFileName, StringComparison.OrdinalIgnoreCase)) {
 								b.AppendLine(line);
 							}
 						}
 					}
 					client.SetPropertyValue(Path.GetDirectoryName(filename), "svn:ignore", b.ToString());
-					MessageService.ShowMessage(shortFileName + " was removed from the ignore list.");
+					MessageService.ShowMessageFormatted("${res:AddIns.Subversion.ItemRemovedFromIgnoreList}", shortFileName);
 					watcher.Callback();
 				}
 			}

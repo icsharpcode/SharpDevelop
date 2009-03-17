@@ -47,7 +47,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 				typedTag += key;
 			}
 			
-			bool match = "${res:".StartsWith(typedTag, StringComparison.InvariantCultureIgnoreCase);
+			bool match = "${res:".StartsWith(typedTag, StringComparison.OrdinalIgnoreCase);
 			
 			if (key == ':') {
 				if (match || this.nonMatchingCharTyped) {

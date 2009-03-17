@@ -15,6 +15,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 	internal sealed class Lexer : AbstractLexer
 	{
 		bool lineEnd = true;
+		bool isAtLineBegin = false; // TODO: handle line begin, if neccessarry
 		
 		public Lexer(TextReader reader) : base(reader)
 		{
@@ -576,11 +577,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				if (missingApostrophes > 0) {
 					if (ch == '\'' || ch == '\u2018' || ch == '\u2019') {
 						if (--missingApostrophes == 0) {
-							specialTracker.StartComment(CommentType.Documentation, startPos);
+							specialTracker.StartComment(CommentType.Documentation, isAtLineBegin, startPos);
 							sb.Length = 0;
 						}
 					} else {
-						specialTracker.StartComment(CommentType.SingleLine, startPos);
+						specialTracker.StartComment(CommentType.SingleLine, isAtLineBegin, startPos);
 						missingApostrophes = 0;
 					}
 				}
@@ -594,7 +595,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						if (specialCommentHash.ContainsKey(tag)) {
 							Location p = new Location(Col, Line);
 							string comment = ch + ReadToEndOfLine();
-							this.TagComments.Add(new TagComment(tag, comment, p, new Location(Col, Line)));
+							this.TagComments.Add(new TagComment(tag, comment, isAtLineBegin, p, new Location(Col, Line)));
 							sb.Append(comment);
 							break;
 						}
@@ -602,7 +603,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			if (missingApostrophes > 0) {
-				specialTracker.StartComment(CommentType.SingleLine, startPos);
+				specialTracker.StartComment(CommentType.SingleLine, isAtLineBegin, startPos);
 			}
 			specialTracker.AddString(sb.ToString());
 			specialTracker.FinishComment(new Location(Col, Line));

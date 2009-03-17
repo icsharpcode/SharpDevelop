@@ -294,7 +294,7 @@ namespace ICSharpCode.FormsDesigner
 			foreach (string fileName in
 			         parts.Select(p => p.CompilationUnit.FileName)
 			         .Where(n => n != null)
-			         .Distinct(StringComparer.InvariantCultureIgnoreCase)) {
+			         .Distinct(StringComparer.OrdinalIgnoreCase)) {
 				
 				ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(language, new StringReader(ParserService.GetParseableFileContent(fileName)));
 				p.Parse();
