@@ -32,21 +32,22 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 		{
 			string outputPath;
 			Profiler profiler = ProfilerService.RunCurrentProject(out outputPath);
+			IProject selectedProject = ProjectService.CurrentProject;
+			
 			if (profiler != null) {
 				profiler.SessionEnded += delegate {
 					string title = Path.GetFileName(outputPath);
 					profiler.DataWriter.Close();
 					ProfilingDataProvider provider = new ProfilingDataSQLiteProvider(outputPath);
-					WorkbenchSingleton.CallLater(20, () => WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title)));
-					FileProjectItem file = new FileProjectItem(ProjectService.CurrentProject, ItemType.Content, "ProfilingSessions\\" + title);
-					WorkbenchSingleton.MainForm.Invoke(
-						new MethodInvoker(
-							() => {
-								ProjectService.AddProjectItem(ProjectService.CurrentProject, file);
-								ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
-								ProjectService.CurrentProject.Save();
-							}
-						));
+					WorkbenchSingleton.CallLater(20,
+                     () => {
+                     	WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title));
+                     	FileProjectItem file = new FileProjectItem(selectedProject, ItemType.Content, "ProfilingSessions\\" + title);
+                     	ProjectService.AddProjectItem(selectedProject, file);
+                     	ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+                     	selectedProject.Save();
+                     }
+				   );
 				};
 			}
 		}

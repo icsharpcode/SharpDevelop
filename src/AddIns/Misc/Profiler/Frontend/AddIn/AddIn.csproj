@@ -15,8 +15,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Profiler\</OutputPath>
     <StartAction>Program</StartAction>
-    <StartProgram>$(SharpDevelopBinPath)\SharpDevelop.exe</StartProgram>
-    <StartArguments>/addindir:$(MSBuildProjectDirectory)\$(OutputPath)</StartArguments>
+    <StartProgram>..\..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
