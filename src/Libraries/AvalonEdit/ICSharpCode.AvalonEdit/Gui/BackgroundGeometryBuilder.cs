@@ -76,7 +76,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 					
 					TextLine lastTextLine = vl.TextLines.Last();
 					foreach (TextLine line in vl.TextLines) {
-						double y = vl.GetTextLineVisualTop(line);
+						double y = vl.GetTextLineVisualYPosition(line, VisualYPosition.LineTop);
 						int visualStartCol = vl.GetTextLineVisualStartColumn(line);
 						int visualEndCol = visualStartCol + line.Length;
 						if (line != lastTextLine)

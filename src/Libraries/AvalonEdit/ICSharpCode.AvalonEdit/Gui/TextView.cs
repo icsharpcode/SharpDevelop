@@ -82,7 +82,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			((TextView)dp).OnDocumentChanged((TextDocument)e.OldValue, (TextDocument)e.NewValue);
 		}
 		
-		double LineHeight {
+		internal double FontSize {
 			get {
 				return (double)GetValue(TextBlock.FontSizeProperty);
 			}
@@ -107,7 +107,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			ClearVisualLines();
 			if (newValue != null) {
 				TextDocumentWeakEventManager.Changing.AddListener(newValue, this);
-				heightTree = new HeightTree(newValue, LineHeight + 3);
+				heightTree = new HeightTree(newValue, FontSize + 3);
 				formatter = TextFormatter.Create();
 			}
 			InvalidateMeasure(DispatcherPriority.Normal);
@@ -579,7 +579,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			return new GlobalTextRunProperties {
 				typeface = this.CreateTypeface(),
-				fontRenderingEmSize = LineHeight,
+				fontRenderingEmSize = FontSize,
 				foregroundBrush = (Brush)GetValue(Control.ForegroundProperty),
 				cultureInfo = CultureInfo.CurrentCulture
 			};
@@ -606,7 +606,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			
 			Debug.WriteLine("Building line " + documentLine.LineNumber);
 			
-			VisualLine visualLine = new VisualLine(documentLine);
+			VisualLine visualLine = new VisualLine(this, documentLine);
 			VisualLineTextSource textSource = new VisualLineTextSource(visualLine) {
 				Document = document,
 				GlobalTextRunProperties = globalTextRunProperties,
@@ -868,12 +868,12 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		void IScrollInfo.LineUp()
 		{
-			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y - LineHeight);
+			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y - FontSize);
 		}
 		
 		void IScrollInfo.LineDown()
 		{
-			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y + LineHeight);
+			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y + FontSize);
 		}
 		
 		void IScrollInfo.LineLeft()
@@ -909,14 +909,14 @@ namespace ICSharpCode.AvalonEdit.Gui
 		void IScrollInfo.MouseWheelUp()
 		{
 			((IScrollInfo)this).SetVerticalOffset(
-				scrollOffset.Y - (SystemParameters.WheelScrollLines * LineHeight));
+				scrollOffset.Y - (SystemParameters.WheelScrollLines * FontSize));
 			OnScrollChange();
 		}
 		
 		void IScrollInfo.MouseWheelDown()
 		{
 			((IScrollInfo)this).SetVerticalOffset(
-				scrollOffset.Y + (SystemParameters.WheelScrollLines * LineHeight));
+				scrollOffset.Y + (SystemParameters.WheelScrollLines * FontSize));
 			OnScrollChange();
 		}
 		
@@ -936,7 +936,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		double WideSpaceWidth {
 			get {
-				return LineHeight / 2;
+				return FontSize / 2;
 			}
 		}
 		
@@ -1113,6 +1113,30 @@ namespace ICSharpCode.AvalonEdit.Gui
 				}
 			}
 			return null;
+		}
+		#endregion
+		
+		#region Visual Position <-> TextViewPosition
+		/// <summary>
+		/// Gets the visual position from a text view position.
+		/// </summary>
+		/// <param name="position">The text view position.</param>
+		/// <param name="yPositionMode">The mode how to retrieve the Y position.</param>
+		/// <returns>The position in WPF device-independent pixels relative
+		/// to the top left corner of the document.</returns>
+		public Point GetVisualPosition(TextViewPosition position, VisualYPosition yPositionMode)
+		{
+			VerifyAccess();
+			if (this.Document == null)
+				throw new InvalidOperationException("There is no document assigned to the TextView");
+			DocumentLine documentLine = this.Document.GetLineByNumber(position.Line);
+			VisualLine visualLine = GetOrConstructVisualLine(documentLine);
+			int visualColumn = position.VisualColumn;
+			if (visualColumn < 0) {
+				int offset = documentLine.Offset + position.Column - 1;
+				visualColumn = visualLine.GetVisualColumn(offset - visualLine.FirstDocumentLine.Offset);
+			}
+			return visualLine.GetVisualPosition(visualColumn, yPositionMode);
 		}
 		#endregion
 		

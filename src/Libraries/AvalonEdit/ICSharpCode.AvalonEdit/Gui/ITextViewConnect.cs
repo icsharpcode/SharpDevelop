@@ -11,7 +11,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 {
 	/// <summary>
 	/// Allows <see cref="VisualLineElementGenerator"/>s, <see cref="IVisualLineTransformer"/>s and
-	/// <see cref="IBackgroundRenderer"/> to be notified when they are added or removed from a text view.
+	/// <see cref="IBackgroundRenderer"/>s to be notified when they are added or removed from a text view.
 	/// </summary>
 	public interface ITextViewConnect
 	{

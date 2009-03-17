@@ -1,0 +1,9 @@
+<cc:CompletionWindowBase
+	x:Class="ICSharpCode.AvalonEdit.CodeCompletion.CompletionWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:cc="clr-namespace:ICSharpCode.AvalonEdit.CodeCompletion"
+	Height="300" Width="200"
+>
+	<cc:CompletionList/>
+</cc:CompletionWindowBase>

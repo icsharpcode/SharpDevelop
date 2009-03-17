@@ -59,6 +59,8 @@
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -70,6 +72,12 @@
   <ItemGroup>
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="CodeCompletion\CompletionWindowBase.cs" />
+    <Compile Include="CodeCompletion\CompletionList.cs" />
+    <Compile Include="CodeCompletion\CompletionWindow.xaml.cs">
+      <DependentUpon>CompletionWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Document\DocumentChangeOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
@@ -209,6 +217,9 @@
     <Compile Include="Gui\TextEditor.cs" />
     <Compile Include="Gui\TextView.cs" />
     <Compile Include="Gui\VisualLine.cs" />
+    <Compile Include="Gui\VisualYPosition.cs">
+      <DependentUpon>VisualLine.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\WhitespaceElementGenerator.cs" />
     <Compile Include="Highlighting\DocumentHighlighter.cs" />
     <Compile Include="Highlighting\HighlightedLine.cs" />
@@ -303,8 +314,10 @@
     <Folder Include="Highlighting" />
     <Folder Include="Highlighting\Xshd" />
     <Folder Include="Highlighting\Resources" />
+    <Folder Include="CodeCompletion" />
     <Folder Include="Utils" />
     <Folder Include="themes" />
+    <Page Include="CodeCompletion\CompletionWindow.xaml" />
     <Page Include="Gui\TextEditor.xaml" />
     <Page Include="themes\generic.xaml" />
   </ItemGroup>

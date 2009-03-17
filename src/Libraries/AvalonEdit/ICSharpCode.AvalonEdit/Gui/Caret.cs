@@ -213,14 +213,13 @@ namespace ICSharpCode.AvalonEdit.Gui
 			
 			TextLine textLine = visualLine.GetTextLine(position.VisualColumn);
 			double xPos = textLine.GetDistanceFromCharacterHit(new CharacterHit(position.VisualColumn, 0));
-			double lineTop = visualLine.GetTextLineVisualTop(textLine);
-			double lineBottom = lineTop + textLine.Height;
-			double fontSize = (double)textArea.GetValue(TextBlock.FontSizeProperty);
+			double lineTop = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
+			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.LineBottom);
 			
 			return new Rect(xPos,
-			                lineBottom - fontSize,
+			                lineTop,
 			                SystemParameters.CaretWidth,
-			                fontSize);
+			                lineBottom - lineTop);
 		}
 		
 		/// <summary>

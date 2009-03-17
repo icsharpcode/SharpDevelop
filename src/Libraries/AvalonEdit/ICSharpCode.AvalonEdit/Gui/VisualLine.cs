@@ -23,6 +23,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 	/// </summary>
 	public sealed class VisualLine
 	{
+		TextView textView;
 		List<VisualLineElement> elements;
 		
 		/// <summary>
@@ -60,9 +61,11 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public double VisualTop { get; internal set; }
 		
-		internal VisualLine(DocumentLine firstDocumentLine)
+		internal VisualLine(TextView textView, DocumentLine firstDocumentLine)
 		{
+			Debug.Assert(textView != null);
 			Debug.Assert(firstDocumentLine != null);
+			this.textView = textView;
 			this.FirstDocumentLine = firstDocumentLine;
 		}
 		
@@ -223,18 +226,30 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		/// <returns>Distance in device-independent pixels
 		/// from the top of the document to the top of the specified text line.</returns>
-		public double GetTextLineVisualTop(TextLine textLine)
+		public double GetTextLineVisualYPosition(TextLine textLine, VisualYPosition yPositionMode)
 		{
-			if (!TextLines.Contains(textLine))
-				throw new ArgumentException("textLine is not a line in this VisualLine");
+			if (textLine == null)
+				throw new ArgumentNullException("textLine");
 			double pos = VisualTop;
 			foreach (TextLine tl in TextLines) {
-				if (tl == textLine)
-					break;
-				else
+				if (tl == textLine) {
+					switch (yPositionMode) {
+						case VisualYPosition.LineTop:
+							return pos;
+						case VisualYPosition.LineMiddle:
+							return pos + tl.Height / 2;
+						case VisualYPosition.LineBottom:
+							return pos + tl.Height;
+						case VisualYPosition.TextTop:
+							return pos + tl.Height - textView.FontSize;
+						default:
+							throw new ArgumentException("Invalid yPositionMode:" + yPositionMode);
+					}
+				} else {
 					pos += tl.Height;
+				}
 			}
-			return pos;
+			throw new ArgumentException("textLine is not a line in this VisualLine");
 		}
 		
 		/// <summary>
@@ -257,7 +272,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <summary>
 		/// Gets a TextLine by the visual position.
 		/// </summary>
-		public TextLine GetTextLineByVisualTop(double visualTop)
+		public TextLine GetTextLineByVisualYPosition(double visualTop)
 		{
 			const double epsilon = 0.0001;
 			double pos = this.VisualTop;
@@ -274,11 +289,11 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		/// <returns>Position in device-independent pixels
 		/// relative to the top left of the document.</returns>
-		public Point GetVisualPosition(int visualColumn)
+		public Point GetVisualPosition(int visualColumn, VisualYPosition yPositionMode)
 		{
 			TextLine textLine = GetTextLine(visualColumn);
 			double xPos = textLine.GetDistanceFromCharacterHit(new CharacterHit(visualColumn, 0));
-			double yPos = GetTextLineVisualTop(textLine);
+			double yPos = GetTextLineVisualYPosition(textLine, yPositionMode);
 			return new Point(xPos, yPos);
 		}
 		
@@ -287,7 +302,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public int GetVisualColumn(Point point)
 		{
-			TextLine textLine = GetTextLineByVisualTop(point.Y);
+			TextLine textLine = GetTextLineByVisualYPosition(point.Y);
 			CharacterHit ch = textLine.GetCharacterHitFromDistance(point.X);
 			return ch.FirstCharacterIndex + ch.TrailingLength;
 		}

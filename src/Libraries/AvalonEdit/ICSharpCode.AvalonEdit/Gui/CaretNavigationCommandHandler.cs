@@ -280,14 +280,14 @@ namespace ICSharpCode.AvalonEdit.Gui
 				case CaretMovementType.PageDown:
 					{
 						// Page up/down: find the target line using its visual position
-						double yPos = visualLine.GetTextLineVisualTop(textLine) + textLine.Height / 2;
+						double yPos = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.LineMiddle);
 						if (direction == CaretMovementType.PageUp)
 							yPos -= textArea.TextView.RenderSize.Height;
 						else
 							yPos += textArea.TextView.RenderSize.Height;
 						DocumentLine newLine = textArea.TextView.GetDocumentLineByVisualTop(yPos);
 						targetVisualLine = textArea.TextView.GetOrConstructVisualLine(newLine);
-						targetLine = targetVisualLine.GetTextLineByVisualTop(yPos);
+						targetLine = targetVisualLine.GetTextLineByVisualYPosition(yPos);
 						break;
 					}
 				default:

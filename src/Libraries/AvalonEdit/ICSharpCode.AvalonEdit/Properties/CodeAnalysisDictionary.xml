@@ -10,6 +10,8 @@
 			<Word>Colorizer</Word>
 			<Word>Renderer</Word>
 			<Word>Deletable</Word>
+			<!-- required so that FxCop accepts 'yPositionMode' -->
+			<Word>y</Word>
 		</Recognized>
 		<Unrecognized>
 			<!-- Disable Lineup as a single word - LineUp is the spelling used in WPF -->

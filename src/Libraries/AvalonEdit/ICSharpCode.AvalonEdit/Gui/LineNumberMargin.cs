@@ -175,7 +175,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			VisualLine vl = TextView.GetVisualLineFromVisualTop(pos.Y);
 			if (vl == null)
 				return SimpleSegment.Invalid;
-			TextLine tl = vl.GetTextLineByVisualTop(pos.Y);
+			TextLine tl = vl.GetTextLineByVisualYPosition(pos.Y);
 			int visualStartColumn = vl.GetTextLineVisualStartColumn(tl);
 			int visualEndColumn = visualStartColumn + tl.Length;
 			int relStart = vl.FirstDocumentLine.Offset;

@@ -625,6 +625,7 @@ namespace ICSharpCode.AvalonEdit
 		/// <summary>
 		/// Gets/sets the encoding used when the file is saved.
 		/// </summary>
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public Encoding Encoding { get; set; }
 		
 		/// <summary>

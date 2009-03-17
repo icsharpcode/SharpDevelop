@@ -19,6 +19,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 {
 	static class ExtensionMethods
 	{
+		#region Epsilon / IsClose
 		public const double Epsilon = 1e-8;
 		
 		/// <summary>
@@ -46,7 +47,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			return IsClose(d1.X, d2.X) && IsClose(d1.Y, d2.Y);
 		}
+		#endregion
 		
+		#region CreateTypeface
 		/// <summary>
 		/// Creates typeface from the framework element.
 		/// </summary>
@@ -57,7 +60,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 			                    (FontWeight)fe.GetValue(TextBlock.FontWeightProperty),
 			                    (FontStretch)fe.GetValue(TextBlock.FontStretchProperty));
 		}
+		#endregion
 		
+		#region AddRange / Sequence
 		public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> elements)
 		{
 			foreach (T e in elements)
@@ -71,7 +76,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			yield return value;
 		}
+		#endregion
 		
+		#region XML reading
 		/// <summary>
 		/// Gets the value of the attribute, or null if the attribute does not exist.
 		/// </summary>
@@ -101,7 +108,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 			else
 				return XmlConvert.ToBoolean(attributeValue);
 		}
+		#endregion
 		
+		#region ISegment extensions
 		/// <summary>
 		/// Gets the end offset of the segment.
 		/// </summary>
@@ -141,5 +150,28 @@ namespace ICSharpCode.AvalonEdit.Utils
 			else
 				return new SimpleSegment(start, end - start);
 		}
+		#endregion
+		
+		#region System.Drawing <-> WPF conversions
+		public static System.Drawing.Point ToSystemDrawing(this Point p)
+		{
+			return new System.Drawing.Point((int)p.X, (int)p.Y);
+		}
+		
+		public static Point ToWpf(this System.Drawing.Point p)
+		{
+			return new Point(p.X, p.Y);
+		}
+		
+		public static Size ToWpf(this System.Drawing.Size s)
+		{
+			return new Size(s.Width, s.Height);
+		}
+		
+		public static Rect ToWpf(this System.Drawing.Rectangle rect)
+		{
+			return new Rect(rect.Location.ToWpf(), rect.Size.ToWpf());
+		}
+		#endregion
 	}
 }

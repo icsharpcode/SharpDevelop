@@ -24,6 +24,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		readonly TextView textView;
 		readonly HighlightingRuleSet ruleSet;
 		DocumentHighlighter highlighter;
+		bool isInTextView;
 		
 		/// <summary>
 		/// Creates a new HighlightingColorizer instance.
@@ -53,25 +54,39 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		void OnDocumentChanged()
 		{
+			if (highlighter != null && isInTextView) {
+				textView.Services.RemoveService(typeof(DocumentHighlighter));
+			}
+			
 			TextDocument document = textView.Document;
 			if (document != null)
 				highlighter = new TextViewDocumentHighlighter(this, document, ruleSet);
 			else
 				highlighter = null;
+			
+			if (highlighter != null && isInTextView) {
+				textView.Services.AddService(typeof(DocumentHighlighter), highlighter);
+			}
 		}
 		
 		/// <inheritdoc/>
 		protected override void OnAddToTextView(TextView textView)
 		{
 			base.OnAddToTextView(textView);
-			textView.Services.AddService(typeof(DocumentHighlighter), highlighter);
+			isInTextView = true;
+			if (highlighter != null) {
+				textView.Services.AddService(typeof(DocumentHighlighter), highlighter);
+			}
 		}
 		
 		/// <inheritdoc/>
 		protected override void OnRemoveFromTextView(TextView textView)
 		{
 			base.OnRemoveFromTextView(textView);
-			textView.Services.RemoveService(typeof(DocumentHighlighter));
+			isInTextView = false;
+			if (highlighter != null) {
+				textView.Services.RemoveService(typeof(DocumentHighlighter));
+			}
 		}
 		
 		int currentLineEndOffset;

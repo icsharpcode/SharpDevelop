@@ -45,7 +45,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			foreach (FoldingMarginMarker m in markers) {
 				int visualColumn = m.VisualLine.GetVisualColumn(m.FoldingSection.StartOffset - m.VisualLine.FirstDocumentLine.Offset);
 				TextLine textLine = m.VisualLine.GetTextLine(visualColumn);
-				double yPos = m.VisualLine.GetTextLineVisualTop(textLine) - TextView.VerticalOffset;
+				double yPos = m.VisualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.LineTop) - TextView.VerticalOffset;
 				yPos += (textLine.Height - m.DesiredSize.Height) / 2;
 				double xPos = (finalSize.Width - m.DesiredSize.Width) / 2;
 				m.Arrange(new Rect(new Point(xPos, yPos), m.DesiredSize));
@@ -213,7 +213,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		double GetVisualPos(VisualLine vl, TextLine tl)
 		{
-			double pos = vl.GetTextLineVisualTop(tl) + tl.Height / 2 - TextView.VerticalOffset;
+			double pos = vl.GetTextLineVisualYPosition(tl, VisualYPosition.LineTop) + tl.Height / 2 - TextView.VerticalOffset;
 			return Math.Round(pos) + 0.5;
 		}
 		
