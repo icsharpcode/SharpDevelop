@@ -164,11 +164,52 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		#endregion
 		
-		#region ParserState
-//		/// <summary>
-//		/// Gets the parser state array associated with this line.
-//		/// </summary>
-//		public object[] ParserState { get; internal set; }
+		#region Previous / Next Line
+		/// <summary>
+		/// Gets the next line in the document.
+		/// </summary>
+		/// <returns>The line following this line, or null if this is the last line.</returns>
+		public DocumentLine NextLine {
+			get {
+				document.DebugVerifyAccess();
+				
+				if (right != null) {
+					return right.LeftMost;
+				} else {
+					DocumentLine node = this;
+					DocumentLine oldNode;
+					do {
+						oldNode = node;
+						node = node.parent;
+						// we are on the way up from the right part, don't output node again
+					} while (node != null && node.right == oldNode);
+					return node;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets the previous line in the document.
+		/// </summary>
+		/// <returns>The line before this line, or null if this is the first line.</returns>
+		public DocumentLine PreviousLine {
+			get {
+				document.DebugVerifyAccess();
+				
+				if (left != null) {
+					return left.RightMost;
+				} else {
+					DocumentLine node = this;
+					DocumentLine oldNode;
+					do {
+						oldNode = node;
+						node = node.parent;
+						// we are on the way up from the left part, don't output node again
+					} while (node != null && node.left == oldNode);
+					return node;
+				}
+			}
+		}
 		#endregion
 		
 		#region ToString

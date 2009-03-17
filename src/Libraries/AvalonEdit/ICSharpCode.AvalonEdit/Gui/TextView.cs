@@ -8,7 +8,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -34,7 +36,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 	                                                 Justification = "The user usually doesn't work with TextView but with TextEditor; and nulling the Document property is sufficient to dispose everything.")]
-	public class TextView : FrameworkElement, IScrollInfo, IWeakEventListener
+	public class TextView : FrameworkElement, IScrollInfo, IWeakEventListener, IServiceProvider
 	{
 		#region Constructor
 		static TextView()
@@ -48,9 +50,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public TextView()
 		{
 			textLayer = new TextLayer(this);
-			elementGenerators.CollectionChanged += delegate { Redraw(); };
-			lineTransformers.CollectionChanged += delegate { Redraw(); };
-			backgroundRenderer.CollectionChanged += delegate { InvalidateVisual(); };
+			elementGenerators.CollectionChanged += elementGenerators_CollectionChanged;
+			lineTransformers.CollectionChanged += lineTransformers_CollectionChanged;
+			backgroundRenderer.CollectionChanged += backgroundRenderer_CollectionChanged;
 			layers = new UIElementCollection(this, this);
 			InsertLayer(textLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
 		}
@@ -135,6 +137,12 @@ namespace ICSharpCode.AvalonEdit.Gui
 			get { return elementGenerators; }
 		}
 		
+		void elementGenerators_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			HandleTextViewConnect(e);
+			Redraw();
+		}
+		
 		readonly ObservableCollection<IVisualLineTransformer> lineTransformers = new ObservableCollection<IVisualLineTransformer>();
 		
 		/// <summary>
@@ -142,6 +150,12 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public ObservableCollection<IVisualLineTransformer> LineTransformers {
 			get { return lineTransformers; }
+		}
+		
+		void lineTransformers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			HandleTextViewConnect(e);
+			Redraw();
 		}
 		#endregion
 		
@@ -526,11 +540,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 				
 				visualLine.VisualTop = scrollOffset.Y + yPos;
 				
-				int visualLineEndLineNumber = visualLine.LastDocumentLine.LineNumber;
-				if (visualLineEndLineNumber == document.LineCount)
-					nextLine = null;
-				else
-					nextLine = document.GetLineByNumber(visualLineEndLineNumber + 1);
+				nextLine = visualLine.LastDocumentLine.NextLine;
 				
 				yPos += visualLine.Height;
 				
@@ -697,6 +707,17 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public ObservableCollection<IBackgroundRenderer> BackgroundRenderer {
 			get { return backgroundRenderer; }
+		}
+		
+		void backgroundRenderer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			HandleTextViewConnect(e);
+			InvalidateVisual();
+			foreach (UIElement layer in this.Layers) {
+				// invalidate known layers
+				if (layer is Layer)
+					layer.InvalidateVisual();
+			}
 		}
 		
 		/// <inheritdoc/>
@@ -1092,6 +1113,45 @@ namespace ICSharpCode.AvalonEdit.Gui
 				}
 			}
 			return null;
+		}
+		#endregion
+		
+		#region Service Provider
+		readonly ServiceContainer services = new ServiceContainer();
+		
+		/// <summary>
+		/// Gets a service container used to associate services with the text view.
+		/// </summary>
+		public ServiceContainer Services {
+			get { return services; }
+		}
+		
+		object IServiceProvider.GetService(Type serviceType)
+		{
+			return services.GetService(serviceType);
+		}
+		
+		void HandleTextViewConnect(NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action) {
+				case NotifyCollectionChangedAction.Add:
+				case NotifyCollectionChangedAction.Remove:
+				case NotifyCollectionChangedAction.Replace:
+					if (e.OldItems != null) {
+						foreach (ITextViewConnect c in e.OldItems.OfType<ITextViewConnect>())
+							c.RemoveFromTextView(this);
+					}
+					if (e.NewItems != null) {
+						foreach (ITextViewConnect c in e.NewItems.OfType<ITextViewConnect>())
+							c.AddToTextView(this);
+					}
+					break;
+				case NotifyCollectionChangedAction.Move:
+					// ignore Move
+					break;
+				default:
+					throw new NotSupportedException(e.Action.ToString());
+			}
 		}
 		#endregion
 		

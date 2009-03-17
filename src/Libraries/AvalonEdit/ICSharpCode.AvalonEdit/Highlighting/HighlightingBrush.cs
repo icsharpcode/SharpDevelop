@@ -21,7 +21,21 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Gets the real brush.
 		/// </summary>
+		/// <param name="context">The construction context. context can be null!</param>
 		public abstract Brush GetBrush(ITextRunConstructionContext context);
+		
+		/// <summary>
+		/// Gets the color of the brush.
+		/// </summary>
+		/// <param name="context">The construction context. context can be null!</param>
+		public virtual Color? GetColor(ITextRunConstructionContext context)
+		{
+			SolidColorBrush scb = GetBrush(context) as SolidColorBrush;
+			if (scb != null)
+				return scb.Color;
+			else
+				return null;
+		}
 	}
 	
 	/// <summary>
@@ -46,12 +60,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		public override string ToString()
 		{
-			SolidColorBrush scb = brush as SolidColorBrush;
-			if (scb != null) {
-				return scb.Color.ToString();
-			} else {
-				return brush.ToString();
-			}
+			return brush.ToString();
 		}
 	}
 	
@@ -71,7 +80,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		public override Brush GetBrush(ITextRunConstructionContext context)
 		{
-			return (Brush)context.TextView.FindResource(resourceKey);
+			if (context != null && context.TextView != null)
+				return (Brush)context.TextView.FindResource(resourceKey);
+			else
+				return (Brush)Application.Current.FindResource(resourceKey);
 		}
 		
 		public override string ToString()

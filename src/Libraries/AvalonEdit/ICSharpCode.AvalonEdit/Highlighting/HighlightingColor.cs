@@ -6,8 +6,10 @@
 // </file>
 
 using System;
+using System.Globalization;
 using System.Text;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -39,9 +41,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			StringBuilder b = new StringBuilder();
 			if (Foreground != null) {
-				b.Append("color: ");
-				b.Append(Foreground.ToString());
-				b.Append("; ");
+				Color? c = Foreground.GetColor(null);
+				if (c != null) {
+					b.AppendFormat(CultureInfo.InvariantCulture, "color: #{0:x2}{1:x2}{2:x2}; ", c.Value.R, c.Value.G, c.Value.B);
+				}
 			}
 			if (FontWeight != null) {
 				b.Append("font-weight: ");

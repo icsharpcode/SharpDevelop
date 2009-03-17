@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 						DocumentLine startLine = manager.document.GetLineByOffset(StartOffset);
 						DocumentLine endLine = manager.document.GetLineByOffset(EndOffset);
 						if (startLine != endLine) {
-							DocumentLine startLinePlusOne = manager.document.GetLineByNumber(startLine.LineNumber + 1);
+							DocumentLine startLinePlusOne = startLine.NextLine;
 							collapsedSection = manager.textView.CollapseLines(startLinePlusOne, endLine);
 						}
 					} else {

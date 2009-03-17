@@ -27,7 +27,7 @@ namespace ICSharpCode.AvalonEdit
 	/// <summary>
 	/// Control that wraps a TextView and adds support for user input and the caret.
 	/// </summary>
-	public class TextArea : Control, IScrollInfo, IWeakEventListener
+	public class TextArea : Control, IScrollInfo, IWeakEventListener, IServiceProvider
 	{
 		#region Constructor
 		static TextArea()
@@ -230,6 +230,8 @@ namespace ICSharpCode.AvalonEdit
 					selection = value;
 					if (SelectionChanged != null)
 						SelectionChanged(this, EventArgs.Empty);
+					// a selection change causes commands like copy/paste/etc. to change status
+					CommandManager.InvalidateRequerySuggested();
 				}
 			}
 		}
@@ -578,5 +580,14 @@ namespace ICSharpCode.AvalonEdit
 			}
 		}
 		#endregion
+		
+		/// <summary>
+		/// Gets the requested service.
+		/// </summary>
+		/// <returns>Returns the requested service instance, or null if the service cannot be found.</returns>
+		public virtual object GetService(Type serviceType)
+		{
+			return textView.Services.GetService(serviceType);
+		}
 	}
 }

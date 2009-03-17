@@ -237,6 +237,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 			// we cannot use DataObject.SetText - then we cannot drag to SciTe
 			// (but dragging to Word works in both cases)
 			
+			// also copy as HTML - adds syntax highlighting when dragging to Word
+			HtmlClipboard.SetHtml(dataObject, HtmlClipboard.CreateHtmlFragmentForSelection(textArea));
+			
 			DragDropEffects allowedEffects = DragDropEffects.All;
 			var deleteOnMove = textArea.Selection.Segments.Select(s => new AnchorSegment(textArea.Document, s)).ToList();
 			

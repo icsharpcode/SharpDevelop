@@ -113,8 +113,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			Debug.Assert(length >= 0);
 			if (length == 0) return;
-			DocumentLineTree.Enumerator it = documentLineTree.GetEnumeratorForOffset(offset);
-			DocumentLine startLine = it.Current;
+			DocumentLine startLine = documentLineTree.GetByOffset(offset);
 			int startLineOffset = startLine.Offset;
 			
 			Debug.Assert(offset < startLineOffset + startLine.TotalLength);
@@ -155,11 +154,11 @@ namespace ICSharpCode.AvalonEdit.Document
 			//startLine.MergedWith(endLine, offset - startLineOffset);
 			
 			// remove all lines between startLine (excl.) and endLine (incl.)
-			it.MoveNext();
+			DocumentLine tmp = startLine.NextLine;
 			DocumentLine lineToRemove;
 			do {
-				lineToRemove = it.Current;
-				it.MoveNext();
+				lineToRemove = tmp;
+				tmp = tmp.NextLine;
 				RemoveLine(lineToRemove);
 			} while (lineToRemove != endLine);
 			
@@ -270,10 +269,9 @@ namespace ICSharpCode.AvalonEdit.Document
 						line.DelimiterLength = 2;
 					} else if (newTotalLength == 1 && lineOffset > 0 && textBuffer.GetCharAt(lineOffset - 1) == '\r') {
 						// we need to join this line with the previous line
-						DocumentLineTree.Enumerator it = new DocumentLineTree.Enumerator(line);
-						it.MoveBack();
+						DocumentLine previousLine = line.PreviousLine;
 						RemoveLine(line);
-						return SetLineLength(it.Current, it.Current.TotalLength + 1);
+						return SetLineLength(previousLine, previousLine.TotalLength + 1);
 					} else {
 						line.DelimiterLength = 1;
 					}

@@ -75,9 +75,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			DocumentLine line = document.GetLineByNumber(lineNumber);
 			if (line.DelimiterLength == 0) {
-				if (lineNumber > 1)
-					line = document.GetLineByNumber(lineNumber - 1);
-				else
+				// at the end of the document, there's no line delimiter, so use the delimiter
+				// from the previous line
+				line = line.PreviousLine;
+				if (line == null)
 					return Environment.NewLine;
 			}
 			return document.GetText(line.Offset + line.Length, line.DelimiterLength);

@@ -6,12 +6,16 @@
 // </file>
 
 using System;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Gui
@@ -82,7 +86,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 								textArea.Document.Insert(offset, indentationString);
 							if (start == end)
 								break;
-							start = textArea.Document.GetLineByNumber(start.LineNumber + 1);
+							start = start.NextLine;
 						}
 					} else {
 						textArea.ReplaceSelectionWithText(indentationString);
@@ -116,7 +120,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 						}
 						if (start == end)
 							break;
-						start = textArea.Document.GetLineByNumber(start.LineNumber + 1);
+						start = start.NextLine;
 					}
 				}
 				textArea.Caret.BringCaretToView();
@@ -200,8 +204,12 @@ namespace ICSharpCode.AvalonEdit.Gui
 		static void CopySelectedText(TextArea textArea)
 		{
 			string text = textArea.Selection.GetText(textArea.Document);
-			// ensure we use the appropriate newline sequence for the OS
-			Clipboard.SetText(NewLineFinder.NormalizeNewLines(text, Environment.NewLine));
+			// Ensure we use the appropriate newline sequence for the OS
+			DataObject data = new DataObject(NewLineFinder.NormalizeNewLines(text, Environment.NewLine));
+			// Also copy text in HTML format to clipboard - good for pasting text into Word
+			// or to the SharpDevelop forums.
+			HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragmentForSelection(textArea));
+			Clipboard.SetDataObject(data, true);
 		}
 		
 		static void CanPaste(object target, CanExecuteRoutedEventArgs args)
@@ -218,6 +226,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
+				Debug.WriteLine( Clipboard.GetText(TextDataFormat.Html) );
 				// convert text back to correct newlines for this document
 				string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
 				string text = NewLineFinder.NormalizeNewLines(Clipboard.GetText(), newLine);

@@ -60,6 +60,20 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				highlighter = null;
 		}
 		
+		/// <inheritdoc/>
+		protected override void OnAddToTextView(TextView textView)
+		{
+			base.OnAddToTextView(textView);
+			textView.Services.AddService(typeof(DocumentHighlighter), highlighter);
+		}
+		
+		/// <inheritdoc/>
+		protected override void OnRemoveFromTextView(TextView textView)
+		{
+			base.OnRemoveFromTextView(textView);
+			textView.Services.RemoveService(typeof(DocumentHighlighter));
+		}
+		
 		int currentLineEndOffset;
 		
 		/// <inheritdoc/>

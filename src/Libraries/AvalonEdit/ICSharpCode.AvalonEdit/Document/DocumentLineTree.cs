@@ -1,3 +1,4 @@
+
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
@@ -210,7 +211,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		#endregion
 		
-		#region GetLineBy / GetEnumeratorFor
+		#region GetLineBy
 		public DocumentLine GetByNumber(int number)
 		{
 			return GetNodeByIndex(number - 1);
@@ -219,11 +220,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		public DocumentLine GetByOffset(int offset)
 		{
 			return GetNodeByOffset(offset);
-		}
-		
-		public Enumerator GetEnumeratorForOffset(int offset)
-		{
-			return new Enumerator(GetNodeByOffset(offset));
 		}
 		#endregion
 		
@@ -625,84 +621,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		#endregion
 		
-		#region Enumerator
-		internal struct Enumerator : IEnumerator<DocumentLine>
-		{
-			LineNode node;
-			
-			internal Enumerator(LineNode node)
-			{
-				this.node = node;
-			}
-			
-			/// <summary>
-			/// Gets the current value. Runs in O(1).
-			/// </summary>
-			public DocumentLine Current {
-				get {
-					if (node == null)
-						throw new InvalidOperationException();
-					return node;
-				}
-			}
-			
-			object System.Collections.IEnumerator.Current {
-				get {
-					return this.Current;
-				}
-			}
-			
-			void IDisposable.Dispose()
-			{
-			}
-			
-			/// <summary>
-			/// Moves to the next index. Runs in O(lg n), but for k calls, the combined time is only O(k+lg n).
-			/// </summary>
-			public bool MoveNext()
-			{
-				if (node == null)
-					return false;
-				if (node.right != null) {
-					node = node.right.LeftMost;
-				} else {
-					LineNode oldNode;
-					do {
-						oldNode = node;
-						node = node.parent;
-						// we are on the way up from the right part, don't output node again
-					} while (node != null && node.right == oldNode);
-				}
-				return node != null;
-			}
-			
-			/// <summary>
-			/// Moves to the previous index. Runs in O(lg n), but for k calls, the combined time is only O(k+lg n).
-			/// </summary>
-			public bool MoveBack()
-			{
-				if (node == null)
-					return false;
-				if (node.left != null) {
-					node = node.left.RightMost;
-				} else {
-					LineNode oldNode;
-					do {
-						oldNode = node;
-						node = node.parent;
-						// we are on the way up from the left part, don't output node again
-					} while (node != null && node.left == oldNode);
-				}
-				return node != null;
-			}
-			
-			void System.Collections.IEnumerator.Reset()
-			{
-				throw new NotSupportedException();
-			}
-		}
-		#endregion
-		
 		#region IList implementation
 		DocumentLine IList<DocumentLine>.this[int index] {
 			get {
@@ -781,22 +699,18 @@ namespace ICSharpCode.AvalonEdit.Document
 		public IEnumerator<DocumentLine> GetEnumerator()
 		{
 			document.VerifyAccess();
-			LineNode dummyNode = new LineNode(document);
-			dummyNode.right = root;
-			return new Enumerator(dummyNode);
+			return Enumerate();
 		}
 		
-		// enumerator that verifies thread on each call
-		// - this is overkill, checking on the GetEnumerator call should be enough.
-//		IEnumerator<DocumentLine> Enumerate()
-//		{
-//			document.VerifyAccess();
-//			Enumerator e = new Enumerator(tree.GetEnumerator());
-//			while (e.MoveNext()) {
-//				yield return e.Current;
-//				document.DebugVerifyAccess();
-//			}
-//		}
+		IEnumerator<DocumentLine> Enumerate()
+		{
+			document.VerifyAccess();
+			DocumentLine line = root.LeftMost;
+			while (line != null) {
+				yield return line;
+				line = line.NextLine;
+			}
+		}
 		
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{

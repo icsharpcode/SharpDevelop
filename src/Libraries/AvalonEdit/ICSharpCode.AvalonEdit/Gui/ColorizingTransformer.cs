@@ -15,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 	/// splitting visual elements so that colors (and other text properties) can be easily assigned
 	/// to individual words/characters.
 	/// </summary>
-	public abstract class ColorizingTransformer : IVisualLineTransformer
+	public abstract class ColorizingTransformer : IVisualLineTransformer, ITextViewConnect
 	{
 		/// <summary>
 		/// Gets the list of elements currently being transformed.
@@ -76,6 +76,30 @@ namespace ICSharpCode.AvalonEdit.Gui
 					}
 				}
 			}
+		}
+		
+				/// <summary>
+		/// Called when added to a text view.
+		/// </summary>
+		protected virtual void OnAddToTextView(TextView textView)
+		{
+		}
+				
+		/// <summary>
+		/// Called when removed from a text view.
+		/// </summary>
+		protected virtual void OnRemoveFromTextView(TextView textView)
+		{
+		}
+		
+		void ITextViewConnect.AddToTextView(TextView textView)
+		{
+			OnAddToTextView(textView);
+		}
+		
+		void ITextViewConnect.RemoveFromTextView(TextView textView)
+		{
+			OnRemoveFromTextView(textView);
 		}
 	}
 }

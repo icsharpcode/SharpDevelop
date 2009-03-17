@@ -16,8 +16,8 @@ using System.Windows;
 namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
-	/// Interface to allow TextSegments to access the TextSegmentTree - we cannot use a direct reference
-	/// because TextSegmentTree is generic.
+	/// Interface to allow TextSegments to access the TextSegmentCollection - we cannot use a direct reference
+	/// because TextSegmentCollection is generic.
 	/// </summary>
 	interface ISegmentTree
 	{

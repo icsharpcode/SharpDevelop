@@ -64,14 +64,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		readonly DocumentLineTree lineTree;
 		readonly LineManager lineManager;
 		readonly TextAnchorTree anchorTree;
-		//readonly ParserManager parserManager;
 		
 		/// <summary>
 		/// Create an empty text document.
 		/// </summary>
 		public TextDocument()
 		{
-			//parserManager = new ParserManager(this);
 			lineTree = new DocumentLineTree(this);
 			lineManager = new LineManager(textBuffer, lineTree, this);
 			lineTrackers.CollectionChanged += delegate { 
@@ -83,20 +81,6 @@ namespace ICSharpCode.AvalonEdit.Document
 			undoStack.AttachToDocument(this);
 			FireChangeEvents();
 		}
-		#endregion
-		
-		#region DocumentParsers
-		/*
-		/// <summary>
-		/// Gets/Sets the document parser associated with this document.
-		/// </summary>
-		public IList<IDocumentParser> DocumentParsers {
-			get {
-				VerifyAccess();
-				return parserManager;
-			}
-		}
-		 */
 		#endregion
 		
 		#region Text
@@ -231,7 +215,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Some events are suspended until EndUpdate is called, and the <see cref="UndoStack"/> will
 		/// group all changes into a single action.
 		/// Calling BeginUpdate several times increments a counter, only after the appropriate number
-		/// of EndUpdate calls the DocumentParsers and events resume their work.
+		/// of EndUpdate calls the events resume their work.
 		/// </summary>
 		public void BeginUpdate()
 		{
@@ -348,7 +332,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (inDocumentChanging)
 				throw new InvalidOperationException("Cannot change document within another document change.");
 			BeginUpdate();
-			// protect document change against corruption by other changes inside the event handlers/IDocumentParser
+			// protect document change against corruption by other changes inside the event handlers
 			inDocumentChanging = true;
 			try {
 				VerifyRange(offset, length);
@@ -373,7 +357,6 @@ namespace ICSharpCode.AvalonEdit.Document
 				anchorTree.InsertText(offset, text.Length);
 				
 				delayedEvents.RaiseEvents();
-				//parserManager.ClearParserState(lineManager.RetrieveDeletedOrChangedLines());
 				
 				// fire DocumentChanged event
 				if (Changed != null)

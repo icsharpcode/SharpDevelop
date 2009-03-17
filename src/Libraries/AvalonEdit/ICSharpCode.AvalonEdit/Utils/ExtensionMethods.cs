@@ -118,11 +118,28 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// </returns>
 		public static bool Contains(this ISegment segment, int offset)
 		{
-			if (segment == null)
-				return false;
 			int start = segment.Offset;
 			int end = start + segment.Length;
 			return offset >= start && offset <= end;
+		}
+		
+		/// <summary>
+		/// Gets the overlapping portion of the segments.
+		/// Returns SimpleSegment.Invalid if the segments don't overlap.
+		/// </summary>
+		public static SimpleSegment GetOverlap(this ISegment segment, ISegment other)
+		{
+			int start1 = segment.Offset;
+			int end1 = start1 + segment.Length;
+			int start2 = other.Offset;
+			int end2 = start2 + other.Length;
+			
+			int start = Math.Max(start1, start2);
+			int end = Math.Min(end1, end2);
+			if (end < start)
+				return SimpleSegment.Invalid;
+			else
+				return new SimpleSegment(start, end - start);
 		}
 	}
 }

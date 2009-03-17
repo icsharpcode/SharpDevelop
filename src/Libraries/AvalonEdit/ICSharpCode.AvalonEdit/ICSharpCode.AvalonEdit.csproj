@@ -125,6 +125,9 @@
     </Compile>
     <Compile Include="Gui\IBackgroundRenderer.cs" />
     <Compile Include="Gui\IReadOnlySectionProvider.cs" />
+    <Compile Include="Gui\ITextViewConnect.cs">
+      <DependentUpon>TextView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\Layer.cs">
       <DependentUpon>TextView.cs</DependentUpon>
     </Compile>
@@ -258,6 +261,7 @@
     <Compile Include="Utils\Empty.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\FileReader.cs" />
+    <Compile Include="Utils\HtmlClipboard.cs" />
     <Compile Include="Utils\ImmutableStack.cs" />
     <Compile Include="Utils\NullSafeCollection.cs" />
     <Compile Include="Utils\WeakEventManagerBase.cs" />

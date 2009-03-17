@@ -111,7 +111,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			while (firstInvalidLine < targetLineNumber) {
 				HighlightLineAndUpdateTreeList(document.GetLineByNumber(firstInvalidLine), firstInvalidLine);
 			}
-			highlightedLine = new HighlightedLine { DocumentLine = line };
+			highlightedLine = new HighlightedLine(line);
 			HighlightLineAndUpdateTreeList(line, targetLineNumber);
 			return highlightedLine;
 		}

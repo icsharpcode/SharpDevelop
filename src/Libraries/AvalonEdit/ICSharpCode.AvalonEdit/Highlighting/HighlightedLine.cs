@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -21,15 +22,18 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Creates a new HighlightedLine instance.
 		/// </summary>
-		public HighlightedLine()
+		public HighlightedLine(DocumentLine documentLine)
 		{
+			if (documentLine == null)
+				throw new ArgumentNullException("documentLine");
+			this.DocumentLine = documentLine;
 			this.Sections = new List<HighlightedSection>();
 		}
 		
 		/// <summary>
 		/// Gets/Sets the document line associated with this HighlightedLine.
 		/// </summary>
-		public DocumentLine DocumentLine { get; set; }
+		public DocumentLine DocumentLine { get; private set; }
 		
 		/// <summary>
 		/// Gets the highlighted sections.
@@ -79,20 +83,42 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public string ToHtml()
 		{
+			int startOffset = this.DocumentLine.Offset;
+			return ToHtml(startOffset, startOffset + this.DocumentLine.Length);
+		}
+		
+		/// <summary>
+		/// Produces HTML code for a section of the line, with &lt;span class="colorName"&gt; tags.
+		/// </summary>
+		public string ToHtml(int startOffset, int endOffset)
+		{
+			int documentLineStartOffset = this.DocumentLine.Offset;
+			int documentLineEndOffset = documentLineStartOffset + this.DocumentLine.Length;
+			if (startOffset < documentLineStartOffset || startOffset > documentLineEndOffset)
+				throw new ArgumentOutOfRangeException("startOffset", startOffset, "Value must be between " + documentLineStartOffset + " and " + documentLineEndOffset);
+			if (endOffset < startOffset || endOffset > documentLineEndOffset)
+				throw new ArgumentOutOfRangeException("endOffset", endOffset, "Value must be between startOffset and " + documentLineEndOffset);
+			ISegment requestedSegment = new SimpleSegment(startOffset, endOffset - startOffset);
+			
 			List<HtmlElement> elements = new List<HtmlElement>();
 			for (int i = 0; i < this.Sections.Count; i++) {
 				HighlightedSection s = this.Sections[i];
-				elements.Add(new HtmlElement(s.Offset, i, false, s.Color));
-				elements.Add(new HtmlElement(s.Offset + s.Length, i, true, s.Color));
+				if (s.GetOverlap(requestedSegment).Length > 0) {
+					elements.Add(new HtmlElement(s.Offset, i, false, s.Color));
+					elements.Add(new HtmlElement(s.Offset + s.Length, i, true, s.Color));
+				}
 			}
 			elements.Sort();
 			
 			TextDocument document = DocumentLine.Document;
 			StringBuilder b = new StringBuilder();
-			int textOffset = DocumentLine.Offset;
+			int textOffset = startOffset;
 			foreach (HtmlElement e in elements) {
-				b.Append(document.GetText(textOffset, e.Offset - textOffset));
-				textOffset = e.Offset;
+				int newOffset = Math.Min(e.Offset, endOffset);
+				if (newOffset > startOffset) {
+					HtmlClipboard.EscapeHtml(b, document.GetText(textOffset, newOffset - textOffset));
+				}
+				textOffset = newOffset;
 				if (e.IsEnd) {
 					b.Append("</span>");
 				} else {
@@ -101,7 +127,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					b.Append("\">");
 				}
 			}
-			b.Append(document.GetText(textOffset, DocumentLine.Offset + DocumentLine.Length - textOffset));
+			HtmlClipboard.EscapeHtml(b, document.GetText(textOffset, endOffset - textOffset));
 			return b.ToString();
 		}
 		
