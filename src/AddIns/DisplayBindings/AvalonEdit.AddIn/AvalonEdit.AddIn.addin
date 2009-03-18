@@ -1,6 +1,7 @@
 ﻿<AddIn name        = "AvalonEdit.AddIn"
        author      = "Daniel Grunwald"
-       description = "The main text editor for SharpDevelop">
+       description = "The main text editor for SharpDevelop"
+       addInManagerHidden="preinstalled">
 	
 	<Manifest>
 		<Identity name="ICSharpCode.AvalonEdit" />

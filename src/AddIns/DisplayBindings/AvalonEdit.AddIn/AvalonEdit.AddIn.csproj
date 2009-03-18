@@ -13,6 +13,8 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Design#CA1014;-Microsoft.Design#CA2210</CodeAnalysisRules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -61,6 +63,8 @@
     <Compile Include="Src\AvalonEditDocumentAdapter.cs" />
     <Compile Include="Src\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Src\AvalonEditViewContent.cs" />
+    <Compile Include="Src\CodeEditor.cs" />
+    <Compile Include="Src\CodeEditorAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

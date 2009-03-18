@@ -8,9 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace CSharpBinding.FormattingStrategy
 {
@@ -33,6 +32,9 @@ namespace CSharpBinding.FormattingStrategy
 	}
 	
 	#region DocumentAccessor
+	/// <summary>
+	/// Adapter IDocumentAccessor -> IDocument
+	/// </summary>
 	public sealed class DocumentAccessor : IDocumentAccessor
 	{
 		IDocument doc;
@@ -44,8 +46,8 @@ namespace CSharpBinding.FormattingStrategy
 		public DocumentAccessor(IDocument document)
 		{
 			doc = document;
-			this.minLine = 0;
-			this.maxLine = doc.TotalNumberOfLines - 1;
+			this.minLine = 1;
+			this.maxLine = doc.TotalNumberOfLines;
 		}
 		
 		public DocumentAccessor(IDocument document, int minLine, int maxLine)
@@ -55,10 +57,10 @@ namespace CSharpBinding.FormattingStrategy
 			this.maxLine = maxLine;
 		}
 		
-		int num = -1;
+		int num = 0;
 		bool dirty;
 		string text;
-		LineSegment line;
+		IDocumentLine line;
 		
 		public bool ReadOnly {
 			get {
@@ -99,14 +101,16 @@ namespace CSharpBinding.FormattingStrategy
 		public bool Next()
 		{
 			if (lineDirty) {
-				DefaultFormattingStrategy.SmartReplaceLine(doc, line, text);
+				// TODO: AVALONEDIT reimplement this
+				//DefaultFormattingStrategy.SmartReplaceLine(doc, line, text);
 				lineDirty = false;
 				++changedLines;
+				throw new NotImplementedException();
 			}
 			++num;
 			if (num > maxLine) return false;
-			line = doc.GetLineSegment(num);
-			text = doc.GetText(line);
+			line = doc.GetLine(num);
+			text = line.Text;
 			return true;
 		}
 	}

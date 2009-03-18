@@ -17,8 +17,6 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using AST = ICSharpCode.NRefactory.Ast;
 using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 
@@ -94,13 +92,13 @@ namespace CSharpBinding
 					}
 				}
 			} else if (ch == '.') {
-				editor.ShowCompletionWindow(new CSharpCodeCompletionDataProvider(), ch);
+				editor.ShowCompletionWindow(new CSharpCodeCompletionDataProvider().GenerateCompletionList(editor));
 				return true;
 			} else if (ch == '>') {
 				if (IsInComment(editor)) return false;
 				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 				if (prevChar == '-') {
-					editor.ShowCompletionWindow(new PointerArrowCompletionDataProvider(), ch);
+					editor.ShowCompletionWindow(new PointerArrowCompletionDataProvider().GenerateCompletionList(editor));
 					
 					return true;
 				}
@@ -138,23 +136,23 @@ namespace CSharpBinding
 			return base.HandleKeyPress(editor, ch);
 		}
 		
-		class CSharpCodeCompletionDataProvider : CodeCompletionDataProvider
+		class CSharpCodeCompletionDataProvider : CodeCompletionItemProvider
 		{
-			protected override ResolveResult Resolve(ExpressionResult expressionResult, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+			public override ResolveResult Resolve(ITextEditor editor, ExpressionResult expressionResult)
 			{
 				// bypass ParserService.Resolve and set resolver.LimitMethodExtractionUntilCaretLine
-				ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
+				ParseInformation parseInfo = ParserService.GetParseInformation(editor.FileName);
 				NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.CSharp);
-				resolver.LimitMethodExtractionUntilLine = caretLineNumber;
-				return resolver.Resolve(expressionResult, parseInfo, fileContent);
+				resolver.LimitMethodExtractionUntilLine = editor.Caret.Line;
+				return resolver.Resolve(expressionResult, parseInfo, editor.Document.Text);
 			}
 		}
 		
-		class PointerArrowCompletionDataProvider : CodeCompletionDataProvider
+		class PointerArrowCompletionDataProvider : CodeCompletionItemProvider
 		{
-			protected override ResolveResult Resolve(ExpressionResult expressionResult, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+			public override ResolveResult Resolve(ITextEditor editor, ExpressionResult expressionResult)
 			{
-				ResolveResult rr = base.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, fileContent);
+				ResolveResult rr = base.Resolve(editor, expressionResult);
 				if (rr != null && rr.ResolvedType != null) {
 					PointerReturnType prt = rr.ResolvedType.CastToDecoratingReturnType<PointerReturnType>();
 					if (prt != null)
@@ -163,17 +161,14 @@ namespace CSharpBinding
 				return null;
 			}
 			
-			protected override ExpressionResult GetExpression(ICSharpCode.TextEditor.TextArea textArea)
+			public override ExpressionResult GetExpression(ITextEditor editor)
 			{
-				ICSharpCode.TextEditor.Document.IDocument document = textArea.Document;
-				IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
+				var document = editor.Document;
+				IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(editor.FileName);
 				if (expressionFinder == null) {
-					return new ExpressionResult(TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset - 1));
+					return ExpressionResult.Empty;
 				} else {
-					ExpressionResult res = expressionFinder.FindExpression(document.GetText(0, textArea.Caret.Offset - 1), textArea.Caret.Offset - 1);
-					if (overrideContext != null)
-						res.Context = overrideContext;
-					return res;
+					return expressionFinder.FindExpression(document.GetText(0, editor.Caret.Offset - 1), editor.Caret.Offset - 1);
 				}
 			}
 		}

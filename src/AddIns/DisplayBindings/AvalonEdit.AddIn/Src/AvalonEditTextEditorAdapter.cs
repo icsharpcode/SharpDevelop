@@ -10,32 +10,53 @@ using System.Diagnostics;
 using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using System.Windows;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
 	/// <summary>
 	/// Wraps AvalonEdit to provide the ITextEditor interface.
 	/// </summary>
-	public class AvalonEditTextEditorAdapter : ITextEditor
+	public class AvalonEditTextEditorAdapter : ITextEditor, IWeakEventListener
 	{
 		readonly TextEditor textEditor;
-		readonly AvalonEditDocumentAdapter document;
+		AvalonEditDocumentAdapter document;
 		
 		public AvalonEditTextEditorAdapter(TextEditor textEditor)
 		{
 			this.textEditor = textEditor;
-			this.document = new AvalonEditDocumentAdapter(textEditor.Document);
+			this.Caret = new CaretAdapter(textEditor.TextArea.Caret);
+			TextEditorWeakEventManager.DocumentChanged.AddListener(textEditor, this);
+			OnDocumentChanged();
+		}
+		
+		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			if (managerType == typeof(TextEditorWeakEventManager.DocumentChanged)) {
+				OnDocumentChanged();
+				return true;
+			}
+			return false;
+		}
+		
+		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			return ReceiveWeakEvent(managerType, sender, e);
+		}
+		
+		void OnDocumentChanged()
+		{
+			if (textEditor.Document != null)
+				document = new AvalonEditDocumentAdapter(textEditor.Document);
+			else
+				document = null;
 		}
 		
 		public IDocument Document {
 			get { return document; }
 		}
 		
-		public ITextEditorCaret Caret {
-			get {
-				throw new NotImplementedException();
-			}
-		}
+		public ITextEditorCaret Caret { get; private set; }
 		
 		sealed class CaretAdapter : ITextEditorCaret
 		{
@@ -68,20 +89,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public string FileName {
-			get {
-				throw new NotImplementedException();
-			}
+		public virtual string FileName {
+			get { return null; }
 		}
 		
-		public void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider)
+		public virtual void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider)
 		{
-			throw new NotImplementedException();
 		}
 		
-		public void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
+		public virtual void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
 		{
-			throw new NotImplementedException();
+		}
+		
+		public void ShowCompletionWindow(ICompletionItemList data)
+		{
 		}
 		
 		public string GetWordBeforeCaret()

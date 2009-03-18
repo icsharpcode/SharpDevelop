@@ -69,6 +69,11 @@ namespace ICSharpCode.AvalonEdit
 			set { SetValue(DocumentProperty, value); }
 		}
 		
+		/// <summary>
+		/// Occurs when the document property has changed.
+		/// </summary>
+		public event EventHandler DocumentChanged;
+		
 		static void OnDocumentChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
 		{
 			((TextEditor)dp).OnDocumentChanged((TextDocument)e.OldValue, (TextDocument)e.NewValue);
@@ -82,8 +87,10 @@ namespace ICSharpCode.AvalonEdit
 			if (newValue != null) {
 				newValue.TextChanged += DocumentTextChanged;
 			}
+			if (DocumentChanged != null)
+				DocumentChanged(this, EventArgs.Empty);
 		}
-
+		
 		/// <summary>
 		/// Gets/Sets the text of the current document.
 		/// </summary>

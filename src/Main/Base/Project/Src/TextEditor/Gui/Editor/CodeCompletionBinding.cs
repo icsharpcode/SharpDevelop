@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				case '.':
 					if (enableDotCompletion) {
-						editor.ShowCompletionWindow(new CodeCompletionDataProvider(), ch);
+						editor.ShowCompletionWindow(new CodeCompletionItemProvider().GenerateCompletionList(editor));
 						return true;
 					} else {
 						return false;

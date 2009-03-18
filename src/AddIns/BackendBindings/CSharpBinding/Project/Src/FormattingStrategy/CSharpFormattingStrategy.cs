@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+/*
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -787,3 +788,4 @@ namespace CSharpBinding.FormattingStrategy
 		#endregion
 	}
 }
+*/

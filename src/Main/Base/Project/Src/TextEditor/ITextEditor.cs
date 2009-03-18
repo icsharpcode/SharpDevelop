@@ -5,11 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory;
 using System;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Gui.InsightWindow;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -39,8 +38,10 @@ namespace ICSharpCode.SharpDevelop
 		void Select(int selectionStart, int selectionLength);
 		
 		string FileName { get; }
-		void ShowInsightWindow(IInsightDataProvider provider);
-		void ShowCompletionWindow(ICompletionDataProvider provider, char ch);
+		void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider);
+		[Obsolete]
+		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);
+		void ShowCompletionWindow(ICompletionItemList data);
 		string GetWordBeforeCaret();
 	}
 	

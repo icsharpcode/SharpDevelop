@@ -5,12 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using System;
+using System.Linq;
 using System.Diagnostics;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -96,10 +98,18 @@ namespace ICSharpCode.SharpDevelop
 				sdtac.ShowInsightWindow(provider);
 		}
 		
-		public void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
+		public void ShowCompletionWindow(ICompletionDataProvider provider, char ch)
 		{
-			if (sdtac != null)
+			if (sdtac != null) {
 				sdtac.ShowCompletionWindow(provider, ch);
+			}
+		}
+		
+		public void ShowCompletionWindow(ICompletionItemList items)
+		{
+			if (sdtac != null) {
+				sdtac.ShowCompletionWindow(new CompletionItemListAdapter(items), '.');
+			}
 		}
 		
 		public string GetWordBeforeCaret()
@@ -143,6 +153,93 @@ namespace ICSharpCode.SharpDevelop
 			var doc = sdtac.Document;
 			sdtac.ActiveTextAreaControl.SelectionManager.SetSelection(
 				doc.OffsetToPosition(selectionStart), doc.OffsetToPosition(selectionStart + selectionLength));
+		}
+	}
+	
+	sealed class CompletionItemListAdapter : ICompletionDataProvider
+	{
+		readonly ICompletionItemList list;
+		
+		public CompletionItemListAdapter(ICompletionItemList list)
+		{
+			if (list == null)
+				throw new ArgumentNullException("list");
+			this.list = list;
+		}
+		
+		public System.Windows.Forms.ImageList ImageList {
+			get {
+				return ClassBrowserIconService.ImageList;
+			}
+		}
+		
+		public string PreSelection {
+			get {
+				return null;
+			}
+		}
+		
+		public int DefaultIndex {
+			get {
+				return 0;
+			}
+		}
+		
+		public CompletionDataProviderKeyResult ProcessKey(char key)
+		{
+			return CompletionDataProviderKeyResult.NormalKey;
+		}
+		
+		public bool InsertAction(ICompletionData data, TextArea textArea, int insertionOffset, char key)
+		{
+			return false;
+		}
+		
+		public ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		{
+			return list.Items.Select(item => new CompletionItemAdapter(item)).ToArray();
+		}
+	}
+	
+	sealed class CompletionItemAdapter : ICompletionData
+	{
+		readonly ICompletionItem item;
+		
+		public CompletionItemAdapter(ICompletionItem item)
+		{
+			if (item == null)
+				throw new ArgumentNullException("item");
+			this.item = item;
+		}
+		
+		public int ImageIndex {
+			get {
+				return -1;
+			}
+		}
+		
+		public string Text {
+			get { return item.Text; }
+			set {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public string Description {
+			get {
+				return item.Description;
+			}
+		}
+		
+		public double Priority {
+			get {
+				return 0;
+			}
+		}
+		
+		public bool InsertAction(TextArea textArea, char ch)
+		{
+			return false;
 		}
 	}
 }

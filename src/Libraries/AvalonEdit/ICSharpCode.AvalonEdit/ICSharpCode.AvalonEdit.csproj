@@ -155,6 +155,7 @@
     <Compile Include="Gui\SelectionMouseHandler.cs">
       <DependentUpon>Selection.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\TextEditorWeakEventManager.cs" />
     <Compile Include="Gui\TextLayer.cs">
       <DependentUpon>TextView.cs</DependentUpon>
     </Compile>
