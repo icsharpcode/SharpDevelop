@@ -23,6 +23,7 @@ namespace Grunwald.BooBinding
 		void Init()
 		{
 			reparseCodeSensitiveProperties.Add("Ducky");
+			reparseCodeSensitiveProperties.Add("Strict");
 			reparseReferencesSensitiveProperties.Add("TargetFrameworkVersion");
 		}
 		
@@ -123,8 +124,21 @@ namespace Grunwald.BooBinding
 		public bool Ducky {
 			get {
 				bool val;
-				bool.TryParse(GetEvaluatedProperty("Ducky"), out val);
-				return val;
+				if (bool.TryParse(GetEvaluatedProperty("Ducky"), out val))
+					return val;
+				else
+					return false;
+			}
+		}
+		
+		[Browsable(false)]
+		public bool Strict {
+			get {
+				bool val;
+				if (bool.TryParse(GetEvaluatedProperty("Strict"), out val))
+					return val;
+				else
+					return false;
 			}
 		}
 	}

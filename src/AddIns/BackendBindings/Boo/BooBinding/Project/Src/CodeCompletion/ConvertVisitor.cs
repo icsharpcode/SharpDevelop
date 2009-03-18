@@ -58,7 +58,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (m.IsPrivate)   r |= ModifierEnum.Private;
 			if (m.IsInternal)  r |= ModifierEnum.Internal;
 			if (!m.IsVisibilitySet) {
-				if (m is AST.Field)
+				if (IsStrictMode(_cu.ProjectContent))
+					r |= ModifierEnum.Private;
+				else if (m is AST.Field)
 					r |= ModifierEnum.Protected;
 				else
 					r |= ModifierEnum.Public;
@@ -220,6 +222,15 @@ namespace Grunwald.BooBinding.CodeCompletion
 			} else {
 				return CreateReturnType(reference, c, method, c.Region.BeginLine + 1, 1, _cu.ProjectContent);
 			}
+		}
+		
+		internal static bool IsStrictMode(IProjectContent projectContent)
+		{
+			BooProject project = projectContent.Project as BooProject;
+			if (project != null)
+				return project.Strict;
+			else
+				return false;
 		}
 		
 		internal static IReturnType GetDefaultReturnType(IProjectContent projectContent)
