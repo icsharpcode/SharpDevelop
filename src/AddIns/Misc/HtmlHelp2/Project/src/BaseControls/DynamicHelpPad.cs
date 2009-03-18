@@ -148,7 +148,14 @@ namespace HtmlHelp2
 
 		private void BuildNewChild(string sectionName, string topicName, string topicUrl)
 		{
-			dynamicHelpBrowser.BuildNewChild(sectionName, topicName, topicUrl);
+			try {
+				dynamicHelpBrowser.BuildNewChild(sectionName, topicName, topicUrl);
+			} catch (NullReferenceException ex) {
+				// HACK: the code doesn't properly check for nulls, so we just ignore errors.
+				// There were bug reports with BuildNewChild crashing simply on a layout change.
+				// e.g. http://community.sharpdevelop.net/forums/t/9180.aspx
+				LoggingService.Warn(ex);
+			}
 		}
 		#endregion
 
