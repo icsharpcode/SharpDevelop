@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public virtual IDocument GetDocumentForFile(OpenedFile file)
+		public virtual ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument GetDocumentForFile(OpenedFile file)
 		{
 			return null;
 		}

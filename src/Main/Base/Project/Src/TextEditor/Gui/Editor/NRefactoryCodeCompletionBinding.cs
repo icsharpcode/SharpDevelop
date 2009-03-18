@@ -14,13 +14,13 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
+using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
@@ -84,11 +84,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		protected IList<ResolveResult> ResolveCallParameters(SharpDevelopTextAreaControl editor, InspectedCall call)
+		protected IList<ResolveResult> ResolveCallParameters(ITextEditor editor, InspectedCall call)
 		{
 			List<ResolveResult> rr = new List<ResolveResult>();
 			int offset = LocationToOffset(editor, call.start);
-			string documentText = editor.Text;
+			string documentText = editor.Document.Text;
 			int newOffset;
 			foreach (Location loc in call.commas) {
 				newOffset = LocationToOffset(editor, loc);
@@ -97,24 +97,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				rr.Add(ParserService.Resolve(new ExpressionResult(text), loc.Line, loc.Column, editor.FileName, documentText));
 			}
 			// the last argument is between the last comma and the caret position
-			newOffset = editor.ActiveTextAreaControl.Caret.Offset;
+			newOffset = editor.Caret.Offset;
 			if (offset < newOffset) {
 				string text = editor.Document.GetText(offset+1,newOffset-(offset+1));
 				rr.Add(ParserService.Resolve(new ExpressionResult(text),
-				                             editor.ActiveTextAreaControl.Caret.Line + 1,
-				                             editor.ActiveTextAreaControl.Caret.Column + 1,
+				                             editor.Caret.Line + 1,
+				                             editor.Caret.Column + 1,
 				                             editor.FileName, documentText));
 			}
 			return rr;
 		}
 		
-		protected bool InsightRefreshOnComma(SharpDevelopTextAreaControl editor, char ch)
+		protected bool InsightRefreshOnComma(ITextEditor editor, char ch)
 		{
 			// Show MethodInsightWindow or IndexerInsightWindow
 			NRefactoryResolver r = new NRefactoryResolver(languageProperties);
-			Location cursorLocation = new Location(editor.ActiveTextAreaControl.Caret.Column + 1, editor.ActiveTextAreaControl.Caret.Line + 1);
+			Location cursorLocation = new Location(editor.Caret.Column + 1, editor.Caret.Line + 1);
 			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), cursorLocation.Y, cursorLocation.X)) {
-				TextReader currentMethod = r.ExtractCurrentMethod(editor.Text);
+				TextReader currentMethod = r.ExtractCurrentMethod(editor.Document.Text);
 				if (currentMethod != null) {
 					ILexer lexer = ParserFactory.CreateLexer(language, currentMethod);
 					Token token;
@@ -157,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		#endregion
 		
-		protected bool ProvideContextCompletion(SharpDevelopTextAreaControl editor, IReturnType expected, char charTyped)
+		protected bool ProvideContextCompletion(ITextEditor editor, IReturnType expected, char charTyped)
 		{
 			if (expected == null) return false;
 			IClass c = expected.GetUnderlyingClass();
@@ -204,7 +204,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		protected void ShowInsight(SharpDevelopTextAreaControl editor, MethodInsightDataProvider dp, ICollection<ResolveResult> parameters, char charTyped)
+		protected void ShowInsight(ITextEditor editor, MethodInsightDataProvider dp, ICollection<ResolveResult> parameters, char charTyped)
 		{
 			int paramCount = parameters.Count;
 			dp.SetupDataProvider(editor.FileName, editor.ActiveTextAreaControl.TextArea);
@@ -237,17 +237,17 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		protected int LocationToOffset(SharpDevelopTextAreaControl editor, Location loc)
+		protected int LocationToOffset(ITextEditor editor, Location loc)
 		{
-			if (loc.IsEmpty || loc.Line - 1 >= editor.Document.TotalNumberOfLines)
+			if (loc.IsEmpty || loc.Line > editor.Document.TotalNumberOfLines)
 				return -1;
-			LineSegment seg = editor.Document.GetLineSegment(loc.Line - 1);
+			IDocumentLine seg = editor.Document.GetLine(loc.Line);
 			return seg.Offset + Math.Min(loc.Column, seg.Length) - 1;
 		}
 		
-		protected IMember GetCurrentMember(SharpDevelopTextAreaControl editor)
+		protected IMember GetCurrentMember(ITextEditor editor)
 		{
-			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
+			var caret = editor.Caret;
 			NRefactoryResolver r = new NRefactoryResolver(languageProperties);
 			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line + 1, caret.Column + 1)) {
 				return r.CallingMember;

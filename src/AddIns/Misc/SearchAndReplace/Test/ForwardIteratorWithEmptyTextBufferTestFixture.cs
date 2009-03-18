@@ -28,8 +28,6 @@ namespace SearchAndReplace.Tests
 		{
 			// Create the document to be iterated through.
 			MockDocument doc = new MockDocument();
-			StringTextBufferStrategy textBufferStrategy = new StringTextBufferStrategy();
-			doc.TextBufferStrategy = textBufferStrategy;
 			ProvidedDocumentInformation docInfo = new ProvidedDocumentInformation(doc, 
 				@"C:\Temp\test.txt", 
 				0);

@@ -80,7 +80,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		bool Match(ITextBufferStrategy document, 
+		bool Match(ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument document, 
 		           int  offset, 
 		           bool ignoreCase,
 		           int  programStart)
@@ -89,7 +89,7 @@ namespace SearchAndReplace
 			curMatchEndOffset = -1;
 			
 			for (int pc = programStart; pc < patternProgram.Count; ++pc) {
-				if (curOffset >= document.Length) {
+				if (curOffset >= document.TextLength) {
 					return false;
 				}
 				
@@ -136,8 +136,8 @@ namespace SearchAndReplace
 		{
 			while (textIterator.MoveAhead(1)) {
 				int position = textIterator.Position;
-				if (Match(textIterator.TextBuffer, position, !SearchOptions.MatchCase, 0)) {
-					if (!SearchOptions.MatchWholeWord || SearchReplaceUtilities.IsWholeWordAt(textIterator.TextBuffer, position, curMatchEndOffset - position)) {
+				if (Match(textIterator.Document, position, !SearchOptions.MatchCase, 0)) {
+					if (!SearchOptions.MatchWholeWord || SearchReplaceUtilities.IsWholeWordAt(textIterator.Document, position, curMatchEndOffset - position)) {
 						textIterator.MoveAhead(curMatchEndOffset - position - 1);
 						return position;
 					}
@@ -150,8 +150,8 @@ namespace SearchAndReplace
 		{
 			while (textIterator.MoveAhead(1) && TextSelection.IsInsideRange(textIterator.Position, offset, length)) {
 				int position = textIterator.Position;
-				if (Match(textIterator.TextBuffer, position, !SearchOptions.MatchCase, 0)) {
-					if (!SearchOptions.MatchWholeWord || SearchReplaceUtilities.IsWholeWordAt(textIterator.TextBuffer, position, curMatchEndOffset - position)) {
+				if (Match(textIterator.Document, position, !SearchOptions.MatchCase, 0)) {
+					if (!SearchOptions.MatchWholeWord || SearchReplaceUtilities.IsWholeWordAt(textIterator.Document, position, curMatchEndOffset - position)) {
 						if (TextSelection.IsInsideRange(curMatchEndOffset - 1, offset, length)) {
 							textIterator.MoveAhead(curMatchEndOffset - position - 1);
 							return position;

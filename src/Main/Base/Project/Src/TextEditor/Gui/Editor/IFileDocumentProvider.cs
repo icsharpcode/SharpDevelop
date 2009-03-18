@@ -5,9 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
-
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {

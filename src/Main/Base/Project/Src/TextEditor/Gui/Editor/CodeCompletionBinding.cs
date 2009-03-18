@@ -8,7 +8,6 @@
 using System;
 using System.Collections;
 using System.IO;
-
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
@@ -19,8 +18,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// </summary>
 	public interface ICodeCompletionBinding
 	{
-		bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch);
-		bool CtrlSpace(SharpDevelopTextAreaControl editor);
+		bool HandleKeyPress(ITextEditor editor, char ch);
+		bool CtrlSpace(ITextEditor editor);
 	}
 	
 	/// <summary>
@@ -69,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			this.extensions = extensions;
 		}
 		
-		public bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
+		public bool HandleKeyPress(ITextEditor editor, char ch)
 		{
 			string ext = Path.GetExtension(editor.FileName);
 			foreach (string extension in extensions) {
@@ -83,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return false;
 		}
 		
-		public bool CtrlSpace(SharpDevelopTextAreaControl editor)
+		public bool CtrlSpace(ITextEditor editor)
 		{
 			string ext = Path.GetExtension(editor.FileName);
 			foreach (string extension in extensions) {
@@ -141,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public virtual bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
+		public virtual bool HandleKeyPress(ITextEditor editor, char ch)
 		{
 			switch (ch) {
 				case '(':
@@ -185,14 +184,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public virtual bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)
+		public virtual bool HandleKeyword(ITextEditor editor, string word)
 		{
 			// DefaultCodeCompletionBinding does not support Keyword handling, but this
 			// method can be overridden
 			return false;
 		}
 		
-		public virtual bool CtrlSpace(SharpDevelopTextAreaControl editor)
+		public virtual bool CtrlSpace(ITextEditor editor)
 		{
 			CtrlSpaceCompletionDataProvider provider = new CtrlSpaceCompletionDataProvider();
 			provider.AllowCompleteExistingExpression = true;

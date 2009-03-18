@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using Hornung.ResourceToolkit.Resolver;
 using Hornung.ResourceToolkit.ResourceFileContent;
@@ -20,7 +21,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 	public class ICSharpCodeCoreResourceCodeCompletionBinding : DefaultCodeCompletionBinding
 	{
 		
-		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
+		public override bool HandleKeyPress(ITextEditor editor, char ch)
 		{
 			
 			if (ch == ':') {

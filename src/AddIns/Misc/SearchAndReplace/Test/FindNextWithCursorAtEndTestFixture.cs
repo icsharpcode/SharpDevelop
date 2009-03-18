@@ -55,9 +55,7 @@ namespace SearchAndReplace.Tests
 			
 			// Create the document to be searched.
 			MockDocument doc = new MockDocument();
-			StringTextBufferStrategy textBufferStrategy = new StringTextBufferStrategy();
-			textBufferStrategy.SetContent("foo");
-			doc.TextBufferStrategy = textBufferStrategy;
+			doc.Text = "foo";
 			
 			// Create a doc info with an initial end offset right 
 			// at the end of the text.

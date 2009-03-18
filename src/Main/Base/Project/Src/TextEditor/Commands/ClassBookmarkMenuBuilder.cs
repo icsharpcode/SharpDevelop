@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Bookmarks;
@@ -215,7 +215,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				if (interf != null && interf.ClassType == ClassType.Interface) {
 					IReturnType rtCopy = rt; // copy for access by anonymous method
 					EventHandler eh = delegate {
-						TextEditorDocument d = new TextEditorDocument(FindReferencesAndRenameHelper.GetDocument(c));
+						var d = FindReferencesAndRenameHelper.GetDocument(c);
 						if (d != null)
 							codeGen.ImplementInterface(rtCopy, d, explicitImpl, c);
 						ParserService.ParseCurrentViewContent();
@@ -284,7 +284,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				if (derivedClass.CompilationUnit == null) continue;
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				
-				SearchResultMatch res = new SimpleSearchResultMatch(ClassNode.GetText(derivedClass), new TextLocation(derivedClass.Region.BeginColumn - 1, derivedClass.Region.BeginLine - 1));
+				SearchResultMatch res = new SimpleSearchResultMatch(ClassNode.GetText(derivedClass), new Location(derivedClass.Region.BeginColumn, derivedClass.Region.BeginLine));
 				res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 				results.Add(res);
 			}

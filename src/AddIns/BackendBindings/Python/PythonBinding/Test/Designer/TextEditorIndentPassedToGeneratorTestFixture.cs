@@ -5,17 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.CodeDom;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -44,7 +43,7 @@ namespace PythonBinding.Tests.Designer
 
 				ParseInformation parseInfo = new ParseInformation();
 				PythonParser parser = new PythonParser();
-				ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.TextContent);
+				ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.Text);
 				parseInfo.SetCompilationUnit(compilationUnit);
 
 				using (Form form = new Form()) {
@@ -81,7 +80,7 @@ namespace PythonBinding.Tests.Designer
 								"  self.ResumeLayout(False)\r\n" +
 								"  self.PerformLayout()\r\n";
 			
-			Assert.AreEqual(expectedCode, document.TextContent);
+			Assert.AreEqual(expectedCode, document.Text);
 		}
 	}
 }

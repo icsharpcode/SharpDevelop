@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.Collections;
 using System.IO;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -54,7 +54,7 @@ namespace SearchAndReplace
 					    content is ITextEditorControlProvider)
 					{
 						document = (((ITextEditorControlProvider)content).TextEditorControl).Document;
-						return new ProvidedDocumentInformation(document,
+						return new ProvidedDocumentInformation(new TextEditorDocument(document),
 						                                       fileName,
 						                                       0);
 					}

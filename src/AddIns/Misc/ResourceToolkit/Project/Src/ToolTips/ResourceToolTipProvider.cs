@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.Drawing;
 using Hornung.ResourceToolkit.Resolver;
@@ -28,7 +29,7 @@ namespace Hornung.ResourceToolkit.ToolTips
 				return null;
 			}
 			
-			ResourceResolveResult result = ResourceResolverService.Resolve(textArea.MotherTextEditorControl.FileName, doc, logicPos.Y, logicPos.X, null);
+			ResourceResolveResult result = ResourceResolverService.Resolve(textArea.MotherTextEditorControl.FileName, new TextEditorDocument(doc), logicPos.Y, logicPos.X, null);
 			
 			if (result != null && result.ResourceFileContent != null) {
 				return new ToolTipInfo(ResourceResolverService.FormatResourceDescription(result.ResourceFileContent, result.Key));

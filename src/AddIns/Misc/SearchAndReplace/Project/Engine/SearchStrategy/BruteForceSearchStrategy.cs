@@ -17,37 +17,37 @@ namespace SearchAndReplace
 	{
 		string searchPattern;
 		
-		bool MatchCaseSensitive(ITextBufferStrategy document, int offset, string pattern)
+		bool MatchCaseSensitive(ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument document, int offset, string pattern)
 		{
 			for (int i = 0; i < pattern.Length; ++i) {
-				if (offset + i >= document.Length || document.GetCharAt(offset + i) != pattern[i]) {
+				if (offset + i >= document.TextLength || document.GetCharAt(offset + i) != pattern[i]) {
 					return false;
 				}
 			}
 			return true;
 		}
 		
-		bool MatchCaseInsensitive(ITextBufferStrategy document, int offset, string pattern)
+		bool MatchCaseInsensitive(ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument document, int offset, string pattern)
 		{
 			for (int i = 0; i < pattern.Length; ++i) {
-				if (offset + i >= document.Length || Char.ToUpper(document.GetCharAt(offset + i)) != pattern[i]) {
+				if (offset + i >= document.TextLength || Char.ToUpper(document.GetCharAt(offset + i)) != pattern[i]) {
 					return false;
 				}
 			}
 			return true;
 		}
 		
-		bool IsWholeWordAt(ITextBufferStrategy document, int offset, int length)
+		bool IsWholeWordAt(ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument document, int offset, int length)
 		{
 			return (offset - 1 < 0 || !Char.IsLetterOrDigit(document.GetCharAt(offset - 1))) &&
-			       (offset + length + 1 >= document.Length || !Char.IsLetterOrDigit(document.GetCharAt(offset + length)));
+			       (offset + length + 1 >= document.TextLength || !Char.IsLetterOrDigit(document.GetCharAt(offset + length)));
 		}
 		
 		int InternalFindNext(ITextIterator textIterator)
 		{
 			while (textIterator.MoveAhead(1)) {
-				if (SearchOptions.MatchCase ? MatchCaseSensitive(textIterator.TextBuffer, textIterator.Position, searchPattern) : MatchCaseInsensitive(textIterator.TextBuffer, textIterator.Position, searchPattern)) {
-					if (!SearchOptions.MatchWholeWord || IsWholeWordAt(textIterator.TextBuffer, textIterator.Position, searchPattern.Length)) {
+				if (SearchOptions.MatchCase ? MatchCaseSensitive(textIterator.Document, textIterator.Position, searchPattern) : MatchCaseInsensitive(textIterator.Document, textIterator.Position, searchPattern)) {
+					if (!SearchOptions.MatchWholeWord || IsWholeWordAt(textIterator.Document, textIterator.Position, searchPattern.Length)) {
 						return textIterator.Position;
 					}
 				}
@@ -58,8 +58,8 @@ namespace SearchAndReplace
 		int InternalFindNext(ITextIterator textIterator, int offset, int length)
 		{
 			while (textIterator.MoveAhead(1) && TextSelection.IsInsideRange(textIterator.Position, offset, length)) {
-				if (SearchOptions.MatchCase ? MatchCaseSensitive(textIterator.TextBuffer, textIterator.Position, searchPattern) : MatchCaseInsensitive(textIterator.TextBuffer, textIterator.Position, searchPattern)) {
-					if (!SearchOptions.MatchWholeWord || IsWholeWordAt(textIterator.TextBuffer, textIterator.Position, searchPattern.Length)) {
+				if (SearchOptions.MatchCase ? MatchCaseSensitive(textIterator.Document, textIterator.Position, searchPattern) : MatchCaseInsensitive(textIterator.Document, textIterator.Position, searchPattern)) {
+					if (!SearchOptions.MatchWholeWord || IsWholeWordAt(textIterator.Document, textIterator.Position, searchPattern.Length)) {
 						if (TextSelection.IsInsideRange(textIterator.Position + searchPattern.Length - 1, offset, length)) {
 							return textIterator.Position;
 						} else {

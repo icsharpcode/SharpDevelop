@@ -225,7 +225,7 @@ namespace SearchAndReplace
 					if (textArea != null) {
 						string transformedPattern = result.TransformReplacePattern(SearchOptions.ReplacePattern);
 						find.Replace(result.Offset, result.Length, transformedPattern);
-						if (find.CurrentDocumentInformation.Document == null) {
+						if (!find.CurrentDocumentInformation.IsDocumentCreated) {
 							textArea.Document.Replace(result.Offset, result.Length, transformedPattern);
 						}
 					} else {

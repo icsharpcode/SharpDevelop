@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.Linq;
 using ICSharpCode.SharpDevelop;
@@ -53,10 +54,10 @@ namespace SearchAndReplace
 				IViewContent viewContent = GetCurrentTextEditorViewContent();
 				if (viewContent != null) {
 					TextEditorControl textEditor = (((ITextEditorControlProvider)viewContent).TextEditorControl);
-					IDocument document = textEditor.Document;
-					return new ProvidedDocumentInformation(document,
-				    	CurrentFileName,
-				   		textEditor.ActiveTextAreaControl);
+					TextEditorAdapter adapter = new TextEditorAdapter(textEditor);
+					return new ProvidedDocumentInformation(adapter.Document,
+					                                       CurrentFileName,
+					                                       adapter);
 				}
 				return null;
 			}
@@ -77,7 +78,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public bool MoveForward() 
+		public bool MoveForward()
 		{
 			GetCurIndex();
 			if (curIndex < 0) {
@@ -118,7 +119,7 @@ namespace SearchAndReplace
 			return false;
 		}
 		
-		public void Reset() 
+		public void Reset()
 		{
 			curIndex = -1;
 			GetCurIndex();

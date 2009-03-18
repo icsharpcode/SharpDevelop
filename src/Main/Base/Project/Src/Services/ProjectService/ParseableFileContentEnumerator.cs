@@ -5,16 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -193,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (p == null) return null;
 			IDocument document = p.GetDocumentForFile(file);
 			if (document == null) return null;
-			return document.TextContent;
+			return document.Text;
 		}
 	}
 }

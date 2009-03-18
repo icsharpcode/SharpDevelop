@@ -5,18 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
 using System.Text;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -63,7 +61,7 @@ namespace ICSharpCode.FormsDesigner
 				throw new ArgumentNullException("method");
 			
 			DomRegion r = method.BodyRegion;
-			int offset = document.PositionToOffset(new TextLocation(r.BeginColumn - 1, r.BeginLine - 1));
+			int offset = document.PositionToOffset(r.BeginLine, r.BeginColumn);
 			while (offset < document.TextLength) {
 				char c = document.GetCharAt(offset++);
 				if (c == '{') {
@@ -103,7 +101,7 @@ namespace ICSharpCode.FormsDesigner
 			gen.CurrentClassPart = c;
 			int line = gen.GetEventHandlerInsertionLine(c);
 			
-			int offset = document.GetLineSegment(line - 1).Offset;
+			int offset = document.GetLine(line).Offset;
 			
 			string tabs = SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.IndentationString;
 			tabs += tabs;

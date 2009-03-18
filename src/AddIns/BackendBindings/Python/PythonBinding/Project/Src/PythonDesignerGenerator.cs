@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -15,14 +16,11 @@ using System.Drawing;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -41,9 +39,9 @@ namespace ICSharpCode.PythonBinding
 	public class PythonDesignerGenerator : IPythonDesignerGenerator
 	{
 		FormsDesignerViewContent viewContent;
-		ITextEditorProperties textEditorProperties;
+		ICSharpCode.TextEditor.Document.ITextEditorProperties textEditorProperties;
 		
-		public PythonDesignerGenerator(ITextEditorProperties textEditorProperties)
+		public PythonDesignerGenerator(ICSharpCode.TextEditor.Document.ITextEditorProperties textEditorProperties)
 		{
 			this.textEditorProperties = textEditorProperties;
 		}
@@ -90,7 +88,7 @@ namespace ICSharpCode.PythonBinding
 		/// <param name="component">The root component in the designer host.</param>
 		/// <param name="document">The document that the generated code will be merged into.</param>
 		/// <param name="parseInfo">The current compilation unit for the <paramref name="document"/>.</param>
-		public static void Merge(IComponent component, IDocument document, ICompilationUnit compilationUnit, ITextEditorProperties textEditorProperties)
+		public static void Merge(IComponent component, IDocument document, ICompilationUnit compilationUnit, ICSharpCode.TextEditor.Document.ITextEditorProperties textEditorProperties)
 		{
 			// Get the document's initialize components method.
 			IMethod method = GetInitializeComponents(compilationUnit);
@@ -122,8 +120,8 @@ namespace ICSharpCode.PythonBinding
 			IDocument doc = viewContent.DesignerCodeFileDocument;
 			string eventHandler = CreateEventHandler(eventMethodName, body, "\t");
 			string newContent = "\r\n" + eventHandler;
-			int line = doc.LineSegmentCollection.Count;
-			int offset = doc.GetLineSegment(line - 1).Offset;
+			int line = doc.TotalNumberOfLines;
+			int offset = doc.GetLine(line).Offset;
 			doc.Insert(offset, newContent);
 			
 			// Set position so it points to the line
@@ -243,7 +241,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		static int GetStartOffset(IDocument document, DomRegion region)
 		{
-			return document.PositionToOffset(new TextLocation(region.BeginColumn - 1, region.BeginLine - 1));			
+			return document.PositionToOffset(region.BeginLine, region.BeginColumn);			
 		}
 		
 		/// <summary>
@@ -251,12 +249,11 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		static int GetEndOffset(IDocument document, DomRegion region)
 		{
-			TextLocation endLocation = new TextLocation(region.EndColumn - 1, region.EndLine - 1);
-			if (endLocation.Line >= document.TotalNumberOfLines) {
+			if (region.EndLine > document.TotalNumberOfLines) {
 				// At end of document.
 				return document.TextLength;
 			} 
-			return document.PositionToOffset(endLocation);
+			return document.PositionToOffset(region.EndLine, region.EndColumn);
 		}
 	}
 }

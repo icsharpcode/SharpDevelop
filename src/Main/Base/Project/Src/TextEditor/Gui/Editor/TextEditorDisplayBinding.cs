@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.Diagnostics;
 using System.Drawing.Printing;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Dom;
@@ -84,10 +84,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public IDocument GetDocumentForFile(OpenedFile file)
+		public ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument GetDocumentForFile(OpenedFile file)
 		{
 			if (file == this.PrimaryFile) {
-				return this.TextEditorControl.Document;
+				return new TextEditorDocument(this.TextEditorControl.Document);
 			} else {
 				return null;
 			}

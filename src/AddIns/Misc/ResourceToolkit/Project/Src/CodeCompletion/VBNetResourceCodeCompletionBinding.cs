@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -20,7 +21,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 		/// <summary>
 		/// Determines if the specified character should trigger resource resolve attempt and possibly code completion at the current position.
 		/// </summary>
-		protected override bool CompletionPossible(SharpDevelopTextAreaControl editor, char ch)
+		protected override bool CompletionPossible(ITextEditor editor, char ch)
 		{
 			return ch == '(';
 		}

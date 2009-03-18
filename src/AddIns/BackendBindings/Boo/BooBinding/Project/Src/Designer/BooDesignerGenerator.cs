@@ -5,13 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text;
-
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -123,7 +123,7 @@ namespace Grunwald.BooBinding.Designer
 			return b.ToString();
 		}
 		
-		protected override DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
+		protected override DomRegion GetReplaceRegion(IDocument document, IMethod method)
 		{
 			DomRegion r = method.BodyRegion;
 			return new DomRegion(r.BeginLine + 1, 1, r.EndLine + 1, 1);

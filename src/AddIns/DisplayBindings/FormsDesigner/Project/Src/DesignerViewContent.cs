@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,14 +17,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.FormsDesigner.UndoRedo;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -68,8 +68,8 @@ namespace ICSharpCode.FormsDesigner
 		}
 		
 		public string PrimaryFileContent {
-			get { return this.PrimaryFileDocument.TextContent; }
-			set { this.PrimaryFileDocument.TextContent = value; }
+			get { return this.PrimaryFileDocument.Text; }
+			set { this.PrimaryFileDocument.Text = value; }
 		}
 		
 		public IDocument DesignerCodeFileDocument {
@@ -78,19 +78,19 @@ namespace ICSharpCode.FormsDesigner
 					return null;
 				} else {
 					return this.sourceCodeStorage[this.sourceCodeStorage.DesignerCodeFile];
-		}
-		}
+				}
+			}
 		}
 		
 		public string DesignerCodeFileContent {
-			get { return this.DesignerCodeFileDocument.TextContent; }
-			set { this.DesignerCodeFileDocument.TextContent = value; }
+			get { return this.DesignerCodeFileDocument.Text; }
+			set { this.DesignerCodeFileDocument.Text = value; }
 		}
 		
-		public IDocument GetDocumentForFile(OpenedFile file)
+		public ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument GetDocumentForFile(OpenedFile file)
 		{
 			return this.sourceCodeStorage[file];
-			}
+		}
 		
 		public IEnumerable<KeyValuePair<OpenedFile, IDocument>> SourceFiles {
 			get { return this.sourceCodeStorage; }
@@ -185,7 +185,7 @@ namespace ICSharpCode.FormsDesigner
 				}
 				
 				this.inMasterLoadOperation = true;
-					
+				
 				try {
 					
 					this.sourceCodeStorage.LoadFile(file, stream);
@@ -195,8 +195,8 @@ namespace ICSharpCode.FormsDesigner
 					IEnumerable<OpenedFile> sourceFiles = this.generator.GetSourceFiles(out newDesignerCodeFile);
 					if (sourceFiles == null || newDesignerCodeFile == null) {
 						throw new FormsDesignerLoadException("The designer source files could not be determined.");
-				}
-				
+					}
+					
 					// Unload all source files from the view which are no longer in the returned collection
 					foreach (OpenedFile f in this.Files.Except(sourceFiles).ToArray()) {
 						// Ensure that we only unload source files, but not resource files.
@@ -206,17 +206,17 @@ namespace ICSharpCode.FormsDesigner
 							this.sourceCodeStorage.RemoveFile(f);
 						}
 					}
-				
+					
 					// Load all files which are new in the returned collection
 					foreach (OpenedFile f in sourceFiles.Except(this.Files).ToArray()) {
 						this.sourceCodeStorage.AddFile(f);
 						this.Files.Add(f);
 					}
-				
+					
 					this.sourceCodeStorage.DesignerCodeFile = newDesignerCodeFile;
 					
-				this.LoadAndDisplayDesigner();
-				
+					this.LoadAndDisplayDesigner();
+					
 				} finally {
 					this.inMasterLoadOperation = false;
 				}
@@ -236,11 +236,11 @@ namespace ICSharpCode.FormsDesigner
 				}
 				
 				try {
-				LoggingService.Debug("Forms designer: Loading " + file.FileName + " in resource store");
-				this.resourceStore.Load(file, stream);
-				if (mustReload) {
-					this.LoadAndDisplayDesigner();
-				}
+					LoggingService.Debug("Forms designer: Loading " + file.FileName + " in resource store");
+					this.resourceStore.Load(file, stream);
+					if (mustReload) {
+						this.LoadAndDisplayDesigner();
+					}
 				} finally {
 					this.inMasterLoadOperation = false;
 				}
@@ -372,9 +372,9 @@ namespace ICSharpCode.FormsDesigner
 			bool loading = this.loader != null && this.loader.Loading;
 			LoggingService.Debug("Forms designer: Component added/removed/renamed, Loading=" + loading + ", Unloading=" + this.unloading);
 			if (!loading && !unloading) {
-			shouldUpdateSelectableObjects = true;
+				shouldUpdateSelectableObjects = true;
 				this.MakeDirty();
-		}
+			}
 		}
 		
 		void UnloadDesigner()
@@ -429,7 +429,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			foreach (KeyValuePair<Type, TypeDescriptionProvider> entry in this.addedTypeDescriptionProviders) {
 				TypeDescriptor.RemoveProvider(entry.Value, entry.Key);
-		}
+			}
 			this.addedTypeDescriptionProviders.Clear();
 		}
 		
@@ -938,7 +938,7 @@ namespace ICSharpCode.FormsDesigner
 				Application.DoEvents();
 			} finally {
 				Cursor.Current = oldCursor;
-	}
+			}
 		}
 		
 		#endregion

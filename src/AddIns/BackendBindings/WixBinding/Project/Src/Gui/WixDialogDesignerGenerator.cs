@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.TextEditor;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -14,14 +15,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using Microsoft.CSharp;
 
 namespace ICSharpCode.WixBinding
@@ -82,13 +81,13 @@ namespace ICSharpCode.WixBinding
 		{
 			// Get the text region we are replacing.
 			IDocument document = view.DesignerCodeFileDocument;
-			DomRegion region = WixDocument.GetElementRegion(new StringReader(document.TextContent), "Dialog", dialogId);
+			DomRegion region = WixDocument.GetElementRegion(new StringReader(document.Text), "Dialog", dialogId);
 			if (region.IsEmpty) {
 				throw new FormsDesignerLoadException(String.Format(StringParser.Parse("${res:ICSharpCode.WixBinding.DialogDesignerGenerator.DialogIdNotFoundMessage}"), dialogId));
 			}
 			// Get the replacement dialog xml.
 			TextEditorControl textEditorControl = ((ITextEditorControlProvider)view.PrimaryViewContent).TextEditorControl;
-			ITextEditorProperties properties = textEditorControl.TextEditorProperties;
+			var properties = textEditorControl.TextEditorProperties;
 			string replacementXml = WixDocument.GetXml(dialogElement, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.IndentationSize);
 
 			// Replace the xml and select the inserted text.

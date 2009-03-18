@@ -27,9 +27,7 @@ namespace SearchAndReplace.Tests
 		{
 			// Create the document to be iterated through.
 			MockDocument doc = new MockDocument();
-			StringTextBufferStrategy textBufferStrategy = new StringTextBufferStrategy();
-			textBufferStrategy.SetContent("bar");
-			doc.TextBufferStrategy = textBufferStrategy;
+			doc.Text = "bar";
 			
 			// Create a doc info with an initial end offset right 
 			// at the end of the text.

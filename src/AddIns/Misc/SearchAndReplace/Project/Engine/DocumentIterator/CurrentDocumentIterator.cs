@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -36,7 +37,8 @@ namespace SearchAndReplace
 					return null;
 				}
 				TextEditorControl textEditor = (((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveViewContent).TextEditorControl);
-				return new ProvidedDocumentInformation(textEditor.Document, CurrentFileName, textEditor.ActiveTextAreaControl);
+				TextEditorAdapter adapter = new TextEditorAdapter(textEditor);
+				return new ProvidedDocumentInformation(adapter.Document, CurrentFileName, adapter);
 			}
 		}
 			

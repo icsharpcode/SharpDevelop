@@ -16,6 +16,7 @@
 						VerticalContentAlignment="Top"
 						HorizontalContentAlignment="Left"
 						Background="{TemplateBinding Background}"
+						Padding="{TemplateBinding Padding}"
 					/>
 					<ControlTemplate.Triggers>
 						<Trigger Property="WordWrap"

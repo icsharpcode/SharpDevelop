@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Diagnostics;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
@@ -23,13 +23,13 @@ namespace SearchAndReplace
 		
 		TextIteratorState state;
 		
-		ITextBufferStrategy textBuffer;
-		int                 endOffset;
-		int                 oldOffset = -1;
+		IDocument document;
+		int       endOffset;
+		int       oldOffset = -1;
 		
-		public ITextBufferStrategy TextBuffer {
+		public IDocument Document {
 			get {
-				return textBuffer;
+				return document;
 			}
 		}
 		
@@ -39,7 +39,7 @@ namespace SearchAndReplace
 					case TextIteratorState.Resetted:
 						throw new System.InvalidOperationException("Call moveAhead first");
 					case TextIteratorState.Iterating:
-						return textBuffer.GetCharAt(Position);
+						return document.GetCharAt(Position);
 					case TextIteratorState.Done:
 						throw new System.InvalidOperationException("TextIterator is at the end");
 					default:
@@ -64,7 +64,7 @@ namespace SearchAndReplace
 				throw new ArgumentNullException("info");
 			
 			this.info       = info;
-			this.textBuffer = info.TextBuffer;
+			this.document   = info.Document;
 			this.position   = info.CurrentOffset;
 			this.endOffset  = info.EndOffset;
 			
@@ -77,8 +77,8 @@ namespace SearchAndReplace
 				throw new System.InvalidOperationException();
 			}
 			
-			int realOffset = (Position + (1 + Math.Abs(offset) / textBuffer.Length) * textBuffer.Length + offset) % textBuffer.Length;
-			return textBuffer.GetCharAt(realOffset);
+			int realOffset = (Position + (1 + Math.Abs(offset) / document.TextLength) * document.TextLength + offset) % document.TextLength;
+			return document.GetCharAt(realOffset);
 		}
 		
 		public bool MoveAhead(int numChars)
@@ -87,7 +87,7 @@ namespace SearchAndReplace
 			
 			switch (state) {
 				case TextIteratorState.Resetted:
-					if (textBuffer.Length == 0) {
+					if (document.TextLength == 0) {
 						state = TextIteratorState.Done;
 						return false;
 					}
@@ -97,24 +97,24 @@ namespace SearchAndReplace
 				case TextIteratorState.Done:
 					return false;
 				case TextIteratorState.Iterating:
-					if (oldOffset == -1 && textBuffer.Length == endOffset) {
+					if (oldOffset == -1 && document.TextLength == endOffset) {
 						// HACK: Take off one if the iterator start
 						// position is at the end of the text.
 						Position--;
 					}
 					
-					if (oldOffset != -1 && Position == endOffset - 1 && textBuffer.Length == endOffset) {
+					if (oldOffset != -1 && Position == endOffset - 1 && document.TextLength == endOffset) {
 						state = TextIteratorState.Done;
 						return false;
 					}
 					
-					Position = (Position + numChars) % textBuffer.Length;
+					Position = (Position + numChars) % document.TextLength;
 					bool finish = oldOffset != -1 && (oldOffset > Position || oldOffset < endOffset) && Position >= endOffset;
 					
 					// HACK: Iterating is complete if Position == endOffset - 1 
 					// when the iterator start position was initially at the
 					// end of the text.
-					if (oldOffset != -1 && oldOffset == endOffset - 1 && textBuffer.Length == endOffset) {
+					if (oldOffset != -1 && oldOffset == endOffset - 1 && document.TextLength == endOffset) {
 						finish = true;
 					}
 					

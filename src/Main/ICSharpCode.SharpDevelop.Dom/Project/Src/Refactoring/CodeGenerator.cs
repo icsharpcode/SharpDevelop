@@ -306,7 +306,6 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				b.Append(GenerateCode(nodes[i], indentation));
 			}
 			document.Insert(lineSegment.Offset, b.ToString());
-			document.UpdateView();
 		}
 		
 		/// <summary>

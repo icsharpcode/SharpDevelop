@@ -5,15 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.TextEditor.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Util;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -158,7 +158,7 @@ namespace ICSharpCode.FormsDesigner
 		/// </summary>
 		sealed class FileContent
 		{
-			static readonly DocumentFactory documentFactory = new DocumentFactory();
+			static readonly ICSharpCode.TextEditor.Document.DocumentFactory documentFactory = new ICSharpCode.TextEditor.Document.DocumentFactory();
 			
 			Encoding encoding;
 			readonly IDocument document;
@@ -170,7 +170,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			public FileContent(Encoding encoding)
-				: this(documentFactory.CreateDocument(), encoding)
+				: this(new TextEditorDocument(documentFactory.CreateDocument()), encoding)
 			{
 			}
 			
@@ -203,13 +203,13 @@ namespace ICSharpCode.FormsDesigner
 				if (this.doNotLoad)
 					return;
 				this.encoding = ParserService.DefaultFileEncoding;
-				this.Document.TextContent = FileReader.ReadFileContent(stream, ref this.encoding);
+				this.Document.Text = FileReader.ReadFileContent(stream, ref this.encoding);
 			}
 			
 			public void SaveTo(Stream stream)
 			{
 				using(StreamWriter writer = new StreamWriter(stream, this.encoding)) {
-					writer.Write(this.Document.TextContent);
+					writer.Write(this.Document.Text);
 				}
 			}
 		}

@@ -75,14 +75,15 @@ namespace SearchAndReplace
 		protected override void Initialize()
 		{
 			Nodes.Clear();
-			IDocument document = results[0].CreateDocument();
+			// TODO AVALONEDIT reimplement this
+			/*IDocument document = results[0].CreateDocument();
 			if (document.HighlightingStrategy == null) {
 				document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
 			}
 			foreach (SearchResultMatch result in results) {
 				TreeNode newResult = new SearchResultNode(document, result);
 				Nodes.Add(newResult);
-			}
+			}*/
 		}
 	}
 }

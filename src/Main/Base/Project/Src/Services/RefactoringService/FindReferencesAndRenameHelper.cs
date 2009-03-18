@@ -5,18 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using SearchAndReplace;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
@@ -165,8 +165,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (fileName == null)
 				return;
 			ProvidedDocumentInformation documentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(fileName);
-			int offset = documentInformation.CreateDocument().PositionToOffset(new TextLocation(region.BeginColumn - 1, region.BeginLine - 1));
-			string text = documentInformation.TextBuffer.GetText(offset, Math.Min(name.Length + 30, documentInformation.TextBuffer.Length - offset - 1));
+			int offset = documentInformation.Document.PositionToOffset(region.BeginLine, region.BeginColumn);
+			string text = documentInformation.Document.GetText(offset, Math.Min(name.Length + 30, documentInformation.Document.TextLength - offset - 1));
 			int offsetChange = -1;
 			do {
 				offsetChange = text.IndexOf(name, offsetChange + 1);
@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
-			ITextBufferStrategy strategy = StringTextBufferStrategy.CreateTextBufferFromFile(fileName);
+			var strategy = ICSharpCode.TextEditor.Document.StringTextBufferStrategy.CreateTextBufferFromFile(fileName);
 			return new ProvidedDocumentInformation(strategy, fileName, 0);
 		}
 		
@@ -260,7 +260,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return c.CompilationUnit.FileName == null || c.GetCompoundClass().IsSynthetic;
 		}
 		
-		public static TextEditorControl JumpToDefinition(IMember member)
+		public static ICSharpCode.TextEditor.TextEditorControl JumpToDefinition(IMember member)
 		{
 			IViewContent viewContent = null;
 			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
@@ -278,7 +278,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return (tecp == null) ? null : tecp.TextEditorControl;
 		}
 		
-		public static TextEditorControl JumpBehindDefinition(IMember member)
+		public static ICSharpCode.TextEditor.TextEditorControl JumpBehindDefinition(IMember member)
 		{
 			IViewContent viewContent = null;
 			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
@@ -315,11 +315,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public struct Modification
 		{
-			public ICSharpCode.TextEditor.Document.IDocument Document;
+			public IDocument Document;
 			public int Offset;
 			public int LengthDifference;
 			
-			public Modification(ICSharpCode.TextEditor.Document.IDocument document, int offset, int lengthDifference)
+			public Modification(IDocument document, int offset, int lengthDifference)
 			{
 				this.Document = document;
 				this.Offset = offset;
@@ -327,30 +327,30 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		public static void ModifyDocument(List<Modification> modifications, ICSharpCode.TextEditor.Document.IDocument doc, int offset, int length, string newName)
+		public static void ModifyDocument(List<Modification> modifications, IDocument doc, int offset, int length, string newName)
 		{
-			doc.UndoStack.StartUndoGroup();
-			foreach (Modification m in modifications) {
-				if (m.Document == doc) {
-					if (m.Offset < offset)
-						offset += m.LengthDifference;
-				}
-			}
-			int lengthDifference = newName.Length - length;
-			doc.Replace(offset, length, newName);
-			if (lengthDifference != 0) {
-				for (int i = 0; i < modifications.Count; ++i) {
-					Modification m = modifications[i];
+			using (doc.OpenUndoGroup()) {
+				foreach (Modification m in modifications) {
 					if (m.Document == doc) {
-						if (m.Offset > offset) {
-							m.Offset += lengthDifference;
-							modifications[i] = m; // Modification is a value type
-						}
+						if (m.Offset < offset)
+							offset += m.LengthDifference;
 					}
 				}
-				modifications.Add(new Modification(doc, offset, lengthDifference));
+				int lengthDifference = newName.Length - length;
+				doc.Replace(offset, length, newName);
+				if (lengthDifference != 0) {
+					for (int i = 0; i < modifications.Count; ++i) {
+						Modification m = modifications[i];
+						if (m.Document == doc) {
+							if (m.Offset > offset) {
+								m.Offset += lengthDifference;
+								modifications[i] = m; // Modification is a value type
+							}
+						}
+					}
+					modifications.Add(new Modification(doc, offset, lengthDifference));
+				}
 			}
-			doc.UndoStack.EndUndoGroup();
 		}
 		
 		public static void ShowAsSearchResults(string pattern, List<Reference> list)
@@ -372,10 +372,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void RenameReferences(List<Reference> list, string newName)
 		{
-			Dictionary<ICSharpCode.TextEditor.Document.IDocument, FileView> modifiedDocuments = new Dictionary<ICSharpCode.TextEditor.Document.IDocument, FileView>();
+			Dictionary<IDocument, FileView> modifiedDocuments = new Dictionary<IDocument, FileView>();
 			List<Modification> modifications = new List<Modification>();
 			foreach (Reference r in list) {
-				ICSharpCode.TextEditor.Document.IDocument document = null;
+				IDocument document = null;
 				IViewContent viewContent = null;
 				
 				OpenedFile file = FileService.GetOpenedFile(r.FileName);
@@ -404,18 +404,18 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				
 				if (!modifiedDocuments.ContainsKey(document)) {
 					modifiedDocuments.Add(document, new FileView() {ViewContent = viewContent, OpenedFile = file});
-					document.UndoStack.StartUndoGroup();
+					document.StartUndoableAction();
 				}
 				
 				ModifyDocument(modifications, document, r.Offset, r.Length, newName);
 			}
-			foreach (KeyValuePair<ICSharpCode.TextEditor.Document.IDocument, FileView> entry in modifiedDocuments) {
-				entry.Key.UndoStack.EndUndoGroup();
+			foreach (KeyValuePair<IDocument, FileView> entry in modifiedDocuments) {
+				entry.Key.EndUndoableAction();
 				entry.Value.OpenedFile.MakeDirty();
 				if (entry.Value.ViewContent is IEditable) {
 					ParserService.ParseViewContent(entry.Value.ViewContent);
 				} else {
-					ParserService.ParseFile(entry.Value.OpenedFile.FileName, entry.Key.TextContent, !entry.Value.OpenedFile.IsUntitled);
+					ParserService.ParseFile(entry.Value.OpenedFile.FileName, entry.Key.Text, !entry.Value.OpenedFile.IsUntitled);
 				}
 			}
 		}
@@ -451,24 +451,22 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static string ExtractCode(IClass c, DomRegion codeRegion, int indentationLine, out Action removeExtractedCodeAction)
 		{
-			ICSharpCode.TextEditor.Document.IDocument doc = GetDocument(c);
+			IDocument doc = GetDocument(c);
 			if (indentationLine < 1) indentationLine = 1;
 			if (indentationLine >= doc.TotalNumberOfLines) indentationLine = doc.TotalNumberOfLines;
 			
-			LineSegment segment = doc.GetLineSegment(indentationLine - 1);
-			string mainLine = doc.GetText(segment);
+			IDocumentLine segment = doc.GetLine(indentationLine);
+			string mainLine = doc.GetText(segment.Offset, segment.Length);
 			string indentation = mainLine.Substring(0, mainLine.Length - mainLine.TrimStart().Length);
 			
-			segment = doc.GetLineSegment(codeRegion.BeginLine - 1);
+			segment = doc.GetLine(codeRegion.BeginLine);
 			int startOffset = segment.Offset;
-			segment = doc.GetLineSegment(codeRegion.EndLine - 1);
+			segment = doc.GetLine(codeRegion.EndLine);
 			int endOffset = segment.Offset + segment.Length;
 			
 			StringReader reader = new StringReader(doc.GetText(startOffset, endOffset - startOffset));
 			removeExtractedCodeAction = delegate {
 				doc.Remove(startOffset, endOffset - startOffset);
-				doc.RequestUpdate(new ICSharpCode.TextEditor.TextAreaUpdate(ICSharpCode.TextEditor.TextAreaUpdateType.WholeTextArea));
-				doc.CommitUpdate();
 			};
 			
 			// now remove indentation from extracted source code
@@ -496,11 +494,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return b.ToString();
 		}
 
-		public static ICSharpCode.TextEditor.Document.IDocument GetDocument(IClass c)
+		public static IDocument GetDocument(IClass c)
 		{
 			ITextEditorControlProvider tecp = FileService.OpenFile(c.CompilationUnit.FileName) as ITextEditorControlProvider;
 			if (tecp == null) return null;
-			return tecp.TextEditorControl.Document;
+			return new TextEditorDocument(tecp.TextEditorControl.Document);
 		}
 		
 		#endregion

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using Hornung.ResourceToolkit.Resolver;
 using Hornung.ResourceToolkit.ResourceFileContent;
@@ -19,7 +20,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 	public abstract class AbstractNRefactoryResourceCodeCompletionBinding : DefaultCodeCompletionBinding
 	{
 		
-		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
+		public override bool HandleKeyPress(ITextEditor editor, char ch)
 		{
 			
 			if (this.CompletionPossible(editor, ch)) {
@@ -55,7 +56,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 		/// <summary>
 		/// Determines if the specified character should trigger resource resolve attempt and possibly code completion at the current position.
 		/// </summary>
-		protected abstract bool CompletionPossible(SharpDevelopTextAreaControl editor, char ch);
+		protected abstract bool CompletionPossible(ITextEditor editor, char ch);
 		
 		/// <summary>
 		/// Gets an NRefactory output visitor used to generate the inserted code.

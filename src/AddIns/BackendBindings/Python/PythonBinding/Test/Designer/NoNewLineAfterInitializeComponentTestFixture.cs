@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.CodeDom;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor;
@@ -42,7 +42,7 @@ namespace PythonBinding.Tests.Designer
 					form.Name = "MainForm";
 					form.ClientSize = new Size(499, 309);
 					
-					PythonDesignerGenerator.Merge(form, document, compilationUnit, new MockTextEditorProperties());
+					PythonDesignerGenerator.Merge(form, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties());
 				}
 			}
 		}

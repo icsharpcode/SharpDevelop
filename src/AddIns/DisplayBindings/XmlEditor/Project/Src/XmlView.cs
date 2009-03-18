@@ -700,10 +700,10 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		public IDocument GetDocumentForFile(OpenedFile file)
+		public ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument GetDocumentForFile(OpenedFile file)
 		{
 			if (file == this.PrimaryFile) {
-				return this.TextEditorControl.Document;
+				return new ICSharpCode.SharpDevelop.Refactoring.TextEditorDocument(this.TextEditorControl.Document);
 			} else {
 				return null;
 			}

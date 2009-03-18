@@ -5,8 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Refactoring;
 using System;
-
 using Hornung.ResourceToolkit;
 using Hornung.ResourceToolkit.Resolver;
 using ICSharpCode.SharpDevelop;
@@ -53,7 +53,7 @@ namespace ResourceToolkit.Tests
 			this.EnlistTestFile(fileName, code, parseFile);
 			IDocument doc = new DocumentFactory().CreateDocument();
 			doc.TextContent = code;
-			return ResourceResolverService.Resolve(fileName, doc, caretLine, caretColumn, charTyped);
+			return ResourceResolverService.Resolve(fileName, new TextEditorDocument(doc), caretLine, caretColumn, charTyped);
 		}
 		
 		/// <summary>

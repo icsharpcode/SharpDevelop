@@ -26,7 +26,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		/// <param name="word">The keyword string.</param>
 		/// <returns>true if the keyword is handled; otherwise false.</returns>
-		public override bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)
+		public override bool HandleKeyword(ICSharpCode.SharpDevelop.ITextEditor editor, string word)
 		{
 			if (word != null) {
 				switch (word.ToLowerInvariant()) {
@@ -51,7 +51,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Shows the code completion window.
 		/// </summary>
-		protected virtual void ShowCodeCompletionWindow(SharpDevelopTextAreaControl textAreaControl, ICompletionDataProvider completionDataProvider, char ch)
+		protected virtual void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.ITextEditor textAreaControl, ICompletionDataProvider completionDataProvider, char ch)
 		{
 			textAreaControl.ShowCompletionWindow(completionDataProvider, ch);
 		}

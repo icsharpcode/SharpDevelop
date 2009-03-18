@@ -5,11 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Collections.Generic;
-
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop;
 
 namespace Hornung.ResourceToolkit.Resolver
 {
@@ -37,7 +36,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="editor">The text editor for which a resource resolution attempt should be performed.</param>
 		/// <param name="charTyped">The character that has been typed at the caret position but is not yet in the buffer (this is used when invoked from code completion), or <c>null</c>.</param>
 		/// <returns>A <see cref="ResourceResolveResult"/> that describes which resource is referenced by the expression at the caret in the specified editor, or <c>null</c> if that expression does not reference a (known) resource.</returns>
-		ResourceResolveResult Resolve(TextEditorControl editor, char? charTyped);
+		ResourceResolveResult Resolve(ITextEditor editor, char? charTyped);
 		
 		/// <summary>
 		/// Determines whether this resolver supports resolving resources in the given file.

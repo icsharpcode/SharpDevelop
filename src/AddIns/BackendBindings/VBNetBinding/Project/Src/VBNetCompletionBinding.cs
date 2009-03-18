@@ -32,7 +32,7 @@ namespace VBNetBinding
 			this.EnableIndexerInsight = false;
 		}
 		
-		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
+		public override bool HandleKeyPress(ITextEditor editor, char ch)
 		{
 			if(ch == '(' && EnableMethodInsight && CodeCompletionOptions.InsightEnabled) {
 				editor.ShowInsightWindow(new MethodInsightDataProvider());
@@ -41,19 +41,19 @@ namespace VBNetBinding
 				if (InsightRefreshOnComma(editor, ch))
 					return true;
 			} else if (ch == '\n') {
-				TryDeclarationTypeInference(editor, editor.Document.GetLineSegmentForOffset(editor.ActiveTextAreaControl.Caret.Offset));
+				TryDeclarationTypeInference(editor, editor.Document.GetLineForOffset(editor.Caret.Offset));
 			}
 			return base.HandleKeyPress(editor, ch);
 		}
 		
-		bool IsInComment(SharpDevelopTextAreaControl editor)
+		bool IsInComment(ITextEditor editor)
 		{
 			VBExpressionFinder ef = new VBExpressionFinder();
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset - 1;
 			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
 		}
 		
-		public override bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)
+		public override bool HandleKeyword(ITextEditor editor, string word)
 		{
 			// TODO: Assistance writing Methods/Fields/Properties/Events:
 			// use public/static/etc. as keywords to display a list with other modifiers
@@ -106,7 +106,7 @@ namespace VBNetBinding
 			}
 		}
 		
-		bool TryDeclarationTypeInference(SharpDevelopTextAreaControl editor, LineSegment curLine)
+		bool TryDeclarationTypeInference(ITextEditor editor, IDocumentLine curLine)
 		{
 			string lineText = editor.Document.GetText(curLine.Offset, curLine.Length);
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new System.IO.StringReader(lineText));
@@ -127,7 +127,7 @@ namespace VBNetBinding
 			ResolveResult rr = ParserService.Resolve(new ExpressionResult(expr),
 			                                         editor.ActiveTextAreaControl.Caret.Line + 1,
 			                                         t2.Location.Column, editor.FileName,
-			                                         editor.Document.TextContent);
+			                                         editor.Document.Text);
 			if (rr != null && rr.ResolvedType != null) {
 				ClassFinder context = new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line, t1.Location.Column);
 				VBNetAmbience ambience = new VBNetAmbience();
@@ -136,8 +136,12 @@ namespace VBNetBinding
 				else
 					ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames;
 				string typeName = ambience.Convert(rr.ResolvedType);
-				editor.Document.Replace(curLine.Offset + t1.Location.Column - 1, 1, typeName);
-				editor.ActiveTextAreaControl.Caret.Column += typeName.Length - 1;
+				using (editor.Document.OpenUndoGroup()) {
+					int offset = curLine.Offset + t1.Location.Column - 1;
+					editor.Document.Remove(offset, 1);
+					editor.Document.Insert(offset, typeName);
+				}
+				editor.Caret.Column += typeName.Length - 1;
 				return true;
 			}
 			return false;

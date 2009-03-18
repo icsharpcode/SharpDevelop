@@ -35,7 +35,7 @@ namespace CSharpBinding
 			return new CSharpExpressionFinder(ParserService.GetParseInformation(fileName));
 		}
 		
-		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
+		public override bool HandleKeyPress(ITextEditor editor, char ch)
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
@@ -51,8 +51,8 @@ namespace CSharpBinding
 				}
 				return false;
 			} else if (ch == '[') {
-				LineSegment line = editor.Document.GetLineSegmentForOffset(cursor);
-				if (TextUtilities.FindPrevWordStart(editor.Document, cursor) <= line.Offset) {
+				var line = editor.Document.GetLineForOffset(cursor);
+				if (TextUtilities.FindPrevWordStart(editor.ActiveTextAreaControl.Document, cursor) <= line.Offset) {
 					// [ is first character on the line
 					// -> Attribute completion
 					editor.ShowCompletionWindow(new AttributesDataProvider(ParserService.CurrentProjectContent), ch);
@@ -62,8 +62,8 @@ namespace CSharpBinding
 				if (InsightRefreshOnComma(editor, ch))
 					return true;
 			} else if(ch == '=') {
-				LineSegment curLine = editor.Document.GetLineSegmentForOffset(cursor);
-				string documentText = editor.Text;
+				var curLine = editor.Document.GetLineForOffset(cursor);
+				string documentText = editor.Document.Text;
 				int position = editor.ActiveTextAreaControl.Caret.Offset - 2;
 				
 				if (position > 0 && (documentText[position + 1] == '+')) {
@@ -114,7 +114,7 @@ namespace CSharpBinding
 					if (endOffset < editor.Document.TextLength && char.IsLetterOrDigit(editor.Document.GetCharAt(endOffset)))
 						return false;
 					editor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
-					editor.ActiveTextAreaControl.Caret.Position = editor.Document.OffsetToPosition(cursor);
+					editor.Caret.Position = editor.Document.OffsetToPosition(cursor);
 				}
 				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 				bool afterUnderscore = prevChar == '_';
@@ -123,7 +123,7 @@ namespace CSharpBinding
 					prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 				}
 				if (!char.IsLetterOrDigit(prevChar) && prevChar != '.' && !IsInComment(editor)) {
-					ExpressionResult result = ef.FindExpression(editor.Text, cursor);
+					ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
 					LoggingService.Debug("CC: Beginning to type a word, result=" + result);
 					if (result.Context != ExpressionContext.IdentifierExpected) {
 						editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(result.Context) {
@@ -177,14 +177,14 @@ namespace CSharpBinding
 			}
 		}
 		
-		bool IsInComment(SharpDevelopTextAreaControl editor)
+		bool IsInComment(ITextEditor editor)
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset - 1;
 			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
 		}
 		
-		public override bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)
+		public override bool HandleKeyword(ITextEditor editor, string word)
 		{
 			switch (word) {
 				case "using":
@@ -226,7 +226,7 @@ namespace CSharpBinding
 			}
 		}
 		
-		bool ShowNewCompletion(SharpDevelopTextAreaControl editor)
+		bool ShowNewCompletion(ITextEditor editor)
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
@@ -235,7 +235,7 @@ namespace CSharpBinding
 			
 			LoggingService.Debug("ShowNewCompletion: expression is " + expressionResult);
 			if (expressionResult.Context.IsObjectCreation) {
-				LineSegment currentLine = editor.Document.GetLineSegmentForOffset(cursor);
+				var currentLine = editor.Document.GetLineForOffset(cursor);
 				string lineText = editor.Document.GetText(currentLine.Offset, cursor - currentLine.Offset);
 				// when the new follows an assignment, improve code-completion by detecting the
 				// type of the variable that is assigned to
@@ -252,14 +252,14 @@ namespace CSharpBinding
 			return false;
 		}
 		
-		ExpressionContext FindExactContextForNewCompletion(SharpDevelopTextAreaControl editor, string documentToCursor,
-		                                                   LineSegment currentLine, int pos)
+		ExpressionContext FindExactContextForNewCompletion(ITextEditor editor, string documentToCursor,
+		                                                   IDocumentLine currentLine, int pos)
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			// find expression on left hand side of the assignment
 			ExpressionResult lhsExpr = ef.FindExpression(documentToCursor, currentLine.Offset + pos);
 			if (lhsExpr.Expression != null) {
-				ResolveResult rr = ParserService.Resolve(lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
+				ResolveResult rr = ParserService.Resolve(lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Document.Text);
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;
 					IClass c;
@@ -317,12 +317,12 @@ namespace CSharpBinding
 		}
 		
 		#region "case"-keyword completion
-		bool DoCaseCompletion(SharpDevelopTextAreaControl editor)
+		bool DoCaseCompletion(ITextEditor editor)
 		{
 			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
 			NRefactoryResolver r = new NRefactoryResolver(LanguageProperties.CSharp);
 			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line + 1, caret.Column + 1)) {
-				AST.INode currentMember = r.ParseCurrentMember(editor.Text);
+				AST.INode currentMember = r.ParseCurrentMember(editor.Document.Text);
 				if (currentMember != null) {
 					CaseCompletionSwitchFinder ccsf = new CaseCompletionSwitchFinder(caret.Line + 1, caret.Column + 1);
 					currentMember.AcceptVisitor(ccsf, null);

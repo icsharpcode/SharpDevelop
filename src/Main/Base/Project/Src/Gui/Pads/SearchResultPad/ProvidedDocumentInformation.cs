@@ -5,28 +5,21 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
 	public class ProvidedDocumentInformation
 	{
 		IDocument           document;
-		ITextBufferStrategy textBuffer;
+		ICSharpCode.TextEditor.Document.ITextBufferStrategy textBuffer;
 		string              fileName;
 		int                 currentOffset;
-		TextAreaControl     textAreaControl = null;
-		
-		public ITextBufferStrategy TextBuffer {
-			get {
-				return textBuffer;
-			}
-			set {
-				textBuffer = value;
-			}
-		}
+		ITextEditor textEditor;
 		
 		public string FileName {
 			get {
@@ -36,20 +29,28 @@ namespace SearchAndReplace
 		
 		public IDocument Document {
 			get {
+				if (document == null) {
+					var factory = new ICSharpCode.TextEditor.Document.DocumentFactory();
+					document = new TextEditorDocument(factory.CreateFromTextBuffer(textBuffer));
+				}
 				return document;
 			}
 		}
 		
+		public bool IsDocumentCreated {
+			get { return document != null; }
+		}
+		
 		public int CurrentOffset {
 			get {
-				if (textAreaControl != null) {
-					return textAreaControl.Caret.Offset;
+				if (textEditor != null) {
+					return textEditor.Caret.Offset;
 				}
 				return currentOffset;
 			}
 			set {
-				if (textAreaControl != null) {
-					textAreaControl.Caret.Position = document.OffsetToPosition(value + 1);
+				if (textEditor != null) {
+					textEditor.Caret.Position = document.OffsetToPosition(value + 1);
 				} else {
 					currentOffset = value;
 				}
@@ -79,22 +80,14 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public IDocument CreateDocument()
-		{
-			if (document != null) {
-				return document;
-			}
-			return new DocumentFactory().CreateFromTextBuffer(textBuffer);
-		}		
-		
 		public override bool Equals(object obj)
 		{
 			ProvidedDocumentInformation info = obj as ProvidedDocumentInformation;
 			if (info == null) {
 				return false;
 			}
-			return this.fileName == info.fileName && 
-				this.textAreaControl == info.textAreaControl;
+			return this.fileName == info.fileName &&
+				this.textEditor == info.textEditor;
 		}
 		
 		public override int GetHashCode()
@@ -105,21 +98,19 @@ namespace SearchAndReplace
 		public ProvidedDocumentInformation(IDocument document, string fileName, int currentOffset)
 		{
 			this.document      = document;
-			this.textBuffer    = document.TextBufferStrategy;
 			this.fileName      = fileName;
 			this.endOffset = this.currentOffset = currentOffset;
 		}
 		
-		public ProvidedDocumentInformation(IDocument document, string fileName, TextAreaControl textAreaControl)
+		public ProvidedDocumentInformation(IDocument document, string fileName, ITextEditor textEditor)
 		{
 			this.document   = document;
-			this.textBuffer = document.TextBufferStrategy;
 			this.fileName   = fileName;
-			this.textAreaControl = textAreaControl;
+			this.textEditor = textEditor;
 			this.endOffset = this.CurrentOffset;
 		}
 		
-		public ProvidedDocumentInformation(ITextBufferStrategy textBuffer, string fileName, int currentOffset)
+		public ProvidedDocumentInformation(ICSharpCode.TextEditor.Document.ITextBufferStrategy textBuffer, string fileName, int currentOffset)
 		{
 			this.textBuffer    = textBuffer;
 			this.fileName      = fileName;

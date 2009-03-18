@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,14 +13,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor.Document;
-
 using RegistryContentPair = System.Collections.Generic.KeyValuePair<ICSharpCode.SharpDevelop.Dom.ProjectContentRegistry, ICSharpCode.SharpDevelop.Dom.IProjectContent>;
 
 namespace ICSharpCode.SharpDevelop
@@ -644,7 +642,7 @@ namespace ICSharpCode.SharpDevelop
 				if (p != null) {
 					IDocument document = p.GetDocumentForFile(file);
 					if (document != null) {
-						return document.TextContent;
+						return document.Text;
 					}
 				}
 				

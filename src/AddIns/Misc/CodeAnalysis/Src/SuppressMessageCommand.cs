@@ -61,7 +61,6 @@ namespace ICSharpCode.CodeAnalysis
 				document.Insert(line.Offset, code);
 				provider.TextEditorControl.ActiveTextAreaControl.Caret.Line = p.Line - 1;
 				provider.TextEditorControl.ActiveTextAreaControl.ScrollToCaret();
-				document.UpdateView();
 				TaskService.Remove(t);
 				ParserService.ParseViewContent(viewContent);
 			}

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
@@ -18,7 +19,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			this.EnableXmlCommentCompletion = false;
 		}
 		
-		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
+		public override bool HandleKeyPress(ITextEditor editor, char ch)
 		{
 			if (ch == '[') {
 				int cursor = editor.ActiveTextAreaControl.Caret.Offset;
@@ -36,14 +37,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return base.HandleKeyPress(editor, ch);
 		}
 		
-		bool IsInComment(SharpDevelopTextAreaControl editor)
+		bool IsInComment(ITextEditor editor)
 		{
 			ExpressionFinder ef = new ExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset - 1;
 			return ef.SimplifyCode(editor.Document.GetText(0, cursor + 1), cursor) == null;
 		}
 		
-		public override bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)
+		public override bool HandleKeyword(ITextEditor editor, string word)
 		{
 			switch (word.ToLowerInvariant()) {
 				case "import":

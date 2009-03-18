@@ -7,12 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace Hornung.ResourceToolkit.Resolver
 {
@@ -37,11 +36,11 @@ namespace Hornung.ResourceToolkit.Resolver
 				LoggingService.Debug("ResourceToolkit: "+this.GetType().ToString()+".Resolve called with null fileName or document argument");
 				return null;
 			}
-			if (caretLine < 0 || caretColumn < 0 || caretLine >= document.TotalNumberOfLines || caretColumn >= document.GetLineSegment(caretLine).TotalLength) {
+			if (caretLine < 0 || caretColumn < 0 || caretLine >= document.TotalNumberOfLines || caretColumn >= document.GetLine(caretLine + 1).TotalLength) {
 				LoggingService.Debug("ResourceToolkit: "+this.GetType().ToString()+".Resolve called with invalid position arguments");
 				return null;
 			}
-			return this.Resolve(fileName, document, caretLine, caretColumn, document.PositionToOffset(new TextLocation(caretColumn, caretLine)), charTyped);
+			return this.Resolve(fileName, document, caretLine, caretColumn, document.PositionToOffset(caretLine + 1, caretColumn + 1), charTyped);
 		}
 		
 		/// <summary>
@@ -50,7 +49,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <param name="editor">The text editor for which a resource resolution attempt should be performed.</param>
 		/// <param name="charTyped">The character that has been typed at the caret position but is not yet in the buffer (this is used when invoked from code completion), or <c>null</c>.</param>
 		/// <returns>A <see cref="ResourceResolveResult"/> that describes which resource is referenced by the expression at the caret in the specified editor, or <c>null</c> if that expression does not reference a (known) resource.</returns>
-		public ResourceResolveResult Resolve(TextEditorControl editor, char? charTyped)
+		public ResourceResolveResult Resolve(ITextEditor editor, char? charTyped)
 		{
 			return this.Resolve(editor.FileName, editor.Document, editor.ActiveTextAreaControl.Caret.Line, editor.ActiveTextAreaControl.Caret.Column, charTyped);
 		}

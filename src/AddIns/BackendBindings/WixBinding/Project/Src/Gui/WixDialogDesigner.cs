@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml;
-
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
@@ -89,7 +89,7 @@ namespace ICSharpCode.WixBinding
 				// become visible in the text editor.
 				if (!this.SourceCodeStorage.ContainsFile(file)) {
 					TextEditorControl editor = ((ITextEditorControlProvider)this.PrimaryViewContent).TextEditorControl;
-					this.SourceCodeStorage.AddFile(file, editor.Document, editor.Encoding ?? ParserService.DefaultFileEncoding, true);
+					this.SourceCodeStorage.AddFile(file, new TextEditorDocument(editor.Document), editor.Encoding ?? ParserService.DefaultFileEncoding, true);
 				}
 				
 				try {

@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
-
 using Hornung.ResourceToolkit.Gui;
 using Hornung.ResourceToolkit.Refactoring;
 using Hornung.ResourceToolkit.Resolver;
@@ -34,7 +34,7 @@ namespace Hornung.ResourceToolkit.Commands
 				return new ToolStripItem[0];
 			}
 			
-			ResourceResolveResult result = ResourceResolverService.Resolve(editor, null);
+			ResourceResolveResult result = ResourceResolverService.Resolve(new TextEditorAdapter(editor), null);
 			if (result != null && result.ResourceFileContent != null && result.Key != null) {
 				
 				List<ToolStripItem> items = new List<ToolStripItem>();

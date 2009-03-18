@@ -5,8 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
@@ -18,7 +18,7 @@ namespace SearchAndReplace
 		/// <value>
 		/// The text buffer strategy
 		/// </value>
-		ITextBufferStrategy TextBuffer {
+		IDocument Document {
 			get;
 		}
 		

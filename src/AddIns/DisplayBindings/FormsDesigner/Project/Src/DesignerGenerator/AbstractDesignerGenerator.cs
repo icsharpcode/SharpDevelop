@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -14,13 +15,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using ReflectionLayer = ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
 namespace ICSharpCode.FormsDesigner
@@ -165,7 +163,7 @@ namespace ICSharpCode.FormsDesigner
 					this.ReplaceFieldDeclaration(doc, oldField, GenerateFieldDeclaration(domGenerator, newField));
 					file.MakeDirty();
 				} else {
-					int endOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(0, initializeComponents.BodyRegion.EndLine));
+					int endOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(initializeComponents.BodyRegion.EndLine, 1);
 					this.ViewContent.DesignerCodeFileDocument.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
 				}
 			} catch (Exception ex) {
@@ -175,7 +173,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected abstract System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider();
 		
-		protected abstract DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method);
+		protected abstract DomRegion GetReplaceRegion(IDocument document, IMethod method);
 		
 		/// <summary>
 		/// Removes a field declaration from the source code document.
@@ -187,8 +185,8 @@ namespace ICSharpCode.FormsDesigner
 		/// </remarks>
 		protected virtual void RemoveFieldDeclaration(IDocument document, IField field)
 		{
-			int startOffset = document.PositionToOffset(new TextLocation(0, field.Region.BeginLine - 1));
-			int endOffset   = document.PositionToOffset(new TextLocation(0, field.Region.EndLine));
+			int startOffset = document.PositionToOffset(field.Region.BeginLine, 1);
+			int endOffset   = document.PositionToOffset(field.Region.EndLine + 1, 1);
 			document.Remove(startOffset, endOffset - startOffset);
 		}
 		
@@ -202,8 +200,8 @@ namespace ICSharpCode.FormsDesigner
 		/// </remarks>
 		protected virtual void ReplaceFieldDeclaration(IDocument document, IField oldField, string newFieldDeclaration)
 		{
-			int startOffset = document.PositionToOffset(new TextLocation(0, oldField.Region.BeginLine - 1));
-			int endOffset   = document.PositionToOffset(new TextLocation(0, oldField.Region.EndLine));
+			int startOffset = document.PositionToOffset(oldField.Region.BeginLine, 1);
+			int endOffset   = document.PositionToOffset(oldField.Region.EndLine + 1, 1);
 			document.Replace(startOffset, endOffset - startOffset, tabs + newFieldDeclaration + Environment.NewLine);
 		}
 		
@@ -259,8 +257,8 @@ namespace ICSharpCode.FormsDesigner
 			DomRegion bodyRegion = GetReplaceRegion(this.ViewContent.DesignerCodeFileDocument, initializeComponents);
 			if (bodyRegion.BeginColumn <= 0 || bodyRegion.EndColumn <= 0)
 				throw new InvalidOperationException("Column must be > 0");
-			int startOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(bodyRegion.BeginColumn - 1, bodyRegion.BeginLine - 1));
-			int endOffset   = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(new TextLocation(bodyRegion.EndColumn - 1, bodyRegion.EndLine - 1));
+			int startOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(bodyRegion.BeginLine, bodyRegion.BeginColumn);
+			int endOffset   = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(bodyRegion.EndLine, bodyRegion.EndColumn);
 			
 			this.ViewContent.DesignerCodeFileDocument.Replace(startOffset, endOffset - startOffset, statements);
 			
@@ -294,7 +292,7 @@ namespace ICSharpCode.FormsDesigner
 			// we must not modify the c.Fields collection while it is enumerated
 			removedFields.ForEach(RemoveField);
 			
-			ParserService.EnqueueForParsing(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument.TextContent);
+			ParserService.EnqueueForParsing(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument.Text);
 		}
 		
 		/// <summary>
@@ -377,7 +375,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			// Reparse all source files for the designed form
 			foreach (KeyValuePair<OpenedFile, IDocument> entry in this.ViewContent.SourceFiles) {
-				parsings.Add(entry.Key, ParserService.ParseFile(entry.Key.FileName, entry.Value.TextContent, false));
+				parsings.Add(entry.Key, ParserService.ParseFile(entry.Key.FileName, entry.Value.Text, false));
 			}
 			
 			// Update currentClassPart from PrimaryFile
@@ -475,7 +473,7 @@ namespace ICSharpCode.FormsDesigner
 						position = GetCursorLine(doc, method);
 					} else {
 						try {
-							position = GetCursorLine(FindReferencesAndRenameHelper.GetDocumentInformation(file).CreateDocument(), method);
+							position = GetCursorLine(FindReferencesAndRenameHelper.GetDocumentInformation(file).Document, method);
 						} catch (FileNotFoundException) {
 							position = 0;
 							return false;
@@ -492,7 +490,7 @@ namespace ICSharpCode.FormsDesigner
 			int line = GetEventHandlerInsertionLine(currentClassPart);
 			LoggingService.Debug("-> Inserting new event handler at line " + line.ToString(System.Globalization.CultureInfo.InvariantCulture));
 			
-			int offset = this.viewContent.PrimaryFileDocument.GetLineSegment(line - 1).Offset;
+			int offset = this.viewContent.PrimaryFileDocument.GetLine(line).Offset;
 			
 			this.viewContent.PrimaryFileDocument.Insert(offset, CreateEventHandler(edesc.EventType, eventMethodName, body, tabs));
 			position = line + GetCursorLineAfterEventHandlerCreation();

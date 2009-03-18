@@ -52,12 +52,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		protected virtual void AttachEvents()
 		{
-			this.TextArea.LostFocus += TextAreaLostFocus;
+			this.TextArea.PreviewLostKeyboardFocus += TextAreaLostFocus;
 			this.TextArea.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
 			this.TextArea.TextView.DocumentChanged += TextViewDocumentChanged;
 			if (parentWindow != null) {
 				parentWindow.LocationChanged += parentWindow_LocationChanged;
-				parentWindow.Deactivated += parentWindowDeactivated;
 			}
 		}
 		
@@ -66,12 +65,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		protected virtual void DetachEvents()
 		{
-			this.TextArea.LostFocus -= TextAreaLostFocus;
+			this.TextArea.PreviewLostKeyboardFocus -= TextAreaLostFocus;
 			this.TextArea.TextView.ScrollOffsetChanged -= TextViewScrollOffsetChanged;
 			this.TextArea.TextView.DocumentChanged -= TextViewDocumentChanged;
 			if (parentWindow != null) {
 				parentWindow.LocationChanged -= parentWindow_LocationChanged;
-				parentWindow.Deactivated -= parentWindowDeactivated;
 			}
 		}
 		
@@ -95,11 +93,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			UpdatePosition();
 		}
 		
-		void parentWindowDeactivated(object sender, EventArgs e)
-		{
-			Dispatcher.BeginInvoke(new Action(CloseIfFocusLost), DispatcherPriority.Background);
-		}
-		
 		/// <inheritdoc/>
 		protected override void OnDeactivated(EventArgs e)
 		{
@@ -111,12 +104,16 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		void CloseIfFocusLost()
 		{
 			Debug.WriteLine("CloseIfFocusLost");
-			if (!this.IsActive && parentWindow != null && !parentWindow.IsActive) {
-				// close if parent window looses focus
+			if (!this.IsActive && IsTextAreaFocused) {
 				Close();
 			}
-			if (!this.TextArea.IsFocused) {
-				Close();
+		}
+		
+		bool IsTextAreaFocused {
+			get {
+				if (parentWindow != null && !parentWindow.IsActive)
+					return false;
+				return this.TextArea.IsKeyboardFocused;
 			}
 		}
 		

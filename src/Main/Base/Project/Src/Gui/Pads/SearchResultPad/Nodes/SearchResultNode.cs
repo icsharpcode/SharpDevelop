@@ -5,16 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
@@ -25,12 +24,12 @@ namespace SearchAndReplace
 	{
 		SearchResultMatch result;
 		
-		TextLocation startPosition;
+		Location startPosition;
 		string positionText;
 		string displayText;
 		string specialText;
 		bool showFileName = false;
-		DrawableLine drawableLine;
+		//DrawableLine drawableLine;
 		
 		public bool ShowFileName {
 			get {
@@ -58,21 +57,24 @@ namespace SearchAndReplace
 			drawDefault = false;
 			this.result = result;
 			startPosition = result.GetStartPosition(document);
-			TextLocation endPosition = result.GetEndPosition(document);
-			positionText =  "(" + (startPosition.Y + 1) + ", " + (startPosition.X + 1) + ") ";
+			Location endPosition = result.GetEndPosition(document);
+			positionText =  "(" + startPosition.Y + ", " + startPosition.X + ") ";
 			
-			LineSegment line = document.GetLineSegment(startPosition.Y);
+			IDocumentLine line = document.GetLine(startPosition.Y);
+			
+			// TODO AVALONEDIT reimplement this
+			/*
 			drawableLine = new DrawableLine(document, line, RegularMonospacedFont, BoldMonospacedFont);
 			drawableLine.SetBold(0, drawableLine.LineLength, false);
 			if (startPosition.Y == endPosition.Y) {
 				drawableLine.SetBold(startPosition.X, endPosition.X, true);
-			}
+			}*/
 			
 			specialText = result.DisplayText;
 			if (specialText != null) {
 				displayText = positionText + specialText;
 			} else {
-				displayText = positionText + document.GetText(line).Replace("\t", "    ");
+				displayText = positionText + line.Text.Replace("\t", "    ");
 			}
 			Text = displayText;
 		}
@@ -82,8 +84,8 @@ namespace SearchAndReplace
 			Graphics g = e.Graphics;
 			int x = MeasureTextWidth(g, displayText, BoldMonospacedFont);
 			if (ShowFileName) {
-				float tabWidth = drawableLine.GetSpaceSize(g).Width * 6;
-				x = (int)((int)((x + 2 + tabWidth) / tabWidth) * tabWidth);
+				//float tabWidth = drawableLine.GetSpaceSize(g).Width * 6;
+				//x = (int)((int)((x + 2 + tabWidth) / tabWidth) * tabWidth);
 				x += MeasureTextWidth(g, FileNameText, ItalicBigFont);
 			}
 			return x;
@@ -99,11 +101,11 @@ namespace SearchAndReplace
 				DrawText(e, specialText, SystemBrushes.WindowText, RegularBigFont, ref x);
 			} else {
 				x -= e.Bounds.X;
-				drawableLine.DrawLine(g, ref x, e.Bounds.X, e.Bounds.Y, GetTextColor(e.State, Color.Empty));
+				//drawableLine.DrawLine(g, ref x, e.Bounds.X, e.Bounds.Y, GetTextColor(e.State, Color.Empty));
 			}
 			if (ShowFileName) {
-				float tabWidth = drawableLine.GetSpaceSize(g).Width * 6;
-				x = (int)((int)((x + 2 + tabWidth) / tabWidth) * tabWidth);
+				//float tabWidth = drawableLine.GetSpaceSize(g).Width * 6;
+				//x = (int)((int)((x + 2 + tabWidth) / tabWidth) * tabWidth);
 				x += e.Bounds.X;
 				DrawText(e,
 				         FileNameText,

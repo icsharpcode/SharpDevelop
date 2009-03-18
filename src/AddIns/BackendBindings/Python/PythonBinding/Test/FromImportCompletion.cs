@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
@@ -34,7 +35,7 @@ namespace PythonBinding.Tests
 			}
 			textAreaControl = new SharpDevelopTextAreaControl();
 			codeCompletionBinding = new DerivedPythonCodeCompletionBinding();
-			handlesImportKeyword = codeCompletionBinding.HandleKeyword(textAreaControl, "from");
+			handlesImportKeyword = codeCompletionBinding.HandleKeyword(new TextEditorAdapter(textAreaControl), "from");
 		}
 		
 		[Test]

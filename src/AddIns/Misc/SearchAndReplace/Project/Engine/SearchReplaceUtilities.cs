@@ -5,16 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.TextEditor.Document;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
@@ -36,10 +36,10 @@ namespace SearchAndReplace
 			return null;
 		}
 		
-		public static bool IsWholeWordAt(ITextBufferStrategy document, int offset, int length)
+		public static bool IsWholeWordAt(ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument document, int offset, int length)
 		{
 			return (offset - 1 < 0 || Char.IsWhiteSpace(document.GetCharAt(offset - 1))) &&
-				(offset + length + 1 >= document.Length || Char.IsWhiteSpace(document.GetCharAt(offset + length)));
+				(offset + length + 1 >= document.TextLength || Char.IsWhiteSpace(document.GetCharAt(offset + length)));
 		}
 		
 		public static ISearchStrategy CreateSearchStrategy(SearchStrategyType type)

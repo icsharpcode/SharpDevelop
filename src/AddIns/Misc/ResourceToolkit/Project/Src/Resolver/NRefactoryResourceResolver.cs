@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-
 using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -17,8 +17,6 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace Hornung.ResourceToolkit.Resolver
 {
@@ -121,14 +119,16 @@ namespace Hornung.ResourceToolkit.Resolver
 			
 			while (true) {
 				
-				ExpressionResult result = ef.FindFullExpression(document.TextContent, caretOffset);
+				ExpressionResult result = ef.FindFullExpression(document.Text, caretOffset);
 				
 				if (result.Expression == null) {
 					// Try to find an expression to the left, but only
 					// in the same line.
-					if (foundStringLiteral || --caretOffset < 0 || document.GetLineNumberForOffset(caretOffset) != caretLine) {
+					if (foundStringLiteral || --caretOffset < 0)
 						return null;
-					}
+					var line = document.GetLineForOffset(caretOffset);
+					if (line.LineNumber - 1 != caretLine)
+						return null;
 					continue;
 				}
 				
@@ -155,7 +155,7 @@ namespace Hornung.ResourceToolkit.Resolver
 						
 						if (!result.Region.IsEmpty) {
 							// Go back to the start of the string literal - 2.
-							caretOffset = document.PositionToOffset(new TextLocation(result.Region.BeginColumn - 1, result.Region.BeginLine - 1)) - 2;
+							caretOffset = document.PositionToOffset(result.Region.BeginLine, result.Region.BeginColumn) - 2;
 							if (caretOffset < 0) return null;
 						} else {
 							LoggingService.Debug("ResourceToolkit: NRefactoryResourceResolver: Found string literal, but result region is empty. Trying to infer position from text.");
@@ -177,7 +177,7 @@ namespace Hornung.ResourceToolkit.Resolver
 					}
 				}
 				
-				return TryResolve(result, expr, caretLine, caretColumn, fileName, document.TextContent, ef, charTyped);
+				return TryResolve(result, expr, caretLine, caretColumn, fileName, document.Text, ef, charTyped);
 				
 			}
 		}

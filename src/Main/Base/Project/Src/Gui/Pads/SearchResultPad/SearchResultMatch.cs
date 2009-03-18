@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using System.Drawing;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace SearchAndReplace
 {
@@ -49,7 +49,7 @@ namespace SearchAndReplace
 		
 		public IDocument CreateDocument()
 		{
-			return providedDocumentInformation.CreateDocument();
+			return providedDocumentInformation.Document;
 		}
 		
 		public SearchResultMatch(int offset, int length)
@@ -62,12 +62,12 @@ namespace SearchAndReplace
 			this.length   = length;
 		}
 		
-		public virtual TextLocation GetStartPosition(IDocument document)
+		public virtual Location GetStartPosition(IDocument document)
 		{
 			return document.OffsetToPosition(Math.Min(Offset, document.TextLength));
 		}
 		
-		public virtual TextLocation GetEndPosition(IDocument document)
+		public virtual Location GetEndPosition(IDocument document)
 		{
 			return document.OffsetToPosition(Math.Min(Offset + Length, document.TextLength));
 		}
@@ -91,14 +91,14 @@ namespace SearchAndReplace
 	
 	public class SimpleSearchResultMatch : SearchResultMatch
 	{
-		TextLocation position;
+		Location position;
 		
-		public override TextLocation GetStartPosition(IDocument doc)
+		public override Location GetStartPosition(IDocument doc)
 		{
 			return position;
 		}
 		
-		public override TextLocation GetEndPosition(IDocument doc)
+		public override Location GetEndPosition(IDocument doc)
 		{
 			return position;
 		}
@@ -111,7 +111,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public SimpleSearchResultMatch(string displayText, TextLocation position) : base(0, 0)
+		public SimpleSearchResultMatch(string displayText, Location position) : base(0, 0)
 		{
 			this.position = position;
 			this.displayText = displayText;

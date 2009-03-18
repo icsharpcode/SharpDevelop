@@ -5,22 +5,21 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-
 using Hornung.ResourceToolkit.Resolver;
 using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using SearchAndReplace;
 
 namespace Hornung.ResourceToolkit.Refactoring
@@ -89,7 +88,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 						// The following line throws an exception if the file does not exist.
 						// But the file may be in an unsaved view content (which would be found by GetDocumentInformation),
 						// so we cannot simply loop on !File.Exists(...).
-						doc = FindReferencesAndRenameHelper.GetDocumentInformation(fileName).CreateDocument();
+						doc = FindReferencesAndRenameHelper.GetDocumentInformation(fileName).Document;
 					} catch (FileNotFoundException) {
 					}
 					if (doc == null) {
@@ -97,7 +96,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 						continue;
 					}
 					
-					string fileContent = doc.TextContent;
+					string fileContent = doc.Text;
 					if (String.IsNullOrEmpty(fileContent)) {
 						if (monitor != null) ++monitor.WorkDone;
 						continue;
@@ -106,8 +105,8 @@ namespace Hornung.ResourceToolkit.Refactoring
 					int pos = -1;
 					while ((pos = finder.GetNextPossibleOffset(fileName, fileContent, pos)) >= 0) {
 						
-						TextLocation docPos = doc.OffsetToPosition(pos);
-						ResourceResolveResult rrr = ResourceResolverService.Resolve(fileName, doc, docPos.Y, docPos.X, null);
+						Location docPos = doc.OffsetToPosition(pos);
+						ResourceResolveResult rrr = ResourceResolverService.Resolve(fileName, doc, docPos.Y - 1, docPos.X - 1, null);
 						
 						if (rrr != null && rrr.ResourceFileContent != null) {
 							if (finder.IsReferenceToResource(rrr)) {

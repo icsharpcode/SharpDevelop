@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Bookmarks;
@@ -186,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				IMember m = MemberLookupHelper.FindSimilarMember(derivedClass, member);
 				if (m != null && !m.Region.IsEmpty) {
 					string matchText = ambience.Convert(m);
-					SearchResultMatch res = new SimpleSearchResultMatch(matchText, new TextLocation(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
+					SearchResultMatch res = new SimpleSearchResultMatch(matchText, new Location(m.Region.BeginColumn, m.Region.BeginLine));
 					res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 					results.Add(res);
 				}

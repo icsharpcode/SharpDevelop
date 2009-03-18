@@ -35,7 +35,7 @@ namespace SearchAndReplace
 		
 		public SearchResultMatch FindNext(ITextIterator textIterator)
 		{
-			string document = textIterator.TextBuffer.GetText(0, textIterator.TextBuffer.Length);
+			string document = textIterator.Document.Text;
 			
 			while (textIterator.MoveAhead(1)) {
 				Match m = regex.Match(document, textIterator.Position);
@@ -59,7 +59,7 @@ namespace SearchAndReplace
 		
 		public SearchResultMatch FindNext(ITextIterator textIterator, int offset, int length)
 		{
-			string document = textIterator.TextBuffer.GetText(0, textIterator.TextBuffer.Length);
+			string document = textIterator.Document.GetText(0, textIterator.Document.TextLength);
 			
 			while (textIterator.MoveAhead(1) && TextSelection.IsInsideRange(textIterator.Position, offset, length)) {
 				Match m = regex.Match(document, textIterator.Position);

@@ -323,8 +323,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 				
 				if (CodeCompletionOptions.EnableCodeCompletion) {
+					TextEditorAdapter adapter = new TextEditorAdapter(this);
 					foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
-						if (ccBinding.HandleKeyPress(this, ch))
+						if (ccBinding.HandleKeyPress(adapter, ch))
 							return false;
 					}
 				}
@@ -338,8 +339,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public void StartCtrlSpaceCompletion()
 		{
+			TextEditorAdapter adapter = new TextEditorAdapter(this);
 			foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
-				if (ccBinding.CtrlSpace(this))
+				if (ccBinding.CtrlSpace(adapter))
 					return;
 			}
 		}
