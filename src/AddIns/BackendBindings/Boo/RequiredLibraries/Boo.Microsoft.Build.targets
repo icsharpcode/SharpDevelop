@@ -218,28 +218,35 @@
 	>
 		
 		<Booc
+			CheckForOverflowUnderflow="$(CheckForOverflowUnderflow)"
+			Culture="$(AssemblyCulture)"
+			DefineSymbols="$(DefineConstants)"
+			DelaySign="$(DelaySign)"
+			DisabledWarnings="$(NoWarn)"
+			Ducky="$(Ducky)"
+			EmitDebugInformation="$(DebugSymbols)"
+			GenerateFullPaths="$(GenerateFullPaths)"
+			KeyContainer="$(AssemblyKeyContainerName)"
+			KeyFile="$(AssemblyOriginatorKeyFile)"
+			NoConfig="$(NoConfig)"
+			NoStandardLib="$(NoStdLib)"
 			OutputAssembly="@(IntermediateAssembly)"
+			Pipeline="$(Pipeline)"
 			References="@(ReferencePath)"
-			Resources= "@(ManifestResourceWithNoCulture);
-			            @(ManifestNonResxWithNoCultureOnDisk);
-			            @(CompiledLicenseFile)"
+			Resources="@(ManifestResourceWithNoCulture);
+			           @(ManifestNonResxWithNoCultureOnDisk);
+			           @(CompiledLicenseFile)"
 			ResponseFiles="$(CompilerResponseFile)"
+			SourceDirectory="$(SourceDirectory)"
 			Sources="@(Compile)"
+			Strict="$(Strict)"
 			TargetType="$(OutputType)"
 			ToolPath="$(BoocToolPath)"
-			Pipeline="$(Pipeline)"
-			WhiteSpaceAgnostic="$(WhiteSpaceAgnostic)"
-			Ducky="$(Ducky)"
+			TreatWarningsAsErrors="$(TreatWarningsAsErrors)"
+			Utf8Output="$(Utf8Output)"
 			Verbosity="$(BoocVerbosity)"
-			Culture="$(AssemblyCulture)"
-			SourceDirectory="$(SourceDirectory)"
-			KeyFile="$(AssemblyOriginatorKeyFile)"
-			KeyContainer="$(AssemblyKeyContainerName)"
-			EmitDebugInformation="$(DebugSymbols)"
-			DelaySign="$(DelaySign)"
-			NoStandardLib="$(NoStdLib)"
-			DefineSymbols="$(DefineConstants)"
-			GenerateFullPaths="$(GenerateFullPaths)"
+			WarningsAsErrors="$(WarningsAsErrors)"
+			WhiteSpaceAgnostic="$(WhiteSpaceAgnostic)"
 		/>
 		
 		<Copy

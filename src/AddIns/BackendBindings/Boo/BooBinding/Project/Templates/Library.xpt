@@ -5,6 +5,7 @@
 		<Category>Boo</Category>
 		<Icon>Boo.Project.EmptyProject</Icon>
 		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<Actions>
@@ -12,12 +13,15 @@
 	</Actions>
 	
 	<Project language = "Boo">
+		<CreateActions>
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
+		</CreateActions>
+		
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
 		</PropertyGroup>
 		
 		<ProjectItems>
-			<Reference Include="System.Xml" />
 			<Reference Include="Boo.Lang.Useful" />
 		</ProjectItems>
 		
@@ -25,12 +29,11 @@
 			<File name="MyClass.boo"><![CDATA[namespace ${StandardNamespace}
 
 import System
-import System.Collections
 
 class MyClass:
 """Description of MyClass."""
 	
-	def constructor():
+	public def constructor():
 		pass
 
 ]]></File>

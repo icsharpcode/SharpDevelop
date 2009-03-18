@@ -23,6 +23,7 @@ namespace Grunwald.BooBinding
 		void Init()
 		{
 			reparseCodeSensitiveProperties.Add("Ducky");
+			reparseReferencesSensitiveProperties.Add("TargetFrameworkVersion");
 		}
 		
 		public override string Language {
@@ -59,6 +60,17 @@ namespace Grunwald.BooBinding
 				}
 			}
 			this.AddImport("$(BooBinPath)\\Boo.Microsoft.Build.targets", null);
+		}
+		
+		protected override void Create(ProjectCreateInformation information)
+		{
+			base.Create(information);
+			
+			SetProperty("Debug", null, "DefineConstants", "DEBUG;TRACE",
+			            PropertyStorageLocations.ConfigurationSpecific, false);
+			SetProperty("Release", null, "DefineConstants", "TRACE",
+			            PropertyStorageLocations.ConfigurationSpecific, false);
+			SetProperty("Strict", "True");
 		}
 		
 		void AddReference(string assembly)
