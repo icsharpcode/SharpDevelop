@@ -185,13 +185,12 @@ namespace Grunwald.BooBinding
 		
 		bool IsMultilineString(IDocument document, int offset)
 		{
-			try {
-				if ((document.GetCharAt(offset) == document.GetCharAt(offset + 1))
-				    && (document.GetCharAt(offset) == document.GetCharAt(offset + 2))) {
-					return true;
-				}
-			} catch (Exception) {
+			if (offset + 2 >= document.TextLength)
 				return false;
+			
+			if ((document.GetCharAt(offset) == document.GetCharAt(offset + 1))
+			    && (document.GetCharAt(offset) == document.GetCharAt(offset + 2))) {
+				return true;
 			}
 			
 			return false;
@@ -228,17 +227,18 @@ namespace Grunwald.BooBinding
 						switch (ch) {
 							case '/':
 								if (!inMultiString && !inSingleString) {
-									if (document.GetCharAt(offset + 1) == '*') {
-										multiCommentLevel++;
-									}
-									if (document.GetCharAt(offset + 1) == '/') {
-										inSingleComment = true;
+									if (offset + 1 < document.TextLength) {
+										if (document.GetCharAt(offset + 1) == '*') {
+											multiCommentLevel++;
+										} else if (document.GetCharAt(offset + 1) == '/') {
+											inSingleComment = true;
+										}
 									}
 								}
 								break;
 							case '*':
 								if (!inMultiString && !inSingleString) {
-									if (document.GetCharAt(offset + 1) == '/') {
+									if (offset + 1 < document.TextLength && document.GetCharAt(offset + 1) == '/') {
 										multiCommentLevel--;
 									}
 								}

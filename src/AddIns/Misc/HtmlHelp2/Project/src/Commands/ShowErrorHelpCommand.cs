@@ -55,7 +55,11 @@ namespace HtmlHelp2.Commands
 						MessageService.ShowErrorFormatted("No help available for {0}!", code);
 						return;
 					}
-					topic = list.ItemAt(1);
+					try {
+						topic = list.ItemAt(1);
+					} catch (ArgumentException) {
+						topic = null;
+					}
 					if (topic == null) {
 						MessageService.ShowErrorFormatted("No help available for {0}!", code);
 						return;
