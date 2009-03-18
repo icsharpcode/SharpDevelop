@@ -60,6 +60,7 @@
     <Compile Include="Src\PartCoverExitEventArgs.cs" />
     <Compile Include="Src\PartCoverRunner.cs" />
     <Compile Include="Src\PartCoverSettings.cs" />
+    <Compile Include="Src\RunAllTestsWithCodeCoverageCommand.cs" />
     <Compile Include="Src\SequencePointListViewSorter.cs" />
     <Compile Include="Src\ToggleCodeCoverageCommand.cs" />
     <Compile Include="Src\CodeCoverageHighlighter.cs" />

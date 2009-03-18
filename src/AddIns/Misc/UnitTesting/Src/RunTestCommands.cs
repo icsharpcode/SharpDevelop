@@ -525,4 +525,29 @@ namespace ICSharpCode.UnitTesting
 			base.Run();
 		}
 	}
+	
+	public class RunProjectTestsInPadCommand : RunTestInPadCommand, ITestTreeView
+	{
+		public override void Run()
+		{ 
+			Owner = this;
+			base.Run();
+		}
+		
+		public IMember SelectedMethod {
+			get { return null; }
+		}
+		
+		public IClass SelectedClass {
+			get { return null; }
+		}
+		
+		public IProject SelectedProject {
+			get { return ProjectService.CurrentProject; }
+		}
+		
+		public string SelectedNamespace {
+			get { return null; }
+		}
+	}
 }
