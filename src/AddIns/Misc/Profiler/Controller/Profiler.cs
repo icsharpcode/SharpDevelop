@@ -493,7 +493,8 @@ namespace ICSharpCode.Profiler.Controller
 			this.logger.Start(nativeToManagedBuffer.CreateReadingStream());
 
 			// GC references currentSession
-			this.dataCollector.Start();
+			if (this.profilerOptions.EnableDC)
+				this.dataCollector.Start();
 
 			OnSessionStarted(EventArgs.Empty);
 			return profilee;
@@ -563,7 +564,8 @@ namespace ICSharpCode.Profiler.Controller
 			Debug.WriteLine("Joining logger thread...");
 			this.logger.Join();
 			Debug.WriteLine("Logger thread joined!");
-			this.dataCollector.Join();
+			if (this.profilerOptions.EnableDC)
+				this.dataCollector.Join();
 
 			// Take last shot
 			if (this.is64Bit)

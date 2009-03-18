@@ -39,7 +39,7 @@ namespace ICSharpCode.Profiler.AddIn
 			}
 			
 			Profiler.Controller.Profiler profiler = InitProfiler(currentProj.CreateStartInfo(), profilerSessionFilePath);
-			profiler.ProfilerOptions = ProfilerOptionsWrapper.CreateProfilerOptions();
+			profiler.ProfilerOptions = General.CreateProfilerOptions();
 			profiler.Start();
 			
 			return profiler;

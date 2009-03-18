@@ -14,7 +14,10 @@ namespace ICSharpCode.Profiler.Controller
 	/// </summary>
 	public class ProfilerOptions
 	{
-		const int SHARED_MEMORY_SIZE = 64 * 1024 * 1024; // 64 mb
+		/// <summary>
+		/// Defines a default size of the shared memory.
+		/// </summary>
+		public const int SHARED_MEMORY_SIZE = 64 * 1024 * 1024; // 64 mb
 		
 		bool enableDC;
 		int sharedMemorySize;
