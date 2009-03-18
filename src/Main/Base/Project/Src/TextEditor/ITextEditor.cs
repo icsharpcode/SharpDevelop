@@ -18,10 +18,25 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public interface ITextEditor : IServiceProvider
 	{
-		ICSharpCode.TextEditor.TextAreaControl ActiveTextAreaControl { get; }
-		
 		IDocument Document { get; }
 		ITextEditorCaret Caret { get; }
+		
+		/// <summary>
+		/// Gets the start offset of the selection.
+		/// </summary>
+		int SelectionStart { get; }
+		
+		/// <summary>
+		/// Gets the length of the selection.
+		/// </summary>
+		int SelectionLength { get; }
+		
+		/// <summary>
+		/// Sets the selection.
+		/// </summary>
+		/// <param name="selectionStart">Start offset of the selection</param>
+		/// <param name="selectionLength">End offset of the selection</param>
+		void Select(int selectionStart, int selectionLength);
 		
 		string FileName { get; }
 		void ShowInsightWindow(IInsightDataProvider provider);
@@ -38,13 +53,13 @@ namespace ICSharpCode.SharpDevelop
 		
 		/// <summary>
 		/// Gets/Sets the caret line number.
-		/// Line numbers are counted starting from 0 (but this will change soon).
+		/// Line numbers are counted starting from 1.
 		/// </summary>
 		int Line { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the caret column number.
-		/// Column numbers are counted starting from 0 (but this will change soon).
+		/// Column numbers are counted starting from 1.
 		/// </summary>
 		int Column { get; set; }
 		

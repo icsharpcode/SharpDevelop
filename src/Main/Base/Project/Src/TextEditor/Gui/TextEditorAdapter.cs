@@ -5,11 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.TextEditor.Document;
 using System;
+using System.Diagnostics;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
-using System.Diagnostics;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -47,13 +48,13 @@ namespace ICSharpCode.SharpDevelop
 			}
 			
 			public int Line {
-				get { return caret.Line; }
-				set { caret.Line = value; }
+				get { return caret.Line + 1; }
+				set { caret.Line = value - 1; }
 			}
 			
 			public int Column {
-				get { return caret.Column; }
-				set { caret.Column = value; }
+				get { return caret.Column + 1; }
+				set { caret.Column = value - 1; }
 			}
 			
 			public ICSharpCode.NRefactory.Location Position {
@@ -111,7 +112,37 @@ namespace ICSharpCode.SharpDevelop
 		
 		public object GetService(Type serviceType)
 		{
-			return null;
+			if (serviceType == typeof(TextArea))
+				return sdtac.ActiveTextAreaControl.TextArea;
+			else
+				return null;
+		}
+		
+		public int SelectionStart {
+			get {
+				var sel = sdtac.ActiveTextAreaControl.SelectionManager;
+				if (sel.HasSomethingSelected)
+					return sel.SelectionCollection[0].Offset;
+				else
+					return this.Caret.Offset;
+			}
+		}
+		
+		public int SelectionLength {
+			get {
+				var sel = sdtac.ActiveTextAreaControl.SelectionManager;
+				if (sel.HasSomethingSelected)
+					return sel.SelectionCollection[0].Length;
+				else
+					return 0;
+			}
+		}
+		
+		public void Select(int selectionStart, int selectionLength)
+		{
+			var doc = sdtac.Document;
+			sdtac.ActiveTextAreaControl.SelectionManager.SetSelection(
+				doc.OffsetToPosition(selectionStart), doc.OffsetToPosition(selectionStart + selectionLength));
 		}
 	}
 }

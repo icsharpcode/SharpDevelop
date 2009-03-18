@@ -84,6 +84,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public int Line {
 			get { return position.Line; }
+			set {
+				this.Position = new TextViewPosition(new TextLocation(value, position.Column));
+			}
 		}
 		
 		/// <summary>
@@ -91,6 +94,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public int Column {
 			get { return position.Column; }
+			set {
+				this.Position = new TextViewPosition(new TextLocation(position.Line, value));
+			}
 		}
 		
 		int storedCaretOffset;
@@ -114,7 +120,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		
 		/// <summary>
-		/// Gets the caret offset.
+		/// Gets/Sets the caret offset.
 		/// </summary>
 		public int Offset {
 			get {

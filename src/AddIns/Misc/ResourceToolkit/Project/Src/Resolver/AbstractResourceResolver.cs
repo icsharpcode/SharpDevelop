@@ -51,7 +51,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <returns>A <see cref="ResourceResolveResult"/> that describes which resource is referenced by the expression at the caret in the specified editor, or <c>null</c> if that expression does not reference a (known) resource.</returns>
 		public ResourceResolveResult Resolve(ITextEditor editor, char? charTyped)
 		{
-			return this.Resolve(editor.FileName, editor.Document, editor.ActiveTextAreaControl.Caret.Line, editor.ActiveTextAreaControl.Caret.Column, charTyped);
+			return this.Resolve(editor.FileName, editor.Document, editor.Caret.Line - 1, editor.Caret.Column - 1, charTyped);
 		}
 		
 		// ********************************************************************************************************************************

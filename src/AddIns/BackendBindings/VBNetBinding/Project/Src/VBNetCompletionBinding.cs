@@ -49,7 +49,7 @@ namespace VBNetBinding
 		bool IsInComment(ITextEditor editor)
 		{
 			VBExpressionFinder ef = new VBExpressionFinder();
-			int cursor = editor.ActiveTextAreaControl.Caret.Offset - 1;
+			int cursor = editor.Caret.Offset - 1;
 			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
 		}
 		
@@ -125,11 +125,11 @@ namespace VBNetBinding
 			string expr = lineText.Substring(t2.Location.Column);
 			LoggingService.Debug("DeclarationTypeInference: >" + expr + "<");
 			ResolveResult rr = ParserService.Resolve(new ExpressionResult(expr),
-			                                         editor.ActiveTextAreaControl.Caret.Line + 1,
+			                                         editor.Caret.Line,
 			                                         t2.Location.Column, editor.FileName,
 			                                         editor.Document.Text);
 			if (rr != null && rr.ResolvedType != null) {
-				ClassFinder context = new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line, t1.Location.Column);
+				ClassFinder context = new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.Caret.Line, t1.Location.Column);
 				VBNetAmbience ambience = new VBNetAmbience();
 				if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
 					ambience.ConversionFlags = ConversionFlags.None;

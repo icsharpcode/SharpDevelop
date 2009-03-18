@@ -5,6 +5,7 @@
 //     <version>$Revision: 1965 $</version>
 // </file>
 
+using ICSharpCode.TextEditor;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -101,8 +102,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (offset < newOffset) {
 				string text = editor.Document.GetText(offset+1,newOffset-(offset+1));
 				rr.Add(ParserService.Resolve(new ExpressionResult(text),
-				                             editor.Caret.Line + 1,
-				                             editor.Caret.Column + 1,
+				                             editor.Caret.Line,
+				                             editor.Caret.Column,
 				                             editor.FileName, documentText));
 			}
 			return rr;
@@ -112,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			// Show MethodInsightWindow or IndexerInsightWindow
 			NRefactoryResolver r = new NRefactoryResolver(languageProperties);
-			Location cursorLocation = new Location(editor.Caret.Column + 1, editor.Caret.Line + 1);
+			Location cursorLocation = editor.Caret.Position;
 			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), cursorLocation.Y, cursorLocation.X)) {
 				TextReader currentMethod = r.ExtractCurrentMethod(editor.Document.Text);
 				if (currentMethod != null) {
@@ -166,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider();
 				ContextCompletionDataProvider cache = new ContextCompletionDataProvider(cdp);
 				cache.activationKey = charTyped;
-				cache.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, charTyped);
+				cache.GenerateCompletionData(editor.FileName, (TextArea)editor.GetService(typeof(TextArea)), charTyped);
 				ICompletionData[] completionData = cache.CompletionData;
 				Array.Sort(completionData, DefaultCompletionData.Compare);
 				for (int i = 0; i < completionData.Length; i++) {
@@ -207,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		protected void ShowInsight(ITextEditor editor, MethodInsightDataProvider dp, ICollection<ResolveResult> parameters, char charTyped)
 		{
 			int paramCount = parameters.Count;
-			dp.SetupDataProvider(editor.FileName, editor.ActiveTextAreaControl.TextArea);
+			dp.SetupDataProvider(editor.FileName, (TextArea)editor.GetService(typeof(TextArea)));
 			List<IMethodOrProperty> methods = dp.Methods;
 			if (methods.Count == 0) return;
 			bool overloadIsSure;
@@ -249,7 +250,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			var caret = editor.Caret;
 			NRefactoryResolver r = new NRefactoryResolver(languageProperties);
-			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line + 1, caret.Column + 1)) {
+			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line, caret.Column)) {
 				return r.CallingMember;
 			} else {
 				return null;

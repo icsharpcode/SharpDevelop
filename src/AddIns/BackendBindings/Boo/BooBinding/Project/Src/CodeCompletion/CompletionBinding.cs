@@ -22,7 +22,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		public override bool HandleKeyPress(ITextEditor editor, char ch)
 		{
 			if (ch == '[') {
-				int cursor = editor.ActiveTextAreaControl.Caret.Offset;
+				int cursor = editor.Caret.Offset;
 				for (int i = cursor - 1; i > 0; i--) {
 					char c = editor.Document.GetCharAt(i);
 					if (c == '\n' || c == '(' || c == ',') {
@@ -40,7 +40,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		bool IsInComment(ITextEditor editor)
 		{
 			ExpressionFinder ef = new ExpressionFinder(editor.FileName);
-			int cursor = editor.ActiveTextAreaControl.Caret.Offset - 1;
+			int cursor = editor.Caret.Offset - 1;
 			return ef.SimplifyCode(editor.Document.GetText(0, cursor + 1), cursor) == null;
 		}
 		

@@ -38,7 +38,7 @@ namespace CSharpBinding
 		public override bool HandleKeyPress(ITextEditor editor, char ch)
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
-			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
+			int cursor = editor.Caret.Offset;
 			ExpressionContext context = null;
 			if (ch == '(') {
 				if (context != null) {
@@ -52,25 +52,26 @@ namespace CSharpBinding
 				return false;
 			} else if (ch == '[') {
 				var line = editor.Document.GetLineForOffset(cursor);
+				/* TODO: AVALONEDIT Reimplement this
 				if (TextUtilities.FindPrevWordStart(editor.ActiveTextAreaControl.Document, cursor) <= line.Offset) {
 					// [ is first character on the line
 					// -> Attribute completion
 					editor.ShowCompletionWindow(new AttributesDataProvider(ParserService.CurrentProjectContent), ch);
 					return true;
-				}
+				}*/
 			} else if (ch == ',' && CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
 				if (InsightRefreshOnComma(editor, ch))
 					return true;
 			} else if(ch == '=') {
 				var curLine = editor.Document.GetLineForOffset(cursor);
 				string documentText = editor.Document.Text;
-				int position = editor.ActiveTextAreaControl.Caret.Offset - 2;
+				int position = editor.Caret.Offset - 2;
 				
 				if (position > 0 && (documentText[position + 1] == '+')) {
 					ExpressionResult result = ef.FindFullExpression(documentText, position);
 					
 					if(result.Expression != null) {
-						ResolveResult resolveResult = ParserService.Resolve(result, editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1, editor.FileName, documentText);
+						ResolveResult resolveResult = ParserService.Resolve(result, editor.Caret.Line, editor.Caret.Column, editor.FileName, documentText);
 						if (resolveResult != null && resolveResult.ResolvedType != null) {
 							IClass underlyingClass = resolveResult.ResolvedType.GetUnderlyingClass();
 							if (underlyingClass != null && underlyingClass.IsTypeInInheritanceTree(ParserService.CurrentProjectContent.GetClass("System.MulticastDelegate", 0))) {
@@ -84,7 +85,7 @@ namespace CSharpBinding
 					ExpressionResult result = ef.FindFullExpression(documentText, position);
 					
 					if(result.Expression != null) {
-						ResolveResult resolveResult = ParserService.Resolve(result, editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1, editor.FileName, documentText);
+						ResolveResult resolveResult = ParserService.Resolve(result, editor.Caret.Line, editor.Caret.Column, editor.FileName, documentText);
 						if (resolveResult != null && resolveResult.ResolvedType != null) {
 							if (ProvideContextCompletion(editor, resolveResult.ResolvedType, ch)) {
 								return true;
@@ -106,15 +107,15 @@ namespace CSharpBinding
 			}
 			
 			if (char.IsLetter(ch) && CodeCompletionOptions.CompleteWhenTyping) {
-				if (editor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+				if (editor.SelectionLength > 0) {
 					// allow code completion when overwriting an identifier
-					cursor = editor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].Offset;
-					int endOffset = editor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].EndOffset;
+					cursor = editor.SelectionStart;
+					int endOffset = cursor + editor.SelectionLength;
 					// but block code completion when overwriting only part of an identifier
 					if (endOffset < editor.Document.TextLength && char.IsLetterOrDigit(editor.Document.GetCharAt(endOffset)))
 						return false;
-					editor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
-					editor.Caret.Position = editor.Document.OffsetToPosition(cursor);
+					editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
+					editor.Caret.Offset = cursor;
 				}
 				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 				bool afterUnderscore = prevChar == '_';
@@ -180,7 +181,7 @@ namespace CSharpBinding
 		bool IsInComment(ITextEditor editor)
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
-			int cursor = editor.ActiveTextAreaControl.Caret.Offset - 1;
+			int cursor = editor.Caret.Offset - 1;
 			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
 		}
 		
@@ -192,7 +193,7 @@ namespace CSharpBinding
 					
 					ParseInformation parseInfo = ParserService.GetParseInformation(editor.FileName);
 					if (parseInfo != null) {
-						IClass innerMostClass = parseInfo.MostRecentCompilationUnit.GetInnermostClass(editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1);
+						IClass innerMostClass = parseInfo.MostRecentCompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 						if (innerMostClass == null) {
 							editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Namespace), ' ');
 						}
@@ -229,7 +230,7 @@ namespace CSharpBinding
 		bool ShowNewCompletion(ITextEditor editor)
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
-			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
+			int cursor = editor.Caret.Offset;
 			string documentToCursor = editor.Document.GetText(0, cursor);
 			ExpressionResult expressionResult = ef.FindExpression(documentToCursor, cursor);
 			
@@ -280,7 +281,7 @@ namespace CSharpBinding
 						string suggestedClassName = LanguageProperties.CSharp.CodeGenerator.GenerateCode(
 							CodeGenerator.ConvertType(
 								rr.ResolvedType,
-								new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1)
+								new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.Caret.Line, editor.Caret.Column)
 							), "");
 						if (suggestedClassName != c.Name) {
 							// create an IClass instance that includes the type arguments in its name
@@ -319,12 +320,12 @@ namespace CSharpBinding
 		#region "case"-keyword completion
 		bool DoCaseCompletion(ITextEditor editor)
 		{
-			ICSharpCode.TextEditor.Caret caret = editor.ActiveTextAreaControl.Caret;
+			ITextEditorCaret caret = editor.Caret;
 			NRefactoryResolver r = new NRefactoryResolver(LanguageProperties.CSharp);
-			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line + 1, caret.Column + 1)) {
+			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line, caret.Column)) {
 				AST.INode currentMember = r.ParseCurrentMember(editor.Document.Text);
 				if (currentMember != null) {
-					CaseCompletionSwitchFinder ccsf = new CaseCompletionSwitchFinder(caret.Line + 1, caret.Column + 1);
+					CaseCompletionSwitchFinder ccsf = new CaseCompletionSwitchFinder(caret.Line, caret.Column);
 					currentMember.AcceptVisitor(ccsf, null);
 					if (ccsf.bestStatement != null) {
 						r.RunLookupTableVisitor(currentMember);

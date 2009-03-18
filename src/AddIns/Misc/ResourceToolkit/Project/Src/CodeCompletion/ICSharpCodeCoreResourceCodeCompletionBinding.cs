@@ -26,7 +26,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 			
 			if (ch == ':') {
 				
-				if (editor.ActiveTextAreaControl.Caret.Offset >= 5 && editor.Document.GetText(editor.ActiveTextAreaControl.Caret.Offset-5, 5) == "${res") {
+				if (editor.Caret.Offset >= 5 && editor.Document.GetText(editor.Caret.Offset-5, 5) == "${res") {
 					
 					IResourceFileContent content = ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreLocalResourceSet(editor.FileName).ResourceFileContent;
 					#if DEBUG
