@@ -33,7 +33,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
         {
             ProfileExecutableForm form = new ProfileExecutableForm();
 
-            form.Show();
+            form.ShowDialog();
         }
     }
 }

@@ -19,11 +19,11 @@
 					label="Profile current project ..."
 				/>
 			</ComplexCondition>
-<!--			<MenuItem
+			<MenuItem
 				id="ProfileExecutable"
 				class="ICSharpCode.Profiler.AddIn.Commands.ProfileExecutable"
 				label="Select executable to profile"
-			/>-->
+			/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">

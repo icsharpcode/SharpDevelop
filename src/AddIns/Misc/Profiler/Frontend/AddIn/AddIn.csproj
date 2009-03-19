@@ -107,7 +107,7 @@
       <DependentUpon>GeneralOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\ProfilerService.cs" />
+    <Compile Include="Src\ProfilerRunner.cs" />
     <Compile Include="Src\Views\ProfilerView.xaml.cs">
       <DependentUpon>ProfilerView.xaml</DependentUpon>
     </Compile>

@@ -203,7 +203,7 @@ namespace ICSharpCode.Profiler.Controller
 		}
 		
 		/// <summary>
-		/// Creates a new profiler using the path to an executable to profile and a data provider.
+		/// Creates a new profiler using the path to an executable to profile and a data writer.
 		/// </summary>
 		public Profiler(string pathToExecutable, IProfilingDataWriter dataWriter)
 			: this(new ProcessStartInfo(pathToExecutable), dataWriter)
@@ -215,7 +215,7 @@ namespace ICSharpCode.Profiler.Controller
 		}
 		
 		/// <summary>
-		/// Creates a new profiler using a process start info of an executable and a data provider.
+		/// Creates a new profiler using a process start info of an executable and a data writer.
 		/// </summary>
 		public Profiler(ProcessStartInfo info, IProfilingDataWriter dataWriter)
 		{

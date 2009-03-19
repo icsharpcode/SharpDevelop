@@ -5,12 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Profiler.Controller.Data;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.Profiler.AddIn.Views;
+using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -30,26 +32,58 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 		/// </summary>
 		public override void Run()
 		{
-			string outputPath;
-			Profiler profiler = ProfilerService.RunCurrentProject(out outputPath);
-			IProject selectedProject = ProjectService.CurrentProject;
+			AbstractProject currentProj = ProjectService.CurrentProject as AbstractProject;
 			
-			if (profiler != null) {
-				profiler.SessionEnded += delegate {
-					string title = Path.GetFileName(outputPath);
-					profiler.DataWriter.Close();
-					ProfilingDataProvider provider = new ProfilingDataSQLiteProvider(outputPath);
-					WorkbenchSingleton.CallLater(20,
-                     () => {
-                     	WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title));
-                     	FileProjectItem file = new FileProjectItem(selectedProject, ItemType.Content, "ProfilingSessions\\" + title);
-                     	ProjectService.AddProjectItem(selectedProject, file);
-                     	ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
-                     	selectedProject.Save();
-                     }
-				   );
+			string filePart = @"ProfilingSessions\Session" +
+				DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) +
+				".sdps";
+			
+			string path = Path.Combine(currentProj.Directory, filePart);
+			
+			Directory.CreateDirectory(Path.GetDirectoryName(path));
+			
+			IProfilingDataWriter writer = new ProfilingDataSQLiteWriter(path);
+			ProfilerRunner runner = CreateRunner(writer);
+			
+			if (runner != null) {
+				runner.RunFinished += delegate {
+					string title = Path.GetFileName(path);
+					ProfilingDataProvider provider = new ProfilingDataSQLiteProvider(path);
+					
+					Action updater = () => {
+						WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title));
+						FileProjectItem file = new FileProjectItem(currentProj, ItemType.Content, "ProfilingSessions\\" + title);
+						ProjectService.AddProjectItem(currentProj, file);
+						ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+						currentProj.Save();
+					};
+					
+					WorkbenchSingleton.CallLater(20, updater);
 				};
 			}
+			
+			runner.Run();
+		}
+		
+		static ProfilerRunner CreateRunner(IProfilingDataWriter writer)
+		{
+			AbstractProject currentProj = ProjectService.CurrentProject as AbstractProject;
+			
+			if (currentProj == null)
+				return null;
+			
+			if (!currentProj.IsStartable) {
+				MessageService.ShowError("This project cannot be started, please select a startable project for Profiling!");
+				return null;
+			}
+			if (!File.Exists(currentProj.OutputAssemblyFullPath)) {
+				MessageService.ShowError("This project cannot be started because the executable file was not found, " +
+				                         "please ensure that the project and all its depencies are built correctly!");
+				return null;
+			}
+			
+			ProfilerRunner runner = new ProfilerRunner(currentProj.CreateStartInfo(), true, writer);
+			return runner;
 		}
 	}
 }

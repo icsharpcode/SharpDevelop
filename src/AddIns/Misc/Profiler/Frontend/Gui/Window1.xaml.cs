@@ -90,7 +90,7 @@ namespace ICSharpCode.Profiler.Frontend
 			string pathToDb = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(typeof(Profiler.Controller.Profiler).Assembly.Location), "output.sdps");
 			profiler.DataWriter.Close();
 			ProfilingDataSQLiteWriter writer = new ProfilingDataSQLiteWriter(pathToDb);
-			this.database.WriteTo(writer, progress => false);
+			this.database.WriteTo(writer, progress => true);
 			writer.Close();
 			this.database.Close();
 			this.provider = new ProfilingDataSQLiteProvider(pathToDb);

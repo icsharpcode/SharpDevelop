@@ -5,9 +5,9 @@
         <GroupBox Header="Data Collection" Margin="0,0,0,0" Name="groupBox1">
             <Grid>
                 <CheckBox Height="14" Margin="6,6,6,0" Name="chkEnableDC" VerticalAlignment="Top">Only collect data at the end of the session.</CheckBox>
-                <Slider Margin="161,26,94,0" Name="slSharedMemorySize" IsDirectionReversed="False" TickPlacement="Both" Minimum="64" Maximum="512" TickFrequency="64" SmallChange="64" LargeChange="128" IsSnapToTickEnabled="True" />
+                <Slider Margin="170,26,94,0" Name="slSharedMemorySize" IsDirectionReversed="False" TickPlacement="Both" Minimum="64" Maximum="512" TickFrequency="64" SmallChange="64" LargeChange="128" IsSnapToTickEnabled="True" />
                 <Label Margin="6,26,0,0" Name="label1" Height="33.723" HorizontalAlignment="Left" VerticalAlignment="Top" Width="163">Size of temporary storage file:</Label>
-                <TextBlock HorizontalAlignment="Right" Margin="0,35,24,5" Width="64" Text="{Binding Value, ElementName=slSharedMemorySize, StringFormat=\{0\} MB}" />
+                <TextBlock HorizontalAlignment="Left" Margin="250,35,24,5" Width="50" Text="{Binding Value, ElementName=slSharedMemorySize, StringFormat=\{0\} MB}" />
             </Grid>
         </GroupBox>
     </Grid>
