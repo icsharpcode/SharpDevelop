@@ -81,6 +81,7 @@
     <Compile Include="Tree\EditCommentNodesTestFixture.cs" />
     <Compile Include="Tree\InsertTextNodeAfterTestFixture.cs" />
     <Compile Include="Tree\InsertTextNodeBeforeTestFixture.cs" />
+    <Compile Include="Tree\LoadXmlFileWithMissingDtdFileRefTestFixture.cs" />
     <Compile Include="Tree\MenuCommandsTestFixture.cs" />
     <Compile Include="Tree\MouseDownTestFixture.cs" />
     <Compile Include="Tree\OwnerStatusTestFixture.cs" />
