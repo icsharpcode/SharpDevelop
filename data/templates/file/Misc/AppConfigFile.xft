@@ -7,7 +7,7 @@
 		  defaultname	= "app.config"
 		  language	= "XML"/>
 	 
-	<Description>${res:Templates.File.Xml.AppConfigFile.Description}</Description>
+	<Description>${res:Templates.File.Xml.AppConfig.Description}</Description>
 
 	<Files>
 		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
