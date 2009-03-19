@@ -48,7 +48,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (!e.Handled && e.Text.Length == 1) {
 				foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 					if (cc.HandleKeyPress(textEditorAdapter, e.Text[0])) {
-						e.Handled = true;
+						// Don't set e.Handled - we still want to insert the typed text.
+						// This isn't optimal, but that's how the ICodeCompletionBinding interface
+						// has always worked; and I don't want to change too much at once.
 						return;
 					}
 				}

@@ -17,10 +17,10 @@ Additionally, the class HighlightingColorizer provides integration of the highli
     </namespaceSummaries>
     <conceptualContent snippetFile="">
         <topics defaultTopic="c52241ea-3eba-4ddf-b463-6349cbff38fd">
-            <topic id="c52241ea-3eba-4ddf-b463-6349cbff38fd" file="..\..\ICSharpCode.AvalonEdit\documentation\Introduction.xml" revision="1" visible="True" />
-            <topic id="5b1854b4-884c-4713-b921-b28e96a1b43e" file="..\..\ICSharpCode.AvalonEdit\documentation\Coordinate Systems.xml" revision="1" visible="True" />
-            <topic id="c06e9832-9ef0-4d65-ac2e-11f7ce9c7774" file="..\..\ICSharpCode.AvalonEdit\documentation\TextRendering.xml" revision="1" visible="True" />
-            <topic id="4d4ceb51-154d-43f0-b876-ad9640c5d2d8" file="..\..\ICSharpCode.AvalonEdit\documentation\SyntaxHighlighting.xml" revision="1" visible="True" />
+            <topic id="c52241ea-3eba-4ddf-b463-6349cbff38fd" file="..\src\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\documentation\Introduction.xml" revision="1" visible="True" />
+            <topic id="5b1854b4-884c-4713-b921-b28e96a1b43e" file="..\src\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\documentation\Coordinate Systems.xml" revision="1" visible="True" />
+            <topic id="c06e9832-9ef0-4d65-ac2e-11f7ce9c7774" file="..\src\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\documentation\TextRendering.xml" revision="1" visible="True" />
+            <topic id="4d4ceb51-154d-43f0-b876-ad9640c5d2d8" file="..\src\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\documentation\SyntaxHighlighting.xml" revision="1" visible="True" />
         </topics>
     </conceptualContent>
     <componentConfigurations>
@@ -31,7 +31,7 @@ Additionally, the class HighlightingColorizer provides integration of the highli
     </componentConfigurations>
     <ProjectSummary />
     <MissingTags>Summary, AutoDocumentCtors, Namespace</MissingTags>
-    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected</VisibleItems>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected</VisibleItems>
     <HtmlHelp1xCompilerPath path="" />
     <HtmlHelp2xCompilerPath path="" />
     <OutputPath>.\Help\</OutputPath>
@@ -51,7 +51,7 @@ Additionally, the class HighlightingColorizer provides integration of the highli
     <HtmlHelpName>AvalonEdit Documentation</HtmlHelpName>
     <Language>en-US</Language>
     <CopyrightHref />
-    <CopyrightText>Copyright 2008, Daniel Grunwald</CopyrightText>
+    <CopyrightText>Copyright 2008-2009, Daniel Grunwald</CopyrightText>
     <FeedbackEMailAddress />
     <FeedbackEMailLinkText />
     <HeaderText />

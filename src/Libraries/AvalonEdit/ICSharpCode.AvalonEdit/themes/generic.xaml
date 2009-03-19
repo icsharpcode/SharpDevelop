@@ -4,6 +4,7 @@
 >
 	<ResourceDictionary.MergedDictionaries>
 		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/Gui/TextEditor.xaml" />
+		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/CodeCompletion/CompletionList.xaml" />
 	</ResourceDictionary.MergedDictionaries>
 	
 	<Style TargetType="{x:Type gui:LineNumberMargin}">

@@ -21,7 +21,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// Runtimes:
 	/// n = number of lines in the document
 	/// </summary>
-	public sealed class TextDocument
+	public sealed class TextDocument : ITextSource
 	{
 		#region Thread ownership
 		readonly object lockObject = new object();
@@ -84,20 +84,17 @@ namespace ICSharpCode.AvalonEdit.Document
 		#endregion
 		
 		#region Text
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Int32.ToString")]
 		void VerifyRange(int offset, int length)
 		{
 			if (offset < 0 || offset > textBuffer.Length) {
-				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + textBuffer.Length.ToString());
+				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + textBuffer.Length.ToString(CultureInfo.InvariantCulture));
 			}
 			if (length < 0 || offset + length > textBuffer.Length) {
-				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset(" + offset + ")+length <= " + textBuffer.Length.ToString());
+				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset(" + offset + ")+length <= " + textBuffer.Length.ToString(CultureInfo.InvariantCulture));
 			}
 		}
 		
-		/// <summary>
-		/// Retrieves the text for a portion of the document.
-		/// </summary>
+		/// <inheritdoc/>
 		public string GetText(int offset, int length)
 		{
 			VerifyAccess();
@@ -115,9 +112,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			return GetText(segment.Offset, segment.Length);
 		}
 		
-		/// <summary>
-		/// Gets a character at the specified position in the document.
-		/// </summary>
+		/// <inheritdoc/>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Int32.ToString")]
 		public char GetCharAt(int offset)
 		{
@@ -141,7 +136,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Get: O(n)
 		/// Set: O(n * log n)
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
 		public string Text {
 			get {
 				VerifyAccess();
@@ -155,15 +149,10 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
-		/// <summary>
-		/// Is raised when the Text property changes.
-		/// </summary>
+		/// <inheritdoc/>
 		public event EventHandler TextChanged;
 		
-		/// <summary>
-		/// Gets the total text length.
-		/// Runtime: O(1).
-		/// </summary>
+		/// <inheritdoc/>
 		public int TextLength {
 			get {
 				VerifyAccess();

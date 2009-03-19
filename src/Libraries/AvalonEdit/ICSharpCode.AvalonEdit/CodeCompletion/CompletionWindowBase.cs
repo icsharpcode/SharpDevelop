@@ -44,6 +44,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				throw new ArgumentNullException("textArea");
 			this.TextArea = textArea;
 			parentWindow = Window.GetWindow(textArea);
+			this.Owner = parentWindow;
+			this.AddHandler(MouseUpEvent, new MouseButtonEventHandler(OnMouseUp), true);
 		}
 		
 		#region Event Handlers
@@ -55,6 +57,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.TextArea.PreviewLostKeyboardFocus += TextAreaLostFocus;
 			this.TextArea.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
 			this.TextArea.TextView.DocumentChanged += TextViewDocumentChanged;
+			this.TextArea.PreviewKeyDown += textArea_PreviewKeyDown;
+			this.TextArea.PreviewKeyUp += textArea_PreviewKeyUp;
 			if (parentWindow != null) {
 				parentWindow.LocationChanged += parentWindow_LocationChanged;
 			}
@@ -68,9 +72,21 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.TextArea.PreviewLostKeyboardFocus -= TextAreaLostFocus;
 			this.TextArea.TextView.ScrollOffsetChanged -= TextViewScrollOffsetChanged;
 			this.TextArea.TextView.DocumentChanged -= TextViewDocumentChanged;
+			this.TextArea.PreviewKeyDown -= textArea_PreviewKeyDown;
+			this.TextArea.PreviewKeyUp -= textArea_PreviewKeyUp;
 			if (parentWindow != null) {
 				parentWindow.LocationChanged -= parentWindow_LocationChanged;
 			}
+		}
+		
+		void textArea_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			OnKeyDown(e);
+		}
+		
+		void textArea_PreviewKeyUp(object sender, KeyEventArgs e)
+		{
+			OnKeyUp(e);
 		}
 		
 		void TextViewScrollOffsetChanged(object sender, EventArgs e)
@@ -101,10 +117,25 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		#endregion
 		
+		// Special handler: handledEventsToo
+		void OnMouseUp(object sender, MouseButtonEventArgs e)
+		{
+			ActiveParentWindow();
+		}
+		
+		/// <summary>
+		/// Activates the parent window.
+		/// </summary>
+		protected virtual void ActiveParentWindow()
+		{
+			if (parentWindow != null)
+				parentWindow.Activate();
+		}
+		
 		void CloseIfFocusLost()
 		{
-			Debug.WriteLine("CloseIfFocusLost");
-			if (!this.IsActive && IsTextAreaFocused) {
+			Debug.WriteLine("CloseIfFocusLost: this.IsActive=" + this.IsActive + " IsTextAreaFocused=" + IsTextAreaFocused);
+			if (!this.IsActive && !IsTextAreaFocused) {
 				Close();
 			}
 		}
@@ -130,6 +161,16 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			base.OnClosed(e);
 			DetachEvents();
+		}
+		
+		/// <inheritdoc/>
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if (!e.Handled && e.Key == Key.Escape) {
+				e.Handled = true;
+				Close();
+			}
 		}
 		
 		Point visualLocation, visualLocationTop;

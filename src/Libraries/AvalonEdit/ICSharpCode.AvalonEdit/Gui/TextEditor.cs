@@ -6,8 +6,10 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,6 +17,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -658,6 +661,23 @@ namespace ICSharpCode.AvalonEdit
 			using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None)) {
 				Save(fs);
 			}
+		}
+		#endregion
+
+		#region Code Completion
+		/// <summary>
+		/// Creates a completion window. Call .Show() on the returned window to display it.
+		/// </summary>
+		/// <param name="data">The list of completion items.</param>
+		/// <exception cref="ArgumentNullException">data is null</exception>
+		/// <returns>The completion window that was opened.</returns>
+		public CompletionWindow CreateCompletionWindow(IEnumerable<ICompletionData> data)
+		{
+			if (data == null)
+				throw new ArgumentNullException("data");
+			CompletionWindow window = new CompletionWindow(textArea);
+			window.CompletionList.CompletionData.AddRange(data);
+			return window;
 		}
 		#endregion
 	}

@@ -92,13 +92,13 @@ namespace CSharpBinding
 					}
 				}
 			} else if (ch == '.') {
-				editor.ShowCompletionWindow(new CSharpCodeCompletionDataProvider().GenerateCompletionList(editor));
+				new CSharpCodeCompletionDataProvider().ShowCompletion(editor);
 				return true;
 			} else if (ch == '>') {
 				if (IsInComment(editor)) return false;
 				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 				if (prevChar == '-') {
-					editor.ShowCompletionWindow(new PointerArrowCompletionDataProvider().GenerateCompletionList(editor));
+					new PointerArrowCompletionDataProvider().ShowCompletion(editor);
 					
 					return true;
 				}

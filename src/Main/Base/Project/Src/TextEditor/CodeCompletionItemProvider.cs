@@ -14,10 +14,20 @@ using System.Collections;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// Allows creating an <see cref="ICompletionDataList"/> from code-completion information.
+	/// Allows creating a <see cref="ICompletionDataList"/> from code-completion information.
 	/// </summary>
 	public class CodeCompletionItemProvider
 	{
+		/// <summary>
+		/// Shows code completion for the specified editor.
+		/// </summary>
+		public virtual void ShowCompletion(ITextEditor editor)
+		{
+			ICompletionItemList itemList = GenerateCompletionList(editor);
+			if (itemList != null)
+				editor.ShowCompletionWindow(itemList);
+		}
+		
 		public virtual ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
 			if (editor == null)

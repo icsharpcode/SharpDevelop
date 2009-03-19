@@ -29,6 +29,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		const string formatingStrategyPath   = "/AddIns/DefaultTextEditor/Formatter";
 		const string advancedHighlighterPath = "/AddIns/DefaultTextEditor/AdvancedHighlighter";
 		
+		readonly TextEditorAdapter adapter;
+		
 		QuickClassBrowserPanel quickClassBrowserPanel = null;
 		Control customQuickClassBrowserPanel = null;
 		ErrorDrawer errorDrawer;
@@ -63,6 +65,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		protected SharpDevelopTextAreaControl(bool enableFolding, bool sdBookmarks)
 		{
+			adapter = new TextEditorAdapter(this);
+			
 			Document.FoldingManager.FoldingStrategy = new ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ParserFoldingStrategy();
 			Document.BookmarkManager.Factory = new Bookmarks.SDBookmarkFactory(Document.BookmarkManager);
 			Document.BookmarkManager.Added   += new BookmarkEventHandler(BookmarkAdded);
@@ -323,7 +327,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 				
 				if (CodeCompletionOptions.EnableCodeCompletion) {
-					TextEditorAdapter adapter = new TextEditorAdapter(this);
 					foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
 						if (ccBinding.HandleKeyPress(adapter, ch))
 							return false;
@@ -339,7 +342,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public void StartCtrlSpaceCompletion()
 		{
-			TextEditorAdapter adapter = new TextEditorAdapter(this);
 			foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
 				if (ccBinding.CtrlSpace(adapter))
 					return;

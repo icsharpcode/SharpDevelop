@@ -215,7 +215,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			viewContents = new ViewContentCollection(this);
 			
 			OnTitleNameChanged(this, EventArgs.Empty);
-			this.ContextMenu = MenuService.CreateContextMenu(this, contextMenuPath);
+		}
+		
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+			
+			if (this.DragEnabledArea != null) {
+				this.DragEnabledArea.ContextMenu = MenuService.CreateContextMenu(this, contextMenuPath);
+				UpdateTitle(); // set tooltip
+			}
 		}
 		
 		void Dispose()
@@ -267,7 +276,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			IViewContent content = ActiveViewContent;
 			if (content != null) {
-				base.ToolTip = content.PrimaryFileName;
+				if (this.DragEnabledArea != null) {
+					this.DragEnabledArea.ToolTip = content.PrimaryFileName;
+				}
 				
 				string newTitle = content.TitleName;
 				

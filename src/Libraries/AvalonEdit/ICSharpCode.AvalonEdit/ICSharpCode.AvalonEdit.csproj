@@ -73,17 +73,19 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CodeCompletion\CompletionListBox.cs" />
     <Compile Include="CodeCompletion\CompletionWindowBase.cs" />
     <Compile Include="CodeCompletion\CompletionList.cs" />
-    <Compile Include="CodeCompletion\CompletionWindow.xaml.cs">
-      <DependentUpon>CompletionWindow.xaml</DependentUpon>
+    <Compile Include="CodeCompletion\CompletionWindow.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CodeCompletion\ICodeCompletionData.cs" />
     <Compile Include="Document\DocumentChangeOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
     <Compile Include="Document\ILineTracker.cs" />
     <Compile Include="Document\ISegment.cs" />
+    <Compile Include="Document\ITextSource.cs" />
     <Compile Include="Document\IUndoableOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
@@ -276,6 +278,7 @@
     <Compile Include="Utils\HtmlClipboard.cs" />
     <Compile Include="Utils\ImmutableStack.cs" />
     <Compile Include="Utils\NullSafeCollection.cs" />
+    <Compile Include="Utils\TextUtilities.cs" />
     <Compile Include="Utils\WeakEventManagerBase.cs" />
     <Compile Include="Utils\PixelSnapHelpers.cs" />
     <Compile Include="Utils\ThrowUtil.cs" />
@@ -318,7 +321,7 @@
     <Folder Include="CodeCompletion" />
     <Folder Include="Utils" />
     <Folder Include="themes" />
-    <Page Include="CodeCompletion\CompletionWindow.xaml" />
+    <Page Include="CodeCompletion\CompletionList.xaml" />
     <Page Include="Gui\TextEditor.xaml" />
     <Page Include="themes\generic.xaml" />
   </ItemGroup>
