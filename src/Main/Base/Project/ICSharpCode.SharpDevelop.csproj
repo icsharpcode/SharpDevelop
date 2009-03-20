@@ -717,6 +717,7 @@
     <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
+    <Compile Include="Src\Util\WorkerThread.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
     <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
