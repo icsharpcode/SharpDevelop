@@ -33,17 +33,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return true;
 			
 			IReturnType baseType = BaseType;
-			bool tmp = (baseType != null && TryEnter()) ? baseType.Equals(other) : false;
-			Leave();
-			return tmp;
+			using (var l = busyManager.Enter(this)) {
+				return (l.Success && baseType != null) ? baseType.Equals(other) : false;
+			}
 		}
 		
 		public override int GetHashCode()
 		{
 			IReturnType baseType = BaseType;
-			int tmp = (baseType != null && TryEnter()) ? baseType.GetHashCode() : 0;
-			Leave();
-			return tmp;
+			using (var l = busyManager.Enter(this)) {
+				return (l.Success && baseType != null) ? baseType.GetHashCode() : 0;
+			}
 		}
 		
 		protected int GetObjectHashCode()
@@ -52,121 +52,103 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		// Required to prevent stack overflow on inferrence cycles
-		bool busy;
+		[ThreadStatic] static BusyManager _busyManager;
 		
-		// keep this method as small as possible, it should be inlined!
-		bool TryEnter()
-		{
-			if (busy) {
-				PrintTryEnterWarning();
-				return false;
-			} else {
-				busy = true;
-				return true;
-			}
-		}
-		
-		void Leave()
-		{
-			busy = false;
-		}
-		
-		void PrintTryEnterWarning()
-		{
-			LoggingService.Info("TryEnter failed on " + ToString());
+		static BusyManager busyManager {
+			get { return _busyManager ?? (_busyManager = new BusyManager()); }
 		}
 		
 		public virtual string FullyQualifiedName {
 			get {
 				IReturnType baseType = BaseType;
-				string tmp = (baseType != null && TryEnter()) ? baseType.FullyQualifiedName : "?";
-				Leave();
-				return tmp;
+				using (var l = busyManager.Enter(this)) {
+					return (l.Success && baseType != null) ? baseType.FullyQualifiedName : "?";
+				}
 			}
 		}
 		
 		public virtual string Name {
 			get {
 				IReturnType baseType = BaseType;
-				string tmp = (baseType != null && TryEnter()) ? baseType.Name : "?";
-				Leave();
-				return tmp;
+				using (var l = busyManager.Enter(this)) {
+					return (l.Success && baseType != null) ? baseType.Name : "?";
+				}
 			}
 		}
 		
 		public virtual string Namespace {
 			get {
 				IReturnType baseType = BaseType;
-				string tmp = (baseType != null && TryEnter()) ? baseType.Namespace : "?";
-				Leave();
-				return tmp;
+				using (var l = busyManager.Enter(this)) {
+					return (l.Success && baseType != null) ? baseType.Namespace : "?";
+				}
 			}
 		}
 		
 		public virtual string DotNetName {
 			get {
 				IReturnType baseType = BaseType;
-				string tmp = (baseType != null && TryEnter()) ? baseType.DotNetName : "?";
-				Leave();
-				return tmp;
+				using (var l = busyManager.Enter(this)) {
+					return (l.Success && baseType != null) ? baseType.DotNetName : "?";
+				}
 			}
 		}
 		
 		public virtual int TypeArgumentCount {
 			get {
 				IReturnType baseType = BaseType;
-				int tmp = (baseType != null && TryEnter()) ? baseType.TypeArgumentCount : 0;
-				Leave();
-				return tmp;
+				using (var l = busyManager.Enter(this)) {
+					return (l.Success && baseType != null) ? baseType.TypeArgumentCount : 0;
+				}
 			}
 		}
 		
 		public virtual IClass GetUnderlyingClass()
 		{
 			IReturnType baseType = BaseType;
-			IClass tmp = (baseType != null && TryEnter()) ? baseType.GetUnderlyingClass() : null;
-			Leave();
-			return tmp;
+			using (var l = busyManager.Enter(this)) {
+				return (l.Success && baseType != null) ? baseType.GetUnderlyingClass() : null;
+			}
 		}
 		
 		public virtual List<IMethod> GetMethods()
 		{
 			IReturnType baseType = BaseType;
-			List<IMethod> tmp = (baseType != null && TryEnter()) ? baseType.GetMethods() : new List<IMethod>();
-			Leave();
-			return tmp;
+			using (var l = busyManager.Enter(this)) {
+				return (l.Success && baseType != null) ? baseType.GetMethods() : new List<IMethod>();
+			}
 		}
 		
 		public virtual List<IProperty> GetProperties()
 		{
 			IReturnType baseType = BaseType;
-			List<IProperty> tmp = (baseType != null && TryEnter()) ? baseType.GetProperties() : new List<IProperty>();
-			Leave();
-			return tmp;
+			using (var l = busyManager.Enter(this)) {
+				return (l.Success && baseType != null) ? baseType.GetProperties() : new List<IProperty>();
+			}
 		}
 		
 		public virtual List<IField> GetFields()
 		{
 			IReturnType baseType = BaseType;
-			List<IField> tmp = (baseType != null && TryEnter()) ? baseType.GetFields() : new List<IField>();
-			Leave();
-			return tmp;
+			using (var l = busyManager.Enter(this)) {
+				return (l.Success && baseType != null) ? baseType.GetFields() : new List<IField>();
+			}
 		}
 		
 		public virtual List<IEvent> GetEvents()
 		{
 			IReturnType baseType = BaseType;
-			List<IEvent> tmp = (baseType != null && TryEnter()) ? baseType.GetEvents() : new List<IEvent>();
-			Leave();
-			return tmp;
+			using (var l = busyManager.Enter(this)) {
+				return (l.Success && baseType != null) ? baseType.GetEvents() : new List<IEvent>();
+			}
 		}
 		
 		public virtual bool IsDefaultReturnType {
 			get {
 				IReturnType baseType = BaseType;
-				bool tmp = (baseType != null && TryEnter()) ? baseType.IsDefaultReturnType : false;
-				Leave();
-				return tmp;
+				using (var l = busyManager.Enter(this)) {
+					return (l.Success && baseType != null) ? baseType.IsDefaultReturnType : false;
+				}
 			}
 		}
 		
@@ -178,13 +160,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public virtual T CastToDecoratingReturnType<T>() where T : DecoratingReturnType
 		{
 			IReturnType baseType = BaseType;
-			T temp;
-			if (baseType != null && TryEnter())
-				temp = baseType.CastToDecoratingReturnType<T>();
-			else
-				temp = null;
-			Leave();
-			return temp;
+			using (var l = busyManager.Enter(this)) {
+				return (l.Success && baseType != null) ? baseType.CastToDecoratingReturnType<T>() : null;
+			}
 		}
 		
 		
@@ -221,18 +199,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public virtual bool? IsReferenceType {
 			get {
 				IReturnType baseType = BaseType;
-				bool? tmp = (baseType != null && TryEnter()) ? baseType.IsReferenceType : null;
-				Leave();
-				return tmp;
+				using (var l = busyManager.Enter(this)) {
+					return (l.Success && baseType != null) ? baseType.IsReferenceType : null;
+				}
 			}
 		}
 		
 		public virtual IReturnType GetDirectReturnType()
 		{
 			IReturnType baseType = BaseType;
-			IReturnType tmp = (baseType != null && TryEnter()) ? baseType.GetDirectReturnType() : UnknownReturnType.Instance;
-			Leave();
-			return tmp;
+			using (var l = busyManager.Enter(this)) {
+				return (l.Success && baseType != null) ? baseType.GetDirectReturnType() : UnknownReturnType.Instance;
+			}
 		}
 	}
 }

@@ -62,6 +62,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\BusyManager.cs" />
     <Compile Include="Src\CSharp\OverloadResolution.cs" />
     <Compile Include="Src\CSharp\TypeInference.cs" />
     <Compile Include="Src\DomCache.cs" />

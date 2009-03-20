@@ -28,24 +28,35 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.pc = pc;
 		}
 		
+		[ThreadStatic] static BusyManager _busyManager;
+		
+		static BusyManager busyManager {
+			get { return _busyManager ?? (_busyManager = new BusyManager()); }
+		}
+		
 		public override IReturnType BaseType {
 			get {
-				// get element type from enumerableType
-				if (enumerableType.IsArrayReturnType)
-					return enumerableType.CastToArrayReturnType().ArrayElementType;
-				
-				IClass c = enumerableType.GetUnderlyingClass();
-				if (c == null)
+				using (var l = busyManager.Enter(this)) {
+					if (!l.Success)
+						return null;
+					
+					// get element type from enumerableType
+					if (enumerableType.IsArrayReturnType)
+						return enumerableType.CastToArrayReturnType().ArrayElementType;
+					
+					IClass c = enumerableType.GetUnderlyingClass();
+					if (c == null)
+						return null;
+					IClass genumerable = pc.GetClass("System.Collections.Generic.IEnumerable", 1);
+					if (c.IsTypeInInheritanceTree(genumerable)) {
+						return MemberLookupHelper.GetTypeParameterPassedToBaseClass(enumerableType, genumerable, 0);
+					}
+					IClass enumerable = pc.GetClass("System.Collections.IEnumerable", 0);
+					if (c.IsTypeInInheritanceTree(enumerable)) {
+						return pc.SystemTypes.Object;
+					}
 					return null;
-				IClass genumerable = pc.GetClass("System.Collections.Generic.IEnumerable", 1);
-				if (c.IsTypeInInheritanceTree(genumerable)) {
-					return MemberLookupHelper.GetTypeParameterPassedToBaseClass(enumerableType, genumerable, 0);
 				}
-				IClass enumerable = pc.GetClass("System.Collections.IEnumerable", 0);
-				if (c.IsTypeInInheritanceTree(enumerable)) {
-					return pc.SystemTypes.Object;
-				}
-				return null;
 			}
 		}
 		
