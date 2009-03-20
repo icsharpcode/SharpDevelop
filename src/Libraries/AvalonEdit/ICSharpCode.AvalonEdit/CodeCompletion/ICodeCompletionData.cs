@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Windows.Media;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {
@@ -14,6 +15,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 	/// </summary>
 	public interface ICompletionData
 	{
+		/// <summary>
+		/// Gets the image.
+		/// </summary>
+		ImageSource Image { get; }
+		
 		/// <summary>
 		/// Gets the text. This property is used to filter the list of visible elements.
 		/// </summary>

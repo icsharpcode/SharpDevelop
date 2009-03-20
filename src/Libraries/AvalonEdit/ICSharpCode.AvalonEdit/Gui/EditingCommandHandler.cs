@@ -6,24 +6,37 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Gui
 {
+	/// <summary>
+	/// We re-use the CommandBinding and InputBinding instances between multiple text areas,
+	/// so this class is static.
+	/// </summary>
 	static class EditingCommandHandler
 	{
-		public static readonly CommandBindingCollection CommandBindings = new CommandBindingCollection();
-		public static readonly InputBindingCollection InputBindings = new InputBindingCollection();
+		/// <summary>
+		/// Creates a new <see cref="TextAreaInputHandler"/> for the text area.
+		/// </summary>
+		public static TextAreaInputHandler Create(TextArea textArea)
+		{
+			TextAreaInputHandler handler = new TextAreaInputHandler(textArea);
+			handler.CommandBindings.AddRange(CommandBindings);
+			handler.InputBindings.AddRange(InputBindings);
+			return handler;
+		}
+		
+		static readonly List<CommandBinding> CommandBindings = new List<CommandBinding>();
+		static readonly List<InputBinding> InputBindings = new List<InputBinding>();
 		
 		static void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
 		{

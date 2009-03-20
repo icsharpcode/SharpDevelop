@@ -38,6 +38,11 @@ namespace ICSharpCode.SharpDevelop
 		
 		public virtual ExpressionResult GetExpression(ITextEditor editor)
 		{
+			return GetExpressionFromOffset(editor, editor.Caret.Offset);
+		}
+		
+		protected ExpressionResult GetExpressionFromOffset(ITextEditor editor, int offset)
+		{
 			if (editor == null)
 				throw new ArgumentNullException("editor");
 			IDocument document = editor.Document;
@@ -45,7 +50,7 @@ namespace ICSharpCode.SharpDevelop
 			if (expressionFinder == null) {
 				return ExpressionResult.Empty;
 			} else {
-				return expressionFinder.FindExpression(document.GetText(0, editor.Caret.Offset), editor.Caret.Offset);
+				return expressionFinder.FindExpression(document.GetText(0, offset), offset);
 			}
 		}
 		
@@ -90,6 +95,11 @@ namespace ICSharpCode.SharpDevelop
 		{
 			return new CodeCompletionItem(entity);
 		}
+	}
+	
+	public class DotCodeCompletionItemProvider : CodeCompletionItemProvider
+	{
+		
 	}
 	
 	public class CodeCompletionItem : ICompletionItem

@@ -5,14 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.CodeCompletion;
 using System;
-using System.Linq;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
+
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using System.Windows.Media;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -107,9 +109,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (data == null || !data.Items.Any())
 				return;
-			CompletionWindow window = textEditor.CreateCompletionWindow(data.Items.Select(i => (ICompletionData)new CodeCompletionDataAdapter(i)));
+			CompletionWindow window = CreateCompletionWindow(data);
 			if (window != null)
 				window.Show();
+		}
+		
+		protected virtual CompletionWindow CreateCompletionWindow(ICompletionItemList data)
+		{
+			return textEditor.CreateCompletionWindow(data.Items.Select(i => (ICompletionData)new CodeCompletionDataAdapter(i)));;
 		}
 		
 		public string GetWordBeforeCaret()
@@ -161,6 +168,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public object Description {
 			get { return item.Description; }
+		}
+		
+		public ImageSource Image {
+			get { return null; }
 		}
 	}
 }

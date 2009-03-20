@@ -5,7 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
+using ICSharpCode.AvalonEdit.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -25,6 +27,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public override string FileName {
 			get { return codeEditor.FileName; }
+		}
+		
+		protected override CompletionWindow CreateCompletionWindow(ICompletionItemList data)
+		{
+			CompletionWindow window = base.CreateCompletionWindow(data);
+			codeEditor.NotifyCompletionWindowOpened(window);
+			return window;
 		}
 	}
 }

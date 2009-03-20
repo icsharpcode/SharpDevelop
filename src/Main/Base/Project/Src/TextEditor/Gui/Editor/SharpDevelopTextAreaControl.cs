@@ -328,8 +328,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				
 				if (CodeCompletionOptions.EnableCodeCompletion) {
 					foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
-						if (ccBinding.HandleKeyPress(adapter, ch))
+						CodeCompletionKeyPressResult result = ccBinding.HandleKeyPress(adapter, ch);
+						if (result == CodeCompletionKeyPressResult.Completed)
 							return false;
+						else if (result == CodeCompletionKeyPressResult.EatKey)
+							return true;
 					}
 				}
 			} catch (Exception ex) {

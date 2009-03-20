@@ -32,14 +32,14 @@ namespace VBNetBinding
 			this.EnableIndexerInsight = false;
 		}
 		
-		public override bool HandleKeyPress(ITextEditor editor, char ch)
+		public override CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			if(ch == '(' && EnableMethodInsight && CodeCompletionOptions.InsightEnabled) {
 				editor.ShowInsightWindow(new MethodInsightDataProvider());
-				return true;
+				return CodeCompletionKeyPressResult.Completed;
 			} else if(ch == ',' && CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
 				if (InsightRefreshOnComma(editor, ch))
-					return true;
+					return CodeCompletionKeyPressResult.Completed;
 			} else if (ch == '\n') {
 				TryDeclarationTypeInference(editor, editor.Document.GetLineForOffset(editor.Caret.Offset));
 			}

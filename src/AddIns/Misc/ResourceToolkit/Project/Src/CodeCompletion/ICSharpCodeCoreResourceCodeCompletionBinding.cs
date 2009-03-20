@@ -21,7 +21,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 	public class ICSharpCodeCoreResourceCodeCompletionBinding : DefaultCodeCompletionBinding
 	{
 		
-		public override bool HandleKeyPress(ITextEditor editor, char ch)
+		public override CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			
 			if (ch == ':') {
@@ -49,7 +49,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 					
 					if (content != null) {
 						editor.ShowCompletionWindow(new ResourceCodeCompletionDataProvider(content, null, null), ch);
-						return true;
+						return CodeCompletionKeyPressResult.Completed;
 					}
 					
 				}
@@ -62,13 +62,13 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 				    ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreLocalResourceSet(editor.FileName).ResourceFileContent != null) {
 					
 					editor.ShowCompletionWindow(new ICSharpCodeCoreTagCompletionDataProvider(), ch);
-					return true;
+					return CodeCompletionKeyPressResult.Completed;
 					
 				}
 				
 			}
 			
-			return false;
+			return CodeCompletionKeyPressResult.None;
 		}
 		
 	}

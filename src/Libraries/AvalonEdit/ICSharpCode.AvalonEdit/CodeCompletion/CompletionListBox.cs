@@ -33,6 +33,19 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		
 		/// <summary>
+		/// Gets the number of the first visible item.
+		/// </summary>
+		public int FirstVisibleItem {
+			get {
+				if (scrollViewer == null) {
+					return 0;
+				} else {
+					return (int)(this.Items.Count * scrollViewer.VerticalOffset / scrollViewer.ExtentHeight);
+				}
+			}
+		}
+		
+		/// <summary>
 		/// Gets the number of visible items.
 		/// </summary>
 		public int VisibleItemCount {

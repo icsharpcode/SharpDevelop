@@ -19,7 +19,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			this.EnableXmlCommentCompletion = false;
 		}
 		
-		public override bool HandleKeyPress(ITextEditor editor, char ch)
+		public override CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			if (ch == '[') {
 				int cursor = editor.Caret.Offset;
@@ -28,7 +28,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					if (c == '\n' || c == '(' || c == ',') {
 						// -> Attribute completion
 						editor.ShowCompletionWindow(new AttributesDataProvider(ExpressionFinder.BooAttributeContext.Instance), ch);
-						return true;
+						return CodeCompletionKeyPressResult.Completed;
 					}
 					if (!char.IsWhiteSpace(c))
 						break;
@@ -52,12 +52,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 					return true;
 				case "as":
 				case "isa":
-					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
-					return true;
-				default:
-					return base.HandleKeyword(editor, word);
+					if (!IsInComment(editor)) {
+						editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
+						return true;
+					}
+					break;
 			}
+			return base.HandleKeyword(editor, word);
 		}
 	}
 }

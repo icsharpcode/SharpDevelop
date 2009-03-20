@@ -41,7 +41,10 @@
 					<cc:CompletionListBox x:Name="PART_ListBox" ItemContainerStyle="{StaticResource CompletionListBoxItem}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
-								<ContentControl Content="{Binding Content}"/>
+								<StackPanel Orientation="Horizontal">
+									<Image Source="{Binding Image}"/>
+									<ContentControl Content="{Binding Content}"/>
+								</StackPanel>
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
 					</cc:CompletionListBox>

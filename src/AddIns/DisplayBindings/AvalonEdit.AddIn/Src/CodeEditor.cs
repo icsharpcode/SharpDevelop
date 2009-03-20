@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
@@ -47,14 +47,30 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			base.OnPreviewTextInput(e);
 			if (!e.Handled && e.Text.Length == 1) {
 				foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
-					if (cc.HandleKeyPress(textEditorAdapter, e.Text[0])) {
-						// Don't set e.Handled - we still want to insert the typed text.
-						// This isn't optimal, but that's how the ICodeCompletionBinding interface
-						// has always worked; and I don't want to change too much at once.
+					CompletionWindow oldCompletionWindow = lastCompletionWindow;
+					CodeCompletionKeyPressResult result = cc.HandleKeyPress(textEditorAdapter, e.Text[0]);
+					if (result == CodeCompletionKeyPressResult.Completed) {
+						if (lastCompletionWindow != null && lastCompletionWindow != oldCompletionWindow) {
+							// a new CompletionWindow was shown, but does not eat the input
+							// increment the offsets so that they are correct after the text insertion
+							lastCompletionWindow.StartOffset++;
+							lastCompletionWindow.EndOffset++;
+						}
+						return;
+					} else if (result == CodeCompletionKeyPressResult.EatKey) {
+						e.Handled = true;
 						return;
 					}
 				}
 			}
+		}
+		
+		CompletionWindow lastCompletionWindow;
+		
+		internal void NotifyCompletionWindowOpened(CompletionWindow window)
+		{
+			lastCompletionWindow = window;
+			window.Closed += delegate { lastCompletionWindow = null; };
 		}
 	}
 }

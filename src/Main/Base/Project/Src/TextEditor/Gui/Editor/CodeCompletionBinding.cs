@@ -18,8 +18,27 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// </summary>
 	public interface ICodeCompletionBinding
 	{
-		bool HandleKeyPress(ITextEditor editor, char ch);
+		CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch);
 		bool CtrlSpace(ITextEditor editor);
+	}
+	
+	/// <summary>
+	/// The result of <see cref="ICodeCompletionBinding.HandleKeyPress"/>.
+	/// </summary>
+	public enum CodeCompletionKeyPressResult
+	{
+		/// <summary>
+		/// The binding did not run code completion. The pressed key will be handled normally.
+		/// </summary>
+		None,
+		/// <summary>
+		/// The binding handled code completion, the pressed key will be handled normally.
+		/// </summary>
+		Completed,
+		/// <summary>
+		/// The binding handled code completion, and the key will not be handled by the text editor.
+		/// </summary>
+		EatKey
 	}
 	
 	/// <summary>
@@ -68,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			this.extensions = extensions;
 		}
 		
-		public bool HandleKeyPress(ITextEditor editor, char ch)
+		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			string ext = Path.GetExtension(editor.FileName);
 			foreach (string extension in extensions) {
@@ -79,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					return binding.HandleKeyPress(editor, ch);
 				}
 			}
-			return false;
+			return CodeCompletionKeyPressResult.None;
 		}
 		
 		public bool CtrlSpace(ITextEditor editor)
@@ -140,48 +159,43 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public virtual bool HandleKeyPress(ITextEditor editor, char ch)
+		public virtual CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			switch (ch) {
 				case '(':
 					if (enableMethodInsight && CodeCompletionOptions.InsightEnabled) {
 						editor.ShowInsightWindow(new MethodInsightDataProvider());
-						return true;
-					} else {
-						return false;
+						return CodeCompletionKeyPressResult.Completed;
 					}
+					break;
 				case '[':
 					if (enableIndexerInsight && CodeCompletionOptions.InsightEnabled) {
 						editor.ShowInsightWindow(new IndexerInsightDataProvider());
-						return true;
-					} else {
-						return false;
+						return CodeCompletionKeyPressResult.Completed;
 					}
+					break;
 				case '<':
 					if (enableXmlCommentCompletion) {
 						editor.ShowCompletionWindow(new CommentCompletionDataProvider(), ch);
-						return true;
-					} else {
-						return false;
+						return CodeCompletionKeyPressResult.Completed;
 					}
+					break;
 				case '.':
 					if (enableDotCompletion) {
-						new CodeCompletionItemProvider().ShowCompletion(editor);
-						return true;
-					} else {
-						return false;
+						new DotCodeCompletionItemProvider().ShowCompletion(editor);
+						return CodeCompletionKeyPressResult.Completed;
 					}
+					break;
 				case ' ':
-					if (!CodeCompletionOptions.KeywordCompletionEnabled)
-						return false;
-					string word = editor.GetWordBeforeCaret();
-					if (word != null)
-						return HandleKeyword(editor, word);
-					else
-						return false;
-				default:
-					return false;
+					if (CodeCompletionOptions.KeywordCompletionEnabled) {
+						string word = editor.GetWordBeforeCaret();
+						if (word != null) {
+							return HandleKeyword(editor, word) ? CodeCompletionKeyPressResult.Completed : CodeCompletionKeyPressResult.None;
+						}
+					}
+					break;
 			}
+			return CodeCompletionKeyPressResult.None;
 		}
 		
 		public virtual bool HandleKeyword(ITextEditor editor, string word)

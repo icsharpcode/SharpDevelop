@@ -134,6 +134,8 @@
       <DependentUpon>FoldingManager.cs</DependentUpon>
     </Compile>
     <Compile Include="Gui\IBackgroundRenderer.cs" />
+    <Compile Include="Gui\TextAreaDefaultInputHandlers.cs" />
+    <Compile Include="Gui\TextAreaInputHandler.cs" />
     <Compile Include="Gui\IReadOnlySectionProvider.cs" />
     <Compile Include="Gui\ITextViewConnect.cs">
       <DependentUpon>TextView.cs</DependentUpon>
@@ -278,6 +280,7 @@
     <Compile Include="Utils\HtmlClipboard.cs" />
     <Compile Include="Utils\ImmutableStack.cs" />
     <Compile Include="Utils\NullSafeCollection.cs" />
+    <Compile Include="Utils\ObserveAddRemoveCollection.cs" />
     <Compile Include="Utils\TextUtilities.cs" />
     <Compile Include="Utils\WeakEventManagerBase.cs" />
     <Compile Include="Utils\PixelSnapHelpers.cs" />

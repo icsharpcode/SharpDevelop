@@ -77,17 +77,44 @@ namespace ICSharpCode.AvalonEdit
 			
 			caret = new Caret(this);
 			caret.PositionChanged += (sender, e) => RequestSelectionValidation();
-			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, ExecuteUndo, CanExecuteUndo));
-			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, ExecuteRedo, CanExecuteRedo));
 			
-			this.CommandBindings.AddRange(CaretNavigationCommandHandler.CommandBindings);
-			this.InputBindings.AddRange(CaretNavigationCommandHandler.InputBindings);
-			
-			this.CommandBindings.AddRange(EditingCommandHandler.CommandBindings);
-			this.InputBindings.AddRange(EditingCommandHandler.InputBindings);
-			
-			new SelectionMouseHandler(this).Attach();
+			this.DefaultInputHandler = new TextAreaDefaultInputHandler(this);
+			this.ActiveInputHandler = this.DefaultInputHandler;
 		}
+		#endregion
+		
+		#region InputHandler management
+		/// <summary>
+		/// Gets the default input handler.
+		/// </summary>
+		public TextAreaDefaultInputHandler DefaultInputHandler { get; private set; }
+		
+		ITextAreaInputHandler activeInputHandler;
+		
+		/// <summary>
+		/// Gets/Sets the active input handler.
+		/// </summary>
+		public ITextAreaInputHandler ActiveInputHandler {
+			get { return activeInputHandler; }
+			set {
+				if (value != null && value.TextArea != this)
+					throw new ArgumentException("The input handler was created for a different text area than this one.");
+				if (activeInputHandler != value) {
+					if (activeInputHandler != null)
+						activeInputHandler.Detach();
+					activeInputHandler = value;
+					if (value != null)
+						value.Attach();
+					if (ActiveInputHandlerChanged != null)
+						ActiveInputHandlerChanged(this, EventArgs.Empty);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Occurs when the ActiveInputHandler property changes.
+		/// </summary>
+		public event EventHandler ActiveInputHandlerChanged;
 		#endregion
 		
 		#region Document property
@@ -327,43 +354,6 @@ namespace ICSharpCode.AvalonEdit
 					throw new ArgumentNullException("value");
 				readOnlySectionProvider = value;
 			}
-		}
-		#endregion
-		
-		#region Undo / Redo
-		UndoStack GetUndoStack()
-		{
-			TextDocument document = this.Document;
-			if (document != null)
-				return document.UndoStack;
-			else
-				return null;
-		}
-		
-		void ExecuteUndo(object sender, ExecutedRoutedEventArgs e)
-		{
-			var undoStack = GetUndoStack();
-			if (undoStack != null && undoStack.CanUndo)
-				undoStack.Undo();
-		}
-		
-		void CanExecuteUndo(object sender, CanExecuteRoutedEventArgs e)
-		{
-			var undoStack = GetUndoStack();
-			e.CanExecute = undoStack != null && undoStack.CanUndo;
-		}
-		
-		void ExecuteRedo(object sender, ExecutedRoutedEventArgs e)
-		{
-			var undoStack = GetUndoStack();
-			if (undoStack != null && undoStack.CanRedo)
-				undoStack.Redo();
-		}
-		
-		void CanExecuteRedo(object sender, CanExecuteRoutedEventArgs e)
-		{
-			var undoStack = GetUndoStack();
-			e.CanExecute = undoStack != null && undoStack.CanRedo;
 		}
 		#endregion
 		

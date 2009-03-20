@@ -111,6 +111,74 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			}
 		}
 		
+		/// <summary>
+		/// Selects the item that starts with the specified text.
+		/// </summary>
+		public void SelectItemWithStart(string startText)
+		{
+			if (string.IsNullOrEmpty(startText))
+				return;
+			int selectedItem = listBox.SelectedIndex;
+			
+			int bestIndex = -1;
+			int bestQuality = -1;
+			// Qualities: 0 = match start
+			//            1 = match start case sensitive
+			//            2 = full match
+			//            3 = full match case sensitive
+			double bestPriority = 0;
+			for (int i = 0; i < completionData.Count; ++i) {
+				string itemText = completionData[i].Text;
+				if (itemText.StartsWith(startText, StringComparison.InvariantCultureIgnoreCase)) {
+					double priority = 0; //completionData[i].Priority;
+					int quality;
+					if (string.Equals(itemText, startText, StringComparison.InvariantCultureIgnoreCase)) {
+						if (startText == itemText)
+							quality = 3;
+						else
+							quality = 2;
+					} else if (itemText.StartsWith(startText, StringComparison.InvariantCulture)) {
+						quality = 1;
+					} else {
+						quality = 0;
+					}
+					bool useThisItem;
+					if (bestQuality < quality) {
+						useThisItem = true;
+					} else {
+						if (bestIndex == selectedItem) {
+							useThisItem = false;
+						} else if (i == selectedItem) {
+							useThisItem = bestQuality == quality;
+						} else {
+							useThisItem = bestQuality == quality && bestPriority < priority;
+						}
+					}
+					if (useThisItem) {
+						bestIndex = i;
+						bestPriority = priority;
+						bestQuality = quality;
+					}
+				}
+			}
+			if (bestIndex < 0) {
+				ClearSelection();
+			} else {
+				int firstItem = listBox.FirstVisibleItem;
+				if (bestIndex < firstItem || firstItem + listBox.VisibleItemCount <= bestIndex) {
+					CenterViewOn(bestIndex);
+					SelectIndex(bestIndex);
+				} else {
+					SelectIndex(bestIndex);
+				}
+			}
+		}
+		
+		void ClearSelection()
+		{
+			listBox.SelectedIndex = -1;
+		}
+		
 		void SelectIndex(int offset)
 		{
 			if (offset >= listBox.Items.Count)
@@ -119,6 +187,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				offset = 0;
 			listBox.SelectedIndex = offset;
 			listBox.ScrollIntoView(listBox.SelectedItem);
+		}
+		
+		void CenterViewOn(int offset)
+		{
+			// TODO: implement me
 		}
 	}
 }

@@ -38,6 +38,7 @@ namespace ICSharpCode.SharpDevelop
 		void Select(int selectionStart, int selectionLength);
 		
 		string FileName { get; }
+		
 		void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider);
 		[Obsolete]
 		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);

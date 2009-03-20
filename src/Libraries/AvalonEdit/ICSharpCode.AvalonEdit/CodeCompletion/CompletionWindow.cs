@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -13,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Gui;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {
@@ -36,21 +38,36 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.Width = 200;
 			this.Content = completionList;
 			
-			completionList.SizeChanged += completionList_SizeChanged;
-			
+			startOffset = endOffset = this.TextArea.Caret.Offset;
 			document = textArea.TextView.Document;
-			startOffset = endOffset = textArea.Caret.Offset;
 		}
 		
-		void completionList_SizeChanged(object sender, SizeChangedEventArgs e)
+		/// <summary>
+		/// Gets/Sets the start offset of the edited text portion.
+		/// </summary>
+		public int StartOffset {
+			get { return startOffset; }
+			set { startOffset = value; }
+		}
+		
+		/// <summary>
+		/// Gets/Sets the end offset of the edited text portion.
+		/// </summary>
+		public int EndOffset {
+			get { return endOffset; }
+			set { endOffset = value; }
+		}
+		
+		/// <inheritdoc/>
+		protected override void OnSourceInitialized(EventArgs e)
 		{
-			if (completionList.ActualHeight < 200) {
-				this.SizeToContent = SizeToContent.Height;
-				this.Height = double.NaN;
-			} else if (completionList.ActualHeight > 300) {
+			// prevent CompletionWindow from growing too large
+			if (this.ActualHeight > 300) {
 				this.SizeToContent = SizeToContent.Manual;
 				this.Height = 300;
 			}
+			
+			base.OnSourceInitialized(e);
 		}
 		
 		/// <inheritdoc/>
@@ -60,6 +77,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			document.Changing += textArea_Document_Changing;
 			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
 			this.TextArea.MouseWheel += textArea_MouseWheel;
+			this.TextArea.ActiveInputHandler = new InputHandler(this);
 		}
 		
 		/// <inheritdoc/>
@@ -69,7 +87,41 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.TextArea.Caret.PositionChanged -= CaretPositionChanged;
 			this.TextArea.MouseWheel -= textArea_MouseWheel;
 			base.DetachEvents();
+			this.TextArea.ActiveInputHandler = this.TextArea.DefaultInputHandler;
 		}
+		
+		#region InputHandler
+		/// <summary>
+		/// A dummy input handler (that justs invokes the default input handler).
+		/// This is used to ensure the completion window closes when any other input handler
+		/// becomes active.
+		/// </summary>
+		sealed class InputHandler : ITextAreaInputHandler
+		{
+			readonly CompletionWindow window;
+			
+			public InputHandler(CompletionWindow window)
+			{
+				Debug.Assert(window != null);
+				this.window = window;
+			}
+			
+			public TextArea TextArea {
+				get { return window.TextArea; }
+			}
+			
+			public void Attach()
+			{
+				this.TextArea.DefaultInputHandler.Attach();
+			}
+			
+			public void Detach()
+			{
+				this.TextArea.DefaultInputHandler.Detach();
+				window.Close();
+			}
+		}
+		#endregion
 		
 		/// <inheritdoc/>
 		protected override void OnKeyDown(KeyEventArgs e)
@@ -104,12 +156,19 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			return completionList.ScrollViewer ?? completionList.ListBox ?? (UIElement)completionList;
 		}
 		
+		bool expectInsertionBeforeStart = true;
+		
 		void textArea_Document_Changing(object sender, DocumentChangeEventArgs e)
 		{
 			// => startOffset test required so that this startOffset/endOffset are not incremented again
 			//    for BeforeStartKey characters
 			if (e.Offset >= startOffset && e.Offset <= endOffset) {
 				endOffset += e.InsertionLength - e.RemovalLength;
+			} else if (expectInsertionBeforeStart && e.Offset == startOffset - 1 && e.InsertionLength == 1 && e.RemovalLength == 0) {
+				// allow a single one-character insertion in front of StartOffset.
+				// this is necessary because for dot-completion, the CompletionWindow is shown before
+				// the dot is actually inserted.
+				expectInsertionBeforeStart = false;
 			} else {
 				Close();
 			}
@@ -133,7 +192,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			if (offset < startOffset || offset > endOffset) {
 				Close();
 			} else {
-				//codeCompletionListView.SelectItemWithStart(document.GetText(startOffset, offset - startOffset));
+				completionList.SelectItemWithStart(document.GetText(startOffset, offset - startOffset));
 			}
 		}
 		

@@ -21,7 +21,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 	/// <summary>
 	/// Handles selection of text using the mouse.
 	/// </summary>
-	sealed class SelectionMouseHandler
+	sealed class SelectionMouseHandler : ITextAreaInputHandler
 	{
 		#region enum SelectionMode
 		enum SelectionMode
@@ -62,7 +62,13 @@ namespace ICSharpCode.AvalonEdit.Gui
 		#region Constructor + Attach + Detach
 		public SelectionMouseHandler(TextArea textArea)
 		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
 			this.textArea = textArea;
+		}
+		
+		public TextArea TextArea {
+			get { return textArea; }
 		}
 		
 		public void Attach()

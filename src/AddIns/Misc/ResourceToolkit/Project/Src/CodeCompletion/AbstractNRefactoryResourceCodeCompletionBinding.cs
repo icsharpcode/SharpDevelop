@@ -20,7 +20,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 	public abstract class AbstractNRefactoryResourceCodeCompletionBinding : DefaultCodeCompletionBinding
 	{
 		
-		public override bool HandleKeyPress(ITextEditor editor, char ch)
+		public override CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			
 			if (this.CompletionPossible(editor, ch)) {
@@ -42,13 +42,13 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 						}
 						
 						editor.ShowCompletionWindow(new ResourceCodeCompletionDataProvider(content, this.OutputVisitor, result.CallingClass != null ? result.CallingClass.Name+"." : null), ch);
-						return true;
+						return CodeCompletionKeyPressResult.Completed;
 					}
 				}
 				
 			}
 			
-			return false;
+			return CodeCompletionKeyPressResult.None;
 		}
 		
 		// ********************************************************************************************************************************

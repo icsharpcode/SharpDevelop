@@ -6,11 +6,13 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media.TextFormatting;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Gui
 {
@@ -35,8 +37,19 @@ namespace ICSharpCode.AvalonEdit.Gui
 	
 	static class CaretNavigationCommandHandler
 	{
-		public static readonly CommandBindingCollection CommandBindings = new CommandBindingCollection();
-		public static readonly InputBindingCollection InputBindings = new InputBindingCollection();
+		/// <summary>
+		/// Creates a new <see cref="TextAreaInputHandler"/> for the text area.
+		/// </summary>
+		public static TextAreaInputHandler Create(TextArea textArea)
+		{
+			TextAreaInputHandler handler = new TextAreaInputHandler(textArea);
+			handler.CommandBindings.AddRange(CommandBindings);
+			handler.InputBindings.AddRange(InputBindings);
+			return handler;
+		}
+		
+		static readonly List<CommandBinding> CommandBindings = new List<CommandBinding>();
+		static readonly List<InputBinding> InputBindings = new List<InputBinding>();
 		
 		static void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
 		{

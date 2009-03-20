@@ -50,9 +50,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public TextView()
 		{
 			textLayer = new TextLayer(this);
-			elementGenerators.CollectionChanged += elementGenerators_CollectionChanged;
-			lineTransformers.CollectionChanged += lineTransformers_CollectionChanged;
-			backgroundRenderer.CollectionChanged += backgroundRenderer_CollectionChanged;
+			elementGenerators = new ObserveAddRemoveCollection<VisualLineElementGenerator>(ElementGenerator_Added, ElementGenerator_Removed);
+			lineTransformers = new ObserveAddRemoveCollection<IVisualLineTransformer>(LineTransformer_Added, LineTransformer_Removed);
+			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
 			layers = new UIElementCollection(this, this);
 			InsertLayer(textLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
 		}
@@ -128,33 +128,45 @@ namespace ICSharpCode.AvalonEdit.Gui
 		#endregion
 		
 		#region ElementGenerators+LineTransformers Properties
-		readonly ObservableCollection<VisualLineElementGenerator> elementGenerators = new ObservableCollection<VisualLineElementGenerator>();
+		readonly ObserveAddRemoveCollection<VisualLineElementGenerator> elementGenerators;
 		
 		/// <summary>
 		/// Gets a collection where element generators can be registered.
 		/// </summary>
-		public ObservableCollection<VisualLineElementGenerator> ElementGenerators {
+		public IList<VisualLineElementGenerator> ElementGenerators {
 			get { return elementGenerators; }
 		}
 		
-		void elementGenerators_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void ElementGenerator_Added(VisualLineElementGenerator generator)
 		{
-			HandleTextViewConnect(e);
+			ConnectToTextView(generator);
 			Redraw();
 		}
 		
-		readonly ObservableCollection<IVisualLineTransformer> lineTransformers = new ObservableCollection<IVisualLineTransformer>();
+		void ElementGenerator_Removed(VisualLineElementGenerator generator)
+		{
+			DisconnectFromTextView(generator);
+			Redraw();
+		}
+		
+		readonly ObserveAddRemoveCollection<IVisualLineTransformer> lineTransformers;
 		
 		/// <summary>
 		/// Gets a collection where line transformers can be registered.
 		/// </summary>
-		public ObservableCollection<IVisualLineTransformer> LineTransformers {
+		public IList<IVisualLineTransformer> LineTransformers {
 			get { return lineTransformers; }
 		}
 		
-		void lineTransformers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void LineTransformer_Added(IVisualLineTransformer lineTransformer)
 		{
-			HandleTextViewConnect(e);
+			ConnectToTextView(lineTransformer);
+			Redraw();
+		}
+		
+		void LineTransformer_Removed(IVisualLineTransformer lineTransformer)
+		{
+			DisconnectFromTextView(lineTransformer);
 			Redraw();
 		}
 		#endregion
@@ -700,18 +712,29 @@ namespace ICSharpCode.AvalonEdit.Gui
 		#endregion
 		
 		#region Render
-		readonly ObservableCollection<IBackgroundRenderer> backgroundRenderer = new ObservableCollection<IBackgroundRenderer>();
+		readonly ObserveAddRemoveCollection<IBackgroundRenderer> backgroundRenderers;
 		
 		/// <summary>
 		/// Gets the list of background renderers.
 		/// </summary>
-		public ObservableCollection<IBackgroundRenderer> BackgroundRenderer {
-			get { return backgroundRenderer; }
+		public IList<IBackgroundRenderer> BackgroundRenderers {
+			get { return backgroundRenderers; }
 		}
 		
-		void backgroundRenderer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void BackgroundRenderer_Added(IBackgroundRenderer renderer)
 		{
-			HandleTextViewConnect(e);
+			ConnectToTextView(renderer);
+			InvalidateVisualAndLayerVisuals();
+		}
+		
+		void BackgroundRenderer_Removed(IBackgroundRenderer renderer)
+		{
+			DisconnectFromTextView(renderer);
+			InvalidateVisualAndLayerVisuals();
+		}
+		
+		void InvalidateVisualAndLayerVisuals()
+		{
 			InvalidateVisual();
 			foreach (UIElement layer in this.Layers) {
 				// invalidate known layers
@@ -728,7 +751,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		internal void RenderBackground(DrawingContext drawingContext, KnownLayer layer)
 		{
-			foreach (IBackgroundRenderer bg in backgroundRenderer) {
+			foreach (IBackgroundRenderer bg in backgroundRenderers) {
 				if (bg.Layer == layer) {
 					bg.Draw(drawingContext);
 				}
@@ -1155,27 +1178,18 @@ namespace ICSharpCode.AvalonEdit.Gui
 			return services.GetService(serviceType);
 		}
 		
-		void HandleTextViewConnect(NotifyCollectionChangedEventArgs e)
+		void ConnectToTextView(object obj)
 		{
-			switch (e.Action) {
-				case NotifyCollectionChangedAction.Add:
-				case NotifyCollectionChangedAction.Remove:
-				case NotifyCollectionChangedAction.Replace:
-					if (e.OldItems != null) {
-						foreach (ITextViewConnect c in e.OldItems.OfType<ITextViewConnect>())
-							c.RemoveFromTextView(this);
-					}
-					if (e.NewItems != null) {
-						foreach (ITextViewConnect c in e.NewItems.OfType<ITextViewConnect>())
-							c.AddToTextView(this);
-					}
-					break;
-				case NotifyCollectionChangedAction.Move:
-					// ignore Move
-					break;
-				default:
-					throw new NotSupportedException(e.Action.ToString());
-			}
+			ITextViewConnect c = obj as ITextViewConnect;
+			if (c != null)
+				c.AddToTextView(this);
+		}
+		
+		void DisconnectFromTextView(object obj)
+		{
+			ITextViewConnect c = obj as ITextViewConnect;
+			if (c != null)
+				c.RemoveFromTextView(this);
 		}
 		#endregion
 		
