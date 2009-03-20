@@ -13,6 +13,9 @@ namespace ICSharpCode.SharpDevelop.Util
 {
 	/// <summary>
 	/// A worker thread that normally sleeps, but can run a queue of commands.
+	/// 
+	/// This class does not create a worker thread on its own, it merely manages tasks for
+	/// the worker thread that calls <see cref="RunLoop"/>.
 	/// </summary>
 	public class WorkerThread
 	{
@@ -64,7 +67,8 @@ namespace ICSharpCode.SharpDevelop.Util
 		
 		readonly object lockObject = new object();
 		Queue<AsyncTask> taskQueue = new Queue<AsyncTask>();
-		bool workerRunning = false;
+		bool workerRunning;
+		bool exitWorker;
 		
 		/// <summary>
 		/// Runs the worker thread loop on the current thread.
@@ -77,7 +81,8 @@ namespace ICSharpCode.SharpDevelop.Util
 				workerRunning = true;
 			}
 			try {
-				while (workerRunning) {
+				exitWorker = false;
+				while (!exitWorker) {
 					AsyncTask task;
 					lock (lockObject) {
 						while (taskQueue.Count == 0)
@@ -95,11 +100,11 @@ namespace ICSharpCode.SharpDevelop.Util
 		}
 		
 		/// <summary>
-		/// Exits running the worker thread.
+		/// Exits running the worker thread after executing all currently enqueued methods.
 		/// </summary>
 		public void ExitWorkerThread()
 		{
-			Enqueue(delegate { workerRunning = false; });
+			Enqueue(delegate { exitWorker = true; });
 		}
 	}
 }
