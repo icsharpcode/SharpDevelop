@@ -85,6 +85,20 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return r;
 		}
 		
+		public static AST.TypeMemberModifiers ConvertVisibilityBack(ModifierEnum modifier)
+		{
+			AST.TypeMemberModifiers r = AST.TypeMemberModifiers.None;
+			if ((modifier & ModifierEnum.Public) == ModifierEnum.Public)
+				r |= AST.TypeMemberModifiers.Public;
+			if ((modifier & ModifierEnum.Protected) == ModifierEnum.Protected)
+				r |= AST.TypeMemberModifiers.Protected;
+			if ((modifier & ModifierEnum.Internal) == ModifierEnum.Internal)
+				r |= AST.TypeMemberModifiers.Internal;
+			if ((modifier & ModifierEnum.Private) == ModifierEnum.Private)
+				r |= AST.TypeMemberModifiers.Private;
+			return r;
+		}
+		
 		private int GetLineEnd(int line)
 		{
 			if (_lineLength == null || line < 1 || line > _lineLength.Length)

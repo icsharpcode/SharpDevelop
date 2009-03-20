@@ -45,13 +45,14 @@ namespace Grunwald.BooBinding.Designer
 		
 		MemberAttributes ConvModifiers(TypeMember member)
 		{
+			bool strict = ConvertVisitor.IsStrictMode(pc);
 			if (member is Field)
-				return ConvModifiers(member.Modifiers, MemberAttributes.Family);
+				return ConvModifiers(member.Modifiers, strict ? MemberAttributes.Private : MemberAttributes.Family);
 			else
-				return ConvModifiers(member.Modifiers, MemberAttributes.Public);
+				return ConvModifiers(member.Modifiers, strict ? MemberAttributes.Private : MemberAttributes.Public);
 		}
 		
-		MemberAttributes ConvModifiers(TypeMemberModifiers modifier, MemberAttributes defaultAttr)
+		MemberAttributes ConvModifiers(TypeMemberModifiers modifier, MemberAttributes defaultVisibility)
 		{
 			MemberAttributes attr = 0;
 			if ((modifier & TypeMemberModifiers.Abstract) == TypeMemberModifiers.Abstract)
@@ -72,10 +73,9 @@ namespace Grunwald.BooBinding.Designer
 				attr |= MemberAttributes.Static;
 			if ((modifier & TypeMemberModifiers.Virtual) != TypeMemberModifiers.Virtual)
 				attr |= MemberAttributes.Final;
-			if (attr == 0)
-				return defaultAttr;
-			else
-				return attr;
+			if ((modifier & TypeMemberModifiers.VisibilityMask) == TypeMemberModifiers.None)
+				attr |= defaultVisibility;
+			return attr;
 		}
 		
 		CodeTypeReference ConvTypeRef(TypeReference tr)
