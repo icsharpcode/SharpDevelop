@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			foreach (Type nestedType in type.GetNestedTypes(flags)) {
 				// We cannot use nestedType.IsVisible - that only checks for public types,
 				// but we also need to load protected types.
-				if (nestedType.IsPublic || nestedType.IsNestedFamily || nestedType.IsNestedFamORAssem) {
+				if (nestedType.IsNestedPublic || nestedType.IsNestedFamily || nestedType.IsNestedFamORAssem) {
 					string name = nestedType.FullName.Replace('+', '.');
 					InnerClasses.Add(new ReflectionClass(CompilationUnit, nestedType, name, this));
 				}
