@@ -52,7 +52,10 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 		public static ProfilerOptions CreateProfilerOptions()
 		{
 			return new ProfilerOptions(properties.Get("EnableDC", true),
-			                           properties.Get("SharedMemorySize", ProfilerOptions.SHARED_MEMORY_SIZE));
+			                           properties.Get("SharedMemorySize", ProfilerOptions.SHARED_MEMORY_SIZE),
+			                           !properties.Get("PorfileDotNetInternals", true),
+			                           properties.Get("CombineRecursiveFunction", false)
+			                          );
 		}
 	}
 }

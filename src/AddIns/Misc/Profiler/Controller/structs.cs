@@ -30,6 +30,8 @@ namespace ICSharpCode.Profiler.Controller
 		public TargetProcessPointer32 RootFuncInfoAddress;
 		public TargetProcessPointer32 LastThreadListItem;
 		public int ProcessorFrequency;
+		public bool DoNotProfileDotnetInternals;
+		public bool CombineRecursiveFunction;
 		public Allocator32 Allocator;
 	}
 	
@@ -238,5 +240,6 @@ namespace ICSharpCode.Profiler.Controller
 	{
 		public TargetProcessPointer32 Function;
 		public ulong StartTime;
+		public int FrameCount;
 	}
 }

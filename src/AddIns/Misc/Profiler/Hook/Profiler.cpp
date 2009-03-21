@@ -81,29 +81,34 @@ ASSEMBLER_CALLBACK FunctionEnterGlobal(int functionID)
 	// this call allows GetOrAddChild to update the value at the top of the stack
 	// if the FunctionInfo is resized
 	FunctionInfo *f = data->stack.top().function;
-	//DebugWriteLine(L"FunctionEnterGlobal %d, current stack top=%d", functionID, f->Id);
-	FunctionInfo *newParent = nullptr;
-	FunctionInfo *child = f->GetOrAddChild(functionID, newParent);
-	if (newParent != nullptr) {
-		// f was moved to newParent
-		// update stack:
-		data->stack.top().function = newParent;
-		// update parent of f:
-		if (data->stack.hasAtLeastTwoElements()) {
-//			DebugWriteLine("Updating parent of parent");
-			data->stack.belowTop().function->AddOrUpdateChild(newParent);
-			data->stack.belowTop().function->Check();
-		} else {
-			DebugWriteLine(L"Updating parent of parent (root)");
-			profiler.MovedRootChild(newParent);
+	
+	if ((sharedMemoryHeader->doNotProfileDotnetInternals && functionID < 0 && f->Id < 0) || (sharedMemoryHeader->combineRecursiveFunction && functionID == f->Id)) {
+		data->stack.top().frameCount++;
+	} else {
+		//DebugWriteLine(L"FunctionEnterGlobal %d, current stack top=%d", functionID, f->Id);
+		FunctionInfo *newParent = nullptr;
+		FunctionInfo *child = f->GetOrAddChild(functionID, newParent);
+		if (newParent != nullptr) {
+			// f was moved to newParent
+			// update stack:
+			data->stack.top().function = newParent;
+			// update parent of f:
+			if (data->stack.hasAtLeastTwoElements()) {
+				//DebugWriteLine("Updating parent of parent");
+				data->stack.belowTop().function->AddOrUpdateChild(newParent);
+				data->stack.belowTop().function->Check();
+			} else {
+				DebugWriteLine(L"Updating parent of parent (root)");
+				profiler.MovedRootChild(newParent);
+			}
+			FreeFunctionInfo(f);
 		}
-		FreeFunctionInfo(f);
+		
+		// Set the stats for this function
+		child->CallCount++;
+		
+		data->stack.push(StackEntry(child, __rdtsc()));
 	}
-	
-	// Set the stats for this function
-	child->CallCount++;
-	
-	data->stack.push(StackEntry(child, __rdtsc()));
 
 	data->inLock = 0;
 }
@@ -132,8 +137,11 @@ ASSEMBLER_CALLBACK FunctionLeaveGlobal()
 	} else {
 		StackEntry &stackTop = data->stack.top();
 		//DebugWriteLine(L"FunctionLeaveGlobal %d", stackTop.function->Id);
-		stackTop.function->TimeSpent += (__rdtsc() - stackTop.startTime);
-		data->stack.pop();
+		stackTop.frameCount--;
+		if (stackTop.frameCount == 0) {
+			stackTop.function->TimeSpent += (__rdtsc() - stackTop.startTime);
+			data->stack.pop();
+		}
 	}
 
 	data->inLock = 0;
@@ -149,9 +157,9 @@ ASSEMBLER_CALLBACK FunctionTailcallGlobal()
 	// FunctionTailcallGlobal call will be followed by FunctionEnterGlobal for new function
 }
 
-volatile LONG nextFunctionID = 0;
+volatile LONG nextPosFunctionID = 0;
 
-int getNewFunctionID() {
+int getNewPosFunctionID() {
 	const int step = 5;
 	// Simple continuous assignment of IDs leads to problems with the
 	// linear probing in FunctionInfo, so we use multiples of 'step' as IDs.
@@ -159,9 +167,9 @@ int getNewFunctionID() {
 	LONG oldID;
 	LONG newID;
 	do {
-		oldID = nextFunctionID;
-		newID = oldID + step;
-	} while (InterlockedCompareExchange(&nextFunctionID, newID, oldID) != oldID);
+		oldID = nextPosFunctionID;
+		newID = ((oldID + step) & 0x7FFFFFFF); // x % 2^31
+	} while (InterlockedCompareExchange(&nextPosFunctionID, newID, oldID) != oldID);
 	return newID;
 }
 
@@ -175,15 +183,19 @@ UINT_PTR CProfiler::MapFunction(FunctionID functionID)
 {
 	mapFunctionCriticalSection.Enter();
 	int clientData = 0;
+	
 	TFunctionIDMap::iterator it = this->functionIDMap.find(functionID);
 	if (it == this->functionIDMap.end()) {
 		DebugWriteLine(L"Creating new ID");
-		clientData = getNewFunctionID();
+		if (sigReader->IsNetInternal(functionID))
+			clientData = -getNewPosFunctionID(); // negative series
+		else
+			clientData = getNewPosFunctionID(); // positive series
 		this->functionIDMap.insert(TFunctionIDPair(functionID, clientData));
 
 		// send to host
 		std::wstring signature = sigReader->Parse(functionID);
-		LogString(L"map %d %Id -%s-", clientData, functionID, signature.c_str());
+		LogString(L"map %d %Id %s", clientData, functionID, signature.c_str());
 	} else {
 		DebugWriteLine(L"using old ID");
 		clientData = it->second;
@@ -197,7 +209,7 @@ FunctionInfo *CProfiler::CreateNewRoot() {
 	rootElementCriticalSection.Enter();
 	FunctionInfo *oldRoot = sharedMemoryHeader->RootFuncInfo;
 	FunctionInfo *newRoot = nullptr;
-	FunctionInfo *newThreadRoot = oldRoot->GetOrAddChild(getNewFunctionID(), newRoot);
+	FunctionInfo *newThreadRoot = oldRoot->GetOrAddChild(getNewPosFunctionID(), newRoot);
 	if (newRoot != nullptr) {
 		sharedMemoryHeader->RootFuncInfo = newRoot;
 		FreeFunctionInfo(oldRoot);
@@ -208,7 +220,7 @@ FunctionInfo *CProfiler::CreateNewRoot() {
 	
 	data->functionInfoId = newThreadRoot->Id;
 		
-	LogString(L"map %d 0 -Thread#%d-%s-", newThreadRoot->Id, GetCurrentThreadId(), data->threadName.c_str());
+	LogString(L"mapthread %d 0 \"Thread#%d\" \"%s\"", newThreadRoot->Id, GetCurrentThreadId(), data->threadName.c_str());
 	
 	return newThreadRoot;
 }

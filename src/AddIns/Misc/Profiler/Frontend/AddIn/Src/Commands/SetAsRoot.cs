@@ -43,10 +43,8 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				foreach (CallTreeNode node in items) {
 					if (nameId != null && nameId != node.NameMapping.Id)
 						nameId = null;
-					NodePath p = node.GetPath().First();
-					if (p != null) {
-						parts.Add("GetNodeByPath(" + string.Join(",", p.Select(i => i.ToString()).ToArray()) + ")");
-					}
+					foreach (var path in node.GetPath())
+						parts.Add("GetNodeByPath(" + string.Join(",", path.Select(i => i.ToString()).ToArray()) + ")");
 				}
 				
 				string header = "Merged Nodes: " + items.First().Name;

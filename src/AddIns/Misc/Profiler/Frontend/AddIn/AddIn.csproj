@@ -99,7 +99,6 @@
     <Compile Include="Src\Dialogs\ProfileExecutableForm.xaml.cs">
       <DependentUpon>ProfileExecutableForm.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\ExtensionMethods.cs" />
     <Compile Include="Src\OptionsPanels\General.cs">
       <SubType>UserControl</SubType>
     </Compile>

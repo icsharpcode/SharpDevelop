@@ -26,6 +26,8 @@ struct SharedMemoryHeader
 	FunctionInfo* RootFuncInfo;
 	ThreadLocalData* LastThreadListItem;
 	int ProcFrequency;
+	bool doNotProfileDotnetInternals;
+	bool combineRecursiveFunction;
 	freeListAllocator<FunctionInfoAllocationSize> mallocator;
 };
 
@@ -35,6 +37,7 @@ public:
 	CSharedMemory(TCHAR *name);
 	~CSharedMemory();
 	void* GetStartPtr();
+	SharedMemoryHeader *header;
 private:
 	HANDLE fileHandle;
 	void* startPtr;

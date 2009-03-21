@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -273,6 +274,8 @@ namespace ICSharpCode.Profiler.Controller
 			memHeader32->HeapOffset = Align(memHeader32->ThreadDataOffset + threadDataSize);
 			memHeader32->HeapLength = profilerOptions.SharedMemorySize - memHeader32->HeapOffset;
 			memHeader32->ProcessorFrequency = GetProcessorFrequency();
+			memHeader32->DoNotProfileDotnetInternals = !profilerOptions.ProfileDotNetInternals;
+			memHeader32->CombineRecursiveFunction = profilerOptions.CombineRecursiveFunction;
 			
 			if ((Int32)(fullView.Pointer + memHeader32->HeapOffset) % 8 != 0) {
 				throw new DataMisalignedException("Heap is not aligned properly: " + ((Int32)(fullView.Pointer + memHeader32->HeapOffset)).ToString(CultureInfo.InvariantCulture) + "!");
@@ -575,6 +578,8 @@ namespace ICSharpCode.Profiler.Controller
 			
 			isRunning = false;
 			
+			this.dataWriter.Close();
+			
 			OnSessionEnded(EventArgs.Empty);
 		}
 
@@ -631,25 +636,32 @@ namespace ICSharpCode.Profiler.Controller
 				return false;
 			
 			if (readString.StartsWith("map ", StringComparison.Ordinal)) {
-				string[] parts = readString.Split('-');
-				string[] args = parts[0].Split(' ');
+				IList<string> parts = readString.SplitSeparatedString(' ');
 				
-				int id = int.Parse(args[1], CultureInfo.InvariantCulture.NumberFormat);
-				string name = null;
-				string returnType = null;
-				IList<string> parameters = null;
-
-				if (parts[1].StartsWith("Thread#", StringComparison.Ordinal)) {
-					name = parts[1] + ((parts.Length > 2 && !string.IsNullOrEmpty(parts[2])) ? " - " + parts[2] : "");
-				} else {
-					returnType = parts[1].Trim();
-					name = parts[2].Trim();
-					if (parts.Length > 3)
-						parameters = parts[3].Trim().Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
-				}
+				if (parts.Count < 3)
+					return false;
+				
+				int id = int.Parse(parts[1], CultureInfo.InvariantCulture);
+				string name = parts[4];
+				string returnType = parts[3];
+				IList<string> parameters = parts.Skip(5).ToList();
 
 				lock (this.dataWriter) {
 					this.dataWriter.WriteMappings(new NameMapping[] {new NameMapping(id, returnType, name, parameters)});
+				}
+
+				return true;
+			} else if (readString.StartsWith("mapthread ", StringComparison.Ordinal)) {
+				IList<string> parts = readString.SplitSeparatedString(' ');
+				
+				if (parts.Count < 5)
+					return false;
+				
+				int id = int.Parse(parts[1], CultureInfo.InvariantCulture);
+				string name = parts[3] + ((string.IsNullOrEmpty(parts[4])) ? "" : " - " + parts[4]);
+				
+				lock (this.dataWriter) {
+					this.dataWriter.WriteMappings(new NameMapping[] {new NameMapping(id, null, name, null)});
 				}
 
 				return true;

@@ -66,8 +66,6 @@ namespace ICSharpCode.Profiler.AddIn
 		
 		void FinishSession()
 		{
-			profiler.DataWriter.Close();
-			
 			if (database != null) {
 				database.WriteTo(writer, progress => true); // TODO : change default impl to good user interface notification
 				writer.Close();
