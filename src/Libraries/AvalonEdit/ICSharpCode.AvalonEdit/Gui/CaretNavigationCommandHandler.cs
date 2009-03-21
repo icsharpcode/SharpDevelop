@@ -159,7 +159,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			DocumentLine caretLine = textArea.Document.GetLineByNumber(textArea.Caret.Position.Line);
 			VisualLine visualLine = textArea.TextView.GetOrConstructVisualLine(caretLine);
-			textArea.Caret.ValidateVisualColumn(visualLine);
 			TextViewPosition caretPosition = textArea.Caret.Position;
 			TextLine textLine = visualLine.GetTextLine(caretPosition.VisualColumn);
 			switch (direction) {

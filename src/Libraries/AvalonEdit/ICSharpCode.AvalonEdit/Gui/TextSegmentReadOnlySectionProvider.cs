@@ -76,7 +76,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 					readonlyUntil = end;
 				}
 			}
-			int endOffset = segment.GetEndOffset();
+			int endOffset = segment.EndOffset;
 			if (readonlyUntil < endOffset) {
 				yield return new SimpleSegment(readonlyUntil, endOffset - readonlyUntil);
 			}

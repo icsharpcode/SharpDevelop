@@ -78,7 +78,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 				segment = new SimpleSegment(0, document.TextLength);
 			
 			StringBuilder html = new StringBuilder();
-			int segmentEndOffset = segment.GetEndOffset();
+			int segmentEndOffset = segment.EndOffset;
 			DocumentLine line = document.GetLineByOffset(segment.Offset);
 			while (line != null && line.Offset < segmentEndOffset) {
 				HighlightedLine highlightedLine;
@@ -89,7 +89,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 				SimpleSegment s = segment.GetOverlap(line);
 				if (html.Length > 0)
 					html.AppendLine("<br>");
-				html.Append(highlightedLine.ToHtml(s.Offset, s.GetEndOffset()));
+				html.Append(highlightedLine.ToHtml(s.Offset, s.EndOffset));
 				line = line.NextLine;
 			}
 			return html.ToString();

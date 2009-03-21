@@ -81,12 +81,14 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		void textArea_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
-			OnKeyDown(e);
+			e.Handled = RaiseEventPair(this, PreviewKeyDownEvent, KeyDownEvent,
+			                         new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
 		}
 		
 		void textArea_PreviewKeyUp(object sender, KeyEventArgs e)
 		{
-			OnKeyUp(e);
+			e.Handled = RaiseEventPair(this, PreviewKeyUpEvent, KeyUpEvent,
+			                         new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
 		}
 		
 		void TextViewScrollOffsetChanged(object sender, EventArgs e)
@@ -116,6 +118,31 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			Dispatcher.BeginInvoke(new Action(CloseIfFocusLost), DispatcherPriority.Background);
 		}
 		#endregion
+		
+		/// <summary>
+		/// Raises a tunnel/bubble event pair for a WPF control.
+		/// </summary>
+		/// <param name="target">The WPF control for which the event should be raised.</param>
+		/// <param name="previewEvent">The tunneling event.</param>
+		/// <param name="event">The bubbling event.</param>
+		/// <param name="args">The event args to use.</param>
+		/// <returns>The <see cref="RoutedEventArgs.Handled"/> value of the event args.</returns>
+		protected static bool RaiseEventPair(UIElement target, RoutedEvent previewEvent, RoutedEvent @event, RoutedEventArgs args)
+		{
+			if (target == null)
+				throw new ArgumentNullException("target");
+			if (previewEvent == null)
+				throw new ArgumentNullException("previewEvent");
+			if (@event == null)
+				throw new ArgumentNullException("event");
+			if (args == null)
+				throw new ArgumentNullException("args");
+			args.RoutedEvent = previewEvent;
+			target.RaiseEvent(args);
+			args.RoutedEvent = @event;
+			target.RaiseEvent(args);
+			return args.Handled;
+		}
 		
 		// Special handler: handledEventsToo
 		void OnMouseUp(object sender, MouseButtonEventArgs e)

@@ -60,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			do {
 				b.Append(input, lastEndOffset, ds.Offset - lastEndOffset);
 				b.Append(newLine);
-				lastEndOffset = ds.GetEndOffset();
+				lastEndOffset = ds.EndOffset;
 				ds = NextNewLine(input, lastEndOffset);
 			} while (ds != SimpleSegment.Invalid);
 			// remaining string (after last newline)

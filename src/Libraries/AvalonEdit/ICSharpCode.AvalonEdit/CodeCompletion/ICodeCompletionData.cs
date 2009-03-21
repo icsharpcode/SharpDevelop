@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Windows.Media;
 
@@ -35,5 +36,13 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// Gets the description.
 		/// </summary>
 		object Description { get; }
+		
+		/// <summary>
+		/// Perform the completion.
+		/// </summary>
+		/// <param name="textArea">The text area on which completion is performed.</param>
+		/// <param name="completionSegment">The text segment that was used by the completion window if
+		/// the user types.</param>
+		void Complete(TextArea textArea, ISegment completionSegment);
 	}
 }

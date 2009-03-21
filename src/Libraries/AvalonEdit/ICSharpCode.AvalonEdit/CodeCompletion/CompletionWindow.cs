@@ -40,6 +40,15 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			
 			startOffset = endOffset = this.TextArea.Caret.Offset;
 			document = textArea.TextView.Document;
+			completionList.InsertionRequested += completionList_InsertionRequested;
+		}
+
+		void completionList_InsertionRequested(object sender, EventArgs e)
+		{
+			var item = completionList.SelectedItem;
+			if (item != null)
+				item.Complete(this.TextArea, new AnchorSegment(this.TextArea.Document, startOffset, endOffset - startOffset));
+			Close();
 		}
 		
 		/// <summary>
@@ -77,6 +86,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			document.Changing += textArea_Document_Changing;
 			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
 			this.TextArea.MouseWheel += textArea_MouseWheel;
+			this.TextArea.PreviewTextInput += textArea_PreviewTextInput;
 			this.TextArea.ActiveInputHandler = new InputHandler(this);
 		}
 		
@@ -86,6 +96,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			document.Changing -= textArea_Document_Changing;
 			this.TextArea.Caret.PositionChanged -= CaretPositionChanged;
 			this.TextArea.MouseWheel -= textArea_MouseWheel;
+			this.TextArea.PreviewTextInput -= textArea_PreviewTextInput;
 			base.DetachEvents();
 			this.TextArea.ActiveInputHandler = this.TextArea.DefaultInputHandler;
 		}
@@ -132,31 +143,25 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			}
 		}
 		
+		void textArea_PreviewTextInput(object sender, TextCompositionEventArgs e)
+		{
+			e.Handled = RaiseEventPair(this, PreviewTextInputEvent, TextInputEvent,
+			                           new TextCompositionEventArgs(e.Device, e.TextComposition));
+		}
+		
 		void textArea_MouseWheel(object sender, MouseWheelEventArgs e)
 		{
-			e.Handled = ForwardEvent(PreviewMouseWheelEvent, MouseWheelEvent,
-			                         new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta));
+			e.Handled = RaiseEventPair(GetScrollEventTarget(),
+			                           PreviewMouseWheelEvent, MouseWheelEvent,
+			                           new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta));
 		}
 		
-		bool ForwardEvent(RoutedEvent previewEvent, RoutedEvent @event, RoutedEventArgs args)
-		{
-			UIElement target = GetEventTarget();
-			
-			args.RoutedEvent = previewEvent;
-			target.RaiseEvent(args);
-			args.RoutedEvent = @event;
-			target.RaiseEvent(args);
-			return args.Handled;
-		}
-		
-		UIElement GetEventTarget()
+		UIElement GetScrollEventTarget()
 		{
 			if (completionList == null)
 				return this;
 			return completionList.ScrollViewer ?? completionList.ListBox ?? (UIElement)completionList;
 		}
-		
-		bool expectInsertionBeforeStart = true;
 		
 		void textArea_Document_Changing(object sender, DocumentChangeEventArgs e)
 		{
@@ -164,11 +169,10 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			//    for BeforeStartKey characters
 			if (e.Offset >= startOffset && e.Offset <= endOffset) {
 				endOffset += e.InsertionLength - e.RemovalLength;
-			} else if (expectInsertionBeforeStart && e.Offset == startOffset - 1 && e.InsertionLength == 1 && e.RemovalLength == 0) {
-				// allow a single one-character insertion in front of StartOffset.
+			} else if (e.Offset == startOffset - 1 && e.InsertionLength == 1 && e.RemovalLength == 0) {
+				// allow one-character insertion in front of StartOffset.
 				// this is necessary because for dot-completion, the CompletionWindow is shown before
 				// the dot is actually inserted.
-				expectInsertionBeforeStart = false;
 			} else {
 				Close();
 			}

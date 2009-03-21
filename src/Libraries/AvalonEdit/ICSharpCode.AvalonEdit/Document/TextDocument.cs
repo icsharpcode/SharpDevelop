@@ -72,7 +72,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			lineTree = new DocumentLineTree(this);
 			lineManager = new LineManager(textBuffer, lineTree, this);
-			lineTrackers.CollectionChanged += delegate { 
+			lineTrackers.CollectionChanged += delegate {
 				lineManager.lineTrackers = lineTrackers.ToArray();
 			};
 			
@@ -307,6 +307,16 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		internal bool inDocumentChanging;
+		
+		/// <summary>
+		/// Replaces text.
+		/// </summary>
+		public void Replace(ISegment segment, string text)
+		{
+			if (segment == null)
+				throw new ArgumentNullException("segment");
+			Replace(segment.Offset, segment.Length, text);
+		}
 		
 		/// <summary>
 		/// Replaces text.

@@ -59,7 +59,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// Gets/Sets the position of the caret.
 		/// </summary>
 		public TextViewPosition Position {
-			get { return position; }
+			get {
+				ValidateVisualColumn();
+				return position;
+			}
 			set {
 				if (position != value) {
 					position = value;
@@ -69,6 +72,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 					//Debug.WriteLine("Caret position changing to " + value);
 					
 					ValidatePosition();
+					InvalidateVisualColumn();
 					if (PositionChanged != null) {
 						PositionChanged(this, EventArgs.Empty);
 					}
@@ -104,10 +108,12 @@ namespace ICSharpCode.AvalonEdit.Gui
 		internal void OnDocumentChanging()
 		{
 			storedCaretOffset = this.Offset;
+			InvalidateVisualColumn();
 		}
 		
 		internal void OnDocumentChanged(DocumentChangeEventArgs e)
 		{
+			InvalidateVisualColumn();
 			if (storedCaretOffset >= 0) {
 				int newCaretOffset = e.GetNewOffset(storedCaretOffset, AnchorMovementType.AfterInsertion);
 				TextDocument document = textArea.Document;
@@ -128,7 +134,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 				if (document == null) {
 					return 0;
 				} else {
-					ValidatePosition();
 					return document.GetOffset(position);
 				}
 			}
@@ -178,14 +183,36 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public event EventHandler PositionChanged;
 		
+		bool visualColumnValid;
+		
+		void ValidateVisualColumn()
+		{
+			if (!visualColumnValid) {
+				TextDocument document = textArea.Document;
+				if (document != null) {
+					var documentLine = document.GetLineByNumber(position.Line);
+					RevalidateVisualColumn(textView.GetOrConstructVisualLine(documentLine));
+				}
+			}
+		}
+		
+		void InvalidateVisualColumn()
+		{
+			visualColumnValid = false;
+		}
+		
 		/// <summary>
 		/// Validates the visual column of the caret using the specified visual line.
 		/// The visual line must contain the caret offset.
 		/// </summary>
-		public void ValidateVisualColumn(VisualLine visualLine)
+		void RevalidateVisualColumn(VisualLine visualLine)
 		{
 			if (visualLine == null)
 				throw new ArgumentNullException("visualLine");
+			
+			// mark column as validated
+			visualColumnValid = true;
+			
 			int caretOffset = textView.Document.GetOffset(position);
 			int firstDocumentLineOffset = visualLine.FirstDocumentLine.Offset;
 			if (position.VisualColumn < 0) {
@@ -215,7 +242,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		Rect CalcCaretRectangle(VisualLine visualLine)
 		{
-			ValidateVisualColumn(visualLine);
+			RevalidateVisualColumn(visualLine);
 			
 			TextLine textLine = visualLine.GetTextLine(position.VisualColumn);
 			double xPos = textLine.GetDistanceFromCharacterHit(new CharacterHit(position.VisualColumn, 0));
@@ -234,7 +261,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public void BringCaretToView()
 		{
 			if (textView != null) {
-				ValidatePosition();
 				VisualLine visualLine = textView.GetOrConstructVisualLine(textView.Document.GetLineByNumber(position.Line));
 				textView.MakeVisible(CalcCaretRectangle(visualLine));
 			}

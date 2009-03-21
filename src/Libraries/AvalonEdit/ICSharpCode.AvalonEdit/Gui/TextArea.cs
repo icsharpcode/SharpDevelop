@@ -528,6 +528,23 @@ namespace ICSharpCode.AvalonEdit
 		#endregion
 		
 		#region OnTextInput / RemoveSelectedText / ReplaceSelectionWithText
+		/// <summary>
+		/// Occurs when the TextArea receives text input.
+		/// This is like the <see cref="UIElement.TextInput"/> event,
+		/// but occurs immediately before the TextArea handles the TextInput event.
+		/// </summary>
+		public event TextCompositionEventHandler TextEntered;
+		
+		/// <summary>
+		/// Raises the TextEntered event.
+		/// </summary>
+		protected virtual void OnTextEntered(TextCompositionEventArgs e)
+		{
+			if (TextEntered != null) {
+				TextEntered(this, e);
+			}
+		}
+		
 		/// <inheritdoc/>
 		protected override void OnTextInput(TextCompositionEventArgs e)
 		{
@@ -541,9 +558,12 @@ namespace ICSharpCode.AvalonEdit
 				}
 				TextDocument document = this.Document;
 				if (document != null) {
-					ReplaceSelectionWithText(e.Text);
-					caret.BringCaretToView();
-					e.Handled = true;
+					OnTextEntered(e);
+					if (!e.Handled) {
+						ReplaceSelectionWithText(e.Text);
+						caret.BringCaretToView();
+						e.Handled = true;
+					}
 				}
 			}
 		}

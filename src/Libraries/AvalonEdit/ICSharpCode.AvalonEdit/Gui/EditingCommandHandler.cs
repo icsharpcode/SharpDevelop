@@ -92,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 				using (textArea.Document.RunUpdate()) {
 					if (textArea.Selection.GetIsMultiline(textArea.Document)) {
 						DocumentLine start = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.Offset);
-						DocumentLine end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.GetEndOffset());
+						DocumentLine end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.EndOffset);
 						while (true) {
 							int offset = start.Offset;
 							if (textArea.ReadOnlySectionProvider.CanInsert(offset))
@@ -120,7 +120,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 						start = end = textArea.Document.GetLineByNumber(textArea.Caret.Line);
 					} else {
 						start = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.Offset);
-						end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.GetEndOffset());
+						end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.EndOffset);
 					}
 					while (true) {
 						int offset = start.Offset;

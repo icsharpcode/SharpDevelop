@@ -26,6 +26,21 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			                                         new FrameworkPropertyMetadata(typeof(CompletionList)));
 		}
 		
+		/// <summary>
+		/// Is raised when the completion list indicates that the user has chosen
+		/// an entry to be completed.
+		/// </summary>
+		public event EventHandler InsertionRequested;
+		
+		/// <summary>
+		/// Raises the InsertionRequested event.
+		/// </summary>
+		public void RequestInsertion(EventArgs e)
+		{
+			if (InsertionRequested != null)
+				InsertionRequested(this, e);
+		}
+		
 		CompletionListBox listBox;
 		
 		/// <inheritdoc/>
@@ -108,6 +123,20 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					e.Handled = true;
 					SelectIndex(listBox.Items.Count - 1);
 					break;
+				case Key.Tab:
+				case Key.Enter:
+					e.Handled = true;
+					RequestInsertion(e);
+					break;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the selected item.
+		/// </summary>
+		public ICompletionData SelectedItem {
+			get {
+				return listBox.SelectedItem as ICompletionData;
 			}
 		}
 		

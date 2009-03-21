@@ -24,6 +24,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Gets the length of the segment.
 		/// </summary>
 		int Length { get; }
+		
+		/// <summary>
+		/// Gets the end offset of the segment.
+		/// </summary>
+		/// <remarks>EndOffset = Offset + Length;</remarks>
+		int EndOffset { get; }
 	}
 	
 	/// <summary>
@@ -44,9 +50,10 @@ namespace ICSharpCode.AvalonEdit.Document
 			get { return Length; }
 		}
 		
-		internal int GetEndOffset()
-		{
-			return Offset + Length;
+		public int EndOffset {
+			get {
+				return Offset + Length;
+			}
 		}
 		
 		public SimpleSegment(int offset, int length)
@@ -105,9 +112,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			get { return end.Offset - start.Offset; }
 		}
 		
-		internal int GetEndOffset()
-		{
-			return end.Offset;
+		public int EndOffset {
+			get { return end.Offset; }
 		}
 		
 		public AnchorSegment(TextAnchor start, TextAnchor end)

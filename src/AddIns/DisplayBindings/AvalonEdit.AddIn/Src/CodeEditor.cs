@@ -29,6 +29,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.Background = Brushes.White;
 			this.FontFamily = new FontFamily("Consolas");
 			this.FontSize = 13;
+			this.TextArea.TextEntered += TextArea_TextInput;
 		}
 		
 		volatile static ReadOnlyCollection<ICodeCompletionBinding> codeCompletionBindings;
@@ -42,13 +43,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		protected override void OnPreviewTextInput(TextCompositionEventArgs e)
+		void TextArea_TextInput(object sender, TextCompositionEventArgs e)
 		{
-			base.OnPreviewTextInput(e);
-			if (!e.Handled && e.Text.Length == 1) {
+			foreach (char c in e.Text) {
 				foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 					CompletionWindow oldCompletionWindow = lastCompletionWindow;
-					CodeCompletionKeyPressResult result = cc.HandleKeyPress(textEditorAdapter, e.Text[0]);
+					CodeCompletionKeyPressResult result = cc.HandleKeyPress(textEditorAdapter, c);
 					if (result == CodeCompletionKeyPressResult.Completed) {
 						if (lastCompletionWindow != null && lastCompletionWindow != oldCompletionWindow) {
 							// a new CompletionWindow was shown, but does not eat the input

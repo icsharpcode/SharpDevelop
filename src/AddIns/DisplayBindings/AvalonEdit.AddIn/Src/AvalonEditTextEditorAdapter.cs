@@ -14,7 +14,6 @@ using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using System.Windows.Media;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -116,7 +115,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected virtual CompletionWindow CreateCompletionWindow(ICompletionItemList data)
 		{
-			return textEditor.CreateCompletionWindow(data.Items.Select(i => (ICompletionData)new CodeCompletionDataAdapter(i)));;
+			return new SharpDevelopCompletionWindow(textEditor.TextArea, data);
 		}
 		
 		public string GetWordBeforeCaret()
@@ -144,34 +143,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void Select(int selectionStart, int selectionLength)
 		{
 			textEditor.Select(selectionStart, selectionLength);
-		}
-	}
-	
-	sealed class CodeCompletionDataAdapter : ICompletionData
-	{
-		readonly ICompletionItem item;
-		
-		public CodeCompletionDataAdapter(ICompletionItem item)
-		{
-			if (item == null)
-				throw new ArgumentNullException("item");
-			this.item = item;
-		}
-		
-		public string Text {
-			get { return item.Text; }
-		}
-		
-		public object Content {
-			get { return item.Text; }
-		}
-		
-		public object Description {
-			get { return item.Description; }
-		}
-		
-		public ImageSource Image {
-			get { return null; }
 		}
 	}
 }

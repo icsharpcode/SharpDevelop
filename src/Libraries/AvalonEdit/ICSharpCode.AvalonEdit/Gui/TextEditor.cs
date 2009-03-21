@@ -663,22 +663,5 @@ namespace ICSharpCode.AvalonEdit
 			}
 		}
 		#endregion
-
-		#region Code Completion
-		/// <summary>
-		/// Creates a completion window. Call .Show() on the returned window to display it.
-		/// </summary>
-		/// <param name="data">The list of completion items.</param>
-		/// <exception cref="ArgumentNullException">data is null</exception>
-		/// <returns>The completion window that was opened.</returns>
-		public CompletionWindow CreateCompletionWindow(IEnumerable<ICompletionData> data)
-		{
-			if (data == null)
-				throw new ArgumentNullException("data");
-			CompletionWindow window = new CompletionWindow(textArea);
-			window.CompletionList.CompletionData.AddRange(data);
-			return window;
-		}
-		#endregion
 	}
 }

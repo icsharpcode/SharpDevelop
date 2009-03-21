@@ -360,12 +360,12 @@ namespace ICSharpCode.AvalonEdit.Gui
 						if (shift && !textArea.Selection.IsEmpty) {
 							if (startWord.Offset < textArea.Selection.SurroundingSegment.Offset) {
 								textArea.Selection = textArea.Selection.SetEndpoint(startWord.Offset);
-							} else if (startWord.GetEndOffset() > textArea.Selection.SurroundingSegment.GetEndOffset()) {
-								textArea.Selection = textArea.Selection.SetEndpoint(startWord.GetEndOffset());
+							} else if (startWord.EndOffset > textArea.Selection.SurroundingSegment.EndOffset) {
+								textArea.Selection = textArea.Selection.SetEndpoint(startWord.EndOffset);
 							}
 							this.startWord = new AnchorSegment(textArea.Document, textArea.Selection.SurroundingSegment);
 						} else {
-							textArea.Selection = new SimpleSelection(startWord.Offset, startWord.GetEndOffset());
+							textArea.Selection = new SimpleSelection(startWord.Offset, startWord.EndOffset);
 							this.startWord = new AnchorSegment(textArea.Document, startWord.Offset, startWord.Length);
 						}
 					}
@@ -475,7 +475,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 			} else if (mode == SelectionMode.WholeWord) {
 				var newWord = GetWordAtMousePosition(e);
 				if (newWord != SimpleSegment.Invalid) {
-					textArea.Selection = new SimpleSelection(Math.Min(newWord.Offset, startWord.Offset), Math.Max(newWord.GetEndOffset(), startWord.GetEndOffset()));
+					textArea.Selection = new SimpleSelection(Math.Min(newWord.Offset, startWord.Offset),
+					                                         Math.Max(newWord.EndOffset, startWord.EndOffset));
 				}
 			}
 		}

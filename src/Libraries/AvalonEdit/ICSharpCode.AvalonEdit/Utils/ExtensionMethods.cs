@@ -112,14 +112,6 @@ namespace ICSharpCode.AvalonEdit.Utils
 		
 		#region ISegment extensions
 		/// <summary>
-		/// Gets the end offset of the segment.
-		/// </summary>
-		public static int GetEndOffset(this ISegment segment)
-		{
-			return segment.Offset + segment.Length;
-		}
-		
-		/// <summary>
 		/// Gets whether the segment contains the offset.
 		/// </summary>
 		/// <returns>
@@ -138,13 +130,8 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// </summary>
 		public static SimpleSegment GetOverlap(this ISegment segment, ISegment other)
 		{
-			int start1 = segment.Offset;
-			int end1 = start1 + segment.Length;
-			int start2 = other.Offset;
-			int end2 = start2 + other.Length;
-			
-			int start = Math.Max(start1, start2);
-			int end = Math.Min(end1, end2);
+			int start = Math.Max(segment.Offset, other.Offset);
+			int end = Math.Min(segment.EndOffset, other.EndOffset);
 			if (end < start)
 				return SimpleSegment.Invalid;
 			else

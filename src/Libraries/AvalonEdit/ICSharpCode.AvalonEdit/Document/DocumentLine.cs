@@ -131,6 +131,10 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
+		int ISegment.EndOffset {
+			get { return this.Offset + this.Length; }
+		}
+		
 		/// <summary>
 		/// Gets the length of this line, including the line delimiter. O(1)
 		/// </summary>
