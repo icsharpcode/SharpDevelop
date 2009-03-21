@@ -7,6 +7,7 @@
 
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
 using System.Reflection;
 
@@ -94,7 +95,7 @@ namespace ICSharpCode.PythonBinding
 		
 		static string GetFontAsString(Font font)
 		{
-			return String.Concat(font.GetType().FullName, "(\"", font.Name, "\", ", font.Size, ", ", typeof(FontStyle).FullName, ".", font.Style, ", ", typeof(GraphicsUnit).FullName, ".", font.Unit, ", ", font.GdiCharSet, ")");
+			return String.Concat(font.GetType().FullName, "(\"", font.Name, "\", ", font.Size.ToString(CultureInfo.InvariantCulture), ", ", typeof(FontStyle).FullName, ".", font.Style, ", ", typeof(GraphicsUnit).FullName, ".", font.Unit, ", ", font.GdiCharSet, ")");
 		}
 	}
 }

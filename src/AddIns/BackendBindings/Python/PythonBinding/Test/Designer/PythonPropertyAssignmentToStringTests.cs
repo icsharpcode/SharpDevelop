@@ -7,6 +7,7 @@
 
 using System;
 using System.Drawing;
+using System.Globalization;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -29,9 +30,15 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void FontToString()
 		{
-			Font font = new Font("Times New Roman", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-			Assert.AreEqual("System.Drawing.Font(\"Times New Roman\", 8.25, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0)",
-			                PythonPropertyValueAssignment.ToString(font));
+			CultureInfo cultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
+			try {
+				System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+				Font font = new Font("Times New Roman", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+				Assert.AreEqual("System.Drawing.Font(\"Times New Roman\", 8.25, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0)",
+				                PythonPropertyValueAssignment.ToString(font));
+			} finally {
+				System.Threading.Thread.CurrentThread.CurrentCulture = cultureInfo;
+			}
 		}
 	}
 }
