@@ -238,6 +238,34 @@ namespace PythonBinding.Tests.Designer
 		{
 			form.ForeColor = Color.Blue;
 			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("ForeColor", form));
+		}
+		
+		[Test]
+		public void FontDefaultIsControlDefaultFont()
+		{
+			form.Font = Control.DefaultFont;
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("Font", form));
+		}
+
+		[Test]
+		public void NonDefaultFont()
+		{
+			form.Font = new Font("Times New Roman", 8.25F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("Font", form));
+		}
+		
+		[Test]
+		public void TransparencyKeyDefaultIsEmptyColor()
+		{
+			form.TransparencyKey = Color.Empty;
+			Assert.IsTrue(defaultPropertyValues.IsDefaultValue("TransparencyKey", form));
+		}
+
+		[Test]
+		public void NonDefaultTransparencyKey()
+		{
+			form.TransparencyKey = Color.White;
+			Assert.IsFalse(defaultPropertyValues.IsDefaultValue("TransparencyKey", form));
 		}		
 	}
 }

@@ -51,6 +51,9 @@ namespace ICSharpCode.PythonBinding
 			} else if (propertyType == typeof(Color)) {
 				Color color = (Color)propertyValue;
 				return GetColorAsString(color);
+			} else if (propertyType == typeof(Font)) {
+				Font font = (Font)propertyValue;
+				return GetFontAsString(font);
 			}
 			return propertyValue.ToString();
 		}
@@ -87,6 +90,11 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return String.Empty;
+		}
+		
+		static string GetFontAsString(Font font)
+		{
+			return String.Concat(font.GetType().FullName, "(\"", font.Name, "\", ", font.Size, ", ", typeof(FontStyle).FullName, ".", font.Style, ", ", typeof(GraphicsUnit).FullName, ".", font.Unit, ", ", font.GdiCharSet, ")");
 		}
 	}
 }

@@ -20,7 +20,9 @@ namespace PythonBinding.Tests.Designer
 	[TestFixture]
 	public class LoadSimpleFormTestFixture : LoadFormTestFixtureBase
 	{		
-		string pythonCode = "class MainForm(System.Windows.Forms.Form):\r\n" +
+		public override string PythonCode {
+			get {
+				return "class MainForm(System.Windows.Forms.Form):\r\n" +
 							"    def InitializeComponent(self):\r\n" +
 							"        self.SuspendLayout()\r\n" +
 							"        # \r\n" +
@@ -29,44 +31,23 @@ namespace PythonBinding.Tests.Designer
 							"        self.ClientSize = System.Drawing.Size(300, 400)\r\n" +
 							"        self.Name = \"MainForm\"\r\n" +
 							"        self.ResumeLayout(False)\r\n";
-		Form form;
-		CreatedComponent formComponent;
-		string typeName;
-		CreatedInstance instance;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			PythonFormWalker walker = new PythonFormWalker(this);
-			form = walker.CreateForm(pythonCode);
-			
-			if (CreatedComponents.Count > 0) {
-				formComponent = CreatedComponents[0];
-			}
-			if (TypeNames.Count > 0) {
-				typeName = TypeNames[0];
-			}
-			if (CreatedInstances.Count > 0) {
-				instance = CreatedInstances[0];
 			}
 		}
-
-		[TestFixtureTearDown]
-		public void TearDownFixture()
-		{
-			form.Dispose();
+				
+		public CreatedComponent FormComponent {
+			get { return CreatedComponents[0]; }
 		}
 		
 		[Test]
 		public void MainFormCreated()
 		{			
-			Assert.IsNotNull(form);
+			Assert.IsNotNull(Form);
 		}
 		
 		[Test]
 		public void MainFormName()
 		{
-			Assert.AreEqual("MainForm", form.Name);
+			Assert.AreEqual("MainForm", Form.Name);
 		}
 		
 		[Test]
@@ -78,20 +59,20 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void ComponentName()
 		{
-			Assert.AreEqual("MainForm", formComponent.Name);
+			Assert.AreEqual("MainForm", FormComponent.Name);
 		}
 		
 		[Test]
 		public void ComponentType()
 		{
-			Assert.AreEqual("System.Windows.Forms.Form", formComponent.TypeName);
+			Assert.AreEqual("System.Windows.Forms.Form", FormComponent.TypeName);
 		}
 		
 		[Test]
 		public void FormClientSize()
 		{
 			Size size = new Size(300, 400);
-			Assert.AreEqual(size, form.ClientSize);
+			Assert.AreEqual(size, Form.ClientSize);
 		}
 		
 		/// <summary>
@@ -101,7 +82,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void TypeNameLookedUp()
 		{
-			Assert.AreEqual("System.Drawing.Size", typeName);
+			Assert.AreEqual("System.Drawing.Size", TypeNames[0]);
 		}
 
 		[Test]
@@ -120,7 +101,7 @@ namespace PythonBinding.Tests.Designer
 			args.Add(height);
 			
 			CreatedInstance expectedInstance = new CreatedInstance(typeof(Size), args, "ClientSize", false);
-			Assert.AreEqual(expectedInstance, instance);
+			Assert.AreEqual(expectedInstance, CreatedInstances[0]);
 		}		
 	}
 }

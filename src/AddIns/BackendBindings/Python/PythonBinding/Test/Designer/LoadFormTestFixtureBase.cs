@@ -9,11 +9,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 
 using ICSharpCode.PythonBinding;
+using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Designer
@@ -27,9 +29,31 @@ namespace PythonBinding.Tests.Designer
 		List <CreatedInstance> createdInstances = new List<CreatedInstance>();
 		List <AddedComponent> addedComponents = new List<AddedComponent>();
 		List<string> typeNames = new List<string>();
-		
+
+		Form form;
+
 		public LoadFormTestFixtureBase()
 		{
+		}
+				
+		[TestFixtureSetUp]
+		public void SetUpFixture()
+		{
+			PythonFormWalker walker = new PythonFormWalker(this);
+			form = walker.CreateForm(PythonCode);
+		}
+
+		[TestFixtureTearDown]
+		public void TearDownFixture()
+		{
+			form.Dispose();
+		}		
+
+		/// <summary>
+		/// Gets the python code that will be loaded.
+		/// </summary>
+		public virtual string PythonCode {
+			get { return String.Empty; }
 		}
 		
 		public IComponent CreateComponent(Type componentClass, string name)
@@ -55,7 +79,12 @@ namespace PythonBinding.Tests.Designer
 			object[] argumentsArray = new object[arguments.Count];
 			arguments.CopyTo(argumentsArray, 0);
 			
-			object o = type.Assembly.CreateInstance(type.FullName, true, BindingFlags.CreateInstance, null, argumentsArray, null, new object[0]);
+			object o = null;
+			DesignerSerializationManager designerSerializationManager = new DesignerSerializationManager();
+			using (designerSerializationManager.CreateSession()) {
+				IDesignerSerializationManager manager = designerSerializationManager as IDesignerSerializationManager;
+				o = manager.CreateInstance(type, arguments, name, addToContainer);
+			}
 			createdInstance.Object = o;
 			return o;
 		}
@@ -71,6 +100,10 @@ namespace PythonBinding.Tests.Designer
 				type = typeof(Size).Assembly.GetType(typeName);
 			}
 			return type;
+		}
+		
+		protected Form Form {
+			get { return form; }
 		}
 		
 		protected List<CreatedComponent> CreatedComponents {

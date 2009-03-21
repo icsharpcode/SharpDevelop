@@ -170,6 +170,7 @@
     <Compile Include="Designer\LoadAccessibleRoleTestFixture.cs" />
     <Compile Include="Designer\LoadColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\LoadCursorTestFixture.cs" />
+    <Compile Include="Designer\LoadFontTestFixture.cs" />
     <Compile Include="Designer\LoadFormTestFixtureBase.cs" />
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />
@@ -184,6 +185,7 @@
     <Compile Include="Designer\NullGeneratorPassedToLoader.cs" />
     <Compile Include="Designer\PythonDesignerLoaderProviderTestFixture.cs" />
     <Compile Include="Designer\PythonDesignerLoaderTestFixture.cs" />
+    <Compile Include="Designer\PythonPropertyAssignmentToStringTests.cs" />
     <Compile Include="Designer\ShouldSerializeTests.cs" />
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
     <Compile Include="Designer\TextEditorIndentPassedToGeneratorTestFixture.cs" />

@@ -29,7 +29,7 @@ namespace PythonBinding.Tests.Designer
 		protected MockTypeResolutionService typeResolutionService;
 		
 		[TestFixtureSetUp]
-		public void SetUpFixture()
+		public new void SetUpFixture()
 		{
 			PythonParser parser = new PythonParser();
 			PythonAst ast = parser.CreateAst(@"snippet.py", GetPythonCode());

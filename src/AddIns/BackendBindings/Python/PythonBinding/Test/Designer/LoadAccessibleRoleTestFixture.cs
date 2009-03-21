@@ -20,7 +20,9 @@ namespace PythonBinding.Tests.Designer
 	[TestFixture]
 	public class LoadAccessibleRoleTestFixture : LoadFormTestFixtureBase
 	{		
-		string pythonCode = "class TestForm(System.Windows.Forms.Form):\r\n" +
+		public override string PythonCode {
+			get {
+				return "class TestForm(System.Windows.Forms.Form):\r\n" +
 							"    def InitializeComponent(self):\r\n" +
 							"        self.SuspendLayout()\r\n" +
 							"        # \r\n" +
@@ -29,25 +31,13 @@ namespace PythonBinding.Tests.Designer
 							"        self.AccessibleRole = System.Windows.Forms.AccessibleRole.None\r\n" +
 							"        self.Name = \"TestForm\"\r\n" +
 							"        self.ResumeLayout(False)\r\n";
-		Form form;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			PythonFormWalker walker = new PythonFormWalker(this);
-			form = walker.CreateForm(pythonCode);
-		}
-
-		[TestFixtureTearDown]
-		public void TearDownFixture()
-		{
-			form.Dispose();
+			}
 		}
 								
 		[Test]
 		public void AccessibleRoleIsNone()
 		{
-			Assert.AreEqual(AccessibleRole.None, form.AccessibleRole);
+			Assert.AreEqual(AccessibleRole.None, Form.AccessibleRole);
 		}
 	}
 }

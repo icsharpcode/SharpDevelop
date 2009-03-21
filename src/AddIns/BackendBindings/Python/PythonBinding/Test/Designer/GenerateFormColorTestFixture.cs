@@ -52,12 +52,5 @@ namespace PythonBinding.Tests.Designer
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode);
 		}
-		
-		[Test]
-		public void ConvertCustomColorToString()
-		{
-			Color customColor = Color.FromArgb(0, 192, 10);
-			Assert.AreEqual("System.Drawing.Color.FromArgb(0, 192, 10)", PythonPropertyValueAssignment.ToString(customColor));
-		}
 	}
 }

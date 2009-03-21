@@ -110,7 +110,7 @@ namespace ICSharpCode.PythonBinding
 				if (walkingAssignment) {
 					Type type = componentCreator.GetType(name);
 					if (type != null) {
-						List<object> args = PythonCodeDeserializer.GetArguments(node);
+						List<object> args = deserializer.GetArguments(node);
 						object instance = componentCreator.CreateInstance(type, args, fieldExpression.MemberName, false);
 						if (!SetPropertyValue(form, fieldExpression.MemberName, instance)) {
 							AddComponent(fieldExpression.MemberName, instance);
@@ -172,9 +172,6 @@ namespace ICSharpCode.PythonBinding
 		static object ConvertPropertyValue(PropertyDescriptor propertyDescriptor, object propertyValue)
 		{
 			if (propertyDescriptor.PropertyType != propertyValue.GetType()) {
-				if (propertyDescriptor.PropertyType.IsEnum) {
-					return Enum.Parse(propertyDescriptor.PropertyType, GetUnqualifiedEnumValue(propertyValue as String));
-				} 
 				return propertyDescriptor.Converter.ConvertFrom(propertyValue);
 			}
 			return propertyValue;
@@ -210,18 +207,6 @@ namespace ICSharpCode.PythonBinding
 				return GetControl(variableName);
 			}
 			return form;
-		}
-		
-		/// <summary>
-		/// Gets the unqualified enum value from a fully qualified value.
-		/// </summary>
-		static string GetUnqualifiedEnumValue(string fullyQualifiedEnumValue)
-		{
-			int index = fullyQualifiedEnumValue.LastIndexOf('.');
-			if (index > 0) {
-				return fullyQualifiedEnumValue.Substring(index + 1);
-			}
-			return fullyQualifiedEnumValue;
 		}
 	}
 }

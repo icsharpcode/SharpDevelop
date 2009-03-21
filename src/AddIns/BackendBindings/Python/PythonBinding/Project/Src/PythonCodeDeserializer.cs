@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Drawing;
 using System.Reflection;
 using IronPython.Compiler.Ast;
 
@@ -28,13 +29,16 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Gets the arguments passed to the call expression.
 		/// </summary>
-		public static List<object> GetArguments(CallExpression expression)
+		public List<object> GetArguments(CallExpression expression)
 		{
 			List<object> args = new List<object>();
 			foreach (Arg a in expression.Args) {
 				ConstantExpression constantExpression = a.Expression as ConstantExpression;
+				MemberExpression memberExpression = a.Expression as MemberExpression;
 				if (constantExpression != null) {
 					args.Add(constantExpression.Value);
+				} else if (memberExpression != null) {
+					args.Add(Deserialize(memberExpression));
 				}
 			}
 			return args;
@@ -92,10 +96,14 @@ namespace ICSharpCode.PythonBinding
 			PythonControlFieldExpression field = PythonControlFieldExpression.Create(memberExpression);			
 			Type type = GetType(field);
 			if (type != null) {
-				BindingFlags propertyBindingFlags = BindingFlags.Public | BindingFlags.GetField | BindingFlags.Static | BindingFlags.Instance;
-				PropertyInfo propertyInfo = type.GetProperty(field.MemberName, propertyBindingFlags);
-				if (propertyInfo != null) {
-					return propertyInfo.GetValue(type, null);
+				if (type.IsEnum) {
+					return Enum.Parse(type, field.MemberName);
+				} else {
+					BindingFlags propertyBindingFlags = BindingFlags.Public | BindingFlags.GetField | BindingFlags.Static | BindingFlags.Instance;
+					PropertyInfo propertyInfo = type.GetProperty(field.MemberName, propertyBindingFlags);
+					if (propertyInfo != null) {
+						return propertyInfo.GetValue(type, null);
+					}
 				}
 			}
 			return null;

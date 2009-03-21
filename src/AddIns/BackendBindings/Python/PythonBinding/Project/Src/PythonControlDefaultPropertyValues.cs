@@ -39,6 +39,8 @@ namespace ICSharpCode.PythonBinding
 			defaultPropertyValues.Add("Padding", Padding.Empty);
 			defaultPropertyValues.Add("BackColor", Control.DefaultBackColor);
 			defaultPropertyValues.Add("ForeColor", Control.DefaultForeColor);
+			defaultPropertyValues.Add("Font", Control.DefaultFont);
+			defaultPropertyValues.Add("TransparencyKey", Color.Empty);
 		}
 		
 		/// <summary>
@@ -99,11 +101,6 @@ namespace ICSharpCode.PythonBinding
 			}
 
 			if (propertyInfo.Name == "Icon") {
-				return true;	
-			} else if (propertyInfo.Name == "TransparencyKey") {
-				return true;	
-			} else if (propertyInfo.Name == "Font") {
-				// Default is Control.DefaultFont
 				return true;	
 			}
 			return false;
