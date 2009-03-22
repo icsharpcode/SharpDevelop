@@ -24,39 +24,36 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		ToolStrip toolStrip;
 		Panel contentPanel = new Panel();
-		
 		TaskView taskView = new TaskView();
-
-		bool showWarnings = true;
-		bool showErrors = true;
-		bool showMessages = true;
+		
+		Properties properties;
 		
 		public bool ShowErrors {
 			get {
-				return showErrors;
+				return properties.Get<bool>("ShowErrors", true);
 			}
 			set {
-				showErrors = value;
+				properties.Set<bool>("ShowErrors", value);
 				InternalShowResults();
 			}
 		}
 		
 		public bool ShowMessages {
 			get {
-				return showMessages;
+				return properties.Get<bool>("ShowMessages", true);
 			}
 			set {
-				showMessages = value;
+				properties.Set<bool>("ShowMessages", value);
 				InternalShowResults();
 			}
 		}
 		
 		public bool ShowWarnings {
 			get {
-				return showWarnings;
+				return properties.Get<bool>("ShowWarnings", true);
 			}
 			set {
-				showWarnings = value;
+				properties.Set<bool>("ShowWarnings", value);
 				InternalShowResults();
 			}
 		}
@@ -79,6 +76,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ErrorListPad()
 		{
 			instance = this;
+			properties = PropertyService.Get("ErrorListPad", new Properties());
 			
 			RedrawContent();
 			
