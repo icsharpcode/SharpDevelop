@@ -9,6 +9,7 @@
 			<Word>Utils</Word>
 			<Word>Colorizer</Word>
 			<Word>Renderer</Word>
+			<Word>Renderers</Word>
 			<Word>Deletable</Word>
 			<!-- required so that FxCop accepts 'yPositionMode' -->
 			<Word>y</Word>

@@ -17,6 +17,8 @@ namespace ICSharpCode.SharpDevelop
 	{
 		IEnumerable<ICompletionItem> Items { get; }
 		
+		ICompletionItem SuggestedItem { get; }
+		
 		/// <summary>
 		/// Processes the specified key press.
 		/// </summary>
@@ -58,6 +60,8 @@ namespace ICSharpCode.SharpDevelop
 		public IList<ICompletionItem> Items {
 			get { return items; }
 		}
+		
+		public ICompletionItem SuggestedItem { get; set; }
 		
 		IEnumerable<ICompletionItem> ICompletionItemList.Items {
 			get { return items; }

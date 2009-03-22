@@ -75,6 +75,7 @@
     <Compile Include="Utils\CaretNavigationTests.cs" />
     <Compile Include="Utils\CompressingTreeListTests.cs" />
     <Compile Include="Utils\ExtensionMethodsTests.cs" />
+    <Compile Include="Utils\IndentationStringTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
     <None Include="app.config" />
   </ItemGroup>

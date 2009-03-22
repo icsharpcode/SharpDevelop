@@ -27,7 +27,7 @@
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE;DATACONSISTENCYTEST</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>false</DebugSymbols>
@@ -159,7 +159,9 @@
     <Compile Include="Gui\SelectionMouseHandler.cs">
       <DependentUpon>Selection.cs</DependentUpon>
     </Compile>
-    <Compile Include="Gui\TextEditorWeakEventManager.cs" />
+    <Compile Include="Gui\TextEditorWeakEventManager.cs">
+      <DependentUpon>TextEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\TextLayer.cs">
       <DependentUpon>TextView.cs</DependentUpon>
     </Compile>
@@ -225,7 +227,7 @@
     <Compile Include="Gui\VisualYPosition.cs">
       <DependentUpon>VisualLine.cs</DependentUpon>
     </Compile>
-    <Compile Include="Gui\WhitespaceElementGenerator.cs" />
+    <Compile Include="Gui\SingleCharacterElementGenerator.cs" />
     <Compile Include="Highlighting\DocumentHighlighter.cs" />
     <Compile Include="Highlighting\HighlightedLine.cs" />
     <Compile Include="Highlighting\HighlightedSection.cs" />
@@ -256,6 +258,8 @@
     <Compile Include="Highlighting\Xshd\XshdRuleSet.cs" />
     <Compile Include="Highlighting\Xshd\XshdSpan.cs" />
     <Compile Include="Highlighting\Xshd\XshdSyntaxDefinition.cs" />
+    <Compile Include="TextEditorComponent.cs">
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Document\DocumentChangeEventArgs.cs" />
     <Compile Include="Document\GapTextBuffer.cs">
@@ -269,6 +273,7 @@
       <DependentUpon>DocumentLine.cs</DependentUpon>
     </Compile>
     <Compile Include="Document\TextDocument.cs" />
+    <Compile Include="TextEditorOptions.cs" />
     <Compile Include="Utils\Boxes.cs" />
     <Compile Include="Utils\CompressingTreeList.cs" />
     <Compile Include="Utils\Constants.cs" />
@@ -281,6 +286,7 @@
     <Compile Include="Utils\ImmutableStack.cs" />
     <Compile Include="Utils\NullSafeCollection.cs" />
     <Compile Include="Utils\ObserveAddRemoveCollection.cs" />
+    <Compile Include="Utils\PropertyChangedWeakEventManager.cs" />
     <Compile Include="Utils\TextUtilities.cs" />
     <Compile Include="Utils\WeakEventManagerBase.cs" />
     <Compile Include="Utils\PixelSnapHelpers.cs" />

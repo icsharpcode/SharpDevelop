@@ -19,7 +19,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 {
 	static class ExtensionMethods
 	{
-		#region Epsilon / IsClose
+		#region Epsilon / IsClose / CoerceValue
 		public const double Epsilon = 1e-8;
 		
 		/// <summary>
@@ -46,6 +46,28 @@ namespace ICSharpCode.AvalonEdit.Utils
 		public static bool IsClose(this Vector d1, Vector d2)
 		{
 			return IsClose(d1.X, d2.X) && IsClose(d1.Y, d2.Y);
+		}
+		
+		/// <summary>
+		/// Forces the value to stay between mininum and maximum.
+		/// </summary>
+		/// <returns>minimum, if value is less than minimum.
+		/// Maximum, if value is greater than maximum.
+		/// Otherwise, value.</returns>
+		public static double CoerceValue(this double value, double minimum, double maximum)
+		{
+			return Math.Max(Math.Min(value, maximum), minimum);
+		}
+		
+		/// <summary>
+		/// Forces the value to stay between mininum and maximum.
+		/// </summary>
+		/// <returns>minimum, if value is less than minimum.
+		/// Maximum, if value is greater than maximum.
+		/// Otherwise, value.</returns>
+		public static int CoerceValue(this int value, int minimum, int maximum)
+		{
+			return Math.Max(Math.Min(value, maximum), minimum);
 		}
 		#endregion
 		

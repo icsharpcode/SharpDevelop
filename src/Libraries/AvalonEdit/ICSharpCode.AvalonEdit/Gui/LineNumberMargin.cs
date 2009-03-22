@@ -110,13 +110,19 @@ namespace ICSharpCode.AvalonEdit.Gui
 			OnDocumentLineCountChanged();
 		}
 		
-		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		/// <inheritdoc/>
+		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextDocumentWeakEventManager.LineCountChanged)) {
 				OnDocumentLineCountChanged();
 				return true;
 			}
 			return false;
+		}
+		
+		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			return ReceiveWeakEvent(managerType, sender, e);
 		}
 		
 		int maxLineNumberLength = 1;

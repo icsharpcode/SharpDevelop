@@ -127,6 +127,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// <param name="event">The bubbling event.</param>
 		/// <param name="args">The event args to use.</param>
 		/// <returns>The <see cref="RoutedEventArgs.Handled"/> value of the event args.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
 		protected static bool RaiseEventPair(UIElement target, RoutedEvent previewEvent, RoutedEvent @event, RoutedEventArgs args)
 		{
 			if (target == null)

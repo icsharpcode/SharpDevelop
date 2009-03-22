@@ -244,7 +244,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 			// (but dragging to Word works in both cases)
 			
 			// also copy as HTML - adds syntax highlighting when dragging to Word
-			HtmlClipboard.SetHtml(dataObject, HtmlClipboard.CreateHtmlFragmentForSelection(textArea));
+			string htmlFragment = HtmlClipboard.CreateHtmlFragmentForSelection(textArea, new HtmlOptions(textArea.Options));
+			HtmlClipboard.SetHtml(dataObject, htmlFragment);
 			
 			DragDropEffects allowedEffects = DragDropEffects.All;
 			var deleteOnMove = textArea.Selection.Segments.Select(s => new AnchorSegment(textArea.Document, s)).ToList();
@@ -466,7 +467,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			int visualColumn;
 			int offset = GetOffsetFromMousePosition(e, out visualColumn);
 			if (allowedSegment != null) {
-				offset = Math.Max(allowedSegment.Offset, Math.Min(allowedSegment.EndOffset, offset));
+				offset = offset.CoerceValue(allowedSegment.Offset, allowedSegment.EndOffset);
 			}
 			if (offset >= 0) {
 				textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(offset), visualColumn);

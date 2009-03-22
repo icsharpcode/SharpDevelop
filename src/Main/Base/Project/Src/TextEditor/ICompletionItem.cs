@@ -17,4 +17,15 @@ namespace ICSharpCode.SharpDevelop
 		string Text { get; }
 		string Description { get; }
 	}
+	
+	public class DefaultCompletionItem : ICompletionItem
+	{
+		public string Text { get; private set; }
+		public string Description { get; set; }
+		
+		public DefaultCompletionItem(string text)
+		{
+			this.Text = text;
+		}
+	}
 }

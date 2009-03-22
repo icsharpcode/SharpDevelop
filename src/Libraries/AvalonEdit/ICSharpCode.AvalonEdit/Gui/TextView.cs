@@ -36,7 +36,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 	                                                 Justification = "The user usually doesn't work with TextView but with TextEditor; and nulling the Document property is sufficient to dispose everything.")]
-	public class TextView : FrameworkElement, IScrollInfo, IWeakEventListener, IServiceProvider
+	public class TextView : FrameworkElement, IScrollInfo, IWeakEventListener, ITextEditorComponent, IServiceProvider
 	{
 		#region Constructor
 		static TextView()
@@ -49,10 +49,16 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public TextView()
 		{
+			this.Options = new TextEditorOptions();
 			textLayer = new TextLayer(this);
 			elementGenerators = new ObserveAddRemoveCollection<VisualLineElementGenerator>(ElementGenerator_Added, ElementGenerator_Removed);
 			lineTransformers = new ObserveAddRemoveCollection<IVisualLineTransformer>(LineTransformer_Added, LineTransformer_Removed);
 			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
+			
+			SingleCharacterElementGenerator sceg = new SingleCharacterElementGenerator();
+			sceg.SynchronizeOptions(this);
+			elementGenerators.Add(sceg);
+			
 			layers = new UIElementCollection(this, this);
 			InsertLayer(textLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
 		}
@@ -115,15 +121,72 @@ namespace ICSharpCode.AvalonEdit.Gui
 				DocumentChanged(this, EventArgs.Empty);
 		}
 		
-		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		/// <inheritdoc/>
+		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextDocumentWeakEventManager.Changing)) {
 				// put redraw into background so that other input events can be handled before the redraw
 				DocumentChangeEventArgs change = (DocumentChangeEventArgs)e;
 				Redraw(change.Offset, change.RemovalLength, DispatcherPriority.Background);
 				return true;
+			} else if (managerType == typeof(PropertyChangedWeakEventManager)) {
+				OnOptionChanged((PropertyChangedEventArgs)e);
+				return true;
 			}
 			return false;
+		}
+		
+		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			return ReceiveWeakEvent(managerType, sender, e);
+		}
+		#endregion
+		
+		#region Options property
+		/// <summary>
+		/// Options property.
+		/// </summary>
+		public static readonly DependencyProperty OptionsProperty
+			= TextEditor.OptionsProperty.AddOwner(typeof(TextView), new FrameworkPropertyMetadata(OnOptionsChanged));
+		
+		/// <summary>
+		/// Gets/Sets the document displayed by the text editor.
+		/// </summary>
+		public TextEditorOptions Options {
+			get { return (TextEditorOptions)GetValue(OptionsProperty); }
+			set { SetValue(OptionsProperty, value); }
+		}
+		
+		/// <summary>
+		/// Occurs when a text editor option has changed.
+		/// </summary>
+		public event PropertyChangedEventHandler OptionChanged;
+		
+		/// <summary>
+		/// Raises the <see cref="OptionChanged"/> event.
+		/// </summary>
+		protected virtual void OnOptionChanged(PropertyChangedEventArgs e)
+		{
+			if (OptionChanged != null) {
+				OptionChanged(this, e);
+			}
+			Redraw();
+		}
+		
+		static void OnOptionsChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
+		{
+			((TextView)dp).OnOptionsChanged((TextEditorOptions)e.OldValue, (TextEditorOptions)e.NewValue);
+		}
+		
+		void OnOptionsChanged(TextEditorOptions oldValue, TextEditorOptions newValue)
+		{
+			if (oldValue != null) {
+				PropertyChangedWeakEventManager.RemoveListener(oldValue, this);
+			}
+			if (newValue != null) {
+				PropertyChangedWeakEventManager.AddListener(newValue, this);
+			}
+			OnOptionChanged(new PropertyChangedEventArgs(null));
 		}
 		#endregion
 		
@@ -602,7 +665,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			return new VisualLineTextParagraphProperties {
 				defaultTextRunProperties = defaultTextRunProperties,
 				textWrapping = canHorizontallyScroll ? TextWrapping.NoWrap : TextWrapping.Wrap,
-				tabSize = 4 * WideSpaceWidth
+				tabSize = Options.IndentationSize * WideSpaceWidth
 			};
 		}
 		

@@ -69,11 +69,14 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// <param name="document">The document to create HTML from.</param>
 		/// <param name="highlighter">The highlighter used to highlight the document.</param>
 		/// <param name="segment">The part of the document to create HTML for. You can pass null to create HTML for the whole document.</param>
+		/// <param name="options">The options for the HTML creation.</param>
 		/// <returns>HTML code for the document part.</returns>
-		public static string CreateHtmlFragment(TextDocument document, DocumentHighlighter highlighter, ISegment segment)
+		public static string CreateHtmlFragment(TextDocument document, DocumentHighlighter highlighter, ISegment segment, HtmlOptions options)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
+			if (options == null)
+				throw new ArgumentNullException("options");
 			if (segment == null)
 				segment = new SimpleSegment(0, document.TextLength);
 			
@@ -89,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 				SimpleSegment s = segment.GetOverlap(line);
 				if (html.Length > 0)
 					html.AppendLine("<br>");
-				html.Append(highlightedLine.ToHtml(s.Offset, s.EndOffset));
+				html.Append(highlightedLine.ToHtml(s.Offset, s.EndOffset, options));
 				line = line.NextLine;
 			}
 			return html.ToString();
@@ -98,14 +101,16 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// <summary>
 		/// Creates a HTML fragment for the selected part of the document.
 		/// </summary>
-		public static string CreateHtmlFragmentForSelection(TextArea textArea)
+		public static string CreateHtmlFragmentForSelection(TextArea textArea, HtmlOptions options)
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
+			if (options == null)
+				throw new ArgumentNullException("options");
 			DocumentHighlighter highlighter = textArea.GetService(typeof(DocumentHighlighter)) as DocumentHighlighter;
 			StringBuilder html = new StringBuilder();
 			foreach (ISegment selectedSegment in textArea.Selection.Segments) {
-				html.AppendLine(CreateHtmlFragment(textArea.Document, highlighter, selectedSegment));
+				html.AppendLine(CreateHtmlFragment(textArea.Document, highlighter, selectedSegment, options));
 			}
 			return html.ToString();
 		}
@@ -113,7 +118,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// <summary>
 		/// Escapes text and writes the result to the StringBuilder.
 		/// </summary>
-		internal static void EscapeHtml(StringBuilder b, string text)
+		internal static void EscapeHtml(StringBuilder b, string text, HtmlOptions options)
 		{
 			int spaceCount = -1;
 			foreach (char c in text) {
@@ -125,8 +130,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 				} else if (c == '\t') {
 					if (spaceCount < 0)
 						spaceCount = 0;
-					// TODO: use tab width setting
-					spaceCount += 4;
+					spaceCount += options.TabSize;
 				} else {
 					if (spaceCount == 1) {
 						b.Append(' ');
@@ -159,5 +163,35 @@ namespace ICSharpCode.AvalonEdit.Utils
 				b.Append("&nbsp;");
 			}
 		}
+	}
+	
+	/// <summary>
+	/// Holds options for converting text to HTML.
+	/// </summary>
+	public class HtmlOptions
+	{
+		/// <summary>
+		/// Creates a default HtmlOptions instance.
+		/// </summary>
+		public HtmlOptions()
+		{
+			this.TabSize = 4;
+		}
+		
+		/// <summary>
+		/// Creates a new HtmlOptions instance that copies applicable options from the <see cref="TextEditorOptions"/>.
+		/// </summary>
+		public HtmlOptions(TextEditorOptions options)
+			: this()
+		{
+			if (options == null)
+				throw new ArgumentNullException("options");
+			this.TabSize = options.IndentationSize;
+		}
+		
+		/// <summary>
+		/// The amount of spaces a tab gets converted to.
+		/// </summary>
+		public int TabSize { get; set; }
 	}
 }

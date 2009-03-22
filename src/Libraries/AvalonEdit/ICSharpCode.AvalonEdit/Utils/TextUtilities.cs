@@ -6,9 +6,10 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Gui;
-using System.ComponentModel;
+using System.Globalization;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {
@@ -17,9 +18,81 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// </summary>
 	public static class TextUtilities
 	{
+		#region GetControlCharacterName
+		// the names of the first 32 ASCII characters = Unicode C0 block
+		static readonly string[] c0Table = {
+			"NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL", "BS", "HT",
+			"LF", "VT", "FF", "CR", "SO", "SI", "DLE", "DC1", "DC2", "DC3",
+			"DC4", "NAK", "SYN", "ETB", "CAN", "EM", "SUB", "ESC", "FS", "GS",
+			"RS", "US"
+		};
+		
+		// the names of the control characters in the C1 block (Unicode 128 to 159)
+		static readonly string[] c1Table = {
+			"PAD", "HOP", "BPH", "NBH", "IND", "NEL", "SSA", "ESA", "HTS", "HTJ",
+			"VTS", "PLD", "PLU", "RI", "SS2", "SS3", "DCS", "PU1", "PU2", "STS",
+			"CCH", "MW", "SPA", "EPA", "SOS", "SGCI", "SCI", "CSI", "ST", "OSC",
+			"PM", "APC"
+		};
+		
+		/// <summary>
+		/// Gets the name of the control character.
+		/// For unknown characters, the unicode codepoint is returned as 4-digit hexadecimal value.
+		/// </summary>
+		public static string GetControlCharacterName(char controlCharacter)
+		{
+			int num = (int)controlCharacter;
+			if (num < c0Table.Length)
+				return c0Table[num];
+			else if (num == 127)
+				return "DEL";
+			else if (num >= 128 && num < 128 + c1Table.Length)
+				return c1Table[num - 128];
+			else
+				return num.ToString("x4", CultureInfo.InvariantCulture);
+		}
+		#endregion
+		
+		#region GetFirstIndentationSegment
+		/// <summary>
+		/// Gets the indentation segment starting at <paramref name="offset"/>.
+		/// </summary>
+		/// <param name="textSource">The text source.</param>
+		/// <param name="offset">The offset where the indentation segment starts.</param>
+		/// <param name="indentationSize">The size of an indentation unit. See <see cref="TextEditorOptions.IndentationSize"/>.</param>
+		/// <returns>The indentation segment.
+		/// If there is no indentation character at the specified <paramref name="offset"/>,
+		/// an empty segment is returned.</returns>
+		public static ISegment GetIndentationSegment(ITextSource textSource, int offset, int indentationSize)
+		{
+			if (textSource == null)
+				throw new ArgumentNullException("textSource");
+			int pos = offset;
+			while (pos < textSource.TextLength) {
+				char c = textSource.GetCharAt(pos);
+				if (c == '\t') {
+					if (pos == offset)
+						return new SimpleSegment(offset, 1);
+					else
+						break;
+				} else if (c == ' ') {
+					if (pos - offset >= indentationSize)
+						break;
+				} else {
+					break;
+				}
+				// continue only if c==' ' and (pos-offset)<tabSize
+				pos++;
+			}
+			return new SimpleSegment(offset, pos - offset);
+		}
+		#endregion
+		
+		#region GetCharacterClass
 		/// <summary>
 		/// Gets whether the character is whitespace, part of an identifier, or line terminator.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "c")]
 		public static CharacterClass GetCharacterClass(char c)
 		{
 			if (c == '\r' || c == '\n')
@@ -31,7 +104,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 			else
 				return CharacterClass.Other;
 		}
+		#endregion
 		
+		#region GetNextCaretPosition
 		/// <summary>
 		/// Gets the next caret position.
 		/// </summary>
@@ -116,6 +191,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 				offset = nextPos;
 			}
 		}
+		#endregion
 	}
 	
 	/// <summary>
@@ -130,9 +206,11 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// <summary>
 		/// The character is whitespace (but not line terminator).
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
+		                                                 Justification = "WPF uses 'Whitespace'")]
 		Whitespace,
 		/// <summary>
-		/// The character can be part of an identifier (LetterOrDigit or underscore).
+		/// The character can be part of an identifier (Letter, digit or underscore).
 		/// </summary>
 		IdentifierPart,
 		/// <summary>

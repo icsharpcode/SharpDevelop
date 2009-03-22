@@ -30,7 +30,7 @@ namespace ICSharpCode.AvalonEdit
 	/// Contains a scrollable TextArea.
 	/// </summary>
 	[Localizability(LocalizationCategory.Text), ContentProperty("Text")]
-	public class TextEditor : Control
+	public class TextEditor : Control, ITextEditorComponent, IWeakEventListener
 	{
 		static TextEditor()
 		{
@@ -53,9 +53,12 @@ namespace ICSharpCode.AvalonEdit
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
 			this.textArea = textArea;
+			this.Options = textArea.Options;
 			textArea.SetBinding(TextArea.DocumentProperty, new Binding("Document") { Source = this });
+			textArea.SetBinding(TextArea.OptionsProperty, new Binding("Options") { Source = this });
 		}
 		
+		#region Document property
 		/// <summary>
 		/// Document property.
 		/// </summary>
@@ -93,6 +96,71 @@ namespace ICSharpCode.AvalonEdit
 			if (DocumentChanged != null)
 				DocumentChanged(this, EventArgs.Empty);
 		}
+		#endregion
+		
+		#region Options property
+		/// <summary>
+		/// Options property.
+		/// </summary>
+		public static readonly DependencyProperty OptionsProperty =
+			DependencyProperty.Register("Options", typeof(TextEditorOptions), typeof(TextEditor),
+			                            new FrameworkPropertyMetadata(OnOptionsChanged));
+		
+		/// <summary>
+		/// Gets/Sets the options currently used by the text editor.
+		/// </summary>
+		public TextEditorOptions Options {
+			get { return (TextEditorOptions)GetValue(OptionsProperty); }
+			set { SetValue(OptionsProperty, value); }
+		}
+		
+		/// <summary>
+		/// Occurs when a text editor option has changed.
+		/// </summary>
+		public event PropertyChangedEventHandler OptionChanged;
+		
+		/// <summary>
+		/// Raises the <see cref="OptionChanged"/> event.
+		/// </summary>
+		protected virtual void OnOptionChanged(PropertyChangedEventArgs e)
+		{
+			if (OptionChanged != null) {
+				OptionChanged(this, e);
+			}
+		}
+		
+		static void OnOptionsChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
+		{
+			((TextEditor)dp).OnOptionsChanged((TextEditorOptions)e.OldValue, (TextEditorOptions)e.NewValue);
+		}
+		
+		void OnOptionsChanged(TextEditorOptions oldValue, TextEditorOptions newValue)
+		{
+			if (oldValue != null) {
+				PropertyChangedWeakEventManager.RemoveListener(oldValue, this);
+			}
+			if (newValue != null) {
+				PropertyChangedWeakEventManager.AddListener(newValue, this);
+			}
+			OnOptionChanged(new PropertyChangedEventArgs(null));
+		}
+		
+		/// <inheritdoc/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			if (managerType == typeof(PropertyChangedWeakEventManager)) {
+				OnOptionChanged((PropertyChangedEventArgs)e);
+				return true;
+			}
+			return false;
+		}
+		
+		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			return ReceiveWeakEvent(managerType, sender, e);
+		}
+		#endregion
 		
 		/// <summary>
 		/// Gets/Sets the text of the current document.

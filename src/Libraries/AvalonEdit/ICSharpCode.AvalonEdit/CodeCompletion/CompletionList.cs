@@ -101,27 +101,27 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			switch (e.Key) {
 				case Key.Down:
 					e.Handled = true;
-					SelectIndex(listBox.SelectedIndex + 1);
+					listBox.SelectIndex(listBox.SelectedIndex + 1);
 					break;
 				case Key.Up:
 					e.Handled = true;
-					SelectIndex(listBox.SelectedIndex - 1);
+					listBox.SelectIndex(listBox.SelectedIndex - 1);
 					break;
 				case Key.PageDown:
 					e.Handled = true;
-					SelectIndex(listBox.SelectedIndex + listBox.VisibleItemCount);
+					listBox.SelectIndex(listBox.SelectedIndex + listBox.VisibleItemCount);
 					break;
 				case Key.PageUp:
 					e.Handled = true;
-					SelectIndex(listBox.SelectedIndex - listBox.VisibleItemCount);
+					listBox.SelectIndex(listBox.SelectedIndex - listBox.VisibleItemCount);
 					break;
 				case Key.Home:
 					e.Handled = true;
-					SelectIndex(0);
+					listBox.SelectIndex(0);
 					break;
 				case Key.End:
 					e.Handled = true;
-					SelectIndex(listBox.Items.Count - 1);
+					listBox.SelectIndex(listBox.Items.Count - 1);
 					break;
 				case Key.Tab:
 				case Key.Enter:
@@ -158,15 +158,15 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			double bestPriority = 0;
 			for (int i = 0; i < completionData.Count; ++i) {
 				string itemText = completionData[i].Text;
-				if (itemText.StartsWith(startText, StringComparison.InvariantCultureIgnoreCase)) {
+				if (itemText.StartsWith(startText, StringComparison.OrdinalIgnoreCase)) {
 					double priority = 0; //completionData[i].Priority;
 					int quality;
-					if (string.Equals(itemText, startText, StringComparison.InvariantCultureIgnoreCase)) {
+					if (string.Equals(itemText, startText, StringComparison.OrdinalIgnoreCase)) {
 						if (startText == itemText)
 							quality = 3;
 						else
 							quality = 2;
-					} else if (itemText.StartsWith(startText, StringComparison.InvariantCulture)) {
+					} else if (itemText.StartsWith(startText, StringComparison.Ordinal)) {
 						quality = 1;
 					} else {
 						quality = 0;
@@ -191,36 +191,16 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				}
 			}
 			if (bestIndex < 0) {
-				ClearSelection();
+				listBox.ClearSelection();
 			} else {
 				int firstItem = listBox.FirstVisibleItem;
 				if (bestIndex < firstItem || firstItem + listBox.VisibleItemCount <= bestIndex) {
-					CenterViewOn(bestIndex);
-					SelectIndex(bestIndex);
+					listBox.CenterViewOn(bestIndex);
+					listBox.SelectIndex(bestIndex);
 				} else {
-					SelectIndex(bestIndex);
+					listBox.SelectIndex(bestIndex);
 				}
 			}
-		}
-		
-		void ClearSelection()
-		{
-			listBox.SelectedIndex = -1;
-		}
-		
-		void SelectIndex(int offset)
-		{
-			if (offset >= listBox.Items.Count)
-				offset = listBox.Items.Count - 1;
-			if (offset < 0)
-				offset = 0;
-			listBox.SelectedIndex = offset;
-			listBox.ScrollIntoView(listBox.SelectedItem);
-		}
-		
-		void CenterViewOn(int offset)
-		{
-			// TODO: implement me
 		}
 	}
 }

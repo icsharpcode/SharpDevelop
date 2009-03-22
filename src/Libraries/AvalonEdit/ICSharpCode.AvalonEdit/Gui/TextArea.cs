@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -27,7 +28,7 @@ namespace ICSharpCode.AvalonEdit
 	/// <summary>
 	/// Control that wraps a TextView and adds support for user input and the caret.
 	/// </summary>
-	public class TextArea : Control, IScrollInfo, IWeakEventListener, IServiceProvider
+	public class TextArea : Control, IScrollInfo, IWeakEventListener, ITextEditorComponent, IServiceProvider
 	{
 		#region Constructor
 		static TextArea()
@@ -59,7 +60,9 @@ namespace ICSharpCode.AvalonEdit
 			if (textView == null)
 				throw new ArgumentNullException("textView");
 			this.textView = textView;
+			this.Options = textView.Options;
 			textView.SetBinding(TextView.DocumentProperty, new Binding("Document") { Source = this });
+			textView.SetBinding(TextView.OptionsProperty, new Binding("Options") { Source = this });
 			
 			leftMargins.Add(new LineNumberMargin { TextView = textView, TextArea = this } );
 			leftMargins.Add(new Line {
@@ -132,6 +135,9 @@ namespace ICSharpCode.AvalonEdit
 			set { SetValue(DocumentProperty, value); }
 		}
 		
+		/// <inheritdoc/>
+		public event EventHandler DocumentChanged;
+		
 		static void OnDocumentChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
 		{
 			((TextArea)dp).OnDocumentChanged((TextDocument)e.OldValue, (TextDocument)e.NewValue);
@@ -149,12 +155,62 @@ namespace ICSharpCode.AvalonEdit
 				TextDocumentWeakEventManager.Changed.AddListener(newValue, this);
 				TextDocumentWeakEventManager.UpdateStarted.AddListener(newValue, this);
 			}
+			if (DocumentChanged != null)
+				DocumentChanged(this, EventArgs.Empty);
 			CommandManager.InvalidateRequerySuggested();
 		}
 		#endregion
 		
-		#region Caret handling on document changes
-		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		#region Options property
+		/// <summary>
+		/// Options property.
+		/// </summary>
+		public static readonly DependencyProperty OptionsProperty
+			= TextEditor.OptionsProperty.AddOwner(typeof(TextArea), new FrameworkPropertyMetadata(OnOptionsChanged));
+		
+		/// <summary>
+		/// Gets/Sets the document displayed by the text editor.
+		/// </summary>
+		public TextEditorOptions Options {
+			get { return (TextEditorOptions)GetValue(OptionsProperty); }
+			set { SetValue(OptionsProperty, value); }
+		}
+		
+		/// <summary>
+		/// Occurs when a text editor option has changed.
+		/// </summary>
+		public event PropertyChangedEventHandler OptionChanged;
+		
+		/// <summary>
+		/// Raises the <see cref="OptionChanged"/> event.
+		/// </summary>
+		protected virtual void OnOptionChanged(PropertyChangedEventArgs e)
+		{
+			if (OptionChanged != null) {
+				OptionChanged(this, e);
+			}
+		}
+		
+		static void OnOptionsChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
+		{
+			((TextArea)dp).OnOptionsChanged((TextEditorOptions)e.OldValue, (TextEditorOptions)e.NewValue);
+		}
+		
+		void OnOptionsChanged(TextEditorOptions oldValue, TextEditorOptions newValue)
+		{
+			if (oldValue != null) {
+				PropertyChangedWeakEventManager.RemoveListener(oldValue, this);
+			}
+			if (newValue != null) {
+				PropertyChangedWeakEventManager.AddListener(newValue, this);
+			}
+			OnOptionChanged(new PropertyChangedEventArgs(null));
+		}
+		#endregion
+		
+		#region ReceiveWeakEvent
+		/// <inheritdoc/>
+		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextDocumentWeakEventManager.Changing)) {
 				caret.OnDocumentChanging();
@@ -165,10 +221,20 @@ namespace ICSharpCode.AvalonEdit
 			} else if (managerType == typeof(TextDocumentWeakEventManager.UpdateStarted)) {
 				OnUpdateStarted();
 				return true;
+			} else if (managerType == typeof(PropertyChangedWeakEventManager)) {
+				OnOptionChanged((PropertyChangedEventArgs)e);
+				return true;
 			}
 			return false;
 		}
 		
+		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			return ReceiveWeakEvent(managerType, sender, e);
+		}
+		#endregion
+		
+		#region Caret handling on document changes
 		void OnDocumentChanged(DocumentChangeEventArgs e)
 		{
 			caret.OnDocumentChanged(e);

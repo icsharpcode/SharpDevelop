@@ -234,8 +234,14 @@ namespace ICSharpCode.AvalonEdit.Gui
 			get { return startOffset == endOffset; }
 		}
 		
+		// For segments, Offset must be less than or equal to EndOffset;
+		// so we must use Min/Max.
 		int ISegment.Offset {
 			get { return Math.Min(startOffset, endOffset); }
+		}
+		
+		int ISegment.EndOffset {
+			get { return Math.Max(startOffset, endOffset); }
 		}
 		
 		/// <inheritdoc/>
@@ -248,6 +254,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <inheritdoc/>
 		public override Selection SetEndpoint(int newEndOffset)
 		{
+			// the empty SimpleSelection must be immutable (it's used for the static Selection.Empty field)
 			if (IsEmpty)
 				throw new NotSupportedException();
 			else

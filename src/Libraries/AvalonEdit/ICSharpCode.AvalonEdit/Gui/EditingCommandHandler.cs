@@ -81,10 +81,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		#endregion
 		
 		#region Tab
-		// TODO: make these per-textarea options
-		const string indentationString = "\t";
-		const int tabSize = 4;
-		
 		static void OnTab(object target, ExecutedRoutedEventArgs args)
 		{
 			TextArea textArea = GetTextArea(target);
@@ -96,12 +92,13 @@ namespace ICSharpCode.AvalonEdit.Gui
 						while (true) {
 							int offset = start.Offset;
 							if (textArea.ReadOnlySectionProvider.CanInsert(offset))
-								textArea.Document.Insert(offset, indentationString);
+								textArea.Document.Insert(offset, textArea.Options.IndentationString);
 							if (start == end)
 								break;
 							start = start.NextLine;
 						}
 					} else {
+						string indentationString = textArea.Options.GetIndentationString(textArea.Caret.Position.VisualColumn);
 						textArea.ReplaceSelectionWithText(indentationString);
 					}
 				}
@@ -124,7 +121,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 					}
 					while (true) {
 						int offset = start.Offset;
-						ISegment s = GetFirstIndentationSegment(textArea.Document, offset);
+						ISegment s = TextUtilities.GetIndentationSegment(textArea.Document, offset, textArea.Options.IndentationSize);
 						if (s.Length > 0) {
 							s = textArea.ReadOnlySectionProvider.GetDeletableSegments(s).FirstOrDefault();
 							if (s != null && s.Length > 0) {
@@ -139,28 +136,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;
 			}
-		}
-		
-		static ISegment GetFirstIndentationSegment(TextDocument document, int offset)
-		{
-			int pos = offset;
-			while (pos < document.TextLength) {
-				char c = document.GetCharAt(pos);
-				if (c == '\t') {
-					if (pos == offset)
-						return new SimpleSegment(offset, 1);
-					else
-						break;
-				} else if (c == ' ') {
-					if (pos - offset >= tabSize)
-						break;
-				} else {
-					break;
-				}
-				// continue only if c==' ' and (pos-offset)<tabSize
-				pos++;
-			}
-			return new SimpleSegment(offset, pos - offset);
 		}
 		#endregion
 		
@@ -221,7 +196,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			DataObject data = new DataObject(NewLineFinder.NormalizeNewLines(text, Environment.NewLine));
 			// Also copy text in HTML format to clipboard - good for pasting text into Word
 			// or to the SharpDevelop forums.
-			HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragmentForSelection(textArea));
+			HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragmentForSelection(textArea, new HtmlOptions(textArea.Options)));
 			Clipboard.SetDataObject(data, true);
 		}
 		

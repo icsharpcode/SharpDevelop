@@ -8,6 +8,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {
@@ -43,6 +44,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					return (int)(this.Items.Count * scrollViewer.VerticalOffset / scrollViewer.ExtentHeight);
 				}
 			}
+			set {
+				value = value.CoerceValue(0, this.Items.Count - this.VisibleItemCount);
+				if (scrollViewer != null) {
+					scrollViewer.ScrollToVerticalOffset((double)value / this.Items.Count * scrollViewer.ExtentHeight);
+				}
+			}
 		}
 		
 		/// <summary>
@@ -59,6 +66,35 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 						                  / scrollViewer.ExtentHeight));
 				}
 			}
+		}
+		
+		/// <summary>
+		/// Removes the selection.
+		/// </summary>
+		public void ClearSelection()
+		{
+			this.SelectedIndex = -1;
+		}
+		
+		/// <summary>
+		/// Selects the item with the specified index and scrolls it into view.
+		/// </summary>
+		public void SelectIndex(int index)
+		{
+			if (index >= this.Items.Count)
+				index = this.Items.Count - 1;
+			if (index < 0)
+				index = 0;
+			this.SelectedIndex = index;
+			this.ScrollIntoView(this.SelectedItem);
+		}
+		
+		/// <summary>
+		/// Centers the view on the item with the specified index.
+		/// </summary>
+		public void CenterViewOn(int index)
+		{
+			this.FirstVisibleItem = index - VisibleItemCount / 2;
 		}
 	}
 }

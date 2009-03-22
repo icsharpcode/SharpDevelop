@@ -6,10 +6,11 @@
 // </file>
 
 using System;
+using System.Collections;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -82,18 +83,61 @@ namespace ICSharpCode.SharpDevelop
 				return null;
 			IProjectContent callingContent = rr.CallingClass != null ? rr.CallingClass.ProjectContent : null;
 			ArrayList arr = rr.GetCompletionData(callingContent ?? ParserService.CurrentProjectContent);
-			DefaultCompletionItemList result = new DefaultCompletionItemList();
+			return GenerateCompletionListForCompletionData(arr, context);
+		}
+		
+		public virtual ICompletionItemList GenerateCompletionListForCompletionData(ArrayList arr, ExpressionContext context)
+		{
+			if (arr == null)
+				return null;
+			
+			List<ICompletionItem> resultItems = new List<ICompletionItem>();
+			DefaultCompletionItemList result = new DefaultCompletionItemList(resultItems);
+			Dictionary<string, CodeCompletionItem> methodItems = new Dictionary<string, CodeCompletionItem>();
 			foreach (object o in arr) {
-				IEntity entity = o as IEntity;
-				if (entity != null)
-					result.Items.Add(new CodeCompletionItem(entity));
+				if (context != null && !context.ShowEntry(o))
+					continue;
+				
+				IMethod method = o as IMethod;
+				if (method != null) {
+					CodeCompletionItem codeItem;
+					if (methodItems.TryGetValue(method.Name, out codeItem)) {
+						codeItem.Overloads++;
+						continue;
+					}
+				}
+				
+				ICompletionItem item = CreateCompletionItem(o, context);
+				if (item != null) {
+					resultItems.Add(item);
+					CodeCompletionItem codeItem = item as CodeCompletionItem;
+					if (method != null && codeItem != null) {
+						methodItems[method.Name] = codeItem;
+					}
+					if (o.Equals(context.SuggestedItem))
+						result.SuggestedItem = item;
+				}
+			}
+			resultItems.Sort((a,b) => string.Compare(a.Text, b.Text, StringComparison.OrdinalIgnoreCase));
+			
+			if (context.SuggestedItem != null) {
+				if (result.SuggestedItem == null) {
+					result.SuggestedItem = CreateCompletionItem(context.SuggestedItem, context);
+					if (result.SuggestedItem != null) {
+						resultItems.Insert(0, result.SuggestedItem);
+					}
+				}
 			}
 			return result;
 		}
 		
-		public virtual ICompletionItem CreateCompletionItem(IEntity entity)
+		public virtual ICompletionItem CreateCompletionItem(object o, ExpressionContext context)
 		{
-			return new CodeCompletionItem(entity);
+			IEntity entity = o as IEntity;
+			if (entity != null)
+				return new CodeCompletionItem(entity);
+			else
+				return new DefaultCompletionItem(o.ToString());
 		}
 	}
 	
@@ -111,18 +155,43 @@ namespace ICSharpCode.SharpDevelop
 			if (entity == null)
 				throw new ArgumentNullException("entity");
 			this.entity = entity;
+			
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
+			ambience.ConversionFlags = entity is IClass ? ConversionFlags.ShowTypeParameterList : ConversionFlags.None;
+			this.Text = ambience.Convert(entity);
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
+			description = ambience.Convert(entity);
+			this.Overloads = 1;
 		}
 		
-		public string Text {
-			get {
-				return entity.Name;
-			}
-		}
+		public string Text { get; private set; }
+		
+		public int Overloads { get; set; }
+		
+		#region Description
+		string description;
+		bool descriptionCreated;
 		
 		public string Description {
 			get {
-				return entity.Documentation;
+				lock (this) {
+					if (!descriptionCreated) {
+						descriptionCreated = true;
+						if (Overloads > 1) {
+							description += Environment.NewLine +
+								StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.OverloadsCounter}", new string[,] {{"NumOverloads", this.Overloads.ToString()}});
+						}
+						if (!string.IsNullOrEmpty(entity.Documentation)) {
+							string documentation = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(entity.Documentation);
+							if (!string.IsNullOrEmpty(documentation)) {
+								description += Environment.NewLine + documentation;
+							}
+						}
+					}
+					return description;
+				}
 			}
 		}
+		#endregion
 	}
 }

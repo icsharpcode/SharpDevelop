@@ -81,17 +81,19 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Produces HTML code for the line, with &lt;span class="colorName"&gt; tags.
 		/// </summary>
-		public string ToHtml()
+		public string ToHtml(HtmlOptions options)
 		{
 			int startOffset = this.DocumentLine.Offset;
-			return ToHtml(startOffset, startOffset + this.DocumentLine.Length);
+			return ToHtml(startOffset, startOffset + this.DocumentLine.Length, options);
 		}
 		
 		/// <summary>
 		/// Produces HTML code for a section of the line, with &lt;span class="colorName"&gt; tags.
 		/// </summary>
-		public string ToHtml(int startOffset, int endOffset)
+		public string ToHtml(int startOffset, int endOffset, HtmlOptions options)
 		{
+			if (options == null)
+				throw new ArgumentNullException("options");
 			int documentLineStartOffset = this.DocumentLine.Offset;
 			int documentLineEndOffset = documentLineStartOffset + this.DocumentLine.Length;
 			if (startOffset < documentLineStartOffset || startOffset > documentLineEndOffset)
@@ -116,7 +118,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			foreach (HtmlElement e in elements) {
 				int newOffset = Math.Min(e.Offset, endOffset);
 				if (newOffset > startOffset) {
-					HtmlClipboard.EscapeHtml(b, document.GetText(textOffset, newOffset - textOffset));
+					HtmlClipboard.EscapeHtml(b, document.GetText(textOffset, newOffset - textOffset), options);
 				}
 				textOffset = newOffset;
 				if (e.IsEnd) {
@@ -127,14 +129,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					b.Append("\">");
 				}
 			}
-			HtmlClipboard.EscapeHtml(b, document.GetText(textOffset, endOffset - textOffset));
+			HtmlClipboard.EscapeHtml(b, document.GetText(textOffset, endOffset - textOffset), options);
 			return b.ToString();
 		}
 		
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return "[" + GetType().Name + " " + ToHtml() + "]";
+			return "[" + GetType().Name + " " + ToHtml(new HtmlOptions()) + "]";
 		}
 	}
 }

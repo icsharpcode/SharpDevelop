@@ -113,6 +113,16 @@ namespace ICSharpCode.AvalonEdit.Document
 				return DocumentLineTree.GetOffsetFromNode(this);
 			}
 		}
+		
+		/// <summary>
+		/// Gets the end offset of the line in the document's text (the offset before the newline character).
+		/// Runtime: O(log n)
+		/// </summary>
+		/// <exception cref="InvalidOperationException">The line was deleted.</exception>
+		/// <remarks>EndOffset = <see cref="Offset"/> + <see cref="Length"/>.</remarks>
+		public int EndOffset {
+			get { return this.Offset + this.Length; }
+		}
 		#endregion
 		
 		#region Length
@@ -129,10 +139,6 @@ namespace ICSharpCode.AvalonEdit.Document
 				document.DebugVerifyAccess();
 				return totalLength - delimiterLength;
 			}
-		}
-		
-		int ISegment.EndOffset {
-			get { return this.Offset + this.Length; }
 		}
 		
 		/// <summary>
