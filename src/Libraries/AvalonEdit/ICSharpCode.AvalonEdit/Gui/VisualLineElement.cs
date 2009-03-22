@@ -179,14 +179,14 @@ namespace ICSharpCode.AvalonEdit.Gui
 			int stop1 = this.VisualColumn;
 			int stop2 = this.VisualColumn + this.VisualLength;
 			if (backwards) {
-				if (mode != CaretPositioningMode.WordStart && visualColumn > stop2)
+				if (visualColumn > stop2 && mode != CaretPositioningMode.WordStart && mode != CaretPositioningMode.WordStartOrSymbol)
 					return stop2;
 				else if (visualColumn > stop1)
 					return stop1;
 			} else {
 				if (visualColumn < stop1)
 					return stop1;
-				else if (mode != CaretPositioningMode.WordStart && visualColumn < stop2)
+				else if (visualColumn < stop2 && mode != CaretPositioningMode.WordStart && mode != CaretPositioningMode.WordStartOrSymbol)
 					return stop2;
 			}
 			return -1;

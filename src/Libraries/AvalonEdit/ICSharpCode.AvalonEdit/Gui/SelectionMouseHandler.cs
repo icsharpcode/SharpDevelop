@@ -389,10 +389,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 			VisualLine line = textView.GetVisualLineFromVisualTop(pos.Y);
 			if (line != null) {
 				int visualColumn = line.GetVisualColumn(pos);
-				int wordStartVC = line.GetNextCaretPosition(visualColumn + 1, true, CaretPositioningMode.WordStart);
+				int wordStartVC = line.GetNextCaretPosition(visualColumn + 1, true, CaretPositioningMode.WordStartOrSymbol);
 				if (wordStartVC == -1)
 					wordStartVC = 0;
-				int wordEndVC = line.GetNextCaretPosition(wordStartVC, false, CaretPositioningMode.WordBorder);
+				int wordEndVC = line.GetNextCaretPosition(wordStartVC, false, CaretPositioningMode.WordBorderOrSymbol);
 				if (wordEndVC == -1)
 					wordEndVC = line.VisualLength;
 				int relOffset = line.FirstDocumentLine.Offset;
@@ -458,8 +458,16 @@ namespace ICSharpCode.AvalonEdit.Gui
 		#region ExtendSelection
 		void SetCaretOffsetToMousePosition(MouseEventArgs e)
 		{
+			SetCaretOffsetToMousePosition(e, null);
+		}
+		
+		void SetCaretOffsetToMousePosition(MouseEventArgs e, ISegment allowedSegment)
+		{
 			int visualColumn;
 			int offset = GetOffsetFromMousePosition(e, out visualColumn);
+			if (allowedSegment != null) {
+				offset = Math.Max(allowedSegment.Offset, Math.Min(allowedSegment.EndOffset, offset));
+			}
 			if (offset >= 0) {
 				textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(offset), visualColumn);
 				textArea.Caret.DesiredXPos = double.NaN;
@@ -469,14 +477,19 @@ namespace ICSharpCode.AvalonEdit.Gui
 		void ExtendSelectionToMouse(MouseEventArgs e)
 		{
 			int oldOffset = textArea.Caret.Offset;
-			SetCaretOffsetToMousePosition(e);
 			if (mode == SelectionMode.Normal) {
+				SetCaretOffsetToMousePosition(e);
 				textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldOffset, textArea.Caret.Offset);
 			} else if (mode == SelectionMode.WholeWord) {
 				var newWord = GetWordAtMousePosition(e);
 				if (newWord != SimpleSegment.Invalid) {
 					textArea.Selection = new SimpleSelection(Math.Min(newWord.Offset, startWord.Offset),
 					                                         Math.Max(newWord.EndOffset, startWord.EndOffset));
+					// Set caret offset, but limit the caret to stay inside the selection.
+					// in whole-word selection, it's otherwise possible that we get the caret outside the
+					// selection - but the TextArea doesn't like that and will reset the selection, causing
+					// flickering.
+					SetCaretOffsetToMousePosition(e, textArea.Selection.SurroundingSegment);
 				}
 			}
 		}

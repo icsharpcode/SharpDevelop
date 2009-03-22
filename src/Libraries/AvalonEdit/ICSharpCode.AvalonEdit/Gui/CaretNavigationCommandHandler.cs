@@ -26,13 +26,21 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		Normal,
 		/// <summary>
-		/// Stop only on word borders. This is used for word-selection using the mouse.
+		/// Stop only on word borders.
 		/// </summary>
 		WordBorder,
 		/// <summary>
 		/// Stop only at the beginning of words. This is used for Ctrl+Left/Ctrl+Right.
 		/// </summary>
-		WordStart
+		WordStart,
+		/// <summary>
+		/// Stop only at the beginning of words, and anywhere in the middle of symbols.
+		/// </summary>
+		WordStartOrSymbol,
+		/// <summary>
+		/// Stop only on word borders, and anywhere in the middle of symbols.
+		/// </summary>
+		WordBorderOrSymbol
 	}
 	
 	static class CaretNavigationCommandHandler

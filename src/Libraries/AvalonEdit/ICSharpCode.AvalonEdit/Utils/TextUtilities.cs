@@ -47,7 +47,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 				throw new ArgumentNullException("textSource");
 			if (mode != CaretPositioningMode.Normal
 			    && mode != CaretPositioningMode.WordBorder
-			    && mode != CaretPositioningMode.WordStart)
+			    && mode != CaretPositioningMode.WordStart
+			    && mode != CaretPositioningMode.WordBorderOrSymbol
+			    && mode != CaretPositioningMode.WordStartOrSymbol)
 			{
 				throw new ArgumentException("Unsupported CaretPositioningMode: " + mode, "mode");
 			}
@@ -82,7 +84,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 						return nextPos;
 				} else if (nextPos == textLength) {
 					// at the document end, there's never a word start
-					if (mode != CaretPositioningMode.WordStart) {
+					if (mode != CaretPositioningMode.WordStart && mode != CaretPositioningMode.WordStartOrSymbol) {
 						// at the document end, there's only a word border
 						// if the last character is not whitespace
 						if (!char.IsWhiteSpace(textSource.GetCharAt(textLength - 1)))
@@ -91,12 +93,21 @@ namespace ICSharpCode.AvalonEdit.Utils
 				} else {
 					CharacterClass charBefore = GetCharacterClass(textSource.GetCharAt(nextPos - 1));
 					CharacterClass charAfter = GetCharacterClass(textSource.GetCharAt(nextPos));
-					if (charBefore != charAfter) {
+					if (charBefore == charAfter) {
+						if (charBefore == CharacterClass.Other &&
+						    (mode == CaretPositioningMode.WordBorderOrSymbol || mode == CaretPositioningMode.WordStartOrSymbol))
+						{
+							// With the "OrSymbol" modes, there's a word border and start between any two unknown characters
+							return nextPos;
+						}
+					} else {
 						// this looks like a possible border
 						
 						// if we're looking for word starts, check that this is a word start (and not a word end)
 						// if we're just checking for word borders, accept unconditionally
-						if (!(mode == CaretPositioningMode.WordStart && (charAfter == CharacterClass.Whitespace || charAfter == CharacterClass.LineTerminator))) {
+						if (!((mode == CaretPositioningMode.WordStart || mode == CaretPositioningMode.WordStartOrSymbol)
+						      && (charAfter == CharacterClass.Whitespace || charAfter == CharacterClass.LineTerminator)))
+						{
 							return nextPos;
 						}
 					}

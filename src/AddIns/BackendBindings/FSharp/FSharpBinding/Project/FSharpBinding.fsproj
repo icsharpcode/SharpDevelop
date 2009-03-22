@@ -225,6 +225,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
