@@ -40,5 +40,12 @@ namespace PythonBinding.Tests.Designer
 				System.Threading.Thread.CurrentThread.CurrentCulture = cultureInfo;
 			}
 		}
+		
+		[Test]
+		public void SizeFToString()
+		{
+			SizeF sizeF = new SizeF(4, 10);
+			Assert.AreEqual("System.Drawing.SizeF(4, 10)", PythonPropertyValueAssignment.ToString(sizeF));
+		}
 	}
 }

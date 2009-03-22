@@ -41,8 +41,8 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    # MainForm\r\n" +
 								"    # \r\n" +
-								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.AccessibleRole = System.Windows.Forms.AccessibleRole.None\r\n" +
+								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Visible = False\r\n" +
 								"    self.ResumeLayout(False)\r\n" +

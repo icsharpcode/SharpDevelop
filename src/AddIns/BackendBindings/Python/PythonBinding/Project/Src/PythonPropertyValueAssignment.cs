@@ -39,6 +39,9 @@ namespace ICSharpCode.PythonBinding
 			} else if (propertyType == typeof(Size)) {
 				Size size = (Size)propertyValue;
 				return size.GetType().FullName + "(" + size.Width + ", " + size.Height + ")";
+			} else if (propertyType == typeof(SizeF)) {
+				SizeF size = (SizeF)propertyValue;
+				return size.GetType().FullName + "(" + size.Width + ", " + size.Height + ")";				
 			} else if (propertyType.IsEnum) {
 				return propertyType.FullName + "." + propertyValue.ToString();
 			} else if (propertyType == typeof(Cursor)) {

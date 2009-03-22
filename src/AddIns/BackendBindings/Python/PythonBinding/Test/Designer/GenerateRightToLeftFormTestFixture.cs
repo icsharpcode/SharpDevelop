@@ -50,9 +50,9 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    # MainForm\r\n" +
 								"    # \r\n" +
-								"    self.RightToLeft = System.Windows.Forms.RightToLeft.Yes\r\n" +
-								"    self.Name = \"MainForm\"\r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
+								"    self.Name = \"MainForm\"\r\n" +
+								"    self.RightToLeft = System.Windows.Forms.RightToLeft.Yes\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

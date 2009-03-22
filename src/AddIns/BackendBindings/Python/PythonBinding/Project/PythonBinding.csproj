@@ -87,7 +87,6 @@
     <Compile Include="Src\PythonConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\PythonConsoleHost.cs" />
     <Compile Include="Src\PythonConsolePad.cs" />
-    <Compile Include="Src\PythonControlDefaultPropertyValues.cs" />
     <Compile Include="Src\PythonControlFieldExpression.cs" />
     <Compile Include="Src\PythonDesignerGenerator.cs" />
     <Compile Include="Src\PythonDesignerLoader.cs" />
