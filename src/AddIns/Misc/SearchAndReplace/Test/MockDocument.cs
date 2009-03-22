@@ -23,6 +23,11 @@ namespace SearchAndReplace.Tests.Utils
 			}
 		}
 		
+		public event EventHandler TextChanged {
+			add { throw new NotImplementedException(); }
+			remove { throw new NotImplementedException(); }
+		}
+		
 		public int TotalNumberOfLines {
 			get {
 				throw new NotImplementedException();
