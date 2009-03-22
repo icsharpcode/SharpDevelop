@@ -72,6 +72,7 @@
     <Compile Include="Document\HeightTests.cs" />
     <Compile Include="Document\RandomizedLineManagerTest.cs" />
     <Compile Include="Document\LineManagerTests.cs" />
+    <Compile Include="Utils\CaretNavigationTests.cs" />
     <Compile Include="Utils\CompressingTreeListTests.cs" />
     <Compile Include="Utils\ExtensionMethodsTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />

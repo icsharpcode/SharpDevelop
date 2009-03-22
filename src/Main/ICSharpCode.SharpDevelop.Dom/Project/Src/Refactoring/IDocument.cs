@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		int TextLength { get; }
 		int TotalNumberOfLines { get; }
 		string Text { get; set; }
+		event EventHandler TextChanged;
 		
 		/// <summary>
 		/// Gets the document line with the specified number.

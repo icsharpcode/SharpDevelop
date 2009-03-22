@@ -512,6 +512,7 @@
     <Compile Include="Src\TextEditor\Commands\TextAreaContextmenuCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />
     <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />
+    <Compile Include="Src\TextEditor\DocumentUtilitites.cs" />
     <Compile Include="Src\TextEditor\Gui\Dialogs\GotoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -750,9 +751,15 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
@@ -761,6 +768,7 @@
     <ProjectReference Include="..\..\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <Folder Include="Src\Gui\Pads\SearchResultPad" />
     <Folder Include="Src\Gui\Pads\SearchResultPad\Nodes" />
@@ -774,25 +782,28 @@
     <ProjectReference Include="..\..\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ICSharpCode.SharpDevelop.BuildWorker.csproj">
       <Project>{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F}</Project>
       <Name>ICSharpCode.SharpDevelop.BuildWorker</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
     </ProjectReference>
     <Folder Include="Src\Gui\Dialogs\SolutionConfiguration" />
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <Page Include="Src\Gui\App.xaml" />
     <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />

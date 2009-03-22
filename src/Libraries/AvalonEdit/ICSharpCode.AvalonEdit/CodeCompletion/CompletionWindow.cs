@@ -163,19 +163,21 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			return completionList.ScrollViewer ?? completionList.ListBox ?? (UIElement)completionList;
 		}
 		
+		/// <summary>
+		/// Gets/sets whether the completion window should expect text insertion at the start offset,
+		/// which not go into the completion region, but before it.
+		/// </summary>
+		public bool ExpectInsertionBeforeStart { get; set; }
+		
 		void textArea_Document_Changing(object sender, DocumentChangeEventArgs e)
 		{
-			// => startOffset test required so that this startOffset/endOffset are not incremented again
-			//    for BeforeStartKey characters
-			if (e.Offset >= startOffset && e.Offset <= endOffset) {
-				endOffset += e.InsertionLength - e.RemovalLength;
-			} else if (e.Offset == startOffset - 1 && e.InsertionLength == 1 && e.RemovalLength == 0) {
-				// allow one-character insertion in front of StartOffset.
-				// this is necessary because for dot-completion, the CompletionWindow is shown before
-				// the dot is actually inserted.
+			if (e.Offset == startOffset && e.RemovalLength == 0 && ExpectInsertionBeforeStart) {
+				startOffset = e.GetNewOffset(startOffset, AnchorMovementType.AfterInsertion);
+				this.ExpectInsertionBeforeStart = false;
 			} else {
-				Close();
+				startOffset = e.GetNewOffset(startOffset, AnchorMovementType.BeforeInsertion);
 			}
+			endOffset = e.GetNewOffset(endOffset, AnchorMovementType.AfterInsertion);
 		}
 		
 		/// <summary>

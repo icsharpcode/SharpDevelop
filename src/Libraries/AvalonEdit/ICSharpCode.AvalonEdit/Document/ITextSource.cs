@@ -55,6 +55,61 @@ namespace ICSharpCode.AvalonEdit.Document
 	}
 	
 	/// <summary>
+	/// Implements the ITextSource interface by wrapping another TextSource
+	/// and viewing only a part of the text.
+	/// </summary>
+	public sealed class TextSourceView : ITextSource
+	{
+		readonly ITextSource baseTextSource;
+		readonly ISegment viewedSegment;
+		
+		/// <summary>
+		/// Creates a new TextSourceView object.
+		/// </summary>
+		/// <param name="baseTextSource">The base text source.</param>
+		/// <param name="viewedSegment">A text segment from the base text source</param>
+		public TextSourceView(ITextSource baseTextSource, ISegment viewedSegment)
+		{
+			if (baseTextSource == null)
+				throw new ArgumentNullException("baseTextSource");
+			if (viewedSegment == null)
+				throw new ArgumentNullException("viewedSegment");
+			this.baseTextSource = baseTextSource;
+			this.viewedSegment = viewedSegment;
+		}
+		
+		/// <inheritdoc/>
+		public event EventHandler TextChanged {
+			add { baseTextSource.TextChanged += value; }
+			remove { baseTextSource.TextChanged -= value; }
+		}
+		
+		/// <inheritdoc/>
+		public string Text {
+			get {
+				return baseTextSource.GetText(viewedSegment.Offset, viewedSegment.Length); 
+			}
+		}
+		
+		/// <inheritdoc/>
+		public int TextLength {
+			get { return viewedSegment.Length; }
+		}
+		
+		/// <inheritdoc/>
+		public char GetCharAt(int offset)
+		{
+			return baseTextSource.GetCharAt(viewedSegment.Offset + offset);
+		}
+		
+		/// <inheritdoc/>
+		public string GetText(int offset, int length)
+		{
+			return baseTextSource.GetText(viewedSegment.Offset + offset, length);
+		}
+	}
+	
+	/// <summary>
 	/// Implements the ITextSource interface using a string.
 	/// </summary>
 	public sealed class StringTextSource : ITextSource

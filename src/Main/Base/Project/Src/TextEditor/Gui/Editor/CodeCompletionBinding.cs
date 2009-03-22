@@ -189,8 +189,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				case ' ':
 					if (CodeCompletionOptions.KeywordCompletionEnabled) {
 						string word = editor.GetWordBeforeCaret();
-						if (word != null) {
-							return HandleKeyword(editor, word) ? CodeCompletionKeyPressResult.Completed : CodeCompletionKeyPressResult.None;
+						if (!string.IsNullOrEmpty(word)) {
+							if (HandleKeyword(editor, word))
+								return CodeCompletionKeyPressResult.Completed;
 						}
 					}
 					break;

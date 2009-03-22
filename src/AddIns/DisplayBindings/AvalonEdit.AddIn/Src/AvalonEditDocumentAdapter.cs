@@ -71,6 +71,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			set { document.Text = value; }
 		}
 		
+		public event EventHandler TextChanged {
+			add { document.TextChanged += value; }
+			remove { document.TextChanged -= value; }
+		}
+		
 		public IDocumentLine GetLine(int lineNumber)
 		{
 			return new LineAdapter(document.GetLineByNumber(lineNumber));

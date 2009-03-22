@@ -52,9 +52,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (result == CodeCompletionKeyPressResult.Completed) {
 						if (lastCompletionWindow != null && lastCompletionWindow != oldCompletionWindow) {
 							// a new CompletionWindow was shown, but does not eat the input
-							// increment the offsets so that they are correct after the text insertion
-							lastCompletionWindow.StartOffset++;
-							lastCompletionWindow.EndOffset++;
+							// tell it to expect the text insertion
+							lastCompletionWindow.ExpectInsertionBeforeStart = true;
 						}
 						return;
 					} else if (result == CodeCompletionKeyPressResult.EatKey) {

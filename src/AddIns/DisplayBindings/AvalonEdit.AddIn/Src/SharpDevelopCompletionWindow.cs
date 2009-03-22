@@ -38,10 +38,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				foreach (char c in e.Text) {
 					switch (itemList.ProcessInput(c)) {
 						case CompletionItemListKeyResult.BeforeStartKey:
-							if (StartOffset == EndOffset) {
-								StartOffset++;
-								EndOffset++;
-							}
+							this.ExpectInsertionBeforeStart = true;
 							break;
 						case CompletionItemListKeyResult.NormalKey:
 							break;

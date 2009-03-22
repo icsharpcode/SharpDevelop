@@ -43,7 +43,6 @@ namespace ICSharpCode.SharpDevelop
 		[Obsolete]
 		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);
 		void ShowCompletionWindow(ICompletionItemList data);
-		string GetWordBeforeCaret();
 	}
 	
 	public interface ITextEditorCaret

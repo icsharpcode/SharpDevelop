@@ -93,7 +93,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 		}
 		
-		class SpaceTextElement : FormattedTextElement
+		sealed class SpaceTextElement : FormattedTextElement
 		{
 			public SpaceTextElement(FormattedText text) : base(text, 1)
 			{
@@ -110,7 +110,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 		}
 		
-		class TabTextElement : VisualLineElement
+		sealed class TabTextElement : VisualLineElement
 		{
 			internal readonly FormattedText text;
 			
@@ -121,6 +121,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 			
 			public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
 			{
+				// the TabTextElement consists of two TextRuns:
+				// first a TabGlyphRun, then TextCharacters '\t' to let WPF handle the tab indentation
 				if (startVisualColumn == this.VisualColumn)
 					return new TabGlyphRun(this, this.TextRunProperties);
 				else if (startVisualColumn == this.VisualColumn + 1)
@@ -138,9 +140,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 		}
 		
-		class TabGlyphRun : TextEmbeddedObject
+		sealed class TabGlyphRun : TextEmbeddedObject
 		{
-			protected readonly TabTextElement element;
+			readonly TabTextElement element;
 			TextRunProperties properties;
 			
 			public TabGlyphRun(TabTextElement element, TextRunProperties properties)

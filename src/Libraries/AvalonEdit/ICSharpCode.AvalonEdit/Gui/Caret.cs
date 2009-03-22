@@ -242,7 +242,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		Rect CalcCaretRectangle(VisualLine visualLine)
 		{
-			RevalidateVisualColumn(visualLine);
+			if (!visualColumnValid) {
+				RevalidateVisualColumn(visualLine);
+			}
 			
 			TextLine textLine = visualLine.GetTextLine(position.VisualColumn);
 			double xPos = textLine.GetDistanceFromCharacterHit(new CharacterHit(position.VisualColumn, 0));

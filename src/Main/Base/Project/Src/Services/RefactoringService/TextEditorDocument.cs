@@ -72,6 +72,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			set { doc.TextContent = value; }
 		}
 		
+		public event EventHandler TextChanged {
+			add { doc.TextContentChanged += value; }
+			remove { doc.TextContentChanged -= value; }
+		}
+		
 		public string GetText(int offset, int length)
 		{
 			return doc.GetText(offset, length);

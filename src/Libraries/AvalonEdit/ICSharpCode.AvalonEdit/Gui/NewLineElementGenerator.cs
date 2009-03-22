@@ -57,7 +57,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			return new NewLineTextElement(text);
 		}
 		
-		class NewLineTextElement : FormattedTextElement
+		sealed class NewLineTextElement : FormattedTextElement
 		{
 			public NewLineTextElement(FormattedText text) : base(text, 0)
 			{
@@ -75,6 +75,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 				} else {
 					return -1;
 				}
+			}
+			
+			public override bool HandlesLineBorders {
+				get { return true; }
 			}
 		}
 	}

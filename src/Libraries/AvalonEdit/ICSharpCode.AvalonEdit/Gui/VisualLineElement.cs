@@ -171,7 +171,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <param name="mode">Whether to stop only at word borders.</param>
 		/// <returns>The visual column of the next caret position, or -1 if there is no next caret position.</returns>
 		/// <remarks>
-		/// In the space between two line elements, usually both of them contain a caret position.
+		/// In the space between two line elements, it is sufficient that one of them contains a caret position;
+		/// though in many cases, both of them contain one.
 		/// </remarks>
 		public virtual int GetNextCaretPosition(int visualColumn, bool backwards, CaretPositioningMode mode)
 		{
@@ -189,6 +190,17 @@ namespace ICSharpCode.AvalonEdit.Gui
 					return stop2;
 			}
 			return -1;
+		}
+		
+		/// <summary>
+		/// Gets whether the <see cref="GetNextCaretPosition"/> implementation handles line borders.
+		/// If this property returns false, the caller of GetNextCaretPosition should handle the line
+		/// borders (i.e. place caret stops at the start and end of the line).
+		/// This property has an effect only for VisualLineElements that are at the start or end of a
+		/// <see cref="VisualLine"/>.
+		/// </summary>
+		public virtual bool HandlesLineBorders {
+			get { return false; }
 		}
 		
 		/// <summary>

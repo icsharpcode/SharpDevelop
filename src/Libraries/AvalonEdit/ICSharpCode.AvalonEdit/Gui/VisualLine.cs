@@ -317,12 +317,31 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public int GetNextCaretPosition(int visualColumn, bool backwards, CaretPositioningMode mode)
 		{
+			if (elements.Count == 0) {
+				// special handling for empty visual lines:
+				// even though we don't have any elements,
+				// there's a single caret stop at visualColumn 0
+				if (visualColumn < 0 && !backwards)
+					return 0;
+				else if (visualColumn > 0 && backwards)
+					return 0;
+				else
+					return -1;
+			}
+			
 			int i;
 			if (backwards) {
+				// Search Backwards:
+				// If the last element doesn't handle line borders, return the line end as caret stop
+				if (visualColumn > this.VisualLength && !elements[elements.Count-1].HandlesLineBorders) {
+					return this.VisualLength;
+				}
+				// skip elements that start after or at visualColumn
 				for (i = elements.Count - 1; i >= 0; i--) {
 					if (elements[i].VisualColumn < visualColumn)
 						break;
 				}
+				// search last element that has a caret stop
 				for (; i >= 0; i--) {
 					int pos = elements[i].GetNextCaretPosition(
 						Math.Min(visualColumn, elements[i].VisualColumn + elements[i].VisualLength + 1),
@@ -330,11 +349,21 @@ namespace ICSharpCode.AvalonEdit.Gui
 					if (pos >= 0)
 						return pos;
 				}
+				// if we've found nothing, and the first element doesn't handle line borders,
+				// return the line start as caret stop
+				if (visualColumn > 0 && !elements[0].HandlesLineBorders)
+					return 0;
 			} else {
+				// Search Forwards:
+				// If the first element doesn't handle line borders, return the line start as caret stop
+				if (visualColumn < 0 && !elements[0].HandlesLineBorders)
+					return 0;
+				// skip elements that end before or at visualColumn
 				for (i = 0; i < elements.Count; i++) {
 					if (elements[i].VisualColumn + elements[i].VisualLength > visualColumn)
 						break;
 				}
+				// search first element that has a caret stop
 				for (; i < elements.Count; i++) {
 					int pos = elements[i].GetNextCaretPosition(
 						Math.Max(visualColumn, elements[i].VisualColumn - 1),
@@ -342,7 +371,12 @@ namespace ICSharpCode.AvalonEdit.Gui
 					if (pos >= 0)
 						return pos;
 				}
+				// if we've found nothing, and the last element doesn't handle line borders,
+				// return the line end as caret stop
+				if (visualColumn < this.VisualLength && !elements[elements.Count-1].HandlesLineBorders)
+					return this.VisualLength;
 			}
+			// we've found nothing, return -1 and let the caret search continue in the next line
 			return -1;
 		}
 	}
