@@ -136,6 +136,9 @@
     <None Include="Templates\FormsProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\LibraryProject.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <EmbeddedResource Include="Resources\Python.xshd" />
   </ItemGroup>
   <ItemGroup>

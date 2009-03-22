@@ -502,3 +502,4 @@ Python.Template.EmptyFile                              = backendicons\Python\Pyt
 Python.Template.Form                                   = backendicons\Python\Python.Template.Form.png
 Python.Template.ConsoleProject                         = backendicons\Python\Python.Template.ConsoleProject.png
 Python.Template.WinFormsProject                        = backendicons\Python\Python.Template.WinFormsProject.png
+Python.Template.LibraryProject                         = backendicons\Python\Python.Template.LibraryProject.png

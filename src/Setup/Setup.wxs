@@ -413,6 +413,7 @@
 				<ComponentRef Id="PythonEmptyUserControlTemplate"/>	
 				<ComponentRef Id="PythonEmptyFileTemplate"/>	
 				<ComponentRef Id="PythonFormsProjectTemplate"/>	
+				<ComponentRef Id="PythonLibraryProjectTemplate"/>	
 				<ComponentRef Id="IpyExe"/>	
 				<ComponentRef Id="IronPythonModulesDll"/>	
 				<ComponentRef Id="IronPythonDll"/>	
