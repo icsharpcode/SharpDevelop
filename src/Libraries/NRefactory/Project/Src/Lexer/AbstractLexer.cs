@@ -46,6 +46,23 @@ namespace ICSharpCode.NRefactory.Parser
 			get { throw new NotSupportedException(); }
 		}
 		
+		protected static IEnumerable<string> GetSymbols (string symbols)
+		{
+			if (!string.IsNullOrEmpty(symbols)) {
+				foreach (string symbol in symbols.Split (';')) {
+					string s = symbol.Trim ();
+					if (s.Length == 0)
+						continue;
+					yield return s;
+				}
+			}
+		}
+		
+		public virtual void SetConditionalCompilationSymbols (string symbols)
+		{
+			throw new NotSupportedException ();
+		}
+		
 		protected int Line {
 			get {
 				return line;

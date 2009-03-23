@@ -33,12 +33,19 @@ namespace PythonBinding.Tests.Designer
 							"        self.InitializeComponent()\r\n" +
 							"\r\n" +
 							"    def InitializeComponent(self):\r\n" +
-							"        self.ClientSize = Unknown.Type(10)\r\n";		
+							"        self.ClientSize = Unknown.Type(10)\r\n";
+		
+		[TestFixtureSetUp]
+		public new void SetUpFixture()
+		{
+			// Do not call base class SetUpFixture.
+		}
+		
 		[Test]
 		[ExpectedException(typeof(PythonFormWalkerException))]
 		public void PythonFormWalkerExceptionThrown()
 		{
-			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
+			PythonFormWalker walker = new PythonFormWalker(this);
 			walker.CreateForm(pythonCode);
 			Assert.Fail("Exception should have been thrown before this.");
 		}

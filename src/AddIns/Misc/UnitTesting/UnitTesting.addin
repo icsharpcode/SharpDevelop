@@ -73,7 +73,7 @@
 			</MenuItem>
 		</Condition>
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands">
 		<ComplexCondition action="Disable">
 			<And>
@@ -163,11 +163,49 @@
 		          label = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 		          class = "ICSharpCode.UnitTesting.CollapseAllCommand"/>-->
 	</Path>
-
+	
+	<Path name="/SharpDevelop/Workbench/MainMenu/QualityTools/Test">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
+				</Not>
+			</And>
+			<MenuItem id      = "RunAll"
+			          icon    = "Icons.16x16.RunAllIcon"
+			          label   = "${res:NUnitPad.NUnitPadContent.RunAllTests}"
+			          class   = "ICSharpCode.UnitTesting.RunAllTestsInPadCommand"/>
+		</ComplexCondition>
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
+					<Condition name="ProjectActive" activeproject="*"/>
+				</Not>
+			</And>
+			<MenuItem id      = "RunProjectTests"
+			          icon    = "Icons.16x16.RunProgramIcon"
+			          label   = "${res:ICSharpCode.UnitTesting.RunProjectTests}"
+			          class   = "ICSharpCode.UnitTesting.RunProjectTestsInPadCommand"/>
+		</ComplexCondition>
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Condition name="RunningTests"/>
+			</And>
+			<MenuItem id    = "Stop"
+			          icon  = "Icons.16x16.Debug.StopProcess"
+			          label = "${res:NUnitPad.NUnitPadContent.StopTests}"
+			          class = "ICSharpCode.UnitTesting.StopTestsCommand"/>
+		</ComplexCondition>
+	</Path>
+	
 	<!-- Options panel -->
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<OptionPanel id="UnitTestingOptionsPanel"
-		       	     label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
-		       	     class="ICSharpCode.UnitTesting.UnitTestingOptionsPanel"/>
+		             label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
+		             class="ICSharpCode.UnitTesting.UnitTestingOptionsPanel"/>
 	</Path>
 </AddIn>

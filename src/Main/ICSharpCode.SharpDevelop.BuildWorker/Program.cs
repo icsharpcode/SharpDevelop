@@ -118,17 +118,12 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			}
 		}
 		
-		Engine engine;
-		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void RunThread()
 		{
 			Program.Log("In build thread");
 			bool success = false;
 			try {
-				if (engine == null) {
-					engine = CreateEngine();
-				}
 				success = DoBuild();
 			} catch (Exception ex) {
 				host.CallMethodOnHost("ReportException", ex.ToString());
@@ -179,12 +174,6 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			};
 			bool success = false;
 			try {
-				if (engine == null) {
-					engine = new Engine(ToolsetDefinitionLocations.Registry
-					                    | ToolsetDefinitionLocations.ConfigurationFile);
-				}
-				engine.UnregisterAllLoggers();
-				engine.RegisterLogger(new ForwardingLogger(this));
 				foreach (ILogger logger in settings.Logger) {
 					logger.Initialize(hostEventSource);
 				}
@@ -192,7 +181,6 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 				foreach (ILogger logger in settings.Logger) {
 					logger.Shutdown();
 				}
-				engine.UnregisterAllLoggers();
 			} finally {
 				lock (this) {
 					currentJob = null;
@@ -202,14 +190,45 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			}
 		}
 		
+		Engine engine;
+		Dictionary<string, string> lastJobProperties;
+		
+		// Fix for SD2-1533 - Project configurations get confused
+		// Whenever the global properties change, we have to create a new Engine
+		// to ensure MSBuild doesn't cache old paths
+		bool GlobalPropertiesChanged(Dictionary<string, string> newJobProperties)
+		{
+			Debug.Assert(newJobProperties != null);
+			if (lastJobProperties == null || lastJobProperties.Count != newJobProperties.Count) {
+				Log("Recreating engine: Number of build properties changed");
+				return true;
+			}
+			foreach (KeyValuePair<string, string> pair in lastJobProperties) {
+				string val;
+				if (!newJobProperties.TryGetValue(pair.Key, out val)) {
+					Log("Recreating engine: Build property removed: " + pair.Key);
+					return true;
+				}
+				if (val != pair.Value) {
+					Log("Recreating engine: Build property changed: " + pair.Key);
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		bool DoBuild()
 		{
 			if (currentJob.IntPtrSize != IntPtr.Size)
 				throw new ApplicationException("Incompatible IntPtr.Size between host and worker");
 			
-			engine.GlobalProperties.Clear();
-			foreach (KeyValuePair<string, string> pair in currentJob.Properties) {
-				engine.GlobalProperties.SetProperty(pair.Key, pair.Value);
+			if (engine == null || GlobalPropertiesChanged(currentJob.Properties)) {
+				engine = CreateEngine();
+				lastJobProperties = currentJob.Properties;
+				engine.GlobalProperties.Clear();
+				foreach (KeyValuePair<string, string> pair in currentJob.Properties) {
+					engine.GlobalProperties.SetProperty(pair.Key, pair.Value);
+				}
 			}
 			
 			Log("Loading " + currentJob.ProjectFileName);

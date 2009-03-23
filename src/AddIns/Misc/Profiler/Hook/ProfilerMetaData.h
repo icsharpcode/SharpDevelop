@@ -99,8 +99,16 @@ class SignatureReader {
 	bool ReadShapedArray(byte);
 	bool ReadSzArray(byte);
 	bool ReadArrayType(byte);
-
+	
+	/// <summary>
+	/// Creates a separated string using the specified separator. The string is encoded
+	/// so that it can be split into the original parts even if the inputs contain the separator.
+	/// </summary>
+	void AppendEscapedString(const WCHAR *input);
+	void AppendEscapedString(const std::wstring &input);
 public:
-	std::wstring Parse(FunctionID);
+	std::wstring Parse(FunctionID);	
+	bool IsNetInternal(FunctionID);
 	SignatureReader(ICorProfilerInfo *);
 };
+

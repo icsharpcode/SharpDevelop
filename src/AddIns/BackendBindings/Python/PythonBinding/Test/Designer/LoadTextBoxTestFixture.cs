@@ -21,7 +21,9 @@ namespace PythonBinding.Tests.Designer
 	[TestFixture]
 	public class LoadTextBoxTestFixture : LoadFormTestFixtureBase
 	{		
-		string pythonCode = "class MainForm(System.Windows.Forms.Form):\r\n" +
+		public override string PythonCode {
+			get {
+				return "class MainForm(System.Windows.Forms.Form):\r\n" +
 							"    def InitializeComponent(self):\r\n" +
 							"        self._textBox1 = System.Windows.Forms.TextBox()\r\n" +
 							"        self.SuspendLayout()\r\n" +
@@ -35,23 +37,11 @@ namespace PythonBinding.Tests.Designer
 							"        self.Name = \"form1\"\r\n" +
 							"        self.Controls.Add(self._textBox1)\r\n" +
 							"        self.ResumeLayout(False)\r\n";
-		Form form;
-		TextBox textBox;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
-			form = walker.CreateForm(pythonCode);
-			if (form.Controls.Count > 0) {
-				textBox = form.Controls[0] as TextBox;
 			}
 		}
-
-		[TestFixtureTearDown]
-		public void TearDownFixture()
-		{
-			form.Dispose();
+		
+		public TextBox TextBox { 
+			get { return Form.Controls[0] as TextBox; }
 		}
 
 		[Test]
@@ -73,20 +63,20 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void TextBoxAddedToForm()
 		{
-			Assert.IsNotNull(textBox);
+			Assert.IsNotNull(TextBox);
 		}
 		
 		[Test]
 		public void TextBoxObjectMatchesObjectAddedToComponentCreator()
 		{
 			CreatedInstance instance = GetCreatedInstance(typeof(TextBox));
-			Assert.AreSame(textBox, instance.Object as TextBox);			
+			Assert.AreSame(TextBox, instance.Object as TextBox);			
 		}
 		
 		[Test]
 		public void TextBoxName()
 		{
-			Assert.AreEqual("textBoxName", textBox.Name);
+			Assert.AreEqual("textBoxName", TextBox.Name);
 		}
 	}
 }

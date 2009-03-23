@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -24,7 +26,7 @@ namespace PythonBinding.Tests.Designer
 	/// InitializeComponent method can be found.
 	/// </summary>
 	[TestFixture]
-	public class MissingInitializeComponentMethodTestFixture : LoadFormTestFixtureBase
+	public class MissingInitializeComponentMethodTestFixture : IComponentCreator
 	{		
 		string pythonCode = "from System.Windows.Forms import Form\r\n" +
 							"\r\n" +
@@ -38,7 +40,7 @@ namespace PythonBinding.Tests.Designer
 		[ExpectedException(typeof(PythonFormWalkerException))]
 		public void PythonFormWalkerExceptionThrown()
 		{
-			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
+			PythonFormWalker walker = new PythonFormWalker(this);
 			walker.CreateForm(pythonCode);
 			Assert.Fail("Exception should have been thrown before this.");
 		}
@@ -50,7 +52,7 @@ namespace PythonBinding.Tests.Designer
 		public void ClassWithNoBody()
 		{
 			ClassDefinition classDef = new ClassDefinition(new SymbolId(10), null, null);
-			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
+			PythonFormWalker walker = new PythonFormWalker(this);
 			walker.Walk(classDef);
 		}
 		
@@ -63,8 +65,28 @@ namespace PythonBinding.Tests.Designer
 		{
 			List<Expression> lhs = new List<Expression>();
 			AssignmentStatement assign = new AssignmentStatement(lhs.ToArray(), null);
-			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
+			PythonFormWalker walker = new PythonFormWalker(this);
 			walker.Walk(assign);
 		}
+		
+		public IComponent CreateComponent(Type componentClass, string name)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Add(System.ComponentModel.IComponent component, string name)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object CreateInstance(Type type, ICollection arguments, string name, bool addToContainer)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public Type GetType(string typeName)
+		{
+			throw new NotImplementedException();
+		}		
 	}
 }

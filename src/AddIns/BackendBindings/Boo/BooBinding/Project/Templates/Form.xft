@@ -27,7 +27,7 @@
 partial class ${ClassName}(System.Windows.Forms.Form):
 	private components as System.ComponentModel.IContainer = null
 	
-	protected override def Dispose(disposing as bool):
+	protected override def Dispose(disposing as bool) as void:
 		if disposing:
 			if components is not null:
 				components.Dispose()
@@ -36,7 +36,7 @@ partial class ${ClassName}(System.Windows.Forms.Form):
 	// This method is required for Windows Forms designer support.
 	// Do not change the method contents inside the source code editor. The Forms designer might
 	// not be able to load this method if it was changed manually.
-	def InitializeComponent():
+	private def InitializeComponent():
 		// ${ClassName}
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		self.Text = '${ClassName}'
@@ -52,7 +52,7 @@ import System.Windows.Forms
 
 partial class ${ClassName}:
 """Description of ${ClassName}."""
-	def constructor():
+	public def constructor():
 		// The InitializeComponent() call is required for Windows Forms designer support.
 		InitializeComponent()
 		// TODO: Add constructor code after the InitializeComponent() call.

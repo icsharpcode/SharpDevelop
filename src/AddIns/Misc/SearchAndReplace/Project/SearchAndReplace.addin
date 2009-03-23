@@ -62,4 +62,14 @@
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
 		             class   = "SearchAndReplace.FindComboBox"/>
 	</Path>
+	
+	<!-- File extensions that should not be searched since they are not opened
+	 in a text editor -->
+	<Path name="/AddIns/DefaultTextEditor/Search/ExcludedFileExtensions">
+		<String text=".resx"/>
+		<String text=".resources"/>
+		<String text=".exe"/>
+		<String text=".dll"/>
+		<String text=".pdb"/>
+	</Path>
 </AddIn>

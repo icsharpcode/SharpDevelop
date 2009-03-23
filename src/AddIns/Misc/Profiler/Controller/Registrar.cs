@@ -45,12 +45,10 @@ namespace ICSharpCode.Profiler.Controller
 		{
 			try {
 				CreateKeys(is64Bit ? ExtendedRegistry.LocalMachine64 : ExtendedRegistry.LocalMachine32, guid, libraryId, classId, path);
-			}
-			catch (UnauthorizedAccessException) {
+			} catch (UnauthorizedAccessException) {
 				try {
 					CreateKeys(is64Bit ? ExtendedRegistry.CurrentUser64 : ExtendedRegistry.CurrentUser32, guid, libraryId, classId, path);
-				}
-				catch (UnauthorizedAccessException) {
+				} catch (UnauthorizedAccessException) {
 					return false;
 				}
 			}
@@ -83,8 +81,16 @@ namespace ICSharpCode.Profiler.Controller
 			if (guid == null)
 				throw new ArgumentNullException("guid");
 			
-			DeleteKey(is64Bit ? ExtendedRegistry.LocalMachine64 : ExtendedRegistry.LocalMachine32, guid);
-			DeleteKey(is64Bit ? ExtendedRegistry.CurrentUser64 : ExtendedRegistry.CurrentUser32, guid);
+			try {
+				DeleteKey(is64Bit ? ExtendedRegistry.LocalMachine64 : ExtendedRegistry.LocalMachine32, guid);
+				DeleteKey(is64Bit ? ExtendedRegistry.CurrentUser64 : ExtendedRegistry.CurrentUser32, guid);
+			} catch (UnauthorizedAccessException) {
+				try {
+					DeleteKey(is64Bit ? ExtendedRegistry.CurrentUser64 : ExtendedRegistry.CurrentUser32, guid);
+				} catch (UnauthorizedAccessException) {
+					return false;
+				}
+			}
 			
 			return true;
 		}

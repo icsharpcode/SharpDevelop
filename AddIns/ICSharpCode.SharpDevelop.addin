@@ -1680,13 +1680,6 @@
 		<Class id ="XmlFormatter" class = "ICSharpCode.SharpDevelop.DefaultEditor.XmlFormattingStrategy"/>
 	</Path>
 	
-	<!-- File extensions that should not be searched since they are not opened
-	 in a text editor -->
-	<Path name="/AddIns/DefaultTextEditor/Search/ExcludedFileExtensions">
-		<String text=".resx"/>
-		<String text=".resources"/>
-	</Path>
-	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "OldText"
 		                insertafter = "Text"
@@ -2146,6 +2139,14 @@
 			<MenuItem id    = "DebugViewMenuBuilder"
 			          type  = "Builder"
 			          class = "ICSharpCode.SharpDevelop.Commands.DebugViewMenuBuilder"/>
+		</MenuItem>
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/MainMenu">
+		<MenuItem id="QualityTools" label="Quality Tools" insertbefore="Tools" type="Menu">
+			<MenuItem id="Profiler" label="Profiler" type="Menu" />
+			<MenuItem id="Test" label="Test" type="Menu" />
+			<MenuItem id="Separator1" type="Separator" />
 		</MenuItem>
 	</Path>
 	

@@ -94,6 +94,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		sealed class TempFileDatabaseWriter : IProfilingDataWriter
 		{
 			TempFileDatabase database;
+			bool isClosed;
 			
 			public TempFileDatabaseWriter(TempFileDatabase database)
 			{
@@ -121,7 +122,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			public void Close()
 			{
-				database.NotifyFinish();
+				if (!isClosed)
+					database.NotifyFinish();
+				isClosed = true;
 			}
 			
 			public void WriteMappings(IEnumerable<NameMapping> mappings)

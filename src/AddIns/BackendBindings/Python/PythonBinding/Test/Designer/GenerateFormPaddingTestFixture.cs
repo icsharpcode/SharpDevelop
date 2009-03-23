@@ -43,8 +43,8 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.Visible = False\r\n" +
 								"    self.Padding = System.Windows.Forms.Padding(10, 20, 15, 18)\r\n" +
+								"    self.Visible = False\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

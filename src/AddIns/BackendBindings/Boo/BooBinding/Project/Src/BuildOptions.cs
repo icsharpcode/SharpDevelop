@@ -21,6 +21,7 @@ namespace Grunwald.BooBinding
 			InitOutputPath();
 			//InitXmlDoc();
 			InitDebugInfo();
+			InitTargetFramework();
 			
 			ConfigurationGuiBinding b;
 			b = helper.BindString("conditionalSymbolsTextBox", "DefineConstants", TextBoxEditMode.EditRawProperty);
@@ -29,10 +30,12 @@ namespace Grunwald.BooBinding
 			
 			helper.BindBoolean("noCorlibCheckBox", "NoStdLib", false).CreateLocationButton("noCorlibCheckBox");
 			helper.BindBoolean("duckyCheckBox", "Ducky", false).CreateLocationButton("duckyCheckBox");
+			helper.BindBoolean("checkForOverflowCheckBox", "CheckForOverflowUnderflow", true).CreateLocationButton("checkForOverflowCheckBox");
+			helper.BindBoolean("useStrictMode", "Strict", false).CreateLocationButton("useStrictMode");
 			
 			helper.BindString("pipelineTextBox", "Pipeline", TextBoxEditMode.EditEvaluatedProperty).CreateLocationButton("pipelineLabel");
 			
-			//InitWarnings();
+			InitWarnings();
 			
 			//
 			InitBaseIntermediateOutputPath();

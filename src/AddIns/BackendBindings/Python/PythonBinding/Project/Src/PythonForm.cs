@@ -26,7 +26,6 @@ namespace ICSharpCode.PythonBinding
 		StringBuilder codeBuilder;
 		string indentString = String.Empty;
 		int indent;
-		PythonControlDefaultPropertyValues defaultPropertyValues = new PythonControlDefaultPropertyValues();		
 		
 		public PythonForm() 
 			: this("\t")
@@ -65,45 +64,31 @@ namespace ICSharpCode.PythonBinding
 			
 			return codeBuilder.ToString();
 		}
-
+		
 		/// <summary>
-		/// Should serialize a property if:
-		/// 
-		/// 1) It has a different value to its default. 
-		/// 2) DesignerSerializationVisibility is set to Hidden. 
+		/// Gets a list of properties that should be serialized for the specified form.
 		/// </summary>
-		public bool ShouldSerialize(object obj, PropertyDescriptor propertyDescriptor)
-		{		
-			if (propertyDescriptor.DesignTimeOnly) {
-				return false;
+		public PropertyDescriptorCollection GetSerializableProperties(object obj)
+		{
+			System.Console.WriteLine("GetSerializableProperties");
+			List<PropertyDescriptor> properties = new List<PropertyDescriptor>();
+			Attribute[] filter = new Attribute[] { DesignOnlyAttribute.No };
+			foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(obj, filter).Sort()) {
+				if (property.SerializationVisibility == DesignerSerializationVisibility.Visible) {
+					if (property.ShouldSerializeValue(obj)) {
+						properties.Add(property);
+						System.Console.WriteLine("Property.Name: " + property.Name);
+					}
+				} 
 			}
-			
-			// Is default value?
-			bool serialize = !defaultPropertyValues.IsDefaultValue(propertyDescriptor, obj);
-			
-			// Is visible to designer?
-			if (serialize) {
-				serialize = propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible;
-				if (!serialize) {
-					serialize = (propertyDescriptor.Name == "AutoScaleMode");
-				}
-			}
-			
-			// Is browsable?
-			if (serialize) {
-				// Always serialize the Name.
-				if (propertyDescriptor.Name != "Name" && propertyDescriptor.Name != "AutoScaleMode" && propertyDescriptor.Name != "ClientSize") {
-					serialize = propertyDescriptor.IsBrowsable;
-				}
-			}
-			return serialize;
-		}		
+			return new PropertyDescriptorCollection(properties.ToArray());
+		}
 		
 		void GenerateInitializeComponentMethodBodyInternal(Form form)
 		{			
 			// Add method body.
 			AppendIndentedLine("self.SuspendLayout()");
-			
+					
 			AppendForm(form);
 			
 			AppendIndentedLine("self.ResumeLayout(False)");
@@ -127,14 +112,9 @@ namespace ICSharpCode.PythonBinding
 		void AppendForm(Form form)
 		{
 			AppendComment(form.Name);
-			
-			PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(form);
-			foreach (PropertyDescriptor property in properties) {
-				if (property.SerializationVisibility == DesignerSerializationVisibility.Hidden && property.Name == "Name") {
-					// Skip the duplicate Name property.
-				} else {
-					AppendProperty(form, property);
-				}
+
+			foreach (PropertyDescriptor property in GetSerializableProperties(form)) {
+				AppendProperty(form, property);
 			}
 		}
 		
@@ -142,19 +122,13 @@ namespace ICSharpCode.PythonBinding
 		/// Appends a property to the InitializeComponents method.
 		/// </summary>
 		void AppendProperty(object obj, PropertyDescriptor propertyDescriptor)
-		{
-			if (propertyDescriptor.Name == "Text") {
-				Console.WriteLine("asfads");
-			}
-			
+		{			
 			object propertyValue = propertyDescriptor.GetValue(obj);
 			if (propertyValue == null) {
 				return;
 			}
 			
-			if (ShouldSerialize(obj, propertyDescriptor)) {
-				AppendIndentedLine("self." + propertyDescriptor.Name + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
-			}
+			AppendIndentedLine("self." + propertyDescriptor.Name + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
 		}
 				
 		/// <summary>

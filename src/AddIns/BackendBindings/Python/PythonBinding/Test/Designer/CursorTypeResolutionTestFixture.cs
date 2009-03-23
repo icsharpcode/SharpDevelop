@@ -22,45 +22,23 @@ namespace PythonBinding.Tests.Designer
 	/// PythonCodeDeserializer.
 	/// </summary>
 	[TestFixture]
-	public class CursorTypeResolutionTestFixture
+	public class CursorTypeResolutionTestFixture : DeserializeAssignmentTestFixtureBase
 	{
-		string pythonCode = "self.Cursors = System.Windows.Forms.Cursors.AppStarting";
-		Node rhsAssignmentNode;
-		object obj;
-		MockDesignerLoaderHost mockDesignerLoaderHost;
-		MockTypeResolutionService typeResolutionService;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		public override string GetPythonCode()
 		{
-			PythonParser parser = new PythonParser();
-			PythonAst ast = parser.CreateAst(@"snippet.py", pythonCode);
-			SuiteStatement suiteStatement = (SuiteStatement)ast.Body;
-			AssignmentStatement assignment = suiteStatement.Statements[0] as AssignmentStatement;
-			rhsAssignmentNode = assignment.Right;
-			
-			mockDesignerLoaderHost = new MockDesignerLoaderHost();
-			typeResolutionService = mockDesignerLoaderHost.TypeResolutionService;
-			PythonCodeDeserializer deserializer = new PythonCodeDeserializer(mockDesignerLoaderHost);
-			obj = deserializer.Deserialize(rhsAssignmentNode);
-		}
-		
-		[Test]
-		public void RhsAssignmentNodeExists()
-		{
-			Assert.IsNotNull(rhsAssignmentNode);
+			return "self.Cursors = System.Windows.Forms.Cursors.AppStarting";
 		}
 		
 		[Test]
 		public void DeserializedObjectIsCursorsAppStarting()
 		{
-			Assert.AreEqual(Cursors.AppStarting, obj);
+			Assert.AreEqual(Cursors.AppStarting, deserializedObject);
 		}
 		
 		[Test]
 		public void CursorsTypeResolved()
 		{
-			Assert.AreEqual("System.Windows.Forms.Cursors", typeResolutionService.LastTypeNameResolved);
+			Assert.AreEqual("System.Windows.Forms.Cursors", base.LastTypeNameResolved);
 		}
 	}
 }

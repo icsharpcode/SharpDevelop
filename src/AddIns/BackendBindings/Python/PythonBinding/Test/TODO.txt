@@ -79,3 +79,11 @@ def main(args):
   of the active document. This is not correct. It should insert it at the 
   end of the form class. The file could contain multiple classes and 
   inserting the event handler at the end will not work in that case.
+  
+ * Python forms designer - default property values are incorrect. They should be based on the parent
+   control. For example:
+   
+   ParentControl has BorderStyle = FixedSingle when created.
+   ChildControl has ParentControl as base class.
+   BorderStyle set to None in designer for ChildControl. Code should then be generated for BorderStyle since this
+   is not the default

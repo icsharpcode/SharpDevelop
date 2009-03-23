@@ -25,5 +25,29 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 		{
 			InitializeComponent();
 		}
+		
+		public void Load(bool enableDC, int sharedMemorySize)
+		{
+			this.slSharedMemorySize.Value = sharedMemorySize;
+			this.chkEnableDC.IsChecked = !enableDC;
+		}
+		
+		public T GetOptionValue<T>(string name)
+		{
+			object o;
+			
+			switch (name) {
+				case "SharedMemorySize":
+					o = this.slSharedMemorySize.Value;
+					break;
+				case "EnableDC":
+					o = this.chkEnableDC.IsChecked;
+					break;
+				default:
+					throw new NotSupportedException("value '" + name + "' is not supported!");
+			}
+			
+			return (T)o;
+		}
 	}
 }

@@ -990,6 +990,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			get { return conditionalCompilation.Symbols; }
 		}
 		
+		public override void SetConditionalCompilationSymbols (string symbols)
+		{
+			foreach (string symbol in GetSymbols (symbols)) {
+				conditionalCompilation.Define (symbol);
+			}
+		}
+		
+		
 		ConditionalCompilation conditionalCompilation = new ConditionalCompilation();
 		
 		void ReadPreProcessingDirective()

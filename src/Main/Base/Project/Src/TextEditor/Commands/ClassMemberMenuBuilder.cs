@@ -187,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				if (m != null && !m.Region.IsEmpty) {
 					string matchText = ambience.Convert(m);
 					SearchResultMatch res = new SimpleSearchResultMatch(matchText, new Location(m.Region.BeginColumn, m.Region.BeginLine));
-					res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
+					res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(m.DeclaringType.CompilationUnit.FileName);
 					results.Add(res);
 				}
 			}

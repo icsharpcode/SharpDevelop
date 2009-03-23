@@ -88,9 +88,8 @@ namespace ICSharpCode.Profiler.Frontend
 		void profiler_SessionEnded(object sender, EventArgs e)
 		{
 			string pathToDb = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(typeof(Profiler.Controller.Profiler).Assembly.Location), "output.sdps");
-			profiler.DataWriter.Close();
 			ProfilingDataSQLiteWriter writer = new ProfilingDataSQLiteWriter(pathToDb);
-			this.database.WriteTo(writer, progress => false);
+			this.database.WriteTo(writer, progress => true);
 			writer.Close();
 			this.database.Close();
 			this.provider = new ProfilingDataSQLiteProvider(pathToDb);
@@ -109,8 +108,8 @@ namespace ICSharpCode.Profiler.Frontend
 							MessageBox.Show(ex.ToString());
 						}
 					}
-				));
-
+				)
+			);
 		}
 
 		void RefreshUI(int startIndex, int endIndex)

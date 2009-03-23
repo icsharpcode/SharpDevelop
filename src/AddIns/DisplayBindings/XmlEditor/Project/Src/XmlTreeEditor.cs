@@ -40,6 +40,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			try {
 				document = new XmlDocument();
+				document.XmlResolver = null;
 				document.LoadXml(xml);
 				view.Document = document;
 			} catch (XmlException ex) {

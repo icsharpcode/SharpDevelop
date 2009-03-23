@@ -19,11 +19,11 @@ CSharedMemory::CSharedMemory(char *name)
 		DebugWriteLine(L"MapViewOfFile returned nullptr");
 		MessageBox(nullptr, TEXT("Could not open Shared Memory, please restart the profiler!"), TEXT("Profiler Error"), MB_OK);
 	}
-	SharedMemoryHeader* header = (SharedMemoryHeader*)this->startPtr;
-	if (header->Magic != '~SM1') {
+	this->header = (SharedMemoryHeader*)this->startPtr;
+	if (this->header->Magic != '~SM1') {
 		DebugWriteLine(L"Corrupted shared memory header");
 	}
-	this->length = header->TotalLength;
+	this->length = this->header->TotalLength;
 	UnmapViewOfFile(this->startPtr);
 	this->startPtr = MapViewOfFile(this->fileHandle, FILE_MAP_ALL_ACCESS, 0, 0, this->length);
 	if (startPtr == nullptr) {

@@ -20,7 +20,9 @@ namespace PythonBinding.Tests.Designer
 	[TestFixture]
 	public class LoadCursorTestFixture : LoadFormTestFixtureBase
 	{		
-		string pythonCode = "class TestForm(System.Windows.Forms.Form):\r\n" +
+		public override string PythonCode {
+			get {
+				return "class TestForm(System.Windows.Forms.Form):\r\n" +
 							"    def InitializeComponent(self):\r\n" +
 							"        self.SuspendLayout()\r\n" +
 							"        # \r\n" +
@@ -29,25 +31,13 @@ namespace PythonBinding.Tests.Designer
 							"        self.Cursor = System.Windows.Forms.Cursors.Hand\r\n" +
 							"        self.Name = \"TestForm\"\r\n" +
 							"        self.ResumeLayout(False)\r\n";
-		Form form;
+			}
+		}
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			PythonFormWalker walker = new PythonFormWalker(this, new MockDesignerLoaderHost());
-			form = walker.CreateForm(pythonCode);
-		}
-
-		[TestFixtureTearDown]
-		public void TearDownFixture()
-		{
-			form.Dispose();
-		}
-								
 		[Test]
 		public void FormCursorIsHand()
 		{
-			Assert.AreEqual(Cursors.Hand, form.Cursor);
+			Assert.AreEqual(Cursors.Hand, Form.Cursor);
 		}
 	}
 }

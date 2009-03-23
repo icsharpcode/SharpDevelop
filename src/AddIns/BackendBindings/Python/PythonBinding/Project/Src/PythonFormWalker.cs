@@ -31,10 +31,10 @@ namespace ICSharpCode.PythonBinding
 		string formName = String.Empty;
 		PythonCodeDeserializer deserializer;
 		
-		public PythonFormWalker(IComponentCreator componentCreator, IDesignerHost designerHost)
+		public PythonFormWalker(IComponentCreator componentCreator)
 		{
 			this.componentCreator = componentCreator;
-			deserializer = new PythonCodeDeserializer(designerHost);
+			deserializer = new PythonCodeDeserializer(componentCreator);
 		}		
 		
 		/// <summary>
@@ -107,12 +107,21 @@ namespace ICSharpCode.PythonBinding
 			MemberExpression memberExpression = node.Target as MemberExpression;
 			if (memberExpression != null) {
 				string name = PythonControlFieldExpression.GetMemberName(memberExpression);
-				if (walkingAssignment) {		
-					Type type = GetType(name);					
-					List<object> args = GetArguments(node);
-					object instance = componentCreator.CreateInstance(type, args, fieldExpression.MemberName, false);
-					if (!SetPropertyValue(form, fieldExpression.MemberName, instance)) {
-						AddComponent(fieldExpression.MemberName, instance);
+				if (walkingAssignment) {
+					Type type = componentCreator.GetType(name);
+					if (type != null) {
+						List<object> args = deserializer.GetArguments(node);
+						object instance = componentCreator.CreateInstance(type, args, fieldExpression.MemberName, false);
+						if (!SetPropertyValue(form, fieldExpression.MemberName, instance)) {
+							AddComponent(fieldExpression.MemberName, instance);
+						}
+					} else {
+						object obj = deserializer.Deserialize(node);
+						if (obj != null) {
+							SetPropertyValue(form, fieldExpression.MemberName, obj);
+						} else {
+							throw new PythonFormWalkerException(String.Format("Could not find type '{0}'.", name));
+						}
 					}
 				} else if (name == "self.Controls.Add") {
 					string controlName = PythonControlFieldExpression.GetControlNameBeingAdded(node);
@@ -126,21 +135,6 @@ namespace ICSharpCode.PythonBinding
 		{
 			SetPropertyValue(fieldExpression.MemberName, node.Name.ToString());
 			return false;
-		}
-				
-		/// <summary>
-		/// Gets the arguments passed to the call expression.
-		/// </summary>
-		static List<object> GetArguments(CallExpression expression)
-		{
-			List<object> args = new List<object>();
-			foreach (Arg a in expression.Args) {
-				ConstantExpression constantExpression = a.Expression as ConstantExpression;
-				if (constantExpression != null) {
-					args.Add(constantExpression.Value);
-				}
-			}
-			return args;
 		}
 		
 		static bool IsInitializeComponentMethod(FunctionDefinition node)
@@ -178,23 +172,11 @@ namespace ICSharpCode.PythonBinding
 		static object ConvertPropertyValue(PropertyDescriptor propertyDescriptor, object propertyValue)
 		{
 			if (propertyDescriptor.PropertyType != propertyValue.GetType()) {
-				if (propertyDescriptor.PropertyType.IsEnum) {
-					return Enum.Parse(propertyDescriptor.PropertyType, GetUnqualifiedEnumValue(propertyValue as String));
-				} 
 				return propertyDescriptor.Converter.ConvertFrom(propertyValue);
 			}
 			return propertyValue;
 		}
-		
-		Type GetType(string typeName)
-		{
-			Type type = componentCreator.GetType(typeName);
-			if (type == null) {	
-				throw new PythonFormWalkerException(String.Format("Could not find type '{0}'.", typeName));
-			}
-			return type;
-		}
-		
+				
 		/// <summary>
 		/// Looks for the control with the specified name in the objects that have been
 		/// created whilst processing the InitializeComponent method.
@@ -218,15 +200,6 @@ namespace ICSharpCode.PythonBinding
 			createdObjects.Add(variableName, component);
 		}
 		
-		static string GetFirstArgumentAsString(CallExpression node)
-		{
-			List<object> args = GetArguments(node);
-			if (args.Count > 0) {
-				return args[0] as String;
-			}
-			return null;
-		}
-		
 		Control GetCurrentControl()
 		{
 			string variableName = PythonControlFieldExpression.GetVariableNameFromSelfReference(fieldExpression.FullMemberName);
@@ -234,18 +207,6 @@ namespace ICSharpCode.PythonBinding
 				return GetControl(variableName);
 			}
 			return form;
-		}
-		
-		/// <summary>
-		/// Gets the unqualified enum value from a fully qualified value.
-		/// </summary>
-		static string GetUnqualifiedEnumValue(string fullyQualifiedEnumValue)
-		{
-			int index = fullyQualifiedEnumValue.LastIndexOf('.');
-			if (index > 0) {
-				return fullyQualifiedEnumValue.Substring(index + 1);
-			}
-			return fullyQualifiedEnumValue;
 		}
 	}
 }

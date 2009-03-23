@@ -8,11 +8,10 @@
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
-using System.ComponentModel.Design.Serialization;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using System.IO;
 using System.Text;
-
 using Boo.Lang.Compiler.Ast;
 using Boo.Lang.Parser;
 using ICSharpCode.Core;
@@ -115,6 +114,7 @@ namespace Grunwald.BooBinding.Designer
 					Field field = new Field();
 					field.Name = f.Name;
 					field.Type = new SimpleTypeReference(f.ReturnType.FullyQualifiedName);
+					field.Modifiers = CodeCompletion.ConvertVisitor.ConvertVisibilityBack(f.Modifiers);
 					cld.Members.Add(field);
 				}
 			}

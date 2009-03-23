@@ -156,11 +156,14 @@ bool SignatureReader::ReadMethodDefSig(byte head)
 	
 	// Append Name
 	
-	this->output << L"-";
-	this->output << className.str();
+	this->output << L" ";
+	this->output << '"';
+	std::wstring name = className.str();
+	AppendEscapedString(name);
 	this->output << L".";
-	this->output << szFunction;
-	this->output << L"-";
+	AppendEscapedString(szFunction);
+	this->output << '"';
+	this->output << L" ";
 
 	// Read Parameters
 	// Param ::= CustomMod* ( TYPEDBYREF | [BYREF] Type )
@@ -188,6 +191,7 @@ bool SignatureReader::ReadMethodDefSig(byte head)
 
 		if (!FAILED(this->metaData->GetParamForMethodIndex(this->methodDefiniton, i + 1, &paramDef))) {
 			if (!FAILED(this->metaData->GetParamProps(paramDef, &this->methodDefiniton, &pSequence, paramName, 256, &pchName, &pdwAttr, &pdwCPlusTypeFlag, &ppValue, &pcchValue))) {
+				this->output << '"';
 				switch (type) {
 					case ELEMENT_TYPE_TYPEDBYREF:
 						// ignore
@@ -205,12 +209,13 @@ bool SignatureReader::ReadMethodDefSig(byte head)
 				}
 				
 				this->output << L" ";
-				this->output << paramName;
+				AppendEscapedString(paramName);
+				this->output << '"';
 			}
 		}
 
 		if (i < paramCount - 1)
-			this->output << L", ";
+			this->output << L" ";
 	}
 
 	return true;
@@ -297,12 +302,12 @@ bool SignatureReader::ReadType(byte type)
 			hr = this->metaData->GetTypeRefProps(token, nullptr, zName, 1024, &length);
 			hr = this->metaData->GetTypeDefProps(token, zName, 1024, &length, nullptr, nullptr);
 			if (SUCCEEDED(hr) && length > 0)
-				this->output << zName;
+				AppendEscapedString(zName);
 			else {
 				hr = this->metaData->GetTypeRefProps(token, nullptr, zName, 1024, &length);
 				hr = this->metaData->GetTypeDefProps(token, zName, 1024, &length, nullptr, nullptr);
 				if (SUCCEEDED(hr) && length > 0)
-					this->output << zName;
+					AppendEscapedString(zName);
 				else
 					this->output << L"?";
 			}
@@ -345,7 +350,7 @@ bool SignatureReader::ReadType(byte type)
 			hr = this->metaData->GetTypeRefProps(token, nullptr, zName, 1024, &length);
 			hr = this->metaData->GetTypeDefProps(token, zName, 1024, &length, nullptr, nullptr);
 			if (SUCCEEDED(hr) && length > 0)
-				this->output << zName;
+				AppendEscapedString(zName);
 			else
 				this->output << L"?";
 			if (!this->ReadCompressedInt(&tmp2))
@@ -359,7 +364,7 @@ bool SignatureReader::ReadType(byte type)
 					return false;
 				this->ReadType(type);
 				if ((i + 1) < genArgCount)
-					this->output << L", ";
+					this->output << L",";
 			}
 			this->output << L">";
 			break;
@@ -519,4 +524,79 @@ bool SignatureReader::ReadCompressedInt(int *out)
 
     *out = ((byte1 & 0x1f) << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
     return true;
+}
+
+const byte mscorlibkey[]      = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+const byte systemdrawingkey[] = {
+	0x00, 0x24, 0x00, 0x00, 0x04, 0x80, 0x00, 0x00, 0x94, 0x00, 0x00, 0x00, 0x06, 0x02, 0x00, 0x00, 0x00,
+	0x24, 0x00, 0x00, 0x52, 0x53, 0x41, 0x31, 0x00, 0x04, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x07, 0xD1,
+	0xFA, 0x57, 0xC4, 0xAE, 0xD9, 0xF0, 0xA3, 0x2E, 0x84, 0xAA, 0x0F, 0xAE, 0xFD, 0x0D, 0xE9, 0xE8, 0xFD,
+	0x6A, 0xEC, 0x8F, 0x87, 0xFB, 0x03, 0x76, 0x6C, 0x83, 0x4C, 0x99, 0x92, 0x1E, 0xB2, 0x3B, 0xE7, 0x9A,
+	0xD9, 0xD5, 0xDC, 0xC1, 0xDD, 0x9A, 0xD2, 0x36, 0x13, 0x21, 0x02, 0x90, 0x0B, 0x72, 0x3C, 0xF9, 0x80,
+	0x95, 0x7F, 0xC4, 0xE1, 0x77, 0x10, 0x8F, 0xC6, 0x07, 0x77, 0x4F, 0x29, 0xE8, 0x32, 0x0E, 0x92, 0xEA,
+	0x05, 0xEC, 0xE4, 0xE8, 0x21, 0xC0, 0xA5, 0xEF, 0xE8, 0xF1, 0x64, 0x5C, 0x4C, 0x0C, 0x93, 0xC1, 0xAB,
+	0x99, 0x28, 0x5D, 0x62, 0x2C, 0xAA, 0x65, 0x2C, 0x1D, 0xFA, 0xD6, 0x3D, 0x74, 0x5D, 0x6F, 0x2D, 0xE5,
+	0xF1, 0x7E, 0x5E, 0xAF, 0x0F, 0xC4, 0x96, 0x3D, 0x26, 0x1C, 0x8A, 0x12, 0x43, 0x65, 0x18, 0x20, 0x6D,
+	0xC0, 0x93, 0x34, 0x4D, 0x5A, 0xD2, 0x93
+};
+
+
+bool SignatureReader::IsNetInternal(FunctionID fid)
+{
+	mdToken funcToken;
+	HRESULT hr = S_OK;
+	IMetaDataAssemblyImport *asmMetaData;
+	const void *publicKey;
+	ULONG pKLength;
+
+	hr = profilerInfo->GetTokenAndMetaDataFromFunction(fid, IID_IMetaDataAssemblyImport, (LPUNKNOWN *) &asmMetaData, &funcToken);
+	if (SUCCEEDED(hr)) {
+		mdAssembly assembly;
+		hr = asmMetaData->GetAssemblyFromScope(&assembly);
+		if (SUCCEEDED(hr)) {
+			WCHAR assemblyName[NAME_BUFFER_SIZE];
+			ULONG assemblyNameLength;
+
+			hr = asmMetaData->GetAssemblyProps(assembly, &publicKey, &pKLength, nullptr, assemblyName, NAME_BUFFER_SIZE, &assemblyNameLength, nullptr, nullptr);
+			DebugWriteLine(L"assembly: %s", assemblyName);
+			const byte *b = (const byte *)publicKey;
+			WCHAR tmp[8];
+			
+			std::wstring s(L"{ ");
+			
+			for (ULONG i = 0; i < pKLength; i++) {
+				memset(tmp, 0, 16);
+				swprintf_s(tmp, L"0x%02X, ", (int) b[i]);
+				s.append(tmp);
+			}
+			
+			s.append(L" }");
+			
+			DebugWriteLine(L"assembly: PK: %s", s.c_str());
+			
+			if (pKLength == sizeof(mscorlibkey) && memcmp(mscorlibkey, b, sizeof(mscorlibkey)) == 0)
+				return true;
+			if (pKLength == sizeof(systemdrawingkey) && memcmp(systemdrawingkey, b, sizeof(systemdrawingkey)) == 0)
+				return true;
+		}
+	}
+	
+	return false;
+}
+
+void SignatureReader::AppendEscapedString(const WCHAR *input)
+{	
+	for (const WCHAR *ptr = input; *ptr != 0; ptr++) {
+		WCHAR c = *ptr;
+		if (c == '"')
+			this->output << "\"\"";
+		else
+			this->output << c;
+	}
+}
+
+void SignatureReader::AppendEscapedString(const std::wstring &input_string)
+{
+	AppendEscapedString(input_string.c_str());
 }

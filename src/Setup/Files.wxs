@@ -1250,6 +1250,9 @@
 											<Component Guid="C077D46F-D6EF-4187-9715-3EAD8A43A1EC" Id="PythonFormsProjectTemplate" DiskId="1">
 												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Templates\FormsProject.xpt" Id="Templates.FormsProject.xpt" Name="FormsProject.xpt" KeyPath="yes" />
 											</Component>
+											<Component Guid="6AE9C385-3B6A-4DD6-9CB9-92EDEEEF3FCF" Id="PythonLibraryProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Templates\LibraryProject.xpt" Id="Templates.LibraryProject.xpt" Name="LibraryProject.xpt" KeyPath="yes" />
+											</Component>
 										</Directory>
 										<Component Guid="DE04B306-0C6D-434C-A6DC-6F450AAFB108" Id="IronPythonModulesDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.Modules.dll" Name="IronPython.Modules.dll" Id="IronPython.Modules.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.Modules.dll" AssemblyManifest="IronPython.Modules.dll" />

@@ -23,9 +23,10 @@ extern DWORD tls_index;
 struct StackEntry {
 	FunctionInfo *function;
 	ULONGLONG startTime;
+	int frameCount;
 	
 	StackEntry() {}
-	StackEntry(FunctionInfo * function, ULONGLONG startTime) : function(function), startTime(startTime) {}
+	StackEntry(FunctionInfo * function, ULONGLONG startTime) : function(function), startTime(startTime), frameCount(1) {}
 };
 
 struct ThreadLocalData {

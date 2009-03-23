@@ -88,6 +88,23 @@
 		</ComplexCondition>
 	</Path>
 	
+	<Path name="/SharpDevelop/Workbench/MainMenu/QualityTools/Test">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
+				</Not>
+			</And>
+			<MenuItem id            = "RunAllWithCodeCoverage"
+			          insertbefore  = "RunProjectTests"
+			          insertafter   = "RunAll"
+			          icon          = "CodeCoverage.Icons.16x16.Run"
+			          label         = "${res:ICSharpCode.UnitTesting.RunAllWithCoverage}"
+			          class         = "ICSharpCode.CodeCoverage.RunAllTestsWithCodeCoverageCommand"/>
+		</ComplexCondition>
+	</Path>	
+	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<OptionPanel id          = "CodeCoverage"
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"

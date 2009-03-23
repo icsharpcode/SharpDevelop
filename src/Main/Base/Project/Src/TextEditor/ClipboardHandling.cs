@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.Util;
 using System;
 using System.Threading;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor
@@ -36,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 			UpdateClipboardContainsText();
 		}
 		
-		static bool clipboardContainsText;
+		static volatile bool clipboardContainsText;
 		
 		public static bool GetClipboardContainsText()
 		{
@@ -47,28 +48,29 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 			return clipboardContainsText;
 		}
 		
-		static volatile Thread updateThread;
+		static WorkerThread workerThread;
+		static IAsyncResult currentWorker;
 		
 		static void UpdateClipboardContainsText()
 		{
-			if (updateThread != null)
+			if (currentWorker != null && !currentWorker.IsCompleted)
 				return;
-			Thread t = new Thread(new ThreadStart(DoUpdate));
-			t.SetApartmentState(ApartmentState.STA);
-			t.IsBackground = true;
-			t.Name = "clipboard access";
-			updateThread = t;
-			t.Start();
-			t.Join(50); // wait a few ms in case the clipboard can be accessed without problems
+			if (workerThread == null) {
+				workerThread = new WorkerThread();
+				Thread t = new Thread(new ThreadStart(workerThread.RunLoop));
+				t.SetApartmentState(ApartmentState.STA);
+				t.IsBackground = true;
+				t.Name = "clipboard access";
+				t.Start();
+			}
+			currentWorker = workerThread.Enqueue(DoUpdate);
+			// wait a few ms in case the clipboard can be accessed without problems
+			currentWorker.AsyncWaitHandle.WaitOne(50);
 		}
 		
 		static void DoUpdate()
 		{
-			try {
-				clipboardContainsText = ClipboardWrapper.ContainsText;
-			} finally {
-				updateThread = null;
-			}
+			clipboardContainsText = ClipboardWrapper.ContainsText;
 		}
 	}
 }

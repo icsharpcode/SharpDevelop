@@ -15,8 +15,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Profiler\</OutputPath>
     <StartAction>Program</StartAction>
-    <StartProgram>$(SharpDevelopBinPath)\SharpDevelop.exe</StartProgram>
-    <StartArguments>/addindir:$(MSBuildProjectDirectory)\$(OutputPath)</StartArguments>
+    <StartProgram>..\..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -100,7 +99,6 @@
     <Compile Include="Src\Dialogs\ProfileExecutableForm.xaml.cs">
       <DependentUpon>ProfileExecutableForm.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\ExtensionMethods.cs" />
     <Compile Include="Src\OptionsPanels\General.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -108,8 +106,7 @@
       <DependentUpon>GeneralOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\OptionsPanels\ProfilerOptionsWrapper.cs" />
-    <Compile Include="Src\ProfilerService.cs" />
+    <Compile Include="Src\ProfilerRunner.cs" />
     <Compile Include="Src\Views\ProfilerView.xaml.cs">
       <DependentUpon>ProfilerView.xaml</DependentUpon>
     </Compile>

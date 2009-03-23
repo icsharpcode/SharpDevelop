@@ -27,7 +27,7 @@ import System
 
 class ${ClassName}:
 """Description of ${ClassName}"""
-	def constructor():
+	public def constructor():
 		pass
 
 ]]></File>

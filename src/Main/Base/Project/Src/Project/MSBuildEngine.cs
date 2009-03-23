@@ -158,6 +158,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return interestingTasks; }
 		}
 		
+		static bool AllowBuildInProcess {
+			get {
+				// don't build in-process if building in parallel.
+				// workaround for SD2-1485: Build worker occasionally hangs
+				return BuildOptions.DefaultParallelProjectCount == 1;
+			}
+		}
+		
 		void StartBuild()
 		{
 			WorkerManager.ShowError = MessageService.ShowError;
@@ -217,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			job.Target = options.Target.TargetName;
 			
 			bool buildInProcess = false;
-			if (Interlocked.CompareExchange(ref isBuildingInProcess, 1, 0) == 0) {
+			if (AllowBuildInProcess && Interlocked.CompareExchange(ref isBuildingInProcess, 1, 0) == 0) {
 				buildInProcess = true;
 			}
 			LoggingService.Info("Start job (buildInProcess=" + buildInProcess + "): " + job.ToString());

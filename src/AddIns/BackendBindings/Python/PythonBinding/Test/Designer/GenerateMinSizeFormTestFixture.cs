@@ -48,10 +48,10 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    # MainForm\r\n" +
 								"    # \r\n" +
-								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
-								"    self.MinimumSize = System.Drawing.Size(100, 200)\r\n" +
 								"    self.AutoScrollMargin = System.Drawing.Size(11, 22)\r\n" +
 								"    self.AutoScrollMinSize = System.Drawing.Size(10, 20)\r\n" +
+								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
+								"    self.MinimumSize = System.Drawing.Size(100, 200)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Visible = False\r\n" +
 								"    self.ResumeLayout(False)\r\n" +

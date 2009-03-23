@@ -6,11 +6,14 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Windows.Forms.Integration;
+
 using ICSharpCode.Core;
+using ICSharpCode.Profiler.Controller;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Windows.Forms.Integration;
 
 namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 {
@@ -19,7 +22,14 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 	/// </summary>
 	public class General : AbstractOptionPanel
 	{
-		GeneralOptionsPanel panel = new GeneralOptionsPanel();
+		GeneralOptionsPanel panel;
+		
+		static Properties properties = PropertyService.Get("ProfilerOptions", new Properties());
+		
+		public General()
+		{
+			panel = new GeneralOptionsPanel();
+		}
 		
 		public override object Content {
 			get {
@@ -29,11 +39,24 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 		
 		public override void LoadOptions()
 		{
+			panel.Load(properties.Get("EnableDC", true),
+			           properties.Get("SharedMemorySize", ProfilerOptions.SHARED_MEMORY_SIZE) / 1024 / 1024);
 		}
 		
 		public override bool SaveOptions()
 		{
+			properties.Set("EnableDC", !panel.GetOptionValue<bool>("EnableDC"));
+			properties.Set("SharedMemorySize", (int)panel.GetOptionValue<double>("SharedMemorySize") * 1024 * 1024);
 			return true;
+		}
+		
+		public static ProfilerOptions CreateProfilerOptions()
+		{
+			return new ProfilerOptions(properties.Get("EnableDC", true),
+			                           properties.Get("SharedMemorySize", ProfilerOptions.SHARED_MEMORY_SIZE),
+			                           !properties.Get("PorfileDotNetInternals", true),
+			                           properties.Get("CombineRecursiveFunction", false)
+			                          );
 		}
 	}
 }

@@ -5,6 +5,7 @@
 		<Category>Boo</Category>
 		<Icon>Boo.Project.Form</Icon>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<Actions>
@@ -12,6 +13,10 @@
 	</Actions>
 	
 	<Project language = "Boo">
+		<CreateActions>
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
+		</CreateActions>
+		
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
 		</PropertyGroup>
@@ -20,7 +25,6 @@
 			<Reference Include="System.Data" />
 			<Reference Include="System.Drawing" />
 			<Reference Include="System.Windows.Forms" />
-			<Reference Include="System.Xml" />
 			<Reference Include="Boo.Lang.Useful" />
 		</ProjectItems>
 		
@@ -33,13 +37,13 @@ import System.Drawing
 import System.Windows.Forms
 
 partial class MainForm:
-	def constructor():
+	public def constructor():
 		// The InitializeComponent() call is required for Windows Forms designer support.
 		InitializeComponent()
 		// TODO: Add constructor code after the InitializeComponent() call.
 
 [STAThread]
-def Main(argv as (string)):
+public def Main(argv as (string)) as void:
 	Application.EnableVisualStyles()
 	Application.SetCompatibleTextRenderingDefault(false)
 	Application.Run(MainForm())
@@ -50,7 +54,7 @@ def Main(argv as (string)):
 partial class MainForm(System.Windows.Forms.Form):
 	private components as System.ComponentModel.IContainer = null
 	
-	protected override def Dispose(disposing as bool):
+	protected override def Dispose(disposing as bool) as void:
 		if disposing:
 			if components is not null:
 				components.Dispose()
@@ -59,7 +63,7 @@ partial class MainForm(System.Windows.Forms.Form):
 	// This method is required for Windows Forms designer support.
 	// Do not change the method contents inside the source code editor. The Forms designer might
 	// not be able to load this method if it was changed manually.
-	def InitializeComponent():
+	private def InitializeComponent():
 		// MainForm
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		self.Text = 'MainForm'

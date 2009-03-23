@@ -531,7 +531,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				combinedBuildFeedbackSink.Done(results.Result == BuildResultCode.Success);
 			}
 			if (options.Callback != null) {
-				Gui.WorkbenchSingleton.SafeThreadAsyncCall(delegate { options.Callback(results); });
+				Gui.WorkbenchSingleton.SafeThreadAsyncCall(r => options.Callback(r), results);
 			}
 		}
 		#endregion
