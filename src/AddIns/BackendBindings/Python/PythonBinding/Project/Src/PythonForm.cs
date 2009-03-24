@@ -70,14 +70,12 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public PropertyDescriptorCollection GetSerializableProperties(object obj)
 		{
-			System.Console.WriteLine("GetSerializableProperties");
 			List<PropertyDescriptor> properties = new List<PropertyDescriptor>();
 			Attribute[] filter = new Attribute[] { DesignOnlyAttribute.No };
 			foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(obj, filter).Sort()) {
 				if (property.SerializationVisibility == DesignerSerializationVisibility.Visible) {
 					if (property.ShouldSerializeValue(obj)) {
 						properties.Add(property);
-						System.Console.WriteLine("Property.Name: " + property.Name);
 					}
 				} 
 			}
@@ -98,39 +96,63 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Generates python code for the form's InitializeComponent method.
 		/// </summary>
-		/// <remarks>
-		/// Note that when the form is loaded in the designer the Name property appears twice:
-		/// 
-		/// Property.ComponentType: System.Windows.Forms.Design.DesignerExtenders+NameExtenderProvider
-		/// Property.SerializationVisibility: Hidden
-		/// Property.IsBrowsable: True
-		/// 
-		/// Property.ComponentType: System.Windows.Forms.Design.ControlDesigner
-		/// Property.SerializationVisibility: Visible
-		/// Property.IsBrowsable: False
-		/// </remarks>
 		void AppendForm(Form form)
 		{
-			AppendComment(form.Name);
+			foreach (Control control in form.Controls) {
+				AppendControl(control);
+			}
+			
+			AppendControl(form, false);
+			
+			foreach (Control control in form.Controls) {
+				AppendIndentedLine("self.Controls.Add(self." + control.Name + ")");
+			}
+		}
 
-			foreach (PropertyDescriptor property in GetSerializableProperties(form)) {
-				AppendProperty(form, property);
+		void AppendControl(Control control)
+		{
+			AppendControl(control, true);
+		}
+		
+		/// <summary>
+		/// Generates python code for the control.
+		/// </summary>
+		void AppendControl(Control control, bool addControlNameToProperty)
+		{
+			AppendComment(control.Name);
+
+			string propertyOwnerName = String.Empty;
+			if (addControlNameToProperty) {
+				propertyOwnerName = control.Name;
+			}
+			
+			foreach (PropertyDescriptor property in GetSerializableProperties(control)) {
+				AppendProperty(propertyOwnerName, control, property);
 			}
 		}
 		
 		/// <summary>
 		/// Appends a property to the InitializeComponents method.
 		/// </summary>
-		void AppendProperty(object obj, PropertyDescriptor propertyDescriptor)
+		void AppendProperty(string propertyOwnerName, object obj, PropertyDescriptor propertyDescriptor)
 		{			
 			object propertyValue = propertyDescriptor.GetValue(obj);
 			if (propertyValue == null) {
 				return;
 			}
 			
-			AppendIndentedLine("self." + propertyDescriptor.Name + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
+			string propertyName = GetPropertyName(propertyOwnerName, propertyDescriptor.Name);
+			AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
 		}
-				
+		
+		static string GetPropertyName(string propertyOwnerName, string propertyName)
+		{
+			if (String.IsNullOrEmpty(propertyOwnerName)) {
+				return "self." + propertyName;
+			}
+			return "self." + propertyOwnerName + "." + propertyName;
+		}
+		
 		/// <summary>
 		/// Appends the comment lines before the control has its properties set.
 		/// </summary>

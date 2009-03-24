@@ -162,6 +162,7 @@
     <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateRightToLeftFormTestFixture.cs" />
     <Compile Include="Designer\GenerateSimpleFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateTextBoxFormTestFixture.cs" />
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertNewEventHandlerTestFixture.cs" />
