@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Profiler.Controller.Data;
 using System;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
-using ICSharpCode.Profiler.Controller;
+
+using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.Profiler.AddIn.Views
 {
@@ -22,7 +23,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 	public class WpfViewer : AbstractViewContent
 	{
 		ProfilingDataProvider provider;
-		ElementHost host;
+		SharpDevelopElementHost host;
 		ProfilerView dataView;
 		
 		/// <summary>
@@ -42,8 +43,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			this.provider = provider;
 			this.TabPageText = title;
 			this.TitleName = this.TabPageText;
-			this.host = new ElementHost();
-			this.host.Child = dataView = new ProfilerView(this.provider);
+			this.host = new SharpDevelopElementHost(dataView = new ProfilerView(this.provider));
 			this.host.Dock = DockStyle.Fill;
 		}
 
@@ -66,6 +66,5 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			this.provider.Close();
 			base.Dispose();
 		}
-	}
-	
+	}	
 }

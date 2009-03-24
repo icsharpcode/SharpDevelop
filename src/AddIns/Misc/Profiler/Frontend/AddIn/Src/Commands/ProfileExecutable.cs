@@ -5,16 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Profiler.Controller.Data;
 using System;
 using System.IO;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.Profiler.AddIn.Views;
+using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.BuildEngine;
+using System.Windows.Interop;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {
@@ -32,7 +34,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
         public override void Run()
         {
             ProfileExecutableForm form = new ProfileExecutableForm();
-
+            new WindowInteropHelper(form).Owner = WorkbenchSingleton.MainForm.Handle;
             form.ShowDialog();
         }
     }

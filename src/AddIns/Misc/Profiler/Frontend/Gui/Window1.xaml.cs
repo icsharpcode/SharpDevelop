@@ -147,6 +147,23 @@ namespace ICSharpCode.Profiler.Frontend
 			this.btnStop.IsEnabled = false;
 			this.timeLine.IsEnabled = false;
 			this.treeView.Reporter = new ErrorReporter(HandleError);
+			
+			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
+		}
+		
+		void ExecuteSelectAll(object sender, ExecutedRoutedEventArgs e)
+		{
+			if (this.timeLine.IsEnabled) {
+				this.timeLine.SelectedStartIndex = 0;
+				this.timeLine.SelectedEndIndex = this.timeLine.ValuesList.Count;
+			}
+			e.Handled = true;
+		}
+		
+		void CanExecuteSelectAll(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = this.timeLine.IsEnabled && this.timeLine.ValuesList.Count > 0;
+			e.Handled = true;
 		}
 		
 		void HandleError(CompilerError error)

@@ -76,7 +76,6 @@
     <Compile Include="PixelSnapper.cs" />
     <Compile Include="PresentationResourceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SharpDevelopElementHost.cs" />
     <Compile Include="SplitButton.cs" />
     <Compile Include="ToolBar\ToolBarButton.cs" />
     <Compile Include="ToolBar\ToolBarComboBox.cs" />
@@ -84,11 +83,6 @@
     <Compile Include="ToolBar\ToolBarSplitButton.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Base\Project\ICSharpCode.SharpDevelop.csproj">
-      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
-      <Name>ICSharpCode.SharpDevelop</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>

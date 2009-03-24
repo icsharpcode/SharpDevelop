@@ -246,11 +246,6 @@ namespace ICSharpCode.Profiler.Controller
 			file = MemoryMappedFile.CreateSharedMemory(SharedMemoryId, profilerOptions.SharedMemorySize);
 
 			fullView = file.MapView(0, profilerOptions.SharedMemorySize);
-
-			if (is64Bit)
-				InitializeHeader64();
-			else
-				InitializeHeader32();
 			
 			this.dataWriter.ProcessorFrequency = GetProcessorFrequency();
 			
@@ -274,7 +269,7 @@ namespace ICSharpCode.Profiler.Controller
 			memHeader32->HeapOffset = Align(memHeader32->ThreadDataOffset + threadDataSize);
 			memHeader32->HeapLength = profilerOptions.SharedMemorySize - memHeader32->HeapOffset;
 			memHeader32->ProcessorFrequency = GetProcessorFrequency();
-			memHeader32->DoNotProfileDotnetInternals = !profilerOptions.ProfileDotNetInternals;
+			memHeader32->DoNotProfileDotnetInternals = profilerOptions.DoNotProfileDotNetInternals;
 			memHeader32->CombineRecursiveFunction = profilerOptions.CombineRecursiveFunction;
 			
 			if ((Int32)(fullView.Pointer + memHeader32->HeapOffset) % 8 != 0) {
@@ -459,6 +454,11 @@ namespace ICSharpCode.Profiler.Controller
 		public Process Start()
 		{
 			VerifyAccess();
+			
+			if (is64Bit)
+				InitializeHeader64();
+			else
+				InitializeHeader32();
 			
 			isRunning = true;
 			

@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="Src\Views\ProfilerDisplayBinding.cs">
     </Compile>
+    <Compile Include="Src\Views\SharpDevelopElementHost.cs" />
     <Compile Include="Src\Views\WpfViewer.cs" />
   </ItemGroup>
   <ItemGroup>

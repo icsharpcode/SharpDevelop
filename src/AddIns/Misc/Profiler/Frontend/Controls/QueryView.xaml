@@ -71,7 +71,7 @@
 		<local:TreeListView x:Name="treeView" Grid.Row="2" SelectionMode="Extended">
 			<ListView.View>
 				<local:CustomGridView>
-					<GridViewColumn Header="Name" Width="210">
+					<GridViewColumn Header="Name" Width="210" x:Name="nameColumn">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<local:CustomGridViewScrollableCell CurrentScrollPosition="{Binding ElementName=treeView, Path=View.CurrentScrollPosition}">
@@ -90,7 +90,7 @@
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="Time spent" Width="90">
+					<GridViewColumn Header="Time spent" Width="110">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock HorizontalAlignment="Right" Text="{Binding TimeSpent}" />

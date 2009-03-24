@@ -74,6 +74,7 @@ namespace ICSharpCode.Profiler.Controls
 			if (!string.IsNullOrEmpty(txtSearch.Text) && list.Count > 0) {
 				CallTreeNodeViewModel result;
 				// TODO: should we perform search in background?
+				
 				if (list.First().Search(txtSearch.Text, true, out result)) {
 					result.IsSelected = true;
 					if (oldSearchResult != null)
@@ -89,10 +90,18 @@ namespace ICSharpCode.Profiler.Controls
 			this.IsVisibleChanged += delegate { this.ExecuteQuery(); };
 			this.DataContext = this;
 			this.task = new SingleTask(this.Dispatcher);
+			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
+				if (e.PreviousSize.Width > 0 && e.NewSize.Width > 0) {
+					nameColumn.Width += (e.NewSize.Width - e.PreviousSize.Width);
+				}
+			};
 		}
 		
 		public void SetRange(int start, int end)
 		{
+			if (this.Provider == null)
+				return;
+			
 			this.RangeStart = start;
 			this.RangeEnd = end;
 			this.searchRoot = new CallTreeNodeViewModel(this.Provider.GetRoot(start, end), null);

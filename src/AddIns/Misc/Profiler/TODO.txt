@@ -10,3 +10,10 @@ NEW FEATURES
 - Implement a memory profiler
 
 API CLEANUP
+(while creating SQLite database from TempFileDatabase)
+[18:49:37] Daniel Grunwald says: ich habe gerade profiled, bin fertig, und jetzt passiert nichts sichtbares mehr...
+[18:50:10] Daniel Grunwald says: da fehlt ein Fortschrittsbalken, oder wenigstens eine Zeile im Output
+[19:51:51] Daniel Grunwald says: wenn ich einen Syntaxfehler in der Query habe, wird keine Fehlermeldung angezeigt
+[00:34:02] Daniel Grunwald says: wir verfälschen sowieso
+[00:34:27] Daniel Grunwald says: Funktionsaufrufe im Vergleich zu Schleifen -> mit Profiler werden Funktionsaufrufe stark benachteiligt
+[00:34:54] Daniel Grunwald says: man könnte versuchen, den eigenen Overhead zu bestimmen und rauszurechnen

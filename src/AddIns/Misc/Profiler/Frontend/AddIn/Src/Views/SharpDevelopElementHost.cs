@@ -17,7 +17,6 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// Hosts a WPF element inside a Windows.Forms application.
 	/// </summary>
-	// TODO : maybe move this class to ICSharpCode.SharpDevelop as it requires it as a reference
 	public class SharpDevelopElementHost : ElementHost, IUndoHandler, IClipboardHandler
 	{		
 		public SharpDevelopElementHost(UIElement child)

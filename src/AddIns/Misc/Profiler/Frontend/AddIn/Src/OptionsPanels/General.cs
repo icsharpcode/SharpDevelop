@@ -36,8 +36,10 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 		
 		public override void LoadPanelContents()
 		{
-			panel.Load(properties.Get("EnableDC", true),
-			           properties.Get("SharedMemorySize", ProfilerOptions.SHARED_MEMORY_SIZE) / 1024 / 1024);
+			panel.SetOptionValue<bool>("EnableDC", !properties.Get("EnableDC", true));
+			panel.SetOptionValue<double>("SharedMemorySize", properties.Get("SharedMemorySize", ProfilerOptions.SHARED_MEMORY_SIZE) / 1024 / 1024);
+			panel.SetOptionValue<bool>("DoNotProfileNetInternals", properties.Get("DoNotProfileNetInternals", false));
+			panel.SetOptionValue<bool>("CombineRecursiveFunction", properties.Get("CombineRecursiveFunction", false));
 			base.LoadPanelContents();
 		}
 		
@@ -45,7 +47,8 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 		{
 			properties.Set("EnableDC", !panel.GetOptionValue<bool>("EnableDC"));
 			properties.Set("SharedMemorySize", (int)panel.GetOptionValue<double>("SharedMemorySize") * 1024 * 1024);
-			
+			properties.Set("DoNotProfileNetInternals", panel.GetOptionValue<bool>("DoNotProfileNetInternals"));
+			properties.Set("CombineRecursiveFunction", panel.GetOptionValue<bool>("CombineRecursiveFunction"));
 			return base.StorePanelContents();
 		}
 			
@@ -53,7 +56,7 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 		{
 			return new ProfilerOptions(properties.Get("EnableDC", true),
 			                           properties.Get("SharedMemorySize", ProfilerOptions.SHARED_MEMORY_SIZE),
-			                           !properties.Get("PorfileDotNetInternals", true),
+			                           properties.Get("DoNotProfileNetInternals", false),
 			                           properties.Get("CombineRecursiveFunction", false)
 			                          );
 		}
