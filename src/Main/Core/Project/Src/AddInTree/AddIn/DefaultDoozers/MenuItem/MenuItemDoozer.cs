@@ -78,6 +78,8 @@ namespace ICSharpCode.Core
 		
 		public MenuItemDescriptor(object caller, Codon codon, IList subItems)
 		{
+			if (codon == null)
+				throw new ArgumentNullException("codon");
 			this.Caller = caller;
 			this.Codon = codon;
 			this.SubItems = subItems;

@@ -45,20 +45,15 @@ namespace ICSharpCode.SharpDevelop
 	
 	public class DefaultCompletionItemList : ICompletionItemList
 	{
-		IList<ICompletionItem> items;
+		List<ICompletionItem> items = new List<ICompletionItem>();
 		
-		public DefaultCompletionItemList()
-			: this(new List<ICompletionItem>())
-		{
-		}
-		
-		public DefaultCompletionItemList(IList<ICompletionItem> items)
-		{
-			this.items = items;
-		}
-		
-		public IList<ICompletionItem> Items {
+		public List<ICompletionItem> Items {
 			get { return items; }
+		}
+		
+		public void SortItems()
+		{
+			items.Sort((a,b) => string.Compare(a.Text, b.Text, StringComparison.OrdinalIgnoreCase));
 		}
 		
 		public ICompletionItem SuggestedItem { get; set; }

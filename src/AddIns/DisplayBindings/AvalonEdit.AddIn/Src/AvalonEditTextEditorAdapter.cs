@@ -118,11 +118,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return new SharpDevelopCompletionWindow(textEditor.TextArea, data);
 		}
 		
-		public string GetWordBeforeCaret()
-		{
-			throw new NotImplementedException();
-		}
-		
 		public object GetService(Type serviceType)
 		{
 			return textEditor.TextArea.GetService(serviceType);
@@ -143,6 +138,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void Select(int selectionStart, int selectionLength)
 		{
 			textEditor.Select(selectionStart, selectionLength);
+		}
+		
+		public void JumpTo(int line, int column)
+		{
+			textEditor.TextArea.Selection = Selection.Empty;
+			textEditor.TextArea.Caret.Position = new TextViewPosition(line, column, -1);
+			textEditor.TextArea.Caret.BringCaretToView();
 		}
 	}
 }

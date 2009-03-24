@@ -24,6 +24,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			get;
 		}
 		
+		public virtual ICSharpCode.SharpDevelop.ITextEditor TextEditor {
+			get {
+				return new TextEditorAdapter(this.TextEditorControl);
+			}
+		}
+		
 		public override object Content {
 			get { return this.TextEditorControl; }
 		}

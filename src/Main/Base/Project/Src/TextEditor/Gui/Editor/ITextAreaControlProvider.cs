@@ -10,7 +10,7 @@ using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
-	public interface ITextEditorControlProvider : IFileDocumentProvider
+	public interface ITextEditorControlProvider : ITextEditorProvider
 	{
 		TextEditorControl TextEditorControl {
 			get;

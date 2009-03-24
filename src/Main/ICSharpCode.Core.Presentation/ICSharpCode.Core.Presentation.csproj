@@ -78,6 +78,7 @@
     <Compile Include="ToolBar\ToolBarComboBox.cs" />
     <Compile Include="ToolBar\ToolBarService.cs" />
     <Compile Include="ToolBar\ToolBarSplitButton.cs" />
+    <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj">

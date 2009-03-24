@@ -15,21 +15,37 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// Allows creating a <see cref="ICompletionDataList"/> from code-completion information.
+	/// Base class for completion item providers.
 	/// </summary>
-	public class CodeCompletionItemProvider
+	/// <remarks>A completion item provider is not necessary to use code completion - it's
+	/// just a helper class.</remarks>
+	public abstract class AbstractCompletionItemProvider
 	{
 		/// <summary>
 		/// Shows code completion for the specified editor.
 		/// </summary>
 		public virtual void ShowCompletion(ITextEditor editor)
 		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
 			ICompletionItemList itemList = GenerateCompletionList(editor);
 			if (itemList != null)
 				editor.ShowCompletionWindow(itemList);
 		}
 		
-		public virtual ICompletionItemList GenerateCompletionList(ITextEditor editor)
+		/// <summary>
+		/// Generates the completion list.
+		/// </summary>
+		public abstract ICompletionItemList GenerateCompletionList(ITextEditor editor);
+	}
+	
+	/// <summary>
+	/// Allows creating a <see cref="ICompletionDataList"/> from code-completion information.
+	/// </summary>
+	public class CodeCompletionItemProvider : AbstractCompletionItemProvider
+	{
+		/// <inheritdoc/>
+		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
 			if (editor == null)
 				throw new ArgumentNullException("textEditor");
@@ -91,8 +107,7 @@ namespace ICSharpCode.SharpDevelop
 			if (arr == null)
 				return null;
 			
-			List<ICompletionItem> resultItems = new List<ICompletionItem>();
-			DefaultCompletionItemList result = new DefaultCompletionItemList(resultItems);
+			DefaultCompletionItemList result = new DefaultCompletionItemList();
 			Dictionary<string, CodeCompletionItem> methodItems = new Dictionary<string, CodeCompletionItem>();
 			foreach (object o in arr) {
 				if (context != null && !context.ShowEntry(o))
@@ -109,7 +124,7 @@ namespace ICSharpCode.SharpDevelop
 				
 				ICompletionItem item = CreateCompletionItem(o, context);
 				if (item != null) {
-					resultItems.Add(item);
+					result.Items.Add(item);
 					CodeCompletionItem codeItem = item as CodeCompletionItem;
 					if (method != null && codeItem != null) {
 						methodItems[method.Name] = codeItem;
@@ -118,13 +133,13 @@ namespace ICSharpCode.SharpDevelop
 						result.SuggestedItem = item;
 				}
 			}
-			resultItems.Sort((a,b) => string.Compare(a.Text, b.Text, StringComparison.OrdinalIgnoreCase));
+			result.SortItems();
 			
 			if (context.SuggestedItem != null) {
 				if (result.SuggestedItem == null) {
 					result.SuggestedItem = CreateCompletionItem(context.SuggestedItem, context);
 					if (result.SuggestedItem != null) {
-						resultItems.Insert(0, result.SuggestedItem);
+						result.Items.Insert(0, result.SuggestedItem);
 					}
 				}
 			}
@@ -148,6 +163,12 @@ namespace ICSharpCode.SharpDevelop
 	
 	public class CodeCompletionItem : ICompletionItem
 	{
+		// TODO: what to do with these properties?
+		[Obsolete]
+		public int ImageIndex { get; set; }
+		[Obsolete]
+		public double Priority { get; set; }
+		
 		readonly IEntity entity;
 		
 		public CodeCompletionItem(IEntity entity)
@@ -164,7 +185,11 @@ namespace ICSharpCode.SharpDevelop
 			this.Overloads = 1;
 		}
 		
-		public string Text { get; private set; }
+		public IEntity Entity {
+			get { return entity; }
+		}
+		
+		public string Text { get; set; }
 		
 		public int Overloads { get; set; }
 		

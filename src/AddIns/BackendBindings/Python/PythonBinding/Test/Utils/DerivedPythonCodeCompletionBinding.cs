@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -22,8 +23,8 @@ namespace PythonBinding.Tests.Utils
 		bool ctrlSpaceCompletionDataProviderCreated;
 		bool codeCompletionWindowDisplayed;
 		ICSharpCode.SharpDevelop.ITextEditor textAreaControlUsedToShowCompletionWindow;
-		ICompletionDataProvider completionProviderUsedWhenDisplayingCodeCompletionWindow;
-		CtrlSpaceCompletionDataProvider ctrlSpaceCompletionDataProvider;
+		AbstractCompletionItemProvider completionProviderUsedWhenDisplayingCodeCompletionWindow;
+		CtrlSpaceCompletionItemProvider ctrlSpaceCompletionDataProvider;
 		char completionCharacter = '\0';
 		ExpressionContext expressionContext;
 		
@@ -57,7 +58,7 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		public ICompletionDataProvider CompletionProviderUsedWhenDisplayingCodeCompletionWindow {
+		public AbstractCompletionItemProvider CompletionProviderUsedWhenDisplayingCodeCompletionWindow {
 			get {
 				return completionProviderUsedWhenDisplayingCodeCompletionWindow;
 			}
@@ -67,7 +68,7 @@ namespace PythonBinding.Tests.Utils
 		/// Gets the CtrlSpaceCompletionDataProvider created via the
 		/// CreateCtrlSpaceCompletionDataProvider method.
 		/// </summary>
-		public CtrlSpaceCompletionDataProvider CtrlSpaceCompletionDataProvider {
+		public CtrlSpaceCompletionItemProvider CtrlSpaceCompletionDataProvider {
 			get {
 				return ctrlSpaceCompletionDataProvider;
 			}
@@ -97,7 +98,7 @@ namespace PythonBinding.Tests.Utils
 		/// Overrides the completion data provider creation to make sure
 		/// it is called at the correct time. 
 		/// </summary>
-		protected override CtrlSpaceCompletionDataProvider CreateCtrlSpaceCompletionDataProvider(ExpressionContext expressionContext)
+		protected override CtrlSpaceCompletionItemProvider CreateCtrlSpaceCompletionDataProvider(ExpressionContext expressionContext)
 		{
 			ctrlSpaceCompletionDataProviderCreated = true;
 			this.expressionContext = expressionContext;
@@ -110,7 +111,7 @@ namespace PythonBinding.Tests.Utils
 		/// not displayed but the fact that this method is called is
 		/// recorded. 
 		/// </summary>
-		protected override void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.ITextEditor textEditor, ICompletionDataProvider completionDataProvider, char ch)
+		protected override void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.ITextEditor textEditor, AbstractCompletionItemProvider completionDataProvider, char ch)
 		{
 			textAreaControlUsedToShowCompletionWindow = textEditor;
 			codeCompletionWindowDisplayed = true;

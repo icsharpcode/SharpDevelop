@@ -154,6 +154,11 @@ namespace ICSharpCode.SharpDevelop
 			sdtac.ActiveTextAreaControl.SelectionManager.SetSelection(
 				doc.OffsetToPosition(selectionStart), doc.OffsetToPosition(selectionStart + selectionLength));
 		}
+		
+		public void JumpTo(int line, int column)
+		{
+			sdtac.ActiveTextAreaControl.JumpTo(line - 1, column - 1);
+		}
 	}
 	
 	sealed class CompletionItemListAdapter : ICompletionDataProvider

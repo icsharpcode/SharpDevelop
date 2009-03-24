@@ -65,19 +65,19 @@ namespace VBNetBinding
 					return true;
 				case "as":
 					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
+					new CtrlSpaceCompletionItemProvider(ExpressionContext.Type).ShowCompletion(editor);
 					return true;
 				case "new":
 					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.ObjectCreation), ' ');
+					new CtrlSpaceCompletionItemProvider(ExpressionContext.ObjectCreation).ShowCompletion(editor);
 					return true;
 				case "inherits":
 					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
+					new CtrlSpaceCompletionItemProvider(ExpressionContext.Type).ShowCompletion(editor);
 					return true;
 				case "implements":
 					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Interface), ' ');
+					new CtrlSpaceCompletionItemProvider(ExpressionContext.Interface).ShowCompletion(editor);
 					return true;
 				case "overrides":
 					if (IsInComment(editor)) return false;

@@ -10,21 +10,21 @@ using System.Collections;
 using System.Diagnostics;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
-	public class CtrlSpaceCompletionDataProvider : CodeCompletionDataProvider
+	public class CtrlSpaceCompletionItemProvider : CodeCompletionItemProvider
 	{
-		public CtrlSpaceCompletionDataProvider()
+		public CtrlSpaceCompletionItemProvider()
 		{
 		}
 		
-		public CtrlSpaceCompletionDataProvider(ExpressionContext overrideContext)
+		public CtrlSpaceCompletionItemProvider(ExpressionContext overrideContext)
 		{
 			this.overrideContext = overrideContext;
 		}
+		
+		ExpressionContext overrideContext;
 		
 		bool allowCompleteExistingExpression;
 		
@@ -43,13 +43,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		public bool ShowTemplates { get; set; }
 		
-		void AddTemplates(TextArea textArea, char charTyped)
+		// TODO: AVALONEDIT implement templates
+		/*
+		void AddTemplates(ITextEditor editor, char charTyped)
 		{
 			if (!ShowTemplates)
 				return;
 			ICompletionData suggestedData = DefaultIndex >= 0 ? completionData[DefaultIndex] : null;
-			ICompletionData[] templateCompletionData = new TemplateCompletionDataProvider().GenerateCompletionData(fileName, textArea, charTyped);
-			if (templateCompletionData == null || templateCompletionData.Length == 0)
+			var templateCompletion = new TemplateCompletionItemProvider().GenerateCompletionList(editor);
+			if (templateCompletion == null || templateCompletionData.Length == 0)
 				return;
 			for (int i = 0; i < completionData.Count; i++) {
 				if (completionData[i].ImageIndex == ClassBrowserIconService.KeywordIndex) {
@@ -73,56 +75,33 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				DefaultIndex = completionData.IndexOf(suggestedData);
 			}
 		}
+		 */
 		
-		protected override void GenerateCompletionData(TextArea textArea, char charTyped)
+		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
-			#if DEBUG
-			if (DebugMode) {
-				Debugger.Break();
-			}
-			#endif
-			
 			if (!allowCompleteExistingExpression) {
-				preSelection = "";
-				if (charTyped != '\0') {
-					preSelection = null;
-				}
 				ExpressionContext context = overrideContext ?? ExpressionContext.Default;
-				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, context), context);
-				AddTemplates(textArea, charTyped);
-				return;
+				var ctrlSpace = ParserService.CtrlSpace(editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text, context);
+				return GenerateCompletionListForCompletionData(ctrlSpace, context);
 			}
 			
-			ExpressionResult expressionResult = GetExpression(textArea);
+			ExpressionResult expressionResult = GetExpression(editor);
 			LoggingService.Debug("Ctrl-Space got expression " + expressionResult.ToString());
 			string expression = expressionResult.Expression;
-			preSelection = null;
 			if (expression == null || expression.Length == 0) {
-				preSelection = "";
-				if (charTyped != '\0') {
-					preSelection = null;
-				}
-				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, expressionResult.Context), expressionResult.Context);
-				AddTemplates(textArea, charTyped);
-				return;
+				var ctrlSpace = ParserService.CtrlSpace(editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text, expressionResult.Context);
+				return GenerateCompletionListForCompletionData(ctrlSpace, expressionResult.Context);
 			}
 			
 			int idx = expression.LastIndexOf('.');
 			if (idx > 0) {
-				preSelection = expression.Substring(idx + 1);
+				//string preSelection = expression.Substring(idx + 1);
 				expressionResult.Expression = expression.Substring(0, idx);
-				if (charTyped != '\0') {
-					preSelection = null;
-				}
-				GenerateCompletionData(textArea, expressionResult);
+				return GenerateCompletionListForExpression(editor, expressionResult);
 			} else {
-				preSelection = expression;
-				if (charTyped != '\0') {
-					preSelection = null;
-				}
-				ArrayList results = ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, expressionResult.Context);
-				AddResolveResults(results, expressionResult.Context);
-				AddTemplates(textArea, charTyped);
+				//preSelection = expression;
+				ArrayList results = ParserService.CtrlSpace(editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text, expressionResult.Context);
+				return GenerateCompletionListForCompletionData(results, expressionResult.Context);
 			}
 		}
 	}

@@ -9,17 +9,13 @@ using ICSharpCode.TextEditor;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using ICSharpCode.SharpDevelop.Dom.VBNet;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 
@@ -164,44 +160,39 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IClass c = expected.GetUnderlyingClass();
 			if (c == null) return false;
 			if (c.ClassType == ClassType.Enum) {
-				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider();
-				ContextCompletionDataProvider cache = new ContextCompletionDataProvider(cdp);
-				cache.activationKey = charTyped;
-				cache.GenerateCompletionData(editor.FileName, (TextArea)editor.GetService(typeof(TextArea)), charTyped);
-				ICompletionData[] completionData = cache.CompletionData;
-				Array.Sort(completionData, DefaultCompletionData.Compare);
-				for (int i = 0; i < completionData.Length; i++) {
-					CodeCompletionData ccd = completionData[i] as CodeCompletionData;
-					if (ccd != null && ccd.Class != null) {
-						if (ccd.Class.FullyQualifiedName == expected.FullyQualifiedName) {
-							cache.DefaultIndex = i;
-							break;
-						}
+				CtrlSpaceCompletionItemProvider cdp = new CtrlSpaceCompletionItemProvider();
+				var ctrlSpaceList = cdp.GenerateCompletionList(editor);
+				if (ctrlSpaceList == null) return false;
+				ContextCompletionItemList contextList = new ContextCompletionItemList();
+				contextList.Items.AddRange(ctrlSpaceList.Items);
+				contextList.activationKey = charTyped;
+				foreach (CodeCompletionItem item in contextList.Items.OfType<CodeCompletionItem>()) {
+					IClass itemClass = item.Entity as IClass;
+					if (c != null && c.FullyQualifiedName == itemClass.FullyQualifiedName && c.TypeParameters.Count == itemClass.TypeParameters.Count) {
+						contextList.SuggestedItem = item;
+						break;
 					}
 				}
-				if (cache.DefaultIndex >= 0) {
-					if (charTyped != ' ') cdp.InsertSpace = true;
-					editor.ShowCompletionWindow(cache, charTyped);
+				if (contextList.SuggestedItem != null) {
+					if (charTyped != ' ') contextList.InsertSpace = true;
+					editor.ShowCompletionWindow(contextList);
 					return true;
 				}
 			}
 			return false;
 		}
 		
-		private class ContextCompletionDataProvider : CachedCompletionDataProvider
+		private class ContextCompletionItemList : DefaultCompletionItemList
 		{
 			internal char activationKey;
+			readonly ICompletionItemList baseList;
 			
-			internal ContextCompletionDataProvider(ICompletionDataProvider baseProvider) : base(baseProvider)
-			{
-			}
-			
-			public override CompletionDataProviderKeyResult ProcessKey(char key)
+			public override CompletionItemListKeyResult ProcessInput(char key)
 			{
 				if (key == '=' && activationKey == '=')
-					return CompletionDataProviderKeyResult.BeforeStartKey;
+					return CompletionItemListKeyResult.BeforeStartKey;
 				activationKey = '\0';
-				return base.ProcessKey(key);
+				return base.ProcessInput(key);
 			}
 		}
 		

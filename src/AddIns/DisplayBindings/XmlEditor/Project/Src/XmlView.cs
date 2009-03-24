@@ -700,6 +700,12 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		public ITextEditor TextEditor {
+			get {
+				return new TextEditorAdapter(xmlEditor);
+			}
+		}
+		
 		public ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument GetDocumentForFile(OpenedFile file)
 		{
 			if (file == this.PrimaryFile) {

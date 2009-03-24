@@ -6,48 +6,39 @@
 // </file>
 
 using System;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	/// <summary>
 	/// Provides code completion for attribute names.
 	/// </summary>
-	public class AttributesDataProvider : CtrlSpaceCompletionDataProvider
+	public class AttributesItemProvider : CtrlSpaceCompletionItemProvider
 	{
-		public AttributesDataProvider(IProjectContent pc)
+		public AttributesItemProvider(IProjectContent pc)
 			: this(ExpressionContext.Attribute)
 		{
 		}
 		
-		public AttributesDataProvider(ExpressionContext context) : base(context)
+		public AttributesItemProvider(ExpressionContext context) : base(context)
 		{
+			this.RemoveAttributeSuffix = true;
 		}
 		
-		bool removeAttributeSuffix = true;
+		public bool RemoveAttributeSuffix { get; set; }
 		
-		public bool RemoveAttributeSuffix {
-			get {
-				return removeAttributeSuffix;
-			}
-			set {
-				removeAttributeSuffix = value;
-			}
-		}
-		
-		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
-			ICompletionData[] data = base.GenerateCompletionData(fileName, textArea, charTyped);
-			if (removeAttributeSuffix && data != null) {
-				foreach (ICompletionData d in data) {
+			ICompletionItemList list = base.GenerateCompletionList(editor);
+			if (this.RemoveAttributeSuffix && list != null) {
+				foreach (CodeCompletionItem d in list.Items.OfType<CodeCompletionItem>()) {
 					if (d.Text.EndsWith("Attribute")) {
 						d.Text = d.Text.Substring(0, d.Text.Length - 9);
 					}
 				}
 			}
-			return data;
+			return list;
 		}
 	}
 }

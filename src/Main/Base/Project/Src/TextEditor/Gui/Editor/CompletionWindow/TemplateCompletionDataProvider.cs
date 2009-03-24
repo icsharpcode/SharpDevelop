@@ -12,60 +12,50 @@ using ICSharpCode.Core;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
-	public class TemplateCompletionDataProvider : AbstractCompletionDataProvider
+	public class TemplateCompletionItemProvider : AbstractCompletionItemProvider
 	{
-		public override ImageList ImageList {
-			get {
-				return ClassBrowserIconService.ImageList;
-			}
-		}
-		
 		public bool AutomaticInsert;
 		
-		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		/// <inheritdoc/>
+		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
-			preSelection = "";
-			
-			CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(fileName);
+			CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(editor.FileName);
 			if (templateGroup == null) {
 				return null;
 			}
+			DefaultCompletionItemList result = new DefaultCompletionItemList();
 			bool automaticInsert = this.AutomaticInsert || DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.AutoInsertTemplates;
-			List<ICompletionData> completionData = new List<ICompletionData>();
 			foreach (CodeTemplate template in templateGroup.Templates) {
-				completionData.Add(new TemplateCompletionData(template, automaticInsert));
+				result.Items.Add(new TemplateCompletionItem(template));
 			}
+			result.SortItems();
 			
-			return completionData.ToArray();
+			return result;
 		}
 		
-		class TemplateCompletionData : DefaultCompletionData
+		sealed class TemplateCompletionItem : ICompletionItem
 		{
-			CodeTemplate template;
-			bool automaticInsert;
+			public readonly CodeTemplate template;
 			
-			public override bool InsertAction(TextArea textArea, char ch)
+			public TemplateCompletionItem(CodeTemplate template)
 			{
-				if (ch == '\t' || automaticInsert) {
-					((SharpDevelopTextAreaControl)textArea.MotherTextEditorControl).InsertTemplate(template);
-					return false;
-				} else {
-					return base.InsertAction(textArea, ch);
+				this.template = template;
+			}
+			
+			public string Text {
+				get {
+					return template.Shortcut;
 				}
 			}
 			
-			public TemplateCompletionData(CodeTemplate template, bool automaticInsert)
-				: base(template.Shortcut,
-				       template.Description + StringParser.Parse("\n${res:Dialog.Options.CodeTemplate.PressTabToInsertTemplate}\n\n") + template.Text,
-				       ClassBrowserIconService.CodeTemplateIndex)
-			{
-				this.template = template;
-				this.automaticInsert = automaticInsert;
+			public string Description {
+				get {
+					return template.Description + StringParser.Parse("\n${res:Dialog.Options.CodeTemplate.PressTabToInsertTemplate}\n\n")
+						+ template.Text;
+				}
 			}
 		}
 	}

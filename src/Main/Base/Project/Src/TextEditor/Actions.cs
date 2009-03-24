@@ -21,7 +21,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 		{
 			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
 			services.AutoClearSelection = false;
-			sdtac.ShowCompletionWindow(new TemplateCompletionDataProvider() { AutomaticInsert = true }, '\0');
+			
+			new TemplateCompletionItemProvider().ShowCompletion(sdtac.Adapter);
 		}
 	}
 	
@@ -43,31 +44,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 				base.Execute(textArea);
 		}
 	}
-	
-	#if DEBUG
-	internal class DebugCtrlSpaceCodeCompletionAction : AbstractEditAction
-	{
-		public override void Execute(TextArea textArea)
-		{
-			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)textArea.MotherTextEditorControl;
-			CtrlSpaceCompletionDataProvider provider = new CtrlSpaceCompletionDataProvider();
-			provider.AllowCompleteExistingExpression = true;
-			provider.DebugMode = true;
-			sdtac.ShowCompletionWindow(provider, '\0');
-		}
-	}
-	
-	internal class DebugDotCompletionAction : AbstractEditAction
-	{
-		public override void Execute(TextArea textArea)
-		{
-			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)textArea.MotherTextEditorControl;
-			CodeCompletionDataProvider ccdp = new CodeCompletionDataProvider();
-			ccdp.DebugMode = true;
-			sdtac.ShowCompletionWindow(ccdp, '.');
-		}
-	}
-	#endif
 	
 	public class GoToDefinition : AbstractEditAction
 	{

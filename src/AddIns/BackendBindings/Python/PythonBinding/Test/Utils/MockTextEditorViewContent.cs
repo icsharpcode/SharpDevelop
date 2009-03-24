@@ -30,6 +30,10 @@ namespace PythonBinding.Tests.Utils
 			get { return textEditor; }
 		}
 		
+		public ITextEditor TextEditor {
+			get { throw new NotImplementedException(); }
+		}
+		
 		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			throw new NotImplementedException();

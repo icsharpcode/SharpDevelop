@@ -29,9 +29,11 @@ namespace WixBinding.Tests.Utils
 		#region ITextEditorControlProvider
 
 		public TextEditorControl TextEditorControl {
-			get {
-				return null;
-			}
+			get { throw new NotImplementedException(); }
+		}
+		
+		public ITextEditor TextEditor {
+			get { throw new NotImplementedException(); }
 		}
 		
 		public IDocument GetDocumentForFile(OpenedFile file)

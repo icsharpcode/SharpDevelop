@@ -31,6 +31,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		readonly TextEditorAdapter adapter;
 		
+		public TextEditorAdapter Adapter {
+			get { return adapter; }
+		}
+		
 		QuickClassBrowserPanel quickClassBrowserPanel = null;
 		Control customQuickClassBrowserPanel = null;
 		ErrorDrawer errorDrawer;
@@ -218,10 +222,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void GenerateEditActions()
 		{
-			#if DEBUG
-			editactions[DebugBreakModifiers | Keys.OemPeriod] = new DebugDotCompletionAction();
-			editactions[DebugBreakModifiers | Keys.Space] = new DebugCtrlSpaceCodeCompletionAction();
-			#endif
 			try {
 				IEditAction[] actions = (IEditAction[])(AddInTree.GetTreeNode(editActionsPath).BuildChildItems(this)).ToArray(typeof(IEditAction));
 				

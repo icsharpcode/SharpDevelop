@@ -37,8 +37,8 @@ namespace ICSharpCode.Core.Presentation
 			ArrayList result = new ArrayList();
 			foreach (ToolbarItemDescriptor descriptor in descriptors) {
 				object item = CreateToolBarItemFromDescriptor(descriptor);
-				if (item is IMenuItemBuilder) {
-					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
+				IMenuItemBuilder submenuBuilder = item as IMenuItemBuilder;
+				if (submenuBuilder != null) {
 					result.AddRange(submenuBuilder.BuildItems(descriptor.Codon, descriptor.Caller));
 				} else {
 					result.Add(item);

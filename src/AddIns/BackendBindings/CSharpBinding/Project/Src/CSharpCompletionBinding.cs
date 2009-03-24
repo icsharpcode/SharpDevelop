@@ -41,7 +41,7 @@ namespace CSharpBinding
 			if (ch == '(') {
 				if (context != null) {
 					if (IsInComment(editor)) return CodeCompletionKeyPressResult.None;
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(context), ch);
+					new CtrlSpaceCompletionItemProvider(context).ShowCompletion(editor);
 					return CodeCompletionKeyPressResult.Completed;
 				} else if (EnableMethodInsight && CodeCompletionOptions.InsightEnabled) {
 					editor.ShowInsightWindow(new MethodInsightDataProvider());
@@ -126,10 +126,10 @@ namespace CSharpBinding
 					ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
 					LoggingService.Debug("CC: Beginning to type a word, result=" + result);
 					if (result.Context != ExpressionContext.IdentifierExpected) {
-						editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(result.Context) {
-						                            	ShowTemplates = true,
-						                            	AllowCompleteExistingExpression = afterUnderscore
-						                            }, '\0');
+						var ctrlSpaceProvider = new CtrlSpaceCompletionItemProvider(result.Context);
+						ctrlSpaceProvider.ShowTemplates = true;
+						ctrlSpaceProvider.AllowCompleteExistingExpression = afterUnderscore;
+						ctrlSpaceProvider.ShowCompletion(editor);
 						return CodeCompletionKeyPressResult.Completed;
 					}
 				}
@@ -187,7 +187,7 @@ namespace CSharpBinding
 					if (parseInfo != null) {
 						IClass innerMostClass = parseInfo.MostRecentCompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 						if (innerMostClass == null) {
-							editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Namespace), ' ');
+							new CtrlSpaceCompletionItemProvider(ExpressionContext.Namespace).ShowCompletion(editor);
 							return true;
 						}
 					}
@@ -195,7 +195,7 @@ namespace CSharpBinding
 				case "as":
 				case "is":
 					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
+					new CtrlSpaceCompletionItemProvider(ExpressionContext.Type).ShowCompletion(editor);
 					return true;
 				case "override":
 					if (IsInComment(editor)) return false;
@@ -237,7 +237,7 @@ namespace CSharpBinding
 					if (context != null)
 						expressionResult.Context = context;
 				}
-				editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(expressionResult.Context), ' ');
+				new CtrlSpaceCompletionItemProvider(expressionResult.Context).ShowCompletion(editor);
 				return true;
 			}
 			return false;

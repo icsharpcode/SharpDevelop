@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
@@ -32,7 +33,7 @@ namespace ICSharpCode.PythonBinding
 				switch (word.ToLowerInvariant()) {
 					case "import":
 					case "from":
-						CtrlSpaceCompletionDataProvider dataProvider = CreateCtrlSpaceCompletionDataProvider(ExpressionContext.Importable);
+						CtrlSpaceCompletionItemProvider dataProvider = CreateCtrlSpaceCompletionDataProvider(ExpressionContext.Importable);
 						ShowCodeCompletionWindow(editor, dataProvider, ' ');
 						return true;
 				}
@@ -41,19 +42,19 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Creates a CtrlSpaceCompletionDataProvider.
+		/// Creates a CtrlSpaceCompletionItemProvider.
 		/// </summary>
-		protected virtual CtrlSpaceCompletionDataProvider CreateCtrlSpaceCompletionDataProvider(ExpressionContext expressionContext)
+		protected virtual CtrlSpaceCompletionItemProvider CreateCtrlSpaceCompletionDataProvider(ExpressionContext expressionContext)
 		{
-			return new CtrlSpaceCompletionDataProvider(expressionContext);
+			return new CtrlSpaceCompletionItemProvider(expressionContext);
 		}
 		
 		/// <summary>
 		/// Shows the code completion window.
 		/// </summary>
-		protected virtual void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.ITextEditor textAreaControl, ICompletionDataProvider completionDataProvider, char ch)
+		protected virtual void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.ITextEditor editor, AbstractCompletionItemProvider completionItemProvider, char ch)
 		{
-			textAreaControl.ShowCompletionWindow(completionDataProvider, ch);
+			completionItemProvider.ShowCompletion(editor);
 		}
 	}
 }

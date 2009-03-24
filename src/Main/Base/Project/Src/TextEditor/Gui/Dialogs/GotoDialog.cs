@@ -5,22 +5,20 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -107,31 +105,34 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listBox.ScrollIntoView(listBox.Items[index]);
 		}
 		
-		ICompletionData[] ctrlSpaceCompletionData;
+		IList<ICompletionItem> ctrlSpaceCompletionData;
 		
-		ICompletionData[] GetCompletionData()
+		IList<ICompletionItem> GetCompletionData()
 		{
 			if (ctrlSpaceCompletionData != null)
 				return ctrlSpaceCompletionData;
-			TextEditorControl editor = GetEditor();
+			ITextEditor editor = GetEditor();
 			if (editor != null) {
-				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider(ExpressionContext.Default);
-				ctrlSpaceCompletionData = cdp.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, '\0');
+				CtrlSpaceCompletionItemProvider cdp = new CtrlSpaceCompletionItemProvider(ExpressionContext.Default);
+				var completionList = cdp.GenerateCompletionList(editor);
+				ctrlSpaceCompletionData = completionList != null ? completionList.Items.ToList() : null;
 			}
 			if (ctrlSpaceCompletionData == null)
-				ctrlSpaceCompletionData = new ICompletionData[0];
+				ctrlSpaceCompletionData = emptyList;
 			return ctrlSpaceCompletionData;
 		}
 		
-		ICompletionData[] Resolve(string expression)
+		static readonly IList<ICompletionItem> emptyList = new ICompletionItem[0];
+		
+		IList<ICompletionItem> Resolve(string expression)
 		{
-			TextEditorControl editor = GetEditor();
+			ITextEditor editor = GetEditor();
 			if (editor != null) {
-				CodeCompletionDataProvider cdp = new CodeCompletionDataProvider(new ExpressionResult(expression));
-				return cdp.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, '.')
-					?? new ICompletionData[0];
+				CodeCompletionItemProvider cdp = new DotCodeCompletionItemProvider();
+				var list = cdp.GenerateCompletionListForExpression(editor, new ExpressionResult(expression));
+				return list != null ? list.Items.ToList() : emptyList;
 			}
-			return new ICompletionData[0];
+			return emptyList;
 		}
 		
 		protected override void OnClosed(EventArgs e)
@@ -249,7 +250,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			int num;
 			if (int.TryParse(text, out num)) {
-				TextEditorControl editor = GetEditor();
+				ITextEditor editor = GetEditor();
 				if (editor != null) {
 					num = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, num));
 					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrowIndex, num, 0, int.MaxValue);
@@ -257,20 +258,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void ShowCompletionData(ICompletionData[] dataList, string text)
+		void ShowCompletionData(IList<ICompletionItem> dataList, string text)
 		{
 			string lowerText = text.ToLowerInvariant();
-			foreach (ICompletionData data in dataList) {
-				CodeCompletionData ccd = data as CodeCompletionData;
-				if (ccd == null)
-					return;
-				string dataText = ccd.Text;
+			foreach (CodeCompletionItem data in dataList.OfType<CodeCompletionItem>()) {
+				string dataText = data.Text;
 				int matchType = GetMatchType(text, dataText);
 				if (matchType >= 0) {
-					if (ccd.Class != null)
-						AddItem(ccd.Class, data.ImageIndex, data.Priority, matchType);
-					else if (ccd.Member != null)
-						AddItem(ccd.Member, data.ImageIndex, data.Priority, matchType);
+					AddItem(data.Entity, data.ImageIndex, data.Priority, matchType);
 				}
 			}
 		}
@@ -399,11 +394,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		TextEditorControl GetEditor()
+		ITextEditor GetEditor()
 		{
 			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (viewContent is ITextEditorControlProvider) {
-				return ((ITextEditorControlProvider)viewContent).TextEditorControl;
+			if (viewContent is ITextEditorProvider) {
+				return ((ITextEditorProvider)viewContent).TextEditor;
 			}
 			return null;
 		}
@@ -415,10 +410,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return;
 				object tag = ((ListBoxItem)listBox.SelectedItem).Tag;
 				if (tag is int) {
-					TextEditorControl editor = GetEditor();
+					ITextEditor editor = GetEditor();
 					if (editor != null) {
 						int i = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, (int)tag));
-						editor.ActiveTextAreaControl.JumpTo(i - 1, int.MaxValue);
+						editor.JumpTo(i, int.MaxValue);
 					}
 				} else if (tag is IClass) {
 					IClass c = tag as IClass;

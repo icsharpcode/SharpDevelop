@@ -84,10 +84,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
+		public ITextEditor TextEditor {
+			get { return textEditorControl.Adapter; }
+		}
+		
 		public ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument GetDocumentForFile(OpenedFile file)
 		{
 			if (file == this.PrimaryFile) {
-				return new TextEditorDocument(this.TextEditorControl.Document);
+				return this.TextEditor.Document;
 			} else {
 				return null;
 			}

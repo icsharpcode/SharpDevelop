@@ -51,6 +51,8 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static IList CreateMenuItems(UIElement inputBindingOwner, object owner, string addInTreePath)
 		{
+			if (inputBindingOwner == null)
+				throw new ArgumentNullException("inputBindingOwner");
 			return CreateMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
 		}
 		
@@ -144,7 +146,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		// HACK: find a better way to allow the host app to process link commands
-		public static Converter<string, ICommand> LinkCommandCreator;
+		public static Converter<string, ICommand> LinkCommandCreator { get; set; }
 		
 		/// <summary>
 		/// Creates an KeyGesture for a shortcut.
