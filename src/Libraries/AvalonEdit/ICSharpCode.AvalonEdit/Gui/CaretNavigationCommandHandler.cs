@@ -108,6 +108,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
+			args.Handled = true;
 				textArea.Caret.Offset = textArea.Document.TextLength;
 				textArea.Selection = new SimpleSelection(0, textArea.Document.TextLength);
 				textArea.Caret.BringCaretToView();

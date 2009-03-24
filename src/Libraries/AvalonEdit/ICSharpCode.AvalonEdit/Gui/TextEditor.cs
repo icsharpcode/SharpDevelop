@@ -731,5 +731,77 @@ namespace ICSharpCode.AvalonEdit
 			}
 		}
 		#endregion
+		
+		/// <summary>
+		/// Gets the text view position from a point inside the editor.
+		/// </summary>
+		/// <param name="p">The position, relative to top left
+		/// corner of TextEditor control</param>
+		/// <returns>The text view position, or null if the point is outside the document.</returns>
+		public TextViewPosition? GetPositionFromPoint(Point p)
+		{
+			if (this.Document == null)
+				return null;
+			TextView textView = this.TextArea.TextView;
+			return textView.GetPosition(TranslatePoint(p, textView) + textView.ScrollOffset);
+		}
+		
+		/// <summary>
+		/// The PreviewMouseHover event.
+		/// </summary>
+		public static readonly RoutedEvent PreviewMouseHoverEvent =
+			TextView.PreviewMouseHoverEvent.AddOwner(typeof(TextEditor));
+		
+		/// <summary>
+		/// The MouseHover event.
+		/// </summary>
+		public static readonly RoutedEvent MouseHoverEvent =
+			TextView.MouseHoverEvent.AddOwner(typeof(TextEditor));
+		
+		
+		/// <summary>
+		/// The PreviewMouseHoverStopped event.
+		/// </summary>
+		public static readonly RoutedEvent PreviewMouseHoverStoppedEvent =
+			TextView.PreviewMouseHoverStoppedEvent.AddOwner(typeof(TextEditor));
+		
+		/// <summary>
+		/// The MouseHoverStopped event.
+		/// </summary>
+		public static readonly RoutedEvent MouseHoverStoppedEvent =
+			TextView.MouseHoverStoppedEvent.AddOwner(typeof(TextEditor));
+		
+		
+		/// <summary>
+		/// Occurs when the mouse has hovered over a fixed location for some time.
+		/// </summary>
+		public event MouseEventHandler PreviewMouseHover {
+			add { AddHandler(PreviewMouseHoverEvent, value); }
+			remove { RemoveHandler(PreviewMouseHoverEvent, value); }
+		}
+		
+		/// <summary>
+		/// Occurs when the mouse has hovered over a fixed location for some time.
+		/// </summary>
+		public event MouseEventHandler MouseHover {
+			add { AddHandler(MouseHoverEvent, value); }
+			remove { RemoveHandler(MouseHoverEvent, value); }
+		}
+		
+		/// <summary>
+		/// Occurs when the mouse had previously hovered but now started moving again.
+		/// </summary>
+		public event MouseEventHandler PreviewMouseHoverStopped {
+			add { AddHandler(PreviewMouseHoverStoppedEvent, value); }
+			remove { RemoveHandler(PreviewMouseHoverStoppedEvent, value); }
+		}
+		
+		/// <summary>
+		/// Occurs when the mouse had previously hovered but now started moving again.
+		/// </summary>
+		public event MouseEventHandler MouseHoverStopped {
+			add { AddHandler(MouseHoverStoppedEvent, value); }
+			remove { RemoveHandler(MouseHoverStoppedEvent, value); }
+		}
 	}
 }

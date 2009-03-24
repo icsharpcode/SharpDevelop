@@ -22,8 +22,9 @@
 		<content>
 			<para>
 			VisualLines are only created for the visible part of the document.
-			This usually happens in the MeasureOverride of TextView:
-			when the TextView is measured, it uses the height tree to determine the first
+			Lots of actions can trigger their creation, but most commonly the creation will be
+			caused by the MeasureOverride method of TextView.
+			When the TextView is measured, it uses the height tree to determine the first
 			document line in the visible region. Then, it constructs and measures a VisualLine
 			for that first line, and repeats that with the following lines
 			until the visible region is filled.
@@ -52,10 +53,10 @@
 			one redraw for multiple input actions.
 			</para>
 			<para>
-			ALERT: this means you need to ensure that if you access VisualLine, you can cope
-			with the case that the VisualLines you're interested in are not available.
+			ALERT: this means that if you access VisualLine, you must be able to handle
+			the case that your requested VisualLines are not available.
 			You can use GetOrConstructVisualLine to make the text editor re-build the visual line
-			if it does not exist anymore; or you can call EnsureVisualLines() to make the text
+			if it does not exist anymore; or you can call EnsureVisualLines() to make the text view
 			create all VisualLines in the visible region.
 			</para>
 		</content>
@@ -67,6 +68,13 @@
 			As a first step, the VisualLineElementGenerators are used to produce elements. The
 			room in between the elements returned from the generators is filled with text elements.
 			Then, the VisualLine assigns the VisualColumn and RelativeTextOffset properties of the line elements.
+			</para>
+			<para>
+			For example, a line contains the text "Hello, World". 
+			The user has enabled "ShowSpaces", so the text editor should show a little dot instead of the space.
+			In this case, the SingleCharacterElementGenerator, which is responsible for ShowSpaces, will produce
+			a "SpaceTextElement" for the space character. Because no other generators are interested in the line,
+			the remaining strings "Hello," and "World" will be represented by VisualLineText elements.
 			</para>
 		</content>
 	</section>

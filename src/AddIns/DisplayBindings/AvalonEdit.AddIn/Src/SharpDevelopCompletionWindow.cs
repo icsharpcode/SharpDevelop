@@ -71,7 +71,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public object Description {
-			get { return item.Description; }
+			get {
+				return item.Description;
+			}
 		}
 		
 		public ImageSource Image {

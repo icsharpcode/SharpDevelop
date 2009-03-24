@@ -9,8 +9,8 @@
 		Text Rendering extension points is the support for "visual line transformers" that
 		can change the display of a visual line after it has been constructed by the "visual element generators".
 		A useful base class implementing IVisualLineTransformer for the purpose of syntax highlighting
-		is DocumentColorizingTransformer. But please take a look at that class' documentation to see
-		how to write fully custom syntax highlighters. This article discusses the XML-driven built-in
+		is DocumentColorizingTransformer. Take a look at that class' documentation to see
+		how to write fully custom syntax highlighters. This article only discusses the XML-driven built-in
 		highlighting engine.
 		</para>
 	</introduction>

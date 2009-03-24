@@ -5,13 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Drawing;
 using Hornung.ResourceToolkit.Resolver;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace Hornung.ResourceToolkit.ToolTips
 {
@@ -20,22 +21,19 @@ namespace Hornung.ResourceToolkit.ToolTips
 	/// </summary>
 	public class ResourceToolTipProvider : ITextAreaToolTipProvider
 	{
-		
-		public ToolTipInfo GetToolTipInfo(TextArea textArea, ToolTipRequestEventArgs e)
+		public void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
-			TextLocation logicPos = e.LogicalPosition;
-			IDocument doc = textArea.Document;
-			if (logicPos.X > doc.GetLineSegment(logicPos.Y).Length - 1) {
-				return null;
+			Location logicPos = e.LogicalPosition;
+			IDocument doc = e.Editor.Document;
+			if (logicPos.X > doc.GetLine(logicPos.Y).Length) {
+				return;
 			}
 			
-			ResourceResolveResult result = ResourceResolverService.Resolve(textArea.MotherTextEditorControl.FileName, new TextEditorDocument(doc), logicPos.Y, logicPos.X, null);
+			ResourceResolveResult result = ResourceResolverService.Resolve(e.Editor.FileName, doc, logicPos.Y - 1, logicPos.X - 1, null);
 			
 			if (result != null && result.ResourceFileContent != null) {
-				return new ToolTipInfo(ResourceResolverService.FormatResourceDescription(result.ResourceFileContent, result.Key));
+				e.ShowToolTip(ResourceResolverService.FormatResourceDescription(result.ResourceFileContent, result.Key));
 			}
-			
-			return null;
 		}
 		
 	}

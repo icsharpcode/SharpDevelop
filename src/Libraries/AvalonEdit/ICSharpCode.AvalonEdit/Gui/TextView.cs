@@ -1176,6 +1176,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public VisualLine GetVisualLineFromVisualTop(double visualTop)
 		{
+			// TODO: change this method to also work outside the visible range -
+			// required to make GetPosition work as expected!
 			EnsureVisualLines();
 			foreach (VisualLine vl in this.VisualLines) {
 				if (visualTop < vl.VisualTop)
@@ -1224,6 +1226,25 @@ namespace ICSharpCode.AvalonEdit.Gui
 			}
 			return visualLine.GetVisualPosition(visualColumn, yPositionMode);
 		}
+		
+		/// <summary>
+		/// Gets the text view position from the specified visual position.
+		/// </summary>
+		/// <param name="visualPosition">The position in WPF device-independent pixels relative
+		/// to the top left corner of the document.</param>
+		/// <returns>The logical position, or null if the position is outside the document.</returns>
+		public TextViewPosition? GetPosition(Point visualPosition)
+		{
+			VerifyAccess();
+			if (this.Document == null)
+				throw new InvalidOperationException("There is no document assigned to the TextView");
+			VisualLine line = GetVisualLineFromVisualTop(visualPosition.Y);
+			if (line == null)
+				return null;
+			int visualColumn = line.GetVisualColumn(visualPosition);
+			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
+			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
+		}
 		#endregion
 		
 		#region Service Provider
@@ -1253,6 +1274,138 @@ namespace ICSharpCode.AvalonEdit.Gui
 			ITextViewConnect c = obj as ITextViewConnect;
 			if (c != null)
 				c.RemoveFromTextView(this);
+		}
+		#endregion
+		
+		#region MouseHover
+		/// <summary>
+		/// The PreviewMouseHover event.
+		/// </summary>
+		public static readonly RoutedEvent PreviewMouseHoverEvent =
+			EventManager.RegisterRoutedEvent("PreviewMouseHover", RoutingStrategy.Tunnel,
+			                                 typeof(MouseEventHandler), typeof(TextView));
+		/// <summary>
+		/// The MouseHover event.
+		/// </summary>
+		public static readonly RoutedEvent MouseHoverEvent =
+			EventManager.RegisterRoutedEvent("MouseHover", RoutingStrategy.Bubble,
+			                                 typeof(MouseEventHandler), typeof(TextView));
+		
+		/// <summary>
+		/// The PreviewMouseHoverStopped event.
+		/// </summary>
+		public static readonly RoutedEvent PreviewMouseHoverStoppedEvent =
+			EventManager.RegisterRoutedEvent("PreviewMouseHoverStopped", RoutingStrategy.Tunnel,
+			                                 typeof(MouseEventHandler), typeof(TextView));
+		/// <summary>
+		/// The MouseHoverStopped event.
+		/// </summary>
+		public static readonly RoutedEvent MouseHoverStoppedEvent =
+			EventManager.RegisterRoutedEvent("MouseHoverStopped", RoutingStrategy.Bubble,
+			                                 typeof(MouseEventHandler), typeof(TextView));
+		
+		
+		/// <summary>
+		/// Occurs when the mouse has hovered over a fixed location for some time.
+		/// </summary>
+		public event MouseEventHandler PreviewMouseHover {
+			add { AddHandler(PreviewMouseHoverEvent, value); }
+			remove { RemoveHandler(PreviewMouseHoverEvent, value); }
+		}
+		
+		/// <summary>
+		/// Occurs when the mouse has hovered over a fixed location for some time.
+		/// </summary>
+		public event MouseEventHandler MouseHover {
+			add { AddHandler(MouseHoverEvent, value); }
+			remove { RemoveHandler(MouseHoverEvent, value); }
+		}
+		
+		/// <summary>
+		/// Occurs when the mouse had previously hovered but now started moving again.
+		/// </summary>
+		public event MouseEventHandler PreviewMouseHoverStopped {
+			add { AddHandler(PreviewMouseHoverStoppedEvent, value); }
+			remove { RemoveHandler(PreviewMouseHoverStoppedEvent, value); }
+		}
+		
+		/// <summary>
+		/// Occurs when the mouse had previously hovered but now started moving again.
+		/// </summary>
+		public event MouseEventHandler MouseHoverStopped {
+			add { AddHandler(MouseHoverStoppedEvent, value); }
+			remove { RemoveHandler(MouseHoverStoppedEvent, value); }
+		}
+		
+		DispatcherTimer mouseHoverTimer;
+		Point mouseHoverStartPoint;
+		MouseEventArgs mouseHoverLastEventArgs;
+		bool mouseHovering;
+		
+		/// <inheritdoc/>
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+			Point newPosition = e.GetPosition(this);
+			Vector mouseMovement = mouseHoverStartPoint - newPosition;
+			if (Math.Abs(mouseMovement.X) > SystemParameters.MouseHoverWidth
+			    || Math.Abs(mouseMovement.Y) > SystemParameters.MouseHoverHeight)
+			{
+				StopHovering();
+				mouseHoverStartPoint = newPosition;
+				mouseHoverLastEventArgs = e;
+				mouseHoverTimer = new DispatcherTimer(SystemParameters.MouseHoverTime, DispatcherPriority.Background,
+				                                      OnMouseHoverTimerElapsed, this.Dispatcher);
+				mouseHoverTimer.Start();
+			}
+			// do not set e.Handled - allow others to also handle MouseMove
+		}
+		
+		/// <inheritdoc/>
+		protected override void OnMouseLeave(MouseEventArgs e)
+		{
+			base.OnMouseLeave(e);
+			StopHovering();
+			// do not set e.Handled - allow others to also handle MouseLeave
+		}
+		
+		void StopHovering()
+		{
+			if (mouseHoverTimer != null) {
+				mouseHoverTimer.Stop();
+				mouseHoverTimer = null;
+			}
+			if (mouseHovering) {
+				mouseHovering = false;
+				RaiseHoverEventPair(PreviewMouseHoverStoppedEvent, MouseHoverStoppedEvent);
+			}
+		}
+		
+		void OnMouseHoverTimerElapsed(object sender, EventArgs e)
+		{
+			mouseHoverTimer.Stop();
+			mouseHoverTimer = null;
+			
+			mouseHovering = true;
+			RaiseHoverEventPair(PreviewMouseHoverEvent, MouseHoverEvent);
+		}
+		
+		void RaiseHoverEventPair(RoutedEvent tunnelingEvent, RoutedEvent bubblingEvent)
+		{
+			var mouseDevice = mouseHoverLastEventArgs.MouseDevice;
+			var stylusDevice = mouseHoverLastEventArgs.StylusDevice;
+			int inputTime = Environment.TickCount;
+			var args1 = new MouseEventArgs(mouseDevice, inputTime, stylusDevice) {
+				RoutedEvent = tunnelingEvent,
+				Source = this
+			};
+			RaiseEvent(args1);
+			var args2 = new MouseEventArgs(mouseDevice, inputTime, stylusDevice) {
+				RoutedEvent = bubblingEvent,
+				Source = this,
+				Handled = args1.Handled
+			};
+			RaiseEvent(args2);
 		}
 		#endregion
 		

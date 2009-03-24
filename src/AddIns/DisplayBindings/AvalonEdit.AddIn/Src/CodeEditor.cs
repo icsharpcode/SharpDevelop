@@ -5,12 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.CodeCompletion;
 using System;
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -30,6 +34,41 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.FontFamily = new FontFamily("Consolas");
 			this.FontSize = 13;
 			this.TextArea.TextEntered += TextArea_TextInput;
+			this.MouseHover += CodeEditor_MouseHover;
+			this.MouseHoverStopped += CodeEditor_MouseHoverStopped;
+		}
+		
+		ToolTip toolTip;
+
+		void CodeEditor_MouseHover(object sender, MouseEventArgs e)
+		{
+			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(textEditorAdapter);
+			var pos = GetPositionFromPoint(e.GetPosition(this));
+			args.InDocument = pos.HasValue;
+			if (pos.HasValue) {
+				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
+			}
+			ToolTipRequestService.RequestToolTip(args);
+			if (args.ContentToShow != null) {
+				if (toolTip == null) {
+					toolTip = new ToolTip();
+					toolTip.Closed += toolTip_Closed;
+				}
+				toolTip.Content = args.ContentToShow;
+				toolTip.IsOpen = true;
+			}
+		}
+		
+		void CodeEditor_MouseHoverStopped(object sender, MouseEventArgs e)
+		{
+			if (toolTip != null) {
+				toolTip.IsOpen = false;
+			}
+		}
+
+		void toolTip_Closed(object sender, RoutedEventArgs e)
+		{
+			toolTip = null;
 		}
 		
 		volatile static ReadOnlyCollection<ICodeCompletionBinding> codeCompletionBindings;

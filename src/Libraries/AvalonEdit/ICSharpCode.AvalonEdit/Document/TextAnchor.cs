@@ -115,7 +115,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public TextLocation Location {
 			get {
-				return new TextLocation(Line, Column);
+				return document.GetLocation(this.Offset);
 			}
 		}
 		

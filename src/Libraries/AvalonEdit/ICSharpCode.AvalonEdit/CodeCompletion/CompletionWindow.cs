@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -27,6 +28,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		int startOffset;
 		int endOffset;
 		readonly CompletionList completionList = new CompletionList();
+		ToolTip toolTip = new ToolTip();
 		
 		/// <summary>
 		/// Creates a new code completion window.
@@ -38,11 +40,41 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.Width = 200;
 			this.Content = completionList;
 			
+			toolTip.PlacementTarget = this;
+			toolTip.Placement = PlacementMode.Right;
+			toolTip.Closed += toolTip_Closed;
+			
 			startOffset = endOffset = this.TextArea.Caret.Offset;
 			document = textArea.TextView.Document;
 			completionList.InsertionRequested += completionList_InsertionRequested;
+			completionList.SelectionChanged += completionList_SelectionChanged;
 		}
-
+		
+		#region ToolTip handling
+		void toolTip_Closed(object sender, RoutedEventArgs e)
+		{
+			// Clear content after tooltip is closed.
+			// We cannot clear is immediately when setting IsOpen=false
+			// because the tooltip uses an animation for closing.
+			if (toolTip != null)
+				toolTip.Content = null;
+		}
+		
+		void completionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var item = completionList.SelectedItem;
+			if (item == null)
+				return;
+			object description = item.Description;
+			if (description != null) {
+				toolTip.Content = description;
+				toolTip.IsOpen = true;
+			} else {
+				toolTip.IsOpen = false;
+			}
+		}
+		#endregion
+		
 		void completionList_InsertionRequested(object sender, EventArgs e)
 		{
 			var item = completionList.SelectedItem;
@@ -135,6 +167,16 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		#endregion
 		
 		/// <inheritdoc/>
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			if (toolTip != null) {
+				toolTip.IsOpen = false;
+				toolTip = null;
+			}
+		}
+		
+		/// <inheritdoc/>
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
@@ -167,6 +209,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// Gets/sets whether the completion window should expect text insertion at the start offset,
 		/// which not go into the completion region, but before it.
 		/// </summary>
+		/// <remarks>This property allows only a single insertion, it is reset to false
+		/// when that insertion has occurred.</remarks>
 		public bool ExpectInsertionBeforeStart { get; set; }
 		
 		void textArea_Document_Changing(object sender, DocumentChangeEventArgs e)

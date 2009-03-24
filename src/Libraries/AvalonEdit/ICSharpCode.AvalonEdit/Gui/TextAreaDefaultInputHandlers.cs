@@ -57,27 +57,39 @@ namespace ICSharpCode.AvalonEdit.Gui
 		void ExecuteUndo(object sender, ExecutedRoutedEventArgs e)
 		{
 			var undoStack = GetUndoStack();
-			if (undoStack != null && undoStack.CanUndo)
-				undoStack.Undo();
+			if (undoStack != null) {
+				if (undoStack.CanUndo)
+					undoStack.Undo();
+				e.Handled = true;
+			}
 		}
 		
 		void CanExecuteUndo(object sender, CanExecuteRoutedEventArgs e)
 		{
 			var undoStack = GetUndoStack();
-			e.CanExecute = undoStack != null && undoStack.CanUndo;
+			if (undoStack != null) {
+				e.Handled = true;
+				e.CanExecute = undoStack.CanUndo;
+			}
 		}
 		
 		void ExecuteRedo(object sender, ExecutedRoutedEventArgs e)
 		{
 			var undoStack = GetUndoStack();
-			if (undoStack != null && undoStack.CanRedo)
-				undoStack.Redo();
+			if (undoStack != null) {
+				if (undoStack.CanRedo)
+					undoStack.Redo();
+				e.Handled = true;
+			}
 		}
 		
 		void CanExecuteRedo(object sender, CanExecuteRoutedEventArgs e)
 		{
 			var undoStack = GetUndoStack();
-			e.CanExecute = undoStack != null && undoStack.CanRedo;
+			if (undoStack != null) {
+				e.Handled = true;
+				e.CanExecute = undoStack.CanRedo;
+			}
 		}
 		#endregion
 	}

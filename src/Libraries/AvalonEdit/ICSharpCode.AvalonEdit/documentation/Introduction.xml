@@ -11,10 +11,10 @@
 		<para>While the WPF RichTextBox is quite powerful, you quickly run into its limits
 		when trying to use it as a code editor: it's hard to write efficient syntax highlighting for it,
 		and you cannot really implement features like code folding with the standard RichTextBox.</para>
-		<para>The issue is that in the RichTextBox edits a rich document. In contrast, AvalonEdit
-		just edits text. However, AvalonEdit offers lots of possibilities on how the text document is
+		<para>The issue is simple: the RichTextBox edits a rich document. In contrast, AvalonEdit
+		simply edits text. However, AvalonEdit offers lots of possibilities on how the text document is
 		displayed - so it is much more suitable for a code editor where things like the text color
-		are not controlled by the user, but simply depend on the text (syntax highlighting).</para>
+		are not controlled by the user, but instead depend on the text (syntax highlighting).</para>
 	</introduction>
 	
 	<!-- TODO: screenshot-->

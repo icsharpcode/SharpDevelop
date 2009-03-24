@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 
@@ -138,6 +139,14 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			get {
 				return listBox.SelectedItem as ICompletionData;
 			}
+		}
+		
+		/// <summary>
+		/// Occurs when the SelectedItem property changes.
+		/// </summary>
+		public event SelectionChangedEventHandler SelectionChanged {
+			add { AddHandler(Selector.SelectionChangedEvent, value); }
+			remove { RemoveHandler(Selector.SelectionChangedEvent, value); }
 		}
 		
 		/// <summary>
