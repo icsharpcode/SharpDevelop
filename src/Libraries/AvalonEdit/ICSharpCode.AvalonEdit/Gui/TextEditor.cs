@@ -62,9 +62,9 @@ namespace ICSharpCode.AvalonEdit
 		/// <summary>
 		/// Document property.
 		/// </summary>
-		public static readonly DependencyProperty DocumentProperty =
-			DependencyProperty.Register("Document", typeof(TextDocument), typeof(TextEditor),
-			                            new FrameworkPropertyMetadata(OnDocumentChanged));
+		public static readonly DependencyProperty DocumentProperty
+			= TextView.DocumentProperty.AddOwner(
+				typeof(TextEditor), new FrameworkPropertyMetadata(OnDocumentChanged));
 		
 		/// <summary>
 		/// Gets/Sets the document displayed by the text editor.
@@ -102,9 +102,8 @@ namespace ICSharpCode.AvalonEdit
 		/// <summary>
 		/// Options property.
 		/// </summary>
-		public static readonly DependencyProperty OptionsProperty =
-			DependencyProperty.Register("Options", typeof(TextEditorOptions), typeof(TextEditor),
-			                            new FrameworkPropertyMetadata(OnOptionsChanged));
+		public static readonly DependencyProperty OptionsProperty
+			= TextEditor.OptionsProperty.AddOwner(typeof(TextEditor), new FrameworkPropertyMetadata(OnOptionsChanged));
 		
 		/// <summary>
 		/// Gets/Sets the options currently used by the text editor.

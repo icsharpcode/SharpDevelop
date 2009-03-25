@@ -68,9 +68,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <summary>
 		/// Document property.
 		/// </summary>
-		public static readonly DependencyProperty DocumentProperty
-			= TextEditor.DocumentProperty.AddOwner(
-				typeof(TextView), new FrameworkPropertyMetadata(OnDocumentChanged));
+		public static readonly DependencyProperty DocumentProperty =
+			DependencyProperty.Register("Document", typeof(TextDocument), typeof(TextView),
+			                            new FrameworkPropertyMetadata(OnDocumentChanged));
 		
 		TextDocument document;
 		HeightTree heightTree;
@@ -146,8 +146,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <summary>
 		/// Options property.
 		/// </summary>
-		public static readonly DependencyProperty OptionsProperty
-			= TextEditor.OptionsProperty.AddOwner(typeof(TextView), new FrameworkPropertyMetadata(OnOptionsChanged));
+		public static readonly DependencyProperty OptionsProperty =
+			DependencyProperty.Register("Options", typeof(TextEditorOptions), typeof(TextView),
+			                            new FrameworkPropertyMetadata(OnOptionsChanged));
 		
 		/// <summary>
 		/// Gets/Sets the document displayed by the text editor.

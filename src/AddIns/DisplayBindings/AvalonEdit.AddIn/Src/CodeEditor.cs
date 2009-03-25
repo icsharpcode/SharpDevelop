@@ -56,6 +56,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				toolTip.Content = args.ContentToShow;
 				toolTip.IsOpen = true;
+				e.Handled = true;
 			}
 		}
 		
@@ -63,6 +64,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (toolTip != null) {
 				toolTip.IsOpen = false;
+				e.Handled = true;
 			}
 		}
 

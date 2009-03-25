@@ -125,7 +125,7 @@ namespace ICSharpCode.AvalonEdit
 		/// Document property.
 		/// </summary>
 		public static readonly DependencyProperty DocumentProperty
-			= TextEditor.DocumentProperty.AddOwner(typeof(TextArea), new FrameworkPropertyMetadata(OnDocumentChanged));
+			= TextView.DocumentProperty.AddOwner(typeof(TextArea), new FrameworkPropertyMetadata(OnDocumentChanged));
 		
 		/// <summary>
 		/// Gets/Sets the document displayed by the text editor.
@@ -166,7 +166,7 @@ namespace ICSharpCode.AvalonEdit
 		/// Options property.
 		/// </summary>
 		public static readonly DependencyProperty OptionsProperty
-			= TextEditor.OptionsProperty.AddOwner(typeof(TextArea), new FrameworkPropertyMetadata(OnOptionsChanged));
+			= TextView.OptionsProperty.AddOwner(typeof(TextArea), new FrameworkPropertyMetadata(OnOptionsChanged));
 		
 		/// <summary>
 		/// Gets/Sets the document displayed by the text editor.
