@@ -331,6 +331,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						CodeCompletionKeyPressResult result = ccBinding.HandleKeyPress(adapter, ch);
 						if (result == CodeCompletionKeyPressResult.Completed)
 							return false;
+						else if (result == CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion)
+							return false;
 						else if (result == CodeCompletionKeyPressResult.EatKey)
 							return true;
 					}

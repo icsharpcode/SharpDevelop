@@ -130,7 +130,7 @@ namespace CSharpBinding
 						ctrlSpaceProvider.ShowTemplates = true;
 						ctrlSpaceProvider.AllowCompleteExistingExpression = afterUnderscore;
 						ctrlSpaceProvider.ShowCompletion(editor);
-						return CodeCompletionKeyPressResult.Completed;
+						return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 					}
 				}
 			}

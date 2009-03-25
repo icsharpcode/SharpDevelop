@@ -42,6 +42,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		static TextView()
 		{
 			ClipToBoundsProperty.OverrideMetadata(typeof(TextView), new FrameworkPropertyMetadata(Boxes.True));
+			FocusableProperty.OverrideMetadata(typeof(TextView), new FrameworkPropertyMetadata(Boxes.False));
 		}
 		
 		/// <summary>
@@ -545,6 +546,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <inheritdoc/>
 		protected override Size MeasureOverride(Size availableSize)
 		{
+			// We don't support infinite available width, so we'll limit it to 32000 pixels.
+			if (availableSize.Width > 32000)
+				availableSize.Width = 32000;
+			
 			if (!canHorizontallyScroll && !availableSize.Width.IsClose(lastAvailableSize.Width))
 				ClearVisualLines();
 			lastAvailableSize = availableSize;
@@ -575,11 +580,11 @@ namespace ICSharpCode.AvalonEdit.Gui
 			              scrollOffset);
 			if (VisualLinesChanged != null)
 				VisualLinesChanged(this, EventArgs.Empty);
-			if (canHorizontallyScroll) {
-				return availableSize;
-			} else {
-				return new Size(maxWidth, availableSize.Height);
-			}
+			
+			return new Size(
+				canHorizontallyScroll ? Math.Min(availableSize.Width, maxWidth) : maxWidth,
+				canVerticallyScroll ? Math.Min(availableSize.Height, heightTree.TotalHeight) : heightTree.TotalHeight
+			);
 		}
 		
 		/// <summary>

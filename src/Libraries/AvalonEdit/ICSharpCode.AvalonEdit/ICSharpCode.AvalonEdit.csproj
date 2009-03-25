@@ -79,7 +79,7 @@
     <Compile Include="CodeCompletion\CompletionWindow.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CodeCompletion\ICodeCompletionData.cs" />
+    <Compile Include="CodeCompletion\ICompletionData.cs" />
     <Compile Include="Document\DocumentChangeOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>

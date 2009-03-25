@@ -3,7 +3,7 @@
         xmlns:x = "http://schemas.microsoft.com/winfx/2006/xaml"
         Title = "SharpDevelop (experimental WPF build)"
         WindowStartupLocation = "Manual"
-        Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}"
+        Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
 >
 	<DockPanel Name="dockPanel">
 		<Menu Name="mainMenu" DockPanel.Dock="Top"/>

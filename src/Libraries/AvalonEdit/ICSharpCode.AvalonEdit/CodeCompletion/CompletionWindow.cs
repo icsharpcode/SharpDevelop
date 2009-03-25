@@ -16,6 +16,7 @@ using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Gui;
+using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {
@@ -39,6 +40,9 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.SizeToContent = SizeToContent.Height;
 			this.Width = 200;
 			this.Content = completionList;
+			// prevent user from resizing window to 0x0
+			this.MinHeight = 15;
+			this.MinWidth = 30;
 			
 			toolTip.PlacementTarget = this;
 			toolTip.Placement = PlacementMode.Right;
@@ -161,7 +165,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			public void Detach()
 			{
 				this.TextArea.DefaultInputHandler.Detach();
-				window.Close();
+				// close with dispatcher so we don't get reentrance problems in input handler Detach/Attach
+				window.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(window.Close));
 			}
 		}
 		#endregion

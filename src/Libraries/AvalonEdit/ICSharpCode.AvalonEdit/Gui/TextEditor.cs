@@ -36,14 +36,25 @@ namespace ICSharpCode.AvalonEdit
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(TextEditor),
 			                                         new FrameworkPropertyMetadata(typeof(TextEditor)));
-			KeyboardNavigation.IsTabStopProperty.OverrideMetadata(
-				typeof(TextEditor), new FrameworkPropertyMetadata(Boxes.False));
+			FocusableProperty.OverrideMetadata(typeof(TextEditor),
+			                                   new FrameworkPropertyMetadata(Boxes.True));
 		}
 		
 		/// <summary>
 		/// Creates a new TextEditor instance.
 		/// </summary>
 		public TextEditor() : this(new TextArea()) {}
+		
+		// Forward focus to TextArea.
+		/// <inheritdoc/>
+		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+		{
+			base.OnGotKeyboardFocus(e);
+			if (!this.TextArea.IsKeyboardFocusWithin) {
+				Keyboard.Focus(this.TextArea);
+				e.Handled = true;
+			}
+		}
 		
 		/// <summary>
 		/// Creates a new TextEditor instance.
@@ -103,7 +114,7 @@ namespace ICSharpCode.AvalonEdit
 		/// Options property.
 		/// </summary>
 		public static readonly DependencyProperty OptionsProperty
-			= TextEditor.OptionsProperty.AddOwner(typeof(TextEditor), new FrameworkPropertyMetadata(OnOptionsChanged));
+			= TextView.OptionsProperty.AddOwner(typeof(TextEditor), new FrameworkPropertyMetadata(OnOptionsChanged));
 		
 		/// <summary>
 		/// Gets/Sets the options currently used by the text editor.

@@ -8,6 +8,7 @@
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type AvalonEdit:TextEditor}">
 					<ScrollViewer
+						Focusable="False"
 						Name="PART_ScrollViewer"
 						CanContentScroll="True"
 						VerticalScrollBarVisibility="Visible"
@@ -32,11 +33,13 @@
 	</Style>
 	
 	<Style TargetType="{x:Type AvalonEdit:TextArea}">
+		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type AvalonEdit:TextArea}">
-					<DockPanel>
+					<DockPanel Focusable="False">
 						<ItemsControl DockPanel.Dock="Left"
+						              Focusable="False"
 						              ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=LeftMargins}">
 							<ItemsControl.ItemsPanel>
 								<ItemsPanelTemplate>
@@ -44,7 +47,10 @@
 								</ItemsPanelTemplate>
 							</ItemsControl.ItemsPanel>
 						</ItemsControl>
-						<ContentPresenter Panel.ZIndex="-1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextView}"/>
+						<ContentPresenter
+							Panel.ZIndex="-1"
+							Focusable="False"
+							Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextView}"/>
 					</DockPanel>
 				</ControlTemplate>
 			</Setter.Value>

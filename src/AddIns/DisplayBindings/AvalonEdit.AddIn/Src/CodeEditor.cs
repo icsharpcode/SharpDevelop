@@ -86,15 +86,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void TextArea_TextInput(object sender, TextCompositionEventArgs e)
 		{
+			// don't start new code completion if there is still a completion window open
+			if (completionWindow != null)
+				return;
+			
 			foreach (char c in e.Text) {
 				foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
-					CompletionWindow oldCompletionWindow = lastCompletionWindow;
 					CodeCompletionKeyPressResult result = cc.HandleKeyPress(textEditorAdapter, c);
 					if (result == CodeCompletionKeyPressResult.Completed) {
-						if (lastCompletionWindow != null && lastCompletionWindow != oldCompletionWindow) {
+						if (completionWindow != null) {
 							// a new CompletionWindow was shown, but does not eat the input
 							// tell it to expect the text insertion
-							lastCompletionWindow.ExpectInsertionBeforeStart = true;
+							completionWindow.ExpectInsertionBeforeStart = true;
+						}
+						return;
+					} else if (result == CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion) {
+						if (completionWindow != null) {
+							if (completionWindow.StartOffset == completionWindow.EndOffset) {
+								completionWindow.CloseWhenCaretAtBeginning = true;
+							}
 						}
 						return;
 					} else if (result == CodeCompletionKeyPressResult.EatKey) {
@@ -105,12 +115,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		CompletionWindow lastCompletionWindow;
+		CompletionWindow completionWindow;
 		
 		internal void NotifyCompletionWindowOpened(CompletionWindow window)
 		{
-			lastCompletionWindow = window;
-			window.Closed += delegate { lastCompletionWindow = null; };
+			completionWindow = window;
+			window.Closed += delegate { completionWindow = null; };
 		}
 	}
 }

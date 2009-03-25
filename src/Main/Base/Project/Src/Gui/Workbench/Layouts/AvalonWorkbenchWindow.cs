@@ -366,6 +366,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 						break;
 				}
 			}
+			if (!e.Cancel) {
+				foreach (IViewContent vc in this.viewContents) {
+					dockLayout.Workbench.StoreMemento(vc);
+				}
+			}
 		}
 		
 		protected override void OnClosed()
@@ -408,6 +413,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 					icon = value;
 					base.Icon = new PixelSnapper(new Image { Source = value });
 				}
+			}
+		}
+		// Forward focus to the content.
+		/// <inheritdoc/>
+		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+		{
+			base.OnGotKeyboardFocus(e);
+			UIElement content = this.Content as UIElement;
+			if (content != null && !content.IsKeyboardFocusWithin) {
+				Keyboard.Focus(content);
+				e.Handled = true;
 			}
 		}
 	}

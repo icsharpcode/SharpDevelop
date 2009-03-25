@@ -41,8 +41,6 @@ namespace ICSharpCode.AvalonEdit
 				typeof(TextArea), new FrameworkPropertyMetadata(KeyboardNavigationMode.None));
 			FocusableProperty.OverrideMetadata(
 				typeof(TextArea), new FrameworkPropertyMetadata(Boxes.True));
-			FocusVisualStyleProperty.OverrideMetadata(
-				typeof(TextArea), new FrameworkPropertyMetadata(null));
 		}
 		
 		/// <summary>
@@ -581,7 +579,6 @@ namespace ICSharpCode.AvalonEdit
 		{
 			base.OnGotKeyboardFocus(e);
 			caret.Show();
-			e.Handled = true;
 		}
 		
 		/// <inheritdoc/>
@@ -589,7 +586,6 @@ namespace ICSharpCode.AvalonEdit
 		{
 			base.OnLostKeyboardFocus(e);
 			caret.Hide();
-			e.Handled = true;
 		}
 		#endregion
 		

@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -98,7 +100,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (e.Uri.Scheme == "mailto") {
 				try {
 					Process.Start(e.Uri.ToString());
-				} catch {}
+				} catch {
+					// catch exceptions - e.g. incorrectly installed mail client
+				}
 			} else {
 				FileService.OpenFile(e.Uri.ToString());
 			}
@@ -273,6 +277,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				throw new ArgumentNullException("content");
 			System.Diagnostics.Debug.Assert(WorkbenchLayout != null);
 			
+			LoadViewContentMemento(content);
+			
 			WorkbenchLayout.ShowView(content, switchToOpenedView);
 			if (switchToOpenedView) {
 				content.WorkbenchWindow.SelectWindow();
@@ -322,6 +328,76 @@ namespace ICSharpCode.SharpDevelop.Gui
 				OnActiveWindowChanged(this, EventArgs.Empty);
 			}
 		}
+		
+		#region ViewContent Memento Handling
+		string viewContentMementosFileName;
+		
+		string ViewContentMementosFileName {
+			get {
+				if (viewContentMementosFileName == null) {
+					viewContentMementosFileName = Path.Combine(PropertyService.ConfigDirectory, "LastViewStates.xml");
+				}
+				return viewContentMementosFileName;
+			}
+		}
+		
+		Properties LoadOrCreateViewContentMementos()
+		{
+			try {
+				return Properties.Load(this.ViewContentMementosFileName) ?? new Properties();
+			} catch (Exception ex) {
+				LoggingService.Warn("Error while loading the view content memento file. Discarding any saved view states.", ex);
+				return new Properties();
+			}
+		}
+		
+		static string GetMementoKeyName(IViewContent viewContent)
+		{
+			return String.Concat(viewContent.GetType().FullName.GetHashCode().ToString("x", CultureInfo.InvariantCulture), ":", FileUtility.NormalizePath(viewContent.PrimaryFileName).ToUpperInvariant());
+		}
+		
+		/// <summary>
+		/// Stores the memento for the view content.
+		/// Such mementos are automatically loaded in ShowView().
+		/// </summary>
+		public void StoreMemento(IViewContent viewContent)
+		{
+			IMementoCapable mementoCapable = viewContent as IMementoCapable;
+			if (mementoCapable != null && PropertyService.Get("SharpDevelop.LoadDocumentProperties", true)) {
+				if (viewContent.PrimaryFileName == null)
+					return;
+				
+				string key = GetMementoKeyName(viewContent);
+				LoggingService.Debug("Saving memento of '" + viewContent.ToString() + "' to key '" + key + "'");
+				
+				Properties memento = mementoCapable.CreateMemento();
+				Properties p = this.LoadOrCreateViewContentMementos();
+				p.Set(key, memento);
+				FileUtility.ObservedSave(new NamedFileOperationDelegate(p.Save), this.ViewContentMementosFileName, FileErrorPolicy.Inform);
+			}
+		}
+		
+		void LoadViewContentMemento(IViewContent viewContent)
+		{
+			IMementoCapable mementoCapable = viewContent as IMementoCapable;
+			if (mementoCapable != null && PropertyService.Get("SharpDevelop.LoadDocumentProperties", true)) {
+				if (viewContent.PrimaryFileName == null)
+					return;
+				
+				try {
+					string key = GetMementoKeyName(viewContent);
+					LoggingService.Debug("Trying to restore memento of '" + viewContent.ToString() + "' from key '" + key + "'");
+					
+					Properties memento = this.LoadOrCreateViewContentMementos().Get<Properties>(key, null);
+					if (memento != null) {
+						mementoCapable.SetMemento(memento);
+					}
+				} catch (Exception e) {
+					MessageService.ShowError(e, "Can't get/set memento");
+				}
+			}
+		}
+		#endregion
 		
 		public void RedrawAllComponents()
 		{

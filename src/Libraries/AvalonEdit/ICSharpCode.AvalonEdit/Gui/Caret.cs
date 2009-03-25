@@ -273,6 +273,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public void Show()
 		{
+			Debug.WriteLine("Caret.Show()");
 			visible = true;
 			if (!showScheduled) {
 				showScheduled = true;
@@ -285,6 +286,11 @@ namespace ICSharpCode.AvalonEdit.Gui
 		void ShowInternal()
 		{
 			showScheduled = false;
+			
+			// if show was scheduled but caret hidden in the meantime
+			if (!visible)
+				return;
+			
 			if (caretAdorner != null && textView != null) {
 				VisualLine visualLine = textView.GetVisualLine(position.Line);
 				if (visualLine != null) {
@@ -300,6 +306,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public void Hide()
 		{
+			Debug.WriteLine("Caret.Hide()");
 			visible = false;
 			if (caretAdorner != null) {
 				caretAdorner.Hide();
