@@ -43,12 +43,34 @@ namespace ICSharpCode.Profiler.Controls
 		public CallTreeNode Node { get { return node; } }
 		
 		public event EventHandler<NodeEventArgs<CallTreeNodeViewModel>> VisibleChildExpandedChanged;
+		public event EventHandler<NodeEventArgs<CallTreeNodeViewModel>> RequestBringIntoView;
+		
+		protected virtual void OnRequestBringIntoView(NodeEventArgs<CallTreeNodeViewModel> e)
+		{			
+			if (RequestBringIntoView != null) {
+				RequestBringIntoView(this, e);
+			}
+		}
 		
 		protected virtual void OnVisibleChildExpandedChanged(NodeEventArgs<CallTreeNodeViewModel> e)
 		{
 			if (VisibleChildExpandedChanged != null) {
 				VisibleChildExpandedChanged(this, e);
 			}
+		}
+		
+		public void BringIntoView()
+		{
+			BringIntoView(this);
+		}
+		
+		void BringIntoView(CallTreeNodeViewModel item)
+		{
+			if (this.parent != null) {
+				parent.BringIntoView(item);
+				return;
+			}
+			OnRequestBringIntoView(new NodeEventArgs<CallTreeNodeViewModel>(item));
 		}
 		
 		public int Level

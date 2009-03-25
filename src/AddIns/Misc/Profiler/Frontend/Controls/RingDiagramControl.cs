@@ -51,8 +51,11 @@ namespace ICSharpCode.Profiler.Controls
 			
 			this.task.Cancel();
 			
-			while (this.hierarchyStack.Count > 0 && !hierarchyStack.Peek().IsAncestorOf(item))
+			Debug.WriteLine("hierarchyStack count: " + this.hierarchyStack.Count);
+			
+			while (this.hierarchyStack.Count > 0 && !hierarchyStack.Peek().IsAncestorOf(item)) {
 				this.hierarchyStack.Pop();
+			}
 
 			Debug.Assert(hierarchyStack.Count == 0 || hierarchyStack.Peek().IsAncestorOf(item));
 
@@ -75,8 +78,11 @@ namespace ICSharpCode.Profiler.Controls
 			ell.MouseLeftButtonDown += (sender, e) =>
 			{
 				if (this.hierarchyStack.Count > 1 && this.hierarchyStack.Peek().Level > 1) {
-					this.hierarchyStack.Pop();
+					var oldItem = this.hierarchyStack.Pop();
 					this.SelectedRoot = this.hierarchyStack.Peek();
+					this.SelectedRoot.IsSelected = true;
+					this.SelectedRoot.IsExpanded = true;
+					oldItem.IsSelected = false;
 				}
 			};
 			
@@ -93,6 +99,7 @@ namespace ICSharpCode.Profiler.Controls
 				() => {
 					this.Children.Add(ell);
 					this.Children.AddRange(pieces.Select(p => CreatePiePiece(p.Radius, p.WedgeAngle, p.RotationAngle, p.Level, p.Node)));
+					item.BringIntoView();
 				},
 				delegate { }
 			);
@@ -149,10 +156,12 @@ namespace ICSharpCode.Profiler.Controls
 			p.Tag = node;
 
 			p.MouseLeftButtonDown += new MouseButtonEventHandler(
-				delegate(object sender, MouseButtonEventArgs e)	{
+				delegate(object sender, MouseButtonEventArgs e)	{					
 					node.IsExpanded = true;
 					node.IsSelected = true; // expand the path to the node so that the treeview can select it
+					var oldNode = this.SelectedRoot;
 					this.SelectedRoot = node;
+					oldNode.IsSelected = false;
 				}
 			);
 			

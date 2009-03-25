@@ -60,7 +60,7 @@
 	</UserControl.Resources>
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="75*" />
+			<ColumnDefinition Width="75*" MinWidth="260" />
 			<ColumnDefinition Width="25*" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
@@ -71,7 +71,7 @@
 		<local:TreeListView x:Name="treeView" Grid.Row="2" SelectionMode="Extended">
 			<ListView.View>
 				<local:CustomGridView>
-					<GridViewColumn Header="Name" Width="210" x:Name="nameColumn">
+					<GridViewColumn Header="Name" Width="240" x:Name="nameColumn">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<local:CustomGridViewScrollableCell CurrentScrollPosition="{Binding ElementName=treeView, Path=View.CurrentScrollPosition}">
