@@ -135,5 +135,15 @@ namespace PythonBinding.Tests.Designer
 			}
 			return null;
 		}
+		
+		protected CreatedInstance GetCreatedInstance(string name)
+		{
+			foreach (CreatedInstance instance in createdInstances) {
+				if (instance.Name == name) {
+					return instance;
+				}
+			}
+			return null;
+		}
 	}
 }

@@ -84,11 +84,12 @@ namespace ICSharpCode.PythonBinding
 		
 		void GenerateInitializeComponentMethodBodyInternal(Form form)
 		{			
-			// Add method body.
+			foreach (Control control in form.Controls) {
+				AppendControlCreation(control);
+			}
+
 			AppendIndentedLine("self.SuspendLayout()");
-					
-			AppendForm(form);
-			
+			AppendForm(form);			
 			AppendIndentedLine("self.ResumeLayout(False)");
 			AppendIndentedLine("self.PerformLayout()");
 		}
@@ -98,12 +99,16 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void AppendForm(Form form)
 		{
+			
+			// Add the controls on the form.
 			foreach (Control control in form.Controls) {
 				AppendControl(control);
 			}
 			
+			// Add form.
 			AppendControl(form, false);
 			
+			// Add controls to form.
 			foreach (Control control in form.Controls) {
 				AppendIndentedLine("self.Controls.Add(self." + control.Name + ")");
 			}
@@ -150,7 +155,7 @@ namespace ICSharpCode.PythonBinding
 			if (String.IsNullOrEmpty(propertyOwnerName)) {
 				return "self." + propertyName;
 			}
-			return "self." + propertyOwnerName + "." + propertyName;
+			return "self._" + propertyOwnerName + "." + propertyName;
 		}
 		
 		/// <summary>
@@ -192,6 +197,11 @@ namespace ICSharpCode.PythonBinding
 				codeBuilder.Append(indentString);
 			}			
 			codeBuilder.Append(text);
+		}
+		
+		void AppendControlCreation(Control control)
+		{
+			AppendIndentedLine("self._" + control.Name + " = " + control.GetType().FullName + "()");			
 		}
 	}
 }

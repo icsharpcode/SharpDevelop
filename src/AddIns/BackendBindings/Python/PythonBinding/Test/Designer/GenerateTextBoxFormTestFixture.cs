@@ -44,14 +44,15 @@ namespace PythonBinding.Tests.Designer
 		public void GeneratedCode()
 		{
 			string expectedCode = "def InitializeComponent(self):\r\n" +
+								"    self._textBox1 = System.Windows.Forms.TextBox()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # textBox1\r\n" +
 								"    # \r\n" +
-								"    self.textBox1.Location = System.Drawing.Point(10, 10)\r\n" +
-								"    self.textBox1.Name = \"textBox1\"\r\n" +
-								"    self.textBox1.Size = System.Drawing.Size(110, 20)\r\n" +
-								"    self.textBox1.TabIndex = 1\r\n" +
+								"    self._textBox1.Location = System.Drawing.Point(10, 10)\r\n" +
+								"    self._textBox1.Name = \"textBox1\"\r\n" +
+								"    self._textBox1.Size = System.Drawing.Size(110, 20)\r\n" +
+								"    self._textBox1.TabIndex = 1\r\n" +
 								"    # \r\n" +
 								"    # MainForm\r\n" +
 								"    # \r\n" +

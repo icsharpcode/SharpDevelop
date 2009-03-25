@@ -44,6 +44,13 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// From a member expression of the form: self._textBox1.Name this property will return "textBox1".
+		/// </summary>		
+		public string VariableName {
+			get { return GetVariableNameFromSelfReference(fullMemberName); }
+		}
+		
+		/// <summary>
 		/// Creates a PythonControlField from a member expression:
 		/// 
 		/// self._textBox1
@@ -55,28 +62,7 @@ namespace ICSharpCode.PythonBinding
 			string fullMemberName = PythonControlFieldExpression.GetMemberName(expression);
 			return new PythonControlFieldExpression(memberName, fullMemberName);
 		}
-		
-		/// <summary>
-		/// Gets the variable name from an expression of the form:
-		/// 
-		/// self._textBox1.Name
-		/// 
-		/// Returns "textBox1"
-		/// </summary>
-		public static string GetVariableNameFromSelfReference(string name)
-		{
-			int startIndex = name.IndexOf('.');
-			if (startIndex > 0) {
-				name = name.Substring(startIndex + 1);
-				int endIndex = name.IndexOf('.');
-				if (endIndex > 0) {
-					return GetVariableName(name.Substring(0, endIndex));
-				}
-				return String.Empty;
-			}
-			return name;
-		}
-		
+				
 		/// <summary>
 		/// From a name such as "System.Windows.Forms.Cursors.AppStarting" this method returns:
 		/// "System.Windows.Forms.Cursors"
@@ -139,6 +125,27 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			return typeName.ToString();
+		}
+		
+		/// <summary>
+		/// Gets the variable name from an expression of the form:
+		/// 
+		/// self._textBox1.Name
+		/// 
+		/// Returns "textBox1"
+		/// </summary>
+		static string GetVariableNameFromSelfReference(string name)
+		{
+			int startIndex = name.IndexOf('.');
+			if (startIndex > 0) {
+				name = name.Substring(startIndex + 1);
+				int endIndex = name.IndexOf('.');
+				if (endIndex > 0) {
+					return GetVariableName(name.Substring(0, endIndex));
+				}
+				return String.Empty;
+			}
+			return name;
 		}		
 	}
 }

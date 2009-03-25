@@ -111,8 +111,8 @@ namespace ICSharpCode.PythonBinding
 					Type type = componentCreator.GetType(name);
 					if (type != null) {
 						List<object> args = deserializer.GetArguments(node);
-						object instance = componentCreator.CreateInstance(type, args, fieldExpression.MemberName, false);
-						if (!SetPropertyValue(form, fieldExpression.MemberName, instance)) {
+						object instance = componentCreator.CreateInstance(type, args, null, false);
+						if (!SetPropertyValue(fieldExpression.MemberName, instance)) {
 							AddComponent(fieldExpression.MemberName, instance);
 						}
 					} else {
@@ -184,12 +184,10 @@ namespace ICSharpCode.PythonBinding
 		Control GetControl(string name)
 		{
 			object o = null;
-			if (createdObjects.TryGetValue(name, out o)) {
-				return o as Control;
-			}
-			return null;
+			createdObjects.TryGetValue(name, out o);
+			return o as Control;
 		}
-		
+
 		/// <summary>
 		/// Adds a component to the list of created objects.
 		/// </summary>
@@ -199,12 +197,14 @@ namespace ICSharpCode.PythonBinding
 			componentCreator.Add(component as IComponent, variableName);
 			createdObjects.Add(variableName, component);
 		}
-		
+				
+		/// <summary>
+		/// Gets the current control being walked.
+		/// </summary>
 		Control GetCurrentControl()
 		{
-			string variableName = PythonControlFieldExpression.GetVariableNameFromSelfReference(fieldExpression.FullMemberName);
-			if (variableName.Length > 0) {
-				return GetControl(variableName);
+			if (fieldExpression.VariableName.Length > 0) {
+				return GetControl(fieldExpression.VariableName);
 			}
 			return form;
 		}

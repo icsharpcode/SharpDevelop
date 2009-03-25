@@ -100,7 +100,7 @@ namespace PythonBinding.Tests.Designer
 			args.Add(width);
 			args.Add(height);
 			
-			CreatedInstance expectedInstance = new CreatedInstance(typeof(Size), args, "ClientSize", false);
+			CreatedInstance expectedInstance = new CreatedInstance(typeof(Size), args, null, false);
 			Assert.AreEqual(expectedInstance, CreatedInstances[0]);
 		}		
 	}
