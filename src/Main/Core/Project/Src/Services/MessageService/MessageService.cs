@@ -125,7 +125,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static bool AskQuestion(string question)
 		{
-			return AskQuestion(StringParser.Parse(question), StringParser.Parse("${res:Global.QuestionText}"));
+			return AskQuestion(question, StringParser.Parse("${res:Global.QuestionText}"));
 		}
 		
 		/// <summary>
@@ -211,7 +211,9 @@ namespace ICSharpCode.Core
 		{
 			try {
 				return String.Format(StringParser.Parse(formatstring), formatitems);
-			} catch (FormatException) {
+			} catch (FormatException ex) {
+				LoggingService.Warn(ex);
+				
 				StringBuilder b = new StringBuilder(StringParser.Parse(formatstring));
 				foreach(string formatitem in formatitems) {
 					b.Append("\nItem: ");

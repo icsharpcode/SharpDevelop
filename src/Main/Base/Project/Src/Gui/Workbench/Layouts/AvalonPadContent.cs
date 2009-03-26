@@ -18,12 +18,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 	sealed class AvalonPadContent : DockableContent, IDisposable
 	{
 		PadDescriptor descriptor;
-		IPadContent content;
+		IPadContent padInstance;
 		AvalonDockLayout layout;
 		TextBlock placeholder;
 		
 		public IPadContent PadContent {
-			get { return content; }
+			get { return padInstance; }
 		}
 		
 		public AvalonPadContent(AvalonDockLayout layout, PadDescriptor descriptor)
@@ -49,9 +49,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (placeholder != null && placeholder.IsVisible && !layout.Busy) {
 				placeholder.IsVisibleChanged -= AvalonPadContent_IsVisibleChanged;
-				content = descriptor.PadContent;
-				if (content != null) {
-					this.SetContent(content.Content);
+				padInstance = descriptor.PadContent;
+				if (padInstance != null) {
+					this.SetContent(padInstance.Content, padInstance);
 					placeholder = null;
 				}
 			}
@@ -59,8 +59,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 
 		public void Dispose()
 		{
-			if (content != null) {
-				content.Dispose();
+			if (padInstance != null) {
+				padInstance.Dispose();
 			}
 		}
 	}

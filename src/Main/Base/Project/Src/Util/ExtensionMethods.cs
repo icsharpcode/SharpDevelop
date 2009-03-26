@@ -127,50 +127,37 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void SetContent(this ContentControl contentControl, object content)
 		{
+			SetContent(contentControl, content, null);
+		}
+		
+		public static void SetContent(this ContentControl contentControl, object content, object serviceObject)
+		{
 			if (contentControl == null)
 				throw new ArgumentNullException("contentControl");
+			// serviceObject = object implementing the old clipboard/undo interfaces
+			// to allow WinForms AddIns to handle WPF commands
+			
 			var host = contentControl.Content as SDWindowsFormsHost;
 			if (host != null) {
-				if (host.Child == content)
+				if (host.Child == content) {
+					host.ServiceObject = serviceObject;
 					return;
+				}
 				host.Dispose();
 			}
 			if (content is WinForms.Control) {
-				contentControl.Content = new SDWindowsFormsHost((WinForms.Control)content);
+				contentControl.Content = new SDWindowsFormsHost {
+					Child = (WinForms.Control)content,
+					ServiceObject = serviceObject,
+					DisposeChild = false
+				};
 			} else if (content is string) {
-				contentControl.Content = new TextBlock(new Run(content.ToString())) { TextWrapping = TextWrapping.Wrap };
+				contentControl.Content = new TextBlock { 
+					Text = content.ToString(),
+					TextWrapping = TextWrapping.Wrap
+				};
 			} else {
 				contentControl.Content = content;
-			}
-		}
-		
-		/// <summary>
-		/// WindowsFormsHost that prevents its child from being disposed.
-		/// The default WindowsFormsHost disposes its child when the WPF application shuts down,
-		/// but some events in SharpDevelop occur after the WPF shutdown (e.g. SolutionClosed), so we must
-		/// not dispose pads that could still be handling them.
-		/// </summary>
-		class SDWindowsFormsHost : WinForms.Integration.WindowsFormsHost
-		{
-			public SDWindowsFormsHost(WinForms.Control child)
-			{
-				this.Child = child;
-				child.Disposed += child_Disposed;
-			}
-			
-			void child_Disposed(object sender, EventArgs e)
-			{
-				Dispose();
-			}
-			
-			protected override void Dispose(bool disposing)
-			{
-				if (disposing && Child != null) {
-					Child.Disposed -= child_Disposed;
-					// prevent child from being disposed
-					Child = null;
-				}
-				base.Dispose(disposing);
 			}
 		}
 	}

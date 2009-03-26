@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (userContent != value) {
 					userContent = value;
 					if (errorList.Count == 0) {
-						contentControl.SetContent(userContent);
+						contentControl.SetContent(userContent, this);
 					}
 				}
 			}
@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				errorTextBox.Background = SystemColors.WindowBrush;
 			}
 			errorTextBox.Text = String.Concat(this.LoadErrorHeaderText, ex.ToString());
-			contentControl.SetContent(errorTextBox);
+			contentControl.SetContent(errorTextBox, this);
 		}
 		
 		Dictionary<OpenedFile, LoadError> errorList = new Dictionary<OpenedFile, LoadError>();
@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (errorList.Count > 0) {
 					errorList.Remove(file);
 					if (errorList.Count == 0) {
-						contentControl.SetContent(userContent);
+						contentControl.SetContent(userContent, this);
 					} else {
 						ShowError(errorList.Values.First().exception);
 					}

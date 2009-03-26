@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			IToolsHost th = WorkbenchSingleton.Workbench.ActiveViewContent as IToolsHost;
 			if (th != null && th.ToolsContent != null) {
-				contentControl.SetContent(th.ToolsContent);
+				contentControl.SetContent(th.ToolsContent, th);
 			} else {
 				contentControl.SetContent(StringParser.Parse("${res:SharpDevelop.SideBar.NoToolsAvailableForCurrentDocument}"));
 			}

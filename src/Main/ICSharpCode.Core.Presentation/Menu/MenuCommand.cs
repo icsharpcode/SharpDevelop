@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,25 @@ namespace ICSharpCode.Core.Presentation
 {
 	class CommandWrapper : System.Windows.Input.ICommand
 	{
+		public static System.Windows.Input.ICommand GetCommand(Codon codon, object caller, bool createCommand)
+		{
+			string commandName = codon.Properties["command"];
+			if (!string.IsNullOrEmpty(commandName)) {
+				PropertyInfo p = typeof(ApplicationCommands).GetProperty(commandName);
+				if (p == null) {
+					p = typeof(NavigationCommands).GetProperty(commandName);
+				}
+				if (p != null) {
+					return (System.Windows.Input.ICommand)p.GetValue(null, null);
+				} else {
+					MessageService.ShowError("Could not find WPF command '" + commandName + "'.");
+					// return dummy command
+					return new CommandWrapper(codon, caller, null);
+				}
+			}
+			return new CommandWrapper(codon, caller, createCommand);
+		}
+		
 		bool commandCreated;
 		ICommand addInCommand;
 		readonly Codon codon;
@@ -101,7 +121,7 @@ namespace ICSharpCode.Core.Presentation
 	{
 		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
 		{
-			this.Command = new CommandWrapper(codon, caller, createCommand);
+			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
 				inputBindingOwner.InputBindings.Add(

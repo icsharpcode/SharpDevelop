@@ -725,6 +725,7 @@
     <Compile Include="Src\Project\CompilableProject.cs" />
     <Compile Include="Src\Project\MSBuildInternals.cs" />
     <Compile Include="Src\Util\Pair.cs" />
+    <Compile Include="Src\Util\SDWindowsFormsHost.cs" />
     <Compile Include="Src\Util\Set.cs" />
     <Compile Include="Src\Util\ReadOnlyCollectionWrapper.cs" />
     <Compile Include="Src\Project\Items\ItemType.cs" />

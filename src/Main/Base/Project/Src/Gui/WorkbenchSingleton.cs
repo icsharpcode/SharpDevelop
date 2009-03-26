@@ -57,22 +57,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public static Control ActiveControl {
-			get {
-				return null;
-				/*
-				ContainerControl container = WorkbenchSingleton.MainForm;
-				Control ctl;
-				do {
-					ctl = container.ActiveControl;
-					if (ctl == null)
-						return container;
-					container = ctl as ContainerControl;
-				} while(container != null);
-				return ctl;*/
-			}
-		}
-		
 		/// <remarks>
 		/// This method handles the redraw all event for specific changed IDE properties
 		/// </remarks>

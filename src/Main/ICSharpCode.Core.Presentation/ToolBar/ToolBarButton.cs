@@ -26,7 +26,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			this.codon = codon;
 			this.caller = caller;
-			this.Command = new CommandWrapper(codon, caller, createCommand);
+			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
 			
 			if (codon.Properties.Contains("icon")) {
 				var image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
