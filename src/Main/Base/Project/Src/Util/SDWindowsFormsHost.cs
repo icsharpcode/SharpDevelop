@@ -11,9 +11,8 @@ using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
 using ICSharpCode.SharpDevelop.DefaultEditor;
-using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
 	/// WindowsFormsHost used in SharpDevelop.

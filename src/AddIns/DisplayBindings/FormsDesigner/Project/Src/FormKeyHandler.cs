@@ -96,7 +96,6 @@ namespace ICSharpCode.FormsDesigner
 					}
 				}
 				LoggingService.Debug("Run menu command: " + commandWrapper.CommandID);
-				Control ctl = WorkbenchSingleton.ActiveControl;
 				
 				IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.Host.GetService(typeof(IMenuCommandService));
 				ISelectionService   selectionService = (ISelectionService)formDesigner.Host.GetService(typeof(ISelectionService));
