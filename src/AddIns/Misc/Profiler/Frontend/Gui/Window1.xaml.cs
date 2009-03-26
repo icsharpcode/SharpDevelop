@@ -166,11 +166,12 @@ namespace ICSharpCode.Profiler.Frontend
 			e.Handled = true;
 		}
 		
-		void HandleError(CompilerError error)
+		void HandleError(IEnumerable<CompilerError> errors)
 		{
 			this.Dispatcher.Invoke(
 				(Action)(delegate() {
-				         	txtOutput.AppendText(error.ToString() + Environment.NewLine);
+				         	foreach (CompilerError error in errors)
+				         		txtOutput.AppendText(error.ToString() + Environment.NewLine);
 				         }));
 		}
 

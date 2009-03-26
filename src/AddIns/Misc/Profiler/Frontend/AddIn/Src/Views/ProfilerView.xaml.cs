@@ -1,13 +1,10 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 using ICSharpCode.Core.Presentation;
@@ -16,6 +13,7 @@ using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.Profiler.Controller.Queries;
 using ICSharpCode.Profiler.Controls;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Profiler.AddIn.Views
 {
@@ -92,9 +90,14 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			tabView.Items.Remove(((Button)sender).Tag);
 		}
 		
-		void UpdateErrorList(System.CodeDom.Compiler.CompilerError error)
+		void UpdateErrorList(IEnumerable<CompilerError> errors)
 		{
-			Dispatcher.Invoke((Action)(() => TaskService.Add(new Task("", error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error))));
+			Dispatcher.Invoke(
+				() => {
+					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+					TaskService.ClearExceptCommentTasks();
+					TaskService.AddRange(errors.Select(error => new Task("", error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)));
+				});
 		}
 		
 		void tabView_SelectionChanged(object sender, SelectionChangedEventArgs e)

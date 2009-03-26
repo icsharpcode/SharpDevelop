@@ -20,7 +20,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 	/// <summary>
 	/// Used to report an error during compilation to a higher level.
 	/// </summary>
-	public delegate void ErrorReporter(CompilerError error);
+	public delegate void ErrorReporter(IEnumerable<CompilerError> error);
 	
 	/// <summary>
 	/// Analyzes, compiles and executes Profiler-specific LINQ queries.
@@ -79,14 +79,14 @@ namespace ICSharpCode.Profiler.Controller.Queries
 			if (!queryCache.ContainsKey(this.currentQuery)) {
 				string code = text + PreprocessString(currentQuery) + textEnd;
 				CompilerResults results = csc.CompileAssemblyFromSource(GetParameters(), code);
+				report(results.Errors.Cast<CompilerError>());
 				
-				if (results.Errors.Count > 0) {
-					foreach (CompilerError error in results.Errors)
-						report(error);
+				if (results.Errors.Count > 0)
 					return false;
-				}
 				
 				queryCache.Add(this.currentQuery, results.CompiledAssembly);
+			} else {
+				report(new List<CompilerError>().AsEnumerable()); // clear errors list
 			}
 
 			return true;
