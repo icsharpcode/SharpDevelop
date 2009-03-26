@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 
 using ICSharpCode.PythonBinding;
 using IronPython.Compiler.Ast;
@@ -31,7 +32,8 @@ namespace PythonBinding.Tests.Designer
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void NullIronPythonAstNode()
 		{
-			deserializer.Deserialize(null);
+			Node node = null;
+			deserializer.Deserialize(node);
 		}
 		
 		[Test]
@@ -73,7 +75,25 @@ namespace PythonBinding.Tests.Designer
 			
 			Assert.AreEqual(expectedArgs, args);
 		}
+		
+		[Test]
+		public void EnumBitwiseOr()
+		{
+			string pythonCode = "self.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom";
+			
+			AnchorStyles expectedStyles = AnchorStyles.Top | AnchorStyles.Bottom;
+			Assert.AreEqual(expectedStyles, Deserialize(pythonCode));
+		}
 
+		[Test]
+		public void MultipleEnumBitwiseOr()
+		{
+			string pythonCode = "self.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left";
+			
+			AnchorStyles expectedStyles = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+			Assert.AreEqual(expectedStyles, Deserialize(pythonCode));
+		}
+		
 		/// <summary>
 		/// Deserializes the right hand side of the assignment.
 		/// </summary>

@@ -146,6 +146,12 @@ namespace PyWalker
 			return base.Walk(node);
 		}
 		
+		public override bool Walk(MemberExpression node)
+		{
+			writer.WriteLine("Member: " + node.Name);
+			return base.Walk(node);
+		}
+		
 		public override bool Walk(FromImportStatement node)
 		{
 			writer.WriteLine("FromImport: " + node.Root.MakeString());

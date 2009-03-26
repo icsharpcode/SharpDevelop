@@ -58,10 +58,27 @@ namespace ICSharpCode.PythonBinding
 	
 			MemberExpression memberExpression = node as MemberExpression;
 			CallExpression callExpression = node as CallExpression;
+			BinaryExpression binaryExpression = node as BinaryExpression;
 			if (callExpression != null) {
 				return Deserialize(callExpression);
-			} 
+			} else if (binaryExpression != null) {
+				return Deserialize(binaryExpression);
+			}
 			return Deserialize(memberExpression);
+		}
+		
+		/// <summary>
+		/// Deserializes expressions of the form:
+		/// 
+		/// System.Windows.Form.AnchorStyles.Top | System.Windows.Form.AnchorStyles.Bottom
+		/// </summary>
+		public object Deserialize(BinaryExpression binaryExpression)
+		{
+			object lhs = Deserialize(binaryExpression.Left);
+			object rhs = Deserialize(binaryExpression.Right);
+			
+			int value = Convert.ToInt32(lhs) | Convert.ToInt32(rhs);
+			return Enum.ToObject(lhs.GetType(), value);			
 		}
 
 		/// <summary>

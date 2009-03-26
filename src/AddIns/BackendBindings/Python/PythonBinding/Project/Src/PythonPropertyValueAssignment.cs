@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using System.Reflection;
+using System.Text;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -42,8 +43,6 @@ namespace ICSharpCode.PythonBinding
 			} else if (propertyType == typeof(SizeF)) {
 				SizeF size = (SizeF)propertyValue;
 				return size.GetType().FullName + "(" + size.Width + ", " + size.Height + ")";				
-			} else if (propertyType.IsEnum) {
-				return propertyType.FullName + "." + propertyValue.ToString();
 			} else if (propertyType == typeof(Cursor)) {
 				return GetCursorAsString(propertyValue as Cursor);
 			} else if (propertyType == typeof(Point)) {
@@ -58,6 +57,11 @@ namespace ICSharpCode.PythonBinding
 			} else if (propertyType == typeof(Font)) {
 				Font font = (Font)propertyValue;
 				return GetFontAsString(font);
+			} else if (propertyType == typeof(AnchorStyles)) {
+				AnchorStyles anchor = (AnchorStyles)propertyValue;
+				return GetAnchorStyleAsString(anchor);
+			} else if (propertyType.IsEnum) {
+				return propertyType.FullName + "." + propertyValue.ToString();
 			}
 			return propertyValue.ToString();
 		}
@@ -99,6 +103,31 @@ namespace ICSharpCode.PythonBinding
 		static string GetFontAsString(Font font)
 		{
 			return String.Concat(font.GetType().FullName, "(\"", font.Name, "\", ", font.Size.ToString(CultureInfo.InvariantCulture), ", ", typeof(FontStyle).FullName, ".", font.Style, ", ", typeof(GraphicsUnit).FullName, ".", font.Unit, ", ", font.GdiCharSet, ")");
+		}
+		
+		static string GetAnchorStyleAsString(AnchorStyles anchorStyles)
+		{
+			if (anchorStyles == AnchorStyles.None) {
+				return typeof(AnchorStyles).FullName + "." + AnchorStyles.None;
+			}
+			
+			StringBuilder text = new StringBuilder();
+			bool firstStyle = true;
+			foreach (AnchorStyles style in AnchorStyles.GetValues(typeof(AnchorStyles))) {
+				if (style != AnchorStyles.None) {
+					if ((anchorStyles & style) == style) {
+						if (firstStyle) {
+							firstStyle = false;
+						} else {
+							text.Append(" | ");
+						}
+						text.Append(typeof(AnchorStyles).FullName);
+						text.Append('.');
+						text.Append(style);
+					}
+				}
+			}
+			return text.ToString();
 		}
 	}
 }

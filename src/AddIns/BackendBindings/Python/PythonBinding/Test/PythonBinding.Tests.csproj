@@ -168,6 +168,7 @@
     <Compile Include="Designer\InsertNewEventHandlerTestFixture.cs" />
     <Compile Include="Designer\IsFullyQualifiedBaseClassFormDesignableTestFixture.cs" />
     <Compile Include="Designer\LoadAccessibleRoleTestFixture.cs" />
+    <Compile Include="Designer\LoadAnchorStylesFormTestFixture.cs" />
     <Compile Include="Designer\LoadColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\LoadCursorTestFixture.cs" />
     <Compile Include="Designer\LoadFontTestFixture.cs" />

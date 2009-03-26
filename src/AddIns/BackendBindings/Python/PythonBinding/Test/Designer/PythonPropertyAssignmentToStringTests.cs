@@ -8,6 +8,7 @@
 using System;
 using System.Drawing;
 using System.Globalization;
+using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -47,5 +48,22 @@ namespace PythonBinding.Tests.Designer
 			SizeF sizeF = new SizeF(4, 10);
 			Assert.AreEqual("System.Drawing.SizeF(4, 10)", PythonPropertyValueAssignment.ToString(sizeF));
 		}
+		
+		[Test]
+		public void AnchorStyleToString()
+		{
+			AnchorStyles anchorStyle = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			string expectedText = "System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right";
+			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(anchorStyle));
+		}
+		
+		[Test]
+		public void AnchorStyleNoneToString()
+		{
+			AnchorStyles anchorStyle = AnchorStyles.None;
+			string expectedText = "System.Windows.Forms.AnchorStyles.None";
+			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(anchorStyle));
+		}
+		
 	}
 }

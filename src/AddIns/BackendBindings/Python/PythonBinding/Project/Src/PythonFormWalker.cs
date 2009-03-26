@@ -88,7 +88,12 @@ namespace ICSharpCode.PythonBinding
 						SetPropertyValue(fieldExpression.MemberName, propertyValue);
 					} else {
 						walkingAssignment = true;
-						node.Right.Walk(this);
+						BinaryExpression binaryExpression = node.Right as BinaryExpression;
+						if (binaryExpression != null) {
+							WalkAssignment(binaryExpression);
+						} else {
+							node.Right.Walk(this);
+						}
 						walkingAssignment = false;
 					}
 				}	
@@ -135,6 +140,15 @@ namespace ICSharpCode.PythonBinding
 		{
 			SetPropertyValue(fieldExpression.MemberName, node.Name.ToString());
 			return false;
+		}
+		
+		/// <summary>
+		/// Walks the binary expression which is the right hand side of an assignment statement.
+		/// </summary>
+		void WalkAssignment(BinaryExpression binaryExpression)
+		{
+			object value = deserializer.Deserialize(binaryExpression);
+			SetPropertyValue(fieldExpression.MemberName, value);
 		}
 		
 		static bool IsInitializeComponentMethod(FunctionDefinition node)
