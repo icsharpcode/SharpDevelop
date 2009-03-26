@@ -36,6 +36,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.TextArea.TextEntered += TextArea_TextInput;
 			this.MouseHover += CodeEditor_MouseHover;
 			this.MouseHoverStopped += CodeEditor_MouseHoverStopped;
+			this.TextArea.DefaultInputHandler.CommandBindings.Add(
+				new CommandBinding(CustomCommands.CodeCompletion, OnCodeCompletion));
 		}
 		
 		ToolTip toolTip;
@@ -111,6 +113,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						e.Handled = true;
 						return;
 					}
+				}
+			}
+		}
+		
+		void OnCodeCompletion(object sender, ExecutedRoutedEventArgs e)
+		{
+			if (completionWindow != null)
+				completionWindow.Close();
+			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
+				if (cc.CtrlSpace(textEditorAdapter)) {
+					e.Handled = true;
+					break;
 				}
 			}
 		}

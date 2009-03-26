@@ -1,0 +1,24 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Daniel Grunwald"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+using System.Windows.Input;
+
+namespace ICSharpCode.AvalonEdit.AddIn
+{
+	/// <summary>
+	/// Custom commands for AvalonEdit.
+	/// </summary>
+	public static class CustomCommands
+	{
+		public static readonly RoutedCommand CodeCompletion = new RoutedCommand(
+			"CtrlSpaceCompletion", typeof(CodeEditor),
+			new InputGestureCollection {
+				new KeyGesture(Key.Space, ModifierKeys.Control)
+			});
+	}
+}

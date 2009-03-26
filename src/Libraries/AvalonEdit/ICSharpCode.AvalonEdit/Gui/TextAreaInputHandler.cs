@@ -118,7 +118,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <param name="modifiers">The modifiers of the keyboard shortcut.</param>
 		/// <param name="key">The key of the keyboard shortcut.</param>
 		/// <param name="handler">The event handler to run when the command is executed.</param>
-		protected void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
+		public void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
 		{
 			this.CommandBindings.Add(new CommandBinding(command, handler));
 			this.InputBindings.Add(new KeyBinding(command, key, modifiers));

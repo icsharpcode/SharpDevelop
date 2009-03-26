@@ -65,6 +65,7 @@
     <Compile Include="Src\AvalonEditViewContent.cs" />
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
+    <Compile Include="Src\CustomCommands.cs" />
     <Compile Include="Src\SharpDevelopCompletionWindow.cs" />
   </ItemGroup>
   <ItemGroup>
