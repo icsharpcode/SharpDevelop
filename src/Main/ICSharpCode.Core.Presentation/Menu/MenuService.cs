@@ -78,8 +78,10 @@ namespace ICSharpCode.Core.Presentation
 		internal static IList CreateMenuItems(UIElement inputBindingOwner, IEnumerable descriptors)
 		{
 			ArrayList result = new ArrayList();
-			foreach (MenuItemDescriptor descriptor in descriptors) {
-				result.Add(CreateMenuItemFromDescriptor(inputBindingOwner, descriptor));
+			if (descriptors != null) {
+				foreach (MenuItemDescriptor descriptor in descriptors) {
+					result.Add(CreateMenuItemFromDescriptor(inputBindingOwner, descriptor));
+				}
 			}
 			return result;
 		}

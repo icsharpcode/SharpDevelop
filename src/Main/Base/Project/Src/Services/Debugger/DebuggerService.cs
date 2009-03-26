@@ -295,6 +295,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// </summary>
 		internal static void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
+			if (!e.InDocument)
+				return;
 			Location logicPos = e.LogicalPosition;
 			var doc = e.Editor.Document;
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(e.Editor.FileName);

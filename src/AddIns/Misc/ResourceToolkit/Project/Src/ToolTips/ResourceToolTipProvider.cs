@@ -23,6 +23,9 @@ namespace Hornung.ResourceToolkit.ToolTips
 	{
 		public void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
+			if (!e.InDocument)
+				return;
+			
 			Location logicPos = e.LogicalPosition;
 			IDocument doc = e.Editor.Document;
 			if (logicPos.X > doc.GetLine(logicPos.Y).Length) {
