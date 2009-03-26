@@ -5,14 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -37,7 +38,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.MouseHover += CodeEditor_MouseHover;
 			this.MouseHoverStopped += CodeEditor_MouseHoverStopped;
 			this.TextArea.DefaultInputHandler.CommandBindings.Add(
-				new CommandBinding(CustomCommands.CodeCompletion, OnCodeCompletion));
+				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
+			this.TextArea.DefaultInputHandler.CommandBindings.Add(
+				new CommandBinding(CustomCommands.DeleteLine, OnDeleteLine));
 		}
 		
 		ToolTip toolTip;
@@ -126,6 +129,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					e.Handled = true;
 					break;
 				}
+			}
+		}
+		
+		void OnDeleteLine(object sender, ExecutedRoutedEventArgs e)
+		{
+			e.Handled = true;
+			using (this.Document.RunUpdate()) {
+				DocumentLine currentLine = this.Document.GetLineByNumber(this.TextArea.Caret.Line);
+				this.Select(currentLine.Offset, currentLine.TotalLength);
+				this.SelectedText = string.Empty;
 			}
 		}
 		

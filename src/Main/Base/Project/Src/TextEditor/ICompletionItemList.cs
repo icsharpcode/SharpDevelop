@@ -15,9 +15,22 @@ namespace ICSharpCode.SharpDevelop
 {
 	public interface ICompletionItemList
 	{
+		/// <summary>
+		/// Gets the items in the list.
+		/// </summary>
 		IEnumerable<ICompletionItem> Items { get; }
 		
+		/// <summary>
+		/// Gets/sets the suggested item.
+		/// This item will be pre-selected in the completion list.
+		/// </summary>
 		ICompletionItem SuggestedItem { get; }
+		
+		/// <summary>
+		/// Gets the length of the preselection (text in front of the completion list that
+		/// should be included as completed expression).
+		/// </summary>
+		int PreselectionLength { get; }
 		
 		/// <summary>
 		/// Processes the specified key press.
@@ -51,11 +64,19 @@ namespace ICSharpCode.SharpDevelop
 			get { return items; }
 		}
 		
+		/// <summary>
+		/// Sorts the items by their text.
+		/// </summary>
 		public void SortItems()
 		{
-			items.Sort((a,b) => string.Compare(a.Text, b.Text, StringComparison.OrdinalIgnoreCase));
+			// the user might use method names is his language, so sort using CurrentCulture
+			items.Sort((a,b) => string.Compare(a.Text, b.Text, StringComparison.CurrentCultureIgnoreCase));
 		}
 		
+		/// <inheritdoc/>
+		public int PreselectionLength { get; set; }
+		
+		/// <inheritdoc/>
 		public ICompletionItem SuggestedItem { get; set; }
 		
 		IEnumerable<ICompletionItem> ICompletionItemList.Items {
@@ -67,6 +88,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public bool InsertSpace { get; set; }
 		
+		/// <inheritdoc/>
 		public virtual CompletionItemListKeyResult ProcessInput(char key)
 		{
 			if (key == ' ' && this.InsertSpace) {

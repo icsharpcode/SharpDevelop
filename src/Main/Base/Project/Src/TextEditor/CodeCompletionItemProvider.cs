@@ -102,12 +102,22 @@ namespace ICSharpCode.SharpDevelop
 			return GenerateCompletionListForCompletionData(arr, context);
 		}
 		
+		protected virtual DefaultCompletionItemList CreateCompletionItemList()
+		{
+			return new DefaultCompletionItemList();
+		}
+		
+		protected virtual void InitializeCompletionItemList(DefaultCompletionItemList list)
+		{
+			list.SortItems();
+		}
+		
 		public virtual ICompletionItemList GenerateCompletionListForCompletionData(ArrayList arr, ExpressionContext context)
 		{
 			if (arr == null)
 				return null;
 			
-			DefaultCompletionItemList result = new DefaultCompletionItemList();
+			DefaultCompletionItemList result = CreateCompletionItemList();
 			Dictionary<string, CodeCompletionItem> methodItems = new Dictionary<string, CodeCompletionItem>();
 			foreach (object o in arr) {
 				if (context != null && !context.ShowEntry(o))
@@ -133,7 +143,7 @@ namespace ICSharpCode.SharpDevelop
 						result.SuggestedItem = item;
 				}
 			}
-			result.SortItems();
+			InitializeCompletionItemList(result);
 			
 			if (context.SuggestedItem != null) {
 				if (result.SuggestedItem == null) {

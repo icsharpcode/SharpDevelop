@@ -644,10 +644,14 @@ namespace ICSharpCode.AvalonEdit
 		
 		internal void ReplaceSelectionWithText(string newText)
 		{
+			if (newText == null)
+				throw new ArgumentNullException("newText");
 			using (Document.RunUpdate()) {
 				RemoveSelectedText();
-				if (ReadOnlySectionProvider.CanInsert(Caret.Offset)) {
-					Document.Insert(Caret.Offset, newText);
+				if (newText.Length > 0) {
+					if (ReadOnlySectionProvider.CanInsert(Caret.Offset)) {
+						Document.Insert(Caret.Offset, newText);
+					}
 				}
 			}
 		}

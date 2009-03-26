@@ -133,11 +133,16 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		
 		/// <summary>
-		/// Gets the selected item.
+		/// Gets/Sets the selected item.
 		/// </summary>
 		public ICompletionData SelectedItem {
 			get {
-				return listBox.SelectedItem as ICompletionData;
+				return (listBox != null ? listBox.SelectedItem : null) as ICompletionData;
+			}
+			set {
+				if (listBox == null && value != null)
+					ApplyTemplate();
+				listBox.SelectedItem = value;
 			}
 		}
 		
@@ -156,6 +161,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			if (string.IsNullOrEmpty(startText))
 				return;
+			if (listBox == null)
+				ApplyTemplate();
 			int selectedItem = listBox.SelectedIndex;
 			
 			int bestIndex = -1;

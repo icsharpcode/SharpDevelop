@@ -5,11 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -26,8 +27,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (itemList == null)
 				throw new ArgumentNullException("itemList");
 			this.itemList = itemList;
+			ICompletionItem suggestedItem = itemList.SuggestedItem;
 			foreach (ICompletionItem item in itemList.Items) {
-				this.CompletionList.CompletionData.Add(new CodeCompletionDataAdapter(item));
+				ICompletionData adapter = new CodeCompletionDataAdapter(item);
+				this.CompletionList.CompletionData.Add(adapter);
+				if (item == suggestedItem)
+					this.CompletionList.SelectedItem = adapter;
+			}
+			this.StartOffset -= itemList.PreselectionLength;
+		}
+		
+		protected override void OnSourceInitialized(EventArgs e)
+		{
+			base.OnSourceInitialized(e);
+			if (itemList.PreselectionLength > 0 && itemList.SuggestedItem == null) {
+				string preselection = this.TextArea.Document.GetText(this.StartOffset, this.EndOffset - this.StartOffset);
+				this.CompletionList.SelectItemWithStart(preselection);
 			}
 		}
 		

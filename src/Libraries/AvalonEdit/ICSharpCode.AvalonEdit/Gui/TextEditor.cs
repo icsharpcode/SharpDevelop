@@ -582,11 +582,7 @@ namespace ICSharpCode.AvalonEdit
 					throw new ArgumentNullException("value");
 				TextArea textArea = this.TextArea;
 				if (textArea != null && textArea.Document != null) {
-					using (textArea.Document.RunUpdate()) {
-						textArea.RemoveSelectedText();
-						if (textArea.ReadOnlySectionProvider.CanInsert(textArea.Caret.Offset))
-							textArea.Document.Insert(textArea.Caret.Offset, value);
-					}
+					textArea.ReplaceSelectionWithText(value);
 				}
 			}
 		}

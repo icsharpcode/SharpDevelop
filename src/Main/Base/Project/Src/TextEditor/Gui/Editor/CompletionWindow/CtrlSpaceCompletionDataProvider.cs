@@ -77,8 +77,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		 */
 		
+		int preselectionLength;
+		
 		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
+			preselectionLength = 0;
 			if (!allowCompleteExistingExpression) {
 				ExpressionContext context = overrideContext ?? ExpressionContext.Default;
 				var ctrlSpace = ParserService.CtrlSpace(editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text, context);
@@ -95,14 +98,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			int idx = expression.LastIndexOf('.');
 			if (idx > 0) {
-				//string preSelection = expression.Substring(idx + 1);
+				preselectionLength = expression.Length - (idx + 1);
 				expressionResult.Expression = expression.Substring(0, idx);
 				return GenerateCompletionListForExpression(editor, expressionResult);
 			} else {
-				//preSelection = expression;
+				preselectionLength = expression.Length;
 				ArrayList results = ParserService.CtrlSpace(editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text, expressionResult.Context);
 				return GenerateCompletionListForCompletionData(results, expressionResult.Context);
 			}
+		}
+		
+		protected override void InitializeCompletionItemList(DefaultCompletionItemList list)
+		{
+			base.InitializeCompletionItemList(list);
+			list.PreselectionLength = preselectionLength;
 		}
 	}
 }

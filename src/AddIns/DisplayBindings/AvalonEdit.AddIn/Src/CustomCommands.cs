@@ -15,10 +15,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public static class CustomCommands
 	{
-		public static readonly RoutedCommand CodeCompletion = new RoutedCommand(
+		public static readonly RoutedCommand CtrlSpaceCompletion = new RoutedCommand(
 			"CtrlSpaceCompletion", typeof(CodeEditor),
 			new InputGestureCollection {
 				new KeyGesture(Key.Space, ModifierKeys.Control)
+			});
+		
+		public static readonly RoutedCommand DeleteLine = new RoutedCommand(
+			"DeleteLine", typeof(CodeEditor),
+			new InputGestureCollection {
+				new KeyGesture(Key.D, ModifierKeys.Control)
 			});
 	}
 }

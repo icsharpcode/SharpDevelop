@@ -38,7 +38,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			// keep height automatic
 			this.SizeToContent = SizeToContent.Height;
-			this.Width = 200;
+			this.Width = 175;
 			this.Content = completionList;
 			// prevent user from resizing window to 0x0
 			this.MinHeight = 15;
