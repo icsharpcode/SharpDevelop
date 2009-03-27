@@ -14,6 +14,7 @@ using VBNetBinding.FormattingStrategy;
 
 namespace VBNetBinding.Tests
 {
+	/*
 	/// <summary>
 	/// Tests the special case of an interface. for ex. no insertion of End-Tags etc.
 	/// </summary>
@@ -54,5 +55,5 @@ namespace VBNetBinding.Tests
 				Assert.AreEqual(expectedCode, editor.Document.TextContent);
 			}
 		}
-	}
+	}*/
 }

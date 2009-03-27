@@ -15,6 +15,7 @@ using VBNetBinding.FormattingStrategy;
 
 namespace VBNetBinding.Tests
 {
+	/*
 	/// <summary>
 	/// Tests that Operator overrides have "End Operator" added after the user presses the return key.
 	/// </summary>
@@ -119,5 +120,5 @@ namespace VBNetBinding.Tests
 				Assert.AreEqual(expectedCode, editor.Document.TextContent);
 			}
 		}
-	}
+	}*/
 }
