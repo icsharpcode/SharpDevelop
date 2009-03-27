@@ -19,6 +19,7 @@ using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor
 {
+	/*
 	/// <summary>
 	/// This class currently inserts the closing tags to typed openening tags
 	/// and does smart indentation for xml files.
@@ -193,4 +194,5 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 		}
 		#endregion
 	}
+	*/
 }

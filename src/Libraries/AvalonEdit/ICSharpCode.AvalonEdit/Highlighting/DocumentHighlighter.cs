@@ -46,7 +46,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				throw new ArgumentNullException("baseRuleSet");
 			this.document = document;
 			this.baseRuleSet = baseRuleSet;
-			document.LineTrackers.Add(new WeakLineTracker(document, this));
+			WeakLineTracker.Register(document, this);
 			InvalidateHighlighting();
 		}
 		

@@ -258,6 +258,8 @@
     <Compile Include="Highlighting\Xshd\XshdRuleSet.cs" />
     <Compile Include="Highlighting\Xshd\XshdSpan.cs" />
     <Compile Include="Highlighting\Xshd\XshdSyntaxDefinition.cs" />
+    <Compile Include="Indentation\DefaultIndentationStrategy.cs" />
+    <Compile Include="Indentation\IIndentationStrategy.cs" />
     <Compile Include="TextEditorComponent.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -328,6 +330,7 @@
     <Folder Include="Highlighting\Xshd" />
     <Folder Include="Highlighting\Resources" />
     <Folder Include="CodeCompletion" />
+    <Folder Include="Indentation" />
     <Folder Include="Utils" />
     <Folder Include="themes" />
     <Page Include="CodeCompletion\CompletionList.xaml" />

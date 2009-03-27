@@ -101,11 +101,9 @@ namespace CSharpBinding.FormattingStrategy
 		public bool Next()
 		{
 			if (lineDirty) {
-				// TODO: AVALONEDIT reimplement this
-				//DefaultFormattingStrategy.SmartReplaceLine(doc, line, text);
+				DocumentUtilitites.SmartReplaceLine(doc, line, text);
 				lineDirty = false;
 				++changedLines;
-				throw new NotImplementedException();
 			}
 			++num;
 			if (num > maxLine) return false;

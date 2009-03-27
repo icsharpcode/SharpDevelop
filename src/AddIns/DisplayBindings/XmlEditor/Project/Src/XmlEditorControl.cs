@@ -33,8 +33,8 @@ namespace ICSharpCode.XmlEditor
 		
 		public XmlEditorControl()
 		{
-			XmlFormattingStrategy strategy = new XmlFormattingStrategy();
-			Document.FormattingStrategy = (IFormattingStrategy)strategy;
+//			XmlFormattingStrategy strategy = new XmlFormattingStrategy();
+//			Document.FormattingStrategy = (IFormattingStrategy)strategy;
 			
 			Document.HighlightingStrategy = HighlightingManager.Manager.FindHighlighter("XML");
 			Document.FoldingManager.FoldingStrategy = new XmlFoldingStrategy();

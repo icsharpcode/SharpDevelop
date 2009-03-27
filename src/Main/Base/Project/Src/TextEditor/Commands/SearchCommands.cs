@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		}
 	}
 	
+	/*
 	public class RunIncrementalSearch : AbstractMenuCommand
 	{
 		static IncrementalSearch incrementalSearch;
@@ -62,5 +63,5 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				return false;
 			}
 		}
-	}
+	}*/
 }

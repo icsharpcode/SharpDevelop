@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Indentation;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -13,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -26,7 +27,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public class CodeEditor : TextEditor
 	{
 		readonly CodeEditorAdapter textEditorAdapter;
-		internal string FileName;
+		public string FileName { get; set; }
 		
 		public CodeEditor()
 		{
@@ -148,6 +149,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			completionWindow = window;
 			window.Closed += delegate { completionWindow = null; };
+		}
+		
+		IFormattingStrategy formattingStrategy;
+		
+		public IFormattingStrategy FormattingStrategy {
+			get { return formattingStrategy; }
+			set {
+				if (formattingStrategy != value) {
+					formattingStrategy = value;
+					if (value != null)
+						this.TextArea.IndentationStrategy = new IndentationStrategyAdapter(textEditorAdapter, value);
+					else
+						this.TextArea.IndentationStrategy = new DefaultIndentationStrategy();
+				}
+			}
 		}
 	}
 }

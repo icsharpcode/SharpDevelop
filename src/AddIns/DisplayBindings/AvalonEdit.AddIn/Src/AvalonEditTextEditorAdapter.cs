@@ -29,6 +29,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			this.textEditor = textEditor;
 			this.Caret = new CaretAdapter(textEditor.TextArea.Caret);
+			this.Options = new OptionsAdapter(textEditor.Options);
 			TextEditorWeakEventManager.DocumentChanged.AddListener(textEditor, this);
 			OnDocumentChanged();
 		}
@@ -60,6 +61,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public ITextEditorCaret Caret { get; private set; }
+		public ITextEditorOptions Options { get; private set; }
 		
 		sealed class CaretAdapter : ITextEditorCaret
 		{
@@ -89,6 +91,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public ICSharpCode.NRefactory.Location Position {
 				get { return AvalonEditDocumentAdapter.ToLocation(caret.Position); }
 				set { caret.Position = new TextViewPosition(AvalonEditDocumentAdapter.ToPosition(value)); }
+			}
+		}
+		
+		sealed class OptionsAdapter : ITextEditorOptions
+		{
+			TextEditorOptions avalonEditOptions;
+			
+			public OptionsAdapter(TextEditorOptions avalonEditOptions)
+			{
+				this.avalonEditOptions = avalonEditOptions;
+			}
+			
+			public string IndentationString {
+				get {
+					return avalonEditOptions.IndentationString;
+				}
 			}
 		}
 		

@@ -8,12 +8,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Gui
@@ -46,7 +48,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		static EditingCommandHandler()
 		{
-			CommandBindings.Add(new CommandBinding(ApplicationCommands.Delete, OnDelete(ApplicationCommands.NotACommand), HasSomethingSelected));
+			CommandBindings.Add(new CommandBinding(ApplicationCommands.Delete, OnDelete(ApplicationCommands.NotACommand), CanDelete));
 			AddBinding(EditingCommands.Delete, ModifierKeys.None, Key.Delete, OnDelete(EditingCommands.SelectRightByCharacter));
 			AddBinding(EditingCommands.DeleteNextWord, ModifierKeys.Control, Key.Delete, OnDelete(EditingCommands.SelectRightByWord));
 			AddBinding(EditingCommands.Backspace, ModifierKeys.None, Key.Back, OnDelete(EditingCommands.SelectLeftByCharacter));
@@ -57,8 +59,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 			AddBinding(EditingCommands.TabForward, ModifierKeys.None, Key.Tab, OnTab);
 			AddBinding(EditingCommands.TabBackward, ModifierKeys.Shift, Key.Tab, OnShiftTab);
 			
-			CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, OnCopy, HasSomethingSelected));
-			CommandBindings.Add(new CommandBinding(ApplicationCommands.Cut, OnCut, HasSomethingSelected));
+			CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, OnCopy, CanCutOrCopy));
+			CommandBindings.Add(new CommandBinding(ApplicationCommands.Cut, OnCut, CanCutOrCopy));
 			CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, OnPaste, CanPaste));
 		}
 		
@@ -73,7 +75,13 @@ namespace ICSharpCode.AvalonEdit.Gui
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
 				string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
-				textArea.ReplaceSelectionWithText(newLine);
+				using (textArea.Document.RunUpdate()) {
+					textArea.ReplaceSelectionWithText(newLine);
+					if (textArea.IndentationStrategy != null) {
+						DocumentLine line = textArea.Document.GetLineByNumber(textArea.Caret.Line);
+						textArea.IndentationStrategy.IndentLine(line);
+					}
+				}
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;
 			}
@@ -121,7 +129,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 					}
 					while (true) {
 						int offset = start.Offset;
-						ISegment s = TextUtilities.GetIndentationSegment(textArea.Document, offset, textArea.Options.IndentationSize);
+						ISegment s = TextUtilities.GetSingleIndentationSegment(textArea.Document, offset, textArea.Options.IndentationSize);
 						if (s.Length > 0) {
 							s = textArea.ReadOnlySectionProvider.GetDeletableSegments(s).FirstOrDefault();
 							if (s != null && s.Length > 0) {
@@ -151,20 +159,41 @@ namespace ICSharpCode.AvalonEdit.Gui
 						if (textArea.Selection.IsEmpty)
 							selectingCommand.Execute(args.Parameter, textArea);
 						textArea.RemoveSelectedText();
+						if (selectingCommand == EditingCommands.SelectLeftByWord) {
+							// Special case: when Ctrl+Backspace deletes until the start of the line,
+							// also delete the previous line delimiter.
+							// This allows deleting lines that consist only of indentation using a single
+							// press on Ctrl+Backspace.
+							if (textArea.Caret.Column == 1 && textArea.Caret.VisualColumn == 0 && textArea.Caret.Line > 1) {
+								DocumentLine previousLine = textArea.Document.GetLineByNumber(textArea.Caret.Line - 1);
+								textArea.Document.Remove(previousLine.EndOffset, previousLine.DelimiterLength);
+							}
+						}
 					}
 					textArea.Caret.BringCaretToView();
 					args.Handled = true;
 				}
 			};
 		}
-		#endregion
 		
-		#region Clipboard commands
-		static void HasSomethingSelected(object target, CanExecuteRoutedEventArgs args)
+		static void CanDelete(object target, CanExecuteRoutedEventArgs args)
 		{
+			// HasSomethingSelected for delete command
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
 				args.CanExecute = !textArea.Selection.IsEmpty;
+				args.Handled = true;
+			}
+		}
+		#endregion
+		
+		#region Clipboard commands
+		static void CanCutOrCopy(object target, CanExecuteRoutedEventArgs args)
+		{
+			// HasSomethingSelected for copy and cut commands
+			TextArea textArea = GetTextArea(target);
+			if (textArea != null && textArea.Document != null) {
+				args.CanExecute = textArea.Options.CutCopyWholeLine || !textArea.Selection.IsEmpty;
 				args.Handled = true;
 			}
 		}
@@ -182,8 +211,14 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				CopySelectedText(textArea);
-				textArea.RemoveSelectedText();
+				if (textArea.Selection.IsEmpty && textArea.Options.CutCopyWholeLine) {
+					DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
+					CopyWholeLine(textArea, currentLine);
+					textArea.Document.Remove(currentLine.Offset, currentLine.TotalLength);
+				} else {
+					CopySelectedText(textArea);
+					textArea.RemoveSelectedText();
+				}
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;
 			}
@@ -197,6 +232,27 @@ namespace ICSharpCode.AvalonEdit.Gui
 			// Also copy text in HTML format to clipboard - good for pasting text into Word
 			// or to the SharpDevelop forums.
 			HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragmentForSelection(textArea, new HtmlOptions(textArea.Options)));
+			Clipboard.SetDataObject(data, true);
+		}
+		
+		const string LineSelectedType = "MSDEVLineSelect";  // This is the type VS 2003 and 2005 use for flagging a whole line copy
+		
+		static void CopyWholeLine(TextArea textArea, DocumentLine line)
+		{
+			ISegment wholeLine = new SimpleSegment(line.Offset, line.TotalLength);
+			string text = textArea.Document.GetText(wholeLine);
+			// Ensure we use the appropriate newline sequence for the OS
+			DataObject data = new DataObject(NewLineFinder.NormalizeNewLines(text, Environment.NewLine));
+			
+			// Also copy text in HTML format to clipboard - good for pasting text into Word
+			// or to the SharpDevelop forums.
+			DocumentHighlighter highlighter = textArea.GetService(typeof(DocumentHighlighter)) as DocumentHighlighter;
+			HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragment(textArea.Document, highlighter, wholeLine, new HtmlOptions(textArea.Options)));
+			
+			MemoryStream lineSelected = new MemoryStream(1);
+			lineSelected.WriteByte(1);
+			data.SetData(LineSelectedType, lineSelected, false);
+			
 			Clipboard.SetDataObject(data, true);
 		}
 		
@@ -215,10 +271,18 @@ namespace ICSharpCode.AvalonEdit.Gui
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
 				Debug.WriteLine( Clipboard.GetText(TextDataFormat.Html) );
+				
 				// convert text back to correct newlines for this document
 				string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
 				string text = NewLineFinder.NormalizeNewLines(Clipboard.GetText(), newLine);
-				textArea.ReplaceSelectionWithText(text);
+				
+				bool fullLine = textArea.Options.CutCopyWholeLine && Clipboard.ContainsData(LineSelectedType);
+				if (fullLine) {
+					DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
+					textArea.Document.Insert(currentLine.Offset, text);
+				} else {
+					textArea.ReplaceSelectionWithText(text);
+				}
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;
 			}

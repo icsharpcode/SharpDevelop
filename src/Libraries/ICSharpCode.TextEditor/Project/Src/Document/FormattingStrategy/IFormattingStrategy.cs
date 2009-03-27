@@ -17,7 +17,7 @@ namespace ICSharpCode.TextEditor.Document
 	public interface IFormattingStrategy
 	{
 		/// <summary>
-		/// This function formats a specific line after <code>ch</code> is pressed.
+		/// This function formats a specific line after <code>charTyped</code> is pressed.
 		/// </summary>
 		void FormatLine(TextArea textArea, int line, int caretOffset, char charTyped);
 		

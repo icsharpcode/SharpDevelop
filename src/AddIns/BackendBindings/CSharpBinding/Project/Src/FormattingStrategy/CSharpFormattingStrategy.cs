@@ -5,18 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-/*
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Drawing;
 using System.Text;
-
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.TextEditor.Document;
 
 namespace CSharpBinding.FormattingStrategy
 {
@@ -26,26 +22,14 @@ namespace CSharpBinding.FormattingStrategy
 	/// </summary>
 	public class CSharpFormattingStrategy : DefaultFormattingStrategy
 	{
-		public CSharpFormattingStrategy()
+		#region Smart Indentation
+		public override void IndentLine(ITextEditor editor, IDocumentLine line)
 		{
-		}
-		
-		#region SmartIndentLine
-		/// <summary>
-		/// Define CSharp specific smart indenting for a line :)
-		/// </summary>
-		protected override int SmartIndentLine(TextArea textArea, int lineNr)
-		{
-			if (lineNr <= 0) {
-				return AutoIndentLine(textArea, lineNr);
-			}
-			
-			string oldText = textArea.Document.GetText(textArea.Document.GetLineSegment(lineNr));
-			
-			DocumentAccessor acc = new DocumentAccessor(textArea.Document, lineNr, lineNr);
+			int lineNr = line.LineNumber;
+			DocumentAccessor acc = new DocumentAccessor(editor.Document, lineNr, lineNr);
 			
 			IndentationSettings set = new IndentationSettings();
-			set.IndentString = Tab.GetIndentationString(textArea.Document);
+			set.IndentString = editor.Options.IndentationString;
 			set.LeaveEmptyLines = false;
 			IndentationReformatter r = new IndentationReformatter();
 			
@@ -54,51 +38,21 @@ namespace CSharpBinding.FormattingStrategy
 			string t = acc.Text;
 			if (t.Length == 0) {
 				// use AutoIndentation for new lines in comments / verbatim strings.
-				return AutoIndentLine(textArea, lineNr);
-			} else {
-				int newIndentLength = t.Length - t.TrimStart().Length;
-				int oldIndentLength = oldText.Length - oldText.TrimStart().Length;
-				if (oldIndentLength != newIndentLength && lineNr == textArea.Caret.Position.Y) {
-					// fix cursor position if indentation was changed
-					int newX = textArea.Caret.Position.X - oldIndentLength + newIndentLength;
-					textArea.Caret.Position = new TextLocation(Math.Max(newX, 0), lineNr);
-				}
-				return newIndentLength;
+				base.IndentLine(editor, line);
 			}
 		}
 		
-		/// <summary>
-		/// This function sets the indentlevel in a range of lines.
-		/// </summary>
-		public override void IndentLines(TextArea textArea, int begin, int end)
+		public override void IndentLines(ITextEditor editor, int begin, int end)
 		{
-			if (textArea.Document.TextEditorProperties.IndentStyle != IndentStyle.Smart) {
-				base.IndentLines(textArea, begin, end);
-				return;
-			}
-			int cursorPos = textArea.Caret.Position.Y;
-			int oldIndentLength = 0;
-			
-			if (cursorPos >= begin && cursorPos <= end)
-				oldIndentLength = GetIndentation(textArea, cursorPos).Length;
-			
 			IndentationSettings set = new IndentationSettings();
-			set.IndentString = Tab.GetIndentationString(textArea.Document);
+			set.IndentString = editor.Options.IndentationString;
 			IndentationReformatter r = new IndentationReformatter();
-			DocumentAccessor acc = new DocumentAccessor(textArea.Document, begin, end);
+			DocumentAccessor acc = new DocumentAccessor(editor.Document, begin, end);
 			r.Reformat(acc, set);
-			
-			if (cursorPos >= begin && cursorPos <= end) {
-				int newIndentLength = GetIndentation(textArea, cursorPos).Length;
-				if (oldIndentLength != newIndentLength) {
-					// fix cursor position if indentation was changed
-					int newX = textArea.Caret.Position.X - oldIndentLength + newIndentLength;
-					textArea.Caret.Position = new TextLocation(Math.Max(newX, 0), cursorPos);
-				}
-			}
 		}
 		#endregion
 		
+		/*
 		#region Private functions
 		bool NeedCurlyBracket(string text)
 		{
@@ -228,12 +182,12 @@ namespace CSharpBinding.FormattingStrategy
 		/// <summary>
 		/// Gets the next member after the specified caret position.
 		/// </summary>
-		object GetMemberAfter(TextArea textArea, int caretLine)
+		object GetMemberAfter(ITextEditor editor, int caretLine)
 		{
-			string fileName = textArea.MotherTextEditorControl.FileName;
+			string fileName = editor.FileName;
 			object nextElement = null;
 			if (fileName != null && fileName.Length > 0 ) {
-				ParseInformation parseInfo = ParserService.ParseFile(fileName, textArea.Document.TextContent);
+				ParseInformation parseInfo = ParserService.ParseFile(fileName, editor.Document.Text);
 				if (parseInfo != null) {
 					ICompilationUnit currentCompilationUnit = parseInfo.BestCompilationUnit;
 					if (currentCompilationUnit != null) {
@@ -786,6 +740,6 @@ namespace CSharpBinding.FormattingStrategy
 			return -1;
 		}
 		#endregion
+		 */
 	}
 }
-*/

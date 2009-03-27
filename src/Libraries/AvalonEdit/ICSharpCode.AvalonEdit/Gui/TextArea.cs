@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Indentation;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -18,7 +19,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Utils;
@@ -658,6 +658,23 @@ namespace ICSharpCode.AvalonEdit
 					}
 				}
 			}
+		}
+		#endregion
+		
+		#region IndentationStrategy property
+		/// <summary>
+		/// IndentationStrategy property.
+		/// </summary>
+		public static readonly DependencyProperty IndentationStrategyProperty =
+			DependencyProperty.Register("IndentationStrategy", typeof(IIndentationStrategy), typeof(TextArea),
+			                            new FrameworkPropertyMetadata(new DefaultIndentationStrategy()));
+		
+		/// <summary>
+		/// Gets/Sets the indentation strategy used when inserting new lines.
+		/// </summary>
+		public IIndentationStrategy IndentationStrategy {
+			get { return (IIndentationStrategy)GetValue(IndentationStrategyProperty); }
+			set { SetValue(IndentationStrategyProperty, value); }
 		}
 		#endregion
 		

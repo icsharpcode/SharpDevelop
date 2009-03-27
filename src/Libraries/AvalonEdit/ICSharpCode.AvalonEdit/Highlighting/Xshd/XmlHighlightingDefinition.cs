@@ -18,8 +18,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 {
 	sealed class XmlHighlightingDefinition : IHighlightingDefinition
 	{
+		public string Name { get; private set; }
+		
 		public XmlHighlightingDefinition(XshdSyntaxDefinition xshd, IHighlightingDefinitionReferenceResolver resolver)
 		{
+			this.Name = xshd.Name;
 			xshd.AcceptElements(new RegisterNamedElementsVisitor(this));
 			TranslateElementVisitor translateVisitor = new TranslateElementVisitor(this, resolver);
 			foreach (XshdElement element in xshd.Elements) {

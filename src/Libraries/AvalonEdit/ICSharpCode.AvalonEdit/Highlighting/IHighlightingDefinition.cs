@@ -15,6 +15,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	public interface IHighlightingDefinition
 	{
 		/// <summary>
+		/// Gets the name of the highlighting definition.
+		/// </summary>
+		string Name { get; }
+		
+		/// <summary>
 		/// Gets the main rule set.
 		/// </summary>
 		HighlightingRuleSet MainRuleSet { get; }

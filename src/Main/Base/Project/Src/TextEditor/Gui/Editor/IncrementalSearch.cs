@@ -15,11 +15,12 @@ using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
+	/*
 	public class IncrementalSearch : IDisposable
 	{		
 		bool disposed;
 		TextEditorControl textEditor;
-		IFormattingStrategy previousFormattingStrategy;
+		ICSharpCode.TextEditor.Document.IFormattingStrategy previousFormattingStrategy;
 		string incrementalSearchStartMessage;
 		
 		StringBuilder searchText = new StringBuilder();
@@ -405,4 +406,5 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			textEditor.Document.FormattingStrategy = previousFormattingStrategy;
 		}
 	}
+	*/
 }

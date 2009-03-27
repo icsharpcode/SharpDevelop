@@ -84,7 +84,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		
 		/// <summary>
-		/// Gets the caret line.
+		/// Gets/Sets the caret line.
 		/// </summary>
 		public int Line {
 			get { return position.Line; }
@@ -94,12 +94,25 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		
 		/// <summary>
-		/// Gets the caret column.
+		/// Gets/Sets the caret column.
 		/// </summary>
 		public int Column {
 			get { return position.Column; }
 			set {
 				this.Position = new TextViewPosition(new TextLocation(position.Line, value));
+			}
+		}
+		
+		/// <summary>
+		/// Gets/Sets the caret visual column.
+		/// </summary>
+		public int VisualColumn {
+			get {
+				ValidateVisualColumn();
+				return position.VisualColumn;
+			}
+			set {
+				this.Position = new TextViewPosition(position.Line, position.Column, value);
 			}
 		}
 		

@@ -27,6 +27,7 @@ namespace ICSharpCode.SharpDevelop
 	{
 		IDocument Document { get; }
 		ITextEditorCaret Caret { get; }
+		ITextEditorOptions Options { get; }
 		
 		/// <summary>
 		/// Gets the start offset of the selection.
@@ -56,6 +57,14 @@ namespace ICSharpCode.SharpDevelop
 		[Obsolete]
 		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);
 		void ShowCompletionWindow(ICompletionItemList data);
+	}
+	
+	public interface ITextEditorOptions
+	{
+		/// <summary>
+		/// Gets the text used for one indentation level.
+		/// </summary>
+		string IndentationString { get; }
 	}
 	
 	public interface ITextEditorCaret

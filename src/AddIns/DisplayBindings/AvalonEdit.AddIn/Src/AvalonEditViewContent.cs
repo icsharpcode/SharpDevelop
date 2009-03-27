@@ -59,9 +59,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				codeEditor.FileName = file.FileName;
 				codeEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
+				LoadFormatter();
 				codeEditor.Load(stream);
 			} finally {
 				isLoading = false;
+			}
+		}
+		
+		void LoadFormatter()
+		{
+			const string formatingStrategyPath   = "/AddIns/DefaultTextEditor/Formatter";
+			
+			string formatterPath = formatingStrategyPath + "/" + codeEditor.SyntaxHighlighting.Name;
+			var formatter = AddInTree.BuildItems<IFormattingStrategy>(formatterPath, this, false);
+			if (formatter != null && formatter.Count > 0) {
+				codeEditor.FormattingStrategy = formatter[0];
 			}
 		}
 		

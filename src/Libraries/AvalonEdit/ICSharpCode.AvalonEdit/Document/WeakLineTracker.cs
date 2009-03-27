@@ -14,17 +14,40 @@ namespace ICSharpCode.AvalonEdit.Document
 		TextDocument textDocument;
 		WeakReference targetObject;
 		
-		public WeakLineTracker(TextDocument textDocument, ILineTracker targetTracker)
+		private WeakLineTracker(TextDocument textDocument, ILineTracker targetTracker)
 		{
 			this.textDocument = textDocument;
 			this.targetObject = new WeakReference(targetTracker);
 		}
 		
-		void Deregister()
+		/// <summary>
+		/// Registers the <paramref name="targetTracker"/> as line tracker for the <paramref name="textDocument"/>.
+		/// A weak reference to the target tracker will be used, and the WeakLineTracker will deregister itself
+		/// when the target tracker is garbage collected.
+		/// </summary>
+		public static WeakLineTracker Register(TextDocument textDocument, ILineTracker targetTracker)
 		{
-			textDocument.LineTrackers.Remove(this);
+			if (textDocument == null)
+				throw new ArgumentNullException("textDocument");
+			if (targetTracker == null)
+				throw new ArgumentNullException("targetTracker");
+			WeakLineTracker wlt = new WeakLineTracker(textDocument, targetTracker);
+			textDocument.LineTrackers.Add(wlt);
+			return wlt;
 		}
 		
+		/// <summary>
+		/// Deregisters the weak line tracker.
+		/// </summary>
+		public void Deregister()
+		{
+			if (textDocument != null) {
+				textDocument.LineTrackers.Remove(this);
+				textDocument = null;
+			}
+		}
+		
+		/// <inheritdoc/>
 		public void BeforeRemoveLine(DocumentLine line)
 		{
 			ILineTracker targetTracker = targetObject.Target as ILineTracker;
@@ -34,6 +57,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				Deregister();
 		}
 		
+		/// <inheritdoc/>
 		public void SetLineLength(DocumentLine line, int newTotalLength)
 		{
 			ILineTracker targetTracker = targetObject.Target as ILineTracker;
@@ -43,6 +67,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				Deregister();
 		}
 		
+		/// <inheritdoc/>
 		public void LineInserted(DocumentLine insertionPos, DocumentLine newLine)
 		{
 			ILineTracker targetTracker = targetObject.Target as ILineTracker;
@@ -52,6 +77,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				Deregister();
 		}
 		
+		/// <inheritdoc/>
 		public void RebuildDocument()
 		{
 			ILineTracker targetTracker = targetObject.Target as ILineTracker;

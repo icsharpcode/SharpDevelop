@@ -6,10 +6,11 @@
 // </file>
 
 using System;
-using System.ComponentModel;
+using System.Globalization;
+using System.Text;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Gui;
-using System.Globalization;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {
@@ -53,9 +54,31 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		#endregion
 		
-		#region GetFirstIndentationSegment
+		#region GetIndentation
 		/// <summary>
-		/// Gets the indentation segment starting at <paramref name="offset"/>.
+		/// Gets all indentation starting at offset.
+		/// </summary>
+		/// <param name="textSource">The text source.</param>
+		/// <param name="offset">The offset where the indentation starts.</param>
+		/// <returns>The segment containing the indentation.</returns>
+		public static ISegment GetIndentation(ITextSource textSource, int offset)
+		{
+			if (textSource == null)
+				throw new ArgumentNullException("textSource");
+			int pos = offset;
+			while (pos < textSource.TextLength) {
+				char c = textSource.GetCharAt(pos++);
+				if (c != ' ' && c != '\t')
+					break;
+			}
+			return new SimpleSegment(offset, pos - offset);
+		}
+		#endregion
+		
+		#region GetSingleIndentationSegment
+		/// <summary>
+		/// Gets a single indentation segment starting at <paramref name="offset"/> - at most one tab
+		/// or <paramref name="indentationSize"/> spaces.
 		/// </summary>
 		/// <param name="textSource">The text source.</param>
 		/// <param name="offset">The offset where the indentation segment starts.</param>
@@ -63,7 +86,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// <returns>The indentation segment.
 		/// If there is no indentation character at the specified <paramref name="offset"/>,
 		/// an empty segment is returned.</returns>
-		public static ISegment GetIndentationSegment(ITextSource textSource, int offset, int indentationSize)
+		public static ISegment GetSingleIndentationSegment(ITextSource textSource, int offset, int indentationSize)
 		{
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");

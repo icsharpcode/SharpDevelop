@@ -5,14 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.TextEditor.Actions;
 using System;
-using System.Linq;
 using System.Diagnostics;
+using System.Linq;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -29,6 +30,7 @@ namespace ICSharpCode.SharpDevelop
 			this.sdtac = editor as SharpDevelopTextAreaControl;
 			this.Document = new TextEditorDocument(editor.Document);
 			this.Caret = new CaretAdapter(this, editor.ActiveTextAreaControl.Caret);
+			this.Options = new OptionsAdapter(editor.TextEditorProperties);
 		}
 		
 		sealed class CaretAdapter : ITextEditorCaret
@@ -69,6 +71,24 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		sealed class OptionsAdapter : ITextEditorOptions
+		{
+			ITextEditorProperties properties;
+			
+			public OptionsAdapter(ITextEditorProperties properties)
+			{
+				if (properties == null)
+					throw new ArgumentNullException("properties");
+				this.properties = properties;
+			}
+			
+			public string IndentationString {
+				get {
+					return properties.ConvertTabsToSpaces ? new string(' ', properties.IndentationSize) : "\t";
+				}
+			}
+		}
+		
 		static ICSharpCode.NRefactory.Location ToLocation(TextLocation position)
 		{
 			return new ICSharpCode.NRefactory.Location(position.Column + 1, position.Line + 1);
@@ -87,6 +107,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument Document { get; private set; }
 		public ITextEditorCaret Caret { get; private set; }
+		public ITextEditorOptions Options { get; private set; }
 		
 		public string FileName {
 			get { return editor.FileName; }

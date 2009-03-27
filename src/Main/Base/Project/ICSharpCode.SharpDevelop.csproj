@@ -558,6 +558,7 @@
     <Compile Include="Src\TextEditor\CompletionContext.cs" />
     <Compile Include="Src\TextEditor\ICompletionItem.cs" />
     <Compile Include="Src\TextEditor\ICompletionItemList.cs" />
+    <Compile Include="Src\TextEditor\IFormattingStrategy.cs" />
     <Compile Include="Src\TextEditor\ITextEditor.cs" />
     <Compile Include="Src\TextEditor\ToolTipService.cs" />
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />

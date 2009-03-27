@@ -50,8 +50,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public HeightTree(TextDocument document, double defaultLineHeight)
 		{
 			this.document = document;
-			weakLineTracker = new WeakLineTracker(document, this);
-			document.LineTrackers.Add(weakLineTracker);
+			weakLineTracker = WeakLineTracker.Register(document, this);
 			this.DefaultLineHeight = defaultLineHeight;
 			RebuildDocument();
 		}
@@ -59,7 +58,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public void Dispose()
 		{
 			if (weakLineTracker != null)
-				document.LineTrackers.Remove(weakLineTracker);
+				weakLineTracker.Deregister();
 			this.dict = null;
 			this.root = null;
 			this.weakLineTracker = null;

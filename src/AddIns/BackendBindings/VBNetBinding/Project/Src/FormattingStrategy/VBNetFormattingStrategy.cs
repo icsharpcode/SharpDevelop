@@ -18,12 +18,10 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.TextEditor.Document;
 
 namespace VBNetBinding.FormattingStrategy
 {
+	/*
 	/// <summary>
 	/// This class handles the auto and smart indenting in the textbuffer while
 	/// you type.
@@ -935,4 +933,5 @@ namespace VBNetBinding.FormattingStrategy
 		}
 		#endregion
 	}
+	*/
 }

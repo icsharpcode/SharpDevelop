@@ -159,5 +159,18 @@ namespace ICSharpCode.AvalonEdit
 			}
 		}
 		#endregion
+		
+		bool cutCopyWholeLine = true;
+		
+		/// <summary>
+		/// Gets/Sets whether copying without a selection copies the whole current line.
+		/// </summary>
+		public virtual bool CutCopyWholeLine {
+			get { return cutCopyWholeLine; }
+			set {
+				cutCopyWholeLine = value;
+				OnPropertyChanged("CutCopyWholeLine");
+			}
+		}
 	}
 }
