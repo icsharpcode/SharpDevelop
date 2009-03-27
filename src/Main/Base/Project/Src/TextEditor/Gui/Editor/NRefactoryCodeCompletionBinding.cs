@@ -185,7 +185,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		private class ContextCompletionItemList : DefaultCompletionItemList
 		{
 			internal char activationKey;
-			readonly ICompletionItemList baseList;
 			
 			public override CompletionItemListKeyResult ProcessInput(char key)
 			{

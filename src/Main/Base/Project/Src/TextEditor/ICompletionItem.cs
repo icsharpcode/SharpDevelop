@@ -16,6 +16,11 @@ namespace ICSharpCode.SharpDevelop
 	{
 		string Text { get; }
 		string Description { get; }
+		
+		/// <summary>
+		/// Performs code completion for the item.
+		/// </summary>
+		void Complete(CompletionContext context);
 	}
 	
 	public class DefaultCompletionItem : ICompletionItem
@@ -26,6 +31,11 @@ namespace ICSharpCode.SharpDevelop
 		public DefaultCompletionItem(string text)
 		{
 			this.Text = text;
+		}
+		
+		public virtual void Complete(CompletionContext context)
+		{
+			context.Editor.Document.Replace(context.StartOffset, context.Length, this.Text);
 		}
 	}
 }

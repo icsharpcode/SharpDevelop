@@ -22,14 +22,23 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		readonly ICompletionItemList itemList;
 		
-		public SharpDevelopCompletionWindow(TextArea textArea, ICompletionItemList itemList) : base(textArea)
+		public ICompletionItemList ItemList {
+			get { return itemList; }
+		}
+		
+		public ITextEditor Editor { get; private set; }
+		
+		public SharpDevelopCompletionWindow(ITextEditor editor, TextArea textArea, ICompletionItemList itemList) : base(textArea)
 		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
 			if (itemList == null)
 				throw new ArgumentNullException("itemList");
+			this.Editor = editor;
 			this.itemList = itemList;
 			ICompletionItem suggestedItem = itemList.SuggestedItem;
 			foreach (ICompletionItem item in itemList.Items) {
-				ICompletionData adapter = new CodeCompletionDataAdapter(item);
+				ICompletionData adapter = new CodeCompletionDataAdapter(this, item);
 				this.CompletionList.CompletionData.Add(adapter);
 				if (item == suggestedItem)
 					this.CompletionList.SelectedItem = adapter;
@@ -68,12 +77,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	
 	sealed class CodeCompletionDataAdapter : ICompletionData
 	{
+		readonly SharpDevelopCompletionWindow window;
 		readonly ICompletionItem item;
 		
-		public CodeCompletionDataAdapter(ICompletionItem item)
+		public CodeCompletionDataAdapter(SharpDevelopCompletionWindow window, ICompletionItem item)
 		{
+			if (window == null)
+				throw new ArgumentNullException("window");
 			if (item == null)
 				throw new ArgumentNullException("item");
+			this.window = window;
 			this.item = item;
 		}
 		
@@ -97,7 +110,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void Complete(TextArea textArea, ISegment completionSegment)
 		{
-			textArea.Document.Replace(completionSegment, item.Text);
+			CompletionContext context = new CompletionContext {
+				Editor = window.Editor,
+				StartOffset = window.StartOffset,
+				EndOffset = window.EndOffset
+			};
+			window.ItemList.Complete(context, item);
 		}
 	}
 }

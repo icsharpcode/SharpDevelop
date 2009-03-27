@@ -142,7 +142,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			{
 				base.OnHighlightStateChanged(line, lineNumber);
 				if (colorizer.currentLineEndOffset >= 0) {
-					int length = colorizer.CurrentContext.Document.TextLength - colorizer.currentLineEndOffset;
+					// Do not use colorizer.CurrentContext - the colorizer might not be the only
+					// class calling DocumentHighlighter.HighlightLine, the the context might be null.
+					int length = this.Document.TextLength - colorizer.currentLineEndOffset;
 					if (length != 0) {
 						// don't redraw if length == 0: at the end of the document, this would cause
 						// the last line which was already constructed to be redrawn ->

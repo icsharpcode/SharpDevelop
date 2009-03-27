@@ -29,6 +29,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		readonly HighlightingRuleSet baseRuleSet;
 		
 		/// <summary>
+		/// Gets the document that this DocumentHighlighter is highlighting.
+		/// </summary>
+		public TextDocument Document {
+			get { return document; }
+		}
+		
+		/// <summary>
 		/// Creates a new DocumentHighlighter instance.
 		/// </summary>
 		public DocumentHighlighter(TextDocument document, HighlightingRuleSet baseRuleSet)

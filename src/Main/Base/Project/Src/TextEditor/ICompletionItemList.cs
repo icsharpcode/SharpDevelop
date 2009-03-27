@@ -36,7 +36,14 @@ namespace ICSharpCode.SharpDevelop
 		/// Processes the specified key press.
 		/// </summary>
 		CompletionItemListKeyResult ProcessInput(char key);
+		
+		/// <summary>
+		/// Performs code completion for the selected item.
+		/// </summary>
+		void Complete(CompletionContext context, ICompletionItem item);
 	}
+	
+
 	
 	public enum CompletionItemListKeyResult
 	{
@@ -101,6 +108,14 @@ namespace ICSharpCode.SharpDevelop
 				// do not reset insertSpace when doing an insertion!
 				return CompletionItemListKeyResult.InsertionKey;
 			}
+		}
+		
+		/// <inheritdoc/>
+		public virtual void Complete(CompletionContext context, ICompletionItem item)
+		{
+			if (item == null)
+				throw new ArgumentNullException("item");
+			item.Complete(context);
 		}
 	}
 }

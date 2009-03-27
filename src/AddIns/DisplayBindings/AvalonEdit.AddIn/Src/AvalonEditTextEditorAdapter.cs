@@ -115,7 +115,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected virtual CompletionWindow CreateCompletionWindow(ICompletionItemList data)
 		{
-			return new SharpDevelopCompletionWindow(textEditor.TextArea, data);
+			return new SharpDevelopCompletionWindow(this, textEditor.TextArea, data);
 		}
 		
 		public object GetService(Type serviceType)

@@ -555,6 +555,7 @@
     <Compile Include="Src\TextEditor\Actions.cs" />
     <Compile Include="Src\TextEditor\CharacterEncodings.cs" />
     <Compile Include="Src\TextEditor\Gui\TextEditorAdapter.cs" />
+    <Compile Include="Src\TextEditor\CompletionContext.cs" />
     <Compile Include="Src\TextEditor\ICompletionItem.cs" />
     <Compile Include="Src\TextEditor\ICompletionItemList.cs" />
     <Compile Include="Src\TextEditor\ITextEditor.cs" />

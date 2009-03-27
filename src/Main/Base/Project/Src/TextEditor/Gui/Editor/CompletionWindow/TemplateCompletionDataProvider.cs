@@ -57,6 +57,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						+ template.Text;
 				}
 			}
+			
+			public void Complete(CompletionContext context)
+			{
+				context.Editor.Document.Replace(context.StartOffset, context.Length, template.Text);
+			}
 		}
 	}
 }

@@ -30,6 +30,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <inheritdoc/>
 		protected override void Colorize(ITextRunConstructionContext context)
 		{
+			if (context == null)
+				throw new ArgumentNullException("context");
 			this.CurrentContext = context;
 			
 			currentDocumentLine = context.VisualLine.FirstDocumentLine;
