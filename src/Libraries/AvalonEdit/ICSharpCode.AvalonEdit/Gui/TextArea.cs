@@ -632,6 +632,8 @@ namespace ICSharpCode.AvalonEdit
 		
 		internal void RemoveSelectedText()
 		{
+			if (this.Document == null)
+				throw ThrowUtil.NoDocumentAssigned();
 			selection.RemoveSelectedText(this);
 			#if DEBUG
 			if (!selection.IsEmpty) {
@@ -646,11 +648,13 @@ namespace ICSharpCode.AvalonEdit
 		{
 			if (newText == null)
 				throw new ArgumentNullException("newText");
-			using (Document.RunUpdate()) {
+			if (this.Document == null)
+				throw ThrowUtil.NoDocumentAssigned();
+			using (this.Document.RunUpdate()) {
 				RemoveSelectedText();
 				if (newText.Length > 0) {
 					if (ReadOnlySectionProvider.CanInsert(Caret.Offset)) {
-						Document.Insert(Caret.Offset, newText);
+						this.Document.Insert(Caret.Offset, newText);
 					}
 				}
 			}

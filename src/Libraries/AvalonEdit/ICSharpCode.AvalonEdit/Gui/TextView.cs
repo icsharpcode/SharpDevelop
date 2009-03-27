@@ -562,28 +562,34 @@ namespace ICSharpCode.AvalonEdit.Gui
 			InvalidateVisual(); // = InvalidateArrange+InvalidateRender
 			textLayer.InvalidateVisual();
 			
-			if (document == null)
-				return Size.Empty;
-			
 			double maxWidth;
-			inMeasure = true;
-			try {
-				maxWidth = CreateAndMeasureVisualLines(availableSize);
-			} finally {
-				inMeasure = false;
+			if (document == null) {
+				// no document -> create empty list of lines
+				allVisualLines = new List<VisualLine>();
+				visibleVisualLines = allVisualLines.AsReadOnly();
+				maxWidth = 0;
+			} else {
+				inMeasure = true;
+				try {
+					maxWidth = CreateAndMeasureVisualLines(availableSize);
+				} finally {
+					inMeasure = false;
+				}
 			}
 			
 			textLayer.RemoveInlineObjectsNow();
 			
+			double heightTreeHeight = this.DocumentHeight;
+			
 			SetScrollData(availableSize,
-			              new Size(maxWidth, heightTree.TotalHeight),
+			              new Size(maxWidth, heightTreeHeight),
 			              scrollOffset);
 			if (VisualLinesChanged != null)
 				VisualLinesChanged(this, EventArgs.Empty);
 			
 			return new Size(
 				canHorizontallyScroll ? Math.Min(availableSize.Width, maxWidth) : maxWidth,
-				canVerticallyScroll ? Math.Min(availableSize.Height, heightTree.TotalHeight) : heightTree.TotalHeight
+				canVerticallyScroll ? Math.Min(availableSize.Height, heightTreeHeight) : heightTreeHeight
 			);
 		}
 		
@@ -734,6 +740,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		protected override Size ArrangeOverride(Size finalSize)
 		{
+			foreach (UIElement layer in layers) {
+				layer.Arrange(new Rect(new Point(0, 0), finalSize));
+			}
+			
 			if (document == null || allVisualLines.Count == 0)
 				return finalSize;
 			
@@ -751,10 +761,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 			//Debug.WriteLine("Arrange finalSize=" + finalSize + ", scrollOffset=" + scrollOffset);
 			
 //			double maxWidth = 0;
-			
-			foreach (UIElement adorner in layers) {
-				adorner.Arrange(new Rect(new Point(0, 0), finalSize));
-			}
 			
 			if (visibleVisualLines != null) {
 				Point pos = new Point(-scrollOffset.X, -clippedPixelsOnTop);
@@ -1222,7 +1228,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			VerifyAccess();
 			if (this.Document == null)
-				throw new InvalidOperationException("There is no document assigned to the TextView");
+				throw ThrowUtil.NoDocumentAssigned();
 			DocumentLine documentLine = this.Document.GetLineByNumber(position.Line);
 			VisualLine visualLine = GetOrConstructVisualLine(documentLine);
 			int visualColumn = position.VisualColumn;
@@ -1243,7 +1249,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			VerifyAccess();
 			if (this.Document == null)
-				throw new InvalidOperationException("There is no document assigned to the TextView");
+				throw ThrowUtil.NoDocumentAssigned();
 			VisualLine line = GetVisualLineFromVisualTop(visualPosition.Y);
 			if (line == null)
 				return null;
@@ -1425,6 +1431,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public CollapsedLineSection CollapseLines(DocumentLine start, DocumentLine end)
 		{
 			VerifyAccess();
+			if (heightTree == null)
+				throw ThrowUtil.NoDocumentAssigned();
 			return heightTree.CollapseText(start, end);
 		}
 		
@@ -1432,7 +1440,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// Gets the height of the document.
 		/// </summary>
 		public double DocumentHeight {
-			get { return heightTree.TotalHeight; }
+			get {
+				// return 0 if there is no document = no heightTree
+				return heightTree != null ? heightTree.TotalHeight : 0;
+			}
 		}
 		
 		/// <summary>
@@ -1442,7 +1453,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			VerifyAccess();
 			if (heightTree == null)
-				throw new InvalidOperationException();
+				throw ThrowUtil.NoDocumentAssigned();
 			return heightTree.GetLineByVisualPosition(visualTop);
 		}
 	}

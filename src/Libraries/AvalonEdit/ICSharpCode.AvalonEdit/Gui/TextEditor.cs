@@ -43,7 +43,9 @@ namespace ICSharpCode.AvalonEdit
 		/// <summary>
 		/// Creates a new TextEditor instance.
 		/// </summary>
-		public TextEditor() : this(new TextArea()) {}
+		public TextEditor() : this(new TextArea())
+		{
+		}
 		
 		// Forward focus to TextArea.
 		/// <inheritdoc/>
@@ -65,6 +67,7 @@ namespace ICSharpCode.AvalonEdit
 				throw new ArgumentNullException("textArea");
 			this.textArea = textArea;
 			this.Options = textArea.Options;
+			this.Document = new TextDocument();
 			textArea.SetBinding(TextArea.DocumentProperty, new Binding("Document") { Source = this });
 			textArea.SetBinding(TextArea.OptionsProperty, new Binding("Options") { Source = this });
 		}
@@ -184,7 +187,7 @@ namespace ICSharpCode.AvalonEdit
 			set {
 				if (value == null)
 					value = string.Empty;
-				TextDocument document = GetOrCreateDocument();
+				TextDocument document = GetDocument();
 				document.Text = value;
 				// after replacing the full text, the caret is positioned at the end of the document
 				// - reset it to the beginning.
@@ -193,13 +196,11 @@ namespace ICSharpCode.AvalonEdit
 			}
 		}
 		
-		TextDocument GetOrCreateDocument()
+		TextDocument GetDocument()
 		{
 			TextDocument document = this.Document;
-			if (document == null) {
-				document = new TextDocument();
-				this.Document = document;
-			}
+			if (document == null)
+				throw ThrowUtil.NoDocumentAssigned();
 			return document;
 		}
 		
@@ -300,7 +301,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public void AppendText(string textData)
 		{
-			TextDocument document = GetOrCreateDocument();
+			var document = GetDocument();
 			document.Insert(document.TextLength, textData);
 		}
 		
@@ -309,7 +310,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public void BeginChange()
 		{
-			GetOrCreateDocument().BeginUpdate();
+			GetDocument().BeginUpdate();
 		}
 		
 		/// <summary>
@@ -334,7 +335,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public IDisposable DeclareChangeBlock()
 		{
-			return GetOrCreateDocument().RunUpdate();
+			return GetDocument().RunUpdate();
 		}
 		
 		/// <summary>
@@ -342,7 +343,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public void EndChange()
 		{
-			GetOrCreateDocument().EndUpdate();
+			GetDocument().EndUpdate();
 		}
 		
 		/// <summary>

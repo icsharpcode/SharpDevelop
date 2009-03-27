@@ -31,5 +31,10 @@ namespace ICSharpCode.AvalonEdit.Utils
 				throw new ArgumentNullException(parameterName);
 			return val;
 		}
+		
+		public static InvalidOperationException NoDocumentAssigned()
+		{
+			throw new InvalidOperationException("Document is null");
+		}
 	}
 }
