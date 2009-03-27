@@ -1,0 +1,44 @@
+<AddIn name        = "XAML binding"
+       author      = "Daniel Grunwald"
+       copyright   = "prj:///doc/copyright.txt"
+       url         = "http://icsharpcode.net"
+       description = "Enables code-completion for xaml files."
+       addInManagerHidden = "preinstalled">
+	
+	<!--
+		This file is unrelated to the WPF Designer, it is a language binding for .xaml files.
+		It allows using Go to definition, find references, code completion in .xaml files.
+	-->
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.XamlBinding"/>
+		<Dependency addin = "ICSharpCode.XmlEditor" requirePreload = "true"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "ICSharpCode.XamlBinding.dll"/>
+	</Runtime>
+	
+	<Path name = "/Workspace/Icons">
+		<Icon id         = "XamlFileIcon"
+		      extensions = ".xaml"
+		      resource   = "FileIcons.XmlIcon" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "Xaml"
+		            insertbefore="AllFiles"
+		            name = "Xaml files (*.xaml)"
+		            extensions = "*.xaml"/>
+	</Path>
+	
+	<Path name = "/Workspace/Parser">
+		<Parser id    = "XAML"
+		        supportedextensions  = ".xaml"
+		        class = "ICSharpCode.XamlBinding.XamlParser"/>
+	</Path>
+	
+	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+		<CodeCompletionBinding id = "Xaml" extensions = ".xaml" class = "ICSharpCode.XamlBinding.XamlCodeCompletionBinding"/>
+	</Path>
+</AddIn>
