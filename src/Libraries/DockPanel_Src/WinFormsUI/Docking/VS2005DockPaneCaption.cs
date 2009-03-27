@@ -452,6 +452,8 @@ namespace WeifenLuo.WinFormsUI.Docking
 		private void AutoHide_Click(object sender, EventArgs e)
 		{
 			DockPane.DockState = DockHelper.ToggleAutoHideState(DockPane.DockState);
+            if (DockHelper.IsDockStateAutoHide(DockPane.DockState))
+                DockPane.DockPanel.ActiveAutoHideContent = null;
 		}
 
         private void Options_Click(object sender, EventArgs e)
