@@ -128,9 +128,12 @@ namespace ICSharpCode.PythonBinding
 							throw new PythonFormWalkerException(String.Format("Could not find type '{0}'.", name));
 						}
 					}
-				} else if (name == "self.Controls.Add") {
-					string controlName = PythonControlFieldExpression.GetControlNameBeingAdded(node);
-					form.Controls.Add(GetControl(controlName));
+				} else {
+					// Add child controls if expression is of the form self.controlName.Controls.Add.
+					string parentControlName = PythonControlFieldExpression.GetParentControlNameAddingChildControls(name);
+					if (parentControlName != null) {
+						AddChildControl(parentControlName, node);
+					}
 				}
 			}
 			return false;
@@ -221,6 +224,16 @@ namespace ICSharpCode.PythonBinding
 				return GetControl(fieldExpression.VariableName);
 			}
 			return form;
+		}
+		
+		void AddChildControl(string parentControlName, CallExpression node)
+		{
+			string childControlName = PythonControlFieldExpression.GetControlNameBeingAdded(node);
+			Control parentControl = form;
+			if (parentControlName.Length > 0) {
+				parentControl = GetControl(parentControlName);
+			}
+			parentControl.Controls.Add(GetControl(childControlName));
 		}
 	}
 }

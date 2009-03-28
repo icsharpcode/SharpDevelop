@@ -88,6 +88,31 @@ namespace ICSharpCode.PythonBinding
 			//}
 			//return null;
 		}
+
+		/// <summary>
+		/// Gets the variable name of the parent control adding child controls. An expression of the form:
+		/// 
+		/// self._panel1.Controls.Add
+		/// 
+		/// would return "panel1".
+		/// </summary>
+		/// <returns>Null if the expression is not one of the following forms:
+		/// self.{0}.Controls.Add
+		/// self.Controls.Add
+		/// </returns>
+		public static string GetParentControlNameAddingChildControls(string code)
+		{
+			int endIndex = code.IndexOf(".Controls.Add", StringComparison.InvariantCultureIgnoreCase);
+			if (endIndex > 0) {
+				string controlName = code.Substring(0, endIndex);
+				int startIndex = controlName.LastIndexOf('.');
+				if (startIndex > 0) {
+					return GetVariableName(controlName.Substring(startIndex + 1));
+				} 
+				return String.Empty;
+			}
+			return null;
+		}
 		
 		/// <summary>
 		/// Removes the underscore from the variable name.
