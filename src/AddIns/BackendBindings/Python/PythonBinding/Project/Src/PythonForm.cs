@@ -83,13 +83,13 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		void GenerateInitializeComponentMethodBodyInternal(Form form)
-		{			
-			foreach (Control control in form.Controls) {
-				AppendControlCreation(control);
-			}
+		{
+			AppendChildControlCreation(form.Controls);
+			AppendChildControlSuspendLayout(form.Controls);
 
 			AppendIndentedLine("self.SuspendLayout()");
 			AppendForm(form);			
+			AppendChildControlResumeLayout(form.Controls);
 			AppendIndentedLine("self.ResumeLayout(False)");
 			AppendIndentedLine("self.PerformLayout()");
 		}
@@ -99,30 +99,24 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void AppendForm(Form form)
 		{
-			
 			// Add the controls on the form.
 			foreach (Control control in form.Controls) {
 				AppendControl(control);
 			}
 			
 			// Add form.
-			AppendControl(form, false);
-			
-			// Add controls to form.
-			foreach (Control control in form.Controls) {
-				AppendIndentedLine("self.Controls.Add(self." + control.Name + ")");
-			}
+			AppendControl(form, false, false);
 		}
 
 		void AppendControl(Control control)
 		{
-			AppendControl(control, true);
+			AppendControl(control, true, true);
 		}
 		
 		/// <summary>
 		/// Generates python code for the control.
 		/// </summary>
-		void AppendControl(Control control, bool addControlNameToProperty)
+		void AppendControl(Control control, bool addControlNameToProperty, bool addChildControlProperties)
 		{
 			AppendComment(control.Name);
 
@@ -133,6 +127,16 @@ namespace ICSharpCode.PythonBinding
 			
 			foreach (PropertyDescriptor property in GetSerializableProperties(control)) {
 				AppendProperty(propertyOwnerName, control, property);
+			}
+			
+			foreach (Control childControl in control.Controls) {
+				AppendIndentedLine(GetPropertyName(propertyOwnerName, "Controls") + ".Add(self._" + childControl.Name + ")");
+			}
+	
+			if (addChildControlProperties) {
+				foreach (Control childControl in control.Controls) {
+					AppendControl(childControl, true, true);
+				}
 			}
 		}
 		
@@ -199,9 +203,39 @@ namespace ICSharpCode.PythonBinding
 			codeBuilder.Append(text);
 		}
 		
+		void AppendChildControlCreation(Control.ControlCollection controls)
+		{
+			foreach (Control control in controls) {
+				AppendControlCreation(control);
+				AppendChildControlCreation(control.Controls);
+			}
+		}
+		
 		void AppendControlCreation(Control control)
 		{
-			AppendIndentedLine("self._" + control.Name + " = " + control.GetType().FullName + "()");			
+			AppendIndentedLine("self._" + control.Name + " = " + control.GetType().FullName + "()");
+		}
+		
+		void AppendChildControlSuspendLayout(Control.ControlCollection controls)
+		{
+			AppendChildControlLayoutMethodCalls(controls, new string[] {"SuspendLayout()"});
+		}
+		
+		void AppendChildControlResumeLayout(Control.ControlCollection controls)
+		{
+			AppendChildControlLayoutMethodCalls(controls, new string[] {"ResumeLayout(false)", "PerformLayout()"});
+		}
+	
+		
+		void AppendChildControlLayoutMethodCalls(Control.ControlCollection controls, string[] methods)
+		{
+			foreach (Control control in controls) {
+				if (control.Controls.Count > 0) {
+					foreach (string method in methods) {
+						AppendIndentedLine("self._" + control.Name + "." + method);
+					}
+				}
+			}
 		}
 	}
 }
