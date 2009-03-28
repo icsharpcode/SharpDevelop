@@ -235,6 +235,7 @@ namespace ICSharpCode.PythonBinding
 						AppendIndentedLine("self._" + control.Name + "." + method);
 					}
 				}
+				AppendChildControlLayoutMethodCalls(control.Controls, methods);
 			}
 		}
 	}
