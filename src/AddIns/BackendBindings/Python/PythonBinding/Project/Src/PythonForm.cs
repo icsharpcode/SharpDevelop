@@ -7,8 +7,10 @@
 
 using System;
 using System.Drawing;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
@@ -26,17 +28,58 @@ namespace ICSharpCode.PythonBinding
 		StringBuilder codeBuilder;
 		string indentString = String.Empty;
 		int indent;
+		IEventBindingService eventBindingService;
+		Attribute[] notDesignOnlyFilter = new Attribute[] { DesignOnlyAttribute.No };
+		
+		class PythonFormEventBindingService : EventBindingService
+		{
+			public PythonFormEventBindingService()
+				: base(new ServiceContainer())
+			{
+			}
+			
+			protected override string CreateUniqueMethodName(IComponent component, EventDescriptor e)
+			{
+				return String.Empty;
+			}
+			
+			protected override ICollection GetCompatibleMethods(EventDescriptor e)
+			{
+				return new ArrayList();
+			}
+			
+			protected override bool ShowCode()
+			{
+				return false;
+			}
+			
+			protected override bool ShowCode(int lineNumber)
+			{
+				return false;
+			}
+			
+			protected override bool ShowCode(IComponent component, EventDescriptor e, string methodName)
+			{
+				return false;
+			}
+		}
 		
 		public PythonForm() 
 			: this("\t")
 		{
 		}
 		
-		public PythonForm(string indentString)
+		public PythonForm(string indentString) 
+			: this(indentString, new PythonFormEventBindingService())
 		{
-			this.indentString = indentString;			
 		}
 		
+		PythonForm(string indentString, IEventBindingService eventBindingService)
+		{
+			this.indentString = indentString;
+			this.eventBindingService = eventBindingService;
+		}
+
 		/// <summary>
 		/// Generates python code for the InitializeComponent method based on the controls added to the form.
 		/// </summary>
@@ -71,8 +114,7 @@ namespace ICSharpCode.PythonBinding
 		public PropertyDescriptorCollection GetSerializableProperties(object obj)
 		{
 			List<PropertyDescriptor> properties = new List<PropertyDescriptor>();
-			Attribute[] filter = new Attribute[] { DesignOnlyAttribute.No };
-			foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(obj, filter).Sort()) {
+			foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(obj, notDesignOnlyFilter).Sort()) {
 				if (property.SerializationVisibility == DesignerSerializationVisibility.Visible) {
 					if (property.ShouldSerializeValue(obj)) {
 						properties.Add(property);
@@ -138,6 +180,8 @@ namespace ICSharpCode.PythonBinding
 					AppendControl(childControl, true, true);
 				}
 			}
+			
+			AppendEventHandlers(propertyOwnerName, control);
 		}
 		
 		/// <summary>
@@ -236,6 +280,34 @@ namespace ICSharpCode.PythonBinding
 					}
 				}
 				AppendChildControlLayoutMethodCalls(control.Controls, methods);
+			}
+		}
+		
+		/// <summary>
+		/// Generates code that wires an event to an event handler.
+		/// </summary>
+		/// <remarks>
+		/// Note that the EventDescriptorCollection.Sort method does not work if the
+		/// enumerator is called first. Sorting will only occur if an item is retrieved after calling
+		/// Sort or CopyTo is called. The PropertyDescriptorCollection class does not behave
+		/// in the same way.</remarks>
+		void AppendEventHandlers(string propertyOwnerName, Control control)
+		{
+			EventDescriptorCollection events = TypeDescriptor.GetEvents(control, notDesignOnlyFilter).Sort();
+			if (events.Count > 0) {
+				EventDescriptor dummyEventDescriptor = events[0];
+			}
+			foreach (EventDescriptor eventDescriptor in events) {
+				AppendEventHandler(propertyOwnerName, control, eventDescriptor);
+			}
+		}
+		
+		void AppendEventHandler(string propertyOwnerName, Control control, EventDescriptor eventDescriptor)
+		{
+			PropertyDescriptor propertyDescriptor = eventBindingService.GetEventProperty(eventDescriptor);
+			if (propertyDescriptor.ShouldSerializeValue(control)) {
+				string methodName = (string)propertyDescriptor.GetValue(control);
+				AppendIndentedLine(GetPropertyName(propertyOwnerName, eventDescriptor.Name) + " += self." + methodName);
 			}
 		}
 	}

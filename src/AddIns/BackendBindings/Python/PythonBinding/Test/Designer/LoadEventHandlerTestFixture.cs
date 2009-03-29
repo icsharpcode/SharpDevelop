@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -18,8 +20,8 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	[TestFixture]
-	public class LoadFontTestFixture : LoadFormTestFixtureBase
-	{
+	public class LoadEventHandlerTestFixture : LoadFormTestFixtureBase
+	{		
 		public override string PythonCode {
 			get {
 				return "class TestForm(System.Windows.Forms.Form):\r\n" +
@@ -28,17 +30,23 @@ namespace PythonBinding.Tests.Designer
 							"        # \r\n" +
 							"        # TestForm\r\n" +
 							"        # \r\n" +
-							"        self.Font = System.Drawing.Font(\"Times New Roman\", 8.25, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 1)\r\n" +
 							"        self.Name = \"TestForm\"\r\n" +
+							"        self.Load += self.TestFormLoad\r\n" +
 							"        self.ResumeLayout(False)\r\n";
 			}
 		}
 		
-		[Test]
-		public void FormBackColor()
+		public EventDescriptor GetLoadEventDescriptor()
 		{
-			Font font = new Font("Times New Roman", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 1);
-			Assert.AreEqual(font, Form.Font);
+			return TypeDescriptor.GetEvents(Form).Find("Load", true);
+		}
+		
+		[Test]
+		public void EventPropertyDescriptorValueSetToEventHandlerMethodName()
+		{
+			EventDescriptor loadEventDescriptor = GetLoadEventDescriptor();
+			PropertyDescriptor property = base.GetEventProperty(loadEventDescriptor);
+			Assert.AreEqual("TestFormLoad", property.GetValue(Form) as String);
 		}
 	}
 }

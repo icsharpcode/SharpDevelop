@@ -9,6 +9,7 @@ using System;
 using System.CodeDom;
 using System.Collections;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Security.Permissions;
 
@@ -76,6 +77,15 @@ namespace ICSharpCode.PythonBinding
 		public Type GetType(string typeName)
 		{
 			return serializationManager.GetType(typeName);
+		}
+		
+		/// <summary>
+		/// Gets the property descriptor associated with the event.
+		/// </summary>
+		public PropertyDescriptor GetEventProperty(EventDescriptor e)
+		{
+			IEventBindingService eventBindingService = GetService(typeof(IEventBindingService)) as IEventBindingService;
+			return eventBindingService.GetEventProperty(e);
 		}
 		
 		/// <summary>

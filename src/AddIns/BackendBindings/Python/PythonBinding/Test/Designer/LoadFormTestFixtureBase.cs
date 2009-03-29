@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Reflection;
@@ -38,7 +39,7 @@ namespace PythonBinding.Tests.Designer
 				
 		[TestFixtureSetUp]
 		public void SetUpFixture()
-		{
+		{			
 			PythonFormWalker walker = new PythonFormWalker(this);
 			form = walker.CreateForm(PythonCode);
 		}
@@ -60,7 +61,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			CreatedComponent c = new CreatedComponent(componentClass.FullName, name);
 			createdComponents.Add(c);
-			
+						
 			object instance = componentClass.Assembly.CreateInstance(componentClass.FullName);
 			return (IComponent)instance;
 		}
@@ -100,6 +101,11 @@ namespace PythonBinding.Tests.Designer
 				type = typeof(Size).Assembly.GetType(typeName);
 			}
 			return type;
+		}
+		
+		public PropertyDescriptor GetEventProperty(EventDescriptor e)
+		{
+			return new MockPropertyDescriptor("abc", "TestFormLoad", true);
 		}
 		
 		protected Form Form {

@@ -87,3 +87,9 @@ def main(args):
    ChildControl has ParentControl as base class.
    BorderStyle set to None in designer for ChildControl. Code should then be generated for BorderStyle since this
    is not the default
+   
+ * Event Handler loading code:
+   
+   Handle invalid event name.
+   Check that += operator used.
+   Support event handlers on other controls.

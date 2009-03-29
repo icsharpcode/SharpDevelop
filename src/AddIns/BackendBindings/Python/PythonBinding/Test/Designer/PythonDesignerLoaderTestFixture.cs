@@ -38,6 +38,7 @@ namespace PythonBinding.Tests.Designer
 		MockExtenderProviderService mockExtenderProviderService;
 		IComponent rootComponent;
 		Form designedForm;
+		MockEventBindingService mockEventBindingService;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -55,6 +56,10 @@ namespace PythonBinding.Tests.Designer
 
 			mockExtenderProviderService = new MockExtenderProviderService();
 			mockDesignerLoaderHost.AddService(typeof(IExtenderProviderService), mockExtenderProviderService);
+			
+			mockEventBindingService = new MockEventBindingService();
+			mockDesignerLoaderHost.AddService(typeof(IEventBindingService), mockEventBindingService);
+			
 			System.Console.WriteLine("Before BeginLoad");
 			loader.BeginLoad(mockDesignerLoaderHost);
 			System.Console.WriteLine("After BeginLoad");
@@ -121,6 +126,15 @@ namespace PythonBinding.Tests.Designer
 		public void PerformFlushUsesDesignedForm()
 		{
 			Assert.AreEqual(designedForm, generator.MergeChangesRootComponent);
+		}
+		
+		[Test]
+		public void GetEventPropertyUsesEventBindingService()
+		{
+			IEventBindingService eventBindingService = (IEventBindingService)mockEventBindingService;
+			EventDescriptor e = TypeDescriptor.GetEvents(typeof(Form)).Find("Load", true);
+			PropertyDescriptor expectedProperty = eventBindingService.GetEventProperty(e);
+			Assert.AreEqual(expectedProperty, loader.GetEventProperty(e));
 		}
 		
 		/// <summary>

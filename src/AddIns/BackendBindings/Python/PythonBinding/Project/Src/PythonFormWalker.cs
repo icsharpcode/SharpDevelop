@@ -146,6 +146,25 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Walks a statement of the form:
+		/// 
+		/// self.a += self.b
+		/// </summary>
+		public override bool Walk(AugmentedAssignStatement node)
+		{
+			MemberExpression eventExpression = node.Left as MemberExpression;
+			string eventName = eventExpression.Name.ToString();
+			
+			MemberExpression eventHandlerExpression = node.Right as MemberExpression;
+			string eventHandlerName = eventHandlerExpression.Name.ToString();
+			
+			EventDescriptor eventDescriptor = TypeDescriptor.GetEvents(form).Find(eventName, false);
+			PropertyDescriptor propertyDescriptor = componentCreator.GetEventProperty(eventDescriptor);
+			propertyDescriptor.SetValue(form, eventHandlerName);
+			return false;
+		}
+		
+		/// <summary>
 		/// Walks the binary expression which is the right hand side of an assignment statement.
 		/// </summary>
 		void WalkAssignment(BinaryExpression binaryExpression)
