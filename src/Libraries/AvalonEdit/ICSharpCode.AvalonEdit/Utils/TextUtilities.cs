@@ -65,9 +65,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");
-			int pos = offset;
-			while (pos < textSource.TextLength) {
-				char c = textSource.GetCharAt(pos++);
+			int pos;
+			for (pos = offset; pos < textSource.TextLength; pos++) {
+				char c = textSource.GetCharAt(pos);
 				if (c != ' ' && c != '\t')
 					break;
 			}

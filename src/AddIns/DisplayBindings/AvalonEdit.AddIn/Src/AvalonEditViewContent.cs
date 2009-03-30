@@ -68,12 +68,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void LoadFormatter()
 		{
-			const string formatingStrategyPath   = "/AddIns/DefaultTextEditor/Formatter";
+			const string formatingStrategyPath = "/AddIns/DefaultTextEditor/Formatter";
 			
-			string formatterPath = formatingStrategyPath + "/" + codeEditor.SyntaxHighlighting.Name;
-			var formatter = AddInTree.BuildItems<IFormattingStrategy>(formatterPath, this, false);
-			if (formatter != null && formatter.Count > 0) {
-				codeEditor.FormattingStrategy = formatter[0];
+			if (codeEditor.SyntaxHighlighting != null) {
+				string formatterPath = formatingStrategyPath + "/" + codeEditor.SyntaxHighlighting.Name;
+				var formatter = AddInTree.BuildItems<IFormattingStrategy>(formatterPath, this, false);
+				if (formatter != null && formatter.Count > 0) {
+					codeEditor.FormattingStrategy = formatter[0];
+				}
 			}
 		}
 		
