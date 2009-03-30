@@ -36,17 +36,34 @@ namespace PythonBinding.Tests.Designer
 			}
 		}
 		
+		[TestFixtureSetUp]
+		public new void SetUpFixture()
+		{
+			base.SetEventPropertyDescriptor(new MockPropertyDescriptor("abc", "TestFormLoad", true));
+			base.SetUpFixture();
+		}		
+		
 		public EventDescriptor GetLoadEventDescriptor()
 		{
 			return TypeDescriptor.GetEvents(Form).Find("Load", true);
 		}
 		
+		public MockPropertyDescriptor GetLoadEventPropertyDescriptor()
+		{
+			EventDescriptor loadEventDescriptor = GetLoadEventDescriptor();
+			return base.GetEventProperty(loadEventDescriptor) as MockPropertyDescriptor;			
+		}
+		
 		[Test]
 		public void EventPropertyDescriptorValueSetToEventHandlerMethodName()
 		{
-			EventDescriptor loadEventDescriptor = GetLoadEventDescriptor();
-			PropertyDescriptor property = base.GetEventProperty(loadEventDescriptor);
-			Assert.AreEqual("TestFormLoad", property.GetValue(Form) as String);
+			Assert.AreEqual("TestFormLoad", GetLoadEventPropertyDescriptor().GetValue(Form) as String);
 		}
+		
+		[Test]
+		public void PropertyDescriptorSetValueComponentIsForm()
+		{
+			Assert.AreEqual(Form, GetLoadEventPropertyDescriptor().GetSetValueComponent());
+		}		
 	}
 }

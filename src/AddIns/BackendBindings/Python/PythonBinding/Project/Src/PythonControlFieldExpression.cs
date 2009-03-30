@@ -22,11 +22,13 @@ namespace ICSharpCode.PythonBinding
 	{
 		string memberName = String.Empty;
 		string fullMemberName = String.Empty;
+		string variableName = String.Empty;
 		
 		PythonControlFieldExpression(string memberName, string fullMemberName)
 		{
 			this.memberName = memberName;
 			this.fullMemberName = fullMemberName;
+			this.variableName = GetVariableNameFromSelfReference(fullMemberName);
 		}
 		
 		/// <summary>
@@ -47,7 +49,7 @@ namespace ICSharpCode.PythonBinding
 		/// From a member expression of the form: self._textBox1.Name this property will return "textBox1".
 		/// </summary>		
 		public string VariableName {
-			get { return GetVariableNameFromSelfReference(fullMemberName); }
+			get { return variableName; }
 		}
 		
 		/// <summary>

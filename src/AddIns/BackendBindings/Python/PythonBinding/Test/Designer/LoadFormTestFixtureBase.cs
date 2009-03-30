@@ -30,7 +30,9 @@ namespace PythonBinding.Tests.Designer
 		List <CreatedInstance> createdInstances = new List<CreatedInstance>();
 		List <AddedComponent> addedComponents = new List<AddedComponent>();
 		List<string> typeNames = new List<string>();
-
+		PropertyDescriptor propertyDescriptor;
+		EventDescriptor eventDescriptor;
+		
 		Form form;
 
 		public LoadFormTestFixtureBase()
@@ -105,7 +107,20 @@ namespace PythonBinding.Tests.Designer
 		
 		public PropertyDescriptor GetEventProperty(EventDescriptor e)
 		{
-			return new MockPropertyDescriptor("abc", "TestFormLoad", true);
+			this.eventDescriptor = e;
+			return propertyDescriptor;
+		}
+		
+		public EventDescriptor EventDescriptorPassedToGetEventProperty {
+			get { return eventDescriptor; }
+		}
+		
+		/// <summary>
+		/// Sets the property descriptor to return from the GetEventProperty method.
+		/// </summary>
+		public void SetEventPropertyDescriptor(PropertyDescriptor propertyDescriptor)
+		{
+			this.propertyDescriptor = propertyDescriptor;
 		}
 		
 		protected Form Form {

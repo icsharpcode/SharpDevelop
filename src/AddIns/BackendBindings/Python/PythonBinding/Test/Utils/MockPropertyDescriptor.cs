@@ -15,6 +15,7 @@ namespace PythonBinding.Tests.Utils
 	{
 		object propertyValue;
 		bool shouldSerializeValue;
+		object setValueComponent;
 		
 		public MockPropertyDescriptor(string name, object value, bool shouldSerializeValue)
 			: base(name, null)
@@ -51,7 +52,13 @@ namespace PythonBinding.Tests.Utils
 		
 		public override void SetValue(object component, object value)
 		{
-			this.propertyValue = value;
+			setValueComponent = component;
+			propertyValue = value;
+		}
+		
+		public object GetSetValueComponent()
+		{
+			return setValueComponent;
 		}
 		
 		public override bool ShouldSerializeValue(object component)

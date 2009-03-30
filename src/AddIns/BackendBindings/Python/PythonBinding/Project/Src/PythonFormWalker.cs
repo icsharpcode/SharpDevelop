@@ -154,13 +154,19 @@ namespace ICSharpCode.PythonBinding
 		{
 			MemberExpression eventExpression = node.Left as MemberExpression;
 			string eventName = eventExpression.Name.ToString();
+			PythonControlFieldExpression field = PythonControlFieldExpression.Create(eventExpression);
 			
 			MemberExpression eventHandlerExpression = node.Right as MemberExpression;
 			string eventHandlerName = eventHandlerExpression.Name.ToString();
 			
-			EventDescriptor eventDescriptor = TypeDescriptor.GetEvents(form).Find(eventName, false);
+			Control control = form;
+			if (field.VariableName.Length > 0) {
+				control = GetControl(field.VariableName);
+			}
+			
+			EventDescriptor eventDescriptor = TypeDescriptor.GetEvents(control).Find(eventName, false);
 			PropertyDescriptor propertyDescriptor = componentCreator.GetEventProperty(eventDescriptor);
-			propertyDescriptor.SetValue(form, eventHandlerName);
+			propertyDescriptor.SetValue(control, eventHandlerName);
 			return false;
 		}
 		
