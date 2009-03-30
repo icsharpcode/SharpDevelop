@@ -148,9 +148,10 @@ namespace ICSharpCode.Profiler.Controls
 			layer.Add(ad);
 			int rangeStart = RangeStart;
 			int rangeEnd = RangeEnd;
+			string query = this.CurrentQuery;
 			
 			ProfilingDataProvider provider = Provider;
-			QueryCompiler compiler = new QueryCompiler(Reporter, this.CurrentQuery);
+			QueryCompiler compiler = new QueryCompiler(Reporter, query);
 			ringDiagram.SelectedRoot = null;
 			
 			task.Execute(() => LoadWorker(provider, compiler, rangeStart, rangeEnd),

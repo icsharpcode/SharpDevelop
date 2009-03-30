@@ -76,17 +76,19 @@ namespace ICSharpCode.Profiler.Controller.Queries
 			if (string.IsNullOrEmpty(this.currentQuery))
 				return false;
 			
-			if (!queryCache.ContainsKey(this.currentQuery)) {
-				string code = text + PreprocessString(currentQuery) + textEnd;
-				CompilerResults results = csc.CompileAssemblyFromSource(GetParameters(), code);
-				report(results.Errors.Cast<CompilerError>());
-				
-				if (results.Errors.Count > 0)
-					return false;
-				
-				queryCache.Add(this.currentQuery, results.CompiledAssembly);
-			} else {
-				report(new List<CompilerError>().AsEnumerable()); // clear errors list
+			lock (queryCache) {
+				if (!queryCache.ContainsKey(this.currentQuery)) {
+					string code = text + PreprocessString(currentQuery) + textEnd;
+					CompilerResults results = csc.CompileAssemblyFromSource(GetParameters(), code);
+					report(results.Errors.Cast<CompilerError>());
+					
+					if (results.Errors.Count > 0)
+						return false;
+					
+					queryCache.Add(this.currentQuery, results.CompiledAssembly);
+				} else {
+					report(new List<CompilerError>().AsEnumerable()); // clear errors list
+				}
 			}
 
 			return true;
