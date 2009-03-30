@@ -147,8 +147,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		internal void NotifyCompletionWindowOpened(CompletionWindow window)
 		{
+			if (completionWindow != null) {
+				// if there already is a completion window open, close it
+				completionWindow.Close();
+			}
 			completionWindow = window;
-			window.Closed += delegate { completionWindow = null; };
+			window.Closed += delegate {
+				completionWindow = null;
+			};
 		}
 		
 		IFormattingStrategy formattingStrategy;
