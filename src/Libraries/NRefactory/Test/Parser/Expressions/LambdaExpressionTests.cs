@@ -69,6 +69,15 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void ExplicitlyTypedStatementBodyWithRefParameter()
+		{
+			LambdaExpression e = ParseCSharp("(ref int i) => i = 1");
+			Assert.AreEqual("i", e.Parameters[0].ParameterName);
+			Assert.IsTrue((e.Parameters[0].ParamModifier & ParameterModifiers.Ref) == ParameterModifiers.Ref);
+			Assert.AreEqual("System.Int32", e.Parameters[0].TypeReference.Type);
+		}
+		
+		[Test]
 		public void LambdaExpressionContainingConditionalExpression()
 		{
 			LambdaExpression e = ParseCSharp("rr => rr != null ? rr.ResolvedType : null");
