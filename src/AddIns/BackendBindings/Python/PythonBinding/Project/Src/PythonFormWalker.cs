@@ -81,10 +81,7 @@ namespace ICSharpCode.PythonBinding
 					
 					MemberExpression rhsMemberExpression = node.Right as MemberExpression;
 					if (rhsMemberExpression != null) {
-						object propertyValue = deserializer.Deserialize(rhsMemberExpression);
-						if (propertyValue == null) {
-							propertyValue = PythonControlFieldExpression.GetMemberName(rhsMemberExpression);
-						}
+						object propertyValue = GetPropertyValueFromAssignmentRhs(rhsMemberExpression);
 						SetPropertyValue(fieldExpression.MemberName, propertyValue);
 					} else {
 						walkingAssignment = true;
@@ -213,7 +210,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		static object ConvertPropertyValue(PropertyDescriptor propertyDescriptor, object propertyValue)
 		{
-			if (propertyDescriptor.PropertyType != propertyValue.GetType()) {
+			if (!propertyDescriptor.PropertyType.IsAssignableFrom(propertyValue.GetType())) {
 				return propertyDescriptor.Converter.ConvertFrom(propertyValue);
 			}
 			return propertyValue;
@@ -259,6 +256,24 @@ namespace ICSharpCode.PythonBinding
 				parentControl = GetControl(parentControlName);
 			}
 			parentControl.Controls.Add(GetControl(childControlName));
+		}
+		
+		/// <summary>
+		/// Gets the property value from the member expression. The member expression is taken from the
+		/// right hand side of an assignment.
+		/// </summary>
+		object GetPropertyValueFromAssignmentRhs(MemberExpression memberExpression)
+		{
+			object propertyValue = deserializer.Deserialize(memberExpression);
+			if (propertyValue == null) {
+				PythonControlFieldExpression field = PythonControlFieldExpression.Create(memberExpression);
+				if (field.MemberName.Length > 0) {
+					propertyValue = GetControl(PythonControlFieldExpression.GetVariableName(field.MemberName));
+				} else {
+					propertyValue = field.FullMemberName;
+				}
+			}
+			return propertyValue;
 		}
 	}
 }

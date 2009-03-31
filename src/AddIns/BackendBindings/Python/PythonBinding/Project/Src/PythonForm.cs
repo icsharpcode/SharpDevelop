@@ -195,7 +195,12 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			string propertyName = GetPropertyName(propertyOwnerName, propertyDescriptor.Name);
-			AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
+			Control control = propertyValue as Control;
+			if (control != null) {
+				AppendIndentedLine(propertyName + " = self._" + control.Name);
+			} else {
+				AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
+			}
 		}
 		
 		static string GetPropertyName(string propertyOwnerName, string propertyName)
