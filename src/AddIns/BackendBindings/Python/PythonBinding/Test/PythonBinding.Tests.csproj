@@ -161,6 +161,7 @@
     <Compile Include="Designer\GenerateFormLocationTestFixture.cs" />
     <Compile Include="Designer\GenerateFormPaddingTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateNestedPanelFormTestFixture.cs" />
     <Compile Include="Designer\GeneratePanelFormTestFixture.cs" />

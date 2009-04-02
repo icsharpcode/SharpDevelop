@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -22,10 +24,18 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			using (Form form = new Form()) {
-				form.Name = "MainForm";
+			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
+				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+				IEventBindingService eventBindingService = new MockEventBindingService(host);
+				Form form = (Form)host.RootComponent;
 				form.ClientSize = new Size(284, 264);
-				form.Location = new Point(10, 20);
+
+				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
+				PropertyDescriptor descriptor = descriptors.Find("Location", false);
+				descriptor.SetValue(form, new Point(10, 20));
+
+				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
+				namePropertyDescriptor.SetValue(form, "MainForm");
 				
 				string indentString = "    ";
 				PythonForm pythonForm = new PythonForm(indentString);
@@ -44,7 +54,6 @@ namespace PythonBinding.Tests.Designer
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Location = System.Drawing.Point(10, 20)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.Visible = False\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

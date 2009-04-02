@@ -32,10 +32,9 @@ namespace PythonBinding.Tests.Designer
 				Form form = (Form)host.RootComponent;
 				form.ClientSize = new Size(200, 300);
 				
-				Button button = new Button();
+				Button button = (Button)host.CreateComponent(typeof(Button), "button1");
 				button.Location = new Point(0, 0);
 				button.Size = new Size(10, 10);
-				button.Name = "button1";
 				button.Text = "button1";
 				button.UseCompatibleTextRendering = false;
 				form.Controls.Add(button);

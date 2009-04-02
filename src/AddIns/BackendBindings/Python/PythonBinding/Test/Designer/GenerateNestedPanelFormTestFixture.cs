@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -26,24 +28,26 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			using (Form form = new Form()) {
-				form.Name = "MainForm";
+			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
+				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+				Form form = (Form)host.RootComponent;			
 				form.ClientSize = new Size(284, 264);
 				
-				Panel panel1 = new Panel();
+				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
+				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
+				namePropertyDescriptor.SetValue(form, "MainForm");
+				
+				Panel panel1 = (Panel)host.CreateComponent(typeof(Panel), "panel1");
 				panel1.Location = new Point(0, 0);
-				panel1.Name = "panel1";
 				panel1.TabIndex = 0;
 				panel1.Size = new Size(200, 220);
 				
-				Panel panel2 = new Panel();
+				Panel panel2 = (Panel)host.CreateComponent(typeof(Panel), "panel2");
 				panel2.Location = new Point(10, 15);
-				panel2.Name = "panel2";
 				panel2.TabIndex = 0;
 				panel2.Size = new Size(100, 120);
-				TextBox textBox = new TextBox();
+				TextBox textBox = (TextBox)host.CreateComponent(typeof(TextBox), "textBox1");
 				textBox.Location = new Point(5, 5);
-				textBox.Name = "textBox1";
 				textBox.TabIndex = 0;
 				textBox.Size = new Size(110, 20);
 				panel2.Controls.Add(textBox);
@@ -95,7 +99,6 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.Visible = False\r\n" +
 								"    self.Controls.Add(self._panel1)\r\n" +
 								"    self._panel1.ResumeLayout(false)\r\n" +
 								"    self._panel1.PerformLayout()\r\n" +

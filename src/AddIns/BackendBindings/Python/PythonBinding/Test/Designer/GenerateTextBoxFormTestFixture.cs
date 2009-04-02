@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -22,12 +24,16 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			using (Form form = new Form()) {
-				form.Name = "MainForm";
+			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
+				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+				Form form = (Form)host.RootComponent;			
 				form.ClientSize = new Size(284, 264);
 				
-				TextBox textBox = new TextBox();
-				textBox.Name = "textBox1";
+				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
+				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
+				namePropertyDescriptor.SetValue(form, "MainForm");
+				
+				TextBox textBox = (TextBox)host.CreateComponent(typeof(TextBox), "textBox1");
 				textBox.Size = new Size(110, 20);
 				textBox.TabIndex = 1;
 				textBox.Location = new Point(10, 10);
@@ -58,7 +64,6 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.Visible = False\r\n" +
 								"    self.Controls.Add(self._textBox1)\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";

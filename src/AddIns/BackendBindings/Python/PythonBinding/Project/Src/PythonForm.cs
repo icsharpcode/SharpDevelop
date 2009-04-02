@@ -31,6 +31,10 @@ namespace ICSharpCode.PythonBinding
 		IEventBindingService eventBindingService;
 		Attribute[] notDesignOnlyFilter = new Attribute[] { DesignOnlyAttribute.No };
 		
+		/// <summary>
+		/// Used so the EventBindingService.GetEventProperty method can be called to get the property descriptor
+		/// for an event.
+		/// </summary>
 		class PythonFormEventBindingService : EventBindingService
 		{
 			public PythonFormEventBindingService()
@@ -172,12 +176,16 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			foreach (Control childControl in control.Controls) {
-				AppendIndentedLine(GetPropertyName(propertyOwnerName, "Controls") + ".Add(self._" + childControl.Name + ")");
+				if (IsSitedControl(childControl)) {
+					AppendIndentedLine(GetPropertyName(propertyOwnerName, "Controls") + ".Add(self._" + childControl.Name + ")");
+				}
 			}
 	
 			if (addChildControlProperties) {
 				foreach (Control childControl in control.Controls) {
-					AppendControl(childControl, true, true);
+					if (IsSitedControl(childControl)) {
+						AppendControl(childControl, true, true);
+					}
 				}
 			}
 			
@@ -255,8 +263,10 @@ namespace ICSharpCode.PythonBinding
 		void AppendChildControlCreation(Control.ControlCollection controls)
 		{
 			foreach (Control control in controls) {
-				AppendControlCreation(control);
-				AppendChildControlCreation(control.Controls);
+				if (IsSitedControl(control)) {
+					AppendControlCreation(control);
+					AppendChildControlCreation(control.Controls);
+				}
 			}
 		}
 		
@@ -279,12 +289,12 @@ namespace ICSharpCode.PythonBinding
 		void AppendChildControlLayoutMethodCalls(Control.ControlCollection controls, string[] methods)
 		{
 			foreach (Control control in controls) {
-				if (control.Controls.Count > 0) {
+				if (HasSitedChildControls(control)) {
 					foreach (string method in methods) {
 						AppendIndentedLine("self._" + control.Name + "." + method);
 					}
+					AppendChildControlLayoutMethodCalls(control.Controls, methods);
 				}
-				AppendChildControlLayoutMethodCalls(control.Controls, methods);
 			}
 		}
 		
@@ -314,6 +324,24 @@ namespace ICSharpCode.PythonBinding
 				string methodName = (string)propertyDescriptor.GetValue(control);
 				AppendIndentedLine(GetPropertyName(propertyOwnerName, eventDescriptor.Name) + " += self." + methodName);
 			}
+		}
+		
+		static bool IsSitedControl(Control control)
+		{
+			return control.Site != null;
+		}
+		
+		bool HasSitedChildControls(Control control)
+		{
+			if (control.Controls.Count > 0) {
+				foreach (Control childControl in control.Controls) {
+					if (!IsSitedControl(childControl)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			return false;
 		}
 	}
 }
