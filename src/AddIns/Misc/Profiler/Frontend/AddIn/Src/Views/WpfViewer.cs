@@ -44,7 +44,13 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			this.TabPageText = title;
 			this.TitleName = this.TabPageText;
 			this.host = new SharpDevelopElementHost(dataView = new ProfilerView(this.provider));
-			this.host.Dock = DockStyle.Fill;
+			// HACK : Make host.Child visible
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				() => {
+					this.host.Dock = DockStyle.None;
+					this.host.Dock = DockStyle.Fill;
+				}
+			);
 		}
 
 		/// <summary>
@@ -66,5 +72,5 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			this.provider.Close();
 			base.Dispose();
 		}
-	}	
+	}
 }

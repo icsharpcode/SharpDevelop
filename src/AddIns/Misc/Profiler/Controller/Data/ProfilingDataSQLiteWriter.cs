@@ -190,7 +190,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				throw new InvalidOperationException("Too large CpuCyclesSpent - there's something wrong in the data");
 			}
 			
-			dataParams.callCount.Value = node.CallCount;
+			dataParams.callCount.Value = node.RawCallCount;
 			dataParams.isActiveAtStart.Value = node.IsActiveAtStart;
 			dataParams.cpuCyclesSpent.Value = node.CpuCyclesSpent;
 			dataParams.dataSetId.Value = dataSetCount;

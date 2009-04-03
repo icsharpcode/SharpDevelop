@@ -49,7 +49,16 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <summary>
 		/// Gets the number of calls to the method represented by the CallTreeNode.
 		/// </summary>
-		public abstract int CallCount { get; }
+		public abstract int RawCallCount { get; }
+		
+		/// <summary>
+		/// Gets the number of calls to the method represented by the CallTreeNode.
+		/// </summary>
+		public virtual int CallCount {
+			get {
+				return this.RawCallCount + (this.IsActiveAtStart ? 1 : 0);
+			}
+		}
 		
 		/// <summary>
 		/// Gets whether the function call started in a previous data set that's not selected.

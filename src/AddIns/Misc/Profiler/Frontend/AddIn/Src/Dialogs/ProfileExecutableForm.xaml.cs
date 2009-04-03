@@ -49,7 +49,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 					runner.RunFinished += delegate {
 						string title = Path.GetFileName(outputPath);
 						ProfilingDataProvider provider = new ProfilingDataSQLiteProvider(outputPath);
-						WorkbenchSingleton.CallLater(20, () => WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title)));
+						WorkbenchSingleton.SafeThreadCall(() => WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title)));
 					};
 					
 					runner.Run();

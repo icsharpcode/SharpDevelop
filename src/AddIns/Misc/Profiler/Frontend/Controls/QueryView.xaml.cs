@@ -106,6 +106,7 @@ namespace ICSharpCode.Profiler.Controls
 			this.RangeEnd = end;
 			this.searchRoot = new CallTreeNodeViewModel(this.Provider.GetRoot(start, end), null);
 			this.Invalidate();
+			this.InvalidateArrange();
 		}
 		
 		public void Invalidate()
