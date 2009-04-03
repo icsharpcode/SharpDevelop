@@ -12,7 +12,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.Profiler.Controller.Queries
 {
 	/// <summary>
-	/// Description of NodePath.
+	/// Describes an absolute path to an CallTreeNode.
 	/// </summary>
 	public class NodePath : IEquatable<NodePath>, IEnumerable<int>
 	{
@@ -21,7 +21,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 		/// </summary>
 		public static readonly NodePath Empty = new NodePath(0, null);
 		
-		int lastId;		
+		int lastId;
 		NodePath previous;
 		
 		/// <summary>

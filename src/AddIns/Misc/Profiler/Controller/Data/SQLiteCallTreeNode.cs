@@ -50,8 +50,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// Gets the number of calls to the method represented by the CallTreeNode.
 		/// </summary>
 		public override int CallCount {
-			get{
-				return this.callCount;
+			get {
+				return this.callCount + (isActiveAtStart ? 1 : 0);
 			}
 		}
 

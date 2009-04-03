@@ -58,7 +58,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public override int CallCount {
 			get {
 				dataSet.VerifyAccess(); // need to verify before deferencing data
-				return this.data->CallCount;
+				return this.data->CallCount + (IsActiveAtStart ? 1 : 0);
 			}
 		}
 
