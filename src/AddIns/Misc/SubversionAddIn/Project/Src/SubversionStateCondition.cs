@@ -10,8 +10,7 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Svn.Commands;
-using PumaCode.SvnDotNet.SubversionSharp;
-using PumaCode.SvnDotNet.AprSharp;
+using SharpSvn;
 
 namespace ICSharpCode.Svn
 {

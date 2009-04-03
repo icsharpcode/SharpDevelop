@@ -88,7 +88,7 @@ namespace ICSharpCode.Svn
 				LoggingService.Info("SVN: Get log of " + fileName);
 				if (File.Exists(fileName)) {
 					using (SvnClientWrapper client = new SvnClientWrapper()) {
-						client.AllowInteractiveAuthorization = true;
+						client.AllowInteractiveAuthorization();
 						client.Log(new string[] { fileName },
 						           Revision.Head,          // Revision start
 						           Revision.FromNumber(1), // Revision end

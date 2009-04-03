@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>UpdateSetupInfo</RootNamespace>
@@ -16,9 +16,10 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>bin</OutputPath>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\Daniel\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -36,11 +37,9 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AprSharp">
-      <HintPath>..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\AprSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="SubversionSharp">
-      <HintPath>..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\SubversionSharp.dll</HintPath>
+    <Reference Include="SharpSvn">
+      <HintPath>..\..\Libraries\SharpSvn\SharpSvn.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -49,9 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
-    <Content Include="UpdateSetupInfo.exe.manifest">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -1,14 +1,15 @@
 using System;
-using System.Text.RegularExpressions;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Xsl;
-using System.Reflection;
-using System.Windows.Forms;
-using System.IO;
-using PumaCode.SvnDotNet.AprSharp;
-using PumaCode.SvnDotNet.SubversionSharp;
+
+using SharpSvn;
 
 class MainClass
 {
@@ -52,21 +53,13 @@ class MainClass
 	{
 		Console.Write("Writing revision to file: ");
 		
-		SvnClient client = new SvnClient();
+		long rev = 0;
 		string filename = Path.GetFullPath(".");
-		int rev = 0;
-		client.Status2(
-			filename, Svn.Revision.Working, 
-			delegate (IntPtr baton, SvnPath path, SvnWcStatus2 status) {
-				if (StringComparer.InvariantCultureIgnoreCase.Equals(filename, path.Value)) {
-					rev = status.Entry.Revision;
-				}
-			},
-			IntPtr.Zero,
-			false, true, false, false, false
-		);
-		client.GlobalPool.Destroy();
-		
+		SvnWorkingCopyClient client = new SvnWorkingCopyClient();
+		SvnWorkingCopyVersion version;
+		if (client.GetVersion(filename, out version)) {
+			rev = version.Start;
+		}
 		Console.WriteLine(rev);
 		using (StreamWriter writer = new StreamWriter("../REVISION")) {
 			writer.Write(rev.ToString());
@@ -78,9 +71,6 @@ class MainClass
 		Console.WriteLine("Reading SVN changelog, this might take a while...");
 		
 		SvnClient client = new SvnClient();
-		client.AddUsernameProvider();
-		client.AddSimpleProvider();
-		client.OpenAuth();
 		
 		StringWriter writer = new StringWriter();
 		XmlTextWriter xmlWriter = new XmlTextWriter(writer);
@@ -88,24 +78,26 @@ class MainClass
 		xmlWriter.WriteStartDocument();
 		xmlWriter.WriteStartElement("log");
 		int progressCount = 0;
-		client.Log2(
-			new SvnPath[] { new SvnPath("..", client.Pool)},
-			Svn.Revision.Base, new SvnRevision(startRevision),
-			int.MaxValue, false, false,
-			delegate(IntPtr baton, AprHash changed_paths, int revision, AprString author, AprString date, AprString message, AprPool pool) {
+		client.Log(
+			"..",
+			new SvnLogArgs {
+				// retrieve log in reverse order
+				Start = SvnRevision.Base,
+				End = new SvnRevision(startRevision)
+			},
+			delegate(object sender, SvnLogEventArgs e) {
 				if (++progressCount == 10) {
 					Console.Write(".");
 					progressCount = 0;
 				}
 				xmlWriter.WriteStartElement("logentry");
-				xmlWriter.WriteAttributeString("revision", revision.ToString(System.Globalization.CultureInfo.InvariantCulture));
-				xmlWriter.WriteElementString("author", author.Value);
-				xmlWriter.WriteElementString("date", DateTime.Parse(date.Value).ToUniversalTime().ToString("MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture));
-				xmlWriter.WriteElementString("msg", message.Value);
+				xmlWriter.WriteAttributeString("revision", e.Revision.ToString(CultureInfo.InvariantCulture));
+				xmlWriter.WriteElementString("author", e.Author);
+				xmlWriter.WriteElementString("date", e.Time.ToUniversalTime().ToString("MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture));
+				xmlWriter.WriteElementString("msg", e.LogMessage);
 				xmlWriter.WriteEndElement();
-				return SvnError.NoError;
-			},
-			IntPtr.Zero);
+			}
+		);
 		xmlWriter.WriteEndDocument();
 		
 		Console.WriteLine();
@@ -122,7 +114,7 @@ class MainClass
 		xmlWriter.Close();
 		tw.Close();
 		
-		client.GlobalPool.Destroy();
+		client.Dispose();
 		
 		Console.WriteLine("Finished");
 	}

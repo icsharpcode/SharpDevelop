@@ -1483,16 +1483,8 @@
 										<Component Guid="C9B1D523-5674-4398-9073-20F57B45DD46" Id="SubversionAddInDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SubversionAddIn.dll" Id="SubversionAddIn.dll" Name="SubversionAddIn.dll" Assembly=".net" AssemblyApplication="SubversionAddIn.dll" AssemblyManifest="SubversionAddIn.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\ICSharpCode.Svn.addin" Id="ICSharpCode.Svn.addin" Name="ICSharpCode.Svn.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\AprSharp.dll" Name="AprSharp.dll" Id="AprSharp.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\intl3_svn.dll" Name="intl3_svn.dll" Id="intl3_svn.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\libapr.dll" Name="libapr.dll" Id="libapr.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\libapriconv.dll" Name="libapriconv.dll" Id="libapriconv.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\libaprutil.dll" Name="libaprutil.dll" Id="libaprutil.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\libdb44.dll" Name="libdb44.dll" Id="libdb44.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\libeay32.dll" Name="libeay32.dll" Id="libeay32.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\ssleay32.dll" Name="ssleay32.dll" Id="ssleay32.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SubversionSharp.dll" Name="SubversionSharp.dll" Id="SubversionSharp.dll" />
-											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\svn_client-1.dll" Name="svn_client-1.dll" Id="svn_client_1.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SharpSvn.dll" Name="SharpSvn.dll" Id="SharpSvn.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SharpSvn.UI.dll" Name="SharpSvn.UI.dll" Id="SharpSvn.UI.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="UnitTestingFolder" Name="UnitTesting">

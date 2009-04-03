@@ -9,7 +9,7 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <NoStdLib>False</NoStdLib>
-    <DebugType>None</DebugType>
+    <DebugType>PdbOnly</DebugType>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
@@ -21,6 +21,7 @@
     <NoWarn>1607</NoWarn>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\Daniel\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -33,13 +34,9 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AprSharp">
-      <HintPath>..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\AprSharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SubversionSharp">
-      <HintPath>..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\SubversionSharp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="SharpSvn">
+      <HintPath>..\..\Libraries\SharpSvn\SharpSvn.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

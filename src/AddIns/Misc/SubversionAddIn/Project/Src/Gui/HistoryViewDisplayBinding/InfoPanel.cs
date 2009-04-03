@@ -54,7 +54,7 @@ namespace ICSharpCode.Svn
 			revisionListView.Controls.Add(txt);
 		}
 		
-		int lastRevision = -1;
+		long lastRevision = -1;
 		
 		public void AddLogMessage(LogMessage logMessage)
 		{
@@ -131,7 +131,7 @@ namespace ICSharpCode.Svn
 				LogMessage logMessage = (LogMessage)loadChangedPathsItem.Tag;
 				string fileName = System.IO.Path.GetFullPath(viewContent.PrimaryFileName);
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
-					client.AllowInteractiveAuthorization = true;
+					client.AllowInteractiveAuthorization();
 					try {
 						client.Log(new string[] { fileName },
 						           Revision.FromNumber(logMessage.Revision), // Revision start
@@ -141,7 +141,7 @@ namespace ICSharpCode.Svn
 						           false,                  // bool strictNodeHistory
 						           ReceiveChangedPaths);
 					} catch (SvnClientException ex) {
-						if (ex.ErrorCode == 160013) {
+						if (ex.IsKnownError(KnownError.FileNotFound)) {
 							// This can happen when the file was renamed/moved so it cannot be found
 							// directly in the old revision. In that case, we do a full download of
 							// all revisions (so the file can be found in the new revision and svn can

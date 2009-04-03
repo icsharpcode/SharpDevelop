@@ -25,11 +25,11 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AprSharp">
-      <HintPath>..\RequiredLibraries\AprSharp.dll</HintPath>
+    <Reference Include="SharpSvn">
+      <HintPath>..\..\..\..\Libraries\SharpSvn\SharpSvn.dll</HintPath>
     </Reference>
-    <Reference Include="SubversionSharp">
-      <HintPath>..\RequiredLibraries\SubversionSharp.dll</HintPath>
+    <Reference Include="SharpSvn.UI">
+      <HintPath>..\..\..\..\Libraries\SharpSvn\SharpSvn.UI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -39,38 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\RequiredLibraries\intl3_svn.dll">
-      <Link>intl3_svn.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\RequiredLibraries\libapr.dll">
-      <Link>libapr.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\RequiredLibraries\libapriconv.dll">
-      <Link>libapriconv.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\RequiredLibraries\libaprutil.dll">
-      <Link>libaprutil.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\RequiredLibraries\libdb44.dll">
-      <Link>libdb44.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\RequiredLibraries\libeay32.dll">
-      <Link>libeay32.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\RequiredLibraries\ssleay32.dll">
-      <Link>ssleay32.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\RequiredLibraries\svn_client-1.dll">
-      <Link>svn_client-1.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="ICSharpCode.Svn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -80,25 +48,9 @@
     </Compile>
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\ClientCertDialog.xfrm" />
-    <EmbeddedResource Include="Resources\ClientCertPassphraseDialog.xfrm" />
-    <EmbeddedResource Include="Resources\LoginDialog.xfrm" />
-    <EmbeddedResource Include="Resources\SslServerTrustDialog.xfrm" />
     <EmbeddedResource Include="Resources\SubversionOptionsPanel.xfrm" />
     <Compile Include="Src\Commands\AutostartCommands.cs" />
     <Compile Include="Src\Commands\ProjectBrowserCommands.cs" />
-    <Compile Include="Src\Gui\AuthentificationDialogs\ClientCertDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\AuthentificationDialogs\ClientCertPassphraseDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\AuthentificationDialogs\LoginDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\AuthentificationDialogs\SslServerTrustDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryView.cs" />
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewDisplayBinding.cs" />
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewPanel.cs">

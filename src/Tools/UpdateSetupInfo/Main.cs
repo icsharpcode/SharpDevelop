@@ -6,16 +6,16 @@
 // </file>
 
 using System;
+using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Text;
-using PumaCode.SvnDotNet.AprSharp;
-using PumaCode.SvnDotNet.SubversionSharp;
+
+using SharpSvn;
 
 namespace UpdateSetupInfo
 {
 	/// <summary>
-	/// Creates the SharpDevelop.Setup.wixproj.user file based on the 
+	/// Creates the SharpDevelop.Setup.wixproj.user file based on the
 	/// SharpDevelop.Setup.wixproj.user.template.
 	/// </summary>
 	class UpdateApplication
@@ -42,7 +42,7 @@ namespace UpdateSetupInfo
 		/// The full filename including path to the setup template file.
 		/// </summary>
 		string setupTemplateFullFileName;
-	
+		
 		/// <summary>
 		/// The full filename including path to the setup project user file that
 		/// will be generated.
@@ -61,7 +61,7 @@ namespace UpdateSetupInfo
 		string previousRevisionFileName;
 		
 		/// <summary>
-		/// The folder that contains the last revision number used to update the 
+		/// The folder that contains the last revision number used to update the
 		/// template.
 		/// </summary>
 		string previousRevisionFolder;
@@ -77,6 +77,9 @@ namespace UpdateSetupInfo
 			setupProjectUserFullFileName = Path.Combine(setupProjectFolder, SetupProjectUserFileName);
 			previousRevisionFolder = Path.Combine(setupProjectFolder, @"bin");
 			previousRevisionFileName = Path.Combine(previousRevisionFolder, "REVISION");
+			
+			File.Copy(Path.Combine(Path.Combine(applicationFolder, subversionLibraryDir), "SharpSvn.dll"),
+			          Path.Combine(applicationFolder, "SharpSvn.dll"), true);
 			
 			// Set current directory to a folder that is in the repository.
 			Environment.CurrentDirectory = setupProjectFolder;
@@ -94,14 +97,14 @@ namespace UpdateSetupInfo
 		}
 		
 		public int Run()
-		{			
+		{
 			// Read setup template contents.
 			if (!SetupTemplateFileExists) {
 				Console.WriteLine(String.Concat(SetupTemplateFileName, " not found. Unable to update setup information."));
 				return SetupTemplateFileNotFoundReturnCode;
 			}
 			string template = ReadSetupTemplate();
-						
+			
 			// Get current revision.
 			string currentRevision = GetCurrentRevision();
 			
@@ -144,7 +147,9 @@ namespace UpdateSetupInfo
 				writer.Write(contents);
 			}
 		}
-				
+		
+		const string subversionLibraryDir = @"..\..\..\Libraries\SharpSvn";
+		
 		/// <summary>
 		/// Code taken directly from UpdateAssemblyInfo and the paths slightly modified.
 		/// </summary>
@@ -157,17 +162,12 @@ namespace UpdateSetupInfo
 			string oldWorkingDir = Environment.CurrentDirectory;
 			try {
 				// Set working directory so msvcp70.dll and msvcr70.dll can be found
-				Environment.CurrentDirectory = Path.Combine(applicationFolder, @"..\..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries");
-				SvnClient client = new SvnClient();
-				try {
-					client.Info(oldWorkingDir, new SvnRevision(Svn.Revision.Unspecified), new SvnRevision(Svn.Revision.Unspecified),
-					            delegate(IntPtr baton, SvnPath path, SvnInfo info, AprPool pool) {
-					            	revisionNumber = info.Rev.ToString();
-					            	return SvnError.NoError;
-					            },
-					            IntPtr.Zero, false);
-				} finally {
-					client.Clear();
+				Environment.CurrentDirectory = Path.Combine(applicationFolder, subversionLibraryDir);
+				
+				SvnWorkingCopyClient client = new SvnWorkingCopyClient();
+				SvnWorkingCopyVersion version;
+				if (client.GetVersion(oldWorkingDir, out version)) {
+					revisionNumber = version.Start.ToString(CultureInfo.InvariantCulture);
 				}
 			} catch (Exception e) {
 				Console.WriteLine("Reading revision number with Svn.Net failed: " + e.ToString());
