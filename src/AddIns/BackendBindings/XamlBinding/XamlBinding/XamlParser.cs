@@ -23,22 +23,13 @@ namespace ICSharpCode.XamlBinding
 
 		public string[] LexerTags
 		{
-			get
-			{
-				return lexerTags;
-			}
-			set
-			{
-				lexerTags = value;
-			}
+			get { return lexerTags; }
+			set { lexerTags = value; }
 		}
 
 		public LanguageProperties Language
 		{
-			get
-			{
-				return LanguageProperties.CSharp;
-			}
+			get { return LanguageProperties.CSharp; }
 		}
 
 		public bool CanParse(string fileName)

@@ -28,7 +28,7 @@ namespace ICSharpCode.XamlBinding
 		ParseInformation parseInfo;
 		int caretLineNumber, caretColumn;
 
-		bool IsReaderAtTarget(XmlTextReader r)
+		internal bool IsReaderAtTarget(XmlTextReader r)
 		{
 			if (r.LineNumber > caretLineNumber)
 				return true;
@@ -55,7 +55,7 @@ namespace ICSharpCode.XamlBinding
 					while (r.Read() && !IsReaderAtTarget(r)) { }
 
 					if (string.IsNullOrEmpty(context.AttributeName)) {
-						return ResolveElementName(r);
+						return ResolveElementName(r, expressionResult.Expression);
 					}
 					else if (context.InAttributeValue) {
 						MemberResolveResult mrr = ResolveAttribute(r, context.AttributeName);
@@ -75,10 +75,11 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 
-		ResolveResult ResolveElementName(XmlReader r)
+		ResolveResult ResolveElementName(XmlReader r, string exp)
 		{
 			string xmlNamespace;
 			string name;
+			this.resolveExpression = exp;
 			if (resolveExpression.Contains(":")) {
 				string prefix = resolveExpression.Substring(0, resolveExpression.IndexOf(':'));
 				name = resolveExpression.Substring(resolveExpression.IndexOf(':') + 1);
@@ -179,114 +180,19 @@ namespace ICSharpCode.XamlBinding
 			}
 			return null;
 		}
-
-		public ArrayList CtrlSpace(int caretLineNumber, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext expressionContext)
+		
+		void AddEventsForType(ArrayList result, XmlTextReader r, TypeResolveResult rr)
 		{
-			this.parseInfo = parseInfo;
-			this.caretLineNumber = caretLineNumber;
-			this.caretColumn = caretColumn;
-			this.callingClass = parseInfo.BestCompilationUnit.GetInnermostClass(caretLineNumber, caretColumn);
-			this.context = expressionContext as XamlExpressionContext;
-			if (context == null) {
-				return null;
-			}
-
-			if (context.AttributeName == null) {
-				return CtrlSpaceForElement(fileContent);
-			}
-			else if (context.InAttributeValue) {
-				return CtrlSpaceForAttributeValue(fileContent, context);
-			}
-			else {
-				return CtrlSpaceForAttributeName(fileContent, context);
-			}
-		}
-
-		ArrayList CtrlSpaceForAttributeName(string fileContent, XamlExpressionContext context)
-		{
-			if (context.ElementPath.Elements.Count == 0)
-				return null;
-			QualifiedName lastElement = context.ElementPath.Elements[context.ElementPath.Elements.Count - 1];
-			XamlCompilationUnit cu = parseInfo.BestCompilationUnit as XamlCompilationUnit;
-			if (cu == null)
-				return null;
-			IReturnType rt = cu.CreateType(lastElement.Namespace, lastElement.Name);
-			if (rt == null)
-				return null;
-			ArrayList list = new ArrayList();
-			foreach (IProperty p in rt.GetProperties()) {
-				if (p.IsPublic && p.CanSet) {
-					list.Add(p);
+			if (rr.ResolvedType != null) {
+				foreach (IEvent e in rr.ResolvedType.GetEvents()) {
+					if (!e.IsPublic)
+						continue;
+					
+					string propPrefix = e.DeclaringType.Name;
+					if (!string.IsNullOrEmpty(r.Prefix))
+						propPrefix = r.Prefix + ":" + propPrefix;
+					result.Add(new XamlCompletionEvent(e, propPrefix));
 				}
-			}
-			return list;
-		}
-
-		ArrayList CtrlSpaceForAttributeValue(string fileContent, XamlExpressionContext context)
-		{
-			ArrayList attributes = CtrlSpaceForAttributeName(fileContent, context);
-			if (attributes != null) {
-				foreach (IProperty p in attributes.OfType<IProperty>()) {
-					if (p.Name == context.AttributeName && p.ReturnType != null) {
-						IClass c = p.ReturnType.GetUnderlyingClass();
-						if (c != null && c.ClassType == ClassType.Enum) {
-							return EnumCompletion(c);
-						}
-					}
-				}
-			}
-			return null;
-		}
-
-		ArrayList EnumCompletion(IClass enumClass)
-		{
-			ArrayList arr = new ArrayList();
-			foreach (IField f in enumClass.Fields) {
-				arr.Add(f);
-			}
-			return arr;
-		}
-
-		ArrayList CtrlSpaceForElement(string fileContent)
-		{
-			using (XmlTextReader r = new XmlTextReader(new StringReader(fileContent))) {
-				try {
-					r.WhitespaceHandling = WhitespaceHandling.Significant;
-					// move reader to correct position
-					while (r.Read() && !IsReaderAtTarget(r)) { }
-				}
-				catch (XmlException) {
-				}
-				ArrayList result = new ArrayList();
-				IProjectContent pc = parseInfo.BestCompilationUnit.ProjectContent;
-
-				resolveExpression = r.Name;
-				TypeResolveResult rr = ResolveElementName(r) as TypeResolveResult;
-				if (rr != null) {
-					AddPropertiesForType(result, r, rr);
-				}
-
-				foreach (var ns in r.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml)) {
-					ArrayList list = XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value);
-					if (list != null) {
-						foreach (IClass c in list.OfType<IClass>()) {
-							if (c.ClassType != ClassType.Class)
-								continue;
-							if (c.IsAbstract && c.IsStatic)
-								continue;
-							if (c.ClassInheritanceTree.Any(b => b.FullyQualifiedName == "System.Attribute"))
-								continue;
-							if (!c.Methods.Any(m => m.IsConstructor && m.IsPublic))
-								continue;
-							if (string.IsNullOrEmpty(ns.Key))
-								result.Add(c);
-							else
-								result.Add(new XamlCompletionClass(c, ns.Key));
-						}
-					}
-				}
-				
-				return result;
 			}
 		}
 		
@@ -313,22 +219,7 @@ namespace ICSharpCode.XamlBinding
 			return rt.GetMethods().Any(m => m.Name == "Add" && m.IsPublic);
 		}
 
-		class XamlCompletionClass : DefaultClass, IEntity
-		{
-			string newName;
 
-			public XamlCompletionClass(IClass baseClass, string prefix)
-				: base(baseClass.CompilationUnit, baseClass.FullyQualifiedName)
-			{
-				this.Modifiers = baseClass.Modifiers;
-				newName = prefix + ":" + baseClass.Name;
-			}
-
-			string IEntity.Name
-			{
-				get { return newName; }
-			}
-		}
 
 		class XamlCompletionProperty : DefaultProperty, IEntity
 		{
@@ -338,6 +229,7 @@ namespace ICSharpCode.XamlBinding
 				: base(baseProperty.DeclaringType, baseProperty.Name)
 			{
 				this.Modifiers = baseProperty.Modifiers;
+				this.CopyDocumentationFrom(baseProperty);
 				newName = prefix + "." + baseProperty.Name;
 			}
 
@@ -345,6 +237,29 @@ namespace ICSharpCode.XamlBinding
 			{
 				get { return newName; }
 			}
+		}
+		
+		class XamlCompletionEvent : DefaultEvent, IEntity
+		{
+			string newName;
+
+			public XamlCompletionEvent(IEvent baseEvent, string prefix)
+				: base(baseEvent.DeclaringType, baseEvent.Name)
+			{
+				this.Modifiers = baseEvent.Modifiers;
+				this.CopyDocumentationFrom(baseEvent);
+				newName = prefix + "." + baseEvent.Name;
+			}
+
+			string IEntity.Name
+			{
+				get { return newName; }
+			}
+		}
+		
+		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
+		{
+			return new ArrayList();
 		}
 	}
 }

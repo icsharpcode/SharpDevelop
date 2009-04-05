@@ -26,8 +26,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (xmlNamespace.StartsWith("clr-namespace:")) {
 				return CreateClrNamespaceType(this.ProjectContent, xmlNamespace, className);
-			}
-			else {
+			} else {
 				return new XamlClassReturnType(this, xmlNamespace, className);
 			}
 		}
@@ -97,7 +96,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (pc == null)
 				throw new ArgumentNullException("pc");
-			if (xmlNamespace == null)
+			if (string.IsNullOrEmpty(xmlNamespace))
 				return null;
 			if (xmlNamespace.StartsWith("clr-namespace:")) {
 				return pc.GetNamespaceContents(GetNamespaceNameFromClrNamespace(xmlNamespace));
