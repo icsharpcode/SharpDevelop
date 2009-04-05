@@ -5,15 +5,17 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.AvalonEdit.AddIn;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
@@ -57,35 +59,62 @@ namespace ICSharpCode.XamlBinding
 					}
 				}
 			} else {
-				if (item is DefaultCompletionItem) {
-					if (item.Text == "<new event handler>") { // TODO : replace with translation string
-	
-					}
+				if (item is NewEventCompletionItem) {
+					NewEventCompletionItem eventItem = item as NewEventCompletionItem;
+					CreateEventHandlerCode(context, eventItem);
 				}
 			}
 			
 			base.Complete(context, item);
 		}
 		
-		string CreateEventHandlerCode(CompletionContext context, out IMember lastMember)
+		void CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem)
 		{
 			ParseInformation p = ParserService.GetParseInformation(context.Editor.FileName);
 			var unit = p.MostRecentCompilationUnit;
 			var loc = context.Editor.Document.OffsetToPosition(context.StartOffset);
 			IClass c = unit.GetInnermostClass(loc.Line, loc.Column);
+			IMethod initializeComponent = c.Methods[0];
 			CompoundClass compound = c.GetCompoundClass() as CompoundClass;
 			if (compound != null) {
 				foreach (IClass part in compound.Parts) {
-					RefactoringProvider provider = part.ProjectContent.Language.RefactoringProvider;
-					if (provider.SupportsCreateEventHandler) {
-						lastMember = part.Methods.Last();
-						
-						//return provider.CreateEventHandler(;
+					IMember lastMember = part.Methods.LastOrDefault();
+					
+					if (lastMember != null && lastMember.ToString() == initializeComponent.ToString())
+						continue;
+					
+					if (completionItem.EventType.ReturnType == null)
+						return;
+					
+					IMethod method = completionItem.EventType.ReturnType.GetMethods().FirstOrDefault(m => m.Name == "Invoke");
+					
+					if (method == null)
+						throw new ArgumentException("delegateType is not a valid delegate!");
+					
+					ParametrizedNode node = CodeGenerator.ConvertMember(method, new ClassFinder(part, context.Editor.Caret.Line, context.Editor.Caret.Column));
+					
+					// TODO : add formatting options ...
+					node.Name = completionItem.TargetName + "_" + completionItem.EventType.Name;
+					
+					completionItem.HandlerName = node.Name;
+					
+					node.Modifier = Modifiers.None;
+					
+					AvalonEditViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName) as AvalonEditViewContent;
+					
+					// TODO : shouldn't we be able to use viewContent.CodeEditor.textEditorAdapter here? (Property missing?)
+					ITextEditor wrapper = new CodeEditorAdapter(viewContent.CodeEditor);
+					
+					if (viewContent != null) {
+						if (lastMember != null)
+							unit.ProjectContent.Language.CodeGenerator.InsertCodeAfter(lastMember, wrapper.Document, node);
+						else
+							unit.ProjectContent.Language.CodeGenerator.InsertCodeAtEnd(part.Region, wrapper.Document, node);
+						return;
 					}
+					return;
 				}
 			}
-			lastMember = null;
-			return string.Empty;
 		}
 	}
 }

@@ -38,13 +38,14 @@ namespace ICSharpCode.XamlBinding
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			XamlResolver resolver = new XamlResolver();
+			XmlElementPath path;
 			int offset;
 			switch (ch) {
 				case '<':
 					int prevLTCharPos = GetPreviousLTCharPos(editor.Document.Text, editor.Caret.Offset) + 1;
-					XmlElementPath elPath = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, prevLTCharPos);
-					if (elPath != null && elPath.Elements.Count > 0) {
-						ICompletionItemList list = CreateListForContext(editor, XamlContext.AtTag, elPath, null);
+					path = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, prevLTCharPos);
+					if (path != null && path.Elements.Count > 0) {
+						ICompletionItemList list = CreateListForContext(editor, XamlContext.AtTag, path, null);
 						editor.ShowCompletionWindow(list);
 						return CodeCompletionKeyPressResult.Completed;
 					}
@@ -60,7 +61,7 @@ namespace ICSharpCode.XamlBinding
 						}
 						if (c != '/') {
 							string document = editor.Document.Text.Insert(offset, ">");
-							XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(document, offset);
+							path = XmlParser.GetActiveElementStartPathAtIndex(document, offset);
 							
 							if (path != null && path.Elements.Count > 0) {
 								QualifiedName last = path.Elements[path.Elements.Count - 1];
@@ -74,12 +75,37 @@ namespace ICSharpCode.XamlBinding
 						}
 					}
 					break;
+				case '"':
+					offset = editor.Caret.Offset;
+					path = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, offset);
+					if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
+						editor.Document.Insert(offset, "\"");
+						editor.Caret.Offset = offset;
+					}
+					break;
+				case '{': // starting point for Markup Extension Completion
+					offset = editor.Caret.Offset;
+					if (offset > 0) {
+						int searchOffset = offset - 1;
+						char c = editor.Document.GetCharAt(searchOffset);
+						while (char.IsWhiteSpace(c)) {
+							searchOffset--;
+							c = editor.Document.GetCharAt(searchOffset);
+						}
+						if (XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && c == '"') {
+							editor.Document.Insert(offset, "}");
+							editor.Caret.Offset = offset;
+						}
+					}
+					break;
 				case ' ':
-					XmlElementPath ePath = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, editor.Caret.Offset);
-					if (ePath != null && ePath.Elements.Count > 0) {
-						ICompletionItemList list = CreateListForContext(editor, XamlContext.InTag, ePath, null);
-						editor.ShowCompletionWindow(list);
-						return CodeCompletionKeyPressResult.Completed;
+					path = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, editor.Caret.Offset);
+					if (path != null && path.Elements.Count > 0) {
+						if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
+							ICompletionItemList list = CreateListForContext(editor, XamlContext.InTag, path, null);
+							editor.ShowCompletionWindow(list);
+							return CodeCompletionKeyPressResult.Completed;
+						}
 					}
 					break;
 				default:
@@ -88,7 +114,7 @@ namespace ICSharpCode.XamlBinding
 						if (offset > 0) {
 							char c = editor.Document.GetCharAt(offset - 1);
 							if (c == ' ' || c == '\t') {
-								XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, offset);
+								path = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, offset);
 								if (path != null && path.Elements.Count > 0) {
 									ICompletionItemList list = CreateListForContext(editor, XamlContext.InTag, path, null);
 									editor.ShowCompletionWindow(list);
@@ -133,22 +159,27 @@ namespace ICSharpCode.XamlBinding
 			switch (context) {
 				case XamlContext.AtTag:
 					list.Items.AddRange(standardItems);
-					list.Items.AddRange(CtrlSpaceForElement(info, editor.Document.Text, editor.Caret.Line, editor.Caret.Column));
+					list.Items.AddRange(CreateListForElement(info, editor.Document.Text, editor.Caret.Line, editor.Caret.Column));
 					break;
 				case XamlContext.InTag:
-					list.Items.AddRange(CtrlSpaceForAttributeName(info, editor.Document.Text, new XamlExpressionContext(path, null, false)));
+					list.Items.AddRange(CreateListForAttributeName(info, editor.Document.Text, new XamlExpressionContext(path, null, false)));
 					break;
 				case XamlContext.InAttributeValue:
 					if (entity is IProperty) {
 						IProperty prop = entity as IProperty;
-						IClass c = prop.ReturnType.GetUnderlyingClass();
-						if (c.ClassType == ClassType.Enum) {
-							foreach (IField f in c.Fields) {
-								list.Items.Add(new XamlCompletionItem(f));
-							}
+						IReturnType type = prop.ReturnType;
+						if (type != null) {
+							TypeCompletion(type.GetUnderlyingClass(), list);
 						}
 					} else if (entity is IEvent) {
-						
+						IEvent e = entity as IEvent;
+						IMethod invoker = GetInvokeMethod(e.ReturnType);
+						if (invoker == null)
+							break;
+						var item = path.Elements[path.Elements.Count - 1];
+						string name = Utils.GetNameAttributeValue(editor.Document.Text, editor.Caret.Offset);
+						list.Items.Add(new NewEventCompletionItem(e, (string.IsNullOrEmpty(name)) ? item.Name : name));
+						AddMatchingEventHandlers(editor, invoker, list.Items);
 					}
 					break;
 			}
@@ -157,6 +188,80 @@ namespace ICSharpCode.XamlBinding
 			
 			return list;
 		}
+		
+		static void AddMatchingEventHandlers(ITextEditor editor, IMethod delegateInvoker, List<ICompletionItem> list)
+		{
+			ParseInformation p = ParserService.GetParseInformation(editor.FileName);
+			var unit = p.MostRecentCompilationUnit;
+			var loc = editor.Document.OffsetToPosition(editor.Caret.Offset);
+			IClass c = unit.GetInnermostClass(loc.Line, loc.Column);
+			CompoundClass compound = c.GetCompoundClass() as CompoundClass;
+			if (compound != null) {
+				foreach (IClass part in compound.Parts) {
+					foreach (IMethod m in part.Methods) {
+						if (m.Parameters.Count != delegateInvoker.Parameters.Count)
+							continue;
+						
+						if ((m.ReturnType != null && delegateInvoker.ReturnType != null) && m.ReturnType.DotNetName != delegateInvoker.ReturnType.DotNetName)
+							continue;
+						
+						bool equal = true;
+						for (int i = 0; i < m.Parameters.Count; i++) {
+							equal &= CompareParameter(m.Parameters[i], delegateInvoker.Parameters[i]);
+							if (!equal)
+								break;
+						}
+						if (equal) {
+							list.Add(new XamlCompletionItem(m));
+						}
+					}
+				}
+			}
+		}
+		
+		static bool CompareParameter(IParameter p1, IParameter p2)
+		{
+			bool result = p1.ReturnType.DotNetName == p2.ReturnType.DotNetName;
+			
+			result &= (p1.IsOut == p2.IsOut);
+			result &= (p1.IsParams == p2.IsParams);
+			result &= (p1.IsRef == p2.IsRef);
+			
+			return result;
+		}
+		
+		static IMethod GetInvokeMethod(IReturnType type)
+		{
+			if (type == null)
+				return null;
+			
+			foreach (IMethod method in type.GetMethods()) {
+				if (method.Name == "Invoke")
+					return method;
+			}
+			
+			return null;
+		}
+		
+		static bool TypeCompletion(IClass type, XamlCompletionItemList list)
+		{
+			switch (type.ClassType) {
+				case ClassType.Enum:
+					foreach (IField f in type.Fields) {
+						list.Items.Add(new XamlCompletionItem(f));
+					}
+					return true;
+				case ClassType.Struct:
+					if (type.FullyQualifiedName == "System.Boolean") {
+						list.Items.Add(new DefaultCompletionItem("True"));
+						list.Items.Add(new DefaultCompletionItem("False"));
+						return true;
+					}
+					break;
+			}
+			
+			return false;
+		}
 
 		public bool CtrlSpace(ICSharpCode.SharpDevelop.ITextEditor editor)
 		{
@@ -164,27 +269,8 @@ namespace ICSharpCode.XamlBinding
 //			provider.ShowCompletion(editor);
 			return true;
 		}
-		
-//		public ArrayList CtrlSpace(int caretLineNumber, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext expressionContext)
-//		{
-//			var callingClass = parseInfo.BestCompilationUnit.GetInnermostClass(caretLineNumber, caretColumn);
-//			var context = expressionContext as XamlExpressionContext;
-//			if (context == null) {
-//				return null;
-//			}
-//
-//			if (context.AttributeName == null) {
-//				return CtrlSpaceForElement(fileContent);
-//			}
-//			else if (context.InAttributeValue) {
-//				return CtrlSpaceForAttributeValue(parseInfo, fileContent, context);
-//			}
-//			else {
-//				return CtrlSpaceForAttributeName(parseInfo, fileContent, context);
-//			}
-//		}
-//
-		static List<ICompletionItem> CtrlSpaceForAttributeName(ParseInformation parseInfo, string fileContent, XamlExpressionContext context)
+
+		static List<ICompletionItem> CreateListForAttributeName(ParseInformation parseInfo, string fileContent, XamlExpressionContext context)
 		{
 			if (context.ElementPath.Elements.Count == 0)
 				return null;
@@ -208,28 +294,7 @@ namespace ICSharpCode.XamlBinding
 			}
 			return list;
 		}
-//
-//		ArrayList CtrlSpaceForAttributeValue(ParseInformation parseInfo, string fileContent, XamlExpressionContext context)
-//		{
-//			ArrayList attributes = CtrlSpaceForAttributeName(parseInfo, fileContent, context);
-//			if (attributes != null) {
-//				foreach (IProperty p in attributes.OfType<IProperty>()) {
-//					if (p.Name == context.AttributeName && p.ReturnType != null) {
-//						IClass c = p.ReturnType.GetUnderlyingClass();
-//						if (c != null && c.ClassType == ClassType.Enum) {
-//							return EnumCompletion(c);
-//						}
-//					}
-//				}
-//			}
-//			return null;
-//		}
-//
-//		ArrayList EnumCompletion(IClass enumClass)
-//		{
 
-//		}
-//
 		static bool IsReaderAtTarget(XmlTextReader r, int caretLine, int caretColumn)
 		{
 			if (r.LineNumber > caretLine)
@@ -240,7 +305,7 @@ namespace ICSharpCode.XamlBinding
 				return false;
 		}
 
-		static List<ICompletionItem> CtrlSpaceForElement(ParseInformation parseInfo, string fileContent, int caretLine, int caretColumn)
+		static List<ICompletionItem> CreateListForElement(ParseInformation parseInfo, string fileContent, int caretLine, int caretColumn)
 		{
 			using (XmlTextReader r = new XmlTextReader(new StringReader(fileContent))) {
 				try {
@@ -281,27 +346,6 @@ namespace ICSharpCode.XamlBinding
 
 				return result;
 			}
-		}
-	}
-	
-	class XamlCompletionItem : DefaultCompletionItem
-	{
-		IEntity entity;
-		
-		public IEntity Entity {
-			get { return entity; }
-		}
-		
-		public XamlCompletionItem(IEntity entity, string prefix)
-			: base(prefix + ":" + entity.Name)
-		{
-			this.entity = entity;
-		}
-		
-		public XamlCompletionItem(IEntity entity)
-			: base(entity.Name)
-		{
-			this.entity = entity;
 		}
 	}
 }

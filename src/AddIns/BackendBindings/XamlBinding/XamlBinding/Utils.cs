@@ -28,7 +28,7 @@ namespace ICSharpCode.XamlBinding
 			XmlReader reader = XmlTextReader.Create(new StringReader(text));
 			int startTags = 0;
 			try {
-				while (reader.Read()) {	
+				while (reader.Read()) {
 					switch (reader.NodeType) {
 						case XmlNodeType.Element:
 							startTags++;
@@ -46,6 +46,30 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return false;
+		}
+		
+		public static string GetNameAttributeValue(string text, int offset)
+		{
+			int index = XmlParser.GetActiveElementStartIndex(text, offset);
+			if (index == -1)
+				return null;
+			index = text.IndexOf(' ', index);
+			
+			text = text.Substring(index);
+			int endIndex = text.IndexOfAny(new char[] { '<', '>' });
+			text = text.Substring(0, endIndex).Trim(' ', '\t', '\n', '\r');
+			
+			string[] attributes = text.Split(new string[] {"=\"", "\""}, StringSplitOptions.None);
+			
+			for (int i = 0; i < attributes.Length; i += 2) {
+				if (i + 1 < attributes.Length) {
+					if (attributes[i].Trim(' ', '\t', '\n', '\r').ToLowerInvariant() == "name")
+						return attributes[i + 1];
+				} else
+					break;
+			}
+			
+			return null;
 		}
 	}
 }

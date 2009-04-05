@@ -618,23 +618,5 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				|| trimLine.StartsWith("#if", StringComparison.Ordinal);
 		}
 		#endregion
-		
-		#region CreateEventHandler
-		public override bool SupportsCreateEventHandler {
-			get { return true; }
-		}
-		
-		public override string CreateEventHandler(string senderName, string eventName, IEvent e)
-		{
-			string text = "";
-			
-			text += "void " + senderName + eventName + "(object sender, " + e.FullyQualifiedName + " e)\n" +
-				"{\n" +
-				"\tthrow new NotImplementedException();\n" +
-				"}\n";
-
-			return text;
-		}
-		#endregion
 	}
 }

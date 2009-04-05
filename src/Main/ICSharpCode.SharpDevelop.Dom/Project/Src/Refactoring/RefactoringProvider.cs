@@ -93,17 +93,6 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			throw new NotSupportedException();
 		}
 		#endregion
-		
-		#region CreateEventHandler
-		public virtual bool SupportsCreateEventHandler {
-			get { return false; }
-		}
-		
-		public virtual string CreateEventHandler(string senderName, string eventName, IEvent e)
-		{
-			throw new NotSupportedException();
-		}
-		#endregion
 	}
 }
 
