@@ -68,6 +68,8 @@ namespace ICSharpCode.XmlEditor
 				return namespaceURI;
 			}
 		}
+
+		static readonly char[] whitespaceCharacters = new char[] {' ', '\n', '\t', '\r'};
 		
 		XmlParser()
 		{
@@ -441,7 +443,7 @@ namespace ICSharpCode.XmlEditor
 		/// -1 if no start tag character is found or a end tag
 		/// &gt; character is found first.
 		/// </returns>
-		static int GetActiveElementStartIndex(string xml, int index)
+		public static int GetActiveElementStartIndex(string xml, int index)
 		{
 			int elementStartIndex = -1;
 			
@@ -662,7 +664,7 @@ namespace ICSharpCode.XmlEditor
 			if (elementStartIndex >= 0 && elementStartIndex < index) {
 				int elementEndIndex = GetActiveElementEndIndex(xml, index);
 				if (elementEndIndex == -1) {
-					elementEndIndex = xml.IndexOf(' ', elementStartIndex);
+					elementEndIndex = xml.IndexOfAny(whitespaceCharacters, elementStartIndex);
 				}
 				if (elementEndIndex >= elementStartIndex) {
 					return xml.Substring(elementStartIndex, elementEndIndex - elementStartIndex);

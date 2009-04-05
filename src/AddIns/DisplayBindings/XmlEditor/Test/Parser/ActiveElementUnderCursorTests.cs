@@ -175,5 +175,32 @@ namespace XmlEditor.Tests.Parser
 			              "Incorrect active element path.");
 		}
 
+		[Test]
+		public void PathWithNewLine()
+
+		{
+			string text = "<foo xmlns='" + namespaceURI + "'><bar";
+			string text2 = "\n</foo>";
+			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text + text2, text.Length);
+
+			expectedElementPath = new XmlElementPath();
+			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			Assert.IsTrue(elementPath.Equals(expectedElementPath), "Incorrect active element path.");
+		}
+		
+		[Test]
+		public void PathWithTab()
+
+		{
+			string text = "<foo xmlns='" + namespaceURI + "'><bar";
+			string text2 = "\t</foo>";
+			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text + text2, text.Length);
+
+			expectedElementPath = new XmlElementPath();
+			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			Assert.IsTrue(elementPath.Equals(expectedElementPath),  "Incorrect active element path.");
+		}
 	}
 }

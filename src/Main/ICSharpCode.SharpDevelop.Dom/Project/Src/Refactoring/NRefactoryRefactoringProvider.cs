@@ -608,14 +608,32 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		static bool IsEndDirective(string trimLine)
 		{
-			return trimLine.StartsWith("#endregion", StringComparison.Ordinal) 
+			return trimLine.StartsWith("#endregion", StringComparison.Ordinal)
 				|| trimLine.StartsWith("#endif", StringComparison.Ordinal);
 		}
 		
 		static bool IsStartDirective(string trimLine)
 		{
-			return trimLine.StartsWith("#region", StringComparison.Ordinal) 
+			return trimLine.StartsWith("#region", StringComparison.Ordinal)
 				|| trimLine.StartsWith("#if", StringComparison.Ordinal);
+		}
+		#endregion
+		
+		#region CreateEventHandler
+		public override bool SupportsCreateEventHandler {
+			get { return true; }
+		}
+		
+		public override string CreateEventHandler(string senderName, string eventName, IEvent e)
+		{
+			string text = "";
+			
+			text += "void " + senderName + eventName + "(object sender, " + e.FullyQualifiedName + " e)\n" +
+				"{\n" +
+				"\tthrow new NotImplementedException();\n" +
+				"}\n";
+
+			return text;
 		}
 		#endregion
 	}
