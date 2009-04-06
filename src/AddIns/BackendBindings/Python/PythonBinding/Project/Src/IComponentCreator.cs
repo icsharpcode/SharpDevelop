@@ -46,5 +46,10 @@ namespace ICSharpCode.PythonBinding
 		/// Gets the type given its name.
 		/// </summary>
 		Type GetType(string typeName);
+		
+		/// <summary>
+		/// Gets the property descriptor associated with the event.
+		/// </summary>
+		PropertyDescriptor GetEventProperty(EventDescriptor e);
 	}
 }

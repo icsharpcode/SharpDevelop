@@ -16,7 +16,7 @@
 				<MenuItem
 					id="ProfileProject"
 					class="ICSharpCode.Profiler.AddIn.Commands.ProfileProject"
-					label="Profile current project ..."
+					label="Profile current project"
 				/>
 			</ComplexCondition>
 			<MenuItem

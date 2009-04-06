@@ -34,12 +34,6 @@ namespace PythonBinding.Tests.Designer
 			}
 		}
 		
-		[TestFixtureSetUp]
-		public new void SetUpFixture()
-		{
-			base.SetUpFixture();
-		}
-		
 		[Test]
 		public void FormBackColor()
 		{

@@ -1,12 +1,10 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 using ICSharpCode.Core.Presentation;
@@ -15,6 +13,7 @@ using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.Profiler.Controller.Queries;
 using ICSharpCode.Profiler.Controls;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Profiler.AddIn.Views
 {
@@ -44,6 +43,8 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			
 			this.dummyTab.Header = new Image { Source = PresentationResourceService.GetImage("Icons.16x16.NewDocumentIcon").Source, Height = 16, Width = 16 };
 			
+			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
+			
 			InitializeLastItems();
 			InitializeOldTabs();
 		}
@@ -51,9 +52,34 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		void timeLine_RangeChanged(object sender, RangeEventArgs e)
 		{
 			foreach (TabItem item in this.tabView.Items) {
-				if (item.Content != null)
+				if (item != null && item.Content != null)
 					((QueryView)item.Content).SetRange(e.StartIndex, e.EndIndex);
 			}
+		}
+		
+		void ExecuteSelectAll(object sender, ExecutedRoutedEventArgs e)
+		{
+			DoSelectAll();
+			e.Handled = true;
+		}
+
+		void DoSelectAll()
+		{
+			if (this.timeLine.IsEnabled) {
+				this.timeLine.SelectedStartIndex = 0;
+				this.timeLine.SelectedEndIndex = this.timeLine.ValuesList.Count;
+			}
+		}
+		
+		void CanExecuteSelectAll(object sender, CanExecuteRoutedEventArgs e)
+		{
+			CanDoSelectAll(e);
+			e.Handled = true;
+		}
+
+		void CanDoSelectAll(CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = this.timeLine.IsEnabled && this.timeLine.ValuesList.Count > 0;
 		}
 
 		void closeButton_Click(object sender, RoutedEventArgs e)
@@ -64,9 +90,14 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			tabView.Items.Remove(((Button)sender).Tag);
 		}
 		
-		void UpdateErrorList(System.CodeDom.Compiler.CompilerError error)
+		void UpdateErrorList(IEnumerable<CompilerError> errors)
 		{
-			Dispatcher.Invoke((Action)(() => TaskService.Add(new Task("", error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error))));
+			Dispatcher.Invoke(
+				() => {
+					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+					TaskService.ClearExceptCommentTasks();
+					TaskService.AddRange(errors.Select(error => new Task("", error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)));
+				});
 		}
 		
 		void tabView_SelectionChanged(object sender, SelectionChangedEventArgs e)

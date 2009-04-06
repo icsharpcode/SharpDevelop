@@ -5,15 +5,17 @@
  * Time: 12:00
  */
 using System;
+using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections.Specialized;
-using System.Runtime.CompilerServices;
-using PumaCode.SvnDotNet.AprSharp;
-using PumaCode.SvnDotNet.SubversionSharp;
+
+using SharpSvn;
+using System.Threading;
 
 namespace UpdateAssemblyInfo
 {
@@ -25,25 +27,42 @@ namespace UpdateAssemblyInfo
 		const string configTemplateFile = "Main/StartUp/Project/app.template.config";
 		const string configFile         = "Main/StartUp/Project/SharpDevelop.exe.config";
 		const string configFile2        = "Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config";
+		const string subversionLibraryDir = "Libraries/SharpSvn";
 		
 		public static int Main(string[] args)
 		{
 			try {
-				if (!File.Exists("SharpDevelop.sln")) {
-					string mainDir = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(typeof(MainClass).Assembly.Location), "../../../.."));
-					if (File.Exists(mainDir + "\\SharpDevelop.sln")) {
-						Directory.SetCurrentDirectory(mainDir);
+				string exeDir = Path.GetDirectoryName(typeof(MainClass).Assembly.Location);
+				bool createdNew;
+				using (Mutex mutex = new Mutex(true, "SharpDevelopUpdateAssemblyInfo" + exeDir.GetHashCode(), out createdNew)) {
+					if (!createdNew) {
+						// multiple calls in parallel?
+						// it's sufficient to let one call run, so just wait for the other call to finish
+						try {
+							mutex.WaitOne(10000);
+						} catch (AbandonedMutexException) {
+						}
+						return 0;
 					}
+					if (!File.Exists("SharpDevelop.sln")) {
+						string mainDir = Path.GetFullPath(Path.Combine(exeDir, "../../../.."));
+						if (File.Exists(mainDir + "\\SharpDevelop.sln")) {
+							Directory.SetCurrentDirectory(mainDir);
+						}
+					}
+					if (!File.Exists("SharpDevelop.sln")) {
+						Console.WriteLine("Working directory must be SharpDevelop\\src!");
+						return 2;
+					}
+					File.Copy(Path.Combine(subversionLibraryDir, "SharpSvn.dll"),
+					          Path.Combine(exeDir, "SharpSvn.dll"),
+					          true);
+					RetrieveRevisionNumber();
+					string versionNumber = GetMajorVersion() + "." + revisionNumber;
+					UpdateStartup();
+					UpdateRedirectionConfig(versionNumber);
+					return 0;
 				}
-				if (!File.Exists("SharpDevelop.sln")) {
-					Console.WriteLine("Working directory must be SharpDevelop\\src!");
-					return 2;
-				}
-				RetrieveRevisionNumber();
-				string versionNumber = GetMajorVersion() + "." + revisionNumber;
-				UpdateStartup();
-				UpdateRedirectionConfig(versionNumber);
-				return 0;
 			} catch (Exception ex) {
 				Console.WriteLine(ex);
 				return 3;
@@ -152,14 +171,14 @@ namespace UpdateAssemblyInfo
 				Console.WriteLine();
 				Console.WriteLine("The revision number of the SharpDevelop version being compiled could not be retrieved.");
 				Console.WriteLine();
-				Console.WriteLine("Build continues with revision number '9999'...");
+				Console.WriteLine("Build continues with revision number '0'...");
 				try {
 					Process[] p = Process.GetProcessesByName("msbuild");
 					if (p != null && p.Length > 0) {
 						System.Threading.Thread.Sleep(3000);
 					}
 				} catch {}
-				return "9999";
+				return "0";
 			}
 		}
 		static void RetrieveRevisionNumber()
@@ -168,21 +187,15 @@ namespace UpdateAssemblyInfo
 			string oldWorkingDir = Environment.CurrentDirectory;
 			try {
 				// Change working dir so that the subversion libraries can be found
-				Environment.CurrentDirectory = Path.Combine(oldWorkingDir, "AddIns\\Misc\\SubversionAddIn\\RequiredLibraries");
+				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, subversionLibraryDir);
 				
-				SvnClient client = new SvnClient();
-				try {
-					client.Info(oldWorkingDir, new SvnRevision(Svn.Revision.Unspecified), new SvnRevision(Svn.Revision.Unspecified),
-					            delegate(IntPtr baton, SvnPath path, SvnInfo info, AprPool pool) {
-					            	revisionNumber = info.Rev.ToString();
-					            	return SvnError.NoError;
-					            },
-					            IntPtr.Zero, false);
-				} finally {
-					client.Clear();
+				SvnWorkingCopyClient client = new SvnWorkingCopyClient();
+				SvnWorkingCopyVersion version;
+				if (client.GetVersion(oldWorkingDir, out version)) {
+					revisionNumber = version.Start.ToString(CultureInfo.InvariantCulture);
 				}
 			} catch (Exception e) {
-				Console.WriteLine("Reading revision number with Svn.Net failed: " + e.ToString());
+				Console.WriteLine("Reading revision number with SharpSvn failed: " + e.ToString());
 			} finally {
 				Environment.CurrentDirectory = oldWorkingDir;
 			}

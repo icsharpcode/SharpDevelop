@@ -46,11 +46,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 
-		/// <summary>
-		/// Gets the number of calls to the method represented by the CallTreeNode.
-		/// </summary>
-		public override int CallCount {
-			get{
+		/// <inheritdoc/>
+		public override int RawCallCount {
+			get {
 				return this.callCount;
 			}
 		}

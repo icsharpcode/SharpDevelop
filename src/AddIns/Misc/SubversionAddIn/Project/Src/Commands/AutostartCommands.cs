@@ -22,9 +22,6 @@ namespace ICSharpCode.Svn.Commands
 	/// </summary>
 	public sealed class RegisterEventsCommand : AbstractCommand
 	{
-		const int CannotDeleteFileWithLocalModifications = 195006;
-		const int CannotDeleteFileNotUnderVersionControl = 200005;
-		
 		public override void Run()
 		{
 			FileService.FileRemoving += FileRemoving;
@@ -231,11 +228,11 @@ namespace ICSharpCode.Svn.Commands
 							try {
 								client.Delete(new string[] { fullName }, false);
 							} catch (SvnClientException ex) {
-								LoggingService.Warn("SVN Error code " + ex.ErrorCode);
+								LoggingService.Warn("SVN Error" + ex);
 								LoggingService.Warn(ex);
 								
-								if (ex.ErrorCode == CannotDeleteFileWithLocalModifications
-								    || ex.ErrorCode == CannotDeleteFileNotUnderVersionControl)
+								if (ex.IsKnownError(KnownError.CannotDeleteFileWithLocalModifications)
+								    || ex.IsKnownError(KnownError.CannotDeleteFileNotUnderVersionControl))
 								{
 									if (MessageService.ShowCustomDialog("${res:AddIns.Subversion.DeleteDirectory}",
 									                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n", new string[,] { { "File", fullName } }) +
@@ -339,7 +336,6 @@ namespace ICSharpCode.Svn.Commands
 					}
 					e.OperationAlreadyDone = true;
 					client.Copy(fullSource,
-					            Revision.Working,
 					            Path.GetFullPath(e.TargetFile)
 					           );
 				}

@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1717
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.1.0.3932
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateSetupInfo", "UpdateSetupInfo.csproj", "{75E6D78C-DC66-40F1-90AC-F9F97ADE3506}"
 EndProject
 Global

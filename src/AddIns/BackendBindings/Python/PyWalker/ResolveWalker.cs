@@ -46,6 +46,12 @@ namespace PyWalker
 			return base.Walk(node);
 		}	
 		
+		public override bool Walk(AugmentedAssignStatement node)
+		{
+			writer.WriteLine("AugmentedAssignStatement");
+			return base.Walk(node);
+		}
+		
 		public override bool Walk(AssignmentStatement node)
 		{
 			writer.WriteLine("AssignmentStatement");
@@ -143,6 +149,12 @@ namespace PyWalker
 		public override bool Walk(NameExpression node)
 		{
 			writer.WriteLine("Name: " + node.Name);
+			return base.Walk(node);
+		}
+		
+		public override bool Walk(MemberExpression node)
+		{
+			writer.WriteLine("Member: " + node.Name);
 			return base.Walk(node);
 		}
 		

@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -26,13 +28,23 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			using (Form form = new Form()) {
-				form.Name = "MainForm";
+			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
+				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+				Form form = (Form)host.RootComponent;			
 				form.ClientSize = new Size(284, 264);
-				form.MinimumSize = new Size(100, 200);
-				form.AutoScrollMinSize = new Size(10, 20);
-				form.AutoScrollMargin = new Size(11, 22);
-				form.AutoScroll = false;
+				
+				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
+				PropertyDescriptor descriptor = descriptors.Find("MinimumSize", false);
+				descriptor.SetValue(form, new Size(100, 200));
+				descriptor = descriptors.Find("AutoScrollMinSize", false);
+				descriptor.SetValue(form, new Size(10, 20));
+				descriptor = descriptors.Find("AutoScrollMargin", false);
+				descriptor.SetValue(form, new Size(11, 22));
+				descriptor = descriptors.Find("AutoScroll", false);
+				descriptor.SetValue(form, false);
+				
+				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
+				namePropertyDescriptor.SetValue(form, "MainForm");
 				
 				string indentString = "    ";
 				PythonForm pythonForm = new PythonForm(indentString);
@@ -53,7 +65,6 @@ namespace PythonBinding.Tests.Designer
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.MinimumSize = System.Drawing.Size(100, 200)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.Visible = False\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

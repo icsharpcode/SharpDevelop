@@ -39,6 +39,7 @@ namespace ICSharpCode.Profiler.Controls
 				selectedEndIndex = value;
 				this.InvalidateMeasure();
 				this.InvalidateVisual();
+				OnRangeChanged(new RangeEventArgs(selectedStartIndex, selectedEndIndex));
 			}
 		}
 
@@ -49,6 +50,7 @@ namespace ICSharpCode.Profiler.Controls
 				selectedStartIndex = value;
 				this.InvalidateMeasure();
 				this.InvalidateVisual();
+				OnRangeChanged(new RangeEventArgs(selectedStartIndex, selectedEndIndex));
 			}
 		}
 
@@ -132,7 +134,12 @@ namespace ICSharpCode.Profiler.Controls
 
 		protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
 		{
-			this.selectedEndIndex = TransformToIndex(e.GetPosition(this));
+			int index = TransformToIndex(e.GetPosition(this));
+			index = (index < 0) ? 0 : index;
+			index = (index > this.valuesList.Count) ? this.valuesList.Count : index;
+			
+			this.selectedEndIndex = index;
+			
 			this.InvalidateMeasure();
 			this.InvalidateVisual();
 			this.ReleaseMouseCapture();
@@ -141,7 +148,12 @@ namespace ICSharpCode.Profiler.Controls
 		protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
 		{
 			this.CaptureMouse();
-			this.selectedStartIndex = this.selectedEndIndex = TransformToIndex(e.GetPosition(this));
+			
+			int index = TransformToIndex(e.GetPosition(this));
+			index = (index < 0) ? 0 : index;
+			index = (index > this.valuesList.Count) ? this.valuesList.Count : index;
+			
+			this.selectedStartIndex = this.selectedEndIndex = index;
 			this.InvalidateMeasure();
 			this.InvalidateVisual();
 		}

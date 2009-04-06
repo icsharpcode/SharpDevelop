@@ -87,6 +87,11 @@ namespace PythonBinding.Tests.Designer
 		public Type GetType(string typeName)
 		{
 			throw new NotImplementedException();
-		}		
+		}
+		
+		public PropertyDescriptor GetEventProperty(EventDescriptor e)
+		{
+			return null;
+		}
 	}
 }

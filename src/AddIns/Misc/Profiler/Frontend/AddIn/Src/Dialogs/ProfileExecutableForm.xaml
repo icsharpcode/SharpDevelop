@@ -1,19 +1,36 @@
 ﻿<Window x:Class="ICSharpCode.Profiler.AddIn.Dialogs.ProfileExecutableForm"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Height="195" Width="609" Title="Profile executable" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" ShowInTaskbar="False" ResizeMode="NoResize">
-	<Grid Background="#FFD4D0C8">
-		<Label HorizontalAlignment="Left" Margin="12,46,0,0" Width="145" Height="24" VerticalAlignment="Top">Path to executable:</Label>
-		<TextBox Margin="163,44,56,0" Name="txtExePath" Height="26" VerticalAlignment="Top" />
-		<Button Height="26" Margin="0,45.138,12,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="38" Click="btnSelectFileClick">...</Button>
-		<Label Height="26" HorizontalAlignment="Left" Margin="12,76,0,0" VerticalAlignment="Top" Width="145">Working directory:</Label>
-		<TextBox Height="26" Margin="163,77,56,0" Name="txtWorkingDir" VerticalAlignment="Top" />
-		<Button Height="26" HorizontalAlignment="Right" Margin="0,76,12,0" VerticalAlignment="Top" Width="38" Click="btnSelectDirClick">...</Button>
-		<Label Height="26" HorizontalAlignment="Left" Margin="12,108,0,0" VerticalAlignment="Top" Width="145">Command-Line Arguments:</Label>
-        <TextBlock Height="36" Margin="12,12,12,0" VerticalAlignment="Top"
-		           Text="Select the path of the executable you want to profile. Optionally you can specify working directory and command line arguments to start the process." TextWrapping="Wrap" />
-        <TextBox Margin="163,109,12,0" Name="txtArgs" VerticalAlignment="Top" Height="24" />
-        <Button Height="27" HorizontalAlignment="Left" Margin="173,0,0,6" VerticalAlignment="Bottom" Width="105" Click="btnStartClick">Start Profiling</Button>
-        <Button Height="27" Margin="0,0,204,6" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="99" Click="btnCancelClick">Cancel</Button>
+        Title="Profile executable" WindowStartupLocation="CenterScreen"
+        WindowStyle="ToolWindow" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+	<Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition  Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <TextBlock TextWrapping="Wrap" Grid.ColumnSpan="3" Margin="3">
+Select the path of the executable you want to profile.<LineBreak />
+Optionally you can specify working directory and command line arguments to start the process.
+        </TextBlock>
+        <Label Grid.Row="1">Path to executable:</Label>
+        <TextBox Margin="3" Name="txtExePath" Grid.Column="1" Grid.Row="1" />
+        <Button Margin="3" Padding="5,0,5,0" Grid.Column="2" Grid.Row="1" Click="btnSelectFileClick">...</Button>
+        <Label Grid.Row="2">Working directory:</Label>
+        <TextBox Margin="3" Name="txtWorkingDir" Grid.Row="2" Grid.Column="1" />
+        <Button Margin="3" Padding="5,0,5,0" Grid.Column="2" Grid.Row="2" Click="btnSelectDirClick">...</Button>
+        <Label Grid.Row="3">Command-Line Arguments:</Label>
+        <TextBox Margin="3" Name="txtArgs" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="3" />
+        <StackPanel Grid.ColumnSpan="3" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Margin="3" Padding="5,0,5,0" Click="btnStartClick">Start Profiling</Button>
+            <Button Margin="3" Padding="5,0,5,0" Click="btnCancelClick">Cancel</Button>
+        </StackPanel>
     </Grid>
 </Window>

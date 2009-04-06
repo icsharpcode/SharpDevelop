@@ -247,6 +247,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			StartPeek();
 			Token pt = Peek();
 			while (pt.kind != Tokens.CloseParenthesis) {
+				if (pt.kind == Tokens.Out || pt.kind == Tokens.Ref) {
+					pt = Peek();
+				}
 				if (!IsTypeNameOrKWForTypeCast(ref pt)) {
 					return false;
 				}

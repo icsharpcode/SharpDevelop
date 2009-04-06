@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Profiler.Controller.Data;
 using System;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
-using ICSharpCode.Profiler.Controller;
+
+using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.Profiler.AddIn.Views
 {
@@ -54,5 +55,4 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			base.Dispose();
 		}
 	}
-	
 }

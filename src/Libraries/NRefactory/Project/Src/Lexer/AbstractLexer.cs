@@ -73,10 +73,16 @@ namespace ICSharpCode.NRefactory.Parser
 				return col;
 			}
 		}
+		
+		protected bool recordRead = false;
+		protected StringBuilder recordedText = new StringBuilder ();
+		
 		protected int ReaderRead()
 		{
 			++col;
 			int val = reader.Read();
+			if (recordRead)
+				recordedText.Append ((char)val);
 			if ((val == '\r' && reader.Peek() != '\n') || val == '\n') {
 				++line;
 				col = 1;

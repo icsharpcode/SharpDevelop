@@ -66,15 +66,18 @@ namespace ICSharpCode.Profiler.AddIn
 		
 		void FinishSession()
 		{
-			if (database != null) {
-				database.WriteTo(writer, progress => true); // TODO : change default impl to good user interface notification
-				writer.Close();
-				database.Close();
-			} else {
-				writer.Close();
+			using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog("Preparing for analysis", true)) {
+				if (database != null) {
+					database.WriteTo(writer, progress => !dlg.IsCancelled);
+					writer.Close();
+					database.Close();
+				} else {
+					writer.Close();
+				}
+				
+				if (!dlg.IsCancelled)
+					OnRunFinished(EventArgs.Empty);
 			}
-			
-			OnRunFinished(EventArgs.Empty);
 		}
 		
 		public void Run()

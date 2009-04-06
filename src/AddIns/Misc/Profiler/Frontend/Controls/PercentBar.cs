@@ -21,8 +21,10 @@ namespace ICSharpCode.Profiler.Controls
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			base.OnRender(drawingContext);
-
-			drawingContext.DrawRectangle(new LinearGradientBrush(Colors.Red, Colors.Orange, 0), new Pen(Brushes.Black, 1), new Rect(new Point(0, 2), new Size(this.RenderSize.Width * this.Value, this.RenderSize.Height - 4)));
+			
+			if (this.RenderSize.Height > 0 && this.RenderSize.Width > 0) {
+				drawingContext.DrawRectangle(new LinearGradientBrush(Colors.Red, Colors.Orange, 0), new Pen(Brushes.Black, 1), new Rect(new Point(0, 2), new Size(this.RenderSize.Width * this.Value, this.RenderSize.Height - 4)));
+			}
 		}
 		
 		public static readonly DependencyProperty ValueProperty =

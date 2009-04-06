@@ -81,14 +81,16 @@ namespace ICSharpCode.PythonBinding
 					
 					MemberExpression rhsMemberExpression = node.Right as MemberExpression;
 					if (rhsMemberExpression != null) {
-						object propertyValue = deserializer.Deserialize(rhsMemberExpression);
-						if (propertyValue == null) {
-							propertyValue = PythonControlFieldExpression.GetMemberName(rhsMemberExpression);
-						}
+						object propertyValue = GetPropertyValueFromAssignmentRhs(rhsMemberExpression);
 						SetPropertyValue(fieldExpression.MemberName, propertyValue);
 					} else {
 						walkingAssignment = true;
-						node.Right.Walk(this);
+						BinaryExpression binaryExpression = node.Right as BinaryExpression;
+						if (binaryExpression != null) {
+							WalkAssignment(binaryExpression);
+						} else {
+							node.Right.Walk(this);
+						}
 						walkingAssignment = false;
 					}
 				}	
@@ -111,8 +113,8 @@ namespace ICSharpCode.PythonBinding
 					Type type = componentCreator.GetType(name);
 					if (type != null) {
 						List<object> args = deserializer.GetArguments(node);
-						object instance = componentCreator.CreateInstance(type, args, fieldExpression.MemberName, false);
-						if (!SetPropertyValue(form, fieldExpression.MemberName, instance)) {
+						object instance = componentCreator.CreateInstance(type, args, null, false);
+						if (!SetPropertyValue(fieldExpression.MemberName, instance)) {
 							AddComponent(fieldExpression.MemberName, instance);
 						}
 					} else {
@@ -123,9 +125,12 @@ namespace ICSharpCode.PythonBinding
 							throw new PythonFormWalkerException(String.Format("Could not find type '{0}'.", name));
 						}
 					}
-				} else if (name == "self.Controls.Add") {
-					string controlName = PythonControlFieldExpression.GetControlNameBeingAdded(node);
-					form.Controls.Add(GetControl(controlName));
+				} else {
+					// Add child controls if expression is of the form self.controlName.Controls.Add.
+					string parentControlName = PythonControlFieldExpression.GetParentControlNameAddingChildControls(name);
+					if (parentControlName != null) {
+						AddChildControl(parentControlName, node);
+					}
 				}
 			}
 			return false;
@@ -135,6 +140,40 @@ namespace ICSharpCode.PythonBinding
 		{
 			SetPropertyValue(fieldExpression.MemberName, node.Name.ToString());
 			return false;
+		}
+		
+		/// <summary>
+		/// Walks a statement of the form:
+		/// 
+		/// self.a += self.b
+		/// </summary>
+		public override bool Walk(AugmentedAssignStatement node)
+		{
+			MemberExpression eventExpression = node.Left as MemberExpression;
+			string eventName = eventExpression.Name.ToString();
+			PythonControlFieldExpression field = PythonControlFieldExpression.Create(eventExpression);
+			
+			MemberExpression eventHandlerExpression = node.Right as MemberExpression;
+			string eventHandlerName = eventHandlerExpression.Name.ToString();
+			
+			Control control = form;
+			if (field.VariableName.Length > 0) {
+				control = GetControl(field.VariableName);
+			}
+			
+			EventDescriptor eventDescriptor = TypeDescriptor.GetEvents(control).Find(eventName, false);
+			PropertyDescriptor propertyDescriptor = componentCreator.GetEventProperty(eventDescriptor);
+			propertyDescriptor.SetValue(control, eventHandlerName);
+			return false;
+		}
+		
+		/// <summary>
+		/// Walks the binary expression which is the right hand side of an assignment statement.
+		/// </summary>
+		void WalkAssignment(BinaryExpression binaryExpression)
+		{
+			object value = deserializer.Deserialize(binaryExpression);
+			SetPropertyValue(fieldExpression.MemberName, value);
 		}
 		
 		static bool IsInitializeComponentMethod(FunctionDefinition node)
@@ -171,7 +210,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		static object ConvertPropertyValue(PropertyDescriptor propertyDescriptor, object propertyValue)
 		{
-			if (propertyDescriptor.PropertyType != propertyValue.GetType()) {
+			if (!propertyDescriptor.PropertyType.IsAssignableFrom(propertyValue.GetType())) {
 				return propertyDescriptor.Converter.ConvertFrom(propertyValue);
 			}
 			return propertyValue;
@@ -184,12 +223,10 @@ namespace ICSharpCode.PythonBinding
 		Control GetControl(string name)
 		{
 			object o = null;
-			if (createdObjects.TryGetValue(name, out o)) {
-				return o as Control;
-			}
-			return null;
+			createdObjects.TryGetValue(name, out o);
+			return o as Control;
 		}
-		
+
 		/// <summary>
 		/// Adds a component to the list of created objects.
 		/// </summary>
@@ -199,14 +236,44 @@ namespace ICSharpCode.PythonBinding
 			componentCreator.Add(component as IComponent, variableName);
 			createdObjects.Add(variableName, component);
 		}
-		
+				
+		/// <summary>
+		/// Gets the current control being walked.
+		/// </summary>
 		Control GetCurrentControl()
 		{
-			string variableName = PythonControlFieldExpression.GetVariableNameFromSelfReference(fieldExpression.FullMemberName);
-			if (variableName.Length > 0) {
-				return GetControl(variableName);
+			if (fieldExpression.VariableName.Length > 0) {
+				return GetControl(fieldExpression.VariableName);
 			}
 			return form;
+		}
+		
+		void AddChildControl(string parentControlName, CallExpression node)
+		{
+			string childControlName = PythonControlFieldExpression.GetControlNameBeingAdded(node);
+			Control parentControl = form;
+			if (parentControlName.Length > 0) {
+				parentControl = GetControl(parentControlName);
+			}
+			parentControl.Controls.Add(GetControl(childControlName));
+		}
+		
+		/// <summary>
+		/// Gets the property value from the member expression. The member expression is taken from the
+		/// right hand side of an assignment.
+		/// </summary>
+		object GetPropertyValueFromAssignmentRhs(MemberExpression memberExpression)
+		{
+			object propertyValue = deserializer.Deserialize(memberExpression);
+			if (propertyValue == null) {
+				PythonControlFieldExpression field = PythonControlFieldExpression.Create(memberExpression);
+				if (field.MemberName.Length > 0) {
+					propertyValue = GetControl(PythonControlFieldExpression.GetVariableName(field.MemberName));
+				} else {
+					propertyValue = field.FullMemberName;
+				}
+			}
+			return propertyValue;
 		}
 	}
 }

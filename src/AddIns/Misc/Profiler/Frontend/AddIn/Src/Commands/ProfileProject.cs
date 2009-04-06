@@ -58,7 +58,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 						currentProj.Save();
 					};
 					
-					WorkbenchSingleton.CallLater(20, updater);
+					WorkbenchSingleton.SafeThreadCall(updater);
 				};
 			}
 			

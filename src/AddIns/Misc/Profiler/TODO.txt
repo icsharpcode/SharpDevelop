@@ -10,3 +10,6 @@ NEW FEATURES
 - Implement a memory profiler
 
 API CLEANUP
+[00:34:02] Daniel Grunwald says: wir verfälschen sowieso
+[00:34:27] Daniel Grunwald says: Funktionsaufrufe im Vergleich zu Schleifen -> mit Profiler werden Funktionsaufrufe stark benachteiligt
+[00:34:54] Daniel Grunwald says: man könnte versuchen, den eigenen Overhead zu bestimmen und rauszurechnen

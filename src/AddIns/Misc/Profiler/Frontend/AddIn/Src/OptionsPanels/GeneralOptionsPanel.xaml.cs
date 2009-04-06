@@ -26,12 +26,6 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 			InitializeComponent();
 		}
 		
-		public void Load(bool enableDC, int sharedMemorySize)
-		{
-			this.slSharedMemorySize.Value = sharedMemorySize;
-			this.chkEnableDC.IsChecked = !enableDC;
-		}
-		
 		public T GetOptionValue<T>(string name)
 		{
 			object o;
@@ -43,11 +37,39 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 				case "EnableDC":
 					o = this.chkEnableDC.IsChecked;
 					break;
+				case "DoNotProfileNetInternals":
+					o = this.chkDoNotProfileNetInternals.IsChecked;
+					break;
+				case "CombineRecursiveFunction":
+					o = this.chkCombineRecursiveCalls.IsChecked;
+					break;
 				default:
 					throw new NotSupportedException("value '" + name + "' is not supported!");
 			}
 			
 			return (T)o;
+		}
+
+		public void SetOptionValue<T>(string name, T value)
+		{
+			object o = value;
+
+			switch (name) {
+				case "SharedMemorySize":
+					this.slSharedMemorySize.Value = (double)o;
+					break;
+				case "EnableDC":
+					this.chkEnableDC.IsChecked = (bool)o;
+					break;
+				case "DoNotProfileNetInternals":
+					this.chkDoNotProfileNetInternals.IsChecked = (bool)o;
+					break;
+				case "CombineRecursiveFunction":
+					this.chkCombineRecursiveCalls.IsChecked = (bool)o;
+					break;
+				default:
+					throw new NotSupportedException("value '" + name + "' is not supported!");
+			}
 		}
 	}
 }

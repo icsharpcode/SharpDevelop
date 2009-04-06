@@ -74,6 +74,7 @@ namespace ICSharpCode.Profiler.Controls
 			if (!string.IsNullOrEmpty(txtSearch.Text) && list.Count > 0) {
 				CallTreeNodeViewModel result;
 				// TODO: should we perform search in background?
+				
 				if (list.First().Search(txtSearch.Text, true, out result)) {
 					result.IsSelected = true;
 					if (oldSearchResult != null)
@@ -89,14 +90,23 @@ namespace ICSharpCode.Profiler.Controls
 			this.IsVisibleChanged += delegate { this.ExecuteQuery(); };
 			this.DataContext = this;
 			this.task = new SingleTask(this.Dispatcher);
+			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
+				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0 && (nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) > 0) {
+					nameColumn.Width += (e.NewSize.Width - e.PreviousSize.Width);
+				}
+			};
 		}
 		
 		public void SetRange(int start, int end)
 		{
+			if (this.Provider == null)
+				return;
+			
 			this.RangeStart = start;
 			this.RangeEnd = end;
 			this.searchRoot = new CallTreeNodeViewModel(this.Provider.GetRoot(start, end), null);
 			this.Invalidate();
+			this.InvalidateArrange();
 		}
 		
 		public void Invalidate()
@@ -139,9 +149,10 @@ namespace ICSharpCode.Profiler.Controls
 			layer.Add(ad);
 			int rangeStart = RangeStart;
 			int rangeEnd = RangeEnd;
+			string query = this.CurrentQuery;
 			
 			ProfilingDataProvider provider = Provider;
-			QueryCompiler compiler = new QueryCompiler(Reporter, this.CurrentQuery);
+			QueryCompiler compiler = new QueryCompiler(Reporter, query);
 			ringDiagram.SelectedRoot = null;
 			
 			task.Execute(() => LoadWorker(provider, compiler, rangeStart, rangeEnd),
@@ -164,8 +175,14 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			layer.Remove(ad);
 			treeView.ItemsSource = this.list = list;
-			if (list != null && list.Count > 0)
+			if (list != null && list.Count > 0) {
 				ringDiagram.SelectedRoot = this.list[0];
+				
+				foreach (var item in list) {
+					var currentItem = item;
+					currentItem.RequestBringIntoView += (sender, e) => this.treeView.ScrollIntoView(e.Node);
+				}
+			}
 		}
 		
 		public string CurrentQuery {

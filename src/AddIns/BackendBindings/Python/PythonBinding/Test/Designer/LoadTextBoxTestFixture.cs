@@ -31,9 +31,11 @@ namespace PythonBinding.Tests.Designer
 							"        # textBox1\r\n" +
 							"        # \r\n" +
 							"        self._textBox1.Name = \"textBoxName\"\r\n" +
+							"        self._textBox1.Location = System.Drawing.Point(108, 120)\r\n" +
 							"        # \r\n" +
 							"        # form1\r\n" +
 							"        # \r\n" +
+							"        self.Location = System.Drawing.Point(10, 20)\r\n" +
 							"        self.Name = \"form1\"\r\n" +
 							"        self.Controls.Add(self._textBox1)\r\n" +
 							"        self.ResumeLayout(False)\r\n";
@@ -42,13 +44,6 @@ namespace PythonBinding.Tests.Designer
 		
 		public TextBox TextBox { 
 			get { return Form.Controls[0] as TextBox; }
-		}
-
-		[Test]
-		public void TextBoxInstanceCreated()
-		{
-			CreatedInstance instance = new CreatedInstance(typeof(TextBox), new List<object>(), "_textBox1", false);
-			Assert.Contains(instance, CreatedInstances);
 		}
 		
 		[Test]
@@ -59,7 +54,14 @@ namespace PythonBinding.Tests.Designer
 			AddedComponent component = new AddedComponent(instance.Object as IComponent, "textBox1");
 			Assert.Contains(component, AddedComponents);
 		}
-		
+
+		[Test]
+		public void TextBoxInstanceCreated()
+		{
+			CreatedInstance instance = new CreatedInstance(typeof(TextBox), new List<object>(), null, false);
+			Assert.Contains(instance, CreatedInstances);
+		}
+
 		[Test]
 		public void TextBoxAddedToForm()
 		{
@@ -77,6 +79,24 @@ namespace PythonBinding.Tests.Designer
 		public void TextBoxName()
 		{
 			Assert.AreEqual("textBoxName", TextBox.Name);
+		}
+		
+		[Test]
+		public void TextBoxLocation()
+		{
+			Assert.AreEqual(new Point(108, 120), TextBox.Location);
+		}
+		
+		[Test]
+		public void CreatedInstancesDoesNotIncludeLocation()
+		{
+			Assert.IsNull(GetCreatedInstance("Location"));
+		}
+		
+		[Test]
+		public void FormLocation()
+		{
+			Assert.AreEqual(new Point(10, 20), Form.Location);
 		}
 	}
 }

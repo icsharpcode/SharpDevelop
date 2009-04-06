@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -19,6 +19,8 @@
     <WarningLevel>4</WarningLevel>
     <NoWarn>1607</NoWarn>
     <StartArguments>--REVISION --START 100</StartArguments>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\Daniel\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,11 +40,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AprSharp">
-      <HintPath>..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\AprSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="SubversionSharp">
-      <HintPath>..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\SubversionSharp.dll</HintPath>
+    <Reference Include="SharpSvn">
+      <HintPath>..\..\Libraries\SharpSvn\SharpSvn.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -52,38 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
-    <None Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\intl3_svn.dll">
-      <Link>intl3_svn.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\libapr.dll">
-      <Link>libapr.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\libapriconv.dll">
-      <Link>libapriconv.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\libaprutil.dll">
-      <Link>libaprutil.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\libdb44.dll">
-      <Link>libdb44.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\libeay32.dll">
-      <Link>libeay32.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\ssleay32.dll">
-      <Link>ssleay32.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\AddIns\Misc\SubversionAddIn\RequiredLibraries\svn_client-1.dll">
-      <Link>svn_client-1.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

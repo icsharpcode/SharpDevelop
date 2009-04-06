@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Reflection;
@@ -29,7 +30,9 @@ namespace PythonBinding.Tests.Designer
 		List <CreatedInstance> createdInstances = new List<CreatedInstance>();
 		List <AddedComponent> addedComponents = new List<AddedComponent>();
 		List<string> typeNames = new List<string>();
-
+		PropertyDescriptor propertyDescriptor;
+		EventDescriptor eventDescriptor;
+		
 		Form form;
 
 		public LoadFormTestFixtureBase()
@@ -38,7 +41,7 @@ namespace PythonBinding.Tests.Designer
 				
 		[TestFixtureSetUp]
 		public void SetUpFixture()
-		{
+		{			
 			PythonFormWalker walker = new PythonFormWalker(this);
 			form = walker.CreateForm(PythonCode);
 		}
@@ -60,7 +63,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			CreatedComponent c = new CreatedComponent(componentClass.FullName, name);
 			createdComponents.Add(c);
-			
+						
 			object instance = componentClass.Assembly.CreateInstance(componentClass.FullName);
 			return (IComponent)instance;
 		}
@@ -102,6 +105,24 @@ namespace PythonBinding.Tests.Designer
 			return type;
 		}
 		
+		public PropertyDescriptor GetEventProperty(EventDescriptor e)
+		{
+			this.eventDescriptor = e;
+			return propertyDescriptor;
+		}
+		
+		public EventDescriptor EventDescriptorPassedToGetEventProperty {
+			get { return eventDescriptor; }
+		}
+		
+		/// <summary>
+		/// Sets the property descriptor to return from the GetEventProperty method.
+		/// </summary>
+		public void SetEventPropertyDescriptor(PropertyDescriptor propertyDescriptor)
+		{
+			this.propertyDescriptor = propertyDescriptor;
+		}
+		
 		protected Form Form {
 			get { return form; }
 		}
@@ -130,6 +151,16 @@ namespace PythonBinding.Tests.Designer
 		{
 			foreach (CreatedInstance instance in createdInstances) {
 				if (instance.InstanceType == type) {
+					return instance;
+				}
+			}
+			return null;
+		}
+		
+		protected CreatedInstance GetCreatedInstance(string name)
+		{
+			foreach (CreatedInstance instance in createdInstances) {
+				if (instance.Name == name) {
 					return instance;
 				}
 			}

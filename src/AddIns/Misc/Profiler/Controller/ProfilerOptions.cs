@@ -15,20 +15,20 @@ namespace ICSharpCode.Profiler.Controller
 	public class ProfilerOptions
 	{
 		/// <summary>
-		/// Defines a default size of the shared memory.
+		/// Defines the default size of the shared memory.
 		/// </summary>
 		public const int SHARED_MEMORY_SIZE = 64 * 1024 * 1024; // 64 mb
 		
 		bool enableDC;
-		bool profileDotNetInternals;
+		bool dotNotProfileDotNetInternals;
 		bool combineRecursiveFunction;
 		int sharedMemorySize;
 		
 		/// <summary>
 		/// Gets whether .NET internal calls are profiled or not.
 		/// </summary>
-		public bool ProfileDotNetInternals {
-			get { return profileDotNetInternals; }
+		public bool DoNotProfileDotNetInternals {
+			get { return dotNotProfileDotNetInternals; }
 		}
 		
 		/// <summary>
@@ -59,7 +59,7 @@ namespace ICSharpCode.Profiler.Controller
 		{
 			this.enableDC = enableDC;
 			this.sharedMemorySize = sharedMemorySize;
-			this.profileDotNetInternals = profileDotNetInternals;
+			this.dotNotProfileDotNetInternals = profileDotNetInternals;
 			this.combineRecursiveFunction = combineRecursiveFunction;
 		}
 		
@@ -67,7 +67,7 @@ namespace ICSharpCode.Profiler.Controller
 		/// Creates default ProfilerOptions.
 		/// </summary>
 		public ProfilerOptions()
-			: this(true, SHARED_MEMORY_SIZE, true, false)
+			: this(true, SHARED_MEMORY_SIZE, false, false)
 		{
 		}
 	}

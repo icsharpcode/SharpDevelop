@@ -5,128 +5,95 @@
 //     <version>$Revision$</version>
 // </file>
 
+using SharpSvn.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using System.Text;
-using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Svn.Gui;
-using PumaCode.SvnDotNet.SubversionSharp;
-using PumaCode.SvnDotNet.AprSharp;
-using System.Runtime.Serialization;
+using SharpSvn;
 
 namespace ICSharpCode.Svn
 {
-	using Svn = PumaCode.SvnDotNet.SubversionSharp.Svn;
-
 	/// <summary>
 	/// A wrapper around the subversion library.
 	/// </summary>
 	public sealed class SvnClientWrapper : IDisposable
 	{
 		#region status->string conversion
-		static string GetKindString(Svn.NodeKind kind)
+		static string GetKindString(SvnNodeKind kind)
 		{
 			switch (kind) {
-				case Svn.NodeKind.Dir:
+				case SvnNodeKind.Directory:
 					return "directory ";
-				case Svn.NodeKind.File:
+				case SvnNodeKind.File:
 					return "file ";
+				default:
+					return null;
 			}
-			return null;
 		}
 		
-		public static string GetActionString(char action)
+		public static string GetActionString(SvnChangeAction action)
 		{
 			switch (action) {
-				case 'A':
-					return GetActionString(SvnWcNotify.Actions.CommitAdded);
-				case 'D':
-					return GetActionString(SvnWcNotify.Actions.CommitDeleted);
-				case 'M':
-					return GetActionString(SvnWcNotify.Actions.CommitModified);
-				case 'R':
-					return GetActionString(SvnWcNotify.Actions.CommitReplaced);
+				case SvnChangeAction.Add:
+					return GetActionString(SvnNotifyAction.CommitAdded);
+				case SvnChangeAction.Delete:
+					return GetActionString(SvnNotifyAction.CommitDeleted);
+				case SvnChangeAction.Modify:
+					return GetActionString(SvnNotifyAction.CommitModified);
+				case SvnChangeAction.Replace:
+					return GetActionString(SvnNotifyAction.CommitReplaced);
 				default:
 					return "unknown";
 			}
 		}
 		
-		static string GetActionString(SvnWcNotify.Actions action)
+		static string GetActionString(SvnNotifyAction action)
 		{
 			switch (action) {
-				case SvnWcNotify.Actions.Add:
-				case SvnWcNotify.Actions.UpdateAdd:
-				case SvnWcNotify.Actions.CommitAdded:
+				case SvnNotifyAction.Add:
+				case SvnNotifyAction.CommitAdded:
 					return "added";
-				case SvnWcNotify.Actions.Copy:
+				case SvnNotifyAction.Copy:
 					return "copied";
-				case SvnWcNotify.Actions.Delete:
-				case SvnWcNotify.Actions.UpdateDelete:
-				case SvnWcNotify.Actions.CommitDeleted:
+				case SvnNotifyAction.Delete:
+				case SvnNotifyAction.UpdateDelete:
+				case SvnNotifyAction.CommitDeleted:
 					return "deleted";
-				case SvnWcNotify.Actions.Restore:
+				case SvnNotifyAction.Restore:
 					return "restored";
-				case SvnWcNotify.Actions.Revert:
+				case SvnNotifyAction.Revert:
 					return "reverted";
-				case SvnWcNotify.Actions.FailedRevert:
+				case SvnNotifyAction.RevertFailed:
 					return "revert failed";
-				case SvnWcNotify.Actions.Resolved:
+				case SvnNotifyAction.Resolved:
 					return "resolved";
-				case SvnWcNotify.Actions.Skip:
+				case SvnNotifyAction.Skip:
 					return "skipped";
-				case SvnWcNotify.Actions.UpdateUpdate:
+				case SvnNotifyAction.UpdateUpdate:
 					return "updated";
-				case SvnWcNotify.Actions.UpdateExternal:
+				case SvnNotifyAction.UpdateExternal:
 					return "updated external";
-				case SvnWcNotify.Actions.CommitModified:
+				case SvnNotifyAction.CommitModified:
 					return "modified";
-				case SvnWcNotify.Actions.CommitReplaced:
+				case SvnNotifyAction.CommitReplaced:
 					return "replaced";
-				case SvnWcNotify.Actions.FailedLock:
+				case SvnNotifyAction.LockFailedLock:
 					return "lock failed";
-				case SvnWcNotify.Actions.FailedUnlock:
+				case SvnNotifyAction.LockFailedUnlock:
 					return "unlock failed";
-				case SvnWcNotify.Actions.Locked:
+				case SvnNotifyAction.LockLocked:
 					return "locked";
-				case SvnWcNotify.Actions.Unlocked:
+				case SvnNotifyAction.LockUnlocked:
 					return "unlocked";
 				default:
 					return "unknown";
-			}
-		}
-		#endregion
-		
-		#region AprPoolHandle
-		sealed class AprPoolHandle : IDisposable
-		{
-			AprPool pool;
-			
-			public AprPool Pool {
-				get { return pool; }
-			}
-			
-			public AprPoolHandle()
-			{
-				pool = Svn.PoolCreate();
-			}
-			
-			public void Dispose()
-			{
-				if (!pool.IsNull) {
-					pool.Destroy();
-				}
-				GC.SuppressFinalize(this);
-			}
-			
-			~AprPoolHandle()
-			{
-				if (!pool.IsNull) {
-					pool.Destroy();
-				}
 			}
 		}
 		#endregion
@@ -139,17 +106,12 @@ namespace ICSharpCode.Svn
 			cancel = true;
 		}
 		
-		SvnError OnCancel(IntPtr baton)
+		void client_Cancel(object sender, SvnCancelEventArgs e)
 		{
-			// TODO: lookup correct error number
-			if (cancel)
-				return SvnError.Create(1, SvnError.NoError, "User cancelled.");
-			else
-				return SvnError.NoError;
+			e.Cancel = cancel;
 		}
 		#endregion
 		
-		AprPoolHandle memoryPool;
 		SvnClient client;
 		Dictionary<string, Status> statusCache = new Dictionary<string, Status>(StringComparer.OrdinalIgnoreCase);
 		
@@ -157,19 +119,15 @@ namespace ICSharpCode.Svn
 		{
 			Debug("SVN: Create SvnClient instance");
 			
-			memoryPool = new AprPoolHandle();
-			client = new SvnClient(memoryPool.Pool);
-			client.Context.NotifyFunc2 = new SvnDelegate(new SvnWcNotify.Func2(OnNotify));
-			client.Context.CancelFunc = new SvnDelegate(new SvnClient.CancelFunc(OnCancel));
+			client = new SvnClient();
+			client.Notify += client_Notify;
+			client.Cancel += client_Cancel;
 		}
-		
+
 		public void Dispose()
 		{
-			if (memoryPool != null) {
-				Debug("SVN: Dispose SvnClient");
-				memoryPool.Dispose();
-				memoryPool = null;
-			}
+			if (client != null)
+				client.Dispose();
 			client = null;
 			statusCache = null;
 		}
@@ -178,17 +136,12 @@ namespace ICSharpCode.Svn
 		bool authorizationEnabled;
 		bool allowInteractiveAuthorization;
 		
-		public bool AllowInteractiveAuthorization {
-			get {
-				return allowInteractiveAuthorization;
-			}
-			set {
-				CheckNotDisposed();
-				if (allowInteractiveAuthorization != value) {
-					if (authorizationEnabled)
-						throw new InvalidOperationException("Cannot change AllowInteractiveAuthorization after an operation was done.");
-					allowInteractiveAuthorization = value;
-				}
+		public void AllowInteractiveAuthorization()
+		{
+			CheckNotDisposed();
+			if (!allowInteractiveAuthorization) {
+				allowInteractiveAuthorization = true;
+				SvnUI.Bind(client, WorkbenchSingleton.MainWin32Window);
 			}
 		}
 		
@@ -197,90 +150,6 @@ namespace ICSharpCode.Svn
 			if (authorizationEnabled)
 				return;
 			authorizationEnabled = true;
-			
-			const int retryLimit = 3;
-			client.AddUsernameProvider();
-			client.AddSimpleProvider();
-			if (allowInteractiveAuthorization) {
-				client.AddPromptProvider(PasswordPrompt, IntPtr.Zero, retryLimit);
-			}
-			client.AddSslServerTrustFileProvider();
-			if (allowInteractiveAuthorization) {
-				client.AddPromptProvider(SslServerTrustPrompt, IntPtr.Zero);
-			}
-			client.AddSslClientCertPwFileProvider();
-			if (allowInteractiveAuthorization) {
-				client.AddPromptProvider(ClientCertificatePasswordPrompt, IntPtr.Zero, retryLimit);
-			}
-			client.AddSslClientCertFileProvider();
-			if (allowInteractiveAuthorization) {
-				client.AddPromptProvider(ClientCertificatePrompt, IntPtr.Zero, retryLimit);
-			}
-			client.OpenAuth();
-		}
-		
-		SvnError PasswordPrompt(out SvnAuthCredSimple cred, IntPtr baton, AprString realm, AprString username, bool maySave, AprPool pool)
-		{
-			cred = IntPtr.Zero;
-			LoggingService.Debug("PasswordPrompt");
-			try {
-				using (LoginDialog loginDialog = new LoginDialog(realm.Value, username.Value, maySave)) {
-					if (WorkbenchSingleton.SafeThreadFunction<IWin32Window, DialogResult>(loginDialog.ShowDialog, WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-						cred = loginDialog.CreateCredential(pool);
-					}
-				}
-			} catch (Exception ex) {
-				MessageService.ShowError(ex);
-			}
-			return SvnError.NoError;
-		}
-		
-		SvnError SslServerTrustPrompt(out SvnAuthCredSslServerTrust cred, IntPtr baton, AprString realm, SvnAuthCredSslServerTrust.CertFailures failures, SvnAuthSslServerCertInfo certInfo, bool maySave, IntPtr pool)
-		{
-			cred = IntPtr.Zero;
-			LoggingService.Debug("SslServerTrustPrompt");
-			try {
-				using (SslServerTrustDialog sslServerTrustDialog = new SslServerTrustDialog(certInfo, failures, maySave)) {
-					if (WorkbenchSingleton.SafeThreadFunction<IWin32Window, DialogResult>(sslServerTrustDialog.ShowDialog, WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-						cred = sslServerTrustDialog.CreateCredential(pool);
-					}
-				}
-			} catch (Exception ex) {
-				MessageService.ShowError(ex);
-			}
-			return SvnError.NoError;
-		}
-		
-		SvnError ClientCertificatePasswordPrompt(out SvnAuthCredSslClientCertPw cred, IntPtr baton, AprString realm, bool maySave, IntPtr pool)
-		{
-			cred = IntPtr.Zero;
-			LoggingService.Debug("SslServerTrustPrompt");
-			try {
-				using (ClientCertPassphraseDialog clientCertPassphraseDialog = new ClientCertPassphraseDialog(realm.Value, maySave)) {
-					if (WorkbenchSingleton.SafeThreadFunction<IWin32Window, DialogResult>(clientCertPassphraseDialog.ShowDialog, WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-						cred = clientCertPassphraseDialog.CreateCredential(pool);
-					}
-				}
-			} catch (Exception ex) {
-				MessageService.ShowError(ex);
-			}
-			return SvnError.NoError;
-		}
-		
-		SvnError ClientCertificatePrompt(out SvnAuthCredSslClientCert cred, IntPtr baton, AprString realm, bool maySave, IntPtr pool)
-		{
-			cred = IntPtr.Zero;
-			LoggingService.Debug("SslServerTrustPrompt");
-			try {
-				using (ClientCertDialog clientCertDialog = new ClientCertDialog(realm.Value, maySave)) {
-					if (WorkbenchSingleton.SafeThreadFunction<IWin32Window, DialogResult>(clientCertDialog.ShowDialog, WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-						cred = clientCertDialog.CreateCredential(pool);
-					}
-				}
-			} catch (Exception ex) {
-				MessageService.ShowError(ex);
-			}
-			return SvnError.NoError;
 		}
 		#endregion
 		
@@ -289,20 +158,20 @@ namespace ICSharpCode.Svn
 		public event EventHandler OperationFinished;
 		public event EventHandler<NotificationEventArgs> Notify;
 		
-		void OnNotify(IntPtr baton, SvnWcNotify notify, AprPool pool)
+		void client_Notify(object sender, SvnNotifyEventArgs e)
 		{
 			if (Notify != null) {
 				Notify(this, new NotificationEventArgs() {
-				       	Action = GetActionString(notify.Action),
-				       	Kind = GetKindString(notify.Kind),
-				       	Path = notify.Path.Value
+				       	Action = GetActionString(e.Action),
+				       	Kind = GetKindString(e.NodeKind),
+				       	Path = e.Path
 				       });
 			}
 		}
 		#endregion
 		
 		[System.Diagnostics.ConditionalAttribute("DEBUG")]
-		void Debug(string text)
+		static void Debug(string text)
 		{
 			LoggingService.Debug(text);
 		}
@@ -327,7 +196,6 @@ namespace ICSharpCode.Svn
 		void AfterOperation()
 		{
 			// after any subversion operation, clear the memory pool
-			client.Clear();
 			if (OperationFinished != null)
 				OperationFinished(this, EventArgs.Empty);
 		}
@@ -349,22 +217,25 @@ namespace ICSharpCode.Svn
 					Debug("SVN: SingleStatus retrieved from cache " + result.TextStatus);
 					return result;
 				}
-				client.Status2(
-					filename, Svn.Revision.Working,
-					delegate (IntPtr baton, SvnPath path, SvnWcStatus2 status) {
-						string dir = path.Value;
-						Debug("SVN: SingleStatus.callback(" + dir + "," + status.TextStatus + ")");
+				SvnStatusArgs args = new SvnStatusArgs {
+					Revision = SvnRevision.Working,
+					RetrieveAllEntries = true,
+					RetrieveIgnoredEntries = true
+				};
+				client.Status(
+					filename, args,
+					delegate (object sender, SvnStatusEventArgs e) {
+						string dir = e.FullPath;
+						Debug("SVN: SingleStatus.callback(" + dir + "," + e.LocalContentStatus + ")");
 						Status s = new Status {
-							Copied = status.Copied,
-							TextStatus = ToStatusKind(status.TextStatus)
+							Copied = e.LocalCopied,
+							TextStatus = ToStatusKind(e.LocalContentStatus)
 						};
 						statusCache[dir] = s;
 						if (StringComparer.OrdinalIgnoreCase.Equals(filename, dir)) {
 							result = s;
 						}
-					},
-					IntPtr.Zero,
-					false, true, false, false, false
+					}
 				);
 				if (result != null) {
 					return result;
@@ -380,12 +251,20 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
+		static SvnDepth ConvertDepth(Recurse recurse)
+		{
+			if (recurse == Recurse.Full)
+				return SvnDepth.Infinity;
+			else
+				return SvnDepth.Empty;
+		}
+		
 		public void Add(string filename, Recurse recurse)
 		{
 			Debug("SVN: Add(" + filename + ", " + recurse + ")");
 			BeforeOperation("add");
 			try {
-				client.Add3(filename, recurse == Recurse.Full, false, false);
+				client.Add(filename, ConvertDepth(recurse));
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -398,17 +277,11 @@ namespace ICSharpCode.Svn
 			Debug("SVN: GetPropertyValue(" + fileName + ", " + propertyName + ")");
 			BeforeOperation("propget");
 			try {
-				AprHash hash = client.PropGet2(propertyName, fileName,
-				                               Svn.Revision.Working, Svn.Revision.Working,
-				                               false);
-				foreach (AprHashEntry entry in hash) {
-					// entry.ValueAsString treats the value as const char*, but it is a svn_string_t*
-					SvnString value = entry.Value;
-					Debug("SVN: GetPropertyValue hash entry: (" + entry.KeyAsString + ", " + value + ")");
-					return value.Data.Value;
-				}
-				Debug("SVN: GetPropertyValue did not find any entries");
-				return null;
+				string propertyValue;
+				if (client.GetProperty(fileName, propertyName, out propertyValue))
+					return propertyValue;
+				else
+					return null;
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -421,12 +294,10 @@ namespace ICSharpCode.Svn
 			Debug("SVN: SetPropertyValue(" + fileName + ", " + propertyName + ", " + newPropertyValue + ")");
 			BeforeOperation("propset");
 			try {
-				SvnString npv;
 				if (newPropertyValue != null)
-					npv = new SvnString(newPropertyValue, client.Pool);
+					client.SetProperty(fileName, propertyName, newPropertyValue);
 				else
-					npv = IntPtr.Zero;
-				client.PropSet2(propertyName, npv, fileName, false, false);
+					client.DeleteProperty(fileName, propertyName);
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -434,21 +305,16 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
-		SvnPath[] ToSvnPaths(string[] files)
-		{
-			SvnPath[] paths = new SvnPath[files.Length];
-			for (int i = 0; i < files.Length; i++) {
-				paths[i] = new SvnPath(files[i], client.Pool);
-			}
-			return paths;
-		}
-		
 		public void Delete(string[] files, bool force)
 		{
 			Debug("SVN: Delete(" + string.Join(",", files) + ", " + force + ")");
 			BeforeOperation("delete");
 			try {
-				client.Delete2(ToSvnPaths(files), force);
+				client.Delete(
+					files,
+					new SvnDeleteArgs {
+						Force = force
+					});
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -461,7 +327,11 @@ namespace ICSharpCode.Svn
 			Debug("SVN: Revert(" + string.Join(",", files) + ", " + recurse + ")");
 			BeforeOperation("revert");
 			try {
-				client.Revert(ToSvnPaths(files), recurse == Recurse.Full);
+				client.Revert(
+					files,
+					new SvnRevertArgs {
+						Depth = ConvertDepth(recurse)
+					});
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -474,7 +344,11 @@ namespace ICSharpCode.Svn
 			Debug("SVN: Move(" + from + ", " + to + ", " + force + ")");
 			BeforeOperation("move");
 			try {
-				client.Move3(from, to, force);
+				client.Move(
+					from, to,
+					new SvnMoveArgs {
+						Force = force
+					});
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -482,12 +356,12 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
-		public void Copy(string from, Revision revision, string to)
+		public void Copy(string from, string to)
 		{
-			Debug("SVN: Copy(" + from + ", " + revision + ", " + to);
+			Debug("SVN: Copy(" + from + ", " + to);
 			BeforeOperation("copy");
 			try {
-				client.Copy2(from, revision, to);
+				client.Copy(from, to);
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -523,37 +397,39 @@ namespace ICSharpCode.Svn
 			      ", " + limit + ", " + discoverChangePaths + ", " + strictNodeHistory + ")");
 			BeforeOperation("log");
 			try {
-				client.Log2(
-					ToSvnPaths(paths),
-					start, end, limit, discoverChangePaths, strictNodeHistory,
-					delegate (IntPtr baton, AprHash changed_paths, int revision, AprString author, AprString date, AprString message, AprPool pool) {
-						Debug("SVN: Log: Got revision " + revision);
-						DateTime dateTime = DateTime.MinValue;
-						DateTime.TryParse(date.Value, out dateTime);
+				client.Log(
+					paths,
+					new SvnLogArgs {
+						Start = start,
+						End = end,
+						Limit = limit,
+						RetrieveChangedPaths = discoverChangePaths,
+						StrictNodeHistory = strictNodeHistory
+					},
+					delegate (object sender, SvnLogEventArgs e) {
+						Debug("SVN: Log: Got revision " + e.Revision);
 						LogMessage msg = new LogMessage() {
-							Revision = revision,
-							Author = author.Value,
-							Date = dateTime,
-							Message = message.Value
+							Revision = e.Revision,
+							Author = e.Author,
+							Date = e.Time,
+							Message = e.LogMessage
 						};
 						if (discoverChangePaths) {
-							msg.ChangedPaths = new List<ChangedPath>();
-							foreach (AprHashEntry entry in changed_paths) {
-								SvnLogChangedPath changedPath = entry.Value;
+							foreach (var entry in e.ChangedPaths) {
 								msg.ChangedPaths.Add(new ChangedPath {
-								                     	Path = entry.KeyAsString,
-								                     	CopyFromPath = changedPath.CopyFromPath.Value,
-								                     	CopyFromRevision = changedPath.CopyFromRev,
-								                     	Action = changedPath.Action
+								                     	Path = entry.Path,
+								                     	CopyFromPath = entry.CopyFromPath,
+								                     	CopyFromRevision = entry.CopyFromRevision,
+								                     	Action = entry.Action
 								                     });
 							}
 						}
 						logMessageReceiver(msg);
-						return SvnError.NoError;
-					},
-					IntPtr.Zero
+					}
 				);
 				Debug("SVN: Log finished");
+			} catch (SvnOperationCanceledException) {
+				// allow cancel without exception
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -561,35 +437,35 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
-		static StatusKind ToStatusKind(SvnWcStatus.Kind kind)
+		static StatusKind ToStatusKind(SvnStatus kind)
 		{
 			switch (kind) {
-				case SvnWcStatus.Kind.Added:
+				case SvnStatus.Added:
 					return StatusKind.Added;
-				case SvnWcStatus.Kind.Conflicted:
+				case SvnStatus.Conflicted:
 					return StatusKind.Conflicted;
-				case SvnWcStatus.Kind.Deleted:
+				case SvnStatus.Deleted:
 					return StatusKind.Deleted;
-				case SvnWcStatus.Kind.External:
+				case SvnStatus.External:
 					return StatusKind.External;
-				case SvnWcStatus.Kind.Ignored:
+				case SvnStatus.Ignored:
 					return StatusKind.Ignored;
-				case SvnWcStatus.Kind.Incomplete:
+				case SvnStatus.Incomplete:
 					return StatusKind.Incomplete;
-				case SvnWcStatus.Kind.Merged:
+				case SvnStatus.Merged:
 					return StatusKind.Merged;
-				case SvnWcStatus.Kind.Missing:
+				case SvnStatus.Missing:
 					return StatusKind.Missing;
-				case SvnWcStatus.Kind.Modified:
+				case SvnStatus.Modified:
 					return StatusKind.Modified;
-				case SvnWcStatus.Kind.Normal:
+				case SvnStatus.Normal:
 					return StatusKind.Normal;
-				case SvnWcStatus.Kind.Obstructed:
-					return StatusKind.Obstructed;
-				case SvnWcStatus.Kind.Replaced:
-					return StatusKind.Replaced;
-				case SvnWcStatus.Kind.Unversioned:
+				case SvnStatus.NotVersioned:
 					return StatusKind.Unversioned;
+				case SvnStatus.Obstructed:
+					return StatusKind.Obstructed;
+				case SvnStatus.Replaced:
+					return StatusKind.Replaced;
 				default:
 					return StatusKind.None;
 			}
@@ -610,7 +486,7 @@ namespace ICSharpCode.Svn
 	
 	public class LogMessage
 	{
-		public int Revision;
+		public long Revision;
 		public string Author;
 		public DateTime Date;
 		public string Message;
@@ -622,24 +498,24 @@ namespace ICSharpCode.Svn
 	{
 		public string Path;
 		public string CopyFromPath;
-		public int CopyFromRevision;
+		public long CopyFromRevision;
 		/// <summary>
 		/// change action ('A','D','R' or 'M')
 		/// </summary>
-		public char Action;
+		public SvnChangeAction Action;
 	}
 	
 	public class Revision
 	{
 		SvnRevision revision;
 		
-		public static readonly Revision Base = new SvnRevision(Svn.Revision.Base);
-		public static readonly Revision Committed = new SvnRevision(Svn.Revision.Committed);
-		public static readonly Revision Head = new SvnRevision(Svn.Revision.Head);
-		public static readonly Revision Working = new SvnRevision(Svn.Revision.Working);
-		public static readonly Revision Unspecified = new SvnRevision(Svn.Revision.Unspecified);
+		public static readonly Revision Base = SvnRevision.Base;
+		public static readonly Revision Committed = SvnRevision.Committed;
+		public static readonly Revision Head = SvnRevision.Head;
+		public static readonly Revision Working = SvnRevision.Working;
+		public static readonly Revision Unspecified = SvnRevision.None;
 		
-		public static Revision FromNumber(int number)
+		public static Revision FromNumber(long number)
 		{
 			return new SvnRevision(number);
 		}
@@ -656,22 +532,22 @@ namespace ICSharpCode.Svn
 		
 		public override string ToString()
 		{
-			switch (revision.Kind) {
-				case Svn.Revision.Base:
+			switch (revision.RevisionType) {
+				case SvnRevisionType.Base:
 					return "base";
-				case Svn.Revision.Committed:
+				case SvnRevisionType.Committed:
 					return "committed";
-				case Svn.Revision.Date:
-					return AprTime.ToDateTime(revision.Date).ToString();
-				case Svn.Revision.Head:
+				case SvnRevisionType.Time:
+					return revision.Time.ToString();
+				case SvnRevisionType.Head:
 					return "head";
-				case Svn.Revision.Number:
-					return revision.Number.ToString();
-				case Svn.Revision.Previous:
+				case SvnRevisionType.Number:
+					return revision.Revision.ToString();
+				case SvnRevisionType.Previous:
 					return "previous";
-				case Svn.Revision.Unspecified:
+				case SvnRevisionType.None:
 					return "unspecified";
-				case Svn.Revision.Working:
+				case SvnRevisionType.Working:
 					return "working";
 				default:
 					return "unknown";
@@ -693,12 +569,12 @@ namespace ICSharpCode.Svn
 
 	public class SvnClientException : Exception
 	{
-		public readonly int ErrorCode;
+		SvnErrorCode errorCode;
 		
 		internal SvnClientException(SvnException ex) : base(ex.Message, ex)
 		{
+			this.errorCode = ex.SvnErrorCode;
 			LoggingService.Debug(ex);
-			ErrorCode = ex.AprErr;
 		}
 		
 		/// <summary>
@@ -708,6 +584,18 @@ namespace ICSharpCode.Svn
 		{
 			return InnerException.InnerException;
 		}
+		
+		public bool IsKnownError(KnownError knownError)
+		{
+			return (int)errorCode == (int)knownError;
+		}
+	}
+	
+	public enum KnownError
+	{
+		FileNotFound = SvnErrorCode.SVN_ERR_FS_NOT_FOUND,
+		CannotDeleteFileWithLocalModifications = SvnErrorCode.SVN_ERR_CLIENT_MODIFIED,
+		CannotDeleteFileNotUnderVersionControl = SvnErrorCode.SVN_ERR_UNVERSIONED_RESOURCE
 	}
 
 	public enum StatusKind

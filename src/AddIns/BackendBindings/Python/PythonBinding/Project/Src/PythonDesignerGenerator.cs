@@ -119,9 +119,15 @@ namespace ICSharpCode.PythonBinding
 			// new line before it.
 			IDocument doc = viewContent.DesignerCodeFileDocument;
 			string eventHandler = CreateEventHandler(eventMethodName, body, "\t");
-			string newContent = "\r\n" + eventHandler;
 			int line = doc.TotalNumberOfLines;
-			int offset = doc.GetLine(line).Offset;
+			IDocumentLine lastLineSegment = doc.GetLine(line);
+			int offset = lastLineSegment.Offset + lastLineSegment.Length;
+
+			string newContent = "\r\n" + eventHandler;
+			if (lastLineSegment.Length > 0) {
+				// Add an extra new line between the last line and the event handler.
+				newContent = "\r\n" + newContent;
+			}
 			doc.Insert(offset, newContent);
 			
 			// Set position so it points to the line

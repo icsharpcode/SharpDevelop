@@ -22,11 +22,13 @@ namespace ICSharpCode.PythonBinding
 	{
 		string memberName = String.Empty;
 		string fullMemberName = String.Empty;
+		string variableName = String.Empty;
 		
 		PythonControlFieldExpression(string memberName, string fullMemberName)
 		{
 			this.memberName = memberName;
 			this.fullMemberName = fullMemberName;
+			this.variableName = GetVariableNameFromSelfReference(fullMemberName);
 		}
 		
 		/// <summary>
@@ -44,6 +46,13 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// From a member expression of the form: self._textBox1.Name this property will return "textBox1".
+		/// </summary>		
+		public string VariableName {
+			get { return variableName; }
+		}
+		
+		/// <summary>
 		/// Creates a PythonControlField from a member expression:
 		/// 
 		/// self._textBox1
@@ -55,28 +64,7 @@ namespace ICSharpCode.PythonBinding
 			string fullMemberName = PythonControlFieldExpression.GetMemberName(expression);
 			return new PythonControlFieldExpression(memberName, fullMemberName);
 		}
-		
-		/// <summary>
-		/// Gets the variable name from an expression of the form:
-		/// 
-		/// self._textBox1.Name
-		/// 
-		/// Returns "textBox1"
-		/// </summary>
-		public static string GetVariableNameFromSelfReference(string name)
-		{
-			int startIndex = name.IndexOf('.');
-			if (startIndex > 0) {
-				name = name.Substring(startIndex + 1);
-				int endIndex = name.IndexOf('.');
-				if (endIndex > 0) {
-					return GetVariableName(name.Substring(0, endIndex));
-				}
-				return String.Empty;
-			}
-			return name;
-		}
-		
+				
 		/// <summary>
 		/// From a name such as "System.Windows.Forms.Cursors.AppStarting" this method returns:
 		/// "System.Windows.Forms.Cursors"
@@ -101,6 +89,31 @@ namespace ICSharpCode.PythonBinding
 				return GetVariableName(memberExpression.Name.ToString());
 			//}
 			//return null;
+		}
+
+		/// <summary>
+		/// Gets the variable name of the parent control adding child controls. An expression of the form:
+		/// 
+		/// self._panel1.Controls.Add
+		/// 
+		/// would return "panel1".
+		/// </summary>
+		/// <returns>Null if the expression is not one of the following forms:
+		/// self.{0}.Controls.Add
+		/// self.Controls.Add
+		/// </returns>
+		public static string GetParentControlNameAddingChildControls(string code)
+		{
+			int endIndex = code.IndexOf(".Controls.Add", StringComparison.InvariantCultureIgnoreCase);
+			if (endIndex > 0) {
+				string controlName = code.Substring(0, endIndex);
+				int startIndex = controlName.LastIndexOf('.');
+				if (startIndex > 0) {
+					return GetVariableName(controlName.Substring(startIndex + 1));
+				} 
+				return String.Empty;
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -139,6 +152,27 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			return typeName.ToString();
+		}
+		
+		/// <summary>
+		/// Gets the variable name from an expression of the form:
+		/// 
+		/// self._textBox1.Name
+		/// 
+		/// Returns "textBox1"
+		/// </summary>
+		static string GetVariableNameFromSelfReference(string name)
+		{
+			int startIndex = name.IndexOf('.');
+			if (startIndex > 0) {
+				name = name.Substring(startIndex + 1);
+				int endIndex = name.IndexOf('.');
+				if (endIndex > 0) {
+					return GetVariableName(name.Substring(0, endIndex));
+				}
+				return String.Empty;
+			}
+			return name;
 		}		
 	}
 }

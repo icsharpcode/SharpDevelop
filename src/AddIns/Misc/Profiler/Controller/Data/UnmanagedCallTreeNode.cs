@@ -55,7 +55,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 
-		public override int CallCount {
+		public override int RawCallCount {
 			get {
 				dataSet.VerifyAccess(); // need to verify before deferencing data
 				return this.data->CallCount;
