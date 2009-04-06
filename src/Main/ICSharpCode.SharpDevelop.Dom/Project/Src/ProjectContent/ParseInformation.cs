@@ -11,9 +11,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public class ParseInformation
 	{
+		/// <summary>
+		/// Gets the last compilation unit that was valid (=no parse errors).
+		/// This property might be null.
+		/// </summary>
 		public ICompilationUnit ValidCompilationUnit { get; private set; }
+		
+		/// <summary>
+		/// Gets the last compilation unit that was invalid (=had parse errors).
+		/// This property is null if the most recent compilation unit is valid.
+		/// </summary>
 		public ICompilationUnit DirtyCompilationUnit { get; private set; }
+		
+		/// <summary>
+		/// Gets the best compilation unit.
+		/// This returns the ValidCompilationUnit if one exists, otherwise
+		/// the DirtyCompilationUnit.
+		/// </summary>
 		public ICompilationUnit BestCompilationUnit { get; private set; }
+		
+		/// <summary>
+		/// Gets the most recent compilation unit. The unit might be valid or invalid.
+		/// </summary>
 		public ICompilationUnit MostRecentCompilationUnit { get; private set; }
 		
 		public ParseInformation() {}
@@ -32,6 +51,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public void SetCompilationUnit(ICompilationUnit unit)
 		{
+			if (unit == null)
+				throw new ArgumentNullException("unit");
 			lock (this) {
 				MostRecentCompilationUnit = unit;
 				if (unit.ErrorsDuringCompile) {

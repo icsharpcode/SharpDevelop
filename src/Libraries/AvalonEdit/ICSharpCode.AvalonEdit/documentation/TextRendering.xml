@@ -86,8 +86,15 @@
 			must not add elements, but they may split existing elements, e.g. to colorize only parts of an
 			element. When splitting elements (or somehow modifying the elements collection), care must be taken
 			that the VisualColumn,VisualLine,RelativeTextOffset and DocumentLength properties stay correct.
-			The ColorizingTransformer base class can do this so that transformers don't have to implement the
-			splitting themselves.
+			</para>
+			<para>
+			The ColorizingTransformer base class provides helper methods for splitting, so the derived class
+			can simply say "color this section in that color".
+			</para>
+			<para>
+			The DocumentColorizingTransformer extends the ColorizingTransformer and additionally
+			allows highlighting on per DocumentLine, coloring text segments (instead of directly
+			working with visual line elements).
 			</para>
 		</content>
 	</section>

@@ -22,6 +22,12 @@ namespace ICSharpCode.XamlBinding
 		{
 		}
 
+		/// <summary>
+		/// Creates a IReturnType looking for a class referenced in XAML.
+		/// </summary>
+		/// <param name="xmlNamespace">The XML namespace</param>
+		/// <param name="className">The class name</param>
+		/// <returns>A new IReturnType that will search the referenced type on demand.</returns>
 		public IReturnType CreateType(string xmlNamespace, string className)
 		{
 			if (xmlNamespace.StartsWith("clr-namespace:")) {
@@ -49,6 +55,12 @@ namespace ICSharpCode.XamlBinding
 			return namespaceName;
 		}
 
+		/// <summary>
+		/// Finds a type referenced in XAML.
+		/// </summary>
+		/// <param name="xmlNamespace">The XML namespace</param>
+		/// <param name="className">The class name</param>
+		/// <returns>Returns the referenced type, or null if it cannot be found.</returns>
 		public IReturnType FindType(string xmlNamespace, string className)
 		{
 			return FindType(this.ProjectContent, xmlNamespace, className);
@@ -80,7 +92,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			foreach (IAttribute att in projectContent.GetAssemblyAttributes()) {
 				if (att.PositionalArguments.Count == 2
-					&& att.AttributeType.FullyQualifiedName == "System.Windows.Markup.XmlnsDefinitionAttribute") {
+				    && att.AttributeType.FullyQualifiedName == "System.Windows.Markup.XmlnsDefinitionAttribute") {
 					string namespaceName = att.PositionalArguments[1] as string;
 					if (xmlNamespace.Equals(att.PositionalArguments[0]) && namespaceName != null) {
 						IClass c = projectContent.GetClass(namespaceName + "." + className, 0);
@@ -115,7 +127,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			foreach (IAttribute att in projectContent.GetAssemblyAttributes()) {
 				if (att.PositionalArguments.Count == 2
-					&& att.AttributeType.FullyQualifiedName == "System.Windows.Markup.XmlnsDefinitionAttribute") {
+				    && att.AttributeType.FullyQualifiedName == "System.Windows.Markup.XmlnsDefinitionAttribute") {
 					string namespaceName = att.PositionalArguments[1] as string;
 					if (xmlNamespace.Equals(att.PositionalArguments[0]) && namespaceName != null) {
 						projectContent.AddNamespaceContents(list, namespaceName, projectContent.Language, false);

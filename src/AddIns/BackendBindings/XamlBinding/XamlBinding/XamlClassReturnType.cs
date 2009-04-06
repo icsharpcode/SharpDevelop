@@ -11,7 +11,8 @@ using ICSharpCode.SharpDevelop.Dom;
 namespace ICSharpCode.XamlBinding
 {
 	/// <summary>
-	/// Description of XamlClassReturnType.
+	/// IReturnType that gets created by XamlCompilationUnit.CreateType and will
+	/// run XamlCompilationUnit.FindType on demand.
 	/// </summary>
 	public class XamlClassReturnType : ProxyReturnType
 	{

@@ -76,6 +76,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public ClassFinder(IClass callingClass, int caretLine, int caretColumn)
 		{
+			if (callingClass == null)
+				throw new ArgumentNullException("callingClass");
+			if (callingClass is CompoundClass)
+				throw new ArgumentException("Cannot use compound class for ClassFinder - must pass a specific class part.");
 			this.caretLine = caretLine;
 			this.caretColumn = caretColumn;
 			this.callingClass = callingClass;
