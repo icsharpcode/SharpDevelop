@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ICSharpCode.Profiler.Controller;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Windows;
-
 using ICSharpCode.Core;
 using ICSharpCode.Profiler.AddIn.OptionsPanels;
 using ICSharpCode.Profiler.AddIn.Views;
@@ -30,7 +30,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 		
 		void btnStartClick(object sender, RoutedEventArgs e)
 		{
-			try {				
+			try {
 				if (!File.Exists(txtExePath.Text))
 					throw new FileNotFoundException("file '" + txtExePath.Text + "' was not found!");
 				if (!Directory.Exists(txtWorkingDir.Text))
@@ -43,19 +43,23 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 				
 				Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 				
-				var runner = CreateRunner(txtExePath.Text, txtWorkingDir.Text, txtArgs.Text, new ProfilingDataSQLiteWriter(outputPath));
-				
-				if (runner != null) {
-					runner.RunFinished += delegate {
-						string title = Path.GetFileName(outputPath);
-						ProfilingDataProvider provider = new ProfilingDataSQLiteProvider(outputPath);
-						WorkbenchSingleton.SafeThreadCall(() => WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title)));
-					};
+				try {
+					var runner = CreateRunner(txtExePath.Text, txtWorkingDir.Text, txtArgs.Text, new ProfilingDataSQLiteWriter(outputPath));
+
+					if (runner != null) {
+						runner.RunFinished += delegate {
+							string title = Path.GetFileName(outputPath);
+							ProfilingDataProvider provider = new ProfilingDataSQLiteProvider(outputPath);
+							WorkbenchSingleton.SafeThreadCall(() => WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title)));
+						};
+						
+						runner.Run();
+					}
 					
-					runner.Run();
+					this.Close();
+				} catch (ProfilerException ex) {
+					MessageService.ShowError(ex.Message);
 				}
-				
-				this.Close();
 			} catch (ArgumentNullException) {
 				MessageService.ShowError("Invalid data, please try again!");
 			} catch (FileNotFoundException ex) {

@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
 using System.Diagnostics;
+using ICSharpCode.Core;
 using ICSharpCode.Profiler.AddIn.OptionsPanels;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop.Gui;
