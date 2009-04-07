@@ -1,0 +1,52 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Media;
+
+namespace ICSharpCode.TreeView
+{
+	class LinesRenderer : FrameworkElement
+	{
+		static LinesRenderer()
+		{
+			pen = new Pen(Brushes.LightGray, 1);
+			pen.Freeze();
+		}
+
+		static Pen pen;
+
+		SharpTreeNodeView NodeView
+		{
+			get { return TemplatedParent as SharpTreeNodeView; }
+		}
+
+		protected override void OnRender(DrawingContext dc)
+		{
+			var indent = NodeView.CalculateIndent();
+			if (indent == 0) return;
+
+			var p = new Point(indent + 4.5, 0);
+
+			if (NodeView.Node.IsLast) {
+				dc.DrawLine(pen, p, new Point(p.X, ActualHeight / 2));
+			}
+			else {
+				dc.DrawLine(pen, p, new Point(p.X, ActualHeight));
+			}
+
+			dc.DrawLine(pen, new Point(p.X, ActualHeight / 2), new Point(p.X + 10, ActualHeight / 2));
+
+			var current = NodeView.Node;
+			while (true) {
+				p.X -= 19;
+				current = current.Parent;
+				if (p.X < 0) break;
+				if (!current.IsLast) {
+					dc.DrawLine(pen, p, new Point(p.X, ActualHeight));
+				}
+			}
+		}
+	}
+}

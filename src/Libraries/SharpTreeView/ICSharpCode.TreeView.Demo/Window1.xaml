@@ -1,0 +1,67 @@
+﻿<Window x:Class="ICSharpCode.TreeView.Demo.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sd="http://sharpdevelop.net"
+        Title="SharpTreeView Demo"
+        SnapsToDevicePixels="True"
+        Background="{x:Static SystemColors.ControlBrush}">
+
+    <DockPanel Margin="10">
+
+        <TextBlock DockPanel.Dock="Top"
+                   Height="70">
+            Features: MVVM (POCO variant), Multiselect, Drag and Drop (with or without order), Cut / Copy / Paste / Delete, Rename (try rename file to '?'),<LineBreak />
+            VirtualizationMode.Recycling (by default), Root Lines, Columns (using ListView), Icon, Checkbox, ContextMenu, Lazy Loading.<LineBreak /> 
+            <LineBreak />
+            <Run FontWeight="Bold">Changes does not affect real file system.</Run>
+        </TextBlock>
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <sd:SharpTreeView x:Name="treeView1"
+                              AllowDrop="True"
+                              AllowDropOrder="True" />
+
+            <sd:SharpTreeView x:Name="treeView2"
+                              AllowDrop="True"
+                              ShowAlternation="True"
+                              Grid.Column="1"
+                              Margin="10 0 0 0">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <sd:SharpTreeNodeView />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="File Size">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding FileSize}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="File Modified">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding FileModified}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+
+            </sd:SharpTreeView>
+
+        </Grid>
+    </DockPanel>
+
+</Window>

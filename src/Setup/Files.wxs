@@ -715,6 +715,9 @@
 							<Component Guid="7ACA96F6-7075-405A-B85D-D5930E984B19" Id="ICSharpCodeAvalonEditDll" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.AvalonEdit.dll" Name="ICSharpCode.AvalonEdit.dll" Id="ICSharpCode.AvalonEdit.dll" KeyPath="yes" />
 							</Component>
+							<Component Guid="84FB3C82-23BD-11DE-8F18-C06F55D89593" Id="ICSharpCodeTreeViewDll" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.TreeView.dll" Name="ICSharpCode.TreeView.dll" Id="ICSharpCode.TreeView.dll" KeyPath="yes" />
+							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
