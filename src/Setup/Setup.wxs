@@ -168,6 +168,7 @@
 				<ComponentRef Id="ICSharpCodeSharpDevelopSdaFiles"/>
 				<ComponentRef Id="ICSharpCodeTextEditorDll"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditDll"/>
+				<ComponentRef Id="ICSharpCodeTreeViewDll"/>
 				<ComponentRef Id="AgaControlsDll"/>
 				<ComponentRef Id="log4netDll"/>
 				<ComponentRef Id="MonoCecilDll"/>
