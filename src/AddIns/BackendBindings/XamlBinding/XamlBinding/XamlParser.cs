@@ -31,6 +31,12 @@ namespace ICSharpCode.XamlBinding
 		{
 			get { return LanguageProperties.CSharp; }
 		}
+		
+		public XamlParser()
+		{
+			// HACK to make colorizing working!
+			XamlColorizerServer.InitializeServer();
+		}
 
 		public bool CanParse(string fileName)
 		{
@@ -42,8 +48,6 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 
-		const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
-
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			XamlCompilationUnit cu = new XamlCompilationUnit(projectContent);
@@ -54,7 +58,7 @@ namespace ICSharpCode.XamlBinding
 					r.Read();
 					r.MoveToContent();
 					DomRegion classStart = new DomRegion(r.LineNumber, r.LinePosition - 1);
-					string className = r.GetAttribute("Class", XamlNamespace);
+					string className = r.GetAttribute("Class", CompletionDataHelper.XamlNamespace);
 					if (string.IsNullOrEmpty(className)) {
 						LoggingService.Debug("XamlParser: returning empty cu because root element has no Class attribute");
 					}
@@ -95,7 +99,7 @@ namespace ICSharpCode.XamlBinding
 		void ParseXamlElement(XamlCompilationUnit cu, DefaultClass c, XmlTextReader r)
 		{
 			Debug.Assert(r.NodeType == XmlNodeType.Element);
-			string name = r.GetAttribute("Name", XamlNamespace) ?? r.GetAttribute("Name");
+			string name = r.GetAttribute("Name", CompletionDataHelper.XamlNamespace) ?? r.GetAttribute("Name");
 			bool isEmptyElement = r.IsEmptyElement;
 
 			if (!string.IsNullOrEmpty(name)) {

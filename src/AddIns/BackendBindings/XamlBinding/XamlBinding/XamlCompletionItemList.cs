@@ -5,20 +5,13 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.AddIn;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
@@ -31,6 +24,9 @@ namespace ICSharpCode.XamlBinding
 		
 		public override CompletionItemListKeyResult ProcessInput(char key)
 		{
+			if (key == ':')
+				return CompletionItemListKeyResult.NormalKey;
+			
 			return base.ProcessInput(key);
 		}
 		
@@ -39,23 +35,42 @@ namespace ICSharpCode.XamlBinding
 			if (item is XamlCompletionItem) {
 				XamlCompletionItem cItem = item as XamlCompletionItem;
 				
-				if (cItem.Entity is IProperty) {
-					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
-					context.Editor.Caret.Offset--;
-					XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
-					if (path != null && path.Elements.Count > 0) {
-						ICompletionItemList list = XamlCodeCompletionBinding.CreateListForContext(context.Editor, XamlContext.InAttributeValue, path, cItem.Entity);
-						context.Editor.ShowCompletionWindow(list);
+				if (cItem.Entity is IProperty || cItem.Entity is IEvent) {
+					if (context.Editor.Document.GetCharAt(context.StartOffset - 1) != '.') {
+						context.Editor.Document.Insert(context.EndOffset, "=\"\"");
+						context.Editor.Caret.Offset--;
+						XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
+						if (path != null && path.Elements.Count > 0) {
+							ICompletionItemList list = CompletionDataHelper.CreateListForContext(context.Editor, XamlContext.InAttributeValue, path, cItem.Entity);
+							context.Editor.ShowCompletionWindow(list);
+						}
 					}
 				}
 				
-				if (cItem.Entity is IEvent) {
-					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
-					context.Editor.Caret.Offset--;
-					XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
-					if (path != null && path.Elements.Count > 0) {
-						ICompletionItemList list = XamlCodeCompletionBinding.CreateListForContext(context.Editor, XamlContext.InAttributeValue, path, cItem.Entity);
-						context.Editor.ShowCompletionWindow(list);
+				if (cItem.Entity is IClass) {
+					IClass c = cItem.Entity as IClass;
+					// TODO : maybe allow accessing ch from HandleKeyPress through context?
+					if (c.FullyQualifiedName == "System.Windows.Style") {
+						string insertionString = "";
+						if (!char.IsWhiteSpace(context.Editor.Document.GetCharAt(context.StartOffset - 1))) {
+							insertionString = " ";
+						}
+						
+						string prefix = Utils.GetXamlNamespacePrefix(context.Editor.Document.Text, context.StartOffset);
+						if (!string.IsNullOrEmpty(prefix))
+							prefix += ":";
+						
+						insertionString += "TargetType=\"{" + prefix + "Type }\"";
+						context.Editor.Document.Insert(context.EndOffset, insertionString);
+						context.Editor.Caret.Offset = context.EndOffset + insertionString.Length - 2;
+					} else if (c.FullyQualifiedName == "System.Windows.Setter") {
+						string insertionString = "";
+						if (!char.IsWhiteSpace(context.Editor.Document.GetCharAt(context.StartOffset - 1))) {
+							insertionString = " ";
+						}
+						insertionString += "Property=\"\"";
+						context.Editor.Document.Insert(context.EndOffset, insertionString);
+						context.Editor.Caret.Offset = context.EndOffset + insertionString.Length - 1;
 					}
 				}
 			} else {
@@ -74,6 +89,8 @@ namespace ICSharpCode.XamlBinding
 			var unit = p.MostRecentCompilationUnit;
 			var loc = context.Editor.Document.OffsetToPosition(context.StartOffset);
 			IClass c = unit.GetInnermostClass(loc.Line, loc.Column);
+			if (c == null)
+				return;
 			IMethod initializeComponent = c.Methods[0];
 			CompoundClass compound = c.GetCompoundClass() as CompoundClass;
 			if (compound != null) {
@@ -101,7 +118,7 @@ namespace ICSharpCode.XamlBinding
 					node.Modifier = Modifiers.None;
 					
 					AvalonEditViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName) as AvalonEditViewContent;
-					
+
 					// TODO : shouldn't we be able to use viewContent.CodeEditor.textEditorAdapter here? (Property missing?)
 					ITextEditor wrapper = new CodeEditorAdapter(viewContent.CodeEditor);
 					
@@ -110,7 +127,6 @@ namespace ICSharpCode.XamlBinding
 							unit.ProjectContent.Language.CodeGenerator.InsertCodeAfter(lastMember, wrapper.Document, node);
 						else
 							unit.ProjectContent.Language.CodeGenerator.InsertCodeAtEnd(part.Region, wrapper.Document, node);
-						return;
 					}
 					return;
 				}

@@ -203,6 +203,8 @@ namespace ICSharpCode.XmlEditor
 		{
 			string name = GetAttributeNameAtIndex(xml, index);
 			QualifiedName qualifiedName = GetQualifiedName(name);
+			if (qualifiedName == null)
+				return null;
 			if (String.IsNullOrEmpty(qualifiedName.Namespace) && includeNamespace) {
 				QualifiedNameCollection namespaces = new QualifiedNameCollection();
 				XmlElementPath path = GetActiveElementStartPathAtIndex(xml, index, namespaces);

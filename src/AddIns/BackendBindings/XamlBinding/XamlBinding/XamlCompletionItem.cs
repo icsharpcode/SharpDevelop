@@ -37,6 +37,12 @@ namespace ICSharpCode.XamlBinding
 		{
 			this.entity = entity;
 		}
+		
+		public XamlCompletionItem(string text, IEntity entity)
+			: base(text)
+		{
+			this.entity = entity;
+		}
 	}
 	
 	class NewEventCompletionItem : DefaultCompletionItem
