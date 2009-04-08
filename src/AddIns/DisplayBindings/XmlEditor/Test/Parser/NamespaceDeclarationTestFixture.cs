@@ -115,6 +115,12 @@ namespace XmlEditor.Tests.Parser
 			string text = " ";
 			bool isNamespace = XmlParser.IsNamespaceDeclaration(text, text.Length);
 			Assert.IsFalse(isNamespace, "Namespace should not be recognised.");
-		}			
+		}
+		
+		[Test]
+		public void NullString()
+		{
+			Assert.IsFalse(XmlParser.IsNamespaceDeclaration(null, 0));
+		}
 	}
 }

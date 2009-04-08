@@ -118,7 +118,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static bool IsNamespaceDeclaration(string xml, int index)
 		{
-			if (xml.Length == 0) {
+			if (String.IsNullOrEmpty(xml)) {
 				return false;
 			}
 			
@@ -185,7 +185,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static string GetAttributeName(string xml, int index)
 		{
-			if (xml.Length == 0) {
+			if (String.IsNullOrEmpty(xml)) {
 				return String.Empty;
 			}
 			
@@ -203,7 +203,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			string name = GetAttributeNameAtIndex(xml, index);
 			QualifiedName qualifiedName = GetQualifiedName(name);
-			if (String.IsNullOrEmpty(qualifiedName.Namespace) && includeNamespace) {
+			if (qualifiedName != null && String.IsNullOrEmpty(qualifiedName.Namespace) && includeNamespace) {
 				QualifiedNameCollection namespaces = new QualifiedNameCollection();
 				XmlElementPath path = GetActiveElementStartPathAtIndex(xml, index, namespaces);
 				qualifiedName.Namespace = GetNamespaceForPrefix(namespaces, path.Elements.LastPrefix);
@@ -226,6 +226,10 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static string GetAttributeNameAtIndex(string xml, int index)
 		{
+			if (String.IsNullOrEmpty(xml)) {
+				return String.Empty;
+			}
+			
 			index = GetCorrectedIndex(xml.Length, index);
 			
 			bool ignoreWhitespace = true;
@@ -308,7 +312,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static bool IsInsideAttributeValue(string xml, int index)
 		{
-			if (xml.Length == 0) {
+			if (String.IsNullOrEmpty(xml)) {
 				return false;
 			}
 			
