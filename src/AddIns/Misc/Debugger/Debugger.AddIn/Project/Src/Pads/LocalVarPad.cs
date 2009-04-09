@@ -51,10 +51,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	{
 		TreeViewAdv localVarList;
 		Process debuggedProcess;
+		static LocalVarPad instance;
 		
 		readonly TreeColumn nameColumn = new TreeColumn();
 		readonly TreeColumn valColumn  = new TreeColumn();
 		readonly TreeColumn typeColumn = new TreeColumn();
+		
+		public LocalVarPad()
+		{
+			instance = this;
+		}
+		
+		public static LocalVarPad Instance {
+			get { return instance; }
+		}
 		
 		/// <remarks>
 		/// This is not used anywhere, but it is neccessary to be overridden in children of AbstractPadContent.

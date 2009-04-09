@@ -15,6 +15,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.TreeModel
@@ -233,6 +234,7 @@ namespace Debugger.AddIn.TreeModel
 			hexView.Checked = DebuggingOptions.Instance.ShowValuesInHexadecimal;
 			hexView.Click += delegate {
 				DebuggingOptions.Instance.ShowValuesInHexadecimal = !DebuggingOptions.Instance.ShowValuesInHexadecimal;
+				LocalVarPad.Instance.RefreshPad();
 			};
 			
 			menu.Items.AddRange(new ToolStripItem[] {
