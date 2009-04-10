@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -873,7 +874,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		[System.Diagnostics.ConditionalAttribute("DEBUG")]
 		internal static void Log(string text)
 		{
-			Console.WriteLine(text);
+			Debug.WriteLine(text);
 		}
 		
 		[System.Diagnostics.ConditionalAttribute("DEBUG")]

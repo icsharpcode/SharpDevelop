@@ -54,9 +54,8 @@ namespace UpdateAssemblyInfo
 						Console.WriteLine("Working directory must be SharpDevelop\\src!");
 						return 2;
 					}
-					File.Copy(Path.Combine(subversionLibraryDir, "SharpSvn.dll"),
-					          Path.Combine(exeDir, "SharpSvn.dll"),
-					          true);
+					FileCopy(Path.Combine(subversionLibraryDir, "SharpSvn.dll"),
+					         Path.Combine(exeDir, "SharpSvn.dll"));
 					RetrieveRevisionNumber();
 					string versionNumber = GetMajorVersion() + "." + revisionNumber;
 					UpdateStartup();
@@ -67,6 +66,16 @@ namespace UpdateAssemblyInfo
 				Console.WriteLine(ex);
 				return 3;
 			}
+		}
+		
+		static void FileCopy(string source, string target)
+		{
+			if (File.Exists(target)) {
+				// don't copy file if it is up-to-date: repeatedly copying a 3 MB file slows down the build
+				if (File.GetLastWriteTimeUtc(source) == File.GetLastWriteTimeUtc(target))
+					return;
+			}
+			File.Copy(source, target, true);
 		}
 		
 		static void UpdateStartup()
@@ -189,10 +198,12 @@ namespace UpdateAssemblyInfo
 				// Change working dir so that the subversion libraries can be found
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, subversionLibraryDir);
 				
-				SvnWorkingCopyClient client = new SvnWorkingCopyClient();
-				SvnWorkingCopyVersion version;
-				if (client.GetVersion(oldWorkingDir, out version)) {
-					revisionNumber = version.Start.ToString(CultureInfo.InvariantCulture);
+				using (SvnClient client = new SvnClient()) {
+					client.Info(
+						oldWorkingDir,
+						(sender, info) => {
+							revisionNumber = info.Revision.ToString(CultureInfo.InvariantCulture);
+						});
 				}
 			} catch (Exception e) {
 				Console.WriteLine("Reading revision number with SharpSvn failed: " + e.ToString());

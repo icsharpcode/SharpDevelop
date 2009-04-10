@@ -125,8 +125,8 @@ namespace ${StandardNamespace}
 			// This makes the generation code much more concise.
 			// EasyCodeDom classes derive from the System.CodeDom types or have an implicit conversion operator, so
 			// use can use EasyCodeDom objects whereever CodeDom is expected.
-			EasyCompileUnit ccu = new EasyCompileUnit();
-			EasyTypeDeclaration generatedClass = ccu.AddNamespace(targetNamespace).AddType(className);
+			CodeCompileUnit ccu = new CodeCompileUnit();
+			CodeTypeDeclaration generatedClass = ccu.AddNamespace(targetNamespace).AddType(className);
 			EasyMethod m = generatedClass.AddMethod("Create");
 			m.ReturnType = Easy.TypeRef(doc.DocumentElement.Name);
 			m.Attributes = MemberAttributes.Static | MemberAttributes.Public;

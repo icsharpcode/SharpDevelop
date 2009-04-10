@@ -78,11 +78,21 @@ namespace UpdateSetupInfo
 			previousRevisionFolder = Path.Combine(setupProjectFolder, @"bin");
 			previousRevisionFileName = Path.Combine(previousRevisionFolder, "REVISION");
 			
-			File.Copy(Path.Combine(Path.Combine(applicationFolder, subversionLibraryDir), "SharpSvn.dll"),
-			          Path.Combine(applicationFolder, "SharpSvn.dll"), true);
+			FileCopy(Path.Combine(Path.Combine(applicationFolder, subversionLibraryDir), "SharpSvn.dll"),
+			         Path.Combine(applicationFolder, "SharpSvn.dll"));
 			
 			// Set current directory to a folder that is in the repository.
 			Environment.CurrentDirectory = setupProjectFolder;
+		}
+		
+		static void FileCopy(string source, string target)
+		{
+			if (File.Exists(target)) {
+				// don't copy file if it is up-to-date: repeatedly copying a 3 MB file slows down the build
+				if (File.GetLastWriteTimeUtc(source) == File.GetLastWriteTimeUtc(target))
+					return;
+			}
+			File.Copy(source, target, true);
 		}
 		
 		public static int Main(string[] args)
@@ -164,10 +174,12 @@ namespace UpdateSetupInfo
 				// Set working directory so msvcp70.dll and msvcr70.dll can be found
 				Environment.CurrentDirectory = Path.Combine(applicationFolder, subversionLibraryDir);
 				
-				SvnWorkingCopyClient client = new SvnWorkingCopyClient();
-				SvnWorkingCopyVersion version;
-				if (client.GetVersion(oldWorkingDir, out version)) {
-					revisionNumber = version.Start.ToString(CultureInfo.InvariantCulture);
+				using (SvnClient client = new SvnClient()) {
+					client.Info(
+						oldWorkingDir,
+						(sender, info) => {
+							revisionNumber = info.Revision.ToString(CultureInfo.InvariantCulture);
+						});
 				}
 			} catch (Exception e) {
 				Console.WriteLine("Reading revision number with Svn.Net failed: " + e.ToString());
