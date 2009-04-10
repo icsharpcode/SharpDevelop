@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ICSharpCode.AvalonEdit.AddIn;
+using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -28,48 +28,15 @@ namespace ICSharpCode.XamlBinding
 
 		static void WorkbenchSingleton_Workbench_ViewOpened(object sender, ViewContentEventArgs e)
 		{
-			if (e.Content is AvalonEditViewContent) {
-				AvalonEditViewContent content = e.Content as AvalonEditViewContent;
-				if (!Path.GetExtension(content.CodeEditor.FileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase))
-					return;
-				content.CodeEditor.TextArea.TextView.LineTransformers.Insert(1, new XamlColorizer(content));
+			if (!Path.GetExtension(e.Content.PrimaryFileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase))
+				return;
+			ITextEditorProvider textEditor = e.Content as ITextEditorProvider;
+			if (textEditor != null) {
+				TextView textView = textEditor.TextEditor.GetService(typeof(TextView)) as TextView;
+				if (textView != null) {
+					textView.LineTransformers.Add(new XamlColorizer(e.Content));
+				}
 			}
 		}
-	}
-	
-	public class ColorizerDoozer : IDoozer
-	{
-		public bool HandleConditions {
-			get {
-				return false;
-			}
-		}
-		
-		public object BuildItem(object caller, Codon codon, System.Collections.ArrayList subItems)
-		{
-			return new ColorizerDescriptor(codon);
-		}
-	}
-	
-	public class ColorizerDescriptor
-	{
-		Codon codon;
-		ColorizingTransformer colorizer;
-		
-		public ColorizingTransformer Colorizer {
-			get {
-				if (colorizer == null)
-					this.colorizer = (ColorizingTransformer)codon.AddIn.CreateObject(codon.Properties["class"]);
-				
-				return colorizer;
-			}
-		}
-		
-		public ColorizerDescriptor(Codon codon)
-		{
-			this.codon = codon;
-		}
-		
-		
 	}
 }

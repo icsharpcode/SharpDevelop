@@ -222,6 +222,10 @@ namespace ICSharpCode.XamlBinding
 				case XamlContext.InAttributeValue:
 					if (entity is IProperty) {
 						IProperty prop = entity as IProperty;
+						QualifiedName item = path.Elements[path.Elements.Count - 1];
+						if (item.Name == "Setter" && item.Namespace == XamlNamespace) {
+							// TODO : add context of markup extension
+						}
 						IReturnType type = prop.ReturnType;
 						if (type != null) {
 							TypeCompletion(type.GetUnderlyingClass(), list);

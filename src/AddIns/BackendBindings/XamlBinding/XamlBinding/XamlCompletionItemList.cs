@@ -5,11 +5,12 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Linq;
-using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.XmlEditor;
@@ -71,6 +72,15 @@ namespace ICSharpCode.XamlBinding
 						insertionString += "Property=\"\"";
 						context.Editor.Document.Insert(context.EndOffset, insertionString);
 						context.Editor.Caret.Offset = context.EndOffset + insertionString.Length - 1;
+						
+						XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
+						if (path != null && path.Elements.Count > 0) {
+							path.Elements.RemoveLast();
+							path.Elements.Add(new QualifiedName("Setter", CompletionDataHelper.XamlNamespace));
+							IEntity newEntity = new DefaultProperty(c, "Property");
+							ICompletionItemList list = CompletionDataHelper.CreateListForContext(context.Editor, XamlContext.InAttributeValue, path, newEntity);
+							context.Editor.ShowCompletionWindow(list);
+						}
 					}
 				}
 			} else {
@@ -117,16 +127,14 @@ namespace ICSharpCode.XamlBinding
 					
 					node.Modifier = Modifiers.None;
 					
-					AvalonEditViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName) as AvalonEditViewContent;
-
-					// TODO : shouldn't we be able to use viewContent.CodeEditor.textEditorAdapter here? (Property missing?)
-					ITextEditor wrapper = new CodeEditorAdapter(viewContent.CodeEditor);
+					IViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName);
+					IFileDocumentProvider document = viewContent as IFileDocumentProvider;
 					
-					if (viewContent != null) {
+					if (viewContent != null || document != null) {
 						if (lastMember != null)
-							unit.ProjectContent.Language.CodeGenerator.InsertCodeAfter(lastMember, wrapper.Document, node);
+							unit.ProjectContent.Language.CodeGenerator.InsertCodeAfter(lastMember, document.GetDocumentForFile(viewContent.PrimaryFile), node);
 						else
-							unit.ProjectContent.Language.CodeGenerator.InsertCodeAtEnd(part.Region, wrapper.Document, node);
+							unit.ProjectContent.Language.CodeGenerator.InsertCodeAtEnd(part.Region, document.GetDocumentForFile(viewContent.PrimaryFile), node);
 					}
 					return;
 				}
