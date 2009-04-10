@@ -50,6 +50,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// </summary>
 		public TextView()
 		{
+			services.AddService(typeof(TextView), this);
 			this.Options = new TextEditorOptions();
 			textLayer = new TextLayer(this);
 			elementGenerators = new ObserveAddRemoveCollection<VisualLineElementGenerator>(ElementGenerator_Added, ElementGenerator_Removed);
