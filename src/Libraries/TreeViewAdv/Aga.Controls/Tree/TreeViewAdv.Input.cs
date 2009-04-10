@@ -21,9 +21,9 @@ namespace Aga.Controls.Tree
 		protected override bool IsInputKey(Keys keyData)
 		{
 			if (((keyData & Keys.Up) == Keys.Up)
-				|| ((keyData & Keys.Down) == Keys.Down)
-				|| ((keyData & Keys.Left) == Keys.Left)
-				|| ((keyData & Keys.Right) == Keys.Right))
+			    || ((keyData & Keys.Down) == Keys.Down)
+			    || ((keyData & Keys.Left) == Keys.Left)
+			    || ((keyData & Keys.Right) == Keys.Right))
 				return true;
 			else
 				return base.IsInputKey(keyData);
@@ -102,7 +102,7 @@ namespace Aga.Controls.Tree
 		{
 			TreeNodeAdvMouseEventArgs args = new TreeNodeAdvMouseEventArgs(e);
 			args.ViewLocation = new Point(e.X + OffsetX,
-				e.Y + _rowLayout.GetRowBounds(FirstVisibleRow).Y - ColumnHeaderHeight);
+			                              e.Y + _rowLayout.GetRowBounds(FirstVisibleRow).Y - ColumnHeaderHeight);
 			args.ModifierKeys = ModifierKeys;
 			args.Node = GetNodeAt(e.Location);
 			NodeControlInfo info = GetNodeControlInfoAt(args.Node, e.Location);
@@ -155,8 +155,11 @@ namespace Aga.Controls.Tree
 			if (args.Node != null && args.Control != null)
 				args.Control.MouseDown(args);
 
-			if (!args.Handled)
+			if (!args.Handled) {
 				Input.MouseDown(args);
+				base.ContextMenuStrip = _cms;
+			} else
+				base.ContextMenuStrip = null;
 
 			base.OnMouseDown(e);
 		}
@@ -218,7 +221,7 @@ namespace Aga.Controls.Tree
 			SetCursor(e);
 			UpdateToolTip(e);
 			if (ItemDragMode && Dist(e.Location, ItemDragStart) > ItemDragSensivity
-				&& CurrentNode != null && CurrentNode.IsSelected)
+			    && CurrentNode != null && CurrentNode.IsSelected)
 			{
 				ItemDragMode = false;
 				_toolTip.Active = false;
@@ -380,7 +383,7 @@ namespace Aga.Controls.Tree
 			{
 				Size ms = btc.GetActualSize(args.Node, _measureContext);
 				if (ms.Width > args.ControlBounds.Size.Width || ms.Height > args.ControlBounds.Size.Height
-					|| args.ControlBounds.Right - OffsetX > DisplayRectangle.Width)
+				    || args.ControlBounds.Right - OffsetX > DisplayRectangle.Width)
 					msg = btc.GetLabel(args.Node);
 			}
 

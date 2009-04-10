@@ -62,6 +62,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			instance = this;
 		}
 		
+		/// <remarks>Always check if Instance is null, might be null if pad is not opened!</remarks>
 		public static LocalVarPad Instance {
 			get { return instance; }
 		}

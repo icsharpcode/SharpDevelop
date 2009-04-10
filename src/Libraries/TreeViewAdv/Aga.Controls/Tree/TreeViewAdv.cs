@@ -41,7 +41,15 @@ namespace Aga.Controls.Tree
 		private IncrementalSearch _search;
 		private List<TreeNodeAdv> _expandingNodes = new List<TreeNodeAdv>();
 		private AbortableThreadPool _threadPool = new AbortableThreadPool();
-
+		private ContextMenuStrip _cms;
+		
+		public new ContextMenuStrip ContextMenuStrip {
+			set {
+				base.ContextMenuStrip = value;
+				_cms = value;
+			}
+		}
+		
 		#region Public Events
 
 		[Category("Action")]
@@ -182,11 +190,11 @@ namespace Aga.Controls.Tree
 		{
 			InitializeComponent();
 			SetStyle(ControlStyles.AllPaintingInWmPaint
-				| ControlStyles.UserPaint
-				| ControlStyles.OptimizedDoubleBuffer
-				| ControlStyles.ResizeRedraw
-				| ControlStyles.Selectable
-				, true);
+			         | ControlStyles.UserPaint
+			         | ControlStyles.OptimizedDoubleBuffer
+			         | ControlStyles.ResizeRedraw
+			         | ControlStyles.Selectable
+			         , true);
 
 
 			if (Application.RenderWithVisualStyles)
@@ -308,7 +316,7 @@ namespace Aga.Controls.Tree
 			point.X += OffsetX;
 			foreach (NodeControlInfo info in GetNodeControls(node))
 				if (info.Bounds.Contains(point))
-					return info;
+				return info;
 
 			if (FullRowSelect)
 				return new NodeControlInfo(null, Rectangle.Empty, node);
@@ -383,7 +391,7 @@ namespace Aga.Controls.Tree
 				CreateRowMap();
 
 			int row = -1;
- 
+			
 			if (node.Row < FirstVisibleRow)
 				row = node.Row;
 			else
@@ -433,10 +441,10 @@ namespace Aga.Controls.Tree
 			Rectangle clientRect = ClientRectangle;
 			
 			_hScrollBar.SetBounds(clientRect.X, clientRect.Bottom - hBarSize,
-				clientRect.Width - vBarSize, hBarSize);
+			                      clientRect.Width - vBarSize, hBarSize);
 
 			_vScrollBar.SetBounds(clientRect.Right - vBarSize, clientRect.Y,
-				vBarSize, clientRect.Height - hBarSize);
+			                      vBarSize, clientRect.Height - hBarSize);
 		}
 
 		private void SafeUpdateScrollBars()
@@ -483,10 +491,10 @@ namespace Aga.Controls.Tree
 				switch (BorderStyle)
 				{
 					case BorderStyle.FixedSingle:
-							res.Style |= 0x800000;
-							break;
+						res.Style |= 0x800000;
+						break;
 					case BorderStyle.Fixed3D:
-							res.ExStyle |= 0x200;
+						res.ExStyle |= 0x200;
 						break;
 				}
 				return res;
@@ -580,10 +588,10 @@ namespace Aga.Controls.Tree
 									bool isLastControl = true;
 									for (int k = i + 1; k < NodeControls.Count; k++)
 										if (NodeControls[k].ParentColumn == col)
-										{
-											isLastControl = false;
-											break;
-										}
+									{
+										isLastControl = false;
+										break;
+									}
 
 									width = right - x;
 									if (!isLastControl)
@@ -669,26 +677,26 @@ namespace Aga.Controls.Tree
 					IEnumerable items = Model.GetChildren(GetPath(parentNode));
 					if (items != null)
 						foreach (object obj in items)
+					{
+						bool found = false;
+						if (obj != null)
 						{
-							bool found = false;
-							if (obj != null)
+							for (int i = 0; i < oldNodes.Count; i++)
+								if (object.Equals(obj, oldNodes[i].Tag))
 							{
-								for (int i = 0; i < oldNodes.Count; i++)
-									if (object.Equals(obj, oldNodes[i].Tag))
-									{
-										oldNodes[i].RightBounds = oldNodes[i].Height = null;
-										AddNode(parentNode, -1, oldNodes[i]);
-										oldNodes.RemoveAt(i);
-										found = true;
-										break;
-									}
+								oldNodes[i].RightBounds = oldNodes[i].Height = null;
+								AddNode(parentNode, -1, oldNodes[i]);
+								oldNodes.RemoveAt(i);
+								found = true;
+								break;
 							}
-							if (!found)
-								AddNewNode(parentNode, obj, -1);
-
-							if (performFullUpdate)
-								FullUpdate();
 						}
+						if (!found)
+							AddNewNode(parentNode, obj, -1);
+
+						if (performFullUpdate)
+							FullUpdate();
+					}
 				}
 
 			}
@@ -860,7 +868,7 @@ namespace Aga.Controls.Tree
 				_contentWidth = 0;
 				foreach (TreeColumn col in _columns)
 					if (col.IsVisible)
-						_contentWidth += col.Width;
+					_contentWidth += col.Width;
 			}
 		}
 
@@ -945,10 +953,10 @@ namespace Aga.Controls.Tree
 
 			for (int i = Selection.Count - 1; i >= 0; i--)
 				if (!IsMyNode(Selection[i]))
-				{
-					flag = true;
-					Selection.RemoveAt(i);
-				}
+			{
+				flag = true;
+				Selection.RemoveAt(i);
+			}
 
 			if (flag)
 				OnSelectionChanged();
@@ -1158,7 +1166,7 @@ namespace Aga.Controls.Tree
 				UpdateSelection();
 				SmartFullUpdate();
 			}
-			//else 
+			//else
 			//	throw new ArgumentException("Path not found");
 		}
 
@@ -1186,10 +1194,10 @@ namespace Aga.Controls.Tree
 					{
 						for (int n = 0; n < e.Children.Length; n++)
 							if (parent.Nodes[i].Tag == e.Children[n])
-							{
-								parent.Nodes.RemoveAt(i);
-								break;
-							}
+						{
+							parent.Nodes.RemoveAt(i);
+							break;
+						}
 					}
 				}
 			}
@@ -1246,9 +1254,9 @@ namespace Aga.Controls.Tree
 				{
 					foreach (object obj in e.Children)
 						if (node.Tag == obj)
-						{
-							node.Height = node.RightBounds = null;
-						}
+					{
+						node.Height = node.RightBounds = null;
+					}
 				}
 			}
 		}

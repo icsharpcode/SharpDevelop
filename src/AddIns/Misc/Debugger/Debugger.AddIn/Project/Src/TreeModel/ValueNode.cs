@@ -233,8 +233,13 @@ namespace Debugger.AddIn.TreeModel
 			hexView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
 			hexView.Checked = DebuggingOptions.Instance.ShowValuesInHexadecimal;
 			hexView.Click += delegate {
+				// refresh all pads that use ValueNode for display
 				DebuggingOptions.Instance.ShowValuesInHexadecimal = !DebuggingOptions.Instance.ShowValuesInHexadecimal;
-				LocalVarPad.Instance.RefreshPad();
+				// always check if instance is null, might be null if pad is not opened
+				if (LocalVarPad.Instance != null)
+					LocalVarPad.Instance.RefreshPad();
+				if (WatchPad.Instance != null)
+					WatchPad.Instance.RefreshPad();
 			};
 			
 			menu.Items.AddRange(new ToolStripItem[] {
