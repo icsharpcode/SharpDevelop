@@ -27,6 +27,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public class CodeEditor : TextEditor
 	{
 		readonly CodeEditorAdapter textEditorAdapter;
+		
+		public CodeEditorAdapter TextEditorAdapter {
+			get { return textEditorAdapter; }
+		}
+		
 		public string FileName { get; set; }
 		
 		public CodeEditor()

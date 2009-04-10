@@ -43,6 +43,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// <param name="textArea">The text area on which completion is performed.</param>
 		/// <param name="completionSegment">The text segment that was used by the completion window if
 		/// the user types.</param>
-		void Complete(TextArea textArea, ISegment completionSegment);
+		void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs);
 	}
 }

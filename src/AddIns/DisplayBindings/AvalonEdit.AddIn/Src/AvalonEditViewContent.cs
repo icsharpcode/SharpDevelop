@@ -15,7 +15,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	public class AvalonEditViewContent : AbstractViewContent, IEditable, IMementoCapable
+	public class AvalonEditViewContent : AbstractViewContent, IEditable, IMementoCapable, ITextEditorProvider
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		
@@ -129,6 +129,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			} catch (ArgumentOutOfRangeException) {
 				// ignore caret out of range - maybe file was changed externally?
 			}
+		}
+		#endregion
+		
+		#region ITextEditorProvider
+		public ITextEditor TextEditor {
+			get { return codeEditor.TextEditorAdapter; }
+		}
+		
+		public ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument GetDocumentForFile(OpenedFile file)
+		{
+			if (file == this.PrimaryFile)
+				return codeEditor.TextEditorAdapter.Document;
+			else
+				return null;
 		}
 		#endregion
 	}

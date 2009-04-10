@@ -83,7 +83,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			var item = completionList.SelectedItem;
 			if (item != null)
-				item.Complete(this.TextArea, new AnchorSegment(this.TextArea.Document, startOffset, endOffset - startOffset));
+				item.Complete(this.TextArea, new AnchorSegment(this.TextArea.Document, startOffset, endOffset - startOffset), e);
 			Close();
 		}
 		

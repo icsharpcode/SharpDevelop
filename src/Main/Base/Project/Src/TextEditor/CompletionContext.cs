@@ -33,5 +33,11 @@ namespace ICSharpCode.SharpDevelop
 		/// Gets the length between EndOffset and StartOffset.
 		/// </summary>
 		public int Length { get { return EndOffset - StartOffset; } }
+		
+		/// <summary>
+		/// Gets/Sets the character that triggered completion.
+		/// This property is '\0' when completion was triggered using the mouse.
+		/// </summary>
+		public char CompletionChar { get; set; }
 	}
 }

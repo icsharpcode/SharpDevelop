@@ -108,13 +108,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return null; }
 		}
 		
-		public void Complete(TextArea textArea, ISegment completionSegment)
+		public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
 		{
 			CompletionContext context = new CompletionContext {
 				Editor = window.Editor,
 				StartOffset = window.StartOffset,
 				EndOffset = window.EndOffset
 			};
+			TextCompositionEventArgs txea = insertionRequestEventArgs as TextCompositionEventArgs;
+			KeyEventArgs kea = insertionRequestEventArgs as KeyEventArgs;
+			if (txea != null && txea.Text.Length > 0)
+				context.CompletionChar = txea.Text[0];
+			else if (kea != null && kea.Key == Key.Tab)
+				context.CompletionChar = '\t';
 			window.ItemList.Complete(context, item);
 		}
 	}
