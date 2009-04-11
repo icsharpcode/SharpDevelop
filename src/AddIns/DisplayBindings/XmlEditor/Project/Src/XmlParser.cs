@@ -275,18 +275,13 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static bool IsAttributeValueChar(char ch)
 		{
-			if (Char.IsLetterOrDigit(ch) ||
-			    (ch == ':') ||
-			    (ch == '/') ||
-			    (ch == '_') ||
-			    (ch == '.') ||
-			    (ch == '-') ||
-			    (ch == '#'))
+			if ((ch == '<') ||
+			    (ch == '>'))
 			{
-				return true;
+				return false;
 			}
 			
-			return false;
+			return true;
 		}
 		
 		/// <summary>
