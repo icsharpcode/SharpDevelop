@@ -31,8 +31,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Gets the total text length.
 		/// </summary>
 		/// <returns>The length of the text, in characters.</returns>
-		/// <remarks>This is the same as Text.Length, but is usually
-		/// more efficient because it doesn't require creating a String object.</remarks>
+		/// <remarks>This is the same as Text.Length, but is more efficient because
+		///  it doesn't require creating a String object.</remarks>
 		int TextLength { get; }
 		
 		/// <summary>
@@ -41,16 +41,16 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <paramref name="offset">The index of the character to get.</paramref>
 		/// <exception cref="ArgumentOutOfRangeException">Offset is outside the valid range (0 to TextLength-1).</exception>
 		/// <returns>The character at the specified position.</returns>
-		/// <remarks>This is the same as Text[offset], but is usually
-		/// more efficient because it doesn't require creating a String object.</remarks>
+		/// <remarks>This is the same as Text[offset], but is more efficient because
+		/// it doesn't require creating a String object.</remarks>
 		char GetCharAt(int offset);
 		
 		/// <summary>
 		/// Retrieves the text for a portion of the document.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
-		/// <remarks>This is the same as Text.Substring, but is usually
-		/// more efficient because it doesn't require creating a String object for the whole document.</remarks>
+		/// <remarks>This is the same as Text.Substring, but is more efficient because
+		///  it doesn't require creating a String object for the whole document.</remarks>
 		string GetText(int offset, int length);
 	}
 	

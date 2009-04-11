@@ -41,6 +41,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			dockingManager.Content = documentPane;
 			dockingManager.PropertyChanged += dockingManager_PropertyChanged;
+			dockingManager.Loaded += dockingManager_Loaded;
+		}
+		
+		void dockingManager_Loaded(object sender, RoutedEventArgs e)
+		{
+			// LoadConfiguration doesn't do anything until the docking manager is loaded,
+			// so we have to load the configuration now
+			LoggingService.Info("dockingManager_Loaded");
+			LoadConfiguration();
 		}
 		
 		void dockingManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -197,6 +206,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void LoadConfiguration()
 		{
+			if (!dockingManager.IsLoaded)
+				return;
 			try {
 				if (File.Exists(LayoutConfiguration.CurrentLayoutFileName)) {
 					dockingManager.RestoreLayout(LayoutConfiguration.CurrentLayoutFileName);
