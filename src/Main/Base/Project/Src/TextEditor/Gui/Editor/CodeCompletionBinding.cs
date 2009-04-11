@@ -184,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					break;
 				case '<':
 					if (enableXmlCommentCompletion) {
-						editor.ShowCompletionWindow(new CommentCompletionDataProvider(), ch);
+						new CommentCompletionDataProvider().ShowCompletion(editor);
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;

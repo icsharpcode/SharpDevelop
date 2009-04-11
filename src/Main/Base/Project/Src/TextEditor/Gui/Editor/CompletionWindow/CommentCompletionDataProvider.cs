@@ -5,24 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Collections;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	/// <summary>
 	/// Data provider for code completion.
 	/// </summary>
-	public class CommentCompletionDataProvider : AbstractCompletionDataProvider
+	public class CommentCompletionDataProvider : AbstractCompletionItemProvider
 	{
-		int caretLineNumber;
-		int caretColumn;
-		
-		string[][] commentTags = new string[][] {
+		static readonly string[][] commentTags = {
 			new string[] {"c", "marks text as code"},
 			new string[] {"code", "marks text as code"},
 			new string[] {"example", "A description of the code example\n(must have a <code> tag inside)"},
@@ -46,74 +41,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			new string[] {"value", "A description of a property"}
 		};
 		
-		/// <remarks>
-		/// Returns true, if the given coordinates (row, column) are in the region.
-		/// </remarks>
-		bool IsBetween(int row, int column, DomRegion region)
+		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
-			return row >= region.BeginLine && (row <= region.EndLine || region.EndLine == -1);
-		}
-		
-		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
-		{
-			caretLineNumber = textArea.Caret.Line;
-			caretColumn     = textArea.Caret.Column;
-			LineSegment caretLine = textArea.Document.GetLineSegment(caretLineNumber);
-			string lineText = textArea.Document.GetText(caretLine.Offset, caretLine.Length);
-			if (!lineText.Trim().StartsWith("///") && !lineText.Trim().StartsWith("'''")) {
+			int caretLineNumber = editor.Caret.Line;
+			int caretColumn     = editor.Caret.Column;
+			IDocumentLine caretLine = editor.Document.GetLine(caretLineNumber);
+			string lineText = caretLine.Text;
+			if (!lineText.Trim().StartsWith("///", StringComparison.Ordinal)
+			    && !lineText.Trim().StartsWith("'''", StringComparison.Ordinal)) 
+			{
 				return null;
 			}
 			
-			ArrayList completionData = new ArrayList();
+			DefaultCompletionItemList list = new DefaultCompletionItemList();
 			foreach (string[] tag in commentTags) {
-				completionData.Add(new CommentCompletionData(tag[0], tag[1]));
+				list.Items.Add(new DefaultCompletionItem(tag[0]) { Description = tag[1] });
 			}
-			return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
-		}
-		
-		class CommentCompletionData : ICompletionData
-		{
-			string text;
-			string description;
-			
-			public int ImageIndex {
-				get {
-					return ClassBrowserIconService.MethodIndex;
-				}
-			}
-			
-			public string Text {
-				get {
-					return text;
-				}
-				set {
-					text = value;
-				}
-			}
-			
-			public string Description {
-				get {
-					return description;
-				}
-			}
-			
-			public double Priority {
-				get {
-					return 0;
-				}
-			}
-			
-			public bool InsertAction(TextArea textArea, char ch)
-			{
-				textArea.InsertString(text);
-				return false;
-			}
-			
-			public CommentCompletionData(string text, string description)
-			{
-				this.text        = text;
-				this.description = description;
-			}
+			list.SortItems();
+			return list;
 		}
 	}
 }

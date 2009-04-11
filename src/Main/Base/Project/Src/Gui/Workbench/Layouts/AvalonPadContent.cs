@@ -47,7 +47,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		internal void LoadPadContentIfRequired()
 		{
-			if (placeholder != null && placeholder.IsVisible && !layout.Busy) {
+			bool dockingManagerIsInitializing = layout.Busy || !layout.DockingManager.IsLoaded;
+			if (placeholder != null && placeholder.IsVisible && !dockingManagerIsInitializing) {
 				placeholder.IsVisibleChanged -= AvalonPadContent_IsVisibleChanged;
 				padInstance = descriptor.PadContent;
 				if (padInstance != null) {

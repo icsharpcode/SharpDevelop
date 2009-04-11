@@ -99,10 +99,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				foreach (PadDescriptor pd in workbench.PadContentCollection) {
 					ShowPad(pd);
 				}
-				LoadConfiguration();
 			} finally {
 				Busy = false;
 			}
+			LoadConfiguration();
 			foreach (AvalonPadContent p in pads.Values) {
 				p.LoadPadContentIfRequired();
 			}
@@ -208,6 +208,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (!dockingManager.IsLoaded)
 				return;
+			Busy = true;
 			try {
 				if (File.Exists(LayoutConfiguration.CurrentLayoutFileName)) {
 					dockingManager.RestoreLayout(LayoutConfiguration.CurrentLayoutFileName);
@@ -217,6 +218,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 				// ignore errors loading configuration
+			} finally {
+				Busy = false;
 			}
 		}
 		
