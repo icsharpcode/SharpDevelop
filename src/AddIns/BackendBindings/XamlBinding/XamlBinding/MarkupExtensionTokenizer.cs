@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ICSharpCode.XamlBinding
@@ -17,26 +18,43 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public sealed class MarkupExtensionTokenizer
 	{
-		private MarkupExtensionTokenizer() {}
+		public MarkupExtensionTokenizer(string text)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+			this.text = text;
+			
+			ParseBeginning();
+		}
 		
 		string text;
 		int pos;
-		List<MarkupExtensionToken> tokens = new List<MarkupExtensionToken>();
+		Queue<MarkupExtensionToken> tokens = new Queue<MarkupExtensionToken>();
 		
-		public static List<MarkupExtensionToken> Tokenize(string text)
+		/// <summary>
+		/// Retrieves the next token.
+		/// </summary>
+		/// <exception cref="MarkupExtensionParseException">A parse error occurred.</exception>
+		public MarkupExtensionToken NextToken()
 		{
-			MarkupExtensionTokenizer t = new MarkupExtensionTokenizer();
-			t.text = text;
-			t.Parse();
-			return t.tokens;
+			if (tokens.Count == 0) {
+				// produce new tokens on demand
+				ParseStep();
+				// a parse step must produce tokens unless we're at EOF
+				Debug.Assert(tokens.Count > 0 || pos == text.Length);
+			}
+			if (tokens.Count > 0)
+				return tokens.Dequeue();
+			else
+				return new MarkupExtensionToken(MarkupExtensionTokenKind.EOF, "");
 		}
 		
 		void AddToken(MarkupExtensionTokenKind kind, string val)
 		{
-			tokens.Add(new MarkupExtensionToken(kind, val));
+			tokens.Enqueue(new MarkupExtensionToken(kind, val));
 		}
 		
-		void Parse()
+		void ParseBeginning()
 		{
 			AddToken(MarkupExtensionTokenKind.OpenBrace, "{");
 			Expect('{');
@@ -47,9 +65,12 @@ namespace ICSharpCode.XamlBinding
 			while (pos < text.Length && !char.IsWhiteSpace(text, pos) && text[pos] != '}')
 				b.Append(text[pos++]);
 			AddToken(MarkupExtensionTokenKind.TypeName, b.ToString());
-			
+		}
+		
+		void ParseStep()
+		{
 			ConsumeWhitespace();
-			while (pos < text.Length) {
+			if (pos < text.Length) {
 				switch (text[pos]) {
 					case '}':
 						AddToken(MarkupExtensionTokenKind.CloseBrace, "}");
@@ -67,7 +88,6 @@ namespace ICSharpCode.XamlBinding
 						MembernameOrString();
 						break;
 				}
-				ConsumeWhitespace();
 			}
 		}
 		
@@ -87,8 +107,7 @@ namespace ICSharpCode.XamlBinding
 				ConsumeWhitespace();
 			} else {
 				int braceTotal = 0;
-				while (true) {
-					CheckNotEOF();
+				while (pos < text.Length) {
 					switch (text[pos]) {
 						case '\\':
 							pos++;
@@ -116,9 +135,8 @@ namespace ICSharpCode.XamlBinding
 				}
 				stop:;
 			}
-			CheckNotEOF();
 			string valueText = b.ToString();
-			if (text[pos] == '=') {
+			if (pos < text.Length && text[pos] == '=') {
 				AddToken(MarkupExtensionTokenKind.Membername, valueText.Trim());
 			} else {
 				AddToken(MarkupExtensionTokenKind.String, valueText);

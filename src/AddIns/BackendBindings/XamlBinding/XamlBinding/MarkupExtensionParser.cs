@@ -15,27 +15,33 @@ namespace ICSharpCode.XamlBinding
 		{
 			var info = new MarkupExtensionInfo();
 			
-			var tokens = MarkupExtensionTokenizer.Tokenize(text);
+			var tokenizer = new MarkupExtensionTokenizer(text);
 			
 			string argumentName = null;
 			
-			foreach (var token in tokens) {
-				switch (token.Kind) {
-					case MarkupExtensionTokenKind.TypeName:
-						info.Type = token.Value;
-						break;
-					case MarkupExtensionTokenKind.Membername:
-						argumentName = token.Value;
-						break;
-					case MarkupExtensionTokenKind.String:
-						if (argumentName != null) {
-							info.NamedArguments.Add(argumentName, ParseValue(token.Value));
-							argumentName = null;
-						} else {
-							info.PositionalArguments.Add(ParseValue(token.Value));
-						}
-						break;
+			try {
+				var token = tokenizer.NextToken();
+				while (token.Kind != MarkupExtensionTokenKind.EOF) {
+					switch (token.Kind) {
+						case MarkupExtensionTokenKind.TypeName:
+							info.Type = token.Value;
+							break;
+						case MarkupExtensionTokenKind.Membername:
+							argumentName = token.Value;
+							break;
+						case MarkupExtensionTokenKind.String:
+							if (argumentName != null) {
+								info.NamedArguments.Add(argumentName, ParseValue(token.Value));
+								argumentName = null;
+							} else {
+								info.PositionalArguments.Add(ParseValue(token.Value));
+							}
+							break;
+					}
+					token = tokenizer.NextToken();
 				}
+			} catch (MarkupExtensionParseException) {
+				// ignore parser errors
 			}
 			
 			return info;

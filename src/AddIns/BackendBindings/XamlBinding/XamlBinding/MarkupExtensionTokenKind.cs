@@ -11,6 +11,7 @@ namespace ICSharpCode.XamlBinding
 {
 	public enum MarkupExtensionTokenKind
 	{
+		EOF,
 		OpenBrace,
 		CloseBrace,
 		Equals,
