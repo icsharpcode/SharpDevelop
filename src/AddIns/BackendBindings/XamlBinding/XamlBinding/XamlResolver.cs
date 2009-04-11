@@ -121,6 +121,17 @@ namespace ICSharpCode.XamlBinding
 						delegate(IMethod p) {
 							return p.IsStatic && p.Parameters.Count == 1 && p.Name == "Get" + propertyName;
 						});
+					if (member != null) {
+						member = new DefaultProperty(resolvedType.GetUnderlyingClass(), propertyName);
+					} else {
+						IMethod m = resolvedType.GetMethods().Find(
+							delegate(IMethod p) {
+								return p.IsPublic && p.IsStatic && p.Parameters.Count == 2 && (p.Name == "Add" + propertyName + "Handler" || p.Name == "Remove" + propertyName + "Handler");
+							});
+						member = m;
+						if (member != null)
+							member = new DefaultEvent(resolvedType.GetUnderlyingClass(), propertyName) { ReturnType = m.Parameters[1].ReturnType };
+					}
 				}
 				if (member != null)
 					return new MemberResolveResult(callingClass, null, member);

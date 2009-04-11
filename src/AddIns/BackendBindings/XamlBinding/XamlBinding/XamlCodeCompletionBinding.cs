@@ -18,30 +18,12 @@ using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
-	public enum XamlContext {
-		/// <summary>
-		/// After '&lt;'
-		/// </summary>
-		AtTag,
-		/// <summary>
-		/// Inside '&lt;TagName &gt;'
-		/// </summary>
-		InTag,
-		/// <summary>
-		/// Inside '="Value"'
-		/// </summary>
-		InAttributeValue,
-		/// <summary>
-		/// Inside '="{}"'
-		/// </summary>
-		InMarkupExtension
-	}
-	
 	public class XamlCodeCompletionBinding : ICodeCompletionBinding
 	{
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			XamlResolver resolver = new XamlResolver();
+			XamlParser parser = new XamlParser();
 			ParseInformation info = ParserService.GetParseInformation(editor.FileName);
 			
 			XmlElementPath path;
@@ -126,6 +108,16 @@ namespace ICSharpCode.XamlBinding
 							ICompletionItemList list = CompletionDataHelper.CreateListForContext(editor, XamlContext.InTag, path, null);
 							editor.ShowCompletionWindow(list);
 							return CodeCompletionKeyPressResult.Completed;
+						} else {
+							if (parser.IsInsideMarkupExtension(editor.Document.Text, editor.Caret.Offset)) {
+								var list = CompletionDataHelper.CreateListForElement(info, editor.Document.Text,
+								                                                     editor.Caret.Line, editor.Caret.Column);
+								var needed = list.Where(i => ((i as XamlCompletionItem).Entity as IClass).ClassInheritanceTree
+								                        .Any(item => item.FullyQualifiedName == "System.Windows.Markup.MarkupExtension"));
+								
+								MarkupExtensionInfo markup = parser.ParseMarkupExtension(editor.FileName, editor.Document.Text, editor.Caret.Offset);
+								
+							}
 						}
 					}
 					break;
@@ -149,6 +141,8 @@ namespace ICSharpCode.XamlBinding
 						}
 					}
 					break;
+				case '/': // ignore '/' when trying to type '/>'
+					return CodeCompletionKeyPressResult.None;
 				case '=':
 					offset = editor.Caret.Offset;
 					path = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, offset);
@@ -217,6 +211,20 @@ namespace ICSharpCode.XamlBinding
 					}
 					editor.ShowCompletionWindow(list);
 					return true;
+				} else {
+					string attribute = XmlParser.GetAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset);
+					string attribValue = XmlParser.GetAttributeValueAtIndex(editor.Document.Text, editor.Caret.Offset);
+					if (!string.IsNullOrEmpty(attribute)) {
+						XamlResolver resolver = new XamlResolver();
+						ExpressionResult expr = new ExpressionResult(attribute, new XamlExpressionContext(path, attribute, true));
+						MemberResolveResult mrr = resolver.Resolve(expr, ParserService.GetParseInformation(editor.FileName), editor.Document.Text) as MemberResolveResult;
+						
+						if (mrr != null) {
+							var list = CompletionDataHelper.CreateListForContext(editor, XamlContext.InAttributeValue, path, mrr.ResolvedMember) as XamlCompletionItemList;
+							editor.ShowCompletionWindow(list);
+							return true;
+						}
+					}
 				}
 			}
 			return false;

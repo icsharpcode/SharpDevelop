@@ -9,12 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Linq;
 using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
-using System.Linq;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -191,6 +190,7 @@ namespace ICSharpCode.XamlBinding
 			int index = XmlParser.GetActiveElementStartIndex(text, offset);
 			if (index == -1) return null;
 			index = text.IndexOf(' ', index);
+			if (index == -1) return null;
 			text = text.Substring(index);
 			int endIndex = text.IndexOfAny(new char[] { '<', '>' });
 			text = text.Substring(0, endIndex).Trim(' ', '\t', '\n', '\r', '/');

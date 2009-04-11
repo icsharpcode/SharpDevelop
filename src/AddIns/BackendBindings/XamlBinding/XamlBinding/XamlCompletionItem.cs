@@ -18,30 +18,29 @@ using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
-	class XamlCompletionItem : DefaultCompletionItem
+	class XamlCompletionItem : CodeCompletionItem
 	{
-		IEntity entity;
-		
-		public IEntity Entity {
-			get { return entity; }
-		}
-		
 		public XamlCompletionItem(IEntity entity, string prefix)
-			: base(prefix + ":" + entity.Name)
+			: base(entity)
 		{
-			this.entity = entity;
+			this.Text = prefix + ":" + entity.Name;
 		}
 		
 		public XamlCompletionItem(IEntity entity)
-			: base(entity.Name)
+			: base(entity)
 		{
-			this.entity = entity;
+			this.Text = entity.Name;
 		}
 		
 		public XamlCompletionItem(string text, IEntity entity)
-			: base(text)
+			: base(entity)
 		{
-			this.entity = entity;
+			this.Text = text;
+		}
+		
+		public override string ToString()
+		{
+			return "[" + this.Text + "]";
 		}
 	}
 	
