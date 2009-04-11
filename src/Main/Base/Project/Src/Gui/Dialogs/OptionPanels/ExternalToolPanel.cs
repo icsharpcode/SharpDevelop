@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -57,10 +58,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		// these are the control names which are enabled/disabled depending if tool is selected
 		static string[] dependendControlNames = new string[] {
-			"titleTextBox", "commandTextBox", "argumentTextBox", 
-			"workingDirTextBox", "promptArgsCheckBox", "useOutputPadCheckBox", 
-			"titleLabel", "argumentLabel", "commandLabel", 
-			"workingDirLabel", "browseButton", "argumentQuickInsertButton", 
+			"titleTextBox", "commandTextBox", "argumentTextBox",
+			"workingDirTextBox", "promptArgsCheckBox", "useOutputPadCheckBox",
+			"titleLabel", "argumentLabel", "commandLabel",
+			"workingDirLabel", "browseButton", "argumentQuickInsertButton",
 			"workingDirQuickInsertButton", "moveUpButton", "moveDownButton"
 		};
 		
@@ -151,8 +152,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			List<ExternalTool> newlist = new List<ExternalTool>();
 			foreach (ExternalTool tool in ((ListBox)ControlDictionary["toolListBox"]).Items) {
 				if (!FileUtility.IsValidPath(StringParser.Parse(tool.Command))) {
-					MessageService.ShowError(String.Format("The command of tool \"{0}\" is invalid.", tool.MenuCommand));
-					return false;
+					if (!Regex.IsMatch(tool.Command, @"^\$\{SdkToolPath:[\w\d]+\.exe\}$")) {
+						MessageService.ShowError(String.Format("The command of tool \"{0}\" is invalid.", tool.MenuCommand));
+						return false;
+					}
 				}
 				if ((tool.InitialDirectory != String.Empty) && (!FileUtility.IsValidPath(tool.InitialDirectory))) {
 					MessageService.ShowError(String.Format("The working directory of tool \"{0}\" is invalid.", tool.MenuCommand));
