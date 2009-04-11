@@ -94,7 +94,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
 				using (textArea.Document.RunUpdate()) {
-					if (textArea.Selection.GetIsMultiline(textArea.Document)) {
+					if (textArea.Selection.IsMultiline(textArea.Document)) {
 						DocumentLine start = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.Offset);
 						DocumentLine end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.EndOffset);
 						while (true) {

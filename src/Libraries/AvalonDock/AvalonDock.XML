@@ -53,6 +53,11 @@
             Context menu related to a <see cref="F:AvalonDock.ContextMenuElement.DockablePane"/>
             </summary>
         </member>
+        <member name="F:AvalonDock.ContextMenuElement.DocumentPane">
+            <summary>
+            Context menu related to a <see cref="F:AvalonDock.ContextMenuElement.DocumentPane"/>
+            </summary>
+        </member>
         <member name="F:AvalonDock.ContextMenuElement.FloatingWindow">
             <summary>
             Context menu related to a <see cref="F:AvalonDock.ContextMenuElement.FloatingWindow"/>
@@ -104,28 +109,42 @@
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "T:AvalonDock.DockablePaneAnchorTabGroup" -->
-        <!-- Badly formed XML comment ignored for member "T:AvalonDock.ResizingPanelSplitter" -->
         <member name="F:AvalonDock.ResizingPanel.OrientationProperty">
             <summary>
             Give access to Orientation attached property
             </summary>
             <remarks>If horizontal oriented children are positioned from left to right and width of each child is computed according to <see cref="!:ResizingWidth"/> attached property value. When vertical oriented children are arranged from top to bottom, according to <see cref="!:ResizingHeight"/> of each child.</remarks>
         </member>
-        <member name="M:AvalonDock.ResizingPanel.NextChildIsVisible(System.Int32)">
+        <member name="M:AvalonDock.ResizingPanel.CorrectSizes">
             <summary>
-            Checks if next child starting from a given index is visible.
+            Correct sizes of children if all of them are set to absolutes
             </summary>
-            <param name="iChild">Starting child index.</param>
-            <returns>Returns true if next child is visible.</returns>
-            <remarks>This method takes in count the flow <see cref="!:ResizingDirection"/> of the children.</remarks>
         </member>
-        <member name="M:AvalonDock.ResizingPanel.PrevChildIsVisible(System.Int32)">
+        <member name="M:AvalonDock.ResizingPanel.AdjustPanelSizes">
             <summary>
-            Checks if previous child starting from a given index is visible.
+            Helper funcs which correct elements size of a resizing panel
             </summary>
-            <param name="iChild">Starting child index.</param>
-            <returns>Returns true if previous child is visible.</returns>
-            <remarks>This method takes in count the flow <see cref="!:ResizingDirection"/> of the children.</remarks>
+        </member>
+        <member name="M:AvalonDock.ResizingPanel.MeasureOverride(System.Windows.Size)">
+            <summary>
+            Compute the desidered size of the panel
+            </summary>
+            <param name="availableSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AvalonDock.ResizingPanel.ArrangeOverride(System.Windows.Size)">
+            <summary>
+            Arranges children giving them a proportional space according to their <see cref="!:SplitSize"/> attached property value
+            </summary>
+            <param name="finalSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AvalonDock.ResizingPanel.splitter_DragDelta(System.Object,System.Windows.Controls.Primitives.DragDeltaEventArgs)">
+            <summary>
+            This method is called by a splitter when it is dragged
+            </summary>
+            <param name="splitter">Dragged splitter</param>
+            <param name="delta"></param>
         </member>
         <member name="M:AvalonDock.ResizingPanel.RemoveChild(System.Windows.FrameworkElement)">
             <summary>
@@ -403,6 +422,21 @@
             <param name="sw">Object which stores the xml</param>
             <remarks>The writer is not closed.</remarks>
         </member>
+        <member name="F:AvalonDock.DockingManager.GLConverter">
+            <summary>
+            Static converter used to convert GridLength from/to string
+            </summary>
+        </member>
+        <member name="M:AvalonDock.DockingManager.OnDocumentClosing(System.ComponentModel.CancelEventArgs)">
+            <summary>
+            Ovveride this method to handle <see cref="E:AvalonDock.DockingManager.DocumentClosing"/> event.
+            </summary>
+        </member>
+        <member name="M:AvalonDock.DockingManager.OnDocumentClosed">
+            <summary>
+            Ovveride this method to handle <see cref="E:AvalonDock.DockingManager.DocumentClosed"/> event.
+            </summary>
+        </member>
         <member name="P:AvalonDock.DockingManager.ActiveDocument">
             <summary>
             Get or set the active document
@@ -441,6 +475,11 @@
             Get the command to show navigator window
             </summary>
         </member>
+        <member name="P:AvalonDock.DockingManager.ShowDocumentNavigatorWindowCommand">
+            <summary>
+            Get the command to show document navigator window
+            </summary>
+        </member>
         <member name="P:AvalonDock.DockingManager.SurfaceRectangle">
             <summary>
             Returns a rectangle where this surface is active
@@ -450,6 +489,17 @@
             <summary>
             Returns current overlay window
             </summary>
+        </member>
+        <member name="E:AvalonDock.DockingManager.DocumentClosing">
+            <summary>
+            Event fired when the document is about to be closed
+            </summary>
+        </member>
+        <member name="E:AvalonDock.DockingManager.DocumentClosed">
+            <summary>
+            Event fired when a document has been closed
+            </summary>
+            <remarks>Note that when a document is closed, property like <see cref="P:AvalonDock.ManagedContent.ContainerPane"/> or <see cref="P:AvalonDock.ManagedContent.Manager"/> returns null.</remarks>
         </member>
         <member name="F:AvalonDock.ManagedContent.IconProperty">
             <summary>
@@ -489,6 +539,16 @@
             </summary>
             <remarks>Use <see cref="M:AvalonDock.ManagedContent.SetAsActive"/> method to set a content as active.</remarks>
         </member>
+        <member name="P:AvalonDock.ManagedContent.IsLocked">
+            <summary>
+            Gets or sets a value indicating if this content is locked (readonly).
+            </summary>
+        </member>
+        <member name="P:AvalonDock.ManagedContent.FloatingWindowSize">
+            <summary>
+            Gets or sets the size of the floating window which hosts this content
+            </summary>
+        </member>
         <!-- Badly formed XML comment ignored for member "T:AvalonDock.DockablePaneAnchorTab" -->
         <member name="T:AvalonDock.DockableContentState">
             <summary>
@@ -517,7 +577,7 @@
         </member>
         <member name="F:AvalonDock.DockableContentState.Document">
             <summary>
-            Content is hosted by <see cref="!:DocmumentContent"/> object
+            Content is hosted into a <see cref="!:DocmumentPane"/>
             </summary>
         </member>
         <member name="F:AvalonDock.DockableContentState.Hidden">
@@ -675,6 +735,11 @@
         <member name="P:AvalonDock.DocumentContent.ContentTypeDescription">
             <summary>
             Gets or sets a text which describes the type of content contained in this document.
+            </summary>
+        </member>
+        <member name="P:AvalonDock.DocumentContent.IsFloatingAllowed">
+            <summary>
+            Gets or sets a value indicating if this document can float over main window (VS2010 Feature).
             </summary>
         </member>
         <member name="E:AvalonDock.DocumentContent.Closing">

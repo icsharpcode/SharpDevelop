@@ -55,18 +55,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void dockingManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "ActiveContent") {
+				UpdateActiveWorkbenchWindow();
 				if (ActiveContentChanged != null)
 					ActiveContentChanged(this, e);
+				CommandManager.InvalidateRequerySuggested();
+			} else if (e.PropertyName == "ActiveDocument") {
+				UpdateActiveWorkbenchWindow();
 				CommandManager.InvalidateRequerySuggested();
 			}
 		}
 		
 		public event EventHandler ActiveContentChanged;
 		
-		public IWorkbenchWindow ActiveWorkbenchWindow {
-			get {
-				return (AvalonWorkbenchWindow)dockingManager.ActiveDocument;
-			}
+		public IWorkbenchWindow ActiveWorkbenchWindow { get; private set; }
+		
+		void UpdateActiveWorkbenchWindow()
+		{
+			IWorkbenchWindow window = dockingManager.ActiveDocument as IWorkbenchWindow;
+			if (window != null)
+				this.ActiveWorkbenchWindow = window;
 		}
 		
 		public object ActiveContent {
@@ -103,9 +110,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Busy = false;
 			}
 			LoadConfiguration();
-			foreach (AvalonPadContent p in pads.Values) {
-				p.LoadPadContentIfRequired();
-			}
 		}
 		
 		public void Detach()
@@ -146,11 +150,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ResizingPanel panel = pane.Parent as ResizingPanel;
 			if (panel.Orientation == Orientation.Horizontal) {
-				if (ResizingPanel.GetResizeWidth(pane) == 0)
-					ResizingPanel.SetResizeWidth(pane, 200);
+				if (ResizingPanel.GetResizeWidth(pane).Value == 0)
+					ResizingPanel.SetResizeWidth(pane, new GridLength(200));
 			} else if (panel.Orientation == Orientation.Vertical) {
-				if (ResizingPanel.GetResizeHeight(pane) == 0)
-					ResizingPanel.SetResizeHeight(pane, 150);
+				if (ResizingPanel.GetResizeHeight(pane).Value == 0)
+					ResizingPanel.SetResizeHeight(pane, new GridLength(150));
 			}
 		}
 		
@@ -202,6 +206,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void window_Closed(object sender, EventArgs e)
 		{
 			workbenchWindows.Remove((IWorkbenchWindow)sender);
+			if (this.ActiveWorkbenchWindow == sender) {
+				this.ActiveWorkbenchWindow = null;
+				UpdateActiveWorkbenchWindow();
+			}
 		}
 		
 		public void LoadConfiguration()
@@ -220,6 +228,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				// ignore errors loading configuration
 			} finally {
 				Busy = false;
+			}
+			foreach (AvalonPadContent p in pads.Values) {
+				p.LoadPadContentIfRequired();
 			}
 		}
 		

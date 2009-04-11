@@ -79,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <summary>
 		/// Gets whether the selection is multi-line.
 		/// </summary>
-		public virtual bool GetIsMultiline(TextDocument document)
+		public virtual bool IsMultiline(TextDocument document)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
@@ -254,7 +254,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <inheritdoc/>
 		public override Selection SetEndpoint(int newEndOffset)
 		{
-			// the empty SimpleSelection must be immutable (it's used for the static Selection.Empty field)
 			if (IsEmpty)
 				throw new NotSupportedException();
 			else

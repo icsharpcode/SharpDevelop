@@ -211,6 +211,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (dockLayout == null)
 				throw new ArgumentNullException("dockLayout");
+			
+			this.IsFloatingAllowed = true;
 			this.dockLayout = dockLayout;
 			viewContents = new ViewContentCollection(this);
 			
