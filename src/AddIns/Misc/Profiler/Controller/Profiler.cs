@@ -225,6 +225,9 @@ namespace ICSharpCode.Profiler.Controller
 
 			if (info == null)
 				throw new ArgumentNullException("info");
+			
+			if (!DetectBinaryType.IsDotNetExecutable(info.FileName))
+				throw new ProfilerException("File is not a valid .NET executable file!");
 
 			this.is64Bit = DetectBinaryType.RunsAs64Bit(info.FileName);
 

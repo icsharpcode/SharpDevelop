@@ -167,7 +167,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 				this.currentWrite = null;
 			}
 			this.file.Flush();
-			this.mmf = MemoryMappedFile.Open(file);//Name, FileAccess.Read, FileShare.ReadWrite);
+			
+			if (this.streamInfos.Count > 0)
+				this.mmf = MemoryMappedFile.Open(file);//Name, FileAccess.Read, FileShare.ReadWrite);
 		}
 		
 		/// <summary>
@@ -175,7 +177,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public void Close()
 		{
-			this.mmf.Close();
+			if (this.mmf != null)
+				this.mmf.Close();
 			this.file.Close();
 		}
 		

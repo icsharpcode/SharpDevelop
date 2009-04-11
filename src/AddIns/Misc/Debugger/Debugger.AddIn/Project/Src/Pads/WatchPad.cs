@@ -75,11 +75,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		public override void SetValue(TreeNodeAdv node, object value)
 		{
-			if (((TreeViewVarNode)node).Content is ValueNode)
-				((ValueNode)((TreeViewVarNode)node).Content).SetName(value.ToString());
-			else {
-				if (((TreeViewVarNode)node).Content is TextNode)
-					((TextNode)((TreeViewVarNode)node).Content).SetName(value.ToString());
+			if (string.IsNullOrEmpty(value as string))
+				MessageBox.Show("You can not set name to an empty string!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else
+			{
+				if (((TreeViewVarNode)node).Content is ValueNode)
+					((ValueNode)((TreeViewVarNode)node).Content).SetName(value.ToString());
+				else {
+					if (((TreeViewVarNode)node).Content is TextNode)
+						((TextNode)((TreeViewVarNode)node).Content).SetName(value.ToString());
+				}
 			}
 		}
 		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
@@ -93,6 +98,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
 				if (menu != null) {
 					menu.Show(args.Node.Tree, args.Location);
+					args.Handled = true;
 				}
 			} else {
 				base.MouseDown(args);
@@ -105,6 +111,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		TreeViewAdv watchList;
 		Process debuggedProcess;
 		List<TextNode> watches;
+		static WatchPad instance;
+		
+		/// <remarks>Always check if Instance is null, might be null if pad is not opened!</remarks>
+		public static WatchPad Instance {
+			get { return instance; }
+		}
+		
+		public WatchPad()
+		{
+			instance = this;
+		}
 		
 		public List<TextNode> Watches {
 			get { return watches; }
@@ -154,17 +171,43 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			watchList.NodeControls.Add(typeControl);
 			
 			watchList.AutoRowHeight = true;
-			
-			watchList.MouseDoubleClick += new MouseEventHandler(watchList_DoubleClick);
-			
-			watchList.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
-			
+			watchList.MouseDoubleClick += new MouseEventHandler(watchList_DoubleClick);			
+			watchList.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");			
+		
+			watchList.AllowDrop = true;
+   			watchList.DragEnter += new DragEventHandler(watchList_DragEnter);   
+   			watchList.DragDrop += new DragEventHandler(watchList_DragDrop);
+   			
 			watches = new List<TextNode>();
 			
 			ResourceService.LanguageChanged += delegate { OnLanguageChanged(); };
 			OnLanguageChanged();
 		}
+		
+		void watchList_DragDrop(object sender, DragEventArgs e)
+        {
+            watchList.BeginUpdate();
+            TextNode text = new TextNode(e.Data.GetData(DataFormats.StringFormat).ToString());
+            TreeViewVarNode node = new TreeViewVarNode(this.debuggedProcess, this.watchList, text);
+            watches.Add(text);
+            watchList.Root.Children.Add(node);
+            watchList.EndUpdate();
+           
+            node.IsSelected = true;
+           
+            this.RefreshPad();
+        }
 
+        void watchList_DragEnter(object sender, DragEventArgs e)
+        {
+           if(e.Data.GetDataPresent(DataFormats.StringFormat)) {
+              e.Effect = DragDropEffects.Copy;
+           }
+           else {
+              e.Effect = DragDropEffects.None;
+           }          
+        }
+        
 		void watchList_DoubleClick(object sender, MouseEventArgs e)
 		{
 			if (watchList.SelectedNode == null)

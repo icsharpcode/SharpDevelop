@@ -16,6 +16,65 @@ namespace ICSharpCode.Profiler.Controller
 	/// </summary>
 	static class DetectBinaryType
 	{
+		public static bool IsDotNetExecutable(string exeName)
+		{
+			try {
+				using (FileStream f = new FileStream(exeName, FileMode.Open, FileAccess.Read)) {
+					BinaryReader r = new BinaryReader(f);
+					
+					f.Position = 0x3c; // jump to position in MSDOS stub that specifies the PE header location
+					int peHeaderStart = r.ReadInt32(); // jump to pe header
+					f.Position = peHeaderStart;
+					if (r.ReadInt32() != 0x00004550) {
+						Debug.WriteLine(".NET detection failed: invalid PE signature");
+						return false;
+					}
+					
+					int optionalHeaderStart = peHeaderStart + 4 + 20;
+					f.Position = optionalHeaderStart; // jump to 'Optional' Header
+					
+					int dotNetHeaderOffset;
+					
+					switch (r.ReadInt16()) {
+						case 0x10b: // PE32 Header
+							dotNetHeaderOffset = 208;
+							break;
+						case 0x20b: // PE32+ Header
+							dotNetHeaderOffset = 224;
+							break;
+						default:
+							Debug.WriteLine(".NET detection failed: invalid PE magic number");
+							return false;
+					}
+					
+					f.Position = peHeaderStart + 4 + 16;
+					ushort sizeOfOptionalHeader = r.ReadUInt16();
+					
+					if (sizeOfOptionalHeader < dotNetHeaderOffset + 8) {
+						Debug.WriteLine(".NET detection failed: optional header too short, this can't be a .NET image");
+						return false;
+					}
+										
+					f.Position = optionalHeaderStart + dotNetHeaderOffset;
+					uint cliHeaderRVA = r.ReadUInt32();
+					uint cliHeaderSize = r.ReadUInt32();
+					
+					if (cliHeaderRVA == 0 || cliHeaderSize == 0) {
+						Debug.WriteLine(".NET detection failed: image has no CLI header");
+						return false;
+					}
+					
+					return true;
+				}
+			} catch (IOException ex) {
+				Debug.WriteLine(".NET detection failed: " + ex.ToString());
+				return false;
+			} catch (ArgumentException ex) {
+				Debug.WriteLine(".NET detection failed: " + ex.ToString());
+				return false;
+			}
+		}
+		
 		public static bool RunsAs64Bit(string exeName)
 		{
 			if (!ExtendedRegistry.Is64BitWindows) {

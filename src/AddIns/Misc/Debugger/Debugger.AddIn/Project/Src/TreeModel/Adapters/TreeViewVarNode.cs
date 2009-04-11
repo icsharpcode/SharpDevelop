@@ -82,6 +82,7 @@ namespace Debugger.AddIn.TreeModel
 				ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
 				if (menu != null) {
 					menu.Show(args.Node.Tree, args.Location);
+					args.Handled = true;
 				}
 			} else {
 				base.MouseDown(args);

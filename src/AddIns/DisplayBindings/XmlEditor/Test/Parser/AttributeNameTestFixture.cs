@@ -114,6 +114,31 @@ namespace XmlEditor.Tests.Parser
 			QualifiedName name = XmlParser.GetQualifiedAttributeName(text, text.Length);
 			Assert.AreEqual(expectedName, name);
 		}
+		
+		[Test]
+		public void GetQualifiedAttributeNameWithEmptyString()
+		{
+			Assert.IsNull(XmlParser.GetQualifiedAttributeNameAtIndex(String.Empty, 0, true));
+		}
+		
+		[Test]
+		public void GetAttributeNameAtIndexWithNullString()
+		{
+			Assert.AreEqual(String.Empty, XmlParser.GetAttributeNameAtIndex(null, 0));
+		}
+		
+		[Test]
+		public void GetAttributeNameWithNullString()
+		{
+			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(null, 0));
+		}		
+		
+		
+		[Test]
+		public void GetQualifiedAttributeNameWithSingleXmlCharacter()
+		{
+			Assert.IsNull(XmlParser.GetQualifiedAttributeNameAtIndex("<", 0, true));
+		}		
 	}
 }
 

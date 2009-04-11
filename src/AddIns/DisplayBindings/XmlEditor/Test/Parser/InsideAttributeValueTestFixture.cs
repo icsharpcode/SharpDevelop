@@ -104,5 +104,11 @@ namespace XmlEditor.Tests.Parser
 			string xml = "<foo a=\"''\"";
 			Assert.IsFalse(XmlParser.IsInsideAttributeValue(xml, xml.Length));
 		}
+		
+		[Test]
+		public void NullString()
+		{
+			Assert.IsFalse(XmlParser.IsInsideAttributeValue(null, 0));
+		}
 	}
 }

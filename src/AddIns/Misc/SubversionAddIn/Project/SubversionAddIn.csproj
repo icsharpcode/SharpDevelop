@@ -42,6 +42,9 @@
     <None Include="ICSharpCode.Svn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="..\..\Profiler\Controller\ExtendedRegistry.cs">
+      <Link>Src\Gui\ExtendedRegistry.cs</Link>
+    </Compile>
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs" />
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.Designer.cs">
       <DependentUpon>InfoPanel.cs</DependentUpon>

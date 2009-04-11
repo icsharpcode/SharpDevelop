@@ -67,12 +67,12 @@ namespace HexEditor.Util
 					
 					while (reader.PeekChar() != -1) {
 						this.buffer.AddRange(reader.ReadBytes(524288));
-						UpdateProgress((int)((this.buffer.Count * 100) / reader.BaseStream.Length));
+						UpdateProgress((int)(((double)this.buffer.Count / (double)reader.BaseStream.Length) * 100));
 					}
 					
 					reader.Close();
-				} catch (Exception) {
-					MessageService.ShowErrorFormatted("${res:FileUtilityService.ErrorWhileLoading}", currentFile.FileName);
+				} catch (OutOfMemoryException) {
+					MessageService.ShowErrorFormatted("${res:FileUtilityService.FileSizeTooBig}");
 				}
 			} else {
 				MessageService.ShowErrorFormatted("${res:Fileutility.CantFindFileError}", currentFile.FileName);
