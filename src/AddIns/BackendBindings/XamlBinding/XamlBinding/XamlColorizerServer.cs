@@ -28,6 +28,8 @@ namespace ICSharpCode.XamlBinding
 
 		static void WorkbenchSingleton_Workbench_ViewOpened(object sender, ViewContentEventArgs e)
 		{
+			if (e.Content.PrimaryFileName == null)
+				return;
 			if (!Path.GetExtension(e.Content.PrimaryFileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase))
 				return;
 			ITextEditorProvider textEditor = e.Content as ITextEditorProvider;

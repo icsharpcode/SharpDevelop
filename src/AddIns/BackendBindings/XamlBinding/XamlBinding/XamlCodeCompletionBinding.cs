@@ -109,15 +109,15 @@ namespace ICSharpCode.XamlBinding
 							editor.ShowCompletionWindow(list);
 							return CodeCompletionKeyPressResult.Completed;
 						} else {
-							if (parser.IsInsideMarkupExtension(editor.Document.Text, editor.Caret.Offset)) {
-								var list = CompletionDataHelper.CreateListForElement(info, editor.Document.Text,
-								                                                     editor.Caret.Line, editor.Caret.Column);
-								var needed = list.Where(i => ((i as XamlCompletionItem).Entity as IClass).ClassInheritanceTree
-								                        .Any(item => item.FullyQualifiedName == "System.Windows.Markup.MarkupExtension"));
-								
-								MarkupExtensionInfo markup = parser.ParseMarkupExtension(editor.FileName, editor.Document.Text, editor.Caret.Offset);
-								
-							}
+//							if (parser.IsInsideMarkupExtension(editor.Document.Text, editor.Caret.Offset)) {
+//								var list = CompletionDataHelper.CreateListForElement(info, editor.Document.Text,
+//								                                                     editor.Caret.Line, editor.Caret.Column);
+//								var needed = list.Where(i => ((i as XamlCompletionItem).Entity as IClass).ClassInheritanceTree
+//								                        .Any(item => item.FullyQualifiedName == "System.Windows.Markup.MarkupExtension"));
+//								
+//								MarkupExtensionInfo markup = parser.ParseMarkupExtension(editor.FileName, editor.Document.Text, editor.Caret.Offset);
+//								
+//							}
 						}
 					}
 					break;
