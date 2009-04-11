@@ -69,5 +69,80 @@ namespace XmlEditor.Tests.Parser
 			string text = "<a foo='a";
 			Assert.AreEqual(String.Empty, XmlParser.GetAttributeValueAtIndex(text, text.Length - 1));
 		}
+
+		[Test]
+		public void MarkupExtensionValueTest()
+		{
+			string xaml = "<Test val1=\"{Binding Value}\" />";
+			int offset = "<Test val1=\"{Bin".Length;
+					
+			Assert.AreEqual("{Binding Value}", XmlParser.GetAttributeValueAtIndex(xaml, offset));
+		}
+		
+		[Test]
+		public void LeftCurlyBracketIsValidAttributeValueChar()
+		{
+			Assert.IsTrue(XmlParser.IsAttributeValueChar('{'));
+		}
+		
+		[Test]
+		public void RightCurlyBracketIsValidAttributeValueChar()
+		{
+			Assert.IsTrue(XmlParser.IsAttributeValueChar('}'));
+		}
+		
+		[Test]
+		public void SpaceCharIsValidAttributeValueChar()
+		{
+			Assert.IsTrue(XmlParser.IsAttributeValueChar(' '));
+		}
+		
+		[Test]
+		public void ColonCharIsValidAttributeValueChar()
+		{
+			Assert.IsTrue(XmlParser.IsAttributeValueChar(':'));
+		}
+		
+		[Test]
+		public void ForwardSlashCharIsValidAttributeValueChar()
+		{
+			Assert.IsTrue(XmlParser.IsAttributeValueChar('/'));
+		}
+		
+		[Test]
+		public void UnderscoreCharIsValidAttributeValueChar()
+		{
+			Assert.IsTrue(XmlParser.IsAttributeValueChar('_'));
+		}
+		
+		[Test]
+		public void DotCharIsValidAttributeValueChar()
+		{
+			Assert.IsTrue(XmlParser.IsAttributeValueChar('.'));
+		}
+
+		[Test]
+		public void DashCharIsValidAttributeValueChar()
+		{
+			Assert.IsTrue(XmlParser.IsAttributeValueChar('-'));
+		}
+		
+		[Test]
+		public void HashCharIsValidAttributeValueChar()
+		{
+			Assert.IsTrue(XmlParser.IsAttributeValueChar('#'));
+		}
+		
+		[Test]
+		public void LeftAngleBracketIsNotValidAttributeValueChar()
+		{
+			Assert.IsFalse(XmlParser.IsAttributeValueChar('<'));
+		}
+		
+		[Test]
+		public void RightAngleBracketIsNotValidAttributeValueChar()
+		{
+			Assert.IsFalse(XmlParser.IsAttributeValueChar('>'));
+		}
 	}
 }
