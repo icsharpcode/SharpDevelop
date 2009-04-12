@@ -61,7 +61,7 @@ namespace PythonBinding.Tests.Console
 			memberProvider.SetMemberNames(new string[] {"a"});
 			
 			ICompletionData[] items = completionProvider.GenerateCompletionData(">>> a");
-			Assert.AreEqual(ClassBrowserIconService.MethodIndex, items[0].ImageIndex);
+			Assert.AreEqual(ClassBrowserIconService.Method.ImageIndex, items[0].ImageIndex);
 		}
 		
 		[Test]

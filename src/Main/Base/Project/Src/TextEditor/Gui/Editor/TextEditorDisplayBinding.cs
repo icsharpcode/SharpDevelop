@@ -431,29 +431,30 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void AddClassMemberBookmarks(BookmarkManager bm, IClass c)
 		{
+			/*
 			if (c.IsSynthetic) return;
 			if (!c.Region.IsEmpty) {
-				bm.AddMark(new Bookmarks.ClassBookmark(textEditorControl.Document, c));
+				bm.AddMark(new Bookmarks.ClassBookmark(c));
 			}
 			foreach (IClass innerClass in c.InnerClasses) {
 				AddClassMemberBookmarks(bm, innerClass);
 			}
 			foreach (IMethod m in c.Methods) {
 				if (m.Region.IsEmpty || m.IsSynthetic) continue;
-				bm.AddMark(new Bookmarks.MethodBookmark(textEditorControl.Document, m));
+				bm.AddMark(new Bookmarks.MethodBookmark(m));
 			}
 			foreach (IProperty m in c.Properties) {
 				if (m.Region.IsEmpty || m.IsSynthetic) continue;
-				bm.AddMark(new Bookmarks.PropertyBookmark(textEditorControl.Document, m));
+				bm.AddMark(new Bookmarks.PropertyBookmark(m));
 			}
 			foreach (IField f in c.Fields) {
 				if (f.Region.IsEmpty || f.IsSynthetic) continue;
-				bm.AddMark(new Bookmarks.FieldBookmark(textEditorControl.Document, f));
+				bm.AddMark(new Bookmarks.FieldBookmark(f));
 			}
 			foreach (IEvent e in c.Events) {
 				if (e.Region.IsEmpty || e.IsSynthetic) continue;
-				bm.AddMark(new Bookmarks.EventBookmark(textEditorControl.Document, e));
-			}
+				bm.AddMark(new Bookmarks.EventBookmark(e));
+			}*/
 		}
 		
 		bool IsClassMemberBookmark(Bookmark b)

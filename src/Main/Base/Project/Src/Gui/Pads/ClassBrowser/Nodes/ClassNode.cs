@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			this.c       = c;
 			
 			Text = GetText(c);
-			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(c);
+			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(c).ImageIndex;
 			
 			if (c.ClassType != ClassType.Delegate) {
 				Nodes.Add(new TreeNode());

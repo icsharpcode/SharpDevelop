@@ -214,9 +214,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
+		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber)
 		{
-			ReadOnlyCollection<Bookmark> bookmarks = document.BookmarkManager.Marks;
+			/*ReadOnlyCollection<Bookmark> bookmarks = document.BookmarkManager.Marks;
 			for (int i = bookmarks.Count - 1; i >= 0; --i) {
 				BreakpointBookmark breakpoint = bookmarks[i] as BreakpointBookmark;
 				if (breakpoint != null) {
@@ -235,7 +235,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					break;
 				}
 				column++;
-			}
+			}*/
 		}
 		
 		/* TODO: reimplement this stuff
@@ -255,18 +255,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			IViewContent viewContent = FileService.JumpToFilePosition(SourceFullFilename, StartLine - 1, StartColumn - 1);
 			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
-		}
-		
-		static void IconBarMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)
-		{
-			if (mouseButtons != MouseButtons.Left) return;
-			Rectangle viewRect = iconBar.TextArea.TextView.DrawingPosition;
-			TextLocation logicPos = iconBar.TextArea.TextView.GetLogicalPosition(0, mousepos.Y - viewRect.Top);
-			
-			if (logicPos.Y >= 0 && logicPos.Y < iconBar.TextArea.Document.TotalNumberOfLines) {
-				ToggleBreakpointAt(iconBar.TextArea.Document, iconBar.TextArea.MotherTextEditorControl.FileName, logicPos.Y);
-				iconBar.TextArea.Refresh(iconBar);
-			}
 		}
 		
 		#region Tool tips

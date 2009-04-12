@@ -57,13 +57,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			public readonly string Text;
 			
-			public MyListBoxItem(string text, int imageIndex)
+			public MyListBoxItem(string text, IImage image)
 			{
 				this.Text = text;
 				this.Content = new StackPanel {
 					Orientation = Orientation.Horizontal,
 					Children = {
-						PresentationResourceService.GetPixelSnappedImage(ClassBrowserIconService.ResourceNames[imageIndex]),
+						new PixelSnapper(new Image { Source = image.ImageSource }),
 						new TextBlock {
 							Text = text,
 							Margin = new Thickness(4, 0, 0, 0)
@@ -241,7 +241,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (item.Project != null) {
 						display += StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ") + item.Project.Name;
 					}
-					AddItem(display, ClassBrowserIconService.GotoArrowIndex, new FileLineReference(fileName, lineNumber), 0.5, matchType);
+					AddItem(display, ClassBrowserIconService.GotoArrow, new FileLineReference(fileName, lineNumber), 0.5, matchType);
 				}
 			}
 		}
@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ITextEditor editor = GetEditor();
 				if (editor != null) {
 					num = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, num));
-					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrowIndex, num, 0, int.MaxValue);
+					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrow, num, 0, int.MaxValue);
 				}
 			}
 		}
@@ -265,7 +265,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				string dataText = data.Text;
 				int matchType = GetMatchType(text, dataText);
 				if (matchType >= 0) {
-					AddItem(data.Entity, data.ImageIndex, data.Priority, matchType);
+					AddItem(data.Entity, data.Image, data.Priority, matchType);
 				}
 			}
 		}
@@ -343,12 +343,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void AddItem(string text, int imageIndex, object tag, double priority, int matchType)
+		void AddItem(string text, IImage image, object tag, double priority, int matchType)
 		{
 			if (visibleEntries.ContainsKey(text))
 				return;
 			visibleEntries.Add(text, null);
-			MyListBoxItem item = new MyListBoxItem(text, imageIndex);
+			MyListBoxItem item = new MyListBoxItem(text, image);
 			item.MouseDoubleClick += okButtonClick;
 			item.Tag = tag;
 			if (bestItem == null
@@ -368,18 +368,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AddItem(c, ClassBrowserIconService.GetIcon(c), CodeCompletionDataUsageCache.GetPriority(c.DotNetName, true), matchType);
 		}
 		
-		void AddItemIfMatchText(string text, IMember member, int imageIndex)
+		void AddItemIfMatchText(string text, IMember member, IImage image)
 		{
 			string name = member.Name;
 			int matchType = GetMatchType(text, name);
 			if (matchType >= 0) {
-				AddItem(member, imageIndex, CodeCompletionDataUsageCache.GetPriority(member.DotNetName, true), matchType);
+				AddItem(member, image, CodeCompletionDataUsageCache.GetPriority(member.DotNetName, true), matchType);
 			}
 		}
 		
-		void AddItem(IEntity e, int imageIndex, double priority, int matchType)
+		void AddItem(IEntity e, IImage image, double priority, int matchType)
 		{
-			AddItem(e.Name + " (" + e.FullyQualifiedName + ")", imageIndex, e, priority, matchType);
+			AddItem(e.Name + " (" + e.FullyQualifiedName + ")", image, e, priority, matchType);
 		}
 		
 		void cancelButtonClick(object sender, RoutedEventArgs e)

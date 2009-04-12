@@ -105,7 +105,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public ImageSource Image {
-			get { return null; }
+			get { 
+				IImage image = item.Image;
+				return image != null ? image.ImageSource : null;
+			}
 		}
 		
 		public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)

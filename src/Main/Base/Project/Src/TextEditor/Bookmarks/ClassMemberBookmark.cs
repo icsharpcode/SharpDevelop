@@ -6,13 +6,9 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -21,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// Does not derive from SDBookmark because it is not stored in the central BookmarkManager,
 	/// but only in the document's BookmarkManager.
 	/// </summary>
-	public abstract class ClassMemberBookmark : Bookmark
+	public class ClassMemberBookmark : IBookmark
 	{
 		IMember member;
 		
@@ -31,43 +27,34 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public ClassMemberBookmark(IDocument document, IMember member)
-			: base(document, GetTextLocationFromMember(document, member))
+		public ClassMemberBookmark(IMember member)
 		{
 			this.member = member;
 		}
 		
-		static TextLocation GetTextLocationFromMember(IDocument document, IMember member)
-		{
-			return new TextLocation(member.Region.BeginColumn - 1, member.Region.BeginLine - 1);
-		}
-		
 		public const string ContextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu";
 		
-		public override bool Click(Control parent, MouseEventArgs e)
+		public virtual IImage Image { 
+			get { return ClassBrowserIconService.GetIcon(member); }
+		}
+		
+		public int LineNumber {
+			get { return member.Region.BeginLine; }
+		}
+		
+		public virtual void MouseDown(MouseButtonEventArgs e)
 		{
-			if (e.Button == MouseButtons.Left) {
-				MenuService.ShowContextMenu(this, ContextMenuPath, parent, e.X, e.Y);
-				return true;
-			} else {
-				return false;
+			if (e.ChangedButton == MouseButton.Left) {
+				MenuService.CreateContextMenu(this, ContextMenuPath).IsOpen = true;
+				e.Handled = true;
 			}
-		}
-		
-		public abstract int IconIndex {
-			get;
-		}
-		
-		public override void Draw(IconBarMargin margin, Graphics g, Point p)
-		{
-			g.DrawImageUnscaled(ClassBrowserIconService.ImageList.Images[IconIndex], p);
 		}
 	}
 	
-	public class ClassBookmark : Bookmark
+	public class ClassBookmark : IBookmark
 	{
 		IClass @class;
-
+		
 		public IClass Class {
 			get {
 				return @class;
@@ -77,88 +64,29 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public ClassBookmark(IDocument document, IClass @class)
-			: base(document, GetTextLocationFromClass(document, @class))
+		public ClassBookmark(IClass @class)
 		{
 			this.@class = @class;
 		}
 		
-		static TextLocation GetTextLocationFromClass(IDocument document, IClass @class)
-		{
-			return new TextLocation(@class.Region.BeginColumn - 1, @class.Region.BeginLine - 1);
-		}
-		
 		public const string ContextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu";
 		
-		public override bool Click(Control parent, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Left) {
-				MenuService.ShowContextMenu(this, ContextMenuPath, parent, e.X, e.Y);
-				return true;
-			} else {
-				return false;
+		public virtual IImage Image { 
+			get {
+				return null;
 			}
 		}
 		
-		public override void Draw(IconBarMargin margin, Graphics g, Point p)
+		public int LineNumber {
+			get { return @class.Region.BeginLine; }
+		}
+		
+		public virtual void MouseDown(MouseButtonEventArgs e)
 		{
-			g.DrawImageUnscaled(ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.GetIcon(@class)], p);
-		}
-	}
-	
-	public class PropertyBookmark : ClassMemberBookmark
-	{
-		IProperty property;
-		
-		public PropertyBookmark(IDocument document, IProperty property) : base(document, property)
-		{
-			this.property = property;
-		}
-		
-		public override int IconIndex {
-			get { return ClassBrowserIconService.GetIcon(property); }
-		}
-	}
-	
-	public class MethodBookmark : ClassMemberBookmark
-	{
-		IMethod method;
-		
-		public MethodBookmark(IDocument document, IMethod method) : base(document, method)
-		{
-			this.method = method;
-		}
-		
-		public override int IconIndex {
-			get { return ClassBrowserIconService.GetIcon(method); }
-		}
-	}
-	
-	public class FieldBookmark : ClassMemberBookmark
-	{
-		IField field;
-		
-		public FieldBookmark(IDocument document, IField field) : base(document, field)
-		{
-			this.field = field;
-		}
-		
-		public override int IconIndex {
-			get { return ClassBrowserIconService.GetIcon(field); }
-		}
-	}
-	
-	public class EventBookmark : ClassMemberBookmark
-	{
-		IEvent @event;
-		
-		public EventBookmark(IDocument document, IEvent @event) : base(document, @event)
-		{
-			this.@event = @event;
-		}
-		
-		public override int IconIndex {
-			get { return ClassBrowserIconService.GetIcon(@event); }
+			if (e.ChangedButton == MouseButton.Left) {
+				MenuService.CreateContextMenu(this, ContextMenuPath).IsOpen = true;
+				e.Handled = true;
+			}
 		}
 	}
 }

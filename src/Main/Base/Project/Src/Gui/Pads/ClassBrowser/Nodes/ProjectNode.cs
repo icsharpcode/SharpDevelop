@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 						ExtTreeNode newnode = new ExtTreeNode();
 						newnode.Tag      = path;
 						newnode.Text     = path;
-						newnode.ImageIndex = newnode.SelectedImageIndex = ClassBrowserIconService.NamespaceIndex;
+						newnode.ImageIndex = newnode.SelectedImageIndex = ClassBrowserIconService.Namespace.ImageIndex;
 						curcollection.Add(newnode);
 						curnode       = newnode;
 						curcollection = curnode.Nodes;

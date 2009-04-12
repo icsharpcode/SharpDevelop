@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override int ImageIndex {
 			get {
-				return ClassBrowserIconService.InterfaceIndex;
+				return ClassBrowserIconService.Interface.ImageIndex;
 			}
 		}
 		

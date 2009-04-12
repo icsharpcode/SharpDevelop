@@ -177,7 +177,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		CodeCompletionData CreateItem(object o, ExpressionContext context)
 		{
 			if (o is string) {
-				return new CodeCompletionData(o.ToString(), ClassBrowserIconService.NamespaceIndex);
+				return new CodeCompletionData(o.ToString(), ClassBrowserIconService.Namespace.ImageIndex);
 			} else if (o is IClass) {
 				return new CodeCompletionData((IClass)o);
 			} else if (o is IProperty) {

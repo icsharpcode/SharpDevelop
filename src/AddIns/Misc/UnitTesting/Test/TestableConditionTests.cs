@@ -148,7 +148,7 @@ namespace UnitTesting.Tests
 		{
 			MockMethod mockMethod = new MockMethod();
 			mockMethod.Region = new DomRegion(1,1);
-			MethodBookmark bookmark = new MethodBookmark(null, mockMethod);
+			ClassMemberBookmark bookmark = new ClassMemberBookmark(mockMethod);
 			
 			Assert.IsTrue(Object.ReferenceEquals(mockMethod, TestableCondition.GetMember(bookmark)));
 		}
@@ -158,7 +158,7 @@ namespace UnitTesting.Tests
 		{
 			MockClass mockClass = new MockClass();
 			mockClass.Region = new DomRegion(1,1);
-			ClassBookmark bookmark = new ClassBookmark(null, mockClass);
+			ClassBookmark bookmark = new ClassBookmark(mockClass);
 			
 			Assert.IsTrue(Object.ReferenceEquals(mockClass, TestableCondition.GetClass(bookmark)));
 		}

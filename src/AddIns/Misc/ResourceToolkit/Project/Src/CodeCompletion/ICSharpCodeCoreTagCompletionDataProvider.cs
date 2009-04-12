@@ -29,7 +29,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 			this.startOffset = textArea.Caret.Offset;
 			this.nonMatchingCharTyped = false;
 			this.DefaultIndex = 0;
-			return new ICompletionData[] { new DefaultCompletionData("{res", null, ClassBrowserIconService.GotoArrowIndex) };
+			return new ICompletionData[] { new DefaultCompletionData("{res", null, ClassBrowserIconService.GotoArrow.ImageIndex) };
 		}
 		
 		public override CompletionDataProviderKeyResult ProcessKey(char key)

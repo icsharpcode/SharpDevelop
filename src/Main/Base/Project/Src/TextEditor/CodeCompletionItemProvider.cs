@@ -175,8 +175,6 @@ namespace ICSharpCode.SharpDevelop
 	{
 		// TODO: what to do with these properties?
 		[Obsolete]
-		public int ImageIndex { get; set; }
-		[Obsolete]
 		public double Priority { get; set; }
 		
 		readonly IEntity entity;
@@ -192,6 +190,7 @@ namespace ICSharpCode.SharpDevelop
 			this.Text = ambience.Convert(entity);
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			description = ambience.Convert(entity);
+			this.Image = ClassBrowserIconService.GetIcon(entity);
 			this.Overloads = 1;
 		}
 		
@@ -202,6 +201,8 @@ namespace ICSharpCode.SharpDevelop
 		public string Text { get; set; }
 		
 		public int Overloads { get; set; }
+		
+		public IImage Image { get; set; }
 		
 		public virtual void Complete(CompletionContext context)
 		{

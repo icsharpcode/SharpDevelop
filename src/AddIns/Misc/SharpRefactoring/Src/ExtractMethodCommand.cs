@@ -29,10 +29,10 @@ namespace SharpRefactoring
 {
 	public class ExtractMethodCommand : AbstractRefactoringCommand
 	{
-		protected override void Run(ICSharpCode.TextEditor.TextEditorControl textEditor, ICSharpCode.SharpDevelop.Dom.Refactoring.RefactoringProvider provider)
+		protected override void Run(ITextEditor textEditor, ICSharpCode.SharpDevelop.Dom.Refactoring.RefactoringProvider provider)
 		{
-			if (textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected)
-			{
+			if (textEditor.SelectionLength > 0) {
+				/*
 				MethodExtractorBase extractor = GetCurrentExtractor(textEditor);
 				if (extractor != null) {
 					if (extractor.Extract()) {
@@ -48,10 +48,11 @@ namespace SharpRefactoring
 							textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
 						}
 					}
-				}
+				}*/
 			}
 		}
 		
+		/*
 		MethodExtractorBase GetCurrentExtractor(TextEditorControl editor)
 		{
 			switch (LanguageBindingService.GetCodonPerCodeFileName(editor.FileName).Language) {
@@ -61,6 +62,6 @@ namespace SharpRefactoring
 					MessageService.ShowError(string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.ExtractMethodNotSupported}"), LanguageBindingService.GetCodonPerCodeFileName(editor.FileName).Language));
 					return null;
 			}
-		}
+		}*/
 	}
 }

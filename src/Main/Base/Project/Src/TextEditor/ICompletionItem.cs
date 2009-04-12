@@ -6,9 +6,12 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Media;
+
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -16,6 +19,7 @@ namespace ICSharpCode.SharpDevelop
 	{
 		string Text { get; }
 		string Description { get; }
+		IImage Image { get; }
 		
 		/// <summary>
 		/// Performs code completion for the item.
@@ -26,7 +30,8 @@ namespace ICSharpCode.SharpDevelop
 	public class DefaultCompletionItem : ICompletionItem
 	{
 		public string Text { get; private set; }
-		public string Description { get; set; }
+		public virtual string Description { get; set; }
+		public virtual IImage Image { get; set; }
 		
 		public DefaultCompletionItem(string text)
 		{

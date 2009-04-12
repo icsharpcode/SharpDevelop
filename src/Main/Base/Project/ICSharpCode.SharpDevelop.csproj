@@ -475,11 +475,12 @@
     <EmbeddedResource Include="Resources\MarkersTextEditorPanel.xfrm" />
     <EmbeddedResource Include="Resources\SortOptionsDialog.xfrm" />
     <Compile Include="Src\TextEditor\Bookmarks\Commands\MenuCommands.cs" />
+    <Compile Include="Src\TextEditor\Bookmarks\IBookmarkMargin.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\Pad\Nodes\BookmarkFolderNode.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\Pad\Nodes\BookmarkNode.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\Pad\BookmarkPad.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\Pad\BookmarkPadToolbarCommands.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\Bookmark.cs" />
+    <Compile Include="Src\TextEditor\Bookmarks\SDBookmark.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkEventHandler.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkManager.cs" />
     <Compile Include="Src\TextEditor\ClipboardHandling.cs" />
@@ -559,6 +560,7 @@
     <Compile Include="Src\TextEditor\ICompletionItem.cs" />
     <Compile Include="Src\TextEditor\ICompletionItemList.cs" />
     <Compile Include="Src\TextEditor\IFormattingStrategy.cs" />
+    <Compile Include="Src\TextEditor\IImage.cs" />
     <Compile Include="Src\TextEditor\ITextEditor.cs" />
     <Compile Include="Src\TextEditor\ToolTipService.cs" />
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />

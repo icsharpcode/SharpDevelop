@@ -48,7 +48,7 @@ namespace ICSharpCode.PythonBinding
 			if (!String.IsNullOrEmpty(name)) {
 				try {
 					foreach (string member in memberProvider.GetMemberNames(name)) {
-						items.Add(new DefaultCompletionData(member, String.Empty, ClassBrowserIconService.MethodIndex));
+						items.Add(new DefaultCompletionData(member, String.Empty, ClassBrowserIconService.Method.ImageIndex));
 					}
 				} catch { 
 					// Do nothing.

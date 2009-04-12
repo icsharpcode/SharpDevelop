@@ -5,16 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Actions;
 
 namespace SharpRefactoring
 {
@@ -58,24 +58,19 @@ namespace SharpRefactoring
 		void AddCheck(RefactoringMenuContext context, string newCode)
 		{
 			var codeGen = context.ResolveResult.CallingClass.ProjectContent.Language.CodeGenerator;
-			TextArea textArea = context.TextArea;
+			ITextEditor textArea = context.Editor;
 			IMember m = context.ResolveResult.CallingMember;
-			TextLocation methodStart = FindMethodStart(textArea.Document, m.BodyRegion);
-			if (methodStart.IsEmpty)
+			int methodStart = FindMethodStartOffset(textArea.Document, m.BodyRegion);
+			if (methodStart < 0)
 				return;
-			textArea.Caret.Position = methodStart;
-			textArea.SelectionManager.ClearSelection();
-			textArea.Document.UndoStack.StartUndoGroup();
-			try {
+			textArea.Select(methodStart, 0);
+			using (textArea.Document.OpenUndoGroup()) {
 				foreach (string newCodeLine in newCode.Split('\n')) {
-					new Return().Execute(textArea);
-					textArea.InsertString(newCodeLine);
+					// TODO: AVALONEDIT
+//					new Return().Execute(textArea);
+//					textArea.InsertString(newCodeLine);
 				}
-			} finally {
-				textArea.Document.UndoStack.EndUndoGroup();
 			}
-			textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-			textArea.Document.CommitUpdate();
 		}
 		
 		void AddCheckForNull(RefactoringMenuContext context)
@@ -94,18 +89,18 @@ namespace SharpRefactoring
 			         "throw new ArgumentOutOfRangeException(\"" + name + "\", " + name + ", \"Value must be between 0 and \" + upper_bound);");
 		}
 		
-		static TextLocation FindMethodStart(ICSharpCode.TextEditor.Document.IDocument document, DomRegion bodyRegion)
+		static int FindMethodStartOffset(IDocument document, DomRegion bodyRegion)
 		{
 			if (bodyRegion.IsEmpty)
-				return TextLocation.Empty;
-			int offset = document.PositionToOffset(new TextLocation(bodyRegion.BeginColumn - 1, bodyRegion.BeginLine - 1));
+				return -1;
+			int offset = document.PositionToOffset(bodyRegion.BeginLine, bodyRegion.BeginColumn);
 			while (offset < document.TextLength) {
 				if (document.GetCharAt(offset) == '{') {
-					return document.OffsetToPosition(offset + 1);
+					return offset + 1;
 				}
 				offset++;
 			}
-			return TextLocation.Empty;
+			return -1;
 		}
 	}
 }

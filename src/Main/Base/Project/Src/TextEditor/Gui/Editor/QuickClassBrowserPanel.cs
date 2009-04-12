@@ -95,11 +95,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
-			public ComboBoxItem(IEntity item, string text, int iconIndex, bool isInCurrentPart)
+			public ComboBoxItem(IEntity item, string text, ClassBrowserImage image, bool isInCurrentPart)
 			{
 				this.item = item;
 				this.text = text;
-				this.iconIndex = iconIndex;
+				this.iconIndex = image.ImageIndex;
 				this.isInCurrentPart = isInCurrentPart;
 			}
 			
@@ -486,9 +486,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				
 				e.Graphics.DrawImageUnscaled(ClassBrowserIconService.ImageList.Images[item.IconIndex],
 				                             new Point(e.Bounds.X, e.Bounds.Y + (e.Bounds.Height - ClassBrowserIconService.ImageList.ImageSize.Height) / 2));
-				Rectangle drawingRect = new Rectangle(e.Bounds.X + ClassBrowserIconService.ImageList.ImageSize.Width,
+				Rectangle drawingRect = new Rectangle(e.Bounds.X + (int)ClassBrowserIconService.ImageSize.Width,
 				                                      e.Bounds.Y,
-				                                      e.Bounds.Width - ClassBrowserIconService.ImageList.ImageSize.Width,
+				                                      e.Bounds.Width - (int)ClassBrowserIconService.ImageSize.Width,
 				                                      e.Bounds.Height);
 				
 				Brush drawItemBrush = SystemBrushes.WindowText;
@@ -525,7 +525,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				SizeF size = e.Graphics.MeasureString(item.ToString(), font);
 				e.ItemWidth  = (int)size.Width;
 				
-				e.ItemHeight = (int)Math.Max(size.Height, ClassBrowserIconService.ImageList.ImageSize.Height);
+				e.ItemHeight = (int)Math.Max(size.Height, ClassBrowserIconService.ImageSize.Height);
 			}
 		}
 	}

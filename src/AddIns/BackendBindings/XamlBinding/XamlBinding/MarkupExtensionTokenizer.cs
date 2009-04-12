@@ -23,8 +23,6 @@ namespace ICSharpCode.XamlBinding
 			if (text == null)
 				throw new ArgumentNullException("text");
 			this.text = text;
-			
-			ParseBeginning();
 		}
 		
 		string text;
@@ -37,6 +35,8 @@ namespace ICSharpCode.XamlBinding
 		/// <exception cref="MarkupExtensionParseException">A parse error occurred.</exception>
 		public MarkupExtensionToken NextToken()
 		{
+			if (pos == 0)
+				ParseBeginning();
 			if (tokens.Count == 0) {
 				// produce new tokens on demand
 				ParseStep();

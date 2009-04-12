@@ -84,14 +84,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public OverrideCompletionData(IMethod method)
 			: base(GetName(method, ConversionFlags.ShowParameterList),
-			       ClassBrowserIconService.GetIcon(method))
+			       ClassBrowserIconService.GetIcon(method).ImageIndex)
 		{
 			this.member = method;
 		}
 		
 		public OverrideCompletionData(IProperty property)
 			: base(property.Name, "override " + property.Name + "\n\n" + CodeCompletionData.ConvertDocumentation(property.Documentation),
-			       ClassBrowserIconService.GetIcon(property))
+			       ClassBrowserIconService.GetIcon(property).ImageIndex)
 		{
 			this.member = property;
 		}

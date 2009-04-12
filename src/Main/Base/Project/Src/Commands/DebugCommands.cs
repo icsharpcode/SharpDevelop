@@ -103,12 +103,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
 			
 			if (provider != null) {
-				TextEditorControl textEditor = provider.TextEditorControl;
-				if (!string.IsNullOrEmpty(textEditor.FileName)) {
-					DebuggerService.ToggleBreakpointAt(textEditor.Document, textEditor.FileName, textEditor.ActiveTextAreaControl.Caret.Line);
+				ITextEditor editor = provider.TextEditor;
+				if (!string.IsNullOrEmpty(editor.FileName)) {
+					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
 				}
 			}
 		}

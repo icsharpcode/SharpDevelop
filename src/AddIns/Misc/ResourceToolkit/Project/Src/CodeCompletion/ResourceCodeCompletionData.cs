@@ -29,7 +29,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 		/// <param name="description">The resource description.</param>
 		/// <param name="outputVisitor">The NRefactory output visitor to be used to generate the inserted code. If <c>null</c>, the key is inserted literally.</param>
 		public ResourceCodeCompletionData(string key, string description, IOutputAstVisitor outputVisitor)
-			: base(key, description, ClassBrowserIconService.GotoArrowIndex)
+			: base(key, description, ClassBrowserIconService.GotoArrow.ImageIndex)
 		{
 			this.outputVisitor = outputVisitor;
 		}

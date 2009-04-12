@@ -176,7 +176,7 @@ namespace CSharpBinding
 			int cursorOffset;
 			
 			public DelegateCompletionData(string text, int cursorOffset, string documentation)
-				: base(text, StringParser.Parse(documentation), ClassBrowserIconService.DelegateIndex)
+				: base(text, StringParser.Parse(documentation), ClassBrowserIconService.Delegate.ImageIndex)
 			{
 				this.cursorOffset = cursorOffset;
 			}
@@ -198,7 +198,7 @@ namespace CSharpBinding
 			string newHandlerCode;
 			
 			public NewEventHandlerCompletionData(string text, int selectionBeginOffset, int selectionLength, string documentation, ResolveResult resolveResult, string newHandlerCode)
-				: base(text, StringParser.Parse(documentation), ClassBrowserIconService.DelegateIndex)
+				: base(text, StringParser.Parse(documentation), ClassBrowserIconService.Delegate.ImageIndex)
 			{
 				this.selectionBeginOffset = selectionBeginOffset;
 				this.selectionLength = selectionLength;

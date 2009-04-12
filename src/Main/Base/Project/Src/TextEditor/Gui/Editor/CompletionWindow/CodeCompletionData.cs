@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			// save class (for the delegate description shortcut)
 			this.entity = c;
-			imageIndex = ClassBrowserIconService.GetIcon(c);
+			imageIndex = ClassBrowserIconService.GetIcon(c).ImageIndex;
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			text = ambience.Convert(c);
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.UseFullyQualifiedMemberNames;
@@ -145,7 +145,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public CodeCompletionData(IMember member)
 		{
 			this.entity = member;
-			imageIndex  = ClassBrowserIconService.GetIcon(member);
+			imageIndex  = ClassBrowserIconService.GetIcon(member).ImageIndex;
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.None;
 			text = ambience.Convert(member);

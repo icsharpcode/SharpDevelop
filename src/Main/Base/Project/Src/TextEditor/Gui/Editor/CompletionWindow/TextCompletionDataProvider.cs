@@ -6,30 +6,31 @@
 // </file>
 
 using System;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	/// <summary>
 	/// Data provider for code completion.
 	/// </summary>
-	public class TextCompletionDataProvider : AbstractCompletionDataProvider
+	public class TextCompletionDataProvider : AbstractCompletionItemProvider
 	{
 		string[] texts;
 		
 		public TextCompletionDataProvider(params string[] texts)
 		{
+			if (texts == null)
+				throw new ArgumentNullException("texts");
 			this.texts = texts;
 		}
 		
-		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
-			ICompletionData[] data = new ICompletionData[texts.Length];
-			for (int i = 0; i < data.Length; i++) {
-				data[i] = new DefaultCompletionData(texts[i], null, ClassBrowserIconService.GotoArrowIndex);
+			DefaultCompletionItemList list = new DefaultCompletionItemList();
+			foreach (string text in this.texts) {
+				list.Items.Add(new DefaultCompletionItem(text) { Image = ClassBrowserIconService.GotoArrow });
 			}
-			return data;
+			list.SortItems();
+			return list;
 		}
 	}
 }

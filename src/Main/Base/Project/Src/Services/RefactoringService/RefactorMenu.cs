@@ -71,37 +71,35 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (ParserService.LoadSolutionProjectsThreadRunning) {
 				return;
 			}
-			if (WorkbenchSingleton.Workbench == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
+			if (WorkbenchSingleton.Workbench == null) {
 				return;
 			}
-			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 			if (provider == null) return;
 			LanguageProperties language = ParserService.CurrentProjectContent.Language;
 			if (language == null) return;
 			
 			RefactoringProvider rp = language.RefactoringProvider;
-			Run(provider.TextEditorControl, rp);
-			provider.TextEditorControl.Refresh();
+			Run(provider.TextEditor, rp);
 		}
 		
-		protected ResolveResult ResolveAtCaret(TextEditorControl textEditor)
+		protected ResolveResult ResolveAtCaret(ITextEditor textEditor)
 		{
 			string fileName = textEditor.FileName;
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			if (expressionFinder == null) return null;
-			Caret caret = textEditor.ActiveTextAreaControl.Caret;
-			string content = textEditor.Document.TextContent;
-			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
+			string content = textEditor.Document.Text;
+			ExpressionResult expr = expressionFinder.FindFullExpression(content, textEditor.Caret.Offset);
 			if (expr.Expression == null) return null;
-			return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
+			return ParserService.Resolve(expr, textEditor.Caret.Line, textEditor.Caret.Column, fileName, content);
 		}
 		
-		protected abstract void Run(TextEditorControl textEditor, RefactoringProvider provider);
+		protected abstract void Run(ITextEditor textEditor, RefactoringProvider provider);
 	}
 	
 	public class RemoveUnusedUsingsCommand : AbstractRefactoringCommand
 	{
-		protected override void Run(TextEditorControl textEditor, RefactoringProvider provider)
+		protected override void Run(ITextEditor textEditor, RefactoringProvider provider)
 		{
 			using (var pm = Gui.AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.RemoveUnusedImports}")) {
 				NamespaceRefactoringService.ManageUsings(pm, textEditor.FileName, textEditor.Document, true, true);
@@ -111,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	
 	public class RenameCommand : AbstractRefactoringCommand
 	{
-		protected override void Run(TextEditorControl textEditor, RefactoringProvider provider)
+		protected override void Run(ITextEditor textEditor, RefactoringProvider provider)
 		{
 			ResolveResult rr = ResolveAtCaret(textEditor);
 			if (rr is MixedResolveResult) rr = (rr as MixedResolveResult).PrimaryResult;

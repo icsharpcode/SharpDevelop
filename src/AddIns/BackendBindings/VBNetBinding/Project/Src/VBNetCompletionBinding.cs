@@ -94,12 +94,15 @@ namespace VBNetBinding
 					}
 				case "option":
 					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new TextCompletionDataProvider("Explicit On",
-					                                                           "Explicit Off",
-					                                                           "Strict On",
-					                                                           "Strict Off",
-					                                                           "Compare Binary",
-					                                                           "Compare Text"), ' ');
+					new TextCompletionDataProvider("Explicit On",
+					                               "Explicit Off",
+					                               "Strict On",
+					                               "Strict Off",
+					                               "Compare Binary",
+					                               "Compare Text",
+					                               "Infer On",
+					                               "Infer Off")
+						.ShowCompletion(editor);
 					return true;
 				default:
 					return base.HandleKeyword(editor, word);

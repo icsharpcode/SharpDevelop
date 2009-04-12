@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override int ImageIndex {
 			get {
-				return ClassBrowserIconService.EventIndex;
+				return ClassBrowserIconService.Event.ImageIndex;
 			}
 		}
 		

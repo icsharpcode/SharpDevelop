@@ -62,6 +62,8 @@ namespace ICSharpCode.AvalonEdit
 			textView.SetBinding(TextView.DocumentProperty, new Binding("Document") { Source = this });
 			textView.SetBinding(TextView.OptionsProperty, new Binding("Options") { Source = this });
 			
+			textView.Services.AddService(typeof(TextArea), this);
+			
 			leftMargins.Add(new LineNumberMargin { TextView = textView, TextArea = this } );
 			leftMargins.Add(new Line {
 			                	X1 = 0, Y1 = 0, X2 = 0, Y2 = 1,

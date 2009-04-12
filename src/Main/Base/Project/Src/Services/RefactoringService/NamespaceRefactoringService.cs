@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void ManageUsings(Gui.IProgressMonitor progressMonitor, string fileName, IDocument document, bool sort, bool removedUnused)
 		{
-			ParseInformation info = ParserService.ParseFile(fileName, document.TextContent);
+			ParseInformation info = ParserService.ParseFile(fileName, document.Text);
 			if (info == null) return;
 			ICompilationUnit cu = info.MostRecentCompilationUnit;
 			
@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			
 			if (removedUnused) {
-				IList<IUsing> decl = cu.ProjectContent.Language.RefactoringProvider.FindUnusedUsingDeclarations(Gui.DomProgressMonitor.Wrap(progressMonitor), fileName, document.TextContent, cu);
+				IList<IUsing> decl = cu.ProjectContent.Language.RefactoringProvider.FindUnusedUsingDeclarations(Gui.DomProgressMonitor.Wrap(progressMonitor), fileName, document.Text, cu);
 				if (decl != null && decl.Count > 0) {
 					foreach (IUsing u in decl) {
 						string ns = null;
@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				PutEmptyLineAfterLastSystemNamespace(newUsings);
 			}
 			
-			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new TextEditorDocument(document), cu.UsingScope.Usings, newUsings);
+			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(document, cu.UsingScope.Usings, newUsings);
 		}
 		
 		static void PutEmptyLineAfterLastSystemNamespace(List<IUsing> newUsings)
@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (sortExistingUsings) {
 				PutEmptyLineAfterLastSystemNamespace(newUsings);
 			}
-			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new TextEditorDocument(document), cu.UsingScope.Usings, newUsings);
+			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(document, cu.UsingScope.Usings, newUsings);
 		}
 	}
 }

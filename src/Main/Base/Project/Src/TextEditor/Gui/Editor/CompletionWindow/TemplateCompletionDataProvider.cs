@@ -58,6 +58,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
+			public IImage Image {
+				get {
+					return ClassBrowserIconService.CodeTemplate;
+				}
+			}
+			
 			public void Complete(CompletionContext context)
 			{
 				context.Editor.Document.Replace(context.StartOffset, context.Length, template.Text);

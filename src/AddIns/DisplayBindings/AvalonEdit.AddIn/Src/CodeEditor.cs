@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Indentation;
+using ICSharpCode.SharpDevelop.Bookmarks;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -15,6 +15,7 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Indentation;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -37,6 +38,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public CodeEditor()
 		{
 			textEditorAdapter = new CodeEditorAdapter(this);
+			this.TextArea.TextView.Services.AddService(typeof(ITextEditor), textEditorAdapter);
+			
 			this.Background = Brushes.White;
 			this.FontFamily = new FontFamily("Consolas");
 			this.FontSize = 13;
@@ -47,6 +50,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
 			this.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.DeleteLine, OnDeleteLine));
+			
+			IconBarMargin iconBarMargin = new IconBarMargin { TextView = this.TextArea.TextView };
+			this.TextArea.LeftMargins.Insert(0, iconBarMargin);
+			this.TextArea.TextView.Services.AddService(typeof(IBookmarkMargin), iconBarMargin);
 		}
 		
 		ToolTip toolTip;

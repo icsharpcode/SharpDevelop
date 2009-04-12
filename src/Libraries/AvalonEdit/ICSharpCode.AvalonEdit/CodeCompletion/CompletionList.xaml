@@ -42,7 +42,7 @@
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
-									<Image Source="{Binding Image}"/>
+									<Image Source="{Binding Image}" Width="16" Height="16" Margin="0,0,2,0"/>
 									<ContentControl Content="{Binding Content}"/>
 								</StackPanel>
 							</DataTemplate>

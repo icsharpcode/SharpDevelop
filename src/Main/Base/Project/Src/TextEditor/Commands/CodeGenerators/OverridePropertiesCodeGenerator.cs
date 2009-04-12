@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override int ImageIndex {
 			get {
-				return ClassBrowserIconService.PropertyIndex;
+				return ClassBrowserIconService.Property.ImageIndex;
 			}
 		}
 		

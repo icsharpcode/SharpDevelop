@@ -66,6 +66,7 @@
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CustomCommands.cs" />
+    <Compile Include="Src\IconBarMargin.cs" />
     <Compile Include="Src\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\SharpDevelopCompletionWindow.cs" />
   </ItemGroup>
