@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -12,7 +12,7 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	/// <summary>
-	/// Description of BookmarkManager.
+	/// Static class that maintains the list of bookmarks and breakpoints.
 	/// </summary>
 	public static class BookmarkManager
 	{
@@ -80,14 +80,14 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			Project.ProjectService.SolutionClosing += delegate { Clear(); };
 		}
 		
-		static void OnRemoved(BookmarkEventArgs e) 
+		static void OnRemoved(BookmarkEventArgs e)
 		{
 			if (Removed != null) {
 				Removed(null, e);
 			}
 		}
 		
-		static void OnAdded(BookmarkEventArgs e) 
+		static void OnAdded(BookmarkEventArgs e)
 		{
 			if (Added != null) {
 				Added(null, e);
@@ -103,6 +103,22 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				}
 			}
 			return projectBookmarks;
+		}
+		
+		public static void ToggleBookmark(ITextEditor editor, int line,
+		                                  Predicate<SDBookmark> canToggle,
+		                                  Func<ICSharpCode.AvalonEdit.Document.TextLocation, SDBookmark> bookmarkFactory)
+		{
+			foreach (SDBookmark bookmark in GetBookmarks(editor.FileName)) {
+				if (canToggle(bookmark) && bookmark.LineNumber == line) {
+					BookmarkManager.RemoveMark(bookmark);
+					return;
+				}
+			}
+			// no bookmark at that line: create a new bookmark
+			int lineStartOffset = editor.Document.GetLine(line).Offset;
+			int column = 1 + DocumentUtilitites.GetIndentation(editor.Document, lineStartOffset).Length;
+			BookmarkManager.AddMark(bookmarkFactory(new ICSharpCode.AvalonEdit.Document.TextLocation(line, column)));
 		}
 		
 		public static event BookmarkEventHandler Removed;

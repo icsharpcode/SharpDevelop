@@ -40,6 +40,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			InvalidateVisual();
 		}
+		
+		public void Redraw()
+		{
+			InvalidateVisual();
+		}
 		#endregion
 		
 		#region OnTextViewChanged
@@ -75,8 +80,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return new Size(18, 0);
 		}
 		
-		static readonly IImage DefaultImage = new ResourceServiceImage("Bookmarks.ToggleMark");
-		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			Size renderSize = this.RenderSize;
@@ -100,7 +103,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					IBookmark bm;
 					if (bookmarkDict.TryGetValue(lineNumber, out bm)) {
 						Rect rect = new Rect(0, line.VisualTop - textView.VerticalOffset, 16, 16);
-						drawingContext.DrawImage((bm.Image ?? DefaultImage).ImageSource, rect);
+						drawingContext.DrawImage((bm.Image ?? BookmarkBase.DefaultBookmarkImage).ImageSource, rect);
 					}
 				}
 			}

@@ -44,6 +44,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
+
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
@@ -57,8 +58,7 @@ using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using BM = ICSharpCode.SharpDevelop.Bookmarks;
-using Process=Debugger.Process;
+using Process = Debugger.Process;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
@@ -467,7 +467,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void AddBreakpoint(BreakpointBookmark bookmark)
 		{
-			Breakpoint breakpoint = debugger.AddBreakpoint(bookmark.FileName, null, bookmark.LineNumber + 1, 0, bookmark.IsEnabled);
+			Breakpoint breakpoint = debugger.AddBreakpoint(bookmark.FileName, null, bookmark.LineNumber, 0, bookmark.IsEnabled);
 			MethodInvoker setBookmarkColor = delegate {
 				if (debugger.Processes.Count == 0) {
 					bookmark.IsHealthy = true;
@@ -514,7 +514,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			EventHandler<ProcessEventArgs> bp_debugger_ProcessStarted = (sender, e) => {
 				setBookmarkColor();
 				// User can change line number by inserting or deleting lines
-				breakpoint.Line = bookmark.LineNumber + 1;
+				breakpoint.Line = bookmark.LineNumber;
 			};
 			EventHandler<ProcessEventArgs> bp_debugger_ProcessExited = (sender, e) => {
 				setBookmarkColor();
@@ -531,12 +531,12 @@ namespace ICSharpCode.SharpDevelop.Services
 								break;
 							case BreakpointAction.Condition:
 								if (Evaluate(bookmark.Condition, bookmark.ScriptLanguage))
-									DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber + 1, bookmark.FileName, bookmark.Condition));
+									DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber, bookmark.FileName, bookmark.Condition));
 								else
 									this.debuggedProcess.AsyncContinue();
 								break;
 							case BreakpointAction.Trace:
-								DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAt}") + "\n", bookmark.LineNumber + 1, bookmark.FileName));
+								DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAt}") + "\n", bookmark.LineNumber, bookmark.FileName));
 								break;
 						}
 					});

@@ -38,10 +38,6 @@ namespace ICSharpCode.XmlEditor
 			
 			Document.HighlightingStrategy = HighlightingManager.Manager.FindHighlighter("XML");
 			Document.FoldingManager.FoldingStrategy = new XmlFoldingStrategy();
-			
-			Document.BookmarkManager.Factory = new SDBookmarkFactory(Document.BookmarkManager);
-			Document.BookmarkManager.Added   += new ICSharpCode.TextEditor.Document.BookmarkEventHandler(BookmarkAdded);
-			Document.BookmarkManager.Removed += new ICSharpCode.TextEditor.Document.BookmarkEventHandler(BookmarkRemoved);
 		}
 		
 		/// <summary>
@@ -338,37 +334,6 @@ namespace ICSharpCode.XmlEditor
 			
 			ActiveTextAreaControl.TextArea.EndUpdate();
 			Document.UndoStack.EndUndoGroup();
-		}
-		
-		/// <summary>
-		/// Have to remove the bookmark from the document otherwise the text will
-		/// stay marked in red if the bookmark is a breakpoint.  This is because
-		/// there are two bookmark managers, one in SharpDevelop itself and one
-		/// in the TextEditor library.  By default, only the one in the text editor's
-		/// bookmark manager will be removed, so SharpDevelop will not know about it.
-		/// Removing it from the SharpDevelop BookMarkManager informs the debugger
-		/// service that the breakpoint has been removed so it triggers the removal
-		/// of the text marker.
-		/// </summary>
-		void BookmarkRemoved(object sender, ICSharpCode.TextEditor.Document.BookmarkEventArgs e)
-		{
-			ICSharpCode.SharpDevelop.Bookmarks.SDBookmark b = e.Bookmark as ICSharpCode.SharpDevelop.Bookmarks.SDBookmark;
-			if (b != null) {
-				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(b);
-			}
-		}
-		
-		/// <summary>
-		/// Have to add the bookmark to the BookmarkManager otherwise the bookmark is
-		/// not remembered when re-opening the file and does not show in the 
-		/// bookmark manager.
-		/// </summary>
-		void BookmarkAdded(object sender, ICSharpCode.TextEditor.Document.BookmarkEventArgs e)
-		{
-			ICSharpCode.SharpDevelop.Bookmarks.SDBookmark b = e.Bookmark as ICSharpCode.SharpDevelop.Bookmarks.SDBookmark;
-			if (b != null) {
-				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(b);
-			}
 		}
 	}
 }

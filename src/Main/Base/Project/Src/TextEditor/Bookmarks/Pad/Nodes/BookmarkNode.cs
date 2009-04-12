@@ -21,11 +21,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	public class BookmarkNode : ExtTreeNode
 	{
 		SDBookmark bookmark;
+		LineSegment line;
 		
 		SizeF  spaceSize;
 		static StringFormat sf = (StringFormat)System.Drawing.StringFormat.GenericTypographic.Clone();
-		
-		LineSegment line;
 		
 		string positionText;
 		
@@ -40,8 +39,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			drawDefault = false;
 			this.bookmark = bookmark;
 			Tag = bookmark;
-			Checked = bookmark.IsEnabled;
-			positionText =  "(" + (bookmark.LineNumber + 1) + ") ";
+//			Checked = bookmark.IsEnabled;
+			positionText =  "(" + (bookmark.LineNumber) + ") ";
 			
 			bookmark.DocumentChanged += BookmarkDocumentChanged;
 			bookmark.LineNumberChanged += BookmarkLineNumberChanged;
@@ -54,20 +53,20 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public override void CheckedChanged()
 		{
-			bookmark.IsEnabled = Checked;
+//			bookmark.IsEnabled = Checked;
 		}
 		
 		void BookmarkDocumentChanged(object sender, EventArgs e)
 		{
 			if (bookmark.Document != null) {
-				line = bookmark.Document.GetLineSegment(Math.Min(bookmark.LineNumber, bookmark.Document.TotalNumberOfLines));
-				Text = positionText + bookmark.Document.GetText(line);
+//				line = bookmark.Document.GetLineSegment(Math.Min(bookmark.LineNumber, bookmark.Document.TotalNumberOfLines));
+//				Text = positionText + bookmark.Document.GetText(line);
 			}
 		}
 		
 		void BookmarkLineNumberChanged(object sender, EventArgs e)
 		{
-			positionText =  "(" + (bookmark.LineNumber + 1) + ") ";
+			positionText =  "(" + (bookmark.LineNumber) + ") ";
 			BookmarkDocumentChanged(sender, e);
 		}
 		
@@ -76,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			Graphics g = e.Graphics;
 			int x = MeasureTextWidth(g, positionText, BoldMonospacedFont);
 			if (line != null && !line.IsDeleted) {
-				x += MeasureTextWidth(g, bookmark.Document.GetText(line).Replace("\t", "    "), BoldMonospacedFont);
+//				x += MeasureTextWidth(g, bookmark.Document.GetText(line).Replace("\t", "    "), BoldMonospacedFont);
 			}
 			return x;
 		}
@@ -140,12 +139,12 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					}
 				}
 			} else {
-				DrawDocumentWord(g,
-				                 bookmark.Document.GetText(line),
-				                 new PointF(xPos, yPos),
-				                 RegularMonospacedFont,
-				                 GetTextColor(state, Color.Black)
-				                );
+//				DrawDocumentWord(g,
+//				                 bookmark.Document.GetText(line),
+//				                 new PointF(xPos, yPos),
+//				                 RegularMonospacedFont,
+//				                 GetTextColor(state, Color.Black)
+//				                );
 			}
 		}
 	}

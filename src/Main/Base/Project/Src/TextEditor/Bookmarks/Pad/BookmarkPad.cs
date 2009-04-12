@@ -127,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		protected virtual bool ShowBookmarkInThisPad(SDBookmark mark)
 		{
-			return mark.IsVisibleInBookmarkPad && !(mark is Debugging.BreakpointBookmark);
+			return mark.IsVisibleInBookmarkPad;
 		}
 		
 		void BookmarkManagerAdded(object sender, BookmarkEventArgs e)

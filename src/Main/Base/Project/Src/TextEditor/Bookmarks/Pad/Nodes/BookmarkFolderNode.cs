@@ -118,10 +118,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			Nodes.Clear();
 			if (marks.Count > 0) {
-				IDocument document = marks[0].Document;
-				if (document != null && document.HighlightingStrategy == null) {
-					document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
-				}
+//				IDocument document = marks[0].Document;
+//				if (document != null && document.HighlightingStrategy == null) {
+//					document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
+//				}
 				foreach (SDBookmark mark in marks) {
 					TreeNode newResult = new BookmarkNode(mark);
 					Nodes.Add(newResult);

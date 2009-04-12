@@ -474,6 +474,7 @@
     <EmbeddedResource Include="Resources\CodeTemplatePanel.xfrm" />
     <EmbeddedResource Include="Resources\MarkersTextEditorPanel.xfrm" />
     <EmbeddedResource Include="Resources\SortOptionsDialog.xfrm" />
+    <Compile Include="Src\TextEditor\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\Commands\MenuCommands.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\IBookmarkMargin.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\Pad\Nodes\BookmarkFolderNode.cs" />
@@ -483,6 +484,7 @@
     <Compile Include="Src\TextEditor\Bookmarks\SDBookmark.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkEventHandler.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkManager.cs" />
+    <Compile Include="Src\TextEditor\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Src\TextEditor\ClipboardHandling.cs" />
     <Compile Include="Src\TextEditor\CodeCompletionItemProvider.cs" />
     <Compile Include="Src\TextEditor\Codons\AddInTreeSyntaxModeProvider.cs" />

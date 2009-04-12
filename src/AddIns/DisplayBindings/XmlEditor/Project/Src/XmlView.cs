@@ -366,8 +366,6 @@ namespace ICSharpCode.XmlEditor
 			SetDefaultSchema(extension);
 			
 			xmlEditor.FileName = newFileName;
-			ICSharpCode.SharpDevelop.Bookmarks.SDBookmarkFactory factory = (ICSharpCode.SharpDevelop.Bookmarks.SDBookmarkFactory)xmlEditor.Document.BookmarkManager.Factory;
-			factory.ChangeFilename(newFileName);
 		}
 		
 		/// <summary>
@@ -564,10 +562,6 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			xmlEditor.LoadFile(file.FileName, stream, false, true);
-			foreach (Bookmarks.SDBookmark mark in Bookmarks.BookmarkManager.GetBookmarks(file.FileName)) {
-				mark.Document = xmlEditor.Document;
-				xmlEditor.Document.BookmarkManager.AddMark(mark);
-			}
 			UpdateFolding();
 		}
 		

@@ -5,7 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Bookmarks;
 using System;
+using System.Linq;
 using System.IO;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -56,11 +58,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			isLoading = true;
 			try {
+				BookmarksDetach();
 				codeEditor.FileName = file.FileName;
 				codeEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
 				LoadFormatter();
 				codeEditor.Load(stream);
+				BookmarksAttach();
 			} finally {
 				isLoading = false;
 			}
@@ -82,13 +86,61 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		protected override void OnFileNameChanged(OpenedFile file)
 		{
 			base.OnFileNameChanged(file);
-			if (file == PrimaryFile)
+			if (file == PrimaryFile) {
 				codeEditor.FileName = file.FileName;
+				BookmarksNotifyNameChange(file.FileName);
+			}
 		}
+		
+		#region Bookmark Handling
+		void BookmarksAttach()
+		{
+			foreach (SDBookmark bookmark in BookmarkManager.GetBookmarks(codeEditor.FileName)) {
+				bookmark.Document = codeEditor.Document;
+				bookmark.BookmarkMargin = codeEditor.IconBarMargin;
+				codeEditor.IconBarMargin.Bookmarks.Add(bookmark);
+			}
+			BookmarkManager.Added += BookmarkManager_Added;
+			BookmarkManager.Removed += BookmarkManager_Removed;
+		}
+
+		void BookmarksDetach()
+		{
+			BookmarkManager.Added -= BookmarkManager_Added;
+			BookmarkManager.Removed -= BookmarkManager_Removed;
+			foreach (SDBookmark bookmark in codeEditor.IconBarMargin.Bookmarks.OfType<SDBookmark>()) {
+				if (bookmark.BookmarkMargin == codeEditor.IconBarMargin) {
+					bookmark.Document = null;
+					bookmark.BookmarkMargin = null;
+				}
+			}
+			codeEditor.IconBarMargin.Bookmarks.Clear();
+		}
+		
+		void BookmarkManager_Removed(object sender, BookmarkEventArgs e)
+		{
+			codeEditor.IconBarMargin.Bookmarks.Remove(e.Bookmark);
+		}
+		
+		void BookmarkManager_Added(object sender, BookmarkEventArgs e)
+		{
+			if (FileUtility.IsEqualFileName(this.PrimaryFileName, e.Bookmark.FileName)) {
+				codeEditor.IconBarMargin.Bookmarks.Add(e.Bookmark);
+			}
+		}
+		
+		void BookmarksNotifyNameChange(string newFileName)
+		{
+			foreach (SDBookmark bookmark in codeEditor.IconBarMargin.Bookmarks.OfType<SDBookmark>()) {
+				bookmark.FileName = newFileName;
+			}
+		}
+		#endregion
 		
 		public override void Dispose()
 		{
 			base.Dispose();
+			BookmarksDetach();
 			// Unload document on dispose.
 			codeEditor.Document = null;
 		}

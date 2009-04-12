@@ -329,6 +329,9 @@ Bookmarks.DeleteMark                              = Bookmarks\DeleteMark.png
 Bookmarks.DeleteAllMarks                          = Bookmarks\DeleteAllMarks.png
 Bookmarks.EnableDisableAll                        = Bookmarks\EnableDisableAll.png
 Bookmarks.EnableDisableMark                       = Bookmarks\EnableDisableMark.png
+Bookmarks.Breakpoint                              = Bookmarks\Breakpoint.png
+Bookmarks.DisabledBreakpoint                      = Bookmarks\DisabledBreakpoint.png
+Bookmarks.UnhealthyBreakpoint                     = Bookmarks\UnhealthyBreakpoint.png
 
 #backend icons
 C#.ProjectIcon                                    = backendicons\CSharp\SmallProject.png

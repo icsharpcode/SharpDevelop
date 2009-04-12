@@ -72,12 +72,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			adapter = new TextEditorAdapter(this);
 			
 			Document.FoldingManager.FoldingStrategy = new ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ParserFoldingStrategy();
-			Document.BookmarkManager.Factory = new Bookmarks.SDBookmarkFactory(Document.BookmarkManager);
-			Document.BookmarkManager.Added   += new BookmarkEventHandler(BookmarkAdded);
-			Document.BookmarkManager.Removed += new BookmarkEventHandler(BookmarkRemoved);
-			Document.LineCountChanged += BookmarkLineCountChanged;
+//			Document.BookmarkManager.Factory = new Bookmarks.SDBookmarkFactory(Document.BookmarkManager);
+//			Document.BookmarkManager.Added   += new BookmarkEventHandler(BookmarkAdded);
+//			Document.BookmarkManager.Removed += new BookmarkEventHandler(BookmarkRemoved);
+//			Document.LineCountChanged += BookmarkLineCountChanged;
 		}
 		
+		/*
 		void BookmarkAdded(object sender, BookmarkEventArgs e)
 		{
 			Bookmarks.SDBookmark b = e.Bookmark as Bookmarks.SDBookmark;
@@ -104,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				}
 			}
-		}
+		}*/
 		
 		protected override void InitializeTextAreaControl(TextAreaControl newControl)
 		{
@@ -286,7 +287,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		protected override void OnFileNameChanged(EventArgs e)
 		{
 			base.OnFileNameChanged(e);
-			((Bookmarks.SDBookmarkFactory)Document.BookmarkManager.Factory).ChangeFilename(this.FileName);
 			ActivateQuickClassBrowserOnDemand();
 		}
 		

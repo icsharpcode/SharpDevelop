@@ -251,10 +251,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			bool autodetectEncoding = true;
 			textEditorControl.LoadFile(file.FileName, stream, true, autodetectEncoding);
 			textEditorControl.FileLoaded();
-			foreach (Bookmarks.SDBookmark mark in Bookmarks.BookmarkManager.GetBookmarks(file.FileName)) {
-				mark.Document = textEditorControl.Document;
-				textEditorControl.Document.BookmarkManager.AddMark(mark);
-			}
+//			foreach (Bookmarks.SDBookmark mark in Bookmarks.BookmarkManager.GetBookmarks(file.FileName)) {
+//				mark.Document = textEditorControl.Document;
+//				textEditorControl.Document.BookmarkManager.AddMark(mark);
+//			}
 			ForceFoldingUpdate();
 		}
 		
@@ -392,7 +392,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					                                    textEditorControl.Document.TextContent, false);
 				}
 				textEditorControl.Document.FoldingManager.UpdateFoldings(fileName, parseInfo);
-				UpdateClassMemberBookmarks(parseInfo);
+				//UpdateClassMemberBookmarks(parseInfo);
 			}
 		}
 		
@@ -407,7 +407,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			try {
 				textEditorControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
-				UpdateClassMemberBookmarks(parseInfo);
+				//UpdateClassMemberBookmarks(parseInfo);
 				textEditorControl.ActiveTextAreaControl.TextArea.Refresh(textEditorControl.ActiveTextAreaControl.TextArea.FoldMargin);
 				textEditorControl.ActiveTextAreaControl.TextArea.Refresh(textEditorControl.ActiveTextAreaControl.TextArea.IconBarMargin);
 			} catch (Exception ex) {
@@ -415,6 +415,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
+			/*
 		void UpdateClassMemberBookmarks(ParseInformation parseInfo)
 		{
 			BookmarkManager bm = textEditorControl.Document.BookmarkManager;
@@ -431,7 +432,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void AddClassMemberBookmarks(BookmarkManager bm, IClass c)
 		{
-			/*
 			if (c.IsSynthetic) return;
 			if (!c.Region.IsEmpty) {
 				bm.AddMark(new Bookmarks.ClassBookmark(c));
@@ -454,13 +454,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			foreach (IEvent e in c.Events) {
 				if (e.Region.IsEmpty || e.IsSynthetic) continue;
 				bm.AddMark(new Bookmarks.EventBookmark(e));
-			}*/
+			}
 		}
 		
 		bool IsClassMemberBookmark(Bookmark b)
 		{
 			return b is Bookmarks.ClassMemberBookmark || b is Bookmarks.ClassBookmark;
 		}
+		*/
 		
 		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
 		public bool EnableCut {

@@ -28,9 +28,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public class CodeEditor : TextEditor
 	{
 		readonly CodeEditorAdapter textEditorAdapter;
+		IconBarMargin iconBarMargin;
 		
 		public CodeEditorAdapter TextEditorAdapter {
 			get { return textEditorAdapter; }
+		}
+		
+		public IconBarMargin IconBarMargin {
+			get { return iconBarMargin; }
 		}
 		
 		public string FileName { get; set; }
@@ -51,7 +56,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.DeleteLine, OnDeleteLine));
 			
-			IconBarMargin iconBarMargin = new IconBarMargin { TextView = this.TextArea.TextView };
+			this.iconBarMargin = new IconBarMargin { TextView = this.TextArea.TextView };
 			this.TextArea.LeftMargins.Insert(0, iconBarMargin);
 			this.TextArea.TextView.Services.AddService(typeof(IBookmarkMargin), iconBarMargin);
 		}

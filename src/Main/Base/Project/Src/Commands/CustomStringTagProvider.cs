@@ -110,9 +110,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 					}
 				case "CURTEXT":
 					{
-						var tecp = WorkbenchSingleton.Workbench.ActiveViewContent as DefaultEditor.Gui.Editor.ITextEditorControlProvider;
+						var tecp = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 						if (tecp != null) {
-							return tecp.TextEditorControl.ActiveTextAreaControl.SelectionManager.SelectedText;
+							return tecp.TextEditor.Document.GetText(tecp.TextEditor.SelectionStart, tecp.TextEditor.SelectionLength);
 						}
 						break;
 					}

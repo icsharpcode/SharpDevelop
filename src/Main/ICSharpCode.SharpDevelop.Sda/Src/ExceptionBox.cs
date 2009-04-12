@@ -71,9 +71,16 @@ namespace ICSharpCode.SharpDevelop.Sda
 			ShowErrorBox(exception, message, false);
 		}
 		
+		[ThreadStatic]
+		static bool showingBox;
+		
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		static void ShowErrorBox(Exception exception, string message, bool mustTerminate)
 		{
+			// ignore reentrant calls (e.g. when there's an exception in OnRender)
+			if (showingBox)
+				return;
+			showingBox = true;
 			try {
 				using (ExceptionBox box = new ExceptionBox(exception, message, mustTerminate)) {
 					if (ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.InvokeRequired)
@@ -85,6 +92,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 				LoggingService.Warn("Error showing ExceptionBox", ex);
 				MessageBox.Show(exception.ToString(), message, MessageBoxButtons.OK,
 				                MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+			} finally {
+				showingBox = false;
 			}
 		}
 		

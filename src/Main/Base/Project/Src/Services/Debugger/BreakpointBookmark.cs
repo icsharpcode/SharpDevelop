@@ -5,10 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Drawing;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Debugging
@@ -20,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	public class BreakpointBookmark : SDMarkerBookmark
 	{
 		bool isHealthy = true;
+		bool isEnabled = true;
 		string tooltip;
 		
 		static readonly Color defaultColor = Color.FromArgb(180, 38, 38);
@@ -48,37 +48,63 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return isHealthy;
 			}
 			set {
-				isHealthy = value;
-				if (Document != null && !Anchor.IsDeleted) {
-					Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
-					Document.CommitUpdate();
+				if (isHealthy != value) {
+					isHealthy = value;
+					Redraw();
 				}
 			}
 		}
+		
+		public virtual bool IsEnabled {
+			get {
+				return isEnabled;
+			}
+			set {
+				if (isEnabled != value) {
+					isEnabled = value;
+					if (IsEnabledChanged != null)
+						IsEnabledChanged(this, EventArgs.Empty);
+					Redraw();
+				}
+			}
+		}
+		
+		public event EventHandler IsEnabledChanged;
 		
 		public string Tooltip {
 			get { return tooltip; }
 			set { tooltip = value; }
 		}
 		
-		public BreakpointBookmark(string fileName, IDocument document, TextLocation location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, document, location)
+		public BreakpointBookmark(string fileName, TextLocation location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, location)
 		{
 			this.action = action;
 			this.scriptLanguage = scriptLanguage;
 			this.condition = script;
 		}
 		
-		public override void Draw(IconBarMargin margin, Graphics g, Point p)
-		{
-			margin.DrawBreakpoint(g, p.Y, IsEnabled, IsHealthy);
+		public static readonly IImage BreakpointImage = new ResourceServiceImage("Bookmarks.Breakpoint");
+		public static readonly IImage DisabledBreakpointImage = new ResourceServiceImage("Bookmarks.DisabledBreakpoint");
+		public static readonly IImage UnhealthyBreakpointImage = new ResourceServiceImage("Bookmarks.UnhealthyBreakpoint");
+		
+		public override IImage Image {
+			get {
+				if (!this.IsEnabled)
+					return DisabledBreakpointImage;
+				else if (this.IsHealthy)
+					return BreakpointImage;
+				else
+					return UnhealthyBreakpointImage;
+			}
 		}
 		
+		/*
 		protected override TextMarker CreateMarker()
 		{
 			LineSegment lineSeg = Anchor.Line;
 			TextMarker marker = new TextMarker(lineSeg.Offset, lineSeg.Length, TextMarkerType.SolidBlock, defaultColor, Color.White);
 			Document.MarkerStrategy.AddMarker(marker);
 			return marker;
-		}
+		}*/
 	}
 }

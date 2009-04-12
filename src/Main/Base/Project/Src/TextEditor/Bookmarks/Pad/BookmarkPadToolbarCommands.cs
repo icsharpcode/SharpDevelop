@@ -17,6 +17,7 @@ using System.Windows.Forms;
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	#region Goto Commands
+	/*
 	public class GotoNext : AbstractEditActionMenuCommand
 	{
 		public override IEditAction EditAction {
@@ -34,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 	}
-	
+	*/
 	#endregion Goto Commands
 	
 	#region Delete BookMark(s) commands
@@ -42,11 +43,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	public abstract class AbstractDeleteMarkClass : AbstractMenuCommand
 	{
 		protected void deleteBookMark (BookmarkNode node) {
-			if (node.Bookmark.Document != null) {
-				node.Bookmark.Document.BookmarkManager.RemoveMark(node.Bookmark);
-			} else {
-				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(node.Bookmark);
-			}
+			ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(node.Bookmark);
 		}
 	}
 	

@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
-using ICSharpCode.TextEditor;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -49,13 +49,14 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				SDBookmark bookmark;
 				switch (v[0]) {
 					case "Breakpoint":
-						bookmark = new Debugging.BreakpointBookmark(fileName, null, new TextLocation(columnNumber, lineNumber), action, scriptLanguage, script);
+//						bookmark = new Debugging.BreakpointBookmark(fileName, null, new TextLocation(columnNumber, lineNumber), action, scriptLanguage, script);
+//						bookmark.IsEnabled = bool.Parse(v[4]);
+						throw new NotImplementedException();
 						break;
 					default:
-						bookmark = new SDBookmark(fileName, null, new TextLocation(columnNumber, lineNumber));
+						bookmark = new SDBookmark(fileName, new TextLocation(lineNumber, columnNumber));
 						break;
 				}
-				bookmark.IsEnabled = bool.Parse(v[4]);
 				return bookmark;
 			} else {
 				return base.ConvertFrom(context, culture, value);
@@ -67,11 +68,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			SDBookmark bookmark = value as SDBookmark;
 			if (destinationType == typeof(string) && bookmark != null) {
 				StringBuilder b = new StringBuilder();
-				if (bookmark is Debugging.BreakpointBookmark) {
-					b.Append("Breakpoint");
-				} else {
+//				if (bookmark is Debugging.BreakpointBookmark) {
+//					b.Append("Breakpoint");
+//				} else {
 					b.Append("Bookmark");
-				}
+//				}
 				b.Append('|');
 				b.Append(bookmark.FileName);
 				b.Append('|');
@@ -79,16 +80,16 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				b.Append('|');
 				b.Append(bookmark.ColumnNumber);
 				b.Append('|');
-				b.Append(bookmark.IsEnabled.ToString());
-				if (bookmark is Debugging.BreakpointBookmark) {
-					Debugging.BreakpointBookmark bbm = (Debugging.BreakpointBookmark)bookmark;
-					b.Append('|');
-					b.Append(bbm.Action);
-					b.Append('|');
-					b.Append(bbm.ScriptLanguage);
-					b.Append('|');
-					b.Append(bbm.Condition);
-				}
+//				b.Append(bookmark.IsEnabled.ToString());
+//				if (bookmark is Debugging.BreakpointBookmark) {
+//					Debugging.BreakpointBookmark bbm = (Debugging.BreakpointBookmark)bookmark;
+//					b.Append('|');
+//					b.Append(bbm.Action);
+//					b.Append('|');
+//					b.Append(bbm.ScriptLanguage);
+//					b.Append('|');
+//					b.Append(bbm.Condition);
+//				}
 				return b.ToString();
 			} else {
 				return base.ConvertTo(context, culture, value, destinationType);

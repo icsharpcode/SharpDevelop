@@ -15,6 +15,7 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
+	/*
 	public class CurrentLineBookmark: SDMarkerBookmark
 	{
 		static CurrentLineBookmark instance;
@@ -93,5 +94,5 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			Document.MarkerStrategy.InsertMarker(0, marker);
 			return marker;
 		}
-	}
+	}*/
 }

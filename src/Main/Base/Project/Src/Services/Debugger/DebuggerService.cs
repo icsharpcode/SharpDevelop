@@ -1,26 +1,22 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-using BM = ICSharpCode.SharpDevelop.Bookmarks;
-using ITextAreaToolTipProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextAreaToolTipProvider;
-using ITextEditorControlProvider = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -36,8 +32,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				ClearDebugMessages();
 			};
 			
-			BM.BookmarkManager.Added   += BookmarkAdded;
-			BM.BookmarkManager.Removed += BookmarkRemoved;
+			BookmarkManager.Added   += BookmarkAdded;
+			BookmarkManager.Removed += BookmarkRemoved;
 		}
 		
 		static void GetDescriptors()
@@ -120,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		static void OnDebugStopped(object sender, EventArgs e)
 		{
-			CurrentLineBookmark.Remove();
+			RemoveCurrentLineMarker();
 			WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
 			LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
 			if (DebugStopped != null)
@@ -148,7 +144,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			EnsureDebugCategory();
 			debugCategory.AppendText(msg);
 		}
-
 
 		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointChanged;
 		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointAdded;
@@ -178,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public static IList<BreakpointBookmark> Breakpoints {
 			get {
 				List<BreakpointBookmark> breakpoints = new List<BreakpointBookmark>();
-				foreach (BM.SDBookmark bookmark in BM.BookmarkManager.Bookmarks) {
+				foreach (SDBookmark bookmark in BookmarkManager.Bookmarks) {
 					BreakpointBookmark breakpoint = bookmark as BreakpointBookmark;
 					if (breakpoint != null) {
 						breakpoints.Add(breakpoint);
@@ -188,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		static void BookmarkAdded(object sender, BM.BookmarkEventArgs e)
+		static void BookmarkAdded(object sender, BookmarkEventArgs e)
 		{
 			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
 			if (bb != null) {
@@ -197,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		static void BookmarkRemoved(object sender, BM.BookmarkEventArgs e)
+		static void BookmarkRemoved(object sender, BookmarkEventArgs e)
 		{
 			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
 			if (bb != null) {
@@ -216,26 +211,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber)
 		{
-			/*ReadOnlyCollection<Bookmark> bookmarks = document.BookmarkManager.Marks;
-			for (int i = bookmarks.Count - 1; i >= 0; --i) {
-				BreakpointBookmark breakpoint = bookmarks[i] as BreakpointBookmark;
-				if (breakpoint != null) {
-					if (breakpoint.LineNumber == lineNumber) {
-						document.BookmarkManager.RemoveMark(breakpoint);
-						return;
-					}
-				}
-			}
-			int column = 0;
-			foreach (char ch in document.GetText(document.GetLineSegment(lineNumber))) {
-				if (!char.IsWhiteSpace(ch)) {
-					document.BookmarkManager.AddMark(new BreakpointBookmark(fileName, document, new TextLocation(column, lineNumber), BreakpointAction.Break, "", ""));
-					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
-					document.CommitUpdate();
-					break;
-				}
-				column++;
-			}*/
+			BookmarkManager.ToggleBookmark(
+				editor, lineNumber,
+				b => b.CanToggle && b is BreakpointBookmark,
+				location => new BreakpointBookmark(editor.FileName, location, BreakpointAction.Break, "", ""));
 		}
 		
 		/* TODO: reimplement this stuff
@@ -248,13 +227,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public static void RemoveCurrentLineMarker()
 		{
-			CurrentLineBookmark.Remove();
+//			CurrentLineBookmark.Remove();
 		}
 		
 		public static void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
 		{
 			IViewContent viewContent = FileService.JumpToFilePosition(SourceFullFilename, StartLine, StartColumn);
-			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
+//			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
 		}
 		
 		#region Tool tips
