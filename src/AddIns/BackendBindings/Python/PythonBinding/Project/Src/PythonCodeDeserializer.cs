@@ -63,8 +63,10 @@ namespace ICSharpCode.PythonBinding
 				return Deserialize(callExpression);
 			} else if (binaryExpression != null) {
 				return Deserialize(binaryExpression);
+			} else if (memberExpression != null) {
+				return Deserialize(memberExpression);
 			}
-			return Deserialize(memberExpression);
+			return null;
 		}
 		
 		/// <summary>
@@ -119,7 +121,7 @@ namespace ICSharpCode.PythonBinding
 					}
 				}
 			}
-			return null;
+			return componentCreator.GetComponent(PythonControlFieldExpression.GetVariableName(field.MemberName));
 		}
 		
 		Type GetType(PythonControlFieldExpression field)

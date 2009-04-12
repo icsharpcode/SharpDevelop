@@ -93,6 +93,13 @@ namespace PythonBinding.Tests.Designer
 			Assert.AreEqual(expectedStyles, DeserializeRhsAssignment(pythonCode));
 		}
 		
+		[Test]
+		public void DeserializeNameExpression()
+		{
+			string pythonCode = "self.Items = self";
+			Assert.IsNull(DeserializeRhsAssignment(pythonCode));
+		}
+		
 		/// <summary>
 		/// Deserializes the right hand side of the assignment.
 		/// </summary>

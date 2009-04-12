@@ -124,45 +124,7 @@ namespace ICSharpCode.PythonBinding
 			}
 			return name;
 		}
-				
-		/// <summary>
-		/// Gets the variable name of the control being added.
-		/// </summary>
-		public static string GetControlNameBeingAdded(CallExpression node)
-		{
-			//if (node.Args.Length > 0) {
-				Arg arg = node.Args[0];
-				MemberExpression memberExpression = arg.Expression as MemberExpression;
-				return GetVariableName(memberExpression.Name.ToString());
-			//}
-			//return null;
-		}
 
-		/// <summary>
-		/// Gets the variable name of the parent control adding child controls. An expression of the form:
-		/// 
-		/// self._panel1.Controls.Add
-		/// 
-		/// would return "panel1".
-		/// </summary>
-		/// <returns>Null if the expression is not one of the following forms:
-		/// self.{0}.Controls.Add
-		/// self.Controls.Add
-		/// </returns>
-		public static string GetParentControlNameAddingChildControls(string code)
-		{
-			int endIndex = code.IndexOf(".Controls.Add", StringComparison.InvariantCultureIgnoreCase);
-			if (endIndex > 0) {
-				string controlName = code.Substring(0, endIndex);
-				int startIndex = controlName.LastIndexOf('.');
-				if (startIndex > 0) {
-					return GetVariableName(controlName.Substring(startIndex + 1));
-				} 
-				return String.Empty;
-			}
-			return null;
-		}
-		
 		/// <summary>
 		/// Removes the underscore from the variable name.
 		/// </summary>
@@ -208,6 +170,14 @@ namespace ICSharpCode.PythonBinding
 		
 		/// <summary>
 		/// Gets the member object that matches the field member.
+		/// 
+		/// For a field: 
+		/// 
+		/// self._menuStrip.Items.AddRange() 
+		/// 
+		/// This method returns:
+		/// 
+		/// Items
 		/// </summary>
 		public object GetMember(IComponentCreator componentCreator)
 		{
@@ -216,9 +186,36 @@ namespace ICSharpCode.PythonBinding
 				return null;
 			}
 			
-			Type type = obj.GetType();
 			string[] memberNames = fullMemberName.Split('.');
-			for (int i = 2; i < memberNames.Length; ++i) {
+			return GetMember(obj, memberNames, 2, memberNames.Length - 1);
+		}
+		
+		/// <summary>
+		/// Gets the member object that matches the field member.
+		/// </summary>
+		/// <remarks>
+		/// The member names array should contain all items including self, for example:
+		///  
+		/// self
+		/// Controls
+		/// </remarks>
+		public static object GetMember(object obj, CallExpression expression)
+		{
+			string[] memberNames = GetMemberNames(expression.Target as MemberExpression);
+			return GetMember(obj, memberNames, 1, memberNames.Length - 2);
+		}
+		
+		/// <summary>
+		/// Gets the member that matches the last item in the memberNames array.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="memberNames"></param>
+		/// <param name="startIndex">The point at which to start looking in the memberNames.</param>
+		/// <param name="endIndex">The last memberNames item to look at.</param>
+		static object GetMember(object obj, string[] memberNames, int startIndex, int endIndex)
+		{
+			Type type = obj.GetType();
+			for (int i = startIndex; i <= endIndex; ++i) {
 				string name = memberNames[i];
 				BindingFlags propertyBindingFlags = BindingFlags.Public | BindingFlags.GetField | BindingFlags.Static | BindingFlags.Instance;
 				PropertyInfo property = type.GetProperty(name, propertyBindingFlags);

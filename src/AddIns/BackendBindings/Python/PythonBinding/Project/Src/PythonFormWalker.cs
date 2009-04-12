@@ -104,39 +104,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(CallExpression node)
 		{			
-			MemberExpression memberExpression = node.Target as MemberExpression;
-			if (memberExpression != null) {
-				string name = PythonControlFieldExpression.GetMemberName(memberExpression);
-				if (walkingAssignment) {
-					Type type = componentCreator.GetType(name);
-					if (type != null) {
-						List<object> args = deserializer.GetArguments(node);
-						object instance = componentCreator.CreateInstance(type, args, null, false);
-						if (!SetPropertyValue(fieldExpression.MemberName, instance)) {
-							AddComponent(fieldExpression.MemberName, instance);
-						}
-					} else {
-						object obj = deserializer.Deserialize(node);
-						if (obj != null) {
-							SetPropertyValue(form, fieldExpression.MemberName, obj);
-						} else {
-							throw new PythonFormWalkerException(String.Format("Could not find type '{0}'.", name));
-						}
-					}
-				} else {
-					// Add child controls if expression is of the form self.controlName.Controls.Add.
-					string parentControlName = PythonControlFieldExpression.GetParentControlNameAddingChildControls(name);
-					if (parentControlName != null) {
-						AddChildControl(parentControlName, node);
-					} else {
-						PythonControlFieldExpression field = PythonControlFieldExpression.Create(node);
-						object member = field.GetMember(componentCreator);
-						if (member != null) {
-							object parameter = deserializer.Deserialize(node.Args[0].Expression);
-							member.GetType().InvokeMember(field.MethodName, BindingFlags.InvokeMethod, Type.DefaultBinder, member, new object[] {parameter});
-						}
-					}
-				}
+			if (walkingAssignment) {
+				WalkAssignmentRhs(node);
+			} else {
+				WalkMethodCall(node);
 			}
 			return false;
 		}
@@ -249,16 +220,6 @@ namespace ICSharpCode.PythonBinding
 			return form;
 		}
 		
-		void AddChildControl(string parentControlName, CallExpression node)
-		{
-			string childControlName = PythonControlFieldExpression.GetControlNameBeingAdded(node);
-			Control parentControl = form;
-			if (parentControlName.Length > 0) {
-				parentControl = GetControl(parentControlName);
-			}
-			parentControl.Controls.Add(GetControl(childControlName));
-		}
-		
 		/// <summary>
 		/// Gets the property value from the member expression. The member expression is taken from the
 		/// right hand side of an assignment.
@@ -275,6 +236,64 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return propertyValue;
+		}
+		
+		/// <summary>
+		/// Walks the right hand side of an assignment where the assignment expression is a call expression.
+		/// Typically the call expression will be a constructor call.
+		/// 
+		/// Constructor call: System.Windows.Forms.Form()
+		/// </summary>
+		void WalkAssignmentRhs(CallExpression node)
+		{
+			MemberExpression memberExpression = node.Target as MemberExpression;
+			if (memberExpression != null) {
+				string name = PythonControlFieldExpression.GetMemberName(memberExpression);
+				Type type = componentCreator.GetType(name);
+				if (type != null) {
+					List<object> args = deserializer.GetArguments(node);
+					object instance = componentCreator.CreateInstance(type, args, null, false);
+					if (!SetPropertyValue(fieldExpression.MemberName, instance)) {
+						AddComponent(fieldExpression.MemberName, instance);
+					}
+				} else {
+					object obj = deserializer.Deserialize(node);
+					if (obj != null) {
+						SetPropertyValue(form, fieldExpression.MemberName, obj);
+					} else {
+						throw new PythonFormWalkerException(String.Format("Could not find type '{0}'.", name));
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Walks a method call. Typical method calls are:
+		/// 
+		/// self._menuItem1.Items.AddRange(...)
+		/// 
+		/// This method will execute the method call.
+		/// </summary>
+		void WalkMethodCall(CallExpression node)
+		{
+			if (node.Args.Length == 0) {
+				// Ignore method calls with no parameters.
+				return;
+			}
+			
+			// Try to get the object being called. Try the form first then
+			// look for other controls.
+			object member = PythonControlFieldExpression.GetMember(form, node);
+			PythonControlFieldExpression field = PythonControlFieldExpression.Create(node);
+			if (member == null) {
+				member = field.GetMember(componentCreator);
+			}
+			
+			// Execute the method on the object.
+			if (member != null) {
+				object parameter = deserializer.Deserialize(node.Args[0].Expression);
+				member.GetType().InvokeMember(field.MethodName, BindingFlags.InvokeMethod, Type.DefaultBinder, member, new object[] {parameter});							
+			}
 		}
 	}
 }

@@ -30,34 +30,6 @@ namespace PythonBinding.Tests.Designer
 		}
 		
 		[Test]
-		public void ParentControlNameAddingChildControls()
-		{
-			string code = "self._panel1.Controls.Add";
-			Assert.AreEqual("panel1", PythonControlFieldExpression.GetParentControlNameAddingChildControls(code));
-		}
-
-		[Test]
-		public void EmptyControlNameAddingChildControls()
-		{
-			string code = "self.Controls.Add";
-			Assert.AreEqual(String.Empty, PythonControlFieldExpression.GetParentControlNameAddingChildControls(code));
-		}
-
-		[Test]
-		public void CaseInsensitiveCheckForControlsAddStatement()
-		{
-			string code = "self._panel1.controls.add";
-			Assert.AreEqual("panel1", PythonControlFieldExpression.GetParentControlNameAddingChildControls(code));
-		}
-		
-		[Test]
-		public void CodeDoesNotIncludeControlsAddStatement()
-		{
-			string code = "self._panel1.SuspendLayout";
-			Assert.IsNull(PythonControlFieldExpression.GetParentControlNameAddingChildControls(code));
-		}
-		
-		[Test]
 		public void GetVariableName()
 		{
 			Assert.AreEqual("abc", PythonControlFieldExpression.GetVariableName("_abc"));
@@ -108,14 +80,6 @@ namespace PythonBinding.Tests.Designer
 		}
 		
 		[Test]
-		public void GetControlNameBeingAdded()
-		{
-			string code = "self.Controls.Add(self._menuItem1)";
-			CallExpression expression = PythonParserHelper.GetCallExpression(code);
-			Assert.AreEqual("menuItem1", PythonControlFieldExpression.GetControlNameBeingAdded(expression));
-		}
-		
-		[Test]
 		public void MethodName()
 		{
 			string code = "self.menuItem.Items.Add(self._fileMenuItem)";
@@ -123,6 +87,15 @@ namespace PythonBinding.Tests.Designer
 			PythonControlFieldExpression field = PythonControlFieldExpression.Create(expression);
 			AssertAreEqual(field, "menuItem", "Items", "Add", "self.menuItem.Items");
 		}
+		
+		[Test]
+		public void MethodNameWithNoVariableName()
+		{
+			string code = "self.Items.Add(self._fileMenuItem)";
+			CallExpression expression = PythonParserHelper.GetCallExpression(code);
+			PythonControlFieldExpression field = PythonControlFieldExpression.Create(expression);
+			AssertAreEqual(field, String.Empty, "Items", "Add", "self.Items");
+		}		
 		
 		[Test]
 		public void GetMemberNames()
@@ -146,7 +119,7 @@ namespace PythonBinding.Tests.Designer
 			using (MenuStrip menuStrip = new MenuStrip()) {
 				MockComponentCreator creator = new MockComponentCreator();
 				creator.Add(menuStrip, "menuStrip1");
-				Assert.AreEqual(menuStrip.Items, field.GetMember(creator));
+				Assert.AreSame(menuStrip.Items, field.GetMember(creator));
 			}
 		}
 		
@@ -163,7 +136,21 @@ namespace PythonBinding.Tests.Designer
 				creator.Add(menuStrip, "unknown");
 				Assert.IsNull(field.GetMember(creator));
 			}
-		}			
+		}
+		
+		[Test]
+		public void GetObjectInMethodCallFromSpecifiedObject()
+		{
+			string pythonCode = "self.Controls.AddRange(System.Array[System.Windows.Forms.ToolStripItem](\r\n" +
+						"    [self._fileToolStripMenuItem,\r\n" +
+						"    self._editToolStripMenuItem]))";
+			
+			CallExpression callExpression = PythonParserHelper.GetCallExpression(pythonCode);
+			
+			using (Form form = new Form()) {
+				Assert.AreSame(form.Controls, PythonControlFieldExpression.GetMember(form, callExpression));
+			}
+		}
 		
 		void AssertAreEqual(PythonControlFieldExpression field, string variableName, string memberName, string methodName, string fullMemberName)
 		{

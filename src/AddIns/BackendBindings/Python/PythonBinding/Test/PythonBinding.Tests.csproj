@@ -148,6 +148,7 @@
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
     <Compile Include="Designer\DeserializeAssignmentTestFixtureBase.cs" />
     <Compile Include="Designer\DeserializeColorFromArgbTestFixture.cs" />
+    <Compile Include="Designer\DeserializeComponentAssignmentTestFixture.cs" />
     <Compile Include="Designer\DeserializeStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeToolStripItemArrayTestFixture.cs" />
     <Compile Include="Designer\EnabledSetUsingPropertyDescriptorTestFixture.cs" />
