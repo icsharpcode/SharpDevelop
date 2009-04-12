@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string fileName = ctl.FileName;
 			if (fileName != null) {
 				Caret caret = ctl.ActiveTextAreaControl.Caret;
-				FileService.JumpToFilePosition(fileName, caret.Line, caret.Column);
+				FileService.JumpToFilePosition(fileName, caret.Line + 1, caret.Column + 1);
 				
 				// refresh DefinitionView to show the definition of the expression that was double-clicked
 				UpdateTick(null);

@@ -75,10 +75,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 					b.Append(t.FileName);
 					if (t.Line >= 0) {
 						b.Append(':');
-						b.Append(t.Line + 1);
-						if (t.Column > 0) {
+						b.Append(t.Line);
+						if (t.Column > 1) {
 							b.Append(',');
-							b.Append(t.Column + 1);
+							b.Append(t.Column);
 						}
 					}
 				}

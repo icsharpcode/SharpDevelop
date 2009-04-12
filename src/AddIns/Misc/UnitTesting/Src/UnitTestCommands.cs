@@ -73,7 +73,7 @@ namespace ICSharpCode.UnitTesting
 			if (filePosition.Position.IsEmpty) {
 				FileService.OpenFile(filePosition.FileName);
 			} else {
-				FileService.JumpToFilePosition(filePosition.FileName, filePosition.Line - 1, filePosition.Column - 1);
+				FileService.JumpToFilePosition(filePosition.FileName, filePosition.Line, filePosition.Column);
 			}
 		}
 	}

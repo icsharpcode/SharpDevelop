@@ -34,9 +34,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Match match = Regex.Match(lineText, @"\b(\w:[/\\].*?)\((\d+),(\d+)\)");
 				if (match.Success) {
 					try	{
-						// Take off 1 for line/col since SharpDevelop is zero index based.
-						int line = Convert.ToInt32(match.Groups[2].Value) - 1;
-						int col = Convert.ToInt32(match.Groups[3].Value) - 1;
+						int line = Convert.ToInt32(match.Groups[2].Value);
+						int col = Convert.ToInt32(match.Groups[3].Value);
 						
 						return new FileLineReference(match.Groups[1].Value, line, col);
 					} catch (FormatException) {
@@ -88,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Match match = Regex.Match(lineText, @"\sin\s(.*?):line\s(\d+)?\r?$", regexOptions);
 				while (match.Success) {
 					try	{
-						int line = Convert.ToInt32(match.Groups[2].Value) - 1;
+						int line = Convert.ToInt32(match.Groups[2].Value);
 						result = new FileLineReference(match.Groups[1].Value, line);
 					} catch (FormatException) {
 					} catch (OverflowException) {
@@ -115,8 +114,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				if (match.Success) {
 					try	{
-						// Take off 1 for line/pos since SharpDevelop is zero index based.
-						int line = Convert.ToInt32(match.Groups[2].Value) - 1;
+						int line = Convert.ToInt32(match.Groups[2].Value);
 						
 						return new FileLineReference(match.Groups[1].Value.Trim(), line);
 					} catch (FormatException) {

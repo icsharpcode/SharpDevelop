@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop
 					DisposeChild = false
 				};
 			} else if (content is string) {
-				contentControl.Content = new TextBlock { 
+				contentControl.Content = new TextBlock {
 					Text = content.ToString(),
 					TextWrapping = TextWrapping.Wrap
 				};
@@ -160,5 +160,37 @@ namespace ICSharpCode.SharpDevelop
 				contentControl.Content = content;
 			}
 		}
+		
+		#region System.Drawing <-> WPF conversions
+		public static System.Drawing.Point ToSystemDrawing(this Point p)
+		{
+			return new System.Drawing.Point((int)p.X, (int)p.Y);
+		}
+		
+		public static System.Drawing.Size ToSystemDrawing(this Size s)
+		{
+			return new System.Drawing.Size((int)s.Width, (int)s.Height);
+		}
+		
+		public static System.Drawing.Rectangle ToSystemDrawing(this Rect r)
+		{
+			return new System.Drawing.Rectangle(r.TopLeft.ToSystemDrawing(), r.Size.ToSystemDrawing());
+		}
+		
+		public static Point ToWpf(this System.Drawing.Point p)
+		{
+			return new Point(p.X, p.Y);
+		}
+		
+		public static Size ToWpf(this System.Drawing.Size s)
+		{
+			return new Size(s.Width, s.Height);
+		}
+		
+		public static Rect ToWpf(this System.Drawing.Rectangle rect)
+		{
+			return new Rect(rect.Location.ToWpf(), rect.Size.ToWpf());
+		}
+		#endregion
 	}
 }

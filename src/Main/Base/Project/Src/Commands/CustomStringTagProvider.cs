@@ -98,14 +98,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 					{
 						IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
 						if (positionable != null)
-							return (positionable.Line + 1).ToString();
+							return positionable.Line.ToString();
 						break;
 					}
 				case "CURCOL":
 					{
 						IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
 						if (positionable != null)
-							return (positionable.Column + 1).ToString();
+							return positionable.Column.ToString();
 						break;
 					}
 				case "CURTEXT":

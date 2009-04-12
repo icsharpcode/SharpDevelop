@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			if (node != null) {
 				SDBookmark mark = node.Tag as SDBookmark;
 				if (mark != null) {
-					FileService.JumpToFilePosition(mark.FileName, mark.LineNumber, 0);
+					FileService.JumpToFilePosition(mark.FileName, mark.LineNumber, 1);
 				}
 			}
 		}

@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public static void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
 		{
-			IViewContent viewContent = FileService.JumpToFilePosition(SourceFullFilename, StartLine - 1, StartColumn - 1);
+			IViewContent viewContent = FileService.JumpToFilePosition(SourceFullFilename, StartLine, StartColumn);
 			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
 		}
 		

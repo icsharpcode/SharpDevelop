@@ -272,7 +272,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				                                                             ClassBrowserIconService.GotoArrow.Bitmap);
 				gotoDefinitionItem.ShortcutKeys = Keys.Control | Keys.Enter;
 				gotoDefinitionItem.Click += delegate {
-					FileService.JumpToFilePosition(cu.FileName, region.BeginLine - 1, region.BeginColumn - 1);
+					FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn);
 				};
 				item.DropDown.Items.Add(gotoDefinitionItem);
 				item.DropDown.Items.Add(new ToolStripSeparator());

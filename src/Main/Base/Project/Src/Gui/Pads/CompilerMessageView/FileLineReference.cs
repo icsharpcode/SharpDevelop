@@ -22,12 +22,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// The file line.
 		/// </summary>
-		int line = 0;
+		int line;
 		
 		/// <summary>
 		/// The line column.
 		/// </summary>
-		int column = 0;
+		int column ;
 		
 		
 		/// <summary>
@@ -43,7 +43,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// Gets or sets the line number 
+		/// Gets or sets the line number. The first line has the number 1.
+		/// The value '0' means that no line information is available.
 		/// </summary>
 		public int Line {
 			get	{
@@ -55,7 +56,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}	
 		
 		/// <summary>
-		/// Gets or sets the line column. 
+		/// Gets or sets the line column. The first line has the number 1.
+		/// The value '0' means that no column information is available.
 		/// </summary>
 		public int Column {
 			get	{

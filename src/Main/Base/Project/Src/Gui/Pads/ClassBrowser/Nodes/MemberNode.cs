@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		public override void ActivateItem()
 		{
 			if (FileName != null) {
-				FileService.JumpToFilePosition(FileName, line - 1, column - 1);
+				FileService.JumpToFilePosition(FileName, line, column);
 			}
 		}
 	}

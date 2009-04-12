@@ -465,7 +465,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		/// <summary>
 		/// Opens the specified file and jumps to the specified file position.
-		/// Warning: Unlike parser coordinates, line and column are 0-based.
+		/// Line and column start counting at 1.
 		/// </summary>
 		public static IViewContent JumpToFilePosition(string fileName, int line, int column)
 		{
@@ -486,7 +486,7 @@ namespace ICSharpCode.SharpDevelop
 					content.WorkbenchWindow.ActiveViewContent = content;
 					NavigationService.ResumeLogging();
 					loggingResumed = true;
-					((IPositionable)content).JumpTo(Math.Max(0, line), Math.Max(0, column));
+					((IPositionable)content).JumpTo(Math.Max(1, line), Math.Max(1, column));
 				} else {
 					NavigationService.ResumeLogging();
 					loggingResumed = true;

@@ -155,13 +155,13 @@ namespace WixBinding.Tests.Gui
 		[Test]
 		public void XmlErrorDialogItemErrorLine()
 		{
-			Assert.AreEqual(9, xmlErrorDialogErrorLine);
+			Assert.AreEqual(10, xmlErrorDialogErrorLine);
 		}
 		
 		[Test]
 		public void XmlErrorDialogItemErrorColumn()
 		{
-			Assert.AreEqual(4, xmlErrorDialogErrorColumn);
+			Assert.AreEqual(5, xmlErrorDialogErrorColumn);
 		}
 		
 		[Test]

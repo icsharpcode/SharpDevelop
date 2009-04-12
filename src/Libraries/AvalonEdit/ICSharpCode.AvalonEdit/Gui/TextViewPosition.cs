@@ -56,6 +56,14 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <summary>
 		/// Creates a new TextViewPosition instance.
 		/// </summary>
+		public TextViewPosition(int line, int column)
+			: this(line, column, -1)
+		{
+		}
+		
+		/// <summary>
+		/// Creates a new TextViewPosition instance.
+		/// </summary>
 		public TextViewPosition(TextLocation location, int visualColumn)
 		{
 			this.line = location.Line;
@@ -67,10 +75,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// Creates a new TextViewPosition instance.
 		/// </summary>
 		public TextViewPosition(TextLocation location)
+			: this(location, -1)
 		{
-			this.line = location.Line;
-			this.column = location.Column;
-			this.visualColumn = -1;
 		}
 		
 		/// <inheritdoc/>

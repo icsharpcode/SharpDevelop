@@ -162,17 +162,17 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (!CheckTask(task)) return;
 			if (task.Line >= 0 && task.Line < textEditor.Document.TotalNumberOfLines) {
 				LineSegment line = textEditor.Document.GetLineSegment(task.Line);
-				int offset = line.Offset + task.Column;
+				int offset = line.Offset + task.Column - 1;
 				int length = 1;
 				if (line.Words != null) {
 					foreach (TextWord tw in line.Words) {
-						if (task.Column == tw.Offset) {
+						if (task.Column - 1 == tw.Offset) {
 							length = tw.Length;
 							break;
 						}
 					}
 				}
-				if (length == 1 && task.Column < line.Length) {
+				if (length == 1 && task.Column - 1 < line.Length) {
 					length = 2; // use minimum length
 				}
 				textEditor.Document.MarkerStrategy.AddMarker(new VisualError(offset, length, task));

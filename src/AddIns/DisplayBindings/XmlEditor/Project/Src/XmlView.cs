@@ -461,7 +461,7 @@ namespace ICSharpCode.XmlEditor
 			// Open schema.
 			if (schemaObject != null && schemaObject.SourceUri != null && schemaObject.SourceUri.Length > 0) {
 				string fileName = schemaObject.SourceUri.Replace("file:///", String.Empty);
-				FileService.JumpToFilePosition(fileName, schemaObject.LineNumber - 1, schemaObject.LinePosition - 1);
+				FileService.JumpToFilePosition(fileName, schemaObject.LineNumber, schemaObject.LinePosition);
 			}
 		}
 		

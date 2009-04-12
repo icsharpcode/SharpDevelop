@@ -15,20 +15,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public interface IPositionable
 	{
 		/// <summary>
-		/// Sets the 'caret' to the position pos, where pos.Y is the line (starting from 0).
-		/// And pos.X is the column (starting from 0 too).
+		/// Sets the 'caret' to the position pos, where pos.Y is the line (starting from 1).
+		/// And pos.X is the column (starting from 1 too).
 		/// </summary>
 		void JumpTo(int line, int column);
 		
 		/// <summary>
-		/// gets the 'caret' position line (starting from 0)
+		/// gets the 'caret' position line (starting from 1)
 		/// </summary>
 		int Line {
 			get;
 		}
 
 		/// <summary>
-		/// gets the 'caret' position column (starting from 0)
+		/// gets the 'caret' position column (starting from 1)
 		/// </summary>
 		int Column {
 			get;

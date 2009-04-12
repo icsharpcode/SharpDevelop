@@ -40,11 +40,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public GotoDialog()
 		{
 			InitializeComponent();
-//			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
-			textBox.Focus();
+			FormLocationHelper.ApplyWindow(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
 			ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
+			textBox.Focus();
 		}
-
+		
 		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
 			// refresh the list box contents when parsing has completed
@@ -390,7 +390,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void GotoRegion(DomRegion region, string fileName)
 		{
 			if (fileName != null && !region.IsEmpty) {
-				FileService.JumpToFilePosition(fileName, region.BeginLine - 1, region.BeginColumn - 1);
+				FileService.JumpToFilePosition(fileName, region.BeginLine, region.BeginColumn);
 			}
 		}
 		
@@ -428,7 +428,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (flref.Line <= 0) {
 						FileService.OpenFile(flref.FileName);
 					} else {
-						FileService.JumpToFilePosition(flref.FileName, flref.Line - 1, flref.Column);
+						FileService.JumpToFilePosition(flref.FileName, flref.Line, flref.Column);
 					}
 				} else {
 					throw new NotImplementedException("Unknown tag: " + tag);

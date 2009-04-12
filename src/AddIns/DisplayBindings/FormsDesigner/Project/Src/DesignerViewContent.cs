@@ -596,7 +596,7 @@ namespace ICSharpCode.FormsDesigner
 				if (FileUtility.IsEqualFileName(file, this.primaryViewContent.PrimaryFileName)) {
 					ShowSourceCode(position);
 				} else {
-					FileService.JumpToFilePosition(file, position - 1, 0);
+					FileService.JumpToFilePosition(file, position, 0);
 				}
 			}
 		}

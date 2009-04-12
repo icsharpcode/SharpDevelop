@@ -268,7 +268,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				string fileName = cu.FileName;
 				if (fileName != null) {
 					if (!member.Region.IsEmpty) {
-						viewContent = FileService.JumpToFilePosition(fileName, member.Region.BeginLine - 1, member.Region.BeginColumn - 1);
+						viewContent = FileService.JumpToFilePosition(fileName, member.Region.BeginLine, member.Region.BeginColumn);
 					} else {
 						FileService.OpenFile(fileName);
 					}
@@ -286,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				string fileName = cu.FileName;
 				if (fileName != null) {
 					if (!member.Region.IsEmpty) {
-						viewContent = FileService.JumpToFilePosition(fileName, member.Region.EndLine, 0);
+						viewContent = FileService.JumpToFilePosition(fileName, member.Region.EndLine + 1, 1);
 					} else {
 						FileService.OpenFile(fileName);
 					}

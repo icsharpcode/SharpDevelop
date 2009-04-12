@@ -262,7 +262,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			if (baseClass != null) {
 				string fileName = baseClass.CompilationUnit.FileName;
 				if (fileName != null) {
-					FileService.JumpToFilePosition(fileName, baseClass.Region.BeginLine - 1, baseClass.Region.BeginColumn - 1);
+					FileService.JumpToFilePosition(fileName, baseClass.Region.BeginLine, baseClass.Region.BeginColumn);
 				}
 			}
 		}

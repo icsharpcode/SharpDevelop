@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public override void ActivateItem()
 		{
-			FileService.JumpToFilePosition(bookmark.FileName, bookmark.LineNumber, 0);
+			FileService.JumpToFilePosition(bookmark.FileName, bookmark.LineNumber, 1);
 		}
 		
 		float DrawDocumentWord(Graphics g, string word, PointF position, Font font, Color foreColor)

@@ -18,7 +18,7 @@ namespace ICSharpCode.WixBinding
 		int column;
 		
 		public SetupDialogErrorListViewItem(string fileName, XmlException ex)
-			: this(fileName, ex.LineNumber - 1, ex.LinePosition - 1)
+			: this(fileName, ex.LineNumber, ex.LinePosition)
 		{
 		}
 		

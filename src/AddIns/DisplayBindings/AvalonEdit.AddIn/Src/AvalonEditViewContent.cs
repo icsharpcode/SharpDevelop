@@ -15,7 +15,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	public class AvalonEditViewContent : AbstractViewContent, IEditable, IMementoCapable, ITextEditorProvider
+	public class AvalonEditViewContent : AbstractViewContent, IEditable, IMementoCapable, ITextEditorProvider, IPositionable
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		
@@ -143,6 +143,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return codeEditor.TextEditorAdapter.Document;
 			else
 				return null;
+		}
+		#endregion
+		
+		#region IPositionable
+		public int Line {
+			get { return codeEditor.TextArea.Caret.Line; }
+		}
+		
+		public int Column {
+			get { return codeEditor.TextArea.Caret.Column; }
+		}
+		
+		public void JumpTo(int line, int column)
+		{
+			codeEditor.TextArea.Caret.Position = new ICSharpCode.AvalonEdit.Gui.TextViewPosition(line, column);
 		}
 		#endregion
 	}

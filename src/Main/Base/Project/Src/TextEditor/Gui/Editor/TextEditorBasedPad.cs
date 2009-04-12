@@ -95,25 +95,25 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		#region IPositionable implementation
 		void IPositionable.JumpTo(int line, int column)
 		{
-			this.TextEditorControl.ActiveTextAreaControl.JumpTo(line, column);
+			this.TextEditorControl.ActiveTextAreaControl.JumpTo(line - 1, column - 1);
 			
 			// we need to delay this call here because the text editor does not know its height if it was just created
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					this.TextEditorControl.ActiveTextAreaControl.CenterViewOn(
-						line, (int)(0.3 * this.TextEditorControl.ActiveTextAreaControl.TextArea.TextView.VisibleLineCount));
+						line - 1, (int)(0.3 * this.TextEditorControl.ActiveTextAreaControl.TextArea.TextView.VisibleLineCount));
 				});
 		}
 		
 		int IPositionable.Line {
 			get {
-				return this.TextEditorControl.ActiveTextAreaControl.Caret.Line;
+				return this.TextEditorControl.ActiveTextAreaControl.Caret.Line + 1;
 			}
 		}
 		
 		int IPositionable.Column {
 			get {
-				return this.TextEditorControl.ActiveTextAreaControl.Caret.Column;
+				return this.TextEditorControl.ActiveTextAreaControl.Caret.Column + 1;
 			}
 		}
 		#endregion

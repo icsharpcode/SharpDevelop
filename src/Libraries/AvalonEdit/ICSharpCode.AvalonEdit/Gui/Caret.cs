@@ -89,7 +89,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public int Line {
 			get { return position.Line; }
 			set {
-				this.Position = new TextViewPosition(new TextLocation(value, position.Column));
+				this.Position = new TextViewPosition(value, position.Column);
 			}
 		}
 		
@@ -99,7 +99,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		public int Column {
 			get { return position.Column; }
 			set {
-				this.Position = new TextViewPosition(new TextLocation(position.Line, value));
+				this.Position = new TextViewPosition(position.Line, value);
 			}
 		}
 		

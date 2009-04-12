@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// The line number of the task. Zero-based (text editor coordinate)
+		/// The line number of the task. Starts counting at 1.
 		/// </summary>
 		public int Line {
 			get {
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// The column number of the task. Zero-based (text editor coordinate)
+		/// The column number of the task. Starts counting at 1.
 		/// </summary>
 		public int Column {
 			get {
@@ -114,8 +114,8 @@ namespace ICSharpCode.SharpDevelop
 		public Task(BuildError error)
 		{
 			type         = error.IsWarning ? TaskType.Warning : TaskType.Error;
-			column       = Math.Max(error.Column - 1, 0);
-			line         = Math.Max(error.Line - 1, 0);
+			column       = Math.Max(error.Column, 1);
+			line         = Math.Max(error.Line, 1);
 			fileName     = error.FileName;
 			if (string.IsNullOrEmpty(error.ErrorCode)) {
 				description = error.ErrorText;

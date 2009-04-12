@@ -117,7 +117,7 @@ namespace SearchAndReplace
 		
 		public override void ActivateItem()
 		{
-			FileService.JumpToFilePosition(result.FileName, startPosition.Y, startPosition.X);
+			FileService.JumpToFilePosition(result.FileName, startPosition.Y + 1, startPosition.X + 1);
 		}
 	}
 }

@@ -581,7 +581,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void JumpTo(string fileName, int line, int column)
 		{
-			FileService.JumpToFilePosition(fileName, line, column);
+			FileService.JumpToFilePosition(fileName, line + 1, column + 1);
 		}
 		
 		/// <summary>

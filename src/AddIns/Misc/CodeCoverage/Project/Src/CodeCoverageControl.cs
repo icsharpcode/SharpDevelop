@@ -298,7 +298,7 @@ namespace ICSharpCode.CodeCoverage
 			if (listView.SelectedItems.Count > 0) {
 				CodeCoverageSequencePoint sequencePoint = (CodeCoverageSequencePoint)listView.SelectedItems[0].Tag;
 				if (sequencePoint.Document.Length > 0) {
-					FileService.JumpToFilePosition(sequencePoint.Document, sequencePoint.Line - 1, sequencePoint.Column - 1);
+					FileService.JumpToFilePosition(sequencePoint.Document, sequencePoint.Line, sequencePoint.Column);
 				}
 			}
 		}
@@ -517,7 +517,7 @@ namespace ICSharpCode.CodeCoverage
 			string fileName = textEditorControl.FileName;
 			if (fileName != null) {
 				Caret caret = textEditorControl.ActiveTextAreaControl.Caret;
-				FileService.JumpToFilePosition(fileName, caret.Line, caret.Column);
+				FileService.JumpToFilePosition(fileName, caret.Line + 1, caret.Column + 1);
 			}
 		}
 		
