@@ -177,8 +177,11 @@ namespace ICSharpCode.PythonBinding
 			AppendEventHandlers(propertyOwnerName, control);
 			
 			MenuStrip menuStrip = control as MenuStrip;
+			ComboBox comboBox = control as ComboBox;
 			if (menuStrip != null) {
 				AppendMenuStripItems(menuStrip);
+			} else if (comboBox != null) {
+				AppendSystemArray(comboBox.Name, "Items.AddRange", typeof(Object).FullName, comboBox.Items);
 			}
 
 			if (addChildControlProperties) {
@@ -413,7 +416,12 @@ namespace ICSharpCode.PythonBinding
 						AppendLine();
 						AppendIndented(String.Empty);
 					}
-					Append("self._" + ((IComponent)components[i]).Site.Name);
+					object component = components[i];
+					if (component is IComponent) {
+						Append("self._" + ((IComponent)component).Site.Name);
+					} else {
+						Append(PythonPropertyValueAssignment.ToString(component));
+					}
 				}
 				Append("]))");
 				AppendLine();

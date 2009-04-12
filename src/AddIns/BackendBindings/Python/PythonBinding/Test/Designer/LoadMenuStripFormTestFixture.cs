@@ -19,7 +19,7 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	[TestFixture]
-	public class LoadMenuStripTestFixture : LoadFormTestFixtureBase
+	public class LoadMenuStripFormTestFixture : LoadFormTestFixtureBase
 	{		
 		public override string PythonCode {
 			get {
