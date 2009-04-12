@@ -74,9 +74,14 @@ namespace PythonBinding.Tests.Designer
 			throw new NotImplementedException();
 		}
 		
-		public void Add(System.ComponentModel.IComponent component, string name)
+		public void Add(IComponent component, string name)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public IComponent GetComponent(string name)
+		{
+			return null;
 		}
 		
 		public object CreateInstance(Type type, ICollection arguments, string name, bool addToContainer)

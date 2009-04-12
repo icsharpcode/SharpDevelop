@@ -48,10 +48,10 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void AddedComponentsContainsTextBox()
 		{
-			CreatedInstance instance = GetCreatedInstance(typeof(TextBox));
+			CreatedInstance instance = ComponentCreator.GetCreatedInstance(typeof(TextBox));
 			
 			AddedComponent c = new AddedComponent(instance.Object as IComponent, "textBox1");
-			Assert.Contains(c, AddedComponents);
+			Assert.Contains(c, ComponentCreator.AddedComponents);
 		}
 		
 		[Test]

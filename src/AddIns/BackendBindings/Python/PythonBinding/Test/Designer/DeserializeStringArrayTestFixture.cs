@@ -18,28 +18,29 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	/// <summary>
-	/// Tests that the string "System.Drawing.Color.FromArgb(0, 192, 10)" can be converted to an object by the 
-	/// PythonCodeDeserializer.
+	/// Tests that the string "System.Array" can be converted to an array.
 	/// </summary>
 	[TestFixture]
-	public class DeserializeColorFromArgbTestFixture : DeserializeAssignmentTestFixtureBase
+	public class DeserializeStringArrayTestFixture : DeserializeAssignmentTestFixtureBase
 	{		
 		public override string GetPythonCode()
 		{
-			return "self.BackColor = System.Drawing.Color.FromArgb(0, 192, 10)";
+			return "self.Items = System.Array[System.String](\r\n" +
+				"    [\"a\",\r\n" + 
+				"    \"b\"])";
 		}
 		
 		[Test]
-		public void DeserializedObjectIsExpectedCustomColor()
+		public void DeserializedObjectIsExpectedArray()
 		{
-			Color customColor = Color.FromArgb(0, 192, 10);
-			Assert.AreEqual(customColor, deserializedObject);
+			string[] expectedArray = new string[] {"a", "b"};
+			Assert.AreEqual(expectedArray, deserializedObject);
 		}
 		
 		[Test]
-		public void ColorTypeResolved()
+		public void StringTypeResolved()
 		{
-			Assert.AreEqual("System.Drawing.Color", componentCreator.LastTypeNameResolved);
+			Assert.AreEqual("System.String", componentCreator.LastTypeNameResolved);
 		}
 	}
 }

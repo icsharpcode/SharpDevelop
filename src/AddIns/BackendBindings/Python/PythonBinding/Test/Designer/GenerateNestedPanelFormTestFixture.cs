@@ -100,9 +100,9 @@ namespace PythonBinding.Tests.Designer
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Controls.Add(self._panel1)\r\n" +
-								"    self._panel1.ResumeLayout(false)\r\n" +
+								"    self._panel1.ResumeLayout(False)\r\n" +
 								"    self._panel1.PerformLayout()\r\n" +
-								"    self._panel2.ResumeLayout(false)\r\n" +
+								"    self._panel2.ResumeLayout(False)\r\n" +
 								"    self._panel2.PerformLayout()\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";

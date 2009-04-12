@@ -38,7 +38,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void CursorsTypeResolved()
 		{
-			Assert.AreEqual("System.Windows.Forms.Cursors", base.LastTypeNameResolved);
+			Assert.AreEqual("System.Windows.Forms.Cursors", base.componentCreator.LastTypeNameResolved);
 		}
 	}
 }

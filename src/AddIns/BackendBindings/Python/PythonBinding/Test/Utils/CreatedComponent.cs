@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 
 namespace PythonBinding.Tests.Utils
 {
@@ -14,14 +15,16 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class CreatedComponent 
 	{		
-		public CreatedComponent(string typeName, string name)
+		public CreatedComponent(string typeName, string name, IComponent component)
 		{
 			TypeName = typeName;
 			Name = name;
+			Component = component;
 		}
 		
 		public string TypeName { get; set; }	
 		public string Name { get; set; }
+		public IComponent Component { get; set; }
 		
 		public override bool Equals(object obj)
 		{

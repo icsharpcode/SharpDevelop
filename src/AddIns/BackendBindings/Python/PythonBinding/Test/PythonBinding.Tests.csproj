@@ -148,6 +148,8 @@
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
     <Compile Include="Designer\DeserializeAssignmentTestFixtureBase.cs" />
     <Compile Include="Designer\DeserializeColorFromArgbTestFixture.cs" />
+    <Compile Include="Designer\DeserializeStringArrayTestFixture.cs" />
+    <Compile Include="Designer\DeserializeToolStripItemArrayTestFixture.cs" />
     <Compile Include="Designer\EnabledSetUsingPropertyDescriptorTestFixture.cs" />
     <Compile Include="Designer\FindInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\GenerateAcceptButtonFormTestFixture.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="Designer\GenerateFormPaddingTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateMenuStripFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateMenuStripItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateNestedPanelFormTestFixture.cs" />
     <Compile Include="Designer\GeneratePanelFormTestFixture.cs" />
@@ -169,6 +172,7 @@
     <Compile Include="Designer\GenerateSimpleFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTextBoxFormTestFixture.cs" />
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
+    <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertNewEventHandlerTestFixture.cs" />
     <Compile Include="Designer\InsertSecondEventHandlerTestFixture.cs" />
@@ -183,6 +187,7 @@
     <Compile Include="Designer\LoadFontTestFixture.cs" />
     <Compile Include="Designer\LoadFormTestFixtureBase.cs" />
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
+    <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxOnPanelTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxTestFixture.cs" />
@@ -191,6 +196,7 @@
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
     <Compile Include="Designer\PythonCodeDeserializerTests.cs" />
+    <Compile Include="Designer\PythonControlFieldExpressionTests.cs" />
     <Compile Include="Designer\PythonGeneratorTestFixture.cs" />
     <Compile Include="Designer\IsFormDesignableTestFixture.cs" />
     <Compile Include="Designer\NullGeneratorPassedToLoader.cs" />
@@ -253,6 +259,7 @@
     <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Utils\MockClass.cs" />
+    <Compile Include="Utils\MockComponentCreator.cs" />
     <Compile Include="Utils\MockDesignerGenerator.cs" />
     <Compile Include="Utils\MockDesignerLoaderHost.cs" />
     <Compile Include="Utils\MockEditableViewContent.cs" />
@@ -281,6 +288,7 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <Compile Include="Parsing\AddInvalidSourceSpanToErrorSinkTestFixture.cs" />
+    <Compile Include="Utils\PythonParserHelper.cs" />
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>

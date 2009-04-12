@@ -27,7 +27,6 @@ namespace ICSharpCode.PythonBinding
 		PythonControlFieldExpression fieldExpression;
 		IComponentCreator componentCreator;
 		bool walkingAssignment;
-		Dictionary<string, object> createdObjects = new Dictionary<string, object>();
 		string formName = String.Empty;
 		PythonCodeDeserializer deserializer;
 		
@@ -65,7 +64,7 @@ namespace ICSharpCode.PythonBinding
 				
 		public override bool Walk(FunctionDefinition node)
 		{
-			if (IsInitializeComponentMethod(node)) {			
+			if (IsInitializeComponentMethod(node)) {
 				form = (Form)componentCreator.CreateComponent(typeof(Form), formName);
 				node.Body.Walk(this);
 			}
@@ -78,7 +77,6 @@ namespace ICSharpCode.PythonBinding
 				MemberExpression lhsMemberExpression = node.Left[0] as MemberExpression;
 				if (lhsMemberExpression != null) {
 					fieldExpression = PythonControlFieldExpression.Create(lhsMemberExpression);
-					
 					MemberExpression rhsMemberExpression = node.Right as MemberExpression;
 					if (rhsMemberExpression != null) {
 						object propertyValue = GetPropertyValueFromAssignmentRhs(rhsMemberExpression);
@@ -130,6 +128,13 @@ namespace ICSharpCode.PythonBinding
 					string parentControlName = PythonControlFieldExpression.GetParentControlNameAddingChildControls(name);
 					if (parentControlName != null) {
 						AddChildControl(parentControlName, node);
+					} else {
+						PythonControlFieldExpression field = PythonControlFieldExpression.Create(node);
+						object member = field.GetMember(componentCreator);
+						if (member != null) {
+							object parameter = deserializer.Deserialize(node.Args[0].Expression);
+							member.GetType().InvokeMember(field.MethodName, BindingFlags.InvokeMethod, Type.DefaultBinder, member, new object[] {parameter});
+						}
 					}
 				}
 			}
@@ -187,19 +192,18 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		bool SetPropertyValue(string name, object propertyValue)
 		{
-			Control control = GetCurrentControl();
-			return SetPropertyValue(control, name, propertyValue);
+			return SetPropertyValue(GetCurrentComponent(), name, propertyValue);
 		}
 		
 		/// <summary>
-		/// Sets the value of a property on the control.
+		/// Sets the value of a property on the component.
 		/// </summary>
-		bool SetPropertyValue(Control control, string name, object propertyValue)
+		bool SetPropertyValue(object component, string name, object propertyValue)
 		{
-			PropertyDescriptor property = TypeDescriptor.GetProperties(control).Find(name, true);
+			PropertyDescriptor property = TypeDescriptor.GetProperties(component).Find(name, true);
 			if (property != null) {
 				propertyValue = ConvertPropertyValue(property, propertyValue);
-				property.SetValue(control, propertyValue);
+				property.SetValue(component, propertyValue);
 				return true;
 			}
 			return false;
@@ -222,9 +226,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		Control GetControl(string name)
 		{
-			object o = null;
-			createdObjects.TryGetValue(name, out o);
-			return o as Control;
+			return componentCreator.GetComponent(name) as Control;
 		}
 
 		/// <summary>
@@ -234,16 +236,15 @@ namespace ICSharpCode.PythonBinding
 		{
 			string variableName = PythonControlFieldExpression.GetVariableName(name);
 			componentCreator.Add(component as IComponent, variableName);
-			createdObjects.Add(variableName, component);
 		}
 				
 		/// <summary>
 		/// Gets the current control being walked.
 		/// </summary>
-		Control GetCurrentControl()
+		object GetCurrentComponent()
 		{
 			if (fieldExpression.VariableName.Length > 0) {
-				return GetControl(fieldExpression.VariableName);
+				return componentCreator.GetComponent(fieldExpression.VariableName);
 			}
 			return form;
 		}

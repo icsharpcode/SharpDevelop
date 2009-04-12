@@ -130,9 +130,8 @@ namespace ICSharpCode.PythonBinding
 		
 		void GenerateInitializeComponentMethodBodyInternal(Form form)
 		{
-			AppendChildControlCreation(form.Controls);
+			AppendChildControlCreation(form);
 			AppendChildControlSuspendLayout(form.Controls);
-
 			AppendIndentedLine("self.SuspendLayout()");
 			AppendForm(form);			
 			AppendChildControlResumeLayout(form.Controls);
@@ -166,30 +165,25 @@ namespace ICSharpCode.PythonBinding
 		{
 			AppendComment(control.Name);
 
-			string propertyOwnerName = String.Empty;
-			if (addControlNameToProperty) {
-				propertyOwnerName = control.Name;
-			}
-			
-			foreach (PropertyDescriptor property in GetSerializableProperties(control)) {
-				AppendProperty(propertyOwnerName, control, property);
-			}
+			string propertyOwnerName = GetPropertyOwnerName(control, addControlNameToProperty);
+			AppendProperties(propertyOwnerName, control);
 			
 			foreach (Control childControl in control.Controls) {
-				if (IsSitedControl(childControl)) {
+				if (IsSitedComponent(childControl)) {
 					AppendIndentedLine(GetPropertyName(propertyOwnerName, "Controls") + ".Add(self._" + childControl.Name + ")");
 				}
 			}
-	
-			if (addChildControlProperties) {
-				foreach (Control childControl in control.Controls) {
-					if (IsSitedControl(childControl)) {
-						AppendControl(childControl, true, true);
-					}
-				}
-			}
-			
+
 			AppendEventHandlers(propertyOwnerName, control);
+			
+			MenuStrip menuStrip = control as MenuStrip;
+			if (menuStrip != null) {
+				AppendMenuStripItems(menuStrip);
+			}
+
+			if (addChildControlProperties) {
+				AppendChildControlProperties(control.Controls);
+			}
 		}
 		
 		/// <summary>
@@ -236,6 +230,11 @@ namespace ICSharpCode.PythonBinding
 		{
 			++indent;
 		}
+		
+		void DecreaseIndent()
+		{
+			--indent;
+		}
 
 		void Append(string text)
 		{
@@ -260,19 +259,52 @@ namespace ICSharpCode.PythonBinding
 			codeBuilder.Append(text);
 		}
 		
+		void AppendChildControlCreation(Control parentControl)
+		{
+			MenuStrip menuStrip = parentControl as MenuStrip;
+			if (menuStrip != null) {
+				AppendChildControlCreation(menuStrip.Items);
+			} else {
+				AppendChildControlCreation(parentControl.Controls);
+			}
+		}
+			
 		void AppendChildControlCreation(Control.ControlCollection controls)
 		{
 			foreach (Control control in controls) {
-				if (IsSitedControl(control)) {
-					AppendControlCreation(control);
-					AppendChildControlCreation(control.Controls);
+				if (IsSitedComponent(control)) {
+					AppendComponentCreation(control);
+					AppendChildControlCreation(control);
 				}
 			}
 		}
 		
-		void AppendControlCreation(Control control)
+		void AppendChildControlCreation(ToolStripItemCollection toolStripItems)
 		{
-			AppendIndentedLine("self._" + control.Name + " = " + control.GetType().FullName + "()");
+			foreach (ToolStripItem item in toolStripItems) {
+				if (IsSitedComponent(item)) {
+					AppendComponentCreation(item);
+				}
+				ToolStripMenuItem menuItem = item as ToolStripMenuItem;
+				if (menuItem != null) {
+					AppendChildControlCreation(menuItem.DropDownItems);
+				}
+			}
+		}
+				
+		void AppendComponentCreation(Control control)
+		{	
+			AppendComponentCreation(control.Name, control);
+		}
+		
+		void AppendComponentCreation(ToolStripItem item)
+		{
+			AppendComponentCreation(item.Name, item);
+		}
+
+		void AppendComponentCreation(string name, object obj)
+		{	
+			AppendIndentedLine("self._" + name + " = " + obj.GetType().FullName + "()");
 		}
 		
 		void AppendChildControlSuspendLayout(Control.ControlCollection controls)
@@ -282,21 +314,20 @@ namespace ICSharpCode.PythonBinding
 		
 		void AppendChildControlResumeLayout(Control.ControlCollection controls)
 		{
-			AppendChildControlLayoutMethodCalls(controls, new string[] {"ResumeLayout(false)", "PerformLayout()"});
+			AppendChildControlLayoutMethodCalls(controls, new string[] {"ResumeLayout(False)", "PerformLayout()"});
 		}
 	
-		
 		void AppendChildControlLayoutMethodCalls(Control.ControlCollection controls, string[] methods)
 		{
 			foreach (Control control in controls) {
-				if (HasSitedChildControls(control)) {
+				if (HasSitedChildComponents(control)) {
 					foreach (string method in methods) {
 						AppendIndentedLine("self._" + control.Name + "." + method);
 					}
 					AppendChildControlLayoutMethodCalls(control.Controls, methods);
 				}
 			}
-		}
+		}		
 		
 		/// <summary>
 		/// Generates code that wires an event to an event handler.
@@ -326,22 +357,133 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 		
-		static bool IsSitedControl(Control control)
+		static bool IsSitedComponent(IComponent component)
 		{
-			return control.Site != null;
+			return component.Site != null;
 		}
 		
-		bool HasSitedChildControls(Control control)
+		bool HasSitedChildComponents(Control control)
 		{
+			MenuStrip menuStrip = control as MenuStrip;
+			if (menuStrip != null) {
+				return HasSitedComponents(menuStrip.Items);
+			}
+			
 			if (control.Controls.Count > 0) {
 				foreach (Control childControl in control.Controls) {
-					if (!IsSitedControl(childControl)) {
+					if (!IsSitedComponent(childControl)) {
 						return false;
 					}
 				}
 				return true;
 			}
 			return false;
+		}
+		
+		bool HasSitedComponents(ToolStripItemCollection items)
+		{	
+			foreach (ToolStripItem item in items) {
+				if (IsSitedComponent(item)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Adds ToolStripItems that are stored on the MenuStrip.
+		/// </summary>
+		void AppendMenuStripItems(MenuStrip menuStrip)
+		{
+			List<ToolStripItem> items = GetSitedToolStripItems(menuStrip.Items);
+			AppendMenuStripItemsAddRange(menuStrip.Name, items);
+			AppendToolStripItems(items);
+		}
+		
+		void AppendSystemArray(string componentName, string methodName, string typeName, IList components)
+		{
+			if (components.Count > 0) {
+				AppendIndentedLine("self._" + componentName + "." + methodName + "(System.Array[" + typeName + "](");
+				IncreaseIndent();
+				for (int i = 0; i < components.Count; ++i) {
+					if (i == 0) {
+						AppendIndented("[");
+					} else {
+						Append(",");
+						AppendLine();
+						AppendIndented(String.Empty);
+					}
+					Append("self._" + ((IComponent)components[i]).Site.Name);
+				}
+				Append("]))");
+				AppendLine();
+				DecreaseIndent();
+			}
+		}
+		
+		void AppendMenuStripItemsAddRange(string menuStripName, List<ToolStripItem> items)
+		{
+			AppendSystemArray(menuStripName, "Items.AddRange", typeof(ToolStripItem).FullName, items);
+		}
+		
+		List<ToolStripItem> GetSitedToolStripItems(ToolStripItemCollection items)
+		{
+			List<ToolStripItem> sitedItems = new List<ToolStripItem>();
+			foreach (ToolStripItem item in items) {
+				if (IsSitedComponent(item)) {
+					sitedItems.Add(item);
+				}
+			}
+			return sitedItems;
+		}
+		
+		void AppendToolStripItems(IList items)
+		{
+			foreach (ToolStripItem item in items) {
+				AppendToolStripItem(item);
+			}
+		}
+		
+		void AppendToolStripItem(ToolStripItem item)
+		{
+			AppendComment(item.Name);		
+			AppendProperties(item.Name, item);
+			
+			ToolStripMenuItem menuItem = item as ToolStripMenuItem;
+			if (menuItem != null) {
+				List<ToolStripItem> sitedItems = GetSitedToolStripItems(menuItem.DropDownItems);
+				AppendToolStripMenuItemDropDownItems(menuItem.Name, sitedItems);
+				AppendToolStripItems(sitedItems);
+			}
+		}
+		
+		void AppendToolStripMenuItemDropDownItems(string menuItemName, List<ToolStripItem> items)
+		{
+			AppendSystemArray(menuItemName, "DropDownItems.AddRange", typeof(ToolStripItem).FullName, items);
+		}
+		
+		void AppendProperties(string propertyOwnerName, object obj)
+		{
+			foreach (PropertyDescriptor property in GetSerializableProperties(obj)) {
+				AppendProperty(propertyOwnerName, obj, property);
+			}			
+		}
+		
+		string GetPropertyOwnerName(Control control, bool addControlNameToProperty)
+		{
+			if (addControlNameToProperty) {
+				return control.Name;
+			}
+			return String.Empty;
+		}
+		
+		void AppendChildControlProperties(Control.ControlCollection controls)
+		{
+			foreach (Control childControl in controls) {
+				if (IsSitedComponent(childControl)) {
+					AppendControl(childControl, true, true);
+				}
+			}			
 		}
 	}
 }

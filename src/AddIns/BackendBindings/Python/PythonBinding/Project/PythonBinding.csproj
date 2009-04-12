@@ -77,7 +77,6 @@
     <Compile Include="Src\IsPythonRunningCondition.cs" />
     <Compile Include="Src\ITextEditor.cs" />
     <Compile Include="Src\NRefactoryToPythonConverter.cs" />
-    <Compile Include="Src\NRefactoryToPythonConverterOld.cs" />
     <Compile Include="Src\PythonAstWalker.cs" />
     <Compile Include="Src\PythonCodeCompletionBinding.cs" />
     <Compile Include="Src\PythonCodeDeserializer.cs" />

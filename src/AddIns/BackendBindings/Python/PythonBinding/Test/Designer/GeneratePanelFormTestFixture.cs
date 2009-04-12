@@ -26,6 +26,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
 				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+				IEventBindingService eventBindingService = new MockEventBindingService(host);
 				Form form = (Form)host.RootComponent;			
 				form.ClientSize = new Size(284, 264);
 				
@@ -43,6 +44,13 @@ namespace PythonBinding.Tests.Designer
 				textBox.Size = new Size(110, 20);
 				panel.Controls.Add(textBox);
 				
+				// Add an event handler to the panel to check that this code is generated
+				// before the text box is initialized.
+				EventDescriptorCollection events = TypeDescriptor.GetEvents(panel);
+				EventDescriptor clickEvent = events.Find("Click", false);
+				PropertyDescriptor clickEventProperty = eventBindingService.GetEventProperty(clickEvent);
+				clickEventProperty.SetValue(panel, "Panel1Click");
+
 				form.Controls.Add(panel);
 				
 				string indentString = "    ";
@@ -67,6 +75,7 @@ namespace PythonBinding.Tests.Designer
 								"    self._panel1.Size = System.Drawing.Size(100, 120)\r\n" +
 								"    self._panel1.TabIndex = 0\r\n" +
 								"    self._panel1.Controls.Add(self._textBox1)\r\n" +
+								"    self._panel1.Click += self.Panel1Click\r\n" +
 								"    # \r\n" +
 								"    # textBox1\r\n" +
 								"    # \r\n" +
@@ -80,7 +89,7 @@ namespace PythonBinding.Tests.Designer
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Controls.Add(self._panel1)\r\n" +
-								"    self._panel1.ResumeLayout(false)\r\n" +
+								"    self._panel1.ResumeLayout(False)\r\n" +
 								"    self._panel1.PerformLayout()\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";

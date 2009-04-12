@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
 using System.Text;
 using IronPython.Compiler.Ast;
 
@@ -23,12 +25,14 @@ namespace ICSharpCode.PythonBinding
 		string memberName = String.Empty;
 		string fullMemberName = String.Empty;
 		string variableName = String.Empty;
+		string methodName = String.Empty;
 		
-		PythonControlFieldExpression(string memberName, string fullMemberName)
+		PythonControlFieldExpression(string memberName, string variableName, string methodName, string fullMemberName)
 		{
 			this.memberName = memberName;
+			this.variableName = variableName;
+			this.methodName = methodName;
 			this.fullMemberName = fullMemberName;
-			this.variableName = GetVariableNameFromSelfReference(fullMemberName);
 		}
 		
 		/// <summary>
@@ -53,6 +57,32 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Returns the method being called by the field reference.
+		/// </summary>
+		public string MethodName {
+			get { return methodName; }
+		}
+		
+		public override string ToString()
+		{
+			return fullMemberName;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			PythonControlFieldExpression rhs = obj as PythonControlFieldExpression;
+			if (rhs != null) {
+				return rhs.fullMemberName == fullMemberName;
+			}
+			return false;
+		}
+		
+		public override int GetHashCode()
+		{
+			return fullMemberName.GetHashCode();			
+		}
+		
+		/// <summary>
 		/// Creates a PythonControlField from a member expression:
 		/// 
 		/// self._textBox1
@@ -60,11 +90,28 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public static PythonControlFieldExpression Create(MemberExpression expression)
 		{
-			string memberName = expression.Name.ToString();
-			string fullMemberName = PythonControlFieldExpression.GetMemberName(expression);
-			return new PythonControlFieldExpression(memberName, fullMemberName);
+			return Create(GetMemberNames(expression));
 		}
 				
+		/// <summary>
+		/// Creates a PythonControlField from a call expression:
+		/// 
+		/// self._menuItem1.Items.AddRange(...)
+		/// </summary>
+		public static PythonControlFieldExpression Create(CallExpression expression)
+		{
+			string[] allNames = GetMemberNames(expression.Target as MemberExpression);
+			
+			// Remove last member since it is the method name.
+			int lastItemIndex = allNames.Length - 1;
+			string[] memberNames = new string[lastItemIndex];
+			Array.Copy(allNames, memberNames, lastItemIndex);
+			
+			PythonControlFieldExpression field = Create(memberNames);
+			field.methodName = allNames[lastItemIndex];
+			return field;
+		}
+		
 		/// <summary>
 		/// From a name such as "System.Windows.Forms.Cursors.AppStarting" this method returns:
 		/// "System.Windows.Forms.Cursors"
@@ -122,7 +169,7 @@ namespace ICSharpCode.PythonBinding
 		public static string GetVariableName(string name)
 		{
 			if (!String.IsNullOrEmpty(name)) {
-				if (name.Length > 1) {
+				if (name.Length > 0) {
 					if (name[0] == '_') {
 						return name.Substring(1);
 					}
@@ -136,22 +183,57 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public static string GetMemberName(MemberExpression expression)
 		{
-			StringBuilder typeName = new StringBuilder();
-			
+			return GetMemberName(GetMemberNames(expression));
+		}
+				
+		/// <summary>
+		/// Gets the member names that make up the MemberExpression in order.
+		/// </summary>
+		public static string[] GetMemberNames(MemberExpression expression)
+		{
+			List<string> names = new List<string>();
 			while (expression != null) {
-				typeName.Insert(0, expression.Name);
-				typeName.Insert(0, ".");
+				names.Insert(0, expression.Name.ToString());
 				
 				NameExpression nameExpression = expression.Target as NameExpression;
 				expression = expression.Target as MemberExpression;
 				if (expression == null) {
 					if (nameExpression != null) {
-						typeName.Insert(0, nameExpression.Name);
+						names.Insert(0, nameExpression.Name.ToString());
 					}
 				}
 			}
+			return names.ToArray();
+		}
+		
+		/// <summary>
+		/// Gets the member object that matches the field member.
+		/// </summary>
+		public object GetMember(IComponentCreator componentCreator)
+		{
+			object obj = componentCreator.GetComponent(variableName);
+			if (obj == null) {
+				return null;
+			}
 			
-			return typeName.ToString();
+			Type type = obj.GetType();
+			string[] memberNames = fullMemberName.Split('.');
+			for (int i = 2; i < memberNames.Length; ++i) {
+				string name = memberNames[i];
+				BindingFlags propertyBindingFlags = BindingFlags.Public | BindingFlags.GetField | BindingFlags.Static | BindingFlags.Instance;
+				PropertyInfo property = type.GetProperty(name, propertyBindingFlags);
+				if (property != null) {
+					obj = property.GetValue(obj, null);
+				} else {
+					return null;
+				}
+			}
+			return obj;
+		}
+		
+		static string GetMemberName(string[] names)
+		{
+			return String.Join(".", names);
 		}
 		
 		/// <summary>
@@ -173,6 +255,16 @@ namespace ICSharpCode.PythonBinding
 				return String.Empty;
 			}
 			return name;
-		}		
+		}
+		
+		static PythonControlFieldExpression Create(string[] memberNames)
+		{
+			string memberName = String.Empty;
+			if (memberNames.Length > 1) {
+				memberName = memberNames[memberNames.Length - 1];
+			}
+			string fullMemberName = PythonControlFieldExpression.GetMemberName(memberNames);
+			return new PythonControlFieldExpression(memberName, GetVariableNameFromSelfReference(fullMemberName), String.Empty, fullMemberName);			
+		}
 	}
 }

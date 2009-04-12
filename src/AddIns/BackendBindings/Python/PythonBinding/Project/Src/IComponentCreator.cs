@@ -35,6 +35,13 @@ namespace ICSharpCode.PythonBinding
 		void Add(IComponent component, string name);
 		
 		/// <summary>
+		/// Gets a component that have been added via the Add method.
+		/// </summary>
+		/// <param name="name">The component name.</param>
+		/// <returns>Null if the component cannot be found.</returns>
+		IComponent GetComponent(string name);
+		
+		/// <summary>
 		/// Creates a new instance of the object given its type.
 		/// </summary>
 		/// <param name="arguments">Arguments passed to the type's constructor.</param>

@@ -18,14 +18,16 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	[TestFixture]
-	public class PythonCodeDeserializerTests : LoadFormTestFixtureBase
+	public class PythonCodeDeserializerTests
 	{
 		PythonCodeDeserializer deserializer;
+		MockComponentCreator componentCreator;
 		
 		[TestFixtureSetUp]
-		public new void SetUpFixture()
+		public void SetUpFixture()
 		{
-			deserializer = new PythonCodeDeserializer(this);
+			componentCreator = new MockComponentCreator();
+			deserializer = new PythonCodeDeserializer(componentCreator);
 		}
 		
 		[Test]
@@ -40,31 +42,28 @@ namespace PythonBinding.Tests.Designer
 		public void UnknownTypeName()
 		{
 			string pythonCode = "self.Cursors = System.Windows.Forms.UnknownType.AppStarting";
-			Assert.IsNull(Deserialize(pythonCode));
+			Assert.IsNull(DeserializeRhsAssignment(pythonCode));
 		}
 
 		[Test]
 		public void UnknownPropertyName()
 		{
 			string pythonCode = "self.Cursors = System.Windows.Forms.Cursors.UnknownCursorsProperty";			
-			Assert.IsNull(Deserialize(pythonCode));
+			Assert.IsNull(DeserializeRhsAssignment(pythonCode));
 		}
 		
 		[Test]
 		public void UnknownTypeNameInCallExpression()
 		{
 			string pythonCode = "self.Cursors = System.Windows.Forms.UnknownType.CreateDefaultCursor()";
-			Assert.IsNull(Deserialize(pythonCode));
+			Assert.IsNull(DeserializeRhsAssignment(pythonCode));
 		}
 
 		[Test]
 		public void EnumReturnedInArgumentsPassedToConstructor()
 		{
 			string pythonCode = "self.Font = System.Drawing.Font(\"Times New Roman\", System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)";
-			PythonParser parser = new PythonParser();
-			PythonAst ast = parser.CreateAst(@"snippet.py", pythonCode);
-			SuiteStatement suiteStatement = (SuiteStatement)ast.Body;
-			AssignmentStatement assignment = suiteStatement.Statements[0] as AssignmentStatement;
+			AssignmentStatement assignment = PythonParserHelper.GetAssignmentStatement(pythonCode);
 			
 			List<object> expectedArgs = new List<object>();
 			expectedArgs.Add("Times New Roman");
@@ -82,7 +81,7 @@ namespace PythonBinding.Tests.Designer
 			string pythonCode = "self.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom";
 			
 			AnchorStyles expectedStyles = AnchorStyles.Top | AnchorStyles.Bottom;
-			Assert.AreEqual(expectedStyles, Deserialize(pythonCode));
+			Assert.AreEqual(expectedStyles, DeserializeRhsAssignment(pythonCode));
 		}
 
 		[Test]
@@ -91,19 +90,15 @@ namespace PythonBinding.Tests.Designer
 			string pythonCode = "self.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left";
 			
 			AnchorStyles expectedStyles = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-			Assert.AreEqual(expectedStyles, Deserialize(pythonCode));
+			Assert.AreEqual(expectedStyles, DeserializeRhsAssignment(pythonCode));
 		}
 		
 		/// <summary>
 		/// Deserializes the right hand side of the assignment.
 		/// </summary>
-		object Deserialize(string pythonCode)
+		object DeserializeRhsAssignment(string pythonCode)
 		{
-			PythonParser parser = new PythonParser();
-			PythonAst ast = parser.CreateAst(@"snippet.py", pythonCode);
-			SuiteStatement suiteStatement = (SuiteStatement)ast.Body;
-			AssignmentStatement assignment = suiteStatement.Statements[0] as AssignmentStatement;
-			return deserializer.Deserialize(assignment.Right);
+			return deserializer.Deserialize(PythonParserHelper.GetAssignmentStatement(pythonCode).Right);
 		}
 	}
 }

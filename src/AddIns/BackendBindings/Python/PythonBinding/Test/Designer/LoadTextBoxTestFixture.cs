@@ -49,17 +49,17 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void AddedComponentsContainsTextBox()
 		{
-			CreatedInstance instance = GetCreatedInstance(typeof(TextBox));
+			CreatedInstance instance = ComponentCreator.GetCreatedInstance(typeof(TextBox));
 			
 			AddedComponent component = new AddedComponent(instance.Object as IComponent, "textBox1");
-			Assert.Contains(component, AddedComponents);
+			Assert.Contains(component, ComponentCreator.AddedComponents);
 		}
 
 		[Test]
 		public void TextBoxInstanceCreated()
 		{
 			CreatedInstance instance = new CreatedInstance(typeof(TextBox), new List<object>(), null, false);
-			Assert.Contains(instance, CreatedInstances);
+			Assert.Contains(instance, ComponentCreator.CreatedInstances);
 		}
 
 		[Test]
@@ -71,7 +71,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void TextBoxObjectMatchesObjectAddedToComponentCreator()
 		{
-			CreatedInstance instance = GetCreatedInstance(typeof(TextBox));
+			CreatedInstance instance = ComponentCreator.GetCreatedInstance(typeof(TextBox));
 			Assert.AreSame(TextBox, instance.Object as TextBox);			
 		}
 		
@@ -90,7 +90,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void CreatedInstancesDoesNotIncludeLocation()
 		{
-			Assert.IsNull(GetCreatedInstance("Location"));
+			Assert.IsNull(ComponentCreator.GetCreatedInstance("Location"));
 		}
 		
 		[Test]

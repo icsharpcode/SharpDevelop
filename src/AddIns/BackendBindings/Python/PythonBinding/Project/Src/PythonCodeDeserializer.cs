@@ -85,20 +85,16 @@ namespace ICSharpCode.PythonBinding
 		/// Deserializes expressions of the form:
 		/// 
 		/// 1) System.Drawing.Color.FromArgb(0, 192, 0)
+		/// 2) System.Array[String](["a", "b"])
 		/// </summary>
 		object Deserialize(CallExpression callExpression)
 		{
 			MemberExpression memberExpression = callExpression.Target as MemberExpression;
-			PythonControlFieldExpression field = PythonControlFieldExpression.Create(memberExpression);			
-			Type type = GetType(field);
-			if (type != null) {		
-				foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.Static)) {
-					if (method.Name == field.MemberName) {
-						if (method.GetParameters().Length == callExpression.Args.Length) {
-							return method.Invoke(null, GetArguments(callExpression).ToArray());
-						}
-					}
-				}
+			IndexExpression indexExpression = callExpression.Target as IndexExpression;
+			if (memberExpression != null) {
+				return DeserializeMethodCallExpression(callExpression, memberExpression);
+			} else if (indexExpression != null) {
+				return DeserializeCreateArrayExpression(callExpression, indexExpression);
 			}
 			return null;
 		}
@@ -129,6 +125,52 @@ namespace ICSharpCode.PythonBinding
 		Type GetType(PythonControlFieldExpression field)
 		{
 			return componentCreator.GetType(PythonControlFieldExpression.GetPrefix(field.FullMemberName));
+		}
+		
+		/// <summary>
+		/// Deserializes a call expression where the target is an array expression.
+		/// 
+		/// System.Array[String](["a", "b"])
+		/// </summary>
+		object DeserializeCreateArrayExpression(CallExpression callExpression, IndexExpression target)
+		{
+			ListExpression list = callExpression.Args[0].Expression as ListExpression;
+			MemberExpression arrayTypeMemberExpression = target.Index as MemberExpression;
+			Type arrayType = componentCreator.GetType(PythonControlFieldExpression.GetMemberName(arrayTypeMemberExpression));
+			Array array = Array.CreateInstance(arrayType, list.Items.Length);
+			for (int i = 0; i < list.Items.Length; ++i) {
+				Expression listItemExpression = list.Items[i];
+				ConstantExpression constantExpression = listItemExpression as ConstantExpression;
+				MemberExpression memberExpression = listItemExpression as MemberExpression;
+				if (constantExpression != null) {
+					array.SetValue(constantExpression.Value, i);
+				} else if (memberExpression != null) {
+					string name = PythonControlFieldExpression.GetVariableName(memberExpression.Name.ToString());
+					array.SetValue(componentCreator.GetComponent(name), i);
+				}
+			}
+			return array;			
+		}
+		
+		/// <summary>
+		/// Deserializes an expression of the form:
+		/// 
+		/// System.Drawing.Color.FromArgb(0, 192, 0)
+		/// </summary>
+		object DeserializeMethodCallExpression(CallExpression callExpression, MemberExpression memberExpression)
+		{
+			PythonControlFieldExpression field = PythonControlFieldExpression.Create(memberExpression);			
+			Type type = GetType(field);
+			if (type != null) {		
+				foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.Static)) {
+					if (method.Name == field.MemberName) {
+						if (method.GetParameters().Length == callExpression.Args.Length) {
+							return method.Invoke(null, GetArguments(callExpression).ToArray());
+						}
+					}
+				}
+			}
+			return null;
 		}
 	}
 }
