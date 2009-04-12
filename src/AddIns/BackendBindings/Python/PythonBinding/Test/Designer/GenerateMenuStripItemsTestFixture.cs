@@ -22,6 +22,10 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateMenuStripItemsFormTestFixture
 	{
 		string generatedPythonCode;
+		Size fileMenuItemSize;
+		Size openMenuItemSize;
+		Size exitMenuItemSize;
+		Size editMenuItemSize;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -45,15 +49,12 @@ namespace PythonBinding.Tests.Designer
 				
 				// Add menu strip items.
 				ToolStripMenuItem fileMenuItem = (ToolStripMenuItem)host.CreateComponent(typeof(ToolStripMenuItem), "fileToolStripMenuItem");
-				fileMenuItem.Size = new Size(37, 20);
 				fileMenuItem.Text = "&File";
 				
 				ToolStripMenuItem openMenuItem = (ToolStripMenuItem)host.CreateComponent(typeof(ToolStripMenuItem), "openToolStripMenuItem");
-				openMenuItem.Size = new Size(37, 20);
 				openMenuItem.Text = "&Open";
 				
 				ToolStripMenuItem exitMenuItem = (ToolStripMenuItem)host.CreateComponent(typeof(ToolStripMenuItem), "exitToolStripMenuItem");
-				exitMenuItem.Size = new Size(37, 20);
 				exitMenuItem.Text = "E&xit";
 				fileMenuItem.DropDownItems.Add(openMenuItem);
 				fileMenuItem.DropDownItems.Add(exitMenuItem);
@@ -64,11 +65,15 @@ namespace PythonBinding.Tests.Designer
 				menuStrip.Items.Add(fileMenuItem);
 								
 				ToolStripMenuItem editMenuItem = (ToolStripMenuItem)host.CreateComponent(typeof(ToolStripMenuItem), "editToolStripMenuItem");
-				editMenuItem.Size = new Size(39, 20);
 				editMenuItem.Text = "&Edit";
 				menuStrip.Items.Add(editMenuItem);
 
 				form.Controls.Add(menuStrip);
+				
+				fileMenuItemSize = fileMenuItem.Size;
+				openMenuItemSize = openMenuItem.Size;
+				exitMenuItemSize = exitMenuItem.Size;
+				editMenuItemSize = editMenuItem.Size;
 
 				PythonForm pythonForm = new PythonForm("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
@@ -101,7 +106,7 @@ namespace PythonBinding.Tests.Designer
 								"    # fileToolStripMenuItem\r\n" +
 								"    # \r\n" +
 								"    self._fileToolStripMenuItem.Name = \"fileToolStripMenuItem\"\r\n" +
-								"    self._fileToolStripMenuItem.Size = System.Drawing.Size(37, 20)\r\n" +
+								"    self._fileToolStripMenuItem.Size = " + SizeToString(fileMenuItemSize) + "\r\n" +
 								"    self._fileToolStripMenuItem.Text = \"&File\"\r\n" +
 								"    self._fileToolStripMenuItem.DropDownItems.AddRange(System.Array[System.Windows.Forms.ToolStripItem](\r\n" +
 								"        [self._openToolStripMenuItem,\r\n" +
@@ -110,19 +115,19 @@ namespace PythonBinding.Tests.Designer
 								"    # openToolStripMenuItem\r\n" +
 								"    # \r\n" +
 								"    self._openToolStripMenuItem.Name = \"openToolStripMenuItem\"\r\n" +
-								"    self._openToolStripMenuItem.Size = System.Drawing.Size(37, 20)\r\n" +
+								"    self._openToolStripMenuItem.Size = " + SizeToString(openMenuItemSize) + "\r\n" +
 								"    self._openToolStripMenuItem.Text = \"&Open\"\r\n" +
 								"    # \r\n" +
 								"    # exitToolStripMenuItem\r\n" +
 								"    # \r\n" +
 								"    self._exitToolStripMenuItem.Name = \"exitToolStripMenuItem\"\r\n" +
-								"    self._exitToolStripMenuItem.Size = System.Drawing.Size(37, 20)\r\n" +
+								"    self._exitToolStripMenuItem.Size = " + SizeToString(exitMenuItemSize) + "\r\n" +
 								"    self._exitToolStripMenuItem.Text = \"E&xit\"\r\n" +
 								"    # \r\n" +
 								"    # editToolStripMenuItem\r\n" +
 								"    # \r\n" +
 								"    self._editToolStripMenuItem.Name = \"editToolStripMenuItem\"\r\n" +
-								"    self._editToolStripMenuItem.Size = System.Drawing.Size(39, 20)\r\n" +
+								"    self._editToolStripMenuItem.Size = " + SizeToString(editMenuItemSize) + "\r\n" +
 								"    self._editToolStripMenuItem.Text = \"&Edit\"\r\n" +				
 								"    # \r\n" +
 								"    # MainForm\r\n" +
@@ -136,6 +141,11 @@ namespace PythonBinding.Tests.Designer
 								"    self.PerformLayout()\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode);
+		}
+		
+		string SizeToString(Size size)
+		{
+			return PythonPropertyValueAssignment.ToString(size);
 		}
 	}
 }
