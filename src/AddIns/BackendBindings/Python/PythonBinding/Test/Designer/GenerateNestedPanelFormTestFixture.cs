@@ -74,19 +74,19 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    # panel1\r\n" +
 								"    # \r\n" +
+								"    self._panel1.Controls.Add(self._panel2)\r\n" +
 								"    self._panel1.Location = System.Drawing.Point(0, 0)\r\n" +
 								"    self._panel1.Name = \"panel1\"\r\n" +
 								"    self._panel1.Size = System.Drawing.Size(200, 220)\r\n" +
 								"    self._panel1.TabIndex = 0\r\n" +
-								"    self._panel1.Controls.Add(self._panel2)\r\n" +
 								"    # \r\n" +
 								"    # panel2\r\n" +
 								"    # \r\n" +
+								"    self._panel2.Controls.Add(self._textBox1)\r\n" +
 								"    self._panel2.Location = System.Drawing.Point(10, 15)\r\n" +
 								"    self._panel2.Name = \"panel2\"\r\n" +
 								"    self._panel2.Size = System.Drawing.Size(100, 120)\r\n" +
 								"    self._panel2.TabIndex = 0\r\n" +
-								"    self._panel2.Controls.Add(self._textBox1)\r\n" +
 								"    # \r\n" +
 								"    # textBox1\r\n" +
 								"    # \r\n" +
@@ -98,8 +98,8 @@ namespace PythonBinding.Tests.Designer
 								"    # MainForm\r\n" +
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
-								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Controls.Add(self._panel1)\r\n" +
+								"    self.Name = \"MainForm\"\r\n" +
 								"    self._panel1.ResumeLayout(False)\r\n" +
 								"    self._panel1.PerformLayout()\r\n" +
 								"    self._panel2.ResumeLayout(False)\r\n" +

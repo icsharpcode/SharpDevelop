@@ -94,23 +94,23 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    # menuStrip1\r\n" +
 								"    # \r\n" +
+								"    self._menuStrip1.Items.AddRange(System.Array[System.Windows.Forms.ToolStripItem](\r\n" +
+								"        [self._fileToolStripMenuItem,\r\n" +
+								"        self._editToolStripMenuItem]))\r\n" +
 								"    self._menuStrip1.Location = System.Drawing.Point(0, 0)\r\n" +
 								"    self._menuStrip1.Name = \"menuStrip1\"\r\n" +
 								"    self._menuStrip1.Size = System.Drawing.Size(200, 24)\r\n" +
 								"    self._menuStrip1.TabIndex = 0\r\n" +
 								"    self._menuStrip1.Text = \"menuStrip1\"\r\n" +
-								"    self._menuStrip1.Items.AddRange(System.Array[System.Windows.Forms.ToolStripItem](\r\n" +
-								"        [self._fileToolStripMenuItem,\r\n" +
-								"        self._editToolStripMenuItem]))\r\n" +
 								"    # \r\n" +
 								"    # fileToolStripMenuItem\r\n" +
 								"    # \r\n" +
-								"    self._fileToolStripMenuItem.Name = \"fileToolStripMenuItem\"\r\n" +
-								"    self._fileToolStripMenuItem.Size = " + SizeToString(fileMenuItemSize) + "\r\n" +
-								"    self._fileToolStripMenuItem.Text = \"&File\"\r\n" +
 								"    self._fileToolStripMenuItem.DropDownItems.AddRange(System.Array[System.Windows.Forms.ToolStripItem](\r\n" +
 								"        [self._openToolStripMenuItem,\r\n" +
 								"        self._exitToolStripMenuItem]))\r\n" +
+								"    self._fileToolStripMenuItem.Name = \"fileToolStripMenuItem\"\r\n" +
+								"    self._fileToolStripMenuItem.Size = " + SizeToString(fileMenuItemSize) + "\r\n" +
+								"    self._fileToolStripMenuItem.Text = \"&File\"\r\n" +
 								"    # \r\n" +
 								"    # openToolStripMenuItem\r\n" +
 								"    # \r\n" +
@@ -133,8 +133,8 @@ namespace PythonBinding.Tests.Designer
 								"    # MainForm\r\n" +
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
-								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Controls.Add(self._menuStrip1)\r\n" +
+								"    self.Name = \"MainForm\"\r\n" +
 								"    self._menuStrip1.ResumeLayout(False)\r\n" +
 								"    self._menuStrip1.PerformLayout()\r\n" +
 								"    self.ResumeLayout(False)\r\n" +

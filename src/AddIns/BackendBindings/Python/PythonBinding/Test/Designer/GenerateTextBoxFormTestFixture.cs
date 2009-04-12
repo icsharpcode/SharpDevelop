@@ -63,8 +63,8 @@ namespace PythonBinding.Tests.Designer
 								"    # MainForm\r\n" +
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
-								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Controls.Add(self._textBox1)\r\n" +
+								"    self.Name = \"MainForm\"\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

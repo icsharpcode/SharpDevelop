@@ -119,7 +119,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			List<PropertyDescriptor> properties = new List<PropertyDescriptor>();
 			foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(obj, notDesignOnlyFilter).Sort()) {
-				if (property.SerializationVisibility == DesignerSerializationVisibility.Visible) {
+				if (property.SerializationVisibility != DesignerSerializationVisibility.Hidden) {
 					if (property.ShouldSerializeValue(obj)) {
 						properties.Add(property);
 					}
@@ -167,21 +167,11 @@ namespace ICSharpCode.PythonBinding
 
 			string propertyOwnerName = GetPropertyOwnerName(control, addControlNameToProperty);
 			AppendProperties(propertyOwnerName, control);
-			
-			foreach (Control childControl in control.Controls) {
-				if (IsSitedComponent(childControl)) {
-					AppendIndentedLine(GetPropertyName(propertyOwnerName, "Controls") + ".Add(self._" + childControl.Name + ")");
-				}
-			}
-
 			AppendEventHandlers(propertyOwnerName, control);
 			
 			MenuStrip menuStrip = control as MenuStrip;
-			ComboBox comboBox = control as ComboBox;
 			if (menuStrip != null) {
-				AppendMenuStripItems(menuStrip);
-			} else if (comboBox != null) {
-				AppendSystemArray(comboBox.Name, "Items.AddRange", typeof(Object).FullName, comboBox.Items);
+				AppendToolStripItems(menuStrip.Items);
 			}
 
 			if (addChildControlProperties) {
@@ -200,11 +190,34 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			string propertyName = GetPropertyName(propertyOwnerName, propertyDescriptor.Name);
-			Control control = propertyValue as Control;
-			if (control != null) {
-				AppendIndentedLine(propertyName + " = self._" + control.Name);
+			if (propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible) {
+				Control control = propertyValue as Control;
+				if (control != null) {
+					AppendIndentedLine(propertyName + " = self._" + control.Name);
+				} else {
+					AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
+				}
 			} else {
-				AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
+				// Content.
+				if (propertyDescriptor.Name == "Controls") {
+					Control parentControl = obj as Control;
+					foreach (Control childControl in parentControl.Controls) {
+						if (IsSitedComponent(childControl)) {
+							AppendIndentedLine(GetPropertyName(propertyOwnerName, "Controls") + ".Add(self._" + childControl.Name + ")");
+						}
+					}
+				} else {
+					MenuStrip menuStrip = obj as MenuStrip;
+					ComboBox comboBox = obj as ComboBox;
+					ToolStripMenuItem menuItem = obj as ToolStripMenuItem; 
+					if (menuStrip != null && propertyDescriptor.Name == "Items") {
+						AppendMenuStripItems(menuStrip);
+					} else if (comboBox != null && propertyDescriptor.Name == "Items") {
+						AppendSystemArray(comboBox.Name, "Items.AddRange", typeof(Object).FullName, comboBox.Items);
+					} else if (menuItem != null && propertyDescriptor.Name == "DropDownItems") {
+						AppendToolStripMenuItemDropDownItems(menuItem.Name, GetSitedToolStripItems(menuItem.DropDownItems));
+					}
+				}
 			}
 		}
 		
@@ -400,7 +413,6 @@ namespace ICSharpCode.PythonBinding
 		{
 			List<ToolStripItem> items = GetSitedToolStripItems(menuStrip.Items);
 			AppendMenuStripItemsAddRange(menuStrip.Name, items);
-			AppendToolStripItems(items);
 		}
 		
 		void AppendSystemArray(string componentName, string methodName, string typeName, IList components)
@@ -448,7 +460,9 @@ namespace ICSharpCode.PythonBinding
 		void AppendToolStripItems(IList items)
 		{
 			foreach (ToolStripItem item in items) {
-				AppendToolStripItem(item);
+				if (IsSitedComponent(item)) {
+					AppendToolStripItem(item);
+				}
 			}
 		}
 		
@@ -460,7 +474,6 @@ namespace ICSharpCode.PythonBinding
 			ToolStripMenuItem menuItem = item as ToolStripMenuItem;
 			if (menuItem != null) {
 				List<ToolStripItem> sitedItems = GetSitedToolStripItems(menuItem.DropDownItems);
-				AppendToolStripMenuItemDropDownItems(menuItem.Name, sitedItems);
 				AppendToolStripItems(sitedItems);
 			}
 		}

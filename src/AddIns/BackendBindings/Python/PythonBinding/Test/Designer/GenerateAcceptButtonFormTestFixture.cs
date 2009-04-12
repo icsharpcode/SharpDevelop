@@ -70,8 +70,8 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    self.AcceptButton = self._button1\r\n" +
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
-								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Controls.Add(self._button1)\r\n" +
+								"    self.Name = \"MainForm\"\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

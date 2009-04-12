@@ -61,20 +61,20 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    # comboBox1\r\n" +
 								"    # \r\n" +
-								"    self._comboBox1.Location = System.Drawing.Point(0, 0)\r\n" +
-								"    self._comboBox1.Name = \"comboBox1\"\r\n" +
-								"    self._comboBox1.Size = System.Drawing.Size(121, 21)\r\n" +
-								"    self._comboBox1.TabIndex = 0\r\n" +
 								"    self._comboBox1.Items.AddRange(System.Array[System.Object](\r\n" +
 								"        [\"aaa\",\r\n" +
 								"        \"bbb\",\r\n" +
 								"        \"ccc\"]))\r\n" +
+								"    self._comboBox1.Location = System.Drawing.Point(0, 0)\r\n" +
+								"    self._comboBox1.Name = \"comboBox1\"\r\n" +
+								"    self._comboBox1.Size = System.Drawing.Size(121, 21)\r\n" +
+								"    self._comboBox1.TabIndex = 0\r\n" +
 								"    # \r\n" +
 								"    # MainForm\r\n" +
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
-								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Controls.Add(self._comboBox1)\r\n" +
+ 								"    self.Name = \"MainForm\"\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

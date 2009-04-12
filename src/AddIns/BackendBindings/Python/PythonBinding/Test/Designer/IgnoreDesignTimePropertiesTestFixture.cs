@@ -104,6 +104,15 @@ namespace PythonBinding.Tests.Designer
 			Assert.AreEqual(strings, unsortedStrings);
 		}
 		
+		/// <summary>
+		/// Tests that the Controls property is returned in the GetSerializableProperties method.
+		/// </summary>
+		[Test]
+		public void ContainsDesignerSerializationContentProperties()
+		{
+			Assert.IsTrue(ContainsProperty(propertyDescriptors, "Controls"), "Controls property should be returned.");
+		}
+		
 		static bool ContainsProperty(PropertyDescriptorCollection propertyDescriptors, string name)
 		{
 			foreach (PropertyDescriptor property in propertyDescriptors) {
