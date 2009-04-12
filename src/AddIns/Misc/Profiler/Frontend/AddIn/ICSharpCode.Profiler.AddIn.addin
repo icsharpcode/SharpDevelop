@@ -41,7 +41,7 @@
 			class="ICSharpCode.Profiler.AddIn.Commands.GoToDefinition" />
 		<MenuItem
 			id="SetAsRoot"
-			label="Set as root"
+			label="Set as root/Merge"
 			class="ICSharpCode.Profiler.AddIn.Commands.SetAsRoot" />
 		<MenuItem
 			id="FindCallsOfSelected"
