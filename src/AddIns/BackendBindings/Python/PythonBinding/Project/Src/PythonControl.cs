@@ -20,10 +20,10 @@ using ICSharpCode.TextEditor.Document;
 namespace ICSharpCode.PythonBinding
 {
 	/// <summary>
-	/// Represents a form in the designer. Used to generate
+	/// Represents a form or user control in the designer. Used to generate
 	/// Python code after the form has been changed in the designer.
 	/// </summary>
-	public class PythonForm
+	public class PythonControl
 	{
 		StringBuilder codeBuilder;
 		string indentString = String.Empty;
@@ -70,17 +70,17 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 		
-		public PythonForm() 
+		public PythonControl() 
 			: this("\t")
 		{
 		}
 		
-		public PythonForm(string indentString) 
+		public PythonControl(string indentString) 
 			: this(indentString, new PythonFormEventBindingService())
 		{
 		}
 		
-		PythonForm(string indentString, IEventBindingService eventBindingService)
+		PythonControl(string indentString, IEventBindingService eventBindingService)
 		{
 			this.indentString = indentString;
 			this.eventBindingService = eventBindingService;
@@ -89,14 +89,14 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Generates python code for the InitializeComponent method based on the controls added to the form.
 		/// </summary>
-		public string GenerateInitializeComponentMethod(Form form)
+		public string GenerateInitializeComponentMethod(Control control)
 		{
 			codeBuilder = new StringBuilder();
 			
 			AppendIndentedLine("def InitializeComponent(self):");
 			IncreaseIndent();
 			
-			GenerateInitializeComponentMethodBodyInternal(form);
+			GenerateInitializeComponentMethodBodyInternal(control);
 			
 			return codeBuilder.ToString();
 		}
@@ -104,12 +104,12 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Generates the InitializeComponent method body.
 		/// </summary>
-		public string GenerateInitializeComponentMethodBody(Form form, int initialIndent)
+		public string GenerateInitializeComponentMethodBody(Control control, int initialIndent)
 		{
 			codeBuilder = new StringBuilder();
 			
 			indent = initialIndent;
-			GenerateInitializeComponentMethodBodyInternal(form);
+			GenerateInitializeComponentMethodBodyInternal(control);
 			
 			return codeBuilder.ToString();
 		}
@@ -243,29 +243,29 @@ namespace ICSharpCode.PythonBinding
 			return childComponents.ToArray();
 		}
 				
-		void GenerateInitializeComponentMethodBodyInternal(Form form)
+		void GenerateInitializeComponentMethodBodyInternal(Control control)
 		{
-			AppendChildControlCreation(form);
-			AppendChildControlSuspendLayout(form.Controls);
+			AppendChildControlCreation(control);
+			AppendChildControlSuspendLayout(control.Controls);
 			AppendIndentedLine("self.SuspendLayout()");
-			AppendForm(form);			
-			AppendChildControlResumeLayout(form.Controls);
+			AppendRootControl(control);			
+			AppendChildControlResumeLayout(control.Controls);
 			AppendIndentedLine("self.ResumeLayout(False)");
 			AppendIndentedLine("self.PerformLayout()");
 		}
 		
 		/// <summary>
-		/// Generates python code for the form's InitializeComponent method.
+		/// Generates python code for the control's InitializeComponent method.
 		/// </summary>
-		void AppendForm(Form form)
+		void AppendRootControl(Control rootControl)
 		{
 			// Add the controls on the form.
-			foreach (Control control in form.Controls) {
+			foreach (Control control in rootControl.Controls) {
 				AppendComponent(control);
 			}
 			
-			// Add form.
-			AppendComponent(form, false, false);
+			// Add root control.
+			AppendComponent(rootControl, false, false);
 		}
 
 		void AppendComponent(IComponent component)
@@ -506,7 +506,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void AppendChildComponentProperties(object component)
 		{
-			foreach (PropertyDescriptor property in PythonForm.GetSerializableContentProperties(component)) {
+			foreach (PropertyDescriptor property in PythonControl.GetSerializableContentProperties(component)) {
 				object propertyCollection = property.GetValue(component);
 				ICollection collection = propertyCollection as ICollection;
 				if (collection != null) {

@@ -31,8 +31,8 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{			
-			PythonFormWalker walker = new PythonFormWalker(componentCreator);
-			form = walker.CreateForm(PythonCode);
+			PythonComponentWalker walker = new PythonComponentWalker(componentCreator);
+			form = walker.CreateComponent(PythonCode) as Form;
 		}
 
 		[TestFixtureTearDown]

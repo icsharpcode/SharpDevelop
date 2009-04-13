@@ -91,10 +91,10 @@
     <Compile Include="Src\PythonDesignerLoader.cs" />
     <Compile Include="Src\PythonDesignerLoaderProvider.cs" />
     <Compile Include="Src\PythonExpressionFinder.cs" />
-    <Compile Include="Src\PythonForm.cs" />
+    <Compile Include="Src\PythonControl.cs" />
     <Compile Include="Src\PythonFormsDesignerDisplayBinding.cs" />
-    <Compile Include="Src\PythonFormWalker.cs" />
-    <Compile Include="Src\PythonFormWalkerException.cs" />
+    <Compile Include="Src\PythonComponentWalker.cs" />
+    <Compile Include="Src\PythonComponentWalkerException.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
     <Compile Include="Src\PythonOptionsPanel.cs" />
     <Compile Include="Src\PythonOutputStream.cs" />

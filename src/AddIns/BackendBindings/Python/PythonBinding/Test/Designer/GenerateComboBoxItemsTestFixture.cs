@@ -47,7 +47,7 @@ namespace PythonBinding.Tests.Designer
 				
 				form.Controls.Add(comboBox);
 				
-				PythonForm pythonForm = new PythonForm("    ");
+				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 			}
 		}

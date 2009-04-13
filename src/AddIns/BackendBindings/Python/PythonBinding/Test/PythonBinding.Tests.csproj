@@ -194,12 +194,14 @@
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
     <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />
+    <Compile Include="Designer\LoadSimpleUserControlTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxOnPanelTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxTestFixture.cs" />
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
+    <Compile Include="Designer\PythonBaseClassTests.cs" />
     <Compile Include="Designer\PythonCodeDeserializerTests.cs" />
     <Compile Include="Designer\PythonControlFieldExpressionTests.cs" />
     <Compile Include="Designer\PythonGeneratorTestFixture.cs" />

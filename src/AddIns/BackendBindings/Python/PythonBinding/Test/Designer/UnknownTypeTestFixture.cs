@@ -36,11 +36,11 @@ namespace PythonBinding.Tests.Designer
 							"        self.ClientSize = Unknown.Type(10)\r\n";
 		
 		[Test]
-		[ExpectedException(typeof(PythonFormWalkerException))]
+		[ExpectedException(typeof(PythonComponentWalkerException))]
 		public void PythonFormWalkerExceptionThrown()
 		{
-			PythonFormWalker walker = new PythonFormWalker(new MockComponentCreator());
-			walker.CreateForm(pythonCode);
+			PythonComponentWalker walker = new PythonComponentWalker(new MockComponentCreator());
+			walker.CreateComponent(pythonCode);
 			Assert.Fail("Exception should have been thrown before this.");
 		}
 	}

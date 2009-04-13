@@ -53,10 +53,10 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 				namePropertyDescriptor.SetValue(form, "MainForm");
 				
-				PythonForm pythonForm = new PythonForm("    ");
+				PythonControl pythonForm = new PythonControl("    ");
 				generatedCode = pythonForm.GenerateInitializeComponentMethod(form);
 				
-				propertyDescriptors = PythonForm.GetSerializableProperties(form);
+				propertyDescriptors = PythonControl.GetSerializableProperties(form);
 			}
 		}
 		

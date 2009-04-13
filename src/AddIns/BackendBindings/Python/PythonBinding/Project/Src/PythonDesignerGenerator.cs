@@ -96,9 +96,9 @@ namespace ICSharpCode.PythonBinding
 			IMethod method = GetInitializeComponents(compilationUnit);
 			
 			// Generate the python source code.
-			PythonForm pythonForm = new PythonForm(NRefactoryToPythonConverter.GetIndentString(textEditorProperties));
+			PythonControl pythonForm = new PythonControl(NRefactoryToPythonConverter.GetIndentString(textEditorProperties));
 			int indent = method.Region.BeginColumn;
-			string methodBody = pythonForm.GenerateInitializeComponentMethodBody(component as Form, indent);
+			string methodBody = pythonForm.GenerateInitializeComponentMethodBody(component as Control, indent);
 			
 			// Merge the code.
 			DomRegion methodRegion = GetBodyRegionInDocument(method);

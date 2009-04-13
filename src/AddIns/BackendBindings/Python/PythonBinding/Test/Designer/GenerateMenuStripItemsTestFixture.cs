@@ -77,11 +77,11 @@ namespace PythonBinding.Tests.Designer
 				exitMenuItemSize = exitMenuItem.Size;
 				editMenuItemSize = editMenuItem.Size;
 
-				PythonForm pythonForm = new PythonForm("    ");
+				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 				
-				menuStripChildComponents = PythonForm.GetChildComponents(menuStrip);
-				fileMenuItemChildComponents = PythonForm.GetChildComponents(fileMenuItem);
+				menuStripChildComponents = PythonControl.GetChildComponents(menuStrip);
+				fileMenuItemChildComponents = PythonControl.GetChildComponents(fileMenuItem);
 			}
 		}
 		

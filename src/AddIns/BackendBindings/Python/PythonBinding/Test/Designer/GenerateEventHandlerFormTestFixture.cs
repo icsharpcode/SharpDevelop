@@ -52,7 +52,7 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor closedEventProperty = eventBindingService.GetEventProperty(closedEvent);
 				closedEventProperty.SetValue(form, "MainFormClosed");
 				
-				PythonForm pythonForm = new PythonForm("    ");
+				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 			}
 		}

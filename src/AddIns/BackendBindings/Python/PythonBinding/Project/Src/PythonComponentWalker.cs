@@ -21,41 +21,59 @@ namespace ICSharpCode.PythonBinding
 	/// <summary>
 	/// Visits the code's Python AST and creates a Windows Form.
 	/// </summary>
-	public class PythonFormWalker : PythonWalker
+	public class PythonComponentWalker : PythonWalker
 	{
-		Form form;
+		IComponent component;
 		PythonControlFieldExpression fieldExpression;
 		IComponentCreator componentCreator;
 		bool walkingAssignment;
-		string formName = String.Empty;
+		string componentName = String.Empty;
 		PythonCodeDeserializer deserializer;
+		ClassDefinition classDefinition;
 		
-		public PythonFormWalker(IComponentCreator componentCreator)
+		public PythonComponentWalker(IComponentCreator componentCreator)
 		{
 			this.componentCreator = componentCreator;
 			deserializer = new PythonCodeDeserializer(componentCreator);
-		}		
+		}
 		
 		/// <summary>
-		/// Creates a form from python code.
+		/// Creates a control either a UserControl or Form from the python code.
 		/// </summary>
-		public Form CreateForm(string pythonCode)
+		public IComponent CreateComponent(string pythonCode)
 		{
 			PythonParser parser = new PythonParser();
-			PythonAst ast = parser.CreateAst(@"Form.py", pythonCode);
+			PythonAst ast = parser.CreateAst(@"Control.py", pythonCode);
 			ast.Walk(this);
-		
-			// Did we find the InitializeComponent method?
-			if (form == null) {
-				throw new PythonFormWalkerException("Unable to find InitializeComponents method.");
-			}
 			
-			return form;
-		}		
+			// Did we find the InitializeComponent method?
+			if (component == null) {
+				throw new PythonComponentWalkerException("Unable to find InitializeComponents method.");
+			}
+			return component;
+		}
+		
+		/// <summary>
+		/// Gets the fully qualified name of the base class.
+		/// </summary>
+		public static string GetBaseClassName(ClassDefinition classDefinition)
+		{
+			if (classDefinition.Bases.Length > 0) {
+				Expression baseClassExpression = classDefinition.Bases[0];
+				NameExpression nameExpression = baseClassExpression as NameExpression;
+				MemberExpression memberExpression = baseClassExpression as MemberExpression;
+				if (nameExpression != null) {
+					return nameExpression.Name.ToString();
+				}
+				return PythonControlFieldExpression.GetMemberName(memberExpression);
+			}
+			return String.Empty;
+		}
 
 		public override bool Walk(ClassDefinition node)
 		{
-			formName = node.Name.ToString();
+			classDefinition = node;
+			componentName = node.Name.ToString();
 			if (node.Body != null) {
 				node.Body.Walk(this);
 			}
@@ -65,7 +83,8 @@ namespace ICSharpCode.PythonBinding
 		public override bool Walk(FunctionDefinition node)
 		{
 			if (IsInitializeComponentMethod(node)) {
-				form = (Form)componentCreator.CreateComponent(typeof(Form), formName);
+				Type type = GetComponentType();
+				component = componentCreator.CreateComponent(type, componentName);
 				node.Body.Walk(this);
 			}
 			return false;
@@ -132,14 +151,14 @@ namespace ICSharpCode.PythonBinding
 			MemberExpression eventHandlerExpression = node.Right as MemberExpression;
 			string eventHandlerName = eventHandlerExpression.Name.ToString();
 			
-			Control control = form;
+			IComponent currentComponent = this.component;
 			if (field.VariableName.Length > 0) {
-				control = GetControl(field.VariableName);
+				currentComponent = GetComponent(field.VariableName);
 			}
 			
-			EventDescriptor eventDescriptor = TypeDescriptor.GetEvents(control).Find(eventName, false);
+			EventDescriptor eventDescriptor = TypeDescriptor.GetEvents(currentComponent).Find(eventName, false);
 			PropertyDescriptor propertyDescriptor = componentCreator.GetEventProperty(eventDescriptor);
-			propertyDescriptor.SetValue(control, eventHandlerName);
+			propertyDescriptor.SetValue(currentComponent, eventHandlerName);
 			return false;
 		}
 		
@@ -192,12 +211,12 @@ namespace ICSharpCode.PythonBinding
 		}
 				
 		/// <summary>
-		/// Looks for the control with the specified name in the objects that have been
+		/// Looks for the component with the specified name in the objects that have been
 		/// created whilst processing the InitializeComponent method.
 		/// </summary>
-		Control GetControl(string name)
+		IComponent GetComponent(string name)
 		{
-			return componentCreator.GetComponent(name) as Control;
+			return componentCreator.GetComponent(name);
 		}
 
 		/// <summary>
@@ -217,7 +236,19 @@ namespace ICSharpCode.PythonBinding
 			if (fieldExpression.VariableName.Length > 0) {
 				return componentCreator.GetComponent(fieldExpression.VariableName);
 			}
-			return form;
+			return component;
+		}
+		
+		/// <summary>
+		/// Gets the type for the control being walked.
+		/// </summary>
+		Type GetComponentType()
+		{
+			string baseClass = GetBaseClassName(classDefinition);
+			if (baseClass.Contains("UserControl")) {
+				return typeof(UserControl);
+			}
+			return typeof(Form);
 		}
 		
 		/// <summary>
@@ -230,7 +261,7 @@ namespace ICSharpCode.PythonBinding
 			if (propertyValue == null) {
 				PythonControlFieldExpression field = PythonControlFieldExpression.Create(memberExpression);
 				if (field.MemberName.Length > 0) {
-					propertyValue = GetControl(PythonControlFieldExpression.GetVariableName(field.MemberName));
+					propertyValue = GetComponent(PythonControlFieldExpression.GetVariableName(field.MemberName));
 				} else {
 					propertyValue = field.FullMemberName;
 				}
@@ -259,9 +290,9 @@ namespace ICSharpCode.PythonBinding
 				} else {
 					object obj = deserializer.Deserialize(node);
 					if (obj != null) {
-						SetPropertyValue(form, fieldExpression.MemberName, obj);
+						SetPropertyValue(component, fieldExpression.MemberName, obj);
 					} else {
-						throw new PythonFormWalkerException(String.Format("Could not find type '{0}'.", name));
+						throw new PythonComponentWalkerException(String.Format("Could not find type '{0}'.", name));
 					}
 				}
 			}
@@ -283,7 +314,7 @@ namespace ICSharpCode.PythonBinding
 			
 			// Try to get the object being called. Try the form first then
 			// look for other controls.
-			object member = PythonControlFieldExpression.GetMember(form, node);
+			object member = PythonControlFieldExpression.GetMember(component, node);
 			PythonControlFieldExpression field = PythonControlFieldExpression.Create(node);
 			if (member == null) {
 				member = field.GetMember(componentCreator);

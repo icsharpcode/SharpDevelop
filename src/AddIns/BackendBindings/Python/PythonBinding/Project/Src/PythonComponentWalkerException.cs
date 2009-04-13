@@ -10,11 +10,11 @@ using System;
 namespace ICSharpCode.PythonBinding
 {
 	/// <summary>
-	/// Exception thrown by the PythonFormWalker class.
+	/// Exception thrown by the PythonComponentWalker class.
 	/// </summary>
-	public class PythonFormWalkerException : Exception
+	public class PythonComponentWalkerException : Exception
 	{
-		public PythonFormWalkerException(string message) : base(message)
+		public PythonComponentWalkerException(string message) : base(message)
 		{
 		}
 	}

@@ -27,7 +27,7 @@ namespace PythonBinding.Tests.Designer
 				MethodInfo expectedMethodInfo = FindMethod(menuStrip.Items, "AddRange", typeof(ToolStripItem[]));
 				Assert.IsNotNull(expectedMethodInfo);
 				
-				Assert.AreSame(expectedMethodInfo, PythonForm.GetAddRangeSerializationMethod(menuStrip.Items));
+				Assert.AreSame(expectedMethodInfo, PythonControl.GetAddRangeSerializationMethod(menuStrip.Items));
 			}
 		}
 		
@@ -36,7 +36,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			using (MenuStrip menuStrip = new MenuStrip()) {
 				MethodInfo methodInfo = FindMethod(menuStrip.Items, "AddRange", typeof(ToolStripItem[]));
-				Assert.AreEqual(typeof(ToolStripItem), PythonForm.GetArrayParameterType(methodInfo));
+				Assert.AreEqual(typeof(ToolStripItem), PythonControl.GetArrayParameterType(methodInfo));
 			}
 		}
 		
@@ -44,13 +44,13 @@ namespace PythonBinding.Tests.Designer
 		public void GetArrayParameterTypeFromMethodWithNoParameters()
 		{
 			MethodInfo methodInfo = typeof(String).GetMethod("Clone");
-			Assert.IsNull(PythonForm.GetArrayParameterType(methodInfo));
+			Assert.IsNull(PythonControl.GetArrayParameterType(methodInfo));
 		}
 		
 		[Test]
 		public void GetArrayParameterTypeWithNullMethodInfo()
 		{
-			Assert.IsNull(PythonForm.GetArrayParameterType(null));
+			Assert.IsNull(PythonControl.GetArrayParameterType(null));
 		}
 		
 		/// <summary>
@@ -61,7 +61,7 @@ namespace PythonBinding.Tests.Designer
 		public void FormControlsAddRangeMethodNotFound()
 		{
 			using (Form form = new Form()) {
-				Assert.IsNull(PythonForm.GetAddRangeSerializationMethod(form.Controls));
+				Assert.IsNull(PythonControl.GetAddRangeSerializationMethod(form.Controls));
 			}
 		}
 		
@@ -72,7 +72,7 @@ namespace PythonBinding.Tests.Designer
 				MethodInfo expectedMethodInfo = FindMethod(form.Controls, "Add", typeof(Control));
 				Assert.IsNotNull(expectedMethodInfo);
 				
-				Assert.AreSame(expectedMethodInfo, PythonForm.GetAddSerializationMethod(form.Controls));
+				Assert.AreSame(expectedMethodInfo, PythonControl.GetAddSerializationMethod(form.Controls));
 			}
 		}
 		

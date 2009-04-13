@@ -19,13 +19,13 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void NullComponent()
 		{
-			Assert.IsFalse(PythonForm.IsSitedComponent(null));
+			Assert.IsFalse(PythonControl.IsSitedComponent(null));
 		}
 		
 		[Test]
 		public void ComponentNotSited()
 		{
-			Assert.IsFalse(PythonForm.IsSitedComponent(new Component()));
+			Assert.IsFalse(PythonControl.IsSitedComponent(new Component()));
 		}
 		
 		[Test]
@@ -33,13 +33,13 @@ namespace PythonBinding.Tests.Designer
 		{
 			Component component = new Component();
 			component.Site = this;
-			Assert.IsTrue(PythonForm.IsSitedComponent(component));
+			Assert.IsTrue(PythonControl.IsSitedComponent(component));
 		}
 		
 		[Test]
 		public void NonComponent()
 		{
-			Assert.IsFalse(PythonForm.IsSitedComponent(String.Empty));
+			Assert.IsFalse(PythonControl.IsSitedComponent(String.Empty));
 		}
 		
 		public IComponent Component {

@@ -27,7 +27,7 @@ namespace PythonBinding.Tests.Designer
 			using (Form form = new Form()) {
 				// Modify Form.Text so it is identified as needing serialization.
 				form.Text = "abc";
-				properties = PythonForm.GetSerializableContentProperties(form);
+				properties = PythonControl.GetSerializableContentProperties(form);
 			}
 		}
 		

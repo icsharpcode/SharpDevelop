@@ -48,7 +48,7 @@ namespace PythonBinding.Tests.Designer
 				menuStrip.Location = new Point(0, 0);
 				form.Controls.Add(menuStrip);
 				
-				PythonForm pythonForm = new PythonForm("    ");
+				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 			}
 		}
