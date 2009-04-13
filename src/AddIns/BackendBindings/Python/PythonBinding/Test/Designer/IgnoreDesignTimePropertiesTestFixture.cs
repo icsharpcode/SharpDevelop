@@ -56,7 +56,7 @@ namespace PythonBinding.Tests.Designer
 				PythonForm pythonForm = new PythonForm("    ");
 				generatedCode = pythonForm.GenerateInitializeComponentMethod(form);
 				
-				propertyDescriptors = pythonForm.GetSerializableProperties(form);
+				propertyDescriptors = PythonForm.GetSerializableProperties(form);
 			}
 		}
 		

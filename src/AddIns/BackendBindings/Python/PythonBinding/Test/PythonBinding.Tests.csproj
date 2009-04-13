@@ -152,6 +152,7 @@
     <Compile Include="Designer\DeserializeStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeToolStripItemArrayTestFixture.cs" />
     <Compile Include="Designer\EnabledSetUsingPropertyDescriptorTestFixture.cs" />
+    <Compile Include="Designer\FindAddRangeMethodTests.cs" />
     <Compile Include="Designer\FindInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\GenerateAcceptButtonFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAccessibleRoleFormTestFixture.cs" />
@@ -175,10 +176,12 @@
     <Compile Include="Designer\GenerateTextBoxFormTestFixture.cs" />
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
     <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
+    <Compile Include="Designer\GetSerializableContentPropertiesTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertNewEventHandlerTestFixture.cs" />
     <Compile Include="Designer\InsertSecondEventHandlerTestFixture.cs" />
     <Compile Include="Designer\IsFullyQualifiedBaseClassFormDesignableTestFixture.cs" />
+    <Compile Include="Designer\IsSitedComponentTests.cs" />
     <Compile Include="Designer\LoadAcceptButtonFormTestFixture.cs" />
     <Compile Include="Designer\LoadAccessibleRoleTestFixture.cs" />
     <Compile Include="Designer\LoadAnchorStylesFormTestFixture.cs" />

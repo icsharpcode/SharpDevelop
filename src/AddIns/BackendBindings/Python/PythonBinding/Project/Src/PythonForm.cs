@@ -29,7 +29,9 @@ namespace ICSharpCode.PythonBinding
 		string indentString = String.Empty;
 		int indent;
 		IEventBindingService eventBindingService;
-		Attribute[] notDesignOnlyFilter = new Attribute[] { DesignOnlyAttribute.No };
+		static readonly Attribute[] notDesignOnlyFilter = new Attribute[] { DesignOnlyAttribute.No };
+		static readonly DesignerSerializationVisibility[] notHiddenDesignerVisibility = new DesignerSerializationVisibility[] { DesignerSerializationVisibility.Content, DesignerSerializationVisibility.Visible };
+		static readonly DesignerSerializationVisibility[] contentDesignerVisibility = new DesignerSerializationVisibility[] { DesignerSerializationVisibility.Content };
 		
 		/// <summary>
 		/// Used so the EventBindingService.GetEventProperty method can be called to get the property descriptor
@@ -115,17 +117,104 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Gets a list of properties that should be serialized for the specified form.
 		/// </summary>
-		public PropertyDescriptorCollection GetSerializableProperties(object obj)
+		public static PropertyDescriptorCollection GetSerializableProperties(object obj)
 		{
+			return GetSerializableProperties(obj, notHiddenDesignerVisibility);
+		}
+		
+		/// <summary>
+		/// Gets a list of properties that should have their content serialized for the specified form.
+		/// </summary>
+		public static PropertyDescriptorCollection GetSerializableContentProperties(object obj)
+		{
+			return GetSerializableProperties(obj, contentDesignerVisibility);
+		}
+	
+		/// <summary>
+		/// Gets the serializable properties with the specified designer serialization visibility.
+		/// </summary>
+		public static PropertyDescriptorCollection GetSerializableProperties(object obj, DesignerSerializationVisibility[] visibility)
+		{
+			List<DesignerSerializationVisibility> requiredVisibility = new List<DesignerSerializationVisibility>(visibility);
 			List<PropertyDescriptor> properties = new List<PropertyDescriptor>();
 			foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(obj, notDesignOnlyFilter).Sort()) {
-				if (property.SerializationVisibility != DesignerSerializationVisibility.Hidden) {
+				if (requiredVisibility.Contains(property.SerializationVisibility)) {
 					if (property.ShouldSerializeValue(obj)) {
 						properties.Add(property);
 					}
 				} 
 			}
 			return new PropertyDescriptorCollection(properties.ToArray());
+		}
+
+		/// <summary>
+		/// Determines whether the object is an IComponent and has a non-null ISite.
+		/// </summary>
+		public static bool IsSitedComponent(object obj)
+		{
+			IComponent component = obj as IComponent;
+			if (component != null) {
+				return component.Site != null;
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Gets the AddRange method on the object that is not hidden from the designer. 
+		/// </summary>
+		public static MethodInfo GetAddRangeSerializationMethod(object obj)
+		{
+			foreach (MethodInfo methodInfo in obj.GetType().GetMethods()) {
+				if (methodInfo.Name == "AddRange") {
+					ParameterInfo[] parameters = methodInfo.GetParameters();
+					if (parameters.Length == 1) {
+						if (parameters[0].ParameterType.IsArray) {
+							if (!IsHiddenFromDesignerSerializer(methodInfo)) {
+								return methodInfo;
+							}
+						}
+					}
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Gets the Add serialization method that is not hidden from the designer.
+		/// </summary>
+		public static MethodInfo GetAddSerializationMethod(object obj)
+		{
+			foreach (MethodInfo methodInfo in obj.GetType().GetMethods()) {
+				if (methodInfo.Name == "Add") {
+					return methodInfo;
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Gets the type used in the array for the first parameter to the method.
+		/// </summary>
+		public static Type GetArrayParameterType(MethodInfo methodInfo)
+		{
+			if (methodInfo != null) {
+				ParameterInfo[] parameters = methodInfo.GetParameters();
+				if (parameters.Length > 0) {
+					Type arrayType = parameters[0].ParameterType;
+					return arrayType.GetElementType();
+				}
+			}
+			return null;
+		}
+		
+		public static bool IsHiddenFromDesignerSerializer(MethodInfo methodInfo)
+		{
+			foreach (DesignerSerializationVisibilityAttribute attribute in methodInfo.GetCustomAttributes(typeof(DesignerSerializationVisibilityAttribute), true)) {
+				if (attribute.Visibility == DesignerSerializationVisibility.Hidden) {
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		void GenerateInitializeComponentMethodBodyInternal(Form form)
@@ -189,35 +278,17 @@ namespace ICSharpCode.PythonBinding
 				return;
 			}
 			
-			string propertyName = GetPropertyName(propertyOwnerName, propertyDescriptor.Name);
 			if (propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible) {
+				string propertyName = GetPropertyName(propertyOwnerName, propertyDescriptor.Name);
 				Control control = propertyValue as Control;
 				if (control != null) {
 					AppendIndentedLine(propertyName + " = self._" + control.Name);
 				} else {
 					AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
 				}
-			} else {
-				// Content.
-				if (propertyDescriptor.Name == "Controls") {
-					Control parentControl = obj as Control;
-					foreach (Control childControl in parentControl.Controls) {
-						if (IsSitedComponent(childControl)) {
-							AppendIndentedLine(GetPropertyName(propertyOwnerName, "Controls") + ".Add(self._" + childControl.Name + ")");
-						}
-					}
-				} else {
-					MenuStrip menuStrip = obj as MenuStrip;
-					ComboBox comboBox = obj as ComboBox;
-					ToolStripMenuItem menuItem = obj as ToolStripMenuItem; 
-					if (menuStrip != null && propertyDescriptor.Name == "Items") {
-						AppendMenuStripItems(menuStrip);
-					} else if (comboBox != null && propertyDescriptor.Name == "Items") {
-						AppendSystemArray(comboBox.Name, "Items.AddRange", typeof(Object).FullName, comboBox.Items);
-					} else if (menuItem != null && propertyDescriptor.Name == "DropDownItems") {
-						AppendToolStripMenuItemDropDownItems(menuItem.Name, GetSitedToolStripItems(menuItem.DropDownItems));
-					}
-				}
+			} else { 
+				// DesignerSerializationVisibility.Content
+				AppendMethodCallWithArrayParameter(propertyOwnerName, obj, propertyDescriptor);
 			}
 		}
 		
@@ -373,11 +444,6 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 		
-		static bool IsSitedComponent(IComponent component)
-		{
-			return component.Site != null;
-		}
-		
 		bool HasSitedChildComponents(Control control)
 		{
 			MenuStrip menuStrip = control as MenuStrip;
@@ -406,21 +472,13 @@ namespace ICSharpCode.PythonBinding
 			return false;
 		}
 		
-		/// <summary>
-		/// Adds ToolStripItems that are stored on the MenuStrip.
-		/// </summary>
-		void AppendMenuStripItems(MenuStrip menuStrip)
-		{
-			List<ToolStripItem> items = GetSitedToolStripItems(menuStrip.Items);
-			AppendMenuStripItemsAddRange(menuStrip.Name, items);
-		}
-		
-		void AppendSystemArray(string componentName, string methodName, string typeName, IList components)
+		void AppendSystemArray(string componentName, string methodName, string typeName, ICollection components)
 		{
 			if (components.Count > 0) {
 				AppendIndentedLine("self._" + componentName + "." + methodName + "(System.Array[" + typeName + "](");
 				IncreaseIndent();
-				for (int i = 0; i < components.Count; ++i) {
+				int i = 0;
+				foreach (object component in components) {
 					if (i == 0) {
 						AppendIndented("[");
 					} else {
@@ -428,22 +486,17 @@ namespace ICSharpCode.PythonBinding
 						AppendLine();
 						AppendIndented(String.Empty);
 					}
-					object component = components[i];
 					if (component is IComponent) {
 						Append("self._" + ((IComponent)component).Site.Name);
 					} else {
 						Append(PythonPropertyValueAssignment.ToString(component));
 					}
+					++i;
 				}
 				Append("]))");
 				AppendLine();
 				DecreaseIndent();
 			}
-		}
-		
-		void AppendMenuStripItemsAddRange(string menuStripName, List<ToolStripItem> items)
-		{
-			AppendSystemArray(menuStripName, "Items.AddRange", typeof(ToolStripItem).FullName, items);
 		}
 		
 		List<ToolStripItem> GetSitedToolStripItems(ToolStripItemCollection items)
@@ -478,11 +531,6 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 		
-		void AppendToolStripMenuItemDropDownItems(string menuItemName, List<ToolStripItem> items)
-		{
-			AppendSystemArray(menuItemName, "DropDownItems.AddRange", typeof(ToolStripItem).FullName, items);
-		}
-		
 		void AppendProperties(string propertyOwnerName, object obj)
 		{
 			foreach (PropertyDescriptor property in GetSerializableProperties(obj)) {
@@ -505,6 +553,51 @@ namespace ICSharpCode.PythonBinding
 					AppendControl(childControl, true, true);
 				}
 			}			
+		}
+		
+		/// <summary>
+		/// Returns the sited components in the collection. If an object in the collection is not
+		/// an IComponent then this is added to the collection.
+		/// </summary>
+		ICollection GetSitedComponentsAndNonComponents(ICollection components)
+		{
+			List<object> sitedComponents = new List<object>();
+			foreach (object obj in components) {
+				IComponent component = obj as IComponent;
+				if (component == null || IsSitedComponent(component)) {
+					sitedComponents.Add(obj);
+				}
+			}
+			return sitedComponents.ToArray();
+		}
+	
+		/// <summary>
+		/// Appends an array as a parameter and its associated method call. 
+		/// </summary>
+		/// <remarks>
+		/// Looks for the AddRange method first. If that does not exist or is hidden from the designer the
+		/// Add method is looked for.
+		/// </remarks>
+		void AppendMethodCallWithArrayParameter(string propertyOwnerName, object propertyOwner, PropertyDescriptor propertyDescriptor)
+		{			
+			IComponent component = propertyOwner as IComponent;
+			ICollection collectionProperty = propertyDescriptor.GetValue(propertyOwner) as ICollection;
+			if (collectionProperty != null) {
+				MethodInfo addRangeMethod = GetAddRangeSerializationMethod(collectionProperty);
+				if (addRangeMethod != null) {
+					Type arrayElementType = GetArrayParameterType(addRangeMethod);
+					AppendSystemArray(component.Site.Name, propertyDescriptor.Name + "." + addRangeMethod.Name, arrayElementType.FullName, GetSitedComponentsAndNonComponents(collectionProperty));
+				} else {
+					MethodInfo addMethod = GetAddSerializationMethod(collectionProperty);
+					ParameterInfo[] parameters = addMethod.GetParameters();
+					foreach (object item in collectionProperty) {
+						IComponent collectionComponent = item as IComponent;
+						if (IsSitedComponent(collectionComponent)) {
+							AppendIndentedLine(GetPropertyName(propertyOwnerName, propertyDescriptor.Name) + "." + addMethod.Name + "(self._" + collectionComponent.Site.Name + ")");
+						}
+					}
+				}
+			}
 		}
 	}
 }
