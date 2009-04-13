@@ -207,6 +207,9 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
+		/// <summary>
+		/// Checks whether the method is marked with the DesignerSerializationVisibility.Hidden attribute.
+		/// </summary>
 		public static bool IsHiddenFromDesignerSerializer(MethodInfo methodInfo)
 		{
 			foreach (DesignerSerializationVisibilityAttribute attribute in methodInfo.GetCustomAttributes(typeof(DesignerSerializationVisibilityAttribute), true)) {
@@ -217,6 +220,29 @@ namespace ICSharpCode.PythonBinding
 			return false;
 		}
 		
+		/// <summary>
+		/// Gets the child components that are sited on the specified object.
+		/// </summary>
+		/// <remarks>
+		/// For a MenuStrip the child components include the MenuStrip.Items.
+		/// For a Control the child components include the Control.Controls.
+		/// </remarks>
+		public static IComponent[] GetChildComponents(object obj)
+		{
+			List<IComponent> childComponents = new List<IComponent>();			
+			foreach (PropertyDescriptor property in GetSerializableContentProperties(obj)) {
+				ICollection collection = property.GetValue(obj) as ICollection;
+				if (collection != null) {
+					foreach (object component in collection) {
+						if (IsSitedComponent(component)) {
+							childComponents.Add(component as IComponent);
+						}
+					}
+				}
+			}			
+			return childComponents.ToArray();
+		}
+				
 		void GenerateInitializeComponentMethodBodyInternal(Form form)
 		{
 			AppendChildControlCreation(form);
@@ -235,36 +261,31 @@ namespace ICSharpCode.PythonBinding
 		{
 			// Add the controls on the form.
 			foreach (Control control in form.Controls) {
-				AppendControl(control);
+				AppendComponent(control);
 			}
 			
 			// Add form.
-			AppendControl(form, false, false);
+			AppendComponent(form, false, false);
 		}
 
-		void AppendControl(Control control)
+		void AppendComponent(IComponent component)
 		{
-			AppendControl(control, true, true);
+			AppendComponent(component, true, true);
 		}
 		
 		/// <summary>
-		/// Generates python code for the control.
+		/// Generates python code for the component.
 		/// </summary>
-		void AppendControl(Control control, bool addControlNameToProperty, bool addChildControlProperties)
+		void AppendComponent(IComponent component, bool addComponentNameToProperty, bool addChildComponentProperties)
 		{
-			AppendComment(control.Name);
+			AppendComment(component.Site.Name);
 
-			string propertyOwnerName = GetPropertyOwnerName(control, addControlNameToProperty);
-			AppendProperties(propertyOwnerName, control);
-			AppendEventHandlers(propertyOwnerName, control);
-			
-			MenuStrip menuStrip = control as MenuStrip;
-			if (menuStrip != null) {
-				AppendToolStripItems(menuStrip.Items);
-			}
+			string propertyOwnerName = GetPropertyOwnerName(component, addComponentNameToProperty);
+			AppendProperties(propertyOwnerName, component);
+			AppendEventHandlers(propertyOwnerName, component);
 
-			if (addChildControlProperties) {
-				AppendChildControlProperties(control.Controls);
+			if (addChildComponentProperties) {			
+				AppendChildComponentProperties(component);
 			}
 		}
 		
@@ -348,45 +369,23 @@ namespace ICSharpCode.PythonBinding
 		
 		void AppendChildControlCreation(Control parentControl)
 		{
-			MenuStrip menuStrip = parentControl as MenuStrip;
-			if (menuStrip != null) {
-				AppendChildControlCreation(menuStrip.Items);
-			} else {
-				AppendChildControlCreation(parentControl.Controls);
-			}
+			AppendChildComponentCreation(GetChildComponents(parentControl));
 		}
-			
-		void AppendChildControlCreation(Control.ControlCollection controls)
+
+		void AppendChildComponentCreation(ICollection components)
 		{
-			foreach (Control control in controls) {
-				if (IsSitedComponent(control)) {
-					AppendComponentCreation(control);
-					AppendChildControlCreation(control);
-				}
-			}
-		}
-		
-		void AppendChildControlCreation(ToolStripItemCollection toolStripItems)
-		{
-			foreach (ToolStripItem item in toolStripItems) {
-				if (IsSitedComponent(item)) {
-					AppendComponentCreation(item);
-				}
-				ToolStripMenuItem menuItem = item as ToolStripMenuItem;
-				if (menuItem != null) {
-					AppendChildControlCreation(menuItem.DropDownItems);
+			foreach (object obj in components) {
+				IComponent component = obj as IComponent;
+				if (IsSitedComponent(component)) {	
+					AppendComponentCreation(component);
+					AppendChildComponentCreation(GetChildComponents(component));
 				}
 			}
 		}
 				
-		void AppendComponentCreation(Control control)
+		void AppendComponentCreation(IComponent component)
 		{	
-			AppendComponentCreation(control.Name, control);
-		}
-		
-		void AppendComponentCreation(ToolStripItem item)
-		{
-			AppendComponentCreation(item.Name, item);
+			AppendComponentCreation(component.Site.Name, component);
 		}
 
 		void AppendComponentCreation(string name, object obj)
@@ -424,47 +423,34 @@ namespace ICSharpCode.PythonBinding
 		/// enumerator is called first. Sorting will only occur if an item is retrieved after calling
 		/// Sort or CopyTo is called. The PropertyDescriptorCollection class does not behave
 		/// in the same way.</remarks>
-		void AppendEventHandlers(string propertyOwnerName, Control control)
+		void AppendEventHandlers(string propertyOwnerName, object component)
 		{
-			EventDescriptorCollection events = TypeDescriptor.GetEvents(control, notDesignOnlyFilter).Sort();
+			EventDescriptorCollection events = TypeDescriptor.GetEvents(component, notDesignOnlyFilter).Sort();
 			if (events.Count > 0) {
 				EventDescriptor dummyEventDescriptor = events[0];
 			}
 			foreach (EventDescriptor eventDescriptor in events) {
-				AppendEventHandler(propertyOwnerName, control, eventDescriptor);
+				AppendEventHandler(propertyOwnerName, component, eventDescriptor);
 			}
 		}
 		
-		void AppendEventHandler(string propertyOwnerName, Control control, EventDescriptor eventDescriptor)
+		void AppendEventHandler(string propertyOwnerName, object component, EventDescriptor eventDescriptor)
 		{
 			PropertyDescriptor propertyDescriptor = eventBindingService.GetEventProperty(eventDescriptor);
-			if (propertyDescriptor.ShouldSerializeValue(control)) {
-				string methodName = (string)propertyDescriptor.GetValue(control);
+			if (propertyDescriptor.ShouldSerializeValue(component)) {
+				string methodName = (string)propertyDescriptor.GetValue(component);
 				AppendIndentedLine(GetPropertyName(propertyOwnerName, eventDescriptor.Name) + " += self." + methodName);
 			}
 		}
 		
 		bool HasSitedChildComponents(Control control)
 		{
-			MenuStrip menuStrip = control as MenuStrip;
-			if (menuStrip != null) {
-				return HasSitedComponents(menuStrip.Items);
-			}
-			
-			if (control.Controls.Count > 0) {
-				foreach (Control childControl in control.Controls) {
-					if (!IsSitedComponent(childControl)) {
-						return false;
-					}
-				}
-				return true;
-			}
-			return false;
+			return HasSitedComponents(GetChildComponents(control));
 		}
 		
-		bool HasSitedComponents(ToolStripItemCollection items)
+		bool HasSitedComponents(ICollection items)
 		{	
-			foreach (ToolStripItem item in items) {
+			foreach (object item in items) {
 				if (IsSitedComponent(item)) {
 					return true;
 				}
@@ -497,39 +483,7 @@ namespace ICSharpCode.PythonBinding
 				AppendLine();
 				DecreaseIndent();
 			}
-		}
-		
-		List<ToolStripItem> GetSitedToolStripItems(ToolStripItemCollection items)
-		{
-			List<ToolStripItem> sitedItems = new List<ToolStripItem>();
-			foreach (ToolStripItem item in items) {
-				if (IsSitedComponent(item)) {
-					sitedItems.Add(item);
-				}
-			}
-			return sitedItems;
-		}
-		
-		void AppendToolStripItems(IList items)
-		{
-			foreach (ToolStripItem item in items) {
-				if (IsSitedComponent(item)) {
-					AppendToolStripItem(item);
-				}
-			}
-		}
-		
-		void AppendToolStripItem(ToolStripItem item)
-		{
-			AppendComment(item.Name);		
-			AppendProperties(item.Name, item);
-			
-			ToolStripMenuItem menuItem = item as ToolStripMenuItem;
-			if (menuItem != null) {
-				List<ToolStripItem> sitedItems = GetSitedToolStripItems(menuItem.DropDownItems);
-				AppendToolStripItems(sitedItems);
-			}
-		}
+		}		
 		
 		void AppendProperties(string propertyOwnerName, object obj)
 		{
@@ -537,22 +491,32 @@ namespace ICSharpCode.PythonBinding
 				AppendProperty(propertyOwnerName, obj, property);
 			}			
 		}
-		
-		string GetPropertyOwnerName(Control control, bool addControlNameToProperty)
+
+		string GetPropertyOwnerName(IComponent component, bool addComponentNameToProperty)
 		{
-			if (addControlNameToProperty) {
-				return control.Name;
+			if (addComponentNameToProperty) {
+				return component.Site.Name;
 			}
 			return String.Empty;
 		}
 		
-		void AppendChildControlProperties(Control.ControlCollection controls)
+		/// <summary>
+		/// Appends the properties of any component that is contained in a collection property that is
+		/// marked as DesignerSerializationVisibility.Content.
+		/// </summary>
+		void AppendChildComponentProperties(object component)
 		{
-			foreach (Control childControl in controls) {
-				if (IsSitedComponent(childControl)) {
-					AppendControl(childControl, true, true);
+			foreach (PropertyDescriptor property in PythonForm.GetSerializableContentProperties(component)) {
+				object propertyCollection = property.GetValue(component);
+				ICollection collection = propertyCollection as ICollection;
+				if (collection != null) {
+					foreach (object childComponent in collection) {
+						if (IsSitedComponent(childComponent)) {
+							AppendComponent(childComponent as IComponent , true, true);
+						}
+					}
 				}
-			}			
+			}
 		}
 		
 		/// <summary>

@@ -22,6 +22,8 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateAcceptButtonFormTestFixture
 	{
 		string generatedPythonCode;
+		IComponent[] formChildComponents;
+		IComponent[] buttonChildComponents;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -48,6 +50,9 @@ namespace PythonBinding.Tests.Designer
 				
 				PythonForm pythonForm = new PythonForm("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
+				
+				formChildComponents = PythonForm.GetChildComponents(form);
+				buttonChildComponents = PythonForm.GetChildComponents(button);
 			}
 		}
 		
@@ -76,6 +81,24 @@ namespace PythonBinding.Tests.Designer
 								"    self.PerformLayout()\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode);
+		}
+		
+		[Test]
+		public void FormHasOneChildComponent()
+		{
+			Assert.AreEqual(1, formChildComponents.Length);
+		}
+		
+		[Test]
+		public void FormChildComponentIsButton()
+		{
+			Assert.IsInstanceOfType(typeof(Button), formChildComponents[0]);
+		}
+		
+		[Test]
+		public void ButtonHasNoChildComponents()
+		{
+			Assert.AreEqual(0, buttonChildComponents.Length);
 		}
 	}
 }

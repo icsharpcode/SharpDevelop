@@ -58,7 +58,7 @@ namespace PythonBinding.Tests.Designer
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 			}
 		}
-		
+				
 		[Test]
 		public void GeneratedCode()
 		{
