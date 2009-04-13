@@ -83,21 +83,21 @@
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="Call count" Width="60">
+					<GridViewColumn Header="Call count" Width="60" x:Name="callCountColumn">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding CallCount}" HorizontalAlignment="Right" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="Time spent" Width="110">
+					<GridViewColumn Header="Time spent" Width="110" x:Name="timeSpentColumn">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock HorizontalAlignment="Right" Text="{Binding TimeSpent}" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="%" Width="80">
+					<GridViewColumn Header="%" Width="80" x:Name="percentColumn">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<DockPanel LastChildFill="false">

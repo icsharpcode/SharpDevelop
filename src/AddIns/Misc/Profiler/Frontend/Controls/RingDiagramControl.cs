@@ -74,6 +74,7 @@ namespace ICSharpCode.Profiler.Controls
 			ell.Fill = Brushes.Gray;
 			ell.Stroke = Brushes.Black;
 			ell.ToolTip = item.CreateToolTip();
+			ell.Tag = item;
 
 			ell.MouseLeftButtonDown += (sender, e) =>
 			{
@@ -154,6 +155,7 @@ namespace ICSharpCode.Profiler.Controls
 			p.VerticalAlignment = VerticalAlignment.Center;
 			p.HorizontalAlignment = HorizontalAlignment.Center;
 			p.Tag = node;
+			//p.ContextMenu = this.ContextMenu.;
 
 			p.MouseLeftButtonDown += new MouseButtonEventHandler(
 				delegate(object sender, MouseButtonEventArgs e)	{					

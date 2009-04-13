@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 
 using ICSharpCode.Core.Presentation;
@@ -34,10 +35,14 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			
 			foreach (TabItem item in this.tabView.Items) {
 				if (item.Content != null) {
-					((QueryView)item.Content).Reporter = new ErrorReporter(UpdateErrorList);
-					((QueryView)item.Content).Provider = provider;
-					((QueryView)item.Content).SetRange(this.timeLine.SelectedStartIndex, this.timeLine.SelectedEndIndex);
-					((QueryView)item.Content).TreeViewContextMenu = MenuService.CreateContextMenu(item.Content, "/AddIns/Profiler/QueryView/ContextMenu");
+					QueryView view = item.Content as QueryView;
+					view.Reporter = new ErrorReporter(UpdateErrorList);
+					view.Provider = provider;
+					view.SetRange(this.timeLine.SelectedStartIndex, this.timeLine.SelectedEndIndex);
+					view.ContextMenuOpening += delegate(object sender, ContextMenuEventArgs e) {
+						object source = (e.OriginalSource is Shape) ? e.OriginalSource : view;
+						MenuService.CreateContextMenu(source, "/AddIns/Profiler/QueryView/ContextMenu").IsOpen = true;
+					};
 				}
 			}
 			
@@ -168,7 +173,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			
 			view.CurrentQuery = query;
 			view.ShowQueryItems = true;
-			view.TreeViewContextMenu = MenuService.CreateContextMenu(view, "/AddIns/Profiler/QueryView/ContextMenu");
+			//view.TreeViewContextMenu = ;
 			
 			view.CurrentQueryChanged += delegate { ViewCurrentQueryChanged(header, view); };
 

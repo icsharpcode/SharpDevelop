@@ -41,7 +41,6 @@ namespace ICSharpCode.Profiler.Controls
 		
 		bool isDirty;
 		
-		public string View { get; set; }
 		public ErrorReporter Reporter { get; set; }
 		
 		public event EventHandler CurrentQueryChanged;
@@ -91,8 +90,13 @@ namespace ICSharpCode.Profiler.Controls
 			this.DataContext = this;
 			this.task = new SingleTask(this.Dispatcher);
 			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
-				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0 && (nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) > 0) {
-					nameColumn.Width += (e.NewSize.Width - e.PreviousSize.Width);
+				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0 &&
+				    (nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) > 0) {
+					if ((nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) >=
+					    (e.NewSize.Width - this.callCountColumn.Width - this.percentColumn.Width - this.timeSpentColumn.Width))
+						this.nameColumn.Width = e.NewSize.Width - this.callCountColumn.Width - this.percentColumn.Width - this.timeSpentColumn.Width - 25;
+					else
+						nameColumn.Width += (e.NewSize.Width - e.PreviousSize.Width);
 				}
 			};
 		}
@@ -159,6 +163,10 @@ namespace ICSharpCode.Profiler.Controls
 			             list => LoadCompleted(list, layer, ad),
 			             delegate { layer.Remove(ad); });
 		}
+		
+		public RingDiagramControl RingDiagram {
+			get { return ringDiagram; }
+		}
 
 		static HierarchyList<CallTreeNodeViewModel> LoadWorker(ProfilingDataProvider provider, QueryCompiler compiler, int rangeStart, int rangeEnd)
 		{
@@ -212,7 +220,7 @@ namespace ICSharpCode.Profiler.Controls
 		
 		public ContextMenu TreeViewContextMenu {
 			get { return this.treeView.ContextMenu; }
-			set { this.treeView.ContextMenu = value; }
+			set { this.treeView.ContextMenu = this.ringDiagram.ContextMenu = value; }
 		}
 	}
 }

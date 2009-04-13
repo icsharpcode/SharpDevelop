@@ -23,19 +23,16 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 	/// <summary>
 	/// Description of SetAsRoot
 	/// </summary>
-	public class SetAsRoot : AbstractMenuCommand
+	public class SetAsRoot : ProfilerMenuCommand
 	{
 		/// <summary>
 		/// Starts the command
 		/// </summary>
 		public override void Run()
 		{
-			IList<CallTreeNodeViewModel> list = ((QueryView)Owner).SelectedItems.ToList();
-			ProfilerView parent = (((((QueryView)Owner).Parent as TabItem).Parent as TabControl).Parent as Grid).Parent as ProfilerView;
+			var items = GetSelectedItems().Where(item => item != null && item.Node != null).Select(i => i.Node);
 			
-			if (list.Count > 0) {
-				var items = from item in list select item.Node;	
-				
+			if (items.FirstOrDefault() != null) {
 				List<string> parts = new List<string>();
 				
 				int? nameId = items.First().NameMapping.Id; // use nullable int to represent non assigned nameId
@@ -51,7 +48,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				if (nameId == null)
 					header = "Merged Nodes";
 				
-				parent.CreateTab(header, "Merge(" + string.Join(",", parts.ToArray()) + ")");
+				Parent.CreateTab(header, "Merge(" + string.Join(",", parts.ToArray()) + ")");
 			}	
 		}
 	}

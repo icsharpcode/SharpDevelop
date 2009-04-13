@@ -26,7 +26,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
     /// <summary>
     /// Description of RunExecutable
     /// </summary>
-    public class ProfileExecutable : AbstractMenuCommand
+    public class ProfileExecutable : ProfilerMenuCommand
     {
         /// <summary>
         /// Starts the command
