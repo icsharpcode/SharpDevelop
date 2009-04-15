@@ -60,9 +60,9 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 					
 					WorkbenchSingleton.SafeThreadCall(updater);
 				};
+				
+				runner.Run();
 			}
-			
-			runner.Run();
 		}
 		
 		static ProfilerRunner CreateRunner(IProfilingDataWriter writer)
