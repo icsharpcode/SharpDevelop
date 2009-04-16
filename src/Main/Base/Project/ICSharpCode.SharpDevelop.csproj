@@ -67,6 +67,34 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Editor\AvalonEdit\AvalonEditDocumentAdapter.cs" />
+    <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextEditorAdapter.cs" />
+    <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionBinding.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionDataUsageCache.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionItemProvider.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\CommentCompletionItemProvider.cs">
+    </Compile>
+    <Compile Include="Src\Editor\CodeCompletion\CompletionContext.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\CtrlSpaceCompletionItemProvider.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\ICompletionItem.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\ICompletionItemList.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\NRefactoryCodeCompletionBinding.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\TemplateCompletionItemProvider.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\TextCompletionItemProvider.cs" />
+    <Compile Include="Src\Editor\DocumentUtilitites.cs" />
+    <Compile Include="Src\Editor\IFileDocumentProvider.cs" />
+    <Compile Include="Src\Editor\IFormattingStrategy.cs" />
+    <Compile Include="Src\Editor\ITextAreaToolTipProvider.cs">
+      <DependentUpon>ToolTipService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Editor\ITextEditor.cs" />
+    <Compile Include="Src\Editor\ITextMarker.cs" />
+    <Compile Include="Src\Editor\ToolTipRequestEventArgs.cs">
+      <DependentUpon>ToolTipService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Editor\ToolTipService.cs" />
     <Compile Include="Src\Gui\AbstractSecondaryViewContent.cs" />
     <Compile Include="Src\Gui\AbstractViewContentHandlingLoadErrors.cs" />
     <Compile Include="Src\Gui\AbstractViewContentWithoutFile.cs" />
@@ -124,6 +152,7 @@
       <DependentUpon>TreeViewOptionsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\IImage.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchFolderNode.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchResultNode.cs" />
@@ -486,7 +515,6 @@
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkManager.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Src\TextEditor\ClipboardHandling.cs" />
-    <Compile Include="Src\TextEditor\CodeCompletionItemProvider.cs" />
     <Compile Include="Src\TextEditor\Codons\AddInTreeSyntaxModeProvider.cs" />
     <Compile Include="Src\TextEditor\Codons\EditActionDoozer.cs" />
     <Compile Include="Src\TextEditor\Codons\SyntaxModeDoozer.cs" />
@@ -515,7 +543,6 @@
     <Compile Include="Src\TextEditor\Commands\TextAreaContextmenuCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />
     <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />
-    <Compile Include="Src\TextEditor\DocumentUtilitites.cs" />
     <Compile Include="Src\TextEditor\Gui\Dialogs\GotoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -525,14 +552,10 @@
     <Compile Include="Src\TextEditor\Gui\Editor\CommandPromptControl.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionData.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CommentCompletionDataProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\TemplateCompletionDataProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\IFileDocumentProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\IndexerInsightDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\MethodInsightDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ErrorDrawer.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ITextAreaControlProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\NRefactoryCodeCompletionBinding.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ParserFoldingStrategy.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\QuickClassBrowserPanel.cs">
       <SubType>UserControl</SubType>
@@ -558,19 +581,10 @@
     <Compile Include="Src\TextEditor\Actions.cs" />
     <Compile Include="Src\TextEditor\CharacterEncodings.cs" />
     <Compile Include="Src\TextEditor\Gui\TextEditorAdapter.cs" />
-    <Compile Include="Src\TextEditor\CompletionContext.cs" />
-    <Compile Include="Src\TextEditor\ICompletionItem.cs" />
-    <Compile Include="Src\TextEditor\ICompletionItemList.cs" />
-    <Compile Include="Src\TextEditor\IFormattingStrategy.cs" />
-    <Compile Include="Src\TextEditor\IImage.cs" />
-    <Compile Include="Src\TextEditor\ITextEditor.cs" />
-    <Compile Include="Src\TextEditor\ITextMarker.cs" />
-    <Compile Include="Src\TextEditor\ToolTipService.cs" />
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\TextEditor\Commands\NavigationCommands.cs" />
     <Compile Include="Src\Project\MSBuildEngine.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CodeCompletionBinding.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.cs">
@@ -612,9 +626,6 @@
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\AbstractCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CachedCompletionDataProvider.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\AttributesDataProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CtrlSpaceCompletionDataProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataUsageCache.cs" />
     <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
     <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeCompletionPanel.cs">
       <SubType>UserControl</SubType>
@@ -650,7 +661,6 @@
     <Compile Include="Src\Project\ChooseStorageLocationButton.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerGridControl.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\NodeBuilder\NodeBuilders.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\TextCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\OverrideCompletionDataProvider.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskView.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPad.cs" />
@@ -693,7 +703,6 @@
     <Compile Include="Src\TextEditor\Gui\Editor\AdvancedHighlightingStrategy.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\AdvancedHighlighter.cs" />
     <Compile Include="Src\Services\NavigationService\DefaultNavigationPoint.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\ITextAreaToolTipProvider.cs" />
     <Compile Include="Src\Services\NavigationService\INavigationPoint.cs" />
     <Compile Include="Src\Services\NavigationService\NavigationService.cs" />
     <Compile Include="Src\Commands\NavigationCommands.cs" />
@@ -780,12 +789,15 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Src\Editor\AvalonEdit" />
+    <Folder Include="Src\Editor\CodeCompletion" />
     <Folder Include="Src\Gui\Pads\SearchResultPad" />
     <Folder Include="Src\Gui\Pads\SearchResultPad\Nodes" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">
       <Link>ICSharpCode.SharpDevelop.addin</Link>
     </Content>
+    <Folder Include="Src\Editor" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
     <Folder Include="Src\Services\NavigationService" />

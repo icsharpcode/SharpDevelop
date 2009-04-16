@@ -5,17 +5,17 @@
 //     <version>$Revision: 1965 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.TextEditor;
 using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;

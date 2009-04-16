@@ -5,10 +5,9 @@
 //     <version>$Revision: 3925 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Container class for the parameters available to the Complete function.

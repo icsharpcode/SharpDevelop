@@ -49,9 +49,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				SDBookmark bookmark;
 				switch (v[0]) {
 					case "Breakpoint":
-//						bookmark = new Debugging.BreakpointBookmark(fileName, null, new TextLocation(columnNumber, lineNumber), action, scriptLanguage, script);
-//						bookmark.IsEnabled = bool.Parse(v[4]);
-						throw new NotImplementedException();
+						var bbm = new Debugging.BreakpointBookmark(fileName, new Location(columnNumber, lineNumber), action, scriptLanguage, script);
+						bbm.IsEnabled = bool.Parse(v[4]);
+						bookmark = bbm;
 						break;
 					default:
 						bookmark = new SDBookmark(fileName, new Location(columnNumber, lineNumber));
@@ -68,28 +68,28 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			SDBookmark bookmark = value as SDBookmark;
 			if (destinationType == typeof(string) && bookmark != null) {
 				StringBuilder b = new StringBuilder();
-//				if (bookmark is Debugging.BreakpointBookmark) {
-//					b.Append("Breakpoint");
-//				} else {
+				if (bookmark is Debugging.BreakpointBookmark) {
+					b.Append("Breakpoint");
+				} else {
 					b.Append("Bookmark");
-//				}
+				}
 				b.Append('|');
 				b.Append(bookmark.FileName);
 				b.Append('|');
 				b.Append(bookmark.LineNumber);
 				b.Append('|');
 				b.Append(bookmark.ColumnNumber);
-				b.Append('|');
-//				b.Append(bookmark.IsEnabled.ToString());
-//				if (bookmark is Debugging.BreakpointBookmark) {
-//					Debugging.BreakpointBookmark bbm = (Debugging.BreakpointBookmark)bookmark;
-//					b.Append('|');
-//					b.Append(bbm.Action);
-//					b.Append('|');
-//					b.Append(bbm.ScriptLanguage);
-//					b.Append('|');
-//					b.Append(bbm.Condition);
-//				}
+				if (bookmark is Debugging.BreakpointBookmark) {
+					Debugging.BreakpointBookmark bbm = (Debugging.BreakpointBookmark)bookmark;
+					b.Append('|');
+					b.Append(bbm.IsEnabled.ToString());
+					b.Append('|');
+					b.Append(bbm.Action.ToString());
+					b.Append('|');
+					b.Append(bbm.ScriptLanguage);
+					b.Append('|');
+					b.Append(bbm.Condition);
+				}
 				return b.ToString();
 			} else {
 				return base.ConvertTo(context, culture, value, destinationType);

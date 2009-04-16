@@ -7,16 +7,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 
-using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Gui;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.AvalonEdit.AddIn
+namespace ICSharpCode.SharpDevelop.Editor
 {
+	using ICSharpCode.AvalonEdit;
+	
 	/// <summary>
 	/// Wraps AvalonEdit to provide the ITextEditor interface.
 	/// </summary>
@@ -122,20 +120,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 		}
 		
-		public void ShowCompletionWindow(ICompletionItemList data)
+		public virtual void ShowCompletionWindow(ICompletionItemList data)
 		{
-			if (data == null || !data.Items.Any())
-				return;
-			CompletionWindow window = CreateCompletionWindow(data);
-			if (window != null)
-				window.Show();
 		}
-		
-		protected virtual CompletionWindow CreateCompletionWindow(ICompletionItemList data)
-		{
-			return new SharpDevelopCompletionWindow(this, textEditor.TextArea, data);
-		}
-		
+	
 		public object GetService(Type serviceType)
 		{
 			return textEditor.TextArea.GetService(serviceType);

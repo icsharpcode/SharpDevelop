@@ -5,11 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections;
 using System.IO;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -185,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 					break;
 				case '<':
 					if (enableXmlCommentCompletion) {
-						new CommentCompletionDataProvider().ShowCompletion(editor);
+						new CommentCompletionItemProvider().ShowCompletion(editor);
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;

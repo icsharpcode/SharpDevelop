@@ -12,11 +12,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// <summary>
 	/// Data provider for code completion.
 	/// </summary>
-	public class TextCompletionDataProvider : AbstractCompletionItemProvider
+	public class TextCompletionItemProvider : AbstractCompletionItemProvider
 	{
 		string[] texts;
 		
-		public TextCompletionDataProvider(params string[] texts)
+		public TextCompletionItemProvider(params string[] texts)
 		{
 			if (texts == null)
 				throw new ArgumentNullException("texts");

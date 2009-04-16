@@ -6,16 +6,12 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Media;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using System.Windows.Media.Imaging;
 
 namespace ICSharpCode.SharpDevelop
 {

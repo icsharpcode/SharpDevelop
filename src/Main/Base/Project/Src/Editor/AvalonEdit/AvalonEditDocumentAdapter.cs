@@ -9,9 +9,8 @@ using System;
 using System.Diagnostics;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.AvalonEdit.AddIn
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Wraps the AvalonEdit TextDocument to provide the IDocument interface.
@@ -21,6 +20,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly TextDocument document;
 		readonly IServiceProvider parentServiceProvider;
 		
+		/// <summary>
+		/// Creates a new AvalonEditDocumentAdapter instance.
+		/// </summary>
+		/// <param name="document">The document to wrap.</param>
+		/// <param name="parentServiceProvider">The service provider used for GetService calls.</param>
 		public AvalonEditDocumentAdapter(TextDocument document, IServiceProvider parentServiceProvider)
 		{
 			if (document == null)

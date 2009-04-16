@@ -1,16 +1,12 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using ICSharpCode.Core;
-using System.Windows.Forms;
-
 using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Editor

@@ -7,11 +7,8 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using System.Windows.Input;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	public interface ICompletionItemList
 	{

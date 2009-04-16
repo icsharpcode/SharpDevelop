@@ -8,9 +8,8 @@
 using System;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Indentation;
-using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.AvalonEdit.AddIn
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Implements AvalonEdit's <see cref="IIndentationStrategy"/> by forwarding calls
@@ -33,6 +32,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void IndentLine(DocumentLine line)
 		{
+			if (line == null)
+				throw new ArgumentNullException("line");
 			formattingStrategy.IndentLine(editor, editor.Document.GetLine(line.LineNumber));
 		}
 		

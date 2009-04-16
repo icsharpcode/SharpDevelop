@@ -7,9 +7,8 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {

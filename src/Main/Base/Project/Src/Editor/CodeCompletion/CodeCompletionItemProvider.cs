@@ -5,15 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Base class for completion item providers.

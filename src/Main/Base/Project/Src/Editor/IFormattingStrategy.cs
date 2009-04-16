@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 
 namespace ICSharpCode.SharpDevelop.Editor

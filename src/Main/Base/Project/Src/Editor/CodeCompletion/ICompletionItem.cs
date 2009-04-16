@@ -6,14 +6,8 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Media;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
-
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	public interface ICompletionItem
 	{

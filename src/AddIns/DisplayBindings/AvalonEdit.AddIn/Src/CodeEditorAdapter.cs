@@ -5,9 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
 using System;
+using System.Linq;
 using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -29,11 +31,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return codeEditor.FileName; }
 		}
 		
-		protected override CompletionWindow CreateCompletionWindow(ICompletionItemList data)
+		public override void ShowCompletionWindow(ICompletionItemList data)
 		{
-			CompletionWindow window = base.CreateCompletionWindow(data);
+			if (data == null || !data.Items.Any())
+				return;
+			CompletionWindow window = new SharpDevelopCompletionWindow(this, codeEditor.TextArea, data);
 			codeEditor.NotifyCompletionWindowOpened(window);
-			return window;
+			window.Show();
 		}
 	}
 }

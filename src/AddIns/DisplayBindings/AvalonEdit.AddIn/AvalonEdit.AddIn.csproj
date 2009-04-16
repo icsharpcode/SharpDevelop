@@ -60,14 +60,11 @@
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AvalonEditDisplayBinding.cs" />
-    <Compile Include="Src\AvalonEditDocumentAdapter.cs" />
-    <Compile Include="Src\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Src\AvalonEditViewContent.cs" />
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CustomCommands.cs" />
     <Compile Include="Src\IconBarMargin.cs" />
-    <Compile Include="Src\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\SharpDevelopCompletionWindow.cs" />
     <Compile Include="Src\TextMarkerService.cs" />
   </ItemGroup>

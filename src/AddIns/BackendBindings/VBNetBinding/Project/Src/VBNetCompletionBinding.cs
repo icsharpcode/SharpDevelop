@@ -90,7 +90,7 @@ namespace VBNetBinding
 					}
 				case "option":
 					if (IsInComment(editor)) return false;
-					new TextCompletionDataProvider("Explicit On",
+					new TextCompletionItemProvider("Explicit On",
 					                               "Explicit Off",
 					                               "Strict On",
 					                               "Strict Off",

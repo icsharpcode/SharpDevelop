@@ -1,21 +1,18 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
-using System.Collections;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Data provider for code completion.
 	/// </summary>
-	public class CommentCompletionDataProvider : AbstractCompletionItemProvider
+	public class CommentCompletionItemProvider : AbstractCompletionItemProvider
 	{
 		static readonly string[][] commentTags = {
 			new string[] {"c", "marks text as code"},
