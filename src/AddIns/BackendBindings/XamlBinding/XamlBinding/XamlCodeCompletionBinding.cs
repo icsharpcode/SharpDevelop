@@ -64,7 +64,7 @@ namespace ICSharpCode.XamlBinding
 							if (path != null && path.Elements.Count > 0) {
 								QualifiedName last = path.Elements[path.Elements.Count - 1];
 								
-								if (!Utils.HasMatchingEndTag(last.Name, document, offset)) {
+								if (!Utils.HasMatchingEndTag(last.Name, document, offset) && !last.Name.StartsWith("/")) {
 									editor.Document.Insert(offset, "></" + last.Name + ">");
 									editor.Caret.Offset = offset + 1;
 									return CodeCompletionKeyPressResult.EatKey;
@@ -78,7 +78,7 @@ namespace ICSharpCode.XamlBinding
 					
 					if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, offset)) {
 						int search = offset + 1;
-						while (char.IsWhiteSpace(editor.Document.GetCharAt(search)))
+						while (search < editor.Document.TextLength - 1 && char.IsWhiteSpace(editor.Document.GetCharAt(search)))
 							search++;
 						
 						if (editor.Document.GetCharAt(search) != '"') {
@@ -233,6 +233,7 @@ namespace ICSharpCode.XamlBinding
 					editor.ShowCompletionWindow(list);
 					return true;
 				} else {
+					// DO NOT USE CompletionDataHelper.CreateListForContext here!!! might result in endless recursion!!!!
 					string attribute = XmlParser.GetAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset);
 					string attribValue = XmlParser.GetAttributeValueAtIndex(editor.Document.Text, editor.Caret.Offset);
 					int offsetFromValueStart = Utils.GetOffsetFromValueStart(editor.Document.Text, editor.Caret.Offset);
@@ -283,15 +284,17 @@ namespace ICSharpCode.XamlBinding
 				case ClassType.Delegate:
 					IMethod invoker = c.Methods.Where(method => method.Name == "Invoke").FirstOrDefault();
 					if (invoker != null) {
-						var path = XmlParser.GetActiveElementStartPath(editor.Document.Text, editor.Caret.Offset);
-						var item = path.Elements[path.Elements.Count - 1];
-						string attribute = XmlParser.GetAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset);
-						var e = ResolveAttribute(attribute, editor) as IEvent;
-						if (e == null)
-							break;
-						string name = Utils.GetAttributeValue(editor.Document.Text, editor.Caret.Offset, "name");
-						list.Add(new NewEventCompletionItem(e, (string.IsNullOrEmpty(name)) ? item.Name : name));
-						CompletionDataHelper.AddMatchingEventHandlers(editor, invoker, list);
+						var path = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, editor.Caret.Offset);
+						if (path != null && path.Elements.Count > 0) {
+							var item = path.Elements[path.Elements.Count - 1];
+							string attribute = XmlParser.GetAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset);
+							var e = ResolveAttribute(attribute, editor) as IEvent;
+							if (e == null)
+								break;
+							string name = Utils.GetAttributeValue(editor.Document.Text, editor.Caret.Offset, "name");
+							list.Add(new NewEventCompletionItem(e, (string.IsNullOrEmpty(name)) ? item.Name : name));
+							CompletionDataHelper.AddMatchingEventHandlers(editor, invoker, list);
+						}
 					}
 					break;
 			}

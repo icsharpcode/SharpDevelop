@@ -24,5 +24,22 @@ namespace ICSharpCode.XamlBinding
 		{
 			return "[" + Kind + " " + Value + "]";
 		}
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				hashCode += 1000000007 * Kind.GetHashCode();
+				if (Value != null) hashCode += 1000000009 * Value.GetHashCode(); 
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			MarkupExtensionToken other = obj as MarkupExtensionToken;
+			if (other == null) return false; 
+			return this.Kind == other.Kind && this.Value == other.Value;
+		}
 	}
 }

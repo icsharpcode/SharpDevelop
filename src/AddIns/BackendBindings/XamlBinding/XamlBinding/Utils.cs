@@ -32,9 +32,6 @@ namespace ICSharpCode.XamlBinding
 			
 			var path = XmlParser.GetActiveElementStartPathAtIndex(text, index);
 			
-			if (path != null && path.Elements.Count > 0 && path.Elements[path.Elements.Count - 1].Name.StartsWith("/"))
-				return true; // is end tag!
-			
 			XmlReader reader = XmlTextReader.Create(new StringReader(text));
 			int startTags = 0;
 			try {

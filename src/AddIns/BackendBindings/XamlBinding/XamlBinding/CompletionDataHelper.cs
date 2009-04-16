@@ -177,13 +177,21 @@ namespace ICSharpCode.XamlBinding
 								if (markup.PositionalArguments.Count == 1 && ch == ' ')
 									break;
 								if (markup.PositionalArguments.Count <= 1) {
-									list.Items.AddRange(CreateListForElement(info, editor.Document.Text, editor.Caret.Line, editor.Caret.Column));
-									AttributeValue selItem = markup.PositionalArguments.LastOrDefault();
-									
-									if (selItem != null && selItem.IsString) {
-										string s = selItem.StringValue;
-										list.PreselectionLength = s.Length;
-										list.SuggestedItem = list.Items.FirstOrDefault(item => item.Text.StartsWith(s, StringComparison.OrdinalIgnoreCase));
+									if (ch == '.') {
+										// TODO : enum and field completion
+									} else {
+										var items = GetClassesFromContext(info, editor.Document.Text, editor.Caret.Line, editor.Caret.Column);
+										foreach (var ns in items) {
+											list.Items.AddRange(ns.Value.Where(c => c.Fields.Any(f => f.IsStatic) || c.Properties.Any(p => p.IsStatic)).Select(c => new XamlCompletionItem(c, ns.Key) as ICompletionItem));
+										}
+										
+										AttributeValue selItem = markup.PositionalArguments.LastOrDefault();
+										
+										if (selItem != null && selItem.IsString) {
+											string s = selItem.StringValue;
+											list.PreselectionLength = s.Length;
+											list.SuggestedItem = list.Items.FirstOrDefault(item => item.Text.StartsWith(s, StringComparison.OrdinalIgnoreCase));
+										}
 									}
 								}
 								break;
@@ -193,6 +201,8 @@ namespace ICSharpCode.XamlBinding
 								if (markup.PositionalArguments.Count <= 1) {
 									list.Items.AddRange(CreateListForElement(info, editor.Document.Text, editor.Caret.Line, editor.Caret.Column));
 									AttributeValue selItem = markup.PositionalArguments.LastOrDefault();
+									
+									
 									
 									if (selItem != null && selItem.IsString) {
 										string s = selItem.StringValue;
