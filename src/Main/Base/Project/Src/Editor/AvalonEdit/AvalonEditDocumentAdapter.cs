@@ -102,12 +102,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 			return ToLocation(document.GetLocation(offset));
 		}
 		
-		internal static Location ToLocation(TextLocation position)
+		public static Location ToLocation(TextLocation position)
 		{
 			return new Location(position.Column, position.Line);
 		}
 		
-		internal static TextLocation ToPosition(Location location)
+		public static TextLocation ToPosition(Location location)
 		{
 			return new TextLocation(location.Line, location.Column);
 		}

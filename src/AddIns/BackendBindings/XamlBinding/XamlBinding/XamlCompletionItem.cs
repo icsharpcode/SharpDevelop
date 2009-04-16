@@ -6,15 +6,9 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Xml;
-
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.XmlEditor;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XamlBinding
 {
