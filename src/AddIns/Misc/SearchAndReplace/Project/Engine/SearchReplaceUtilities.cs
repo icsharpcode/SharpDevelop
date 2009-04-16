@@ -5,16 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
 
 namespace SearchAndReplace
 {
@@ -22,21 +20,21 @@ namespace SearchAndReplace
 	{
 		public static bool IsTextAreaSelected {
 			get {
-				return WorkbenchSingleton.Workbench.ActiveViewContent != null &&
-					WorkbenchSingleton.Workbench.ActiveViewContent is ITextEditorControlProvider;
+				return WorkbenchSingleton.Workbench.ActiveViewContent is ITextEditorProvider;
 			}
 		}
 		
-		public static TextEditorControl GetActiveTextEditor()
+		public static ITextEditor GetActiveTextEditor()
 		{
-			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (content is ITextEditorControlProvider) {
-				return ((ITextEditorControlProvider)content).TextEditorControl;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			if (provider != null) {
+				return provider.TextEditor;
+			} else {
+				return null;
 			}
-			return null;
 		}
 		
-		public static bool IsWholeWordAt(ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument document, int offset, int length)
+		public static bool IsWholeWordAt(IDocument document, int offset, int length)
 		{
 			return (offset - 1 < 0 || Char.IsWhiteSpace(document.GetCharAt(offset - 1))) &&
 				(offset + length + 1 >= document.TextLength || Char.IsWhiteSpace(document.GetCharAt(offset + length)));
@@ -105,19 +103,6 @@ namespace SearchAndReplace
 				}
 			}
 			return true;
-		}
-		
-		public static void SelectText(TextEditorControl textArea, int offset, int endOffset)
-		{
-			int textLength = textArea.ActiveTextAreaControl.Document.TextLength;
-			if (textLength < endOffset) {
-				endOffset = textLength - 1;
-			}
-			textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(endOffset);
-			textArea.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
-			textArea.ActiveTextAreaControl.TextArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, textArea.Document.OffsetToPosition(offset),
-			                                                                                           textArea.Document.OffsetToPosition(endOffset)));
-			textArea.Refresh();
 		}
 	}
 }

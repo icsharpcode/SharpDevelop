@@ -5,16 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.Reflection;
 using System.Text;
-using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.FormsDesigner
 {

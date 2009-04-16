@@ -5,13 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Extension methods for ITextEditor and IDocument.
@@ -83,6 +84,16 @@ namespace ICSharpCode.SharpDevelop
 		public static int FindPrevWordStart(this IDocument document, int offset)
 		{
 			return TextUtilities.GetNextCaretPosition(GetTextSource(document), offset, true, CaretPositioningMode.WordStart);
+		}
+		
+		/// <summary>
+		/// Gets the word at the specified position.
+		/// </summary>
+		public static string GetWordAt(this IDocument document, int offset)
+		{
+			if (document == null)
+				throw new ArgumentNullException("document");
+			throw new NotImplementedException();
 		}
 		
 		/// <summary>

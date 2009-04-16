@@ -6,10 +6,9 @@
 // </file>
 
 using System;
-using ICSharpCode.TextEditor;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Describes an object being able to provide tooltip information for

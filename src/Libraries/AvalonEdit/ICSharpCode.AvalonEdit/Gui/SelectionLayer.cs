@@ -40,7 +40,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 			base.OnRender(drawingContext);
 			
 			BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder();
-			geoBuilder.AddSegments(textView, textArea.Selection.Segments);
+			foreach (var segment in textArea.Selection.Segments) {
+				geoBuilder.AddSegment(textView, segment);
+			}
 			PathGeometry geometry = geoBuilder.CreateGeometry();
 			if (geometry != null) {
 				SolidColorBrush lightHighlightBrush = new SolidColorBrush(SystemColors.HighlightColor);

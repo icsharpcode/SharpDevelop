@@ -5,20 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Bookmarks;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Indentation;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -28,7 +27,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public class CodeEditor : TextEditor
 	{
 		readonly CodeEditorAdapter textEditorAdapter;
-		IconBarMargin iconBarMargin;
+		readonly IconBarMargin iconBarMargin;
+		readonly TextMarkerService textMarkerService;
 		
 		public CodeEditorAdapter TextEditorAdapter {
 			get { return textEditorAdapter; }
@@ -59,6 +59,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.iconBarMargin = new IconBarMargin { TextView = this.TextArea.TextView };
 			this.TextArea.LeftMargins.Insert(0, iconBarMargin);
 			this.TextArea.TextView.Services.AddService(typeof(IBookmarkMargin), iconBarMargin);
+			
+			textMarkerService = new TextMarkerService(this);
+			this.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
+			this.TextArea.TextView.LineTransformers.Add(textMarkerService);
+			this.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 		}
 		
 		ToolTip toolTip;

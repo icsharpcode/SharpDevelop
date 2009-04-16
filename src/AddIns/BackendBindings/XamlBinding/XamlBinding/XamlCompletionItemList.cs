@@ -5,14 +5,14 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding

@@ -23,11 +23,11 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor.Document;
-using Bookmarks = ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -700,7 +700,7 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		public ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument GetDocumentForFile(OpenedFile file)
+		public ICSharpCode.SharpDevelop.Editor.IDocument GetDocumentForFile(OpenedFile file)
 		{
 			if (file == this.PrimaryFile) {
 				return new ICSharpCode.SharpDevelop.Refactoring.TextEditorDocument(this.TextEditorControl.Document);

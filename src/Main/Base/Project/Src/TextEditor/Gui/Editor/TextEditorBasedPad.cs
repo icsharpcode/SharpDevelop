@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			get;
 		}
 		
-		public virtual ICSharpCode.SharpDevelop.ITextEditor TextEditor {
+		public virtual ICSharpCode.SharpDevelop.Editor.ITextEditor TextEditor {
 			get {
 				return new TextEditorAdapter(this.TextEditorControl);
 			}
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public virtual ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument GetDocumentForFile(OpenedFile file)
+		public virtual ICSharpCode.SharpDevelop.Editor.IDocument GetDocumentForFile(OpenedFile file)
 		{
 			return null;
 		}

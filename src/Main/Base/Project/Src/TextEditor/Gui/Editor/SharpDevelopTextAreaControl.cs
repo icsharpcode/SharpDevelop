@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.DefaultEditor.Actions;
@@ -491,7 +491,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public void InitializeFormatter()
 		{
 			string formatterPath = formatingStrategyPath + "/" + Document.HighlightingStrategy.Name;
-			var formatter = AddInTree.BuildItems<IFormattingStrategy>(formatterPath, this, false);
+			var formatter = AddInTree.BuildItems<ICSharpCode.SharpDevelop.Editor.IFormattingStrategy>(formatterPath, this, false);
 			if (formatter != null && formatter.Count > 0) {
 				//Document.FormattingStrategy = formatter[0];
 			}

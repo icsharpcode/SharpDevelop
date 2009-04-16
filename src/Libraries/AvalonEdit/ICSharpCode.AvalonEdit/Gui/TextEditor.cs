@@ -94,6 +94,16 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public event EventHandler DocumentChanged;
 		
+		/// <summary>
+		/// Raises the <see cref="DocumentChanged"/> event.
+		/// </summary>
+		protected virtual void OnDocumentChanged(EventArgs e)
+		{
+			if (DocumentChanged != null) {
+				DocumentChanged(this, e);
+			}
+		}
+		
 		static void OnDocumentChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
 		{
 			((TextEditor)dp).OnDocumentChanged((TextDocument)e.OldValue, (TextDocument)e.NewValue);
@@ -102,13 +112,13 @@ namespace ICSharpCode.AvalonEdit
 		void OnDocumentChanged(TextDocument oldValue, TextDocument newValue)
 		{
 			if (oldValue != null) {
-				oldValue.TextChanged -= DocumentTextChanged;
+				TextDocumentWeakEventManager.TextChanged.RemoveListener(oldValue, this);
 			}
 			if (newValue != null) {
-				newValue.TextChanged += DocumentTextChanged;
+				TextDocumentWeakEventManager.TextChanged.AddListener(newValue, this);
 			}
-			if (DocumentChanged != null)
-				DocumentChanged(this, EventArgs.Empty);
+			OnDocumentChanged(EventArgs.Empty);
+			OnTextChanged(EventArgs.Empty);
 		}
 		#endregion
 		
@@ -165,6 +175,9 @@ namespace ICSharpCode.AvalonEdit
 			if (managerType == typeof(PropertyChangedWeakEventManager)) {
 				OnOptionChanged((PropertyChangedEventArgs)e);
 				return true;
+			} else if (managerType == typeof(TextDocumentWeakEventManager.TextChanged)) {
+				OnTextChanged(e);
+				return true;
 			}
 			return false;
 		}
@@ -209,10 +222,14 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public event EventHandler TextChanged;
 		
-		void DocumentTextChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Raises the <see cref="TextChanged"/> event.
+		/// </summary>
+		protected virtual void OnTextChanged(EventArgs e)
 		{
-			if (TextChanged != null)
+			if (TextChanged != null) {
 				TextChanged(this, e);
+			}
 		}
 		
 		readonly TextArea textArea;

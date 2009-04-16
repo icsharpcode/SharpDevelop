@@ -6,10 +6,8 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -17,8 +15,8 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using AST = ICSharpCode.NRefactory.Ast;
-using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 
 namespace CSharpBinding
 {

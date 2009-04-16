@@ -5,11 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
 using System;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -27,7 +26,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		/// <param name="word">The keyword string.</param>
 		/// <returns>true if the keyword is handled; otherwise false.</returns>
-		public override bool HandleKeyword(ICSharpCode.SharpDevelop.ITextEditor editor, string word)
+		public override bool HandleKeyword(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, string word)
 		{
 			if (word != null) {
 				switch (word.ToLowerInvariant()) {
@@ -52,7 +51,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Shows the code completion window.
 		/// </summary>
-		protected virtual void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.ITextEditor editor, AbstractCompletionItemProvider completionItemProvider, char ch)
+		protected virtual void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, AbstractCompletionItemProvider completionItemProvider, char ch)
 		{
 			completionItemProvider.ShowCompletion(editor);
 		}

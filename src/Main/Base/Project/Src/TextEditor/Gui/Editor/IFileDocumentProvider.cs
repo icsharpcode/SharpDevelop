@@ -5,10 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Interface for view contents that provide a text editor document

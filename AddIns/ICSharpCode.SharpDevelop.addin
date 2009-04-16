@@ -43,7 +43,7 @@
 			<Doozer name="EditAction" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.EditActionDoozer"/>
 			<Doozer name="SyntaxMode" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
-			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionBindingDoozer"/>
+			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.Editor.CodeCompletionBindingDoozer"/>
 			<Doozer name="Debugger" class="ICSharpCode.SharpDevelop.Debugging.DebuggerDoozer"/>
 			<Doozer name="Directory" class="ICSharpCode.SharpDevelop.DirectoryDoozer"/>
 			<Doozer name="TaskBoundAdditionalLogger" class="ICSharpCode.SharpDevelop.Project.TaskBoundAdditionalLoggerDoozer"/>
@@ -1533,6 +1533,7 @@
 				<MenuItem id       = "Toggle Breakpoint"
 				          label    = "${res:XML.MainMenu.DebugMenu.ToggleBreakpoint}"
 				          shortcut = "F7"
+				          icon     = "Bookmarks.Breakpoint"
 				          class    = "ICSharpCode.SharpDevelop.Project.Commands.ToggleBreakpointCommand"/>
 			</ComplexCondition>
 		</MenuItem> <!-- end DEBUG menu -->

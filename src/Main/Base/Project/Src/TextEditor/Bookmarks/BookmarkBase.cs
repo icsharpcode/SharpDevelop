@@ -5,9 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
-using ICSharpCode.AvalonEdit.Document;
 using System.Windows.Input;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -16,13 +18,12 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// </summary>
 	public class BookmarkBase : IBookmark
 	{
-		TextLocation location;
+		Location location;
 		
-		TextDocument document;
-		TextAnchor anchor;
-		IBookmarkMargin bookmarkMargin;
+		IDocument document;
+		ITextAnchor anchor;
 		
-		public TextDocument Document {
+		public IDocument Document {
 			get {
 				return document;
 			}
@@ -39,26 +40,15 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public IBookmarkMargin BookmarkMargin {
-			get { return bookmarkMargin; }
-			set {
-				if (bookmarkMargin != value) {
-					bookmarkMargin = value;
-					OnBookmarkMarginChanged(EventArgs.Empty);
-				}
-			}
-		}
-		
 		void CreateAnchor()
 		{
 			if (document != null) {
-				int lineNumber = Math.Max(1, Math.Min(location.Line, document.LineCount));
-				int lineLength = document.GetLineByNumber(lineNumber).Length;
-				int offset = document.GetOffset(
-					new TextLocation(
-						lineNumber,
-						Math.Max(1, Math.Min(location.Column, lineLength + 1))
-					));
+				int lineNumber = Math.Max(1, Math.Min(location.Line, document.TotalNumberOfLines));
+				int lineLength = document.GetLine(lineNumber).Length;
+				int offset = document.PositionToOffset(
+					lineNumber,
+					Math.Max(1, Math.Min(location.Column, lineLength + 1))
+				);
 				anchor = document.CreateAnchor(offset);
 				// after insertion: keep bookmarks after the initial whitespace (see DefaultFormattingStrategy.SmartReplaceLine)
 				anchor.MovementType = AnchorMovementType.AfterInsertion;
@@ -75,19 +65,22 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		protected virtual void RemoveMark()
 		{
-			if (bookmarkMargin != null)
-				bookmarkMargin.Bookmarks.Remove(this);
+			if (document != null) {
+				IBookmarkMargin bookmarkMargin = document.GetService(typeof(IBookmarkMargin)) as IBookmarkMargin;
+				if (bookmarkMargin != null)
+					bookmarkMargin.Bookmarks.Remove(this);
+			}
 		}
 		
 		/// <summary>
 		/// Gets the TextAnchor used for this bookmark.
 		/// Is null if the bookmark is not connected to a document.
 		/// </summary>
-		public TextAnchor Anchor {
+		public ITextAnchor Anchor {
 			get { return anchor; }
 		}
 		
-		public TextLocation Location {
+		public Location Location {
 			get {
 				if (anchor != null)
 					return anchor.Location;
@@ -109,14 +102,13 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		protected virtual void OnBookmarkMarginChanged(EventArgs e)
-		{
-		}
-		
 		protected virtual void Redraw()
 		{
-			if (bookmarkMargin != null)
-				bookmarkMargin.Redraw();
+			if (document != null) {
+				IBookmarkMargin bookmarkMargin = document.GetService(typeof(IBookmarkMargin)) as IBookmarkMargin;
+				if (bookmarkMargin != null)
+					bookmarkMargin.Redraw();
+			}
 		}
 		
 		public int LineNumber {
@@ -146,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public BookmarkBase(TextLocation location)
+		public BookmarkBase(Location location)
 		{
 			this.Location = location;
 		}

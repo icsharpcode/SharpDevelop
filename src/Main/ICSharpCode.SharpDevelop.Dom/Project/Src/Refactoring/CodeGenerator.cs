@@ -11,6 +11,7 @@ using System.Text;
 
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.AstBuilder;
+using ICSharpCode.SharpDevelop.Editor;
 using NR = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.Dom.Refactoring

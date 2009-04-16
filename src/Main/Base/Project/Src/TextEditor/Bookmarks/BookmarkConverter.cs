@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory;
 using System;
 using System.ComponentModel;
 using System.Globalization;
@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						throw new NotImplementedException();
 						break;
 					default:
-						bookmark = new SDBookmark(fileName, new TextLocation(lineNumber, columnNumber));
+						bookmark = new SDBookmark(fileName, new Location(columnNumber, lineNumber));
 						break;
 				}
 				return bookmark;

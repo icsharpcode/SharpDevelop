@@ -11,16 +11,18 @@ using System.Drawing;
 
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using IDocumentLine = ICSharpCode.SharpDevelop.Dom.Refactoring.IDocumentLine;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
+	using IDocument = ICSharpCode.TextEditor.Document.IDocument;
+	
 	/// <summary>
 	/// Use this class to pass a text editor document to the refactoring API.
 	/// </summary>
-	public sealed class TextEditorDocument : ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument
+	public sealed class TextEditorDocument : ICSharpCode.SharpDevelop.Editor.IDocument
 	{
-		IDocument doc;
+		ICSharpCode.TextEditor.Document.IDocument doc;
 		
 		public TextEditorDocument(IDocument doc)
 		{
@@ -158,6 +160,115 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public int TotalNumberOfLines {
 			get {
 				return doc.TotalNumberOfLines;
+			}
+		}
+		
+		public ITextAnchor CreateAnchor(int offset)
+		{
+			LineSegment lineSegment = doc.GetLineSegmentForOffset(offset);
+			return new AnchorAdapter(lineSegment.CreateAnchor(offset - lineSegment.Offset));
+		}
+		
+		public object GetService(Type serviceType)
+		{
+			if (serviceType == typeof(ICSharpCode.TextEditor.Document.IDocument))
+				return doc;
+			else
+				return null;
+		}
+		
+		sealed class AnchorAdapter : ITextAnchor
+		{
+			readonly TextAnchor anchor;
+			
+			public AnchorAdapter(TextAnchor anchor)
+			{
+				this.anchor = anchor;
+			}
+			
+			#region Forward Deleted Event
+			EventHandler deleted;
+			
+			public event EventHandler Deleted {
+				add {
+					// we cannot simply forward the event handler because
+					// that would raise the event with an incorrect sender
+					if (deleted == null && value != null)
+						anchor.Deleted += OnDeleted;
+					deleted += value;
+				}
+				remove {
+					deleted -= value;
+					if (deleted == null)
+						anchor.Deleted -= OnDeleted;
+				}
+			}
+			
+			void OnDeleted(object sender, EventArgs e)
+			{
+				// raise event with correct sender
+				if (deleted != null)
+					deleted(this, e);
+			}
+			#endregion
+			
+			public ICSharpCode.NRefactory.Location Location {
+				get {
+					TextLocation loc = anchor.Location;
+					return new ICSharpCode.NRefactory.Location(
+						loc.Column + 1,
+						loc.Line + 1
+					);
+				}
+			}
+			
+			public int Offset {
+				get { return anchor.Offset; }
+			}
+			
+			public ICSharpCode.SharpDevelop.Editor.AnchorMovementType MovementType {
+				get {
+					switch (anchor.MovementType) {
+						case ICSharpCode.TextEditor.Document.AnchorMovementType.AfterInsertion:
+							return ICSharpCode.SharpDevelop.Editor.AnchorMovementType.AfterInsertion;
+						case ICSharpCode.TextEditor.Document.AnchorMovementType.BeforeInsertion:
+							return ICSharpCode.SharpDevelop.Editor.AnchorMovementType.BeforeInsertion;
+						default:
+							throw new NotSupportedException();
+					}
+				}
+				set {
+					switch (value) {
+						case ICSharpCode.SharpDevelop.Editor.AnchorMovementType.AfterInsertion:
+							anchor.MovementType = ICSharpCode.TextEditor.Document.AnchorMovementType.AfterInsertion;
+							break;
+						case ICSharpCode.SharpDevelop.Editor.AnchorMovementType.BeforeInsertion:
+							anchor.MovementType = ICSharpCode.TextEditor.Document.AnchorMovementType.BeforeInsertion;
+							break;
+						default:
+							throw new NotSupportedException();
+					}
+				}
+			}
+			
+			public bool SurviveDeletion {
+				get { return false; }
+				set {
+					if (value)
+						throw new NotSupportedException();
+				}
+			}
+			
+			public bool IsDeleted {
+				get { return anchor.IsDeleted; }
+			}
+			
+			public int Line {
+				get { return anchor.LineNumber + 1; }
+			}
+			
+			public int Column {
+				get { return anchor.ColumnNumber + 1; }
 			}
 		}
 	}

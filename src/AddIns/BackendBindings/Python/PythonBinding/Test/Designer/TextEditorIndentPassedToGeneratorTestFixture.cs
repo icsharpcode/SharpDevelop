@@ -5,16 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
-using System.CodeDom;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
+
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop.Editor;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 

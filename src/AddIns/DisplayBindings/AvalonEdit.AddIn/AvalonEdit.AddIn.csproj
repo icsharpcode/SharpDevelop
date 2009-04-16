@@ -69,6 +69,7 @@
     <Compile Include="Src\IconBarMargin.cs" />
     <Compile Include="Src\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\SharpDevelopCompletionWindow.cs" />
+    <Compile Include="Src\TextMarkerService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

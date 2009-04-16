@@ -5,8 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
@@ -17,7 +17,7 @@ namespace SearchAndReplace
 	{
 		string searchPattern;
 		
-		bool MatchCaseSensitive(ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument document, int offset, string pattern)
+		bool MatchCaseSensitive(IDocument document, int offset, string pattern)
 		{
 			for (int i = 0; i < pattern.Length; ++i) {
 				if (offset + i >= document.TextLength || document.GetCharAt(offset + i) != pattern[i]) {
@@ -27,7 +27,7 @@ namespace SearchAndReplace
 			return true;
 		}
 		
-		bool MatchCaseInsensitive(ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument document, int offset, string pattern)
+		bool MatchCaseInsensitive(IDocument document, int offset, string pattern)
 		{
 			for (int i = 0; i < pattern.Length; ++i) {
 				if (offset + i >= document.TextLength || Char.ToUpper(document.GetCharAt(offset + i)) != pattern[i]) {
@@ -37,7 +37,7 @@ namespace SearchAndReplace
 			return true;
 		}
 		
-		bool IsWholeWordAt(ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument document, int offset, int length)
+		bool IsWholeWordAt(IDocument document, int offset, int length)
 		{
 			return (offset - 1 < 0 || !Char.IsLetterOrDigit(document.GetCharAt(offset - 1))) &&
 			       (offset + length + 1 >= document.TextLength || !Char.IsLetterOrDigit(document.GetCharAt(offset + length)));

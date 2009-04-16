@@ -5,13 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using ICSharpCode.AvalonEdit.Gui;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XamlBinding

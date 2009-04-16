@@ -8,7 +8,7 @@
 using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
@@ -22,7 +22,7 @@ namespace PythonBinding.Tests.Utils
 	{
 		bool ctrlSpaceCompletionDataProviderCreated;
 		bool codeCompletionWindowDisplayed;
-		ICSharpCode.SharpDevelop.ITextEditor textAreaControlUsedToShowCompletionWindow;
+		ICSharpCode.SharpDevelop.Editor.ITextEditor textAreaControlUsedToShowCompletionWindow;
 		AbstractCompletionItemProvider completionProviderUsedWhenDisplayingCodeCompletionWindow;
 		CtrlSpaceCompletionItemProvider ctrlSpaceCompletionDataProvider;
 		char completionCharacter = '\0';
@@ -52,7 +52,7 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		public ICSharpCode.SharpDevelop.ITextEditor TextAreaControlUsedToShowCompletionWindow {
+		public ICSharpCode.SharpDevelop.Editor.ITextEditor TextAreaControlUsedToShowCompletionWindow {
 			get {
 				return textAreaControlUsedToShowCompletionWindow;
 			}
@@ -111,7 +111,7 @@ namespace PythonBinding.Tests.Utils
 		/// not displayed but the fact that this method is called is
 		/// recorded. 
 		/// </summary>
-		protected override void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.ITextEditor textEditor, AbstractCompletionItemProvider completionDataProvider, char ch)
+		protected override void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.Editor.ITextEditor textEditor, AbstractCompletionItemProvider completionDataProvider, char ch)
 		{
 			textAreaControlUsedToShowCompletionWindow = textEditor;
 			codeCompletionWindowDisplayed = true;

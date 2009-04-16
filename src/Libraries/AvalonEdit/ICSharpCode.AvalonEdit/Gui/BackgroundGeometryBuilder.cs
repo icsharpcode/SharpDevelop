@@ -27,7 +27,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <summary>
 		/// Gets/sets the radius of the rounded corners.
 		/// </summary>
-		public double CornerRadius { 
+		public double CornerRadius {
 			get { return cornerRadius; }
 			set { cornerRadius = value; }
 		}
@@ -40,59 +40,57 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		
 		/// <summary>
-		/// Adds the specified segments to the geometry.
+		/// Adds the specified segment to the geometry.
 		/// </summary>
-		public void AddSegments(TextView textView, IEnumerable<ISegment> segments)
+		public void AddSegment(TextView textView, ISegment segment)
 		{
 			if (textView == null)
 				throw new ArgumentNullException("textView");
-			if (segments == null)
-				throw new ArgumentNullException("segments");
+			if (segment == null)
+				throw new ArgumentNullException("segment");
 			
-			var scrollOffset = textView.ScrollOffset;
-			foreach (ISegment segment in segments) {
-				int segmentStart = segment.Offset;
-				int segmentEnd = segment.Offset + segment.Length;
+			Vector scrollOffset = textView.ScrollOffset;
+			int segmentStart = segment.Offset;
+			int segmentEnd = segment.Offset + segment.Length;
+			
+			foreach (VisualLine vl in textView.VisualLines) {
+				int vlStartOffset = vl.FirstDocumentLine.Offset;
+				if (vlStartOffset > segmentEnd)
+					break;
+				int vlEndOffset = vl.LastDocumentLine.Offset + vl.LastDocumentLine.Length;
+				if (vlEndOffset < segmentStart)
+					continue;
 				
-				foreach (VisualLine vl in textView.VisualLines) {
-					int vlStartOffset = vl.FirstDocumentLine.Offset;
-					if (vlStartOffset > segmentEnd)
+				int segmentStartVC;
+				if (segmentStart < vlStartOffset)
+					segmentStartVC = 0;
+				else
+					segmentStartVC = vl.GetVisualColumn(segmentStart - vlStartOffset);
+				
+				int segmentEndVC;
+				if (segmentEnd > vlEndOffset)
+					segmentEndVC = vl.VisualLength;
+				else
+					segmentEndVC = vl.GetVisualColumn(segmentEnd - vlStartOffset);
+				
+				TextLine lastTextLine = vl.TextLines.Last();
+				foreach (TextLine line in vl.TextLines) {
+					double y = vl.GetTextLineVisualYPosition(line, VisualYPosition.LineTop);
+					int visualStartCol = vl.GetTextLineVisualStartColumn(line);
+					int visualEndCol = visualStartCol + line.Length;
+					if (line != lastTextLine)
+						visualEndCol -= line.TrailingWhitespaceLength;
+					
+					if (segmentEndVC < visualStartCol)
 						break;
-					int vlEndOffset = vl.LastDocumentLine.Offset + vl.LastDocumentLine.Length;
-					if (vlEndOffset < segmentStart)
+					if (segmentStartVC > visualEndCol)
 						continue;
-					
-					int segmentStartVC;
-					if (segmentStart < vlStartOffset)
-						segmentStartVC = 0;
-					else
-						segmentStartVC = vl.GetVisualColumn(segmentStart - vlStartOffset);
-					
-					int segmentEndVC;
-					if (segmentEnd > vlEndOffset)
-						segmentEndVC = vl.VisualLength;
-					else
-						segmentEndVC = vl.GetVisualColumn(segmentEnd - vlStartOffset);
-					
-					TextLine lastTextLine = vl.TextLines.Last();
-					foreach (TextLine line in vl.TextLines) {
-						double y = vl.GetTextLineVisualYPosition(line, VisualYPosition.LineTop);
-						int visualStartCol = vl.GetTextLineVisualStartColumn(line);
-						int visualEndCol = visualStartCol + line.Length;
-						if (line != lastTextLine)
-							visualEndCol -= line.TrailingWhitespaceLength;
-						
-						if (segmentEndVC < visualStartCol)
-							break;
-						if (segmentStartVC > visualEndCol)
-							continue;
-						double left = line.GetDistanceFromCharacterHit(new CharacterHit(Math.Max(segmentStartVC, visualStartCol), 0));
-						double right = line.GetDistanceFromCharacterHit(new CharacterHit(Math.Min(segmentEndVC, visualEndCol), 0));
-						y -= scrollOffset.Y;
-						left -= scrollOffset.X;
-						right -= scrollOffset.X;
-						AddRectangle(left, y, right, y + line.Height);
-					}
+					double left = line.GetDistanceFromCharacterHit(new CharacterHit(Math.Max(segmentStartVC, visualStartCol), 0));
+					double right = line.GetDistanceFromCharacterHit(new CharacterHit(Math.Min(segmentEndVC, visualEndCol), 0));
+					y -= scrollOffset.Y;
+					left -= scrollOffset.X;
+					right -= scrollOffset.X;
+					AddRectangle(left, y, right, y + line.Height);
 				}
 			}
 		}

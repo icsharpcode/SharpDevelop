@@ -13,8 +13,8 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -227,13 +227,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public static void RemoveCurrentLineMarker()
 		{
-//			CurrentLineBookmark.Remove();
+			CurrentLineBookmark.Remove();
 		}
 		
 		public static void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
 		{
 			IViewContent viewContent = FileService.JumpToFilePosition(SourceFullFilename, StartLine, StartColumn);
-//			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
+			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
 		}
 		
 		#region Tool tips

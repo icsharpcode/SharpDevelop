@@ -49,10 +49,22 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
+		/// Gets whether this segment is connected to a TextSegmentCollection and will automatically
+		/// update its offsets.
+		/// </summary>
+		protected bool IsConnectedToCollection {
+			get {
+				return ownerTree != null;
+			}
+		}
+		
+		/// <summary>
 		/// Gets/Sets the start offset of the segment.
 		/// </summary>
 		public int StartOffset {
 			get {
+				// If the segment is not connected to a tree, we store the offset in "nodeLength".
+				// Otherwise, "nodeLength" contains the distance to the start offset of the previous node
 				if (ownerTree == null)
 					return nodeLength;
 				

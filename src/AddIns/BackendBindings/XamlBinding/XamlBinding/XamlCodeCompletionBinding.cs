@@ -6,14 +6,10 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Xml;
-
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
@@ -195,7 +191,7 @@ namespace ICSharpCode.XamlBinding
 			return CodeCompletionKeyPressResult.None;
 		}
 
-		public bool CtrlSpace(ICSharpCode.SharpDevelop.ITextEditor editor)
+		public bool CtrlSpace(ITextEditor editor)
 		{
 			var path = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, editor.Caret.Offset);
 			if (path != null && path.Elements.Count > 0) {

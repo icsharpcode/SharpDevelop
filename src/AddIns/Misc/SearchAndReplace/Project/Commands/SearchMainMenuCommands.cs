@@ -5,10 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
@@ -17,9 +16,9 @@ namespace SearchAndReplace
 		public static void SetSearchPattern()
 		{
 			// Get Highlighted value and set it to FindDialog.searchPattern
-			TextEditorControl textArea = SearchReplaceUtilities.GetActiveTextEditor();
+			ITextEditor textArea = SearchReplaceUtilities.GetActiveTextEditor();
 			if (textArea != null) {
-				string selectedText = textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
+				string selectedText = textArea.SelectedText;
 				if (selectedText != null && selectedText.Length > 0 && !IsMultipleLines(selectedText)) {
 					SearchOptions.CurrentFindPattern = selectedText;
 				}
@@ -54,7 +53,7 @@ namespace SearchAndReplace
 	/// <summary>
 	/// Finds the next text match based on the text currently
 	/// selected. It uses the currently active search options and only changes
-	/// the current find pattern. If the currently active search is inside the 
+	/// the current find pattern. If the currently active search is inside the
 	/// current text selection then the quick find will change the search so it is
 	/// across the active document, otherwise it will not change the current setting.
 	/// </summary>
@@ -70,7 +69,7 @@ namespace SearchAndReplace
 	{
 		public override void Run()
 		{
-			TextEditorControl textArea = SearchReplaceUtilities.GetActiveTextEditor();
+			ITextEditor textArea = SearchReplaceUtilities.GetActiveTextEditor();
 			if (textArea == null) {
 				return;
 			}
@@ -78,17 +77,17 @@ namespace SearchAndReplace
 			// Determine what text we should search for.
 			string textToFind;
 			
-			string selectedText = textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
+			string selectedText = textArea.SelectedText;
 			if (selectedText.Length > 0) {
 				if (Find.IsMultipleLines(selectedText)) {
 					// Locate the nearest word at the selection start.
-					textToFind = TextUtilities.GetWordAt(textArea.Document, textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection[0].Offset);
+					textToFind = textArea.Document.GetWordAt(textArea.SelectionStart);
 				} else {
 					// Search for selected text.
-					textToFind = selectedText;		
+					textToFind = selectedText;
 				}
 			} else {
-				textToFind = TextUtilities.GetWordAt(textArea.Document, textArea.ActiveTextAreaControl.Caret.Offset);
+				textToFind = textArea.Document.GetWordAt(textArea.Caret.Offset);
 			}
 			
 			if (textToFind != null && textToFind.Length > 0) {

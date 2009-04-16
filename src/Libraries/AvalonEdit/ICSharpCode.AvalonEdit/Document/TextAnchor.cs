@@ -94,6 +94,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the line number of the anchor.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">Thrown when trying to get the Offset from a deleted anchor.</exception>
 		public int Line {
 			get {
 				return document.GetLineByOffset(this.Offset).LineNumber;
@@ -103,6 +104,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the column number of this anchor.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">Thrown when trying to get the Offset from a deleted anchor.</exception>
 		public int Column {
 			get {
 				int offset = this.Offset;
@@ -113,6 +115,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the text location of this anchor.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">Thrown when trying to get the Offset from a deleted anchor.</exception>
 		public TextLocation Location {
 			get {
 				return document.GetLocation(this.Offset);

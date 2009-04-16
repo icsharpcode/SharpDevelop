@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -12,16 +13,33 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
+	class StoredSelection
+	{
+		public readonly int Offset, Length;
+		
+		public int EndOffset {
+			get { return Offset + Length; }
+		}
+		
+		public bool IsTextSelected {
+			get { return Length > 0; }
+		}
+		
+		public StoredSelection(int offset, int length)
+		{
+			this.Offset = offset;
+			this.Length = length;
+		}
+	}
+	
 	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
 		SearchAndReplaceMode  searchAndReplaceMode;
-		ISelection selection;
-		TextEditorControl textEditor;
+		StoredSelection selection;
+		ITextEditor textEditor;
 		bool ignoreSelectionChanges;
 		bool findFirst;
 		
@@ -94,7 +112,7 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			if (IsSelectionSearch) {
-				if (IsTextSelected(selection)) {
+				if (selection.IsTextSelected) {
 					FindNextInSelection();
 				}
 			} else {
@@ -110,7 +128,7 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			if (IsSelectionSearch) {
-				if (IsTextSelected(selection)) {
+				if (selection.IsTextSelected) {
 					RunAllInSelection(0);
 				}
 			} else {
@@ -125,7 +143,7 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			if (IsSelectionSearch) {
-				if (IsTextSelected(selection)) {
+				if (selection.IsTextSelected) {
 					RunAllInSelection(1);
 				}
 			} else {
@@ -140,7 +158,7 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			if (IsSelectionSearch) {
-				if (IsTextSelected(selection)) {
+				if (selection.IsTextSelected) {
 					RunAllInSelection(2);
 				}
 			} else {
@@ -155,7 +173,7 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			if (IsSelectionSearch) {
-				if (IsTextSelected(selection)) {
+				if (selection.IsTextSelected) {
 					ReplaceInSelection();
 				}
 			} else {
@@ -227,7 +245,7 @@ namespace SearchAndReplace
 			Get<ComboBox>("lookIn").Items.Add(SearchOptions.LookIn);
 			Get<ComboBox>("lookIn").SelectedIndexChanged += new EventHandler(LookInSelectedIndexChanged);
 			
-			if (IsMultipleLineSelection(GetCurrentTextSelection())) {
+			if (IsMultipleLineSelection(SearchReplaceUtilities.GetActiveTextEditor())) {
 				DocumentIteratorType = DocumentIteratorType.CurrentSelection;
 			} else {
 				if (SearchOptions.DocumentIteratorType == DocumentIteratorType.CurrentSelection) {
@@ -287,22 +305,12 @@ namespace SearchAndReplace
 		/// <summary>
 		/// Checks whether the selection spans two or more lines.
 		/// </summary>
-		/// <remarks>Maybe the ISelection interface should have an
-		/// IsMultipleLine method?</remarks>
-		static bool IsMultipleLineSelection(ISelection selection)
+		static bool IsMultipleLineSelection(ITextEditor editor)
 		{
-			if (IsTextSelected(selection)) {
-				return selection.SelectedText.IndexOf('\n') != -1;
-			}
-			return false;
-		}
-		
-		static bool IsTextSelected(ISelection selection)
-		{
-			if (selection != null) {
-				return !selection.IsEmpty;
-			}
-			return false;
+			if (editor == null)
+				return false;
+			else
+				return editor.SelectedText.IndexOf('\n') != -1;
 		}
 		
 		void FindNextInSelection()
@@ -311,7 +319,7 @@ namespace SearchAndReplace
 			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
 			
 			if (findFirst) {
-				SetCaretPosition(textEditor.ActiveTextAreaControl.TextArea, startOffset);
+				textEditor.Caret.Offset = startOffset;
 			}
 			
 			try {
@@ -322,7 +330,7 @@ namespace SearchAndReplace
 				} else {
 					findFirst = !SearchReplaceManager.FindNextInSelection(null);
 					if (findFirst) {
-						SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
+						textEditor.Select(startOffset, endOffset - startOffset);
 					}
 				}
 			} finally {
@@ -333,41 +341,38 @@ namespace SearchAndReplace
 		/// <summary>
 		/// Returns the first ISelection object from the currently active text editor
 		/// </summary>
-		static ISelection GetCurrentTextSelection()
+		static StoredSelection GetCurrentTextSelection()
 		{
-			TextEditorControl textArea = SearchReplaceUtilities.GetActiveTextEditor();
+			ITextEditor textArea = SearchReplaceUtilities.GetActiveTextEditor();
 			if (textArea != null) {
-				SelectionManager selectionManager = textArea.ActiveTextAreaControl.SelectionManager;
-				if (selectionManager.HasSomethingSelected) {
-					return selectionManager.SelectionCollection[0];
-				}
+				return new StoredSelection(textArea.SelectionStart, textArea.SelectionLength);
 			}
 			return null;
 		}
 		
 		void WorkbenchActiveViewContentChanged(object source, EventArgs e)
 		{
-			TextEditorControl activeTextEditorControl = SearchReplaceUtilities.GetActiveTextEditor();
+			ITextEditor activeTextEditorControl = SearchReplaceUtilities.GetActiveTextEditor();
 			if (activeTextEditorControl != this.textEditor) {
 				AddSelectionChangedHandler(activeTextEditorControl);
 				TextSelectionChanged(source, e);
 			}
 		}
 		
-		void AddSelectionChangedHandler(TextEditorControl textEditor)
+		void AddSelectionChangedHandler(ITextEditor textEditor)
 		{
 			RemoveSelectionChangedHandler();
 			
 			this.textEditor = textEditor;
 			if (textEditor != null) {
-				this.textEditor.ActiveTextAreaControl.SelectionManager.SelectionChanged += TextSelectionChanged;
+				this.textEditor.SelectionChanged += TextSelectionChanged;
 			}
 		}
 		
 		void RemoveSelectionChangedHandler()
 		{
 			if (textEditor != null) {
-				textEditor.ActiveTextAreaControl.SelectionManager.SelectionChanged -= TextSelectionChanged;
+				textEditor.SelectionChanged -= TextSelectionChanged;
 			}
 		}
 		
@@ -390,11 +395,6 @@ namespace SearchAndReplace
 				selection = GetCurrentTextSelection();
 				findFirst = true;
 			}
-		}
-		
-		void SetCaretPosition(TextArea textArea, int offset)
-		{
-			textArea.Caret.Position = textArea.Document.OffsetToPosition(offset);
 		}
 		
 		void InitSelectionSearch()
@@ -421,8 +421,7 @@ namespace SearchAndReplace
 			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
 			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
 			
-			SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
-			SetCaretPosition(textEditor.ActiveTextAreaControl.TextArea, startOffset);
+			textEditor.Select(startOffset, endOffset - startOffset);
 			
 			try {
 				ignoreSelectionChanges = true;
@@ -432,7 +431,7 @@ namespace SearchAndReplace
 					SearchReplaceManager.MarkAll(startOffset, endOffset - startOffset, monitor);
 				else if (action == 2)
 					SearchReplaceManager.ReplaceAll(startOffset, endOffset - startOffset, monitor);
-				SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
+				textEditor.Select(startOffset, endOffset - startOffset);
 			} finally {
 				ignoreSelectionChanges = false;
 			}
@@ -444,7 +443,7 @@ namespace SearchAndReplace
 			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
 			
 			if (findFirst) {
-				SetCaretPosition(textEditor.ActiveTextAreaControl.TextArea, startOffset);
+				textEditor.Caret.Offset = startOffset;
 			}
 			
 			try {
@@ -455,7 +454,7 @@ namespace SearchAndReplace
 				} else {
 					findFirst = !SearchReplaceManager.ReplaceNextInSelection(null);
 					if (findFirst) {
-						SearchReplaceUtilities.SelectText(textEditor, startOffset, endOffset);
+						textEditor.Select(startOffset, endOffset - startOffset);
 					}
 				}
 			} finally {

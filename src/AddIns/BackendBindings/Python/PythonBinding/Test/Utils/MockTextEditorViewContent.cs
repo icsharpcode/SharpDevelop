@@ -30,11 +30,11 @@ namespace PythonBinding.Tests.Utils
 			get { return textEditor; }
 		}
 		
-		public ITextEditor TextEditor {
+		public ICSharpCode.SharpDevelop.Editor.ITextEditor TextEditor {
 			get { throw new NotImplementedException(); }
 		}
 		
-		public IDocument GetDocumentForFile(OpenedFile file)
+		public ICSharpCode.SharpDevelop.Editor.IDocument GetDocumentForFile(OpenedFile file)
 		{
 			throw new NotImplementedException();
 		}

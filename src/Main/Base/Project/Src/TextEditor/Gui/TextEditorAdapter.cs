@@ -5,13 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Actions;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
@@ -105,7 +106,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument Document { get; private set; }
+		public ICSharpCode.SharpDevelop.Editor.IDocument Document { get; private set; }
 		public ITextEditorCaret Caret { get; private set; }
 		public ITextEditorOptions Options { get; private set; }
 		
@@ -167,6 +168,21 @@ namespace ICSharpCode.SharpDevelop
 				else
 					return 0;
 			}
+		}
+		
+		public string SelectedText {
+			get {
+				var sel = sdtac.ActiveTextAreaControl.SelectionManager;
+				return sel.SelectedText;
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public event EventHandler SelectionChanged {
+			add    { sdtac.ActiveTextAreaControl.SelectionManager.SelectionChanged += value; }
+			remove { sdtac.ActiveTextAreaControl.SelectionManager.SelectionChanged -= value; }
 		}
 		
 		public void Select(int selectionStart, int selectionLength)

@@ -5,8 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -15,28 +17,24 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// </summary>
 	public abstract class SDMarkerBookmark : SDBookmark
 	{
-		public SDMarkerBookmark(string fileName, TextLocation location) : base(fileName, location)
+		public SDMarkerBookmark(string fileName, Location location) : base(fileName, location)
 		{
 			//SetMarker();
 		}
 		
-		/*
-		IDocument oldDocument;
-		TextMarker oldMarker;
+		ITextMarker marker;
 		
-		protected abstract TextMarker CreateMarker();
+		protected abstract ITextMarker CreateMarker(ITextMarkerService markerService);
 		
 		void SetMarker()
 		{
 			RemoveMarker();
-			if (Document != null) {
-				TextMarker marker = CreateMarker();
-				// Perform editor update
-				Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
-				Document.CommitUpdate();
-				oldMarker = marker;
+			if (this.Document != null) {
+				ITextMarkerService markerService = this.Document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+				if (markerService != null) {
+					marker = CreateMarker(markerService);
+				}
 			}
-			oldDocument = Document;
 		}
 		
 		protected override void OnDocumentChanged(EventArgs e)
@@ -44,29 +42,13 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			base.OnDocumentChanged(e);
 			SetMarker();
 		}
-		*/
 		
-		public void RemoveMarker()
+		public virtual void RemoveMarker()
 		{
-			/*
-			if (oldDocument != null) {
-				int from = SafeGetLineNumberForOffset(oldDocument, oldMarker.Offset);
-				int to = SafeGetLineNumberForOffset(oldDocument, oldMarker.Offset + oldMarker.Length);
-				oldDocument.MarkerStrategy.RemoveMarker(oldMarker);
-				oldDocument.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.LinesBetween, from, to));
-				oldDocument.CommitUpdate();
+			if (marker != null) {
+				marker.Delete();
+				marker = null;
 			}
-			oldDocument = null;
-			oldMarker = null;*/
-		}
-		
-		static int SafeGetLineNumberForOffset(TextDocument document, int offset)
-		{
-			if (offset <= 0)
-				return 0;
-			if (offset >= document.TextLength)
-				return document.LineCount;
-			return document.GetLineByOffset(offset).LineNumber;
 		}
 	}
 }

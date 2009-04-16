@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -15,12 +14,14 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.TextEditor;
 using Microsoft.CSharp;
 
 namespace ICSharpCode.WixBinding

@@ -34,15 +34,25 @@
 			coming into view are created, the rest is reused.
 			The VisualLine cache can be manually invalidated using the Redraw method family;
 			moreover, lots of actions cause automatic invalidation:
-			- any change in the document will invalidate the affected VisualLines
-			- changing the width of the TextView invalidates all VisualLines if word-wrap is enabled
-			- changing any text editor settings (word-wrap, font size, etc.) will invalidate all VisualLines
-			- VisualLines leaving the visible area after scrolling will be disposed
+			<list class="bullet">
+			  <listItem>any change in the document will invalidate the affected VisualLines</listItem>
+			  <listItem>changing the width of the TextView invalidates all VisualLines if word-wrap is enabled</listItem>
+			  <listItem>changing any text editor settings (word-wrap, font size, etc.) will invalidate all VisualLines</listItem>
+			  <listItem>VisualLines leaving the visible area after scrolling will be disposed</listItem>
+			</list>
 			In general, manual invalidation is required only if you have written a text editor extension
 			(BackgroundRenderer, VisualLineElementGenerator or VisualLineTransformer) that also consumes
 			external data - in that case, you'll have to notify the text editor that VisualLines need
 			to be recreated when your external data changes.
 			</para>
+			
+			<alert class="note">
+			  <para>If external data used by your text editor extension changes, call
+				TextView.<codeEntityReference>M:ICSharpCode.AvalonEdit.Gui.TextView.Redraw</codeEntityReference>
+				to invalidate the VisualLine.
+			  </para>
+			</alert>
+
 			<para>
 			Invalidating VisualLines does not cause immediate recreation of the lines!
 			Rather, the VisualLines are recreated when the text view is next re-measured.
@@ -52,13 +62,23 @@
 			in case the user types faster than the text view can redraw, there will be only
 			one redraw for multiple input actions.
 			</para>
-			<para>
-			ALERT: this means that if you access VisualLine, you must be able to handle
-			the case that your requested VisualLines are not available.
-			You can use GetOrConstructVisualLine to make the text editor re-build the visual line
-			if it does not exist anymore; or you can call EnsureVisualLines() to make the text view
-			create all VisualLines in the visible region.
-			</para>
+			<alert class="note">
+			  <para>
+			  	The TextView will never return invalid lines to you, but you
+			  	may run into the case that the valid visual lines are not available.
+			  </para>
+			  <para>
+			    What happens in this case depends on the method you are calling -
+			    the new visual line might get created automatically,
+			    null could be returned, or you may get a
+				<codeEntityReference>T:ICSharpCode.AvalonEdit.Gui.VisualLinesInvalidException</codeEntityReference>.
+			  </para>
+			  <para>
+				You can call
+				<codeEntityReference>M:ICSharpCode.AvalonEdit.Gui.TextView.EnsureVisualLines</codeEntityReference>
+				to make the text view create all VisualLines in the visible region.
+			  </para>
+			</alert>
 		</content>
 	</section>
 	<section>
@@ -122,13 +142,30 @@
 			the measured heights. This way, scrolling takes account for word-wrapping.
 			The constructed text lines are stored for the arrange and render steps.
 			Now, finally, the measure step is complete.
-			
-			Arrange:
-			This step will arrange inline UI elements at their position inside the text.
-			
-			Render:
-			First, background renderers are called to draw the background.
-			Then, the TextView draws the TextLines.
+			</para>
+			<para>
+			The WPF arrange step doesn't have much work to do:
+			It just arranges inline UI elements at their position inside the text.
+			</para>
+			<para>
+			The actual rendering does not happen directly in the TextView, but in its
+			various layers.
+			</para>
+			<para>
+			These are the predefined layers:
+			<list class="bullet">
+			  <listItem>Background layer: renders the background colors associated with the visual elements</listItem>
+			  <listItem>Selection layer: renders the background of the selection</listItem>
+			  <listItem>Text layer: renders the TextLines that were constructed during the Measure step.
+			  	The text layer also serves as container for any inline UI elements.
+			  </listItem>
+			  <listItem>Caret layer: renders a blinking caret</listItem>
+			</list>
+			It's also possible to insert new layers into the TextView using the
+			<codeEntityReference>M:ICSharpCode.AvalonEdit.Gui.TextView.InsertLayer</codeEntityReference>
+			method.
+			This allows adding custom interactive components to the editor
+			while being in full control of the Z-Order.
 			</para>
 		</content>
 	</section>

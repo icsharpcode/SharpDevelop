@@ -5,15 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reflection;
 using System.Text;
+
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace Grunwald.BooBinding.Designer
 {

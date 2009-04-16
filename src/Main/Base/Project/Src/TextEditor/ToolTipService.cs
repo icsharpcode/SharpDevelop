@@ -9,9 +9,8 @@ using ICSharpCode.SharpDevelop.Debugging;
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Static class for the ToolTipRequested event.

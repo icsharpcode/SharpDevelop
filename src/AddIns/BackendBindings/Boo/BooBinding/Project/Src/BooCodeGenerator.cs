@@ -16,6 +16,7 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using NRefactoryToBooConverter;
 
 namespace Grunwald.BooBinding

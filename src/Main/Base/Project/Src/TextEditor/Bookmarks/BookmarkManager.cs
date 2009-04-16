@@ -5,9 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -107,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public static void ToggleBookmark(ITextEditor editor, int line,
 		                                  Predicate<SDBookmark> canToggle,
-		                                  Func<ICSharpCode.AvalonEdit.Document.TextLocation, SDBookmark> bookmarkFactory)
+		                                  Func<Location, SDBookmark> bookmarkFactory)
 		{
 			foreach (SDBookmark bookmark in GetBookmarks(editor.FileName)) {
 				if (canToggle(bookmark) && bookmark.LineNumber == line) {
@@ -118,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			// no bookmark at that line: create a new bookmark
 			int lineStartOffset = editor.Document.GetLine(line).Offset;
 			int column = 1 + DocumentUtilitites.GetIndentation(editor.Document, lineStartOffset).Length;
-			BookmarkManager.AddMark(bookmarkFactory(new ICSharpCode.AvalonEdit.Document.TextLocation(line, column)));
+			BookmarkManager.AddMark(bookmarkFactory(new Location(column, line)));
 		}
 		
 		public static event BookmarkEventHandler Removed;

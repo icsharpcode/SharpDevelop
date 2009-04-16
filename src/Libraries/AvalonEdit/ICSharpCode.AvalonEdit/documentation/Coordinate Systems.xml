@@ -27,9 +27,7 @@
 		<title>Offset</title>
 		<content>
 			<para>The number of characters from the start of the text, counting from 0.</para>
-			<para>Same as used by
-				<codeEntityReference>M:System.String.IndexOf(System.String)</codeEntityReference>
-				etc.</para>
+			<para>Same as used by String.IndexOf() etc.</para>
 		</content>
 	</section>
 	<section>
@@ -37,9 +35,9 @@
 		<content>
 			<para>A Line,Column pair. Line and column count from 1.</para>
 			<para>Use the
-				<codeEntityReference>M:ICSharpCode.AvalonEdit.Document.TextDocument.GetLocation(System.Int32)</codeEntityReference>
+				TextDocument.<codeEntityReference>M:ICSharpCode.AvalonEdit.Document.TextDocument.GetLocation(System.Int32)</codeEntityReference>
 				and
-				<codeEntityReference>M:ICSharpCode.AvalonEdit.Document.TextDocument.GetOffset(ICSharpCode.AvalonEdit.Document.TextLocation)</codeEntityReference>
+				TextDocument.<codeEntityReference>M:ICSharpCode.AvalonEdit.Document.TextDocument.GetOffset(ICSharpCode.AvalonEdit.Document.TextLocation)</codeEntityReference>
 			methods to convert between TextLocation and Offset.</para>
 		</content>
 	</section>
@@ -66,15 +64,11 @@
 		<title>RelativeTextOffset</title>
 		<content>
 			<para>An offset in the document, but relative to the start offset of a VisualLine.</para>
-			<para>This is used to store document offsets in visual lines.</para>
+			<para>Relative text offsets are used to store document offsets in visual lines.</para>
 			<para>You can convert between relative text offsets and document offsets
 			by adding/subtracting
-			<codeEntityReference>T:ICSharpCode.AvalonEdit.Gui.VisualLine</codeEntityReference>
-			.
-			<codeEntityReference>P:ICSharpCode.AvalonEdit.Gui.VisualLine.FirstDocumentLine</codeEntityReference>
-			.
-			<codeEntityReference>P:ICSharpCode.AvalonEdit.Document.DocumentLine.Offset</codeEntityReference>
-			.</para>
+			<codeEntityReference>T:ICSharpCode.AvalonEdit.Gui.VisualLine</codeEntityReference>.<codeEntityReference>P:ICSharpCode.AvalonEdit.Gui.VisualLine.FirstDocumentLine</codeEntityReference>.<codeEntityReference>P:ICSharpCode.AvalonEdit.Document.DocumentLine.Offset</codeEntityReference>.
+			</para>
 		</content>
 	</section>
 	<section>
@@ -83,7 +77,8 @@
 			<para>An integer value that specifies a position inside a VisualLine.</para>
 			<para>
 			Not only text has a length in the visual line, but also other VisualLineElements.
-			Counting from 0 for each visual line.</para>
+			VisualColumn is counting from 0 for each visual line.
+			</para>
 			<para>For example, tab markers take 2 visual columns (the marker and the tab space),
 			newline markers take 1 visual column; folding markers take just 1 visual column
 			even though they are longer in the document text.</para>
@@ -93,12 +88,19 @@
 			<codeEntityReference>M:ICSharpCode.AvalonEdit.Gui.VisualLine.GetRelativeOffset(System.Int32)</codeEntityReference>
 			methods to convert between
 			visual columns and relative text offsets.</para>
+		
+			<alert class="note">
+				<para>Do not confuse VisualColumn with text columns.
+				VisualColumn starts at 0, text column at 1. Text may have different length
+				in the two coordinate systems (e.g. tab markers, foldings).</para>
+			</alert>
 		</content>
 	</section>
 	<section>
 		<title>TextViewPosition</title>
 		<content>
-			<para>A Line,Column,VisualColumn triple. Can be implicitly converted
+			<para>A Line,Column,VisualColumn triple.</para>
+			<para>Can be implicitly converted
 			to TextLocation, but has the additional VisualColumn information
 			that is necessary to accurately hold the caret position when
 			VisualLineElements with DocumentLength 0 are in use.</para>
@@ -117,6 +119,11 @@
 		<content>
 			<para>A Point value (double X,Y) that specifies the position of an
 			element from the top left document corner measured in device-independent pixels.</para>
+			<para>To convert a VisualPosition to or from a (mouse) position inside
+			the TextView, simply subtract or add
+			TextView.<codeEntityReference>P:ICSharpCode.AvalonEdit.Gui.TextView.ScrollOffset</codeEntityReference>
+			to it.
+			</para>
 		</content>
 	</section>
 	

@@ -13,7 +13,7 @@ using System.Windows;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void OnDocumentChanged()
 		{
 			if (textEditor.Document != null)
-				document = new AvalonEditDocumentAdapter(textEditor.Document);
+				document = new AvalonEditDocumentAdapter(textEditor.Document, this);
 			else
 				document = null;
 		}
@@ -151,6 +151,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get {
 				return textEditor.SelectionLength;
 			}
+		}
+		
+		public string SelectedText {
+			get {
+				return textEditor.SelectedText;
+			}
+			set {
+				textEditor.SelectedText = value;
+			}
+		}
+		
+		public event EventHandler SelectionChanged {
+			add    { textEditor.TextArea.SelectionChanged += value; }
+			remove { textEditor.TextArea.SelectionChanged -= value; }
 		}
 		
 		public void Select(int selectionStart, int selectionLength)

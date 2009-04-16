@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -105,7 +105,7 @@ namespace SearchAndReplace
 			find.Reset();
 			if (!find.SearchStrategy.CompilePattern(monitor))
 				return;
-			List<TextEditorControl> textAreas = new List<TextEditorControl>();
+			List<ITextEditor> textAreas = new List<ITextEditor>();
 			int count;
 			for (count = 0;; count++) {
 				SearchResultMatch result = SearchReplaceManager.find.FindNext(monitor);
@@ -117,9 +117,6 @@ namespace SearchAndReplace
 				}
 			}
 			find.Reset();
-			foreach (TextEditorControl ctl in textAreas) {
-				ctl.Refresh();
-			}
 			ShowMarkDoneMessage(count, monitor);
 		}
 		
@@ -131,7 +128,7 @@ namespace SearchAndReplace
 			if (!find.SearchStrategy.CompilePattern(monitor))
 				return;
 			
-			List<TextEditorControl> textAreas = new List<TextEditorControl>();
+			List<ITextEditor> textAreas = new List<ITextEditor>();
 			int count;
 			for (count = 0;; count++) {
 				SearchResultMatch result = find.FindNext(offset, length);
@@ -142,26 +139,25 @@ namespace SearchAndReplace
 				}
 			}
 			find.Reset();
-			foreach (TextEditorControl ctl in textAreas) {
-				ctl.Refresh();
-			}
 			ShowMarkDoneMessage(count, monitor);
 		}
 		
-		static void MarkResult(List<TextEditorControl> textAreas, SearchResultMatch result)
+		static void MarkResult(List<ITextEditor> textAreas, SearchResultMatch result)
 		{
-			TextEditorControl textArea = OpenTextArea(result.FileName);
+			ITextEditor textArea = OpenTextArea(result.FileName);
 			if (textArea != null) {
 				if (!textAreas.Contains(textArea)) {
 					textAreas.Add(textArea);
 				}
-				textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(result.Offset);
-				LineSegment segment = textArea.Document.GetLineSegmentForOffset(result.Offset);
+				textArea.Caret.Offset = result.Offset;
+				IDocumentLine segment = textArea.Document.GetLineForOffset(result.Offset);
 				
 				int lineNr = segment.LineNumber;
-				if (!textArea.Document.BookmarkManager.IsMarked(lineNr)) {
-					textArea.Document.BookmarkManager.ToggleMarkAt(new TextLocation(result.Offset - segment.Offset, lineNr));
-				}
+				// TODO: AVALONEDIT
+				throw new NotImplementedException();
+//				if (!textArea.Document.BookmarkManager.IsMarked(lineNr)) {
+//					textArea.Document.BookmarkManager.ToggleMarkAt(new TextLocation(result.Offset - segment.Offset, lineNr));
+//				}
 			}
 		}
 		
@@ -195,16 +191,15 @@ namespace SearchAndReplace
 			if (!find.SearchStrategy.CompilePattern(monitor))
 				return;
 			
-			List<TextEditorControl> textAreas = new List<TextEditorControl>();
-			TextEditorControl textArea = null;
+			List<ITextEditor> textAreas = new List<ITextEditor>();
+			ITextEditor textArea = null;
 			for (int count = 0;; count++) {
 				SearchResultMatch result = SearchReplaceManager.find.FindNext(monitor);
 				
 				if (result == null) {
 					if (count != 0) {
-						foreach (TextEditorControl ta in textAreas) {
-							ta.EndUpdate();
-							ta.Refresh();
+						foreach (ITextEditor ta in textAreas) {
+							ta.Document.EndUndoableAction();
 						}
 					}
 					ShowReplaceDoneMessage(count, monitor);
@@ -216,8 +211,8 @@ namespace SearchAndReplace
 						textArea = OpenTextArea(result.FileName);
 						if (textArea != null) {
 							if (!textAreas.Contains(textArea)) {
-								textArea.BeginUpdate();
-								textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection.Clear();
+								textArea.Document.StartUndoableAction();
+								textArea.Select(textArea.SelectionStart, 0);
 								textAreas.Add(textArea);
 							}
 						}
@@ -281,7 +276,7 @@ namespace SearchAndReplace
 				return;
 			}
 			
-			TextEditorControl textArea = null;
+			ITextEditor textArea = null;
 			while (textArea == null) {
 				SearchResultMatch result = find.FindNext(monitor);
 				if (result == null) {
@@ -293,13 +288,13 @@ namespace SearchAndReplace
 					textArea = OpenTextArea(result.FileName);
 					if (textArea != null) {
 						if (lastResult != null  && lastResult.FileName == result.FileName &&
-						    textArea.ActiveTextAreaControl.Caret.Offset != lastResult.Offset + lastResult.Length) {
+						    textArea.Caret.Offset != lastResult.Offset + lastResult.Length) {
 							find.Reset();
 						}
 						int startPos = Math.Min(textArea.Document.TextLength, Math.Max(0, result.Offset));
 						int endPos   = Math.Min(textArea.Document.TextLength, startPos + result.Length);
 						
-						SearchReplaceUtilities.SelectText(textArea, startPos, endPos);
+						textArea.Select(startPos, endPos - startPos);
 						lastResult = result;
 					}
 				}
@@ -332,7 +327,7 @@ namespace SearchAndReplace
 
 		public static bool FindNextInSelection(IProgressMonitor monitor)
 		{
-			TextEditorControl textArea = null;
+			ITextEditor textArea = null;
 			while (textArea == null) {
 				SearchResultMatch result = find.FindNext(textSelection.Offset, textSelection.Length);
 				if (result == null) {
@@ -348,11 +343,11 @@ namespace SearchAndReplace
 					if (textArea != null) {
 						foundAtLeastOneItem = true;
 						if (lastResult != null  && lastResult.FileName == result.FileName &&
-						    textArea.ActiveTextAreaControl.Caret.Offset != lastResult.Offset + lastResult.Length) {
+						    textArea.Caret.Offset != lastResult.Offset + lastResult.Length) {
 						}
 						int startPos = Math.Min(textArea.Document.TextLength, Math.Max(0, result.Offset));
 						int endPos   = Math.Min(textArea.Document.TextLength, startPos + result.Length);
-						SearchReplaceUtilities.SelectText(textArea, startPos, endPos);
+						textArea.Select(startPos, endPos - startPos);
 						lastResult = result;
 					}
 				}
@@ -373,17 +368,17 @@ namespace SearchAndReplace
 			if (monitor != null) monitor.ShowingDialog = false;
 		}
 		
-		static TextEditorControl OpenTextArea(string fileName)
+		static ITextEditor OpenTextArea(string fileName)
 		{
-			ITextEditorControlProvider textEditorProvider = null;
+			ITextEditorProvider textEditorProvider;
 			if (fileName != null) {
-				textEditorProvider = FileService.OpenFile(fileName) as ITextEditorControlProvider;
+				textEditorProvider = FileService.OpenFile(fileName) as ITextEditorProvider;
 			} else {
-				textEditorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
+				textEditorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 			}
 			
 			if (textEditorProvider != null) {
-				return textEditorProvider.TextEditorControl;
+				return textEditorProvider.TextEditor;
 			}
 			return null;
 		}

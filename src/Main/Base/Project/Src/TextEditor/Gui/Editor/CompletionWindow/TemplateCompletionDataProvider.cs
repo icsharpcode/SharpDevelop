@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Internal.Templates;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	public class TemplateCompletionItemProvider : AbstractCompletionItemProvider
 	{

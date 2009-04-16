@@ -21,6 +21,7 @@ Additionally, the class HighlightingColorizer provides integration of the highli
             <topic id="5b1854b4-884c-4713-b921-b28e96a1b43e" file="..\src\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\documentation\Coordinate Systems.xml" revision="1" visible="True" />
             <topic id="c06e9832-9ef0-4d65-ac2e-11f7ce9c7774" file="..\src\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\documentation\TextRendering.xml" revision="1" visible="True" />
             <topic id="4d4ceb51-154d-43f0-b876-ad9640c5d2d8" file="..\src\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\documentation\SyntaxHighlighting.xml" revision="1" visible="True" />
+            <topic id="440df648-413e-4f42-a28b-6b2b0e9b1084" file="..\src\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\documentation\Folding.xml" revision="1" visible="True" />
         </topics>
     </conceptualContent>
     <componentConfigurations>

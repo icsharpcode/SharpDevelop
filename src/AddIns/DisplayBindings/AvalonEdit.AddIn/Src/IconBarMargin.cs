@@ -14,8 +14,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Gui;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {

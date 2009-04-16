@@ -10,8 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace Hornung.ResourceToolkit.Resolver
 {

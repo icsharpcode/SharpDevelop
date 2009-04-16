@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Data provider for code completion.

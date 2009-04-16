@@ -64,6 +64,21 @@ namespace ICSharpCode.AvalonEdit.Tests
 		}
 		
 		[Test]
+		public void DocumentDoesNotHoldReferenceToTextEditor()
+		{
+			bool collectedTextEditor = false;
+			TextDocument textDocument = new TextDocument();
+			
+			TextEditor textEditor = new TextEditorWithGCCallback(delegate { collectedTextEditor = true; });
+			textEditor.Document = textDocument;
+			textEditor = null;
+			
+			GarbageCollect();
+			Assert.IsTrue(collectedTextEditor);
+			GC.KeepAlive(textDocument);
+		}
+		
+		[Test]
 		public void DocumentDoesNotHoldReferenceToLineMargin()
 		{
 			bool collectedTextView = false;
@@ -76,6 +91,7 @@ namespace ICSharpCode.AvalonEdit.Tests
 			GC.KeepAlive(textDocument);
 		}
 		
+		// using a method to ensure the local variables can be garbage collected after the method returns
 		void DocumentDoesNotHoldReferenceToLineMargin_CreateMargin(TextDocument textDocument, Action finalizeAction)
 		{
 			TextView textView = new TextViewWithGCCallback(finalizeAction) {
@@ -118,6 +134,21 @@ namespace ICSharpCode.AvalonEdit.Tests
 			}
 			
 			~TextAreaWithGCCallback()
+			{
+				onFinalize();
+			}
+		}
+		
+		sealed class TextEditorWithGCCallback : TextEditor
+		{
+			Action onFinalize;
+			
+			public TextEditorWithGCCallback(Action onFinalize)
+			{
+				this.onFinalize = onFinalize;
+			}
+			
+			~TextEditorWithGCCallback()
 			{
 				onFinalize();
 			}

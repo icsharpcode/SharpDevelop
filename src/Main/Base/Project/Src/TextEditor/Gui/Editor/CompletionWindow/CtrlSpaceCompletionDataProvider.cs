@@ -11,7 +11,7 @@ using System.Diagnostics;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	public class CtrlSpaceCompletionItemProvider : CodeCompletionItemProvider
 	{

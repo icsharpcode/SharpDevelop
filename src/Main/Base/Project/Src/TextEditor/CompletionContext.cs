@@ -5,6 +5,7 @@
 //     <version>$Revision: 3925 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 
 namespace ICSharpCode.SharpDevelop

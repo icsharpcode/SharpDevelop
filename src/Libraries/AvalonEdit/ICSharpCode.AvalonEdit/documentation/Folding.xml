@@ -1,5 +1,18 @@
-﻿
-How foldings work:
+<?xml version="1.0" encoding="utf-8"?>
+<developerConceptualDocument
+	xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+	
+	<introduction>
+		<para>
+			Introduction for 'Folding'.
+		</para>
+	</introduction>
+	
+	<section>
+		<title>How the FoldingManager works</title>
+		<content>
+			<para>
 	The FoldingManager maintains a list of foldings. The FoldMargin displays those foldings and provides
 	the UI for collapsing/expanding.
 	Folded foldings cause the FoldingElementGenerator to produce a line element that spans the whole folded
@@ -9,3 +22,11 @@ How foldings work:
 	be used as start lines for the visual line generation. This is done by setting the line height of all
 	such lines to 0. To efficiently set the height on a large number of lines and support reverting to the
 	old height when the folding is uncollapsed, a CollapsedLineSection is used.
+			</para>
+		</content>
+	</section>
+	
+	<relatedTopics>
+		<codeEntityReference>T:ICSharpCode.AvalonEdit.Gui.FoldingManager</codeEntityReference>
+	</relatedTopics>
+</developerConceptualDocument>

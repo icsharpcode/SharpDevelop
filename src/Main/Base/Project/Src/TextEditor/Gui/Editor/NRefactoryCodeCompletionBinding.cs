@@ -5,7 +5,7 @@
 //     <version>$Revision: 1965 $</version>
 // </file>
 
-using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,10 +16,11 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.TextEditor;
 using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Base class for C# and VB Code Completion Binding.

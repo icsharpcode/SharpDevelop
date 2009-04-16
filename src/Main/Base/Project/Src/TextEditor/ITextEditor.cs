@@ -5,13 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	public interface ITextEditorProvider : IFileDocumentProvider
 	{
@@ -40,11 +39,21 @@ namespace ICSharpCode.SharpDevelop
 		int SelectionLength { get; }
 		
 		/// <summary>
+		/// Gets/Sets the selected text.
+		/// </summary>
+		string SelectedText { get; set; }
+		
+		/// <summary>
 		/// Sets the selection.
 		/// </summary>
 		/// <param name="selectionStart">Start offset of the selection</param>
 		/// <param name="selectionLength">End offset of the selection</param>
 		void Select(int selectionStart, int selectionLength);
+		
+		/// <summary>
+		/// Is raised when the selection changes.
+		/// </summary>
+		event EventHandler SelectionChanged;
 		
 		/// <summary>
 		/// Sets the caret to the specified line/column and brings the caret into view.

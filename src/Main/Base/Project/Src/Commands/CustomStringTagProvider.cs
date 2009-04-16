@@ -10,6 +10,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -112,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					{
 						var tecp = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 						if (tecp != null) {
-							return tecp.TextEditor.Document.GetText(tecp.TextEditor.SelectionStart, tecp.TextEditor.SelectionLength);
+							return tecp.TextEditor.SelectedText;
 						}
 						break;
 					}

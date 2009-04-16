@@ -313,8 +313,8 @@
     <EmbeddedResource Include="Highlighting\Resources\ModeV2.xsd" />
     <EmbeddedResource Include="Highlighting\Resources\CSharp-Mode.xshd" />
     <EmbeddedResource Include="Highlighting\Resources\XmlDoc.xshd" />
-    <None Include="Architecture.txt" />
     <None Include="documentation\Coordinate Systems.xml" />
+    <None Include="documentation\Folding.xml" />
     <None Include="documentation\Introduction.xml" />
     <None Include="documentation\SyntaxHighlighting.xml" />
     <None Include="documentation\TextRendering.xml" />

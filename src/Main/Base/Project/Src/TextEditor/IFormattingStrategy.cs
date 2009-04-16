@@ -8,7 +8,7 @@
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Indentation strategy.

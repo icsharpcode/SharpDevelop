@@ -8,8 +8,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.FormattingStrategy
 {

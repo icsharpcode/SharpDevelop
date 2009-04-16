@@ -18,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <summary>
 		/// This layer is in the background.
 		/// There is no UIElement to represent this layer, it is directly drawn in the TextView.
-		/// It is invalid to replace the background layer or insert
+		/// It is not possible to replace the background layer or insert new layers below it.
 		/// </summary>
 		/// <remarks>This layer is below the Selection layer.</remarks>
 		Background,

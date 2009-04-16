@@ -5,8 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace SearchAndReplace.Tests.Utils
 {
@@ -92,6 +92,16 @@ namespace SearchAndReplace.Tests.Utils
 		}
 		
 		public IDisposable OpenUndoGroup()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public ITextAnchor CreateAnchor(int offset)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object GetService(Type serviceType)
 		{
 			throw new NotImplementedException();
 		}

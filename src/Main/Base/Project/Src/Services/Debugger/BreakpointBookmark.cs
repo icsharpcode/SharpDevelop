@@ -5,15 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
 using System;
-using System.Drawing;
+using System.Windows.Media;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
-	public enum BreakpointAction {
-		Break, Trace, Condition
+	public enum BreakpointAction
+	{
+		Break,
+		Trace,
+		Condition
 	}
 	
 	public class BreakpointBookmark : SDMarkerBookmark
@@ -21,8 +25,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		bool isHealthy = true;
 		bool isEnabled = true;
 		string tooltip;
-		
-		static readonly Color defaultColor = Color.FromArgb(180, 38, 38);
 		
 		BreakpointAction action = BreakpointAction.Break;
 		string condition;
@@ -76,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			set { tooltip = value; }
 		}
 		
-		public BreakpointBookmark(string fileName, TextLocation location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, location)
+		public BreakpointBookmark(string fileName, Location location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, location)
 		{
 			this.action = action;
 			this.scriptLanguage = scriptLanguage;
@@ -98,13 +100,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		/*
-		protected override TextMarker CreateMarker()
+		protected override ITextMarker CreateMarker(ITextMarkerService markerService)
 		{
-			LineSegment lineSeg = Anchor.Line;
-			TextMarker marker = new TextMarker(lineSeg.Offset, lineSeg.Length, TextMarkerType.SolidBlock, defaultColor, Color.White);
-			Document.MarkerStrategy.AddMarker(marker);
+			IDocumentLine line = this.Document.GetLine(this.LineNumber);
+			ITextMarker marker = markerService.Create(line.Offset, line.Length);
+			marker.BackgroundColor = Color.FromRgb(180, 38, 38);
+			marker.ForegroundColor = Colors.White;
 			return marker;
-		}*/
+		}
 	}
 }

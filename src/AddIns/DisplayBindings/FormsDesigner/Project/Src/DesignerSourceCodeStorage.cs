@@ -5,15 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using ICSharpCode.Core;
+
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.TextEditor.Util;
 
 namespace ICSharpCode.FormsDesigner
 {

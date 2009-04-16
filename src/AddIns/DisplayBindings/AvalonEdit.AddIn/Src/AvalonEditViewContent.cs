@@ -5,14 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Bookmarks;
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -96,8 +98,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void BookmarksAttach()
 		{
 			foreach (SDBookmark bookmark in BookmarkManager.GetBookmarks(codeEditor.FileName)) {
-				bookmark.Document = codeEditor.Document;
-				bookmark.BookmarkMargin = codeEditor.IconBarMargin;
+				bookmark.Document = codeEditor.TextEditorAdapter.Document;
 				codeEditor.IconBarMargin.Bookmarks.Add(bookmark);
 			}
 			BookmarkManager.Added += BookmarkManager_Added;
@@ -109,9 +110,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			BookmarkManager.Added -= BookmarkManager_Added;
 			BookmarkManager.Removed -= BookmarkManager_Removed;
 			foreach (SDBookmark bookmark in codeEditor.IconBarMargin.Bookmarks.OfType<SDBookmark>()) {
-				if (bookmark.BookmarkMargin == codeEditor.IconBarMargin) {
+				if (bookmark.Document == codeEditor.TextEditorAdapter.Document) {
 					bookmark.Document = null;
-					bookmark.BookmarkMargin = null;
 				}
 			}
 			codeEditor.IconBarMargin.Bookmarks.Clear();
@@ -120,12 +120,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void BookmarkManager_Removed(object sender, BookmarkEventArgs e)
 		{
 			codeEditor.IconBarMargin.Bookmarks.Remove(e.Bookmark);
+			if (e.Bookmark.Document == codeEditor.TextEditorAdapter.Document) {
+				e.Bookmark.Document = null;
+			}
 		}
 		
 		void BookmarkManager_Added(object sender, BookmarkEventArgs e)
 		{
 			if (FileUtility.IsEqualFileName(this.PrimaryFileName, e.Bookmark.FileName)) {
 				codeEditor.IconBarMargin.Bookmarks.Add(e.Bookmark);
+				e.Bookmark.Document = codeEditor.TextEditorAdapter.Document;
 			}
 		}
 		
@@ -189,7 +193,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return codeEditor.TextEditorAdapter; }
 		}
 		
-		public ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument GetDocumentForFile(OpenedFile file)
+		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			if (file == this.PrimaryFile)
 				return codeEditor.TextEditorAdapter.Document;

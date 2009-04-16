@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Reflection;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
@@ -34,20 +34,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			if (WorkbenchSingleton.Workbench == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
+			if (WorkbenchSingleton.Workbench == null) {
 				return false;
 			}
-			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 			if (provider == null)
 				return false;
 			LanguageProperties language = ParserService.CurrentProjectContent.Language;
 			if (language == null)
 				return false;
-			if (string.IsNullOrEmpty(provider.TextEditorControl.FileName))
+			if (string.IsNullOrEmpty(provider.TextEditor.FileName))
 				return false;
 			
 			RefactoringProvider rp = language.RefactoringProvider;
-			if (!rp.IsEnabledForFile(provider.TextEditorControl.FileName))
+			if (!rp.IsEnabledForFile(provider.TextEditor.FileName))
 				return false;
 			
 			string supports = condition.Properties["supports"];

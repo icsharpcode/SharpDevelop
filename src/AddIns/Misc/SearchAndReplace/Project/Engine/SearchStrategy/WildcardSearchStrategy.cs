@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
@@ -80,7 +80,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		bool Match(ICSharpCode.SharpDevelop.Dom.Refactoring.IDocument document, 
+		bool Match(IDocument document, 
 		           int  offset, 
 		           bool ignoreCase,
 		           int  programStart)

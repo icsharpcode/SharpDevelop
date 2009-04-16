@@ -6,17 +6,15 @@
 // </file>
 
 using System;
-using System.Drawing;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
+using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
-	/*
-	public class CurrentLineBookmark: SDMarkerBookmark
+	public class CurrentLineBookmark : SDMarkerBookmark
 	{
 		static CurrentLineBookmark instance;
 		
@@ -27,9 +25,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public static void SetPosition(IViewContent viewContent,  int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
 		{
-			ITextEditorControlProvider tecp = viewContent as ITextEditorControlProvider;
+			ITextEditorProvider tecp = viewContent as ITextEditorProvider;
 			if (tecp != null)
-				SetPosition(tecp.TextEditorControl.FileName, tecp.TextEditorControl.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
+				SetPosition(tecp.TextEditor.FileName, tecp.TextEditor.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
 			else
 				Remove();
 		}
@@ -52,20 +50,17 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			if (startColumn < 1)
 				startColumn = 1;
 			
-			LineSegment line = document.GetLineSegment(startLine - 1);
+			IDocumentLine line = document.GetLine(startLine);
 			if (endColumn < 1 || endColumn > line.Length)
 				endColumn = line.Length;
-			instance = new CurrentLineBookmark(fileName, document, new TextLocation(startColumn - 1, startLine - 1));
-			document.BookmarkManager.AddMark(instance);
-			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.LinesBetween, startLine - 1, endLine - 1));
-			document.CommitUpdate();
+			instance = new CurrentLineBookmark(fileName, new Location(startColumn, startLine));
+			BookmarkManager.AddMark(instance);
 		}
 		
 		public static void Remove()
 		{
 			if (instance != null) {
-				instance.Document.BookmarkManager.RemoveMark(instance);
-				instance.RemoveMarker();
+				BookmarkManager.RemoveMark(instance);
 				instance = null;
 			}
 		}
@@ -76,23 +71,25 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public CurrentLineBookmark(string fileName, IDocument document, TextLocation location) : base(fileName, document, location)
+		public CurrentLineBookmark(string fileName, Location location) : base(fileName, location)
 		{
 			this.IsSaved = false;
 			this.IsVisibleInBookmarkPad = false;
 		}
 		
-		public override void Draw(IconBarMargin margin, Graphics g, Point p)
-		{
-			margin.DrawArrow(g, p.Y);
+		readonly static IImage currentLineArrow = new ResourceServiceImage("Bookmarks.CurrentLine");
+		
+		public override IImage Image {
+			get { return currentLineArrow; }
 		}
 		
-		protected override TextMarker CreateMarker()
+		protected override ITextMarker CreateMarker(ITextMarkerService markerService)
 		{
-			LineSegment lineSeg = Document.GetLineSegment(startLine - 1);
-			TextMarker marker = new TextMarker(lineSeg.Offset + startColumn - 1, Math.Max(endColumn - startColumn, 1), TextMarkerType.SolidBlock, Color.Yellow, Color.Blue);
-			Document.MarkerStrategy.InsertMarker(0, marker);
+			IDocumentLine line = this.Document.GetLine(startLine);
+			ITextMarker marker = markerService.Create(line.Offset + startColumn - 1, Math.Max(endColumn - startColumn, 1));
+			marker.BackgroundColor = Colors.Yellow;
+			marker.ForegroundColor = Colors.Blue;
 			return marker;
 		}
-	}*/
+	}
 }
