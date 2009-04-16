@@ -58,5 +58,14 @@ namespace ICSharpCode.XamlBinding.Tests
 			Assert.IsTrue(elementPath.Equals(expectedElementPath),
 			              "Incorrect active element path.");
 		}
+		
+		[Test]
+		public void InMarkupExtensionTest()
+		{
+			string xaml = "<Test val1=\"{Binding Value}\" />";
+			int offset = "<Test val1=\"{Bin".Length;
+			
+			Assert.AreEqual(true, XmlParser.IsInsideAttributeValue(xaml, offset));
+		}
 	}
 }

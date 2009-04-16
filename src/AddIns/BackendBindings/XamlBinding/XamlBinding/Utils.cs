@@ -30,13 +30,19 @@ namespace ICSharpCode.XamlBinding
 			
 			text = text.Substring(index);
 			
+			var path = XmlParser.GetActiveElementStartPathAtIndex(text, index);
+			
+			if (path != null && path.Elements.Count > 0 && path.Elements[path.Elements.Count - 1].Name.StartsWith("/"))
+				return true; // is end tag!
+			
 			XmlReader reader = XmlTextReader.Create(new StringReader(text));
 			int startTags = 0;
 			try {
 				while (reader.Read()) {
 					switch (reader.NodeType) {
 						case XmlNodeType.Element:
-							startTags++;
+							if (!reader.IsEmptyElement)
+								startTags++;
 							break;
 						case XmlNodeType.EndElement:
 							startTags--;
@@ -46,7 +52,8 @@ namespace ICSharpCode.XamlBinding
 							break;
 					}
 				}
-			} catch (XmlException) {
+			} catch (XmlException e) {
+				Debug.Print(e.ToString());
 				return false;
 			}
 			
@@ -141,6 +148,21 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return map;
+		}
+		
+		public static int GetOffsetFromValueStart(string xaml, int offset)
+		{
+			if (xaml == null)
+				throw new ArgumentNullException("xaml");
+			if (offset < 0 || offset > xaml.Length)
+				throw new ArgumentOutOfRangeException("offset", offset, "Value must be between 0 and " + xaml.Length);
+			
+			int start = offset;
+			
+			while (start > 0 && XmlParser.IsInsideAttributeValue(xaml, start))
+				start--;
+			
+			return offset - start - 1;
 		}
 		
 		public static string[] GetListOfExistingAttributeNames(string text, int offset)

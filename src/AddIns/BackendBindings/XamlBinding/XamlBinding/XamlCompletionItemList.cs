@@ -33,6 +33,8 @@ namespace ICSharpCode.XamlBinding
 		
 		public override void Complete(CompletionContext context, ICompletionItem item)
 		{
+			base.Complete(context, item);
+			
 			if (item is XamlCompletionItem) {
 				XamlCompletionItem cItem = item as XamlCompletionItem;
 				
@@ -40,17 +42,13 @@ namespace ICSharpCode.XamlBinding
 					if (context.Editor.Document.GetCharAt(context.StartOffset - 1) != '.') {
 						context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 						context.Editor.Caret.Offset--;
-						XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
-						if (path != null && path.Elements.Count > 0) {
-							ICompletionItemList list = CompletionDataHelper.CreateListForContext(context.Editor, XamlContext.InAttributeValue, path, cItem.Entity);
-							context.Editor.ShowCompletionWindow(list);
-						}
+						
+						XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 					}
 				}
 				
 				if (cItem.Entity is IClass) {
 					IClass c = cItem.Entity as IClass;
-					// TODO : maybe allow accessing ch from HandleKeyPress through context?
 					if (c.FullyQualifiedName == "System.Windows.Style") {
 						string insertionString = "";
 						if (!char.IsWhiteSpace(context.Editor.Document.GetCharAt(context.StartOffset - 1))) {
@@ -64,6 +62,8 @@ namespace ICSharpCode.XamlBinding
 						insertionString += "TargetType=\"{" + prefix + "Type }\"";
 						context.Editor.Document.Insert(context.EndOffset, insertionString);
 						context.Editor.Caret.Offset = context.EndOffset + insertionString.Length - 2;
+						
+						XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 					} else if (c.FullyQualifiedName == "System.Windows.Setter") {
 						string insertionString = "";
 						if (!char.IsWhiteSpace(context.Editor.Document.GetCharAt(context.StartOffset - 1))) {
@@ -73,14 +73,7 @@ namespace ICSharpCode.XamlBinding
 						context.Editor.Document.Insert(context.EndOffset, insertionString);
 						context.Editor.Caret.Offset = context.EndOffset + insertionString.Length - 1;
 						
-						XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
-						if (path != null && path.Elements.Count > 0) {
-							path.Elements.RemoveLast();
-							path.Elements.Add(new QualifiedName("Setter", CompletionDataHelper.XamlNamespace));
-							IEntity newEntity = new DefaultProperty(c, "Property");
-							ICompletionItemList list = CompletionDataHelper.CreateListForContext(context.Editor, XamlContext.InAttributeValue, path, newEntity);
-							context.Editor.ShowCompletionWindow(list);
-						}
+						XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 					}
 				}
 			} else {
@@ -89,8 +82,6 @@ namespace ICSharpCode.XamlBinding
 					CreateEventHandlerCode(context, eventItem);
 				}
 			}
-			
-			base.Complete(context, item);
 		}
 		
 		void CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem)
@@ -120,11 +111,8 @@ namespace ICSharpCode.XamlBinding
 					
 					ParametrizedNode node = CodeGenerator.ConvertMember(method, new ClassFinder(part, context.Editor.Caret.Line, context.Editor.Caret.Column));
 					
-					// TODO : add formatting options ...
-					node.Name = completionItem.TargetName + "_" + completionItem.EventType.Name;
-					
-					completionItem.HandlerName = node.Name;
-					
+					node.Name = completionItem.HandlerName;
+										
 					node.Modifier = Modifiers.None;
 					
 					IViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName);

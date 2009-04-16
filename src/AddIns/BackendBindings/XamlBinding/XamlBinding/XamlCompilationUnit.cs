@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using System.Collections;
 using System.Collections.Generic;
@@ -104,23 +105,25 @@ namespace ICSharpCode.XamlBinding
 			return null;
 		}
 
-		public static ArrayList GetNamespaceMembers(IProjectContent pc, string xmlNamespace)
+		public static IEnumerable<IClass> GetNamespaceMembers(IProjectContent pc, string xmlNamespace)
 		{
 			if (pc == null)
 				throw new ArgumentNullException("pc");
-			if (string.IsNullOrEmpty(xmlNamespace))
-				return null;
-			if (xmlNamespace.StartsWith("clr-namespace:")) {
-				return pc.GetNamespaceContents(GetNamespaceNameFromClrNamespace(xmlNamespace));
-			}
-			else {
-				ArrayList list = new ArrayList();
-				AddNamespaceMembersInAssembly(pc, xmlNamespace, list);
-				foreach (IProjectContent p in pc.ReferencedContents) {
-					AddNamespaceMembersInAssembly(p, xmlNamespace, list);
+			
+			if (!string.IsNullOrEmpty(xmlNamespace)) {
+				if (xmlNamespace.StartsWith("clr-namespace:"))
+					return pc.GetNamespaceContents(GetNamespaceNameFromClrNamespace(xmlNamespace)).OfType<IClass>();
+				else {
+					var list = new ArrayList();
+					AddNamespaceMembersInAssembly(pc, xmlNamespace, list);
+					foreach (IProjectContent p in pc.ReferencedContents) {
+						AddNamespaceMembersInAssembly(p, xmlNamespace, list);
+					}
+					return list.OfType<IClass>();
 				}
-				return list;
 			}
+			
+			return Enumerable.Empty<IClass>();
 		}
 
 		static void AddNamespaceMembersInAssembly(IProjectContent projectContent, string xmlNamespace, ArrayList list)

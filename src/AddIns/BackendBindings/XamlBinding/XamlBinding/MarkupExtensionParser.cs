@@ -9,17 +9,17 @@ using System;
 
 namespace ICSharpCode.XamlBinding
 {
-	static class MarkupExtensionParser
+	public static class MarkupExtensionParser
 	{
 		public static MarkupExtensionInfo Parse(string text)
 		{
 			var info = new MarkupExtensionInfo();
 			
-			var tokenizer = new MarkupExtensionTokenizer(text);
-			
-			string argumentName = null;
-			
 			try {
+				var tokenizer = new MarkupExtensionTokenizer(text);
+				
+				string argumentName = null;
+				
 				var token = tokenizer.NextToken();
 				while (token.Kind != MarkupExtensionTokenKind.EOF) {
 					switch (token.Kind) {
@@ -47,7 +47,7 @@ namespace ICSharpCode.XamlBinding
 			return info;
 		}
 		
-		static AttributeValue ParseValue(string text)
+		public static AttributeValue ParseValue(string text)
 		{
 			if (text.StartsWith("{", StringComparison.OrdinalIgnoreCase))
 				return new AttributeValue(Parse(text));

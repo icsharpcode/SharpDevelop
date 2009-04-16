@@ -208,6 +208,8 @@ namespace ICSharpCode.SharpDevelop
 		public virtual void Complete(CompletionContext context)
 		{
 			context.Editor.Document.Replace(context.StartOffset, context.Length, this.Text);
+			
+			context.EndOffset = context.StartOffset + this.Text.Length;
 		}
 		
 		#region Description

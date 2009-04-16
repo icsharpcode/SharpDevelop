@@ -23,7 +23,10 @@ namespace ICSharpCode.XamlBinding
 		public XamlCompletionItem(IEntity entity, string prefix)
 			: base(entity)
 		{
-			this.Text = prefix + ":" + entity.Name;
+			if (string.IsNullOrEmpty(prefix))
+				this.Text = entity.Name;
+			else
+				this.Text = prefix + ":" + entity.Name;
 		}
 		
 		public XamlCompletionItem(IEntity entity)
@@ -58,18 +61,22 @@ namespace ICSharpCode.XamlBinding
 			get { return targetName; }
 		}
 		
-		public string HandlerName { get; set; }
+		public string HandlerName { get; private set; }
 		
 		public NewEventCompletionItem(IEvent eventType, string targetName)
 			: base("<new event handler>") // TODO : replace by resource string
 		{
 			this.eventType = eventType;
 			this.targetName = targetName;
+			// TODO : Add formatting options
+			this.HandlerName = this.TargetName + "_" + this.EventType.Name;
 		}
 		
 		public override void Complete(CompletionContext context)
 		{
 			context.Editor.Document.Replace(context.StartOffset, context.Length, this.HandlerName);
+			
+			context.EndOffset = context.StartOffset + this.HandlerName.Length;
 		}
 	}
 }

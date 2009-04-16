@@ -117,12 +117,13 @@ namespace ICSharpCode.XamlBinding
 					member = resolvedType.GetEvents().Find(delegate(IEvent p) { return p.Name == propertyName; });
 				}
 				if (member == null && allowAttached) {
-					member = resolvedType.GetMethods().Find(
+					IMethod method = resolvedType.GetMethods().Find(
 						delegate(IMethod p) {
 							return p.IsStatic && p.Parameters.Count == 1 && p.Name == "Get" + propertyName;
 						});
+					member = method;
 					if (member != null) {
-						member = new DefaultProperty(resolvedType.GetUnderlyingClass(), propertyName);
+						member = new DefaultProperty(resolvedType.GetUnderlyingClass(), propertyName) { ReturnType = method.ReturnType };
 					} else {
 						IMethod m = resolvedType.GetMethods().Find(
 							delegate(IMethod p) {
