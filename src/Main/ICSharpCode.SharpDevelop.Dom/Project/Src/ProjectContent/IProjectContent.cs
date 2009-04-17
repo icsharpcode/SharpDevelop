@@ -133,6 +133,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		LookForInnerClass = 2,
 		/// <summary>
+		/// Do not return a class with the wrong type parameter count.
+		/// If this flag is not set, GetClass will return a class with the same name but a different
+		/// type parameter count if no exact match is found.
+		/// </summary>
+		ExactMatch = 4,
+		/// <summary>
 		/// Default = LookInReferences + LookForInnerClass
 		/// </summary>
 		Default = LookInReferences | LookForInnerClass

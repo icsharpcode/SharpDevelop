@@ -593,7 +593,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if ((options & GetClassOptions.LookInReferences) != 0) {
 				lock (referencedContents) {
 					foreach (IProjectContent content in referencedContents) {
-						IClass contentClass = content.GetClass(typeName, typeParameterCount, language, GetClassOptions.None);
+						// Look for the class in the referenced content.
+						// Don't do a inner-class search in the recursive call - one search
+						// done by this GetClass call is sufficient.
+						IClass contentClass = content.GetClass(
+							typeName, typeParameterCount, language,
+							options & ~(GetClassOptions.LookInReferences | GetClassOptions.LookForInnerClass));
 						if (contentClass != null) {
 							if (contentClass.TypeParameters.Count == typeParameterCount
 							    && IsAccessibleClass(contentClass))
@@ -607,7 +612,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			if (c != null) {
+			if (c != null && c.TypeParameters.Count == typeParameterCount) {
 				return c;
 			}
 			
@@ -624,7 +629,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 								string innerName = typeName.Substring(lastIndex + 1);
 								foreach (IClass innerClass in innerClasses) {
 									if (language.NameComparer.Equals(innerClass.Name, innerName)) {
-										return innerClass;
+										c = innerClass;
+										if (innerClass.TypeParameters.Count == typeParameterCount) {
+											return innerClass;
+										}
 									}
 								}
 							}
@@ -632,7 +640,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 			}
-			return null;
+			if ((options & GetClassOptions.ExactMatch) == GetClassOptions.ExactMatch) {
+				return null;
+			} else {
+				// no matching class found - we'll return a class with different type paramter count
+				return c;
+			}
 		}
 		
 		public ArrayList GetNamespaceContents(string nameSpace)

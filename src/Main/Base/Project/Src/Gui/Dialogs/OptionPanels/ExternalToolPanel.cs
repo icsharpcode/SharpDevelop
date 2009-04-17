@@ -153,6 +153,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			foreach (ExternalTool tool in ((ListBox)ControlDictionary["toolListBox"]).Items) {
 				if (!FileUtility.IsValidPath(StringParser.Parse(tool.Command))) {
 					if (!Regex.IsMatch(tool.Command, @"^\$\{SdkToolPath:[\w\d]+\.exe\}$")) {
+						// Always treat SdkToolPath entries as valid - this allows saving the tool options
+						// with the default entries even when the .NET SDK is not installed.
 						MessageService.ShowError(String.Format("The command of tool \"{0}\" is invalid.", tool.MenuCommand));
 						return false;
 					}
