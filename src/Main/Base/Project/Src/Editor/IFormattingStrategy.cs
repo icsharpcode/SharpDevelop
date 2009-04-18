@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <summary>
 		/// This function sets the indentation in a range of lines.
 		/// </summary>
-		void IndentLines(ITextEditor editor, int begin, int end);
+		void IndentLines(ITextEditor editor, int beginLine, int endLine);
 	}
 	
 	public class DefaultFormattingStrategy : IFormattingStrategy

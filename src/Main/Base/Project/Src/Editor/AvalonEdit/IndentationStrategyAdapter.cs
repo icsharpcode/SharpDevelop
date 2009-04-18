@@ -37,9 +37,9 @@ namespace ICSharpCode.SharpDevelop.Editor
 			formattingStrategy.IndentLine(editor, editor.Document.GetLine(line.LineNumber));
 		}
 		
-		public void IndentLines(int begin, int end)
+		public void IndentLines(int beginLine, int endLine)
 		{
-			formattingStrategy.IndentLines(editor, begin, end);
+			formattingStrategy.IndentLines(editor, beginLine, endLine);
 		}
 	}
 }

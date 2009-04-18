@@ -33,17 +33,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
-		/// The project content in which this class is defined.
-		/// </summary>
-		IProjectContent ProjectContent {
-			get;
-		}
-		
-		ICompilationUnit CompilationUnit {
-			get;
-		}
-		
-		/// <summary>
 		/// Gets the using scope of contains this class.
 		/// </summary>
 		IUsingScope UsingScope {

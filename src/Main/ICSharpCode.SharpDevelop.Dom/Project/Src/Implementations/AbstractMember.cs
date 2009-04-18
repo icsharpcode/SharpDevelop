@@ -23,6 +23,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			base.FreezeInternal();
 		}
 		
+		public sealed override ICompilationUnit CompilationUnit {
+			[System.Diagnostics.DebuggerStepThrough]
+			get {
+				return this.DeclaringType.CompilationUnit;
+			}
+		}
+		
 		public virtual DomRegion Region {
 			get {
 				return region;

@@ -36,7 +36,7 @@ namespace ICSharpCode.AvalonEdit.Indentation
 		/// <summary>
 		/// Does nothing: indenting multiple lines is useless without a smart indentation strategy.
 		/// </summary>
-		public virtual void IndentLines(int begin, int end)
+		public virtual void IndentLines(int beginLine, int endLine)
 		{
 		}
 	}

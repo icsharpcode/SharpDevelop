@@ -20,7 +20,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		readonly CodeEditor codeEditor;
 		
-		public CodeEditorAdapter(CodeEditor codeEditor) : base(codeEditor)
+		public CodeEditorAdapter(CodeEditor codeEditor) : base(codeEditor.TextEditor)
 		{
 			if (codeEditor == null)
 				throw new ArgumentNullException("codeEditor");
@@ -35,7 +35,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (data == null || !data.Items.Any())
 				return;
-			CompletionWindow window = new SharpDevelopCompletionWindow(this, codeEditor.TextArea, data);
+			CompletionWindow window = new SharpDevelopCompletionWindow(this, codeEditor.TextEditor.TextArea, data);
 			codeEditor.NotifyCompletionWindowOpened(window);
 			window.Show();
 		}

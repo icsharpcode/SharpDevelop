@@ -25,6 +25,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		public AvalonEditTextEditorAdapter(TextEditor textEditor)
 		{
+			if (textEditor == null)
+				throw new ArgumentNullException("textEditor");
 			this.textEditor = textEditor;
 			this.Caret = new CaretAdapter(textEditor.TextArea.Caret);
 			this.Options = new OptionsAdapter(textEditor.Options);

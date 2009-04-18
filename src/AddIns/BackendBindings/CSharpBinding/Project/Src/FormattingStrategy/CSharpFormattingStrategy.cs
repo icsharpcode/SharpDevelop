@@ -43,12 +43,12 @@ namespace CSharpBinding.FormattingStrategy
 			}
 		}
 		
-		public override void IndentLines(ITextEditor editor, int begin, int end)
+		public override void IndentLines(ITextEditor editor, int beginLine, int endLine)
 		{
 			IndentationSettings set = new IndentationSettings();
 			set.IndentString = editor.Options.IndentationString;
 			IndentationReformatter r = new IndentationReformatter();
-			DocumentAccessor acc = new DocumentAccessor(editor.Document, begin, end);
+			DocumentAccessor acc = new DocumentAccessor(editor.Document, beginLine, endLine);
 			r.Reformat(acc, set);
 		}
 		#endregion

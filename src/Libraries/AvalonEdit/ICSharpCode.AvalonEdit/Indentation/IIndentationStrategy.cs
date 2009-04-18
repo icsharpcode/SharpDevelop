@@ -24,6 +24,6 @@ namespace ICSharpCode.AvalonEdit.Indentation
 		/// <summary>
 		/// Reindents a set of lines.
 		/// </summary>
-		void IndentLines(int begin, int end);
+		void IndentLines(int beginLine, int endLine);
 	}
 }

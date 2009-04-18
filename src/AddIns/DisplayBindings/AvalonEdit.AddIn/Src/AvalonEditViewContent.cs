@@ -10,16 +10,18 @@ using System.IO;
 using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	public class AvalonEditViewContent : AbstractViewContent, IEditable, IMementoCapable, ITextEditorProvider, IPositionable
+	public class AvalonEditViewContent : AbstractViewContent, IEditable, IMementoCapable, ITextEditorProvider, IPositionable, IParseInformationListener
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		
@@ -49,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (file != PrimaryFile)
 				return;
-			codeEditor.Save(stream);
+			codeEditor.TextEditor.Save(stream);
 		}
 		
 		bool isLoading;
@@ -62,10 +64,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			try {
 				BookmarksDetach();
 				codeEditor.FileName = file.FileName;
-				codeEditor.SyntaxHighlighting =
+				codeEditor.TextEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
 				LoadFormatter();
-				codeEditor.Load(stream);
+				codeEditor.TextEditor.Load(stream);
 				BookmarksAttach();
 			} finally {
 				isLoading = false;
@@ -76,8 +78,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			const string formatingStrategyPath = "/AddIns/DefaultTextEditor/Formatter";
 			
-			if (codeEditor.SyntaxHighlighting != null) {
-				string formatterPath = formatingStrategyPath + "/" + codeEditor.SyntaxHighlighting.Name;
+			if (codeEditor.TextEditor.SyntaxHighlighting != null) {
+				string formatterPath = formatingStrategyPath + "/" + codeEditor.TextEditor.SyntaxHighlighting.Name;
 				var formatter = AddInTree.BuildItems<IFormattingStrategy>(formatterPath, this, false);
 				if (formatter != null && formatter.Count > 0) {
 					codeEditor.FormattingStrategy = formatter[0];
@@ -157,13 +159,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#region IEditable
 		public string Text {
 			get {
-				if (WorkbenchSingleton.InvokeRequired)
-					return WorkbenchSingleton.SafeThreadFunction(() => codeEditor.Text);
-				else
-					return codeEditor.Text;
+				return WorkbenchSingleton.SafeThreadFunction(() => codeEditor.Document.Text);
 			}
 			set {
-				WorkbenchSingleton.SafeThreadCall(text => codeEditor.Text = text, value);
+				WorkbenchSingleton.SafeThreadCall(text => codeEditor.Document.Text = text, value);
 			}
 		}
 		#endregion
@@ -172,16 +171,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public Properties CreateMemento()
 		{
 			Properties memento = new Properties();
-			memento.Set("CaretOffset", codeEditor.CaretOffset);
-			memento.Set("ScrollPositionY", codeEditor.VerticalOffset);
+			memento.Set("CaretOffset", codeEditor.TextEditor.CaretOffset);
+			memento.Set("ScrollPositionY", codeEditor.TextEditor.VerticalOffset);
 			return memento;
 		}
 		
 		public void SetMemento(Properties memento)
 		{
-			codeEditor.ScrollToVerticalOffset(memento.Get("ScrollPositionY", 0.0));
+			codeEditor.TextEditor.ScrollToVerticalOffset(memento.Get("ScrollPositionY", 0.0));
 			try {
-				codeEditor.CaretOffset = memento.Get("CaretOffset", 0);
+				codeEditor.TextEditor.CaretOffset = memento.Get("CaretOffset", 0);
 			} catch (ArgumentOutOfRangeException) {
 				// ignore caret out of range - maybe file was changed externally?
 			}
@@ -204,16 +203,23 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		#region IPositionable
 		public int Line {
-			get { return codeEditor.TextArea.Caret.Line; }
+			get { return codeEditor.TextEditor.TextArea.Caret.Line; }
 		}
 		
 		public int Column {
-			get { return codeEditor.TextArea.Caret.Column; }
+			get { return codeEditor.TextEditor.TextArea.Caret.Column; }
 		}
 		
 		public void JumpTo(int line, int column)
 		{
-			codeEditor.TextArea.Caret.Position = new ICSharpCode.AvalonEdit.Gui.TextViewPosition(line, column);
+			codeEditor.TextEditor.TextArea.Caret.Position = new TextViewPosition(line, column);
+		}
+		#endregion
+		
+		#region IParseInformationListener
+		public void ParseInformationUpdated(ParseInformation parseInfo)
+		{
+			WorkbenchSingleton.SafeThreadAsyncCall(codeEditor.ParseInformationUpdated, parseInfo);
 		}
 		#endregion
 	}

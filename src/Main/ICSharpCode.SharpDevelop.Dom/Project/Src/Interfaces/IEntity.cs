@@ -35,6 +35,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the declaring type.
+		/// For members, this is the type that contains the member.
+		/// For classes, this is the outer class (for nested classes), or null if there this
+		/// is a top-level class.
+		/// </summary>
 		IClass DeclaringType {
 			get;
 		}
@@ -118,6 +124,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		bool IsSynthetic {
+			get;
+		}
+		
+		/// <summary>
+		/// Gets the compilation unit that contains this entity.
+		/// </summary>
+		ICompilationUnit CompilationUnit {
+			get;
+		}
+		
+		/// <summary>
+		/// The project content in which this entity is defined.
+		/// </summary>
+		IProjectContent ProjectContent {
 			get;
 		}
 		

@@ -762,12 +762,12 @@ namespace ICSharpCode.AvalonEdit
 		/// <param name="p">The position, relative to top left
 		/// corner of TextEditor control</param>
 		/// <returns>The text view position, or null if the point is outside the document.</returns>
-		public TextViewPosition? GetPositionFromPoint(Point p)
+		public TextViewPosition? GetPositionFromPoint(Point point)
 		{
 			if (this.Document == null)
 				return null;
 			TextView textView = this.TextArea.TextView;
-			return textView.GetPosition(TranslatePoint(p, textView) + textView.ScrollOffset);
+			return textView.GetPosition(TranslatePoint(point, textView) + textView.ScrollOffset);
 		}
 		
 		/// <summary>

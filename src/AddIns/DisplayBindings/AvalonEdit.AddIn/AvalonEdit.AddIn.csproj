@@ -65,6 +65,9 @@
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CustomCommands.cs" />
     <Compile Include="Src\IconBarMargin.cs" />
+    <Compile Include="Src\QuickClassBrowser.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\SharpDevelopCompletionWindow.cs" />
     <Compile Include="Src\TextMarkerService.cs" />
   </ItemGroup>
@@ -105,5 +108,8 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Page Include="Src\QuickClassBrowser.xaml">
+      <DependentUpon>QuickClassBrowser.cs</DependentUpon>
+    </Page>
   </ItemGroup>
 </Project>

@@ -328,6 +328,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return false;
 		}
 		
+		public abstract ICompilationUnit CompilationUnit {
+			get;
+		}
+		
+		public IProjectContent ProjectContent {
+			[System.Diagnostics.DebuggerStepThrough]
+			get {
+				return this.CompilationUnit.ProjectContent;
+			}
+		}
+		
 		public virtual int CompareTo(IEntity value)
 		{
 			return this.Modifiers - value.Modifiers;

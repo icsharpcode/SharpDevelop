@@ -14,9 +14,12 @@ using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Indentation;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -24,11 +27,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// Integrates AvalonEdit with SharpDevelop.
 	/// </summary>
-	public class CodeEditor : TextEditor
+	public class CodeEditor : DockPanel
 	{
+		readonly QuickClassBrowser quickClassBrowser = new QuickClassBrowser();
+		readonly TextEditor textEditor = new TextEditor();
 		readonly CodeEditorAdapter textEditorAdapter;
 		readonly IconBarMargin iconBarMargin;
 		readonly TextMarkerService textMarkerService;
+		
+		public TextEditor TextEditor {
+			get { return textEditor; }
+		}
+		
+		public TextDocument Document {
+			get { return textEditor.Document; }
+			set { textEditor.Document = value; }
+		}
 		
 		public CodeEditorAdapter TextEditorAdapter {
 			get { return textEditorAdapter; }
@@ -38,40 +52,70 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return iconBarMargin; }
 		}
 		
-		public string FileName { get; set; }
+		string fileName;
+		
+		public string FileName {
+			get { return fileName; }
+			set {
+				if (fileName != value) {
+					fileName = value;
+					
+					FetchParseInformation();
+				}
+			}
+		}
 		
 		public CodeEditor()
 		{
 			textEditorAdapter = new CodeEditorAdapter(this);
-			this.TextArea.TextView.Services.AddService(typeof(ITextEditor), textEditorAdapter);
+			TextView textView = textEditor.TextArea.TextView;
+			textView.Services.AddService(typeof(ITextEditor), textEditorAdapter);
+			textView.Services.AddService(typeof(CodeEditor), this);
 			
-			this.Background = Brushes.White;
-			this.FontFamily = new FontFamily("Consolas");
-			this.FontSize = 13;
-			this.TextArea.TextEntered += TextArea_TextInput;
-			this.MouseHover += CodeEditor_MouseHover;
-			this.MouseHoverStopped += CodeEditor_MouseHoverStopped;
-			this.TextArea.DefaultInputHandler.CommandBindings.Add(
+			textEditor.Background = Brushes.White;
+			textEditor.FontFamily = new FontFamily("Consolas");
+			textEditor.FontSize = 13;
+			textEditor.TextArea.TextEntered += TextArea_TextInput;
+			textEditor.MouseHover += textEditor_MouseHover;
+			textEditor.MouseHoverStopped += textEditor_MouseHoverStopped;
+			textEditor.TextArea.Caret.PositionChanged += caret_PositionChanged;
+			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
-			this.TextArea.DefaultInputHandler.CommandBindings.Add(
+			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.DeleteLine, OnDeleteLine));
 			
-			this.iconBarMargin = new IconBarMargin { TextView = this.TextArea.TextView };
-			this.TextArea.LeftMargins.Insert(0, iconBarMargin);
-			this.TextArea.TextView.Services.AddService(typeof(IBookmarkMargin), iconBarMargin);
+			this.iconBarMargin = new IconBarMargin { TextView = textView };
+			textEditor.TextArea.LeftMargins.Insert(0, iconBarMargin);
+			textView.Services.AddService(typeof(IBookmarkMargin), iconBarMargin);
 			
 			textMarkerService = new TextMarkerService(this);
-			this.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
-			this.TextArea.TextView.LineTransformers.Add(textMarkerService);
-			this.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
+			textView.BackgroundRenderers.Add(textMarkerService);
+			textView.LineTransformers.Add(textMarkerService);
+			textView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
+			
+			quickClassBrowser.JumpAction = quickClassBrowser_Jump;
+			SetDock(quickClassBrowser, Dock.Top);
+			this.Children.Add(quickClassBrowser);
+			this.Children.Add(textEditor);
+		}
+
+		void caret_PositionChanged(object sender, EventArgs e)
+		{
+			quickClassBrowser.SelectItemAtCaretPosition(textEditorAdapter.Caret.Position);
+		}
+		
+		void quickClassBrowser_Jump(DomRegion region)
+		{
+			textEditor.TextArea.Caret.Position = new TextViewPosition(region.BeginLine, region.BeginColumn);
+			textEditor.Focus();
 		}
 		
 		ToolTip toolTip;
 
-		void CodeEditor_MouseHover(object sender, MouseEventArgs e)
+		void textEditor_MouseHover(object sender, MouseEventArgs e)
 		{
 			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(textEditorAdapter);
-			var pos = GetPositionFromPoint(e.GetPosition(this));
+			var pos = textEditor.GetPositionFromPoint(e.GetPosition(this));
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
 				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
@@ -88,7 +132,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void CodeEditor_MouseHoverStopped(object sender, MouseEventArgs e)
+		void textEditor_MouseHoverStopped(object sender, MouseEventArgs e)
 		{
 			if (toolTip != null) {
 				toolTip.IsOpen = false;
@@ -159,9 +203,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			e.Handled = true;
 			using (this.Document.RunUpdate()) {
-				DocumentLine currentLine = this.Document.GetLineByNumber(this.TextArea.Caret.Line);
-				this.Select(currentLine.Offset, currentLine.TotalLength);
-				this.SelectedText = string.Empty;
+				DocumentLine currentLine = this.Document.GetLineByNumber(textEditor.TextArea.Caret.Line);
+				textEditor.Select(currentLine.Offset, currentLine.TotalLength);
+				textEditor.SelectedText = string.Empty;
 			}
 		}
 		
@@ -187,11 +231,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (formattingStrategy != value) {
 					formattingStrategy = value;
 					if (value != null)
-						this.TextArea.IndentationStrategy = new IndentationStrategyAdapter(textEditorAdapter, value);
+						textEditor.TextArea.IndentationStrategy = new IndentationStrategyAdapter(textEditorAdapter, value);
 					else
-						this.TextArea.IndentationStrategy = new DefaultIndentationStrategy();
+						textEditor.TextArea.IndentationStrategy = new DefaultIndentationStrategy();
 				}
 			}
+		}
+		
+		void FetchParseInformation()
+		{
+			ParseInformationUpdated(ParserService.GetParseInformation(this.FileName));
+		}
+		
+		public void ParseInformationUpdated(ParseInformation parseInfo)
+		{
+			if (parseInfo != null)
+				quickClassBrowser.Update(parseInfo.MostRecentCompilationUnit);
+			else
+				quickClassBrowser.Update(null);
+			quickClassBrowser.SelectItemAtCaretPosition(textEditorAdapter.Caret.Position);
 		}
 	}
 }

@@ -227,17 +227,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			defaultReturnType = null; // re-create default return type
 		}
 		
-		public ICompilationUnit CompilationUnit {
+		public sealed override ICompilationUnit CompilationUnit {
 			[System.Diagnostics.DebuggerStepThrough]
 			get {
 				return compilationUnit;
-			}
-		}
-		
-		public IProjectContent ProjectContent {
-			[System.Diagnostics.DebuggerStepThrough]
-			get {
-				return CompilationUnit.ProjectContent;
 			}
 		}
 		
