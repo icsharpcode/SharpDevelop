@@ -89,7 +89,7 @@ namespace ICSharpCode.CodeCoverage
 			// will ignore any type that has no source code available
 			// for it even though the type may be in the Part Cover
 			// results file.
-			if (settings.Include.Count + settings.Exclude.Count == 0) {
+			if (settings.Include.Count == 0) {
 				settings.Include.Add("[*]*");
 			}
 			
@@ -177,6 +177,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		void AddStringsToCollection(StringCollection source, StringCollection target)
 		{
+			target.Clear();
 			foreach (string item in source) {
 				target.Add(item);
 			}
