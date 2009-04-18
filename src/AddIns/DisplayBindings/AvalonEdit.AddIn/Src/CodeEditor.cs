@@ -21,6 +21,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -101,7 +102,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
 		void caret_PositionChanged(object sender, EventArgs e)
 		{
-			quickClassBrowser.SelectItemAtCaretPosition(textEditorAdapter.Caret.Position);
+			InvalidateQuickClassBrowserCaretPosition();
+		}
+		
+		bool quickClassBrowserCaretPositionIsValid;
+		
+		/// <summary>
+		/// Only call 'SelectItemAtCaretPosition' once when the caret position
+		/// changes multiple times (e.g. running refactoring which causes lots of caret changes).
+		/// </summary>
+		void InvalidateQuickClassBrowserCaretPosition()
+		{
+			if (quickClassBrowserCaretPositionIsValid) {
+				quickClassBrowserCaretPositionIsValid = false;
+				Dispatcher.BeginInvoke(
+					DispatcherPriority.Normal,
+					new Action(
+						delegate {
+							quickClassBrowser.SelectItemAtCaretPosition(textEditorAdapter.Caret.Position);
+						}));
+			}
 		}
 		
 		void quickClassBrowser_Jump(DomRegion region)
@@ -249,7 +269,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				quickClassBrowser.Update(parseInfo.MostRecentCompilationUnit);
 			else
 				quickClassBrowser.Update(null);
-			quickClassBrowser.SelectItemAtCaretPosition(textEditorAdapter.Caret.Position);
+			InvalidateQuickClassBrowserCaretPosition();
 		}
 	}
 }

@@ -21,5 +21,11 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 				return String.Empty;
 			}
 		}
+		
+		public override ICompilationUnit CompilationUnit {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

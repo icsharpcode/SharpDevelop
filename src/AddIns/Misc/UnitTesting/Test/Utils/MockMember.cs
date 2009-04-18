@@ -255,5 +255,16 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
+		public ICompilationUnit CompilationUnit {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IProjectContent ProjectContent {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

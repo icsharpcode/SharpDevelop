@@ -302,5 +302,16 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
+		public ICompilationUnit CompilationUnit {
+			get {
+				return declaringType.CompilationUnit;
+			}
+		}
+		
+		public IProjectContent ProjectContent {
+			get {
+				return declaringType.ProjectContent;
+			}
+		}
 	}
 }

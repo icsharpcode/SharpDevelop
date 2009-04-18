@@ -28,12 +28,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		const int TYPE_FIELD = 4;
 		const int TYPE_EVENT = 5;
 		
+		/// <summary>
+		/// ViewModel used for combobox items.
+		/// </summary>
 		class EntityItem : IComparable<EntityItem>
 		{
 			IEntity entity;
 			IImage image;
 			string text;
-			int typeCode; // type code is used for sorting by type
+			int typeCode; // type code is used for sorting entities by type
 			
 			public IEntity Entity {
 				get { return entity; }
@@ -53,16 +56,29 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				image = ClassBrowserIconService.GetIcon(entity);
 			}
 			
+			/// <summary>
+			/// Text to display in combo box.
+			/// </summary>
 			public string Text {
 				get { return text; }
 			}
 			
+			/// <summary>
+			/// Image to use in combox box
+			/// </summary>
 			public ImageSource Image {
 				get {
 					return image.ImageSource;
 				}
 			}
 			
+			/// <summary>
+			/// Gets/Sets whether the item is in the current file.
+			/// </summary>
+			/// <returns>
+			/// <c>true</c>: item is in current file;
+			/// <c>false</c>: item is in another part of the partial class
+			/// </returns>
 			public bool IsInSamePart { get; set; }
 			
 			public int CompareTo(EntityItem other)
@@ -80,12 +96,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public QuickClassBrowser()
 		{
 			InitializeComponent();
-			Update(null);
 		}
 		
-		List<EntityItem> classItems;
-		List<EntityItem> memberItems;
+		// The lists of items currently visible in the combo boxes.
+		// These should never be null.
+		List<EntityItem> classItems = new List<EntityItem>();
+		List<EntityItem> memberItems = new List<EntityItem>();
 		
+		/// <summary>
+		/// Updates the list of available classes.
+		/// This causes the classes combo box to loose its current selected,
+		/// so the members combo box will be cleared.
+		/// </summary>
 		public void Update(ICompilationUnit compilationUnit)
 		{
 			classItems = new List<EntityItem>();
@@ -104,6 +126,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		/// <summary>
+		/// Selects the class and member closest to the specified location.
+		/// </summary>
 		public void SelectItemAtCaretPosition(Location location)
 		{
 			EntityItem matchInside = null;
@@ -116,6 +141,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						matchInside = item;
 						// when there are multiple matches inside (nested classes), use the last one
 					} else {
+						// Not a perfect match?
+						// Try to first the nearest match. We want the classes combo box to always
+						// have a class selected if possible.
 						int matchDistance = Math.Min(Math.Abs(location.Line - c.Region.BeginLine),
 						                             Math.Abs(location.Line - c.Region.EndLine));
 						if (matchDistance < nearestMatchDistance) {
@@ -153,6 +181,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void classComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			// The selected class was changed.
+			// Update the list of member items to be the list of members of the current class.
 			EntityItem item = classComboBox.SelectedItem as EntityItem;
 			IClass selectedClass = item != null ? item.Entity as IClass : null;
 			memberItems = new List<EntityItem>();
@@ -199,16 +229,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (region.IsEmpty)
 				return;
-			if (item.IsInSamePart) {
-				Action<DomRegion> jumpAction = this.JumpAction;
-				if (jumpAction != null) {
-					jumpAction(region);
-				}
+			Action<DomRegion> jumpAction = this.JumpAction;
+			if (item.IsInSamePart && jumpAction != null) {
+				jumpAction(region);
 			} else {
 				FileService.JumpToFilePosition(item.Entity.CompilationUnit.FileName, region.BeginLine, region.BeginColumn);
 			}
 		}
 		
+		/// <summary>
+		/// Action used for jumping to a position inside the current file.
+		/// </summary>
 		public Action<DomRegion> JumpAction { get; set; }
 	}
 }
