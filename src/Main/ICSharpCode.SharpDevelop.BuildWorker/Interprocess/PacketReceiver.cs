@@ -65,6 +65,11 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 				OnConnectionLost();
 				return;
 			}
+			if (bytes == 0) {
+				// 0 bytes read indicates the end of the stream
+				OnConnectionLost();
+				return;
+			}
 			bufferReadOffset += bytes;
 			int packetStart = 0;
 			int packetSize = -1;
@@ -95,6 +100,11 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 			if (packetSize > buffer.Length) {
 				Debug.WriteLine("resizing receive buffer for packet of size " + packetSize);
 				Array.Resize(ref buffer, Math.Max(packetSize, buffer.Length * 2));
+			}
+			if (bufferReadOffset >= buffer.Length) {
+				// should never happen - the buffer now is large enough to contain the packet,
+				// and we would have already processed the packet if received it completely
+				throw new InvalidOperationException("trying to read 0 bytes from socket");
 			}
 			try {
 				stream.BeginRead(buffer, bufferReadOffset, buffer.Length - bufferReadOffset, OnReceive, null);

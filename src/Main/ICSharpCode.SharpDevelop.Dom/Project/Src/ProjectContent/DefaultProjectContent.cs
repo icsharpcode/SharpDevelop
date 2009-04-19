@@ -612,10 +612,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			if (c != null && c.TypeParameters.Count == typeParameterCount) {
-				return c;
-			}
-			
 			if ((options & GetClassOptions.LookForInnerClass) != 0) {
 				// not found -> maybe nested type -> trying to find class that contains this one.
 				int lastIndex = typeName.LastIndexOf('.');
@@ -629,9 +625,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 								string innerName = typeName.Substring(lastIndex + 1);
 								foreach (IClass innerClass in innerClasses) {
 									if (language.NameComparer.Equals(innerClass.Name, innerName)) {
-										c = innerClass;
 										if (innerClass.TypeParameters.Count == typeParameterCount) {
 											return innerClass;
+										} else {
+											// store match
+											c = innerClass;
 										}
 									}
 								}

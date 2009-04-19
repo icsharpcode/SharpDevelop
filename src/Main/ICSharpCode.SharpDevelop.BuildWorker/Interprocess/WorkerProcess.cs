@@ -53,6 +53,10 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 			string oldArguments = info.Arguments;
 			info.Arguments += " " + argument;
 			process = Process.Start(info);
+			// "manual process start" - useful for profiling the build worker
+			//System.Windows.Forms.MessageBox.Show(info.Arguments);
+			//process = Process.GetProcessesByName("ICSharpCode.SharpDevelop.BuildWorker")[0];
+			
 			info.Arguments = oldArguments;
 			
 			SetTimeout();
