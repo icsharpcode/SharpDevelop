@@ -26,8 +26,8 @@ namespace PythonBinding.Tests.Designer
 		Size openMenuItemSize;
 		Size exitMenuItemSize;
 		Size editMenuItemSize;
-		IComponent[] menuStripChildComponents;
-		IComponent[] fileMenuItemChildComponents;
+		object[] menuStripChildComponents;
+		object[] fileMenuItemChildComponents;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()

@@ -144,11 +144,14 @@ namespace ICSharpCode.PythonBinding
 				Expression listItemExpression = list.Items[i];
 				ConstantExpression constantExpression = listItemExpression as ConstantExpression;
 				MemberExpression memberExpression = listItemExpression as MemberExpression;
+				NameExpression nameExpression = listItemExpression as NameExpression;
 				if (constantExpression != null) {
 					array.SetValue(constantExpression.Value, i);
 				} else if (memberExpression != null) {
 					string name = PythonControlFieldExpression.GetVariableName(memberExpression.Name.ToString());
 					array.SetValue(componentCreator.GetComponent(name), i);
+				} else if (nameExpression != null) {
+					array.SetValue(componentCreator.GetInstance(nameExpression.Name.ToString()), i);
 				}
 			}
 			return array;			

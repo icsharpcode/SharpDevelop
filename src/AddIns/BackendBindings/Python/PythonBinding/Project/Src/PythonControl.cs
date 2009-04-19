@@ -221,28 +221,31 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Gets the child components that are sited on the specified object.
+		/// Gets the child objects that need to be stored in the generated designer code on the specified object.
 		/// </summary>
 		/// <remarks>
 		/// For a MenuStrip the child components include the MenuStrip.Items.
 		/// For a Control the child components include the Control.Controls.
 		/// </remarks>
-		public static IComponent[] GetChildComponents(object obj)
+		public static object[] GetChildComponents(object obj)
 		{
-			List<IComponent> childComponents = new List<IComponent>();			
+			List<object> childComponents = new List<object>();			
 			foreach (PropertyDescriptor property in GetSerializableContentProperties(obj)) {
 				ICollection collection = property.GetValue(obj) as ICollection;
 				if (collection != null) {
-					foreach (object component in collection) {
-						if (IsSitedComponent(component)) {
-							childComponents.Add(component as IComponent);
+					foreach (object childObject in collection) {
+						// Add only those IComponents which are sited and any other objects
+						// which are not IComponents.
+						IComponent component = childObject as IComponent;
+						if ((component == null) || IsSitedComponent(component)) {
+							childComponents.Add(childObject);
 						}
 					}
 				}
 			}			
 			return childComponents.ToArray();
 		}
-				
+								
 		void GenerateInitializeComponentMethodBodyInternal(Control control)
 		{
 			AppendChildControlCreation(control);
@@ -290,6 +293,14 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Generates python code for an object's properties which is not an IComponent.
+		/// </summary>
+		void AppendObject(object obj, int count)
+		{
+			AppendProperties(GetVariableName(obj, count), obj);
+		}
+		
+		/// <summary>
 		/// Appends a property to the InitializeComponents method.
 		/// </summary>
 		void AppendProperty(string propertyOwnerName, object obj, PropertyDescriptor propertyDescriptor)
@@ -300,7 +311,7 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			if (propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible) {
-				string propertyName = GetPropertyName(propertyOwnerName, propertyDescriptor.Name);
+				string propertyName = propertyOwnerName + "." + propertyDescriptor.Name;
 				Control control = propertyValue as Control;
 				if (control != null) {
 					AppendIndentedLine(propertyName + " = self._" + control.Name);
@@ -312,15 +323,7 @@ namespace ICSharpCode.PythonBinding
 				AppendMethodCallWithArrayParameter(propertyOwnerName, obj, propertyDescriptor);
 			}
 		}
-		
-		static string GetPropertyName(string propertyOwnerName, string propertyName)
-		{
-			if (String.IsNullOrEmpty(propertyOwnerName)) {
-				return "self." + propertyName;
-			}
-			return "self._" + propertyOwnerName + "." + propertyName;
-		}
-		
+				
 		/// <summary>
 		/// Appends the comment lines before the control has its properties set.
 		/// </summary>
@@ -374,11 +377,15 @@ namespace ICSharpCode.PythonBinding
 
 		void AppendChildComponentCreation(ICollection components)
 		{
+			int count = 1;
 			foreach (object obj in components) {
 				IComponent component = obj as IComponent;
 				if (IsSitedComponent(component)) {	
 					AppendComponentCreation(component);
 					AppendChildComponentCreation(GetChildComponents(component));
+				} else if (component == null) {
+					AppendChildObjectCreation(obj, count);
+					count++;
 				}
 			}
 		}
@@ -391,6 +398,15 @@ namespace ICSharpCode.PythonBinding
 		void AppendComponentCreation(string name, object obj)
 		{	
 			AppendIndentedLine("self._" + name + " = " + obj.GetType().FullName + "()");
+		}
+		
+		void AppendChildObjectCreation(object obj, int count)
+		{
+			if (obj is String) {
+				// Do nothing.
+			} else {
+				AppendIndentedLine(GetVariableName(obj, count) + " = " + obj.GetType().FullName + "()");
+			}
 		}
 		
 		void AppendChildControlSuspendLayout(Control.ControlCollection controls)
@@ -439,7 +455,7 @@ namespace ICSharpCode.PythonBinding
 			PropertyDescriptor propertyDescriptor = eventBindingService.GetEventProperty(eventDescriptor);
 			if (propertyDescriptor.ShouldSerializeValue(component)) {
 				string methodName = (string)propertyDescriptor.GetValue(component);
-				AppendIndentedLine(GetPropertyName(propertyOwnerName, eventDescriptor.Name) + " += self." + methodName);
+				AppendIndentedLine(propertyOwnerName + "." + eventDescriptor.Name + " += self." + methodName);
 			}
 		}
 		
@@ -474,8 +490,10 @@ namespace ICSharpCode.PythonBinding
 					}
 					if (component is IComponent) {
 						Append("self._" + ((IComponent)component).Site.Name);
-					} else {
+					} else if (component is String) {
 						Append(PythonPropertyValueAssignment.ToString(component));
+					} else {
+						Append(GetVariableName(component, i + 1));
 					}
 					++i;
 				}
@@ -495,9 +513,9 @@ namespace ICSharpCode.PythonBinding
 		string GetPropertyOwnerName(IComponent component, bool addComponentNameToProperty)
 		{
 			if (addComponentNameToProperty) {
-				return component.Site.Name;
+				return "self._" + component.Site.Name;
 			}
-			return String.Empty;
+			return "self";
 		}
 		
 		/// <summary>
@@ -510,9 +528,14 @@ namespace ICSharpCode.PythonBinding
 				object propertyCollection = property.GetValue(component);
 				ICollection collection = propertyCollection as ICollection;
 				if (collection != null) {
-					foreach (object childComponent in collection) {
+					int count = 1;
+					foreach (object childObject in collection) {
+						IComponent childComponent = childObject as IComponent;
 						if (IsSitedComponent(childComponent)) {
-							AppendComponent(childComponent as IComponent , true, true);
+							AppendComponent(childComponent, true, true);
+						} else if (childComponent == null) {
+							AppendObject(childObject, count);
+							++count;
 						}
 					}
 				}
@@ -557,11 +580,24 @@ namespace ICSharpCode.PythonBinding
 					foreach (object item in collectionProperty) {
 						IComponent collectionComponent = item as IComponent;
 						if (IsSitedComponent(collectionComponent)) {
-							AppendIndentedLine(GetPropertyName(propertyOwnerName, propertyDescriptor.Name) + "." + addMethod.Name + "(self._" + collectionComponent.Site.Name + ")");
+							AppendIndentedLine(propertyOwnerName + "." + propertyDescriptor.Name + "." + addMethod.Name + "(self._" + collectionComponent.Site.Name + ")");
 						}
 					}
 				}
 			}
 		}
+		
+		/// <summary>
+		/// Gets the variable name for the specified type.
+		/// </summary>
+		/// <remarks>
+		/// The variable name is simply the type name with the first character in lower case followed by the
+		/// count.
+		/// </remarks>
+		static string GetVariableName(object obj, int count)
+		{
+			string typeName = obj.GetType().Name;
+			return typeName[0].ToString().ToLowerInvariant() + typeName.Substring(1) + count;
+		}		
 	}
 }

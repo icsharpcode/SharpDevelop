@@ -35,7 +35,7 @@ namespace PythonBinding.Tests.Designer
 			
 			textBox = (TextBox)loader.CreateComponent(typeof(TextBox), "textBox1");
 			label = (Label)loader.CreateComponent(typeof(Label), "label1");
-			loader.Add(label, "label1");
+			loader.Add(label, "label1");			
 		}
 		
 		[TearDown]
@@ -43,6 +43,12 @@ namespace PythonBinding.Tests.Designer
 		{
 			if (textBox != null) {
 				textBox.Dispose();
+			}
+			if (label != null) {
+				label.Dispose();
+			}
+			if (loader != null) {
+				loader.Dispose();
 			}
 		}
 		

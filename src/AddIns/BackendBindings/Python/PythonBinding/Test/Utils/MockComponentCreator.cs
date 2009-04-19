@@ -147,6 +147,15 @@ namespace PythonBinding.Tests.Utils
 				}
 			}
 			return null;
-		}		
+		}
+		
+		public object GetInstance(string name)
+		{
+			CreatedInstance instance = GetCreatedInstance(name);
+			if (instance != null) {
+				return instance.Object;
+			}
+			return null;
+		}
 	}
 }

@@ -94,6 +94,7 @@ namespace ICSharpCode.PythonBinding
 		{			
 			if (node.Left.Count > 0) {
 				MemberExpression lhsMemberExpression = node.Left[0] as MemberExpression;
+				NameExpression lhsNameExpression = node.Left[0] as NameExpression;
 				if (lhsMemberExpression != null) {
 					fieldExpression = PythonControlFieldExpression.Create(lhsMemberExpression);
 					MemberExpression rhsMemberExpression = node.Right as MemberExpression;
@@ -110,14 +111,23 @@ namespace ICSharpCode.PythonBinding
 						}
 						walkingAssignment = false;
 					}
-				}	
+				} else if (lhsNameExpression != null) {
+					CallExpression callExpression = node.Right as CallExpression;
+					if (callExpression != null) {
+						CreateInstance(lhsNameExpression.Name.ToString(), callExpression);
+					}
+				}
 			}
 			return false;
 		}
 		
 		public override bool Walk(ConstantExpression node)
 		{
-			SetPropertyValue(fieldExpression.MemberName, node.Value);
+			if (fieldExpression.IsSelfReference) {
+				SetPropertyValue(fieldExpression.MemberName, node.Value);
+			} else {
+				SetPropertyValue(componentCreator.GetInstance(fieldExpression.VariableName), fieldExpression.MemberName, node.Value);
+			}
 			return false;
 		}
 		
@@ -279,11 +289,8 @@ namespace ICSharpCode.PythonBinding
 		{
 			MemberExpression memberExpression = node.Target as MemberExpression;
 			if (memberExpression != null) {
-				string name = PythonControlFieldExpression.GetMemberName(memberExpression);
-				Type type = componentCreator.GetType(name);
-				if (type != null) {
-					List<object> args = deserializer.GetArguments(node);
-					object instance = componentCreator.CreateInstance(type, args, null, false);
+				object instance = CreateInstance(null, node);
+				if (instance != null) {
 					if (!SetPropertyValue(fieldExpression.MemberName, instance)) {
 						AddComponent(fieldExpression.MemberName, instance);
 					}
@@ -292,7 +299,7 @@ namespace ICSharpCode.PythonBinding
 					if (obj != null) {
 						SetPropertyValue(component, fieldExpression.MemberName, obj);
 					} else {
-						throw new PythonComponentWalkerException(String.Format("Could not find type '{0}'.", name));
+						throw new PythonComponentWalkerException(String.Format("Could not find type '{0}'.", PythonControlFieldExpression.GetMemberName(memberExpression)));
 					}
 				}
 			}
@@ -325,6 +332,23 @@ namespace ICSharpCode.PythonBinding
 				object parameter = deserializer.Deserialize(node.Args[0].Expression);
 				member.GetType().InvokeMember(field.MethodName, BindingFlags.InvokeMethod, Type.DefaultBinder, member, new object[] {parameter});							
 			}
+		}
+		
+		/// <summary>
+		/// Creates a new instance with the specified name.
+		/// </summary>
+		object CreateInstance(string name, CallExpression node)
+		{
+			MemberExpression memberExpression = node.Target as MemberExpression;
+			if (memberExpression != null) {
+				string typeName = PythonControlFieldExpression.GetMemberName(memberExpression);
+				Type type = componentCreator.GetType(typeName);
+				if (type != null) {
+					List<object> args = deserializer.GetArguments(node);
+					return componentCreator.CreateInstance(type, args, name, false);
+				}
+			}
+			return null;
 		}
 	}
 }

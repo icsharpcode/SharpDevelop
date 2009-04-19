@@ -26,13 +26,15 @@ namespace ICSharpCode.PythonBinding
 		string fullMemberName = String.Empty;
 		string variableName = String.Empty;
 		string methodName = String.Empty;
+		bool selfReference;
 		
-		PythonControlFieldExpression(string memberName, string variableName, string methodName, string fullMemberName)
+		public PythonControlFieldExpression(string memberName, string variableName, string methodName, string fullMemberName)
 		{
 			this.memberName = memberName;
 			this.variableName = variableName;
 			this.methodName = methodName;
 			this.fullMemberName = fullMemberName;
+			selfReference = ContainsSelfReference(fullMemberName);
 		}
 		
 		/// <summary>
@@ -63,16 +65,23 @@ namespace ICSharpCode.PythonBinding
 			get { return methodName; }
 		}
 		
+		/// <summary>
+		/// Returns whether the variable is for a field or not.
+		/// </summary>
+		public bool IsSelfReference {
+			get { return selfReference; }
+		}
+		
 		public override string ToString()
 		{
-			return fullMemberName;
+			return "[VariableName: " + variableName + " FullMemberName: " + fullMemberName + "]";
 		}
 		
 		public override bool Equals(object obj)
 		{
 			PythonControlFieldExpression rhs = obj as PythonControlFieldExpression;
 			if (rhs != null) {
-				return rhs.fullMemberName == fullMemberName;
+				return rhs.fullMemberName == fullMemberName && rhs.variableName == variableName;
 			}
 			return false;
 		}
@@ -240,18 +249,20 @@ namespace ICSharpCode.PythonBinding
 		/// 
 		/// Returns "textBox1"
 		/// </summary>
+		/// <remarks>
+		/// If there is no self part then the variable name is the first part of the name.
+		/// </remarks>
 		static string GetVariableNameFromSelfReference(string name)
 		{
-			int startIndex = name.IndexOf('.');
-			if (startIndex > 0) {
-				name = name.Substring(startIndex + 1);
-				int endIndex = name.IndexOf('.');
-				if (endIndex > 0) {
-					return GetVariableName(name.Substring(0, endIndex));
-				}
-				return String.Empty;
+			if (ContainsSelfReference(name)) {
+				name = name.Substring(5);
 			}
-			return name;
+
+			int endIndex = name.IndexOf('.');
+			if (endIndex > 0) {
+				return GetVariableName(name.Substring(0, endIndex));
+			}
+			return String.Empty;
 		}
 		
 		static PythonControlFieldExpression Create(string[] memberNames)
@@ -261,7 +272,12 @@ namespace ICSharpCode.PythonBinding
 				memberName = memberNames[memberNames.Length - 1];
 			}
 			string fullMemberName = PythonControlFieldExpression.GetMemberName(memberNames);
-			return new PythonControlFieldExpression(memberName, GetVariableNameFromSelfReference(fullMemberName), String.Empty, fullMemberName);			
+			return new PythonControlFieldExpression(memberName, GetVariableNameFromSelfReference(fullMemberName), String.Empty, fullMemberName);
+		}
+		
+		static bool ContainsSelfReference(string name)
+		{
+			return name.StartsWith("self.", StringComparison.InvariantCultureIgnoreCase);
 		}
 	}
 }

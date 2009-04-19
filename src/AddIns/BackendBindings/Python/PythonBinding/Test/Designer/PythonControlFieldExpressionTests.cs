@@ -152,6 +152,32 @@ namespace PythonBinding.Tests.Designer
 			}
 		}
 		
+		[Test]
+		public void LocalVariable()
+		{
+			AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("listViewItem1.TooltipText = \"abc\"");
+			PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
+			
+			PythonControlFieldExpression expectedField = new PythonControlFieldExpression("TooltipText", "listViewItem1", String.Empty, "listViewItem1.TooltipText");
+			Assert.AreEqual(expectedField, field);
+		}
+
+		[Test]
+		public void LocalVariableIsNotSelfReference()
+		{
+			AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("listViewItem1.TooltipText = \"abc\"");
+			PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
+			Assert.IsFalse(field.IsSelfReference);
+		}
+
+		[Test]
+		public void FieldIsNotSelfReference()
+		{
+			AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("self.listView1.TooltipText = \"abc\"");
+			PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
+			Assert.IsTrue(field.IsSelfReference);
+		}
+		
 		void AssertAreEqual(PythonControlFieldExpression field, string variableName, string memberName, string methodName, string fullMemberName)
 		{
 			string expected = "Variable: " + variableName + " Member: " + memberName + " Method: " + methodName + " FullMemberName: " + fullMemberName;

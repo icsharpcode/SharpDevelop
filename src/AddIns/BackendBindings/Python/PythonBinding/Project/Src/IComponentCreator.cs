@@ -48,6 +48,12 @@ namespace ICSharpCode.PythonBinding
 		/// <param name="name">Name of the object.</param>
 		/// <param name="addToContainer">If set to true then the is added to the design container.</param>
 		object CreateInstance(Type type, ICollection arguments, string name, bool addToContainer);
+
+		/// <summary>
+		/// Gets the created instance.
+		/// </summary>
+		/// <param name="name">Instance name.</param>
+		object GetInstance(string name);
 		
 		/// <summary>
 		/// Gets the type given its name.

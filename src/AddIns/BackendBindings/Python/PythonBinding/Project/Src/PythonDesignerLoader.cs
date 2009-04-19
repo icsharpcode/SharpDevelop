@@ -84,6 +84,14 @@ namespace ICSharpCode.PythonBinding
 		{
 			return serializationManager.CreateInstance(type, arguments, name, addToContainer);
 		}
+		
+		/// <summary>
+		/// Gets an instance by name.
+		/// </summary>
+		public object GetInstance(string name)
+		{
+			return serializationManager.GetInstance(name);
+		}
 
 		/// <summary>
 		/// Gets the type given its name.

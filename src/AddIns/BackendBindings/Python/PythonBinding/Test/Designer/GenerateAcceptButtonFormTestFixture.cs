@@ -22,8 +22,8 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateAcceptButtonFormTestFixture
 	{
 		string generatedPythonCode;
-		IComponent[] formChildComponents;
-		IComponent[] buttonChildComponents;
+		object[] formChildComponents;
+		object[] buttonChildComponents;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()

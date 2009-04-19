@@ -98,5 +98,10 @@ namespace PythonBinding.Tests.Designer
 		{
 			return null;
 		}
+		
+		public object GetInstance(string name)
+		{
+			return null;
+		}
 	}
 }
