@@ -196,7 +196,6 @@ namespace ICSharpCode.Profiler.Controls
 			return p;
 		}
 	}
-
 	
 	class PiePieceDescriptor
 	{

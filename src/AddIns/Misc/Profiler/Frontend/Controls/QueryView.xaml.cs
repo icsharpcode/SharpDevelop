@@ -18,13 +18,15 @@ namespace ICSharpCode.Profiler.Controls
 	/// </summary>
 	public partial class QueryView : UserControl
 	{
+		#region Properties
 		/// <remarks>
 		/// Provider should only be changed once!
 		/// </remarks>
 		public ProfilingDataProvider Provider { get; set; }
 		HierarchyList<CallTreeNodeViewModel> list;
-		CallTreeNodeViewModel searchRoot, oldSearchResult;
+		CallTreeNodeViewModel oldSearchResult;
 		SingleTask task;
+		SingleTask searchTask;
 		
 		bool isQueryModifiable = true;
 		
@@ -67,20 +69,49 @@ namespace ICSharpCode.Profiler.Controls
 			set { SetValue(ShowQueryItemsProperty, value); }
 			get { return (bool)GetValue(ShowQueryItemsProperty); }
 		}
+		#endregion
 
 		void txtSearchKeyDown(object sender, KeyEventArgs e)
 		{
 			if (!string.IsNullOrEmpty(txtSearch.Text) && list.Count > 0) {
-				CallTreeNodeViewModel result;
-				// TODO: should we perform search in background?
-				
-				if (list.First().Search(txtSearch.Text, true, out result)) {
-					result.IsSelected = true;
-					if (oldSearchResult != null)
-						oldSearchResult.IsSelected = false;
-					oldSearchResult = result;
+//				searchTask.Cancel();
+//				string text = txtSearch.Text;
+//				int start = this.RangeStart;
+//				int end = this.RangeEnd;
+//				var provider = this.Provider;
+//				
+//				AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
+//				OverlayAdorner ad = new OverlayAdorner(this);
+//				WaitBar bar = new WaitBar("Refreshing view, please wait ...");
+//				ad.Child = bar;
+//				layer.Add(ad);
+//				
+//				searchTask.Execute(
+//					() => DoSearchInBackground(provider, start, end, text, true),
+//					result => SearchCompleted(result, layer, ad),
+//					delegate { layer.Remove(ad); });
+			}
+		}
+		
+		static CallTreeNode DoSearchInBackground(ProfilingDataProvider provider, int startIndex, int endIndex, string text, bool recursive)
+		{
+			CallTreeNode result;
+			foreach (var item in provider.GetRoot(startIndex, endIndex).Children) {
+				if (item.Search(text, true, out result)) {
+					return result;
 				}
 			}
+			return null;
+		}
+		
+		void SearchCompleted(CallTreeNode result, AdornerLayer layer, OverlayAdorner ad)
+		{
+//			var root = Provider.GetRoot(RangeStart, RangeEnd);
+//			result.IsSelected = true;
+//			if (oldSearchResult != null)
+//				oldSearchResult.IsSelected = false;
+//			oldSearchResult = result;
+//			layer.Remove(ad);
 		}
 
 		public QueryView()
@@ -89,6 +120,8 @@ namespace ICSharpCode.Profiler.Controls
 			this.IsVisibleChanged += delegate { this.ExecuteQuery(); };
 			this.DataContext = this;
 			this.task = new SingleTask(this.Dispatcher);
+			this.searchTask = new SingleTask(this.Dispatcher);
+			
 			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
 				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0 &&
 				    (nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) > 0) {
@@ -108,7 +141,6 @@ namespace ICSharpCode.Profiler.Controls
 			
 			this.RangeStart = start;
 			this.RangeEnd = end;
-			this.searchRoot = new CallTreeNodeViewModel(this.Provider.GetRoot(start, end), null);
 			this.Invalidate();
 			this.InvalidateArrange();
 		}
@@ -122,7 +154,7 @@ namespace ICSharpCode.Profiler.Controls
 		
 		void ExecuteQuery()
 		{
-			if (!this.isDirty)
+			if (!this.isDirty || this.Provider == null)
 				return;
 			
 			if (RangeStart > RangeEnd) {
@@ -170,10 +202,14 @@ namespace ICSharpCode.Profiler.Controls
 
 		static HierarchyList<CallTreeNodeViewModel> LoadWorker(ProfilingDataProvider provider, QueryCompiler compiler, int rangeStart, int rangeEnd)
 		{
-			if (compiler.Compile()) {
-				var data = compiler.ExecuteQuery(provider, rangeStart, rangeEnd - 1);
-				var nodes = data.Select(i => new CallTreeNodeViewModel(i, null)).ToList();
-				return new HierarchyList<CallTreeNodeViewModel>(nodes);
+			try {
+				if (compiler.Compile()) {
+					var data = compiler.ExecuteQuery(provider, rangeStart, rangeEnd - 1);
+					var nodes = data.Select(i => new CallTreeNodeViewModel(i, null)).ToList();
+					return new HierarchyList<CallTreeNodeViewModel>(nodes);
+				}
+			} catch (ObjectDisposedException) {
+				return null;
 			}
 			
 			return null;

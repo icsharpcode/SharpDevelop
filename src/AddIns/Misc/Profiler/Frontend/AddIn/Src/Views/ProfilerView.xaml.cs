@@ -173,8 +173,10 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			
 			view.CurrentQuery = query;
 			view.ShowQueryItems = true;
-			//view.TreeViewContextMenu = ;
-			
+			view.ContextMenuOpening += delegate(object sender, ContextMenuEventArgs e) {
+				object source = (e.OriginalSource is Shape) ? e.OriginalSource : view;
+				MenuService.CreateContextMenu(source, "/AddIns/Profiler/QueryView/ContextMenu").IsOpen = true;
+			};
 			view.CurrentQueryChanged += delegate { ViewCurrentQueryChanged(header, view); };
 
 			header.Text = title;

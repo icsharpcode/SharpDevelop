@@ -47,12 +47,9 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			
 			if (runner != null) {
 				runner.RunFinished += delegate {
-					string title = Path.GetFileName(path);
-					ProfilingDataProvider provider = new ProfilingDataSQLiteProvider(path);
-					
 					Action updater = () => {
-						WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title));
-						FileProjectItem file = new FileProjectItem(currentProj, ItemType.Content, "ProfilingSessions\\" + title);
+						FileService.OpenFile(path);
+						FileProjectItem file = new FileProjectItem(currentProj, ItemType.Content, "ProfilingSessions\\" + Path.GetFileName(path));
 						ProjectService.AddProjectItem(currentProj, file);
 						ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 						currentProj.Save();
@@ -73,8 +70,14 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				return null;
 			
 			if (!currentProj.IsStartable) {
-				MessageService.ShowError("This project cannot be started, please select a startable project for Profiling!");
-				return null;
+				if (MessageService.AskQuestion("This project cannot be started. Do you want to profile the solution's StartUp project instead?")) {
+					currentProj = ProjectService.OpenSolution.StartupProject as AbstractProject;
+					if (currentProj == null) {
+						MessageService.ShowError("No startable project was found. Aborting ...");
+						return null;
+					}
+				} else
+					return null;
 			}
 			if (!File.Exists(currentProj.OutputAssemblyFullPath)) {
 				MessageService.ShowError("This project cannot be started because the executable file was not found, " +

@@ -66,6 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\PerformanceCounterDescriptor.cs" />
     <Compile Include="Data\ProfilingDataProvider.cs" />
     <Compile Include="Data\CallTreeNode.cs" />
     <Compile Include="Data\IProfilingDataSet.cs" />

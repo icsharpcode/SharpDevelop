@@ -318,43 +318,6 @@ namespace ICSharpCode.Profiler.Controls
 				}
 			}
 		}
-
-		public bool Search(string search, bool recursive, out CallTreeNodeViewModel result)
-		{
-			if (recursive)
-				return SearchRecursive(search, this, out result);
-			else
-				return SearchInternal(search, out result);
-		}
-
-		bool SearchInternal(string search, out CallTreeNodeViewModel result)
-		{
-			foreach (CallTreeNodeViewModel item in this.Children) {
-				if (item.Name.IndexOf(search, StringComparison.Ordinal) > -1) {
-					result = item;
-					return true;
-				}
-			}
-
-			result = null;
-			return false;
-		}
-
-		bool SearchRecursive(string search, CallTreeNodeViewModel current, out CallTreeNodeViewModel result)
-		{
-			foreach (CallTreeNodeViewModel item in current.Children) {
-				if (item.Name.IndexOf(search, StringComparison.Ordinal) > -1) {
-					result = item;
-					return true;
-				}
-
-				if (SearchRecursive(search, item, out result))
-					return true;
-			}
-
-			result = null;
-			return false;
-		}
 		
 		public string TimeSpent {
 			get {

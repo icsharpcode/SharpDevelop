@@ -97,6 +97,7 @@ namespace ICSharpCode.Profiler.Controller
 		EventWaitHandle accessEventHandle;
 		Thread logger;
 		Thread dataCollector;
+		Thread counterCollector;
 		UnmanagedCircularBuffer nativeToManagedBuffer;
 		IProfilingDataWriter dataWriter;
 		
@@ -259,6 +260,10 @@ namespace ICSharpCode.Profiler.Controller
 			this.dataCollector = new Thread(new ThreadStart(DataCollection));
 			this.dataCollector.Name = "DataCollector";
 			this.dataCollector.IsBackground = true;
+			
+			this.counterCollector = new Thread(new ThreadStart(CounterCollection));
+			this.counterCollector.Name = "CounterCollector";
+			this.counterCollector.IsBackground = true;
 		}
 
 		void InitializeHeader32()
@@ -291,6 +296,11 @@ namespace ICSharpCode.Profiler.Controller
 			if (freq == -1)
 				throw new ArgumentException("The Processor Frequency could not be read!");
 			return freq;
+		}
+		
+		void CounterCollection()
+		{
+			
 		}
 
 		void DataCollection()
@@ -499,8 +509,10 @@ namespace ICSharpCode.Profiler.Controller
 			this.logger.Start(nativeToManagedBuffer.CreateReadingStream());
 
 			// GC references currentSession
-			if (this.profilerOptions.EnableDC)
+			if (this.profilerOptions.EnableDC) {
 				this.dataCollector.Start();
+				this.counterCollector.Start();
+			}
 
 			OnSessionStarted(EventArgs.Empty);
 			return profilee;
@@ -570,8 +582,10 @@ namespace ICSharpCode.Profiler.Controller
 			Debug.WriteLine("Joining logger thread...");
 			this.logger.Join();
 			Debug.WriteLine("Logger thread joined!");
-			if (this.profilerOptions.EnableDC)
+			if (this.profilerOptions.EnableDC) {
 				this.dataCollector.Join();
+				this.counterCollector.Join();
+			}
 
 			// Take last shot
 			if (this.is64Bit)
@@ -768,6 +782,10 @@ namespace ICSharpCode.Profiler.Controller
 
 				if (dataCollector != null && dataCollector.IsAlive) {
 					this.dataCollector.Join();
+				}
+				
+				if (counterCollector != null && counterCollector.IsAlive) {
+					this.counterCollector.Join();
 				}
 
 				this.fullView.Dispose();

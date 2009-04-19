@@ -55,7 +55,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 		/// Creates a new instance of the QueryCompiler.
 		/// </summary>
 		/// <param name="reporter">A delegate to report any errors to an upper layer.</param>
-		/// <param name="query">The query to c</param>
+		/// <param name="query">The query to compile.</param>
 		public QueryCompiler(ErrorReporter reporter, string query)
 		{
 			if (reporter == null)
@@ -100,11 +100,13 @@ namespace ICSharpCode.Profiler.Controller.Queries
 		/// <returns>The result of the query.</returns>
 		public IEnumerable<CallTreeNode> ExecuteQuery(ProfilingDataProvider provider, int startIndex, int endIndex)
 		{
+			if (provider == null)
+				throw new ArgumentNullException("provider");
+			
 			Assembly assembly;
 			lock (queryCache)
 				assembly = queryCache[this.currentQuery];
 			QueryBase queryContainer = assembly.CreateInstance("Query") as QueryBase;
-			CallTreeNode root = provider.GetRoot(startIndex, endIndex);
 			
 			queryContainer.Provider = provider;
 			queryContainer.StartDataSetIndex = startIndex;

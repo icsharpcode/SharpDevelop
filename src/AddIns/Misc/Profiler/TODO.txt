@@ -3,7 +3,6 @@ TODO list:
 HIGH PRIORITY
 
 LOW PRIORITY
-- handle Tailcalls differently
 
 NEW FEATURES
 - Implement an exception tracer

@@ -559,21 +559,7 @@ bool SignatureReader::IsNetInternal(FunctionID fid)
 			ULONG assemblyNameLength;
 
 			hr = asmMetaData->GetAssemblyProps(assembly, &publicKey, &pKLength, nullptr, assemblyName, NAME_BUFFER_SIZE, &assemblyNameLength, nullptr, nullptr);
-			DebugWriteLine(L"assembly: %s", assemblyName);
 			const byte *b = (const byte *)publicKey;
-			WCHAR tmp[8];
-			
-			std::wstring s(L"{ ");
-			
-			for (ULONG i = 0; i < pKLength; i++) {
-				memset(tmp, 0, 16);
-				swprintf_s(tmp, L"0x%02X, ", (int) b[i]);
-				s.append(tmp);
-			}
-			
-			s.append(L" }");
-			
-			DebugWriteLine(L"assembly: PK: %s", s.c_str());
 			
 			if (pKLength == sizeof(mscorlibkey) && memcmp(mscorlibkey, b, sizeof(mscorlibkey)) == 0)
 				return true;

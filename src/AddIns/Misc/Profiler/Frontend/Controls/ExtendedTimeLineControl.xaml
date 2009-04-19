@@ -1,0 +1,48 @@
+<UserControl x:Class="ICSharpCode.Profiler.Controls.ExtendedTimeLineControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        	 xmlns:y="clr-namespace:ICSharpCode.Profiler.Controls">
+	<DockPanel>
+		<DockPanel Margin="3,0">
+			<TextBlock Text="Performance Counters" DockPanel.Dock="Top" />
+			<ListBox>
+				<ListBoxItem>Test1</ListBoxItem>
+				<ListBoxItem>Test2</ListBoxItem>
+				<ListBoxItem>Test3</ListBoxItem>
+				<ListBoxItem>Test4</ListBoxItem>
+				<ListBoxItem>Test5</ListBoxItem>
+			</ListBox>
+		</DockPanel>
+		<Grid Margin="3,0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="20" />
+				<RowDefinition Height="20" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<TextBlock Grid.Row="0" Text="Time" />
+			<TextBlock Grid.Row="1" Text="Events" />
+			<TextBlock Grid.Row="2" Text="Graph" />
+		</Grid>
+		<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="3,0">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="20" />
+					<RowDefinition Height="20" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<StackPanel Grid.Row="0" Orientation="Horizontal">
+					<TextBlock Text="Test" />
+					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
+					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
+					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
+					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
+					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
+					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
+					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
+				</StackPanel>
+				<y:TimeLineControl x:Name="t1" Grid.Row="1" />
+				<TextBlock Grid.Row="2" Text="Test" />
+			</Grid>
+		</ScrollViewer>
+	</DockPanel>
+</UserControl>

@@ -61,6 +61,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallTreeNodeViewModel.cs" />
+    <Compile Include="EventLine.cs" />
+    <Compile Include="ExtendedTimeLineControl.xaml.cs">
+      <DependentUpon>ExtendedTimeLineControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SingleTask.cs" />
     <Compile Include="CustomGridView.cs" />
     <Compile Include="ExtensionMethods.cs" />
@@ -85,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes" />
+    <Page Include="ExtendedTimeLineControl.xaml" />
     <Page Include="QueryView.xaml" />
     <Page Include="Themes\Generic.xaml" />
     <ProjectReference Include="..\..\Controller\Controller.csproj">

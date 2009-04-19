@@ -1,4 +1,4 @@
-﻿using ICSharpCode.Profiler.Controller;
+﻿using ICSharpCode.SharpDevelop;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -7,6 +7,7 @@ using System.Windows;
 using ICSharpCode.Core;
 using ICSharpCode.Profiler.AddIn.OptionsPanels;
 using ICSharpCode.Profiler.AddIn.Views;
+using ICSharpCode.Profiler.Controller;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
@@ -48,9 +49,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 
 					if (runner != null) {
 						runner.RunFinished += delegate {
-							string title = Path.GetFileName(outputPath);
-							ProfilingDataProvider provider = new ProfilingDataSQLiteProvider(outputPath);
-							WorkbenchSingleton.SafeThreadCall(() => WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title)));
+							WorkbenchSingleton.SafeThreadCall(() => FileService.OpenFile(outputPath));
 						};
 						
 						runner.Run();

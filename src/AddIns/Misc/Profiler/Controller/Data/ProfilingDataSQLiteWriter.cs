@@ -142,31 +142,47 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			cmd.CommandText = @"
 				CREATE TABLE NameMapping(
-				id INTEGER NOT NULL PRIMARY KEY,
-				returntype VARCHAR2(100) NOT NULL,
-				name VARCHAR2(255) NOT NULL,
-				parameters VARCHAR2(1000) NOT NULL);
+					id INTEGER NOT NULL PRIMARY KEY,
+					returntype VARCHAR2(100) NOT NULL,
+					name VARCHAR2(255) NOT NULL,
+					parameters VARCHAR2(1000) NOT NULL
+				);
 				
 				CREATE TABLE FunctionData(
-				datasetid INTEGER NOT NULL,
-				id INTEGER NOT NULL PRIMARY KEY,
-				endid INTEGER NOT NULL,
-				parentid INTEGER NOT NULL,
-				nameid INTEGER NOT NULL,
-				timespent INT8 NOT NULL,
-				isactiveatstart INTEGER NOT NULL,
-				callcount INTEGER NOT NULL);
+					datasetid INTEGER NOT NULL,
+					id INTEGER NOT NULL PRIMARY KEY,
+					endid INTEGER NOT NULL,
+					parentid INTEGER NOT NULL,
+					nameid INTEGER NOT NULL,
+					timespent INT8 NOT NULL,
+					isactiveatstart INTEGER NOT NULL,
+					callcount INTEGER NOT NULL
+				);
 				
 				CREATE TABLE DataSets(
-				id INTEGER NOT NULL PRIMARY KEY,
-				cpuusage REAL NOT NULL,
-				rootid INTEGER NOT NULL);
+					id INTEGER NOT NULL PRIMARY KEY,
+					cpuusage REAL NOT NULL,
+					rootid INTEGER NOT NULL
+				);
 				
 				CREATE TABLE Properties(
-				name VARCHAR2(100) NOT NULL PRIMARY KEY,
-				value VARCHAR2(100) NOT NULL);
+					name VARCHAR2(100) NOT NULL PRIMARY KEY,
+					value VARCHAR2(100) NOT NULL
+				);
 				
 				INSERT INTO Properties(name, value) VALUES('version', '1.0');
+				
+				CREATE TABLE PerformanceCounter(
+					id INTEGER NOT NULL PRIMARY KEY,
+					name VARCHAR2(100) NOT NULL
+				);
+				
+				CREATE TABLE CounterData(
+					datasetid INTEGER NOT NULL,
+					counterid INTEGER NOT NULL,
+					value INTEGER NOT NULL,
+					CONSTRAINT PK_couterdata PRIMARY KEY (datasetid, counterid)
+				);
 	";
 			
 			cmd.ExecuteNonQuery();
