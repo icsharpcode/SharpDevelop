@@ -207,6 +207,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Starting (debugging)
 		public override bool IsStartable {
 			get {
+				if (IsSilverlightProject) {
+					return TestPageFileName.Length > 0;
+				}
 				switch (this.StartAction) {
 					case StartAction.Project:
 						return OutputType == OutputType.Exe || OutputType == OutputType.WinExe;
@@ -282,6 +285,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override ProcessStartInfo CreateStartInfo()
 		{
+			if (IsSilverlightProject) {
+				string pagePath = "file:///" + Path.Combine(OutputFullPath, TestPageFileName);
+				return new  ProcessStartInfo(pagePath);
+			}
 			switch (this.StartAction) {
 				case StartAction.Project:
 					return CreateStartInfo(this.OutputAssemblyFullPath);
@@ -348,6 +355,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				SetProperty("StartWorkingDirectory", string.IsNullOrEmpty(value) ? null : value);
+			}
+		}
+		
+		public bool IsSilverlightProject {
+			get {
+				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
+				return guids.Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
+			}
+		}		
+		
+		public string TestPageFileName {
+			get {
+				return GetEvaluatedProperty("TestPageFileName") ?? "";
+			}
+			set {
+				SetProperty("TestPageFileName", string.IsNullOrEmpty(value) ? null : value);
 			}
 		}
 		#endregion

@@ -1020,6 +1020,7 @@
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopMacro.xpt" Id="CSharpSharpDevelopMacro.xpt" Name="SharpDevelopMacro.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WebpageProject.xpt" Id="CSharpWebpageProject.xpt" Name="WebpageProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WPFApplication.xpt" Id="CSharpWPFApplication.xpt" Name="WPFApplication.xpt" />
+											<File Source="..\..\data\templates\project\CSharp\SilverlightApplication.xpt" Id="CSharpSilverlightApplication.xpt" Name="SilverlightApplication.xpt" />
 										</Component>
 										<Component Guid="9D156515-C54F-4DAB-AD66-40E44C28E56C" Id="CSharpProjectSharpDevelopCustomToolTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopCustomTool.xpt" Id="SharpDevelopCustomTool.xpt" Name="SharpDevelopCustomTool.xpt" />
