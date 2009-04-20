@@ -40,11 +40,14 @@ namespace SharpRefactoring
 						
 						if (form.ShowDialog() == DialogResult.OK) {
 							extractor.ExtractedMethod.Name = form.Text;
-							textEditor.Document.UndoStack.StartUndoGroup();
-							extractor.InsertAfterCurrentMethod();
-							extractor.InsertCall();
-							textEditor.Document.FormattingStrategy.IndentLines(textEditor.ActiveTextAreaControl.TextArea, 0, textEditor.Document.TotalNumberOfLines - 1);
-							textEditor.Document.UndoStack.EndUndoGroup();
+							try {
+								textEditor.Document.UndoStack.StartUndoGroup();
+								extractor.InsertAfterCurrentMethod();
+								extractor.InsertCall();
+								textEditor.Document.FormattingStrategy.IndentLines(textEditor.ActiveTextAreaControl.TextArea, 0, textEditor.Document.TotalNumberOfLines - 1);
+							} finally {
+								textEditor.Document.UndoStack.EndUndoGroup();
+							}
 							textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
 						}
 					}
