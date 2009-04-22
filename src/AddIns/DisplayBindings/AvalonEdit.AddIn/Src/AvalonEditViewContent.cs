@@ -212,7 +212,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void JumpTo(int line, int column)
 		{
-			codeEditor.TextEditor.TextArea.Caret.Position = new TextViewPosition(line, column);
+			codeEditor.JumpTo(line, column);
 		}
 		#endregion
 		

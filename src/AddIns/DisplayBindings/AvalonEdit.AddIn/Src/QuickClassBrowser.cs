@@ -229,9 +229,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (region.IsEmpty)
 				return;
-			Action<DomRegion> jumpAction = this.JumpAction;
+			Action<int, int> jumpAction = this.JumpAction;
 			if (item.IsInSamePart && jumpAction != null) {
-				jumpAction(region);
+				jumpAction(region.BeginLine, region.BeginColumn);
 			} else {
 				FileService.JumpToFilePosition(item.Entity.CompilationUnit.FileName, region.BeginLine, region.BeginColumn);
 			}
@@ -240,6 +240,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// Action used for jumping to a position inside the current file.
 		/// </summary>
-		public Action<DomRegion> JumpAction { get; set; }
+		public Action<int, int> JumpAction { get; set; }
 	}
 }

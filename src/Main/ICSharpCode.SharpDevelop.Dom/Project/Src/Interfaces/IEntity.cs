@@ -65,10 +65,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
+		/// <summary>
+		/// Gets whether this entity is static.
+		/// Returns true if either the 'static' or the 'const' modifier is set.
+		/// </summary>
 		bool IsStatic {
 			get;
 		}
 		
+		/// <summary>
+		/// Gets whether this entity is a constant (C#-like const).
+		/// </summary>
 		bool IsConst {
 			get;
 		}
@@ -92,7 +99,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool IsPrivate {
 			get;
 		}
-
 
 		bool IsInternal {
 			get;

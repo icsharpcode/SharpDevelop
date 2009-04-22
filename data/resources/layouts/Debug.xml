@@ -1,28 +1,30 @@
 <DockingManager>
-    <ResizingPanel ResizeWidth="*" ResizeHeight="*" Orientation="Horizontal">
-        <DockablePane ResizeWidth="200" ResizeHeight="*" Anchor="Left">
-            <DockableContent Name="ICSharpCode_SharpDevelop_Project_ProjectBrowserPad" AutoHide="false" EffectiveSize="0,0" />
-            <DockableContent Name="ICSharpCode_SharpDevelop_Gui_ToolsPad" AutoHide="false" EffectiveSize="0,0" />
-        </DockablePane>
-        <ResizingPanel ResizeWidth="*" ResizeHeight="*" Orientation="Vertical">
+    <ResizingPanel ResizeWidth="*" ResizeHeight="*" EffectiveSize="1076,904.08" Orientation="Vertical">
+        <ResizingPanel ResizeWidth="*" ResizeHeight="*" EffectiveSize="1257.04,717.08" Orientation="Horizontal">
+            <DockablePane ResizeWidth="200" ResizeHeight="*" EffectiveSize="200,717.08" Anchor="Left">
+                <DockableContent Name="ICSharpCode_SharpDevelop_Project_ProjectBrowserPad" AutoHide="false" />
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_ToolsPad" AutoHide="false" />
+            </DockablePane>
             <DocumentPanePlaceHolder />
-            <ResizingPanel ResizeWidth="*" ResizeHeight="226" Orientation="Horizontal">
-                <DockablePane ResizeWidth="0.439330543933054*" ResizeHeight="226" Anchor="Bottom">
-                    <DockableContent Name="ICSharpCode_SharpDevelop_Gui_CompilerMessageView" AutoHide="false" FloatingWindowSize="1280,199" EffectiveSize="0,0" />
-                    <DockableContent Name="ICSharpCode_SharpDevelop_Gui_Pads_LocalVarPad" AutoHide="false" FloatingWindowSize="506,655.08" EffectiveSize="0,0" />
-                    <DockableContent Name="ICSharpCode_SharpDevelop_Gui_Pads_RunningThreadsPad" AutoHide="false" FloatingWindowSize="506,655.08" EffectiveSize="0,0" />
-                </DockablePane>
-                <DockablePane ResizeWidth="0.560669456066946*" ResizeHeight="*" Anchor="Bottom">
-                    <DockableContent Name="ICSharpCode_SharpDevelop_Gui_Pads_ConsolePad" AutoHide="false" FloatingWindowSize="506,904.08" EffectiveSize="0,0" />
-                    <DockableContent Name="ICSharpCode_SharpDevelop_Gui_Pads_CallStackPad" AutoHide="false" FloatingWindowSize="506,655.08" EffectiveSize="0,0" />
-                    <DockableContent Name="ICSharpCode_SharpDevelop_Gui_Pads_LoadedModulesPad" AutoHide="false" FloatingWindowSize="506,655.08" EffectiveSize="0,0" />
-                </DockablePane>
-            </ResizingPanel>
+            <DockablePane ResizeWidth="200" ResizeHeight="*" EffectiveSize="200,717.08" Anchor="Right">
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_ClassBrowser_ClassBrowserPad" AutoHide="true" />
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_PropertyPad" AutoHide="true" />
+            </DockablePane>
         </ResizingPanel>
-        <DockablePane ResizeWidth="334" ResizeHeight="*" Anchor="Right">
-            <DockableContent Name="ICSharpCode_SharpDevelop_Gui_ClassBrowser_ClassBrowserPad" AutoHide="true" EffectiveSize="0,0" />
-            <DockableContent Name="ICSharpCode_SharpDevelop_Gui_PropertyPad" AutoHide="true" EffectiveSize="0,0" />
-        </DockablePane>
+        <ResizingPanel ResizeWidth="*" ResizeHeight="183" EffectiveSize="1257.04,183" Orientation="Horizontal">
+            <DockablePane ResizeWidth="0.516044590840343*" ResizeHeight="150" EffectiveSize="646.624514106583,183" Anchor="Bottom">
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_ErrorListPad" AutoHide="false" FloatingWindowSize="1280,150" />
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_CompilerMessageView" AutoHide="false" FloatingWindowSize="1280,150" />
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_Pads_RunningThreadsPad" AutoHide="false" FloatingWindowSize="128,904.08" />
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_Pads_LocalVarPad" AutoHide="false" FloatingWindowSize="123,904.08" />
+            </DockablePane>
+            <DockablePane ResizeWidth="0.483955409159657*" ResizeHeight="*" EffectiveSize="606.415485893417,183" Anchor="Bottom">
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_Pads_CallStackPad" AutoHide="false" FloatingWindowSize="640,904.08" />
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_Pads_ConsolePad" AutoHide="false" FloatingWindowSize="175,904.08" />
+                <DockableContent Name="ICSharpCode_SharpDevelop_Gui_Pads_WatchPad" AutoHide="false" FloatingWindowSize="200,904.08" />
+            </DockablePane>
+        </ResizingPanel>
     </ResizingPanel>
+    <Hidden />
     <Windows />
 </DockingManager>

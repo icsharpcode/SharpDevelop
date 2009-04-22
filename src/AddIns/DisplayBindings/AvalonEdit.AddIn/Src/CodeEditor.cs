@@ -94,7 +94,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.LineTransformers.Add(textMarkerService);
 			textView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 			
-			quickClassBrowser.JumpAction = quickClassBrowser_Jump;
+			quickClassBrowser.JumpAction = JumpTo;
 			SetDock(quickClassBrowser, Dock.Top);
 			this.Children.Add(quickClassBrowser);
 			this.Children.Add(textEditor);
@@ -105,7 +105,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			InvalidateQuickClassBrowserCaretPosition();
 		}
 		
-		bool quickClassBrowserCaretPositionIsValid;
+		bool quickClassBrowserCaretPositionInvalid;
 		
 		/// <summary>
 		/// Only call 'SelectItemAtCaretPosition' once when the caret position
@@ -113,20 +113,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		void InvalidateQuickClassBrowserCaretPosition()
 		{
-			if (quickClassBrowserCaretPositionIsValid) {
-				quickClassBrowserCaretPositionIsValid = false;
+			if (!quickClassBrowserCaretPositionInvalid) {
+				quickClassBrowserCaretPositionInvalid = true;
 				Dispatcher.BeginInvoke(
 					DispatcherPriority.Normal,
 					new Action(
 						delegate {
+							quickClassBrowserCaretPositionInvalid = false;
 							quickClassBrowser.SelectItemAtCaretPosition(textEditorAdapter.Caret.Position);
 						}));
 			}
 		}
 		
-		void quickClassBrowser_Jump(DomRegion region)
+		public void JumpTo(int line, int column)
 		{
-			textEditor.TextArea.Caret.Position = new TextViewPosition(region.BeginLine, region.BeginColumn);
+			// the adapter sets the caret position and takes care of scrolling
+			textEditorAdapter.JumpTo(line, column);
 			textEditor.Focus();
 		}
 		
