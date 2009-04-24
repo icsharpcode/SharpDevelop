@@ -172,7 +172,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			engine.buildStart = DateTime.Now;
 			engine.combinedBuildFeedbackSink = realtimeBuildFeedbackSink;
 			engine.progressMonitor = progressMonitor;
-			engine.configMatchings = solution.GetActiveConfigurationsAndPlatformsForProjects(options.SolutionConfiguration, options.SolutionPlatform);
 			try {
 				engine.rootNode = engine.CreateBuildGraph(project);
 			} catch (CyclicDependencyException ex) {
@@ -206,6 +205,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			readonly BuildEngine engine;
 			internal readonly IBuildable project;
+			/// <summary>The build options used for this node. Might be null.</summary>
 			internal ProjectBuildOptions options;
 			internal BuildNode[] dependencies;
 			/// <summary>specifies whether the node has been constructed completely (all dependencies initialized)</summary>
@@ -287,7 +287,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		readonly Dictionary<IBuildable, BuildNode> nodeDict = new Dictionary<IBuildable, BuildNode>();
 		readonly BuildOptions options;
 		IProgressMonitor progressMonitor;
-		List<Solution.ProjectConfigurationPlatformMatching> configMatchings;
 		BuildNode rootNode;
 		IBuildable rootProject;
 		BuildResults results = new BuildResults();
@@ -324,26 +323,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			IBuildable project = node.project;
 			// Create options for building the project
-			node.options = new ProjectBuildOptions(project == rootProject ? options.ProjectTarget : options.TargetForDependencies);
-			// find the project configuration
-			foreach (var matching in configMatchings) {
-				if (matching.Project == project) {
-					node.options.Configuration = matching.Configuration;
-					node.options.Platform = matching.Platform;
-				}
-			}
-			if (string.IsNullOrEmpty(node.options.Configuration))
-				node.options.Configuration = options.SolutionConfiguration;
-			if (string.IsNullOrEmpty(node.options.Platform))
-				node.options.Platform = options.SolutionPlatform;
-			
-			// copy properties to project options
-			options.GlobalAdditionalProperties.ForEach(node.options.Properties.Add);
-			if (project == rootProject) {
-				foreach (var pair in options.ProjectAdditionalProperties) {
-					node.options.Properties[pair.Key] = pair.Value;
-				}
-			}
+			node.options = project.CreateProjectBuildOptions(options, project == rootProject);
 		}
 		
 		void InitializeDependencies(BuildNode node)

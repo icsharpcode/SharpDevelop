@@ -7,14 +7,15 @@
 
 using System;
 using System.Diagnostics;
-using System.Reflection;
-using System.Net;
 using System.Globalization;
-using System.Net.Sockets;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
+using System.Security.Cryptography;
 using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
@@ -41,17 +42,31 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 		PacketSender sender;
 		PacketReceiver receiver;
 		
+		// We use TCP, so we'll have to deal with "attackers" trying to hijack our connection.
+		// There are two lines of defense:
+		// 1. the only local connections are accepted
+		// 2. the client must authenticate with a random password
+		// We're not protecting against DOS - we're only vulnerable to local attackers during a short
+		// time frame. The password is only to defend against deserializing arbitrary objects from
+		// unauthenticated clients.
+		// We probably should use Named Pipes instead of TCP.
+		byte[] password;
+		bool clientAuthenticated;
+		
 		public void Start(ProcessStartInfo info)
 		{
 			if (info == null)
 				throw new ArgumentNullException("info");
+			
+			password = new byte[16];
+			new RNGCryptoServiceProvider().GetBytes(password);
 			
 			listener = new TcpListener(IPAddress.Loopback, 0);
 			listener.Start();
 			string argument = ((IPEndPoint)listener.LocalEndpoint).Port.ToString(CultureInfo.InvariantCulture);
 			
 			string oldArguments = info.Arguments;
-			info.Arguments += " " + argument;
+			info.Arguments += " " + argument + " " + Convert.ToBase64String(password);
 			process = Process.Start(info);
 			// "manual process start" - useful for profiling the build worker
 			//System.Windows.Forms.MessageBox.Show(info.Arguments);
@@ -91,6 +106,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 		
 		void OnAcceptTcpClient(IAsyncResult ar)
 		{
+			clientAuthenticated = false;
 			SetTimeout();
 			try {
 				client = listener.EndAcceptTcpClient(ar);
@@ -134,9 +150,29 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 		{
 			SetTimeout();
 			if (e.Packet.Length != 0) {
-				MethodCall mc = (MethodCall)DeserializeObject(e.Packet);
-				mc.CallOn(hostObject);
+				if (clientAuthenticated) {
+					MethodCall mc = (MethodCall)DeserializeObject(e.Packet);
+					mc.CallOn(hostObject);
+				} else {
+					if (ArrayEquals(e.Packet, password)) {
+						clientAuthenticated = true;
+					} else {
+						Kill();
+						throw new InvalidOperationException("Worker process authentication failed.");
+					}
+				}
 			}
+		}
+		
+		static bool ArrayEquals(byte[] a, byte[] b)
+		{
+			if (a.Length != b.Length)
+				return false;
+			for (int i = 0; i < a.Length; i++) {
+				if (a[i] != b[i])
+					return false;
+			}
+			return true;
 		}
 		
 		public void Kill()

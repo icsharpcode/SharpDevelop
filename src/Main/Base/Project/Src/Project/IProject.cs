@@ -272,6 +272,58 @@ namespace ICSharpCode.SharpDevelop.Project
 		Solution ParentSolution { get; }
 	}
 	
+	// We cannot extend an existing interface in 3.x because we don't want to break addin compatibility.
+	// TODO: merge this interface with IBuildable in SharpDevelop 4.0
+	public interface IBuildable2 : IBuildable
+	{
+		/// <summary>
+		/// Creates the project-specific build options.
+		/// </summary>
+		/// <param name="options">The global build options.</param>
+		/// <param name="isRootBuildable">Specifies whether this project is the main buildable item
+		/// (i.e. the ).</param>
+		/// <returns>The project-specific build options.</returns>
+		ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable);
+	}
+	
+	/// <summary>
+	/// Provides the IBuildable2 methods in IBuildable.
+	/// For classes not implementing IBuildable2, a default implementation is used.
+	/// </summary>
+	public static class IBuildableExtension
+	{
+		public static ProjectBuildOptions CreateProjectBuildOptions(this IBuildable buildable, BuildOptions options, bool isRootBuildable)
+		{
+			IBuildable2 buildable2 = buildable as IBuildable2;
+			if (buildable2 != null) {
+				return buildable2.CreateProjectBuildOptions(options, isRootBuildable);
+			}
+			// start of default implementation
+			var configMatchings = buildable.ParentSolution.GetActiveConfigurationsAndPlatformsForProjects(options.SolutionConfiguration, options.SolutionPlatform);
+			ProjectBuildOptions projectOptions = new ProjectBuildOptions(isRootBuildable ? options.ProjectTarget : options.TargetForDependencies);
+			// find the project configuration
+			foreach (var matching in configMatchings) {
+				if (matching.Project == buildable) {
+					projectOptions.Configuration = matching.Configuration;
+					projectOptions.Platform = matching.Platform;
+				}
+			}
+			if (string.IsNullOrEmpty(projectOptions.Configuration))
+				projectOptions.Configuration = options.SolutionConfiguration;
+			if (string.IsNullOrEmpty(projectOptions.Platform))
+				projectOptions.Platform = options.SolutionPlatform;
+			
+			// copy properties to project options
+			options.GlobalAdditionalProperties.ForEach(projectOptions.Properties.Add);
+			if (isRootBuildable) {
+				foreach (var pair in options.ProjectAdditionalProperties) {
+					projectOptions.Properties[pair.Key] = pair.Value;
+				}
+			}
+			return projectOptions;
+		}
+	}
+	
 	/// <summary>
 	/// Interface for adding and removing items from a project. Not part of the IProject
 	/// interface because in nearly all cases, ProjectService.Add/RemoveProjectItem should

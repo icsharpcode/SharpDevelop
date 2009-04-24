@@ -32,10 +32,10 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		{
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(AppDomain_CurrentDomain_UnhandledException);
 			
-			if (args.Length == 2 && args[0] == "worker") {
+			if (args.Length == 3 && args[0] == "worker") {
 				try {
 					host = new HostProcess(new Program());
-					host.WorkerProcessMain(args[1]);
+					host.WorkerProcessMain(args[1], args[2]);
 				} catch (Exception ex) {
 					ShowMessageBox(ex.ToString());
 				}
