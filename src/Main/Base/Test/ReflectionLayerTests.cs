@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	{
 		public CecilLayerTests()
 		{
-			pc = CecilReader.LoadAssembly(typeof(object).Assembly.Location, ParserService.DefaultProjectContentRegistry);;
+			pc = CecilReader.LoadAssembly(typeof(object).Assembly.Location, ParserService.DefaultProjectContentRegistry);
 		}
 		
 		protected override IClass GetClass(Type type)
@@ -192,6 +192,18 @@ namespace ICSharpCode.SharpDevelop.Tests
 			IClass c = pc.GetClass("System.Void", 0);
 			Assert.IsNotNull(c, "System.Void not found");
 			Assert.AreSame(c.DefaultReturnType, pc.SystemTypes.Void, "pc.SystemTypes.Void is c.DefaultReturnType");
+		}
+		
+		[Test]
+		public void NestedClassInGenericClassTest()
+		{
+			IClass dictionary = pc.GetClass("System.Collections.Generic.Dictionary", 2);
+			Assert.IsNotNull(dictionary);
+			IClass valueCollection = pc.GetClass("System.Collections.Generic.Dictionary.ValueCollection", 2);
+			Assert.IsNotNull(valueCollection);
+			var dictionaryRT = new ConstructedReturnType(dictionary.DefaultReturnType, new[] { pc.SystemTypes.String, pc.SystemTypes.Int32 });
+			IProperty valueProperty = dictionaryRT.GetProperties().Find(p => p.Name == "Values");
+			Assert.AreSame(valueCollection, valueProperty.ReturnType.GetUnderlyingClass());
 		}
 		
 		public class TestClass<A, B> where A : B {

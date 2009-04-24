@@ -561,6 +561,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		protected IClass GetClassInternal(string typeName, int typeParameterCount, LanguageProperties language)
 		{
+			#if DEBUG
+			if (System.Text.RegularExpressions.Regex.IsMatch (typeName, "`[0-9]+$"))
+				Debug.Assert(false, "how did a Reflection type name get here?");
+			#endif
 			lock (namespaces) {
 				IClass c;
 				if (GetClasses(language).TryGetValue(typeName, out c)) {

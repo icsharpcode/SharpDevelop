@@ -19,12 +19,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string fullName;
 		string shortName;
 		int typeArgumentCount;
+		GetClassOptions options;
 		
-		public GetClassReturnType(IProjectContent content, string fullName, int typeParameterCount)
+		public GetClassReturnType(IProjectContent content, string fullName, int typeArgumentCount)
+			: this(content, fullName, typeArgumentCount, GetClassOptions.Default)
+		{
+		}
+		
+		public GetClassReturnType(IProjectContent content, string fullName, int typeArgumentCount, GetClassOptions options)
 		{
 			this.content = content;
-			this.typeArgumentCount = typeParameterCount;
+			this.typeArgumentCount = typeArgumentCount;
 			SetFullyQualifiedName(fullName);
+			this.options = options;
 		}
 		
 		public override bool IsDefaultReturnType {
@@ -41,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override IReturnType BaseType {
 			get {
-				IClass c = content.GetClass(fullName, typeArgumentCount);
+				IClass c = content.GetClass(fullName, typeArgumentCount, content.Language, options);
 				return (c != null) ? c.DefaultReturnType : null;
 			}
 		}

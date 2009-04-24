@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 18;
+		public const short FileVersion = 19;
 		
 		ProjectContentRegistry registry;
 		string cacheDirectory;
@@ -46,7 +46,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			int pos = assemblyFullName.IndexOf(',');
 			string fileName = Path.Combine(cacheDirectory,
 			                               assemblyFullName.Substring(0, pos)
-			                               + "." + assemblyFullName.GetHashCode().ToString("x", CultureInfo.InvariantCulture)
 			                               + "." + pc.AssemblyLocation.GetHashCode().ToString("x", CultureInfo.InvariantCulture)
 			                               + ".dat");
 			AddFileNameToCacheIndex(Path.GetFileName(fileName), pc);
