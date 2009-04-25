@@ -146,6 +146,29 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
+	public class BuildProjectBeforeExecute : BuildProject
+	{
+		public BuildProjectBeforeExecute(IProject project) : base(project)
+		{
+		}
+		
+		public override void Run()
+		{
+			if (BuildModifiedProjectsOnlyService.Setting == BuildOnExecuteSetting.DoNotBuild) {
+				LastBuildResults = new BuildResults { Result = BuildResultCode.Success };
+				OnBuildComplete(EventArgs.Empty);
+			} else {
+				base.Run();
+			}
+		}
+		
+		public override void StartBuild()
+		{
+			BuildEngine.BuildInGui(BuildModifiedProjectsOnlyService.WrapBuildable(this.ProjectToBuild),
+			                       new BuildOptions(BuildTarget.Build, CallbackMethod));
+		}
+	}
+	
 	public class Rebuild : Build
 	{
 		public override void StartBuild()

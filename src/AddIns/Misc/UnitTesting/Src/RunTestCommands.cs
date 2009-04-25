@@ -397,7 +397,7 @@ namespace ICSharpCode.UnitTesting
 	/// are not cleared from the Errors list before every build since
 	/// we may be running multiple tests after each other.
 	/// </summary>
-	public class BuildProjectBeforeTestRun : BuildProject
+	public class BuildProjectBeforeTestRun : BuildProjectBeforeExecute
 	{
 		public BuildProjectBeforeTestRun(IProject targetProject)
 			: base(targetProject)
