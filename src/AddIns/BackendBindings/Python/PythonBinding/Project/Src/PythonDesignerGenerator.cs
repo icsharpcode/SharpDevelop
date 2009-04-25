@@ -80,7 +80,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void MergeRootComponentChanges(IComponent component)
 		{
-			ParseInformation parseInfo = ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent);			
+			ParseInformation parseInfo = ParseFile();
 			Merge(component, ViewContent.DesignerCodeFileDocument, parseInfo.BestCompilationUnit, textEditorProperties);
 		}
 		
@@ -113,32 +113,35 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
 		{		
-			// Ensure the text editor has the latest version
-			// of the source code before we insert any new code.
-			viewContent.MergeFormChanges();
-			
-			// Insert the event handler at the end of the class with an extra 
-			// new line before it.
-			IDocument doc = viewContent.DesignerCodeFileDocument;
-			string eventHandler = CreateEventHandler(eventMethodName, body, "\t");
-			int line = doc.LineSegmentCollection.Count;
-			LineSegment lastLineSegment = doc.GetLineSegment(line - 1);
-			int offset = lastLineSegment.Offset + lastLineSegment.Length;
-
-			string newContent = "\r\n" + eventHandler;
-			if (lastLineSegment.Length > 0) {
-				// Add an extra new line between the last line and the event handler.
-				newContent = "\r\n" + newContent;
-			}
-			doc.Insert(offset, newContent);
-			
-			// Set position so it points to the line
-			// where the event handler was inserted.
-			position = line + 1;
+			position = GetExistingEventHandler(eventMethodName);
+			if (position == -1) {
+				// Ensure the text editor has the latest version
+				// of the source code before we insert any new code.
+				viewContent.MergeFormChanges();
+				
+				// Insert the event handler at the end of the class with an extra 
+				// new line before it.
+				IDocument doc = viewContent.DesignerCodeFileDocument;
+				string eventHandler = CreateEventHandler(eventMethodName, body, "\t");
+				int line = doc.LineSegmentCollection.Count;
+				LineSegment lastLineSegment = doc.GetLineSegment(line - 1);
+				int offset = lastLineSegment.Offset + lastLineSegment.Length;
 	
+				string newContent = "\r\n" + eventHandler;
+				if (lastLineSegment.Length > 0) {
+					// Add an extra new line between the last line and the event handler.
+					newContent = "\r\n" + newContent;
+				}
+				doc.Insert(offset, newContent);
+				
+				// Set position so it points to the line
+				// where the event handler was inserted.
+				position = line + 1;
+			}
+			
 			// Set the filename so it refers to the form being designed.
 			file = viewContent.DesignerCodeFile.FileName;
-			
+					
 			return true;
 		}
 		
@@ -149,7 +152,7 @@ namespace ICSharpCode.PythonBinding
 		public ICollection GetCompatibleMethods(EventDescriptor edesc)
 		{
 			// Get the form or user control class.
-			ParseInformation parseInfo = ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent);
+			ParseInformation parseInfo = ParseFile();
 			
 			// Look at the form's methods and see which are compatible.
 			ArrayList methods = new ArrayList();
@@ -263,6 +266,30 @@ namespace ICSharpCode.PythonBinding
 				return document.TextLength;
 			} 
 			return document.PositionToOffset(endLocation);
+		}
+		
+		/// <summary>
+		/// Checks if the event handler already exists.
+		/// </summary>
+		/// <returns>The line position of the first line of the existing event handler.</returns>
+		int GetExistingEventHandler(string methodName)
+		{
+			ParseInformation parseInfo = ParseFile();
+			IClass c = GetClass(parseInfo.BestCompilationUnit);
+			foreach (IMethod method in c.Methods) {
+				if ((method.Name == methodName) && (method.Parameters.Count == 2)) {
+					return method.Region.BeginLine;
+				}
+			}
+			return -1;
+		}
+		
+		/// <summary>
+		/// Parses the form or user control being designed.
+		/// </summary>
+		ParseInformation ParseFile()
+		{
+			return ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent);
 		}
 	}
 }

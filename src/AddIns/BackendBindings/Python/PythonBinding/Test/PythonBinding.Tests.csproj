@@ -153,6 +153,8 @@
     <Compile Include="Designer\DeserializeStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeToolStripItemArrayTestFixture.cs" />
     <Compile Include="Designer\EnabledSetUsingPropertyDescriptorTestFixture.cs" />
+    <Compile Include="Designer\EventHandlerAlreadyExistsTestFixture.cs" />
+    <Compile Include="Designer\EventHandlerExistsWithIncorrectParameterCountTestFixture.cs" />
     <Compile Include="Designer\FindAddRangeMethodTests.cs" />
     <Compile Include="Designer\FindInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\GenerateAcceptButtonFormTestFixture.cs" />
@@ -181,6 +183,7 @@
     <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\GetSerializableContentPropertiesTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
+    <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
     <Compile Include="Designer\InsertNewEventHandlerTestFixture.cs" />
     <Compile Include="Designer\InsertSecondEventHandlerTestFixture.cs" />
     <Compile Include="Designer\IsFullyQualifiedBaseClassFormDesignableTestFixture.cs" />

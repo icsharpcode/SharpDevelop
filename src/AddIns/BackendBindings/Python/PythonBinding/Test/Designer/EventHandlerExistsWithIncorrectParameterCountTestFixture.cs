@@ -15,27 +15,23 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	/// <summary>
-	/// Tests the PythonDesignerGenerator adds an extra new line between the previous event handler
-	/// and the new one inserted.
+	/// An event handler should be inserted if a method exists in the form's class but has the incorrect
+	/// number of parameters.
 	/// </summary>
 	[TestFixture]
-	public class InsertSecondEventHandlerTestFixture : InsertEventHandlerTestFixtureBase
+	public class EventHandlerExistsWithIncorrectParameterCountTestFixture : InsertEventHandlerTestFixtureBase
 	{
 		public override void AfterSetUpFixture()
 		{						
 			MockEventDescriptor mockEventDescriptor = new MockEventDescriptor("Click");
-			generator.InsertComponentEvent(null, mockEventDescriptor, "button1_click", String.Empty, out file, out position);
-			insertedEventHandler = generator.InsertComponentEvent(null, mockEventDescriptor, "button2_click", String.Empty, out file, out position);
+			insertedEventHandler = generator.InsertComponentEvent(null, mockEventDescriptor, "mybuttonclick", String.Empty, out file, out position);
 		}
-		
+
 		[Test]
 		public void ExpectedCodeAfterEventHandlerInserted()
 		{
 			string expectedCode = GetTextEditorCode();			
-			string eventHandler = "\tdef button1_click(self, sender, e):\r\n" +
-								"\t\tpass\r\n" +
-								"\r\n" +
-								"\tdef button2_click(self, sender, e):\r\n" +
+			string eventHandler = "\tdef mybuttonclick(self, sender, e):\r\n" +
 								"\t\tpass";
 			expectedCode = expectedCode + "\r\n" + eventHandler;
 			
@@ -52,7 +48,10 @@ namespace PythonBinding.Tests.Designer
 					"\t\r\n" +
 					"\tdef InitializeComponents(self):\r\n" +
 					"\t\tself._button1 = System.Windows.Forms.Button()\r\n" +
-					"\t\tself.Controls.Add(self._button1)\r\n";
-		}
+					"\t\tself._button1.Click += mybuttonclick\r\n" +
+					"\t\r\n" +
+					"\tdef mybuttonclick(self)\r\n" +
+					"\t\tpass\r\n";
+		}		
 	}
 }
