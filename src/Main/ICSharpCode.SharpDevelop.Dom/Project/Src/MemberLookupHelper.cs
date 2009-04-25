@@ -188,12 +188,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		static bool IsInvocable(IMember member)
 		{
+			if (member == null)
+				throw new ArgumentNullException("member");
 			if (member is IMethod || member is IEvent)
 				return true;
 			IProperty p = member as IProperty;
 			if (p != null && p.Parameters.Count > 0)
 				return true;
-			IClass c = member.ReturnType.GetUnderlyingClass();
+			IReturnType returnType = member.ReturnType;
+			if (returnType == null)
+				return false;
+			IClass c = returnType.GetUnderlyingClass();
 			return c != null && c.ClassType == ClassType.Delegate;
 		}
 		
