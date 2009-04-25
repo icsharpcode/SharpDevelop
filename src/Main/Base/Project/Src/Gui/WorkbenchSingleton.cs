@@ -104,20 +104,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Project.CustomToolsService.Initialize();
 			Project.BuildModifiedProjectsOnlyService.Initialize();
 			
-			workbench.MainForm.CreateControl(); // ensure the control is created so Invoke can work
+			workbench.Initialize();
+			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));
+			
+			caller = new STAThreadCaller(workbench.MainForm);
 			WinFormsMessageService.DialogOwner = workbench.MainForm;
 			WinFormsMessageService.DialogSynchronizeInvoke = workbench.MainForm;
 			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(TrackPropertyChanges);
 			ResourceService.LanguageChanged += delegate { workbench.RedrawAllComponents(); };
 			
-			caller = new STAThreadCaller(workbench.MainForm);
-			
-			workbench.Initialize();
-			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));
-			workbench.WorkbenchLayout = layout;
-			
 			ApplicationStateInfoService.RegisterStateGetter(activeContentState, delegate { return WorkbenchSingleton.Workbench.ActiveContent; });
+			
+			// attach workbench layout -> load pads
+			workbench.WorkbenchLayout = layout;
 			
 			OnWorkbenchCreated();
 			
@@ -167,6 +167,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (ctl == null)
 					throw new ArgumentNullException("ctl");
 				this.ctl = ctl;
+				ctl.CreateControl(); // ensure the control is created so Invoke can work
+				// CreateControl() doesn't always force handle creation - fetch the handle once
+				// to ensure it really gets created.
+				IntPtr handle = ctl.Handle;
 			}
 			
 			public object Call(Delegate method, object[] arguments)
@@ -326,7 +330,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				delegate {
 					Timer t = new Timer();
 					t.Interval = delayMilliseconds;
-					t.Tick += delegate { 
+					t.Tick += delegate {
 						t.Stop();
 						t.Dispose();
 						method();
