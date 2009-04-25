@@ -6,10 +6,12 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
-using NUnit.Framework;
+
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
+using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
@@ -29,9 +31,15 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public void TestClasses()
 		{
 			TestClass(typeof(object));
-			TestClass(typeof(Environment.SpecialFolder));
 			TestClass(typeof(Nullable));
 			TestClass(typeof(Nullable<>));
+		}
+		
+		[Test]
+		public void TestNestedClass()
+		{
+			TestClass(typeof(Environment.SpecialFolder));
+			TestClass(typeof(Dictionary<,>.ValueCollection));
 		}
 		
 		void TestMember(string className, string memberName)

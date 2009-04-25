@@ -71,20 +71,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				if (name == null)
 					throw new ApplicationException("type.FullName returned null. Type: " + type.ToString());
 				int typeParameterCount;
-				if (name.IndexOf('+') > 0) {
-					typeParameterCount = 0;
-					StringBuilder newName = new StringBuilder();
-					foreach (string namepart in name.Split('+')) {
-						if (newName.Length > 0)
-							newName.Append('.');
-						int partTypeParameterCount;
-						newName.Append(ReflectionClass.SplitTypeParameterCountFromReflectionName(namepart, out partTypeParameterCount));
-						typeParameterCount += partTypeParameterCount;
-					}
-					name = newName.ToString();
-				} else {
-					name = ReflectionClass.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
-				}
+				name = ReflectionClass.ConvertReflectionNameToFullName(name, out typeParameterCount);
 				if (!createLazyReturnType) {
 					IClass c = pc.GetClass(name, typeParameterCount);
 					if (c != null)

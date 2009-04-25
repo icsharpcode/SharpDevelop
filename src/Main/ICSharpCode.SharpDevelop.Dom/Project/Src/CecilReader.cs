@@ -162,8 +162,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						string name = td.FullName;
 						if (name.Length == 0 || name[0] == '<')
 							continue;
-						if (name.Length > 2 && name[name.Length - 2] == '`')
-							name = name.Substring(0, name.Length - 2);
+						name = ReflectionClass.SplitTypeParameterCountFromReflectionName(name);
 						AddClassToNamespaceListInternal(new CecilClass(this.AssemblyCompilationUnit, null, td, name));
 					}
 				}

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
@@ -121,6 +122,24 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 					return reflectionName.Substring(0, pos);
 				else
 					return reflectionName;
+			}
+		}
+		
+		public static string ConvertReflectionNameToFullName(string reflectionName, out int typeParameterCount)
+		{
+			if (reflectionName.IndexOf('+') > 0) {
+				typeParameterCount = 0;
+				StringBuilder newName = new StringBuilder();
+				foreach (string namepart in reflectionName.Split('+')) {
+					if (newName.Length > 0)
+						newName.Append('.');
+					int partTypeParameterCount;
+					newName.Append(SplitTypeParameterCountFromReflectionName(namepart, out partTypeParameterCount));
+					typeParameterCount += partTypeParameterCount;
+				}
+				return newName.ToString();
+			} else {
+				return SplitTypeParameterCountFromReflectionName(reflectionName, out typeParameterCount);
 			}
 		}
 		

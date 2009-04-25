@@ -264,16 +264,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override string DotNetName {
 			get {
 				string fullName;
+				int typeParametersCount = this.TypeParameters.Count;
 				if (this.DeclaringType != null) {
 					fullName = this.DeclaringType.DotNetName + "+" + this.Name;
+					typeParametersCount -= this.DeclaringType.TypeParameters.Count;
 				} else {
 					fullName = this.FullyQualifiedName;
 				}
-				IList<ITypeParameter> typeParameters = this.TypeParameters;
-				if (typeParameters == null || typeParameters.Count == 0) {
+				if (typeParametersCount == 0) {
 					return fullName;
 				} else {
-					return fullName + "`" + typeParameters.Count;
+					return fullName + "`" + typeParametersCount;
 				}
 			}
 		}

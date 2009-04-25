@@ -867,15 +867,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (className == null)
 				throw new ArgumentNullException("className");
-			className = className.Replace('+', '.');
-			if (className.Length > 2 && className[className.Length - 2] == '`') {
-				int typeParameterCount = className[className.Length - 1] - '0';
-				if (typeParameterCount < 0) typeParameterCount = 0;
-				className = className.Substring(0, className.Length - 2);
-				return GetClass(className, typeParameterCount, LanguageProperties.CSharp, GetClassOptions.Default);
-			} else {
-				return GetClass(className, 0, LanguageProperties.CSharp, GetClassOptions.Default);
-			}
+			int typeParameterCount;
+			className = ReflectionLayer.ReflectionClass.ConvertReflectionNameToFullName(className, out typeParameterCount);
+			GetClassOptions options = GetClassOptions.Default;
+			if (!lookInReferences)
+				options &= ~GetClassOptions.LookInReferences;
+			return GetClass(className, typeParameterCount, LanguageProperties.CSharp, options);
 		}
 		
 		/// <summary>
