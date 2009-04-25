@@ -110,13 +110,13 @@ namespace Grunwald.BooBinding.Designer
 			System.Diagnostics.Debug.Assert(FileUtility.IsEqualFileName(initMethod.DeclaringType.CompilationUnit.FileName, this.Generator.ViewContent.DesignerCodeFile.FileName));
 			
 			foreach (IField f in formClass.Fields) {
+				Field field = new Field();
+				field.Name = f.Name;
 				if (f.ReturnType.IsDefaultReturnType) {
-					Field field = new Field();
-					field.Name = f.Name;
 					field.Type = new SimpleTypeReference(f.ReturnType.FullyQualifiedName);
-					field.Modifiers = CodeCompletion.ConvertVisitor.ConvertVisibilityBack(f.Modifiers);
-					cld.Members.Add(field);
 				}
+				field.Modifiers = CodeCompletion.ConvertVisitor.ConvertVisibilityBack(f.Modifiers);
+				cld.Members.Add(field);
 			}
 			
 			// Now find InitializeComponent in parsed module and put it into our new module
