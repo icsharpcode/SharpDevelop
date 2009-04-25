@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public abstract class AbstractPadContent : IPadContent
 	{
-		public abstract object Content {
+		public abstract object Control {
 			get;
 		}
 		

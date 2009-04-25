@@ -108,10 +108,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
+		[Obsolete("This property does not do what one would expect - it merely checks if protected+internal are set, it is not the equivalent of AssemblyAndFamily in Reflection!")]
 		bool IsProtectedAndInternal {
 			get;
 		}
 
+		[Obsolete("This property does not do what one would expect - it merely checks if one of protected+internal is set, it is not the equivalent of AssemblyOrFamily in Reflection!")]
 		bool IsProtectedOrInternal {
 			get;
 		}

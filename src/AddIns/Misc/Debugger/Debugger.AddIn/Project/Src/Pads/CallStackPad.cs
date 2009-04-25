@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		ColumnHeader name     = new ColumnHeader();
 		ColumnHeader language = new ColumnHeader();
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return callStackList;
 			}

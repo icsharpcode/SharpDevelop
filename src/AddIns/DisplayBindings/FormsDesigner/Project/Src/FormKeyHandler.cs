@@ -75,7 +75,7 @@ namespace ICSharpCode.FormsDesigner
 			if (formDesigner == null || formDesigner.Host == null) {
 				return false;
 			}
-			if (!((Control)formDesigner.Content).ContainsFocus)
+			if (!((Control)formDesigner.Control).ContainsFocus)
 				return false;
 			
 			Keys keyPressed = (Keys)m.WParam.ToInt32() | Control.ModifierKeys;

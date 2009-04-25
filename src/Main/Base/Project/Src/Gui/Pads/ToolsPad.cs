@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		ContentControl contentControl = new ContentControl();
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return contentControl;
 			}

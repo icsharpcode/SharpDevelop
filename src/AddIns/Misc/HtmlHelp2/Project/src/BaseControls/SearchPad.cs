@@ -47,7 +47,7 @@ namespace HtmlHelp2
 		Label label2               = new Label();
 		bool searchIsBusy;
 
-		public override object Content
+		public override object Control
 		{
 			get { return mainPanel; }
 		}

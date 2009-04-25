@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		/// <remarks>
 		/// This is not used anywhere, but it is neccessary to be overridden in children of AbstractPadContent.
 		/// </remarks>
-		public override object Content {
+		public override object Control {
 			get {
 				return watchList;
 			}

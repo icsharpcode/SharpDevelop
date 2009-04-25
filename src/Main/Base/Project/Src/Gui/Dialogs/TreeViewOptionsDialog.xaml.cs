@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						optionPanel.LoadOptions();
 						dialog.optionPanels.Add(optionPanel);
 					}
-					return optionPanel.Content;
+					return optionPanel.Control;
 				}
 			}
 			

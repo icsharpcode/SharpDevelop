@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				placeholder.IsVisibleChanged -= AvalonPadContent_IsVisibleChanged;
 				padInstance = descriptor.PadContent;
 				if (padInstance != null) {
-					this.SetContent(padInstance.Content, padInstance);
+					this.SetContent(padInstance.Control, padInstance);
 					placeholder = null;
 				}
 			}

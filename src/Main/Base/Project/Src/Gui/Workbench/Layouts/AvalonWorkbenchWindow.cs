@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				window.RegisterNewContent(item);
 				
 				if (Count == 1) {
-					window.SetContent(item.Content, item);
+					window.SetContent(item.Control, item);
 				} else {
 					if (Count == 2) {
 						window.CreateViewTabControl();
@@ -129,13 +129,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 						
 						TabItem oldPage = new TabItem();
 						oldPage.Header = StringParser.Parse(oldItem.TabPageText);
-						oldPage.SetContent(oldItem.Content, oldItem);
+						oldPage.SetContent(oldItem.Control, oldItem);
 						window.viewTabControl.Items.Add(oldPage);
 					}
 					
 					TabItem newPage = new TabItem();
 					newPage.Header = StringParser.Parse(item.TabPageText);
-					newPage.SetContent(item.Content, item);
+					newPage.SetContent(item.Control, item);
 					
 					window.viewTabControl.Items.Insert(index, newPage);
 				}
@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (Count < 2) {
 					window.ClearContent();
 					if (Count == 1) {
-						window.SetContent(this[0].Content, this[0]);
+						window.SetContent(this[0].Control, this[0]);
 					}
 				} else {
 					window.viewTabControl.Items.RemoveAt(index);
@@ -169,10 +169,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				if (Count == 1) {
 					window.ClearContent();
-					window.SetContent(item.Content, item);
+					window.SetContent(item.Control, item);
 				} else {
 					TabItem page = (TabItem)window.viewTabControl.Items[index];
-					page.SetContent(item.Content, item);
+					page.SetContent(item.Control, item);
 					page.Header = StringParser.Parse(item.TabPageText);
 				}
 				window.UpdateActiveViewContent();

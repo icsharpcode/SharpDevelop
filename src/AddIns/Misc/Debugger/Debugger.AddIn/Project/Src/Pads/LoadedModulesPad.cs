@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		ColumnHeader information = new ColumnHeader();
 			
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return loadedModulesList;
 			}

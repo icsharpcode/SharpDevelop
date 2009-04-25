@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			{
 				this.Text = StringParser.Parse(desc.Title);
 				
-				Control ctl = desc.PadContent.Content;
+				Control ctl = desc.PadContent.Control;
 				ctl.Dock = DockStyle.Fill;
 				Controls.Add(ctl);
 			}
@@ -326,9 +326,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					
 					window.RegisterNewContent(item);
 					
-					item.Content.Dock = DockStyle.Fill;
+					item.Control.Dock = DockStyle.Fill;
 					if (Count == 1) {
-						window.Controls.Add(item.Content);
+						window.Controls.Add(item.Control);
 					} else {
 						if (Count == 2) {
 							window.CreateViewTabControl();
@@ -336,12 +336,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 							if (oldItem == item) oldItem = this[1];
 							
 							TabPage oldPage = new TabPage(StringParser.Parse(oldItem.TabPageText));
-							oldPage.Controls.Add(oldItem.Content);
+							oldPage.Controls.Add(oldItem.Control);
 							window.viewTabControl.TabPages.Add(oldPage);
 						}
 						
 						TabPage newPage = new TabPage(StringParser.Parse(item.TabPageText));
-						newPage.Controls.Add(item.Content);
+						newPage.Controls.Add(item.Control);
 						
 						// Work around bug in TabControl: TabPages.Insert has no effect if inserting at end
 						if (index == window.viewTabControl.TabPages.Count) {
@@ -362,7 +362,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (Count < 2) {
 						window.ClearContent();
 						if (Count == 1) {
-							window.Controls.Add(this[0].Content);
+							window.Controls.Add(this[0].Control);
 						}
 					} else {
 						window.viewTabControl.TabPages.RemoveAt(index);
@@ -378,14 +378,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 					
 					window.RegisterNewContent(item);
 					
-					item.Content.Dock = DockStyle.Fill;
+					item.Control.Dock = DockStyle.Fill;
 					if (Count == 1) {
 						window.ClearContent();
-						window.Controls.Add(item.Content);
+						window.Controls.Add(item.Control);
 					} else {
 						TabPage page = window.viewTabControl.TabPages[index];
 						page.Controls.Clear();
-						page.Controls.Add(item.Content);
+						page.Controls.Add(item.Control);
 						page.Text = StringParser.Parse(item.TabPageText);
 					}
 					window.UpdateActiveViewContent();

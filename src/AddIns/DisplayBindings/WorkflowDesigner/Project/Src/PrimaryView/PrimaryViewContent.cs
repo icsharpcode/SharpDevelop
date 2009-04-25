@@ -37,7 +37,7 @@ namespace WorkflowDesigner
 			
 		}
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return control;
 			}

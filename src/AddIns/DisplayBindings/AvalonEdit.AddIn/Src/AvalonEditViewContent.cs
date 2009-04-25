@@ -43,7 +43,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return codeEditor; }
 		}
 		
-		public override object Content {
+		public override object Control {
 			get { return codeEditor; }
 		}
 		

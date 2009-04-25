@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						ICanBeDirty dirty = optionPanel as ICanBeDirty;
 						if (dirty != null)
 							dirty.IsDirtyChanged += options.OnIsDirtyChanged;
-						this.SetContent(optionPanel.Content);
+						this.SetContent(optionPanel.Control);
 					}
 				}
 			}

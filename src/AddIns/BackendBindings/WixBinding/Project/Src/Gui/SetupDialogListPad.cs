@@ -45,7 +45,7 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 	
-		public override object Content {
+		public override object Control {
 			get {
 				return setupDialogListView;
 			}

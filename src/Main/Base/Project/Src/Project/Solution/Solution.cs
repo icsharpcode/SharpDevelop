@@ -770,7 +770,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		internal class ProjectConfigurationPlatformMatching
+		internal sealed class ProjectConfigurationPlatformMatching
 		{
 			public readonly IProject Project;
 			public string Configuration;
@@ -1191,6 +1191,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			// building a solution finishes immediately: we only care for the dependencies
 			feedbackSink.Done(true);
+		}
+		
+		ProjectBuildOptions IBuildable.CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+		{
+			return null;
 		}
 		#endregion
 		

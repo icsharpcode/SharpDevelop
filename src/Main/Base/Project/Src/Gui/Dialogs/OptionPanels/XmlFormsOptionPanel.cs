@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	{
 		public object Owner { get; set; }
 		
-		public object Content {
+		public object Control {
 			get {
 				return this;
 			}

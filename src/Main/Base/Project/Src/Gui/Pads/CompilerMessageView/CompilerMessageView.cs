@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return myPanel;
 			}
@@ -342,7 +342,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (fullText.Length > 0) {
 				//int line = textEditorControl.ActiveTextAreaControl.Caret.Line;
 				//string textLine = TextUtilities.GetLineAsString(textEditorControl.Document, line);
-				Point clickPos = textEditorControl.PointToClient(Control.MousePosition);
+				Point clickPos = textEditorControl.PointToClient(System.Windows.Forms.Control.MousePosition);
 				int index = textEditorControl.GetCharIndexFromPosition(clickPos);
 				int start = index;
 				// find start of current line

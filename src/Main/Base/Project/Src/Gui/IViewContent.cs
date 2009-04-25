@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// This is the UI element for the view.
 		/// You can use both Windows.Forms and WPF controls.
 		/// </summary>
-		object Content {
+		object Control {
 			get;
 		}
 		

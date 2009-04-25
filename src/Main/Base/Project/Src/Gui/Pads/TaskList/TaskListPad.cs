@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return contentPanel;
 			}
@@ -76,8 +76,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (WorkbenchSingleton.Workbench.ActiveViewContent != null) {
 				UpdateItems();
 				
-				if (WorkbenchSingleton.Workbench.ActiveViewContent.Content is SharpDevelopTextAreaControl) {
-					SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Content as SharpDevelopTextAreaControl;
+				if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is SharpDevelopTextAreaControl) {
+					SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control as SharpDevelopTextAreaControl;
 					
 					ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(CaretPositionChanged);
 				}
@@ -103,8 +103,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (isInitialized)
 				UpdateItems();
 			
-			if (WorkbenchSingleton.Workbench.ActiveViewContent.Content is SharpDevelopTextAreaControl) {
-				SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Content as SharpDevelopTextAreaControl;
+			if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is SharpDevelopTextAreaControl) {
+				SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control as SharpDevelopTextAreaControl;
 				
 				ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(CaretPositionChanged);
 			}

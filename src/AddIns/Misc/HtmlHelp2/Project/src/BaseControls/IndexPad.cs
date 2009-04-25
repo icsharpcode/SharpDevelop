@@ -33,7 +33,7 @@ namespace HtmlHelp2
 	{
 		MSHelp2IndexControl help2IndexControl;
 
-		public override object Content
+		public override object Control
 		{
 			get { return help2IndexControl;	}
 		}

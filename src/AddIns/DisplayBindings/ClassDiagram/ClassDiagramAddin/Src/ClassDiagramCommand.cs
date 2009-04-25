@@ -18,7 +18,7 @@ namespace ClassDiagramAddin
 	{
 		protected ClassCanvas Canvas
 		{
-			get { return (ClassCanvas)((ClassDiagramViewContent)this.Owner).Content; }
+			get { return (ClassCanvas)((ClassDiagramViewContent)this.Owner).Control; }
 		}
 	}
 	

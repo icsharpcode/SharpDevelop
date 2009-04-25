@@ -31,7 +31,7 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 			panel = new GeneralOptionsPanel();
 		}
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return panel;
 			}

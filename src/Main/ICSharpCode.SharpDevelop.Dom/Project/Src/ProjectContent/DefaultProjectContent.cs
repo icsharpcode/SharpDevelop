@@ -748,12 +748,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return GetNamespaces(language).ContainsKey(name);
 		}
 		
-		
-		public string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
-		{
-			return SearchType(new SearchTypeRequest(name, 0, curType, unit, caretLine, caretColumn)).NamespaceResult;
-		}
-		
 		bool MatchesRequest(ref SearchTypeRequest request, ref SearchTypeResult result)
 		{
 			if (result.NamespaceResult != null)

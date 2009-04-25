@@ -27,10 +27,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		ProfilingDataProvider provider;
 		ProfilerView dataView;
 		
-		/// <summary>
-		/// The <see cref="System.Windows.Forms.Control"/> representing the view
-		/// </summary>
-		public override object Content {
+		public override object Control {
 			get {
 				return dataView;
 			}

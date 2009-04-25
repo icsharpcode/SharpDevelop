@@ -96,9 +96,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences);
 		
-		[Obsolete]
-		string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
-		
 		SearchTypeResult SearchType(SearchTypeRequest request);
 		
 		/// <summary>

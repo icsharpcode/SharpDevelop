@@ -34,7 +34,7 @@ namespace WorkflowDesigner
 		#endregion
 		
 		#region Property Accessors
-		public override object Content {
+		public override object Control {
 			get {
 				return control;
 			}

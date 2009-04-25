@@ -142,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return textEditorControl;
 			}

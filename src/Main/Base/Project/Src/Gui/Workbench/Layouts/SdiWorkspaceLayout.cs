@@ -389,7 +389,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					IPadContent content = padDescriptor.PadContent;
 					if (content == null)
 						return;
-					Control control = content.Content;
+					Control control = content.Control;
 					control.Dock = DockStyle.Fill;
 					Controls.Add(control);
 				}
@@ -564,7 +564,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return oldSdiWindow;
 				}
 			}
-			content.Content.Dock = DockStyle.Fill;
+			content.Control.Dock = DockStyle.Fill;
 			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow();
 			sdiWorkspaceWindow.ViewContents.Add(content);
 			sdiWorkspaceWindow.ViewContents.AddRange(content.SecondaryViewContents);

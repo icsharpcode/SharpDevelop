@@ -260,6 +260,11 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 			throw new NotImplementedException();
 		}
 		
+		public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+		{
+			throw new NotImplementedException();
+		}
+		
 		public void Dispose()
 		{
 			throw new NotImplementedException();

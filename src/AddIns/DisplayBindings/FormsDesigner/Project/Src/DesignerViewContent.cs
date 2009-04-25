@@ -520,7 +520,7 @@ namespace ICSharpCode.FormsDesigner
 				designView.RightToLeft = RightToLeft.No;
 				// Make sure auto-scaling is based on the correct font.
 				// This is required on Vista, I don't know why it works correctly in XP
-				designView.Font = Control.DefaultFont;
+				designView.Font = System.Windows.Forms.Control.DefaultFont;
 				
 				this.UserContent = designView;
 				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + this.designSurface.ToString());

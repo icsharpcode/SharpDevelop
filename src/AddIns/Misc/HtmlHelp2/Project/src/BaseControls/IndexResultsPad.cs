@@ -32,7 +32,7 @@ namespace HtmlHelp2
 		ColumnHeader title        = new ColumnHeader();
 		ColumnHeader location     = new ColumnHeader();
 
-		public override object Content
+		public override object Control
 		{
 			get { return listView; }
 		}

@@ -19,7 +19,7 @@ namespace ICSharpCode.IconEditorAddIn
 	{
 		EditorPanel editor = new EditorPanel();
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return editor;
 			}

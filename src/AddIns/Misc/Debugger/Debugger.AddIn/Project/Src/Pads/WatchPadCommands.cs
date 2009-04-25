@@ -17,7 +17,7 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				TreeViewAdv ctrl = (TreeViewAdv)pad.Content;
+				TreeViewAdv ctrl = (TreeViewAdv)pad.Control;
 				
 				string input = MessageService.ShowInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"),
 				                                           StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"),
@@ -44,18 +44,18 @@ namespace Debugger.AddIn
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
 
-				TreeNodeAdv node = ((TreeViewAdv)pad.Content).SelectedNode;
+				TreeNodeAdv node = ((TreeViewAdv)pad.Control).SelectedNode;
 				
 				if (node == null)
 					return;
 				
-				while (node.Parent != ((TreeViewAdv)pad.Content).Root)
+				while (node.Parent != ((TreeViewAdv)pad.Control).Root)
 				{
 					node = node.Parent;
 				}
 				
 				pad.Watches.RemoveAt(node.Index);
-				((TreeViewAdv)pad.Content).Root.Children.Remove(node);
+				((TreeViewAdv)pad.Control).Root.Children.Remove(node);
 				
 				((WatchPad)this.Owner).RefreshPad();
 			}
@@ -79,10 +79,10 @@ namespace Debugger.AddIn
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
 				
-				((TreeViewAdv)pad.Content).BeginUpdate();
+				((TreeViewAdv)pad.Control).BeginUpdate();
 				pad.Watches.Clear();
-				((TreeViewAdv)pad.Content).Root.Children.Clear();
-				((TreeViewAdv)pad.Content).EndUpdate();
+				((TreeViewAdv)pad.Control).Root.Children.Clear();
+				((TreeViewAdv)pad.Control).EndUpdate();
 			}
 		}
 	}

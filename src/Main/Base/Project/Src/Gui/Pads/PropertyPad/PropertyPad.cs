@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static event EventHandler SelectedObjectChanged;
 		public static event SelectedGridItemChangedEventHandler SelectedGridItemChanged;
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return contentControl;
 			}

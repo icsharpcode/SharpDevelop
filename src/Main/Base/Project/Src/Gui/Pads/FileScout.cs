@@ -325,14 +325,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class FileScout : UserControl, IPadContent
 	{
-		public object Content {
+		public object Control {
 			get {
 				return this;
 			}
-		}
-		
-		public void RedrawContent()
-		{
 		}
 		
 		Splitter      splitter1     = new Splitter();

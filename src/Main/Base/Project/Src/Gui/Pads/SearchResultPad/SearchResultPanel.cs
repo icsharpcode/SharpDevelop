@@ -50,7 +50,7 @@ namespace SearchAndReplace
 		string curPattern = null;
 		IList<SearchResultMatch> curResults = null;
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return myPanel;
 			}

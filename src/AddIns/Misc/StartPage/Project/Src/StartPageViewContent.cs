@@ -15,7 +15,7 @@ namespace ICSharpCode.StartPage
 	{
 		StartPageControl content = new StartPageControl();
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return content;
 			}

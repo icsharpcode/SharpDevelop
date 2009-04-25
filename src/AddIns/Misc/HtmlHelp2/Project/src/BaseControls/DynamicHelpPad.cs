@@ -43,7 +43,7 @@ namespace HtmlHelp2
 		private string debugPreElement              = String.Empty;
 		private bool enableDebugInfo                = HtmlHelp2Environment.Config.DynamicHelpDebugInfos;
 
-		public override object Content
+		public override object Control
 		{
 			get { return dynamicHelpBrowser; }
 		}

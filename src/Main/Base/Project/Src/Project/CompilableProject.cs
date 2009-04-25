@@ -231,23 +231,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				return text;
 		}
 		
-		[Obsolete("Override CreateStartInfo instead of using Start()")]
-		protected void Start(string program, bool withDebugging)
-		{
-			ProcessStartInfo psi;
-			try {
-				psi = CreateStartInfo();
-			} catch (ProjectStartException ex) {
-				MessageService.ShowError(ex.Message);
-				return;
-			}
-			if (withDebugging) {
-				DebuggerService.CurrentDebugger.Start(psi);
-			} else {
-				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
-			}
-		}
-		
 		/// <summary>
 		/// Creates a <see cref="ProcessStartInfo"/> for the specified program, using
 		/// arguments and working directory from the project options.

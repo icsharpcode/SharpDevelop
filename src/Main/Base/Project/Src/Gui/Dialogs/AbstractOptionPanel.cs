@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public virtual object Owner { get; set; }
 		
-		public abstract object Content { get; }
+		public abstract object Control { get; }
 		public abstract void LoadOptions();
 		public abstract bool SaveOptions();
 	}

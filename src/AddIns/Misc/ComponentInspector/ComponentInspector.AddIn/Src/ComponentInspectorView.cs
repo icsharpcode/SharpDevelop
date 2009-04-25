@@ -45,7 +45,7 @@ namespace ICSharpCode.ComponentInspector.AddIn
 			}
 		}
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return objectBrowser;
 			}

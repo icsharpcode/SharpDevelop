@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			}
 		}
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return htmlViewPane;
 			}

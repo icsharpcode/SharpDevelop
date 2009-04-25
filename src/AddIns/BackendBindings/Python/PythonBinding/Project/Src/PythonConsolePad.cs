@@ -29,7 +29,7 @@ namespace ICSharpCode.PythonBinding
 			host.Run();			
 		}
 		
-		public override object Content {
+		public override object Control {
 			get { return textEditorControl; }
 		}		
 		

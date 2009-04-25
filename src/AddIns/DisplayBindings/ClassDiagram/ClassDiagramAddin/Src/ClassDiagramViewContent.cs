@@ -43,7 +43,7 @@ namespace ClassDiagramAddin
 			canvas.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/ViewContent/ClassDiagram/ContextMenu");
 		}
 		
-		public override object Content {
+		public override object Control {
 			get { return canvas; }
 		}
 

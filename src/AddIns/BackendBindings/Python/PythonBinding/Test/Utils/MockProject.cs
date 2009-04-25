@@ -310,6 +310,11 @@ namespace PythonBinding.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 	}
 }

@@ -513,5 +513,34 @@ namespace ICSharpCode.SharpDevelop.Project
 				return result;
 			}
 		}
+		
+		public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+		{
+			if (options == null)
+				throw new ArgumentNullException("options");
+			// start of default implementation
+			var configMatchings = this.ParentSolution.GetActiveConfigurationsAndPlatformsForProjects(options.SolutionConfiguration, options.SolutionPlatform);
+			ProjectBuildOptions projectOptions = new ProjectBuildOptions(isRootBuildable ? options.ProjectTarget : options.TargetForDependencies);
+			// find the project configuration
+			foreach (var matching in configMatchings) {
+				if (matching.Project == this) {
+					projectOptions.Configuration = matching.Configuration;
+					projectOptions.Platform = matching.Platform;
+				}
+			}
+			if (string.IsNullOrEmpty(projectOptions.Configuration))
+				projectOptions.Configuration = options.SolutionConfiguration;
+			if (string.IsNullOrEmpty(projectOptions.Platform))
+				projectOptions.Platform = options.SolutionPlatform;
+			
+			// copy properties to project options
+			options.GlobalAdditionalProperties.ForEach(projectOptions.Properties.Add);
+			if (isRootBuildable) {
+				foreach (var pair in options.ProjectAdditionalProperties) {
+					projectOptions.Properties[pair.Key] = pair.Value;
+				}
+			}
+			return projectOptions;
+		}
 	}
 }

@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		object Owner { get; set; }
 		
-		object Content {
+		object Control {
 			get;
 		}
 		

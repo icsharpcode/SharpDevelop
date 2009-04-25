@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		sealed class DummyBuildable : IBuildable2
+		sealed class DummyBuildable : IBuildable
 		{
 			IBuildable wrappedBuildable;
 			
@@ -183,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		sealed class Wrapper : IBuildable2
+		sealed class Wrapper : IBuildable
 		{
 			internal readonly IBuildable wrapped;
 			internal readonly WrapperFactory factory;

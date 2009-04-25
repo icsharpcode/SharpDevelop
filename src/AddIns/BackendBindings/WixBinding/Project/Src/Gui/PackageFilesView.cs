@@ -31,7 +31,7 @@ namespace ICSharpCode.WixBinding
 		WixProject project;
 		bool reload;
 
-		public override object Content {
+		public override object Control {
 			get {
 				return packageFilesControl;
 			}

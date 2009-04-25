@@ -16,7 +16,7 @@ namespace AddInScout
 	{
 		Control control = null;
 		
-		public override object Content {
+		public override object Control {
 			get {
 				return control;
 			}
