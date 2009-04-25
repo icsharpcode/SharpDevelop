@@ -39,7 +39,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void ColorTypeResolved()
 		{
-			Assert.AreEqual("System.Drawing.Color", LastTypeNameResolved);
+			Assert.AreEqual("System.Drawing.Color", componentCreator.LastTypeNameResolved);
 		}
 	}
 }

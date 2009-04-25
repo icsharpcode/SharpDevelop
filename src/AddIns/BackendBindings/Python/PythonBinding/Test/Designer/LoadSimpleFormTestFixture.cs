@@ -35,7 +35,7 @@ namespace PythonBinding.Tests.Designer
 		}
 				
 		public CreatedComponent FormComponent {
-			get { return CreatedComponents[0]; }
+			get { return ComponentCreator.CreatedComponents[0]; }
 		}
 		
 		[Test]
@@ -53,7 +53,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void OneComponentCreated()
 		{
-			Assert.AreEqual(1, CreatedComponents.Count);
+			Assert.AreEqual(1, ComponentCreator.CreatedComponents.Count);
 		}
 		
 		[Test]
@@ -82,13 +82,13 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void TypeNameLookedUp()
 		{
-			Assert.AreEqual("System.Drawing.Size", TypeNames[0]);
+			Assert.AreEqual("System.Drawing.Size", ComponentCreator.TypeNames[0]);
 		}
 
 		[Test]
 		public void OneObjectCreated()
 		{
-			Assert.AreEqual(1, CreatedInstances.Count);
+			Assert.AreEqual(1, ComponentCreator.CreatedInstances.Count);
 		}
 		
 		[Test]
@@ -101,7 +101,7 @@ namespace PythonBinding.Tests.Designer
 			args.Add(height);
 			
 			CreatedInstance expectedInstance = new CreatedInstance(typeof(Size), args, null, false);
-			Assert.AreEqual(expectedInstance, CreatedInstances[0]);
+			Assert.AreEqual(expectedInstance, ComponentCreator.CreatedInstances[0]);
 		}		
 	}
 }

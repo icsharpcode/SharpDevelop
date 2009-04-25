@@ -67,7 +67,7 @@ namespace PythonBinding.Tests.Designer
 			
 			designedForm = new Form();
 			designedForm.Name = "NewMainForm";
-			mockDesignerLoaderHost.RootComponent = designedForm;
+			mockDesignerLoaderHost.RootComponent = designedForm;			
 			loader.CallPerformFlush();
 		}
 		
@@ -89,11 +89,11 @@ namespace PythonBinding.Tests.Designer
 		public void CreateComponent()
 		{			
 			List<CreatedComponent> expectedCreatedComponents = new List<CreatedComponent>();
-			expectedCreatedComponents.Add(new CreatedComponent(typeof(Form).FullName, "MainForm"));
+			expectedCreatedComponents.Add(new CreatedComponent(typeof(Form).FullName, "MainForm", null));
 			                              
 			Assert.AreEqual(expectedCreatedComponents, mockDesignerLoaderHost.CreatedComponents);
 		}
-		
+				
 		[Test]
 		public void ComponentSerializationServiceCreated()
 		{

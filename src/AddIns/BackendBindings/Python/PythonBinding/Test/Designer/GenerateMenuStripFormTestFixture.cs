@@ -48,7 +48,7 @@ namespace PythonBinding.Tests.Designer
 				menuStrip.Location = new Point(0, 0);
 				form.Controls.Add(menuStrip);
 				
-				PythonForm pythonForm = new PythonForm("    ");
+				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 			}
 		}
@@ -71,8 +71,8 @@ namespace PythonBinding.Tests.Designer
 								"    # MainForm\r\n" +
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
-								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Controls.Add(self._menuStrip1)\r\n" +
+								"    self.Name = \"MainForm\"\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

@@ -21,25 +21,25 @@ namespace PythonBinding.Tests.Designer
 	/// Base class for all tests of the PythonCodeDeserialize when deserializing an 
 	/// assignment.
 	/// </summary>
-	public abstract class DeserializeAssignmentTestFixtureBase : LoadFormTestFixtureBase
+	public abstract class DeserializeAssignmentTestFixtureBase
 	{
 		protected Node rhsAssignmentNode;
 		protected object deserializedObject;
 		protected MockDesignerLoaderHost mockDesignerLoaderHost;
 		protected MockTypeResolutionService typeResolutionService;
+		protected MockComponentCreator componentCreator;
 		
 		[TestFixtureSetUp]
-		public new void SetUpFixture()
+		public void SetUpFixture()
 		{
-			PythonParser parser = new PythonParser();
-			PythonAst ast = parser.CreateAst(@"snippet.py", GetPythonCode());
-			SuiteStatement suiteStatement = (SuiteStatement)ast.Body;
-			AssignmentStatement assignment = suiteStatement.Statements[0] as AssignmentStatement;
+			componentCreator = new MockComponentCreator();
+
+			AssignmentStatement assignment = PythonParserHelper.GetAssignmentStatement(GetPythonCode());
 			rhsAssignmentNode = assignment.Right;
 			
 			mockDesignerLoaderHost = new MockDesignerLoaderHost();
 			typeResolutionService = mockDesignerLoaderHost.TypeResolutionService;
-			PythonCodeDeserializer deserializer = new PythonCodeDeserializer(this);
+			PythonCodeDeserializer deserializer = new PythonCodeDeserializer(componentCreator);
 			deserializedObject = deserializer.Deserialize(rhsAssignmentNode);
 		}
 		

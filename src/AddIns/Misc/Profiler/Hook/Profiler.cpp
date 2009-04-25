@@ -150,9 +150,8 @@ ASSEMBLER_CALLBACK FunctionLeaveGlobal()
 ASSEMBLER_CALLBACK FunctionTailcallGlobal()
 {
 	DebugWriteLine(L"FunctionTailcallGlobal");
-	// For now, handle tail calls A->B as leave A, enter B, ...
+	// handle tail calls A->B as leave A, enter B, ...
 	FunctionLeaveGlobal();
-	// TODO: handle tail calls A->B as enter B, ..., leave B, leave A
 	
 	// FunctionTailcallGlobal call will be followed by FunctionEnterGlobal for new function
 }

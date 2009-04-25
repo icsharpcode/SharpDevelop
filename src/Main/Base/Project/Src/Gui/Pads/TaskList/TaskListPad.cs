@@ -85,8 +85,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ProjectService.SolutionLoaded += OnSolutionOpen;
 			ProjectService.SolutionClosed += OnSolutionClosed;
+			ProjectService.CurrentProjectChanged += ProjectServiceCurrentProjectChanged;
 			
 			this.isInitialized = true;
+		}
+
+		void ProjectServiceCurrentProjectChanged(object sender, ProjectEventArgs e)
+		{
+			if (isInitialized)
+				UpdateItems();
 		}
 
 		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
@@ -122,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				UpdateItems();
 		}
 		
-		private void InitializeToolStrip()
+		void InitializeToolStrip()
 		{
 			taskView.CreateControl();
 			

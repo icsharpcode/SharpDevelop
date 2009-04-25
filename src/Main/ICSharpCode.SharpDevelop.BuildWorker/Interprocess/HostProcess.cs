@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 		
 		internal const int SendKeepAliveInterval = 10000;
 		
-		public void WorkerProcessMain(string argument)
+		public void WorkerProcessMain(string argument, string passwordBase64)
 		{
 			int port = int.Parse(argument, CultureInfo.InvariantCulture);
 			
@@ -54,6 +54,9 @@ namespace ICSharpCode.SharpDevelop.BuildWorker.Interprocess
 			receiver.ConnectionLost += OnConnectionLost;
 			receiver.PacketReceived += OnPacketReceived;
 			sender.WriteFailed += OnConnectionLost;
+			
+			// send password
+			sender.Send(Convert.FromBase64String(passwordBase64));
 			
 			receiver.StartReceive(stream);
 			while (!shutdownEvent.WaitOne(SendKeepAliveInterval, false)) {

@@ -22,6 +22,8 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateAcceptButtonFormTestFixture
 	{
 		string generatedPythonCode;
+		object[] formChildComponents;
+		object[] buttonChildComponents;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -46,8 +48,11 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 				namePropertyDescriptor.SetValue(form, "MainForm");
 				
-				PythonForm pythonForm = new PythonForm("    ");
+				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
+				
+				formChildComponents = PythonControl.GetChildComponents(form);
+				buttonChildComponents = PythonControl.GetChildComponents(button);
 			}
 		}
 		
@@ -70,12 +75,30 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    self.AcceptButton = self._button1\r\n" +
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
-								"    self.Name = \"MainForm\"\r\n" +
 								"    self.Controls.Add(self._button1)\r\n" +
+								"    self.Name = \"MainForm\"\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode);
+		}
+		
+		[Test]
+		public void FormHasOneChildComponent()
+		{
+			Assert.AreEqual(1, formChildComponents.Length);
+		}
+		
+		[Test]
+		public void FormChildComponentIsButton()
+		{
+			Assert.IsInstanceOfType(typeof(Button), formChildComponents[0]);
+		}
+		
+		[Test]
+		public void ButtonHasNoChildComponents()
+		{
+			Assert.AreEqual(0, buttonChildComponents.Length);
 		}
 	}
 }

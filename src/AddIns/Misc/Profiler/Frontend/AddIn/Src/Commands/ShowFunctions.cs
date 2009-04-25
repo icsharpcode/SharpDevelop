@@ -21,24 +21,18 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 	/// <summary>
 	/// Description of ShowFunctions
 	/// </summary>
-	public class ShowFunctions : AbstractMenuCommand
+	public class ShowFunctions : ProfilerMenuCommand
 	{
 		/// <summary>
 		/// Starts the command
 		/// </summary>
 		public override void Run()
 		{
-			IList<CallTreeNodeViewModel> list = ((QueryView)Owner).SelectedItems.ToList();
+			var selectedItem = GetSelectedItems().FirstOrDefault();
 			
-			if (list.Count == 0)
-				return;
-			
-			CallTreeNodeViewModel selectedItem = list.First();
-			
-			if (selectedItem != null) {
-				ProfilerView parent = (((((QueryView)Owner).Parent as TabItem).Parent as TabControl).Parent as Grid).Parent as ProfilerView;
-				parent.CreateTab("All functions for " + selectedItem.GetSignature(), "from f in Functions where f.Signature == \"" + selectedItem.GetSignature() + "\" select f");
-			}
+			if (selectedItem != null)
+				Parent.CreateTab("All functions for " + selectedItem.GetSignature(),
+				                 "from f in Functions where f.Signature == \"" + selectedItem.GetSignature() + "\" select f");
 		}
 	}
 }

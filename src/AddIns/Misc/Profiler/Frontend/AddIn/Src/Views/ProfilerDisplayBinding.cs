@@ -29,7 +29,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		
 		public ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForFile(OpenedFile file)
 		{
-			return new WpfViewer(ProfilingDataSQLiteProvider.FromFile(file.FileName), Path.GetFileName(file.FileName));
+			return new WpfViewer(file);
 		}
 	}
 }

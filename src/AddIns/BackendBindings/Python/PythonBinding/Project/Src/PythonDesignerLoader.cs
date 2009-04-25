@@ -8,6 +8,7 @@
 using System;
 using System.CodeDom;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
@@ -29,6 +30,7 @@ namespace ICSharpCode.PythonBinding
 	{
 		IPythonDesignerGenerator generator;
 		IDesignerSerializationManager serializationManager;
+		Dictionary<string, IComponent> addedObjects = new Dictionary<string, IComponent>();
 	
 		public PythonDesignerLoader(IPythonDesignerGenerator generator)
 		{
@@ -61,6 +63,18 @@ namespace ICSharpCode.PythonBinding
 		public void Add(IComponent component, string name)
 		{
 			base.LoaderHost.Container.Add(component, name);
+			addedObjects.Add(name, component);
+		}
+		
+		/// <summary>
+		/// Gets a component that has been added to the loader.
+		/// </summary>
+		/// <returns>Null if the component cannot be found.</returns>
+		public IComponent GetComponent(string name)
+		{
+			IComponent component = null;
+			addedObjects.TryGetValue(name, out component);
+			return component;
 		}
 		
 		/// <summary>
@@ -69,6 +83,14 @@ namespace ICSharpCode.PythonBinding
 		public object CreateInstance(Type type, ICollection arguments, string name, bool addToContainer)
 		{
 			return serializationManager.CreateInstance(type, arguments, name, addToContainer);
+		}
+		
+		/// <summary>
+		/// Gets an instance by name.
+		/// </summary>
+		public object GetInstance(string name)
+		{
+			return serializationManager.GetInstance(name);
 		}
 
 		/// <summary>
@@ -101,8 +123,8 @@ namespace ICSharpCode.PythonBinding
 		{
 			// Create designer root object.
 			this.serializationManager = serializationManager;
-			PythonFormWalker visitor = new PythonFormWalker(this);
-			visitor.CreateForm(generator.ViewContent.DesignerCodeFileContent);
+			PythonComponentWalker visitor = new PythonComponentWalker(this);
+			visitor.CreateComponent(generator.ViewContent.DesignerCodeFileContent);
 		}		
 	}
 }

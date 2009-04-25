@@ -88,6 +88,8 @@ namespace SharpRefactoring
 			{
 				FindReferenceVisitor frv = new FindReferenceVisitor(CSharpNameComparer, pde.ParameterName, newMethod.Body.StartLocation, newMethod.Body.EndLocation);
 				
+				pde.ParamModifier &= ~(ParameterModifiers.Params);
+				
 				newMethod.AcceptVisitor(frv, null);
 				
 				if (frv.Identifiers.Count > 0) {

@@ -1,4 +1,4 @@
-﻿using ICSharpCode.Profiler.Controller;
+﻿using ICSharpCode.SharpDevelop;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -7,6 +7,7 @@ using System.Windows;
 using ICSharpCode.Core;
 using ICSharpCode.Profiler.AddIn.OptionsPanels;
 using ICSharpCode.Profiler.AddIn.Views;
+using ICSharpCode.Profiler.Controller;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
@@ -41,16 +42,14 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 					@"ProfilingSessions\Session" +
 					DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) + ".sdps");
 				
-				Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
-				
 				try {
+					Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+					
 					var runner = CreateRunner(txtExePath.Text, txtWorkingDir.Text, txtArgs.Text, new ProfilingDataSQLiteWriter(outputPath));
 
 					if (runner != null) {
 						runner.RunFinished += delegate {
-							string title = Path.GetFileName(outputPath);
-							ProfilingDataProvider provider = new ProfilingDataSQLiteProvider(outputPath);
-							WorkbenchSingleton.SafeThreadCall(() => WorkbenchSingleton.Workbench.ShowView(new WpfViewer(provider, title)));
+							WorkbenchSingleton.SafeThreadCall(() => FileService.OpenFile(outputPath));
 						};
 						
 						runner.Run();
@@ -66,6 +65,8 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 				MessageService.ShowError(ex.Message);
 			} catch (DirectoryNotFoundException ex2) {
 				MessageService.ShowError(ex2.Message);
+			} catch (UnauthorizedAccessException ex4) {
+				MessageService.ShowError(ex4.Message);
 			} catch (Exception ex3) {
 				MessageService.ShowError(ex3);
 			}

@@ -44,7 +44,7 @@ namespace PythonBinding.Tests.Designer
 				enabledPropertyDescriptor.SetValue(form, false);
 				
 				string indentString = "    ";
-				PythonForm pythonForm = new PythonForm(indentString);
+				PythonControl pythonForm = new PythonControl(indentString);
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 			}
 		}

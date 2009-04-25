@@ -8,10 +8,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.Text;
 
+using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 using Mono.Cecil;
-using AssemblyName = System.Reflection.AssemblyName;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -109,13 +109,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (name == null)
 					throw new ApplicationException("type.FullName returned null. Type: " + type.ToString());
 				
+				int typeParameterCount;
 				if (name.IndexOf('/') > 0) {
-					name = name.Replace('/', '.');
-				}
-				int typeParameterCount = 0;
-				if (name.Length > 2 && name[name.Length - 2] == '`') {
-					typeParameterCount = name[name.Length - 1] - '0';
-					name = name.Substring(0, name.Length - 2);
+					typeParameterCount = 0;
+					StringBuilder newName = new StringBuilder();
+					foreach (string namepart in name.Split('/')) {
+						if (newName.Length > 0)
+							newName.Append('.');
+						int partTypeParameterCount;
+						newName.Append(ReflectionClass.SplitTypeParameterCountFromReflectionName(namepart, out partTypeParameterCount));
+						typeParameterCount += partTypeParameterCount;
+					}
+					name = newName.ToString();
+				} else {
+					name = ReflectionClass.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
 				}
 				
 				IClass c = pc.GetClass(name, typeParameterCount);
@@ -155,8 +162,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						string name = td.FullName;
 						if (name.Length == 0 || name[0] == '<')
 							continue;
-						if (name.Length > 2 && name[name.Length - 2] == '`')
-							name = name.Substring(0, name.Length - 2);
+						name = ReflectionClass.SplitTypeParameterCountFromReflectionName(name);
 						AddClassToNamespaceListInternal(new CecilClass(this.AssemblyCompilationUnit, null, td, name));
 					}
 				}
@@ -238,7 +244,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					BaseTypes.Add(CreateType(this.ProjectContent, this, iface));
 				}
 				
-				ReflectionLayer.ReflectionClass.ApplySpecialsFromAttributes(this);
+				ReflectionClass.ApplySpecialsFromAttributes(this);
 				
 				InitMembers(td);
 			}
@@ -265,8 +271,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 							name = name.Substring(pos + 1);
 						if (name.Length == 0 || name[0] == '<')
 							continue;
-						if (name.Length > 2 && name[name.Length - 2] == '`')
-							name = name.Substring(0, name.Length - 2);
+						name = ReflectionClass.SplitTypeParameterCountFromReflectionName(name);
 						name = this.FullyQualifiedName + "." + name;
 						InnerClasses.Add(new CecilClass(this.CompilationUnit, this, nestedType, name));
 					}

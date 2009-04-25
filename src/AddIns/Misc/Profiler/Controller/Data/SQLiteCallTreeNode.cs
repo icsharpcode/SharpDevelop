@@ -42,6 +42,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public override NameMapping NameMapping {
 			get {
+				if (nameId == 0)
+					return new NameMapping(0, null, "Merged node", null);
+				
 				return this.provider.GetMapping(nameId);
 			}
 		}

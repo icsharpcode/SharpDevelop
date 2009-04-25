@@ -44,7 +44,7 @@ namespace ICSharpCode.Profiler.Frontend
 			string path = dlg.FileName;
 
 			// remove UI before disposing profiler
-			this.timeLine.ValuesList.Clear();
+			//this.timeLine.ValuesList.Clear();
 			if (this.provider != null)
 				this.provider.Close();
 
@@ -101,8 +101,8 @@ namespace ICSharpCode.Profiler.Frontend
 							this.treeView.Provider = this.provider;
 							RefreshUI(0, 0);
 							this.timeLine.IsEnabled = true;
-							this.timeLine.ValuesList.Clear();
-							this.timeLine.ValuesList.AddRange(this.provider.DataSets.Select(i => i.CpuUsage));
+							//this.timeLine.ValuesList.Clear();
+							//this.timeLine.ValuesList.AddRange(this.provider.DataSets.Select(i => i.CpuUsage));
 						} catch (Exception ex) {
 							Debug.WriteLine(ex.ToString());
 							MessageBox.Show(ex.ToString());
@@ -145,7 +145,7 @@ namespace ICSharpCode.Profiler.Frontend
 			InitializeComponent();
 
 			this.btnStop.IsEnabled = false;
-			this.timeLine.IsEnabled = false;
+			//this.timeLine.IsEnabled = false;
 			this.treeView.Reporter = new ErrorReporter(HandleError);
 			
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
@@ -154,15 +154,15 @@ namespace ICSharpCode.Profiler.Frontend
 		void ExecuteSelectAll(object sender, ExecutedRoutedEventArgs e)
 		{
 			if (this.timeLine.IsEnabled) {
-				this.timeLine.SelectedStartIndex = 0;
-				this.timeLine.SelectedEndIndex = this.timeLine.ValuesList.Count;
+				//this.timeLine.SelectedStartIndex = 0;
+				//this.timeLine.SelectedEndIndex = this.timeLine.ValuesList.Count;
 			}
 			e.Handled = true;
 		}
 		
 		void CanExecuteSelectAll(object sender, CanExecuteRoutedEventArgs e)
 		{
-			e.CanExecute = this.timeLine.IsEnabled && this.timeLine.ValuesList.Count > 0;
+			e.CanExecute = this.timeLine.IsEnabled;// && this.timeLine.ValuesList.Count > 0;
 			e.Handled = true;
 		}
 		
@@ -194,8 +194,8 @@ namespace ICSharpCode.Profiler.Frontend
 			this.treeView.CurrentQuery = "from t in Threads select t";
 			treeView.SetRange(0, this.provider.DataSets.Count);
 			this.timeLine.IsEnabled = true;
-			this.timeLine.ValuesList.Clear();
-			this.timeLine.ValuesList.AddRange(provider.DataSets.Select(i => i.CpuUsage));
+			//this.timeLine.ValuesList.Clear();
+			//this.timeLine.ValuesList.AddRange(provider.DataSets.Select(i => i.CpuUsage));
 		}
 
 		internal void LogString(string text, bool clear)

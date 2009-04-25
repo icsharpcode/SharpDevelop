@@ -52,7 +52,7 @@ namespace PythonBinding.Tests.Designer
 				autoScaleDimensionsDescriptor.SetValue(form, new SizeF(6F, 13F));
 
 				string indentString = "    ";
-				PythonForm pythonForm = new PythonForm(indentString);
+				PythonControl pythonForm = new PythonControl(indentString);
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 			}
 		}

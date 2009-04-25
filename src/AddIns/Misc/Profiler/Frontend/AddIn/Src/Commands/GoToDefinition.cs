@@ -22,7 +22,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 	/// <summary>
 	/// Description of GoToDefinition
 	/// </summary>
-	public class GoToDefinition : AbstractMenuCommand
+	public class GoToDefinition : ProfilerMenuCommand
 	{
 		IAmbience ambience = new CSharpAmbience();
 		
@@ -31,12 +31,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 		/// </summary>
 		public override void Run()
 		{
-			IList<CallTreeNodeViewModel> list = ((QueryView)Owner).SelectedItems.ToList();
-			
-			if (list.Count == 0)
-				return;
-			
-			CallTreeNodeViewModel selectedItem = list.First();
+			var selectedItem = GetSelectedItems().FirstOrDefault();
 
 			if (selectedItem != null) {
 				IClass c = GetClassFromName(selectedItem.FullyQualifiedClassName);
@@ -44,7 +39,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				{
 					IMember member = GetMemberFromName(c, selectedItem.MethodName, selectedItem.Parameters);
 					if (member != null) {
-						IViewContent view = FileService.JumpToFilePosition(c.CompilationUnit.FileName, member.BodyRegion.BeginLine, member.BodyRegion.BeginColumn);
+						IViewContent view = FileService.JumpToFilePosition(c.CompilationUnit.FileName, member.BodyRegion.BeginLine - 1, member.BodyRegion.BeginColumn - 1);
 					}
 				}
 			}

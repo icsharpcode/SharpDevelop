@@ -21,20 +21,20 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 	/// <summary>
 	/// Description of CopySelectedData
 	/// </summary>
-	public class CopySelectedData : AbstractMenuCommand
+	public class CopySelectedData : ProfilerMenuCommand
 	{
 		/// <summary>
 		/// Starts the command
 		/// </summary>
 		public override void Run()
 		{
-			IList<CallTreeNodeViewModel> list = ((QueryView)Owner).SelectedItems.ToList();
-			ProfilerView parent = (((((QueryView)Owner).Parent as TabItem).Parent as TabControl).Parent as Grid).Parent as ProfilerView;
+			var list = GetSelectedItems();
 			
-			if (list.Count > 0) {
+			if (list.FirstOrDefault() != null) {
 				StringBuilder builder = new StringBuilder();
 				
 				foreach (CallTreeNodeViewModel node in list) {
+					if (node != null)
 					builder.AppendLine(new string('\t', node.Level) + node.Name + "\t" + node.CallCount + "\t" + node.TimeSpent + "\t" + node.TimePercentageOfParentAsText);
 				}
 				

@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		sealed class DummyBuildable : IBuildable
+		sealed class DummyBuildable : IBuildable2
 		{
 			IBuildable wrappedBuildable;
 			
@@ -133,6 +133,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public Solution ParentSolution {
 				get { return wrappedBuildable.ParentSolution; }
+			}
+			
+			public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+			{
+				return null;
 			}
 			
 			public ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
@@ -178,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		sealed class Wrapper : IBuildable
+		sealed class Wrapper : IBuildable2
 		{
 			internal readonly IBuildable wrapped;
 			internal readonly WrapperFactory factory;
@@ -195,6 +200,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public Solution ParentSolution {
 				get { return wrapped.ParentSolution; }
+			}
+			
+			public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+			{
+				return wrapped.CreateProjectBuildOptions(options, isRootBuildable);
 			}
 			
 			Dictionary<ProjectBuildOptions, ICollection<IBuildable>> cachedBuildDependencies = new Dictionary<ProjectBuildOptions, ICollection<IBuildable>>();

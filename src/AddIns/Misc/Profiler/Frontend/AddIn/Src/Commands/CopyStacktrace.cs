@@ -7,9 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using System.Windows.Shapes;
 
 using ICSharpCode.Core;
 using ICSharpCode.Profiler.Controls;
@@ -19,15 +20,14 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 	/// <summary>
 	/// Description of CopyStacktrace
 	/// </summary>
-	public class CopyStacktrace : AbstractMenuCommand
+	public class CopyStacktrace : ProfilerMenuCommand
 	{
 		/// <summary>
 		/// Starts the command
 		/// </summary>
 		public override void Run()
 		{
-			IList<CallTreeNodeViewModel> list = ((QueryView)Owner).SelectedItems.ToList();
-			CallTreeNodeViewModel selectedItem = (list.Count > 0) ? list[0] as CallTreeNodeViewModel : null;
+			var selectedItem = GetSelectedItems().FirstOrDefault();
 			
 			if (selectedItem != null) {
 				StringBuilder data = new StringBuilder();

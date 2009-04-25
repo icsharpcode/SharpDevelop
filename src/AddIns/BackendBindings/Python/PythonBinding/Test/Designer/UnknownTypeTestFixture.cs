@@ -24,7 +24,7 @@ namespace PythonBinding.Tests.Designer
 	/// form.
 	/// </summary>
 	[TestFixture]
-	public class UnknownTypeTestFixture : LoadFormTestFixtureBase
+	public class UnknownTypeTestFixture
 	{		
 		string pythonCode = "from System.Windows.Forms import Form\r\n" +
 							"\r\n" +
@@ -35,18 +35,12 @@ namespace PythonBinding.Tests.Designer
 							"    def InitializeComponent(self):\r\n" +
 							"        self.ClientSize = Unknown.Type(10)\r\n";
 		
-		[TestFixtureSetUp]
-		public new void SetUpFixture()
-		{
-			// Do not call base class SetUpFixture.
-		}
-		
 		[Test]
-		[ExpectedException(typeof(PythonFormWalkerException))]
+		[ExpectedException(typeof(PythonComponentWalkerException))]
 		public void PythonFormWalkerExceptionThrown()
 		{
-			PythonFormWalker walker = new PythonFormWalker(this);
-			walker.CreateForm(pythonCode);
+			PythonComponentWalker walker = new PythonComponentWalker(new MockComponentCreator());
+			walker.CreateComponent(pythonCode);
 			Assert.Fail("Exception should have been thrown before this.");
 		}
 	}

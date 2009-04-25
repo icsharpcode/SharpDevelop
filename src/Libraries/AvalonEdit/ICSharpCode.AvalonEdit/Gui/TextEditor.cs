@@ -759,7 +759,7 @@ namespace ICSharpCode.AvalonEdit
 		/// <summary>
 		/// Gets the text view position from a point inside the editor.
 		/// </summary>
-		/// <param name="p">The position, relative to top left
+		/// <param name="point">The position, relative to top left
 		/// corner of TextEditor control</param>
 		/// <returns>The text view position, or null if the point is outside the document.</returns>
 		public TextViewPosition? GetPositionFromPoint(Point point)

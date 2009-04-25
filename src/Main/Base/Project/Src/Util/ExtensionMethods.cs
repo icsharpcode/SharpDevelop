@@ -14,6 +14,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Text;
 using System.Windows.Forms;
 using WinForms = System.Windows.Forms;
 
@@ -202,5 +203,33 @@ namespace ICSharpCode.SharpDevelop
 			return new Rect(rect.Location.ToWpf(), rect.Size.ToWpf());
 		}
 		#endregion
+		
+		public static string Replace(this string original, string pattern, string replacement, StringComparison comparisonType)
+		{
+			if (original == null)
+				throw new ArgumentNullException("original");
+			if (pattern == null)
+				throw new ArgumentNullException("pattern");
+			if (pattern.Length == 0)
+				throw new ArgumentException("String cannot be of zero length.", "pattern");
+			if (comparisonType != StringComparison.Ordinal && comparisonType != StringComparison.OrdinalIgnoreCase)
+				throw new NotSupportedException("Currently only ordinal comparisons are implemented.");
+			
+			StringBuilder result = new StringBuilder(original.Length);
+			int currentPos = 0;
+			int nextMatch = original.IndexOf(pattern, comparisonType);
+			while (nextMatch >= 0) {
+				result.Append(original, currentPos, nextMatch - currentPos);
+				// The following line restricts this method to ordinal comparisons:
+				// for non-ordinal comparisons, the match length might be different than the pattern length.
+				currentPos = nextMatch + pattern.Length;
+				result.Append(replacement);
+				
+				nextMatch = original.IndexOf(pattern, currentPos, comparisonType);
+			}
+			
+			result.Append(original, currentPos, original.Length - currentPos);
+			return result.ToString();
+		}
 	}
 }

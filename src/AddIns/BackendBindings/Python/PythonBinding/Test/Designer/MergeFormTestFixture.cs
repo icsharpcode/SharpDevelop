@@ -8,6 +8,8 @@
 using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.CodeDom;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -39,9 +41,14 @@ namespace PythonBinding.Tests.Designer
 				PythonParser parser = new PythonParser();
 				ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.TextContent);
 
-				using (Form form = new Form()) {
-					form.Name = "MainForm";
+				using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
+					IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+					Form form = (Form)host.RootComponent;
 					form.ClientSize = new Size(499, 309);
+
+					PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
+					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
+					namePropertyDescriptor.SetValue(form, "MainForm");
 					
 					PythonDesignerGenerator.Merge(form, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties());
 				}
@@ -75,7 +82,6 @@ namespace PythonBinding.Tests.Designer
 					"\t\t# \r\n" + 
 					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
 					"\t\tself.Name = \"MainForm\"\r\n" +
-					"\t\tself.Visible = False\r\n" +
 					"\t\tself.ResumeLayout(False)\r\n" +
 					"\t\tself.PerformLayout()\r\n";						
 		}

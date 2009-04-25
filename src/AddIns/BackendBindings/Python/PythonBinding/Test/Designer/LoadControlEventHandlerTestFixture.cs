@@ -49,7 +49,7 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public new void SetUpFixture()
 		{
-			base.SetEventPropertyDescriptor(new MockPropertyDescriptor("abc", "Button2KeyDown", true));
+			base.ComponentCreator.SetEventPropertyDescriptor(new MockPropertyDescriptor("abc", "Button2KeyDown", true));
 			base.SetUpFixture();
 		}
 		
@@ -67,7 +67,7 @@ namespace PythonBinding.Tests.Designer
 		public MockPropertyDescriptor GetButtonKeyDownEventPropertyDescriptor()
 		{
 			EventDescriptor eventDescriptor = GetButtonKeyDownEventDescriptor();
-			return base.GetEventProperty(eventDescriptor) as MockPropertyDescriptor;			
+			return base.ComponentCreator.GetEventProperty(eventDescriptor) as MockPropertyDescriptor;			
 		}		
 		
 		[Test]

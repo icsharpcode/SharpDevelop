@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
@@ -25,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				// We cannot use nestedType.IsVisible - that only checks for public types,
 				// but we also need to load protected types.
 				if (nestedType.IsNestedPublic || nestedType.IsNestedFamily || nestedType.IsNestedFamORAssem) {
-					string name = nestedType.FullName.Replace('+', '.');
+					string name = this.FullyQualifiedName + "." + nestedType.Name;
 					InnerClasses.Add(new ReflectionClass(CompilationUnit, nestedType, name, this));
 				}
 			}
@@ -100,13 +101,51 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			}
 		}
 		
+		public static string SplitTypeParameterCountFromReflectionName(string reflectionName)
+		{
+			int lastBackTick = reflectionName.LastIndexOf('`');
+			if (lastBackTick < 0)
+				return reflectionName;
+			else
+				return reflectionName.Substring(0, lastBackTick);
+		}
+		
+		public static string SplitTypeParameterCountFromReflectionName(string reflectionName, out int typeParameterCount)
+		{
+			int pos = reflectionName.LastIndexOf('`');
+			if (pos < 0) {
+				typeParameterCount = 0;
+				return reflectionName;
+			} else {
+				string typeCount = reflectionName.Substring(pos + 1);
+				if (int.TryParse(typeCount, out typeParameterCount))
+					return reflectionName.Substring(0, pos);
+				else
+					return reflectionName;
+			}
+		}
+		
+		public static string ConvertReflectionNameToFullName(string reflectionName, out int typeParameterCount)
+		{
+			if (reflectionName.IndexOf('+') > 0) {
+				typeParameterCount = 0;
+				StringBuilder newName = new StringBuilder();
+				foreach (string namepart in reflectionName.Split('+')) {
+					if (newName.Length > 0)
+						newName.Append('.');
+					int partTypeParameterCount;
+					newName.Append(SplitTypeParameterCountFromReflectionName(namepart, out partTypeParameterCount));
+					typeParameterCount += partTypeParameterCount;
+				}
+				return newName.ToString();
+			} else {
+				return SplitTypeParameterCountFromReflectionName(reflectionName, out typeParameterCount);
+			}
+		}
+		
 		public ReflectionClass(ICompilationUnit compilationUnit, Type type, string fullName, IClass declaringType) : base(compilationUnit, declaringType)
 		{
-			if (fullName.Length > 2 && fullName[fullName.Length - 2] == '`') {
-				FullyQualifiedName = fullName.Substring(0, fullName.Length - 2);
-			} else {
-				FullyQualifiedName = fullName;
-			}
+			FullyQualifiedName = SplitTypeParameterCountFromReflectionName(fullName);
 			
 			try {
 				AddAttributes(compilationUnit.ProjectContent, this.Attributes, CustomAttributeData.GetCustomAttributes(type));

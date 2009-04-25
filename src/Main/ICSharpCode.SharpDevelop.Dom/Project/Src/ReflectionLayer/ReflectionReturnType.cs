@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 {
@@ -69,16 +70,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				string name = type.FullName;
 				if (name == null)
 					throw new ApplicationException("type.FullName returned null. Type: " + type.ToString());
-				int typeParameterCount = 0;
-				if (name.Length > 2) {
-					if (name[name.Length - 2] == '`') {
-						typeParameterCount = int.Parse(name[name.Length - 1].ToString());
-						name = name.Substring(0, name.Length - 2);
-					}
-				}
-				if (name.IndexOf('+') > 0) {
-					name = name.Replace('+', '.');
-				}
+				int typeParameterCount;
+				name = ReflectionClass.ConvertReflectionNameToFullName(name, out typeParameterCount);
 				if (!createLazyReturnType) {
 					IClass c = pc.GetClass(name, typeParameterCount);
 					if (c != null)

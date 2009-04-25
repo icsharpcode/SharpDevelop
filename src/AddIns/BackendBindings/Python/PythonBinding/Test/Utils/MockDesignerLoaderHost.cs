@@ -23,7 +23,8 @@ namespace PythonBinding.Tests.Utils
 		List<CreatedComponent> createdComponents = new List<CreatedComponent>();
 		IComponent rootComponent;
 		MockTypeResolutionService typeResolutionService = new MockTypeResolutionService();
-				
+		Container container = new Container();
+		
 		public MockDesignerLoaderHost()
 		{
 			AddService(typeof(IServiceContainer), serviceContainer);
@@ -62,9 +63,7 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public IContainer Container {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return container; }
 		}
 		
 		public IComponent RootComponent {
@@ -104,11 +103,11 @@ namespace PythonBinding.Tests.Utils
 		
 		public IComponent CreateComponent(Type componentClass, string name)
 		{
-			createdComponents.Add(new CreatedComponent(componentClass.FullName, name));
 			IComponent component = componentClass.Assembly.CreateInstance(componentClass.FullName) as IComponent;
 			if (rootComponent == null) {
 				rootComponent = component;
 			}
+			createdComponents.Add(new CreatedComponent(componentClass.FullName, name, component));
 			return component;
 		}
 		

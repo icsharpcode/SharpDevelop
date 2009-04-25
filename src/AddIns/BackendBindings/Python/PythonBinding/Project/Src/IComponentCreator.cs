@@ -35,12 +35,25 @@ namespace ICSharpCode.PythonBinding
 		void Add(IComponent component, string name);
 		
 		/// <summary>
+		/// Gets a component that have been added via the Add method.
+		/// </summary>
+		/// <param name="name">The component name.</param>
+		/// <returns>Null if the component cannot be found.</returns>
+		IComponent GetComponent(string name);
+		
+		/// <summary>
 		/// Creates a new instance of the object given its type.
 		/// </summary>
 		/// <param name="arguments">Arguments passed to the type's constructor.</param>
 		/// <param name="name">Name of the object.</param>
 		/// <param name="addToContainer">If set to true then the is added to the design container.</param>
 		object CreateInstance(Type type, ICollection arguments, string name, bool addToContainer);
+
+		/// <summary>
+		/// Gets the created instance.
+		/// </summary>
+		/// <param name="name">Instance name.</param>
+		object GetInstance(string name);
 		
 		/// <summary>
 		/// Gets the type given its name.

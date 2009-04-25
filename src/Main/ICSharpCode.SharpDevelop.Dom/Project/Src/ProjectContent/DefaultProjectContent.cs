@@ -561,6 +561,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		protected IClass GetClassInternal(string typeName, int typeParameterCount, LanguageProperties language)
 		{
+			#if DEBUG
+			if (System.Text.RegularExpressions.Regex.IsMatch (typeName, "`[0-9]+$"))
+				Debug.Assert(false, "how did a Reflection type name get here?");
+			#endif
 			lock (namespaces) {
 				IClass c;
 				if (GetClasses(language).TryGetValue(typeName, out c)) {
@@ -593,7 +597,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if ((options & GetClassOptions.LookInReferences) != 0) {
 				lock (referencedContents) {
 					foreach (IProjectContent content in referencedContents) {
-						IClass contentClass = content.GetClass(typeName, typeParameterCount, language, GetClassOptions.None);
+						// Look for the class in the referenced content.
+						// Don't do a inner-class search in the recursive call - one search
+						// done by this GetClass call is sufficient.
+						IClass contentClass = content.GetClass(
+							typeName, typeParameterCount, language,
+							options & ~(GetClassOptions.LookInReferences | GetClassOptions.LookForInnerClass));
 						if (contentClass != null) {
 							if (contentClass.TypeParameters.Count == typeParameterCount
 							    && IsAccessibleClass(contentClass))
@@ -605,10 +614,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 				}
-			}
-			
-			if (c != null) {
-				return c;
 			}
 			
 			if ((options & GetClassOptions.LookForInnerClass) != 0) {
@@ -624,7 +629,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 								string innerName = typeName.Substring(lastIndex + 1);
 								foreach (IClass innerClass in innerClasses) {
 									if (language.NameComparer.Equals(innerClass.Name, innerName)) {
-										return innerClass;
+										if (innerClass.TypeParameters.Count == typeParameterCount) {
+											return innerClass;
+										} else {
+											// store match
+											c = innerClass;
+										}
 									}
 								}
 							}
@@ -632,7 +642,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 			}
-			return null;
+			if ((options & GetClassOptions.ExactMatch) == GetClassOptions.ExactMatch) {
+				return null;
+			} else {
+				// no matching class found - we'll return a class with different type paramter count
+				return c;
+			}
 		}
 		
 		public ArrayList GetNamespaceContents(string nameSpace)
@@ -852,15 +867,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (className == null)
 				throw new ArgumentNullException("className");
-			className = className.Replace('+', '.');
-			if (className.Length > 2 && className[className.Length - 2] == '`') {
-				int typeParameterCount = className[className.Length - 1] - '0';
-				if (typeParameterCount < 0) typeParameterCount = 0;
-				className = className.Substring(0, className.Length - 2);
-				return GetClass(className, typeParameterCount, LanguageProperties.CSharp, GetClassOptions.Default);
-			} else {
-				return GetClass(className, 0, LanguageProperties.CSharp, GetClassOptions.Default);
-			}
+			int typeParameterCount;
+			className = ReflectionLayer.ReflectionClass.ConvertReflectionNameToFullName(className, out typeParameterCount);
+			GetClassOptions options = GetClassOptions.Default;
+			if (!lookInReferences)
+				options &= ~GetClassOptions.LookInReferences;
+			return GetClass(className, typeParameterCount, LanguageProperties.CSharp, options);
 		}
 		
 		/// <summary>

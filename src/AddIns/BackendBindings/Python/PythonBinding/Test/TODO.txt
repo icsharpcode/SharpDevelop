@@ -98,8 +98,7 @@ def main(args):
   
 * ContextMenuStrip - designer does not generate the correct code.
 
-* MenuStrip - adds a design time only control to the generated code.
-   self._menuStrip1.Items.AddRange(System.Array[System.Windows.Forms.ToolStripItem]((self._fileToolStripMenuItem, )))
-   System.Array[System.Windows.Forms.ToolStripItem([self._fileToolStripMenuItem,self._exitToolStripMenuItem])
+* Look at fixing the compiled exe so it can be run from a different folder.
 
-   
+  See http://lists.ironpython.com/pipermail/users-ironpython.com/2009-April/009993.html
+ 

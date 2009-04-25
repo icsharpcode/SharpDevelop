@@ -6,12 +6,14 @@
 // </file>
 
 using System;
+using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 
-using ICSharpCode.Profiler.Controller.Data;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.Profiler.Controller.Data;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Profiler.AddIn.Views
 {
@@ -37,10 +39,11 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		/// <summary>
 		/// Creates a new WpfViewer object
 		/// </summary>
-		public WpfViewer(ProfilingDataProvider provider, string title)
+		public WpfViewer(OpenedFile file)
 		{
-			this.provider = provider;
-			this.TabPageText = title;
+			this.Files.Add(file);
+			this.provider = ProfilingDataSQLiteProvider.FromFile(file.FileName);
+			this.TabPageText = Path.GetFileName(file.FileName);
 			this.TitleName = this.TabPageText;
 			dataView = new ProfilerView(this.provider);
 		}

@@ -23,13 +23,15 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		FileDescriptionTemplate file;
 		
 		readonly static Regex scriptRegex  = new Regex("<%.*?%>");
-		readonly static Regex replaceRegex = new Regex("\"");
 		
 		public string CompileScript(FileTemplate item, FileDescriptionTemplate file)
 		{
 			if (file.Content == null)
 				throw new ArgumentException("file must have textual content");
 			Match m = scriptRegex.Match(file.Content);
+			// A file must have at least two "<% %>" segments to be recognized as script.
+			// I consider this a bug, but we'll keep it for backwards compatibility;
+			// at least until the ScriptRunner gets replaced by something more sane.
 			m = m.NextMatch();
 			if (m.Success) {
 				this.item = item;
@@ -126,13 +128,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			for (Match m = scriptRegex.Match(file.Content); m.Success; m = m.NextMatch()) {
 				Group g = m.Groups[0];
 				outPut.Append("outPut.Append(@\"");
-				outPut.Append(file.Content.Substring(lastIndex, g.Index - lastIndex));
+				outPut.Append(file.Content.Substring(lastIndex, g.Index - lastIndex).Replace("\"", "\"\""));
 				outPut.Append("\");\n");
 				outPut.Append(g.Value.Substring(2, g.Length - 4));
 				lastIndex = g.Index + g.Length;
 			}
 			outPut.Append("outPut.Append(@\"");
-			string formattedContent = replaceRegex.Replace(file.Content.Substring(lastIndex, file.Content.Length - lastIndex), "\"\"");
+			string formattedContent = file.Content.Substring(lastIndex, file.Content.Length - lastIndex).Replace("\"", "\"\"");
 			outPut.Append(formattedContent);
 			outPut.Append("\");\n");
 			outPut.Append("return outPut.ToString();\n");

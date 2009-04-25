@@ -399,6 +399,68 @@ class Outer { protected class Inner {} }
 			return false;
 		}
 		
+		[Test]
+		public void GenericInnerClassOrNonGenericOuterClass()
+		{
+			string program = @"using System;
+class Test {
+	
+	class TheClass<T> {}
+}
+class TheClass { }
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "TheClass<string>", 3);
+			Assert.AreEqual("Test.TheClass", trr.ResolvedClass.FullyQualifiedName);
+		}
 		
+		[Test]
+		public void GenericInnerClassOrNonGenericOuterClass2()
+		{
+			string program = @"using System;
+class Test {
+	TheClass<string> x;
+	
+	class TheClass<T> {}
+}
+class TheClass { }
+";
+			MemberResolveResult rr = Resolve<MemberResolveResult>(program, "x", 3);
+			Assert.AreEqual("Test.TheClass", rr.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void GenericInnerClassOrNonGenericInnerClass()
+		{
+			string program = @"using System;
+class Test {
+	TheClass<string> x1;
+	TheClass x2;
+	Test.TheClass<string> y1;
+	Test.TheClass y2;
+	global::Test.TheClass<string> z1;
+	global::Test.TheClass z2;
+	
+	public class TheClass { }
+	public class TheClass<T> {}
+}
+";
+			MemberResolveResult rr = Resolve<MemberResolveResult>(program, "x1", 3);
+			Assert.AreEqual(1, rr.ResolvedType.GetUnderlyingClass().TypeParameters.Count);
+			
+			rr = Resolve<MemberResolveResult>(program, "y1", 3);
+			Assert.AreEqual(1, rr.ResolvedType.GetUnderlyingClass().TypeParameters.Count);
+			
+			rr = Resolve<MemberResolveResult>(program, "z1", 3);
+			Assert.AreEqual(1, rr.ResolvedType.GetUnderlyingClass().TypeParameters.Count);
+			
+			rr = Resolve<MemberResolveResult>(program, "x2", 3);
+			Assert.AreEqual(0, rr.ResolvedType.GetUnderlyingClass().TypeParameters.Count);
+			
+			rr = Resolve<MemberResolveResult>(program, "y2", 3);
+			Assert.AreEqual(0, rr.ResolvedType.GetUnderlyingClass().TypeParameters.Count);
+			
+			rr = Resolve<MemberResolveResult>(program, "z2", 3);
+			Assert.AreEqual(0, rr.ResolvedType.GetUnderlyingClass().TypeParameters.Count);
+		}
 	}
 }

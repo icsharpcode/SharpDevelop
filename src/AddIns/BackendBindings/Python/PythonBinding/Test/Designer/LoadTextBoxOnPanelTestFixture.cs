@@ -69,34 +69,6 @@ namespace PythonBinding.Tests.Designer
 		public void TextBoxAddedToPanel()
 		{
 			Assert.IsNotNull(TextBox);
-		}
-		
-		[Test]
-		public void ParentControlNameAddingChildControls()
-		{
-			string code = "self._panel1.Controls.Add";
-			Assert.AreEqual("panel1", PythonControlFieldExpression.GetParentControlNameAddingChildControls(code));
-		}
-
-		[Test]
-		public void EmptyControlNameAddingChildControls()
-		{
-			string code = "self.Controls.Add";
-			Assert.AreEqual(String.Empty, PythonControlFieldExpression.GetParentControlNameAddingChildControls(code));
-		}
-
-		[Test]
-		public void CaseInsensitiveCheckForControlsAddStatement()
-		{
-			string code = "self._panel1.controls.add";
-			Assert.AreEqual("panel1", PythonControlFieldExpression.GetParentControlNameAddingChildControls(code));
-		}
-		
-		[Test]
-		public void CodeDoesNotIncludeControlsAddStatement()
-		{
-			string code = "self._panel1.SuspendLayout";
-			Assert.IsNull(PythonControlFieldExpression.GetParentControlNameAddingChildControls(code));
-		}
+		}		
 	}
 }

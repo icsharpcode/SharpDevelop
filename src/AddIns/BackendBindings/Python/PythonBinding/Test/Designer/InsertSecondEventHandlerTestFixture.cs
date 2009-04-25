@@ -19,23 +19,10 @@ namespace PythonBinding.Tests.Designer
 	/// and the new one inserted.
 	/// </summary>
 	[TestFixture]
-	public class InsertSecondEventHandlerTestFixture
+	public class InsertSecondEventHandlerTestFixture : InsertEventHandlerTestFixtureBase
 	{
-		string file;
-		int position;
-		bool insertedEventHandler;
-		MockTextEditorViewContent mockViewContent;
-		DerivedFormDesignerViewContent viewContent;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			DerivedPythonDesignerGenerator generator = new DerivedPythonDesignerGenerator();
-			mockViewContent = new MockTextEditorViewContent();
-			viewContent = new DerivedFormDesignerViewContent(mockViewContent, new MockOpenedFile(@"C:\Projects\Python\mainform.py"));
-			generator.Attach(viewContent);
-			viewContent.DesignerCodeFileContent = GetTextEditorCode();	
-						
+		public override void AfterSetUpFixture()
+		{						
 			MockEventDescriptor mockEventDescriptor = new MockEventDescriptor("Click");
 			generator.InsertComponentEvent(null, mockEventDescriptor, "button1_click", String.Empty, out file, out position);
 			insertedEventHandler = generator.InsertComponentEvent(null, mockEventDescriptor, "button2_click", String.Empty, out file, out position);
@@ -55,7 +42,7 @@ namespace PythonBinding.Tests.Designer
 			Assert.AreEqual(expectedCode, viewContent.DesignerCodeFileContent);
 		}
 		
-		string GetTextEditorCode()
+		protected override string GetTextEditorCode()
 		{
 			return "from System.Windows.Forms import Form\r\n" +
 					"\r\n" +

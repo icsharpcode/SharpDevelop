@@ -53,10 +53,10 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 				namePropertyDescriptor.SetValue(form, "MainForm");
 				
-				PythonForm pythonForm = new PythonForm("    ");
+				PythonControl pythonForm = new PythonControl("    ");
 				generatedCode = pythonForm.GenerateInitializeComponentMethod(form);
 				
-				propertyDescriptors = pythonForm.GetSerializableProperties(form);
+				propertyDescriptors = PythonControl.GetSerializableProperties(form);
 			}
 		}
 		
@@ -102,6 +102,15 @@ namespace PythonBinding.Tests.Designer
 			strings.Sort();
 			
 			Assert.AreEqual(strings, unsortedStrings);
+		}
+		
+		/// <summary>
+		/// Tests that the Controls property is returned in the GetSerializableProperties method.
+		/// </summary>
+		[Test]
+		public void ContainsDesignerSerializationContentProperties()
+		{
+			Assert.IsTrue(ContainsProperty(propertyDescriptors, "Controls"), "Controls property should be returned.");
 		}
 		
 		static bool ContainsProperty(PropertyDescriptorCollection propertyDescriptors, string name)

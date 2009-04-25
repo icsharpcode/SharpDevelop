@@ -341,6 +341,12 @@ namespace ICSharpCode.FormsDesigner
 				// ignore type changes to untyped VB fields
 				return false;
 			}
+			if (newType.BaseType == "System.Void") {
+				// field types get replaced with System.Void if the type cannot be resolved
+				// (e.g. generic fields in the Boo designer which aren't converted to CodeDom)
+				// we'll ignore such type changes (fields should never have the type void)
+				return false;
+			}
 			
 			ArrayReturnType oldArray = oldType.IsArrayReturnType ? oldType.CastToArrayReturnType() : null;
 			if (oldArray == null ^ newType.ArrayRank < 1)

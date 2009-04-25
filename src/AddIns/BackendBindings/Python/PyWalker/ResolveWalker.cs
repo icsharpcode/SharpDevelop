@@ -170,6 +170,12 @@ namespace PyWalker
 			return base.Walk(node);
 		}
 		
+		public override bool Walk(IndexExpression node)
+		{
+			writer.WriteLine("Index: " + node.Index.ToString());
+			return base.Walk(node);
+		}
+		
 		public override bool Walk(UnaryExpression node)
 		{
 			writer.WriteLine("Unary");

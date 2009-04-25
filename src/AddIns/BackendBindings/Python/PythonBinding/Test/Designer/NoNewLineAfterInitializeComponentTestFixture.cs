@@ -8,14 +8,16 @@
 using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.CodeDom;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
+using NUnit.Framework;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Designer
@@ -38,11 +40,16 @@ namespace PythonBinding.Tests.Designer
 				PythonParser parser = new PythonParser();
 				ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.TextContent);
 
-				using (Form form = new Form()) {
-					form.Name = "MainForm";
-					form.ClientSize = new Size(499, 309);
+				using (DesignSurface designSurface = new DesignSurface(typeof(UserControl))) {
+					IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+					UserControl userControl = (UserControl)host.RootComponent;			
+					userControl.ClientSize = new Size(489, 389);
 					
-					PythonDesignerGenerator.Merge(form, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties());
+					PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(userControl);
+					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
+					namePropertyDescriptor.SetValue(userControl, "userControl1");
+					
+					PythonDesignerGenerator.Merge(userControl, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties());
 				}
 			}
 		}
@@ -50,20 +57,19 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "from System.Windows.Forms import Form\r\n" +
+			string expectedCode = "from System.Windows.Forms import UserControl\r\n" +
 									"\r\n" +
-									"class MainForm(Form):\r\n" +
+									"class MyUserControl(UserControl):\r\n" +
 									"\tdef __init__(self):\r\n" +
 									"\t\tself.InitializeComponent()\r\n" +
 									"\t\r\n" +
 									"\tdef InitializeComponent(self):\r\n" +
 									"\t\tself.SuspendLayout()\r\n" +
 									"\t\t# \r\n" +
-									"\t\t# MainForm\r\n" +
+									"\t\t# userControl1\r\n" +
 									"\t\t# \r\n" + 
-									"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
-									"\t\tself.Name = \"MainForm\"\r\n" +
-									"\t\tself.Visible = False\r\n" +
+									"\t\tself.Name = \"userControl1\"\r\n" +
+									"\t\tself.Size = System.Drawing.Size(489, 389)\r\n" +
 									"\t\tself.ResumeLayout(False)\r\n" +
 									"\t\tself.PerformLayout()\r\n";
 			
@@ -75,9 +81,9 @@ namespace PythonBinding.Tests.Designer
 		/// </summary>
 		string GetTextEditorCode()
 		{
-			return "from System.Windows.Forms import Form\r\n" +
+			return "from System.Windows.Forms import UserControl\r\n" +
 					"\r\n" +
-					"class MainForm(Form):\r\n" +
+					"class MyUserControl(UserControl):\r\n" +
 					"\tdef __init__(self):\r\n" +
 					"\t\tself.InitializeComponent()\r\n" +
 					"\t\r\n" +

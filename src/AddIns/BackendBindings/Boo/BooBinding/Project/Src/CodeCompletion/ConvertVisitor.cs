@@ -386,8 +386,23 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return base.EnterEnumDefinition(node);
 		}
 		
+		// cannot override OnNamespaceDeclaration - it's visited too late (after the type definitions)
+		void HandleNamespaceDeclaration(AST.NamespaceDeclaration node)
+		{
+			if (node == null)
+				return;
+			string[] namespaceName = node.Name.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach (string namePart in namespaceName) {
+				_cu.UsingScope = new DefaultUsingScope {
+					NamespaceName = PrependCurrentNamespace(namePart),
+					Parent = _cu.UsingScope
+				};
+			}
+		}
+		
 		public override bool EnterModule(AST.Module node)
 		{
+			HandleNamespaceDeclaration(node.Namespace);
 			if (!_firstModule && node.Members.Count > 0) {
 				EnterTypeDefinition(node, ClassType.Module);
 			}
@@ -537,18 +552,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return name;
 			else
 				return _cu.UsingScope.NamespaceName + "." + name;
-		}
-		
-		public override void OnNamespaceDeclaration(Boo.Lang.Compiler.Ast.NamespaceDeclaration node)
-		{
-			string[] namespaceName = node.Name.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-			foreach (string namePart in namespaceName) {
-				_cu.UsingScope = new DefaultUsingScope {
-					NamespaceName = PrependCurrentNamespace(namePart),
-					Parent = _cu.UsingScope
-				};
-			}
-			base.OnNamespaceDeclaration(node);
 		}
 	}
 }

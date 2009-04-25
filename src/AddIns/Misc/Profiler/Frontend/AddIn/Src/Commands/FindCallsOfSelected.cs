@@ -23,15 +23,14 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 	/// <summary>
 	/// Description of FindCallsOfSelected
 	/// </summary>
-	public class FindCallsOfSelected : AbstractMenuCommand
+	public class FindCallsOfSelected : ProfilerMenuCommand
 	{
 		/// <summary>
 		/// Starts the command
 		/// </summary>
 		public override void Run()
 		{
-			IList<CallTreeNodeViewModel> list = ((QueryView)Owner).SelectedItems.ToList();
-			ProfilerView parent = (((((QueryView)Owner).Parent as TabItem).Parent as TabControl).Parent as Grid).Parent as ProfilerView;
+			var list = GetSelectedItems().ToList();
 			
 			if (list.Count > 0) {
 				var items = from item in list select item.Node;	
@@ -47,7 +46,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				
 				string header = "Results";
 				
-				parent.CreateTab(header, "from c in Calls where " + string.Join(" || ", parts.ToArray()) + " select c");
+				Parent.CreateTab(header, "from c in Calls where " + string.Join(" || ", parts.ToArray()) + " select c");
 			}	
 		}
 	}

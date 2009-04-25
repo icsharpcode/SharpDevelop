@@ -188,7 +188,7 @@ namespace SharpRefactoring
 			foreach (ParameterDeclarationExpression pde in parameters)
 			{
 				expressions.Add(new DirectionExpression(
-					(FieldDirection)Enum.Parse(typeof(FieldDirection),pde.ParamModifier.ToString()),
+					(FieldDirection)Enum.Parse(typeof(FieldDirection), pde.ParamModifier.ToString()),
 					new IdentifierExpression(pde.ParameterName)));
 			}
 			
