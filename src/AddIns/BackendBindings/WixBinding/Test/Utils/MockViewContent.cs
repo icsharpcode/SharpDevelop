@@ -121,7 +121,7 @@ namespace WixBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public object Content {
+		public object Control {
 			get {
 				throw new NotImplementedException();
 			}
