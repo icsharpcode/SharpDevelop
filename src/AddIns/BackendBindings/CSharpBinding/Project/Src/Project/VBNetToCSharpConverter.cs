@@ -54,13 +54,18 @@ namespace CSharpBinding
 			base.CopyProperties(sourceProject, targetProject);
 			
 			CSharpProject project = (CSharpProject)targetProject;
+			
 			// 1591 = missing XML comment - the VB compiler does not have this warning
 			// we disable it by default because many VB projects have XML documentation turned on
 			// even though only few members are commented
-			project.SetProperty("NoWarn", "1591"); 
+			// (we replace existing NoWarn entries because VB and C# error codes don't match)
+			project.SetProperty("NoWarn", "1591");
 			
 			FixProperty(project, "DefineConstants",
-			            delegate(string v) { return v.Replace(',', ';'); });
+			            v => v.Replace(',', ';'));
+			
+			FixProperty(project, "ProjectTypeGuids",
+			            v => v.Replace(ProjectTypeGuids.VBNet, ProjectTypeGuids.CSharp, StringComparison.OrdinalIgnoreCase));
 		}
 		
 		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials, FileProjectItem sourceItem)

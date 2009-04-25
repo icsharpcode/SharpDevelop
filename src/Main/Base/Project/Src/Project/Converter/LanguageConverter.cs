@@ -106,14 +106,12 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		protected virtual void FixExtensionOfExtraProperties(FileProjectItem item, string sourceExtension, string targetExtension)
 		{
-			sourceExtension = sourceExtension.ToLowerInvariant();
-			
 			List<KeyValuePair<string, string>> replacements = new List<KeyValuePair<string, string>>();
 			foreach (string metadataName in item.MetadataNames) {
 				if ("Include".Equals(metadataName, StringComparison.OrdinalIgnoreCase))
 					continue;
 				string value = item.GetMetadata(metadataName);
-				if (value.ToLowerInvariant().EndsWith(sourceExtension)) {
+				if (value.EndsWith(sourceExtension, StringComparison.OrdinalIgnoreCase)) {
 					replacements.Add(new KeyValuePair<string, string>(metadataName, value));
 				}
 			}
