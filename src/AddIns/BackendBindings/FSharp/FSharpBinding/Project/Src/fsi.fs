@@ -117,7 +117,7 @@ module TheControl =
 type FSharpInteractive = class
     inherit AbstractPadContent
         new() = {}
-        override x.Content
+        override x.Control
             with get() = TheControl.panel :> Object
 end
 
