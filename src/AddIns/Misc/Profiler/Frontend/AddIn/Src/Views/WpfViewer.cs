@@ -27,6 +27,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		ProfilingDataProvider provider;
 		SharpDevelopElementHost host;
 		ProfilerView dataView;
+		OpenedFile file;
 		
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the view
@@ -37,12 +38,17 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			}
 		}
 		
+		public override string PrimaryFileName {
+			get { return file.FileName; }
+		}
+		
 		/// <summary>
 		/// Creates a new WpfViewer object
 		/// </summary>
 		public WpfViewer(OpenedFile file)
 		{
-			this.Files.Add(file);
+			//this.Files.Add(file);
+			this.file = file;
 			this.provider = ProfilingDataSQLiteProvider.FromFile(file.FileName);
 			this.TabPageText = Path.GetFileName(file.FileName);
 			this.TitleName = this.TabPageText;
