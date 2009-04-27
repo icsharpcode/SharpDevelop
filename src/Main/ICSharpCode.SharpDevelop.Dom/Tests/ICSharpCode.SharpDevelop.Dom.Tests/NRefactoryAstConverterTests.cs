@@ -151,5 +151,19 @@ class X {
 			Assert.AreEqual("IComparable", crt.Name);
 			Assert.AreSame(a, crt.TypeArguments[0].CastToGenericReturnType().TypeParameter);
 		}
+		
+		[Test]
+		public void StaticClassTest()
+		{
+			ICompilationUnit cu = Parse(@"
+using System;
+
+static class X {}
+");
+			IClass c = cu.Classes[0];
+			Assert.IsTrue(c.IsAbstract, "class should be abstract");
+			Assert.IsTrue(c.IsSealed, "class should be sealed");
+			Assert.IsTrue(c.IsStatic, "class should be static");
+		}
 	}
 }

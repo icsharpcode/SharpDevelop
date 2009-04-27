@@ -368,6 +368,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DomRegion bodyRegion = GetRegion(typeDeclaration.BodyStartLocation, typeDeclaration.EndLocation);
 			
 			DefaultClass c = new DefaultClass(cu, TranslateClassType(typeDeclaration.Type), ConvertTypeModifier(typeDeclaration.Modifier), region, GetCurrentClass());
+			if (c.IsStatic) {
+				// static classes are also abstract and sealed at the same time
+				c.Modifiers |= ModifierEnum.Abstract | ModifierEnum.Sealed;
+			}
 			c.BodyRegion = bodyRegion;
 			ConvertAttributes(typeDeclaration, c);
 			c.Documentation = GetDocumentation(region.BeginLine, typeDeclaration.Attributes);

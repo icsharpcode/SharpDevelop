@@ -166,6 +166,16 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		[Test]
+		public void StaticModifierTest()
+		{
+			IClass c = pc.GetClass("System.Environment", 0);
+			Assert.IsNotNull(c, "System.Environment not found");
+			Assert.IsTrue(c.IsAbstract, "class should be abstract");
+			Assert.IsTrue(c.IsSealed, "class should be sealed");
+			Assert.IsTrue(c.IsStatic, "class should be static");
+		}
+		
+		[Test]
 		public void InnerClassReferenceTest()
 		{
 			IClass c = pc.GetClass("System.Environment", 0);

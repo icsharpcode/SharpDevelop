@@ -222,6 +222,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (td.IsAbstract) {
 					modifiers |= ModifierEnum.Abstract;
 				}
+				if (td.IsSealed && td.IsAbstract) {
+					modifiers |= ModifierEnum.Static;
+				}
 				
 				if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPublic) {
 					modifiers |= ModifierEnum.Public;
