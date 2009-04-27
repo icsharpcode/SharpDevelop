@@ -22,11 +22,13 @@ namespace ICSharpCode.Svn
 	/// </summary>
 	public partial class InfoPanel : UserControl
 	{
-		IViewContent viewContent;
+		string fileName;
 		
-		public InfoPanel(IViewContent viewContent)
+		public InfoPanel(string fileName)
 		{
-			this.viewContent = viewContent;
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			this.fileName = fileName;
 			
 			InitializeComponent();
 			
@@ -129,7 +131,6 @@ namespace ICSharpCode.Svn
 		{
 			try {
 				LogMessage logMessage = (LogMessage)loadChangedPathsItem.Tag;
-				string fileName = System.IO.Path.GetFullPath(viewContent.PrimaryFileName);
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
 					client.AllowInteractiveAuthorization();
 					try {
