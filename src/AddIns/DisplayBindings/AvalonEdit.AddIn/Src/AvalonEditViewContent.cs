@@ -101,7 +101,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			foreach (SDBookmark bookmark in BookmarkManager.GetBookmarks(codeEditor.FileName)) {
 				bookmark.Document = codeEditor.DocumentAdapter;
-				codeEditor.IconBarMargin.Bookmarks.Add(bookmark);
+				codeEditor.IconBarManager.Bookmarks.Add(bookmark);
 			}
 			BookmarkManager.Added += BookmarkManager_Added;
 			BookmarkManager.Removed += BookmarkManager_Removed;
@@ -111,17 +111,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			BookmarkManager.Added -= BookmarkManager_Added;
 			BookmarkManager.Removed -= BookmarkManager_Removed;
-			foreach (SDBookmark bookmark in codeEditor.IconBarMargin.Bookmarks.OfType<SDBookmark>()) {
+			foreach (SDBookmark bookmark in codeEditor.IconBarManager.Bookmarks.OfType<SDBookmark>()) {
 				if (bookmark.Document == codeEditor.DocumentAdapter) {
 					bookmark.Document = null;
 				}
 			}
-			codeEditor.IconBarMargin.Bookmarks.Clear();
+			codeEditor.IconBarManager.Bookmarks.Clear();
 		}
 		
 		void BookmarkManager_Removed(object sender, BookmarkEventArgs e)
 		{
-			codeEditor.IconBarMargin.Bookmarks.Remove(e.Bookmark);
+			codeEditor.IconBarManager.Bookmarks.Remove(e.Bookmark);
 			if (e.Bookmark.Document == codeEditor.DocumentAdapter) {
 				e.Bookmark.Document = null;
 			}
@@ -130,14 +130,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void BookmarkManager_Added(object sender, BookmarkEventArgs e)
 		{
 			if (FileUtility.IsEqualFileName(this.PrimaryFileName, e.Bookmark.FileName)) {
-				codeEditor.IconBarMargin.Bookmarks.Add(e.Bookmark);
+				codeEditor.IconBarManager.Bookmarks.Add(e.Bookmark);
 				e.Bookmark.Document = codeEditor.DocumentAdapter;
 			}
 		}
 		
 		void BookmarksNotifyNameChange(string newFileName)
 		{
-			foreach (SDBookmark bookmark in codeEditor.IconBarMargin.Bookmarks.OfType<SDBookmark>()) {
+			foreach (SDBookmark bookmark in codeEditor.IconBarManager.Bookmarks.OfType<SDBookmark>()) {
 				bookmark.FileName = newFileName;
 			}
 		}

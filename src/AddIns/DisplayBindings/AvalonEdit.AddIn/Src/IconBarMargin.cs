@@ -22,30 +22,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// Icon bar: contains breakpoints and other icons.
 	/// </summary>
-	public class IconBarMargin : AbstractMargin, IBookmarkMargin
+	public class IconBarMargin : AbstractMargin
 	{
-		#region IBookmarkMargin implementation
-		ObservableCollection<IBookmark> bookmarks = new ObservableCollection<IBookmark>();
+		readonly IconBarManager manager;
 		
-		public IconBarMargin()
+		public IconBarMargin(IconBarManager manager)
 		{
-			bookmarks.CollectionChanged += bookmarks_CollectionChanged;
+			if (manager == null)
+				throw new ArgumentNullException("manager");
+			this.manager = manager;
 		}
-		
-		public IList<IBookmark> Bookmarks {
-			get { return bookmarks; }
-		}
-		
-		void bookmarks_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			InvalidateVisual();
-		}
-		
-		public void Redraw()
-		{
-			InvalidateVisual();
-		}
-		#endregion
 		
 		#region OnTextViewChanged
 		/// <inheritdoc/>
@@ -93,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (textView != null && textView.VisualLinesValid) {
 				// create a dictionary line number => first bookmark
 				Dictionary<int, IBookmark> bookmarkDict = new Dictionary<int, IBookmark>();
-				foreach (IBookmark bm in bookmarks) {
+				foreach (IBookmark bm in manager.Bookmarks) {
 					int line = bm.LineNumber;
 					if (!bookmarkDict.ContainsKey(line))
 						bookmarkDict.Add(line, bm);
@@ -117,7 +103,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				VisualLine visualLine = textView.GetVisualLineFromVisualTop(e.GetPosition(textView).Y + textView.VerticalOffset);
 				if (visualLine != null) {
 					int line = visualLine.FirstDocumentLine.LineNumber;
-					foreach (IBookmark bm in bookmarks) {
+					foreach (IBookmark bm in manager.Bookmarks) {
 						if (bm.LineNumber == line) {
 							bm.MouseDown(e);
 							if (e.Handled)

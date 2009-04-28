@@ -39,7 +39,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly CodeEditorAdapter primaryTextEditorAdapter;
 		TextEditor secondaryTextEditor;
 		CodeEditorAdapter secondaryTextEditorAdapter;
-		readonly IconBarMargin iconBarMargin;
+		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
 		
 		public TextEditor PrimaryTextEditor {
@@ -86,8 +86,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return primaryTextEditorAdapter;
 		}
 		
-		public IconBarMargin IconBarMargin {
-			get { return iconBarMargin; }
+		public IconBarManager IconBarManager {
+			get { return iconBarManager; }
 		}
 		
 		string fileName;
@@ -116,17 +116,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
 			
 			textMarkerService = new TextMarkerService(this);
+			iconBarManager = new IconBarManager();
+			
 			primaryTextEditor = CreateTextEditor();
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
 			
 			this.Document = primaryTextEditor.Document;
 			primaryTextEditor.SetBinding(TextEditor.DocumentProperty, new Binding("Document") { Source = this });
-			
-			// TODO: support iconbarmargin in split view
-			this.iconBarMargin = new IconBarMargin { TextView = primaryTextEditor.TextArea.TextView };
-			primaryTextEditor.TextArea.LeftMargins.Insert(0, iconBarMargin);
-			primaryTextEditor.TextArea.TextView.Services.AddService(typeof(IBookmarkMargin), iconBarMargin);
 			
 			this.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 			this.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
@@ -158,6 +155,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.BackgroundRenderers.Add(textMarkerService);
 			textView.LineTransformers.Add(textMarkerService);
 			textView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
+			
+			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
+			var iconBarMargin = new IconBarMargin(iconBarManager) { TextView = textView };
+			textEditor.TextArea.LeftMargins.Insert(0, iconBarMargin);
 			
 			return textEditor;
 		}
@@ -240,7 +241,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			TextEditor textEditor = (TextEditor)sender;
 			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(GetAdapter(textEditor));
-			var pos = textEditor.GetPositionFromPoint(e.GetPosition(this));
+			var pos = textEditor.GetPositionFromPoint(e.GetPosition(textEditor));
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
 				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
