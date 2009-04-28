@@ -42,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		/// <param name="textArea">The text area on which completion is performed.</param>
 		/// <param name="completionSegment">The text segment that was used by the completion window if
-		/// the user types.</param>
+		/// the user types (segment between CompletionWindow.StartOffset and CompletionWindow.EndOffset).</param>
 		/// <param name="insertionRequestEventArgs">The EventArgs used for the insertion request.
 		/// These can be TextCompositionEventArgs, KeyEventArgs, MouseEventArgs, depending on how
 		/// the insertion was triggered.</param>

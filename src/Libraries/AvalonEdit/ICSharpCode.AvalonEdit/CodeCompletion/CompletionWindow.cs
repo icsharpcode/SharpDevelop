@@ -89,6 +89,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		/// <summary>
 		/// Gets/Sets the start offset of the edited text portion.
+		/// This text portion is used to determine the text used to select an entry in the completion list by typing.
 		/// </summary>
 		public int StartOffset {
 			get { return startOffset; }
@@ -97,6 +98,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		/// <summary>
 		/// Gets/Sets the end offset of the edited text portion.
+		/// This text portion is used to determine the text used to select an entry in the completion list by typing.
 		/// </summary>
 		public int EndOffset {
 			get { return endOffset; }
