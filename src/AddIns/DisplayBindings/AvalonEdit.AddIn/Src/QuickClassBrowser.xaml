@@ -16,19 +16,19 @@
 			</DataTemplate.Triggers>
 		</DataTemplate>
 	</UserControl.Resources>
-	<Grid>
+	<Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="0.5*"/>
 			<ColumnDefinition Width="0.5*"/>
 		</Grid.ColumnDefinitions>
 		<ComboBox Name="classComboBox"
 		          Grid.Column="0"
-		          Margin="0,0,4,0"
+		          Margin="0,0,4,1"
 		          ItemTemplate="{StaticResource comboBoxItemTemplate}"
 		          SelectionChanged="classComboBoxSelectionChanged"/>
 		<ComboBox Name="membersComboBox"
 		          Grid.Column="1"
-		          Margin="0,0,4,0"
+		          Margin="0,0,4,1"
 		          ItemTemplate="{StaticResource comboBoxItemTemplate}"
 		          SelectionChanged="membersComboBoxSelectionChanged"/>
 	</Grid>

@@ -829,7 +829,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			foreach (IBackgroundRenderer bg in backgroundRenderers) {
 				if (bg.Layer == layer) {
-					bg.Draw(drawingContext);
+					bg.Draw(this, drawingContext);
 				}
 			}
 		}

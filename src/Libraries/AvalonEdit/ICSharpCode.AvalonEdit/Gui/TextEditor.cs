@@ -68,8 +68,8 @@ namespace ICSharpCode.AvalonEdit
 			this.textArea = textArea;
 			this.Options = textArea.Options;
 			this.Document = new TextDocument();
-			textArea.SetBinding(TextArea.DocumentProperty, new Binding("Document") { Source = this });
-			textArea.SetBinding(TextArea.OptionsProperty, new Binding("Options") { Source = this });
+			textArea.SetBinding(TextArea.DocumentProperty, new Binding(DocumentProperty.Name) { Source = this });
+			textArea.SetBinding(TextArea.OptionsProperty, new Binding(OptionsProperty.Name) { Source = this });
 		}
 		
 		#region Document property

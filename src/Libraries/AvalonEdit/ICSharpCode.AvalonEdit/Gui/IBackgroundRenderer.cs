@@ -28,6 +28,6 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <summary>
 		/// Causes the background renderer to draw.
 		/// </summary>
-		void Draw(DrawingContext drawingContext);
+		void Draw(TextView textView, DrawingContext drawingContext);
 	}
 }

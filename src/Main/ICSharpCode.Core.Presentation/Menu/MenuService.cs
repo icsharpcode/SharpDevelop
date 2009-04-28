@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,6 +20,48 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public static class MenuService
 	{
+		static List<Type> commandClasses = new List<Type> {
+			typeof(ApplicationCommands),
+			typeof(NavigationCommands)
+		};
+		
+		/// <summary>
+		/// Gets a known WPF command.
+		/// </summary>
+		/// <param name="commandName">The name of the command, e.g. "Copy".</param>
+		/// <returns>The WPF ICommand with the given name, or null if thecommand was not found.</returns>
+		public static System.Windows.Input.ICommand GetRegisteredCommand(string commandName)
+		{
+			if (commandName == null)
+				throw new ArgumentNullException("commandName");
+			lock (commandClasses) {
+				foreach (Type t in commandClasses) {
+					PropertyInfo p = t.GetProperty(commandName, BindingFlags.Public | BindingFlags.Static);
+					if (p != null) {
+						return (System.Windows.Input.ICommand)(p.GetValue(null, null));
+					}
+					FieldInfo f = t.GetField(commandName, BindingFlags.Public | BindingFlags.Static);
+					if (f != null) {
+						return (System.Windows.Input.ICommand)(f.GetValue(null));
+					}
+				}
+				return null;
+			}
+		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public static void RegisterCommandClass(Type commandClass)
+		{
+			if (commandClass == null)
+				throw new ArgumentNullException("commandClass");
+			lock (commandClasses) {
+				if (!commandClasses.Contains(commandClass))
+					commandClasses.Add(commandClass);
+			}
+		}
+		
 		public static void UpdateStatus(IEnumerable menuItems)
 		{
 			if (menuItems == null)
@@ -86,7 +129,7 @@ namespace ICSharpCode.Core.Presentation
 			return result;
 		}
 		
-		internal static IList ExpandMenuBuilders(ICollection input)
+		static IList ExpandMenuBuilders(ICollection input)
 		{
 			ArrayList result = new ArrayList(input.Count);
 			foreach (object o in input) {

@@ -22,12 +22,9 @@ namespace ICSharpCode.Core.Presentation
 		{
 			string commandName = codon.Properties["command"];
 			if (!string.IsNullOrEmpty(commandName)) {
-				PropertyInfo p = typeof(ApplicationCommands).GetProperty(commandName);
-				if (p == null) {
-					p = typeof(NavigationCommands).GetProperty(commandName);
-				}
-				if (p != null) {
-					return (System.Windows.Input.ICommand)p.GetValue(null, null);
+				var wpfCommand = MenuService.GetRegisteredCommand(commandName);
+				if (wpfCommand != null) {
+					return wpfCommand;
 				} else {
 					MessageService.ShowError("Could not find WPF command '" + commandName + "'.");
 					// return dummy command

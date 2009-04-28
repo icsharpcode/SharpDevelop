@@ -30,7 +30,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (codeEditor == null)
 				throw new ArgumentNullException("codeEditor");
 			this.codeEditor = codeEditor;
-			codeEditor.TextEditor.DocumentChanged += codeEditor_DocumentChanged;
+			codeEditor.DocumentChanged += codeEditor_DocumentChanged;
 			codeEditor_DocumentChanged(null, null);
 		}
 		
@@ -73,7 +73,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		internal void Redraw(ISegment segment)
 		{
-			codeEditor.TextEditor.TextArea.TextView.Redraw(segment, DispatcherPriority.Normal);
+			codeEditor.Redraw(segment, DispatcherPriority.Normal);
 		}
 		#endregion
 		
@@ -111,9 +111,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public void Draw(DrawingContext drawingContext)
+		public void Draw(TextView textView, DrawingContext drawingContext)
 		{
-			TextView textView = codeEditor.TextEditor.TextArea.TextView;
+			if (textView == null)
+				throw new ArgumentNullException("textView");
+			if (drawingContext == null)
+				throw new ArgumentNullException("drawingContext");
 			if (markers == null || !textView.VisualLinesValid)
 				return;
 			var visualLines = textView.VisualLines;

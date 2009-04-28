@@ -59,8 +59,8 @@ namespace ICSharpCode.AvalonEdit
 				throw new ArgumentNullException("textView");
 			this.textView = textView;
 			this.Options = textView.Options;
-			textView.SetBinding(TextView.DocumentProperty, new Binding("Document") { Source = this });
-			textView.SetBinding(TextView.OptionsProperty, new Binding("Options") { Source = this });
+			textView.SetBinding(TextView.DocumentProperty, new Binding(DocumentProperty.Name) { Source = this });
+			textView.SetBinding(TextView.OptionsProperty, new Binding(OptionsProperty.Name) { Source = this });
 			
 			textView.Services.AddService(typeof(TextArea), this);
 			

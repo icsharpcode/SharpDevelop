@@ -1595,6 +1595,10 @@
 				          shortcut = "Shift|Control|Tab"
 				          class = "ICSharpCode.SharpDevelop.Commands.SelectPrevWindow" />
 				<MenuItem id ="NxtPrvSeparator" type = "Separator" />
+				<MenuItem id = "SplitView"
+				          label = "${res:XML.MainMenu.WindowMenu.Split}"
+				          icon  = "Icons.16x16.SplitWindow"
+				          command = "SplitView"/>
 				<MenuItem id    = "CloseAll"
 				          label = "${res:XML.MainMenu.FileMenu.CloseAll}"
 				          icon  = "Icons.16x16.CloseAllDocuments"
@@ -1840,17 +1844,6 @@
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace"/>
 			<!--			</Condition> -->
 		</MenuItem>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Workbench/MainMenu/Window">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
-			<MenuItem id = "SplitTextEditor"
-			          insertafter="NxtPrvSeparator"
-			          insertbefore="CloseAll"
-			          label = "${res:XML.MainMenu.WindowMenu.Split}"
-			          icon  = "Icons.16x16.SplitWindow"
-			          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.SplitTextEditor"/>
-		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit">

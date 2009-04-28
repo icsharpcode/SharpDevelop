@@ -93,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			WorkbenchSingleton.workbench = workbench;
 
+			Core.Presentation.MenuService.RegisterCommandClass(typeof(SharpDevelopRoutedCommands));
 			DisplayBindingService.InitializeService();
 			LayoutConfiguration.LoadLayoutConfiguration();
 			FileService.InitializeService();

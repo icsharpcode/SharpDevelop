@@ -114,7 +114,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			base.OnMouseDown(e);
 			TextView textView = this.TextView;
 			if (!e.Handled && textView != null) {
-				VisualLine visualLine = textView.GetVisualLineFromVisualTop(e.GetPosition(textView).Y - textView.VerticalOffset);
+				VisualLine visualLine = textView.GetVisualLineFromVisualTop(e.GetPosition(textView).Y + textView.VerticalOffset);
 				if (visualLine != null) {
 					int line = visualLine.FirstDocumentLine.LineNumber;
 					foreach (IBookmark bm in bookmarks) {

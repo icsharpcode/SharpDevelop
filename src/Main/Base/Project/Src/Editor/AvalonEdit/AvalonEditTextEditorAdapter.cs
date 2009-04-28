@@ -23,6 +23,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		readonly TextEditor textEditor;
 		AvalonEditDocumentAdapter document;
 		
+		public TextEditor TextEditor {
+			get { return textEditor; }
+		}
+		
 		public AvalonEditTextEditorAdapter(TextEditor textEditor)
 		{
 			if (textEditor == null)

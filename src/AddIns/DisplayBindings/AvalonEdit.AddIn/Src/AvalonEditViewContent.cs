@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (file != PrimaryFile)
 				return;
-			codeEditor.TextEditor.Save(stream);
+			codeEditor.Save(stream);
 		}
 		
 		bool isLoading;
@@ -64,10 +64,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			try {
 				BookmarksDetach();
 				codeEditor.FileName = file.FileName;
-				codeEditor.TextEditor.SyntaxHighlighting =
+				codeEditor.PrimaryTextEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
 				LoadFormatter();
-				codeEditor.TextEditor.Load(stream);
+				codeEditor.Load(stream);
 				BookmarksAttach();
 			} finally {
 				isLoading = false;
@@ -78,8 +78,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			const string formatingStrategyPath = "/AddIns/DefaultTextEditor/Formatter";
 			
-			if (codeEditor.TextEditor.SyntaxHighlighting != null) {
-				string formatterPath = formatingStrategyPath + "/" + codeEditor.TextEditor.SyntaxHighlighting.Name;
+			if (codeEditor.SyntaxHighlighting != null) {
+				string formatterPath = formatingStrategyPath + "/" + codeEditor.SyntaxHighlighting.Name;
 				var formatter = AddInTree.BuildItems<IFormattingStrategy>(formatterPath, this, false);
 				if (formatter != null && formatter.Count > 0) {
 					codeEditor.FormattingStrategy = formatter[0];
@@ -100,7 +100,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void BookmarksAttach()
 		{
 			foreach (SDBookmark bookmark in BookmarkManager.GetBookmarks(codeEditor.FileName)) {
-				bookmark.Document = codeEditor.TextEditorAdapter.Document;
+				bookmark.Document = codeEditor.DocumentAdapter;
 				codeEditor.IconBarMargin.Bookmarks.Add(bookmark);
 			}
 			BookmarkManager.Added += BookmarkManager_Added;
@@ -112,7 +112,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			BookmarkManager.Added -= BookmarkManager_Added;
 			BookmarkManager.Removed -= BookmarkManager_Removed;
 			foreach (SDBookmark bookmark in codeEditor.IconBarMargin.Bookmarks.OfType<SDBookmark>()) {
-				if (bookmark.Document == codeEditor.TextEditorAdapter.Document) {
+				if (bookmark.Document == codeEditor.DocumentAdapter) {
 					bookmark.Document = null;
 				}
 			}
@@ -122,7 +122,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void BookmarkManager_Removed(object sender, BookmarkEventArgs e)
 		{
 			codeEditor.IconBarMargin.Bookmarks.Remove(e.Bookmark);
-			if (e.Bookmark.Document == codeEditor.TextEditorAdapter.Document) {
+			if (e.Bookmark.Document == codeEditor.DocumentAdapter) {
 				e.Bookmark.Document = null;
 			}
 		}
@@ -131,7 +131,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (FileUtility.IsEqualFileName(this.PrimaryFileName, e.Bookmark.FileName)) {
 				codeEditor.IconBarMargin.Bookmarks.Add(e.Bookmark);
-				e.Bookmark.Document = codeEditor.TextEditorAdapter.Document;
+				e.Bookmark.Document = codeEditor.DocumentAdapter;
 			}
 		}
 		
@@ -171,16 +171,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public Properties CreateMemento()
 		{
 			Properties memento = new Properties();
-			memento.Set("CaretOffset", codeEditor.TextEditor.CaretOffset);
-			memento.Set("ScrollPositionY", codeEditor.TextEditor.VerticalOffset);
+			memento.Set("CaretOffset", codeEditor.ActiveTextEditor.CaretOffset);
+			memento.Set("ScrollPositionY", codeEditor.ActiveTextEditor.VerticalOffset);
 			return memento;
 		}
 		
 		public void SetMemento(Properties memento)
 		{
-			codeEditor.TextEditor.ScrollToVerticalOffset(memento.Get("ScrollPositionY", 0.0));
+			codeEditor.PrimaryTextEditor.ScrollToVerticalOffset(memento.Get("ScrollPositionY", 0.0));
 			try {
-				codeEditor.TextEditor.CaretOffset = memento.Get("CaretOffset", 0);
+				codeEditor.PrimaryTextEditor.CaretOffset = memento.Get("CaretOffset", 0);
 			} catch (ArgumentOutOfRangeException) {
 				// ignore caret out of range - maybe file was changed externally?
 			}
@@ -189,13 +189,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		#region ITextEditorProvider
 		public ITextEditor TextEditor {
-			get { return codeEditor.TextEditorAdapter; }
+			get { return codeEditor.ActiveTextEditorAdapter; }
 		}
 		
 		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			if (file == this.PrimaryFile)
-				return codeEditor.TextEditorAdapter.Document;
+				return codeEditor.DocumentAdapter;
 			else
 				return null;
 		}
@@ -203,11 +203,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		#region IPositionable
 		public int Line {
-			get { return codeEditor.TextEditor.TextArea.Caret.Line; }
+			get { return this.TextEditor.Caret.Line; }
 		}
 		
 		public int Column {
-			get { return codeEditor.TextEditor.TextArea.Caret.Column; }
+			get { return this.TextEditor.Caret.Column; }
 		}
 		
 		public void JumpTo(int line, int column)
