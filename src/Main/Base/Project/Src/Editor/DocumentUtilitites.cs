@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
+using System.Windows.Documents;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -83,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <returns>The offset of the word start, or -1 if there is no word start before the specified offset.</returns>
 		public static int FindPrevWordStart(this IDocument document, int offset)
 		{
-			return TextUtilities.GetNextCaretPosition(GetTextSource(document), offset, true, CaretPositioningMode.WordStart);
+			return TextUtilities.GetNextCaretPosition(GetTextSource(document), offset, LogicalDirection.Backward, CaretPositioningMode.WordStart);
 		}
 		
 		/// <summary>
