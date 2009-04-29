@@ -90,6 +90,8 @@ namespace ICSharpCode.SharpDevelop
 		
 		protected virtual void ChangeFileName(string newValue)
 		{
+			WorkbenchSingleton.AssertMainThread();
+			
 			fileName = newValue;
 			
 			if (FileNameChanged != null) {

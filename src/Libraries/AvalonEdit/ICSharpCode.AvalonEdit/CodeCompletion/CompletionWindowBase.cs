@@ -82,13 +82,13 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		void textArea_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			e.Handled = RaiseEventPair(this, PreviewKeyDownEvent, KeyDownEvent,
-			                         new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
+			                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
 		}
 		
 		void textArea_PreviewKeyUp(object sender, KeyEventArgs e)
 		{
 			e.Handled = RaiseEventPair(this, PreviewKeyUpEvent, KeyUpEvent,
-			                         new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
+			                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
 		}
 		
 		void TextViewScrollOffsetChanged(object sender, EventArgs e)
@@ -162,10 +162,19 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		void CloseIfFocusLost()
 		{
-			Debug.WriteLine("CloseIfFocusLost: this.IsActive=" + this.IsActive + " IsTextAreaFocused=" + IsTextAreaFocused);
-			if (!this.IsActive && !IsTextAreaFocused) {
-				Close();
+			if (CloseOnFocusLost) {
+				Debug.WriteLine("CloseIfFocusLost: this.IsActive=" + this.IsActive + " IsTextAreaFocused=" + IsTextAreaFocused);
+				if (!this.IsActive && !IsTextAreaFocused) {
+					Close();
+				}
 			}
+		}
+		
+		/// <summary>
+		/// Gets whether the completion window should automatically close when the text editor looses focus.
+		/// </summary>
+		protected virtual bool CloseOnFocusLost {
+			get { return true; }
 		}
 		
 		bool IsTextAreaFocused {

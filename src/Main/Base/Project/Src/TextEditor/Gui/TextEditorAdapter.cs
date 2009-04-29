@@ -5,11 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
@@ -195,6 +197,17 @@ namespace ICSharpCode.SharpDevelop
 		public void JumpTo(int line, int column)
 		{
 			sdtac.ActiveTextAreaControl.JumpTo(line - 1, column - 1);
+		}
+		
+		public IInsightWindow ActiveInsightWindow {
+			get {
+				return null;
+			}
+		}
+		
+		public IInsightWindow OpenInsightWindow(IEnumerable<IInsightItem> items)
+		{
+			throw new NotImplementedException();
 		}
 	}
 	

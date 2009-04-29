@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 
@@ -129,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public virtual void ShowCompletionWindow(ICompletionItemList data)
 		{
 		}
-	
+		
 		public object GetService(Type serviceType)
 		{
 			return textEditor.TextArea.GetService(serviceType);
@@ -171,6 +172,23 @@ namespace ICSharpCode.SharpDevelop.Editor
 			textEditor.TextArea.Selection = Selection.Empty;
 			textEditor.TextArea.Caret.Position = new TextViewPosition(line, column, -1);
 			textEditor.TextArea.Caret.BringCaretToView();
+		}
+		
+		
+		AvalonEditInsightWindow activeInsightWindow;
+		
+		public virtual IInsightWindow ActiveInsightWindow {
+			get {
+				return activeInsightWindow;
+			}
+		}
+		
+		public virtual IInsightWindow OpenInsightWindow(IEnumerable<IInsightItem> items)
+		{
+			activeInsightWindow = new AvalonEditInsightWindow(textEditor.TextArea);
+			activeInsightWindow.Items.AddRange(items);
+			activeInsightWindow.SelectedItem = activeInsightWindow.Items[0];
+			return activeInsightWindow;
 		}
 	}
 }

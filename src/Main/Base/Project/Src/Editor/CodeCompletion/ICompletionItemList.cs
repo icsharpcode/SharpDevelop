@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		IEnumerable<ICompletionItem> Items { get; }
 		
 		/// <summary>
-		/// Gets/sets the suggested item.
+		/// Gets the suggested item.
 		/// This item will be pre-selected in the completion list.
 		/// </summary>
 		ICompletionItem SuggestedItem { get; }

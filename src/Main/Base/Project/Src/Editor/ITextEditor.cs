@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.NRefactory;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -60,10 +61,24 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		string FileName { get; }
 		
+		[Obsolete]
 		void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider);
 		[Obsolete]
 		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);
+		
 		void ShowCompletionWindow(ICompletionItemList data);
+		
+		/// <summary>
+		/// Open a new insight window showing the specific insight items.
+		/// </summary>
+		/// <param name="items">The insight items to show in the window.</param>
+		/// <returns>The insight window.</returns>
+		IInsightWindow OpenInsightWindow(IEnumerable<IInsightItem> items);
+		
+		/// <summary>
+		/// Gets the insight window that is currently open.
+		/// </summary>
+		IInsightWindow ActiveInsightWindow { get; }
 	}
 	
 	public interface ITextEditorOptions

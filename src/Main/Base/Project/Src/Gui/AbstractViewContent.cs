@@ -229,6 +229,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public virtual OpenedFile PrimaryFile {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				if (files.Count != 0)
 					return files[0];
 				else

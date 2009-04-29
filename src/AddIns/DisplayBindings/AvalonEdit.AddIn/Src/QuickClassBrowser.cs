@@ -21,6 +21,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public partial class QuickClassBrowser : UserControl
 	{
+		// type codes are used for sorting entities by type
 		const int TYPE_CLASS = 0;
 		const int TYPE_CONSTRUCTOR = 1;
 		const int TYPE_METHOD = 2;
