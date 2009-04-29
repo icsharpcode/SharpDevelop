@@ -31,6 +31,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
+		/// Gets the language this compilation unit was written in.
+		/// </summary>
+		LanguageProperties Language {
+			get;
+		}
+		
+		/// <summary>
 		/// Gets the main using scope of the compilation unit.
 		/// That scope usually represents the root namespace.
 		/// </summary>

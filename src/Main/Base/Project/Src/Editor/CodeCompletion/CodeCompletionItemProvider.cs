@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			if (expressionFinder == null) {
 				return ExpressionResult.Empty;
 			} else {
-				return expressionFinder.FindExpression(document.GetText(0, offset), offset);
+				return expressionFinder.FindExpression(document.Text, offset);
 			}
 		}
 		
@@ -224,8 +224,9 @@ namespace ICSharpCode.SharpDevelop.Editor
 							description += Environment.NewLine +
 								StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.OverloadsCounter}", new string[,] {{"NumOverloads", this.Overloads.ToString()}});
 						}
-						if (!string.IsNullOrEmpty(entity.Documentation)) {
-							string documentation = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(entity.Documentation);
+						string entityDoc = entity.Documentation;
+						if (!string.IsNullOrEmpty(entityDoc)) {
+							string documentation = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(entityDoc);
 							if (!string.IsNullOrEmpty(documentation)) {
 								description += Environment.NewLine + documentation;
 							}

@@ -71,9 +71,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <summary>
 		/// Open a new insight window showing the specific insight items.
 		/// </summary>
-		/// <param name="items">The insight items to show in the window.</param>
-		/// <returns>The insight window.</returns>
-		IInsightWindow OpenInsightWindow(IEnumerable<IInsightItem> items);
+		/// <param name="items">The insight items to show in the window.
+		/// If this property is null or an empty list, the insight window will not be shown.</param>
+		/// <returns>The insight window; or null if no insight window was opened.</returns>
+		IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items);
 		
 		/// <summary>
 		/// Gets the insight window that is currently open.

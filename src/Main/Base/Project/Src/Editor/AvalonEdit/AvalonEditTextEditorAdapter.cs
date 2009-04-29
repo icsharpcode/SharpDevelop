@@ -94,8 +94,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 			
 			public ICSharpCode.NRefactory.Location Position {
-				get { return AvalonEditDocumentAdapter.ToLocation(caret.Position); }
-				set { caret.Position = new TextViewPosition(AvalonEditDocumentAdapter.ToPosition(value)); }
+				get { return AvalonEditDocumentAdapter.ToLocation(caret.Location); }
+				set { caret.Location = AvalonEditDocumentAdapter.ToPosition(value); }
 			}
 		}
 		
@@ -170,25 +170,19 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public void JumpTo(int line, int column)
 		{
 			textEditor.TextArea.Selection = Selection.Empty;
-			textEditor.TextArea.Caret.Position = new TextViewPosition(line, column, -1);
+			textEditor.TextArea.Caret.Position = new TextViewPosition(line, column);
 			textEditor.TextArea.Caret.BringCaretToView();
 		}
 		
-		
-		AvalonEditInsightWindow activeInsightWindow;
-		
 		public virtual IInsightWindow ActiveInsightWindow {
 			get {
-				return activeInsightWindow;
+				return null;
 			}
 		}
 		
-		public virtual IInsightWindow OpenInsightWindow(IEnumerable<IInsightItem> items)
+		public virtual IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
 		{
-			activeInsightWindow = new AvalonEditInsightWindow(textEditor.TextArea);
-			activeInsightWindow.Items.AddRange(items);
-			activeInsightWindow.SelectedItem = activeInsightWindow.Items[0];
-			return activeInsightWindow;
+			return null;
 		}
 	}
 }

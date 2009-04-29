@@ -106,7 +106,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 							start = start.NextLine;
 						}
 					} else {
-						string indentationString = textArea.Options.GetIndentationString(textArea.Caret.Position.VisualColumn);
+						string indentationString = textArea.Options.GetIndentationString(textArea.Caret.Column);
 						textArea.ReplaceSelectionWithText(indentationString);
 					}
 				}

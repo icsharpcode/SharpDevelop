@@ -174,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			switch (ch) {
 				case '(':
 					if (enableMethodInsight && CodeCompletionOptions.InsightEnabled) {
-						editor.ShowInsightWindow(new MethodInsightDataProvider());
+						editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;

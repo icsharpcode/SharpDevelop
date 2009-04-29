@@ -141,7 +141,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
 		public string IndentationString {
-			get { return GetIndentationString(0); }
+			get { return GetIndentationString(1); }
 		}
 		
 		/// <summary>
@@ -149,11 +149,11 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public virtual string GetIndentationString(int column)
 		{
-			if (column < 0)
-				throw new ArgumentOutOfRangeException("column", column, "Value must be non-negative.");
+			if (column < 1)
+				throw new ArgumentOutOfRangeException("column", column, "Value must be at least 1.");
 			int indentationSize = this.IndentationSize;
 			if (ConvertTabsToSpaces) {
-				return new string(' ', indentationSize - (column % indentationSize));
+				return new string(' ', indentationSize - ((column - 1) % indentationSize));
 			} else {
 				return "\t";
 			}

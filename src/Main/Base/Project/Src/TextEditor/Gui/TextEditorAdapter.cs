@@ -205,9 +205,9 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public IInsightWindow OpenInsightWindow(IEnumerable<IInsightItem> items)
+		public IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 	}
 	

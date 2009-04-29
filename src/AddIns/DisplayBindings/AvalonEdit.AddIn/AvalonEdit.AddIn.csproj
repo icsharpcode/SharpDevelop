@@ -70,6 +70,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\SharpDevelopCompletionWindow.cs" />
+    <Compile Include="Src\SharpDevelopInsightWindow.cs" />
     <Compile Include="Src\TextMarkerService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -77,11 +78,6 @@
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

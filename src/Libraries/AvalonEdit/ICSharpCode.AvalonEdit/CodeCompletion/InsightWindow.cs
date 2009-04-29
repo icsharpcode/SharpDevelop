@@ -5,33 +5,34 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Gui;
 using System;
 using System.Windows;
-using ICSharpCode.AvalonEdit.Document;
 using System.Windows.Controls;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {
 	/// <summary>
-	/// A popup-like window.
+	/// A popup-like window that is attached to a text segment.
 	/// </summary>
 	public class InsightWindow : CompletionWindowBase
 	{
-		TextDocument document;
-		int startOffset;
-		int endOffset;
+		static InsightWindow()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(InsightWindow),
+			                                         new FrameworkPropertyMetadata(typeof(InsightWindow)));
+			AllowsTransparencyProperty.OverrideMetadata(typeof(InsightWindow),
+			                                            new FrameworkPropertyMetadata(Boxes.True));
+		}
 		
 		/// <summary>
 		/// Creates a new InsightWindow.
 		/// </summary>
 		public InsightWindow(TextArea textArea) : base(textArea)
 		{
-			this.SizeToContent = SizeToContent.WidthAndHeight;
-			// prevent user from resizing window to 0x0
-			this.MinHeight = 15;
-			this.MinWidth = 30;
-			
-			startOffset = endOffset = this.TextArea.Caret.Offset;
+			this.CloseAutomatically = true;
 		}
 		
 		/// <summary>
@@ -45,50 +46,27 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			get { return this.CloseAutomatically; }
 		}
 		
-		/// <summary>
-		/// Gets/Sets the start of the text range in which the insight window stays open.
-		/// Has no effect if CloseAutomatically is false.
-		/// </summary>
-		public int StartOffset { get; set; }
-		
-		/// <summary>
-		/// Gets/Sets the end of the text range in which the insight window stays open.
-		/// Has no effect if CloseAutomatically is false.
-		/// </summary>
-		public int EndOffset { get; set; }
-		
 		/// <inheritdoc/>
 		protected override void AttachEvents()
 		{
 			base.AttachEvents();
-			document = this.TextArea.Document;
-			if (document != null) {
-				document.Changing += textArea_Document_Changing;
-			}
 			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
 		}
 		
 		/// <inheritdoc/>
 		protected override void DetachEvents()
 		{
-			if (document != null) {
-				document.Changing -= textArea_Document_Changing;
-			}
 			this.TextArea.Caret.PositionChanged -= CaretPositionChanged;
 			base.DetachEvents();
 		}
 		
-		void textArea_Document_Changing(object sender, DocumentChangeEventArgs e)
-		{
-			startOffset = e.GetNewOffset(startOffset, AnchorMovementType.BeforeInsertion);
-			endOffset = e.GetNewOffset(endOffset, AnchorMovementType.AfterInsertion);
-		}
-		
 		void CaretPositionChanged(object sender, EventArgs e)
 		{
-			int offset = this.TextArea.Caret.Offset;
-			if (offset < startOffset || offset > endOffset) {
-				Close();
+			if (this.CloseAutomatically) {
+				int offset = this.TextArea.Caret.Offset;
+				if (offset < this.StartOffset || offset > this.EndOffset) {
+					Close();
+				}
 			}
 		}
 	}

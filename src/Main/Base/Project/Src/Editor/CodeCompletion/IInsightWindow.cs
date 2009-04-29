@@ -32,6 +32,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		bool CloseAutomatically { get; set; }
 		
 		/// <summary>
+		/// Closes the insight window.
+		/// </summary>
+		void Close();
+		
+		/// <summary>
+		/// Occurs after the insight window was closed.
+		/// </summary>
+		event EventHandler Closed;
+		
+		/// <summary>
 		/// Gets/Sets the start of the text range in which the insight window stays open.
 		/// Has no effect if CloseAutomatically is false.
 		/// </summary>
@@ -42,10 +52,5 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Has no effect if CloseAutomatically is false.
 		/// </summary>
 		int EndOffset { get; set; }
-		
-		/// <summary>
-		/// Closes the insight window.
-		/// </summary>
-		void Close();
 	}
 }

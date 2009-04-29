@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Utils;
 
@@ -34,6 +34,9 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		public TextArea TextArea { get; private set; }
 		
 		Window parentWindow;
+		TextDocument document;
+		int startOffset;
+		int endOffset;
 		
 		/// <summary>
 		/// Creates a new CompletionWindowBase.
@@ -46,6 +49,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			parentWindow = Window.GetWindow(textArea);
 			this.Owner = parentWindow;
 			this.AddHandler(MouseUpEvent, new MouseButtonEventHandler(OnMouseUp), true);
+			
+			startOffset = endOffset = this.TextArea.Caret.Offset;
 		}
 		
 		#region Event Handlers
@@ -54,11 +59,15 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		protected virtual void AttachEvents()
 		{
+			document = this.TextArea.Document;
+			if (document != null) {
+				document.Changing += textArea_Document_Changing;
+			}
 			this.TextArea.PreviewLostKeyboardFocus += TextAreaLostFocus;
 			this.TextArea.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
-			this.TextArea.TextView.DocumentChanged += TextViewDocumentChanged;
-			this.TextArea.PreviewKeyDown += textArea_PreviewKeyDown;
-			this.TextArea.PreviewKeyUp += textArea_PreviewKeyUp;
+			this.TextArea.DocumentChanged += TextAreaDocumentChanged;
+			this.TextArea.PreviewKeyDown += TextAreaPreviewKeyDown;
+			this.TextArea.PreviewKeyUp += TextAreaPreviewKeyUp;
 			if (parentWindow != null) {
 				parentWindow.LocationChanged += parentWindow_LocationChanged;
 			}
@@ -69,23 +78,26 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		protected virtual void DetachEvents()
 		{
+			if (document != null) {
+				document.Changing -= textArea_Document_Changing;
+			}
 			this.TextArea.PreviewLostKeyboardFocus -= TextAreaLostFocus;
 			this.TextArea.TextView.ScrollOffsetChanged -= TextViewScrollOffsetChanged;
-			this.TextArea.TextView.DocumentChanged -= TextViewDocumentChanged;
-			this.TextArea.PreviewKeyDown -= textArea_PreviewKeyDown;
-			this.TextArea.PreviewKeyUp -= textArea_PreviewKeyUp;
+			this.TextArea.DocumentChanged -= TextAreaDocumentChanged;
+			this.TextArea.PreviewKeyDown -= TextAreaPreviewKeyDown;
+			this.TextArea.PreviewKeyUp -= TextAreaPreviewKeyUp;
 			if (parentWindow != null) {
 				parentWindow.LocationChanged -= parentWindow_LocationChanged;
 			}
 		}
 		
-		void textArea_PreviewKeyDown(object sender, KeyEventArgs e)
+		void TextAreaPreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			e.Handled = RaiseEventPair(this, PreviewKeyDownEvent, KeyDownEvent,
 			                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
 		}
 		
-		void textArea_PreviewKeyUp(object sender, KeyEventArgs e)
+		void TextAreaPreviewKeyUp(object sender, KeyEventArgs e)
 		{
 			e.Handled = RaiseEventPair(this, PreviewKeyUpEvent, KeyUpEvent,
 			                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
@@ -96,7 +108,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			UpdatePosition();
 		}
 		
-		void TextViewDocumentChanged(object sender, EventArgs e)
+		void TextAreaDocumentChanged(object sender, EventArgs e)
 		{
 			Close();
 		}
@@ -189,8 +201,13 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		protected override void OnSourceInitialized(EventArgs e)
 		{
 			base.OnSourceInitialized(e);
-			SetPosition();
 			AttachEvents();
+			
+			if (document != null && this.StartOffset != this.TextArea.Caret.Offset) {
+				SetPosition(new TextViewPosition(document.GetLocation(this.StartOffset)));
+			} else {
+				SetPosition(this.TextArea.Caret.Position);
+			}
 		}
 		
 		/// <inheritdoc/>
@@ -213,14 +230,14 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		Point visualLocation, visualLocationTop;
 		
 		/// <summary>
-		/// Positions the completion window at the caret position.
+		/// Positions the completion window at the specified position.
 		/// </summary>
-		void SetPosition()
+		protected void SetPosition(TextViewPosition position)
 		{
 			TextView textView = this.TextArea.TextView;
 			
-			visualLocation = textView.GetVisualPosition(this.TextArea.Caret.Position, VisualYPosition.LineBottom);
-			visualLocationTop = textView.GetVisualPosition(this.TextArea.Caret.Position, VisualYPosition.LineTop);
+			visualLocation = textView.GetVisualPosition(position, VisualYPosition.LineBottom);
+			visualLocationTop = textView.GetVisualPosition(position, VisualYPosition.LineTop);
 			UpdatePosition();
 		}
 		
@@ -248,6 +265,43 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			}
 			this.Left = bounds.X;
 			this.Top = bounds.Y;
+		}
+		
+		/// <summary>
+		/// Gets/Sets the start of the text range in which the completion window stays open.
+		/// This text portion is used to determine the text used to select an entry in the completion list by typing.
+		/// </summary>
+		public int StartOffset {
+			get { return startOffset; }
+			set { startOffset = value; }
+		}
+		
+		/// <summary>
+		/// Gets/Sets the end of the text range in which the completion window stays open.
+		/// This text portion is used to determine the text used to select an entry in the completion list by typing.
+		/// </summary>
+		public int EndOffset {
+			get { return endOffset; }
+			set { endOffset = value; }
+		}
+		
+		/// <summary>
+		/// Gets/sets whether the completion window should expect text insertion at the start offset,
+		/// which not go into the completion region, but before it.
+		/// </summary>
+		/// <remarks>This property allows only a single insertion, it is reset to false
+		/// when that insertion has occurred.</remarks>
+		public bool ExpectInsertionBeforeStart { get; set; }
+		
+		void textArea_Document_Changing(object sender, DocumentChangeEventArgs e)
+		{
+			if (e.Offset == startOffset && e.RemovalLength == 0 && ExpectInsertionBeforeStart) {
+				startOffset = e.GetNewOffset(startOffset, AnchorMovementType.AfterInsertion);
+				this.ExpectInsertionBeforeStart = false;
+			} else {
+				startOffset = e.GetNewOffset(startOffset, AnchorMovementType.BeforeInsertion);
+			}
+			endOffset = e.GetNewOffset(endOffset, AnchorMovementType.AfterInsertion);
 		}
 	}
 }

@@ -43,13 +43,19 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			OnDocumentChanged();
 		}
 		
-		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		/// <inheritdoc/>
+		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextViewWeakEventManager.DocumentChanged)) {
 				OnDocumentChanged();
 				return true;
 			}
 			return false;
+		}
+		
+		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			return ReceiveWeakEvent(managerType, sender, e);
 		}
 		
 		void OnDocumentChanged()

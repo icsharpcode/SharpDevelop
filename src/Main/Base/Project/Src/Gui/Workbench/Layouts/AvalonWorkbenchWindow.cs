@@ -346,15 +346,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				switch (dr) {
 					case MessageBoxResult.Yes:
 						foreach (IViewContent vc in this.ViewContents) {
-							if (!vc.IsDirty) continue;
-							if (vc.PrimaryFile != null) {
-								while (true) {
-									vc.Files.ForEach(ICSharpCode.SharpDevelop.Commands.SaveFile.Save);
-									if (vc.IsDirty) {
-										if (MessageService.AskQuestion("${res:MainWindow.DiscardChangesMessage}")) {
-											break;
-										}
-									} else {
+							while (vc.IsDirty) {
+								ICSharpCode.SharpDevelop.Commands.SaveFile.Save(vc);
+								if (vc.IsDirty) {
+									if (MessageService.AskQuestion("${res:MainWindow.DiscardChangesMessage}")) {
 										break;
 									}
 								}

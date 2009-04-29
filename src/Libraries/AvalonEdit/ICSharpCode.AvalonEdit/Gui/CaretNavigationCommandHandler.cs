@@ -166,7 +166,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		#region Caret movement
 		static void MoveCaret(TextArea textArea, CaretMovementType direction)
 		{
-			DocumentLine caretLine = textArea.Document.GetLineByNumber(textArea.Caret.Position.Line);
+			DocumentLine caretLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
 			VisualLine visualLine = textArea.TextView.GetOrConstructVisualLine(caretLine);
 			TextViewPosition caretPosition = textArea.Caret.Position;
 			TextLine textLine = visualLine.GetTextLine(caretPosition.VisualColumn);
@@ -215,7 +215,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			if (newVC < 0)
 				newVC = visualLine.VisualLength;
 			// when the caret is already at the start of the text, jump to start before whitespace
-			if (newVC == textArea.Caret.Position.VisualColumn)
+			if (newVC == textArea.Caret.VisualColumn)
 				newVC = 0;
 			int offset = visualLine.FirstDocumentLine.Offset + visualLine.GetRelativeOffset(newVC);
 			SetCaretPosition(textArea, newVC, offset);

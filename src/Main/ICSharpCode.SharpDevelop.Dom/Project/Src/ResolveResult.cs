@@ -740,6 +740,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <summary>
 		/// Gets the class that contains the method.
+		/// This property cannot be null.
 		/// </summary>
 		public IReturnType ContainingType {
 			get { return containingType; }

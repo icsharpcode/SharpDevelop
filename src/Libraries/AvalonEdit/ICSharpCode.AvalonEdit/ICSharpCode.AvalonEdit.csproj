@@ -81,6 +81,9 @@
     </Compile>
     <Compile Include="CodeCompletion\ICompletionData.cs" />
     <Compile Include="CodeCompletion\InsightWindow.cs" />
+    <Compile Include="CodeCompletion\IOverloadProvider.cs" />
+    <Compile Include="CodeCompletion\OverloadInsightWindow.cs" />
+    <Compile Include="CodeCompletion\OverloadViewer.cs" />
     <Compile Include="Document\DocumentChangeOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
@@ -335,6 +338,7 @@
     <Folder Include="Utils" />
     <Folder Include="themes" />
     <Page Include="CodeCompletion\CompletionList.xaml" />
+    <Page Include="CodeCompletion\InsightWindow.xaml" />
     <Page Include="Gui\TextEditor.xaml" />
     <Page Include="themes\generic.xaml" />
   </ItemGroup>

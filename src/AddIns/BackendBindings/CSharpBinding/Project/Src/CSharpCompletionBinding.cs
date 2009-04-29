@@ -36,17 +36,7 @@ namespace CSharpBinding
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.Caret.Offset;
 			ExpressionContext context = null;
-			if (ch == '(') {
-				if (context != null) {
-					if (IsInComment(editor)) return CodeCompletionKeyPressResult.None;
-					new CtrlSpaceCompletionItemProvider(context).ShowCompletion(editor);
-					return CodeCompletionKeyPressResult.Completed;
-				} else if (EnableMethodInsight && CodeCompletionOptions.InsightEnabled) {
-					editor.ShowInsightWindow(new MethodInsightDataProvider());
-					return CodeCompletionKeyPressResult.Completed;
-				}
-				return CodeCompletionKeyPressResult.None;
-			} else if (ch == '[') {
+			if (ch == '[') {
 				var line = editor.Document.GetLineForOffset(cursor);
 				/* TODO: AVALONEDIT Reimplement this
 				if (TextUtilities.FindPrevWordStart(editor.ActiveTextAreaControl.Document, cursor) <= line.Offset) {

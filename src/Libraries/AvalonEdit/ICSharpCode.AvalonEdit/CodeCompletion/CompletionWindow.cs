@@ -25,9 +25,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 	/// </summary>
 	public class CompletionWindow : CompletionWindowBase
 	{
-		TextDocument document;
-		int startOffset;
-		int endOffset;
 		readonly CompletionList completionList = new CompletionList();
 		ToolTip toolTip = new ToolTip();
 		
@@ -48,8 +45,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			toolTip.Placement = PlacementMode.Right;
 			toolTip.Closed += toolTip_Closed;
 			
-			startOffset = endOffset = this.TextArea.Caret.Offset;
-			document = textArea.TextView.Document;
 			completionList.InsertionRequested += completionList_InsertionRequested;
 			completionList.SelectionChanged += completionList_SelectionChanged;
 		}
@@ -83,26 +78,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			var item = completionList.SelectedItem;
 			if (item != null)
-				item.Complete(this.TextArea, new AnchorSegment(this.TextArea.Document, startOffset, endOffset - startOffset), e);
+				item.Complete(this.TextArea, new AnchorSegment(this.TextArea.Document, this.StartOffset, this.EndOffset - this.StartOffset), e);
 			Close();
-		}
-		
-		/// <summary>
-		/// Gets/Sets the start offset of the edited text portion.
-		/// This text portion is used to determine the text used to select an entry in the completion list by typing.
-		/// </summary>
-		public int StartOffset {
-			get { return startOffset; }
-			set { startOffset = value; }
-		}
-		
-		/// <summary>
-		/// Gets/Sets the end offset of the edited text portion.
-		/// This text portion is used to determine the text used to select an entry in the completion list by typing.
-		/// </summary>
-		public int EndOffset {
-			get { return endOffset; }
-			set { endOffset = value; }
 		}
 		
 		/// <inheritdoc/>
@@ -121,7 +98,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		protected override void AttachEvents()
 		{
 			base.AttachEvents();
-			document.Changing += textArea_Document_Changing;
 			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
 			this.TextArea.MouseWheel += textArea_MouseWheel;
 			this.TextArea.PreviewTextInput += textArea_PreviewTextInput;
@@ -131,7 +107,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// <inheritdoc/>
 		protected override void DetachEvents()
 		{
-			document.Changing -= textArea_Document_Changing;
 			this.TextArea.Caret.PositionChanged -= CaretPositionChanged;
 			this.TextArea.MouseWheel -= textArea_MouseWheel;
 			this.TextArea.PreviewTextInput -= textArea_PreviewTextInput;
@@ -213,25 +188,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		
 		/// <summary>
-		/// Gets/sets whether the completion window should expect text insertion at the start offset,
-		/// which not go into the completion region, but before it.
-		/// </summary>
-		/// <remarks>This property allows only a single insertion, it is reset to false
-		/// when that insertion has occurred.</remarks>
-		public bool ExpectInsertionBeforeStart { get; set; }
-		
-		void textArea_Document_Changing(object sender, DocumentChangeEventArgs e)
-		{
-			if (e.Offset == startOffset && e.RemovalLength == 0 && ExpectInsertionBeforeStart) {
-				startOffset = e.GetNewOffset(startOffset, AnchorMovementType.AfterInsertion);
-				this.ExpectInsertionBeforeStart = false;
-			} else {
-				startOffset = e.GetNewOffset(startOffset, AnchorMovementType.BeforeInsertion);
-			}
-			endOffset = e.GetNewOffset(endOffset, AnchorMovementType.AfterInsertion);
-		}
-		
-		/// <summary>
 		/// When this flag is set, code completion closes if the caret moves to the
 		/// beginning of the allowed range. This is useful in Ctrl+Space and "complete when typing",
 		/// but not in dot-completion.
@@ -241,15 +197,18 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		void CaretPositionChanged(object sender, EventArgs e)
 		{
 			int offset = this.TextArea.Caret.Offset;
-			if (offset == startOffset) {
+			if (offset == this.StartOffset) {
 				if (CloseWhenCaretAtBeginning)
 					Close();
 				return;
 			}
-			if (offset < startOffset || offset > endOffset) {
+			if (offset < this.StartOffset || offset > this.EndOffset) {
 				Close();
 			} else {
-				completionList.SelectItemWithStart(document.GetText(startOffset, offset - startOffset));
+				TextDocument document = this.TextArea.Document;
+				if (document != null) {
+					completionList.SelectItemWithStart(document.GetText(this.StartOffset, offset - this.StartOffset));
+				}
 			}
 		}
 		

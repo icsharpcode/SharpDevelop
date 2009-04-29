@@ -57,6 +57,8 @@ namespace ICSharpCode.AvalonEdit.Gui
 		
 		/// <summary>
 		/// Gets/Sets the position of the caret.
+		/// Retrieving this property will validate the visual column.
+		/// Use the <see cref="Location"/> property instead if you don't need the visual column.
 		/// </summary>
 		public TextViewPosition Position {
 			get {
@@ -80,6 +82,20 @@ namespace ICSharpCode.AvalonEdit.Gui
 					if (visible)
 						Show();
 				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets/Sets the location of the caret.
+		/// The getter of this property is faster than <see cref="Position"/> because it doesn't have
+		/// to validate the visual column.
+		/// </summary>
+		public TextLocation Location {
+			get {
+				return position;
+			}
+			set {
+				this.Position = new TextViewPosition(value);
 			}
 		}
 		

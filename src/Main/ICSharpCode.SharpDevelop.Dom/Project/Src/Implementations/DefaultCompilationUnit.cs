@@ -133,7 +133,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public DefaultCompilationUnit(IProjectContent projectContent)
 		{
-			Debug.Assert(projectContent != null);
+			if (projectContent == null)
+				throw new ArgumentNullException("projectContent");
 			this.projectContent = projectContent;
 		}
 		
@@ -147,11 +148,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return null;
 		}
 		
-		public override string ToString() {
+		public override string ToString() 
+		{
 			return String.Format("[CompilationUnit: classes = {0}, fileName = {1}]",
 			                     classes.Count,
 			                     fileName);
 		}
 		
+		public LanguageProperties Language {
+			get {
+				return projectContent.Language;
+			}
+		}
 	}
 }

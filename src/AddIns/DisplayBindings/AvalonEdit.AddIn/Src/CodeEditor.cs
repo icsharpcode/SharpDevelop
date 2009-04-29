@@ -301,6 +301,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 							// tell it to expect the text insertion
 							completionWindow.ExpectInsertionBeforeStart = true;
 						}
+						if (insightWindow != null) {
+							insightWindow.ExpectInsertionBeforeStart = true;
+						}
 						return;
 					} else if (result == CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion) {
 						if (completionWindow != null) {
@@ -317,11 +320,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		TextEditor GetTextEditorFromRoutedCommand(object sender)
+		{
+			TextArea textArea = (TextArea)sender;
+			TextEditor textEditor = (TextEditor)textArea.GetService(typeof(TextEditor));
+			Debug.Assert(textEditor != null);
+			return textEditor;
+		}
+		
 		void OnCodeCompletion(object sender, ExecutedRoutedEventArgs e)
 		{
-			TextEditor textEditor = (TextEditor)sender;
-			if (completionWindow != null)
-				completionWindow.Close();
+			CloseExistingCompletionWindows();
+			TextEditor textEditor = GetTextEditorFromRoutedCommand(sender);
 			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 				if (cc.CtrlSpace(GetAdapter(textEditor))) {
 					e.Handled = true;
@@ -332,7 +342,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void OnDeleteLine(object sender, ExecutedRoutedEventArgs e)
 		{
-			TextEditor textEditor = (TextEditor)sender;
+			TextEditor textEditor = GetTextEditorFromRoutedCommand(sender);
 			e.Handled = true;
 			using (textEditor.Document.RunUpdate()) {
 				DocumentLine currentLine = textEditor.Document.GetLineByNumber(textEditor.TextArea.Caret.Line);
@@ -342,16 +352,37 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		CompletionWindow completionWindow;
+		SharpDevelopInsightWindow insightWindow;
+		
+		void CloseExistingCompletionWindows()
+		{
+			if (completionWindow != null) {
+				completionWindow.Close();
+			}
+			if (insightWindow != null) {
+				insightWindow.Close();
+			}
+		}
+		
+		public SharpDevelopInsightWindow ActiveInsightWindow {
+			get { return insightWindow; }
+		}
 		
 		internal void NotifyCompletionWindowOpened(CompletionWindow window)
 		{
-			if (completionWindow != null) {
-				// if there already is a completion window open, close it
-				completionWindow.Close();
-			}
+			CloseExistingCompletionWindows();
 			completionWindow = window;
 			window.Closed += delegate {
 				completionWindow = null;
+			};
+		}
+		
+		internal void NotifyInsightWindowOpened(SharpDevelopInsightWindow window)
+		{
+			CloseExistingCompletionWindows();
+			insightWindow = window;
+			window.Closed += delegate {
+				insightWindow = null;
 			};
 		}
 		

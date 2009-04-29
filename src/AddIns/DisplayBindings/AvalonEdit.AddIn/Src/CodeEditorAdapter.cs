@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -38,6 +40,28 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			CompletionWindow window = new SharpDevelopCompletionWindow(this, this.TextEditor.TextArea, data);
 			codeEditor.NotifyCompletionWindowOpened(window);
 			window.Show();
+		}
+		
+		public override IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
+		{
+			if (items == null)
+				return null;
+			var insightWindow = new SharpDevelopInsightWindow(this.TextEditor.TextArea);
+			insightWindow.Items.AddRange(items);
+			if (insightWindow.Items.Count > 0) {
+				insightWindow.SelectedItem = insightWindow.Items[0];
+			} else {
+				// don't open insight window when there are no items
+				return null;
+			}
+			codeEditor.NotifyInsightWindowOpened(insightWindow);
+			insightWindow.Show();
+			
+			return insightWindow;
+		}
+		
+		public override IInsightWindow ActiveInsightWindow {
+			get { return codeEditor.ActiveInsightWindow; }
 		}
 	}
 }

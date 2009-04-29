@@ -24,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 			TextViewWeakEventManager.ScrollOffsetChanged.AddListener(textView, this);
 		}
 		
-		public bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextViewWeakEventManager.VisualLinesChanged)
 			    || managerType == typeof(TextViewWeakEventManager.ScrollOffsetChanged))

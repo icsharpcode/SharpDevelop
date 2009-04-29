@@ -69,8 +69,6 @@
   <ItemGroup>
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditDocumentAdapter.cs" />
-    <Compile Include="Src\Editor\AvalonEdit\AvalonEditInsightWindow.cs">
-    </Compile>
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />
@@ -85,6 +83,8 @@
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemList.cs" />
     <Compile Include="Src\Editor\CodeCompletion\IInsightItem.cs" />
     <Compile Include="Src\Editor\CodeCompletion\IInsightWindow.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\MethodInsightItem.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\MethodInsightProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCodeCompletionBinding.cs" />
     <Compile Include="Src\Editor\CodeCompletion\TemplateCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\TextCompletionItemProvider.cs" />

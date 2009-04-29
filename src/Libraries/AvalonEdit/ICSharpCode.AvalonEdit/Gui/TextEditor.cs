@@ -47,6 +47,23 @@ namespace ICSharpCode.AvalonEdit
 		{
 		}
 		
+		/// <summary>
+		/// Creates a new TextEditor instance.
+		/// </summary>
+		protected TextEditor(TextArea textArea)
+		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
+			this.textArea = textArea;
+			
+			textArea.TextView.Services.AddService(typeof(TextEditor), this);
+			
+			this.Options = textArea.Options;
+			this.Document = new TextDocument();
+			textArea.SetBinding(TextArea.DocumentProperty, new Binding(DocumentProperty.Name) { Source = this });
+			textArea.SetBinding(TextArea.OptionsProperty, new Binding(OptionsProperty.Name) { Source = this });
+		}
+			
 		// Forward focus to TextArea.
 		/// <inheritdoc/>
 		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
@@ -56,20 +73,6 @@ namespace ICSharpCode.AvalonEdit
 				Keyboard.Focus(this.TextArea);
 				e.Handled = true;
 			}
-		}
-		
-		/// <summary>
-		/// Creates a new TextEditor instance.
-		/// </summary>
-		protected TextEditor(TextArea textArea)
-		{
-			if (textArea == null)
-				throw new ArgumentNullException("textArea");
-			this.textArea = textArea;
-			this.Options = textArea.Options;
-			this.Document = new TextDocument();
-			textArea.SetBinding(TextArea.DocumentProperty, new Binding(DocumentProperty.Name) { Source = this });
-			textArea.SetBinding(TextArea.OptionsProperty, new Binding(OptionsProperty.Name) { Source = this });
 		}
 		
 		#region Document property
@@ -169,7 +172,6 @@ namespace ICSharpCode.AvalonEdit
 		}
 		
 		/// <inheritdoc/>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(PropertyChangedWeakEventManager)) {
