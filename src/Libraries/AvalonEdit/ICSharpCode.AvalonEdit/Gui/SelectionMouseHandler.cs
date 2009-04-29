@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -390,10 +391,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 			VisualLine line = textView.GetVisualLineFromVisualTop(pos.Y);
 			if (line != null) {
 				int visualColumn = line.GetVisualColumn(pos);
-				int wordStartVC = line.GetNextCaretPosition(visualColumn + 1, true, CaretPositioningMode.WordStartOrSymbol);
+				int wordStartVC = line.GetNextCaretPosition(visualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.WordStartOrSymbol);
 				if (wordStartVC == -1)
 					wordStartVC = 0;
-				int wordEndVC = line.GetNextCaretPosition(wordStartVC, false, CaretPositioningMode.WordBorderOrSymbol);
+				int wordEndVC = line.GetNextCaretPosition(wordStartVC, LogicalDirection.Forward, CaretPositioningMode.WordBorderOrSymbol);
 				if (wordEndVC == -1)
 					wordEndVC = line.VisualLength;
 				int relOffset = line.FirstDocumentLine.Offset;

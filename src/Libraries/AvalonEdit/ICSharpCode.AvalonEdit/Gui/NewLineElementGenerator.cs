@@ -7,6 +7,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -65,11 +66,11 @@ namespace ICSharpCode.AvalonEdit.Gui
 				BreakAfter = LineBreakCondition.BreakRestrained;
 			}
 			
-			public override int GetNextCaretPosition(int visualColumn, bool backwards, CaretPositioningMode mode)
+			public override int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode)
 			{
 				// only place a caret stop before the newline, no caret stop after it
-				if (visualColumn > this.VisualColumn && backwards ||
-				    visualColumn < this.VisualColumn && !backwards)
+				if (visualColumn > this.VisualColumn && direction == LogicalDirection.Backward ||
+				    visualColumn < this.VisualColumn && direction == LogicalDirection.Forward)
 				{
 					return this.VisualColumn;
 				} else {

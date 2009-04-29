@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media.TextFormatting;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -315,22 +316,22 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <summary>
 		/// Gets the next possible caret position after visualColumn, or -1 if there is no caret position.
 		/// </summary>
-		public int GetNextCaretPosition(int visualColumn, bool backwards, CaretPositioningMode mode)
+		public int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode)
 		{
 			if (elements.Count == 0) {
 				// special handling for empty visual lines:
 				// even though we don't have any elements,
 				// there's a single caret stop at visualColumn 0
-				if (visualColumn < 0 && !backwards)
+				if (visualColumn < 0 && direction == LogicalDirection.Forward)
 					return 0;
-				else if (visualColumn > 0 && backwards)
+				else if (visualColumn > 0 && direction == LogicalDirection.Backward)
 					return 0;
 				else
 					return -1;
 			}
 			
 			int i;
-			if (backwards) {
+			if (direction == LogicalDirection.Backward) {
 				// Search Backwards:
 				// If the last element doesn't handle line borders, return the line end as caret stop
 				if (visualColumn > this.VisualLength && !elements[elements.Count-1].HandlesLineBorders) {
@@ -345,7 +346,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 				for (; i >= 0; i--) {
 					int pos = elements[i].GetNextCaretPosition(
 						Math.Min(visualColumn, elements[i].VisualColumn + elements[i].VisualLength + 1),
-						backwards, mode);
+						direction, mode);
 					if (pos >= 0)
 						return pos;
 				}
@@ -367,7 +368,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 				for (; i < elements.Count; i++) {
 					int pos = elements[i].GetNextCaretPosition(
 						Math.Max(visualColumn, elements[i].VisualColumn - 1),
-						backwards, mode);
+						direction, mode);
 					if (pos >= 0)
 						return pos;
 				}

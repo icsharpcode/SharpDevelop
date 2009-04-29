@@ -7,7 +7,7 @@
 
 using System;
 using System.Globalization;
-using System.Text;
+using System.Windows.Documents;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Gui;
@@ -135,11 +135,11 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// </summary>
 		/// <param name="textSource">The text source.</param>
 		/// <param name="offset">The start offset inside the text source.</param>
-		/// <param name="backwards">True to look backwards, false to look forwards.</param>
+		/// <param name="direction">The search direction (forwards or backwards).</param>
 		/// <param name="mode">The mode for caret positioning.</param>
 		/// <returns>The offset of the next caret position, or -1 if there is no further caret position
 		/// in the text source.</returns>
-		public static int GetNextCaretPosition(ITextSource textSource, int offset, bool backwards, CaretPositioningMode mode)
+		public static int GetNextCaretPosition(ITextSource textSource, int offset, LogicalDirection direction, CaretPositioningMode mode)
 		{
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");
@@ -151,17 +151,22 @@ namespace ICSharpCode.AvalonEdit.Utils
 			{
 				throw new ArgumentException("Unsupported CaretPositioningMode: " + mode, "mode");
 			}
+			if (direction != LogicalDirection.Backward
+			    && direction != LogicalDirection.Forward)
+			{
+				throw new ArgumentException("Invalid LogicalDirection: " + direction, "direction");
+			}
 			int textLength = textSource.TextLength;
 			if (textLength <= 0) {
 				// empty document? has a normal caret position at 0, though no word borders
 				if (mode == CaretPositioningMode.Normal) {
-					if (offset > 0 && backwards) return 0;
-					if (offset < 0 && !backwards) return 0;
+					if (offset > 0 && direction == LogicalDirection.Backward) return 0;
+					if (offset < 0 && direction == LogicalDirection.Forward) return 0;
 				}
 				return -1;
 			}
 			while (true) {
-				int nextPos = backwards ? offset - 1 : offset + 1;
+				int nextPos = (direction == LogicalDirection.Backward) ? offset - 1 : offset + 1;
 				
 				// return -1 if there is no further caret position in the text source
 				// we also need this to handle offset values outside the valid range

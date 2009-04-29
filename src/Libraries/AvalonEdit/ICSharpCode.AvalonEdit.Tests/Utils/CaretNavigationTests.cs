@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Gui;
 using System;
+using System.Windows.Documents;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Utils;
 using NUnit.Framework;
 
@@ -18,12 +19,12 @@ namespace ICSharpCode.AvalonEdit.Tests.Utils
 	{
 		int GetNextCaretStop(string text, int offset, CaretPositioningMode mode)
 		{
-			return TextUtilities.GetNextCaretPosition(new StringTextSource(text), offset, false, mode);
+			return TextUtilities.GetNextCaretPosition(new StringTextSource(text), offset, LogicalDirection.Forward, mode);
 		}
 		
 		int GetPrevCaretStop(string text, int offset, CaretPositioningMode mode)
 		{
-			return TextUtilities.GetNextCaretPosition(new StringTextSource(text), offset, true, mode);
+			return TextUtilities.GetNextCaretPosition(new StringTextSource(text), offset, LogicalDirection.Backward, mode);
 		}
 		
 		[Test]

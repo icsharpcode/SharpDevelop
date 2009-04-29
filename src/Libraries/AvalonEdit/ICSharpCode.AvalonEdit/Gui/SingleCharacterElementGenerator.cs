@@ -5,13 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
+
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Gui
 {
@@ -154,10 +156,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 				BreakAfter = LineBreakCondition.BreakDesired;
 			}
 			
-			public override int GetNextCaretPosition(int visualColumn, bool backwards, CaretPositioningMode mode)
+			public override int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode)
 			{
 				if (mode == CaretPositioningMode.Normal)
-					return base.GetNextCaretPosition(visualColumn, backwards, mode);
+					return base.GetNextCaretPosition(visualColumn, direction, mode);
 				else
 					return -1;
 			}
@@ -184,10 +186,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 					throw new ArgumentOutOfRangeException("startVisualColumn");
 			}
 			
-			public override int GetNextCaretPosition(int visualColumn, bool backwards, CaretPositioningMode mode)
+			public override int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode)
 			{
 				if (mode == CaretPositioningMode.Normal)
-					return base.GetNextCaretPosition(visualColumn, backwards, mode);
+					return base.GetNextCaretPosition(visualColumn, direction, mode);
 				else
 					return -1;
 			}

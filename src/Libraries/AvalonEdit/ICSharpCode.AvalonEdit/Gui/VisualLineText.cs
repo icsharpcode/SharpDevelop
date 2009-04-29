@@ -5,11 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
+using System.Windows.Documents;
 using System.Windows.Media.TextFormatting;
+
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Gui
 {
@@ -92,13 +94,13 @@ namespace ICSharpCode.AvalonEdit.Gui
 		}
 		
 		/// <inheritdoc/>
-		public override int GetNextCaretPosition(int visualColumn, bool backwards, CaretPositioningMode mode)
+		public override int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode)
 		{
 			int textOffset = parentVisualLine.FirstDocumentLine.Offset + this.RelativeTextOffset;
 			TextSourceView view = new TextSourceView(
 				parentVisualLine.FirstDocumentLine.Document,
 				new SimpleSegment(textOffset, this.DocumentLength));
-			int pos = TextUtilities.GetNextCaretPosition(view, visualColumn - this.VisualColumn, backwards, mode);
+			int pos = TextUtilities.GetNextCaretPosition(view, visualColumn - this.VisualColumn, direction, mode);
 			if (pos < 0)
 				return pos;
 			else

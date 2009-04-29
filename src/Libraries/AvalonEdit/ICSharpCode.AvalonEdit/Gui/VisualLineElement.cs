@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media.TextFormatting;
 
@@ -167,18 +168,18 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// Gets the next caret position inside this element.
 		/// </summary>
 		/// <param name="visualColumn">The visual column from which the search should be started.</param>
-		/// <param name="backwards">Whether to search backwards (false=forwards,true=backwards).</param>
+		/// <param name="direction">The search direction (forwards or backwards).</param>
 		/// <param name="mode">Whether to stop only at word borders.</param>
 		/// <returns>The visual column of the next caret position, or -1 if there is no next caret position.</returns>
 		/// <remarks>
 		/// In the space between two line elements, it is sufficient that one of them contains a caret position;
 		/// though in many cases, both of them contain one.
 		/// </remarks>
-		public virtual int GetNextCaretPosition(int visualColumn, bool backwards, CaretPositioningMode mode)
+		public virtual int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode)
 		{
 			int stop1 = this.VisualColumn;
 			int stop2 = this.VisualColumn + this.VisualLength;
-			if (backwards) {
+			if (direction == LogicalDirection.Backward) {
 				if (visualColumn > stop2 && mode != CaretPositioningMode.WordStart && mode != CaretPositioningMode.WordStartOrSymbol)
 					return stop2;
 				else if (visualColumn > stop1)

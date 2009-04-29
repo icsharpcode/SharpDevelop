@@ -210,7 +210,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		#region Home/End
 		static void MoveCaretToStartOfLine(TextArea textArea, VisualLine visualLine)
 		{
-			int newVC = visualLine.GetNextCaretPosition(-1, false, CaretPositioningMode.WordStart);
+			int newVC = visualLine.GetNextCaretPosition(-1, LogicalDirection.Forward, CaretPositioningMode.WordStart);
 			// in empty lines (whitespace only), jump to the end
 			if (newVC < 0)
 				newVC = visualLine.VisualLength;
@@ -232,7 +232,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		#region By-character / By-word movement
 		static void MoveCaretRight(TextArea textArea, TextViewPosition caretPosition, VisualLine visualLine, CaretPositioningMode mode)
 		{
-			int pos = visualLine.GetNextCaretPosition(caretPosition.VisualColumn, false, mode);
+			int pos = visualLine.GetNextCaretPosition(caretPosition.VisualColumn, LogicalDirection.Forward, mode);
 			if (pos >= 0) {
 				SetCaretPosition(textArea, pos, visualLine.GetRelativeOffset(pos) + visualLine.FirstDocumentLine.Offset);
 			} else {
@@ -243,7 +243,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 
 		static void MoveCaretLeft(TextArea textArea, TextViewPosition caretPosition, VisualLine visualLine, CaretPositioningMode mode)
 		{
-			int pos = visualLine.GetNextCaretPosition(caretPosition.VisualColumn, true, mode);
+			int pos = visualLine.GetNextCaretPosition(caretPosition.VisualColumn, LogicalDirection.Backward, mode);
 			if (pos >= 0) {
 				SetCaretPosition(textArea, pos, visualLine.GetRelativeOffset(pos) + visualLine.FirstDocumentLine.Offset);
 			} else if (caretPosition.Line > 1) {

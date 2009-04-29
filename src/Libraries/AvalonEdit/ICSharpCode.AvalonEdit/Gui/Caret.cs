@@ -8,7 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
 
@@ -258,10 +258,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 				}
 			}
 			// search possible caret position (first try forwards)
-			int newVisualColumn = visualLine.GetNextCaretPosition(position.VisualColumn - 1, false, CaretPositioningMode.Normal);
+			int newVisualColumn = visualLine.GetNextCaretPosition(position.VisualColumn - 1, LogicalDirection.Forward, CaretPositioningMode.Normal);
 			if (newVisualColumn < 0) {
 				// then try backwards
-				newVisualColumn = visualLine.GetNextCaretPosition(position.VisualColumn + 1, true, CaretPositioningMode.Normal);
+				newVisualColumn = visualLine.GetNextCaretPosition(position.VisualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.Normal);
 			}
 			if (newVisualColumn >= 0 && newVisualColumn != position.VisualColumn) {
 				int newOffset = visualLine.GetRelativeOffset(newVisualColumn) + firstDocumentLineOffset;
