@@ -71,10 +71,10 @@
 	
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog">
 		<DialogPanel id    = "Profiling"
-		             label = "${res:Dialog.Options.IDEOptions.Profiling}"
+		             label = "Profiling"
 		             insertbefore = "TextEditorOptions">
 			<DialogPanel id    = "General"
-			             label = "${res:Dialog.Options.IDEOptions.Profiling.General}"
+			             label = "General"
 			             class = "ICSharpCode.Profiler.AddIn.OptionsPanels.General"/>
 		</DialogPanel>
 	</Path>
