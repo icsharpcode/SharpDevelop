@@ -40,6 +40,8 @@ namespace SharpRefactoring
 		protected Dom.IClass currentClass;
 		protected Dom.IProjectContent currentProjectContent;
 		
+		protected Location start, end;
+		
 		public Statement Caller {
 			get { return caller; }
 		}
@@ -53,6 +55,9 @@ namespace SharpRefactoring
 			this.currentDocument = textEditor.Document;
 			this.textEditor = textEditor;
 			this.currentSelection = selection;
+			
+			this.start = new Location(this.currentSelection.StartPosition.Column + 1, this.currentSelection.StartPosition.Line + 1);
+			this.end = new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1);
 		}
 		
 		protected static Statement CreateCaller(ParametrizedNode parent, MethodDeclaration method, VariableDeclaration returnVariable)
@@ -249,29 +254,9 @@ namespace SharpRefactoring
 			
 			member.AcceptVisitor(frv, null);
 			
-			foreach (IdentifierExpression identifier in frv.Identifiers)
-			{
+			foreach (IdentifierExpression identifier in frv.Identifiers) {
 				if (identifier.StartLocation > location)
 					return true;
-			}
-			
-			return false;
-		}
-		
-		protected bool IsInitializedVariable(StringComparer nameComparer, ParametrizedNode member, Variable variable)
-		{
-			if (!(variable.Initializer.IsNull)) {
-				return true;
-			} else {
-				FindReferenceVisitor frv = new FindReferenceVisitor(nameComparer, variable.Name, variable.StartPos, variable.EndPos);
-				
-				member.AcceptVisitor(frv, null);
-				
-				foreach (IdentifierExpression expr in frv.Identifiers) {
-					if ((expr.EndLocation < new Location(currentSelection.StartPosition.Column, currentSelection.StartPosition.Line)) &&
-					    !(expr.IsNull))
-						return true;
-				}
 			}
 			
 			return false;
@@ -300,6 +285,8 @@ namespace SharpRefactoring
 		public Location EndPos { get; set; }
 		public Expression Initializer { get; set; }
 		public bool IsReferenceType { get; set; }
+		public bool WasOutParam { get; set; }
+		public bool WasRefParam { get; set; }
 		
 		public Variable(LocalLookupVariable v)
 		{
@@ -308,6 +295,22 @@ namespace SharpRefactoring
 			this.StartPos = v.StartPos;
 			this.EndPos = v.EndPos;
 			this.Initializer = v.Initializer;
+		}
+		
+		public Variable(BlockStatement block, ParameterDeclarationExpression param)
+		{
+			this.Type = param.TypeReference;
+			this.Name = param.ParameterName;
+			this.StartPos = block.StartLocation;
+			this.EndPos = block.EndLocation;
+			this.Initializer = param.DefaultValue;
+			this.WasOutParam = (param.ParamModifier & ParameterModifiers.Out) == ParameterModifiers.Out;
+			this.WasRefParam = (param.ParamModifier & ParameterModifiers.Ref) == ParameterModifiers.Ref;
+		}
+		
+		public override string ToString()
+		{
+			return "[ " + this.Type.Type + " " + this.Name + " ]";
 		}
 	}
 }

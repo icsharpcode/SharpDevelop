@@ -66,7 +66,6 @@
     </Compile>
     <Compile Include="Src\MethodExtractorBase.cs" />
     <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
-    <Compile Include="Src\Transformers\ReplaceUnnecessaryVariableDeclarationsTransformer.cs" />
     <Compile Include="Src\Visitors\FindJumpInstructionsVisitor.cs" />
     <Compile Include="Src\Visitors\FindMemberVisitor.cs" />
     <Compile Include="Src\Visitors\FindReferenceVisitor.cs" />
@@ -107,6 +106,5 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Src\Transformers" />
   </ItemGroup>
 </Project>
