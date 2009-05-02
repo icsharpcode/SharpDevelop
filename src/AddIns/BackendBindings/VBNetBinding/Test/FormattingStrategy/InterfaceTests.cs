@@ -42,7 +42,7 @@ namespace VBNetBinding.Tests
 			
 			string expectedCode = "Public Interface Foo\r\n" +
 				"\tPublic Sub Bar\r\n" +
-				"\t\t\r\n" +
+				"\t\r\n" +
 				"End Interface";
 			
 			using (TextEditorControl editor = new TextEditorControl()) {
