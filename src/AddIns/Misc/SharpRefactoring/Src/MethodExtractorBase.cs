@@ -6,17 +6,15 @@
 // </file>
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using SharpRefactoring.Visitors;
