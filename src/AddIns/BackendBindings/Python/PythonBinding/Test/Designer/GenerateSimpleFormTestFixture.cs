@@ -20,6 +20,8 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateSimpleFormTestFixture
 	{
 		string generatedPythonCode;
+		string formPropertiesCode;
+		string propertyOwnerName;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -36,6 +38,14 @@ namespace PythonBinding.Tests.Designer
 				string indentString = "    ";
 				PythonControl pythonForm = new PythonControl(indentString);
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
+				
+				PythonCodeBuilder codeBuilder = new PythonCodeBuilder();
+				codeBuilder.IndentString = indentString;
+				codeBuilder.IncreaseIndent();
+				PythonDesignerRootComponent designerRootComponent = new PythonDesignerRootComponent(form);
+				propertyOwnerName = designerRootComponent.GetPropertyOwnerName();
+				designerRootComponent.AppendComponentProperties(codeBuilder);
+				formPropertiesCode = codeBuilder.ToString();
 			}
 		}
 		
@@ -54,5 +64,19 @@ namespace PythonBinding.Tests.Designer
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode);
 		}
+		
+		[Test]
+		public void FormPropertiesCode()
+		{
+			string expectedCode = "    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
+								"    self.Name = \"MainForm\"\r\n";
+			Assert.AreEqual(expectedCode, formPropertiesCode);
+		}
+		
+		[Test]
+		public void PropertyOwnerName()
+		{
+			Assert.AreEqual("self", propertyOwnerName);
+		}		
 	}
 }

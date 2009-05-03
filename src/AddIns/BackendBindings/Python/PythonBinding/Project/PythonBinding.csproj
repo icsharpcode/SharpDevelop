@@ -80,6 +80,7 @@
     <Compile Include="Src\PythonAstWalker.cs" />
     <Compile Include="Src\PythonCodeCompletionBinding.cs" />
     <Compile Include="Src\PythonCodeDeserializer.cs" />
+    <Compile Include="Src\PythonCodeBuilder.cs" />
     <Compile Include="Src\PythonCompilerError.cs" />
     <Compile Include="Src\PythonCompilerSink.cs" />
     <Compile Include="Src\PythonConsole.cs" />
@@ -87,15 +88,19 @@
     <Compile Include="Src\PythonConsoleHost.cs" />
     <Compile Include="Src\PythonConsolePad.cs" />
     <Compile Include="Src\PythonControlFieldExpression.cs" />
+    <Compile Include="Src\PythonDesignerComponent.cs" />
+    <Compile Include="Src\PythonDesignerComponentFactory.cs" />
     <Compile Include="Src\PythonDesignerGenerator.cs" />
     <Compile Include="Src\PythonDesignerLoader.cs" />
     <Compile Include="Src\PythonDesignerLoaderProvider.cs" />
+    <Compile Include="Src\PythonDesignerRootComponent.cs" />
     <Compile Include="Src\PythonExpressionFinder.cs" />
     <Compile Include="Src\PythonControl.cs" />
     <Compile Include="Src\PythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Src\PythonComponentWalker.cs" />
     <Compile Include="Src\PythonComponentWalkerException.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
+    <Compile Include="Src\PythonListViewComponent.cs" />
     <Compile Include="Src\PythonOptionsPanel.cs" />
     <Compile Include="Src\PythonOutputStream.cs" />
     <Compile Include="Src\PythonOutputWindowPadDescriptor.cs" />

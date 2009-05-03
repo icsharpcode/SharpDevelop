@@ -145,6 +145,7 @@
     <Compile Include="Converter\VBClassConversionTestFixture.cs" />
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
+    <Compile Include="Designer\CreateDesignerComponentTests.cs" />
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
     <Compile Include="Designer\DeserializeAssignmentTestFixtureBase.cs" />
     <Compile Include="Designer\DeserializeColorFromArgbTestFixture.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
     <Compile Include="Designer\PythonBaseClassTests.cs" />
     <Compile Include="Designer\PythonCodeDeserializerTests.cs" />
+    <Compile Include="Designer\PythonCodeBuilderTests.cs" />
     <Compile Include="Designer\PythonControlFieldExpressionTests.cs" />
     <Compile Include="Designer\PythonGeneratorTestFixture.cs" />
     <Compile Include="Designer\IsFormDesignableTestFixture.cs" />

@@ -51,8 +51,8 @@ namespace PythonBinding.Tests.Designer
 				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 				
-				formChildComponents = PythonControl.GetChildComponents(form);
-				buttonChildComponents = PythonControl.GetChildComponents(button);
+				formChildComponents = PythonDesignerComponentFactory.CreateDesignerComponent(form).GetChildComponents();
+				buttonChildComponents = PythonDesignerComponentFactory.CreateDesignerComponent(button).GetChildComponents();
 			}
 		}
 		

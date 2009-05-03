@@ -80,8 +80,8 @@ namespace PythonBinding.Tests.Designer
 				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 				
-				menuStripChildComponents = PythonControl.GetChildComponents(menuStrip);
-				fileMenuItemChildComponents = PythonControl.GetChildComponents(fileMenuItem);
+				menuStripChildComponents = PythonDesignerComponentFactory.CreateDesignerComponent(menuStrip).GetChildComponents();
+				fileMenuItemChildComponents = PythonDesignerComponentFactory.CreateDesignerComponent(fileMenuItem).GetChildComponents();
 			}
 		}
 		
@@ -145,7 +145,7 @@ namespace PythonBinding.Tests.Designer
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			
-			Assert.AreEqual(expectedCode, generatedPythonCode);
+			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}
 		
 		[Test]
