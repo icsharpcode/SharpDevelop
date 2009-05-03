@@ -660,47 +660,35 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			JumpToCurrentLine();
 			
-			StringBuilder msg = new StringBuilder();
+			StringBuilder stacktraceBuilder = new StringBuilder();
 			
 			// Need to intercept now so that we can evaluate properties
 			if (e.Process.SelectedThread.InterceptCurrentException()) {
-				msg.AppendLine(e.Exception.ToString());
+				stacktraceBuilder.AppendLine(e.Exception.ToString());
 				string stackTrace;
 				try {
 					stackTrace = e.Exception.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException}"));
 				} catch (GetValueException) {
 					stackTrace = e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}"));
 				}
-				msg.Append(stackTrace);
+				stacktraceBuilder.Append(stackTrace);
 			} else {
 				// For example, happens on stack overflow
-				msg.AppendLine(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}"));
-				msg.AppendLine(e.Exception.ToString());
-				msg.Append(e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}")));
+				stacktraceBuilder.AppendLine(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}"));
+				stacktraceBuilder.AppendLine(e.Exception.ToString());
+				stacktraceBuilder.Append(e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}")));
 			}
 			
 			string title = e.IsUnhandled ? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled}") : StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Handled}");
-			string message = msg.ToString();
+			string message = string.Format("An exception of type {0} was thrown:\n{1}", e.Exception.Type, e.Exception.Message);
 			Bitmap icon = WinFormsResourceService.GetBitmap(e.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
 			bool canContinue = !e.IsUnhandled;
 			
 			//DebuggerEventForm.Result result = DebuggerEventForm.Show(title, message, icon, canContinue);
-			DebuggerEventForm.Result result = DebugeeExceptionForm.Show(debuggedProcess, title, message, icon, canContinue);
-			
+			DebuggeeExceptionForm.Show(debuggedProcess, title, message, stacktraceBuilder.ToString(), icon);
 			
 			// If the process was killed while the exception form is still being displayed
 			if (e.Process.HasExited) return;
-			
-			switch (result) {
-				case DebuggerEventForm.Result.Break:
-					break;
-				case DebuggerEventForm.Result.Continue:
-					e.Process.AsyncContinue();
-					break;
-				case DebuggerEventForm.Result.Terminate:
-					e.Process.Terminate();
-					break;
-			}
 		}
 		
 		public void JumpToCurrentLine()
