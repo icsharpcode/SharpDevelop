@@ -117,6 +117,9 @@ namespace Debugger.MetaData
 		FieldInfo backingFieldCache;
 		bool getBackingFieldCalled;
 		
+		/// <summary>
+		/// Backing field that can be used to obtain the same value as by calling this method.
+		/// </summary>
 		internal FieldInfo BackingField {
 			get {
 				if (!getBackingFieldCalled) {
@@ -130,7 +133,8 @@ namespace Debugger.MetaData
 		// Is this method in form 'return this.field;'?
 		FieldInfo GetBackingField()
 		{
-			if (this.IsStatic) return null; // TODO: Make work for static
+			if (this.IsStatic) return null; // TODO: Make work for static, 
+											// the code size for static is 10/11 opposed to instance 11/12 - the ldarg.0 is missing
 			if (this.ParameterCount != 0) return null;
 			
 			ICorDebugCode corCode;
@@ -141,7 +145,7 @@ namespace Debugger.MetaData
 			}
 			
 			if (corCode == null) return null;
-			if (corCode.Size != 7 && corCode.Size != 12) return null;
+			if (corCode.Size != 7 && corCode.Size != 12 && corCode.Size != 11) return null;
 			
 			byte[] code = corCode.GetCode();
 			
@@ -153,10 +157,11 @@ namespace Debugger.MetaData
 				codeTxt += b.ToString("X2") + " ";
 			}
 			this.Process.TraceMessage("Code of " + Name + ": " + codeTxt);
-			*/
+			 */
 			
 			uint token = 0;
-			
+		
+			// code generated for 'return this.field'
 			if (code.Length == 12 &&
 			    code[00] == 0x00 && // nop
 			    code[01] == 0x02 && // ldarg.0
@@ -168,11 +173,22 @@ namespace Debugger.MetaData
 			    code[10] == 0x06 && // ldloc.0
 			    code[11] == 0x2A)   // ret
 			{
-				token = 
-					((uint)code[06] << 24) +
-					((uint)code[05] << 16) +
-					((uint)code[04] << 8) +
-					((uint)code[03]);
+				token = getTokenFromIL(code, 06);
+			}
+			
+			// code generated for getter 'public int Prop { get; [set;] }'
+			// (same as above, just leading nop is missing)
+			if (code.Length == 11 &&
+			    code[00] == 0x02 && // ldarg.0
+			    code[01] == 0x7B && // ldfld
+			    code[05] == 0x04 && //   <field token>
+			    code[06] == 0x0A && // stloc.0
+			    code[07] == 0x2B && // br.s
+			    code[08] == 0x00 && //   offset+00
+			    code[09] == 0x06 && // ldloc.0
+			    code[10] == 0x2A)   // ret
+			{
+				token = getTokenFromIL(code, 05);
 			}
 			
 			if (code.Length == 7 &&
@@ -181,11 +197,7 @@ namespace Debugger.MetaData
 			    code[05] == 0x04 && //   <field token>
 			    code[06] == 0x2A)   // ret
 			{
-				token = 
-					((uint)code[05] << 24) +
-					((uint)code[04] << 16) +
-					((uint)code[03] << 8) +
-					((uint)code[02]);
+				token = getTokenFromIL(code, 05);
 			}
 			
 			if (token != 0) {
@@ -203,6 +215,20 @@ namespace Debugger.MetaData
 			}
 			
 			return null;
+		}
+		
+		/// <summary>
+		/// Gets token from IL code.
+		/// </summary>
+		/// <param name="ilCode">Bytes representing the code.</param>
+		/// <param name="tokenEndIndex">Index of last byte of the token.</param>
+		/// <returns>IL token.</returns>
+		uint getTokenFromIL(byte[] ilCode, uint tokenEndIndex)
+		{
+			return  ((uint)ilCode[tokenEndIndex] << 24) +
+					((uint)ilCode[tokenEndIndex - 1] << 16) +
+					((uint)ilCode[tokenEndIndex - 2] << 8) +
+					((uint)ilCode[tokenEndIndex - 3]);
 		}
 		
 		bool? isSingleLineCache;
