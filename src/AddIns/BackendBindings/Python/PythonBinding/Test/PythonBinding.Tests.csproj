@@ -164,6 +164,7 @@
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
     <Compile Include="Designer\GenerateComboBoxItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
+    <Compile Include="Designer\GeneratedControlOrderingTestFixture.cs" />
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
     <Compile Include="Designer\GenerateEventHandlerFormTestFixture.cs" />
     <Compile Include="Designer\GenerateFormColorTestFixture.cs" />

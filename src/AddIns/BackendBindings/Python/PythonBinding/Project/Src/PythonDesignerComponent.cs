@@ -224,7 +224,7 @@ namespace ICSharpCode.PythonBinding
 		/// For a MenuStrip the child components include the MenuStrip.Items.
 		/// For a Control the child components include the Control.Controls.
 		/// </remarks>
-		public object[] GetChildComponents()
+		public virtual object[] GetChildComponents()
 		{
 			List<object> childComponents = new List<object>();			
 			foreach (PropertyDescriptor property in GetSerializableContentProperties(component)) {

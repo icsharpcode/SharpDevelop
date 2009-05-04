@@ -37,13 +37,23 @@ namespace ICSharpCode.PythonBinding
 		
 		public override void AppendComponent(PythonCodeBuilder codeBuilder)
 		{
-			// Add the child component's first.
+			// Add the child components first.
 			foreach (IComponent component in GetChildComponents()) {
 				PythonDesignerComponentFactory.CreateDesignerComponent(component).AppendComponent(codeBuilder);
 			}
 			
 			// Add root component
 			AppendComponentProperties(codeBuilder, false, false, true);
-		}				
+		}
+		
+		/// <summary>
+		/// Gets the child components in reverse order since the forms designer has them reversed.
+		/// </summary>
+		public override object[] GetChildComponents()
+		{
+			object[] components = base.GetChildComponents();
+			Array.Reverse(components);
+			return components;
+		}
 	}
 }

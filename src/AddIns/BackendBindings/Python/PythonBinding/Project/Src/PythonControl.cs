@@ -79,6 +79,6 @@ namespace ICSharpCode.PythonBinding
 			rootDesignerComponent.AppendComponent(codeBuilder);
 			rootDesignerComponent.AppendChildComponentsResumeLayout(codeBuilder);
 			rootDesignerComponent.AppendResumeLayout(codeBuilder);
-		}		
+		}
 	}
 }
