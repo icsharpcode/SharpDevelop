@@ -124,7 +124,7 @@ namespace ICSharpCode.PythonBinding
 					}
 				}
 			}
-			return componentCreator.GetComponent(PythonControlFieldExpression.GetVariableName(field.MemberName));
+			return componentCreator.GetInstance(PythonControlFieldExpression.GetVariableName(field.MemberName));
 		}
 		
 		Type GetType(PythonControlFieldExpression field)

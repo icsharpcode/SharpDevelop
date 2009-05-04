@@ -182,6 +182,7 @@
     <Compile Include="Designer\GenerateRightToLeftFormTestFixture.cs" />
     <Compile Include="Designer\GenerateSimpleFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTextBoxFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateTimerTestFixture.cs" />
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
     <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
@@ -208,6 +209,7 @@
     <Compile Include="Designer\LoadSimpleUserControlTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxOnPanelTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxTestFixture.cs" />
+    <Compile Include="Designer\LoadTimerTestFixture.cs" />
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />

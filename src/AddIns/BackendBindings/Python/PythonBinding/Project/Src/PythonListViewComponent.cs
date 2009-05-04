@@ -28,7 +28,7 @@ namespace ICSharpCode.PythonBinding
 			// Append list view item creation first.
 			int count = 1;
 			foreach (ListViewItem item in GetListViewItems(Component)) {
-				AppendObjectCreation(codeBuilder, item, count, GetConstructorParameters(item));
+				AppendCreateInstance(codeBuilder, item, count, GetConstructorParameters(item));
 				++count;
 			}
 			

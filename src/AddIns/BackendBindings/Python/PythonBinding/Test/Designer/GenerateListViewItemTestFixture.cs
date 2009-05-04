@@ -249,5 +249,11 @@ namespace PythonBinding.Tests.Designer
 			
 			Assert.AreEqual(expectedCode, createListViewChildComponentsCode);
 		}
+		
+		[Test]
+		public void ColumnHeaderIsHiddenFromDesigner()
+		{
+			Assert.IsTrue(PythonDesignerComponent.IsHiddenFromDesigner(columnHeader1));
+		}
 	}
 }

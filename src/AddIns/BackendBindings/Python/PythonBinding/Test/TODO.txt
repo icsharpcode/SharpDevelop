@@ -95,3 +95,7 @@ def main(args):
   See http://lists.ironpython.com/pipermail/users-ironpython.com/2009-April/009993.html
  
  * Support for ListViewSubItems - Font, Colors.
+ 
+ * Timer - Honour the GenerateMember setting.
+ 
+ * Look at creating code for non-visual components in the same order as Visual Studio.

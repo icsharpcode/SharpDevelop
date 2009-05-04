@@ -196,11 +196,24 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Returns true if the current component has a property with the specified name.
+		/// </summary>
+		bool HasPropertyValue(string name)
+		{
+			return GetPropertyDescriptor(GetCurrentComponent(), name) != null;
+		}
+		
+		PropertyDescriptor GetPropertyDescriptor(object component, string name)
+		{
+			return TypeDescriptor.GetProperties(component).Find(name, true);
+		}
+		
+		/// <summary>
 		/// Sets the value of a property on the component.
 		/// </summary>
 		bool SetPropertyValue(object component, string name, object propertyValue)
 		{
-			PropertyDescriptor property = TypeDescriptor.GetProperties(component).Find(name, true);
+			PropertyDescriptor property = GetPropertyDescriptor(component, name);
 			if (property != null) {
 				propertyValue = ConvertPropertyValue(property, propertyValue);
 				property.SetValue(component, propertyValue);
@@ -232,10 +245,13 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Adds a component to the list of created objects.
 		/// </summary>
-		void AddComponent(string name, object component)
+		void AddComponent(string name, object obj)
 		{
-			string variableName = PythonControlFieldExpression.GetVariableName(name);
-			componentCreator.Add(component as IComponent, variableName);
+			IComponent component = obj as IComponent;
+			if (component != null) {
+				string variableName = PythonControlFieldExpression.GetVariableName(name);
+				componentCreator.Add(component, variableName);
+			}
 		}
 				
 		/// <summary>
@@ -289,7 +305,8 @@ namespace ICSharpCode.PythonBinding
 		{
 			MemberExpression memberExpression = node.Target as MemberExpression;
 			if (memberExpression != null) {
-				object instance = CreateInstance(null, node);
+				string name = GetInstanceName(fieldExpression);
+				object instance = CreateInstance(name, node);
 				if (instance != null) {
 					if (!SetPropertyValue(fieldExpression.MemberName, instance)) {
 						AddComponent(fieldExpression.MemberName, instance);
@@ -303,6 +320,18 @@ namespace ICSharpCode.PythonBinding
 					}
 				}
 			}
+		}
+		
+		/// <summary>
+		/// Gets the name of the instance. If the name matches a property of the current component being created
+		/// then this method returns null.
+		/// </summary>
+		string GetInstanceName(PythonControlFieldExpression fieldExpression)
+		{
+			if (!HasPropertyValue(fieldExpression.MemberName)) {
+				return PythonControlFieldExpression.GetVariableName(fieldExpression.MemberName);
+			}			
+			return null;
 		}
 		
 		/// <summary>

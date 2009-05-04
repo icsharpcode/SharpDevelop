@@ -58,7 +58,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void TextBoxInstanceCreated()
 		{
-			CreatedInstance instance = new CreatedInstance(typeof(TextBox), new List<object>(), null, false);
+			CreatedInstance instance = new CreatedInstance(typeof(TextBox), new List<object>(), "textBox1", false);
 			Assert.Contains(instance, ComponentCreator.CreatedInstances);
 		}
 

@@ -122,7 +122,34 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return false;
-		}		
+		}
+		
+		/// <summary>
+		/// Returns true if the component has the DesignTimeVisible attribute set to false.
+		/// </summary>
+		public static bool IsHiddenFromDesigner(IComponent component)
+		{
+			foreach (DesignTimeVisibleAttribute attribute in component.GetType().GetCustomAttributes(typeof(DesignTimeVisibleAttribute), true)) {
+				return !attribute.Visible;
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// A component is non-visual if it is not a control and is not hidden from the designer.
+		/// </summary>
+		public static bool IsNonVisualComponent(IComponent component)
+		{
+			Control control = component as Control;
+			return (control == null) && !IsHiddenFromDesigner(component);
+		}
+		
+		/// <summary>
+		/// Returns true if this component is non-visual.
+		/// </summary>
+		public bool IsNonVisual {
+			get { return IsNonVisualComponent(component); }
+		}
 
 		/// <summary>
 		/// Gets the AddRange method on the object that is not hidden from the designer. 
@@ -186,6 +213,11 @@ namespace ICSharpCode.PythonBinding
 		public virtual void AppendCreateInstance(PythonCodeBuilder codeBuilder)
 		{			
 			AppendComponentCreation(codeBuilder, component);
+		}
+		
+		public void AppendCreateInstance(PythonCodeBuilder codeBuilder, string parameters)
+		{
+			AppendComponentCreation(codeBuilder, component, parameters);
 		}
 		
 		/// <summary>
@@ -294,12 +326,11 @@ namespace ICSharpCode.PythonBinding
 				designerComponent.AppendChildComponentsMethodCalls(codeBuilder, methods);
 			}
 		}
-		
-		
+				
 		/// <summary>
 		/// Appends the code to create the specified object.
 		/// </summary>
-		public void AppendObjectCreation(PythonCodeBuilder codeBuilder, object obj, int count, object[] parameters)
+		public void AppendCreateInstance(PythonCodeBuilder codeBuilder, object obj, int count, object[] parameters)
 		{
 			if (obj is String) {
 				// Do nothing.
@@ -330,9 +361,17 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void AppendComponentCreation(PythonCodeBuilder codeBuilder, IComponent component)
 		{
-			codeBuilder.AppendIndentedLine("self._" + component.Site.Name + " = " + component.GetType().FullName + "()");
+			AppendComponentCreation(codeBuilder, component, String.Empty);
 		}
-				
+
+		/// <summary>
+		/// Appends the code to create the specified IComponent
+		/// </summary>
+		public void AppendComponentCreation(PythonCodeBuilder codeBuilder, IComponent component, string parameters)
+		{
+			codeBuilder.AppendIndentedLine("self._" + component.Site.Name + " = " + component.GetType().FullName + "(" + parameters + ")");
+		}
+		
 		/// <summary>
 		/// Generates the code for the component's properties.
 		/// </summary>

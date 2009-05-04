@@ -28,7 +28,7 @@ namespace ICSharpCode.PythonBinding
 			return new PythonDesignerComponent(component);
 		}
 		
-		public static PythonDesignerComponent CreateDesignerRootComponent(IComponent component)
+		public static PythonDesignerRootComponent CreateDesignerRootComponent(IComponent component)
 		{
 			return new PythonDesignerRootComponent(component);
 		}

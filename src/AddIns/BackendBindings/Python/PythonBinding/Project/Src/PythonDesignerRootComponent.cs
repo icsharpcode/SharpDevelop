@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -54,6 +56,60 @@ namespace ICSharpCode.PythonBinding
 			PythonDesignerComponent[] components = base.GetChildComponents();
 			Array.Reverse(components);
 			return components;
-		}		
+		}
+		
+		/// <summary>
+		/// Returns true if non-visual components (e.g. Timer) are associated with this root component.
+		/// </summary>	
+		public bool HasNonVisualChildComponents()
+		{
+			foreach (IComponent containerComponent in Component.Site.Container.Components) {
+				if (IsNonVisualComponent(containerComponent)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public PythonDesignerComponent[] GetNonVisualChildComponents()
+		{
+			List<PythonDesignerComponent> components = new List<PythonDesignerComponent>();
+			foreach (IComponent containerComponent in Component.Site.Container.Components) {
+				PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(containerComponent);
+				if (designerComponent.IsNonVisual) {
+					components.Add(designerComponent);
+				}
+			}
+			return components.ToArray();
+		}
+		
+		/// <summary>
+		/// Appends an expression that creates an instance of the Container to hold non-visual components
+		/// </summary>
+		public void AppendCreateComponentsContainer(PythonCodeBuilder codeBuilder)
+		{
+			codeBuilder.AppendIndentedLine("self._components = " + typeof(Container).FullName + "()");
+		}
+		
+		/// <summary>
+		/// Appends code to create all the non-visual component.
+		/// </summary>
+		public void AppendCreateNonVisualComponents(PythonCodeBuilder codeBuilder)
+		{
+			foreach (PythonDesignerComponent component in GetNonVisualChildComponents()) {
+				component.AppendCreateInstance(codeBuilder, "self._components");
+			}
+		}
+		
+		/// <summary>
+		/// Appends code to set all the non-visual component properties.
+		/// </summary>
+		/// <param name="codeBuilder"></param>
+		public void AppendNonVisualComponents(PythonCodeBuilder codeBuilder)
+		{
+			foreach (PythonDesignerComponent component in GetNonVisualChildComponents()) {
+				component.AppendComponent(codeBuilder);
+			}
+		}
 	}
 }

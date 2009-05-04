@@ -72,10 +72,15 @@ namespace ICSharpCode.PythonBinding
 						
 		void GenerateInitializeComponentMethodBodyInternal(Control control)
 		{
-			PythonDesignerComponent rootDesignerComponent = PythonDesignerComponentFactory.CreateDesignerRootComponent(control);
+			PythonDesignerRootComponent rootDesignerComponent = PythonDesignerComponentFactory.CreateDesignerRootComponent(control);
+			if (rootDesignerComponent.HasNonVisualChildComponents()) {
+				rootDesignerComponent.AppendCreateComponentsContainer(codeBuilder);
+				rootDesignerComponent.AppendCreateNonVisualComponents(codeBuilder);
+			}
 			rootDesignerComponent.AppendCreateChildComponents(codeBuilder);
 			rootDesignerComponent.AppendChildComponentsSuspendLayout(codeBuilder);
 			rootDesignerComponent.AppendSuspendLayout(codeBuilder);
+			rootDesignerComponent.AppendNonVisualComponents(codeBuilder);
 			rootDesignerComponent.AppendComponent(codeBuilder);
 			rootDesignerComponent.AppendChildComponentsResumeLayout(codeBuilder);
 			rootDesignerComponent.AppendResumeLayout(codeBuilder);
