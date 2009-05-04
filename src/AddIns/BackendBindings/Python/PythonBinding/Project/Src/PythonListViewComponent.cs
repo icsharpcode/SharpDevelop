@@ -58,6 +58,13 @@ namespace ICSharpCode.PythonBinding
 		/// </remarks>
 		object[] GetConstructorParameters(ListViewItem item)
 		{
+			if (item.SubItems.Count > 1) {
+				string[] subItems = new string[item.SubItems.Count];
+				for (int i = 0; i < item.SubItems.Count; ++i) {
+					subItems[i] = item.SubItems[i].Text;
+				}
+				return new object[] {subItems};
+			}
 			if (String.IsNullOrEmpty(item.Text)) {
 				return new object[0];
 			}

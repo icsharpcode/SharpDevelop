@@ -27,7 +27,7 @@ namespace PythonBinding.Tests.Designer
 		string suspendLayoutCode;
 		string resumeLayoutCode;
 		string listViewPropertiesCode;
-		object[] listViewChildComponents;
+		PythonDesignerComponent[] listViewChildComponents;
 		ColumnHeader columnHeader1;
 		ColumnHeader columnHeader2;
 		
@@ -191,8 +191,8 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void ListViewChildComponentAreColumnHeaders()
 		{
-			object[] expectedChildComponents = new object[] {columnHeader1, columnHeader2};
-			Assert.AreEqual(expectedChildComponents, listViewChildComponents);
+			Assert.AreEqual(typeof(ColumnHeader), listViewChildComponents[0].GetComponentType());
+			Assert.AreEqual(typeof(ColumnHeader), listViewChildComponents[1].GetComponentType());
 		}
 		
 		[Test]

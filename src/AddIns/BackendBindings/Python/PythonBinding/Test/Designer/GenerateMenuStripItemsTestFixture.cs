@@ -26,8 +26,6 @@ namespace PythonBinding.Tests.Designer
 		Size openMenuItemSize;
 		Size exitMenuItemSize;
 		Size editMenuItemSize;
-		object[] menuStripChildComponents;
-		object[] fileMenuItemChildComponents;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -79,9 +77,6 @@ namespace PythonBinding.Tests.Designer
 
 				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
-				
-				menuStripChildComponents = PythonDesignerComponentFactory.CreateDesignerComponent(menuStrip).GetChildComponents();
-				fileMenuItemChildComponents = PythonDesignerComponentFactory.CreateDesignerComponent(fileMenuItem).GetChildComponents();
 			}
 		}
 		
@@ -147,33 +142,7 @@ namespace PythonBinding.Tests.Designer
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}
-		
-		[Test]
-		public void MenuStripHasTwoChildComponents()
-		{
-			Assert.AreEqual(2, menuStripChildComponents.Length);
-		}
-		
-		[Test]
-		public void MenuStripFirstChildIsFileMenuItem()
-		{
-			ToolStripMenuItem fileMenuItem = menuStripChildComponents[0] as ToolStripMenuItem;
-			Assert.AreEqual("&File", fileMenuItem.Text);
-		}
-		
-		[Test]
-		public void FileMenuItemHasTwoChildComponents()
-		{
-			Assert.AreEqual(2, fileMenuItemChildComponents.Length);
-		}
-		
-		[Test]
-		public void FileMenuItemFirstChildIsOpenFileMenuItem()
-		{
-			ToolStripMenuItem openMenuItem = fileMenuItemChildComponents[0] as ToolStripMenuItem;
-			Assert.AreEqual("&Open", openMenuItem.Text);
-		}
-		
+				
 		string SizeToString(Size size)
 		{
 			return PythonPropertyValueAssignment.ToString(size);

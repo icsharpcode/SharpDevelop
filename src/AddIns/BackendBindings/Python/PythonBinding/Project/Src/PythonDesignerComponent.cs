@@ -145,6 +145,14 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Gets the component type.
+		/// </summary>
+		public Type GetComponentType()
+		{
+			return component.GetType();
+		}
+		
+		/// <summary>
 		/// Gets the Add serialization method that is not hidden from the designer.
 		/// </summary>
 		public static MethodInfo GetAddSerializationMethod(object obj)
@@ -216,7 +224,7 @@ namespace ICSharpCode.PythonBinding
 		public bool IsSited {
 			get { return IsSitedComponent(component); }
 		}
-		
+				
 		/// <summary>
 		/// Gets the child objects that need to be stored in the generated designer code on the specified object.
 		/// </summary>
@@ -224,21 +232,24 @@ namespace ICSharpCode.PythonBinding
 		/// For a MenuStrip the child components include the MenuStrip.Items.
 		/// For a Control the child components include the Control.Controls.
 		/// </remarks>
-		public virtual object[] GetChildComponents()
+		public virtual PythonDesignerComponent[] GetChildComponents()
 		{
-			List<object> childComponents = new List<object>();			
+			List<PythonDesignerComponent> components = new List<PythonDesignerComponent>();
 			foreach (PropertyDescriptor property in GetSerializableContentProperties(component)) {
 				ICollection collection = property.GetValue(component) as ICollection;
 				if (collection != null) {
 					foreach (object childObject in collection) {
 						IComponent childComponent = childObject as IComponent;
-						if (IsSitedComponent(childComponent)) {
-							childComponents.Add(childObject);
+						if (childComponent != null) {
+							PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(childComponent);
+							if (designerComponent.IsSited) {
+								components.Add(designerComponent);
+							}
 						}
 					}
 				}
-			}			
-			return childComponents.ToArray();
+			}
+			return components.ToArray();
 		}
 		
 		/// <summary>
@@ -274,9 +285,8 @@ namespace ICSharpCode.PythonBinding
 	
 		void AppendChildComponentsMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
 		{
-			foreach (IComponent component in GetChildComponents()) {
-				PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(component);
-				if (designerComponent.component is Control) {
+			foreach (PythonDesignerComponent designerComponent in GetChildComponents()) {
+				if (typeof(Control).IsAssignableFrom(designerComponent.GetComponentType())) {
 					if (designerComponent.HasSitedChildComponents()) {
 						designerComponent.AppendMethodCalls(codeBuilder, methods);
 					}
@@ -301,7 +311,14 @@ namespace ICSharpCode.PythonBinding
 					if (i > 0) {
 						codeBuilder.Append(", ");
 					}
-					codeBuilder.Append(PythonPropertyValueAssignment.ToString(parameters[i]));
+					object currentParameter = parameters[i];
+					Array array = currentParameter as Array;
+					if (array != null) {
+						AppendSystemArray(codeBuilder, array.GetValue(0).GetType().FullName, currentParameter as ICollection);
+						codeBuilder.DecreaseIndent();
+					} else {
+						codeBuilder.Append(PythonPropertyValueAssignment.ToString(currentParameter));
+					}
 				}
 				codeBuilder.Append(")");
 				codeBuilder.AppendLine();
@@ -520,21 +537,19 @@ namespace ICSharpCode.PythonBinding
 			get { return component; }
 		}
 		
-		static bool HasSitedComponents(ICollection items)
+		static bool HasSitedComponents(PythonDesignerComponent[] components)
 		{	
-			foreach (object item in items) {
-				if (IsSitedComponent(item)) {
+			foreach (PythonDesignerComponent component in components) {
+				if (component.IsSited) {
 					return true;
 				}
 			}
 			return false;
 		}
 		
-		void AppendCreateChildComponents(PythonCodeBuilder codeBuilder, ICollection childComponents)
+		void AppendCreateChildComponents(PythonCodeBuilder codeBuilder, PythonDesignerComponent[] childComponents)
 		{
-			foreach (object obj in childComponents) {
-				IComponent component = obj as IComponent;
-				PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(component);
+			foreach (PythonDesignerComponent designerComponent in childComponents) {
 				if (designerComponent.IsSited) {
 					designerComponent.AppendCreateInstance(codeBuilder);
 					designerComponent.AppendCreateChildComponents(codeBuilder);
@@ -561,7 +576,19 @@ namespace ICSharpCode.PythonBinding
 		static void AppendSystemArray(PythonCodeBuilder codeBuilder, string componentName, string methodName, string typeName, ICollection components)
 		{
 			if (components.Count > 0) {
-				codeBuilder.AppendIndentedLine("self._" + componentName + "." + methodName + "(System.Array[" + typeName + "](");
+				codeBuilder.AppendIndented("self._" + componentName + "." + methodName + "(");
+				AppendSystemArray(codeBuilder, typeName, components);
+				codeBuilder.Append(")");
+				codeBuilder.AppendLine();
+				codeBuilder.DecreaseIndent();
+			}
+		}
+		
+		static void AppendSystemArray(PythonCodeBuilder codeBuilder, string typeName, ICollection components)
+		{
+			if (components.Count > 0) {
+				codeBuilder.Append("System.Array[" + typeName + "](");
+				codeBuilder.AppendLine();
 				codeBuilder.IncreaseIndent();
 				int i = 0;
 				foreach (object component in components) {
@@ -581,9 +608,7 @@ namespace ICSharpCode.PythonBinding
 					}
 					++i;
 				}
-				codeBuilder.Append("]))");
-				codeBuilder.AppendLine();
-				codeBuilder.DecreaseIndent();
+				codeBuilder.Append("])");
 			}
 		}		
 	}

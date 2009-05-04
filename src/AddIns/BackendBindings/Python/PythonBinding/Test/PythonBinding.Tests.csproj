@@ -151,6 +151,7 @@
     <Compile Include="Designer\DeserializeColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\DeserializeComponentAssignmentTestFixture.cs" />
     <Compile Include="Designer\DeserializeLocalVariableTestFixture.cs" />
+    <Compile Include="Designer\DeserializerConstructorStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeToolStripItemArrayTestFixture.cs" />
     <Compile Include="Designer\EnabledSetUsingPropertyDescriptorTestFixture.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="Designer\GenerateFormPaddingTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewItemTestFixture.cs" />
+    <Compile Include="Designer\GenerateListViewSubItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\GenerateMenuStripItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
