@@ -75,7 +75,9 @@ namespace ICSharpCode.TreeView
 				CaptureMouse();
 
 				if (e.ClickCount == 2) {
-					Node.IsExpanded = !Node.IsExpanded;
+					if (!Node.IsRoot || ParentTreeView.ShowRootExpander) {
+						Node.IsExpanded = !Node.IsExpanded;
+					}
 				}
 			}
 		}

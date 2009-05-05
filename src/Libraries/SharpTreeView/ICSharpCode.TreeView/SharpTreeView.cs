@@ -15,6 +15,9 @@ namespace ICSharpCode.TreeView
 	{
 		static SharpTreeView()
 		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(SharpTreeView),
+				new FrameworkPropertyMetadata(typeof(SharpTreeView)));
+
 			SelectionModeProperty.OverrideMetadata(typeof(SharpTreeView),
 				new FrameworkPropertyMetadata(SelectionMode.Extended));
 
@@ -137,7 +140,7 @@ namespace ICSharpCode.TreeView
 		protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
 		{
 			base.PrepareContainerForItemOverride(element, item);
-			var container = element as SharpTreeViewItem;
+			SharpTreeViewItem container = element as SharpTreeViewItem;
 			container.ParentTreeView = this;
 		}
 
@@ -204,14 +207,27 @@ namespace ICSharpCode.TreeView
 
 		protected override void OnDragEnter(DragEventArgs e)
 		{
-			e.Effects = DragDropEffects.None;
-			e.Handled = true;
+			OnDragOver(e);
 		}
 
 		protected override void OnDragOver(DragEventArgs e)
 		{
 			e.Effects = DragDropEffects.None;
 			e.Handled = true;
+
+			if (Root != null && !ShowRoot && Root.Children.Count == 0) {
+				Root.InternalCanDrop(e, 0);
+			}
+		}
+
+		protected override void OnDrop(DragEventArgs e)
+		{
+			e.Effects = DragDropEffects.None;
+			e.Handled = true;
+
+			if (Root != null && !ShowRoot && Root.Children.Count == 0) {
+				Root.InternalDrop(e, 0);
+			}
 		}
 
 		internal void HandleDragEnter(SharpTreeViewItem item, DragEventArgs e)

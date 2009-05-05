@@ -25,9 +25,13 @@ namespace ICSharpCode.TreeView
 		protected override void OnRender(DrawingContext dc)
 		{
 			var indent = NodeView.CalculateIndent();
-			if (indent == 0) return;
-
 			var p = new Point(indent + 4.5, 0);
+
+			if (!NodeView.Node.IsRoot || NodeView.ParentTreeView.ShowRootExpander) {
+				dc.DrawLine(pen, new Point(p.X, ActualHeight / 2), new Point(p.X + 10, ActualHeight / 2));
+			}
+
+			if (NodeView.Node.IsRoot) return;
 
 			if (NodeView.Node.IsLast) {
 				dc.DrawLine(pen, p, new Point(p.X, ActualHeight / 2));
@@ -35,8 +39,6 @@ namespace ICSharpCode.TreeView
 			else {
 				dc.DrawLine(pen, p, new Point(p.X, ActualHeight));
 			}
-
-			dc.DrawLine(pen, new Point(p.X, ActualHeight / 2), new Point(p.X + 10, ActualHeight / 2));
 
 			var current = NodeView.Node;
 			while (true) {

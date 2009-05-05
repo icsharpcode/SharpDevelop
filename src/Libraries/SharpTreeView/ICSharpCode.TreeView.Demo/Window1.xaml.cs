@@ -21,9 +21,12 @@ namespace ICSharpCode.TreeView.Demo
 			InitializeComponent();
 
 			treeView1.Root = new FolderNode("c:\\");
+			//treeView1.ShowRoot = false;
 			//treeView1.SelectionChanged += new SelectionChangedEventHandler(treeView1_SelectionChanged);
 
 			treeView2.Root = new FolderNode("c:\\");
+			//treeView2.ShowRootExpander = true;
+			//treeView2.ShowRoot = false;
 		}
 
 		//void treeView1_SelectionChanged(object sender, SelectionChangedEventArgs e)

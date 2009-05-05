@@ -61,6 +61,11 @@ namespace ICSharpCode.TreeView
 			get { return Parent != null ? Parent.Level + 1 : 0; }
 		}
 
+		public bool IsRoot
+		{
+			get { return Parent == null; }
+		}
+
 		//bool isSelected;
 
 		//public bool IsSelected

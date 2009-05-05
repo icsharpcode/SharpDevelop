@@ -32,7 +32,7 @@
                               Grid.Column="1"
                               Margin="10 0 0 0">
                 <ListView.View>
-                    <GridView>
+                    <sd:SharpGridView>
                         <GridView.Columns>
                             <GridViewColumn>
                                 <GridViewColumn.CellTemplate>
@@ -56,7 +56,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                         </GridView.Columns>
-                    </GridView>
+                    </sd:SharpGridView>
                 </ListView.View>
 
             </sd:SharpTreeView>
