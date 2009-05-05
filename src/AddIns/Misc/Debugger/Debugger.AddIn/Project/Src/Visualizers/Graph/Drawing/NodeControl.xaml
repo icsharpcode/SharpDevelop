@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="Debugger.AddIn.Visualizers.Graph.Drawing.NodeControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dropShadow="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
+    <dropShadow:SystemDropShadowChrome>
+    <Border Name="border1" BorderBrush="Black" BorderThickness="1" Padding="04,04,04,04"
+                        Canvas.Left="20" Canvas.Top="20">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#ddeeff"  Offset="0.0" />
+                <GradientStop Color="White" Offset="0.4" />
+                <GradientStop Color="White" Offset="0.8" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <Grid Name="propertyGrid">
+            <Grid.RowDefinitions>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+        </Grid>
+    </Border>
+    </dropShadow:SystemDropShadowChrome>
+</UserControl>

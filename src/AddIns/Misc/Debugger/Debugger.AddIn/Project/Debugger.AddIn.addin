@@ -149,4 +149,13 @@
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingSymbolsPanel"/>
 		</OptionPanel>
 	</Path>
+
+	<Path name = "/Workspace/Tools">
+		<Condition name="SolutionOpen" action="disable">
+			<MenuItem id = "DebuggerVisualizerCommandShow"
+			          label = "Show object graph visualizer"
+			          class = "Debugger.AddIn.Visualizers.Graph.ShowObjectGraphVisualizerCommand"/>
+		</Condition>
+	</Path>
+
 </AddIn>
