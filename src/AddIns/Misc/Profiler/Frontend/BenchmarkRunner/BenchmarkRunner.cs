@@ -85,7 +85,7 @@ namespace BenchmarkRunner
 				File.Delete(fileName);
 			
 			using (var profiler = new Profiler(
-				startInfo, new ProfilingDataSQLiteWriter(fileName)
+				startInfo, new ProfilingDataSQLiteWriter(fileName), new ProfilerOptions()
 			)) {
 				using (ManualResetEvent mre = new ManualResetEvent(false)) {
 					profiler.SessionEnded += delegate {

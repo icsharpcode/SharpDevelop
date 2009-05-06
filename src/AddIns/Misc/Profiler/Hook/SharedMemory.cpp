@@ -37,10 +37,13 @@ CSharedMemory::CSharedMemory(char *name)
 	#endif
 	this->length = header->TotalLength;
 	UnmapViewOfFile(this->startPtr);
+	DebugWriteLine(L"Length: %d", this->length);
 	this->startPtr = MapViewOfFile(this->fileHandle, FILE_MAP_ALL_ACCESS, 0, 0, this->length);
 	if (startPtr == nullptr) {
+		char buffer[512];
+		sprintf_s(buffer, 512, "Error while creating temporary storage file (shared memory)!\n\nError: %d", GetLastError());
 		DebugWriteLine(L"second MapViewOfFile returned nullptr");
-		MessageBox(nullptr, TEXT(""), TEXT("Profiler Error"), MB_OK);
+		MessageBox(nullptr, buffer, TEXT("Profiler Error"), MB_OK);
 	}
 	this->header = (SharedMemoryHeader*)this->startPtr;
 }

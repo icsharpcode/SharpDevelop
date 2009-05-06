@@ -119,15 +119,10 @@ namespace ICSharpCode.Profiler.Controller
 		ProfilerOptions profilerOptions = new ProfilerOptions();
 		
 		/// <summary>
-		/// Gets and sets all settings used by this profiler instance.
+		/// Gets all settings used by this profiler instance.
 		/// </summary>
 		public ProfilerOptions ProfilerOptions {
 			get { return profilerOptions; }
-			set {
-				if (isRunning)
-					throw new InvalidOperationException("Can not change settings while the profiler is executing!");
-				profilerOptions = value;
-			}
 		}
 
 		SharedMemoryHeader32* memHeader32;
@@ -206,8 +201,8 @@ namespace ICSharpCode.Profiler.Controller
 		/// <summary>
 		/// Creates a new profiler using the path to an executable to profile and a data writer.
 		/// </summary>
-		public Profiler(string pathToExecutable, IProfilingDataWriter dataWriter)
-			: this(new ProcessStartInfo(pathToExecutable), dataWriter)
+		public Profiler(string pathToExecutable, IProfilingDataWriter dataWriter, ProfilerOptions options)
+			: this(new ProcessStartInfo(pathToExecutable), dataWriter, options)
 		{
 			if (!File.Exists(pathToExecutable))
 				throw new FileNotFoundException("File not found!", pathToExecutable);
@@ -218,7 +213,7 @@ namespace ICSharpCode.Profiler.Controller
 		/// <summary>
 		/// Creates a new profiler using a process start info of an executable and a data writer.
 		/// </summary>
-		public Profiler(ProcessStartInfo info, IProfilingDataWriter dataWriter)
+		public Profiler(ProcessStartInfo info, IProfilingDataWriter dataWriter, ProfilerOptions options)
 		{
 			if (dataWriter == null)
 				throw new ArgumentNullException("dataWriter");
@@ -228,6 +223,8 @@ namespace ICSharpCode.Profiler.Controller
 			
 			if (!DetectBinaryType.IsDotNetExecutable(info.FileName))
 				throw new ProfilerException("File is not a valid .NET executable file!");
+			
+			this.profilerOptions = options;
 
 			this.is64Bit = DetectBinaryType.RunsAs64Bit(info.FileName);
 
@@ -245,7 +242,7 @@ namespace ICSharpCode.Profiler.Controller
 			this.psi.EnvironmentVariables["AccessEventName"] = AccessEventId; // name for access event of controller
 			this.psi.EnvironmentVariables["COR_ENABLE_PROFILING"] = "1"; // enable profiling; 0 = disable
 			this.psi.EnvironmentVariables["COR_PROFILER"] = ProfilerGuid; // GUID for the profiler
-
+			
 			file = MemoryMappedFile.CreateSharedMemory(SharedMemoryId, profilerOptions.SharedMemorySize);
 
 			fullView = file.MapView(0, profilerOptions.SharedMemorySize);

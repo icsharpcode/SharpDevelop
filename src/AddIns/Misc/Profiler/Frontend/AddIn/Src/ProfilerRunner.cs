@@ -49,14 +49,14 @@ namespace ICSharpCode.Profiler.AddIn
 			if (useTempFileDatabase) {
 				this.database = new TempFileDatabase();
 				this.writer = writer;
-				this.profiler = new Controller.Profiler(startInfo, this.database.GetWriter());
+				this.profiler = new Controller.Profiler(startInfo, this.database.GetWriter(), General.CreateProfilerOptions());
 			} else {
 				this.database = null;
 				this.writer = writer;
-				this.profiler = new Controller.Profiler(startInfo, writer);
+				this.profiler = new Controller.Profiler(startInfo, writer, General.CreateProfilerOptions());
 			}
 			
-			this.profiler.ProfilerOptions = General.CreateProfilerOptions();
+			PrintProfilerOptions();
 			
 			this.profiler.RegisterFailed += delegate { MessageService.ShowError("Could not register the profiler into COM Registry. Cannot start profiling!"); };
 			this.profiler.DeregisterFailed += delegate { MessageService.ShowError("Could not unregister the profiler from COM Registry!"); };
@@ -64,8 +64,18 @@ namespace ICSharpCode.Profiler.AddIn
 			this.profiler.SessionEnded += delegate { FinishSession(); };
 		}
 		
-		void FinishSession()
+		void PrintProfilerOptions()
 		{
+			var options = General.CreateProfilerOptions();
+			LoggingService.Info("Profiler settings:");
+			LoggingService.Info("Shared memory size: " + options.SharedMemorySize + " (" + (options.SharedMemorySize / 1024 / 1024) + " MB)");
+			LoggingService.Info("Combine recursive calls: " + options.CombineRecursiveFunction);
+			LoggingService.Info("Enable DC: " + options.EnableDC);
+			LoggingService.Info("Profile .NET internals: " + (!options.DoNotProfileDotNetInternals));
+		}
+		
+		void FinishSession()
+		{		
 			using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog("Preparing for analysis", true)) {
 				if (database != null) {
 					database.WriteTo(writer, progress => !dlg.IsCancelled);
@@ -82,6 +92,7 @@ namespace ICSharpCode.Profiler.AddIn
 		
 		public void Run()
 		{
+			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 			profiler.Start();
 		}
 		
