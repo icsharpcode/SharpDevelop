@@ -409,35 +409,34 @@
 									</Component>
 								</Directory>
 								<Directory Id="NUnitFolder" Name="NUnit">
-									<Component Guid="264B36E0-A168-432B-A227-F628D0159370" Id="NUnitCoreExtensionsDll" DiskId="1">
-										<File Source="..\..\bin\Tools\NUnit\nunit.core.extensions.dll" Id="nunit.core.extensions.dll" Name="nunit.core.extensions.dll" Assembly=".net" AssemblyApplication="nunit.core.extensions.dll" AssemblyManifest="nunit.core.extensions.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="77AD4995-2B2B-4E93-86B2-78FEF44A2E23" Id="NUnitUiKitDll" DiskId="1">
-										<File Source="..\..\bin\Tools\NUnit\nunit.uikit.dll" Id="nunit.uikit.dll" Name="nunit.uikit.dll" Assembly=".net" AssemblyApplication="nunit.uikit.dll" AssemblyManifest="nunit.uikit.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="05C2C035-FD03-4E68-B4B4-A20906FEBA9E" Id="NUnitUtilDll" DiskId="1">
-										<File Source="..\..\bin\Tools\NUnit\nunit.util.dll" Id="nunit.util.dll" Name="nunit.util.dll" Assembly=".net" AssemblyApplication="nunit.util.dll" AssemblyManifest="nunit.util.dll" KeyPath="yes" />
-									</Component>
 									<Component Guid="108E9A75-72D2-40FA-B65C-EFB5ECADB245" Id="NUnitConsoleFiles" DiskId="1">
 										<File Source="..\..\bin\Tools\NUnit\nunit-console.exe" Id="nunit_console.exe" Name="nunit-console.exe" Assembly=".net" AssemblyApplication="nunit_console.exe" AssemblyManifest="nunit_console.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\NUnit\nunit-console.exe.config" Id="nunit_console.exe.config" Name="nunit-console.exe.config" />
 									</Component>
-									<Component Guid="D27CF2E9-B836-4581-8FF3-23D1154FC9B8" Id="NunitConsoleRunnerDll" DiskId="1">
-										<File Source="..\..\bin\Tools\NUnit\nunit-console-runner.dll" Id="nunit_console_runner.dll" Name="nunit-console-runner.dll" Assembly=".net" AssemblyApplication="nunit_console_runner.dll" AssemblyManifest="nunit_console_runner.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="6485334C-163C-479E-9ACE-8E738D9BDB96" Id="NUnitCoreDll" DiskId="1">
-										<File Source="..\..\bin\Tools\NUnit\nunit.core.dll" Id="nunit.core.dll" Name="nunit.core.dll" />
-									</Component>
 									<Component Guid="AB89A052-2D0A-426E-B755-6FA1A9C1C64F" Id="NUnitFrameworkDll" DiskId="1">
 										<File Source="..\..\bin\Tools\NUnit\nunit.framework.dll" Id="nunit.framework.dll" Name="nunit.framework.dll" />
-									</Component>
-									<Component Guid="D67E8EC9-2D98-4889-856F-78FD2BE35947" Id="NUnitCoreInterfacesDll" DiskId="1">
-										<File Id="nunit.core.interfaces.dll" KeyPath="yes" Name="nunit.core.interfaces.dll" Assembly=".net" AssemblyApplication="nunit.core.interfaces.dll" AssemblyManifest="nunit.core.interfaces.dll" Source="..\..\bin\Tools\NUnit\nunit.core.interfaces.dll" />
 									</Component>
 									<Component Guid="C996D268-4471-4CBF-9015-43357863360A" Id="NUnitConsoleX86Files" DiskId="1">
 										<File Source="..\..\bin\Tools\NUnit\nunit-console-x86.exe" Name="nunit-console-x86.exe" Id="nunit_console_x86.exe" Assembly=".net" KeyPath="yes" AssemblyApplication="nunit_console_x86.exe" AssemblyManifest="nunit_console_x86.exe" />
 										<File Source="..\..\bin\Tools\NUnit\nunit-console-x86.exe.config" Name="nunit-console-x86.exe.config" Id="nunit_console_x86.exe.config" />
 									</Component>
+									<Directory Id="lib" Name="lib">
+										<Component Guid="7A72406E-0E83-4CE7-BB3A-2F3CC2D6F91B" Id="NUnitConsoleRunnerDll" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\lib\nunit-console-runner.dll" Name="nunit-console-runner.dll" Id="lib.nunit_console_runner.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="81A713E3-4905-4006-8510-3E1F3AB9AD13" Id="NUnitCoreDll" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\lib\nunit.core.dll" Name="nunit.core.dll" Id="lib.nunit.core.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="8E89CF2B-A866-4488-91F9-9079565FD9AE" Id="NUnitCoreInterfacesDll" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\lib\nunit.core.interfaces.dll" Name="nunit.core.interfaces.dll" Id="lib.nunit.core.interfaces.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="ECB29CA1-EDDC-4B39-972E-29E54B23DA0B" Id="NUnitUiKitDll" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\lib\nunit.uikit.dll" Name="nunit.uikit.dll" Id="lib.nunit.uikit.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="F9388116-85AE-4BF0-8CF6-0E6B5C3DD15F" Id="NUnitUtilDll" DiskId="1">
+											<File Source="..\..\bin\Tools\NUnit\lib\nunit.util.dll" Name="nunit.util.dll" Id="lib.nunit.util.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
 								</Directory>
 								<Directory Id="PartCover" Name="PartCover">
 									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">

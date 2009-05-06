@@ -1,4 +1,9 @@
-﻿using System;
+﻿// ****************************************************************
+// Copyright 2007, Charlie Poole
+// This is free software licensed under the NUnit license. You may
+// obtain a copy of the license at http://nunit.org
+// ****************************************************************
+using System;
 using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -75,7 +80,7 @@ namespace NUnit.ConsoleRunner
 		{
 		}
 
-		public void TestFinished(TestCaseResult testResult)
+		public void TestFinished(TestResult testResult)
 		{
 			if(testResult.Executed)
 			{
@@ -145,7 +150,7 @@ namespace NUnit.ConsoleRunner
 			}
 		}
 
-		public void SuiteFinished(TestSuiteResult suiteResult) 
+		public void SuiteFinished(TestResult suiteResult) 
 		{
 			if ( --level == 0) 
 			{
@@ -219,9 +224,9 @@ namespace NUnit.ConsoleRunner
 		/// <summary>
 		/// Writes a single test result to the output result file.
 		/// </summary>
-		void WriteTestResult(TestCaseResult testResult)
+		void WriteTestResult(TestResult testResult)
 		{
-			testResultWriter.WriteLine("Name: " + testResult.Name);
+			testResultWriter.WriteLine("Name: " + testResult.FullName);
 			
 			if (testResult.IsFailure) 
 			{

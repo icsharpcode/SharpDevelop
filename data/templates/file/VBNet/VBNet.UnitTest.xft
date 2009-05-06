@@ -45,7 +45,6 @@
 	<Files>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
 Imports NUnit.Framework
-Imports NUnit.Framework.SyntaxHelpers
 
 <TestFixture> _
 Public Class ${ClassName}
