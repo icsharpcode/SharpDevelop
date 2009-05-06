@@ -39,17 +39,17 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="nunit.util">
-      <HintPath>..\..\..\Tools\NUnit\nunit.util.dll</HintPath>
+      <HintPath>..\..\..\Tools\NUnit\lib\nunit.util.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="nunit.core">
-      <HintPath>..\..\..\Tools\NUnit\nunit.core.dll</HintPath>
+      <HintPath>..\..\..\Tools\NUnit\lib\nunit.core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="nunit.uikit">
-      <HintPath>..\..\..\Tools\NUnit\nunit.uikit.dll</HintPath>
+      <HintPath>..\..\..\Tools\NUnit\lib\nunit.uikit.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>

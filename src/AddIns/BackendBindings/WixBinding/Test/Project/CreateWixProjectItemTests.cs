@@ -26,7 +26,7 @@ namespace WixBinding.Tests.Project
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			ProjectItem item = p.CreateProjectItem(new BuildItem("Reference", "DummyInclude"));
-			Assert.IsInstanceOfType(typeof(ReferenceProjectItem), item);
+			Assert.IsInstanceOf(typeof(ReferenceProjectItem), item);
 		}
 		
 		[Test]
@@ -34,7 +34,7 @@ namespace WixBinding.Tests.Project
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			ProjectItem item = p.CreateProjectItem(new BuildItem("WixLibrary", "DummyInclude"));
-			Assert.IsInstanceOfType(typeof(WixLibraryProjectItem), item);
+			Assert.IsInstanceOf(typeof(WixLibraryProjectItem), item);
 		}
 		
 		[Test]
@@ -42,7 +42,7 @@ namespace WixBinding.Tests.Project
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			ProjectItem item = p.CreateProjectItem(new BuildItem("WixExtension", "DummyInclude"));
-			Assert.IsInstanceOfType(typeof(WixExtensionProjectItem), item);
+			Assert.IsInstanceOf(typeof(WixExtensionProjectItem), item);
 		}
 	}
 }

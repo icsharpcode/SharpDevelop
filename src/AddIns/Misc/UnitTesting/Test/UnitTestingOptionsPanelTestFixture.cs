@@ -59,7 +59,7 @@ namespace UnitTesting.Tests
 		[Test]
 		public void IsAbstractOptionPanel()
 		{
-			Assert.IsInstanceOfType(typeof(AbstractOptionPanel), panel);
+			Assert.IsInstanceOf(typeof(AbstractOptionPanel), panel);
 		}
 
 		[Test]

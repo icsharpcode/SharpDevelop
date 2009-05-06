@@ -9,7 +9,6 @@ using ICSharpCode.TextEditor;
 using System;
 using ICSharpCode.Core;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 using VBNetBinding.FormattingStrategy;
 
 namespace VBNetBinding.Tests.FormattingStrategy

@@ -49,7 +49,7 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void IsExtensionType()
 		{
-			Assert.IsInstanceOfType(typeof(WixExtensionProjectItem), extensionItem);
+			Assert.IsInstanceOf(typeof(WixExtensionProjectItem), extensionItem);
 		}
 	}
 }

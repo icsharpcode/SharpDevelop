@@ -9,7 +9,6 @@
 using ICSharpCode.SharpDevelop.Dom;
 using System;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace ICSharpCode.XamlBinding.Tests
 {

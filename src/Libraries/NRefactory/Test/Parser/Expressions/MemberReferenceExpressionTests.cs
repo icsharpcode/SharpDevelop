@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("SomeClass(of string).myField");
 			Assert.AreEqual("myField", fre.MemberName);
-			Assert.IsInstanceOfType(typeof(IdentifierExpression), fre.TargetObject);
+			Assert.IsInstanceOf(typeof(IdentifierExpression), fre.TargetObject);
 			TypeReference tr = ((IdentifierExpression)fre.TargetObject).TypeArguments[0];
 			Assert.AreEqual("System.String", tr.Type);
 		}
@@ -113,7 +113,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("System.Subnamespace.SomeClass(of string).myField");
 			Assert.AreEqual("myField", fre.MemberName);
-			Assert.IsInstanceOfType(typeof(MemberReferenceExpression), fre.TargetObject);
+			Assert.IsInstanceOf(typeof(MemberReferenceExpression), fre.TargetObject);
 			
 			MemberReferenceExpression inner = (MemberReferenceExpression)fre.TargetObject;
 			Assert.AreEqual("SomeClass", inner.MemberName);
@@ -126,7 +126,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("Global.System.Subnamespace.SomeClass(of string).myField");
 			Assert.AreEqual("myField", fre.MemberName);
-			Assert.IsInstanceOfType(typeof(MemberReferenceExpression), fre.TargetObject);
+			Assert.IsInstanceOf(typeof(MemberReferenceExpression), fre.TargetObject);
 			MemberReferenceExpression inner = (MemberReferenceExpression)fre.TargetObject;
 			
 			Assert.AreEqual("SomeClass", inner.MemberName);
@@ -139,7 +139,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("MyType(of string).InnerClass(of integer).myField");
 			Assert.AreEqual("myField", fre.MemberName);
-			Assert.IsInstanceOfType(typeof(MemberReferenceExpression), fre.TargetObject);
+			Assert.IsInstanceOf(typeof(MemberReferenceExpression), fre.TargetObject);
 			
 			MemberReferenceExpression inner = (MemberReferenceExpression)fre.TargetObject;
 			Assert.AreEqual("InnerClass", inner.MemberName);

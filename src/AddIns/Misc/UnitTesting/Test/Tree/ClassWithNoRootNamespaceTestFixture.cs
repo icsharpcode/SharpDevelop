@@ -97,7 +97,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void TestFixtureNodeIsTestClassNode()
 		{
-			Assert.IsInstanceOfType(typeof(TestClassTreeNode), testFixtureNode);
+			Assert.IsInstanceOf(typeof(TestClassTreeNode), testFixtureNode);
 		}
 		
 		/// <summary>

@@ -60,7 +60,7 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void IsTypeResolveResult()
 		{
-			Assert.IsInstanceOfType(typeof(TypeResolveResult), resolveResult);
+			Assert.IsInstanceOf(typeof(TypeResolveResult), resolveResult);
 		}
 		
 		[Test]

@@ -79,7 +79,7 @@ namespace NavigationServiceTests
 			Assert.IsNull(NavigationService.CurrentPosition);
 			
 			NavigationService.CurrentPosition = p;
-			Assert.IsInstanceOfType(typeof(INavigationPoint),
+			Assert.IsInstanceOf(typeof(INavigationPoint),
 			                        NavigationService.CurrentPosition);
 		}
 		
@@ -112,7 +112,7 @@ namespace NavigationServiceTests
 		/// <remarks>necessary for testing and for menu building</remarks>
 		public void GetListOfPointsTest()
 		{
-			Assert.IsInstanceOfType(typeof(ICollection<INavigationPoint>),
+			Assert.IsInstanceOf(typeof(ICollection<INavigationPoint>),
 			                        NavigationService.Points);
 		}
 		
@@ -139,7 +139,7 @@ namespace NavigationServiceTests
 		/// </summary>
 		public void CountTest()
 		{
-			Assert.IsInstanceOfType(typeof(int),
+			Assert.IsInstanceOf(typeof(int),
 			                        NavigationService.Count);
 		}
 		

@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using Hornung.ResourceToolkit;
 using Hornung.ResourceToolkit.Resolver;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace ResourceToolkit.Tests.CSharp
 {

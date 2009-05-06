@@ -119,7 +119,7 @@ namespace XmlEditor.Tests.Tree
 			Assert.AreEqual(1, mockXmlTreeView.CommentNodesRemoved.Count);
 			Assert.AreSame(rootComment, mockXmlTreeView.CommentNodesRemoved[0]);
 			Assert.AreEqual(1, mockXmlTreeView.Document.ChildNodes.Count);
-			Assert.IsInstanceOfType(typeof(XmlElement), mockXmlTreeView.Document.FirstChild);
+			Assert.IsInstanceOf(typeof(XmlElement), mockXmlTreeView.Document.FirstChild);
 			Assert.IsTrue(mockXmlTreeView.IsDirty);
 		}
 		

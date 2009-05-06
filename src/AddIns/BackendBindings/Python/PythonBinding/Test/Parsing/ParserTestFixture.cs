@@ -109,20 +109,20 @@ namespace PythonBinding.Tests.Parsing
 		{
 			DefaultProjectContent projectContent = new DefaultProjectContent();
 			ICompilationUnit unit = parser.Parse(projectContent, null, null);
-			Assert.IsInstanceOfType(typeof(DefaultCompilationUnit), unit);
+			Assert.IsInstanceOf(typeof(DefaultCompilationUnit), unit);
 		}
 		
 		[Test]
 		public void PythonExpressionFinderCreated()
 		{
 			IExpressionFinder expressionFinder = parser.CreateExpressionFinder(@"c:\Projects\test.py");
-			Assert.IsInstanceOfType(typeof(PythonExpressionFinder), expressionFinder);
+			Assert.IsInstanceOf(typeof(PythonExpressionFinder), expressionFinder);
 		}
 		
 		[Test]
 		public void Resolver()
 		{
-			Assert.IsInstanceOfType(typeof(PythonResolver), parser.CreateResolver());
+			Assert.IsInstanceOf(typeof(PythonResolver), parser.CreateResolver());
 		}
 	}
 }

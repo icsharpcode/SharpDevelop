@@ -810,7 +810,7 @@ End Module
 			MemberResolveResult result = ResolveVB<MemberResolveResult>(program, "F()(0)", 3);
 			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
 			Assert.IsFalse(result.ResolvedType.IsArrayReturnType);
-			Assert.IsInstanceOfType(typeof(IProperty), result.ResolvedMember);
+			Assert.IsInstanceOf(typeof(IProperty), result.ResolvedMember);
 			Assert.IsTrue((result.ResolvedMember as IProperty).IsIndexer);
 		}
 		
@@ -1548,9 +1548,9 @@ namespace OtherName { class Bla { } }
 		public void MixedResolveResultTest()
 		{
 			ResolveResult result = Resolve(mixedTypeTestProgram, "Project", 4);
-			Assert.IsInstanceOfType(typeof(MixedResolveResult), result);
+			Assert.IsInstanceOf(typeof(MixedResolveResult), result);
 			MixedResolveResult mrr = (MixedResolveResult)result;
-			Assert.IsInstanceOfType(typeof(MemberResolveResult), mrr.PrimaryResult);
+			Assert.IsInstanceOf(typeof(MemberResolveResult), mrr.PrimaryResult);
 			Assert.AreEqual("Project", mrr.TypeResult.ResolvedClass.Name);
 		}
 		
@@ -1558,7 +1558,7 @@ namespace OtherName { class Bla { } }
 		public void MixedStaticAccessTest()
 		{
 			ResolveResult result = Resolve(mixedTypeTestProgram, "Project.Static", 4);
-			Assert.IsInstanceOfType(typeof(MemberResolveResult), result);
+			Assert.IsInstanceOf(typeof(MemberResolveResult), result);
 			Assert.AreEqual("Static", (result as MemberResolveResult).ResolvedMember.Name);
 		}
 		
@@ -1566,7 +1566,7 @@ namespace OtherName { class Bla { } }
 		public void MixedInstanceAccessTest()
 		{
 			ResolveResult result = Resolve(mixedTypeTestProgram, "Project.Instance", 4);
-			Assert.IsInstanceOfType(typeof(MemberResolveResult), result);
+			Assert.IsInstanceOf(typeof(MemberResolveResult), result);
 			Assert.AreEqual("Instance", (result as MemberResolveResult).ResolvedMember.Name);
 		}
 		
@@ -1574,7 +1574,7 @@ namespace OtherName { class Bla { } }
 		public void NamespaceMixResolveResultTest()
 		{
 			ResolveResult result = Resolve(mixedTypeTestProgram, "OtherName", 4);
-			Assert.IsInstanceOfType(typeof(MemberResolveResult), result);
+			Assert.IsInstanceOf(typeof(MemberResolveResult), result);
 			Assert.AreEqual("OtherName", (result as MemberResolveResult).ResolvedMember.Name);
 		}
 		
@@ -1582,7 +1582,7 @@ namespace OtherName { class Bla { } }
 		public void NamespaceMixMemberAccessTest()
 		{
 			ResolveResult result = Resolve(mixedTypeTestProgram, "OtherName.Instance", 4);
-			Assert.IsInstanceOfType(typeof(MemberResolveResult), result);
+			Assert.IsInstanceOf(typeof(MemberResolveResult), result);
 			Assert.AreEqual("Instance", (result as MemberResolveResult).ResolvedMember.Name);
 		}
 		#endregion

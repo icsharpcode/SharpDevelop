@@ -190,7 +190,7 @@ namespace XmlEditor.Tests.Tree
 			treeView.RemoveComment(rootCommentNode);
 			
 			Assert.AreEqual(1, treeView.Nodes.Count);
-			Assert.IsInstanceOfType(typeof(XmlElementTreeNode), treeView.Nodes[0]);
+			Assert.IsInstanceOf(typeof(XmlElementTreeNode), treeView.Nodes[0]);
 		}
 		
 		[Test]

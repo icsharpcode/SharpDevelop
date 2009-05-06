@@ -59,7 +59,7 @@ namespace WixBinding.Tests.PropertyGrid
 		[Test]
 		public void NewGuidReturned()
 		{
-			Assert.IsInstanceOfType(typeof(String), newValue);
+			Assert.IsInstanceOf(typeof(String), newValue);
 		}
 		
 		[Test]

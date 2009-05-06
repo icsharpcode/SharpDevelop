@@ -48,28 +48,28 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void PythonConsoleHostIsMicrosoftScriptingConsoleHostType()
 		{
-			Assert.IsInstanceOfType(typeof(ConsoleHost), host);
+			Assert.IsInstanceOf(typeof(ConsoleHost), host);
 		}
 		
 		[Test]
 		public void OptionsParserCreatedIsPythonOptionsParser()
 		{
 			OptionsParser parser = host.CallCreateOptionsParser();
-			Assert.IsInstanceOfType(typeof(PythonOptionsParser), parser);
+			Assert.IsInstanceOf(typeof(PythonOptionsParser), parser);
 		}
 		
 		[Test]
 		public void CommandLineCreatedIsPythonCommandLine()
 		{
 			CommandLine commandLine = host.CallCreateCommandLine();
-			Assert.IsInstanceOfType(typeof(PythonCommandLine), commandLine);
+			Assert.IsInstanceOf(typeof(PythonCommandLine), commandLine);
 		}
 
 		[Test]
 		public void ConsoleCreatedIsPythonConsole()
 		{
 			IConsole console = host.CallCreateConsole(null, null, null);
-			Assert.IsInstanceOfType(typeof(PythonConsole), console);
+			Assert.IsInstanceOf(typeof(PythonConsole), console);
 		}
 		
 		[Test]

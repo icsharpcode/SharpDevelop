@@ -12,7 +12,6 @@ using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.CSharp;
 using ICSharpCode.NRefactory.PrettyPrinter;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 {

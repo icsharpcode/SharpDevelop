@@ -22,7 +22,7 @@ namespace PythonBinding.Tests.Designer
 		public void ListViewComponent()
 		{
 			using (ListView listView = new ListView()) {
-				Assert.IsInstanceOfType(typeof(PythonListViewComponent), PythonDesignerComponentFactory.CreateDesignerComponent(listView));
+				Assert.IsInstanceOf(typeof(PythonListViewComponent), PythonDesignerComponentFactory.CreateDesignerComponent(listView));
 			}
 		}
 		
@@ -30,7 +30,7 @@ namespace PythonBinding.Tests.Designer
 		public void TextBoxComponent()
 		{
 			using (TextBox textBox = new TextBox()) {
-				Assert.IsInstanceOfType(typeof(PythonDesignerComponent), PythonDesignerComponentFactory.CreateDesignerComponent(textBox));
+				Assert.IsInstanceOf(typeof(PythonDesignerComponent), PythonDesignerComponentFactory.CreateDesignerComponent(textBox));
 			}
 		}
 		
@@ -38,7 +38,7 @@ namespace PythonBinding.Tests.Designer
 		public void CreateRootDesigner()
 		{
 			using (TextBox textBox = new TextBox()) {
-				Assert.IsInstanceOfType(typeof(PythonDesignerRootComponent), PythonDesignerComponentFactory.CreateDesignerRootComponent(textBox));
+				Assert.IsInstanceOf(typeof(PythonDesignerRootComponent), PythonDesignerComponentFactory.CreateDesignerRootComponent(textBox));
 			}
 		}
 	}

@@ -51,7 +51,7 @@ namespace PythonBinding.Tests.Designer
 		public void ArgumentIsStringArray()
 		{
 			string[] array = new string[0];
-			Assert.IsInstanceOfType(array.GetType(), args[0]);
+			Assert.IsInstanceOf(array.GetType(), args[0]);
 		}
 	}
 }
