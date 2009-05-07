@@ -36,11 +36,9 @@ namespace PythonBinding.Tests.Designer
 			}
 		}
 		
-		[TestFixtureSetUp]
-		public new void SetUpFixture()
+		public override void BeforeSetUpFixture()
 		{
 			base.ComponentCreator.SetEventPropertyDescriptor(new MockPropertyDescriptor("abc", "TestFormLoad", true));
-			base.SetUpFixture();
 		}		
 		
 		public EventDescriptor GetLoadEventDescriptor()

@@ -46,11 +46,9 @@ namespace PythonBinding.Tests.Designer
 			}
 		}
 		
-		[TestFixtureSetUp]
-		public new void SetUpFixture()
+		public override void BeforeSetUpFixture()
 		{
 			base.ComponentCreator.SetEventPropertyDescriptor(new MockPropertyDescriptor("abc", "Button2KeyDown", true));
-			base.SetUpFixture();
 		}
 		
 		public Button GetButton()

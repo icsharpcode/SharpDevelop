@@ -31,6 +31,7 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{			
+			BeforeSetUpFixture();
 			PythonComponentWalker walker = new PythonComponentWalker(componentCreator);
 			form = walker.CreateComponent(PythonCode) as Form;
 		}
@@ -41,6 +42,13 @@ namespace PythonBinding.Tests.Designer
 			form.Dispose();
 		}		
 
+		/// <summary>
+		/// Called at the start of SetUpFixture method before anything is setup.
+		/// </summary>
+		public virtual void BeforeSetUpFixture()
+		{
+		}
+		
 		/// <summary>
 		/// Gets the python code that will be loaded.
 		/// </summary>
