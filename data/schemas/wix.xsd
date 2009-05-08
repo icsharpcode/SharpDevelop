@@ -488,6 +488,7 @@
                     <xs:element ref="PatchFamily" minOccurs="1" maxOccurs="unbounded"/>
                     <xs:element ref="PatchFamilyRef" minOccurs="0" maxOccurs="unbounded"/>
                     <xs:element ref="PatchProperty"/>
+                    <xs:element ref="TargetProductCodes"/>
                     <xs:any namespace="##other" processContents="lax">
                         <xs:annotation><xs:documentation>
                             Extensibility point in the WiX XML Schema.  Schema extensions can register additional
@@ -589,21 +590,36 @@
     </xs:element>
 
     <xs:element name="Validate">
-        <xs:annotation><xs:documentation>Sets information on the patch transform that determines to which product the transform applies and what errors should be ignored when applying the patch transform.</xs:documentation></xs:annotation>
+        <xs:annotation>
+            <xs:documentation>Sets information in the patch transform that determines if the transform applies to an installed product and what errors should be ignored when applying the patch transform.</xs:documentation>
+            <xs:appinfo>
+                <xse:remarks>
+                    <html:p>A transform contains the differences between the target product and the upgraded product. When a transform or a patch (which contains transforms) is applied, the following properties of the installed product are validated against the properties of the target product stored in a transform.</html:p>
+                    <html:ul>
+                        <html:li>ProductCode</html:li>
+                        <html:li>ProductLanguage</html:li>
+                        <html:li>ProductVersion</html:li>
+                        <html:li>UpgradeCode</html:li>
+                    </html:ul>
+                    <html:p>Windows Installer simply validates that the ProductCode, ProductLanguage, and UpgradeCode of an installed product are equivalent to those propeties of the target product used to create the transform; however, the ProductVersion can be validated with a greater range of comparisons.</html:p>
+                    <html:p>You can compare up to the first three fields of the ProductVersion. Changes to the fourth field are not validated and are useful for small updates. You can also choose how to compare the target ProductVersion used to create the transform with the installed ProductVersion. For example, while the default value of 'Equals' is recommended, if you wanted a minor upgrade patch to apply to the target ProductVersion and all older products with the same ProductCode, you would use 'LesserOrEqual'.</html:p>
+                </xse:remarks>
+            </xs:appinfo>
+        </xs:annotation>
         <xs:complexType>
             <xs:attribute name="ProductId" type="YesNoType" default="yes">
                 <xs:annotation>
-                    <xs:documentation>Requires that the upgrade ProductCode match the target ProductCode. The default is 'yes'.</xs:documentation>
+                    <xs:documentation>Requires that the installed ProductCode match the target ProductCode used to create the transform. The default is 'yes'.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ProductLanguage" type="YesNoType" default="no">
                 <xs:annotation>
-                    <xs:documentation>Requires that the upgrade ProductLanguage match the target ProductLanguage. The default is 'no'.</xs:documentation>
+                    <xs:documentation>Requires that the installed ProductLanguage match the target ProductLanguage used to create the transform. The default is 'no'.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ProductVersion" default="Update">
                 <xs:annotation>
-                    <xs:documentation>Determines how many fields in the ProductVersion to check. The default is 'Update'.</xs:documentation>
+                    <xs:documentation>Determines how many fields of the installed ProductVersion to compare. See remarks for more information. The default is 'Update'.</xs:documentation>
                 </xs:annotation>
                 <xs:simpleType>
                     <xs:restriction base="xs:NMTOKEN">
@@ -627,33 +643,33 @@
             </xs:attribute>
             <xs:attribute name="ProductVersionOperator" default="Equal">
                 <xs:annotation>
-                    <xs:documentation>Determines how the target and upgrade ProductVersions are compared. The default is 'Equal'.</xs:documentation>
+                    <xs:documentation>Determines how the installed ProductVersion is compared to the target ProductVersion used to create the transform. See remarks for more information. The default is 'Equal'.</xs:documentation>
                 </xs:annotation>
                 <xs:simpleType>
                     <xs:restriction base="xs:NMTOKEN">
                         <xs:enumeration value="Lesser">
                             <xs:annotation>
-                                <xs:documentation>Upgrade ProductVersion &lt; target ProductVersion.</xs:documentation>
+                                <xs:documentation>Installed ProductVersion &lt; target ProductVersion.</xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
                         <xs:enumeration value="LesserOrEqual">
                             <xs:annotation>
-                                <xs:documentation>Upgrade ProductVersion &lt;= target ProductVersion.</xs:documentation>
+                                <xs:documentation>Installed ProductVersion &lt;= target ProductVersion.</xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
                         <xs:enumeration value="Equal">
                             <xs:annotation>
-                                <xs:documentation>Upgrade ProductVersion = target ProductVersion.</xs:documentation>
+                                <xs:documentation>Installed ProductVersion = target ProductVersion.</xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
                         <xs:enumeration value="GreaterOrEqual">
                             <xs:annotation>
-                                <xs:documentation>Upgrade ProductVersion &gt;= target ProductVersion.</xs:documentation>
+                                <xs:documentation>Installed ProductVersion &gt;= target ProductVersion.</xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
                         <xs:enumeration value="Greater">
                             <xs:annotation>
-                                <xs:documentation>Upgrade ProductVersion &gt; target ProductVersion.</xs:documentation>
+                                <xs:documentation>Installed ProductVersion &gt; target ProductVersion.</xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
                     </xs:restriction>
@@ -661,7 +677,7 @@
             </xs:attribute>
             <xs:attribute name="UpgradeCode" type="YesNoType" default="yes">
                 <xs:annotation>
-                    <xs:documentation>Requires that the upgrade UpgradeCode match the target UpgradeCode. The default is 'yes'.</xs:documentation>
+                    <xs:documentation>Requires that the installed UpgradeCode match the target UpgradeCode used to create the transform. The default is 'yes'.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="IgnoreAddExistingRow" type="YesNoType" default="yes">
@@ -971,7 +987,7 @@
                     with Windows Installer 3.1.
                 </xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="MoreInfoURL" type="xs:string">
+            <xs:attribute name="MoreInfoURL" type="xs:string" use="required">
                 <xs:annotation>
                     <xs:documentation>A URL that provides information specific to this patch.  In Add/Remove Programs from XP SP2 on.</xs:documentation>
                 </xs:annotation>
@@ -1022,17 +1038,41 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="TargetProductCodes">
+        <xs:annotation>
+            <xs:documentation>
+                The product codes for products that can accept the patch.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="TargetProductCode"/>
+            </xs:choice>
+            <xs:attribute name="Replace" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>Whether to replace the product codes that can accept the patch from the target packages with the child elements.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="TargetProductCode">
         <xs:annotation>
             <xs:documentation>
-                A product code for a product that may receive this patch (or '*' for all products).
+                A product code for a product that can accept the patch.
             </xs:documentation>
+            <xs:appinfo>
+                <xse:remarks>
+                    <html:p>When using the PatchCreation element, if the Id attribute value is '*' or this element is not authored, the product codes of all products referenced by the TargetImages element are used.</html:p>
+                    <html:p>When using the Patch element, the Id attribute value must not be '*'. Use the TargetProductCodes/@Replace attribute instead.</html:p>
+                </xse:remarks>
+            </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
             <xs:attribute name="Id" type="xs:string" use="required">
                 <xs:annotation>
                     <xs:documentation>
-                        The product code for a product that can receive this patch (or '*' for all products).
+                        The product code for a product that can accept the patch. This can be '*'. See remarks for more information.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -1872,12 +1912,15 @@
                 <xse:msiRef table="DrLocator" href="http://msdn.microsoft.com/library/aa368331.aspx"/>
                 <xse:msiRef table="Signature" href="http://msdn.microsoft.com/library/aa371853.aspx"/>
                 <xse:howtoRef href="check_the_version_number.htm">How To: Check the version number of a file during installation</xse:howtoRef>
+                <xse:remarks>
+                    <html:a>When the parent DirectorySearch/@Depth attribute is greater than 1, the FileSearch/@Id attribute must be absent or the same as the parent DirectorySearch/@Id attribute value, unless the parent DirectorySearch/@AssignToProperty attribute value is 'yes'.</html:a>
+                </xse:remarks>
             </xs:appinfo>
             <xs:documentation>Searches for file and assigns to fullpath value of parent Property</xs:documentation>
         </xs:annotation>
         <xs:complexType>
             <xs:attribute name="Id" type="xs:string">
-                <xs:annotation><xs:documentation>Unique identifier for the file search and external key into the Signature table. If the parent DirectorySearch/@Depth is greater than 1, this must either be set to the parent DirectorySearch/@Id or absent.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Unique identifier for the file search and external key into the Signature table. If this attribute value is not set then the parent element's @Id attribute is used.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Name" type="LongFileNameType">
                 <xs:annotation>
@@ -1938,7 +1981,7 @@
             <xs:appinfo>
                 <xse:seeAlso ref="FileSearch"/>
                 <xse:remarks>
-                    <html:p>If you intend to use a FileSearchRef to reference a FileSearch but they have different parent elements, you must use a FileSearch instead of a FileSearchRef. This is because the DrLocator table in an installer package is keyed on the Id, Parent, and Path. A file is associated with its parent directory in the DrLocator table. When a FileSearch and a FileSearchRef element are under different parent elements, the Parent will automatically be different so a FileSearchRef will not have a FileSearch to reference.</html:p>
+                    <html:p>A reference to another FileSearch element must reference the same Id and the same Parent Id. If any of these attribute values are different you must instead use a FileSearch element.</html:p>
                 </xse:remarks>
             </xs:appinfo>
             <xs:documentation>References an existing FileSearch element.</xs:documentation>
@@ -1959,6 +2002,12 @@
                 <xse:msiRef table="DrLocator" href="http://msdn.microsoft.com/library/aa368331.aspx"/>
                 <xse:msiRef table="Signature" href="http://msdn.microsoft.com/library/aa371853.aspx"/>
                 <xse:howtoRef href="check_the_version_number.htm">How To: Check the version number of a file during installation</xse:howtoRef>
+                <xse:howtoRef href="directorysearchref.htm">How To: Reference another DirectorySearch element</xse:howtoRef>
+                <xse:howtoRef href="parentdirectorysearch.htm">How To: Get the parent directory of a file search</xse:howtoRef>
+                <xse:remarks>
+                    <html:p>Use the AssignToProperty attribute to search for a file but set the outer property to the directory containing the file. When this attribute is set to 'yes', you may only nest a FileSearch element with a unique Id or define no child element.</html:p>
+                    <html:a>When the parent DirectorySearch/@Depth attribute is greater than 1, the FileSearch/@Id attribute must be absent or the same as the parent DirectorySearch/@Id attribute value, unless the parent DirectorySearch/@AssignToProperty attribute value is 'yes'.</html:a>
+                </xse:remarks>
             </xs:appinfo>
             <xs:documentation>Searches for directory and assigns to value of parent Property.</xs:documentation>
         </xs:annotation>
@@ -1979,13 +2028,12 @@
             <xs:attribute name="Depth" type="xs:integer">
                 <xs:annotation>
                     <xs:documentation>
-                        Depth below the path that the installer searches for the file or directory specified by the search.
-                        If this value is not specified, the depth is assumed to be 0.
+                        Depth below the path that the installer searches for the file or directory specified by the search. See remarks for more information.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="AssignToProperty" type="YesNoType">
-                <xs:annotation><xs:documentation>Set the result of this search to the value of the outer Property.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Set the value of the outer Property to the result of this search. See remarks for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -1996,8 +2044,9 @@
                 <xse:seeAlso ref="ComponentSearch"/>
                 <xse:seeAlso ref="IniFileSearch"/>
                 <xse:seeAlso ref="RegistrySearch"/>
+                <xse:howtoRef href="directorysearchref.htm">How To: Reference another DirectorySearch element</xse:howtoRef>
                 <xse:remarks>
-                    <html:p>If you intend to use a DirectorySearchRef to reference a DirectorySearch but they have different parent elements, you must use a DirectorySearch instead of a DirectorySearchRef. This is because the DrLocator table in an installer package is keyed on the Id, Parent, and Path. When a DirectorySearch and a DirectorySearchRef element are under different parent elements, the Parent will automatically be different so a DirectorySearchRef will not have a DirectorySearch to reference.</html:p>
+                    <html:p>A reference to another DirectorySearch element must reference the same Id, the same Parent Id, and the same Path. If any of these attribute values are different you must instead use a DirectorySearch element.</html:p>
                 </xse:remarks>
             </xs:appinfo>
             <xs:documentation>References an existing DirectorySearch element.</xs:documentation>
@@ -2018,9 +2067,6 @@
             </xs:attribute>
             <xs:attribute name="Path" type="xs:string">
                 <xs:annotation><xs:documentation>Path on the user's system. Either absolute, or relative to containing directories.</xs:documentation></xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="AssignToProperty" type="YesNoType">
-                <xs:annotation><xs:documentation>Set the result of this search to the value of the outer Property.</xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -2159,6 +2205,15 @@
                 <xse:msiRef table="RegLocator" href="http://msdn.microsoft.com/library/aa371171.aspx"/>
                 <xse:msiRef table="Signature" href="http://msdn.microsoft.com/library/aa371853.aspx"/>
                 <xse:howtoRef href="read_a_registry_entry.htm">How To: Read a registry entry during installation</xse:howtoRef>
+                <xse:remarks>
+                    <html:p>
+                        When the Type attribute value is 'directory' the registry value must specify the path to a directory excluding the file name.
+                        When the Type attribute value is 'file' the registry value must specify the path to a file including the file name;
+                        however, if there is no child FileSearch element the parent directory of the file is returned. The FileSearch element requires
+                        that you author the name of the file you are searching for. If you do not know the file name
+                        you must set the Type attribute to 'raw' to return the full file path including the file name.
+                    </html:p>
+                </xse:remarks>
             </xs:appinfo>
             <xs:documentation>Searches for file, directory or registry key and assigns to value of parent Property</xs:documentation>
         </xs:annotation>
@@ -2217,7 +2272,7 @@
             <xs:attribute name="Type" use="required">
                 <xs:annotation>
                     <xs:documentation>
-                        The value must be 'file' if the last child is a FileSearch element and must be 'directory' if last child is a DirectorySearch element.
+                        The value must be 'file' if the child is a FileSearch element, and must be 'directory' if child is a DirectorySearch element.
                     </xs:documentation>
                 </xs:annotation>
                 <xs:simpleType>
@@ -2225,26 +2280,33 @@
                         <xs:enumeration value="directory">
                             <xs:annotation>
                                 <xs:documentation>
-                                    Sets a directory path from the registry value.
+                                    The registry value contains the path to a directory.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
                         <xs:enumeration value="file">
                             <xs:annotation>
                                 <xs:documentation>
-                                    Sets a file path from the registry value.
+                                    The registry value contains the path to a file. To return the full file path you must add a FileSearch element as a child of this element; otherwise, the parent directory of the file path is returned.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
                         <xs:enumeration value="raw">
                             <xs:annotation>
                                 <xs:documentation>
-                                    Sets the raw value from the registry value.  Please note that this value will contain a prefix as follows:<html:br/>
-                                    DWORD: Starts with '#' optionally followed by '+' or '-'.<html:br />
-                                    REG_BINARY: Starts with '#x' and the installer converts and saves each hexadecimal digit (nibble) as an ASCII character prefixed by '#x'.<html:br/>
-                                    REG_EXPAND_SZ: Starts with '#%'.<html:br/>
-                                    REG_MULTI_SZ: Starts with '[~]' and ends with '[~]'.<html:br/>
-                                    REG_SZ: No prefix, but if the first character of the registry value is '#', the installer escapes the character by prefixing it with another '#'.<html:br/>
+                                    Sets the raw value from the registry value.  Please note that this value will contain a prefix as follows:<html:br/><html:br/>
+                                    <html:dl>
+                                        <html:dt>DWORD</html:dt>
+                                        <html:dd>Starts with '#' optionally followed by '+' or '-'.</html:dd>
+                                        <html:dt>REG_BINARY</html:dt>
+                                        <html:dd>Starts with '#x' and the installer converts and saves each hexadecimal digit (nibble) as an ASCII character prefixed by '#x'.</html:dd>
+                                        <html:dt>REG_EXPAND_SZ</html:dt>
+                                        <html:dd>Starts with '#%'.</html:dd>
+                                        <html:dt>REG_MULTI_SZ</html:dt>
+                                        <html:dd>Starts with '[~]' and ends with '[~]'.</html:dd>
+                                        <html:dt>REG_SZ</html:dt>
+                                        <html:dd>No prefix, but if the first character of the registry value is '#', the installer escapes the character by prefixing it with another '#'.</html:dd>
+                                    </html:dl>
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
@@ -2588,17 +2650,17 @@
                 <xse:seeAlso ref="Shortcut"/>
                 <xse:msiRef table="MsiShortcutProperty" />
             </xs:appinfo>
-            <xs:documentation>Property values for a shortcut.</xs:documentation>
+            <xs:documentation>Property values for a shortcut. This element's functionality is available starting with MSI 5.0.</xs:documentation>
         </xs:annotation>
         <xs:complexType mixed="true">
             <xs:attribute name="Id" type="xs:string">
                 <xs:annotation><xs:documentation>Unique identifier for MsiShortcutProperty table. If omitted, a stable identifier will be generated from the parent shortcut identifier and Key value.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Key" type="xs:string" use="required">
-                <xs:annotation><xs:documentation>Sets a default value for the property.  The value will be overwritten if the Property is used for a search.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>A formatted string identifying the property to be set.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Value" type="xs:string">
-                <xs:annotation><xs:documentation>Sets a default value for the property.  The value will be overwritten if the Property is used for a search.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>A formatted string supplying the value of the property.</xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -3063,7 +3125,16 @@
                 </xs:simpleType>
             </xs:attribute>
             <xs:attribute name="DiskId" type="xs:integer">
-                <xs:annotation><xs:documentation>Specifies the Media this File should be sourced on.  This attribute overrides the default DiskId attribute from the parent Component element.  If no DiskId attribute is specifed, the default is "1".</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>
+                    The value of this attribute should correspond to the Id attribute of a Media
+                    element authored elsewhere.  By creating this connection between a file and
+                    its media, you set the packaging options to the values specified in the Media
+                    element (values such as compression level, cab embedding, etc...). Specifying
+                    the DiskId attribute on the File element overrides the default DiskId attribute
+                    from the parent Component element. If no DiskId attribute is specified,
+                    the default is "1". This DiskId attribute is ignored when creating a merge module
+                    because merge modules do not have media.
+                </xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Source" type="xs:string">
                 <xs:annotation><xs:documentation>Specifies the path to the File in the build process. Overrides default source path set by parent directories and Name attribute. This attribute must be set if no source information can be gathered from parent directories. For more information, see <a href="\html\specifying_source_files.htm">Specifying source files</a>.</xs:documentation></xs:annotation>
@@ -4098,8 +4169,8 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="ProgId" minOccurs="0">
-                    <xs:annotation><xs:documentation>Version-independent ProgId must be child element of actual ProgId.  Nesting further ProgId elements within the Version-independent ProgId is disallowed.</xs:documentation></xs:annotation>
+                <xs:element ref="ProgId" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation><xs:documentation>The version-independent ProgId must be the first child element of actual ProgId.  Nesting other ProgId elements within the Version-independent ProgId will create COM+ aliases, see <a href="http://support.microsoft.com/kb/305745">http://support.microsoft.com/kb/305745</a> for more information.</xs:documentation></xs:annotation>
                 </xs:element>
                 <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation><xs:documentation>Extensions that refer to this ProgId</xs:documentation></xs:annotation>
@@ -4344,6 +4415,25 @@
                                     @="[!<html:b>comserv.dll</html:b>]"<html:br/>
                                     [HKCR\CLSID\{<html:b>01234567-89AB-CDEF-0123-456789ABCDEF</html:b>}\<html:b>LocalServer32</html:b>]<html:br/>
                                     @="[!<html:b>comserv.dll</html:b>]"
+                                </html:dd>
+                            </html:dl>
+                        </html:dd>
+                        <html:dt>Id/Context/ForeignServer</html:dt>
+                        <html:dd>
+                            <html:dl>
+                                <html:dt>In General</html:dt>
+                                <html:dd>
+                                  [HKCR\CLSID\{<html:b>Id</html:b>}\<html:b>Context1</html:b>]<html:br/>
+                                  @="<html:b>ForeignServer</html:b>"<html:br/>
+                                  [HKCR\CLSID\{<html:b>Id</html:b>}\<html:b>Context2</html:b>]<html:br/>
+                                  @="<html:b>ForeignServer</html:b>"
+                                </html:dd>
+                                <html:dt>Specific Example</html:dt>
+                                <html:dd>
+                                  [HKCR\CLSID\{<html:b>01234567-89AB-CDEF-0123-456789ABCDEF</html:b>}\<html:b>LocalServer</html:b>]<html:br/>
+                                  @="<html:b>mscoree.dll</html:b>"<html:br/>
+                                  [HKCR\CLSID\{<html:b>01234567-89AB-CDEF-0123-456789ABCDEF</html:b>}\<html:b>LocalServer32</html:b>]<html:br/>
+                                  @="<html:b>mscoree.dll</html:b>"
                                 </html:dd>
                             </html:dl>
                         </html:dd>
@@ -4689,9 +4779,16 @@
                     Specifies the CLSID may be programmable.
                 </xs:documentation></xs:annotation>
             </xs:attribute>
+            <xs:attribute name="ForeignServer" type="xs:string">
+                <xs:annotation><xs:documentation>
+                  May only be specified if the value of the Advertise attribute is "no" and Server has not been specified. In addition, it may only
+                  be used when the Class element is directly under the Component element. The value can be
+                  that of an registry type (REG_SZ). This attribute should be used to specify foreign servers, such as mscoree.dll if needed.
+                </xs:documentation></xs:annotation>
+          </xs:attribute>
             <xs:attribute name="Server" type="xs:string">
                 <xs:annotation><xs:documentation>
-                    May only be specified if the value of the Advertise attribute is "no".  File Id of the
+                    May only be specified if the value of the Advertise attribute is "no" and the ForeignServer attribute is not specified.  File Id of the
                     COM server file.  If this element is nested under a File element, this value defaults to
                     the value of the parent File/@Id.
                 </xs:documentation></xs:annotation>
@@ -4817,6 +4914,9 @@
         </xs:annotation>
         <xs:complexType>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="PermissionEx">
+                    <xs:annotation><xs:documentation>Configures the ACLs for this service.</xs:documentation></xs:annotation>
+                </xs:element>
                 <xs:element ref="ServiceDependency">
                     <xs:annotation><xs:documentation>ordered list of dependencies when installing services</xs:documentation></xs:annotation>
                 </xs:element>
@@ -5114,7 +5214,7 @@
     <xs:element name="ServiceConfig">
         <xs:annotation>
             <xs:documentation>
-                Configures a service being installed or one that already exists.
+                Configures a service being installed or one that already exists. This element's functionality is available starting with MSI 5.0.
             </xs:documentation>
             <xs:appinfo>
                 <xse:msiRef table="MsiServiceConfig" href="http://msdn.microsoft.com/library/aa371637.aspx"/>
@@ -5207,7 +5307,7 @@
     <xs:element name="ServiceConfigFailureActions">
         <xs:annotation>
             <xs:documentation>
-                Configures the failure actions for a service being installed or one that already exists.
+                Configures the failure actions for a service being installed or one that already exists. This element's functionality is available starting with MSI 5.0.
             </xs:documentation>
             <xs:appinfo>
                 <xse:msiRef table="MsiServiceConfigFailureActions" href="http://msdn.microsoft.com/library/aa371637.aspx"/>
@@ -5584,11 +5684,10 @@
             <xs:attribute name="DiskId" type="xs:integer">
                 <xs:annotation>
                     <xs:documentation>
-                        This attribute must be set either on a Component element or all of its children File
-                        elements.  The value of this attribute should correspond to the Id attribute of a
-                        Media element authored elsewhere.  By creating this connection between a component (or
-                        particular files), you set the packaging options to the values specified in the Media
-                        element (values such as compression level, cab embedding, etc...).
+                        This attribute provides a default DiskId attribute for all child File elements. Specifying
+                        the DiskId on a Component element will override any DiskId attributes set by parent Directory
+                        or DirectoryRef elements. See the File element's DiskId attribute for more information about
+                        the purpose of the DiskId.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -5883,7 +5982,7 @@
             </xs:attribute>
             <xs:attribute name="DiskId" type="xs:string">
                 <xs:annotation><xs:documentation>The value of this attribute should correspond to the Id attribute of a
-                    Media element authored elsewhere.  By creating this connection between the Merge Module and Media
+                    Media element authored elsewhere.  By creating this connection between the merge module and Media
                     element, you set the packaging options to the values specified in the Media
                     element (values such as compression level, cab embedding, etc...).</xs:documentation></xs:annotation>
             </xs:attribute>
@@ -5984,11 +6083,9 @@
                 <xs:annotation>
                     <xs:documentation>
                         Sets the default disk identifier for the files contained in this directory.
-                        This attribute must be set on a Component, Directory, or DirectoryRef element or all of its children File
-                        elements, else the default disk identifier of 1 is assumed. The value of this attribute should correspond to the Id attribute of a
-                        Media element authored elsewhere.  By creating this connection between a component (or
-                        particular files), you set the packaging options to the values specified in the Media
-                        element (values such as compression level, cab embedding, etc...).
+                        This attribute's value may be overridden by a child Component, Directory,
+                        Merge or File element. See the File or Merge elements' DiskId attribute for
+                        more information.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -6052,7 +6149,7 @@
                 <xs:annotation>
                     <xs:documentation>
                         The name of the directory on the source media.
-                        If this attribute is note specified, the Windows Installer will default to the Name attribute.
+                        If this attribute is not specified, Windows Installer will default to the Name attribute.
 
                         In prior versions of the WiX toolset, this attribute specified the short source directory name.
                         This attribute's value may now be either a short or long directory name.
@@ -6103,11 +6200,9 @@
                 <xs:annotation>
                     <xs:documentation>
                         Sets the default disk identifier for the files contained in this directory.
-                        This attribute must be set on a Component, Directory, or DirectoryRef element or all of its children File
-                        elements, else the default disk identifier of 1 is assumed. The value of this attribute should correspond to the Id attribute of a
-                        Media element authored elsewhere.  By creating this connection between a component (or
-                        particular files), you set the packaging options to the values specified in the Media
-                        element (values such as compression level, cab embedding, etc...).
+                        This attribute's value may be overridden by a child Component, Directory,
+                        Merge or File element. See the File or Merge elements' DiskId attribute for
+                        more information.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -6282,7 +6377,7 @@
                         <xs:enumeration value="no">
                             <xs:annotation>
                                 <xs:documentation>
-                                    Prevents this feature from being advertised by settting the msidbFeatureAttributesDisallowAdvertise attribute.
+                                    Prevents this feature from being advertised by setting the msidbFeatureAttributesDisallowAdvertise attribute.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
@@ -8517,9 +8612,12 @@
                     </xs:annotation>
                 </xs:element>
             </xs:sequence>
-            <xs:attribute name="Id" type="xs:string" use="required">
+            <xs:attribute name="Id" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>Unique identifier for embedded UI.</xs:documentation>
+                    <xs:documentation>
+                        Unique identifier for embedded UI.If this attribute is not specified the Name attribute or the file name 
+                        portion of the SourceFile attribute will be used.
+                    </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="IgnoreFatalExit" type="YesNoType">
@@ -8602,12 +8700,23 @@
                     <xs:documentation>Embedded UI will not recieve any INSTALLLOGMODE_RMFILESINUSE messages.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
+            <xs:attribute name="IgnoreInstallStart" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>Embedded UI will not recieve any INSTALLLOGMODE_INSTALLSTART messages.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="IgnoreInstallEnd" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>Embedded UI will not recieve any INSTALLLOGMODE_INSTALLEND messages.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
             <xs:attribute name="Name" type="LongFileNameType">
                 <xs:annotation>
                     <xs:documentation>
                         The name for the embedded UI DLL when it is extracted from the Product and executed. (Windows Installer 
                         does not support the typical short filename and long filename combination for embedded UI files as it 
-                        does for other kinds of files.) If this attribute is not specified the Id attribute will be used.
+                        does for other kinds of files.) If this attribute is not specified the file name portion of the SourceFile 
+                        attribute will be used.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -8837,7 +8946,7 @@
                 <xs:annotation><xs:documentation>Combined with the Dialog Id to make up the primary key of the Control table.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Type" use="required" type="xs:string">
-                <xs:annotation><xs:documentation>The type of the control. Could be one of the following: Billboard, Bitmap, CheckBox, ComboBox, DirectoryCombo, DirectoryList, Edit, GroupBox, Icon, Line, ListBox, ListView, MaskedEdit, PathEdit, ProgressBar, PushButton, RadioButtonGroup, ScrollableText, SelectionTree, Text, VolumeCostList, VolumeSelectCombo</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>The type of the control. Could be one of the following: Billboard, Bitmap, CheckBox, ComboBox, DirectoryCombo, DirectoryList, Edit, GroupBox, Hyperlink, Icon, Line, ListBox, ListView, MaskedEdit, PathEdit, ProgressBar, PushButton, RadioButtonGroup, ScrollableText, SelectionTree, Text, VolumeCostList, VolumeSelectCombo</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="X" use="required" type="LocalizableInteger">
                 <xs:annotation><xs:documentation>Horizontal coordinate of the upper-left corner of the rectangular boundary of the control. This must be a non-negative number.</xs:documentation></xs:annotation>
@@ -8865,6 +8974,9 @@
             </xs:attribute>
             <xs:attribute name="CheckBoxValue" type="xs:string">
                 <xs:annotation><xs:documentation>This attribute is only valid for CheckBox Controls. When set, the linked Property will be set to this value when the check box is checked.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="CheckBoxPropertyRef" type="xs:string">
+                <xs:annotation><xs:documentation>This attribute is only valid for CheckBox controls. The value is the name of a Property that was already used as the Property for another CheckBox control. The Property attribute cannot be specified. The attribute exists to support multiple checkboxes on different dialogs being tied to the same property.</xs:documentation></xs:annotation>
             </xs:attribute>
             <!-- Control ordering - order of declaration in Dialog determines tab ordering -->
             <xs:attribute name="TabSkip" type="YesNoType">

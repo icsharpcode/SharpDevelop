@@ -24,7 +24,7 @@
         <xs:annotation>
             <xs:documentation>
                 Improves the performance of managed applications by creating native images.
-                Requires the .NET Framework 2.0 to be installed on the target machine since
+                Requires the .NET Framework 2.0 or newer to be installed on the target machine since
                 it runs <html:a href="http://msdn2.microsoft.com/en-us/library/6t9t5wcf.aspx">NGen</html:a>.
             </xs:documentation>
             <xs:appinfo>
@@ -109,7 +109,7 @@
                             <xs:annotation>
                                 <xs:documentation>
                                     Attempt to generate native images only for the 32-bit version of the .NET Framework
-                                    on the target machine.  If the 32-bit version of the .NET Framework 2.0 is not
+                                    on the target machine.  If the 32-bit version of the .NET Framework 2.0 or newer is not
                                     present on the target machine, native image custom actions will not be scheduled.
                                     This is the default value.
                                 </xs:documentation>
@@ -119,7 +119,7 @@
                             <xs:annotation>
                                 <xs:documentation>
                                     Attempt to generate native images only for the 64-bit version of the .NET Framework
-                                    on the target machine.  If a 64-bit version of the .NET Framework 2.0 is not
+                                    on the target machine.  If a 64-bit version of the .NET Framework 2.0 or newer is not
                                     present on the target machine, native image custom actions will not be scheduled.
                                 </xs:documentation>
                             </xs:annotation>
@@ -128,7 +128,7 @@
                             <xs:annotation>
                                 <xs:documentation>
                                     Attempt to generate native images for the 32-bit and 64-bit versions of the .NET Framework
-                                    on the target machine.  If a version of the .NET Framework 2.0 is not present on the
+                                    on the target machine.  If a version of the .NET Framework 2.0 or newer is not present on the
                                     target machine for a processor architecture, native image custom actions will not be
                                     scheduled for that processor architecture.
                                 </xs:documentation>
