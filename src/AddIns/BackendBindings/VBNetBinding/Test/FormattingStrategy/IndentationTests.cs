@@ -13,6 +13,7 @@ using VBNetBinding.FormattingStrategy;
 
 namespace VBNetBinding.Tests.FormattingStrategy
 {
+	/*
 	[TestFixture]
 	public class IndentationTests
 	{
@@ -82,5 +83,5 @@ End Class";
 				PropertyService.InitializeService(String.Empty, String.Empty, "VBNetBindingTests");
 			}
 		}
-	}
+	}*/
 }
