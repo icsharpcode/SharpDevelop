@@ -90,7 +90,7 @@ namespace SharpRefactoring
 			parentNode.AcceptVisitor(ltv, null);
 			
 			var variablesList = (from list in ltv.Variables.Values from item in list select new Variable(item))
-				.Where(v => !(v.StartPos > end || v.EndPos < start))
+				.Where(v => !(v.StartPos > end || v.EndPos < start) && HasReferencesInSelection(newMethod, v))
 				.Union(FromParameters(newMethod))
 				.Select(va => ResolveVariable(va));
 			
@@ -98,7 +98,7 @@ namespace SharpRefactoring
 				LoggingService.Debug(variable);
 				
 				bool hasOccurrencesAfter = HasOccurrencesAfter(CSharpNameComparer, this.parentNode, end, variable.Name, variable.StartPos, variable.EndPos);
-				bool isInitialized = !variable.Initializer.IsNull;
+				bool isInitialized = (variable.Initializer != null) ? !variable.Initializer.IsNull : false;
 				bool hasAssignment = HasAssignment(newMethod, variable);
 				
 				if (IsInSel(variable.StartPos, this.currentSelection) && hasOccurrencesAfter) {
@@ -106,7 +106,7 @@ namespace SharpRefactoring
 					otherReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.Type));
 				}
 				
-				if (!(IsInSel(variable.StartPos, this.currentSelection) || IsInSel(variable.EndPos, this.currentSelection))) {					
+				if (!(IsInSel(variable.StartPos, this.currentSelection) || IsInSel(variable.EndPos, this.currentSelection))) {
 					ParameterDeclarationExpression newParam = null;
 
 					if ((hasOccurrencesAfter && isInitialized) || variable.WasRefParam)
@@ -152,6 +152,15 @@ namespace SharpRefactoring
 			this.extractedMethod = newMethod;
 			
 			return true;
+		}
+		
+		bool HasReferencesInSelection(MethodDeclaration newMethod, Variable variable)
+		{
+			FindReferenceVisitor frv = new FindReferenceVisitor(CSharpNameComparer, variable.Name,
+			                                                    newMethod.Body.StartLocation, newMethod.Body.EndLocation);
+			
+			newMethod.AcceptVisitor(frv, null);
+			return frv.Identifiers.Count > 0;
 		}
 
 		Variable ResolveVariable(Variable variable)
