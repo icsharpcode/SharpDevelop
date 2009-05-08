@@ -97,6 +97,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.Controls.Add(this.lblExceptionText);
 			this.Controls.Add(this.pictureBox);
 			this.Name = "DebuggeeExceptionForm";
+			this.ShowInTaskbar = false;
 			this.Resize += new System.EventHandler(this.debugeeExceptionFormResize);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
 			this.ResumeLayout(false);
