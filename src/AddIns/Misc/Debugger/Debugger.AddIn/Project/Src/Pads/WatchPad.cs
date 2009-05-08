@@ -79,12 +79,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				MessageBox.Show("You can not set name to an empty string!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else
 			{
-				if (((TreeViewVarNode)node).Content is ValueNode)
+				if (((TreeViewVarNode)node).Content is ValueNode) {
+					WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((ValueNode)((TreeViewVarNode)node).Content).Name);
 					((ValueNode)((TreeViewVarNode)node).Content).SetName(value.ToString());
-				else {
-					if (((TreeViewVarNode)node).Content is TextNode)
+				} else {
+					if (((TreeViewVarNode)node).Content is TextNode) {
+						WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((TextNode)((TreeViewVarNode)node).Content).Name);
 						((TextNode)((TreeViewVarNode)node).Content).SetName(value.ToString());
+					}
 				}
+				
+				WatchPad.Instance.Watches.Add(new TextNode(value as string));
 			}
 		}
 		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
@@ -171,42 +176,42 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			watchList.NodeControls.Add(typeControl);
 			
 			watchList.AutoRowHeight = true;
-			watchList.MouseDoubleClick += new MouseEventHandler(watchList_DoubleClick);			
-			watchList.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");			
-		
+			watchList.MouseDoubleClick += new MouseEventHandler(watchList_DoubleClick);
+			watchList.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
+			
 			watchList.AllowDrop = true;
-   			watchList.DragEnter += new DragEventHandler(watchList_DragEnter);   
-   			watchList.DragDrop += new DragEventHandler(watchList_DragDrop);
-   			
+			watchList.DragEnter += new DragEventHandler(watchList_DragEnter);
+			watchList.DragDrop += new DragEventHandler(watchList_DragDrop);
+			
 			watches = new List<TextNode>();
 			
 			RedrawContent();
 		}
 		
 		void watchList_DragDrop(object sender, DragEventArgs e)
-        {
-            watchList.BeginUpdate();
-            TextNode text = new TextNode(e.Data.GetData(DataFormats.StringFormat).ToString());
-            TreeViewVarNode node = new TreeViewVarNode(this.debuggedProcess, this.watchList, text);
-            watches.Add(text);
-            watchList.Root.Children.Add(node);
-            watchList.EndUpdate();
-           
-            node.IsSelected = true;
-           
-            this.RefreshPad();
-        }
+		{
+			watchList.BeginUpdate();
+			TextNode text = new TextNode(e.Data.GetData(DataFormats.StringFormat).ToString());
+			TreeViewVarNode node = new TreeViewVarNode(this.debuggedProcess, this.watchList, text);
+			watches.Add(text);
+			watchList.Root.Children.Add(node);
+			watchList.EndUpdate();
+			
+			node.IsSelected = true;
+			
+			this.RefreshPad();
+		}
 
-        void watchList_DragEnter(object sender, DragEventArgs e)
-        {
-           if(e.Data.GetDataPresent(DataFormats.StringFormat)) {
-              e.Effect = DragDropEffects.Copy;
-           }
-           else {
-              e.Effect = DragDropEffects.None;
-           }          
-        }
-        
+		void watchList_DragEnter(object sender, DragEventArgs e)
+		{
+			if(e.Data.GetDataPresent(DataFormats.StringFormat)) {
+				e.Effect = DragDropEffects.Copy;
+			}
+			else {
+				e.Effect = DragDropEffects.None;
+			}
+		}
+		
 		void watchList_DoubleClick(object sender, MouseEventArgs e)
 		{
 			if (watchList.SelectedNode == null)
@@ -226,7 +231,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					if (nfo.Control is WatchItemName)
 						((EditableControl)nfo.Control).MouseUp(new TreeNodeAdvMouseEventArgs(e));
 				}
-
 			}
 		}
 		
@@ -281,17 +285,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					Utils.DoEvents(debuggedProcess);
 					List<TreeViewVarNode> nodes = new List<TreeViewVarNode>();
 					
-					foreach (TreeViewVarNode nod in this.watchList.Root.Children) {
+					foreach (var nod in watches) {
 						try {
-							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(nod.Content.Name) ? "is null or empty!" : nod.Content.Name));
-							Value val = AstEvaluator.Evaluate(nod.Content.Name, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
+							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(nod.Name) ? "is null or empty!" : nod.Name));
+							Value val = AstEvaluator.Evaluate(nod.Name, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
 							ValueNode valNode = new ValueNode(val);
-							valNode.SetName(nod.Content.Name);
-							
+							valNode.SetName(nod.Name);
 							nodes.Add(new TreeViewVarNode(debuggedProcess, watchList, valNode));
 						} catch (GetValueException) {
-							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), nod.Content.Name);
-							ErrorInfoNode infoNode = new ErrorInfoNode(nod.Content.Name, error);
+							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), nod.Name);
+							ErrorInfoNode infoNode = new ErrorInfoNode(nod.Name, error);
 							nodes.Add(new TreeViewVarNode(debuggedProcess, watchList, infoNode));
 						}
 					}
