@@ -26,6 +26,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 	{
 		ProfilingDataProvider provider;
 		ProfilerView dataView;
+		OpenedFile file;
 		
 		public override object Control {
 			get {
@@ -33,12 +34,17 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			}
 		}
 		
+		public override string PrimaryFileName {
+			get { return file.FileName; }
+		}
+		
 		/// <summary>
 		/// Creates a new WpfViewer object
 		/// </summary>
 		public WpfViewer(OpenedFile file)
 		{
-			this.Files.Add(file);
+			//this.Files.Add(file);
+			this.file = file;
 			this.provider = ProfilingDataSQLiteProvider.FromFile(file.FileName);
 			this.TabPageText = Path.GetFileName(file.FileName);
 			this.TitleName = this.TabPageText;

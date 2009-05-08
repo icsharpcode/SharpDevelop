@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace ICSharpCode.AvalonEdit.Document.Tests
 {

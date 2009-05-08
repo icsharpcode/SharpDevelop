@@ -24,7 +24,7 @@ namespace ICSharpCode.Svn
 		public HistoryView(IViewContent viewContent) : base(viewContent)
 		{
 			this.TabPageText = "${res:AddIns.Subversion.History}";
-			this.historyViewPanel = new HistoryViewPanel(viewContent);
+			this.historyViewPanel = new HistoryViewPanel(viewContent.PrimaryFileName);
 		}
 		
 		protected override void LoadFromPrimary()

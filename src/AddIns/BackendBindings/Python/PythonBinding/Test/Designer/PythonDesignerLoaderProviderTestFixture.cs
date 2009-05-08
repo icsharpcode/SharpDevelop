@@ -33,7 +33,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			DesignerLoader loader = provider.CreateLoader(generator);
 			using (IDisposable disposable = loader as IDisposable) {
-				Assert.IsInstanceOfType(typeof(PythonDesignerLoader), loader);
+				Assert.IsInstanceOf(typeof(PythonDesignerLoader), loader);
 			}
 		}
 		

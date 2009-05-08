@@ -134,7 +134,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void RootNodeIsTestProjectNode()
 		{
-			Assert.IsInstanceOfType(typeof(TestProjectTreeNode), rootNode);
+			Assert.IsInstanceOf(typeof(TestProjectTreeNode), rootNode);
 		}
 		
 		[Test]
@@ -212,7 +212,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void RootNamespaceNodeIsTestNamespaceNode()
 		{
-			Assert.IsInstanceOfType(typeof(TestNamespaceTreeNode), rootNamespaceNode);
+			Assert.IsInstanceOf(typeof(TestNamespaceTreeNode), rootNamespaceNode);
 		}
 		
 		[Test]
@@ -237,7 +237,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void TestsNamespaceNodeIsNamespaceNode()
 		{
-			Assert.IsInstanceOfType(typeof(TestNamespaceTreeNode), testsNamespaceNode);
+			Assert.IsInstanceOf(typeof(TestNamespaceTreeNode), testsNamespaceNode);
 		}
 		
 		[Test]
@@ -255,7 +255,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void TestFixtureNodeIsTestClassNode()
 		{
-			Assert.IsInstanceOfType(typeof(TestClassTreeNode), testFixtureNode);
+			Assert.IsInstanceOf(typeof(TestClassTreeNode), testFixtureNode);
 		}
 		
 		[Test]
@@ -289,7 +289,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void TestMethodIsTestMethodNode()
 		{
-			Assert.IsInstanceOfType(typeof(TestMethodTreeNode), testNode);
+			Assert.IsInstanceOf(typeof(TestMethodTreeNode), testNode);
 		}
 		
 		[Test]
@@ -394,7 +394,7 @@ namespace UnitTesting.Tests.Tree
 
 			Assert.AreEqual(2, testFixtureNode.Nodes.Count);
 			Assert.IsNotNull(newMethodNode);
-			Assert.IsInstanceOfType(typeof(TestMethodTreeNode), newMethodNode);
+			Assert.IsInstanceOf(typeof(TestMethodTreeNode), newMethodNode);
 		}
 		
 		/// <summary>

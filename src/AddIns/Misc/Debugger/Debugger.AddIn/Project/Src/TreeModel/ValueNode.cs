@@ -27,6 +27,7 @@ namespace Debugger.AddIn.TreeModel
 	{
 		Expression expression;
 		bool canSetText;
+		string fullText;
 		
 		public Expression Expression {
 			get { return expression; }
@@ -82,14 +83,12 @@ namespace Debugger.AddIn.TreeModel
 			this.Name = val.Expression.CodeTail;
 			
 			if (DebuggingOptions.Instance.ShowValuesInHexadecimal && val.Type.IsInteger) {
-				this.Text = String.Format("0x{0:X}", val.PrimitiveValue);
+				fullText = String.Format("0x{0:X}", val.PrimitiveValue);
 			} else if (val.Type.IsPointer) {
-				this.Text = String.Format("0x{0:X}", val.PointerAddress);
+				fullText = String.Format("0x{0:X}", val.PointerAddress);
 			} else {
-				this.Text = val.AsString;
+				fullText = val.AsString;
 			}
-			
-			this.Text = (this.Text.Length > 256) ? this.Text.Substring(0, 256) + "..." : this.Text;
 			
 			if (val.Type != null) {
 				this.Type = val.Type.Name;
@@ -118,8 +117,10 @@ namespace Debugger.AddIn.TreeModel
 			
 			// Do last since it may expire the object
 			if ((val.Type.IsClass || val.Type.IsValueType) && !val.IsNull) {
-				this.Text = val.InvokeToString();
+				fullText = val.InvokeToString();
 			}
+			
+			this.Text = (fullText.Length > 256) ? fullText.Substring(0, 256) + "..." : fullText;
 		}
 		
 		IEnumerable<AbstractNode> PrependNode(AbstractNode node, IEnumerable<AbstractNode> rest)
@@ -225,7 +226,7 @@ namespace Debugger.AddIn.TreeModel
 			copyItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CopyToClipboard");
 			copyItem.Checked = false;
 			copyItem.Click += delegate {
-				ClipboardWrapper.SetText(this.Text);
+				ClipboardWrapper.SetText(fullText);
 			};
 			
 			ToolStripMenuItem hexView;

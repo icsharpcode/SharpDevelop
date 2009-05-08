@@ -202,7 +202,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
 			if (msbuildProject != null) {
-				string platformTarget = msbuildProject.GetProperty(project.ActiveConfiguration, project.ActivePlatform, "PlatformTarget");
+				string platformTarget = msbuildProject.GetEvaluatedProperty("PlatformTarget");
 				return String.Compare(platformTarget, "x86", true) == 0;
 			}
 			return false;

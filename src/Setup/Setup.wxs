@@ -262,14 +262,13 @@
 				<ComponentRef Id="SHFBTemplates"/>
 				<ComponentRef Id="SHFBWeb"/>
 
-				<ComponentRef Id="NUnitCoreExtensionsDll"/>
 				<ComponentRef Id="NUnitUiKitDll"/>
 				<ComponentRef Id="NUnitUtilDll"/>
 				<ComponentRef Id="NUnitConsoleFiles"/>
 				<ComponentRef Id="NUnitConsoleX86Files"/>
 				<ComponentRef Id="NUnitCoreDll"/>
 				<ComponentRef Id="NUnitFrameworkDll"/>
-				<ComponentRef Id="NunitConsoleRunnerDll"/>
+				<ComponentRef Id="NUnitConsoleRunnerDll"/>
 				<ComponentRef Id="NUnitCoreInterfacesDll"/>
 				<ComponentRef Id="ConversionStyleSheetFiles"/>
 				<ComponentRef Id="TextLibOptionsFiles"/>

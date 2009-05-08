@@ -154,11 +154,13 @@
     <Compile Include="Converter\VBClassConversionTestFixture.cs" />
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
+    <Compile Include="Designer\CreateDesignerComponentTests.cs" />
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
     <Compile Include="Designer\DeserializeAssignmentTestFixtureBase.cs" />
     <Compile Include="Designer\DeserializeColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\DeserializeComponentAssignmentTestFixture.cs" />
     <Compile Include="Designer\DeserializeLocalVariableTestFixture.cs" />
+    <Compile Include="Designer\DeserializerConstructorStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeToolStripItemArrayTestFixture.cs" />
     <Compile Include="Designer\EnabledSetUsingPropertyDescriptorTestFixture.cs" />
@@ -172,6 +174,7 @@
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
     <Compile Include="Designer\GenerateComboBoxItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
+    <Compile Include="Designer\GeneratedControlOrderingTestFixture.cs" />
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
     <Compile Include="Designer\GenerateEventHandlerFormTestFixture.cs" />
     <Compile Include="Designer\GenerateFormColorTestFixture.cs" />
@@ -179,6 +182,7 @@
     <Compile Include="Designer\GenerateFormPaddingTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewItemTestFixture.cs" />
+    <Compile Include="Designer\GenerateListViewSubItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\GenerateMenuStripItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
@@ -187,6 +191,7 @@
     <Compile Include="Designer\GenerateRightToLeftFormTestFixture.cs" />
     <Compile Include="Designer\GenerateSimpleFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTextBoxFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateTimerTestFixture.cs" />
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
     <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
@@ -213,12 +218,14 @@
     <Compile Include="Designer\LoadSimpleUserControlTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxOnPanelTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxTestFixture.cs" />
+    <Compile Include="Designer\LoadTimerTestFixture.cs" />
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
     <Compile Include="Designer\PythonBaseClassTests.cs" />
     <Compile Include="Designer\PythonCodeDeserializerTests.cs" />
+    <Compile Include="Designer\PythonCodeBuilderTests.cs" />
     <Compile Include="Designer\PythonControlFieldExpressionTests.cs" />
     <Compile Include="Designer\PythonGeneratorTestFixture.cs" />
     <Compile Include="Designer\IsFormDesignableTestFixture.cs" />

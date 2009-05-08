@@ -56,7 +56,7 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void IsNamespaceResolveResult()
 		{
-			Assert.IsInstanceOfType(typeof(NamespaceResolveResult), resolveResult);
+			Assert.IsInstanceOf(typeof(NamespaceResolveResult), resolveResult);
 		}
 		
 		[Test]

@@ -35,10 +35,13 @@ namespace ICSharpCode.PythonBinding
 			foreach (Arg a in expression.Args) {
 				ConstantExpression constantExpression = a.Expression as ConstantExpression;
 				MemberExpression memberExpression = a.Expression as MemberExpression;
+				CallExpression callExpression = a.Expression as CallExpression;
 				if (constantExpression != null) {
 					args.Add(constantExpression.Value);
 				} else if (memberExpression != null) {
 					args.Add(Deserialize(memberExpression));
+				} else if(callExpression != null) {
+					args.Add(Deserialize(callExpression));
 				}
 			}
 			return args;
@@ -121,7 +124,7 @@ namespace ICSharpCode.PythonBinding
 					}
 				}
 			}
-			return componentCreator.GetComponent(PythonControlFieldExpression.GetVariableName(field.MemberName));
+			return componentCreator.GetInstance(PythonControlFieldExpression.GetVariableName(field.MemberName));
 		}
 		
 		Type GetType(PythonControlFieldExpression field)

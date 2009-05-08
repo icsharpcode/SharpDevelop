@@ -81,7 +81,9 @@
     <Compile Include="Data\UnmanagedCallTreeNode64.cs">
       <DependentUpon>UnmanagedCallTreeNode.cs</DependentUpon>
     </Compile>
-    <Compile Include="Data\UnmanagedProfilingDataSet.cs" />
+    <Compile Include="Data\UnmanagedProfilingDataSet.cs">
+      <DependentUpon>ProfilingDataSQLiteWriter.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExtendedRegistry.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Interprocess\AtomicBoolean.cs" />

@@ -98,7 +98,7 @@ namespace UnitTesting.Tests.Tree
 			
 			Assert.AreEqual(2, pad.TestTreeView.GetProjects().Length);
 			Assert.AreEqual(1, pad.TestTreeView.Nodes.Count);
-			Assert.IsInstanceOfType(typeof(AllTestsTreeNode), pad.TestTreeView.Nodes[0]);
+			Assert.IsInstanceOf(typeof(AllTestsTreeNode), pad.TestTreeView.Nodes[0]);
 			Assert.AreEqual(2, pad.TestTreeView.Nodes[0].Nodes.Count);
 		}
 		
@@ -134,7 +134,7 @@ namespace UnitTesting.Tests.Tree
 			// NUnit.
 			Assert.AreEqual(2, pad.TestTreeView.GetProjects().Length);
 			Assert.AreEqual(1, pad.TestTreeView.Nodes.Count);
-			Assert.IsInstanceOfType(typeof(AllTestsTreeNode), pad.TestTreeView.Nodes[0]);
+			Assert.IsInstanceOf(typeof(AllTestsTreeNode), pad.TestTreeView.Nodes[0]);
 			Assert.AreEqual(2, pad.TestTreeView.Nodes[0].Nodes.Count);
 		}
 		
@@ -158,7 +158,7 @@ namespace UnitTesting.Tests.Tree
 
 			Assert.AreEqual(2, pad.TestTreeView.GetProjects().Length);
 			Assert.AreEqual(1, pad.TestTreeView.Nodes.Count);
-			Assert.IsInstanceOfType(typeof(AllTestsTreeNode), pad.TestTreeView.Nodes[0]);
+			Assert.IsInstanceOf(typeof(AllTestsTreeNode), pad.TestTreeView.Nodes[0]);
 			Assert.AreEqual(2, pad.TestTreeView.Nodes[0].Nodes.Count);
 		}
 		

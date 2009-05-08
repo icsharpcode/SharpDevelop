@@ -7,13 +7,8 @@
 
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -22,10 +17,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using SharpRefactoring.Forms;
-using SharpRefactoring.Transformers;
-using SharpRefactoring.Visitors;
 
 namespace SharpRefactoring
 {

@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				return;
 			}
 			if (node.Project.IsStartable) {
-				BuildProject build = new BuildProject(node.Project);
+				BuildProjectBeforeExecute build = new BuildProjectBeforeExecute(node.Project);
 				build.BuildComplete += delegate {
 					if (build.LastBuildResults.ErrorCount == 0) {
 						node.Project.Start(true);

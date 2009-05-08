@@ -27,7 +27,7 @@ namespace PythonBinding.Tests.Designer
 				MethodInfo expectedMethodInfo = FindMethod(menuStrip.Items, "AddRange", typeof(ToolStripItem[]));
 				Assert.IsNotNull(expectedMethodInfo);
 				
-				Assert.AreSame(expectedMethodInfo, PythonControl.GetAddRangeSerializationMethod(menuStrip.Items));
+				Assert.AreSame(expectedMethodInfo, PythonDesignerComponent.GetAddRangeSerializationMethod(menuStrip.Items));
 			}
 		}
 		
@@ -36,7 +36,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			using (MenuStrip menuStrip = new MenuStrip()) {
 				MethodInfo methodInfo = FindMethod(menuStrip.Items, "AddRange", typeof(ToolStripItem[]));
-				Assert.AreEqual(typeof(ToolStripItem), PythonControl.GetArrayParameterType(methodInfo));
+				Assert.AreEqual(typeof(ToolStripItem), PythonDesignerComponent.GetArrayParameterType(methodInfo));
 			}
 		}
 		
@@ -44,13 +44,13 @@ namespace PythonBinding.Tests.Designer
 		public void GetArrayParameterTypeFromMethodWithNoParameters()
 		{
 			MethodInfo methodInfo = typeof(String).GetMethod("Clone");
-			Assert.IsNull(PythonControl.GetArrayParameterType(methodInfo));
+			Assert.IsNull(PythonDesignerComponent.GetArrayParameterType(methodInfo));
 		}
 		
 		[Test]
 		public void GetArrayParameterTypeWithNullMethodInfo()
 		{
-			Assert.IsNull(PythonControl.GetArrayParameterType(null));
+			Assert.IsNull(PythonDesignerComponent.GetArrayParameterType(null));
 		}
 		
 		/// <summary>
@@ -61,7 +61,7 @@ namespace PythonBinding.Tests.Designer
 		public void FormControlsAddRangeMethodNotFound()
 		{
 			using (Form form = new Form()) {
-				Assert.IsNull(PythonControl.GetAddRangeSerializationMethod(form.Controls));
+				Assert.IsNull(PythonDesignerComponent.GetAddRangeSerializationMethod(form.Controls));
 			}
 		}
 		
@@ -72,7 +72,7 @@ namespace PythonBinding.Tests.Designer
 				MethodInfo expectedMethodInfo = FindMethod(form.Controls, "Add", typeof(Control));
 				Assert.IsNotNull(expectedMethodInfo);
 				
-				Assert.AreSame(expectedMethodInfo, PythonControl.GetAddSerializationMethod(form.Controls));
+				Assert.AreSame(expectedMethodInfo, PythonDesignerComponent.GetAddSerializationMethod(form.Controls));
 			}
 		}
 		

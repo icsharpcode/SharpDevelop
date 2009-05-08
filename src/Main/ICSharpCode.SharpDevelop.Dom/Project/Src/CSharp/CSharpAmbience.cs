@@ -70,7 +70,6 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			return ret;
 		}
 		
-		
 		public override string Convert(IClass c)
 		{
 			CheckThread();
@@ -84,7 +83,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			}
 			
 			if (ShowModifiers) {
-				if (c.IsSealed) {
+				if (c.IsStatic) {
+					builder.Append("static ");
+				} else if (c.IsSealed) {
 					switch (c.ClassType) {
 						case ClassType.Delegate:
 						case ClassType.Struct:

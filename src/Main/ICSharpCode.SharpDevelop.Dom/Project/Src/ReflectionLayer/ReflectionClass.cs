@@ -187,6 +187,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			if (type.IsAbstract) {
 				modifiers |= ModifierEnum.Abstract;
 			}
+			if (type.IsSealed && type.IsAbstract) {
+				modifiers |= ModifierEnum.Static;
+			}
 			
 			if (type.IsNestedPrivate ) { // I assume that private is used most and public last (at least should be)
 				modifiers |= ModifierEnum.Private;

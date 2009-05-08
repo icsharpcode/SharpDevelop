@@ -94,7 +94,8 @@
     <Compile Include="Src\Commands\GoToDefinition.cs" />
     <Compile Include="Src\Commands\ProfileExecutable.cs" />
     <Compile Include="Src\Commands\ProfileProject.cs" />
-    <Compile Include="Src\Commands\ProfilerMenuCommand.cs" />    <Compile Include="Src\Commands\SetAsRoot.cs" />
+    <Compile Include="Src\Commands\ProfilerMenuCommand.cs" />
+    <Compile Include="Src\Commands\SetAsRoot.cs" />
     <Compile Include="Src\Commands\ShowFunctions.cs" />
     <Compile Include="Src\Dialogs\ProfileExecutableForm.xaml.cs">
       <DependentUpon>ProfileExecutableForm.xaml</DependentUpon>

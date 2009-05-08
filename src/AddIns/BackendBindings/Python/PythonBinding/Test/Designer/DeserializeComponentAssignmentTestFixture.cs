@@ -27,10 +27,7 @@ namespace PythonBinding.Tests.Designer
 		
 		public override string GetPythonCode()
 		{
-			button = new Button();
-			button.Name = "button1";
-			base.componentCreator.Add(button, "button1");
-			
+			button = (Button)base.componentCreator.CreateInstance(typeof(Button), new object[0], "button1", false);
 			return "self.AcceptButton = self._button1";
 		}
 		

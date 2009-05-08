@@ -20,14 +20,16 @@ namespace ICSharpCode.Svn
 	/// </summary>
 	public class HistoryViewPanel : Panel
 	{
-		IViewContent viewContent;
+		string fileName;
 		
 		InfoPanel infoPanel;
 		DiffPanel diffPanel = null;
 		
-		public HistoryViewPanel(IViewContent viewContent)
+		public HistoryViewPanel(string fileName)
 		{
-			this.viewContent = viewContent;
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			this.fileName = FileUtility.NormalizePath(fileName);
 		}
 		
 		protected override void OnVisibleChanged(EventArgs e)
@@ -71,7 +73,7 @@ namespace ICSharpCode.Svn
 			mainTab.TabPages.Add(conflictTabPage);
 			 */
 			
-			infoPanel = new InfoPanel(viewContent);
+			infoPanel = new InfoPanel(fileName);
 			infoPanel.Dock = DockStyle.Fill;
 			Controls.Add(infoPanel);
 			
@@ -84,7 +86,6 @@ namespace ICSharpCode.Svn
 		void GetLogMessages()
 		{
 			try {
-				string fileName = Path.GetFullPath(viewContent.PrimaryFileName);
 				LoggingService.Info("SVN: Get log of " + fileName);
 				if (File.Exists(fileName)) {
 					using (SvnClientWrapper client = new SvnClientWrapper()) {

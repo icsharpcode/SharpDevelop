@@ -70,8 +70,7 @@ namespace ICSharpCode.Profiler.Controller
 		/// </summary>
 		public int ProcessorFrequency
 		{
-			get
-			{
+			get {
 				if (this.is64Bit)
 					return this.memHeader64->ProcessorFrequency;
 				else
@@ -97,9 +96,11 @@ namespace ICSharpCode.Profiler.Controller
 		EventWaitHandle accessEventHandle;
 		Thread logger;
 		Thread dataCollector;
-		Thread counterCollector;
 		UnmanagedCircularBuffer nativeToManagedBuffer;
 		IProfilingDataWriter dataWriter;
+		
+		Dictionary<string, PerformanceCounter> performanceCounters;
+		PerformanceCounter cpuUsageCounter;
 		
 		/// <summary>
 		/// The currently used data provider.
@@ -118,21 +119,14 @@ namespace ICSharpCode.Profiler.Controller
 		ProfilerOptions profilerOptions = new ProfilerOptions();
 		
 		/// <summary>
-		/// Gets and sets all settings used by this profiler instance.
+		/// Gets all settings used by this profiler instance.
 		/// </summary>
 		public ProfilerOptions ProfilerOptions {
 			get { return profilerOptions; }
-			set {
-				if (isRunning)
-					throw new InvalidOperationException("Can not change settings while the profiler is executing!");
-				profilerOptions = value;
-			}
 		}
 
 		SharedMemoryHeader32* memHeader32;
 		SharedMemoryHeader64* memHeader64;
-
-		TimeSpan lastTotalProcessorTime;
 
 		StringBuilder profilerOutput;
 		
@@ -207,8 +201,8 @@ namespace ICSharpCode.Profiler.Controller
 		/// <summary>
 		/// Creates a new profiler using the path to an executable to profile and a data writer.
 		/// </summary>
-		public Profiler(string pathToExecutable, IProfilingDataWriter dataWriter)
-			: this(new ProcessStartInfo(pathToExecutable), dataWriter)
+		public Profiler(string pathToExecutable, IProfilingDataWriter dataWriter, ProfilerOptions options)
+			: this(new ProcessStartInfo(pathToExecutable), dataWriter, options)
 		{
 			if (!File.Exists(pathToExecutable))
 				throw new FileNotFoundException("File not found!", pathToExecutable);
@@ -219,7 +213,7 @@ namespace ICSharpCode.Profiler.Controller
 		/// <summary>
 		/// Creates a new profiler using a process start info of an executable and a data writer.
 		/// </summary>
-		public Profiler(ProcessStartInfo info, IProfilingDataWriter dataWriter)
+		public Profiler(ProcessStartInfo info, IProfilingDataWriter dataWriter, ProfilerOptions options)
 		{
 			if (dataWriter == null)
 				throw new ArgumentNullException("dataWriter");
@@ -229,11 +223,13 @@ namespace ICSharpCode.Profiler.Controller
 			
 			if (!DetectBinaryType.IsDotNetExecutable(info.FileName))
 				throw new ProfilerException("File is not a valid .NET executable file!");
+			
+			this.profilerOptions = options;
 
 			this.is64Bit = DetectBinaryType.RunsAs64Bit(info.FileName);
 
 			this.profilerOutput = new StringBuilder();
-
+			this.performanceCounters = new Dictionary<string, PerformanceCounter>();
 			this.dataWriter = dataWriter;
 
 			this.threadListMutex = new Mutex(false, MutexId);
@@ -246,7 +242,7 @@ namespace ICSharpCode.Profiler.Controller
 			this.psi.EnvironmentVariables["AccessEventName"] = AccessEventId; // name for access event of controller
 			this.psi.EnvironmentVariables["COR_ENABLE_PROFILING"] = "1"; // enable profiling; 0 = disable
 			this.psi.EnvironmentVariables["COR_PROFILER"] = ProfilerGuid; // GUID for the profiler
-
+			
 			file = MemoryMappedFile.CreateSharedMemory(SharedMemoryId, profilerOptions.SharedMemorySize);
 
 			fullView = file.MapView(0, profilerOptions.SharedMemorySize);
@@ -260,16 +256,18 @@ namespace ICSharpCode.Profiler.Controller
 			this.dataCollector = new Thread(new ThreadStart(DataCollection));
 			this.dataCollector.Name = "DataCollector";
 			this.dataCollector.IsBackground = true;
-			
-			this.counterCollector = new Thread(new ThreadStart(CounterCollection));
-			this.counterCollector.Name = "CounterCollector";
-			this.counterCollector.IsBackground = true;
 		}
 
 		void InitializeHeader32()
 		{
 			memHeader32 = (SharedMemoryHeader32*)fullView.Pointer;
+			#if DEBUG
+			// '~DBG'
+			memHeader32->Magic = 0x7e444247;
+			#else
+			// '~SM1'
 			memHeader32->Magic = 0x7e534d31;
+			#endif
 			memHeader32->TotalLength = profilerOptions.SharedMemorySize;
 			memHeader32->NativeToManagedBufferOffset = Align(sizeof(SharedMemoryHeader32));
 			memHeader32->ThreadDataOffset = Align(memHeader32->NativeToManagedBufferOffset + bufferSize);
@@ -296,11 +294,6 @@ namespace ICSharpCode.Profiler.Controller
 			if (freq == -1)
 				throw new ArgumentException("The Processor Frequency could not be read!");
 			return freq;
-		}
-		
-		void CounterCollection()
-		{
-			
 		}
 
 		void DataCollection()
@@ -354,10 +347,8 @@ namespace ICSharpCode.Profiler.Controller
 			                memHeader32->NativeAddress + memHeader32->HeapOffset,
 			                memHeader32->Allocator.startPos - memHeader32->NativeAddress,
 			                memHeader32->Allocator.pos - memHeader32->Allocator.startPos,
-			                this.profilee.TotalProcessorTime.Subtract(lastTotalProcessorTime).TotalMilliseconds / 500.0,
+			                (cpuUsageCounter == null) ? 0 : cpuUsageCounter.NextValue(),
 			                memHeader32->RootFuncInfoAddress);
-
-			lastTotalProcessorTime = this.profilee.TotalProcessorTime;
 
 			ZeroMemory(new IntPtr(TranslatePointer(memHeader32->Allocator.startPos)), new IntPtr(memHeader32->Allocator.pos - memHeader32->Allocator.startPos));
 
@@ -477,8 +468,6 @@ namespace ICSharpCode.Profiler.Controller
 			
 			RegisterProfiler();
 
-			this.lastTotalProcessorTime = new TimeSpan(0);
-
 			if (is64Bit) {
 				nativeToManagedBuffer = UnmanagedCircularBuffer.Create(
 					new IntPtr(fullView.Pointer + memHeader64->NativeToManagedBufferOffset), bufferSize);
@@ -506,12 +495,13 @@ namespace ICSharpCode.Profiler.Controller
 			Debug.WriteLine("Launching profiler for " + this.psi.FileName + "...");
 			this.profilee.Start();
 			
+			this.cpuUsageCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total", ".");
+			
 			this.logger.Start(nativeToManagedBuffer.CreateReadingStream());
 
 			// GC references currentSession
 			if (this.profilerOptions.EnableDC) {
 				this.dataCollector.Start();
-				this.counterCollector.Start();
 			}
 
 			OnSessionStarted(EventArgs.Empty);
@@ -582,11 +572,12 @@ namespace ICSharpCode.Profiler.Controller
 			Debug.WriteLine("Joining logger thread...");
 			this.logger.Join();
 			Debug.WriteLine("Logger thread joined!");
-			if (this.profilerOptions.EnableDC) {
+			if (this.profilerOptions.EnableDC)
 				this.dataCollector.Join();
-				this.counterCollector.Join();
-			}
-
+			
+			// unload all counters to prevent exception during last collection!
+			this.cpuUsageCounter = null;
+			this.performanceCounters = null;
 			// Take last shot
 			if (this.is64Bit)
 				CollectData64();
@@ -782,10 +773,6 @@ namespace ICSharpCode.Profiler.Controller
 
 				if (dataCollector != null && dataCollector.IsAlive) {
 					this.dataCollector.Join();
-				}
-				
-				if (counterCollector != null && counterCollector.IsAlive) {
-					this.counterCollector.Join();
 				}
 
 				this.fullView.Dispose();

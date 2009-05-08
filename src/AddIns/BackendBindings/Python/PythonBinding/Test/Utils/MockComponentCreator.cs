@@ -42,6 +42,10 @@ namespace PythonBinding.Tests.Utils
 		
 		public void Add(IComponent component, string name)
 		{
+			if (component == null) {
+				throw new ArgumentNullException("component");
+			}
+			
 			AddedComponent addedComponent = new AddedComponent(component, name);
 			addedComponents.Add(addedComponent);
 		}
@@ -81,11 +85,14 @@ namespace PythonBinding.Tests.Utils
 			// Lookup type in System.Windows.Forms assembly.
 			Type type = typeof(Form).Assembly.GetType(typeName);
 			if (type == null) {
-				// Lookup type System.Drawing assembly.
+				// Lookup type in System.Drawing assembly.
 				type = typeof(Size).Assembly.GetType(typeName);
 			}
 			if (type == null) {
 				type = typeof(String).Assembly.GetType(typeName);
+			}
+			if (type == null) {
+				type = typeof(Component).Assembly.GetType(typeName);
 			}
 			
 			return type;

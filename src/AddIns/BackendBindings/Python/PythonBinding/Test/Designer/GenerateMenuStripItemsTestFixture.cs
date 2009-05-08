@@ -26,8 +26,7 @@ namespace PythonBinding.Tests.Designer
 		Size openMenuItemSize;
 		Size exitMenuItemSize;
 		Size editMenuItemSize;
-		object[] menuStripChildComponents;
-		object[] fileMenuItemChildComponents;
+		bool nonVisualComponents;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -77,11 +76,11 @@ namespace PythonBinding.Tests.Designer
 				exitMenuItemSize = exitMenuItem.Size;
 				editMenuItemSize = editMenuItem.Size;
 
+				PythonDesignerRootComponent rootComponent = new PythonDesignerRootComponent(form);
+				nonVisualComponents = rootComponent.HasNonVisualChildComponents();
+				
 				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
-				
-				menuStripChildComponents = PythonControl.GetChildComponents(menuStrip);
-				fileMenuItemChildComponents = PythonControl.GetChildComponents(fileMenuItem);
 			}
 		}
 		
@@ -145,38 +144,18 @@ namespace PythonBinding.Tests.Designer
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			
-			Assert.AreEqual(expectedCode, generatedPythonCode);
+			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}
-		
+
 		[Test]
-		public void MenuStripHasTwoChildComponents()
+		public void NoNonVisualComponents()
 		{
-			Assert.AreEqual(2, menuStripChildComponents.Length);
-		}
-		
-		[Test]
-		public void MenuStripFirstChildIsFileMenuItem()
-		{
-			ToolStripMenuItem fileMenuItem = menuStripChildComponents[0] as ToolStripMenuItem;
-			Assert.AreEqual("&File", fileMenuItem.Text);
-		}
-		
-		[Test]
-		public void FileMenuItemHasTwoChildComponents()
-		{
-			Assert.AreEqual(2, fileMenuItemChildComponents.Length);
-		}
-		
-		[Test]
-		public void FileMenuItemFirstChildIsOpenFileMenuItem()
-		{
-			ToolStripMenuItem openMenuItem = fileMenuItemChildComponents[0] as ToolStripMenuItem;
-			Assert.AreEqual("&Open", openMenuItem.Text);
+			Assert.IsFalse(nonVisualComponents);
 		}
 		
 		string SizeToString(Size size)
 		{
 			return PythonPropertyValueAssignment.ToString(size);
-		}
+		}		
 	}
 }

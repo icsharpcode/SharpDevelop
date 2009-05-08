@@ -89,7 +89,7 @@ namespace XmlEditor.Tests.Tree
 			
 			XmlElement bodyElement = (XmlElement)paragraphElement.ParentNode;
 			Assert.AreEqual(2, bodyElement.ChildNodes.Count);
-			Assert.IsInstanceOfType(typeof(XmlText), bodyElement.FirstChild);
+			Assert.IsInstanceOf(typeof(XmlText), bodyElement.FirstChild);
 			Assert.IsTrue(mockXmlTreeView.IsDirty);		
 		}
 		

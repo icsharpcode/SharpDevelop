@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Xml;
 
 namespace ICSharpCode.Core
@@ -90,12 +91,14 @@ namespace ICSharpCode.Core
 				return false;
 			}
 			try {
-				using (XmlTextReader reader = new XmlTextReader(fileName)) {
-					while (reader.Read()){
-						if (reader.IsStartElement()) {
-							if (reader.LocalName == propertyXmlRootNodeName) {
-								properties.ReadProperties(reader, propertyXmlRootNodeName);
-								return true;
+				using (LockPropertyFile()) {
+					using (XmlTextReader reader = new XmlTextReader(fileName)) {
+						while (reader.Read()){
+							if (reader.IsStartElement()) {
+								if (reader.LocalName == propertyXmlRootNodeName) {
+									properties.ReadProperties(reader, propertyXmlRootNodeName);
+									return true;
+								}
 							}
 						}
 					}
@@ -108,13 +111,36 @@ namespace ICSharpCode.Core
 		
 		public static void Save()
 		{
-			string fileName = Path.Combine(configDirectory, propertyFileName);
-			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
+			using (MemoryStream ms = new MemoryStream()) {
+				XmlTextWriter writer = new XmlTextWriter(ms, Encoding.UTF8);
 				writer.Formatting = Formatting.Indented;
 				writer.WriteStartElement(propertyXmlRootNodeName);
 				properties.WriteProperties(writer);
 				writer.WriteEndElement();
+				writer.Flush();
+				
+				ms.Position = 0;
+				string fileName = Path.Combine(configDirectory, propertyFileName);
+				using (LockPropertyFile()) {
+					using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None)) {
+						ms.WriteTo(fs);
+					}
+				}
 			}
+		}
+		
+		/// <summary>
+		/// Acquires an exclusive lock on the properties file so that it can be opened safely.
+		/// </summary>
+		public static IDisposable LockPropertyFile()
+		{
+			Mutex mutex = new Mutex(false, "PropertyServiceSave-30F32619-F92D-4BC0-BF49-AA18BF4AC313");
+			mutex.WaitOne();
+			return new CallbackOnDispose(
+				delegate {
+					mutex.ReleaseMutex();
+					mutex.Close();
+				});
 		}
 		
 		static void PropertiesPropertyChanged(object sender, PropertyChangedEventArgs e)

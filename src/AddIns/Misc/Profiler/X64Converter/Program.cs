@@ -34,11 +34,12 @@ namespace X64Converter
 						File.WriteAllText(path + "64.cs", message);
 						return 2;
 					}
-
+					
+					var specials = parser.Lexer.SpecialTracker.RetrieveSpecials().Where(item => item is PreprocessingDirective);
+					
 					parser.CompilationUnit.AcceptVisitor(new Converter(), null);
-
-					CSharpOutputVisitor output = new CSharpOutputVisitor();
-
+					CSharpOutputVisitor output = new CSharpOutputVisitor();					
+					SpecialNodesInserter.Install(specials, output);
 					parser.CompilationUnit.AcceptVisitor(output, null);
 
 					if (!File.Exists(path + "64.cs") || File.ReadAllText(path + "64.cs") != output.Text) {
@@ -84,8 +85,7 @@ namespace X64Converter
 		{
 			if (methodDeclaration.Name.EndsWith("32"))
 				methodDeclaration.Name = methodDeclaration.Name.Replace("32", "64");
-			else
-			{
+			else {
 				if (!this.copyAllMembers)
 					this.RemoveCurrentNode();
 			}
@@ -136,13 +136,10 @@ namespace X64Converter
 
 		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
-			if (typeDeclaration.Name.EndsWith("32"))
-			{
+			if (typeDeclaration.Name.EndsWith("32")) {
 				this.copyAllMembers = true;
 				typeDeclaration.Name = typeDeclaration.Name.Replace("32", "64");
-			}
-			else
-			{
+			} else {
 				if ((typeDeclaration.Modifier & Modifiers.Partial) != Modifiers.Partial)
 					this.RemoveCurrentNode();
 				else

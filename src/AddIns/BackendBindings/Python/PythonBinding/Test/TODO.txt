@@ -25,7 +25,6 @@ def main(args):
 	print "Hello, World!"
 	return 0
 	
-* Test python compiler task logging.
 * CtrlSpaceHelper.AddUsing should be called in the PythonResolver when
   the ExpressionContext is Importable.
   
@@ -71,10 +70,6 @@ def main(args):
     code completion after the import is incorrect here. It needs to
     show items that are in the System namespace.
 
-* Python code converter. 
-
-  More tests...
-
 * The PythonDesignerGenerator inserts an event handler at the end
   of the active document. This is not correct. It should insert it at the 
   end of the form class. The file could contain multiple classes and 
@@ -93,12 +88,14 @@ def main(args):
    Handle invalid event name.
    Check that += operator used.
    
-* Double clicking an event handler name in the property grid when it is already defined generates a new
-  event handler.
-  
 * ContextMenuStrip - designer does not generate the correct code.
 
 * Look at fixing the compiled exe so it can be run from a different folder.
 
   See http://lists.ironpython.com/pipermail/users-ironpython.com/2009-April/009993.html
  
+ * Support for ListViewSubItems - Font, Colors.
+ 
+ * Timer - Honour the GenerateMember setting.
+ 
+ * Look at creating code for non-visual components in the same order as Visual Studio.

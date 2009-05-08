@@ -57,7 +57,7 @@ namespace ICSharpCode.Profiler.Frontend
 			
 			this.database = new TempFileDatabase();
 			
-			this.profiler = new Profiler.Controller.Profiler(path, database.GetWriter());
+			this.profiler = new Profiler.Controller.Profiler(path, database.GetWriter(), new ProfilerOptions());
 			profiler.RegisterFailed += delegate { MessageBox.Show("register failed"); };
 			profiler.DeregisterFailed += delegate { MessageBox.Show("deregister failed"); };
 

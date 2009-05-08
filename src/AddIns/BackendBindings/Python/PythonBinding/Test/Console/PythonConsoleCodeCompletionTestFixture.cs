@@ -53,7 +53,7 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void PythonConsoleCompletionDataProviderPassedToShowCompletionWindowMethod()
 		{
-			Assert.IsInstanceOfType(typeof(PythonConsoleCompletionDataProvider), textEditor.CompletionDataProvider);
+			Assert.IsInstanceOf(typeof(PythonConsoleCompletionDataProvider), textEditor.CompletionDataProvider);
 		}
 	}
 }

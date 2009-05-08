@@ -42,7 +42,7 @@ namespace XmlEditor.Tests.Tree
 		public void NewTextNodeAdded()
 		{
 			XmlNode node = paragraphElement.FirstChild;
-			Assert.IsInstanceOfType(typeof(XmlText), node);
+			Assert.IsInstanceOf(typeof(XmlText), node);
 		}
 		
 		[Test]

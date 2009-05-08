@@ -1,17 +1,11 @@
 // ****************************************************************
 // This is free software licensed under the NUnit license. You
 // may obtain a copy of the license as well as information regarding
-// copyright ownership at http://nunit.org/?p=license&r=2.4.
+// copyright ownership at http://nunit.org.
 // ****************************************************************
 
 // This version of NUnit-console is modified to support:
 // 1) Writing all tests results to a file as the test results are known.
-
-// ****************************************************************
-// This is free software licensed under the NUnit license. You
-// may obtain a copy of the license as well as information regarding
-// copyright ownership at http://nunit.org/?p=license&r=2.4.
-// ****************************************************************
 
 namespace NUnit.ConsoleRunner
 {
@@ -34,7 +28,6 @@ namespace NUnit.ConsoleRunner
 		public static readonly int INVALID_ARG = -1;
 		public static readonly int FILE_NOT_FOUND = -2;
 		public static readonly int FIXTURE_NOT_FOUND = -3;
-		public static readonly int TRANSFORM_ERROR = -4;
 		public static readonly int UNEXPECTED_ERROR = -100;
 
 		public ExtendedConsoleUi()
@@ -43,9 +36,6 @@ namespace NUnit.ConsoleRunner
 
 		public int Execute( ExtendedConsoleOptions options )
 		{
-			XmlTextReader transformReader = GetTransformReader(options);
-			if(transformReader == null) return FILE_NOT_FOUND;
-
 			TextWriter outWriter = Console.Out;
 			bool redirectOutput = options.output != null && options.output != string.Empty;
 			if ( redirectOutput )
@@ -71,9 +61,25 @@ namespace NUnit.ConsoleRunner
 				((StreamWriter)testResultWriter).AutoFlush = true;
 			}
 
-			TestRunner testRunner = MakeRunnerFromCommandLine( options );
+            TestPackage package = MakeTestPackage(options);
 
-			try
+            Console.WriteLine("ProcessModel: {0}    DomainUsage: {1}", 
+                package.Settings.Contains("ProcessModel")
+                    ? package.Settings["ProcessModel"]
+                    : "Default", 
+                package.Settings.Contains("DomainUsage")
+                    ? package.Settings["DomainUsage"]
+                    : "Default");
+
+            Console.WriteLine("Execution Runtime: {0}", 
+                package.Settings.Contains("RuntimeFramework")
+                    ? package.Settings["RuntimeFramework"]
+                    : "Default");
+
+            TestRunner testRunner = TestRunnerFactory.MakeTestRunner(package);
+            testRunner.Load(package);
+
+            try
 			{
 				if (testRunner.Test == null)
 				{
@@ -112,7 +118,7 @@ namespace NUnit.ConsoleRunner
 					else
 						testFilter = new AndFilter( testFilter, excludeFilter );
 				}
-				
+
 				TestResult result = null;
 				string savedDirectory = Environment.CurrentDirectory;
 				TextWriter savedOut = Console.Out;
@@ -141,52 +147,45 @@ namespace NUnit.ConsoleRunner
 
 				Console.WriteLine();
 
-				string xmlOutput = CreateXmlOutput( result );
-			
-				if (options.xmlConsole)
-				{
-					Console.WriteLine(xmlOutput);
-				}
-				else
-				{
-					try
-					{
-						//CreateSummaryDocument(xmlOutput, transformReader );
-						XmlResultTransform xform = new XmlResultTransform( transformReader );
-						xform.Transform( new StringReader( xmlOutput ), Console.Out );
-					}
-					catch( Exception ex )
-					{
-						Console.WriteLine( "Error: {0}", ex.Message );
-						return TRANSFORM_ERROR;
-					}
-				}
+                int returnCode = UNEXPECTED_ERROR;
 
-				// Write xml output here
-				string xmlResultFile = options.xml == null || options.xml == string.Empty
-					? "TestResult.xml" : options.xml;
-				
-				if( options.xml != null ) 
-				{
-					using ( StreamWriter writer = new StreamWriter( xmlResultFile ) ) 
-					{
-						writer.Write(xmlOutput);
-					}
-				}
+                if (result != null)
+                {
+                    string xmlOutput = CreateXmlOutput(result);
+                    ResultSummarizer summary = new ResultSummarizer(result);
 
-				//if ( testRunner != null )
-				//    testRunner.Unload();
+                    if (options.xmlConsole)
+                    {
+                        Console.WriteLine(xmlOutput);
+                    }
+                    else
+                    {
+                        WriteSummaryReport(summary);
+                        if (summary.ErrorsAndFailures > 0)
+                            WriteErrorsAndFailuresReport(result);
+                        if (summary.TestsNotRun > 0)
+                            WriteNotRunReport(result);
+                    }
+
+                    // Write xml output here
+                    string xmlResultFile = options.xml == null || options.xml == string.Empty
+                        ? "TestResult.xml" : options.xml;
+
+                    using (StreamWriter writer = new StreamWriter(xmlResultFile))
+                    {
+                        writer.Write(xmlOutput);
+                    }
+
+                    returnCode = summary.ErrorsAndFailures;
+                }
 
 				if ( collector.HasExceptions )
 				{
 					collector.WriteExceptions();
-					return UNEXPECTED_ERROR;
+					returnCode = UNEXPECTED_ERROR;
 				}
             
-				if ( !result.IsFailure ) return OK;
-
-				ResultSummarizer summ = new ResultSummarizer( result );
-				return summ.FailureCount;
+				return returnCode;
 			}
 			finally
 			{
@@ -195,31 +194,150 @@ namespace NUnit.ConsoleRunner
 		}
 
 		#region Helper Methods
-		private static XmlTextReader GetTransformReader(ConsoleOptions parser)
-		{
-			return (XmlTextReader)typeof(ConsoleUi).InvokeMember("GetTransformReader",
-																 BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod,
-																 null, null, new object[] { parser });
-		}
+        private static TestPackage MakeTestPackage( ConsoleOptions options )
+        {
+			TestPackage package;
+			DomainUsage domainUsage = DomainUsage.Default;
+            ProcessModel processModel = ProcessModel.Default;
+            RuntimeFramework framework = RuntimeFramework.CurrentFramework;
 
-		private static TestRunner MakeRunnerFromCommandLine( ConsoleOptions options )
-		{
-			return (TestRunner)typeof(ConsoleUi).InvokeMember("MakeRunnerFromCommandLine",
-															  BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod,
-															  null, null, new object[] { options });
+			if (options.IsTestProject)
+			{
+				NUnitProject project = 
+					Services.ProjectService.LoadProject((string)options.Parameters[0]);
 
+				string configName = options.config;
+				if (configName != null)
+					project.SetActiveConfig(configName);
+
+				package = project.ActiveConfig.MakeTestPackage();
+                processModel = project.ProcessModel;
+                domainUsage = project.DomainUsage;
+                framework = project.ActiveConfig.RuntimeFramework;
+			}
+			else if (options.Parameters.Count == 1)
+			{
+				package = new TestPackage((string)options.Parameters[0]);
+				domainUsage = DomainUsage.Single;
+			}
+			else
+			{
+				package = new TestPackage(null, options.Parameters);
+				domainUsage = DomainUsage.Multiple;
+			}
+
+            if (options.process != ProcessModel.Default)
+                processModel = options.process;
+
+			if (options.domain != DomainUsage.Default)
+				domainUsage = options.domain;
+
+            if (options.framework != null)
+                framework = RuntimeFramework.Parse(options.framework);
+
+			package.TestName = options.fixture;
+            
+            package.Settings["ProcessModel"] = processModel;
+            package.Settings["DomainUsage"] = domainUsage;
+            if (framework != null)
+                package.Settings["RuntimeFramework"] = framework;
+
+            
+
+            if (domainUsage == DomainUsage.None)
+            {
+                // Make sure that addins are available
+                CoreExtensions.Host.AddinRegistry = Services.AddinRegistry;
+            }
+
+            package.Settings["ShadowCopyFiles"] = !options.noshadow;
+			package.Settings["UseThreadedRunner"] = !options.nothread;
+            package.Settings["DefaultTimeout"] = options.timeout;
+
+            return package;
 		}
 
 		private static string CreateXmlOutput( TestResult result )
 		{
 			StringBuilder builder = new StringBuilder();
-			XmlResultVisitor resultVisitor = new XmlResultVisitor(new StringWriter( builder ), result);
-			result.Accept(resultVisitor);
-			resultVisitor.Write();
+			new XmlResultWriter(new StringWriter( builder )).SaveTestResult(result);
 
 			return builder.ToString();
 		}
-		#endregion
+
+		private static void WriteSummaryReport( ResultSummarizer summary )
+		{
+            Console.WriteLine(
+                "Tests run: {0}, Errors: {1}, Failures: {2}, Inconclusive: {3} Time: {4} seconds",
+                summary.TestsRun, summary.Errors, summary.Failures, summary.Inconclusive, summary.Time);
+            Console.WriteLine(
+                "  Not run: {0}, Invalid: {1}, Ignored: {2}, Skipped: {3}",
+                summary.TestsNotRun, summary.NotRunnable, summary.Ignored, summary.Skipped);
+            Console.WriteLine();
+        }
+
+        private void WriteErrorsAndFailuresReport(TestResult result)
+        {
+            reportIndex = 0;
+            Console.WriteLine("Errors and Failures:");
+            WriteErrorsAndFailures(result);
+            Console.WriteLine();
+        }
+
+        private void WriteErrorsAndFailures(TestResult result)
+        {
+            if (result.Executed)
+            {
+                if (result.HasResults)
+                {
+                    if ( (result.IsFailure || result.IsError) && result.FailureSite == FailureSite.SetUp)
+                        WriteSingleResult(result);
+
+                    foreach (TestResult childResult in result.Results)
+                        WriteErrorsAndFailures(childResult);
+                }
+                else if (result.IsFailure || result.IsError)
+                {
+                    WriteSingleResult(result);
+                }
+            }
+        }
+
+        private void WriteNotRunReport(TestResult result)
+        {
+	        reportIndex = 0;
+            Console.WriteLine("Tests Not Run:");
+	        WriteNotRunResults(result);
+            Console.WriteLine();
+        }
+
+	    private int reportIndex = 0;
+        private void WriteNotRunResults(TestResult result)
+        {
+            if (result.HasResults)
+                foreach (TestResult childResult in result.Results)
+                    WriteNotRunResults(childResult);
+            else if (!result.Executed)
+                WriteSingleResult( result );
+        }
+
+        private void WriteSingleResult( TestResult result )
+        {
+            string status = result.IsFailure || result.IsError
+                ? string.Format("{0} {1}", result.FailureSite, result.ResultState)
+                : result.ResultState.ToString();
+
+            Console.WriteLine("{0}) {1} : {2}", ++reportIndex, status, result.FullName);
+
+            if ( result.Message != null && result.Message != string.Empty )
+                 Console.WriteLine("   {0}", result.Message);
+
+            if (result.StackTrace != null && result.StackTrace != string.Empty)
+                Console.WriteLine( result.IsFailure
+                    ? StackTraceFilter.Filter(result.StackTrace)
+                    : result.StackTrace + Environment.NewLine );
+        }
+	    #endregion
 	}
 }
 

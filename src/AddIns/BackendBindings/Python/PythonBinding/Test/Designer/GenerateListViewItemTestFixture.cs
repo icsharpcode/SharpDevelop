@@ -22,9 +22,14 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateListViewItemsFormTestFixture
 	{
 		string generatedPythonCode;
-		object[] listViewChildren;
-		ListViewItem listViewItem1;
-		ListViewItem listViewItem2;
+		string createListViewCode;
+		string createListViewChildComponentsCode;
+		string suspendLayoutCode;
+		string resumeLayoutCode;
+		string listViewPropertiesCode;
+		PythonDesignerComponent[] listViewChildComponents;
+		ColumnHeader columnHeader1;
+		ColumnHeader columnHeader2;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -47,23 +52,70 @@ namespace PythonBinding.Tests.Designer
 				descriptors = TypeDescriptor.GetProperties(listView);
 				PropertyDescriptor descriptor = descriptors.Find("UseCompatibleStateImageBehavior", false);
 				descriptor.SetValue(listView, true);
+				descriptor = descriptors.Find("View", false);
+				descriptor.SetValue(listView, View.Details);
 				form.Controls.Add(listView);
 				
+				// Add column headers.
+				columnHeader1 = (ColumnHeader)host.CreateComponent(typeof(ColumnHeader), "columnHeader1");
+				descriptors = TypeDescriptor.GetProperties(columnHeader1);
+				descriptor = descriptors.Find("Text", false);
+				descriptor.SetValue(columnHeader1, "columnHeader1");
+				listView.Columns.Add(columnHeader1);
+				
+				columnHeader2 = (ColumnHeader)host.CreateComponent(typeof(ColumnHeader), "columnHeader2");
+				descriptors = TypeDescriptor.GetProperties(columnHeader2);
+				descriptor = descriptors.Find("Text", false);
+				descriptor.SetValue(columnHeader2, "columnHeader2");
+				listView.Columns.Add(columnHeader2);
+				
+				// Add list view items.
 				ListViewItem item = new ListViewItem("aaa");
 				item.ToolTipText = "tooltip";
 				listView.Items.Add(item);
 				
 				ListViewItem item2 = new ListViewItem("bbb");
 				listView.Items.Add(item2);
+				
+				ListViewItem item3 = new ListViewItem();
+				listView.Items.Add(item3);
 
 				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
 				
-				listViewChildren = PythonControl.GetChildComponents(listView);
-				if (listViewChildren != null && listViewChildren.Length > 1) {
-					listViewItem1 = listViewChildren[0] as ListViewItem;
-					listViewItem2 = listViewChildren[1] as ListViewItem;
-				}
+				// Get list view creation code.
+				PythonCodeBuilder codeBuilder = new PythonCodeBuilder();
+				codeBuilder.IndentString = "    ";
+				PythonListViewComponent listViewComponent = new PythonListViewComponent(listView);
+				listViewComponent.AppendCreateInstance(codeBuilder);
+				createListViewCode = codeBuilder.ToString();
+			
+				// Get list view child component's creation code.
+				codeBuilder = new PythonCodeBuilder();
+				codeBuilder.IndentString = "    ";
+				listViewComponent.AppendCreateChildComponents(codeBuilder);
+				createListViewChildComponentsCode = codeBuilder.ToString();
+				
+				// Get list view suspend layout code.
+				codeBuilder = new PythonCodeBuilder();
+				codeBuilder.IndentString = "    ";
+				listViewComponent.AppendSuspendLayout(codeBuilder);
+				suspendLayoutCode = codeBuilder.ToString();
+		
+				// Get generated list view property code.
+				codeBuilder = new PythonCodeBuilder();
+				codeBuilder.IndentString = "    ";
+				codeBuilder.IncreaseIndent();
+				listViewComponent.AppendComponent(codeBuilder);
+				listViewPropertiesCode = codeBuilder.ToString();
+				
+				// Get list view resume layout code.
+				codeBuilder = new PythonCodeBuilder();
+				codeBuilder.IndentString = "    ";
+				listViewComponent.AppendResumeLayout(codeBuilder);
+				resumeLayoutCode = codeBuilder.ToString();
+				
+				listViewChildComponents = listViewComponent.GetChildComponents();
 			}
 		}
 		
@@ -71,55 +123,137 @@ namespace PythonBinding.Tests.Designer
 		public void GeneratedCode()
 		{
 			string expectedCode = "def InitializeComponent(self):\r\n" +
+								"    listViewItem1 = System.Windows.Forms.ListViewItem(\"aaa\")\r\n" +
+								"    listViewItem2 = System.Windows.Forms.ListViewItem(\"bbb\")\r\n" +
+								"    listViewItem3 = System.Windows.Forms.ListViewItem()\r\n" +
 								"    self._listView1 = System.Windows.Forms.ListView()\r\n" +
-								"    listViewItem1 = System.Windows.Forms.ListViewItem()\r\n" +
-								"    listViewItem2 = System.Windows.Forms.ListViewItem()\r\n" +
+								"    self._columnHeader1 = System.Windows.Forms.ColumnHeader()\r\n" +
+								"    self._columnHeader2 = System.Windows.Forms.ColumnHeader()\r\n" +
+								"    self._listView1.SuspendLayout()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # listView1\r\n" +
 								"    # \r\n" +
+								"    listViewItem1.ToolTipText = \"tooltip\"\r\n" +
+								"    self._listView1.Columns.AddRange(System.Array[System.Windows.Forms.ColumnHeader](\r\n" +
+								"        [self._columnHeader1,\r\n" +
+								"        self._columnHeader2]))\r\n" +
 								"    self._listView1.Items.AddRange(System.Array[System.Windows.Forms.ListViewItem](\r\n" +
 								"        [listViewItem1,\r\n" +
-								"        listViewItem2]))\r\n" +
+								"        listViewItem2,\r\n" +
+								"        listViewItem3]))\r\n" +
 								"    self._listView1.Location = System.Drawing.Point(0, 0)\r\n" +
 								"    self._listView1.Name = \"listView1\"\r\n" +
 								"    self._listView1.Size = System.Drawing.Size(204, 104)\r\n" +
 								"    self._listView1.TabIndex = 0\r\n" +
-								"    listViewItem1.ToolTipText = \"tooltip\"\r\n" +
+								"    self._listView1.View = System.Windows.Forms.View.Details\r\n" +
+								"    # \r\n" +
+								"    # columnHeader1\r\n" +
+								"    # \r\n" +
+								"    self._columnHeader1.Text = \"columnHeader1\"\r\n" +
+								"    # \r\n" +
+								"    # columnHeader2\r\n" +
+								"    # \r\n" +
+								"    self._columnHeader2.Text = \"columnHeader2\"\r\n" +
 								"    # \r\n" +
 								"    # MainForm\r\n" +
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
 								"    self.Controls.Add(self._listView1)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
+								"    self._listView1.ResumeLayout(False)\r\n" +
+								"    self._listView1.PerformLayout()\r\n" +	
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			
-			Assert.AreEqual(expectedCode, generatedPythonCode);
+			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
+		}
+		
+		/// <summary>
+		/// Should include the column header and list view item creation.
+		/// </summary>
+		[Test]
+		public void ListViewCreationCode()
+		{
+			string expectedCode = "listViewItem1 = System.Windows.Forms.ListViewItem(\"aaa\")\r\n" +
+								"listViewItem2 = System.Windows.Forms.ListViewItem(\"bbb\")\r\n" +
+								"listViewItem3 = System.Windows.Forms.ListViewItem()\r\n" +
+								"self._listView1 = System.Windows.Forms.ListView()\r\n";
+			Assert.AreEqual(expectedCode, createListViewCode);
 		}
 		
 		[Test]
-		public void TwoListViewChildren()
+		public void TwoListViewChildComponents()
 		{
-			Assert.AreEqual(2, listViewChildren.Length);
+			Assert.AreEqual(2, listViewChildComponents.Length);
 		}
 		
 		[Test]
-		public void ListViewItem1Text()
+		public void ListViewChildComponentAreColumnHeaders()
 		{
-			Assert.AreEqual("aaa", listViewItem1.Text);
+			Assert.AreEqual(typeof(ColumnHeader), listViewChildComponents[0].GetComponentType());
+			Assert.AreEqual(typeof(ColumnHeader), listViewChildComponents[1].GetComponentType());
 		}
 		
 		[Test]
-		public void ListViewItem1TooltipText()
+		public void SuspendLayoutGeneratedCode()
 		{
-			Assert.AreEqual("tooltip", listViewItem1.ToolTipText);
-		}	
+			string expectedCode = "self._listView1.SuspendLayout()\r\n";
+			Assert.AreEqual(expectedCode, suspendLayoutCode);
+		}
 		
 		[Test]
-		public void ListViewItem2Text()
+		public void ResumeLayoutGeneratedCode()
 		{
-			Assert.AreEqual("bbb", listViewItem2.Text);
+			string expectedCode = "self._listView1.ResumeLayout(False)\r\n" +
+								"self._listView1.PerformLayout()\r\n";
+			Assert.AreEqual(expectedCode, resumeLayoutCode);
+		}		
+		
+		[Test]
+		public void GeneratedListViewPropertiesCode()
+		{
+			string expectedCode = "    # \r\n" +
+								"    # listView1\r\n" +
+								"    # \r\n" +
+								"    listViewItem1.ToolTipText = \"tooltip\"\r\n" +
+								"    self._listView1.Columns.AddRange(System.Array[System.Windows.Forms.ColumnHeader](\r\n" +
+								"        [self._columnHeader1,\r\n" +
+								"        self._columnHeader2]))\r\n" +
+								"    self._listView1.Items.AddRange(System.Array[System.Windows.Forms.ListViewItem](\r\n" +
+								"        [listViewItem1,\r\n" +
+								"        listViewItem2,\r\n" +
+								"        listViewItem3]))\r\n" +
+								"    self._listView1.Location = System.Drawing.Point(0, 0)\r\n" +
+								"    self._listView1.Name = \"listView1\"\r\n" +
+								"    self._listView1.Size = System.Drawing.Size(204, 104)\r\n" +
+								"    self._listView1.TabIndex = 0\r\n" +
+								"    self._listView1.View = System.Windows.Forms.View.Details\r\n" +
+								"    # \r\n" +
+								"    # columnHeader1\r\n" +
+								"    # \r\n" +
+								"    self._columnHeader1.Text = \"columnHeader1\"\r\n" +
+								"    # \r\n" +
+								"    # columnHeader2\r\n" +
+								"    # \r\n" +
+								"    self._columnHeader2.Text = \"columnHeader2\"\r\n";
+
+			Assert.AreEqual(expectedCode, listViewPropertiesCode);
+		}
+		
+		[Test]
+		public void ListViewChildComponentsCreated()
+		{
+			string expectedCode = "self._columnHeader1 = System.Windows.Forms.ColumnHeader()\r\n" +
+								"self._columnHeader2 = System.Windows.Forms.ColumnHeader()\r\n";
+			
+			Assert.AreEqual(expectedCode, createListViewChildComponentsCode);
+		}
+		
+		[Test]
+		public void ColumnHeaderIsHiddenFromDesigner()
+		{
+			Assert.IsTrue(PythonDesignerComponent.IsHiddenFromDesigner(columnHeader1));
 		}
 	}
 }

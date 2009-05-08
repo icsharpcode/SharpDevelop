@@ -66,7 +66,7 @@ namespace WixBinding.Tests.DirectoryImport
 		[Test]
 		public void DirectoryElementAddedToView()
 		{
-			Assert.IsInstanceOfType(typeof(WixDirectoryElement), view.ElementsAdded[0]);
+			Assert.IsInstanceOf(typeof(WixDirectoryElement), view.ElementsAdded[0]);
 		}
 		
 		[Test]

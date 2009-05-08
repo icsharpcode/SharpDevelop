@@ -28,12 +28,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		// Properties for the DebuggerExceptionForm
 		public FormWindowState DebuggerEventWindowState = FormWindowState.Normal;
-		public Size DebuggerEventWindowSize = new Size(646, 235);
 		
 		// Properties for the DebuggeeExceptionForm
 		public FormWindowState DebuggeeExceptionWindowState = FormWindowState.Normal;
-		public Size DebuggeeExceptionWindowSize = new Size(646,431);
-		public int DebugeeExceptionSplitterDistance = 163;
-		public bool ShowExceptionDetails;
+		public double DebuggeeExceptionWindowOpacity = 0.75;
 	}
 }

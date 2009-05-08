@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -228,28 +229,18 @@ namespace VBNetBinding.FormattingStrategy
 							VBStatement statement = statement_; // allow passing statement byref
 							if (Regex.IsMatch(texttoreplace.Trim(), statement.StartRegex, RegexOptions.IgnoreCase)) {
 								string indentation = GetIndentation(textArea, lineNr - 1);
-								if (IsEndStatementNeeded(textArea, ref statement, lineNr)) {
+								if (IsEndStatementNeeded(textArea, ref statement, lineNr))
 									textArea.Document.Replace(curLine.Offset, curLine.Length, terminator + indentation + statement.EndStatement);
-								}
-								for (int i = 0; i < statement.IndentPlus; i++) {
-									indentation += Tab.GetIndentationString(textArea.Document);
+								if (!IsInsideInterface(textArea, lineNr) || statement == interfaceStatement) {
+									for (int i = 0; i < statement.IndentPlus; i++) {
+										indentation += Tab.GetIndentationString(textArea.Document);
+									}
 								}
 
 								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation + curLineText.Trim());
 								textArea.Caret.Column = indentation.Length;
 								return;
 							}
-						}
-						
-						// fix for SD2-1284
-						string prevLineText = textArea.Document.GetText(lineAbove);
-						string prevLineText2 = (lineNr > 1) ? textArea.Document.GetText(textArea.Document.GetLineSegment(lineNr - 2)) : "";
-						if (StripComment(prevLineText.ToLowerInvariant()).Trim(' ', '\t', '\r', '\n').StartsWith("case")) {
-							string indentation = GetIndentation(textArea, lineNr - 1) + Tab.GetIndentationString(textArea.Document);
-							textArea.Document.Replace(curLine.Offset, curLine.Length, indentation + curLineText.Trim());
-							SmartIndentInternal(textArea, lineNr - 1, lineNr);
-							textArea.Caret.Column = GetIndentation(textArea, lineNr).Length;
-							return;
 						}
 					}
 					
@@ -281,8 +272,8 @@ namespace VBNetBinding.FormattingStrategy
 							textArea.Document.Replace(curLine.Offset, curLine.Length, newLineText);
 						}
 						if (IsElseConstruct(lineAboveText))
-							SmartIndentLine(textArea, lineNr - 1);
-						textArea.Caret.Column = indent.Length;
+							SmartIndentInternal(textArea, lineNr - 1, lineNr);
+						textArea.Caret.Column = GetIndentation(textArea, lineNr).Length;
 					}
 				}
 				else if(ch == '>')
@@ -335,13 +326,53 @@ namespace VBNetBinding.FormattingStrategy
 			return (count > 0);
 		}
 		
+		bool IsInsideInterface(TextArea area, int lineNr)
+		{
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(area.Document.TextContent));
+			
+			Stack<Token> tokens = new Stack<Token>();
+			
+			Token currentToken = null;
+			Token prevToken = null;
+			
+			while ((currentToken = lexer.NextToken()).Kind != Tokens.EOF) {
+				if (prevToken == null)
+					prevToken = currentToken;
+				
+				if (currentToken.EndLocation.Line <= lineNr &&
+				    IsDeclaration(currentToken.Kind) &&
+				    IsBlockStart(lexer, currentToken, prevToken)) {
+					
+					tokens.Push(currentToken);
+				}
+				
+				if (currentToken.EndLocation.Line <= lineNr &&
+				    IsDeclaration(currentToken.Kind) &&
+				    IsBlockEnd(currentToken, prevToken)) {
+					
+					if (tokens.Count > 0)
+						tokens.Pop();
+				}
+				
+				if (currentToken.EndLocation.Line > lineNr)
+					break;
+			}
+			
+			if (tokens.Count > 0)
+				return tokens.Pop().Kind == Tokens.Interface;
+			
+			return false;
+		}
+		
 		bool IsElseConstruct(string line)
 		{
-			string t = StripComment(line).ToLowerInvariant();
-			if (t.StartsWith("case ")) return true;
-			if (t == "else" || t.StartsWith("elseif ")) return true;
-			if (t == "catch" || t.StartsWith("catch ")) return true;
-			if (t == "finally") return true;
+			string t = StripComment(line);
+			if (t.StartsWith("case ", StringComparison.OrdinalIgnoreCase)) return true;
+			if (string.Compare(t, "else", true) == 0 ||
+			    t.StartsWith("elseif ", StringComparison.OrdinalIgnoreCase)) return true;
+			if (string.Compare(t, "catch", true) == 0 ||
+			    t.StartsWith("catch ", StringComparison.OrdinalIgnoreCase)) return true;
+			if (string.Compare(t, "finally", true) == 0) return true;
 			
 			return false;
 		}
@@ -372,7 +403,10 @@ namespace VBNetBinding.FormattingStrategy
 		
 		bool IsDeclaration(int type)
 		{
-			return (type == Tokens.Class) || (type == Tokens.Module);
+			return (type == Tokens.Class) ||
+				(type == Tokens.Module) ||
+				(type == Tokens.Structure) ||
+				(type == Tokens.Interface);
 		}
 		
 		bool IsEndStatementNeeded(TextArea textArea, ref VBStatement statement, int lineNr)
@@ -408,9 +442,12 @@ namespace VBNetBinding.FormattingStrategy
 				prevToken = currentToken;
 			}
 			
-			if (missingEnds.Count > 0) {
+			while (tokens.Count > 0)
+				missingEnds.Add(tokens.Pop());
+			
+			if (missingEnds.Count > 0)
 				return GetClosestMissing(missingEnds, statement, textArea, lineNr) != null;
-			} else
+			else
 				return false;
 		}
 		
@@ -469,8 +506,6 @@ namespace VBNetBinding.FormattingStrategy
 		
 		bool IsMatchingStatement(Token token, VBStatement statement)
 		{
-			// funktioniert noch nicht!
-			
 			if (token.Kind == Tokens.For && statement.EndStatement == "Next")
 				return true;
 			
@@ -517,7 +552,9 @@ namespace VBNetBinding.FormattingStrategy
 		{
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(textArea.Document.TextContent));
 			
-			int indentation = 0;
+			Stack<string> indentation = new Stack<string>();
+			
+			indentation.Push(string.Empty);
 			
 			int oldLine = 0;
 			
@@ -546,38 +583,38 @@ namespace VBNetBinding.FormattingStrategy
 					isDelegate = isDeclare = isMustOverride = false;
 				
 				if (IsSpecialCase(currentToken, prevToken)) {
-					ApplyToRange(textArea, ref indentation, oldLine, currentToken.Location.Line - 1, begin, end);
-					indentation--;
-					ApplyToRange(textArea, ref indentation, currentToken.Location.Line - 1, currentToken.Location.Line, begin, end);
-					indentation++;
+					ApplyToRange(textArea, indentation, oldLine, currentToken.Location.Line, begin, end);
+					Unindent(indentation);
+					ApplyToRange(textArea, indentation, currentToken.Location.Line - 1, currentToken.Location.Line, begin, end);
+					Indent(textArea, indentation);
 					
 					oldLine = currentToken.Location.Line;
 				}
 				
 				if (IsBlockEnd(currentToken, prevToken)) {
-					ApplyToRange(textArea, ref indentation, oldLine, currentToken.Location.Line - 1, begin, end);
+					ApplyToRange(textArea, indentation, oldLine, currentToken.Location.Line - 1, begin, end);
 					
 					if (currentToken.Kind == Tokens.Interface)
 						inInterface = false;
 					
 					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
-						indentation--;
+						Unindent(indentation);
 						
 						if (currentToken.Kind == Tokens.Select)
-							indentation--;
+							Unindent(indentation);
 					}
 					
 					oldLine = currentToken.Location.Line - 1;
 				}
 				
 				if (IsBlockStart(lexer, currentToken, prevToken)) {
-					ApplyToRange(textArea, ref indentation, oldLine, currentToken.Location.Line, begin, end);
+					ApplyToRange(textArea, indentation, oldLine, currentToken.Location.Line, begin, end);
 					
 					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
-						indentation++;
+						Indent(textArea, indentation);
 						
 						if (currentToken.Kind == Tokens.Select)
-							indentation++;
+							Indent(textArea, indentation);
 					}
 					
 					if (currentToken.Kind == Tokens.Interface)
@@ -590,9 +627,29 @@ namespace VBNetBinding.FormattingStrategy
 			}
 			
 			// do last indent step
-			ApplyToRange(textArea, ref indentation, oldLine, prevToken.Location.Line, begin, end);
+			int newLine = prevToken.Location.Line;
 			
-			return indentation;
+			if (oldLine > newLine)
+				newLine = oldLine + 1;
+			
+			ApplyToRange(textArea, indentation, oldLine, newLine, begin, end);
+			
+			return indentation.Peek().Length;
+		}
+
+		void Unindent(Stack<string> indentation)
+		{
+			indentation.Pop();
+		}
+
+		void Indent(TextArea textArea, Stack<string> indentation)
+		{
+			bool useSpaces = textArea.TextEditorProperties.ConvertTabsToSpaces;
+			int indentationSize = textArea.TextEditorProperties.IndentationSize;
+			
+			string addIndent = (useSpaces) ? new string(' ', indentationSize) : "\t";
+			
+			indentation.Push(indentation.Peek() + addIndent);
 		}
 		
 		bool IsBlockStart(ILexer lexer, Token current, Token prev)
@@ -607,12 +664,8 @@ namespace VBNetBinding.FormattingStrategy
 					Token currentToken = null;
 					
 					while ((currentToken = lexer.Peek()).Kind != Tokens.EOL) {
-						if (currentToken.Kind == Tokens.Then) {
-							if (lexer.Peek().Kind == Tokens.EOL)
-								return true;
-							else
-								return false;
-						}
+						if (currentToken.Kind == Tokens.Then)
+							return lexer.Peek().Kind == Tokens.EOL;
 					}
 				}
 				
@@ -693,10 +746,7 @@ namespace VBNetBinding.FormattingStrategy
 				case Tokens.Else:
 					return true;
 				case Tokens.Case:
-					if (prev.Kind == Tokens.Select)
-						return false;
-					else
-						return true;
+					return prev.Kind != Tokens.Select;
 				case Tokens.ElseIf:
 					return true;
 				case Tokens.Catch:
@@ -708,74 +758,38 @@ namespace VBNetBinding.FormattingStrategy
 			return false;
 		}
 		
-		bool multiLine = false;
-		bool otherMultiLine = false;
-
-		void ApplyToRange(TextArea textArea, ref int indentation, int begin, int end, int selBegin, int selEnd)
+		void ApplyToRange(TextArea textArea, Stack<string> indentation, int begin, int end, int selBegin, int selEnd)
 		{
-			bool useSpaces = textArea.TextEditorProperties.ConvertTabsToSpaces;
-			int indentationSize = textArea.TextEditorProperties.IndentationSize;
-			int tabSize = textArea.TextEditorProperties.TabIndent;
-			int spaces = indentationSize * (indentation < 0 ? 0 : indentation);
-			int tabs = 0;
-			
-			if (begin >= end) {
-				LineSegment curLine = textArea.Document.GetLineSegment(begin);
-				string lineText = textArea.Document.GetText(curLine).Trim(' ', '\t', '\r', '\n');
-				
-				string newLine = new string('\t', tabs) + new string(' ', spaces) + lineText;
-				
-				if (begin >= selBegin && begin <= selEnd)
-					SmartReplaceLine(textArea.Document, curLine, newLine);
-			}
+			bool multiLine = false;
 			
 			for (int i = begin; i < end; i++) {
 				LineSegment curLine = textArea.Document.GetLineSegment(i);
 				string lineText = textArea.Document.GetText(curLine).Trim(' ', '\t', '\r', '\n');
-				
 				string noComments = StripComment(lineText).TrimEnd(' ', '\t', '\r', '\n');
 				
-				
-				if (otherMultiLine && noComments == "}") {
-					indentation--;
-					otherMultiLine = false;
+				if (i < selBegin || i > selEnd) {
+					indentation.Pop();
+					indentation.Push(GetIndentation(textArea, i));
 				}
 				
-				spaces = indentationSize * (indentation < 0 ? 0 : indentation);
-				tabs = 0;
-				
-				if (!useSpaces) {
-					tabs = (int)(spaces / tabSize);
-					spaces %= tabSize;
-				}
-
-				
-				string newLine = new string('\t', tabs) + new string(' ', spaces) + lineText;
-				
-				if (noComments.EndsWith("_") && !IsStatement(noComments) && !otherMultiLine) {
-					otherMultiLine = true;
-					indentation++;
-				}
-				
-				if (noComments.EndsWith("_") && IsStatement(noComments)) {
-					multiLine = true;
-					indentation++;
-				}
-				
-				if (!noComments.EndsWith("_") && multiLine) {
-					indentation--;
+				// change indentation before (indent this line)
+				if (multiLine && noComments.EndsWith("}")) {
+					Unindent(indentation);
 					multiLine = false;
 				}
 				
-				if (!noComments.EndsWith("_") && otherMultiLine) {
-					indentation--;
-					otherMultiLine = false;
+				SmartReplaceLine(textArea.Document, curLine, indentation.Peek() + lineText);
+				
+				// change indentation afterwards (indent next line)
+				if (!multiLine && noComments.EndsWith("_")) {
+					Indent(textArea, indentation);
+					multiLine = true;
 				}
-				
-				if (i >= selBegin && i <= selEnd)
-					SmartReplaceLine(textArea.Document, curLine, newLine);
-				
-				LoggingService.Debug("'" + newLine + "'");
+
+				if (multiLine && !noComments.EndsWith("_")) {
+					multiLine = false;
+					Unindent(indentation);
+				}
 			}
 		}
 		

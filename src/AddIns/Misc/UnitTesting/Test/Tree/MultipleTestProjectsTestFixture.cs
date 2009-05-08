@@ -108,7 +108,7 @@ namespace UnitTesting.Tests.Tree
 			treeView.RemoveProject(firstProject);
 			
 			Assert.AreEqual(1, treeView.GetProjects().Length);
-			Assert.IsInstanceOfType(typeof(TestProjectTreeNode), treeView.Nodes[0]);
+			Assert.IsInstanceOf(typeof(TestProjectTreeNode), treeView.Nodes[0]);
 		}
 		
 		/// <summary>

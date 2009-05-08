@@ -35,7 +35,7 @@ namespace Grunwald.BooBinding.Tests
 		{
 			ResolveResult rr = Resolve(prog, new ExpressionResult(code), marker);
 			Assert.IsNotNull(rr, "Resolve must not return null");
-			Assert.IsInstanceOfType(typeof(T), rr, "Resolve must return instance of type " + typeof(T).Name);
+			Assert.IsInstanceOf(typeof(T), rr, "Resolve must return instance of type " + typeof(T).Name);
 			return (T)rr;
 		}
 		

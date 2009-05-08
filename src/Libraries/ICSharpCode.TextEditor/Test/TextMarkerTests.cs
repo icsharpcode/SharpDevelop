@@ -8,7 +8,6 @@
 using ICSharpCode.TextEditor.Document;
 using System;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace ICSharpCode.TextEditor.Tests
 {

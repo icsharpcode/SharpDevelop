@@ -240,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the name of the primary file being edited. Might return null if no file is edited.
 		/// </summary>
-		public string PrimaryFileName {
+		public virtual string PrimaryFileName {
 			get {
 				OpenedFile file = PrimaryFile;
 				if (file != null)

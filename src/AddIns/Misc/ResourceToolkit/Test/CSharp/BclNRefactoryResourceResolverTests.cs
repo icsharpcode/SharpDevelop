@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using Hornung.ResourceToolkit;
 using Hornung.ResourceToolkit.Resolver;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace ResourceToolkit.Tests.CSharp
 {
@@ -283,7 +282,7 @@ class A
 		{
 			ResourceResolveResult rrr = Resolve(CodeLocalCRMDeferredInitUsingApplyResources, 8, 20, null);
 			TestHelper.CheckReference(rrr, "A", null, "A", "A.B");
-			Assert.That(rrr, Is.InstanceOfType(typeof(ResourcePrefixResolveResult)));
+			Assert.That(rrr, Is.InstanceOf(typeof(ResourcePrefixResolveResult)));
 			ResourcePrefixResolveResult rprr = (ResourcePrefixResolveResult)rrr;
 			Assert.That(rprr.Prefix, Is.EqualTo("$this"), "Resource key prefix not detected correctly.");
 		}
