@@ -1432,7 +1432,13 @@ namespace ICSharpCode.PythonBinding
 		{
 			// Create event handler expression.
 			IdentifierExpression identifierExpression = eventHandlerExpression as IdentifierExpression;
-			Append(identifierExpression.Identifier);
+			ObjectCreateExpression objectCreateExpression = eventHandlerExpression as ObjectCreateExpression;
+			if (identifierExpression != null) {
+				Append(identifierExpression.Identifier);
+			} else if (objectCreateExpression != null) {
+				//if (objectCreateExpression.Parameters.Count > 0) {
+				CreateDelegateCreateExpression(objectCreateExpression.Parameters[0]);
+			}
 			return null;
 		}
 		

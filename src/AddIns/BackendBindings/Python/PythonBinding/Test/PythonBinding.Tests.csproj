@@ -103,6 +103,7 @@
     <Compile Include="Converter\ClassFieldReferenceTestFixture.cs" />
     <Compile Include="Converter\ConverterSupportedLanguageTests.cs" />
     <Compile Include="Converter\ConvertToPythonProjectCommandTestFixture.cs" />
+    <Compile Include="Converter\EventHandlerWithObjectCreationTestFixture.cs" />
     <Compile Include="Converter\IntegerMethodParameterTestFixture.cs" />
     <Compile Include="Converter\BaseClassReferenceTestFixture.cs" />
     <Compile Include="Converter\BinaryOperatorConversionTests.cs" />
