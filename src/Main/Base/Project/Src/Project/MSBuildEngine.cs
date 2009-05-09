@@ -181,7 +181,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			BuildJob job = new BuildJob();
 			job.IntPtrSize = IntPtr.Size;
 			job.ProjectFileName = project.FileName;
-			job.EventMask = EventTypes.All & ~ControllableEvents;
+			// Never report custom events (those are usually derived EventArgs classes, and SharpDevelop
+			// doesn't have the matching assemblies loaded - see SD2-1514).
+			// Also, remove the flags for the controllable events.
+			job.EventMask = EventTypes.All & ~(ControllableEvents | EventTypes.Custom);
+			// Add back active controllable events.
 			if (ReportMessageEvents)
 				job.EventMask |= EventTypes.Message;
 			if (ReportTargetStartedEvents)
@@ -266,7 +270,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static string EnsureBackslash(string path)
 		{
-			if (path.EndsWith("\\"))
+			if (path.EndsWith("\\", StringComparison.Ordinal))
 				return path;
 			else
 				return path + "\\";
