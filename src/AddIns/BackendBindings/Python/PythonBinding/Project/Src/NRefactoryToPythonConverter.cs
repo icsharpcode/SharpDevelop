@@ -1086,6 +1086,9 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
+			Append("clr.GetClrType(");
+			Append(typeOfExpression.TypeReference.Type);
+			Append(")");
 			return null;
 		}
 		
@@ -1361,19 +1364,26 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		object CreateInitStatement(ForeachStatement foreachStatement)
 		{
-			Append("enumerator = " + GetForeachVariableName(foreachStatement) + ".GetEnumerator()");
+			Append("enumerator = ");
+			AppendForeachVariableName(foreachStatement);
+			Append(".GetEnumerator()");
 
 			return null;
 		}
 		
 		/// <summary>
 		/// Gets the name of the variable that is used in the
-		/// foreach loop as the item being iterated.
+		/// foreach loop as the item being iterated and appends the code.
 		/// </summary>
-		string GetForeachVariableName(ForeachStatement foreachStatement)
+		void AppendForeachVariableName(ForeachStatement foreachStatement)
 		{
 			IdentifierExpression identifierExpression = foreachStatement.Expression as IdentifierExpression;
-			return identifierExpression.Identifier;
+			InvocationExpression invocationExpression = foreachStatement.Expression as InvocationExpression;
+			if (identifierExpression != null) {
+				Append(identifierExpression.Identifier);
+			} else if (invocationExpression != null) {
+				invocationExpression.AcceptVisitor(this, null);
+			}
 		}
 				
 		/// <summary>
@@ -1436,7 +1446,6 @@ namespace ICSharpCode.PythonBinding
 			if (identifierExpression != null) {
 				Append(identifierExpression.Identifier);
 			} else if (objectCreateExpression != null) {
-				//if (objectCreateExpression.Parameters.Count > 0) {
 				CreateDelegateCreateExpression(objectCreateExpression.Parameters[0]);
 			}
 			return null;
