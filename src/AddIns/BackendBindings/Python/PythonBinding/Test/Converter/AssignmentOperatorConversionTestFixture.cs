@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -60,7 +61,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void MultiplyOperator()
 		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string python = converter.Convert(GetCode(csharp, "*="));
 			string expectedPython = GetCode(pythonCodeTemplate, "*=");
 			
@@ -70,7 +71,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void DivideOperator()
 		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string python = converter.Convert(GetCode(csharp, "/="));
 			string expectedPython = GetCode(pythonCodeTemplate, "/=");
 			
@@ -80,7 +81,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void AndOperator()
 		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string python = converter.Convert(GetCode(csharp, "&="));
 			string expectedPython = GetCode(pythonCodeTemplate, "&=");
 			
@@ -90,7 +91,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void OrOperator()
 		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string python = converter.Convert(GetCode(csharp, "|="));
 			string expectedPython = GetCode(pythonCodeTemplate, "|=");
 			
@@ -100,7 +101,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void ExclusiveOrOperator()
 		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string python = converter.Convert(GetCode(csharp, "^="));
 			string expectedPython = GetCode(pythonCodeTemplate, "^=");
 			
@@ -110,7 +111,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void ShiftLeftOperator()
 		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string python = converter.Convert(GetCode(csharp, "<<="));
 			string expectedPython = GetCode(pythonCodeTemplate, "<<=");
 			
@@ -120,7 +121,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void ShiftRightOperator()
 		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string python = converter.Convert(GetCode(csharp, ">>="));
 			string expectedPython = GetCode(pythonCodeTemplate, ">>=");
 			
@@ -130,7 +131,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void VBConcatOperator()
 		{
-			VBNetToPythonConverter converter = new VBNetToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.VBNet);
 			string python = converter.Convert(GetCode(vb, "&="));
 			string expectedPython = GetCode(pythonCodeTemplate, "+=");
 			
@@ -140,7 +141,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void VBDivideIntegerOperator()
 		{
-			VBNetToPythonConverter converter = new VBNetToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.VBNet);
 			string python = converter.Convert(GetCode(vb, "\\="));
 			string expectedPython = GetCode(pythonCodeTemplate, "/=");
 			
@@ -150,7 +151,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void VBPowerOperator()
 		{
-			VBNetToPythonConverter converter = new VBNetToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.VBNet);
 			string python = converter.Convert(GetCode(vb, "^="));
 			string expectedPython = GetCode(pythonCodeTemplate, "**=");
 			

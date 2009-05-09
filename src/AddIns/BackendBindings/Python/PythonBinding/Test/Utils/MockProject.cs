@@ -21,6 +21,9 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class MockProject : IProject
 	{
+		readonly object syncRoot = new object();
+		string directory = String.Empty;
+		
 		public MockProject()
 		{
 		}
@@ -78,9 +81,8 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public string Directory {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return directory; }
+			set { directory = value; }
 		}
 		
 		public string AssemblyName {
@@ -161,9 +163,7 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public object SyncRoot {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return syncRoot; }
 		}
 		
 		public ISolutionFolderContainer Parent {

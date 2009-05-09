@@ -8,6 +8,7 @@
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -32,7 +33,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void ConvertedPythonCode()
 		{
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string python = converter.Convert(csharp);
 			string expectedPython = "class Foo(object):\r\n" +
 									"\tdef __init__(self):\r\n" +

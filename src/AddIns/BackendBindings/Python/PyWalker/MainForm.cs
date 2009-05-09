@@ -100,7 +100,7 @@ namespace PyWalker
 		{
 			try {
 				Clear();
-				CSharpToPythonConverter converter = new CSharpToPythonConverter();
+				NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(NRefactory.SupportedLanguage.CSharp);
 				walkerOutputTextBox.Text = converter.Convert(codeTextBox.Text);
 			} catch (Exception ex) {
 				walkerOutputTextBox.Text = ex.ToString();

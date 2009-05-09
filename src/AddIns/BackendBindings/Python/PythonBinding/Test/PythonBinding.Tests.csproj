@@ -101,6 +101,8 @@
     <Compile Include="Converter\CallConstructorWithParametersConversionTestFixture.cs" />
     <Compile Include="Converter\ClassDestructorConversionTestFixture.cs" />
     <Compile Include="Converter\ClassFieldReferenceTestFixture.cs" />
+    <Compile Include="Converter\ConverterSupportedLanguageTests.cs" />
+    <Compile Include="Converter\ConvertToPythonProjectCommandTestFixture.cs" />
     <Compile Include="Converter\IntegerMethodParameterTestFixture.cs" />
     <Compile Include="Converter\BaseClassReferenceTestFixture.cs" />
     <Compile Include="Converter\BinaryOperatorConversionTests.cs" />
@@ -269,11 +271,13 @@
     <Compile Include="Utils\AddedComponent.cs" />
     <Compile Include="Utils\BrowseButtonInfo.cs" />
     <Compile Include="Utils\BrowseFolderButtonInfo.cs" />
+    <Compile Include="Utils\ConvertedFile.cs" />
     <Compile Include="Utils\CreatedComponent.cs" />
     <Compile Include="Utils\CreatedInstance.cs" />
     <Compile Include="Utils\DerivedAddInOptions.cs" />
     <Compile Include="Utils\DerivedApplicationSettingsPanel.cs" />
     <Compile Include="Utils\DerivedCompilingOptionsPanel.cs" />
+    <Compile Include="Utils\DerivedConvertProjectToPythonProjectCommand.cs" />
     <Compile Include="Utils\DerivedFormDesignerViewContent.cs" />
     <Compile Include="Utils\DerivedPythonCodeCompletionBinding.cs" />
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />

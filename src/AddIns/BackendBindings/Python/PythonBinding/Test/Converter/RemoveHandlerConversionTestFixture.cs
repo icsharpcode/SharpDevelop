@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -41,7 +42,7 @@ namespace PythonBinding.Tests.Converter
 									"\r\n" +
 									"\tdef ButtonClick(self, sender, e):\r\n" +
 									"\t\tpass";
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string code = converter.Convert(csharp);
 			
 			Assert.AreEqual(expectedCode, code);

@@ -18,7 +18,6 @@ using ICSharpCode.TextEditor.Document;
 namespace ICSharpCode.PythonBinding
 {
 	/// <summary>
-	/// Base class for the CSharpToPythonConverter and VBNetToPythonConverter. 
 	/// Used to convert VB.NET and C# to Python.
 	/// </summary>
 	public class NRefactoryToPythonConverter : IAstVisitor
@@ -27,17 +26,55 @@ namespace ICSharpCode.PythonBinding
 		string indentString = "\t";
 		StringBuilder codeBuilder;
 		
-		// Holds the constructor for the class being converted. This used to identify class fields.
+		// Holds the constructor for the class being converted. This is used to identify class fields.
 		PythonConstructorInfo constructorInfo;
 		
 		// Holds the parameters of the current method. This is used to identify
 		// references to fields or parameters.
 		List<ParameterDeclarationExpression> methodParameters = new List<ParameterDeclarationExpression>();
-
+		SupportedLanguage language;
+		
+		public NRefactoryToPythonConverter(SupportedLanguage language)
+		{
+			this.language = language;
+		}
+		
 		public NRefactoryToPythonConverter()
 		{
 		}
 		
+		/// <summary>
+		/// Gets or sets the source language that will be converted to python.
+		/// </summary>
+		public SupportedLanguage SupportedLanguage {
+			get { return language; }
+		}
+		
+		/// <summary>
+		/// Creates either C# to Python or VB.NET to Python converter based on the filename extension that is to be converted.
+		/// </summary>
+		/// <returns>Null if the file cannot be converted.</returns>
+		public static NRefactoryToPythonConverter Create(string fileName)
+		{
+			if (CanConvert(fileName)) {
+				return new NRefactoryToPythonConverter(GetSupportedLanguage(fileName));
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Only C# (.cs) or VB.NET (.vb) files can be converted.
+		/// </summary>
+		public static bool CanConvert(string fileName)
+		{
+			string extension = Path.GetExtension(fileName);
+			if (!String.IsNullOrEmpty(extension)) {
+				extension = extension.ToLowerInvariant();
+				return (extension == ".cs") || (extension == ".vb");
+			}
+			return false;
+		}
+				
 		/// <summary>
 		/// Gets the indentation string to use in the text editor based on the text editor properties.
 		/// </summary>
@@ -69,6 +106,14 @@ namespace ICSharpCode.PythonBinding
 				parser.Parse();
 				return parser.CompilationUnit;
 			}
+		}
+		
+		/// <summary>
+		/// Converts the source code to Python.
+		/// </summary>
+		public string Convert(string source)
+		{
+			return Convert(source, language);
 		}
 		
 		/// <summary>
@@ -1609,5 +1654,17 @@ namespace ICSharpCode.PythonBinding
 			Append(" == ");
 			label.Label.AcceptVisitor(this, null);
 		}
+		
+		/// <summary>
+		/// Gets the supported language either C# or VB.NET
+		/// </summary>
+		static SupportedLanguage GetSupportedLanguage(string fileName)
+		{
+			string extension = Path.GetExtension(fileName.ToLowerInvariant());
+			if (extension == ".vb") {
+				return SupportedLanguage.VBNet;
+			}
+			return SupportedLanguage.CSharp;
+		}		
 	}
 }

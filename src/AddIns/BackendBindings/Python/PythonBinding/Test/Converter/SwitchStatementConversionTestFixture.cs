@@ -8,6 +8,7 @@
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -43,7 +44,7 @@ namespace PythonBinding.Tests.Converter
 									"\t\telse:\r\n" +
 									"\t\t\treturn -1";
 	
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string code = converter.Convert(csharp);
 			
 			Assert.AreEqual(expectedPython, code);
@@ -77,7 +78,7 @@ namespace PythonBinding.Tests.Converter
 									"\t\telse:\r\n" +
 									"\t\t\treturn -1";
 	
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string code = converter.Convert(csharp);
 			
 			Assert.AreEqual(expectedPython, code);
