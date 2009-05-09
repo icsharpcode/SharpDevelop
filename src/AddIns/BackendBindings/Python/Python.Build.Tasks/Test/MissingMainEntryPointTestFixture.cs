@@ -6,25 +6,20 @@
 // </file>
 
 using System;
-using System.Reflection;
 using System.Reflection.Emit;
-using IronPython.Runtime;
-using IronPython.Runtime.Operations;
 using ICSharpCode.Python.Build.Tasks;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
-using Microsoft.Scripting.Runtime;
 using NUnit.Framework;
 
 namespace Python.Build.Tasks.Tests
 {
 	/// <summary>
-	/// Tests that an IOException is caught and logged.
+	/// Tests that an error is reported when the mainFile is missing and we are trying to compile
+	/// an executable.
 	/// </summary>
 	[TestFixture]
-	public class IOErrorTestFixture
+	public class MissingMainEntryPointTestFixture
 	{
 		MockPythonCompiler mockCompiler;
 		DummyPythonCompilerTask compiler;
@@ -41,7 +36,7 @@ namespace Python.Build.Tasks.Tests
 			TaskItem sourceFile = new TaskItem(@"D:\Projects\MyProject\test.py");
 			compiler.Sources = new ITaskItem[] {sourceFile};
 			
-			mockCompiler.ThrowExceptionAtCompile = PythonOps.IOError("Could not find main file test.py");
+			mockCompiler.ThrowExceptionAtCompile = new PythonCompilerException("Missing main file.");
 			
 			success = compiler.Execute();
 		}
@@ -55,7 +50,7 @@ namespace Python.Build.Tasks.Tests
 		[Test]
 		public void IsExceptionMessageLogged()
 		{
-			Assert.AreEqual("Could not find main file test.py", compiler.LoggedErrorMessage);
+			Assert.AreEqual("Missing main file.", compiler.LoggedErrorMessage);
 		}
 	}
 }

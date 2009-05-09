@@ -68,9 +68,11 @@
     <Compile Include="IncludeDebugInfoTestFixture.cs" />
     <Compile Include="IOErrorTestFixture.cs" />
     <Compile Include="MainEntryPointTestFixture.cs" />
+    <Compile Include="MissingMainEntryPointTestFixture.cs" />
     <Compile Include="MockPythonCompiler.cs" />
     <Compile Include="CompileSingleSourceFileTestFixture.cs" />
     <Compile Include="PlatformTestFixture.cs" />
+    <Compile Include="PythonCompilerTests.cs" />
     <Compile Include="RelativeReferenceTestFixture.cs" />
     <Compile Include="RelativeResourceFileTestFixture.cs" />
     <Compile Include="SyntaxErrorTestFixture.cs" />
