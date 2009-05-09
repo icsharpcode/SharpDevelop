@@ -4,14 +4,36 @@
     xmlns:dv="clr-namespace:Debugger.AddIn.Visualizers.Graph"
     Title="Object graph visualizer" Height="400" Width="600">
     <StackPanel>
-        <StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock VerticalAlignment="Center" Padding="4">Expression:</TextBlock>
-                <TextBox Name="txtExpression" VerticalAlignment="Center"  Margin="4" Width="100"></TextBox>
-                <Button Padding="4" Margin="4" Click="Inspect_Button_Click">Inspect</Button>
-            </StackPanel>
-            <Canvas Name="canvas">
-            </Canvas>
+        <StackPanel Orientation="Horizontal" Background="AliceBlue">
+
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Margin" Value="0 0 8 0" />
+                </Style>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="8 0 0 0" />
+                    <Setter Property="Padding" Value="8 0 8 0" />
+                </Style>
+            </StackPanel.Resources>
+
+            <Border Margin="3" Padding="3">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">Expression:</TextBlock>
+                    <TextBox Name="txtExpression" VerticalAlignment="Center" Width="100"></TextBox>
+                    <Button Click="Inspect_Button_Click">Inspect</Button>
+                </StackPanel>
+            </Border>
+            
+            <Border Margin="3" Padding="3">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">Layout:</TextBlock>
+                    <ComboBox Name="cmbLayoutDirection" Width="150" ItemsSource="{Binding Path=EnumValues}" SelectedValue="{Binding Path=SelectedEnumValue}" SelectedValuePath="EnumValue" DisplayMemberPath="DisplayValue"></ComboBox>
+                </StackPanel>
+            </Border>
         </StackPanel>
+
+        <Canvas Name="canvas" Margin="4">
+        </Canvas>
+
     </StackPanel>
 </Window>

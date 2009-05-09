@@ -170,10 +170,13 @@
     <Compile Include="Src\Visualizers\Graph\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\GraphDrawer.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Point.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedGraph.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedNode.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\LayoutDirection.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoEdgeRouter.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoRunner.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeLayouter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNode.cs" />
@@ -192,10 +195,17 @@
     <Compile Include="Src\Visualizers\Graph\Utils\LookupValueCollection.cs" />
     <Compile Include="Src\Visualizers\Graph\VisualizerWinFormsControl.cs" />
     <Compile Include="Src\Visualizers\Graph\VisualizerWinFormsControl.Designer.cs" />
-    <Compile Include="Src\Visualizers\Graph\VisualizerWPFControl.xaml.cs" />
-    <Compile Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml.cs" />
+    <Compile Include="Src\Visualizers\Graph\VisualizerWPFControl.xaml.cs">
+      <DependentUpon>VisualizerWPFControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml.cs">
+      <DependentUpon>VisualizerWPFWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Visualizers\ICorDebug.cs" />
     <Compile Include="Src\Visualizers\IList.cs" />
+    <Compile Include="Src\Visualizers\PresentationBindings\DisplayAttribute.cs" />
+    <Compile Include="Src\Visualizers\PresentationBindings\EnumViewModel.cs" />
+    <Compile Include="Src\Visualizers\PresentationBindings\ViewModelBase.cs" />
     <None Include="COPYING" />
   </ItemGroup>
   <ItemGroup>
@@ -263,6 +273,7 @@
     <Folder Include="Src\Visualizers\Graph\Layout\Tree" />
     <Folder Include="Src\Visualizers\Graph\ObjectGraph" />
     <Folder Include="Src\Visualizers\Graph\Utils" />
+    <Folder Include="Src\Visualizers\PresentationBindings" />
     <Page Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml" />
     <Page Include="Src\Visualizers\Graph\VisualizerWPFControl.xaml" />
     <Page Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml" />

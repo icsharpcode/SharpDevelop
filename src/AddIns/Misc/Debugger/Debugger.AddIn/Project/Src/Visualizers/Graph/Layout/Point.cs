@@ -9,13 +9,11 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Direction of tree layout.
+	/// Description of Point.
 	/// </summary>
-	public enum LayoutDirection
+	public struct Point
 	{
-		[Display("Top to bottom")]
-		TopBottom,
-		[Display("Left to right")]
-		LeftRight
+		public double X { get; set; }
+		public double Y { get; set; }
 	}
 }

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Collections.Generic;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -13,5 +14,19 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class PositionedEdge : NamedEdge<PositionedNode>
 	{
+		private IList<Point> splinePoints = null;
+		
+		// ReadOnlyCollection<Point> ?
+		public IList<Point> SplinePoints 
+		{
+			get 
+			{
+				return splinePoints;
+			}
+			set 
+			{
+				splinePoints = value;
+			}
+		}
 	}
 }

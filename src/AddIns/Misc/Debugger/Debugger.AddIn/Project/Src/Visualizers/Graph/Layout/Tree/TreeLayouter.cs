@@ -43,13 +43,17 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <returns></returns>
 		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction)
 		{
-			resultGraph = new PositionedGraph();
 			layoutDirection = direction;
-			
-			var seenNodes = new Dictionary<ObjectNode, object>();
+
+			resultGraph = new PositionedGraph();
+			treeNodeFor = new Dictionary<ObjectNode, TreeNode>();
+			seenNodes = new Dictionary<ObjectNode, object>();
 
 			TreeNode tree = buildTreeRecursive(objectGraph.Root);
 			calculateNodePosRecursive(tree, 0, 0);
+			
+			var neatoRouter = new NeatoEdgeRouter();
+			resultGraph = neatoRouter.CalculateEdges(resultGraph);
 			
 			return resultGraph;
 		}

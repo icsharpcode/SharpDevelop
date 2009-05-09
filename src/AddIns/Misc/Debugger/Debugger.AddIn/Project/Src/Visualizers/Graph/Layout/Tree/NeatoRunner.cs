@@ -9,13 +9,12 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Direction of tree layout.
+	/// Runs neato.exe, passes string to standart input and reads from standart output.
 	/// </summary>
-	public enum LayoutDirection
+	public class NeatoRunner
 	{
-		[Display("Top to bottom")]
-		TopBottom,
-		[Display("Left to right")]
-		LeftRight
+		public NeatoRunner()
+		{
+		}
 	}
 }

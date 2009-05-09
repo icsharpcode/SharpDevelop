@@ -6,6 +6,7 @@
 // </file>
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+using Debugger.AddIn.Visualizers.Graph.Layout;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -26,7 +28,9 @@ namespace Debugger.AddIn.Visualizers.Graph
     /// </summary>
     public partial class VisualizerWPFWindow : Window
     {
-    	WindowsDebugger _debuggerService = null;
+    	private WindowsDebugger _debuggerService;
+    	private EnumViewModel<LayoutDirection> layoutViewModel;
+    	private ObjectGraph objectGraph;
 
         public VisualizerWPFWindow()
         {
@@ -38,6 +42,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 				
 			_debuggerService.IsProcessRunningChanged += new EventHandler(debuggerService_IsProcessRunningChanged);
 			_debuggerService.DebugStopped += new EventHandler(_debuggerService_DebugStopped);
+			
+			this.layoutViewModel = new EnumViewModel<LayoutDirection>();
+            this.layoutViewModel.PropertyChanged += new PropertyChangedEventHandler(layoutViewModel_PropertyChanged);
+            this.DataContext = this.layoutViewModel;
 		}
 		
 		public void debuggerService_IsProcessRunningChanged(object sender, EventArgs e)
@@ -60,14 +68,22 @@ namespace Debugger.AddIn.Visualizers.Graph
 			refreshGraph();
         }
         
+        void layoutViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+        	if (e.PropertyName == "SelectedEnumValue")	// TODO should be special event for enum value change
+        	{
+        		layoutGraph(this.objectGraph);
+        	}
+        }
+        
         void refreshGraph()
 		{
 			ObjectGraphBuilder graphBuilder = new ObjectGraphBuilder(_debuggerService);
-			ObjectGraph graph = null;
+			this.objectGraph = null;
 			
 			try
 			{	
-				graph = graphBuilder.BuildGraphForExpression(txtExpression.Text);
+				this.objectGraph = graphBuilder.BuildGraphForExpression(txtExpression.Text);
 			}
 			catch(DebuggerVisualizerException ex)
 			{
@@ -80,14 +96,19 @@ namespace Debugger.AddIn.Visualizers.Graph
 				return;
 			}
 			
-			Layout.TreeLayouter layouter = new Layout.TreeLayouter();
-			Layout.PositionedGraph posGraph = layouter.CalculateLayout(graph, Layout.LayoutDirection.LeftRight);
-			
-			GraphDrawer.Draw(posGraph, canvas);
+			layoutGraph(this.objectGraph);
 				
 			//GraphDrawer drawer = new GraphDrawer(graph);
 			//drawer.Draw(canvas);
 		}
+        
+        void layoutGraph(ObjectGraph graph)
+        {
+        	Layout.TreeLayouter layouter = new Layout.TreeLayouter();
+			Layout.PositionedGraph posGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue);
+			
+			GraphDrawer.Draw(posGraph, canvas);
+        }
 		
 		void guiHandleException(System.Exception ex)
 		{
