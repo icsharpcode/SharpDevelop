@@ -9,8 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.DefaultEditor.Codons;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
@@ -24,10 +27,11 @@ namespace PythonBinding.Tests.Converter
 		FileProjectItem source;
 		FileProjectItem target;
 		MockProject sourceProject;
-		MockProject targetProject;
+		IProject targetProject;
 		FileProjectItem textFileSource;
 		FileProjectItem textFileTarget;
 		MockTextEditorProperties mockTextEditorProperties;
+		ReferenceProjectItem ironPythonReference;
 		string sourceCode = "class Foo\r\n" +
 							"{\r\n" +
 							"}";
@@ -35,6 +39,13 @@ namespace PythonBinding.Tests.Converter
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			List<LanguageBindingDescriptor> bindings = new List<LanguageBindingDescriptor>();
+			using (TextReader reader = PythonBindingAddInFile.ReadAddInFile()) {
+				AddIn addin = AddIn.Load(reader, String.Empty);
+				bindings.Add(new LanguageBindingDescriptor(AddInHelper.GetCodon(addin, "/SharpDevelop/Workbench/LanguageBindings", "Python")));
+			}
+			LanguageBindingService.SetBindings(bindings);
+			
 			mockTextEditorProperties = new MockTextEditorProperties();
 			convertProjectCommand = new DerivedConvertProjectToPythonProjectCommand(mockTextEditorProperties);
 			mockTextEditorProperties.Encoding = Encoding.Unicode;
@@ -42,14 +53,21 @@ namespace PythonBinding.Tests.Converter
 			sourceProject = new MockProject();
 			sourceProject.Directory = @"d:\projects\test";
 			source = new FileProjectItem(sourceProject, ItemType.Compile, @"src\Program.cs");
-			targetProject = new MockProject();
-			targetProject.Directory = @"d:\projects\test\converted";
+			targetProject = convertProjectCommand.CallCreateProject(@"d:\projects\test\converted", sourceProject);
 			target = new FileProjectItem(targetProject, source.ItemType, source.Include);
 			source.CopyMetadataTo(target);
 			
 			textFileSource = new FileProjectItem(sourceProject, ItemType.None, @"src\readme.txt");
 			textFileTarget = new FileProjectItem(targetProject, textFileSource.ItemType, textFileSource.Include);
 			textFileSource.CopyMetadataTo(textFileTarget);
+			
+			foreach (ProjectItem item in targetProject.Items) {
+				ReferenceProjectItem reference = item as ReferenceProjectItem;
+				if ((reference != null) && (reference.Name == "IronPython")) {
+					ironPythonReference = reference;
+					break;
+				}
+			}
 			
 			convertProjectCommand.AddParseableFileContent(source.FileName, sourceCode);
 			
@@ -92,6 +110,18 @@ namespace PythonBinding.Tests.Converter
 			List<ConvertedFile> expectedSavedFiles = new List<ConvertedFile>();
 			expectedSavedFiles.Add(new ConvertedFile(target.FileName, expectedCode, mockTextEditorProperties.Encoding));
 			Assert.AreEqual(expectedSavedFiles, convertProjectCommand.SavedFiles);
+		}
+		
+		[Test]
+		public void IronPythonReferenceAddedToProject()
+		{
+			Assert.IsNotNull(ironPythonReference, "No IronPython reference added to converted project.");
+		}
+		
+		[Test]
+		public void IronPythonReferenceHintPath()
+		{
+			Assert.AreEqual(@"$(PythonBinPath)\IronPython.dll", ironPythonReference.GetMetadata("HintPath"));
 		}
 	}
 }

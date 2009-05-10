@@ -62,6 +62,11 @@ namespace PythonBinding.Tests.Utils
 			ConvertFile(source, target);
 		}
 		
+		public IProject CallCreateProject(string directory, IProject sourceProject)
+		{
+			return base.CreateProject(directory, sourceProject);
+		}
+		
 		protected override void LanguageConverterConvertFile(FileProjectItem source, FileProjectItem target)
 		{
 			sourceAndTargetFilesPassedToBaseClass.Add(new SourceAndTargetFile(source, target));

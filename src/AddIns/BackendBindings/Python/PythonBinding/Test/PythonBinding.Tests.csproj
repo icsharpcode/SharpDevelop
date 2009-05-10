@@ -271,6 +271,7 @@
     <Compile Include="RunPythonCommandTestFixture.cs" />
     <Compile Include="StopPythonCommandTestFixture.cs" />
     <Compile Include="Utils\AddedComponent.cs" />
+    <Compile Include="Utils\AddInHelper.cs" />
     <Compile Include="Utils\BrowseButtonInfo.cs" />
     <Compile Include="Utils\BrowseFolderButtonInfo.cs" />
     <Compile Include="Utils\ConvertedFile.cs" />

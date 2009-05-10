@@ -95,11 +95,8 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public string RootNamespace {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return String.Empty; }
 			set {
-				throw new NotImplementedException();
 			}
 		}
 		
@@ -176,9 +173,7 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public Solution ParentSolution {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return new Solution(); }
 		}
 		
 		public string TypeGuid {
@@ -209,11 +204,8 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public string Name {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return String.Empty; }
 			set {
-				throw new NotImplementedException();
 			}
 		}
 		

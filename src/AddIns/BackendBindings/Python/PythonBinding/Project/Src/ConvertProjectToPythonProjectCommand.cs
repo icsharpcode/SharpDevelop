@@ -37,6 +37,18 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Creates an PythonProject.
+		/// </summary>
+		protected override IProject CreateProject(string targetProjectDirectory, IProject sourceProject)
+		{
+			// Add IronPython reference.
+			IProject targetProject = base.CreateProject(targetProjectDirectory, sourceProject);
+			IProjectItemListProvider targetProjectItems = targetProject as IProjectItemListProvider;
+			targetProjectItems.AddProjectItem(CreateIronPythonReference(targetProject));
+			return targetProject;
+		}
+		
+		/// <summary>
 		/// Converts C# and VB.NET files to Python and saves the files.
 		/// </summary>
 		protected override void ConvertFile(FileProjectItem sourceItem, FileProjectItem targetItem)
@@ -76,6 +88,13 @@ namespace ICSharpCode.PythonBinding
 		protected virtual string GetParseableFileContent(string fileName)
 		{
 			return ParserService.GetParseableFileContent(fileName);
-		}		
+		}
+		
+		ReferenceProjectItem CreateIronPythonReference(IProject project)
+		{
+			ReferenceProjectItem reference = new ReferenceProjectItem(project, "IronPython");
+			reference.SetMetadata("HintPath", @"$(PythonBinPath)\IronPython.dll");
+			return reference;
+		}
 	}
 }
