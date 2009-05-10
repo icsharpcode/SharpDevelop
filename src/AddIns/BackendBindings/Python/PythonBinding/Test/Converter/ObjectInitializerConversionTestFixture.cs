@@ -34,7 +34,7 @@ namespace PythonBinding.Tests.Converter
 						"		set { lastName = value; }\r\n" +
 						"	}\r\n" +
 						"\r\n" +
-						"	public static Class1 Create()\r\n" +
+						"	public Class1 Clone()\r\n" +
 						"	{\r\n" +
 						"		return new Class1 { Name = \"First\", LastName = \"Last\" };\r\n" +
 						"	}\r\n" +
@@ -66,7 +66,7 @@ namespace PythonBinding.Tests.Converter
 									"\r\n" +
 									"\tLastName = property(fget=get_LastName, fset=set_LastName)\r\n" +
 									"\r\n" +
-									"\tdef Create(self):\r\n" +
+									"\tdef Clone(self):\r\n" +
 									"\t\treturn Class1(Name = \"First\", LastName = \"Last\")";
 			
 			Assert.AreEqual(expectedPython, python);

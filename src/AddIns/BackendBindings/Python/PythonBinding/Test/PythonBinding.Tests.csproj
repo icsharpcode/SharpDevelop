@@ -140,6 +140,7 @@
     <Compile Include="Converter\CSharpClassWithNamespaceConversionTestFixture.cs" />
     <Compile Include="Converter\EmptyCSharpClassConversionTestFixture.cs" />
     <Compile Include="Converter\StaticClassReferenceTestFixture.cs" />
+    <Compile Include="Converter\StaticMethodConversionTestFixture.cs" />
     <Compile Include="Converter\SwitchStatementConversionTestFixture.cs" />
     <Compile Include="Converter\TernaryOperatorConversionTestFixture.cs" />
     <Compile Include="Converter\ThrowExceptionConversionTestFixture.cs" />

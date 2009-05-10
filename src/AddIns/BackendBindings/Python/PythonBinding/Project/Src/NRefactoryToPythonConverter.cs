@@ -772,10 +772,11 @@ namespace ICSharpCode.PythonBinding
 		public object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			// Add method name.
-			AppendIndented("def " + methodDeclaration.Name);
+			string methodName = methodDeclaration.Name;
+			AppendIndented("def " + methodName);
 					
 			// Add the parameters.
-			AddParameters(methodDeclaration.Parameters);
+			AddParameters(methodDeclaration);
 			methodParameters = methodDeclaration.Parameters;
 			AppendNewLine();
 			
@@ -788,6 +789,11 @@ namespace ICSharpCode.PythonBinding
 			
 			DecreaseIndent();
 			AppendNewLine();
+			
+			if (IsStatic(methodDeclaration)) {
+				AppendIndentedLine(methodDeclaration.Name + " = staticmethod(" + methodDeclaration.Name + ")");
+				AppendNewLine();
+			}
 			
 			return null;
 		}
@@ -1531,7 +1537,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			if (constructorInfo.Constructor != null) {
 				AppendIndented("def __init__");
-				AddParameters(constructorInfo.Constructor.Parameters);
+				AddParameters(constructorInfo.Constructor);
 				methodParameters = constructorInfo.Constructor.Parameters;
 			} else {
 				AppendIndented("def __init__(self):");
@@ -1587,19 +1593,33 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Adds the method or constructor parameters.
 		/// </summary>
-		void AddParameters(List<ParameterDeclarationExpression> parameters)
+		void AddParameters(ParametrizedNode method)
 		{			
+			Append("(");
+			List<ParameterDeclarationExpression> parameters = method.Parameters;
 			if (parameters.Count > 0) {
-				Append("(self");
-				foreach (ParameterDeclarationExpression parameter in parameters) {
-					Append(", " + parameter.ParameterName);
+				if (!IsStatic(method)) {
+					Append("self, ");
 				}
-				Append("):");
+				for (int i = 0; i < parameters.Count; ++i) {
+					if (i > 0) {
+						Append(", ");
+					}
+					Append(parameters[i].ParameterName);
+				}
 			} else {
-				Append("(self):");
+				if (!IsStatic(method)) {
+					Append("self");
+				}				
 			}
+			Append("):");
 		}
-		
+				
+		bool IsStatic(ParametrizedNode method)
+		{
+			return (method.Modifier & Modifiers.Static) == Modifiers.Static;
+		}
+			
 		/// <summary>
 		/// Creates assignments of the form:
 		/// i = 1
