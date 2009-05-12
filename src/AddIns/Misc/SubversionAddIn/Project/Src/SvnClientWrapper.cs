@@ -407,24 +407,29 @@ namespace ICSharpCode.Svn
 						StrictNodeHistory = strictNodeHistory
 					},
 					delegate (object sender, SvnLogEventArgs e) {
-						Debug("SVN: Log: Got revision " + e.Revision);
-						LogMessage msg = new LogMessage() {
-							Revision = e.Revision,
-							Author = e.Author,
-							Date = e.Time,
-							Message = e.LogMessage
-						};
-						if (discoverChangePaths) {
-							foreach (var entry in e.ChangedPaths) {
-								msg.ChangedPaths.Add(new ChangedPath {
-								                     	Path = entry.Path,
-								                     	CopyFromPath = entry.CopyFromPath,
-								                     	CopyFromRevision = entry.CopyFromRevision,
-								                     	Action = entry.Action
-								                     });
+						try {
+							Debug("SVN: Log: Got revision " + e.Revision);
+							LogMessage msg = new LogMessage() {
+								Revision = e.Revision,
+								Author = e.Author,
+								Date = e.Time,
+								Message = e.LogMessage
+							};
+							if (discoverChangePaths) {
+								msg.ChangedPaths = new List<ChangedPath>();
+								foreach (var entry in e.ChangedPaths) {
+									msg.ChangedPaths.Add(new ChangedPath {
+									                     	Path = entry.Path,
+									                     	CopyFromPath = entry.CopyFromPath,
+									                     	CopyFromRevision = entry.CopyFromRevision,
+									                     	Action = entry.Action
+									                     });
+								}
 							}
+							logMessageReceiver(msg);
+						} catch (Exception ex) {
+							MessageService.ShowError(ex);
 						}
-						logMessageReceiver(msg);
 					}
 				);
 				Debug("SVN: Log finished");
