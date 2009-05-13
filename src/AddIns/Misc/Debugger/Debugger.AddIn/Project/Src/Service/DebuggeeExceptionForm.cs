@@ -37,6 +37,7 @@
 //
 #endregion
 
+using ICSharpCode.Core.WinForms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -54,7 +55,6 @@ namespace ICSharpCode.SharpDevelop.Services
 	internal sealed partial class DebuggeeExceptionForm
 	{
 		Process process;
-		bool active;
 		
 		DebuggeeExceptionForm(Process process)
 		{
@@ -66,39 +66,26 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.process.Resumed += ProcessHandler;
 			
 			this.FormClosed += FormClosedHandler;
-			this.Activated += delegate { this.active = true; this.Opacity = 1; };
-			this.Deactivate += delegate { this.active = false; this.Opacity = DebuggingOptions.Instance.DebuggeeExceptionWindowOpacity; };
 			
 			this.WindowState = DebuggingOptions.Instance.DebuggeeExceptionWindowState;
 			FormLocationHelper.Apply(this, "DebuggeeExceptionForm", true);
 			
-			this.Opacity = DebuggingOptions.Instance.DebuggeeExceptionWindowOpacity;
-			
-			this.MouseLeave += FormLeave;
-			this.MouseEnter += FormEnter;
-			this.lblExceptionText.MouseEnter += FormEnter;
-			this.pictureBox.MouseEnter += FormEnter;
-			this.exceptionView.MouseEnter += FormEnter;
-			
 			this.MinimizeBox = this.MaximizeBox = this.ShowIcon = false;
 			
+			this.exceptionView.Font = WinFormsResourceService.DefaultMonospacedFont;
 			this.exceptionView.DoubleClick += ExceptionViewDoubleClick;
+			this.exceptionView.WordWrap = false;
+			
+			this.btnBreak.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Break}");
+			this.btnStop.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Terminate}");
+			
+			this.btnBreak.Image = WinFormsResourceService.GetBitmap("Icons.16x16.Debug.Break");
+			this.btnStop.Image = WinFormsResourceService.GetBitmap("Icons.16x16.StopProcess");
 		}
 
 		void ProcessHandler(object sender, EventArgs e)
 		{
 			this.Close();
-		}
-		
-		void FormEnter(object sender, EventArgs e)
-		{
-			this.Opacity = 1;
-		}
-		
-		void FormLeave(object sender, EventArgs e)
-		{
-			if (!this.active)
-				this.Opacity = DebuggingOptions.Instance.DebuggeeExceptionWindowOpacity;
 		}
 		
 		void FormClosedHandler(object sender, EventArgs e)
@@ -143,9 +130,20 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		void debugeeExceptionFormResize(object sender, EventArgs e)
+		void FormResize(object sender, EventArgs e)
 		{
 			DebuggingOptions.Instance.DebuggeeExceptionWindowState = WindowState;
+		}
+		
+		void BtnBreakClick(object sender, EventArgs e)
+		{
+			Close();
+		}
+		
+		void BtnStopClick(object sender, EventArgs e)
+		{
+			this.process.Terminate();
+			Close();
 		}
 	}
 }
