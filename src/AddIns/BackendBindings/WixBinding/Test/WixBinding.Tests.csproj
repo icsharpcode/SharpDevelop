@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Diff\MissingDirectoryTestFixture.cs" />
+    <Compile Include="Document\DuplicateBinaryIdTestFixture.cs" />
     <Compile Include="Document\GenerateComponentIdFromDirectoryWithDotsTestFixture.cs" />
     <Compile Include="Document\NewWixFileElementTests.cs" />
     <Compile Include="Gui\AddDialogsToSetupDialogListTestFixture.cs" />
