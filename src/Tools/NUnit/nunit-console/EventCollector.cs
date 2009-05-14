@@ -228,7 +228,7 @@ namespace NUnit.ConsoleRunner
 		{
 			testResultWriter.WriteLine("Name: " + testResult.FullName);
 			
-			if (testResult.IsFailure) 
+			if (testResult.IsFailure || testResult.IsError) 
 			{
 				testResultWriter.WriteLine("Result: Failure");
 				testResultWriter.WriteLine("Message: " + EncodeText(testResult.Message));
