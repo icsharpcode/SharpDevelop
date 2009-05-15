@@ -194,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		protected void ShowInsight(ITextEditor editor, IList<IInsightItem> insightItems, ICollection<ResolveResult> parameters, char charTyped)
 		{
 			int paramCount = parameters.Count;
-			if (insightItems.Count == 0)
+			if (insightItems == null || insightItems.Count == 0)
 				return;
 			bool overloadIsSure;
 			int defaultIndex;

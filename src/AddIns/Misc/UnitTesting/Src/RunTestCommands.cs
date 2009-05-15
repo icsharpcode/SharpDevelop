@@ -133,6 +133,8 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		protected void TestsFinished()
 		{
+			WorkbenchSingleton.AssertMainThread();
+			
 			// Read the rest of the file just in case.
 			testResultsMonitor.Stop();
 			testResultsMonitor.Read();

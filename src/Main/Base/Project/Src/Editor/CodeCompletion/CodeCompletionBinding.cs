@@ -10,7 +10,6 @@ using System.Collections;
 using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -180,7 +179,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 					break;
 				case '[':
 					if (enableIndexerInsight && CodeCompletionOptions.InsightEnabled) {
-						editor.ShowInsightWindow(new IndexerInsightDataProvider());
+						editor.ShowInsightWindow(new IndexerInsightProvider().ProvideInsight(editor));
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;
