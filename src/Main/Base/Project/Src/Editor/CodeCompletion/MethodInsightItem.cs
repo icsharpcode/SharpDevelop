@@ -24,6 +24,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 			this.entity = entity;
 		}
 		
+		public IEntity Entity {
+			get { return entity; }
+		}
+		
 		string headerText;
 		bool descriptionCreated;
 		string description;

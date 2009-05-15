@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 	{
 		private OverloadResolution() {}
 		
-		public static IMethodOrProperty FindOverload(IList<IMethodOrProperty> list,
+		public static IMethodOrProperty FindOverload(IEnumerable<IMethodOrProperty> list,
 		                                             IReturnType[] arguments,
 		                                             bool allowAdditionalArguments,
 		                                             bool substituteInferredTypes,
@@ -80,6 +80,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			
 			public Candidate(IMethodOrProperty method)
 			{
+				if (method == null)
+					throw new ArgumentNullException("method");
 				this.Method = method;
 				this.OriginalMethod = method;
 			}

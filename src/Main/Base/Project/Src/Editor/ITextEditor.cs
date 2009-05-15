@@ -61,11 +61,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		string FileName { get; }
 		
-		[Obsolete]
-		void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider);
-		[Obsolete]
-		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);
-		
 		void ShowCompletionWindow(ICompletionItemList data);
 		
 		/// <summary>
@@ -80,6 +75,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the insight window that is currently open.
 		/// </summary>
 		IInsightWindow ActiveInsightWindow { get; }
+		
+		[Obsolete("Use the overload taking IEnumerable<IInsightItem>")]
+		void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider);
+		[Obsolete("Use the overload taking ICompletionItemList")]
+		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);
 	}
 	
 	public interface ITextEditorOptions

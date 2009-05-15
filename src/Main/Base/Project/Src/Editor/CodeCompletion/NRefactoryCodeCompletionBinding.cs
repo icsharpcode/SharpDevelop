@@ -13,7 +13,6 @@ using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.TextEditor;
@@ -133,15 +132,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 					int offset = LocationToOffset(editor, call.start);
 					if (offset >= 0 && offset < editor.Document.TextLength) {
 						char c = editor.Document.GetCharAt(offset);
-						if (c == '(') {
+						if (c == '(' || c == '[') {
+							var insightProvider = new MethodInsightProvider { LookupOffset = offset };
+							var insightItems = insightProvider.ProvideInsight(editor);
 							ShowInsight(editor,
-							            new MethodInsightDataProvider(offset, true),
-							            ResolveCallParameters(editor, call),
-							            ch);
-							return true;
-						} else if (c == '[') {
-							ShowInsight(editor,
-							            new IndexerInsightDataProvider(offset, true),
+							            insightItems,
 							            ResolveCallParameters(editor, call),
 							            ch);
 							return true;
@@ -196,17 +191,18 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 		}
 		
-		protected void ShowInsight(ITextEditor editor, MethodInsightDataProvider dp, ICollection<ResolveResult> parameters, char charTyped)
+		protected void ShowInsight(ITextEditor editor, IList<IInsightItem> insightItems, ICollection<ResolveResult> parameters, char charTyped)
 		{
 			int paramCount = parameters.Count;
-			dp.SetupDataProvider(editor.FileName, (TextArea)editor.GetService(typeof(TextArea)));
-			List<IMethodOrProperty> methods = dp.Methods;
-			if (methods.Count == 0) return;
+			if (insightItems.Count == 0)
+				return;
 			bool overloadIsSure;
-			if (methods.Count == 1) {
+			int defaultIndex;
+			if (insightItems.Count == 1) {
 				overloadIsSure = true;
-				dp.DefaultIndex = 0;
+				defaultIndex = 0;
 			} else {
+				var methods = insightItems.Select(item => GetMethodFromInsightItem(item)).ToList();
 				IReturnType[] argumentTypes = new IReturnType[paramCount + 1];
 				int i = 0;
 				foreach (ResolveResult rr in parameters) {
@@ -216,16 +212,29 @@ namespace ICSharpCode.SharpDevelop.Editor
 					i++;
 				}
 				IMethodOrProperty result = Dom.CSharp.OverloadResolution.FindOverload(
-					methods, argumentTypes, true, false, out overloadIsSure);
-				dp.DefaultIndex = methods.IndexOf(result);
+					methods.Where(m => m != null), argumentTypes, true, false, out overloadIsSure);
+				defaultIndex = methods.IndexOf(result);
 			}
-			editor.ShowInsightWindow(dp);
+			IInsightWindow insightWindow = editor.ShowInsightWindow(insightItems);
+			if (insightWindow != null) {
+				insightWindow.SelectedItem = insightItems[defaultIndex];
+			}
 			if (overloadIsSure) {
-				IMethodOrProperty method = methods[dp.DefaultIndex];
-				if (paramCount < method.Parameters.Count) {
+				IMethodOrProperty method = GetMethodFromInsightItem(insightItems[defaultIndex]);
+				if (method != null && paramCount < method.Parameters.Count) {
 					IParameter param = method.Parameters[paramCount];
 					ProvideContextCompletion(editor, param.ReturnType, charTyped);
 				}
+			}
+		}
+		
+		IMethodOrProperty GetMethodFromInsightItem(IInsightItem item)
+		{
+			MethodInsightItem mii = item as MethodInsightItem;
+			if (mii != null) {
+				return mii.Entity as IMethodOrProperty;
+			} else {
+				return null;
 			}
 		}
 		

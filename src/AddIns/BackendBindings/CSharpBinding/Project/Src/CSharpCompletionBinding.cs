@@ -35,7 +35,6 @@ namespace CSharpBinding
 		{
 			CSharpExpressionFinder ef = CreateExpressionFinder(editor.FileName);
 			int cursor = editor.Caret.Offset;
-			ExpressionContext context = null;
 			if (ch == '[') {
 				var line = editor.Document.GetLineForOffset(cursor);
 				/* TODO: AVALONEDIT Reimplement this

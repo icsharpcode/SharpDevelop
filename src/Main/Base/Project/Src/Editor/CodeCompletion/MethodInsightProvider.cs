@@ -20,6 +20,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// </summary>
 	public class MethodInsightProvider
 	{
+		/// <summary>
+		/// Gets/Sets the offset where lookup is done.
+		/// The default value is -1, which instructs the insight provider to use the caret position.
+		/// </summary>
 		public int LookupOffset { get; set; }
 		
 		public MethodInsightProvider()
