@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectService.SolutionClosed += MarkAllForRecompilation;
 			ProjectService.SolutionConfigurationChanged += MarkAllForRecompilation;
 			ProjectService.SolutionSaved += MarkAllForRecompilation;
-			ProjectService.EndBuild += ProjectService_EndBuild;
+			BuildEngine.GuiBuildFinished += BuildEngine_GuiBuildFinished;
 			
 			FileUtility.FileSaved += OnFileSaved;
 		}
@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			// first call to init causes static ctor calls
 		}
 		
-		static void ProjectService_EndBuild(object sender, BuildEventArgs e)
+		static void BuildEngine_GuiBuildFinished(object sender, BuildEventArgs e)
 		{
 			// at the end of an successful build, mark all built projects as unmodified
 			if (e.Results.Result == BuildResultCode.Success) {
@@ -67,6 +67,12 @@ namespace ICSharpCode.SharpDevelop.Project
 							unmodifiedProjects[p] = pass;
 						}
 					}
+				}
+			}
+			// at the end of a cleaning build, mark all projects as requiring a rebuild
+			if (e.Options.ProjectTarget == BuildTarget.Clean || e.Options.TargetForDependencies == BuildTarget.Clean) {
+				lock (unmodifiedProjects) {
+					unmodifiedProjects.Clear();
 				}
 			}
 		}

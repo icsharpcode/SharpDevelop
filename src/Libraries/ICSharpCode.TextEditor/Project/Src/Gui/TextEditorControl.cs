@@ -179,7 +179,7 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		public void SetHighlighting(string name)
+		public virtual void SetHighlighting(string name)
 		{
 			Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(name);
 		}

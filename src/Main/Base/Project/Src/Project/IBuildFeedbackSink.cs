@@ -11,6 +11,7 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
 	/// Interface for reporting build results in real-time.
+	/// Project-specific build engines use this interface to report results to the main build engine.
 	/// </summary>
 	public interface IBuildFeedbackSink
 	{

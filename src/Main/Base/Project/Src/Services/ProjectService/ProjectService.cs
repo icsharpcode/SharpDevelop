@@ -662,10 +662,41 @@ namespace ICSharpCode.SharpDevelop.Project
 	
 	public class BuildEventArgs : EventArgs
 	{
+		/// <summary>
+		/// The project/solution to be built.
+		/// </summary>
+		public readonly IBuildable Buildable;
+		
+		/// <summary>
+		/// The build options.
+		/// </summary>
+		public readonly BuildOptions Options;
+		
+		/// <summary>
+		/// Gets the build results.
+		/// This property is null for build started events.
+		/// </summary>
 		public readonly BuildResults Results;
+		
+		public BuildEventArgs(IBuildable buildable, BuildOptions options)
+			: this(buildable, options, null)
+		{
+		}
+		
+		public BuildEventArgs(IBuildable buildable, BuildOptions options, BuildResults results)
+		{
+			if (buildable == null)
+				throw new ArgumentNullException("buildable");
+			if (options == null)
+				throw new ArgumentNullException("options");
+			this.Buildable = buildable;
+			this.Options = options;
+			this.Results = results;
+		}
 		
 		public BuildEventArgs(BuildResults results)
 		{
+			// TODO: remove this constructor in 4.0
 			this.Results = results;
 		}
 	}

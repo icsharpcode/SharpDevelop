@@ -21,6 +21,42 @@ namespace ICSharpCode.SharpDevelop
 	public static class ExtensionMethods
 	{
 		/// <summary>
+		/// Raises the event.
+		/// Does nothing if eventHandler is null.
+		/// Because the event handler is passed as parameter, it is only fetched from the event field one time.
+		/// This makes
+		/// <code>MyEvent.RaiseEvent(x,y);</code>
+		/// thread-safe
+		/// whereas
+		/// <code>if (MyEvent != null) MyEvent(x,y);</code>
+		/// would not be safe.
+		/// </summary>
+		public static void RaiseEvent(this EventHandler eventHandler, object sender, EventArgs e)
+		{
+			if (eventHandler != null) {
+				eventHandler(sender, e);
+			}
+		}
+		
+		/// <summary>
+		/// Raises the event.
+		/// Does nothing if eventHandler is null.
+		/// Because the event handler is passed as parameter, it is only fetched from the event field one time.
+		/// This makes
+		/// <code>MyEvent.RaiseEvent(x,y);</code>
+		/// thread-safe
+		/// whereas
+		/// <code>if (MyEvent != null) MyEvent(x,y);</code>
+		/// would not be safe.
+		/// </summary>
+		public static void RaiseEvent<T>(this EventHandler<T> eventHandler, object sender, T e) where T : EventArgs
+		{
+			if (eventHandler != null) {
+				eventHandler(sender, e);
+			}
+		}
+		
+		/// <summary>
 		/// Runs an action for all elements in the input.
 		/// </summary>
 		public static void ForEach<T>(this IEnumerable<T> input, Action<T> action)

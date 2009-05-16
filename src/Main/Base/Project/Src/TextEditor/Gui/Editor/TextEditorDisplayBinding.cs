@@ -265,7 +265,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			Properties properties = new Properties();
 			properties.Set("CaretOffset", textEditorControl.ActiveTextAreaControl.Caret.Offset);
 			properties.Set("VisibleLine", textEditorControl.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine);
-			properties.Set("HighlightingLanguage", textEditorControl.Document.HighlightingStrategy.Name);
+			if (textEditorControl.HighlightingExplicitlySet) {
+				properties.Set("HighlightingLanguage", textEditorControl.Document.HighlightingStrategy.Name);
+			}
 			return properties;
 		}
 		
@@ -274,10 +276,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			textEditorControl.ActiveTextAreaControl.Caret.Position =  textEditorControl.Document.OffsetToPosition(Math.Min(textEditorControl.Document.TextLength, Math.Max(0, properties.Get("CaretOffset", textEditorControl.ActiveTextAreaControl.Caret.Offset))));
 //			textAreaControl.SetDesiredColumn();
 			
-			if (textEditorControl.Document.HighlightingStrategy.Name != properties.Get("HighlightingLanguage", textEditorControl.Document.HighlightingStrategy.Name)) {
-				IHighlightingStrategy highlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(properties.Get("HighlightingLanguage", textEditorControl.Document.HighlightingStrategy.Name));
-				if (highlightingStrategy != null) {
-					textEditorControl.Document.HighlightingStrategy = highlightingStrategy;
+			string highlightingName = properties.Get("HighlightingLanguage", string.Empty);
+			if (!string.IsNullOrEmpty(highlightingName)) {
+				if (highlightingName == textEditorControl.Document.HighlightingStrategy.Name) {
+					textEditorControl.HighlightingExplicitlySet = true;
+				} else {
+					IHighlightingStrategy highlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(highlightingName);
+					if (highlightingStrategy != null) {
+						textEditorControl.HighlightingExplicitlySet = true;
+						textEditorControl.Document.HighlightingStrategy = highlightingStrategy;
+					}
 				}
 			}
 			textEditorControl.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = properties.Get("VisibleLine", 0);
