@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ICSharpCode.PythonBinding
@@ -97,14 +98,17 @@ namespace ICSharpCode.PythonBinding
 		public void AppendCreateNonVisualComponents(PythonCodeBuilder codeBuilder)
 		{
 			foreach (PythonDesignerComponent component in GetNonVisualChildComponents()) {
-				component.AppendCreateInstance(codeBuilder, "self._components");
+				if (component.HasIContainerConstructor()) {
+					component.AppendCreateInstance(codeBuilder, "self._components");
+				} else {
+					component.AppendCreateInstance(codeBuilder);
+				}
 			}
 		}
 		
 		/// <summary>
 		/// Appends code to set all the non-visual component properties.
 		/// </summary>
-		/// <param name="codeBuilder"></param>
 		public void AppendNonVisualComponents(PythonCodeBuilder codeBuilder)
 		{
 			foreach (PythonDesignerComponent component in GetNonVisualChildComponents()) {

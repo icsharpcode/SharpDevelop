@@ -572,6 +572,23 @@ namespace ICSharpCode.PythonBinding
 			return "self._" + component.Site.Name;			
 		}
 		
+		/// <summary>
+		/// Determines whether the component has a constructor that takes a single IContainer parameter.
+		/// </summary>
+		public bool HasIContainerConstructor() 
+		{
+			foreach (ConstructorInfo constructor in GetComponentType().GetConstructors()) {
+				ParameterInfo[] parameters = constructor.GetParameters();
+				if (parameters.Length == 1) {
+					ParameterInfo parameter = parameters[0];
+					if (parameter.ParameterType.IsAssignableFrom(typeof(IContainer))) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
 		protected IComponent Component {
 			get { return component; }
 		}

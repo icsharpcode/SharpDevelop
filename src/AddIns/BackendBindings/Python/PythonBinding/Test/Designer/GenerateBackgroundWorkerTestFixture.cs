@@ -17,11 +17,12 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	[TestFixture]
-	public class GenerateTimerTestFixture
+	public class GenerateBackgroundWorkerTestFixture
 	{
 		string generatedPythonCode;
 		bool hasNonVisualChildComponents;
-		bool hasIContainerConstructor;		
+		bool hasIContainerConstructor;
+		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
@@ -31,21 +32,21 @@ namespace PythonBinding.Tests.Designer
 				form.ClientSize = new Size(284, 264);
 				
 				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
-				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
-				namePropertyDescriptor.SetValue(form, "MainForm");
+				PropertyDescriptor propertyDescriptor = descriptors.Find("Name", false);
+				propertyDescriptor.SetValue(form, "MainForm");
 				
-				Timer timer = (Timer)host.CreateComponent(typeof(Timer), "timer1");
-				descriptors = TypeDescriptor.GetProperties(timer);
-				namePropertyDescriptor = descriptors.Find("Interval", false);
-				namePropertyDescriptor.SetValue(timer, 1000);
+				BackgroundWorker worker = (BackgroundWorker)host.CreateComponent(typeof(BackgroundWorker), "backgroundWorker1");
+				descriptors = TypeDescriptor.GetProperties(worker);
+				propertyDescriptor = descriptors.Find("WorkerReportsProgress", false);
+				propertyDescriptor.SetValue(worker, true);
 				
 				string indentString = "    ";
 				PythonDesignerRootComponent designerRootComponent = new PythonDesignerRootComponent(form);
 				hasNonVisualChildComponents = designerRootComponent.HasNonVisualChildComponents();
 				
-				PythonDesignerComponent component = new PythonDesignerComponent(timer);
+				PythonDesignerComponent component = new PythonDesignerComponent(worker);
 				hasIContainerConstructor = component.HasIContainerConstructor();
-			
+				
 				PythonControl pythonControl = new PythonControl(indentString);
 				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form);
 			}
@@ -62,12 +63,12 @@ namespace PythonBinding.Tests.Designer
 		{
 			string expectedCode = "def InitializeComponent(self):\r\n" +
 								"    self._components = System.ComponentModel.Container()\r\n" +
-								"    self._timer1 = System.Windows.Forms.Timer(self._components)\r\n" +
+								"    self._backgroundWorker1 = System.ComponentModel.BackgroundWorker()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
-								"    # timer1\r\n" +
+								"    # backgroundWorker1\r\n" +
 								"    # \r\n" +
-								"    self._timer1.Interval = 1000\r\n" +
+								"    self._backgroundWorker1.WorkerReportsProgress = True\r\n" +
 								"    # \r\n" +
 								"    # MainForm\r\n" +
 								"    # \r\n" +
@@ -76,13 +77,13 @@ namespace PythonBinding.Tests.Designer
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			
-			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
+			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode, generatedPythonCode);
 		}
 		
 		[Test]
 		public void HasIContainerConstructor()
 		{
-			Assert.IsTrue(hasIContainerConstructor);
-		}		
+			Assert.IsFalse(hasIContainerConstructor);
+		}
 	}
 }
