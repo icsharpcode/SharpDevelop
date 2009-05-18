@@ -19,7 +19,7 @@ namespace ICSharpCode.PythonBinding
 	public class PythonDesignerRootComponent : PythonDesignerComponent
 	{
 		public PythonDesignerRootComponent(IComponent component)
-			: base(component)
+			: base(null, component)
 		{
 		}
 		
@@ -76,7 +76,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			List<PythonDesignerComponent> components = new List<PythonDesignerComponent>();
 			foreach (IComponent containerComponent in Component.Site.Container.Components) {
-				PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(containerComponent);
+				PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(this, containerComponent);
 				if (designerComponent.IsNonVisual) {
 					components.Add(designerComponent);
 				}
@@ -114,6 +114,33 @@ namespace ICSharpCode.PythonBinding
 			foreach (PythonDesignerComponent component in GetNonVisualChildComponents()) {
 				component.AppendComponent(codeBuilder);
 			}
+		}
+		
+		/// <summary>
+		/// Adds BeginInit method call for any non-visual components that implement the 
+		/// System.ComponentModel.ISupportInitialize interface.
+		/// </summary>
+		public void AppendNonVisualComponentsBeginInit(PythonCodeBuilder codeBuilder)
+		{
+			AppendNonVisualComponentsMethodCalls(codeBuilder, new string[] {"BeginInit()"});
+		}
+		
+		/// <summary>
+		/// Adds EndInit method call for any non-visual components that implement the 
+		/// System.ComponentModel.ISupportInitialize interface.
+		/// </summary>
+		public void AppendNonVisualComponentsEndInit(PythonCodeBuilder codeBuilder)
+		{
+			AppendNonVisualComponentsMethodCalls(codeBuilder, new string[] {"EndInit()"});
+		}		
+		
+		public void AppendNonVisualComponentsMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
+		{
+			foreach (PythonDesignerComponent component in GetNonVisualChildComponents()) {
+				if (typeof(ISupportInitialize).IsAssignableFrom(component.GetComponentType())) {
+					component.AppendMethodCalls(codeBuilder, methods);
+				}
+			}			
 		}
 	}
 }

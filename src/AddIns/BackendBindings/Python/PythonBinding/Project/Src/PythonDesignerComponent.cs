@@ -26,7 +26,8 @@ namespace ICSharpCode.PythonBinding
 		static readonly DesignerSerializationVisibility[] notHiddenDesignerVisibility = new DesignerSerializationVisibility[] { DesignerSerializationVisibility.Content, DesignerSerializationVisibility.Visible };
 		static readonly DesignerSerializationVisibility[] contentDesignerVisibility = new DesignerSerializationVisibility[] { DesignerSerializationVisibility.Content };
 		IEventBindingService eventBindingService;
-
+		PythonDesignerComponent parent;
+		
 		protected static readonly string[] suspendLayoutMethods = new string[] {"SuspendLayout()"};
 		protected static readonly string[] resumeLayoutMethods = new string[] {"ResumeLayout(False)", "PerformLayout()"};
 		
@@ -66,14 +67,20 @@ namespace ICSharpCode.PythonBinding
 				return false;
 			}
 		}
-		
+
 		public PythonDesignerComponent(IComponent component)
-			: this(component, new PythonEventBindingService())
+			: this(null, component)
 		{
 		}
 		
-		PythonDesignerComponent(IComponent component, IEventBindingService eventBindingService)
+		public PythonDesignerComponent(PythonDesignerComponent parent, IComponent component)
+			: this(parent, component, new PythonEventBindingService())
 		{
+		}
+		
+		PythonDesignerComponent(PythonDesignerComponent parent, IComponent component, IEventBindingService eventBindingService)
+		{
+			this.parent = parent;
 			this.component = component;
 			this.eventBindingService = eventBindingService;
 		}
@@ -273,7 +280,7 @@ namespace ICSharpCode.PythonBinding
 					foreach (object childObject in collection) {
 						IComponent childComponent = childObject as IComponent;
 						if (childComponent != null) {
-							PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(childComponent);
+							PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(this, childComponent);
 							if (designerComponent.IsSited) {
 								components.Add(designerComponent);
 							}
@@ -314,19 +321,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			AppendChildComponentsMethodCalls(codeBuilder, resumeLayoutMethods);
 		}
-	
-		void AppendChildComponentsMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
-		{
-			foreach (PythonDesignerComponent designerComponent in GetChildComponents()) {
-				if (typeof(Control).IsAssignableFrom(designerComponent.GetComponentType())) {
-					if (designerComponent.HasSitedChildComponents()) {
-						designerComponent.AppendMethodCalls(codeBuilder, methods);
-					}
-				}
-				designerComponent.AppendChildComponentsMethodCalls(codeBuilder, methods);
-			}
-		}
-				
+							
 		/// <summary>
 		/// Appends the code to create the specified object.
 		/// </summary>
@@ -393,7 +388,7 @@ namespace ICSharpCode.PythonBinding
 					foreach (object childObject in collection) {
 						IComponent childComponent = childObject as IComponent;
 						if (childComponent != null) {
-							PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(childComponent);
+							PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(this, childComponent);
 							if (designerComponent.IsSited) {
 								designerComponent.AppendComponentProperties(codeBuilder, true, true, true);
 							}
@@ -427,7 +422,7 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Appends the method calls if this component.
+		/// Appends the method calls for this component.
 		/// </summary>
 		public void AppendMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
 		{
@@ -481,7 +476,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Appends a property.
 		/// </summary>
-		public static void AppendProperty(PythonCodeBuilder codeBuilder, string propertyOwnerName, object obj, PropertyDescriptor propertyDescriptor)
+		public void AppendProperty(PythonCodeBuilder codeBuilder, string propertyOwnerName, object obj, PropertyDescriptor propertyDescriptor)
 		{			
 			object propertyValue = propertyDescriptor.GetValue(obj);
 			if (propertyValue == null) {
@@ -492,7 +487,7 @@ namespace ICSharpCode.PythonBinding
 				string propertyName = propertyOwnerName + "." + propertyDescriptor.Name;
 				Control control = propertyValue as Control;
 				if (control != null) {
-					codeBuilder.AppendIndentedLine(propertyName + " = self._" + control.Name);
+					codeBuilder.AppendIndentedLine(propertyName + " = " + GetControlReference(control));
 				} else {
 					codeBuilder.AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
 				}
@@ -505,7 +500,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Appends the properties of the object to the code builder.
 		/// </summary>
-		public static void AppendProperties(PythonCodeBuilder codeBuilder, string propertyOwnerName, object obj)
+		public void AppendProperties(PythonCodeBuilder codeBuilder, string propertyOwnerName, object obj)
 		{
 			foreach (PropertyDescriptor property in GetSerializableProperties(obj)) {
 				AppendProperty(codeBuilder, propertyOwnerName, obj, property);
@@ -666,6 +661,34 @@ namespace ICSharpCode.PythonBinding
 				}
 				codeBuilder.Append("])");
 			}
-		}		
+		}
+	
+		void AppendChildComponentsMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
+		{
+			foreach (PythonDesignerComponent designerComponent in GetChildComponents()) {
+				if (typeof(Control).IsAssignableFrom(designerComponent.GetComponentType())) {
+					if (designerComponent.HasSitedChildComponents()) {
+						designerComponent.AppendMethodCalls(codeBuilder, methods);
+					}
+				}
+				designerComponent.AppendChildComponentsMethodCalls(codeBuilder, methods);
+			}
+		}
+		
+		bool IsRootComponent(IComponent component)
+		{
+			if (parent == null) {
+				return this.component == component;
+			}
+			return parent.IsRootComponent(component);
+		}
+		
+		string GetControlReference(Control control)
+		{
+			if (IsRootComponent(control)) {
+				return "self";
+			}
+			return "self._" + control.Name;
+		}
 	}
 }

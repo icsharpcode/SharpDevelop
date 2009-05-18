@@ -76,6 +76,7 @@ namespace ICSharpCode.PythonBinding
 			if (rootDesignerComponent.HasNonVisualChildComponents()) {
 				rootDesignerComponent.AppendCreateComponentsContainer(codeBuilder);
 				rootDesignerComponent.AppendCreateNonVisualComponents(codeBuilder);
+				rootDesignerComponent.AppendNonVisualComponentsBeginInit(codeBuilder);
 			}
 			rootDesignerComponent.AppendCreateChildComponents(codeBuilder);
 			rootDesignerComponent.AppendChildComponentsSuspendLayout(codeBuilder);
@@ -83,6 +84,9 @@ namespace ICSharpCode.PythonBinding
 			rootDesignerComponent.AppendNonVisualComponents(codeBuilder);
 			rootDesignerComponent.AppendComponent(codeBuilder);
 			rootDesignerComponent.AppendChildComponentsResumeLayout(codeBuilder);
+			if (rootDesignerComponent.HasNonVisualChildComponents()) {
+				rootDesignerComponent.AppendNonVisualComponentsEndInit(codeBuilder);
+			}
 			rootDesignerComponent.AppendResumeLayout(codeBuilder);
 		}
 	}

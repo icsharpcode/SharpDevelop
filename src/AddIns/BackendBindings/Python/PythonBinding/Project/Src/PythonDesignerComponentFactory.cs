@@ -22,10 +22,18 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public static PythonDesignerComponent CreateDesignerComponent(IComponent component)
 		{
+			return CreateDesignerComponent(null, component);
+		}
+		
+		/// <summary>
+		/// Creates a PythonDesignerComponent class for the specified component.
+		/// </summary>
+		public static PythonDesignerComponent CreateDesignerComponent(PythonDesignerComponent parent, IComponent component)
+		{
 			if (component is ListView) {
-				return new PythonListViewComponent(component);
+				return new PythonListViewComponent(parent,component);
 			}
-			return new PythonDesignerComponent(component);
+			return new PythonDesignerComponent(parent, component);
 		}
 		
 		public static PythonDesignerRootComponent CreateDesignerRootComponent(IComponent component)
