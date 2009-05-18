@@ -6,6 +6,7 @@
 // </file>
 using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -14,9 +15,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class PositionedEdge : NamedEdge<PositionedNode>
 	{
-		private IList<Point> splinePoints = null;
+		private IList<Point> splinePoints = new List<Point>();
 		
 		// ReadOnlyCollection<Point> ?
+		/// <summary>
+		/// Control points of edge's spline, in standart format: 1 start point + 3 points per segment
+		/// </summary>
 		public IList<Point> SplinePoints 
 		{
 			get 

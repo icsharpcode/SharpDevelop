@@ -9,11 +9,19 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Description of Point.
+	/// Generates sequential ids, usefull for node and edge ids.
 	/// </summary>
-	public struct Point
+	public class IdGenerator
 	{
-		public double X { get; set; }
-		public double Y { get; set; }
+		int currentId = 0;
+		
+		public IdGenerator()
+		{
+		}
+		
+		public int GetNextId()
+		{
+			return currentId++;
+		}
 	}
 }

@@ -17,8 +17,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class TreeLayouter
 	{
-		private static readonly double horizNodeMargin = 20;
-		private static readonly double vertNodeMargin = 20;
+		private static readonly double horizNodeMargin = 30;
+		private static readonly double vertNodeMargin = 30;
 		
 		private LayoutDirection layoutDirection = LayoutDirection.TopBottom;
 		

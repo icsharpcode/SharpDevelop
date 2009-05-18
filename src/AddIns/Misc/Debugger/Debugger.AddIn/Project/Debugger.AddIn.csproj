@@ -170,13 +170,15 @@
     <Compile Include="Src\Visualizers\Graph\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\GraphDrawer.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\Point.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedGraph.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\DotGraph.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\IdGenerator.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\LayoutDirection.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoEdgeRouter.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoRunner.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoPositionTransform.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoProcess.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeLayouter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNode.cs" />
@@ -207,6 +209,21 @@
     <Compile Include="Src\Visualizers\PresentationBindings\EnumViewModel.cs" />
     <Compile Include="Src\Visualizers\PresentationBindings\ViewModelBase.cs" />
     <None Include="COPYING" />
+  </ItemGroup>
+  <ItemGroup>
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\cdt.dll" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\config6" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\graph.dll" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\gvc.dll" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\gvplugin_core.dll" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\gvplugin_dot_layout.dll" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\gvplugin_gd.dll" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\gvplugin_neato_layout.dll" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\gvplugin_pango.dll" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\libexpat.dll" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\ltdl.dll" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\neato.exe" />
+    <GraphvizBinaries Include="Src\Visualizers\Graph\Graphviz\Pathplan.dll" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Client.config">
@@ -271,6 +288,7 @@
     <Folder Include="Src\Visualizers\Graph\Drawing" />
     <Folder Include="Src\Visualizers\Graph\Layout" />
     <Folder Include="Src\Visualizers\Graph\Layout\Tree" />
+    <Folder Include="Src\Visualizers\Graph\Graphviz" />
     <Folder Include="Src\Visualizers\Graph\ObjectGraph" />
     <Folder Include="Src\Visualizers\Graph\Utils" />
     <Folder Include="Src\Visualizers\PresentationBindings" />
@@ -307,4 +325,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="PostBuildEvent.proj" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(ProjectDir)Src\Visualizers\Graph\Graphviz\*.*" "$(TargetDir)" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

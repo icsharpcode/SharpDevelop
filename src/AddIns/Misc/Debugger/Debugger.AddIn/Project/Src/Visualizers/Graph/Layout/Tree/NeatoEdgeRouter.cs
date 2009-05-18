@@ -5,7 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Text;
+using System.Linq;
+using System.Windows;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -18,54 +23,23 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 		}
 		
+		/// <summary>
+		/// Given <see cref="PositionedGraph" /> with node positions, calculates edge positions.
+		/// </summary>
+		/// <param name="graphWithNodesPositioned"><see cref="PositionedGraph" />, the nodes must have positions filled.</param>
+		/// <returns><see cref="PositionedGraph" /> with preserved node positions and calculated edge positions.</returns>
 		public PositionedGraph CalculateEdges(PositionedGraph graphWithNodesPositioned)
 		{
-			System.Diagnostics.Process p = new System.Diagnostics.Process();
-			p.StartInfo.FileName = @"D:\__prog__\Graphviz\Graphviz2.22\bin\neato.exe";
-			//p.StartInfo.Arguments = arguments.ToString();
-			p.StartInfo.RedirectStandardInput = true;
-			p.StartInfo.RedirectStandardError = true;
-			p.StartInfo.RedirectStandardOutput = true;
-			p.StartInfo.UseShellExecute = false;
-			//p.EnableRaisingEvents = true;
-			p.Exited += delegate {
-					p.Dispose();
-			};
-     		/*p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
-					SvnClient.Instance.SvnCategory.AppendText(e.Data);
-			};
-			p.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) {
-					SvnClient.Instance.SvnCategory.AppendText(e.Data);
-			};*/
-     		
-     		// convert PosGraph to .dot string
-     		// assign unique ids to edges, build map id->edge
+			DotGraph dotGraph = new DotGraph(graphWithNodesPositioned);
 			
-     		p.Start();
-			p.StandardInput.Write("digraph G {}");
-			p.StandardInput.Flush();
-			p.StandardInput.Close();
+			NeatoProcess neatoProcess = NeatoProcess.Start();
+			// convert PosGraph to .dot string, pass to neato.exe
+			string dotGraphStringWithPositions = neatoProcess.CalculatePositions(dotGraph.DotGraphString);
 			
-			StringBuilder output = new StringBuilder();
-			while(true)
-			{
-				string line = p.StandardOutput.ReadLine();
-				output.Append(line);
-				if (line == "}")
-				{
-					break;
-				}
-			}
+			// parse edge positions from neato's plain output format
+			PositionedGraph result = dotGraph.ParseEdgePositions(dotGraphStringWithPositions);
 			
-			string layoutedGraph = output.ToString();
-			
-			// parse edge positions
-			// lookup edge in id->edge map, set position
-			 
-			PositionedGraph posGraph = graphWithNodesPositioned;
-			//posGraph.Edges
-			
-			return posGraph;
+			return result;
 		}
 	}
 }

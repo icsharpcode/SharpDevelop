@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using Debugger.AddIn.Visualizers.Graph.Drawing;
+using System.Windows;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -22,7 +23,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public double Left { get; set; }
 		public double Top { get; set; }
-		public double Width 
+		public double Width
 		{
 			get { return NodeVisualControl.DesiredSize.Width; }
 		}
@@ -31,12 +32,24 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			get { return NodeVisualControl.DesiredSize.Height; }
 		}
 		
+		public Point LeftTop
+		{
+			get { return new Point(Left, Top); }
+		}
+		
+		public Point Center
+		{
+			get { return new Point(Left + Width / 2, Top + Height / 2); }
+		}
+		
+		public Rect Rect { get {  return new Rect(Left, Top, Width, Height); } }
+		
 		private NodeControl nodeVisualControl;
 		/// <summary>
 		/// Visual control to be shown for this node.
 		/// </summary>
-		public NodeControl NodeVisualControl 
-		{ 
+		public NodeControl NodeVisualControl
+		{
 			get
 			{
 				return this.nodeVisualControl;
