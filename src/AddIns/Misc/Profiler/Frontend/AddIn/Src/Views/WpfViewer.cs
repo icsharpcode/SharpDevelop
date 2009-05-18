@@ -30,6 +30,13 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		OpenedFile file;
 		
 		/// <summary>
+		/// Returns the ProfilerView of this instance.
+		/// </summary>
+		public ProfilerView DataView {
+			get { return dataView; }
+		}
+		
+		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the view
 		/// </summary>
 		public override Control Control {

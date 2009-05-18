@@ -11,6 +11,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Profiler.AddIn.OptionsPanels;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Profiling;
 
 namespace ICSharpCode.Profiler.AddIn
 {
@@ -98,7 +99,7 @@ namespace ICSharpCode.Profiler.AddIn
 		
 		public void Stop()
 		{
-			throw new NotImplementedException();
+			profiler.Stop();
 		}
 		
 		#region MessageView Management

@@ -43,7 +43,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			Directory.CreateDirectory(Path.GetDirectoryName(path));
 			
 			IProfilingDataWriter writer = new ProfilingDataSQLiteWriter(path);
-			ProfilerRunner runner = CreateRunner(writer);
+			ProfilerRunner runner = WindowsProfiler.CreateRunner(writer);
 			
 			if (runner != null) {
 				runner.RunFinished += delegate {
@@ -60,33 +60,6 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				
 				runner.Run();
 			}
-		}
-		
-		static ProfilerRunner CreateRunner(IProfilingDataWriter writer)
-		{
-			AbstractProject currentProj = ProjectService.CurrentProject as AbstractProject;
-			
-			if (currentProj == null)
-				return null;
-			
-			if (!currentProj.IsStartable) {
-				if (MessageService.AskQuestion("This project cannot be started. Do you want to profile the solution's StartUp project instead?")) {
-					currentProj = ProjectService.OpenSolution.StartupProject as AbstractProject;
-					if (currentProj == null) {
-						MessageService.ShowError("No startable project was found. Aborting ...");
-						return null;
-					}
-				} else
-					return null;
-			}
-			if (!File.Exists(currentProj.OutputAssemblyFullPath)) {
-				MessageService.ShowError("This project cannot be started because the executable file was not found, " +
-				                         "please ensure that the project and all its depencies are built correctly!");
-				return null;
-			}
-			
-			ProfilerRunner runner = new ProfilerRunner(currentProj.CreateStartInfo(), true, writer);
-			return runner;
 		}
 	}
 }

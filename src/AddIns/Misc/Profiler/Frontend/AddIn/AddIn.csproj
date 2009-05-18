@@ -115,6 +115,7 @@
     </Compile>
     <Compile Include="Src\Views\SharpDevelopElementHost.cs" />
     <Compile Include="Src\Views\WpfViewer.cs" />
+    <Compile Include="Src\WindowsProfiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Dialogs\ProfileExecutableForm.xaml">

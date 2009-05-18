@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Profiling;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Commands;
@@ -516,6 +516,52 @@ namespace ICSharpCode.UnitTesting
 		}
 	}
 	
+	public class RunTestWithProfilerCommand : AbstractRunTestCommand
+	{
+		protected override void RunTests(UnitTestApplicationStartHelper helper)
+		{
+			TestRunnerCategory.AppendLine(helper.GetCommandLine());
+			ProcessStartInfo startInfo = new ProcessStartInfo(helper.UnitTestApplication);
+			
+			string path = ProfilerService.GetSessionFileName(helper.Project);
+			
+			startInfo.Arguments = helper.GetArguments();
+			startInfo.WorkingDirectory = UnitTestApplicationStartHelper.UnitTestApplicationDirectory;
+			ProfilerService.CurrentProfiler.Start(startInfo, path, delegate { AfterFinish(helper, path); });
+		}
+		
+		void AfterFinish(UnitTestApplicationStartHelper helper, string path)
+		{
+			Action updater = delegate {
+				FileService.OpenFile(path);
+				FileProjectItem file = new FileProjectItem(helper.Project, ItemType.Content, "ProfilingSessions\\" + Path.GetFileName(path));
+				ProjectService.AddProjectItem(helper.Project, file);
+				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+				helper.Project.Save();
+			};
+			
+			WorkbenchSingleton.SafeThreadCall(updater);
+			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
+		}
+		
+		public override void Run()
+		{
+			if (ProfilerService.IsProfilerLoaded && ProfilerService.CurrentProfiler.IsRunning) {
+				MessageService.ShowError("Currently there is a profiling session in progress. " +
+				                         "Please finish the current session before starting a new one.");
+			} else {
+				base.Run();
+			}
+		}
+		
+		protected override void OnStop()
+		{
+			if (ProfilerService.CurrentProfiler.IsRunning) {
+				ProfilerService.CurrentProfiler.Stop();
+			}
+		}
+	}
+	
 	public class RunAllTestsInPadCommand : RunTestInPadCommand
 	{
 		public override void Run()
@@ -529,7 +575,7 @@ namespace ICSharpCode.UnitTesting
 	public class RunProjectTestsInPadCommand : RunTestInPadCommand, ITestTreeView
 	{
 		public override void Run()
-		{ 
+		{
 			Owner = this;
 			base.Run();
 		}
