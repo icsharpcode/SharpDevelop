@@ -32,12 +32,14 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public static NeatoProcess Start()
 		{
 			System.Diagnostics.Process neatoProcess = new System.Diagnostics.Process();
-			string neatoPath = getNeatoExePath();
-			neatoProcess.StartInfo.FileName =  neatoPath;
+			neatoProcess.StartInfo.FileName =  getNeatoExePath();
 			neatoProcess.StartInfo.RedirectStandardInput = true;
 			neatoProcess.StartInfo.RedirectStandardError = true;
 			neatoProcess.StartInfo.RedirectStandardOutput = true;
 			neatoProcess.StartInfo.UseShellExecute = false;
+			neatoProcess.StartInfo.CreateNoWindow = true;
+			// tell neato to use splines instead of straigt lines
+			// output type = Graphviz's plain format
 			neatoProcess.StartInfo.Arguments = " -Gsplines=true -Tplain";
 			//p.EnableRaisingEvents = true;
 			neatoProcess.Exited += delegate {
