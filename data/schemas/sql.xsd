@@ -72,7 +72,7 @@
             <xs:attribute name="Database" use="required" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>
-                        The name of the database.  If the name does not follow the SQL server "Rules for Regular Identifiers" (see <html:a href="http://msdn.microsoft.com/library/en-us/acdata/ac_8_con_03_6e9e.asp">MSDN</html:a>) it must be surrounded by quotes or square brackets.  Since this value can be formatted text, this means that if you choose to use square brackets you must use the MSI method for escaping square brackets, for example: [\[]blah[\]].
+                        The name of the database.  If the name does not follow the SQL server "Rules for Regular Identifiers" (see <html:a href="http://msdn.microsoft.com/en-us/library/ms175874.aspx">MSDN</html:a>) it must be surrounded by quotes or square brackets.  Since this value can be formatted text, this means that if you choose to use square brackets you must use the MSI method for escaping square brackets, for example: [\[]blah[\]].
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -232,32 +232,32 @@
             </xs:attribute>
             <xs:attribute name="ExecuteOnInstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies to execute the script when the associated component is installed.</xs:documentation>
+                    <xs:documentation>Specifies to execute the script when the associated component is installed.  This attribute is mutually exclusive with the RollbackOnInstall, RollbackOnReinstall and RollbackOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ExecuteOnReinstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies whether to execute the script when the associated component is reinstalled.  Setting ExecuteOnInstall to yes does <html:b>not</html:b> imply ExecuteOnReinstall is set to yes.  ExecuteOnReinstall must be set in addition to ExecuteOnInstall for it to be executed during both install and reinstall.</xs:documentation>
+                    <xs:documentation>Specifies whether to execute the script when the associated component is reinstalled.  Setting ExecuteOnInstall to yes does <html:b>not</html:b> imply ExecuteOnReinstall is set to yes.  ExecuteOnReinstall must be set in addition to ExecuteOnInstall for it to be executed during both install and reinstall.  This attribute is mutually exclusive with the RollbackOnInstall, RollbackOnReinstall and RollbackOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ExecuteOnUninstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies to execute the script when the associated component is uninstalled.</xs:documentation>
+                    <xs:documentation>Specifies to execute the script when the associated component is uninstalled.  This attribute is mutually exclusive with the RollbackOnInstall, RollbackOnReinstall and RollbackOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="RollbackOnInstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies whether to execute the script on rollback if an attempt is made to install the associated component.</xs:documentation>
+                    <xs:documentation>Specifies whether to execute the script on rollback if an attempt is made to install the associated component.  This attribute is mutually exclusive with the ExecuteOnInstall, ExecuteOnReinstall and ExecuteOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="RollbackOnReinstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies whether to execute the script on rollback if an attempt is made to reinstall the associated component.</xs:documentation>
+                    <xs:documentation>Specifies whether to execute the script on rollback if an attempt is made to reinstall the associated component.  This attribute is mutually exclusive with the ExecuteOnInstall, ExecuteOnReinstall and ExecuteOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="RollbackOnUninstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies whether to execute the script on rollback if an attempt is made to uninstall the associated component.</xs:documentation>
+                    <xs:documentation>Specifies whether to execute the script on rollback if an attempt is made to uninstall the associated component.  This attribute is mutually exclusive with the ExecuteOnInstall, ExecuteOnReinstall and ExecuteOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ContinueOnError" type="YesNoType">
@@ -291,34 +291,34 @@
             </xs:attribute>
             <xs:attribute name="ExecuteOnInstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies to execute the string when the associated component is installed.</xs:documentation>
+                    <xs:documentation>Specifies to execute the string when the associated component is installed.  This attribute is mutually exclusive with the RollbackOnInstall, RollbackOnReinstall and RollbackOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ExecuteOnReinstall" type="YesNoType">
                 <xs:annotation>
                     <xs:documentation>
-                        Specifies whether to execute the string when the associated component is reinstalled.  Setting ExecuteOnInstall to yes does <html:b>not</html:b> imply ExecuteOnReinstall is set to yes.  ExecuteOnReinstall must be set in addition to ExecuteOnInstall for it to be executed during both install and reinstall.
+                        Specifies whether to execute the string when the associated component is reinstalled.  Setting ExecuteOnInstall to yes does <html:b>not</html:b> imply ExecuteOnReinstall is set to yes.  ExecuteOnReinstall must be set in addition to ExecuteOnInstall for it to be executed during both install and reinstall.  This attribute is mutually exclusive with the RollbackOnInstall, RollbackOnReinstall and RollbackOnUninstall attributes.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ExecuteOnUninstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies to execute the string when the associated component is uninstalled.</xs:documentation>
+                    <xs:documentation>Specifies to execute the string when the associated component is uninstalled.  This attribute is mutually exclusive with the RollbackOnInstall, RollbackOnReinstall and RollbackOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="RollbackOnInstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies whether to execute the string on rollback if an attempt is made to install the associated component.</xs:documentation>
+                    <xs:documentation>Specifies whether to execute the string on rollback if an attempt is made to install the associated component.  This attribute is mutually exclusive with the ExecuteOnInstall, ExecuteOnReinstall and ExecuteOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="RollbackOnReinstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies whether to execute the string on rollback if an attempt is made to reinstall the associated component.</xs:documentation>
+                    <xs:documentation>Specifies whether to execute the string on rollback if an attempt is made to reinstall the associated component.  This attribute is mutually exclusive with the ExecuteOnInstall, ExecuteOnReinstall and ExecuteOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="RollbackOnUninstall" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Specifies whether to execute the string on rollback if an attempt is made to uninstall the associated component.</xs:documentation>
+                    <xs:documentation>Specifies whether to execute the string on rollback if an attempt is made to uninstall the associated component.  This attribute is mutually exclusive with the ExecuteOnInstall, ExecuteOnReinstall and ExecuteOnUninstall attributes.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ContinueOnError" type="YesNoType">

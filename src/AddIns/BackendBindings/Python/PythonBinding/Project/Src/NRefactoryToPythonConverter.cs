@@ -18,7 +18,6 @@ using ICSharpCode.TextEditor.Document;
 namespace ICSharpCode.PythonBinding
 {
 	/// <summary>
-	/// Base class for the CSharpToPythonConverter and VBNetToPythonConverter. 
 	/// Used to convert VB.NET and C# to Python.
 	/// </summary>
 	public class NRefactoryToPythonConverter : IAstVisitor
@@ -27,17 +26,55 @@ namespace ICSharpCode.PythonBinding
 		string indentString = "\t";
 		StringBuilder codeBuilder;
 		
-		// Holds the constructor for the class being converted. This used to identify class fields.
+		// Holds the constructor for the class being converted. This is used to identify class fields.
 		PythonConstructorInfo constructorInfo;
 		
 		// Holds the parameters of the current method. This is used to identify
 		// references to fields or parameters.
 		List<ParameterDeclarationExpression> methodParameters = new List<ParameterDeclarationExpression>();
-
+		SupportedLanguage language;
+		
+		public NRefactoryToPythonConverter(SupportedLanguage language)
+		{
+			this.language = language;
+		}
+		
 		public NRefactoryToPythonConverter()
 		{
 		}
 		
+		/// <summary>
+		/// Gets or sets the source language that will be converted to python.
+		/// </summary>
+		public SupportedLanguage SupportedLanguage {
+			get { return language; }
+		}
+		
+		/// <summary>
+		/// Creates either C# to Python or VB.NET to Python converter based on the filename extension that is to be converted.
+		/// </summary>
+		/// <returns>Null if the file cannot be converted.</returns>
+		public static NRefactoryToPythonConverter Create(string fileName)
+		{
+			if (CanConvert(fileName)) {
+				return new NRefactoryToPythonConverter(GetSupportedLanguage(fileName));
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Only C# (.cs) or VB.NET (.vb) files can be converted.
+		/// </summary>
+		public static bool CanConvert(string fileName)
+		{
+			string extension = Path.GetExtension(fileName);
+			if (!String.IsNullOrEmpty(extension)) {
+				extension = extension.ToLowerInvariant();
+				return (extension == ".cs") || (extension == ".vb");
+			}
+			return false;
+		}
+				
 		/// <summary>
 		/// Gets the indentation string to use in the text editor based on the text editor properties.
 		/// </summary>
@@ -69,6 +106,14 @@ namespace ICSharpCode.PythonBinding
 				parser.Parse();
 				return parser.CompilationUnit;
 			}
+		}
+		
+		/// <summary>
+		/// Converts the source code to Python.
+		/// </summary>
+		public string Convert(string source)
+		{
+			return Convert(source, language);
 		}
 		
 		/// <summary>
@@ -727,10 +772,11 @@ namespace ICSharpCode.PythonBinding
 		public object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			// Add method name.
-			AppendIndented("def " + methodDeclaration.Name);
+			string methodName = methodDeclaration.Name;
+			AppendIndented("def " + methodName);
 					
 			// Add the parameters.
-			AddParameters(methodDeclaration.Parameters);
+			AddParameters(methodDeclaration);
 			methodParameters = methodDeclaration.Parameters;
 			AppendNewLine();
 			
@@ -743,6 +789,11 @@ namespace ICSharpCode.PythonBinding
 			
 			DecreaseIndent();
 			AppendNewLine();
+			
+			if (IsStatic(methodDeclaration)) {
+				AppendIndentedLine(methodDeclaration.Name + " = staticmethod(" + methodDeclaration.Name + ")");
+				AppendNewLine();
+			}
 			
 			return null;
 		}
@@ -1041,6 +1092,9 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
+			Append("clr.GetClrType(");
+			Append(typeOfExpression.TypeReference.Type);
+			Append(")");
 			return null;
 		}
 		
@@ -1316,19 +1370,26 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		object CreateInitStatement(ForeachStatement foreachStatement)
 		{
-			Append("enumerator = " + GetForeachVariableName(foreachStatement) + ".GetEnumerator()");
+			Append("enumerator = ");
+			AppendForeachVariableName(foreachStatement);
+			Append(".GetEnumerator()");
 
 			return null;
 		}
 		
 		/// <summary>
 		/// Gets the name of the variable that is used in the
-		/// foreach loop as the item being iterated.
+		/// foreach loop as the item being iterated and appends the code.
 		/// </summary>
-		string GetForeachVariableName(ForeachStatement foreachStatement)
+		void AppendForeachVariableName(ForeachStatement foreachStatement)
 		{
 			IdentifierExpression identifierExpression = foreachStatement.Expression as IdentifierExpression;
-			return identifierExpression.Identifier;
+			InvocationExpression invocationExpression = foreachStatement.Expression as InvocationExpression;
+			if (identifierExpression != null) {
+				Append(identifierExpression.Identifier);
+			} else if (invocationExpression != null) {
+				invocationExpression.AcceptVisitor(this, null);
+			}
 		}
 				
 		/// <summary>
@@ -1387,7 +1448,12 @@ namespace ICSharpCode.PythonBinding
 		{
 			// Create event handler expression.
 			IdentifierExpression identifierExpression = eventHandlerExpression as IdentifierExpression;
-			Append(identifierExpression.Identifier);
+			ObjectCreateExpression objectCreateExpression = eventHandlerExpression as ObjectCreateExpression;
+			if (identifierExpression != null) {
+				Append(identifierExpression.Identifier);
+			} else if (objectCreateExpression != null) {
+				CreateDelegateCreateExpression(objectCreateExpression.Parameters[0]);
+			}
 			return null;
 		}
 		
@@ -1471,7 +1537,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			if (constructorInfo.Constructor != null) {
 				AppendIndented("def __init__");
-				AddParameters(constructorInfo.Constructor.Parameters);
+				AddParameters(constructorInfo.Constructor);
 				methodParameters = constructorInfo.Constructor.Parameters;
 			} else {
 				AppendIndented("def __init__(self):");
@@ -1527,19 +1593,33 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Adds the method or constructor parameters.
 		/// </summary>
-		void AddParameters(List<ParameterDeclarationExpression> parameters)
+		void AddParameters(ParametrizedNode method)
 		{			
+			Append("(");
+			List<ParameterDeclarationExpression> parameters = method.Parameters;
 			if (parameters.Count > 0) {
-				Append("(self");
-				foreach (ParameterDeclarationExpression parameter in parameters) {
-					Append(", " + parameter.ParameterName);
+				if (!IsStatic(method)) {
+					Append("self, ");
 				}
-				Append("):");
+				for (int i = 0; i < parameters.Count; ++i) {
+					if (i > 0) {
+						Append(", ");
+					}
+					Append(parameters[i].ParameterName);
+				}
 			} else {
-				Append("(self):");
+				if (!IsStatic(method)) {
+					Append("self");
+				}				
 			}
+			Append("):");
 		}
-		
+				
+		bool IsStatic(ParametrizedNode method)
+		{
+			return (method.Modifier & Modifiers.Static) == Modifiers.Static;
+		}
+			
 		/// <summary>
 		/// Creates assignments of the form:
 		/// i = 1
@@ -1609,5 +1689,17 @@ namespace ICSharpCode.PythonBinding
 			Append(" == ");
 			label.Label.AcceptVisitor(this, null);
 		}
+		
+		/// <summary>
+		/// Gets the supported language either C# or VB.NET
+		/// </summary>
+		static SupportedLanguage GetSupportedLanguage(string fileName)
+		{
+			string extension = Path.GetExtension(fileName.ToLowerInvariant());
+			if (extension == ".vb") {
+				return SupportedLanguage.VBNet;
+			}
+			return SupportedLanguage.CSharp;
+		}		
 	}
 }

@@ -680,15 +680,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			string title = e.IsUnhandled ? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled}") : StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Handled}");
-			string message = string.Format("An exception of type {0} was thrown:\n{1}", e.Exception.Type, e.Exception.Message);
+			string message = string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Message}"), e.Exception.Type, e.Exception.Message);
 			Bitmap icon = WinFormsResourceService.GetBitmap(e.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
-			bool canContinue = !e.IsUnhandled;
 			
-			//DebuggerEventForm.Result result = DebuggerEventForm.Show(title, message, icon, canContinue);
 			DebuggeeExceptionForm.Show(debuggedProcess, title, message, stacktraceBuilder.ToString(), icon);
-			
-			// If the process was killed while the exception form is still being displayed
-			if (e.Process.HasExited) return;
 		}
 		
 		public void JumpToCurrentLine()

@@ -471,6 +471,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			InitializeAdvancedHighlighter();
 		}
 		
+		public bool HighlightingExplicitlySet { get; set; }
+		
+		/// <summary>
+		/// Explicitly set the highlighting to use. Will be persisted.
+		/// </summary>
+		public override void SetHighlighting(string name)
+		{
+			base.SetHighlighting(name);
+			this.HighlightingExplicitlySet = true;
+			InitializeAdvancedHighlighter();
+		}
+		
 		public void InitializeAdvancedHighlighter()
 		{
 			if (advancedHighlighter != null) {

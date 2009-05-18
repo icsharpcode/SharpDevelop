@@ -78,4 +78,8 @@
 			             class = "ICSharpCode.Profiler.AddIn.OptionsPanels.General"/>
 		</OptionPanel>
 	</Path>
+
+	<Path name="/SharpDevelop/Services/ProfilerService/Profiler">
+		<Class id = "WindowsProfiler" class="ICSharpCode.Profiler.AddIn.WindowsProfiler" />
+	</Path>
 </AddIn>

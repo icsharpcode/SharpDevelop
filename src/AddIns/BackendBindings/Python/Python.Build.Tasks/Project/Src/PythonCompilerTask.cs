@@ -135,6 +135,8 @@ namespace ICSharpCode.Python.Build.Tasks
 					LogSyntaxError(ex);
 				} catch (IOException ex) {
 					LogError(ex.Message);
+				} catch (PythonCompilerException ex) {
+					LogError(ex.Message);
 				}
 			}
 			return false;

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -32,7 +33,7 @@ namespace PythonBinding.Tests.Converter
 									"\tdef __init__(self):\r\n" +
 									"\t\tb = Bar(0, 0, 1, 10)";
 			
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string python = converter.Convert(csharp);
 			
 			Assert.AreEqual(expectedPython, python);

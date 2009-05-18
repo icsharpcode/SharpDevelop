@@ -7,12 +7,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Shapes;
 
 using ICSharpCode.Core;
+using ICSharpCode.Profiler.Controller.Queries;
 using ICSharpCode.Profiler.Controls;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
@@ -30,14 +32,16 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			var selectedItem = GetSelectedItems().FirstOrDefault();
 			
 			if (selectedItem != null) {
-				StringBuilder data = new StringBuilder();
-
-				while (selectedItem.Parent != null) {
-					data.AppendLine(selectedItem.GetSignature());
-					selectedItem = selectedItem.Parent;
+				var node = selectedItem.Node;
+				var data = new StringBuilder();
+				while (node != null && node.NameMapping.Id != 0) { // TODO : Callers returns a "merged node" as a caller,
+																   // is checking for Id == 0 safe???
+					data.AppendLine(node.Signature);
+					node = node.Callers.FirstOrDefault(); // TODO : only takes first path!
 				}
-
-				Clipboard.SetText(data.ToString());
+				
+				if (data.Length > 0)
+					Clipboard.SetText(data.ToString());
 			}
 		}
 	}

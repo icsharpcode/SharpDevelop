@@ -65,8 +65,10 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\IPythonCompiler.cs" />
     <Compile Include="Src\PythonCompiler.cs" />
+    <Compile Include="Src\PythonCompilerException.cs" />
     <Compile Include="Src\PythonCompilerTask.cs" />
     <Compile Include="Src\ResourceFile.cs" />
+    <Compile Include="Src\Resources.cs" />
     <None Include="SharpDevelop.Build.Python.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

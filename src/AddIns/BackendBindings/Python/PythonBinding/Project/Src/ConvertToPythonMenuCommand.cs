@@ -33,10 +33,9 @@ namespace ICSharpCode.PythonBinding
 			IEditable editable = viewContent as IEditable;
 			
 			// Generate the python code.
-			SupportedLanguage language = GetSupportedLanguage(viewContent.PrimaryFileName);
-			NRefactoryToPythonConverter converter = CreateConverter(language);
+			NRefactoryToPythonConverter converter = NRefactoryToPythonConverter.Create(viewContent.PrimaryFileName);
 			converter.IndentString = NRefactoryToPythonConverter.GetIndentString(textEditorProperties);
-			string pythonCode = converter.Convert(editable.Text, language);
+			string pythonCode = converter.Convert(editable.Text);
 			
 			// Show the python code in a new window.
 			NewFile("Generated.py", "Python", pythonCode);
@@ -48,29 +47,6 @@ namespace ICSharpCode.PythonBinding
 		protected virtual void NewFile(string defaultName, string language, string content)
 		{
 			FileService.NewFile(defaultName, content);
-		}		
-		
-		/// <summary>
-		/// Creates either a VBNet converter or C# converted.
-		/// </summary>
-		NRefactoryToPythonConverter CreateConverter(SupportedLanguage language)
-		{
-			if (language == SupportedLanguage.VBNet) {
-				return new VBNetToPythonConverter();
-			}
-			return new CSharpToPythonConverter();
-		}	
-			
-		/// <summary>
-		/// Gets the supported language either C# or VB.NET
-		/// </summary>
-		SupportedLanguage GetSupportedLanguage(string fileName)
-		{
-			string extension = Path.GetExtension(fileName.ToLower());
-			if (extension == ".vb") {
-				return SupportedLanguage.VBNet;
-			}
-			return SupportedLanguage.CSharp;
 		}		
 	}
 }

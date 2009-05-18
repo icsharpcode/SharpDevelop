@@ -171,11 +171,13 @@ namespace NUnit.ConsoleRunner
                     string xmlResultFile = options.xml == null || options.xml == string.Empty
                         ? "TestResult.xml" : options.xml;
 
-                    using (StreamWriter writer = new StreamWriter(xmlResultFile))
+                    if (!String.IsNullOrEmpty(options.xml))
                     {
-                        writer.Write(xmlOutput);
+	                    using (StreamWriter writer = new StreamWriter(xmlResultFile))
+	                    {
+	                        writer.Write(xmlOutput);
+	                    }
                     }
-
                     returnCode = summary.ErrorsAndFailures;
                 }
 

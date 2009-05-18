@@ -212,6 +212,9 @@
     <Compile Include="Src\Internal\Doozers\IOptionPanelDescriptor.cs" />
     <Compile Include="Src\Services\File\FileService.cs" />
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
+    <Compile Include="Src\Services\Profiler\DefaultProfiler.cs" />
+    <Compile Include="Src\Services\Profiler\IProfiler.cs" />
+    <Compile Include="Src\Services\Profiler\ProfilerService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
@@ -805,6 +808,7 @@
       <Link>ICSharpCode.SharpDevelop.addin</Link>
     </Content>
     <Folder Include="Src\Editor" />
+    <Folder Include="Src\Services\Profiler" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
     <Folder Include="Src\Services\NavigationService" />

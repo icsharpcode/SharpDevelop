@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -33,7 +34,7 @@ namespace PythonBinding.Tests.Converter
 			string expectedCode = "class Foo(object):\r\n" +
 									"\tdef Run(self):\r\n" +
 									"\t\traise XmlException()";
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string code = converter.Convert(csharp);
 			
 			Assert.AreEqual(expectedCode, code);

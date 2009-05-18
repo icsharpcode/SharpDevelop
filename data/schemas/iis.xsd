@@ -428,7 +428,7 @@
     <xs:element name="Certificate">
         <xs:annotation>
             <xs:documentation>
-                Used to install and unintall certificates.
+                Used to install and uninstall certificates.
             </xs:documentation>
             <xs:appinfo>
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Component" />
@@ -635,7 +635,7 @@
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Module" />
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Product" />
             </xs:appinfo>
-            <xs:documentation>Defines properties for a web application. These properties can be used for more than one application defined in a web site, directory, or vroot, by defining this element in a common location and referring to it by setting the WebApplication attribute of the WebSite, WebDir, and WebVirtualDir elements.</xs:documentation>
+            <xs:documentation>Defines properties for a web application. These properties can be used for more than one application defined in a web site or vroot, by defining this element in a common location and referring to it by setting the WebApplication attribute of the WebSite and WebVirtualDir elements.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>

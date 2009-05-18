@@ -92,6 +92,8 @@ namespace ICSharpCode.Python.Build.Tasks
 		/// </summary>
 		public void Compile()
 		{
+			VerifyParameters();
+			
 			// Compile the source files to a dll first.
 			ScriptEngine engine = IronPython.Hosting.Python.CreateEngine();
 			PythonDictionary dictionary = new PythonDictionary();
@@ -110,6 +112,16 @@ namespace ICSharpCode.Python.Build.Tasks
 				} finally {
 					Directory.SetCurrentDirectory(originalFolder);
 				}
+			}
+		}
+		
+		/// <summary>
+		/// Verifies the compiler parameters that have been set correctly.
+		/// </summary>
+		public void VerifyParameters()
+		{
+			if ((mainFile == null) && (targetKind != PEFileKinds.Dll)) {
+				throw new PythonCompilerException(Resources.NoMainFileSpecified);
 			}
 		}
 		

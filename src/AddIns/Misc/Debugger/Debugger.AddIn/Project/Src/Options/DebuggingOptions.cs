@@ -31,6 +31,5 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		// Properties for the DebuggeeExceptionForm
 		public FormWindowState DebuggeeExceptionWindowState = FormWindowState.Normal;
-		public double DebuggeeExceptionWindowOpacity = 0.75;
 	}
 }

@@ -21,7 +21,7 @@ namespace PythonBinding.Tests.Designer
 	{
 		string generatedPythonCode;
 		bool hasNonVisualChildComponents;
-		
+		bool hasIContainerConstructor;		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
@@ -43,6 +43,9 @@ namespace PythonBinding.Tests.Designer
 				PythonDesignerRootComponent designerRootComponent = new PythonDesignerRootComponent(form);
 				hasNonVisualChildComponents = designerRootComponent.HasNonVisualChildComponents();
 				
+				PythonDesignerComponent component = new PythonDesignerComponent(timer);
+				hasIContainerConstructor = component.HasIContainerConstructor();
+			
 				PythonControl pythonControl = new PythonControl(indentString);
 				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form);
 			}
@@ -75,5 +78,11 @@ namespace PythonBinding.Tests.Designer
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}
+		
+		[Test]
+		public void HasIContainerConstructor()
+		{
+			Assert.IsTrue(hasIContainerConstructor);
+		}		
 	}
 }

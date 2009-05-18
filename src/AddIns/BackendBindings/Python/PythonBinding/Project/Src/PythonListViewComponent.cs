@@ -15,8 +15,13 @@ namespace ICSharpCode.PythonBinding
 	/// Used to generate code for a ListView component currently being designed.
 	/// </summary>
 	public class PythonListViewComponent : PythonDesignerComponent
-	{		
-		public PythonListViewComponent(IComponent component) : base(component)
+	{
+		public PythonListViewComponent(IComponent component) : this(null, component)
+		{
+		}
+		
+		public PythonListViewComponent(PythonDesignerComponent parent, IComponent component) 
+			: base(parent, component)
 		{
 		}
 		

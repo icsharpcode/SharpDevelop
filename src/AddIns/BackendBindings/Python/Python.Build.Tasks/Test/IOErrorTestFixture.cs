@@ -41,7 +41,7 @@ namespace Python.Build.Tasks.Tests
 			TaskItem sourceFile = new TaskItem(@"D:\Projects\MyProject\test.py");
 			compiler.Sources = new ITaskItem[] {sourceFile};
 			
-			mockCompiler.ThrowExceptionAtCompile = PythonOps.IOError("Could not find main file test.py");;
+			mockCompiler.ThrowExceptionAtCompile = PythonOps.IOError("Could not find main file test.py");
 			
 			success = compiler.Execute();
 		}
@@ -57,11 +57,5 @@ namespace Python.Build.Tasks.Tests
 		{
 			Assert.AreEqual("Could not find main file test.py", compiler.LoggedErrorMessage);
 		}
-		
-//		[Test]
-//		public void IsErrorCodeLogged()
-//		{
-//			Assert.AreEqual("1000", compiler.LoggedErrorCode);
-//		}	
 	}
 }

@@ -59,14 +59,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 				item.Checked = true;
 				try {
-					IHighlightingStrategy strat = HighlightingStrategyFactory.CreateHighlightingStrategy(item.Text);
-					if (strat == null) {
-						throw new Exception("Strategy can't be null");
-					}
-					control.Document.HighlightingStrategy = strat;
-					if (control is SharpDevelopTextAreaControl) {
-						((SharpDevelopTextAreaControl)control).InitializeAdvancedHighlighter();
-					}
+					control.SetHighlighting(item.Text);
 				} catch (HighlightingDefinitionInvalidException ex) {
 					MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}

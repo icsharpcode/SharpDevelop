@@ -64,12 +64,12 @@
     </Compile>
     <Compile Include="Src\CommandLineHistory.cs" />
     <Compile Include="Src\ConstructorInfo.cs" />
+    <Compile Include="Src\ConvertProjectToPythonProjectCommand.cs" />
     <Compile Include="Src\ConvertToPythonMenuCommand.cs" />
     <Compile Include="Src\ApplicationSettingsPanel.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CompilingOptionsPanel.cs" />
-    <Compile Include="Src\CSharpToPythonConverter.cs" />
     <Compile Include="Src\IComponentCreator.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IPadDescriptor.cs" />
@@ -114,7 +114,6 @@
     <Compile Include="Src\StopPythonCommand.cs" />
     <Compile Include="Src\PythonVariableResolver.cs" />
     <Compile Include="Src\TextEditor.cs" />
-    <Compile Include="Src\VBNetToPythonConverter.cs" />
     <None Include="PythonBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

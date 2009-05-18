@@ -55,12 +55,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.pictureBox = new System.Windows.Forms.PictureBox();
 			this.lblExceptionText = new System.Windows.Forms.Label();
 			this.exceptionView = new System.Windows.Forms.RichTextBox();
+			this.btnStop = new System.Windows.Forms.Button();
+			this.btnBreak = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// pictureBox
 			// 
-			this.pictureBox.Location = new System.Drawing.Point(12, 12);
+			this.pictureBox.Location = new System.Drawing.Point(4, 12);
 			this.pictureBox.Name = "pictureBox";
 			this.pictureBox.Size = new System.Drawing.Size(48, 52);
 			this.pictureBox.TabIndex = 0;
@@ -70,9 +72,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			this.lblExceptionText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
-			this.lblExceptionText.Location = new System.Drawing.Point(66, 12);
+			this.lblExceptionText.Location = new System.Drawing.Point(58, 12);
 			this.lblExceptionText.Name = "lblExceptionText";
-			this.lblExceptionText.Size = new System.Drawing.Size(560, 52);
+			this.lblExceptionText.Size = new System.Drawing.Size(564, 52);
 			this.lblExceptionText.TabIndex = 1;
 			this.lblExceptionText.Text = "Exception Message Text";
 			// 
@@ -83,25 +85,55 @@ namespace ICSharpCode.SharpDevelop.Services
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.exceptionView.BackColor = System.Drawing.SystemColors.Control;
 			this.exceptionView.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.exceptionView.Location = new System.Drawing.Point(12, 70);
+			this.exceptionView.Location = new System.Drawing.Point(4, 70);
 			this.exceptionView.Name = "exceptionView";
 			this.exceptionView.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-			this.exceptionView.Size = new System.Drawing.Size(614, 317);
+			this.exceptionView.Size = new System.Drawing.Size(635, 290);
 			this.exceptionView.TabIndex = 2;
 			this.exceptionView.Text = "";
 			// 
+			// btnStop
+			// 
+			this.btnStop.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+			this.btnStop.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.btnStop.Location = new System.Drawing.Point(340, 366);
+			this.btnStop.Name = "btnStop";
+			this.btnStop.Size = new System.Drawing.Size(115, 30);
+			this.btnStop.TabIndex = 3;
+			this.btnStop.Text = "Stop";
+			this.btnStop.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+			this.btnStop.UseVisualStyleBackColor = true;
+			this.btnStop.Click += new System.EventHandler(this.BtnStopClick);
+			// 
+			// btnBreak
+			// 
+			this.btnBreak.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+			this.btnBreak.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.btnBreak.Location = new System.Drawing.Point(219, 366);
+			this.btnBreak.Name = "btnBreak";
+			this.btnBreak.Size = new System.Drawing.Size(115, 30);
+			this.btnBreak.TabIndex = 4;
+			this.btnBreak.Text = "Break";
+			this.btnBreak.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+			this.btnBreak.UseVisualStyleBackColor = true;
+			this.btnBreak.Click += new System.EventHandler(this.BtnBreakClick);
+			// 
 			// DebuggeeExceptionForm
 			// 
-			this.ClientSize = new System.Drawing.Size(638, 399);
+			this.ClientSize = new System.Drawing.Size(642, 399);
+			this.Controls.Add(this.btnBreak);
+			this.Controls.Add(this.btnStop);
 			this.Controls.Add(this.exceptionView);
 			this.Controls.Add(this.lblExceptionText);
 			this.Controls.Add(this.pictureBox);
 			this.Name = "DebuggeeExceptionForm";
 			this.ShowInTaskbar = false;
-			this.Resize += new System.EventHandler(this.debugeeExceptionFormResize);
+			this.Resize += new System.EventHandler(this.FormResize);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Button btnBreak;
+		private System.Windows.Forms.Button btnStop;
 		private System.Windows.Forms.RichTextBox exceptionView;
 		private System.Windows.Forms.Label lblExceptionText;
 		private System.Windows.Forms.PictureBox pictureBox;

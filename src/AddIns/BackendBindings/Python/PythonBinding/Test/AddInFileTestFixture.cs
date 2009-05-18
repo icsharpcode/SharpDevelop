@@ -14,6 +14,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Codons;
 using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests
 {
@@ -47,6 +48,8 @@ namespace PythonBinding.Tests
 		Codon convertCodeCodon;
 		Codon pythonFileIconCodon;
 		Codon pythonProjectIconCodon;
+		Codon convertCSharpProjectCodon;
+		Codon convertVBNetProjectCodon;
 		
 		[TestFixtureSetUp]
 		public void SetupFixture()
@@ -76,7 +79,9 @@ namespace PythonBinding.Tests
 				convertCodeCodon = GetCodon("/SharpDevelop/Workbench/MainMenu/Tools/ConvertCode", "ConvertToPython");
 				pythonFileIconCodon = GetCodon("/Workspace/Icons", "PythonFileIcon");
 				pythonProjectIconCodon = GetCodon("/Workspace/Icons", "PythonProjectIcon");
-				
+				convertCSharpProjectCodon = GetCodon("/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert", "CSharpProjectToPythonProjectConverter");
+				convertVBNetProjectCodon = GetCodon("/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert", "VBNetProjectToPythonProjectConverter");
+					
 				// Get the PythonBinding runtime.
 				foreach (Runtime runtime in addin.Runtimes) {
 					if (runtime.Assembly == "PythonBinding.dll") {
@@ -634,31 +639,75 @@ namespace PythonBinding.Tests
 		public void PythonProjectIconCodonResource()
 		{
 			Assert.AreEqual("Python.ProjectBrowser.Project", pythonProjectIconCodon["resource"]);
-		}		
-				
-		/// <summary>
-		/// Gets the codon with the specified extension path and name.
-		/// </summary>
-		Codon GetCodon(string extensionPath, string name)
-		{
-			if (addin.Paths.ContainsKey(extensionPath)) {
-				ExtensionPath path = addin.Paths[extensionPath];
-				return GetCodon(path.Codons, name);
-			}
-			return null;
 		}
 		
-		/// <summary>
-		/// Gets the codon with the specified name.
-		/// </summary>
-		Codon GetCodon(List<Codon> codons, string name)
+		[Test]
+		public void ConvertToCSharpProjectCodonExists()
 		{
-			foreach (Codon codon in codons) {
-				if (codon.Id == name) {
-					return codon;
-				}
-			}
-			return null;
+			Assert.IsNotNull(convertCSharpProjectCodon);
+		}
+
+		[Test]
+		public void ConvertToVBNetProjectCodonExists()
+		{
+			Assert.IsNotNull(convertVBNetProjectCodon);
+		}
+			
+		[Test]
+		public void ConvertToCSharpProjectLabel()
+		{
+			Assert.AreEqual("${res:ICSharpCode.PythonBinding.ConvertCSharpProjectToPythonProject}", convertCSharpProjectCodon["label"]);
+		}
+
+		[Test]
+		public void ConvertToVBNetProjectLabel()
+		{
+			Assert.AreEqual("${res:ICSharpCode.PythonBinding.ConvertVBNetProjectToPythonProject}", convertVBNetProjectCodon["label"]);
+		}
+		
+		[Test]
+		public void ConvertToCSharpProjectClass()
+		{
+			Assert.AreEqual("ICSharpCode.PythonBinding.ConvertProjectToPythonProjectCommand", convertCSharpProjectCodon["class"]);
+		}
+
+		[Test]
+		public void ConvertToVBNetProjectClass()
+		{
+			Assert.AreEqual("ICSharpCode.PythonBinding.ConvertProjectToPythonProjectCommand", convertVBNetProjectCodon["class"]);
+		}
+		
+		[Test]
+		public void ConvertToCSharpProjectConditionName()
+		{
+			ICondition condition = convertCSharpProjectCodon.Conditions[0];
+			Assert.AreEqual("ProjectActive", condition.Name);
+		}
+		
+		[Test]
+		public void ConvertToCSharpProjectConditionActiveExtension()
+		{
+			Condition condition = convertCSharpProjectCodon.Conditions[0] as Condition;
+			Assert.AreEqual("C#", condition["activeproject"]);
+		}
+
+		[Test]
+		public void ConvertToVBNetProjectConditionName()
+		{
+			ICondition condition = convertVBNetProjectCodon.Conditions[0];
+			Assert.AreEqual("ProjectActive", condition.Name);
+		}
+		
+		[Test]
+		public void ConvertToVBNetProjectConditionActiveExtension()
+		{
+			Condition condition = convertVBNetProjectCodon.Conditions[0] as Condition;
+			Assert.AreEqual("VBNet", condition["activeproject"]);
+		}
+		
+		Codon GetCodon(string name, string extensionPath)
+		{
+			return AddInHelper.GetCodon(addin, name, extensionPath);
 		}		
 	}
 }

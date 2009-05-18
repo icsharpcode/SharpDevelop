@@ -28,6 +28,13 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		ProfilerView dataView;
 		OpenedFile file;
 		
+		/// <summary>
+		/// Returns the ProfilerView of this instance.
+		/// </summary>
+		public ProfilerView DataView {
+			get { return dataView; }
+		}
+		
 		public override object Control {
 			get {
 				return dataView;

@@ -114,6 +114,7 @@
     <Compile Include="Src\Views\ProfilerDisplayBinding.cs">
     </Compile>
     <Compile Include="Src\Views\WpfViewer.cs" />
+    <Compile Include="Src\WindowsProfiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Dialogs\ProfileExecutableForm.xaml">

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 
@@ -35,7 +36,7 @@ namespace PythonBinding.Tests.Converter
 									"\t\ti = System.Array[System.Int32]((1, 2, 3, 4))\r\n" +
 									"\t\ti[0] = 5\r\n" +
 									"\t\treturn i";
-			CSharpToPythonConverter converter = new CSharpToPythonConverter();
+			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string code = converter.Convert(csharp);
 			
 			Assert.AreEqual(expectedCode, code);
