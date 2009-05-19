@@ -5,17 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Profiling;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Profiling;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.SharpDevelop.Util;
@@ -532,15 +533,7 @@ namespace ICSharpCode.UnitTesting
 		
 		void AfterFinish(UnitTestApplicationStartHelper helper, string path)
 		{
-			Action updater = delegate {
-				FileService.OpenFile(path);
-				FileProjectItem file = new FileProjectItem(helper.Project, ItemType.Content, "ProfilingSessions\\" + Path.GetFileName(path));
-				ProjectService.AddProjectItem(helper.Project, file);
-				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
-				helper.Project.Save();
-			};
-			
-			WorkbenchSingleton.SafeThreadCall(updater);
+			ProfilerService.AddSessionToProject(helper.Project, path);
 			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
 		}
 		
