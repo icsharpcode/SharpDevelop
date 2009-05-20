@@ -1724,7 +1724,7 @@
 		<Include id = "Common" path = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
 		<MenuItem id = "Refactoring" type = "Builder" class = "ICSharpCode.SharpDevelop.Refactoring.RefactoringMenuBuilder"/>
 		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
 		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
@@ -1743,6 +1743,11 @@
 		          label = "${res:XML.MainMenu.FileMenu.Close}"
 		          icon  = "Icons.16x16.CloseFileIcon"
 		          class ="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
+	</Path>
+	
+	<!-- DefaultTextEditor=old editor. TODO: remove this -->
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+		<Include id="DefaultEditor" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu"/>
 		<MenuItem id = "Separator2" type = "Separator" />
 		<MenuItem id = "Comment"
 		          icon  = "Icons.16x16.CommentRegion"

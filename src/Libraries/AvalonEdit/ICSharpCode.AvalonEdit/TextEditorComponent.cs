@@ -16,7 +16,7 @@ namespace ICSharpCode.AvalonEdit
 	/// Represents a text editor control (<see cref="TextEditor"/>, <see cref="TextArea"/>
 	/// or <see cref="Gui.TextView"/>).
 	/// </summary>
-	public interface ITextEditorComponent
+	public interface ITextEditorComponent : IServiceProvider
 	{
 		/// <summary>
 		/// Gets the document being edited.

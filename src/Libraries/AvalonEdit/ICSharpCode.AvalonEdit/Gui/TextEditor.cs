@@ -30,7 +30,7 @@ namespace ICSharpCode.AvalonEdit
 	/// Contains a scrollable TextArea.
 	/// </summary>
 	[Localizability(LocalizationCategory.Text), ContentProperty("Text")]
-	public class TextEditor : Control, ITextEditorComponent, IWeakEventListener
+	public class TextEditor : Control, ITextEditorComponent, IServiceProvider, IWeakEventListener
 	{
 		static TextEditor()
 		{
@@ -63,7 +63,7 @@ namespace ICSharpCode.AvalonEdit
 			textArea.SetBinding(TextArea.DocumentProperty, new Binding(DocumentProperty.Name) { Source = this });
 			textArea.SetBinding(TextArea.OptionsProperty, new Binding(OptionsProperty.Name) { Source = this });
 		}
-			
+		
 		// Forward focus to TextArea.
 		/// <inheritdoc/>
 		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
@@ -828,6 +828,11 @@ namespace ICSharpCode.AvalonEdit
 		public event MouseEventHandler MouseHoverStopped {
 			add { AddHandler(MouseHoverStoppedEvent, value); }
 			remove { RemoveHandler(MouseHoverStoppedEvent, value); }
+		}
+		
+		object IServiceProvider.GetService(Type serviceType)
+		{
+			return textArea.GetService(serviceType);
 		}
 	}
 }

@@ -11,15 +11,13 @@
 		<Import assembly = "ICSharpCode.AvalonEdit.AddIn.dll"/>
 	</Runtime>
 	
-	<!-- Extend the SharpDevelop AddIn-Tree like this:
-	<Path name = ...>
-		<.../>
-	</Path>
-	-->
-	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id = "Text"
 		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.TextEditor} (AvalonEdit)"
 		                class = "ICSharpCode.AvalonEdit.AddIn.AvalonEditDisplayBinding"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu">
+		<Include id="DefaultEditor" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu"/>
 	</Path>
 </AddIn>

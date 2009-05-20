@@ -22,6 +22,7 @@ using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Indentation;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
@@ -34,6 +35,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public class CodeEditor : Grid
 	{
+		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
+		
 		QuickClassBrowser quickClassBrowser;
 		readonly TextEditor primaryTextEditor;
 		readonly CodeEditorAdapter primaryTextEditorAdapter;
@@ -160,7 +163,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var iconBarMargin = new IconBarMargin(iconBarManager) { TextView = textView };
 			textEditor.TextArea.LeftMargins.Insert(0, iconBarMargin);
 			
+			textEditor.TextArea.TextView.ContextMenu = MenuService.CreateContextMenu(adapter, contextMenuPath);
+			textEditor.TextArea.TextView.MouseRightButtonDown += textEditor_TextArea_TextView_MouseRightButtonDown;
+			
 			return textEditor;
+		}
+		
+		void textEditor_TextArea_TextView_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			ITextEditorComponent component = (ITextEditorComponent)sender;
+			TextEditor textEditor = (TextEditor)component.GetService(typeof(TextEditor));
+			var position = textEditor.GetPositionFromPoint(e.GetPosition(textEditor));
+			if (position.HasValue) {
+				textEditor.TextArea.Caret.Position = position.Value;
+			}
 		}
 		
 		// always use primary text editor for loading/saving
