@@ -5,17 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Text;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop.Gui;
 using WinForms = System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop
@@ -266,6 +267,42 @@ namespace ICSharpCode.SharpDevelop
 			
 			result.Append(original, currentPos, original.Length - currentPos);
 			return result.ToString();
+		}
+		
+		/// <summary>
+		/// Creates a new image for the image source.
+		/// </summary>
+		public static Image CreateImage(this IImage image)
+		{
+			if (image == null)
+				throw new ArgumentNullException("image");
+			return new Image { Source = image.ImageSource };
+		}
+		
+		/// <summary>
+		/// Creates a new image for the image source.
+		/// </summary>
+		public static UIElement CreatePixelSnappedImage(this IImage image)
+		{
+			return new PixelSnapper(CreateImage(image));
+		}
+		
+		/// <summary>
+		/// Translates a WinForms menu to WPF.
+		/// </summary>
+		public static ICollection TranslateToWpf(this ToolStripItem[] items)
+		{
+			return items.OfType<ToolStripMenuItem>().Select(item => TranslateMenuItemToWpf(item)).ToList();
+		}
+		
+		static System.Windows.Controls.MenuItem TranslateMenuItemToWpf(ToolStripMenuItem item)
+		{
+			var r = new System.Windows.Controls.MenuItem();
+			r.Header = MenuService.ConvertLabel(item.Text);
+			if (item.ImageIndex >= 0)
+				r.Icon = ClassBrowserIconService.GetImageByIndex(item.ImageIndex).CreatePixelSnappedImage();
+			r.Click += delegate { item.PerformClick(); };
+			return r;
 		}
 	}
 }

@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory;
+using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -25,8 +26,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	/// <summary>
 	/// Build context menu for class members in the text editor.
 	/// </summary>
-	public class ClassMemberMenuBuilder : ISubmenuBuilder
+	public class ClassMemberMenuBuilder : ISubmenuBuilder, IMenuItemBuilder
 	{
+		public System.Collections.ICollection BuildItems(Codon codon, object owner)
+		{
+			return BuildSubmenu(codon, owner).TranslateToWpf();
+		}
+		
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
 			MenuCommand cmd;

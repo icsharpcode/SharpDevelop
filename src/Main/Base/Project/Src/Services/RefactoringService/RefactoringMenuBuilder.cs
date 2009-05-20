@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 							definitions.Add(cmb.Member.DotNetName);
 							item = new MenuItem {
 								Header = MemberNode.GetText(cmb.Member),
-								Icon = cmb.Image.ImageSource,
+								Icon = cmb.Image.CreateImage(),
 								ItemsSource = MenuService.CreateMenuItems(null, mark, ClassMemberBookmark.ContextMenuPath)
 							};
 							resultItems.Add(item);
@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 							definitions.Add(type.DotNetName);
 							item = new MenuItem {
 								Header = ClassNode.GetText(type),
-								Icon = ClassBrowserIconService.GetIcon(type).ImageSource,
+								Icon = ClassBrowserIconService.GetIcon(type).CreateImage(),
 								ItemsSource = MenuService.CreateMenuItems(null,
 								                                          cb ?? new ClassBookmark(type),
 								                                          ClassBookmark.ContextMenuPath)
@@ -272,7 +272,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			MenuItem item = new MenuItem();
 			item.Header = title;
-			item.Icon = image.ImageSource;
+			item.Icon = image.CreateImage();
 			
 			//ToolStripMenuItem titleItem = new ToolStripMenuItem(title);
 			//titleItem.Enabled = false;
@@ -281,8 +281,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			if (cu != null && cu.FileName != null && !region.IsEmpty) {
 				MenuItem gotoDefinitionItem = new MenuItem();
-				gotoDefinitionItem.Header = StringParser.Parse("${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}");
-				gotoDefinitionItem.Icon = ClassBrowserIconService.GotoArrow.ImageSource;
+				gotoDefinitionItem.Header = MenuService.ConvertLabel(StringParser.Parse("${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"));
+				gotoDefinitionItem.Icon = ClassBrowserIconService.GotoArrow.CreatePixelSnappedImage();
 				gotoDefinitionItem.InputGestureText = new KeyGesture(Key.Enter, ModifierKeys.Control).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 				gotoDefinitionItem.Click += delegate {
 					FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn);

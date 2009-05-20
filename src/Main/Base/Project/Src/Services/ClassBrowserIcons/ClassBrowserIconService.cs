@@ -68,6 +68,8 @@ namespace ICSharpCode.SharpDevelop
 		static void AddNewImagesToList()
 		{
 			lock (lockObj) {
+				if (imglist.Images.Count > imglistEntries.Count)
+					throw new InvalidOperationException("Too many images in list (list was modified externally?)");
 				while (imglist.Images.Count < imglistEntries.Count) {
 					imglist.Images.Add(imglistEntries[imglist.Images.Count].Bitmap);
 				}

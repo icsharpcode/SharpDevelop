@@ -94,8 +94,6 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static IList CreateMenuItems(UIElement inputBindingOwner, object owner, string addInTreePath)
 		{
-			if (inputBindingOwner == null)
-				throw new ArgumentNullException("inputBindingOwner");
 			return CreateMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
 		}
 		
@@ -126,7 +124,7 @@ namespace ICSharpCode.Core.Presentation
 					result.Add(CreateMenuItemFromDescriptor(inputBindingOwner, descriptor));
 				}
 			}
-			return result;
+			return ExpandMenuBuilders(result);
 		}
 		
 		static IList ExpandMenuBuilders(ICollection input)
@@ -185,6 +183,10 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Converts from the Windows-Forms style label format (accessor key marked with '&')
+		/// to a WPF label format (accessor key marked with '_').
+		/// </summary>
 		public static string ConvertLabel(string label)
 		{
 			return label.Replace("_", "__").Replace("&", "_");

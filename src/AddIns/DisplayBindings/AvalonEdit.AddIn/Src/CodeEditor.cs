@@ -163,10 +163,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var iconBarMargin = new IconBarMargin(iconBarManager) { TextView = textView };
 			textEditor.TextArea.LeftMargins.Insert(0, iconBarMargin);
 			
-			textEditor.TextArea.TextView.ContextMenu = MenuService.CreateContextMenu(adapter, contextMenuPath);
 			textEditor.TextArea.TextView.MouseRightButtonDown += textEditor_TextArea_TextView_MouseRightButtonDown;
+			textEditor.TextArea.TextView.ContextMenuOpening += textEditor_TextArea_TextView_ContextMenuOpening;
 			
 			return textEditor;
+		}
+		
+		void textEditor_TextArea_TextView_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+		{
+			ITextEditorComponent component = (ITextEditorComponent)sender;
+			ITextEditor adapter = (ITextEditor)component.GetService(typeof(ITextEditor));
+			MenuService.CreateContextMenu(adapter, contextMenuPath).IsOpen = true;
 		}
 		
 		void textEditor_TextArea_TextView_MouseRightButtonDown(object sender, MouseButtonEventArgs e)

@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.Content = new StackPanel {
 					Orientation = Orientation.Horizontal,
 					Children = {
-						new PixelSnapper(new Image { Source = image.ImageSource }),
+						image.CreatePixelSnappedImage(),
 						new TextBlock {
 							Text = text,
 							Margin = new Thickness(4, 0, 0, 0)

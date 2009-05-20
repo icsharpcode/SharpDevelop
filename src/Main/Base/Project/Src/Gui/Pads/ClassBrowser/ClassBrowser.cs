@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -77,7 +78,11 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		{
 			instance = this;
 			classBrowserTreeView.Dock         = DockStyle.Fill;
-			classBrowserTreeView.ImageList    = ClassBrowserIconService.ImageList;
+			// we need to create a copy of the image list because adding image to
+			// ClassBrowserIconService.ImageList is not allowed, but the ExtTreeView sometimes
+			// does add images to its image list.
+			classBrowserTreeView.ImageList    = new ImageList();
+			classBrowserTreeView.ImageList.Images.AddRange(ClassBrowserIconService.ImageList.Images.Cast<System.Drawing.Image>().ToArray());
 			classBrowserTreeView.AfterSelect += new TreeViewEventHandler(ClassBrowserTreeViewAfterSelect);
 			
 			contentPanel.Controls.Add(classBrowserTreeView);
