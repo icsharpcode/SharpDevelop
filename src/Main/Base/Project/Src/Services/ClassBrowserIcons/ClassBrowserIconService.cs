@@ -97,6 +97,7 @@ namespace ICSharpCode.SharpDevelop
 			bool imgListPresent;
 			lock (lockObj) {
 				image = new ClassBrowserImage(baseImage, imglistEntries.Count);
+				imglistEntries.Add(image);
 				imgListPresent = (imglist != null);
 			}
 			// We need to do the call outside the lock to prevent deadlocks.
