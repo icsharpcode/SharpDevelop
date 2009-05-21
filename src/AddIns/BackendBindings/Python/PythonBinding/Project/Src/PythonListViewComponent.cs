@@ -48,7 +48,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			AppendComment(codeBuilder);
 			AppendListViewItemProperties(codeBuilder);
-			AppendComponentProperties(codeBuilder);
+			AppendComponentProperties(codeBuilder, true, false, false);
 			AppendChildComponentProperties(codeBuilder);
 		}
 		

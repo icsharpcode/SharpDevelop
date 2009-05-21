@@ -17,35 +17,28 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Designer
 {
 	[TestFixture]
-	public class GenerateSimpleFormTestFixture
+	public class GenerateToolTipFormTestFixture
 	{
 		string generatedPythonCode;
-		string formPropertiesCode;
-		string propertyOwnerName;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
 				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
-				Form form = (Form)host.RootComponent;			
+				IEventBindingService eventBindingService = new MockEventBindingService(host);
+				Form form = (Form)host.RootComponent;
 				form.ClientSize = new Size(284, 264);
-				
+
 				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
-				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
-				namePropertyDescriptor.SetValue(form, "MainForm");
+				PropertyDescriptor descriptor = descriptors.Find("Name", false);
+				descriptor.SetValue(form, "MainForm");
+
+				ToolTip toolTip = (ToolTip)host.CreateComponent(typeof(ToolTip), "toolTip1");
 				
 				string indentString = "    ";
 				PythonControl pythonForm = new PythonControl(indentString);
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
-				
-				PythonCodeBuilder codeBuilder = new PythonCodeBuilder();
-				codeBuilder.IndentString = indentString;
-				codeBuilder.IncreaseIndent();
-				PythonDesignerRootComponent designerRootComponent = new PythonDesignerRootComponent(form);
-				propertyOwnerName = designerRootComponent.GetPropertyOwnerName();
-				designerRootComponent.AppendComponentProperties(codeBuilder, true, false, false);
-				formPropertiesCode = codeBuilder.ToString();
 			}
 		}
 		
@@ -53,6 +46,8 @@ namespace PythonBinding.Tests.Designer
 		public void GeneratedCode()
 		{
 			string expectedCode = "def InitializeComponent(self):\r\n" +
+								"    self._components = System.ComponentModel.Container()\r\n" +
+								"    self._toolTip1 = System.Windows.Forms.ToolTip(self._components)\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # MainForm\r\n" +
@@ -62,21 +57,7 @@ namespace PythonBinding.Tests.Designer
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			
-			Assert.AreEqual(expectedCode, generatedPythonCode);
+			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}
-		
-		[Test]
-		public void FormPropertiesCode()
-		{
-			string expectedCode = "    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
-								"    self.Name = \"MainForm\"\r\n";
-			Assert.AreEqual(expectedCode, formPropertiesCode);
-		}
-		
-		[Test]
-		public void PropertyOwnerName()
-		{
-			Assert.AreEqual("self", propertyOwnerName);
-		}		
 	}
 }

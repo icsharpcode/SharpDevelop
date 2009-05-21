@@ -72,5 +72,33 @@ namespace PythonBinding.Tests.Designer
 			codeBuilder.AppendIndentedLine("abc");
 			Assert.AreEqual("\tabc\r\n", codeBuilder.ToString());
 		}
+		
+		[Test]
+		public void InitialIndentWhenCodeBuilderCreatedIsZero()
+		{
+			Assert.AreEqual(0, codeBuilder.Indent);
+		}
+		
+		[Test]
+		public void IncreaseIndentByOne()
+		{
+			codeBuilder.IncreaseIndent();
+			Assert.AreEqual(1, codeBuilder.Indent);
+		}
+		
+		[Test]
+		public void LengthAfterAddingText()
+		{
+			codeBuilder.Append("abc");
+			Assert.AreEqual(3, codeBuilder.Length);
+		}
+		
+		[Test]
+		public void IndentPassedToConstructor()
+		{
+			codeBuilder = new PythonCodeBuilder(2);
+			codeBuilder.AppendIndented("abc");
+			Assert.AreEqual("\t\tabc", codeBuilder.ToString());
+		}
 	}
 }

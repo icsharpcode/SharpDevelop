@@ -20,6 +20,11 @@ namespace ICSharpCode.PythonBinding
 		{
 		}
 		
+		public PythonCodeBuilder(int initialIndent)
+		{
+			indent = initialIndent;
+		}
+		
 		/// <summary>
 		/// Gets or sets the string used for indenting.
 		/// </summary>
@@ -76,6 +81,17 @@ namespace ICSharpCode.PythonBinding
 		public void DecreaseIndent()
 		{
 			indent--;
+		}
+		
+		public int Indent {
+			get { return indent; }
+		}
+
+		/// <summary>
+		/// Gets the length of the current code string.
+		/// </summary>
+		public int Length {
+			get { return codeBuilder.Length; }
 		}
 	}
 }

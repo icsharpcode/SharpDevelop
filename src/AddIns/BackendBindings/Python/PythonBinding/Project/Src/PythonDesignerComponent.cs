@@ -240,7 +240,6 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public virtual void AppendComponent(PythonCodeBuilder codeBuilder)
 		{
-			AppendComment(codeBuilder);
 			AppendComponentProperties(codeBuilder);
 			AppendChildComponentProperties(codeBuilder);
 		}
@@ -372,7 +371,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void AppendComponentProperties(PythonCodeBuilder codeBuilder)
 		{
-			AppendComponentProperties(codeBuilder, true, false, false);
+			AppendComponentProperties(codeBuilder, true, false, true);
 		}
 		
 		/// <summary>
@@ -520,13 +519,18 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void AppendComponentProperties(PythonCodeBuilder codeBuilder, bool addComponentNameToProperty, bool addChildComponentProperties, bool addComment)
 		{			
-			if (addComment) {
+			PythonCodeBuilder propertiesBuilder = new PythonCodeBuilder(codeBuilder.Indent);
+			propertiesBuilder.IndentString = codeBuilder.IndentString;
+			
+			AppendProperties(propertiesBuilder);
+			AppendEventHandlers(propertiesBuilder, eventBindingService);
+
+			// Add comment if we have added some properties or event handlers.
+			if (addComment && propertiesBuilder.Length > 0) {
 				AppendComment(codeBuilder);
 			}
-
-			AppendProperties(codeBuilder);
-			AppendEventHandlers(codeBuilder, eventBindingService);
-
+			codeBuilder.Append(propertiesBuilder.ToString());
+			
 			if (addChildComponentProperties) {	
 				AppendChildComponentProperties(codeBuilder);
 			}
