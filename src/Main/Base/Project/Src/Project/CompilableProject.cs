@@ -411,10 +411,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override void ConvertToMSBuild35(bool changeTargetFrameworkToNet35)
+		public override void ConvertToMSBuild40(bool changeTargetFrameworkToNet40)
 		{
 			lock (SyncRoot) {
-				base.ConvertToMSBuild35(changeTargetFrameworkToNet35);
+				base.ConvertToMSBuild40(changeTargetFrameworkToNet40);
 				
 				var winFxImport = MSBuildProject.Imports.Cast<Microsoft.Build.BuildEngine.Import>()
 					.Where(import => !import.IsImported)
@@ -422,12 +422,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (winFxImport != null) {
 					MSBuildProject.Imports.RemoveImport(winFxImport);
 				}
-				if (changeTargetFrameworkToNet35) {
-					bool isDotNet35 = TargetFrameworkVersion == "v3.5";
-					SetProperty(null, null, "TargetFrameworkVersion", "v3.5", PropertyStorageLocations.Base, true);
+				if (changeTargetFrameworkToNet40) {
+					bool isDotNet40 = TargetFrameworkVersion == "v4.0";
+					SetProperty(null, null, "TargetFrameworkVersion", "v4.0", PropertyStorageLocations.Base, true);
 					
-					if (!isDotNet35) {
-						AddDotnet35References();
+					if (!isDotNet40) {
+						AddDotnet40References();
 					}
 				} else {
 					foreach (string config in ConfigurationNames) {
@@ -455,7 +455,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			AddOrRemoveExtensions();
 		}
 		
-		protected internal virtual void AddDotnet35References()
+		protected internal virtual void AddDotnet40References()
 		{
 			ReferenceProjectItem rpi = new ReferenceProjectItem(this, "System.Core");
 			rpi.SetMetadata("RequiredTargetFramework", "3.5");
@@ -486,7 +486,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				CompilableProject project = (CompilableProject)Owner;
 				if (project.TargetFrameworkVersion == "v3.5") {
-					project.AddDotnet35References();
+					project.AddDotnet40References();
 				}
 			}
 		}

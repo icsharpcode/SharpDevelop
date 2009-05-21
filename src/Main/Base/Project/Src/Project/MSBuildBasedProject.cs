@@ -82,17 +82,19 @@ namespace ICSharpCode.SharpDevelop.Project
 					    || project.DefaultToolsVersion == "2.0")
 					{
 						return Solution.SolutionVersionVS2005;
-					} else {
+					} else if (project.DefaultToolsVersion == "3.0" || project.DefaultToolsVersion == "3.5") {
 						return Solution.SolutionVersionVS2008;
+					} else {
+						return Solution.SolutionVersionVS2010;
 					}
 				}
 			}
 		}
 		
-		public virtual void ConvertToMSBuild35(bool changeTargetFrameworkToNet35)
+		public virtual void ConvertToMSBuild40(bool changeTargetFrameworkToNet40)
 		{
 			lock (SyncRoot) {
-				project.DefaultToolsVersion = "3.5";
+				project.DefaultToolsVersion = "4.0";
 			}
 		}
 		

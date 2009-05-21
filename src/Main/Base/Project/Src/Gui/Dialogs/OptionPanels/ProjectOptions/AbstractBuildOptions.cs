@@ -243,13 +243,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ComboBox targetFrameworkComboBox = (ComboBox)ControlDictionary["targetFrameworkComboBox"];
 			
 			if (convertProjectToMSBuild35Button != null) {
-				if (project.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
-					// VS05 project
+				if (project.MinimumSolutionVersion <= Solution.SolutionVersionVS2008) {
+					// VS05/VS08 project
 					targetFrameworkComboBox.Enabled = false;
 					convertProjectToMSBuild35Button.Click += OnConvertProjectToMSBuild35ButtonClick;
 					return;
 				} else {
-					// VS08 project
+					// VS2010 project
 					targetFrameworkComboBox.Enabled = true;
 					convertProjectToMSBuild35Button.Visible = false;
 				}
@@ -279,13 +279,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						foreach (IProject p in ProjectService.OpenSolution.Projects) {
 							MSBuildBasedProject msbp = p as MSBuildBasedProject;
 							if (msbp != null)
-								msbp.ConvertToMSBuild35(dlg.ChangeTargetFramework);
+								msbp.ConvertToMSBuild40(dlg.ChangeTargetFramework);
 						}
 					} else {
-						project.ConvertToMSBuild35(dlg.ChangeTargetFramework);
+						project.ConvertToMSBuild40(dlg.ChangeTargetFramework);
 					}
-					if (project.MinimumSolutionVersion == Solution.SolutionVersionVS2005)
-						throw new InvalidOperationException("Project did not convert to MSBuild 3.5");
+					if (project.MinimumSolutionVersion < Solution.SolutionVersionVS2010)
+						throw new InvalidOperationException("Project did not convert to MSBuild 4.0");
 					ProjectService.SaveSolution();
 					InitTargetFramework();
 				}
