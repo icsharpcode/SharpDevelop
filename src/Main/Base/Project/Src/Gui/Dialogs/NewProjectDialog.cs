@@ -239,6 +239,15 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		void PathChanged(object sender, EventArgs e)
 		{
+			string solution = solutionNameTextBox.Text.Trim();
+			string name     = nameTextBox.Text.Trim();
+			string location = locationTextBox.Text.Trim();
+			string projectNameError = CheckProjectName(solution, name, location);
+			if (projectNameError != null) {
+				createInLabel.Text = StringParser.Parse(projectNameError).Replace("\n", " ").Replace("\r", "");
+				return;
+			}
+			
 			string solutionPath;
 			try {
 				solutionPath = NewProjectDirectory;
@@ -274,6 +283,25 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		public string NewProjectLocation;
 		public string NewSolutionLocation;
 		
+		string CheckProjectName(string solution, string name, string location)
+		{
+			if (name.Length == 0 || !char.IsLetter(name[0]) && name[0] != '_') {
+				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustStartWithLetter}";
+			}
+			if (!FileUtility.IsValidDirectoryName(solution)
+			    || !FileUtility.IsValidDirectoryName(name))
+			{
+				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError}";
+			}
+			if (name.EndsWith(".")) {
+				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustNotEndWithDot}";
+			}
+			if (!FileUtility.IsValidPath(location) || !Path.IsPathRooted(location)) {
+				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.SpecifyValidLocation}";
+			}
+			return null;
+		}
+		
 		void OpenEvent(object sender, EventArgs e)
 		{
 			
@@ -287,19 +315,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			string solution = solutionNameTextBox.Text.Trim();
 			string name     = nameTextBox.Text.Trim();
 			string location = locationTextBox.Text.Trim();
-			if (!FileUtility.IsValidDirectoryName(solution)
-			    || !FileUtility.IsValidDirectoryName(name)
-			    || !FileUtility.IsValidPath(location))
-			{
-				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError}");
-				return;
-			}
-			if (!char.IsLetter(name[0]) && name[0] != '_') {
-				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustStartWithLetter}");
-				return;
-			}
-			if (name.EndsWith(".")) {
-				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustNotEndWithDot}");
+			string projectNameError = CheckProjectName(solution, name, location);
+			if (projectNameError != null) {
+				MessageService.ShowError(projectNameError);
 				return;
 			}
 			
