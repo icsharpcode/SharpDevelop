@@ -165,6 +165,7 @@
 			<Word>on</Word>
 			<Word>equals</Word>
 			<Word>var</Word>
+			<Word>dynamic</Word>
 		</Keywords>
 		
 		<Keywords fontWeight="bold" foreground="Teal">

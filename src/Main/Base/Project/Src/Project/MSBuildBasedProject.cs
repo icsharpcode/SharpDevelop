@@ -163,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileName = information.OutputProjectFileName;
 			
 			project.FullFileName = information.OutputProjectFileName;
-			project.DefaultToolsVersion = "3.5";
+			project.DefaultToolsVersion = "4.0";
 			
 			base.IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
 			MSBuild.BuildPropertyGroup group = project.AddNewPropertyGroup(false);
