@@ -43,16 +43,20 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// The underlying debugger service used for getting expression values.
 		/// </summary>
-		private WindowsDebugger _debuggerService;
+		private WindowsDebugger debuggerService;
 		/// <summary>
 		/// The resulting object graph.
 		/// </summary>
-		private ObjectGraph _resultGraph;
+		private ObjectGraph resultGraph;
+		/// <summary>
+		/// System.Runtime.CompilerServices.GetHashCode method, for obtaining non-overriden hash codes from debuggee.
+		/// </summary>
+		private MethodInfo hashCodeMethod;
 		
 		/// <summary>
 		/// Given hash code, lookup already existing node(s) with this hash code.
 		/// </summary>
-		private Lookup<string, ObjectNode> objectNodesForHashCode = new Lookup<string, ObjectNode>();
+		private Lookup<int, ObjectNode> objectNodesForHashCode = new Lookup<int, ObjectNode>();
 		
 		/// <summary>
 		/// Binding flags for getting member expressions.
@@ -66,7 +70,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="debuggerService">Debugger service.</param>
 		public ObjectGraphBuilder(WindowsDebugger debuggerService)
 		{
-			_debuggerService = debuggerService;
+			this.debuggerService = debuggerService;
+			
+			DebugType helpersType =  DebugType.Create(debuggerService.DebuggedProcess, null, "System.Runtime.CompilerServices.RuntimeHelpers");
+			this.hashCodeMethod = helpersType.GetMember("GetHashCode", BindingFlags.Public | BindingFlags.Static | BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
 		}
 		
 		/// <summary>
@@ -81,15 +88,15 @@ namespace Debugger.AddIn.Visualizers.Graph
 				throw new DebuggerVisualizerException("Expression cannot be empty.");
 			}
 			
-			_resultGraph = new ObjectGraph();
+			resultGraph = new ObjectGraph();
 			
 			// empty graph for null expression
-			if (!_debuggerService.GetValueFromName(expression).IsNull)
+			if (!debuggerService.GetValueFromName(expression).IsNull)
 			{
-				_resultGraph.Root = buildGraphRecursive(_debuggerService.GetValueFromName(expression).GetPermanentReference());
+				resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference());
 			}
 			
-			return _resultGraph;
+			return resultGraph;
 		}
 		
 		/// <summary>
@@ -117,7 +124,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				if (isOfAtomicType(memberExpr))
 				{
 					// atomic members are added to the list of node's "properties"
-				    string memberValueAsString = memberExpr.Evaluate(_debuggerService.DebuggedProcess).AsString;
+				    string memberValueAsString = memberExpr.Evaluate(debuggerService.DebuggedProcess).AsString;
 				    thisNode.AddProperty(memberName, memberValueAsString);
 				}
 				else
@@ -153,7 +160,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			ObjectNode newNode = new ObjectNode();
 			
-			_resultGraph.AddNode(newNode);
+			resultGraph.AddNode(newNode);
 			// remember this node's hashcode for quick lookup
 			objectNodesForHashCode.Add(invokeGetHashCode(permanentReference), newNode);
 			
@@ -171,7 +178,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <returns></returns>
 		private ObjectNode getNodeForValue(Value value)
 		{
-			string objectHashCode = invokeGetHashCode(value);
+			int objectHashCode = invokeGetHashCode(value);
 			// are there any nodes with the same hash code?
 			LookupValueCollection<ObjectNode> nodesWithSameHashCode = objectNodesForHashCode[objectHashCode];
 			if (nodesWithSameHashCode == null)
@@ -194,11 +201,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="value">Valid value.</param>
 		/// <returns>Hash code of the object in the debugee.</returns>
-		private string invokeGetHashCode(Value value)
+		private int invokeGetHashCode(Value value)
 		{
-			MethodInfo method = value.Type.GetMember("GetHashCode", BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
-			string hashCode = value.InvokeMethod(method, null).AsString;
-			return hashCode;
+			// Dadid: I had hard time finding out how to invoke static method
+			// value.InvokeMethod is nice for instance methods.
+			// what about MethodInfo.Invoke() ?
+			// also, there could be an overload that takes 1 parameter instead of array
+			string defaultHashCode = Eval.InvokeMethod(this.hashCodeMethod, null, new Value[]{value}).AsString;
+			
+			//MethodInfo method = value.Type.GetMember("GetHashCode", BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
+			//string hashCode = value.InvokeMethod(method, null).AsString;
+			return int.Parse(defaultHashCode);
 		}
 		
 		/// <summary>
@@ -207,7 +220,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="expr">Expression to be checked.</param>
 		private void checkIsOfSupportedType(Expression expr)
 		{
-			DebugType typeOfValue = expr.Evaluate(_debuggerService.DebuggedProcess).Type;
+			DebugType typeOfValue = expr.Evaluate(debuggerService.DebuggedProcess).Type;
 			if (typeOfValue.IsArray)
 			{
 				// arrays will be supported of course in the final version
@@ -222,7 +235,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <returns>True if expression's type is atomic, False otherwise.</returns>
 		private bool isOfAtomicType(Expression expr)
 		{
-			DebugType typeOfValue = expr.Evaluate(_debuggerService.DebuggedProcess).Type;
+			DebugType typeOfValue = expr.Evaluate(debuggerService.DebuggedProcess).Type;
 			return (!typeOfValue.IsClass) || typeOfValue.IsString;
 		}
 		
@@ -230,22 +243,22 @@ namespace Debugger.AddIn.Visualizers.Graph
 			
 		private Value getPermanentReference(Expression expr)
 		{
-			return expr.Evaluate(_debuggerService.DebuggedProcess).GetPermanentReference();
+			return expr.Evaluate(debuggerService.DebuggedProcess).GetPermanentReference();
 		}
 		
 		private bool isNull(Expression expr)
 		{
-			return expr.Evaluate(_debuggerService.DebuggedProcess).IsNull;
+			return expr.Evaluate(debuggerService.DebuggedProcess).IsNull;
 		}
 		
 		private DebugType getType(Expression expr)
 		{
-			return expr.Evaluate(_debuggerService.DebuggedProcess).Type;
+			return expr.Evaluate(debuggerService.DebuggedProcess).Type;
 		}
 		
 		private ulong getObjectAddress(Expression expr)
 		{
-			return getObjectValue(expr.Evaluate(_debuggerService.DebuggedProcess));
+			return getObjectValue(expr.Evaluate(debuggerService.DebuggedProcess));
 		}
 		
 		private ulong getObjectValue(Value val)

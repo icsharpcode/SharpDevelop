@@ -19,6 +19,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// Additional info useful for internal algorithms, not to be visible to the user.
 		/// </summary>
     	internal Debugger.Value PermanentReference { get; set; }
+    	internal int HashCode { get; set; }
     	
         private List<ObjectEdge> _edges = new List<ObjectEdge>();
         /// <summary>
@@ -37,11 +38,11 @@ namespace Debugger.AddIn.Visualizers.Graph
             _edges.Add(new ObjectEdge { Name = edgeName, SourceNode = this, TargetNode = targetNode });
         }
 
-        private ObjectPropertyCollection _properties = new ObjectPropertyCollection();
+        private List<ObjectProperty> _properties = new List<ObjectProperty>();
         /// <summary>
         /// Properties representing atomic string values as part of the node.
         /// </summary>
-        public ObjectPropertyCollection Properties
+        public List<ObjectProperty> Properties
         {
             get { return _properties; }
         }

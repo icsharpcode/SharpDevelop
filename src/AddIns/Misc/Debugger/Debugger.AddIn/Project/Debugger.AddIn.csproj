@@ -191,7 +191,6 @@
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphBuilder.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectNode.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectProperty.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectPropertyCollection.cs" />
     <Compile Include="Src\Visualizers\Graph\ShowObjectGraphVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Graph\Utils\Lookup.cs" />
     <Compile Include="Src\Visualizers\Graph\Utils\LookupValueCollection.cs" />
