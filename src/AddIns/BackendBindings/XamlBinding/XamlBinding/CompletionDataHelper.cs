@@ -297,23 +297,22 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		
-		public static IEnumerable<IInsightItem> MemberInsight(MemberResolveResult mrr)
+		public static IEnumerable<IInsightItem> MemberInsight(MemberResolveResult result)
 		{
-			switch (mrr.ResolvedType.FullyQualifiedName) {
+			switch (result.ResolvedType.FullyQualifiedName) {
 				case "System.Windows.Thickness":
-					yield return new MemberInsightItem(mrr.ResolvedMember, "left");
-					yield return new MemberInsightItem(mrr.ResolvedMember, "left, top");
-					yield return new MemberInsightItem(mrr.ResolvedMember, "left, top, right, bottom");
+					yield return new MemberInsightItem(result.ResolvedMember, "left");
+					yield return new MemberInsightItem(result.ResolvedMember, "left, top");
+					yield return new MemberInsightItem(result.ResolvedMember, "left, top, right, bottom");
 					break;
 				case "System.Windows.Size":
-					yield return new MemberInsightItem(mrr.ResolvedMember, "width, height");
+					yield return new MemberInsightItem(result.ResolvedMember, "width, height");
 					break;
 				case "System.Windows.Point":
-					yield return new MemberInsightItem(mrr.ResolvedMember, "x, y");
+					yield return new MemberInsightItem(result.ResolvedMember, "x, y");
 					break;
 				case "System.Windows.Rect":
-					yield return new MemberInsightItem(mrr.ResolvedMember, "x, y, width, height");
+					yield return new MemberInsightItem(result.ResolvedMember, "x, y, width, height");
 					break;
 			}
 		}
@@ -375,7 +374,7 @@ namespace ICSharpCode.XamlBinding
 			AttributeValue selItem = context.AttributeValue.ExtensionValue.PositionalArguments.LastOrDefault();
 			if (context.PressedKey == '.') {
 				if (selItem != null && selItem.IsString) {
-					var rr = ResolveStringValue(selItem.StringValue, list, context.Path, info, editor) as TypeResolveResult;
+					var rr = ResolveStringValue(selItem.StringValue, context.Path, info, editor) as TypeResolveResult;
 					if (rr != null)
 						list.Items.AddRange(MemberCompletion(editor, rr.ResolvedType));
 				}
@@ -383,7 +382,7 @@ namespace ICSharpCode.XamlBinding
 				if (selItem != null && selItem.IsString) {
 					int index = selItem.StringValue.IndexOf('.');
 					string s = (index > -1) ? selItem.StringValue.Substring(0, index) : selItem.StringValue;
-					var rr = ResolveStringValue(s, list, context.Path, info, editor) as TypeResolveResult;
+					var rr = ResolveStringValue(s, context.Path, info, editor) as TypeResolveResult;
 					if (rr != null) {
 						list.Items.AddRange(MemberCompletion(editor, rr.ResolvedType));
 						
@@ -410,7 +409,7 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		static ResolveResult ResolveStringValue(string value, XamlCompletionItemList list, XmlElementPath path, ParseInformation info, ITextEditor editor)
+		static ResolveResult ResolveStringValue(string value, XmlElementPath path, ParseInformation info, ITextEditor editor)
 		{
 			var resolver = new XamlResolver();
 			var rr = resolver.Resolve(new ExpressionResult(value, new XamlExpressionContext(path, string.Empty, false)), info, editor.Document.Text);

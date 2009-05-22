@@ -67,5 +67,14 @@ namespace ICSharpCode.XamlBinding.Tests
 			
 			Assert.AreEqual(true, XmlParser.IsInsideAttributeValue(xaml, offset));
 		}
+		
+		[Test]
+		public void InMarkupExtensionNamedParameterTest()
+		{
+			string xaml = "<Test val1=\"{Binding Value, Path=Control}\" />";
+			int offset = "<Test val1=\"{Binding Value, Path=".Length;
+			
+			Assert.AreEqual(true, XmlParser.IsInsideAttributeValue(xaml, offset));
+		}
 	}
 }

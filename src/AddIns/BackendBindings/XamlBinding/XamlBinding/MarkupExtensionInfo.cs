@@ -57,7 +57,6 @@ namespace ICSharpCode.XamlBinding
 				throw new ArgumentNullException("value");
 			
 			this.stringValue = value;
-			this.extensionValue = null;
 		}
 		
 		public AttributeValue(MarkupExtensionInfo value)
@@ -65,7 +64,6 @@ namespace ICSharpCode.XamlBinding
 			if (value == null)
 				throw new ArgumentNullException("value");
 			
-			this.stringValue = null;
 			this.extensionValue = value;
 		}
 	}

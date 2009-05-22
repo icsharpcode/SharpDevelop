@@ -40,8 +40,10 @@ namespace ICSharpCode.XamlBinding
 				
 				if (cItem.Entity is IProperty || cItem.Entity is IEvent) {
 					if (context.Editor.Document.GetCharAt(context.StartOffset - 1) != '.') {
-						context.Editor.Document.Insert(context.EndOffset, "=\"\"");
-						context.Editor.Caret.Offset--;
+						if (!item.Text.EndsWith("=", StringComparison.OrdinalIgnoreCase)) {
+							context.Editor.Document.Insert(context.EndOffset, "=\"\"");
+							context.Editor.Caret.Offset--;
+						}
 						
 						XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 					}
@@ -84,7 +86,7 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		void CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem)
+		static void CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem)
 		{
 			ParseInformation p = ParserService.GetParseInformation(context.Editor.FileName);
 			var unit = p.MostRecentCompilationUnit;
@@ -112,7 +114,7 @@ namespace ICSharpCode.XamlBinding
 					ParametrizedNode node = CodeGenerator.ConvertMember(method, new ClassFinder(part, context.Editor.Caret.Line, context.Editor.Caret.Column));
 					
 					node.Name = completionItem.HandlerName;
-										
+					
 					node.Modifier = Modifiers.None;
 					
 					IViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName);

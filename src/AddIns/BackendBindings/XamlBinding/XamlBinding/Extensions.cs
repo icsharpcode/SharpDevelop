@@ -15,25 +15,34 @@ namespace ICSharpCode.XamlBinding
 {
 	public static class Extensions
 	{
-		public static string[] Split(this string s, StringSplitOptions options, params char[] delimiters)
+		public static string[] Split(this string thisValue, StringSplitOptions options, params char[] delimiters)
 		{
-			return s.Split(delimiters, options);
+			if (thisValue == null)
+				throw new ArgumentNullException("thisValue");
+			
+			return thisValue.Split(delimiters, options);
 		}
 		
-		public static bool EndsWith(this string s, StringComparison comparison, params char[] characters)
+		public static bool EndsWith(this string thisValue, StringComparison comparison, params char[] characters)
 		{
+			if (thisValue == null)
+				throw new ArgumentNullException("thisValue");
+			
 			foreach (var c in characters) {
-				if (s.EndsWith(c.ToString(), comparison))
+				if (thisValue.EndsWith(c.ToString(), comparison))
 					return true;
 			}
 			
 			return false;
 		}
 		
-		public static QualifiedName LastOrDefault(this QualifiedNameCollection coll)
+		public static QualifiedName LastOrDefault(this QualifiedNameCollection collection)
 		{
-			if (coll.Count > 0)
-				return coll[coll.Count - 1];
+			if (collection == null)
+				throw new ArgumentNullException("collection");
+			
+			if (collection.Count > 0)
+				return collection[collection.Count - 1];
 			
 			return null;
 		}

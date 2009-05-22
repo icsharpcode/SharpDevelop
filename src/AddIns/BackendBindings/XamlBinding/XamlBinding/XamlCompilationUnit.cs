@@ -73,7 +73,7 @@ namespace ICSharpCode.XamlBinding
 				throw new ArgumentNullException("pc");
 			if (xmlNamespace == null || className == null)
 				return null;
-			if (xmlNamespace.StartsWith("clr-namespace:")) {
+			if (xmlNamespace.StartsWith("clr-namespace:", StringComparison.OrdinalIgnoreCase)) {
 				return CreateClrNamespaceType(pc, xmlNamespace, className);
 			}
 			else {
@@ -111,7 +111,7 @@ namespace ICSharpCode.XamlBinding
 				throw new ArgumentNullException("pc");
 			
 			if (!string.IsNullOrEmpty(xmlNamespace)) {
-				if (xmlNamespace.StartsWith("clr-namespace:"))
+				if (xmlNamespace.StartsWith("clr-namespace:", StringComparison.OrdinalIgnoreCase))
 					return pc.GetNamespaceContents(GetNamespaceNameFromClrNamespace(xmlNamespace)).OfType<IClass>();
 				else {
 					var list = new ArrayList();

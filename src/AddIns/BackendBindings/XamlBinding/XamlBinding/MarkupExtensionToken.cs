@@ -11,8 +11,8 @@ namespace ICSharpCode.XamlBinding
 {
 	public sealed class MarkupExtensionToken
 	{
-		public readonly MarkupExtensionTokenKind Kind;
-		public readonly string Value;
+		public MarkupExtensionTokenKind Kind { get; private set; }
+		public string Value { get; private set; }
 		
 		public MarkupExtensionToken(MarkupExtensionTokenKind kind, string value)
 		{

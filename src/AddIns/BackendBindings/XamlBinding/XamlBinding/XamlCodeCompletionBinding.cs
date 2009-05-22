@@ -31,8 +31,6 @@ namespace ICSharpCode.XamlBinding
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
-			XamlResolver resolver = new XamlResolver();
-			XamlParser parser = new XamlParser();
 			ParseInformation info = ParserService.GetParseInformation(editor.FileName);
 			
 			XamlContext context = CompletionDataHelper.ResolveContext(editor, ch);
@@ -108,26 +106,15 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				default:
-					char c = char.IsWhiteSpace(ch) ? ch : editor.Document.GetCharAt(editor.Caret.Offset - 1);
-					
-					if (!string.IsNullOrEmpty(context.AttributeName)) {
-						if (DoMarkupExtensionCompletion(editor, info, context))
-							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
-					} else if (context.Path != null && (c == ' ' || c == '\t')) {
-						list = CompletionDataHelper.CreateListForContext(editor, context);
-						editor.ShowCompletionWindow(list);
-						if (ch == ' ' || ch == '\t')
-							return CodeCompletionKeyPressResult.Completed;
-						else
-							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
-					}
-					break;
+					editor.Document.Insert(editor.Caret.Offset, ch.ToString());
+					this.CtrlSpace(editor);
+					return CodeCompletionKeyPressResult.EatKey;
 			}
 			
 			return CodeCompletionKeyPressResult.None;
 		}
 		
-		bool DoXmlTagCompletion(ITextEditor editor)
+		static bool DoXmlTagCompletion(ITextEditor editor)
 		{
 			int offset = editor.Caret.Offset;
 			if (offset > 0) {
@@ -162,25 +149,17 @@ namespace ICSharpCode.XamlBinding
 			if (context.Path != null) {
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
 					var list = CompletionDataHelper.CreateListForContext(editor, context) as XamlCompletionItemList;
-					string starter = editor.GetWordBeforeCaret();
+					string starter = editor.GetWordBeforeCaret().Trim('<');
 					if (!string.IsNullOrEmpty(starter) && !starter.EndsWith(StringComparison.Ordinal, ' ', '\t', '\n', '\r'))
 						list.PreselectionLength = starter.Length;
 					editor.ShowCompletionWindow(list);
 					return true;
 				} else {
-					// DO NOT USE CompletionDataHelper.CreateListForContext here!!! might result in endless recursion!!!!
-					string attribute = XmlParser.GetAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset);
-					string attribValue = XmlParser.GetAttributeValueAtIndex(editor.Document.Text, editor.Caret.Offset);
-					int offsetFromValueStart = Utils.GetOffsetFromValueStart(editor.Document.Text, editor.Caret.Offset);
-					
-					if (!string.IsNullOrEmpty(attribute)) {
-						string interestingPart = attribValue.Substring(0, offsetFromValueStart);
-						
-						AttributeValue value = MarkupExtensionParser.ParseValue(interestingPart);
-						
+					// DO NOT USE CompletionDataHelper.CreateListForContext here!!! might result in endless recursion!!!!					
+					if (!string.IsNullOrEmpty(context.AttributeName)) {						
 						if (!DoMarkupExtensionCompletion(editor, info, context)) {
 							XamlResolver resolver = new XamlResolver();
-							var mrr = resolver.Resolve(new ExpressionResult(attribute, new XamlExpressionContext(context.Path, attribute, false)),
+							var mrr = resolver.Resolve(new ExpressionResult(context.AttributeName, new XamlExpressionContext(context.Path, context.AttributeName, false)),
 							                           info, editor.Document.Text) as MemberResolveResult;
 							if (mrr != null && mrr.ResolvedType != null) {
 								var c = mrr.ResolvedType.GetUnderlyingClass();
@@ -196,13 +175,13 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 
-		bool DoMarkupExtensionCompletion(ITextEditor editor, ParseInformation info, XamlContext context)
+		static bool DoMarkupExtensionCompletion(ITextEditor editor, ParseInformation info, XamlContext context)
 		{
 			if (context.AttributeValue != null && !context.AttributeValue.IsString) {
 				var completionList = CompletionDataHelper.CreateMarkupExtensionCompletion(context, info, editor);
 				editor.ShowCompletionWindow(completionList);
 				var insightList = CompletionDataHelper.CreateMarkupExtensionInsight(context, info, editor);
-				editor.ShowInsightWindow(insightList);
+				//editor.ShowInsightWindow(insightList);
 				return true;
 			}
 			

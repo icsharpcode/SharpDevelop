@@ -19,9 +19,9 @@ namespace ICSharpCode.XamlBinding
 	{
 		public static readonly XamlExpressionContext Empty = new XamlExpressionContext(new XmlElementPath(), null, false);
 
-		public readonly XmlElementPath ElementPath;
-		public readonly string AttributeName;
-		public readonly bool InAttributeValue;
+		public XmlElementPath ElementPath { get; private set; }
+		public string AttributeName { get; private set; }
+		public bool InAttributeValue { get; private set; }
 
 		public XamlExpressionContext(XmlElementPath elementPath, string attributeName, bool inAttributeValue)
 		{

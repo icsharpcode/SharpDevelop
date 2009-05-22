@@ -75,9 +75,9 @@ namespace ICSharpCode.XamlBinding
 				do {
 					LoggingService.Debug("name: " + reader.Name + " value: " + reader.Value);
 					int start = reader.Name.IndexOf(':') + 1;
-					string plainName = reader.Name.Substring(start, reader.Name.Length - start).ToLowerInvariant();
+					string plainName = reader.Name.Substring(start, reader.Name.Length - start).ToUpperInvariant();
 					
-					if (plainName == name.ToLowerInvariant())
+					if (plainName == name.ToUpperInvariant())
 						return reader.Value;
 				} while (reader.MoveToNextAttribute());
 			} catch (XmlException) { }
@@ -225,7 +225,7 @@ namespace ICSharpCode.XamlBinding
 			var list = Utils.GetXmlNamespacesForOffset(xaml, offset);
 			var item = list.FirstOrDefault(i => i.Value == CompletionDataHelper.XamlNamespace);
 			
-			if (item.Key.StartsWith("xmlns:"))
+			if (item.Key.StartsWith("xmlns:", StringComparison.OrdinalIgnoreCase))
 				return item.Key.Substring("xmlns:".Length);
 			return string.Empty;
 		}
@@ -241,11 +241,11 @@ namespace ICSharpCode.XamlBinding
 				offset = xaml.Length - 1;
 			
 			string interestingPart = xaml.Substring(0, offset);
-			int end = interestingPart.LastIndexOf("-->");
+			int end = interestingPart.LastIndexOf("-->", StringComparison.OrdinalIgnoreCase);
 			
 			interestingPart = (end > -1) ? interestingPart.Substring(end, interestingPart.Length - end) : interestingPart;
 			
-			return interestingPart.LastIndexOf("<!--") != -1;
+			return interestingPart.LastIndexOf("<!--", StringComparison.OrdinalIgnoreCase) != -1;
 		}
 	}
 }
