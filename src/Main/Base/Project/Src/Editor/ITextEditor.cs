@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		void ShowCompletionWindow(ICompletionItemList data);
 		
 		/// <summary>
-		/// Open a new insight window showing the specific insight items.
+		/// Open a new insight window showing the specified insight items.
 		/// </summary>
 		/// <param name="items">The insight items to show in the window.
 		/// If this property is null or an empty list, the insight window will not be shown.</param>

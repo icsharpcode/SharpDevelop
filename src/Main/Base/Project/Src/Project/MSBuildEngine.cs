@@ -342,7 +342,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			void OnProjectFinished(object sender, ProjectFinishedEventArgs e)
 			{
 				FlushCurrentError();
-				worker.projectFiles.Pop();
+				// it's possible that MSBuild raises ProjectFinished without a matching
+				// ProjectStarted - e.g. if an additional import is missing
+				if (worker.projectFiles.Count > 0)
+					worker.projectFiles.Pop();
 			}
 			
 			string activeTaskName;
