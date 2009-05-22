@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public sealed class UnknownProjectItem : ProjectItem
 	{
-		internal UnknownProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
+		internal UnknownProjectItem(IProject project, IProjectItemBackendStore buildItem)
 			: base(project, buildItem)
 		{
 		}

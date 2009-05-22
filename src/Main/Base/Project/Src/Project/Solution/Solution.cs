@@ -19,14 +19,7 @@ using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public interface IMSBuildEngineProvider
-	{
-		MSBuild.Engine BuildEngine {
-			get;
-		}
-	}
-	
-	public class Solution : SolutionFolder, IDisposable, IMSBuildEngineProvider, IBuildable
+	public class Solution : SolutionFolder, IDisposable, IBuildable
 	{
 		public const int SolutionVersionVS2005 = 9;
 		public const int SolutionVersionVS2008 = 10;
@@ -37,16 +30,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		string fileName = String.Empty;
 		
-		MSBuild.Engine buildEngine = MSBuildInternals.CreateEngine();
-		
 		public Solution()
 		{
 			preferences = new SolutionPreferences(this);
-		}
-		
-		[Browsable(false)]
-		public MSBuild.Engine BuildEngine {
-			get { return buildEngine; }
 		}
 		
 		#region Enumerate projects/folders
@@ -1174,10 +1160,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			foreach (IProject project in Projects) {
 				project.Dispose();
-			}
-			if (buildEngine != null) {
-				buildEngine.UnloadAllProjects();
-				buildEngine = null;
 			}
 		}
 		#endregion

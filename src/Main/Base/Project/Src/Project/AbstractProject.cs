@@ -442,7 +442,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Creates a new projectItem for the passed itemType
 		/// </summary>
-		public virtual ProjectItem CreateProjectItem(Microsoft.Build.BuildEngine.BuildItem item)
+		public virtual ProjectItem CreateProjectItem(IProjectItemBackendStore item)
 		{
 			return new UnknownProjectItem(this, item);
 		}

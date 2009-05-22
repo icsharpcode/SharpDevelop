@@ -74,6 +74,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			if (sp != null && tp != null) {
 				lock (sp.SyncRoot) {
 					lock (tp.SyncRoot) {
+						throw new NotImplementedException();
+						/*
 						tp.MSBuildProject.RemoveAllPropertyGroups();
 						foreach (MSBuild.BuildPropertyGroup spg in sp.MSBuildProject.PropertyGroups) {
 							if (spg.IsImported) continue;
@@ -87,6 +89,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 						
 						// use the newly created IdGuid instead of the copied one
 						tp.SetProperty(MSBuildBasedProject.ProjectGuidPropertyName, tp.IdGuid);
+						*/
 					}
 				}
 			}
@@ -98,9 +101,10 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		protected void FixProperty(MSBuildBasedProject project, string propertyName, Converter<string, string> method)
 		{
 			lock (project.SyncRoot) {
-				foreach (MSBuild.BuildProperty p in project.GetAllProperties(propertyName)) {
+				throw new NotImplementedException();
+				/*foreach (MSBuild.BuildProperty p in project.GetAllProperties(propertyName)) {
 					p.Value = method(p.Value);
-				}
+				}*/
 			}
 		}
 		

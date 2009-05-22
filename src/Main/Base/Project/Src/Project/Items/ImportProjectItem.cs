@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
-		internal ImportProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
+		internal ImportProjectItem(IProject project, IProjectItemBackendStore buildItem)
 			: base(project, buildItem)
 		{
 		}

@@ -88,15 +88,13 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
-		public static IProject LoadProject(IMSBuildEngineProvider provider, string location, string title)
+		public static IProject LoadProject(Solution parentSolution, string location, string title)
 		{
-			return LoadProject(provider, location, title, "{" + Guid.Empty.ToString() + "}", null);
+			return LoadProject(parentSolution, location, title, "{" + Guid.Empty.ToString() + "}", null);
 		}
 		
-		public static IProject LoadProject(IMSBuildEngineProvider provider, string location, string title, string projectTypeGuid, IProgressMonitor progressMonitor)
+		public static IProject LoadProject(Solution parentSolution, string location, string title, string projectTypeGuid, IProgressMonitor progressMonitor)
 		{
-			if (provider == null)
-				throw new ArgumentNullException("provider");
 			if (location == null)
 				throw new ArgumentNullException("location");
 			if (title == null)
@@ -117,7 +115,7 @@ namespace ICSharpCode.SharpDevelop
 				if (binding != null) {
 					location = FileUtility.NormalizePath(location);
 					try {
-						newProject = binding.LoadProject(provider, location, title);
+						newProject = binding.LoadProject(location, title);
 					} catch (ProjectLoadException ex) {
 						LoggingService.Warn("Project load error", ex);
 						if (progressMonitor != null) progressMonitor.ShowingDialog = true;

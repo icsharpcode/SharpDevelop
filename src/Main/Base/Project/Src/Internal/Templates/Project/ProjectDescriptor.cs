@@ -326,7 +326,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				if (clearExistingImports || projectImports.Count > 0) {
 					if (!(project is MSBuildBasedProject))
 						throw new Exception("<Imports> may be only used in project templates for MSBuildBasedProjects");
-					
+					throw new NotImplementedException();
+					/*
 					if (clearExistingImports) {
 						MSBuildInternals.ClearImports(((MSBuildBasedProject)project).MSBuildProject);
 					}
@@ -342,7 +343,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							MessageService.ShowError(importsFailureMessage + "\n\n" + ex.Message);
 						}
 						return null;
-					}
+					}*/
 				}
 				
 				if (projectProperties.Count > 0) {

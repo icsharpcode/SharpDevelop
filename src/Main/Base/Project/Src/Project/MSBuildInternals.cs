@@ -17,7 +17,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using MSBuild = Microsoft.Build.BuildEngine;
+using MSBuild = Microsoft.Build;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static string Escape(string text)
 		{
-			return MSBuild.Utilities.Escape(text);
+			return MSBuild.Evaluation.ProjectCollection.Escape(text);
 		}
 		
 		/// <summary>
@@ -48,34 +48,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static string Unescape(string text)
 		{
-			if (text == null)
-				throw new ArgumentNullException("text");
-			StringBuilder b = null;
-			for (int i = 0; i < text.Length; i++) {
-				char c = text[i];
-				if (c == '%' && i + 2 < text.Length) {
-					if (b == null) b = new StringBuilder(text, 0, i, text.Length);
-					string a = text[i + 1].ToString() + text[i + 2].ToString();
-					int num;
-					if (int.TryParse(a, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out num)) {
-						b.Append((char)num);
-						i += 2;
-					} else {
-						b.Append('%');
-					}
-				} else {
-					if (b != null) {
-						b.Append(c);
-					}
-				}
-			}
-			if (b != null)
-				return b.ToString();
-			else
-				return text;
+			return MSBuild.Evaluation.ProjectCollection.Unescape(text);
 		}
 		#endregion
 		
+		/*
 		internal static void AddItemToGroup(MSBuild.BuildItemGroup group, ProjectItem item)
 		{
 			if (group == null)
@@ -143,6 +120,17 @@ namespace ICSharpCode.SharpDevelop.Project
 				tempProject = baseProject;
 			}
 		}
+		*/
+		
+		internal static PropertyStorageLocations GetLocationFromCondition(MSBuild.Construction.ProjectElement element)
+		{
+			while (element != null) {
+				if (!string.IsNullOrEmpty(element.Condition))
+					return GetLocationFromCondition(element.Condition);
+				element = element.Parent;
+			}
+			return PropertyStorageLocations.Base;
+		}
 		
 		internal static PropertyStorageLocations GetLocationFromCondition(string condition)
 		{
@@ -187,6 +175,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/*
 		/// <summary>
 		/// Evaluates the specified condition in the project and specified configuration/platform.
 		/// WARNING: EvaluateCondition might add a temporary property group and remove it again,
@@ -221,17 +210,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			return result;
 		}
 		
+		
 		public static MSBuild.BuildProperty GetProperty(MSBuild.BuildPropertyGroup pg, string name)
 		{
 			return pg.Cast<MSBuild.BuildProperty>().FirstOrDefault(p => p.Name == name);
 		}
+		
 		
 		public static MSBuild.Engine CreateEngine()
 		{
 			return new MSBuild.Engine(MSBuild.ToolsetDefinitionLocations.Registry
 			                          | MSBuild.ToolsetDefinitionLocations.ConfigurationFile);
 		}
+		*/
 		
+		/*
 		/// <summary>
 		/// Removes all &lt;Import&gt; nodes from a project.
 		/// </summary>
@@ -252,7 +245,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			EndXmlManipulation(project);
 		}
+		*/
 		
+		/*
 		/// <summary>
 		/// Changes the value of the ProjectPath property on an existing import.
 		/// Note: this methods causes the project to recreate all imports, so existing import
@@ -292,37 +287,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			prop.SetValue(item, oldValue, null);
 			return result;
 		}
-		
-		static XmlElement CreateElement(XmlDocument document, string name)
-		{
-			return document.CreateElement(name, MSBuildXmlNamespace);
-		}
-		
-		static XmlElement BeginXmlManipulation(MSBuild.Project project)
-		{
-			return (XmlElement)typeof(MSBuild.Project).InvokeMember(
-				"ProjectElement",
-				BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-				null, project, null
-			);
-		}
-		
-		static void EndXmlManipulation(MSBuild.Project project)
-		{
-			MarkProjectAsDirtyForReprocessXml(project);
-		}
-		
-		internal static void MarkProjectAsDirtyForReprocessXml(MSBuild.Project project)
-		{
-			typeof(MSBuild.Project).InvokeMember(
-				"MarkProjectAsDirtyForReprocessXml",
-				BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.NonPublic,
-				null, project, null
-			);
-		}
+		*/
 		
 		internal static void ResolveAssemblyReferences(MSBuildBasedProject baseProject, ReferenceProjectItem[] referenceReplacements)
 		{
+			/*
 			MSBuild.Engine tempEngine;
 			MSBuild.Project tempProject;
 			IEnumerable<ReferenceProjectItem> references;
@@ -409,6 +378,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			tempEngine.UnloadAllProjects(); // unload temp project
+			*/
 		}
 	}
 }

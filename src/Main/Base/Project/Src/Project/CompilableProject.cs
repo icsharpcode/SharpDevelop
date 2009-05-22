@@ -64,16 +64,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		protected readonly Set<string> reparseCodeSensitiveProperties = new Set<string>();
 		
-		protected CompilableProject(IMSBuildEngineProvider engineProvider)
-			: base(engineProvider.BuildEngine)
+		protected CompilableProject()
+			: base()
 		{
 		}
 		
 		protected override void Create(ICSharpCode.SharpDevelop.Internal.Templates.ProjectCreateInformation information)
 		{
 			base.Create(information);
-			
-			this.MSBuildProject.DefaultTargets = "Build";
 			
 			this.OutputType = OutputType.Exe;
 			this.RootNamespace = information.RootNamespace;
@@ -416,6 +414,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			lock (SyncRoot) {
 				base.ConvertToMSBuild40(changeTargetFrameworkToNet40);
 				
+				throw new NotImplementedException();
+				/*
 				var winFxImport = MSBuildProject.Imports.Cast<Microsoft.Build.BuildEngine.Import>()
 					.Where(import => !import.IsImported)
 					.FirstOrDefault(import => string.Equals(import.ProjectPath, "$(MSBuildBinPath)\\Microsoft.WinFX.targets", StringComparison.OrdinalIgnoreCase));
@@ -451,6 +451,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 				}
+				*/
 			}
 			AddOrRemoveExtensions();
 		}

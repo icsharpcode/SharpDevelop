@@ -32,14 +32,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		bool treatIncludeAsLiteral;
 		
 		// either use: (bound mode)
-		BuildItem buildItem;
+		IProjectItemBackendStore buildItem;
 		
 		// or: (virtual mode)
 		string virtualInclude;
 		ItemType virtualItemType;
 		Dictionary<string, string> virtualMetadata = new Dictionary<string, string>();
 		
-		protected ProjectItem(IProject project, BuildItem buildItem)
+		protected ProjectItem(IProject project, IProjectItemBackendStore buildItem)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		internal BuildItem BuildItem {
+		internal IProjectItemBackendStore BuildItem {
 			get { return buildItem; }
 			set {
 				if (project is AbstractProject) {
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				lock (SyncRoot) {
 					if (buildItem != null)
-						return new ItemType(buildItem.Name);
+						return buildItem.ItemType;
 					else
 						return virtualItemType;
 				}
@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			set {
 				lock (SyncRoot) {
 					if (buildItem != null)
-						buildItem.Name = value.ToString();
+						buildItem.ItemType = value;
 					else
 						virtualItemType = value;
 				}
@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				lock (SyncRoot) {
 					if (buildItem != null)
-						return buildItem.FinalItemSpec;
+						return buildItem.EvaluatedInclude;
 					else
 						return virtualInclude;
 				}
@@ -164,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					
 					if (buildItem != null)
-						buildItem.Include = MSBuildInternals.Escape(value);
+						buildItem.EvaluatedInclude = value;
 					else
 						virtualInclude = value ?? "";
 					fileNameCache = null;
@@ -241,7 +241,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			} else {
 				lock (SyncRoot) {
 					if (buildItem != null)
-						buildItem.SetMetadata(metadataName, value, true);
+						buildItem.SetEvaluatedMetadata(metadataName, value);
 					else
 						virtualMetadata[metadataName] = MSBuildInternals.Escape(value);
 				}
@@ -297,7 +297,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				lock (SyncRoot) {
 					if (buildItem != null)
-						return MSBuildInternals.GetCustomMetadataNames(buildItem);
+						return buildItem.MetadataNames;
 					else
 						return virtualMetadata.Keys.ToArray();
 				}
@@ -312,12 +312,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			lock (SyncRoot) {
 				lock (targetItem.SyncRoot) {
-					if (this.buildItem != null && targetItem.buildItem != null) {
-						this.buildItem.CopyCustomMetadataTo(targetItem.buildItem);
-					} else {
-						foreach (string name in this.MetadataNames) {
-							targetItem.SetMetadata(name, this.GetMetadata(name));
-						}
+					foreach (string name in this.MetadataNames) {
+						targetItem.SetMetadata(name, this.GetMetadata(name));
 					}
 				}
 			}
@@ -356,19 +352,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 		}
 		
-		BuildItem CloneBuildItem()
+		IProjectItemBackendStore CloneBuildItem()
 		{
-			lock (SyncRoot) {
-				if (buildItem != null) {
-					return buildItem.Clone();
-				} else {
-					BuildItem dummyItem = new BuildItem(this.ItemType.ToString(), this.Include);
-					foreach (string name in this.MetadataNames) {
-						dummyItem.SetMetadata(name, this.GetMetadata(name));
-					}
-					return dummyItem;
-				}
-			}
+			throw new NotImplementedException();
 		}
 		
 		object ICloneable.Clone()

@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			UrlBehavior = "Static";
 		}
 		
-		public WebReferenceUrl(IProject project, BuildItem buildItem) : base(project, buildItem)
+		public WebReferenceUrl(IProject project, IProjectItemBackendStore buildItem) : base(project, buildItem)
 		{
 			UrlBehavior = "Static";
 		}

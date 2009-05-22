@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.DefaultCopyLocalValue = true;
 		}
 		
-		internal ComReferenceProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
+		internal ComReferenceProjectItem(IProject project, IProjectItemBackendStore buildItem)
 			: base(project, buildItem)
 		{
 			this.DefaultCopyLocalValue = true;

@@ -240,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Creates a new ProjectItem for the passed MSBuild item.
 		/// </summary>
-		ProjectItem CreateProjectItem(Microsoft.Build.BuildEngine.BuildItem item);
+		ProjectItem CreateProjectItem(IProjectItemBackendStore item);
 		
 		/// <summary>
 		/// Gets the minimum version the solution must have to support this project type.
