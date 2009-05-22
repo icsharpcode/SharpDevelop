@@ -63,8 +63,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public WpfWorkbench()
 		{
 			this.SynchronizingObject = new WpfSynchronizeInvoke(this.Dispatcher);
-			this.MainWin32Window = this.GetWin32Window();
 			InitializeComponent();
+		}
+		
+		protected override void OnSourceInitialized(EventArgs e)
+		{
+			this.MainWin32Window = this.GetWin32Window();
+			base.OnSourceInitialized(e);
 		}
 		
 		public void Initialize()

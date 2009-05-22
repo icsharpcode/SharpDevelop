@@ -202,7 +202,12 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				CopySelectedText(textArea);
+				if (textArea.Selection.IsEmpty && textArea.Options.CutCopyWholeLine) {
+					DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
+					CopyWholeLine(textArea, currentLine);
+				} else {
+					CopySelectedText(textArea);
+				}
 				args.Handled = true;
 			}
 		}
