@@ -16,7 +16,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Build.BuildEngine;
 using Microsoft.Build.Framework;
-using ICSharpCode.SharpDevelop.BuildWorker;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -105,11 +104,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.feedbackSink = feedbackSink;
 		}
 		
-		const EventTypes ControllableEvents = EventTypes.Message
-			| EventTypes.TargetStarted | EventTypes.TargetFinished
-			| EventTypes.TaskStarted | EventTypes.TaskFinished
-			| EventTypes.Unknown;
-		
 		/// <summary>
 		/// Controls whether messages should be made available to loggers.
 		/// Logger AddIns should set this property in their CreateLogger method.
@@ -168,6 +162,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void StartBuild()
 		{
+			feedbackSink.ReportError(new BuildError { ErrorText = "Compiling is not yet implemented" });
+			feedbackSink.Done(false);
+			/*
 			WorkerManager.ShowError = MessageService.ShowError;
 			BuildWorker.BuildSettings settings = new BuildWorker.BuildSettings();
 			SharpDevelopLogger logger = new SharpDevelopLogger(this);
@@ -263,7 +260,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				};
 				
 				WorkerManager.StartBuild(job, settings);
-			}
+			}*/
 		}
 		
 		static int isBuildingInProcess = 0;
@@ -312,6 +309,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			feedbackSink.ReportError(error);
 		}
 		
+		/*
 		class SharpDevelopLogger : ILogger
 		{
 			MSBuildEngine worker;
@@ -430,5 +428,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			#endregion
 		}
+		*/
 	}
 }

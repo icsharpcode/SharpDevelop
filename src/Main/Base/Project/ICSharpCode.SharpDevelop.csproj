@@ -57,10 +57,9 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.Build.Framework">
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -820,11 +819,6 @@
     <ProjectReference Include="..\..\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ICSharpCode.SharpDevelop.BuildWorker.csproj">
-      <Project>{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F}</Project>
-      <Name>ICSharpCode.SharpDevelop.BuildWorker</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
