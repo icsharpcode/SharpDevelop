@@ -412,16 +412,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public override void BeforeBuild()
 		{
-			ProjectService.RaiseEventStartBuild();
 			SaveAllFiles.SaveAll();
-		}
-		
-		/// <summary>
-		/// After a build do not show the errors list.
-		/// </summary>
-		public override void AfterBuild()
-		{
-			ProjectService.RaiseEventEndBuild(new BuildEventArgs(LastBuildResults));
 		}
 	}
 	
