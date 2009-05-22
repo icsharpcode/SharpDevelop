@@ -212,6 +212,7 @@ namespace ICSharpCode.XamlBinding
 			if (index == -1) return null;
 			text = text.Substring(index);
 			int endIndex = text.IndexOfAny(new char[] { '<', '>' });
+			if (endIndex == -1) return null;
 			text = text.Substring(0, endIndex).Trim(' ', '\t', '\n', '\r', '/');
 			LoggingService.Debug("text: '" + text + "'");
 			text = "<" + name + " " + text + " />";
@@ -227,6 +228,24 @@ namespace ICSharpCode.XamlBinding
 			if (item.Key.StartsWith("xmlns:"))
 				return item.Key.Substring("xmlns:".Length);
 			return string.Empty;
+		}
+		
+		public static bool IsInsideXmlComment(string xaml, int offset)
+		{
+			if (xaml == null)
+				throw new ArgumentNullException("xaml");
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException("offset", offset, "Value must be between 0 and " + (xaml.Length - 1));
+			
+			if (offset >= xaml.Length)
+				offset = xaml.Length - 1;
+			
+			string interestingPart = xaml.Substring(0, offset);
+			int end = interestingPart.LastIndexOf("-->");
+			
+			interestingPart = (end > -1) ? interestingPart.Substring(end, interestingPart.Length - end) : interestingPart;
+			
+			return interestingPart.LastIndexOf("<!--") != -1;
 		}
 	}
 }

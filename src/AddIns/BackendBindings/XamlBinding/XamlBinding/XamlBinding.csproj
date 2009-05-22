@@ -76,6 +76,7 @@
     <Compile Include="XamlCompilationUnit.cs" />
     <Compile Include="XamlCompletionItem.cs" />
     <Compile Include="XamlCompletionItemList.cs" />
+    <Compile Include="XamlCompletionSettings.cs" />
     <Compile Include="XamlContext.cs" />
     <Compile Include="XamlExpressionContext.cs" />
     <Compile Include="XamlExpressionFinder.cs">

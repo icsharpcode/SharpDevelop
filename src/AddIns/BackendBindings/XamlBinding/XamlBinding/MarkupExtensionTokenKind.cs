@@ -11,13 +11,13 @@ namespace ICSharpCode.XamlBinding
 {
 	public enum MarkupExtensionTokenKind
 	{
-		EOF,
+		EndOfFile,
 		OpenBrace,
 		CloseBrace,
 		Equals,
 		Comma,
 		TypeName,
-		Membername,
+		MemberName,
 		String
 	}
 }

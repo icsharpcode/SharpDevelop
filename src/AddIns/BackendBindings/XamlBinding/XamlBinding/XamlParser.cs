@@ -91,7 +91,7 @@ namespace ICSharpCode.XamlBinding
 			return cu;
 		}
 
-		IReturnType TypeFromXmlNode(XamlCompilationUnit cu, XmlReader r)
+		static IReturnType TypeFromXmlNode(XamlCompilationUnit cu, XmlReader r)
 		{
 			return cu.CreateType(r.NamespaceURI, r.LocalName);
 		}

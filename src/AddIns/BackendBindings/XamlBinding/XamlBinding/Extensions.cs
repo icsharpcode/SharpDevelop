@@ -19,5 +19,23 @@ namespace ICSharpCode.XamlBinding
 		{
 			return s.Split(delimiters, options);
 		}
+		
+		public static bool EndsWith(this string s, StringComparison comparison, params char[] characters)
+		{
+			foreach (var c in characters) {
+				if (s.EndsWith(c.ToString(), comparison))
+					return true;
+			}
+			
+			return false;
+		}
+		
+		public static QualifiedName LastOrDefault(this QualifiedNameCollection coll)
+		{
+			if (coll.Count > 0)
+				return coll[coll.Count - 1];
+			
+			return null;
+		}
 	}
 }
