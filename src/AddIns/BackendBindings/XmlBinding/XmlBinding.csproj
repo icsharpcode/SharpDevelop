@@ -37,6 +37,12 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -47,9 +53,15 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -67,10 +79,6 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\XmlSchemasPanel.xaml.cs">
       <DependentUpon>XmlSchemasPanel.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\XmlTreeViewContainer.xaml.cs">
-      <DependentUpon>XmlTreeViewContainer.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\XmlFormattingStrategy.cs">
@@ -183,6 +191,5 @@
     <Page Include="Src\Gui\Dialogs\SelectXmlSchema.xaml" />
     <Page Include="Src\Gui\Dialogs\XmlEditorOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\XmlSchemasPanel.xaml" />
-    <Page Include="Src\Gui\XmlTreeViewContainer.xaml" />
   </ItemGroup>
 </Project>

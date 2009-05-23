@@ -12,21 +12,24 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.XmlBinding.Gui;
+using System.Xml;
 
 namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	/// The secondary view content that displays the XML document as a tree view.
 	/// </summary>
-	public class XmlTreeView : AbstractViewContent, IClipboardHandler
+	public class XmlTreeView : AbstractSecondaryViewContent, IClipboardHandler
 	{
 		XmlTreeViewContainerControl treeViewContainer;
 		
 		public XmlTreeView(IViewContent parent)
+			: base(parent)
 		{
 			this.TabPageText = "XML Tree";
-			this.Files.Add(parent.PrimaryFile);
 			this.treeViewContainer = new XmlTreeViewContainerControl();
 			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
 			treeViewContainer.TreeView.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/ContextMenu");
@@ -126,20 +129,24 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		public override void Load(OpenedFile file, Stream stream)
+		protected override void LoadFromPrimary()
 		{
-			LoggingService.Debug("XmlTreeView.LoadFromPrimary");
-			
-			treeViewContainer.LoadXml(new StreamReader(this.PrimaryFile.OpenRead()).ReadToEnd());
-			
-//			XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(xmlEditor.SchemaCompletionDataItems, xmlEditor.DefaultSchemaCompletionData, xmlEditor.DefaultNamespacePrefix);
-//			treeViewContainer.LoadXml(xmlView.Text, completionDataProvider);
-//			xmlView.CheckIsWellFormed();
+			var provider = this.PrimaryViewContent as ITextEditorProvider;
+			treeViewContainer.LoadXml(provider.TextEditor.Document.Text);
 		}
 		
-		public override void Save(OpenedFile file, Stream stream)
+		protected override void SaveToPrimary()
 		{
-			treeViewContainer.
+			// Do not modify text in the primary view if the data is not well-formed XML
+			if (!treeViewContainer.IsErrorMessageTextBoxVisible) {
+				var provider = this.PrimaryViewContent as ITextEditorProvider;
+				var str = new StringWriter();
+				var writer = new XmlTextWriter(str);
+				
+				writer.Formatting = Formatting.Indented;
+				treeViewContainer.Document.WriteTo(writer);
+				provider.TextEditor.Document.Text = str.ToString();
+			}
 		}
 		
 		public override bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
