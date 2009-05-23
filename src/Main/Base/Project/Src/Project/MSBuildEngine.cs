@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		
-		public static void StartBuild(MSBuildBasedProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
+		public static void StartBuild(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
@@ -92,12 +92,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			engine.StartBuild();
 		}
 		
-		MSBuildBasedProject project;
+		IProject project;
 		ProjectBuildOptions options;
 		IBuildFeedbackSink feedbackSink;
 		IEnumerable<string> additionalTargetFiles;
 		
-		private MSBuildEngine(MSBuildBasedProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		private MSBuildEngine(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			this.project = project;
 			this.options = options;

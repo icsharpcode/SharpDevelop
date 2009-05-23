@@ -332,7 +332,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				Dictionary<string, string> globalProps = new Dictionary<string, string>();
 				globalProps["Configuration"] = configuration;
 				globalProps["Platform"] = platform;
-				var project = new MSBuild.Project(projectFile, globalProps, projectFile.ToolsVersion, projectCollection);
+				string toolsVersion = projectFile.ToolsVersion;
+				if (string.IsNullOrEmpty(toolsVersion))
+					toolsVersion = projectCollection.DefaultToolsVersion;
+				var project = new MSBuild.Project(projectFile, globalProps, toolsVersion, projectCollection);
 				return new ConfiguredProject(this, project);
 			} catch {
 				// Leave lock only on exceptions.
