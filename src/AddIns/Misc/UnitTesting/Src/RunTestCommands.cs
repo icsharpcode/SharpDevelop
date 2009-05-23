@@ -308,6 +308,10 @@ namespace ICSharpCode.UnitTesting
 				helper.Labels = options.Labels;
 				helper.ShadowCopy = !options.NoShadow;
 				
+				if (options.CreateXmlOutputFile) {
+					helper.XmlOutputFile = Path.Combine(Path.GetDirectoryName(project.OutputAssemblyFullPath), project.AssemblyName + "-TestResult.xml");
+				}
+				
 				helper.Initialize(project, namespaceFilter, fixture, test);
 				helper.Results = Path.GetTempFileName();
 				

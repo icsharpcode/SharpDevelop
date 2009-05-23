@@ -22,6 +22,7 @@ namespace ICSharpCode.UnitTesting
 		CheckBox showProgressCheckBox;
 		CheckBox threadCheckBox;
 		CheckBox shadowCopyCheckBox;
+		CheckBox createXmlOutputFileCheckBox;
 		
 		public UnitTestingOptionsPanel() : this(new UnitTestingOptions())
 		{
@@ -50,6 +51,9 @@ namespace ICSharpCode.UnitTesting
 
 			threadCheckBox = (CheckBox)ControlDictionary["threadCheckBox"];
 			threadCheckBox.Checked = !options.NoThread;
+		
+			createXmlOutputFileCheckBox = (CheckBox)ControlDictionary["createXmlOutputFileCheckBox"];
+			createXmlOutputFileCheckBox.Checked = options.CreateXmlOutputFile;
 		}
 
 		public override bool StorePanelContents()
@@ -59,6 +63,7 @@ namespace ICSharpCode.UnitTesting
 			options.NoDots = !showProgressCheckBox.Checked;
 			options.NoShadow = !shadowCopyCheckBox.Checked;
 			options.NoThread = !threadCheckBox.Checked;
+			options.CreateXmlOutputFile = createXmlOutputFileCheckBox.Checked;
 			
 			return true;
 		}

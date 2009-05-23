@@ -29,6 +29,7 @@ namespace UnitTesting.Tests
 		CheckBox showProgressCheckBox;
 		CheckBox threadCheckBox;
 		CheckBox shadowCopyCheckBox;
+		CheckBox createXmlOutputFileCheckBox;
 		
 		[SetUp]
 		public void SetUp()
@@ -39,6 +40,7 @@ namespace UnitTesting.Tests
 			options.NoDots = false;
 			options.NoShadow = false;
 			options.NoThread = false;
+			options.CreateXmlOutputFile = false;
 			
 			panel = new DerivedUnitTestingOptionsPanel(options);
 			panel.LoadPanelContents();
@@ -48,6 +50,7 @@ namespace UnitTesting.Tests
 			showProgressCheckBox = (CheckBox)panel.ControlDictionary["showProgressCheckBox"];
 			threadCheckBox = (CheckBox)panel.ControlDictionary["threadCheckBox"];
 			shadowCopyCheckBox = (CheckBox)panel.ControlDictionary["shadowCopyCheckBox"];			
+			createXmlOutputFileCheckBox = (CheckBox)panel.ControlDictionary["createXmlOutputFileCheckBox"];			
 		}
 		
 		[TearDown]
@@ -137,5 +140,20 @@ namespace UnitTesting.Tests
 			panel.StorePanelContents();
 			Assert.IsTrue(options.NoThread);
 		}
+		
+		[Test]
+		public void CreateXmlOutputFileCheckBoxIsChecked()
+		{
+			Assert.IsFalse(createXmlOutputFileCheckBox.Checked);
+		}
+		
+		[Test]
+		public void CreateXmlOutputFileSettingSaved()
+		{
+			options.CreateXmlOutputFile = false;
+			createXmlOutputFileCheckBox.Checked = true;
+			panel.StorePanelContents();
+			Assert.IsTrue(options.CreateXmlOutputFile);
+		}		
 	}
 }

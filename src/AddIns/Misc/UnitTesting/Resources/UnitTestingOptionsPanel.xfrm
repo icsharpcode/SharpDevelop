@@ -13,6 +13,15 @@
         <TabIndex value="1" />
         <Controls>
           <System.Windows.Forms.CheckBox>
+            <Name value="createXmlOutputFileCheckBox" />
+            <Location value="6, 179" />
+            <Text value="${res:ICSharpCode.UnitTesting.OptionsPanel.CreateXmlOutputFile}" />
+            <TabIndex value="6" />
+            <Size value="420, 24" />
+            <UseVisualStyleBackColor value="True" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
             <Name value="threadCheckBox" />
             <Location value="6, 149" />
             <Text value="${res:ICSharpCode.UnitTesting.OptionsPanel.Thread}" />
