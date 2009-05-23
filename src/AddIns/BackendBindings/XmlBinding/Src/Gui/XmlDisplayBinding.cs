@@ -57,9 +57,7 @@ namespace ICSharpCode.XmlBinding.Gui
 		/// Gets the known xml file extensions.
 		/// </summary>
 		public static string[] GetXmlFileExtensions()
-		{
-			return new string[] { ".xml" };
-			
+		{			
 			foreach (ParserDescriptor parser in AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false)) {
 				if (parser.Codon.Id == "XmlFoldingParser") {
 					return parser.Supportedextensions;
@@ -73,7 +71,7 @@ namespace ICSharpCode.XmlBinding.Gui
 //				return strategy.Extensions;
 //			}
 			
-			return new string[0];
+			return new string[] { ".xml", ".addin" };
 		}
 		
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)

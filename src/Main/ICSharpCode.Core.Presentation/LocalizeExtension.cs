@@ -27,4 +27,22 @@ namespace ICSharpCode.Core.Presentation
 			return ResourceService.GetString(key);
 		}
 	}
+	
+	/// <summary>
+	/// Markup extension that works like StringParser.Parse
+	/// </summary>
+	public class StringParseExtension : MarkupExtension
+	{
+		protected string text;
+		
+		public StringParseExtension(string text)
+		{
+			this.text = text;
+		}
+		
+		public override object ProvideValue(IServiceProvider serviceProvider)
+		{
+			return StringParser.Parse(text);
+		}
+	}
 }

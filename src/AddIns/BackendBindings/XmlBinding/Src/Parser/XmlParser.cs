@@ -100,7 +100,7 @@ namespace ICSharpCode.XmlBinding.Parser
 			QualifiedNameCollection namespaces = new QualifiedNameCollection();
 			return GetActiveElementStartPathAtIndex(xml, index, namespaces);
 		}
-
+		
 		/// <summary>
 		/// Gets the parent element path based on the index position.
 		/// </summary>

@@ -11,15 +11,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 
-namespace ICSharpCode.XmlBinding.Gui
+namespace ICSharpCode.XmlBinding.Gui.Dialogs
 {
     /// <summary>
     /// Interaction logic for SelectXmlSchema.xaml
     /// </summary>
-
     public partial class SelectXmlSchema : Window
     {
-
         public SelectXmlSchema()
         {
             InitializeComponent();

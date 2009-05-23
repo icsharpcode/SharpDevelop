@@ -5,12 +5,12 @@
 //     <version>$Revision: 1965 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
 
 namespace ICSharpCode.XmlEditor
 {
-	/*
 	/// <summary>
 	///   A collection that stores <see cref='XmlCompletionData'/> objects.
 	/// </summary>
@@ -41,7 +41,7 @@ namespace ICSharpCode.XmlEditor
 		/// <param name='val'>
 		///       A array of <see cref='XmlCompletionData'/> objects with which to intialize the collection
 		/// </param>
-		public XmlCompletionDataCollection(XmlCompletionData[] val)
+		public XmlCompletionDataCollection(XmlCompletionItem[] val)
 		{
 			this.AddRange(val);
 		}
@@ -52,9 +52,9 @@ namespace ICSharpCode.XmlEditor
 		/// <param name='index'>The zero-based index of the entry to locate in the collection.</param>
 		/// <value>The entry at the specified index of the collection.</value>
 		/// <exception cref='ArgumentOutOfRangeException'><paramref name='index'/> is outside the valid range of indexes for the collection.</exception>
-		public XmlCompletionData this[int index] {
+		public XmlCompletionItem this[int index] {
 			get {
-				return ((XmlCompletionData)(List[index]));
+				return ((XmlCompletionItem)(List[index]));
 			}
 			set {
 				List[index] = value;
@@ -71,7 +71,7 @@ namespace ICSharpCode.XmlEditor
 		/// <param name='val'>The <see cref='XmlCompletionData'/> to add.</param>
 		/// <returns>The index at which the new element was inserted.</returns>
 		/// <seealso cref='XmlCompletionDataCollection.AddRange'/>
-		public int Add(XmlCompletionData val)
+		public int Add(XmlCompletionItem val)
 		{
 			int index = -1;
 			if (!Contains(val)) {
@@ -87,7 +87,7 @@ namespace ICSharpCode.XmlEditor
 		///    An array of type <see cref='XmlCompletionData'/> containing the objects to add to the collection.
 		/// </param>
 		/// <seealso cref='XmlCompletionDataCollection.Add'/>
-		public void AddRange(XmlCompletionData[] val)
+		public void AddRange(XmlCompletionItem[] val)
 		{
 			for (int i = 0; i < val.Length; i++) {
 				this.Add(val[i]);
@@ -119,7 +119,7 @@ namespace ICSharpCode.XmlEditor
 		///   otherwise, <see langword='false'/>.
 		/// </returns>
 		/// <seealso cref='XmlCompletionDataCollection.IndexOf'/>
-		public bool Contains(XmlCompletionData val)
+		public bool Contains(XmlCompletionItem val)
 		{
 			if (val.Text != null) {
 				if (val.Text.Length > 0) {
@@ -133,7 +133,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			bool contains = false;
 			
-			foreach (XmlCompletionData data in this) {
+			foreach (XmlCompletionItem data in this) {
 				if (data.Text != null) {
 					if (data.Text.Length > 0) {
 						if (data.Text == name) {
@@ -163,7 +163,7 @@ namespace ICSharpCode.XmlEditor
 		/// <exception cref='ArgumentNullException'><paramref name='array'/> is <see langword='null'/>. </exception>
 		/// <exception cref='ArgumentOutOfRangeException'><paramref name='arrayIndex'/> is less than <paramref name='array'/>'s lowbound. </exception>
 		/// <seealso cref='Array'/>
-		public void CopyTo(XmlCompletionData[] array, int index)
+		public void CopyTo(XmlCompletionItem[] array, int index)
 		{
 			List.CopyTo(array, index);
 		}
@@ -172,7 +172,7 @@ namespace ICSharpCode.XmlEditor
 		///   Copies the <see cref='XmlCompletionDataCollection'/> values to a one-dimensional <see cref='Array'/> instance at the 
 		///    specified index.
 		/// </summary>
-		public void CopyTo(ICompletionData[] array, int index)
+		public void CopyTo(ICompletionItem[] array, int index)
 		{
 			List.CopyTo(array, index);
 		}		
@@ -187,7 +187,7 @@ namespace ICSharpCode.XmlEditor
 		///   <see cref='XmlCompletionDataCollection'/>, if found; otherwise, -1.
 		/// </returns>
 		/// <seealso cref='XmlCompletionDataCollection.Contains'/>
-		public int IndexOf(XmlCompletionData val)
+		public int IndexOf(XmlCompletionItem val)
 		{
 			return List.IndexOf(val);
 		}
@@ -198,7 +198,7 @@ namespace ICSharpCode.XmlEditor
 		/// <param name='index'>The zero-based index where <paramref name='val'/> should be inserted.</param>
 		/// <param name='val'>The <see cref='XmlCompletionData'/> to insert.</param>
 		/// <seealso cref='XmlCompletionDataCollection.Add'/>
-		public void Insert(int index, XmlCompletionData val)
+		public void Insert(int index, XmlCompletionItem val)
 		{
 			List.Insert(index, val);
 		}
@@ -207,9 +207,9 @@ namespace ICSharpCode.XmlEditor
 		/// Returns an array of <see cref="ICompletionData"/> items.
 		/// </summary>
 		/// <returns></returns>
-		public ICompletionData[] ToArray()
+		public ICompletionItem[] ToArray()
 		{
-			ICompletionData[] data = new ICompletionData[Count];
+			XmlCompletionItem[] data = new XmlCompletionItem[Count];
 			CopyTo(data, 0);
 			return data;
 		}
@@ -228,7 +228,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <param name='val'>The <see cref='XmlCompletionData'/> to remove from the <see cref='XmlCompletionDataCollection'/>.</param>
 		/// <exception cref='ArgumentException'><paramref name='val'/> is not found in the Collection.</exception>
-		public void Remove(XmlCompletionData val)
+		public void Remove(XmlCompletionItem val)
 		{
 			List.Remove(val);
 		}
@@ -256,9 +256,9 @@ namespace ICSharpCode.XmlEditor
 			/// <summary>
 			///   Gets the current <see cref='XmlCompletionData'/> in the <seealso cref='XmlCompletionDataCollection'/>.
 			/// </summary>
-			public XmlCompletionData Current {
+			public XmlCompletionItem Current {
 				get {
-					return ((XmlCompletionData)(baseEnumerator.Current));
+					return ((XmlCompletionItem)(baseEnumerator.Current));
 				}
 			}
 			
@@ -285,5 +285,4 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 	}
-	*/
 }

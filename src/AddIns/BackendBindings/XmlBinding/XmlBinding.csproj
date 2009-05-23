@@ -69,6 +69,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\CodeCompletion\XmlCodeCompletionBinding.cs" />
+    <Compile Include="Src\CodeCompletion\XmlCompletionItemList.cs" />
     <Compile Include="Src\Gui\Dialogs\SelectXmlSchema.xaml.cs">
       <DependentUpon>SelectXmlSchema.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -107,16 +109,19 @@
     <Compile Include="Src\Commands\RemoveXPathHighlightingCommand.cs" />
     <Compile Include="Src\Commands\RunXslTransformCommand.cs" />
     <Compile Include="Src\Commands\ValidateXmlCommand.cs" />
-    <Compile Include="Src\Gui\AddXmlNodeDialog.cs" />
+    <Compile Include="Src\Gui\AddXmlNodeDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\Gui\GoToSchemaDefinitionEditAction.cs" />
     <Compile Include="Src\Gui\IAddXmlNodeDialog.cs" />
     <Compile Include="Src\Gui\IXmlTreeView.cs" />
     <Compile Include="Src\Gui\SelectXmlSchemaForm.cs">
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\XmlDisplayBinding.cs" />
     <Compile Include="Src\Gui\XmlTreeView.cs" />
-    <Compile Include="Src\Gui\XPathQueryControl.cs" />
+    <Compile Include="Src\Gui\XPathQueryControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Gui\XPathQueryPad.cs">
     </Compile>
     <Compile Include="Src\Gui\XslOutputView.cs" />
@@ -131,7 +136,6 @@
     <Compile Include="Src\Src\XmlCommentTreeNode.cs" />
     <Compile Include="Src\Src\XmlEditorAddInOptions.cs" />
     <Compile Include="Src\Src\XmlEditorOptionsPanel.cs">
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Src\XmlElementTreeNode.cs" />
     <Compile Include="Src\Src\XmlSchemaAssociation.cs" />
@@ -146,7 +150,9 @@
     <Compile Include="Src\Src\XmlTextTreeNode.cs" />
     <Compile Include="Src\Src\XmlTreeEditor.cs">
     </Compile>
-    <Compile Include="Src\Src\XmlTreeViewContainerControl.cs" />
+    <Compile Include="Src\Src\XmlTreeViewContainerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Src\XmlTreeViewControl.cs" />
     <Compile Include="Src\Src\XPathNodeMatch.cs" />
     <Compile Include="Src\Src\XPathNodeTextMarker.cs" />
@@ -155,23 +161,11 @@
     <Compile Include="Src\Xml\EncodedStringWriter.cs" />
     <Compile Include="Src\Xml\XmlEncoder.cs" />
     <Compile Include="Src\Xml\XmlNamespace.cs" />
-    <EmbeddedResource Include="Resources\SelectXmlSchema.xfrm" />
     <EmbeddedResource Include="Resources\XmlCommentTreeNodeIcon.png" />
-    <EmbeddedResource Include="Resources\XmlEditorOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\XmlElementTreeNodeIcon.png" />
-    <EmbeddedResource Include="Resources\XmlSchemasPanel.xfrm" />
     <EmbeddedResource Include="Resources\XmlTextTreeNodeIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources" />
-    <Folder Include="Src" />
-    <Folder Include="Src\CodeCompletion" />
-    <Folder Include="Src\Commands" />
-    <Folder Include="Src\Gui" />
-    <Folder Include="Src\Gui\Dialogs" />
-    <Folder Include="Src\Xml" />
-    <Folder Include="Src\Parser" />
-    <Folder Include="Src\Src" />
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -179,6 +173,10 @@
     <ProjectReference Include="..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>

@@ -5,16 +5,17 @@
 //     <version>$Revision: 1965 $</version>
 // </file>
 
-using ICSharpCode.XmlBinding.Parser;
+using ICSharpCode.XmlBinding;
 using System;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.XmlBinding.Parser;
 
 namespace ICSharpCode.XmlEditor
 {
-	/*
 	/// <summary>
 	/// Holds the completion (intellisense) data for an xml schema.
 	/// </summary>
@@ -141,7 +142,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
-		public ICompletionData[] GetElementCompletionData()
+		public ICompletionItemList GetElementCompletionData()
 		{
 			return GetElementCompletionData(String.Empty);
 		}
@@ -149,7 +150,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
-		public ICompletionData[] GetElementCompletionData(string namespacePrefix)
+		public ICompletionItemList GetElementCompletionData(string namespacePrefix)
 		{
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 
@@ -161,14 +162,18 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 			
-			return data.ToArray();
+			var list = new XmlCompletionItemList();
+			list.Items.AddRange(data.ToArray());
+			list.SortItems();
+			
+			return list;
 		}
 		
 		/// <summary>
 		/// Gets the attribute completion data for the xml element that exists
 		/// at the end of the specified path.
 		/// </summary>
-		public ICompletionData[] GetAttributeCompletionData(XmlElementPath path)
+		public ICompletionItem[] GetAttributeCompletionData(XmlElementPath path)
 		{
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 					
@@ -188,7 +193,7 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the child element completion data for the xml element that exists
 		/// at the end of the specified path.
 		/// </summary>
-		public ICompletionData[] GetChildElementCompletionData(XmlElementPath path)
+		public ICompletionItem[] GetChildElementCompletionData(XmlElementPath path)
 		{
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 		
@@ -206,7 +211,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the autocomplete data for the specified attribute value.
 		/// </summary>
-		public ICompletionData[] GetAttributeValueCompletionData(XmlElementPath path, string name)
+		public ICompletionItem[] GetAttributeValueCompletionData(XmlElementPath path, string name)
 		{
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 			
@@ -608,8 +613,8 @@ namespace ICSharpCode.XmlEditor
 				if (prefix.Length > 0) {
 					name = String.Concat(prefix, ":", name);
 				}
-				XmlCompletionData completionData = new XmlCompletionData(name, documentation);
-				data.Add(completionData);
+				XmlCompletionItem item = new XmlCompletionItem(name, documentation);
+				data.Add(item);
 			}				
 		}
 		
@@ -630,7 +635,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void AddElements(XmlCompletionDataCollection lhs, XmlCompletionDataCollection rhs)
 		{
-			foreach (XmlCompletionData data in rhs) {
+			foreach (XmlCompletionItem data in rhs) {
 				if (!lhs.Contains(data)) {
 					lhs.Add(data);
 				}
@@ -817,7 +822,7 @@ namespace ICSharpCode.XmlEditor
 			
 			if (name != null) {
 				string documentation = GetDocumentation(attribute.Annotation);
-				XmlCompletionData completionData = new XmlCompletionData(name, documentation, XmlCompletionData.DataType.XmlAttribute);
+				XmlCompletionItem completionData = new XmlCompletionItem(name, documentation, XmlCompletionItem.DataType.XmlAttribute);
 				data.Add(completionData);
 			}
 		}
@@ -1270,7 +1275,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void AddAttributeValue(XmlCompletionDataCollection data, string valueText)
 		{
-			XmlCompletionData completionData = new XmlCompletionData(valueText, XmlCompletionData.DataType.XmlAttributeValue);
+			XmlCompletionItem completionData = new XmlCompletionItem(valueText, XmlCompletionItem.DataType.XmlAttributeValue);
 			data.Add(completionData);
 		}
 		
@@ -1280,7 +1285,7 @@ namespace ICSharpCode.XmlEditor
 		void AddAttributeValue(XmlCompletionDataCollection data, string valueText, XmlSchemaAnnotation annotation)
 		{
 			string documentation = GetDocumentation(annotation);
-			XmlCompletionData completionData = new XmlCompletionData(valueText, documentation, XmlCompletionData.DataType.XmlAttributeValue);
+			XmlCompletionItem completionData = new XmlCompletionItem(valueText, documentation, XmlCompletionItem.DataType.XmlAttributeValue);
 			data.Add(completionData);
 		}
 		
@@ -1289,7 +1294,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void AddAttributeValue(XmlCompletionDataCollection data, string valueText, string description)
 		{
-			XmlCompletionData completionData = new XmlCompletionData(valueText, description, XmlCompletionData.DataType.XmlAttributeValue);
+			XmlCompletionItem completionData = new XmlCompletionItem(valueText, description, XmlCompletionItem.DataType.XmlAttributeValue);
 			data.Add(completionData);
 		}		
 		
@@ -1343,6 +1348,5 @@ namespace ICSharpCode.XmlEditor
 			return matchedElement;
 		}
 	}
-	*/
 }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                

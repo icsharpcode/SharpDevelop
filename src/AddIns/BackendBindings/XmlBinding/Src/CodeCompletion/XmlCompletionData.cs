@@ -5,18 +5,17 @@
 //     <version>$Revision: 2932 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 
 namespace ICSharpCode.XmlEditor
 {
-	/*
 	/// <summary>
 	/// Holds the text for  namespace, child element or attribute 
 	/// autocomplete (intellisense).
 	/// </summary>
-	public class XmlCompletionData : ICompletionData
+	public class XmlCompletionItem : DefaultCompletionItem
 	{
-		string text;
 		DataType dataType = DataType.XmlElement;
 		string description = String.Empty;
 		
@@ -30,76 +29,52 @@ namespace ICSharpCode.XmlEditor
 			XmlAttributeValue = 4
 		}
 		
-		public XmlCompletionData(string text)
+		public XmlCompletionItem(string text)
 			: this(text, String.Empty, DataType.XmlElement)
 		{
 		}
 		
-		public XmlCompletionData(string text, string description)
+		public XmlCompletionItem(string text, string description)
 			: this(text, description, DataType.XmlElement)
 		{
 		}
 
-		public XmlCompletionData(string text, DataType dataType)
+		public XmlCompletionItem(string text, DataType dataType)
 			: this(text, String.Empty, dataType)
 		{
 		}		
 
-		public XmlCompletionData(string text, string description, DataType dataType)
+		public XmlCompletionItem(string text, string description, DataType dataType)
+			: base(text)
 		{
-			this.text = text;
 			this.description = description;
 			this.dataType = dataType;  
 		}		
-		
-		public int ImageIndex {
-			get {
-				return 0;
-			}
-		}
-		
-		public string Text {
-			get {
-				return text;
-			}
-			set {
-				text = value;
-			}
-		}
 		
 		/// <summary>
 		/// Returns the xml item's documentation as retrieved from
 		/// the xs:annotation/xs:documentation element.
 		/// </summary>
-		public string Description {
+		public override string Description {
 			get {
 				return description;
 			}
 		}
 		
-		public double Priority {
-			get {
-				return 0;
-			}
-		}
-		
-		public bool InsertAction(TextArea textArea, char ch)
+		public override void Complete(CompletionContext context)
 		{
-			if ((dataType == DataType.XmlElement) || (dataType == DataType.XmlAttributeValue)) {
-				textArea.InsertString(text);
-			}
-			else if (dataType == DataType.NamespaceUri) {
-				textArea.InsertString(String.Concat("\"", text, "\""));
-			} else {
-				// Insert an attribute.
-				Caret caret = textArea.Caret;
-				textArea.InsertString(String.Concat(text, "=\"\""));	
-				
-				// Move caret into the middle of the attribute quotes.
-				caret.Position = textArea.Document.OffsetToPosition(caret.Offset - 1);
-			}
-			return false;
+			base.Complete(context);
+			
+//			if (dataType == DataType.NamespaceUri) {
+//				textArea.InsertString(String.Concat("\"", text, "\""));
+//			} else {
+//				// Insert an attribute.
+//				Caret caret = textArea.Caret;
+//				textArea.InsertString(String.Concat(text, "=\"\""));	
+//				
+//				// Move caret into the middle of the attribute quotes.
+//				caret.Position = textArea.Document.OffsetToPosition(caret.Offset - 1);
+//			}
 		}
 	}
-	*/
 }

@@ -5,13 +5,14 @@
 //     <version>$Revision: 1965 $</version>
 // </file>
 
+using ICSharpCode.XmlBinding;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
 {
-	/*
 	/// <summary>
 	///   A collection that stores <see cref='XmlSchemaCompletionData'/> objects.
 	/// </summary>
@@ -62,16 +63,18 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		public ICompletionData[] GetNamespaceCompletionData()
+		public ICompletionItemList GetNamespaceCompletionData()
 		{
-			List<ICompletionData> completionItems = new List<ICompletionData>();
+			XmlCompletionItemList list = new XmlCompletionItemList();
 			
 			foreach (XmlSchemaCompletionData schema in this) {
-				XmlCompletionData completionData = new XmlCompletionData(schema.NamespaceUri, XmlCompletionData.DataType.NamespaceUri);
-				completionItems.Add(completionData);
+				XmlCompletionItem completionData = new XmlCompletionItem(schema.NamespaceUri, XmlCompletionItem.DataType.NamespaceUri);
+				list.Items.Add(completionData);
 			}
 			
-			return completionItems.ToArray();
+			list.SortItems();
+			
+			return list;
 		}
 		
 		/// <summary>
@@ -288,5 +291,4 @@ namespace ICSharpCode.XmlEditor
 			return matchedItem;
 		}
 	}
-	*/
 }

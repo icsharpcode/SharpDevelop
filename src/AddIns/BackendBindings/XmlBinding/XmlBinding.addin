@@ -5,11 +5,7 @@
        addInManagerHidden = "preinstalled">
 	
 	<Runtime>
-		<Import assembly = "XmlBinding.dll"/>
-	</Runtime>
-	
-	<Runtime>
-		<Import assembly = "XmlEditor.dll">
+		<Import assembly = "XmlBinding.dll">
 			<ConditionEvaluator name = "StylesheetAssigned" class = "ICSharpCode.XmlEditor.StylesheetAssignedCondition"/>
 		</Import>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
@@ -17,6 +13,14 @@
 	
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/XML">
 		<Class id ="XmlFormatter" class = "ICSharpCode.XmlBinding.XmlFormattingStrategy"/>
+	</Path>
+	
+	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+		<CodeCompletionBinding
+			id = "Xml"
+			extensions  = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco"
+			class = "ICSharpCode.XmlBinding.XmlCodeCompletionBinding"
+		/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
@@ -153,12 +157,12 @@
 		<OptionPanel id = "XmlSchemasPanel"
 		             insertafter = "Markers"
 		             label = "${res:ICSharpCode.XmlEditor.XmlSchemasPanel.Title}"
-		             class = "ICSharpCode.XmlEditor.XmlSchemasPanel" />
+		             class = "ICSharpCode.XmlBinding.Gui.Dialogs.XmlSchemasPanel" />
 		<OptionPanel id = "XmlEditorOptionsPanel"
 		             insertafter = "Markers"
 		             insertbefore = "XmlSchemasPanel"
 		             label = "${res:ICSharpCode.XmlEditor.XmlEditorOptionsPanel.Title}"
-		             class = "ICSharpCode.XmlEditor.XmlEditorOptionsPanel" />
+		             class = "ICSharpCode.XmlBinding.Gui.Dialogs.XmlEditorOptionsPanel" />
 	</Path>
 	
 	<Path path = "/AddIns/XmlEditor/EditActions">
