@@ -35,6 +35,7 @@ namespace PythonBinding.Tests.Designer
 				descriptor.SetValue(form, "MainForm");
 
 				ToolTip toolTip = (ToolTip)host.CreateComponent(typeof(ToolTip), "toolTip1");
+				toolTip.SetToolTip(form, "test");
 				
 				string indentString = "    ";
 				PythonControl pythonForm = new PythonControl(indentString);
@@ -54,6 +55,7 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
+								"    self._toolTip1.SetToolTip(self, \"test\")\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			

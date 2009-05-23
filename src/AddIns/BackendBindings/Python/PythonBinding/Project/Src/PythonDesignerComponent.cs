@@ -482,7 +482,10 @@ namespace ICSharpCode.PythonBinding
 				return;
 			}
 			
-			if (propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible) {
+			ExtenderProvidedPropertyAttribute extender = GetExtenderAttribute(propertyDescriptor);
+			if (extender != null) {
+				AppendExtenderProperty(codeBuilder, propertyOwnerName, extender, propertyDescriptor, propertyValue);
+			} else if (propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible) {
 				string propertyName = propertyOwnerName + "." + propertyDescriptor.Name;
 				Control control = propertyValue as Control;
 				if (control != null) {
@@ -494,6 +497,22 @@ namespace ICSharpCode.PythonBinding
 				// DesignerSerializationVisibility.Content
 				AppendMethodCallWithArrayParameter(codeBuilder, propertyOwnerName, obj, propertyDescriptor);
 			}
+		}
+
+		/// <summary>
+		/// Appends an extender provider property.
+		/// </summary>
+		public void AppendExtenderProperty(PythonCodeBuilder codeBuilder, string propertyOwnerName, ExtenderProvidedPropertyAttribute extender, PropertyDescriptor propertyDescriptor, object propertyValue)
+		{
+			IComponent component = extender.Provider as IComponent;
+			codeBuilder.AppendIndented("self._" + component.Site.Name);
+			codeBuilder.Append(".Set" + propertyDescriptor.Name);
+			codeBuilder.Append("(");
+			codeBuilder.Append(propertyOwnerName);
+			codeBuilder.Append(", ");
+			codeBuilder.Append(PythonPropertyValueAssignment.ToString(propertyValue));
+			codeBuilder.Append(")");
+			codeBuilder.AppendLine();
 		}
 		
 		/// <summary>
@@ -693,6 +712,17 @@ namespace ICSharpCode.PythonBinding
 				return "self";
 			}
 			return "self._" + control.Name;
+		}
+		
+		static ExtenderProvidedPropertyAttribute GetExtenderAttribute(PropertyDescriptor property)
+		{
+			foreach (Attribute attribute in property.Attributes) {
+				ExtenderProvidedPropertyAttribute extenderAttribute = attribute as ExtenderProvidedPropertyAttribute;
+				if (extenderAttribute != null) {
+					return extenderAttribute;
+				}
+			}
+			return null;
 		}
 	}
 }
