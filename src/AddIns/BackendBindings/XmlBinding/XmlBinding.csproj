@@ -1,0 +1,159 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.XmlBinding</RootNamespace>
+    <AssemblyName>XmlBinding</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\Siegfried\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\AddIns\AddIns\BackendBindings\XmlBinding\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="XmlBinding.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\XmlFormattingStrategy.cs">
+    </Compile>
+    <Compile Include="Src\CodeCompletion\XmlCompletionData.cs" />
+    <Compile Include="Src\CodeCompletion\XmlCompletionDataCollection.cs" />
+    <Compile Include="Src\CodeCompletion\XmlCompletionDataImageList.cs" />
+    <Compile Include="Src\CodeCompletion\XmlCompletionDataProvider.cs" />
+    <Compile Include="Src\Commands\AddAttributeCommand.cs" />
+    <Compile Include="Src\Commands\AddChildCommentCommand.cs" />
+    <Compile Include="Src\Commands\AddChildElementCommand.cs" />
+    <Compile Include="Src\Commands\AddChildTextNodeCommand.cs" />
+    <Compile Include="Src\Commands\AssignStylesheetCommand.cs" />
+    <Compile Include="Src\Commands\CodeCompletionPopupCommand.cs" />
+    <Compile Include="Src\Commands\CreateSchemaCommand.cs" />
+    <Compile Include="Src\Commands\FormatXmlCommand.cs" />
+    <Compile Include="Src\Commands\GoToSchemaDefinitionCommand.cs" />
+    <Compile Include="Src\Commands\InsertCommentAfterCommand.cs" />
+    <Compile Include="Src\Commands\InsertCommentBeforeCommand.cs" />
+    <Compile Include="Src\Commands\InsertElementAfterCommand.cs" />
+    <Compile Include="Src\Commands\InsertElementBeforeCommand.cs" />
+    <Compile Include="Src\Commands\InsertTextNodeAfterCommand.cs" />
+    <Compile Include="Src\Commands\InsertTextNodeBeforeCommand.cs" />
+    <Compile Include="Src\Commands\OpenStylesheetCommand.cs" />
+    <Compile Include="Src\Commands\RemoveAttributeCommand.cs" />
+    <Compile Include="Src\Commands\RemoveXPathHighlightingCommand.cs" />
+    <Compile Include="Src\Commands\RunXslTransformCommand.cs" />
+    <Compile Include="Src\Commands\ValidateXmlCommand.cs" />
+    <Compile Include="Src\Gui\AddXmlNodeDialog.cs" />
+    <Compile Include="Src\Gui\GoToSchemaDefinitionEditAction.cs" />
+    <Compile Include="Src\Gui\IAddXmlNodeDialog.cs" />
+    <Compile Include="Src\Gui\IXmlTreeView.cs" />
+    <Compile Include="Src\Gui\SelectXmlSchemaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\XmlDisplayBinding.cs" />
+    <Compile Include="Src\Gui\XmlTreeView.cs" />
+    <Compile Include="Src\Gui\XPathQueryControl.cs" />
+    <Compile Include="Src\Gui\XPathQueryPad.cs">
+    </Compile>
+    <Compile Include="Src\Gui\XslOutputView.cs" />
+    <Compile Include="Src\Parser\Parser.cs" />
+    <Compile Include="Src\Parser\QualifiedName.cs" />
+    <Compile Include="Src\Parser\QualifiedNameCollection.cs" />
+    <Compile Include="Src\Parser\XmlElementPath.cs" />
+    <Compile Include="Src\Parser\XmlParser.cs" />
+    <Compile Include="Src\Src\XmlAttributePropertyDescriptor.cs" />
+    <Compile Include="Src\Src\XmlAttributeTypeDescriptor.cs" />
+    <Compile Include="Src\Src\XmlCharacterDataTreeNode.cs" />
+    <Compile Include="Src\Src\XmlCommentTreeNode.cs" />
+    <Compile Include="Src\Src\XmlEditorAddInOptions.cs" />
+    <Compile Include="Src\Src\XmlEditorOptionsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Src\XmlElementTreeNode.cs" />
+    <Compile Include="Src\Src\XmlSchemaAssociation.cs" />
+    <Compile Include="Src\Src\XmlSchemaAssociationListBoxItem.cs" />
+    <Compile Include="Src\Src\XmlSchemaCompletionData.cs" />
+    <Compile Include="Src\Src\XmlSchemaCompletionDataCollection.cs" />
+    <Compile Include="Src\Src\XmlSchemaListBoxItem.cs" />
+    <Compile Include="Src\Src\XmlSchemaManager.cs" />
+    <Compile Include="Src\Src\XmlSchemasPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Src\XmlTextTreeNode.cs" />
+    <Compile Include="Src\Src\XmlTreeEditor.cs" />
+    <Compile Include="Src\Src\XmlTreeViewContainerControl.cs" />
+    <Compile Include="Src\Src\XmlTreeViewControl.cs" />
+    <Compile Include="Src\Src\XPathNodeMatch.cs" />
+    <Compile Include="Src\Src\XPathNodeTextMarker.cs" />
+    <Compile Include="Src\StylesheetAssignedCondition.cs" />
+    <Compile Include="Src\XmlFoldingStrategy.cs" />
+    <Compile Include="Src\Xml\EncodedStringWriter.cs" />
+    <Compile Include="Src\Xml\XmlEncoder.cs" />
+    <Compile Include="Src\Xml\XmlNamespace.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src" />
+    <Folder Include="Src\CodeCompletion" />
+    <Folder Include="Src\Commands" />
+    <Folder Include="Src\Gui" />
+    <Folder Include="Src\Xml" />
+    <Folder Include="Src\Parser" />
+    <Folder Include="Src\Src" />
+    <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
