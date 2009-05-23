@@ -5,13 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Microsoft.Build.Execution;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
-using System.Text.RegularExpressions;
 using System.Linq;
-
+using System.Text.RegularExpressions;
+using System.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Build.BuildEngine;
@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		
-		public static void StartBuild(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
+		public static void StartBuild(MSBuildBasedProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
@@ -92,12 +92,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			engine.StartBuild();
 		}
 		
-		IProject project;
+		MSBuildBasedProject project;
 		ProjectBuildOptions options;
 		IBuildFeedbackSink feedbackSink;
 		IEnumerable<string> additionalTargetFiles;
 		
-		private MSBuildEngine(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		private MSBuildEngine(MSBuildBasedProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			this.project = project;
 			this.options = options;
@@ -150,14 +150,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public ICollection<string> InterestingTasks {
 			get { return interestingTasks; }
-		}
-		
-		static bool AllowBuildInProcess {
-			get {
-				// don't build in-process if building in parallel.
-				// workaround for SD2-1485: Build worker occasionally hangs
-				return BuildOptions.DefaultParallelProjectCount == 1;
-			}
 		}
 		
 		void StartBuild()

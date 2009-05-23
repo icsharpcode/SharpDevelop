@@ -5,18 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
+using Microsoft.Build.Construction;
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using ICSharpCode.Core;
 using MSBuild = Microsoft.Build;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -53,22 +54,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		/*
-		internal static void AddItemToGroup(MSBuild.BuildItemGroup group, ProjectItem item)
-		{
-			if (group == null)
-				throw new ArgumentNullException("group");
-			if (item == null)
-				throw new ArgumentNullException("item");
-			if (item.IsAddedToProject)
-				throw new ArgumentException("item is already added to project", "item");
-			MSBuild.BuildItem newItem = group.AddNewItem(item.ItemType.ToString(), item.Include, item.TreatIncludeAsLiteral);
-			foreach (string name in item.MetadataNames) {
-				newItem.SetMetadata(name, item.GetMetadata(name));
-			}
-			item.BuildItem = newItem;
-			Debug.Assert(item.IsAddedToProject);
-		}
-		
 		internal static void EnsureCorrectTempProject(MSBuild.Project baseProject,
 		                                              string configuration, string platform,
 		                                              ref MSBuild.Project tempProject)

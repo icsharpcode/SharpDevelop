@@ -41,8 +41,7 @@ namespace CSharpBinding
 			reparseCodeSensitiveProperties.Add("DefineConstants");
 		}
 		
-		public CSharpProject(IMSBuildEngineProvider engineProvider, string fileName, string projectName)
-			: base(engineProvider)
+		public CSharpProject(string fileName, string projectName)
 		{
 			this.Name = projectName;
 			Init();
@@ -50,7 +49,6 @@ namespace CSharpBinding
 		}
 		
 		public CSharpProject(ProjectCreateInformation info)
-			: base(info.Solution)
 		{
 			Init();
 			Create(info);
@@ -99,6 +97,7 @@ namespace CSharpBinding
 			}
 		}
 		
+		/*
 		protected override void AddOrRemoveExtensions()
 		{
 			// Test if SharpDevelop-Build extensions are required
@@ -134,5 +133,6 @@ namespace CSharpBinding
 				}
 			}
 		}
+		*/
 	}
 }

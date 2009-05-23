@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the owning project.
 		IProject Project { get; }
 		
-		string Include { get; set; }
+		string UnevaluatedInclude { get; set; }
 		string EvaluatedInclude { get; set; }
 		ItemType ItemType { get; set; }
 		

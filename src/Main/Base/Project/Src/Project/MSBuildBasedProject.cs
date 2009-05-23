@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -156,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Create new project
 		protected virtual void Create(ProjectCreateInformation information)
 		{
-			InitializeMSBuildProjectProperties(projectCollection.GlobalProperties);
+			InitializeMSBuildProjectProperties(projectCollection);
 			
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
@@ -870,7 +871,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (var item in c.Project.AllEvaluatedItems) {
 					if (item.IsImported) continue;
 					
-					items.Add(CreateProjectItem(new MSBuildItemWrapper(item)));
+					items.Add(CreateProjectItem(new MSBuildItemWrapper(this, item)));
 				}
 				
 				ClearFindFileCache();
@@ -887,21 +888,20 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentException("item is already added to project", "item");
 			
 			WorkbenchSingleton.AssertMainThread();
-			throw new NotImplementedException();
-			/*
-			lock (SyncRoot) {
+			using (var c = OpenCurrentConfiguration()) {
 				items.Add(item);
 				itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
-				foreach (MSBuild.BuildItemGroup g in projectFile.ItemGroups) {
-					if (g.IsImported || !string.IsNullOrEmpty(g.Condition) || g.Count == 0)
+				/*foreach (var g in projectFile.ItemGroups) {
+					if (!string.IsNullOrEmpty(g.Condition) || g.Count == 0)
 						continue;
-					if (g[0].Name == item.ItemType.ItemName) {
+					var firstItemInGroup = g.Items.First();
+					if (firstItemInGroup.Name == item.ItemType.ItemName) {
 						MSBuildInternals.AddItemToGroup(g, item);
 						return;
 					}
-					if (g[0].Name == "Reference")
+					if (firstItemInGroup.ItemType == ItemType.Reference.ItemName)
 						continue;
-					if (ItemType.DefaultFileItems.Contains(new ItemType(g[0].Name))) {
+					if (ItemType.DefaultFileItems.Contains(new ItemType(firstItemInGroup.ItemType))) {
 						if (ItemType.DefaultFileItems.Contains(item.ItemType)) {
 							MSBuildInternals.AddItemToGroup(g, item);
 							return;
@@ -913,9 +913,21 @@ namespace ICSharpCode.SharpDevelop.Project
 					MSBuildInternals.AddItemToGroup(g, item);
 					return;
 				}
-				MSBuild.BuildItemGroup newGroup = projectFile.AddNewItemGroup();
-				MSBuildInternals.AddItemToGroup(newGroup, item);
-			}*/
+				var newGroup = projectFile.AddItemGroup();
+				MSBuildInternals.AddItemToGroup(newGroup, item);*/
+				
+				
+				string newInclude = item.TreatIncludeAsLiteral ? MSBuildInternals.Escape(item.Include) : item.Include;
+				var newMetadata = new Dictionary<string, string>();
+				foreach (string name in item.MetadataNames) {
+					newMetadata[name] = item.GetMetadata(name);
+				}
+				var newItems = c.Project.AddItem(item.ItemType.ItemName, newInclude, newMetadata);
+				if (newItems.Count != 1)
+					throw new InvalidOperationException("expected one new item, but got " + newItems.Count);
+				item.BuildItem = new MSBuildItemWrapper((MSBuildBasedProject)item.Project, newItems[0]);
+				Debug.Assert(item.IsAddedToProject);
+			}
 		}
 		
 		bool IProjectItemListProvider.RemoveProjectItem(ProjectItem item)
@@ -984,18 +996,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Loading
 		protected bool isLoading;
 		
-		internal static void InitializeMSBuildProject(MSBuild.Project project)
-		{
-			InitializeMSBuildProjectProperties(project.GlobalProperties);
-		}
-		
 		/// <summary>
 		/// Set compilation properties (MSBuildProperties and AddInTree/AdditionalPropertiesPath).
 		/// </summary>
-		internal static void InitializeMSBuildProjectProperties(IDictionary<string, string> propertyGroup)
+		internal static void InitializeMSBuildProjectProperties(MSBuild.ProjectCollection collection)
 		{
 			foreach (KeyValuePair<string, string> entry in MSBuildEngine.MSBuildProperties) {
-				propertyGroup[entry.Key] = entry.Value;
+				collection.SetGlobalProperty(entry.Key, entry.Value);
 			}
 			// re-load these properties from AddInTree every time because "text" might contain
 			// SharpDevelop properties resolved by the StringParser (e.g. ${property:FxCopPath})
@@ -1007,7 +1014,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						string text = item.ToString();
 						if (!codon.Properties.Get("text", "").Contains("$("))
 							text = MSBuildInternals.Escape(text);
-						propertyGroup[codon.Id] = text;
+						collection.SetGlobalProperty(codon.Id, text);
 					}
 				}
 			}
@@ -1029,7 +1036,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.FileName = fileName;
 			
-			InitializeMSBuildProjectProperties(projectCollection.GlobalProperties);
+			InitializeMSBuildProjectProperties(projectCollection);
 			
 			//try {
 				projectFile = ProjectRootElement.Open(fileName, projectCollection);
