@@ -6,14 +6,15 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Invokes a callback when this class is dispsed.
+	/// Invokes a callback when this class is disposed.
 	/// </summary>
-	sealed class CallbackOnDispose : IDisposable
+	public sealed class CallbackOnDispose : IDisposable
 	{
 		// TODO: in 4.0, use System.Action and make this class public
 		System.Threading.ThreadStart callback;
@@ -28,8 +29,19 @@ namespace ICSharpCode.Core
 		public void Dispose()
 		{
 			System.Threading.ThreadStart action = Interlocked.Exchange(ref callback, null);
-			if (action != null)
+			if (action != null) {
 				action();
+				#if DEBUG
+				GC.SuppressFinalize(this);
+				#endif
+			}
 		}
+		
+		#if DEBUG
+		~CallbackOnDispose()
+		{
+			Debug.Fail("CallbackOnDispose was finalized without being disposed.");
+		}
+		#endif
 	}
 }

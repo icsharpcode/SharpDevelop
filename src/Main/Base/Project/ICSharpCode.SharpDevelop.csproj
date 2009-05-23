@@ -192,6 +192,9 @@
     <Compile Include="Src\Project\ContextSpecificProperties.cs" />
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
     <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
+    <Compile Include="Src\Project\MSBuildEngine\EventSource.cs" />
+    <Compile Include="Src\Project\MSBuildEngine\MSBuildEngine.cs" />
+    <Compile Include="Src\Project\MSBuildEngine\ParallelMSBuildManager.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
     <Compile Include="Src\Project\ProjectStartException.cs" />
@@ -595,7 +598,6 @@
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\TextEditor\Commands\NavigationCommands.cs" />
-    <Compile Include="Src\Project\MSBuildEngine.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.cs">
@@ -809,6 +811,7 @@
       <Link>ICSharpCode.SharpDevelop.addin</Link>
     </Content>
     <Folder Include="Src\Editor" />
+    <Folder Include="Src\Project\MSBuildEngine" />
     <Folder Include="Src\Services\Profiler" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />

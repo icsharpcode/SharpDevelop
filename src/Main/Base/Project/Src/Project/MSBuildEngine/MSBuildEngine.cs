@@ -5,23 +5,22 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Build.Execution;
+using Microsoft.Build.Construction;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
+using MSBuild = Microsoft.Build.Evaluation;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	// let Project refer to the class, not to the namespace
-	using Project = Microsoft.Build.BuildEngine.Project;
-	
 	/// <summary>
 	/// Class responsible for building a project using MSBuild.
 	/// Is called by MSBuildProject.
@@ -154,15 +153,59 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void StartBuild()
 		{
-			feedbackSink.ReportError(new BuildError { ErrorText = "Compiling is not yet implemented" });
-			feedbackSink.Done(false);
+			// perform initialization of the build in parallel
+			ThreadPool.QueueUserWorkItem(RunBuild);
+		}
+		
+		void RunBuild(object state)
+		{
+			var projectCollection = new MSBuild.ProjectCollection();
+			MSBuildBasedProject.InitializeMSBuildProjectProperties(projectCollection);
+			
+			Solution solution = project.ParentSolution;
+			projectCollection.SetGlobalProperty("SolutionDir", EnsureBackslash(solution.Directory));
+			projectCollection.SetGlobalProperty("SolutionExt", ".sln");
+			projectCollection.SetGlobalProperty("SolutionFileName", Path.GetFileName(solution.FileName));
+			projectCollection.SetGlobalProperty("SolutionPath", solution.FileName);
+			
+			foreach (var pair in options.Properties) {
+				projectCollection.SetGlobalProperty(pair.Key, pair.Value);
+			}
+			projectCollection.SetGlobalProperty("Configuration", options.Configuration);
+			if (options.Platform == "Any CPU")
+				projectCollection.SetGlobalProperty("Platform", "AnyCPU");
+			else
+				projectCollection.SetGlobalProperty("Platform", options.Platform);
+
+			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
+			
+			var projectFile = ProjectRootElement.Open(project.FileName, projectCollection);
+			foreach (string import in additionalTargetFiles)
+				projectFile.AddImport(import);
+			string toolsVersion = projectFile.ToolsVersion;
+			if (string.IsNullOrEmpty(toolsVersion))
+				toolsVersion = projectCollection.DefaultToolsVersion;
+			var evalProject = new MSBuild.Project(projectFile, null, toolsVersion, projectCollection);
+			var projectInstance = evalProject.CreateProjectInstance();
+			
+			string[] targets = { options.Target.TargetName };
+			BuildRequestData requestData = new BuildRequestData(projectInstance, targets, new HostServices());
+			ParallelMSBuildManager.StartBuild(requestData, new SharpDevelopLogger(this), OnComplete);
+		}
+		
+		void OnComplete(BuildSubmission submission)
+		{
+			Debug.Assert(submission.IsCompleted);
+			
+			feedbackSink.Done(submission.BuildResult.OverallResult == Microsoft.Build.Execution.BuildResultCode.Success);
+		}
+		
 			/*
 			WorkerManager.ShowError = MessageService.ShowError;
 			BuildWorker.BuildSettings settings = new BuildWorker.BuildSettings();
 			SharpDevelopLogger logger = new SharpDevelopLogger(this);
 			settings.Logger.Add(logger);
 			
-			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
 			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
 				settings.Logger.Add(loggerProvider.CreateLogger(this));
 			}
@@ -195,26 +238,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			job.AdditionalImports.AddRange(additionalTargetFiles);
 			
-			BuildPropertyGroup pg = new BuildPropertyGroup();
-			MSBuildBasedProject.InitializeMSBuildProjectProperties(pg);
-			foreach (BuildProperty p in pg) {
-				job.Properties[p.Name] = p.FinalValue;
-			}
-			
-			Solution solution = project.ParentSolution;
-			job.Properties["SolutionDir"] = EnsureBackslash(solution.Directory);
-			job.Properties["SolutionExt"] = ".sln";
-			job.Properties["SolutionFileName"] = Path.GetFileName(solution.FileName);
-			job.Properties["SolutionPath"] = solution.FileName;
-			
-			foreach (var pair in options.Properties) {
-				job.Properties[pair.Key] = pair.Value;
-			}
-			job.Properties["Configuration"] = options.Configuration;
-			if (options.Platform == "Any CPU")
-				job.Properties["Platform"] = "AnyCPU";
-			else
-				job.Properties["Platform"] = options.Platform;
 			job.Target = options.Target.TargetName;
 			
 			bool buildInProcess = false;
@@ -253,9 +276,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				WorkerManager.StartBuild(job, settings);
 			}*/
-		}
-		
-		static int isBuildingInProcess = 0;
 		
 		static string EnsureBackslash(string path)
 		{
@@ -301,7 +321,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			feedbackSink.ReportError(error);
 		}
 		
-		/*
 		class SharpDevelopLogger : ILogger
 		{
 			MSBuildEngine worker;
@@ -394,11 +413,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			public LoggerVerbosity Verbosity { get; set; }
 			public string Parameters { get; set; }
 			
-			IEventSource eventSource;
-			
 			public void Initialize(IEventSource eventSource)
 			{
-				this.eventSource = eventSource;
 				eventSource.ProjectStarted  += OnProjectStarted;
 				eventSource.ProjectFinished += OnProjectFinished;
 				eventSource.TaskStarted     += OnTaskStarted;
@@ -410,16 +426,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void Shutdown()
 			{
-				eventSource.ProjectStarted  -= OnProjectStarted;
-				eventSource.ProjectFinished -= OnProjectFinished;
-				eventSource.TaskStarted     -= OnTaskStarted;
-				eventSource.TaskFinished    -= OnTaskFinished;
-				
-				eventSource.ErrorRaised     -= OnError;
-				eventSource.WarningRaised   -= OnWarning;
 			}
 			#endregion
 		}
-		*/
 	}
 }

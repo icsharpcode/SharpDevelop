@@ -1004,8 +1004,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		internal static void InitializeMSBuildProjectProperties(MSBuild.ProjectCollection collection)
 		{
+			Dictionary<string, string> props = new Dictionary<string, string>();
+			InitializeMSBuildProjectProperties(props);
+			foreach (var pair in props)
+				collection.SetGlobalProperty(pair.Key, pair.Value);
+		}
+		
+		internal static void InitializeMSBuildProjectProperties(IDictionary<string, string> globalProperties)
+		{
 			foreach (KeyValuePair<string, string> entry in MSBuildEngine.MSBuildProperties) {
-				collection.SetGlobalProperty(entry.Key, entry.Value);
+				globalProperties[entry.Key] = entry.Value;
 			}
 			// re-load these properties from AddInTree every time because "text" might contain
 			// SharpDevelop properties resolved by the StringParser (e.g. ${property:FxCopPath})
@@ -1017,7 +1025,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						string text = item.ToString();
 						if (!codon.Properties.Get("text", "").Contains("$("))
 							text = MSBuildInternals.Escape(text);
-						collection.SetGlobalProperty(codon.Id, text);
+						globalProperties[codon.Id] = text;
 					}
 				}
 			}
