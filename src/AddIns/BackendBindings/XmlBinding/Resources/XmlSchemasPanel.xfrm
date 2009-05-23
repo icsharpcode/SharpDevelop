@@ -1,0 +1,110 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="XmlEditorOptionsPanel" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=352, Height=328}" />
+    <SnapToGrid value="False" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="xmlFileExtensionGroupBox" />
+        <TabIndex value="4" />
+        <Location value="{X=8,Y=186}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=336, Height=126}" />
+        <Text value="${res:ICSharpCode.XmlEditor.XmlSchemaPanel.FileExtensionsGroupBoxText}" />
+        <Controls>
+          <System.Windows.Forms.TextBox>
+            <Name value="namespacePrefixTextBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="10" />
+            <Location value="{X=80,Y=84}" />
+            <Size value="{Width=248, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="prefixLabel" />
+            <Text value="${res:ICSharpCode.XmlEditor.XmlSchemaPanel.NamespacePrefixLabelText}" />
+            <TextAlign value="MiddleLeft" />
+            <TabIndex value="9" />
+            <Size value="{Width=72, Height=16}" />
+            <Location value="{X=8,Y=84}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="schemaTextBox" />
+            <ReadOnly value="True" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="8" />
+            <Location value="{X=80,Y=58}" />
+            <Size value="{Width=216, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.ComboBox>
+            <Name value="fileExtensionComboBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="7" />
+            <Location value="{X=80,Y=34}" />
+            <Size value="{Width=248, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="schemaLabel" />
+            <Text value="${res:ICSharpCode.XmlEditor.XmlSchemaPanel.SchemaLabelText}" />
+            <TextAlign value="MiddleLeft" />
+            <TabIndex value="1" />
+            <Size value="{Width=72, Height=16}" />
+            <Location value="{X=8,Y=58}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.Label>
+            <Name value="fileExtensionLabel" />
+            <Text value="${res:ICSharpCode.XmlEditor.XmlSchemaPanel.FileExtensionLabelText}" />
+            <TextAlign value="MiddleLeft" />
+            <TabIndex value="0" />
+            <Size value="{Width=72, Height=16}" />
+            <Location value="{X=8,Y=34}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.Button>
+            <Name value="changeSchemaButton" />
+            <Location value="{X=304,Y=58}" />
+            <Size value="{Width=24, Height=21}" />
+            <Text value="..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="6" />
+          </System.Windows.Forms.Button>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="schemasGroupBox" />
+        <TabIndex value="3" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=336, Height=170}" />
+        <Text value="${res:ICSharpCode.XmlEditor.XmlSchemaPanel.SchemasGroupBoxText}" />
+        <Controls>
+          <System.Windows.Forms.Button>
+            <Name value="addButton" />
+            <Location value="{X=160,Y=140}" />
+            <Size value="{Width=80, Height=24}" />
+            <Text value="${res:Global.AddButtonText}..." />
+            <Anchor value="Bottom, Right" />
+            <TabIndex value="4" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.Button>
+            <Name value="removeButton" />
+            <Location value="{X=247,Y=140}" />
+            <Size value="{Width=80, Height=24}" />
+            <Text value="${res:Global.RemoveButtonText}" />
+            <Anchor value="Bottom, Right" />
+            <TabIndex value="5" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.ListBox>
+            <Name value="schemaListBox" />
+            <Size value="{Width=320, Height=108}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="3" />
+            <Location value="{X=8,Y=29}" />
+          </System.Windows.Forms.ListBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

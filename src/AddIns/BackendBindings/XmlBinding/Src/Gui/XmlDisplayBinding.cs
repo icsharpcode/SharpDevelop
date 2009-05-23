@@ -22,7 +22,7 @@ namespace ICSharpCode.XmlBinding.Gui
 	{
 		public bool ReattachWhenParserServiceIsReady {
 			get {
-				throw new NotImplementedException();
+				return false;
 			}
 		}
 		
@@ -58,7 +58,7 @@ namespace ICSharpCode.XmlBinding.Gui
 		/// </summary>
 		public static string[] GetXmlFileExtensions()
 		{
-			return string[] { ".xml", ".xaml" };
+			return new string[] { ".xml" };
 			
 			foreach (ParserDescriptor parser in AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false)) {
 				if (parser.Codon.Id == "XmlFoldingParser") {

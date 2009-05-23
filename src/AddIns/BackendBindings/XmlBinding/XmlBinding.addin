@@ -27,11 +27,11 @@
 	</Path>
 	
 	<!-- Xml parser used to initiate the folding update -->
-<!--	<Path name = "/Workspace/Parser">
+	<Path name = "/Workspace/Parser">
 		<Parser id = "XmlFoldingParser"
 		        supportedextensions  = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco"
-		        class = "ICSharpCode.XmlEditor.Parser"/>
-	</Path>-->
+		        class = "ICSharpCode.XmlBinding.Parser.Parser"/>
+	</Path>
 	
 	<!-- Extra project browser icons -->
 	<Path name = "/Workspace/Icons">

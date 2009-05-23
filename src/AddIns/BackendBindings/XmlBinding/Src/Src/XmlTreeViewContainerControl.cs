@@ -844,17 +844,17 @@ namespace ICSharpCode.XmlEditor
 			ImageList images = new ImageList(components);
 			
 			// Add xml element tree node images.
-			Image xmlElementImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlElementTreeNodeIcon.png"));
+			Image xmlElementImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlBinding.Resources.XmlElementTreeNodeIcon.png"));
 			images.Images.Add(XmlElementTreeNode.XmlElementTreeNodeImageKey, xmlElementImage);
 			images.Images.Add(XmlElementTreeNode.XmlElementTreeNodeGhostImageKey, IconService.GetGhostBitmap(new Bitmap(xmlElementImage)));
 			
 			// Add text tree node images.
-			Image xmlTextImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlTextTreeNodeIcon.png"));
+			Image xmlTextImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlBinding.Resources.XmlTextTreeNodeIcon.png"));
 			images.Images.Add(XmlTextTreeNode.XmlTextTreeNodeImageKey, xmlTextImage);
 			images.Images.Add(XmlTextTreeNode.XmlTextTreeNodeGhostImageKey, IconService.GetGhostBitmap(new Bitmap(xmlTextImage)));
 			
 			// Add comment tree node images.
-			Image xmlCommentImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlCommentTreeNodeIcon.png"));
+			Image xmlCommentImage = Image.FromStream(typeof(XmlTreeViewContainerControl).Assembly.GetManifestResourceStream("ICSharpCode.XmlBinding.Resources.XmlCommentTreeNodeIcon.png"));
 			images.Images.Add(XmlCommentTreeNode.XmlCommentTreeNodeImageKey, xmlCommentImage);
 			images.Images.Add(XmlCommentTreeNode.XmlCommentTreeNodeGhostImageKey, IconService.GetGhostBitmap(new Bitmap(xmlCommentImage)));
 

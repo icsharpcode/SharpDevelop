@@ -21,14 +21,13 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class XmlTreeView : AbstractViewContent, IClipboardHandler
 	{
-		XmlTreeViewContainerControl treeViewContainer = new XmlTreeViewContainerControl();
-		IViewContent parent;
-		bool disposed;
-		bool ignoreDirtyChange;
+		XmlTreeViewContainerControl treeViewContainer;
 		
 		public XmlTreeView(IViewContent parent)
 		{
-			this.parent = parent;
+			this.TabPageText = "XML Tree";
+			this.Files.Add(parent.PrimaryFile);
+			this.treeViewContainer = new XmlTreeViewContainerControl();
 			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
 			treeViewContainer.TreeView.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/ContextMenu");
 		}
@@ -121,17 +120,36 @@ namespace ICSharpCode.XmlEditor
 		
 		#endregion
 		
-		void TreeViewContainerDirtyChanged(object source, EventArgs e)
-		{
-			if (!ignoreDirtyChange) {
-				this.PrimaryFile.IsDirty = treeViewContainer.IsDirty;
-			}
-		}
-		
 		public override object Control {
 			get {
 				return this.treeViewContainer;
 			}
+		}
+		
+		public override void Load(OpenedFile file, Stream stream)
+		{
+			LoggingService.Debug("XmlTreeView.LoadFromPrimary");
+			
+			treeViewContainer.LoadXml(new StreamReader(this.PrimaryFile.OpenRead()).ReadToEnd());
+			
+//			XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(xmlEditor.SchemaCompletionDataItems, xmlEditor.DefaultSchemaCompletionData, xmlEditor.DefaultNamespacePrefix);
+//			treeViewContainer.LoadXml(xmlView.Text, completionDataProvider);
+//			xmlView.CheckIsWellFormed();
+		}
+		
+		public override void Save(OpenedFile file, Stream stream)
+		{
+			treeViewContainer.
+		}
+		
+		public override bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
+		{
+			return false;
+		}
+		
+		public override bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
+		{
+			return false;
 		}
 	}
 }

@@ -57,6 +57,22 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Gui\Dialogs\SelectXmlSchema.xaml.cs">
+      <DependentUpon>SelectXmlSchema.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\XmlEditorOptionsPanel.xaml.cs">
+      <DependentUpon>XmlEditorOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\XmlSchemasPanel.xaml.cs">
+      <DependentUpon>XmlSchemasPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\XmlTreeViewContainer.xaml.cs">
+      <DependentUpon>XmlTreeViewContainer.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\XmlFormattingStrategy.cs">
     </Compile>
     <Compile Include="Src\CodeCompletion\XmlCompletionData.cs" />
@@ -120,7 +136,8 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Src\XmlTextTreeNode.cs" />
-    <Compile Include="Src\Src\XmlTreeEditor.cs" />
+    <Compile Include="Src\Src\XmlTreeEditor.cs">
+    </Compile>
     <Compile Include="Src\Src\XmlTreeViewContainerControl.cs" />
     <Compile Include="Src\Src\XmlTreeViewControl.cs" />
     <Compile Include="Src\Src\XPathNodeMatch.cs" />
@@ -130,12 +147,20 @@
     <Compile Include="Src\Xml\EncodedStringWriter.cs" />
     <Compile Include="Src\Xml\XmlEncoder.cs" />
     <Compile Include="Src\Xml\XmlNamespace.cs" />
+    <EmbeddedResource Include="Resources\SelectXmlSchema.xfrm" />
+    <EmbeddedResource Include="Resources\XmlCommentTreeNodeIcon.png" />
+    <EmbeddedResource Include="Resources\XmlEditorOptionsPanel.xfrm" />
+    <EmbeddedResource Include="Resources\XmlElementTreeNodeIcon.png" />
+    <EmbeddedResource Include="Resources\XmlSchemasPanel.xfrm" />
+    <EmbeddedResource Include="Resources\XmlTextTreeNodeIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Resources" />
     <Folder Include="Src" />
     <Folder Include="Src\CodeCompletion" />
     <Folder Include="Src\Commands" />
     <Folder Include="Src\Gui" />
+    <Folder Include="Src\Gui\Dialogs" />
     <Folder Include="Src\Xml" />
     <Folder Include="Src\Parser" />
     <Folder Include="Src\Src" />
@@ -155,5 +180,9 @@
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
+    <Page Include="Src\Gui\Dialogs\SelectXmlSchema.xaml" />
+    <Page Include="Src\Gui\Dialogs\XmlEditorOptionsPanel.xaml" />
+    <Page Include="Src\Gui\Dialogs\XmlSchemasPanel.xaml" />
+    <Page Include="Src\Gui\XmlTreeViewContainer.xaml" />
   </ItemGroup>
 </Project>
