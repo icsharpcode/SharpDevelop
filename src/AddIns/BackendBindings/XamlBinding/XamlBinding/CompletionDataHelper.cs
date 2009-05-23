@@ -91,6 +91,7 @@ namespace ICSharpCode.XamlBinding
 				ResolvedExpression = rr,
 				AttributeName = attribute,
 				AttributeValue = value,
+				RawAttributeValue = attributeValue,
 				ValueStartOffset = offsetFromValueStart,
 				Path = (path == null || path.Elements.Count == 0) ? null : path
 			};
@@ -421,7 +422,7 @@ namespace ICSharpCode.XamlBinding
 			return null;
 		}
 		
-		static MarkupExtensionInfo GetInnermostMarkup(MarkupExtensionInfo markup)
+		public static MarkupExtensionInfo GetInnermostMarkup(MarkupExtensionInfo markup)
 		{
 			var lastPair = markup.NamedArguments.LastOrDefault();
 			var last = markup.PositionalArguments.LastOrDefault();

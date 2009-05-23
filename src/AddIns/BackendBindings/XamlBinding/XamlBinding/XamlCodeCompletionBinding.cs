@@ -64,6 +64,10 @@ namespace ICSharpCode.XamlBinding
 					break;
 				case '{': // starting point for Markup Extension Completion
 					if (!string.IsNullOrEmpty(context.AttributeName) && XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
+						string valueBeforeCaret = context.RawAttributeValue.Substring(0, context.ValueStartOffset);
+						if (valueBeforeCaret.StartsWith("{}", StringComparison.OrdinalIgnoreCase))
+							return CodeCompletionKeyPressResult.None;
+						
 						editor.Document.Insert(editor.Caret.Offset, "{}");
 						editor.Caret.Offset--;
 						
@@ -155,8 +159,12 @@ namespace ICSharpCode.XamlBinding
 					editor.ShowCompletionWindow(list);
 					return true;
 				} else {
-					// DO NOT USE CompletionDataHelper.CreateListForContext here!!! might result in endless recursion!!!!					
-					if (!string.IsNullOrEmpty(context.AttributeName)) {						
+					// DO NOT USE CompletionDataHelper.CreateListForContext here!!! might result in endless recursion!!!!
+					if (!string.IsNullOrEmpty(context.AttributeName)) {
+						string valueBeforeCaret = context.RawAttributeValue.Substring(0, context.ValueStartOffset);
+						if (valueBeforeCaret.StartsWith("{}", StringComparison.OrdinalIgnoreCase))
+							return false;
+						
 						if (!DoMarkupExtensionCompletion(editor, info, context)) {
 							XamlResolver resolver = new XamlResolver();
 							var mrr = resolver.Resolve(new ExpressionResult(context.AttributeName, new XamlExpressionContext(context.Path, context.AttributeName, false)),
