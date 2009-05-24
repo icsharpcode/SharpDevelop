@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// <see cref="TextRunProperties"/> implementation that allows changing the properties.

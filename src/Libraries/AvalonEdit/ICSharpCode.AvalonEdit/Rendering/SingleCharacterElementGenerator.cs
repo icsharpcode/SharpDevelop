@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -15,7 +14,7 @@ using System.Windows.Media.TextFormatting;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Element generator that displays · for spaces and » for tabs and a box for control characeters.

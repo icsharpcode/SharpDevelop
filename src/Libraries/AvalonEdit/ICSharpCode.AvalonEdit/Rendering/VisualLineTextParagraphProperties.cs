@@ -9,7 +9,7 @@ using System;
 using System.Windows;
 using System.Windows.Media.TextFormatting;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	class VisualLineTextParagraphProperties : TextParagraphProperties
 	{

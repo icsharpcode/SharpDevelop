@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,10 +17,9 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
-
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
 

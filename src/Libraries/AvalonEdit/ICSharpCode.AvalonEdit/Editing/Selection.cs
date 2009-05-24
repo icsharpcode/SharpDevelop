@@ -5,14 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.Gui
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Utils;
+
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// Base class for selections.

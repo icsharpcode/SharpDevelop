@@ -9,7 +9,7 @@ using System;
 using System.ComponentModel;
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Represents a collapsed line section.

@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	sealed class GlobalTextRunProperties : TextRunProperties
 	{

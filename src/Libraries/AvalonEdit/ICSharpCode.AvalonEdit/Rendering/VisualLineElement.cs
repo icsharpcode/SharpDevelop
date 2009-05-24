@@ -11,7 +11,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media.TextFormatting;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Represents a visual element in the document.

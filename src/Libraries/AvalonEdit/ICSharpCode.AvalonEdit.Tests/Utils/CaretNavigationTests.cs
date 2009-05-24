@@ -8,7 +8,6 @@
 using System;
 using System.Windows.Documents;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Utils;
 using NUnit.Framework;
 

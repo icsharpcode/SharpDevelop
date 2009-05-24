@@ -10,7 +10,6 @@ using System.IO;
 using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;

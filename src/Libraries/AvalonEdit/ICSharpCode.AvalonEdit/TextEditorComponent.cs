@@ -5,16 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.ComponentModel;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.AvalonEdit
 {
 	/// <summary>
 	/// Represents a text editor control (<see cref="TextEditor"/>, <see cref="TextArea"/>
-	/// or <see cref="Gui.TextView"/>).
+	/// or <see cref="TextView"/>).
 	/// </summary>
 	public interface ITextEditorComponent : IServiceProvider
 	{

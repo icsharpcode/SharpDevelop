@@ -13,7 +13,7 @@ using System.Windows.Media.TextFormatting;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// VisualLineElement that represents a piece of text.

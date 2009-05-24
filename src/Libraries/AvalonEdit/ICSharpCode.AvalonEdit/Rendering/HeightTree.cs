@@ -13,7 +13,7 @@ using System.Text;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Red-black tree similar to DocumentLineTree, augmented with collapsing and height data.

@@ -8,7 +8,7 @@
 using System;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Contains weak event managers for the TextView events.

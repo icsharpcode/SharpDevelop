@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
@@ -25,7 +24,7 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// A virtualizing panel producing+showing <see cref="VisualLine"/>s for a <see cref="TextDocument"/>.
@@ -1427,7 +1426,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		/// <see cref="VisualLineElementGenerator"/>s that cause <see cref="VisualLine"/>s to span
 		/// multiple <see cref="DocumentLine"/>s. Do not call it without providing a corresponding
 		/// <see cref="VisualLineElementGenerator"/>.
-		/// If you want to create collapsible text sections, see <see cref="FoldingManager"/>.
+		/// If you want to create collapsible text sections, see <see cref="Editing.FoldingManager"/>.
 		/// </summary>
 		public CollapsedLineSection CollapseLines(DocumentLine start, DocumentLine end)
 		{

@@ -11,7 +11,7 @@ using System.Windows.Media.TextFormatting;
 
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// WPF TextSource implementation that creates TextRuns for a VisualLine.

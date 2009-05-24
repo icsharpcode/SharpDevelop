@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Abstract base class for generators that produce new visual line elements.

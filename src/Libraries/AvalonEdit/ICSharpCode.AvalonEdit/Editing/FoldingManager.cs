@@ -10,8 +10,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Rendering;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// Stores a list of foldings for a specific TextView and TextDocument.

@@ -6,11 +6,11 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
-using System.Collections.Generic;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// <see cref="IReadOnlySectionProvider"/> that has no read-only sections; all text is editable.

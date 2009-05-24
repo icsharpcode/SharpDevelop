@@ -9,7 +9,7 @@ using System;
 using System.Windows.Media.TextFormatting;
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Contains information relevant for text run creation.

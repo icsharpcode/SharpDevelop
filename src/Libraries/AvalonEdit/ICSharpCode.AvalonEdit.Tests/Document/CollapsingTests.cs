@@ -6,8 +6,8 @@
 // </file>
 
 using System;
+using ICSharpCode.AvalonEdit.Rendering;
 using NUnit.Framework;
-using ICSharpCode.AvalonEdit.Gui;
 
 namespace ICSharpCode.AvalonEdit.Document.Tests
 {

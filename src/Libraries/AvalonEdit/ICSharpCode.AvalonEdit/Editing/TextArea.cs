@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Indentation;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -19,11 +18,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Indentation;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// Control that wraps a TextView and adds support for user input and the caret.

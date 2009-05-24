@@ -7,13 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 

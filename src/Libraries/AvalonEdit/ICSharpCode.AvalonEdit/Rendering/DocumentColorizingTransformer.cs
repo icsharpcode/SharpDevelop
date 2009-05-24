@@ -9,7 +9,7 @@ using System;
 using System.Linq;
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Base class for <see cref="IVisualLineTransformer"/> that helps

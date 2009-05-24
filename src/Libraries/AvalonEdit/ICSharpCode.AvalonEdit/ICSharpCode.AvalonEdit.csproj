@@ -73,6 +73,7 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CaretPositioningMode.cs" />
     <Compile Include="CodeCompletion\CompletionListBox.cs" />
     <Compile Include="CodeCompletion\CompletionWindowBase.cs" />
     <Compile Include="CodeCompletion\CompletionList.cs" />
@@ -121,7 +122,6 @@
     <Compile Include="Editing\AbstractMargin.cs" />
     <Compile Include="Editing\Caret.cs" />
     <Compile Include="Editing\CaretLayer.cs">
-      <DependentUpon>Caret.cs</DependentUpon>
     </Compile>
     <Compile Include="Editing\CaretNavigationCommandHandler.cs">
     </Compile>
@@ -237,7 +237,6 @@
       <DependentUpon>TextView.cs</DependentUpon>
     </Compile>
     <Compile Include="Rendering\TextView.cs" />
-    <Compile Include="Rendering\TextViewPosition.cs" />
     <Compile Include="Rendering\TextViewWeakEventManager.cs">
       <DependentUpon>TextView.cs</DependentUpon>
     </Compile>
@@ -278,6 +277,7 @@
     <Compile Include="TextEditorWeakEventManager.cs">
       <DependentUpon>TextEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="TextViewPosition.cs" />
     <Compile Include="Utils\Boxes.cs" />
     <Compile Include="Utils\CompressingTreeList.cs" />
     <Compile Include="Utils\Constants.cs" />

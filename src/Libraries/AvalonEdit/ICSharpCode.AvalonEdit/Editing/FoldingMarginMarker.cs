@@ -11,7 +11,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ICSharpCode.AvalonEdit.Gui
+using ICSharpCode.AvalonEdit.Rendering;
+
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	sealed class FoldingMarginMarker : UIElement
 	{

@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -15,7 +14,7 @@ using System.Windows.Media.TextFormatting;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Helper for creating a PathGeometry.

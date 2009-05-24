@@ -10,7 +10,6 @@ using System.Globalization;
 using System.Windows.Documents;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {

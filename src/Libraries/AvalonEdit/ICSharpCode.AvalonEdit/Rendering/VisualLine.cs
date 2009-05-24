@@ -15,7 +15,7 @@ using System.Windows.Media.TextFormatting;
 
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Represents a visual line in the document.

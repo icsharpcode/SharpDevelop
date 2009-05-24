@@ -5,13 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using ICSharpCode.AvalonEdit.Gui;
+
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion

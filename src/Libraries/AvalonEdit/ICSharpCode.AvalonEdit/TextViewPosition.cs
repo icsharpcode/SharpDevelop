@@ -9,7 +9,7 @@ using System;
 using System.Globalization;
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit
 {
 	/// <summary>
 	/// Represents a text location with a visual column.

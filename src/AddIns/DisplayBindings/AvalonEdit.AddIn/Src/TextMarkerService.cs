@@ -5,15 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {

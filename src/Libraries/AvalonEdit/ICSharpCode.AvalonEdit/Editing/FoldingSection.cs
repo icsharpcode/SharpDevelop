@@ -8,8 +8,9 @@
 using System;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Rendering;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// A section that can be folded.

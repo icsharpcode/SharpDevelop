@@ -18,9 +18,10 @@ using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Indentation;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;

@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// A set of input bindings and event handlers for the text area.

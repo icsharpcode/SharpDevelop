@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {

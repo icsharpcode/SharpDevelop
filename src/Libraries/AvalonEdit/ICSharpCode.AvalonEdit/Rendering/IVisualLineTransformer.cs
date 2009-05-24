@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Allows transforming visual line elements.

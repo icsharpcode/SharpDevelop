@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;

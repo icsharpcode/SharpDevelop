@@ -6,12 +6,10 @@
 // </file>
 
 using System;
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
-using ICSharpCode.AvalonEdit.Utils;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using ICSharpCode.SharpDevelop.Editor;
 using System.Windows.Documents;
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Editing;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {

@@ -9,6 +9,8 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 
+using ICSharpCode.AvalonEdit.Editing;
+
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {
 	/// <summary>

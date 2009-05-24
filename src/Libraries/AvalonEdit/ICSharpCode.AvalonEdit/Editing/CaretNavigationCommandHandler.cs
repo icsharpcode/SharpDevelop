@@ -12,37 +12,11 @@ using System.Windows.Input;
 using System.Windows.Media.TextFormatting;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Editing
 {
-	/// <summary>
-	/// Specifies the mode for getting the next caret position.
-	/// </summary>
-	public enum CaretPositioningMode
-	{
-		/// <summary>
-		/// Normal positioning (stop at every caret position)
-		/// </summary>
-		Normal,
-		/// <summary>
-		/// Stop only on word borders.
-		/// </summary>
-		WordBorder,
-		/// <summary>
-		/// Stop only at the beginning of words. This is used for Ctrl+Left/Ctrl+Right.
-		/// </summary>
-		WordStart,
-		/// <summary>
-		/// Stop only at the beginning of words, and anywhere in the middle of symbols.
-		/// </summary>
-		WordStartOrSymbol,
-		/// <summary>
-		/// Stop only on word borders, and anywhere in the middle of symbols.
-		/// </summary>
-		WordBorderOrSymbol
-	}
-	
 	static class CaretNavigationCommandHandler
 	{
 		/// <summary>
@@ -108,7 +82,7 @@ namespace ICSharpCode.AvalonEdit.Gui
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-			args.Handled = true;
+				args.Handled = true;
 				textArea.Caret.Offset = textArea.Document.TextLength;
 				textArea.Selection = new SimpleSelection(0, textArea.Document.TextLength);
 				textArea.Caret.BringCaretToView();

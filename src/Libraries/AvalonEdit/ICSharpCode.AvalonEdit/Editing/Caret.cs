@@ -13,8 +13,9 @@ using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Rendering;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// Helper class with caret-related methods.

@@ -6,11 +6,10 @@
 // </file>
 
 using System;
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Utils;
 using System.Collections.Generic;
+using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// Determines whether the document can be modified.

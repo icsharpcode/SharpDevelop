@@ -10,9 +10,10 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	sealed class CaretLayer : Layer
 	{

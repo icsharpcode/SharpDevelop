@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Base class for known layers.

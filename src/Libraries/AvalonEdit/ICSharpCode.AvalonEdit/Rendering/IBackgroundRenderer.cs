@@ -8,7 +8,7 @@
 using System;
 using System.Windows.Media;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Background renderers draw in the background of a known layer.

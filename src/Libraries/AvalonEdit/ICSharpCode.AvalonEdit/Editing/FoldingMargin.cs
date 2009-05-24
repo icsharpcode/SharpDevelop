@@ -14,9 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// A margin that shows markers for foldings and allows to expand/collapse the foldings.

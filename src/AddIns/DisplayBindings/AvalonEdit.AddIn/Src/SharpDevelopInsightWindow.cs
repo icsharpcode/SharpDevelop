@@ -12,6 +12,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 
 using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn

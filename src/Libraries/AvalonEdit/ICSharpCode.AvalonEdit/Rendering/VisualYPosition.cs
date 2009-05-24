@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// An enum that specifies the possible Y positions that can be returned by VisualLine.GetVisualPosition.

@@ -9,7 +9,7 @@ using System;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.Gui
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
 	/// Contains the predefined input handlers.
