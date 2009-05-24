@@ -68,9 +68,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		#region Equals and GetHashCode implementation
-		// The code in this region is useful if you want to use this structure in collections.
-		// If you don't need it, you can just remove the region and the ": IEquatable<ItemType>" declaration.
-		
 		public override bool Equals(object obj)
 		{
 			if (obj is ItemType)
@@ -81,13 +78,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public bool Equals(ItemType other)
 		{
-			// add comparisions for all members here
 			return this.itemName == other.itemName;
 		}
 		
 		public override int GetHashCode()
 		{
-			// combine the hash codes of all members here (e.g. with XOR operator ^)
 			return itemName.GetHashCode();
 		}
 		

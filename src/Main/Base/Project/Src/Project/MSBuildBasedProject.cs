@@ -89,13 +89,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			lock (SyncRoot) {
 				projectFile.ToolsVersion = "4.0";
 				userProjectFile.ToolsVersion = "4.0";
-				Reevaluate();
 			}
-		}
-		
-		void Reevaluate()
-		{
-			// ?
 		}
 		
 		public override void ResolveAssemblyReferences()
@@ -205,7 +199,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			lock (SyncRoot) {
 				projectFile.AddImport(importedProjectFile).Condition = condition;
-				Reevaluate();
 			}
 		}
 		#endregion
@@ -314,6 +307,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		MSBuild.Project currentlyOpenProject;
+		
+		void ReconfigureCurrentlyOpenProject()
+		{
+			if (currentlyOpenProject != null) {
+				projectCollection.UnloadProject(currentlyOpenProject);
+				currentlyOpenProject = null;
+			}
+		}
+		
 		ConfiguredProject OpenCurrentConfiguration()
 		{
 			return OpenConfiguration(null, null);
@@ -329,6 +332,15 @@ namespace ICSharpCode.SharpDevelop.Project
 					configuration = this.ActiveConfiguration;
 				if (platform == null)
 					platform = this.ActivePlatform;
+				
+				bool openCurrentConfiguration = configuration == this.ActiveConfiguration && platform == this.ActivePlatform;
+				
+				if (currentlyOpenProject != null && openCurrentConfiguration) {
+					// use currently open project
+					currentlyOpenProject.ReevaluateIfNecessary();
+					return new ConfiguredProject(this, currentlyOpenProject, false);
+				}
+				
 				Dictionary<string, string> globalProps = new Dictionary<string, string>();
 				globalProps["Configuration"] = configuration;
 				globalProps["Platform"] = platform;
@@ -336,7 +348,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (string.IsNullOrEmpty(toolsVersion))
 					toolsVersion = projectCollection.DefaultToolsVersion;
 				var project = new MSBuild.Project(projectFile, globalProps, toolsVersion, projectCollection);
-				return new ConfiguredProject(this, project);
+				if (openCurrentConfiguration)
+					currentlyOpenProject = project;
+				return new ConfiguredProject(this, project, !openCurrentConfiguration);
 			} catch {
 				// Leave lock only on exceptions.
 				// If there's no exception, the lock will be left when the ConfiguredProject
@@ -350,12 +364,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		sealed class ConfiguredProject : IDisposable 
 		{
 			readonly MSBuildBasedProject p;
+			readonly bool unloadProjectOnDispose;
 			public readonly MSBuild.Project Project;
 			
-			public ConfiguredProject(MSBuildBasedProject parent, MSBuild.Project project)
+			public ConfiguredProject(MSBuildBasedProject parent, MSBuild.Project project, bool unloadProjectOnDispose)
 			{
 				this.p = parent;
 				this.Project = project;
+				this.unloadProjectOnDispose = unloadProjectOnDispose;
 			}
 			
 			public MSBuild.ProjectProperty GetNonImportedProperty(string name)
@@ -378,7 +394,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void Dispose()
 			{
-				p.projectCollection.UnloadProject(this.Project);
+				if (unloadProjectOnDispose) {
+					p.projectCollection.UnloadProject(this.Project);
+				}
 				System.Threading.Monitor.Exit(p.SyncRoot);
 			}
 		}
@@ -1131,6 +1149,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (!isLoading) {
 				lock (SyncRoot) {
+					ReconfigureCurrentlyOpenProject();
 					CreateItemsListFromMSBuild();
 				}
 			}
@@ -1141,6 +1160,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (!isLoading) {
 				lock (SyncRoot) {
+					ReconfigureCurrentlyOpenProject();
 					CreateItemsListFromMSBuild();
 				}
 			}
