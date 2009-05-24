@@ -1,0 +1,548 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ad="clr-namespace:AvalonDock">
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="/AvalonDock;component/themes/generic.xaml"/>
+
+		<!--Aero colors-->
+		<ResourceDictionary Source="/AvalonDock;component/themes/classic.brushes.xaml"/>
+	</ResourceDictionary.MergedDictionaries>
+
+
+	<!--DockableContentTabItemStyle-->
+	<Style x:Key="DockableContentTabItemStyle" TargetType="{x:Type ad:DockableContent}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ad:DockableContent}">
+					<Grid SnapsToDevicePixels="True">
+						<Border 
+						    x:Name="PART_DragArea" 
+						    BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}" 
+						    BorderThickness="1,0,1,1" 
+                            Margin="0,2,-1,0"
+                            Background="{StaticResource ManagedContentTabItemNormalBackground}"   
+                            Padding="1"
+                            >
+							<Grid Margin="4,0,4,0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<ad:AlignedImage>
+									<ContentPresenter x:Name="Icon"
+													Grid.Column="0"
+													Margin="1"
+													VerticalAlignment="Center"
+													ContentSource="Icon"
+													SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+								</ad:AlignedImage>
+								<TextBlock 
+								        x:Name="tabItemTitle"
+                                        Grid.Column="1"
+								        TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+								        Text="{TemplateBinding Title}" 
+								        Margin="2,0,0,0" VerticalAlignment="Center"
+								        Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+							</Grid>
+						</Border>
+					</Grid>
+
+					<ControlTemplate.Triggers>
+						<Trigger Property="Selector.IsSelected"
+								 Value="true">
+							<Setter Property="BorderBrush"
+									Value="{StaticResource ManagedContentTabItemSelectedBorderBrush}" TargetName="PART_DragArea"/>
+							<Setter Property="Background"
+									Value="{StaticResource ManagedContentTabItemSelectedBackground}" TargetName="PART_DragArea"/>
+							<Setter Property="Margin"
+                                    Value="0,1,-1,-2" TargetName="PART_DragArea"/>
+							<Setter Property="Padding"
+                                    Value="2" TargetName="PART_DragArea"/>
+							<Setter Property="Panel.ZIndex" 
+                                    Value="100" />
+						</Trigger>
+						<MultiTrigger>
+							<MultiTrigger.Conditions>
+								<Condition Property="IsMouseOver" Value="true"/>
+								<Condition Property="Selector.IsSelected" Value="false"/>
+							</MultiTrigger.Conditions>
+							<Setter Property="BorderBrush" Value="{StaticResource ManagedContentTabItemHotBorderBrush}" 
+                                    TargetName="PART_DragArea" />
+							<Setter Property="Background" Value="{StaticResource ManagedContentTabItemHotBackground}" 
+                                    TargetName="PART_DragArea" />
+							<Setter Property="Panel.ZIndex" Value="99" />
+						</MultiTrigger>
+						<Trigger Property="IsEnabled" Value="false">
+							<Setter Property="BorderBrush" Value="{StaticResource ManagedContentTabItemDisabledBorderBrush}"
+                                    TargetName="PART_DragArea" />
+							<Setter Property="Background" Value="{StaticResource ManagedContentTabItemDisabledBackground}"
+                                    TargetName="PART_DragArea" />
+							<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                                    TargetName="tabItemTitle" />
+							<Setter TargetName="Icon" Property="IsEnabled" Value="false" />
+						</Trigger>
+						<Trigger Property="Icon"
+                     Value="{x:Null}">
+							<Setter TargetName="Icon"
+                        Property="Visibility"
+                        Value="Collapsed"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--DockablePane-->
+	<Style TargetType="{x:Type ad:DockablePane}">
+		<Setter Property="Background" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ad:DockablePane}">
+					<Border
+                        Focusable="True"
+                        Background="{TemplateBinding Background}"
+                        >
+						<Grid FocusManager.FocusedElement="{Binding ElementName=PART_SelectedContent}">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="*"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+							<Border x:Name="PART_Header" 
+							    Grid.Row="0" Focusable="False" 
+							    Background="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DockablePaneTitleBackground}}}"
+							    BorderThickness="1,1,1,0" 
+							    BorderBrush="DarkGray"
+                                Height="18">
+								<DockPanel LastChildFill="True">
+									<Button DockPanel.Dock="Right" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:DockablePane.CloseCommand"
+                                            Width="15" Height="15" Margin="2,0,2,0" VerticalAlignment="Center">
+										<ad:AlignedImage>
+											<Image x:Name="IMG_Close" Source="/AvalonDock;component/resources/Images/Classic/PinClose.png" Width="13" Height="13" Stretch="UniformToFill"/>
+										</ad:AlignedImage>
+									</Button>
+									<Button x:Name="btnPinAutoHide" DockPanel.Dock="Right" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:DockablePane.ToggleAutoHideCommand"
+                                            Width="15" Height="15" VerticalAlignment="Center">
+										<ad:AlignedImage>
+											<Image x:Name="IMG_AutoHide" Source="/AvalonDock;component/resources/Images/Classic/PinAutoHide.png" Width="13" Height="13" Stretch="UniformToFill"/>
+										</ad:AlignedImage>
+									</Button>
+									<Button x:Name="PART_ShowContextMenuButton"  DockPanel.Dock="Right" Style="{StaticResource PaneHeaderContextMenuCommandStyle}" Command="ad:DockablePane.ShowOptionsCommand"
+                                            Width="15" Height="15" VerticalAlignment="Center">
+										<ad:AlignedImage>
+											<Image x:Name="IMG_ShowContextMenu" Source="/AvalonDock;component/resources/Images/Classic/PinMenu.png" Width="13" Height="13" Stretch="UniformToFill"/>
+										</ad:AlignedImage>
+									</Button>
+									<TextBlock 
+									    Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.Title}" 
+									    x:Name="paneTitle"
+									    Grid.Row="0" 
+									    Margin="2,0,0,0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                        VerticalAlignment="Center"
+									    Foreground="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DockablePaneTitleForeground}}}"/>
+								</DockPanel>
+							</Border>
+							<Border Grid.Row="1" 
+							        BorderThickness="1,0,1,1" 
+							        BorderBrush="DarkGray"
+                                    Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.Background}"   
+                                >
+								<ContentPresenter 
+                                    x:Name="PART_SelectedContent"
+                                    
+                                    Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.Content}"
+								    KeyboardNavigation.TabNavigation="Local"
+								    KeyboardNavigation.DirectionalNavigation="Contained"
+								    KeyboardNavigation.TabIndex="1"
+                                    />
+							</Border>
+							<Border x:Name="PART_Tabs"
+                                    Grid.Row="2" 
+								    Margin ="0,2,0,0" 
+                                    Height ="23" 
+								    BorderThickness="0,1,0,0" 
+								    BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}" 
+								    >
+							</Border>
+							<ad:DockableTabPanel
+                                    Grid.Row="2" 
+                                    Height ="22" 
+                                    KeyboardNavigation.TabIndex="2"								
+                                    IsItemsHost="True" 
+                                    x:Name="paneTabsPanel" 
+                                    Margin="0,0,0,2"
+                                    TabItemStyle="{StaticResource DockableContentTabItemStyle}"/>
+						</Grid>
+					</Border>
+
+					<ControlTemplate.Triggers>
+						<DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=SelectedItem.IsActiveContent}" Value="True" >
+							<Setter Property="Background" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DockablePaneTitleBackgroundSelected}}}" TargetName="PART_Header"/>
+							<Setter Property="Foreground" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DockablePaneTitleForegroundSelected}}}" TargetName="paneTitle"/>
+							<Setter Property="Source" Value="/AvalonDock;component/resources/Images/Classic/PinMenuSelected.png" TargetName="IMG_ShowContextMenu"/>
+							<Setter Property="Source" Value="/AvalonDock;component/resources/Images/Classic/PinAutoHideSelected.png" TargetName="IMG_AutoHide"/>
+							<Setter Property="Source" Value="/AvalonDock;component/resources/Images/Classic/PinCloseSelected.png" TargetName="IMG_Close"/>
+						</DataTrigger>
+						<Trigger Property ="ShowHeader" Value="False">
+							<Setter Property="Visibility" Value="Collapsed" TargetName="PART_Header"/>
+						</Trigger>
+						<Trigger Property ="ShowTabs" Value="False">
+							<Setter Property="Visibility" Value="Collapsed" TargetName="PART_Tabs"/>
+						</Trigger>
+						<Trigger Property ="HasSingleItem" Value="True">
+							<Setter Property="Visibility" Value="Collapsed" TargetName="PART_Tabs"/>
+							<Setter Property="Visibility" Value="Collapsed" TargetName="paneTabsPanel"/>
+						</Trigger>
+						<DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},  Path=SelectedItem.State}" Value="AutoHide">
+							<Setter Property="LayoutTransform" TargetName="btnPinAutoHide">
+								<Setter.Value>
+									<RotateTransform Angle="90"/>
+								</Setter.Value>
+							</Setter>
+						</DataTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--DocumentTabItemStyle-->
+	<Style x:Key="DocumentTabItemStyle" TargetType="{x:Type ad:ManagedContent}">
+		<Setter Property="Background"
+                Value="Transparent"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ad:ManagedContent}">
+					<Border 
+						x:Name="PART_DragArea" 
+						BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}"
+                        Margin="-10,0,0,0"
+						SnapsToDevicePixels="True"
+                        ContextMenu="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:ContextMenuElement.DocumentPane}}}"
+                        >
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="20"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<Path Data="M 20,0.5 Q 16,0.5 10,10 Q 0,19.5 0,19.5 L 20,19.5"
+                                x:Name="tabItemIntPathBackground"  
+                                  Fill="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderBackground}}}"/>
+							<!--<Path Data="M 20,0.5 Q 16,0.5 10,10 Q 5,19.5 0,19.5 L 20,19.5"
+                                x:Name="tabItemIntPathBackground"  
+                                  Fill="Red"/>-->
+							<Path 
+                                x:Name="tabItemIntPathBorder"  
+                                Stroke="{StaticResource ManagedContentTabControlNormalBorderBrush}"
+                                Data="M 20,0.5 Q 16,0.5 10,10 Q 4,19.5 0,19.5"
+                            />
+							<Line x:Name="tabItemIntLineBorder"
+								  X1="4" X2="20" Y1="16.5" Y2="16.5"
+								  Stroke="{StaticResource ManagedContentTabControlNormalBorderBrush}"
+								  />
+							<Border
+                                    x:Name="tabItemIntBorder"
+                                    Grid.Column="1"
+                                    BorderThickness="0,1,1,1"
+                                    Margin="-0.5,0,0,0"
+                                    CornerRadius="0,3,0,0"
+                                    BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}"
+                                    Background="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderBackground}}}"
+                                >
+								<StackPanel Orientation="Horizontal" 
+                                            Margin="5,0,4,0">
+									<TextBlock 
+							                x:Name="tabItemTitle" 
+							                TextTrimming="CharacterEllipsis" 
+                                            TextWrapping="NoWrap"
+							                Text="{TemplateBinding Title}" 
+							                Foreground="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderForeground}}}"/>
+									<ad:AlignedImage x:Name="PART_LockedIcon" Margin="2,0,0,0" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center">
+										<Image Source="/AvalonDock;component/resources/Images/Locked.png" Width="6" Height="8" Stretch="Uniform"/>
+									</ad:AlignedImage>
+								</StackPanel>
+							</Border>
+						</Grid>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="Selector.IsSelected" Value="True">
+							<Setter Property="Background" 
+                                    TargetName="tabItemIntBorder" 
+                                    Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderBackgroundSelected}}}"
+                                    />
+							<Setter Property="Fill" 
+                                    TargetName="tabItemIntPathBackground" 
+                                    Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderBackgroundSelected}}}"
+                                    />
+							<Setter Property="Visibility" 
+                                    TargetName="tabItemIntLineBorder" 
+                                    Value="Hidden"
+                                    />
+							<Setter Property="BorderThickness" 
+                                    TargetName="tabItemIntBorder" 
+                                    Value="0,1,1,0"
+                                    />
+
+						</Trigger>
+						<DataTrigger Binding="{Binding Path=IsActiveDocument, RelativeSource={RelativeSource Self}}" Value="True">
+							<Setter Property="TextBlock.FontWeight" TargetName="tabItemTitle" Value="Bold"/>
+						</DataTrigger>
+						<MultiTrigger>
+							<MultiTrigger.Conditions>
+								<Condition Property="IsMouseOver" SourceName="tabItemIntBorder" Value="True"/>
+								<Condition Property="Selector.IsSelected" Value="False"/>
+							</MultiTrigger.Conditions>
+							<Setter Property="Background" 
+                                    TargetName="tabItemIntBorder" 
+                                    Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderBackgroundMouseOver}}}"
+                                    />
+							<Setter Property="Fill" 
+                                    TargetName="tabItemIntPathBackground" 
+                                    Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderBackgroundMouseOver}}}"
+                                    />
+						</MultiTrigger>
+
+						<DataTrigger Binding="{Binding Path=IsLocked, RelativeSource={RelativeSource Self}}" Value="True">
+							<Setter Property="Visibility" Value="Visible" TargetName="PART_LockedIcon"/>
+						</DataTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--DocumentPane-->
+	<Style TargetType="{x:Type ad:DocumentPane}">
+		<Setter Property="Background" Value="Transparent"/>
+		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ad:DocumentPane}" >
+					<ControlTemplate.Resources>
+						<ContextMenu x:Key="DocumentsListMenu" StaysOpen="True" >
+							<!--ItemTemplate="{StaticResource ManagedContentHeaderDataTemplate}"-->
+							<ContextMenu.ItemContainerStyle>
+								<Style TargetType="{x:Type MenuItem}">
+									<Setter Property="CommandParameter" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=Header}"/>
+									<Setter Property="Command" Value="ad:DocumentPane.ActivateDocumentCommand"/>
+									<Setter Property="Template">
+										<Setter.Value>
+											<ControlTemplate TargetType="MenuItem">
+												<Border x:Name="intBorder" BorderThickness="1" Background="{TemplateBinding Background}" CornerRadius="2">
+													<Grid>
+														<Grid.ColumnDefinitions>
+															<ColumnDefinition Width="Auto" MinWidth="24"/>
+															<ColumnDefinition Width="*"/>
+														</Grid.ColumnDefinitions>
+														<ContentPresenter x:Name="Icon" Margin="2" Content="{Binding Path=Icon}" Grid.Column="0" VerticalAlignment="Center"/>
+														<TextBlock x:Name="intMenuTitle" Margin="5,2,20,2" Text="{Binding Path=Title}" Grid.Column="1" VerticalAlignment="Center"/>
+													</Grid>
+												</Border>
+												<ControlTemplate.Triggers>
+													<Trigger Property="IsMouseOver" Value="true">
+														<Setter Property="Background" TargetName="intBorder">
+															<Setter.Value>
+																<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}" Opacity="0.3"/>
+															</Setter.Value>
+														</Setter>
+														<Setter Property="BorderBrush" TargetName="intBorder" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"/>
+													</Trigger>
+													<DataTrigger Binding="{Binding Path=IsActiveDocument}" Value="True">
+														<Setter Property="FontWeight" Value="Bold" TargetName="intMenuTitle"/>
+													</DataTrigger>
+													<!--<Trigger Property="Icon"
+                                                            Value="{x:Null}">
+                                                        <Setter TargetName="Icon"
+                                                            Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    </Trigger>-->
+												</ControlTemplate.Triggers>
+											</ControlTemplate>
+										</Setter.Value>
+									</Setter>
+								</Style>
+							</ContextMenu.ItemContainerStyle>
+						</ContextMenu>
+					</ControlTemplate.Resources>
+					<Border 
+                        Focusable="False"
+                        Background="{TemplateBinding Background}"
+                        >
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="20"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<Grid Grid.Row="1" Margin="0,-1,0,0">
+								<Border 
+                                    BorderThickness="1" 
+                                    BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}"
+									Background="#FFD4D0C8"
+                                    CornerRadius="3" 
+                                    Focusable="False">
+								</Border>
+								<Border BorderThickness="1" 
+                                        BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}" 
+                                        CornerRadius="1" 
+                                        Margin="4" 
+                                        Focusable="False"
+                                        Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.Background}"   
+                                        >
+									<ContentPresenter 
+                                        Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.Content}"
+                                        Margin="2"
+								        KeyboardNavigation.TabNavigation="Local"
+								        KeyboardNavigation.DirectionalNavigation="Contained"
+								        KeyboardNavigation.TabIndex="1"
+                                        />
+								</Border>
+							</Grid>
+							<Border x:Name="PART_Header" 
+							    Grid.Row="0" 
+							    Focusable="False" 
+							    BorderThickness="1,1,1,0">
+								<DockPanel LastChildFill="True">
+									<Button DockPanel.Dock="Right" Width="15" Height="15" Margin="2,0,2,0" Style="{StaticResource PaneHeaderCommandStyle}" Command="ApplicationCommands.Close">
+										<Image Source="/AvalonDock;component/resources/Images/PinClose.png" Width="13" Height="13" Stretch="None"/>
+									</Button>
+									<Button x:Name="PART_ShowContextMenuButton" DockPanel.Dock="Right" Width="15" Height="15" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:DocumentPane.ShowDocumentsListMenuCommand">
+										<Image x:Name="ShowContextMenuIcon" Source="/AvalonDock;component/resources/Images/PinMenu.png" Width="13" Height="13" Stretch="None"/>
+									</Button>
+									<ad:DocumentTabPanel 
+                                      x:Name="paneTabsPanel" 
+                                      Panel.ZIndex ="1" 
+                                      KeyboardNavigation.TabIndex="2"								
+								      IsItemsHost="True" 
+								      Margin="10,2,0,0"
+								      TabItemStyle="{StaticResource DocumentTabItemStyle}"/>
+								</DockPanel>
+							</Border>
+						</Grid>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="HasItems" Value="False">
+							<Setter Property="Visibility" Value="Hidden"/>
+						</Trigger>
+						<DataTrigger Binding="{Binding Path=IsMainDocumentPane, RelativeSource={RelativeSource Self}}" Value="True">
+							<Setter Property="Source" Value="/AvalonDock;component/resources/Images\PinDocMenu.png" TargetName="ShowContextMenuIcon"/>
+						</DataTrigger>
+						<EventTrigger RoutedEvent="Window.Loaded">
+							<BeginStoryboard>
+								<Storyboard>
+									<DoubleAnimation
+                                        Storyboard.TargetProperty="Opacity"
+                                        From="0" To="1"  Duration="0:0:0.200" />
+								</Storyboard>
+							</BeginStoryboard>
+						</EventTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--DockablePaneAnchorTab-->
+	<Style TargetType="{x:Type ad:DockablePaneAnchorTab}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ad:DockablePaneAnchorTab}">
+					<Grid>
+						<Border 
+                          Name="PART_Border" 
+                          BorderThickness="1,0,1,1" 
+                          BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}"
+                          Background="{StaticResource ManagedContentTabItemNormalBackground}">
+							<!--<StackPanel Orientation="Horizontal">-->
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+
+								<Border Grid.Column="0" Width="18" Height="18">
+									<Border.Background>
+										<VisualBrush Stretch="None" Visual="{Binding Path=ReferencedContent.Icon, RelativeSource={RelativeSource TemplatedParent}}"/>
+									</Border.Background>
+								</Border>
+								<TextBlock 
+                                    Grid.Column="1"
+                                    Text="{Binding Path=ReferencedContent.Title, RelativeSource={RelativeSource TemplatedParent}}"  
+                                    Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" 
+                                    Margin="4,2,2,2"/>
+							</Grid>
+							<!--</StackPanel>-->
+						</Border>
+					</Grid>
+					<ControlTemplate.Triggers>
+
+
+						<Trigger Property="Anchor" >
+							<Trigger.Value>
+								<ad:AnchorStyle>
+									Left
+								</ad:AnchorStyle>
+							</Trigger.Value>
+							<Setter TargetName="PART_Border" Property="Background" Value="{StaticResource ManagedContentTabItemInvNormalBackground}"/>
+							<Setter TargetName="PART_Border" Property="BorderThickness" Value="1,1,1,0"/>
+
+						</Trigger>
+						<Trigger Property="Anchor">
+							<Trigger.Value>
+								<ad:AnchorStyle>
+									Bottom
+								</ad:AnchorStyle>
+							</Trigger.Value>
+							<Setter TargetName="PART_Border" Property="Background" Value="{StaticResource ManagedContentTabItemInvNormalBackground}"/>
+							<Setter TargetName="PART_Border" Property="BorderThickness" Value="1,1,1,0"/>
+						</Trigger>
+
+						<Trigger Property="IsMouseOver"
+								 Value="true">
+							<Setter Property="BorderBrush" Value="{StaticResource ManagedContentTabItemHotBorderBrush}" 
+                                    TargetName="PART_Border" />
+							<Setter Property="Background" Value="{StaticResource ManagedContentTabItemInvHotBackground}" 
+                                    TargetName="PART_Border" />
+						</Trigger>
+
+						<MultiTrigger>
+							<MultiTrigger.Conditions>
+								<Condition Property="IsMouseOver" Value="True"/>
+								<Condition Property="Anchor">
+									<Condition.Value>
+										<ad:AnchorStyle>
+											Top
+										</ad:AnchorStyle>
+									</Condition.Value>
+								</Condition>
+							</MultiTrigger.Conditions>
+							<Setter TargetName="PART_Border" Property="Background" Value="{StaticResource ManagedContentTabItemHotBackground}"/>
+						</MultiTrigger>
+						<MultiTrigger>
+							<MultiTrigger.Conditions>
+								<Condition Property="IsMouseOver" Value="True"/>
+								<Condition Property="Anchor">
+									<Condition.Value>
+										<ad:AnchorStyle>
+											Right
+										</ad:AnchorStyle>
+									</Condition.Value>
+								</Condition>
+							</MultiTrigger.Conditions>
+							<Setter TargetName="PART_Border" Property="Background" Value="{StaticResource ManagedContentTabItemHotBackground}"/>
+						</MultiTrigger>
+
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--DockablePaneAnchorTabGroup-->
+	<Style TargetType="{x:Type ad:DockablePaneAnchorTabGroup}">
+		<Setter Property="Orientation" Value="Horizontal"/>
+		<Setter Property="Margin" Value="7,0,0,0"/>
+	</Style>
+
+</ResourceDictionary>
