@@ -75,7 +75,10 @@ namespace ICSharpCode.AvalonEdit.Gui
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null) {
 				TextComposition textComposition = new TextComposition(InputManager.Current, textArea, "\n");
-				textArea.PerformTextInput(new TextCompositionEventArgs(Keyboard.PrimaryDevice, textComposition));
+				TextCompositionEventArgs e = new TextCompositionEventArgs(Keyboard.PrimaryDevice, textComposition);
+				e.RoutedEvent = TextArea.TextInputEvent;
+				textArea.PerformTextInput(e);
+				args.Handled = true;
 			}
 		}
 		#endregion

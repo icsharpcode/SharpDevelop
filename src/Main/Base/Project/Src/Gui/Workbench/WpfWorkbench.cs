@@ -464,7 +464,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnClosing(e);
 			if (!e.Cancel) {
+				Project.ProjectService.SaveSolutionPreferences();
+				
+				while (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count > 0) {
+					IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[0];
+					if (!window.CloseWindow(false)) {
+						e.Cancel = true;
+						return;
+					}
+				}
+				
+				Project.ProjectService.CloseSolution();
+				ParserService.StopParserThread();
+				
 				this.WorkbenchLayout = null;
+				
+				foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
+					padDescriptor.Dispose();
+				}
 			}
 		}
 	}

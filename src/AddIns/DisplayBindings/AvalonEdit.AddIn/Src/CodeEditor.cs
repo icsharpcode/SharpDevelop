@@ -346,7 +346,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
 		{
 			if (e.Text.Length > 0 && !e.Handled) {
-				formattingStrategy.FormatLine(GetAdapterFromSender(sender), e.Text[0]);
+				if (formattingStrategy != null) {
+					formattingStrategy.FormatLine(GetAdapterFromSender(sender), e.Text[0]);
+				}
 			}
 		}
 		
