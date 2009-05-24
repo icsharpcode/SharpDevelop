@@ -25,6 +25,8 @@
             </DockablePane>
         </ResizingPanel>
     </ResizingPanel>
-    <Hidden />
+    <Hidden>
+        <DockableContent Name="ICSharpCode_SharpDevelop_Gui_TaskListPad" AutoHide="false"/>
+    </Hidden>
     <Windows />
 </DockingManager>

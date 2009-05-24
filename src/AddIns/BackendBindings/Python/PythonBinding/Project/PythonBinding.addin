@@ -173,7 +173,8 @@
 		     insertafter  = "Bookmarks"
 		     insertbefore = "DefinitionView"
 		     icon         = "PadIcons.Output"
-		     class        = "ICSharpCode.PythonBinding.PythonConsolePad"/>
+		     defaultPosition = "Bottom, Hidden"
+		     class = "ICSharpCode.PythonBinding.PythonConsolePad"/>
 	</Path>
 	
 	<Path name = "/Workspace/Icons">

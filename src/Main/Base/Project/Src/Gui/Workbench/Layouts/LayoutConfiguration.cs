@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class LayoutConfiguration
 	{
-		const string DataLayoutSubPath = "resources/layouts";
+		const string DataLayoutSubPath = "layouts";
 		const string configFile = "LayoutConfig.xml";
 		public static readonly List<LayoutConfiguration> Layouts = new List<LayoutConfiguration>();
 		

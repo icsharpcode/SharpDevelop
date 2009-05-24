@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ISynchronizeInvoke SynchronizingObject { get; private set; }
 		public Window MainWindow { get { return this; } }
 		
-		List<PadDescriptor> padViewContentCollection = new List<PadDescriptor>();
+		List<PadDescriptor> padDescriptorCollection = new List<PadDescriptor>();
 		
 		ToolBar[] toolBars;
 		
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		// keep a reference to the event handler to prevent it from being gargabe collected
+		// keep a reference to the event handler to prevent it from being garbage collected
 		// (CommandManager.RequerySuggested only keeps weak references to the event handlers)
 		EventHandler requerySuggestedEventHandler;
 
@@ -180,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IList<PadDescriptor> PadContentCollection {
 			get {
-				return padViewContentCollection.AsReadOnly();
+				return padDescriptorCollection.AsReadOnly();
 			}
 		}
 		
@@ -318,8 +318,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (content == null)
 				throw new ArgumentNullException("content");
+			if (padDescriptorCollection.Contains(content))
+				throw new ArgumentException("Pad is already loaded");
 			
-			padViewContentCollection.Add(content);
+			padDescriptorCollection.Add(content);
 			
 			if (WorkbenchLayout != null) {
 				WorkbenchLayout.ShowPad(content);
