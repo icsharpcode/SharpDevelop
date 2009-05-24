@@ -54,6 +54,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				get { return line.TotalLength; }
 			}
 			
+			public int DelimiterLength {
+				get { return line.DelimiterLength; }
+			}
+			
 			public int LineNumber {
 				get { return line.LineNumber + 1; }
 			}

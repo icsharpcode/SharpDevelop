@@ -109,6 +109,22 @@ namespace ICSharpCode.SharpDevelop.Editor
 			return document.GetText(segment.Offset, segment.Length);
 		}
 		
+		/// <summary>
+		/// Gets the line terminator for the document around the specified line number.
+		/// </summary>
+		public static string GetLineTerminator(IDocument document, int lineNumber)
+		{
+			IDocumentLine line = document.GetLine(lineNumber);
+			if (line.DelimiterLength == 0) {
+				// at the end of the document, there's no line delimiter, so use the delimiter
+				// from the previous line
+				if (lineNumber == 1)
+					return Environment.NewLine;
+				line = document.GetLine(lineNumber - 1);
+			}
+			return document.GetText(line.Offset + line.Length, line.DelimiterLength);
+		}
+		
 		#region ITextSource implementation
 		public static ICSharpCode.AvalonEdit.Document.ITextSource GetTextSource(IDocument document)
 		{

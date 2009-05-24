@@ -113,6 +113,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 					return avalonEditOptions.IndentationString;
 				}
 			}
+			
+			public bool AutoInsertBlockEnd {
+				get {
+					return true;
+				}
+			}
 		}
 		
 		public virtual string FileName {

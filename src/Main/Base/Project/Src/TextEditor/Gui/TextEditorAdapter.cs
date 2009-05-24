@@ -90,6 +90,12 @@ namespace ICSharpCode.SharpDevelop
 					return properties.ConvertTabsToSpaces ? new string(' ', properties.IndentationSize) : "\t";
 				}
 			}
+			
+			public bool AutoInsertBlockEnd {
+				get {
+					return true;
+				}
+			}
 		}
 		
 		static ICSharpCode.NRefactory.Location ToLocation(TextLocation position)

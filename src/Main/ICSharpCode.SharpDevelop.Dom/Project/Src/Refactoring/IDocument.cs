@@ -120,6 +120,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 		int TotalLength { get; }
 		
 		/// <summary>
+		/// Gets the length of the line terminator.
+		/// Returns 1 or 2; or 0 at the end of the document.
+		/// </summary>
+		int DelimiterLength { get; }
+		
+		/// <summary>
 		/// Gets the number of this line.
 		/// The first line has the number 1.
 		/// </summary>

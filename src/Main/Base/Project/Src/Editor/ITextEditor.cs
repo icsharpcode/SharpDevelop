@@ -88,6 +88,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the text used for one indentation level.
 		/// </summary>
 		string IndentationString { get; }
+		
+		/// <summary>
+		/// Gets whether a '}' should automatically be inserted when a block is opened.
+		/// </summary>
+		bool AutoInsertBlockEnd { get; }
 	}
 	
 	public interface ITextEditorCaret

@@ -597,7 +597,24 @@ namespace ICSharpCode.AvalonEdit
 		/// This is like the <see cref="UIElement.TextInput"/> event,
 		/// but occurs immediately before the TextArea handles the TextInput event.
 		/// </summary>
+		public event TextCompositionEventHandler TextEntering;
+		
+		/// <summary>
+		/// Occurs when the TextArea receives text input.
+		/// This is like the <see cref="UIElement.TextInput"/> event,
+		/// but occurs immediately after the TextArea handles the TextInput event.
+		/// </summary>
 		public event TextCompositionEventHandler TextEntered;
+		
+		/// <summary>
+		/// Raises the TextEntering event.
+		/// </summary>
+		protected virtual void OnTextEntering(TextCompositionEventArgs e)
+		{
+			if (TextEntering != null) {
+				TextEntering(this, e);
+			}
+		}
 		
 		/// <summary>
 		/// Raises the TextEntered event.
@@ -613,21 +630,48 @@ namespace ICSharpCode.AvalonEdit
 		protected override void OnTextInput(TextCompositionEventArgs e)
 		{
 			base.OnTextInput(e);
-			if (!e.Handled) {
+			if (!e.Handled && this.Document != null) {
 				if (e.Text == "\x1b") {
 					// ASCII 0x1b = ESC.
 					// WPF produces a TextInput event with that old ASCII control char
 					// when Escape is pressed. We'll just ignore it.
 					return;
 				}
-				TextDocument document = this.Document;
-				if (document != null) {
-					OnTextEntered(e);
-					if (!e.Handled) {
-						ReplaceSelectionWithText(e.Text);
-						caret.BringCaretToView();
-						e.Handled = true;
-					}
+				PerformTextInput(e);
+				e.Handled = true;
+			}
+		}
+		
+		/// <summary>
+		/// Runs text input.
+		/// This raises the <see cref="TextEntering"/> event, replaces the selection with the text,
+		/// and then raises the <see cref="TextEntered"/> event.
+		/// </summary>
+		public void PerformTextInput(TextCompositionEventArgs e)
+		{
+			if (e == null)
+				throw new ArgumentNullException("e");
+			if (this.Document == null)
+				throw ThrowUtil.NoDocumentAssigned();
+			OnTextEntering(e);
+			if (!e.Handled) {
+				if (e.Text == "\n" || e.Text == "\r\n")
+					ReplaceSelectionWithNewLine();
+				else
+					ReplaceSelectionWithText(e.Text);
+				OnTextEntered(e);
+				caret.BringCaretToView();
+			}
+		}
+		
+		void ReplaceSelectionWithNewLine()
+		{
+			string newLine = NewLineFinder.GetNewLineFromDocument(this.Document, this.Caret.Line);
+			using (this.Document.RunUpdate()) {
+				ReplaceSelectionWithText(newLine);
+				if (this.IndentationStrategy != null) {
+					DocumentLine line = this.Document.GetLineByNumber(this.Caret.Line);
+					this.IndentationStrategy.IndentLine(line);
 				}
 			}
 		}

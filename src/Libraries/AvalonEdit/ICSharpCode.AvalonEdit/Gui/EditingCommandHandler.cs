@@ -73,17 +73,9 @@ namespace ICSharpCode.AvalonEdit.Gui
 		static void OnEnter(object target, ExecutedRoutedEventArgs args)
 		{
 			TextArea textArea = GetTextArea(target);
-			if (textArea != null && textArea.Document != null) {
-				string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
-				using (textArea.Document.RunUpdate()) {
-					textArea.ReplaceSelectionWithText(newLine);
-					if (textArea.IndentationStrategy != null) {
-						DocumentLine line = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-						textArea.IndentationStrategy.IndentLine(line);
-					}
-				}
-				textArea.Caret.BringCaretToView();
-				args.Handled = true;
+			if (textArea != null) {
+				TextComposition textComposition = new TextComposition(InputManager.Current, textArea, "\n");
+				textArea.PerformTextInput(new TextCompositionEventArgs(Keyboard.PrimaryDevice, textComposition));
 			}
 		}
 		#endregion
