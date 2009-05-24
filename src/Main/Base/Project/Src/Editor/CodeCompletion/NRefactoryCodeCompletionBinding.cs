@@ -164,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 				contextList.activationKey = charTyped;
 				foreach (CodeCompletionItem item in contextList.Items.OfType<CodeCompletionItem>()) {
 					IClass itemClass = item.Entity as IClass;
-					if (c != null && c.FullyQualifiedName == itemClass.FullyQualifiedName && c.TypeParameters.Count == itemClass.TypeParameters.Count) {
+					if (itemClass != null && c.FullyQualifiedName == itemClass.FullyQualifiedName && c.TypeParameters.Count == itemClass.TypeParameters.Count) {
 						contextList.SuggestedItem = item;
 						break;
 					}
