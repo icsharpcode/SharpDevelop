@@ -25,14 +25,23 @@ namespace PythonBinding.Tests.Utils
 		List<string> typeNames = new List<string>();
 		PropertyDescriptor propertyDescriptor;
 		EventDescriptor eventDescriptor;
-
+		IComponent rootComponent;
+		
 		public MockComponentCreator()
 		{
+		}
+		
+		public IComponent RootComponent {
+			get { return rootComponent; }
 		}
 		
 		public IComponent CreateComponent(Type componentClass, string name)
 		{						
 			object instance = componentClass.Assembly.CreateInstance(componentClass.FullName);
+	
+			if (rootComponent == null) {
+				rootComponent = instance as IComponent;
+			}
 			
 			CreatedComponent c = new CreatedComponent(componentClass.FullName, name, (IComponent)instance);
 			createdComponents.Add(c);

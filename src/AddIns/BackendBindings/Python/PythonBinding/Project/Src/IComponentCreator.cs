@@ -42,6 +42,11 @@ namespace ICSharpCode.PythonBinding
 		IComponent GetComponent(string name);
 		
 		/// <summary>
+		/// Gets the RootComponent.
+		/// </summary>
+		IComponent RootComponent { get; }
+		
+		/// <summary>
 		/// Creates a new instance of the object given its type.
 		/// </summary>
 		/// <param name="arguments">Arguments passed to the type's constructor.</param>

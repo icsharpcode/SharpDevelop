@@ -218,6 +218,7 @@
     <Compile Include="Designer\LoadTextBoxOnPanelTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxTestFixture.cs" />
     <Compile Include="Designer\LoadTimerTestFixture.cs" />
+    <Compile Include="Designer\LoadToolTipTestFixture.cs" />
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
