@@ -32,7 +32,7 @@
 		          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Workbench/MainMenu/QualityTools">
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Analysis">
 		<ComplexCondition action="Disable">
 			<And>
 				<Condition name = "ProjectActive" activeproject="*" />
