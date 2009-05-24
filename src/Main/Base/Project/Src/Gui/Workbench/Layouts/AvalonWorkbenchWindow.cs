@@ -91,6 +91,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			oldActiveViewContent = newActiveViewContent;
 			CommandManager.InvalidateRequerySuggested();
+			
+			var contextName = newActiveViewContent.GetType().FullName;
+
+			CommandsRegistry.LoadContext(contextName, (UIElement)Content);
+			
+			CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, delegate {
+													var bindings = CommandsRegistry.GetCommandBindings(contextName);
+													CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
+													CommandBindings.AddRange(bindings);
+												});
+				
+			CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, delegate {
+													var bindings = CommandsRegistry.GetInputBindings(contextName);
+													CommandsRegistry.RemoveManagedInputBindings(InputBindings);
+													InputBindings.AddRange(bindings);
+												});
+			CommandsRegistry.InvokeCommandBindingUpdateHandlers(contextName);
+			CommandsRegistry.InvokeInputBindingUpdateHandlers(contextName);
 		}
 		
 		sealed class ViewContentCollection : Collection<IViewContent>

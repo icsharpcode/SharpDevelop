@@ -80,6 +80,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
+			CommandsRegistry.DefaultContext = this.GetType().Name;
+			
+			// Load all commands and and key bindings from addin tree
+			CommandsService.RegisterRoutedUICommands(this, "/SharpDevelop/Workbench/RoutedUICommands");
+			CommandsService.RegisterCommandBindings(this, "/SharpDevelop/Workbench/CommandBindings");
+			CommandsService.RegisterInputBindings(this, "/SharpDevelop/Workbench/InputBindings");
+			
+			// Register context and load all commands from addin
+			CommandsRegistry.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
+				
+			CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContext, delegate {
+																	var bindings = CommandsRegistry.GetCommandBindings(CommandsRegistry.DefaultContext);
+																	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
+																	CommandBindings.AddRange(bindings);
+																});
+				
+			CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContext, delegate {
+																	var bindings = CommandsRegistry.GetInputBindings(CommandsRegistry.DefaultContext);
+																	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
+																	InputBindings.AddRange(bindings);
+																});
+			CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext);
+			CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext);
+			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath);
 			
 			toolBars = ToolBarService.CreateToolBars(this, "/SharpDevelop/Workbench/ToolBar");

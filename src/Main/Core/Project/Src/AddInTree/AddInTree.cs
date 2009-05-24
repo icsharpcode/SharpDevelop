@@ -33,6 +33,9 @@ namespace ICSharpCode.Core
 			doozers.Add("MenuItem", new MenuItemDoozer());
 			doozers.Add("ToolbarItem", new ToolbarItemDoozer());
 			doozers.Add("Include", new IncludeDoozer());
+			doozers.Add("InputBinding", new InputBindingDoozer());
+			doozers.Add("CommandBinding", new CommandBindingDoozer());
+			doozers.Add("RoutedUICommand", new RoutedUICommandDoozer());
 			
 			conditionEvaluators.Add("Compare", new CompareConditionEvaluator());
 			conditionEvaluators.Add("Ownerstate", new OwnerStateConditionEvaluator());

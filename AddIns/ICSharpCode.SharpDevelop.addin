@@ -51,6 +51,25 @@
 		<Import assembly=":ICSharpCode.TextEditor"/>
 	</Runtime>
 	
+	<!-- Commands registry test -->
+	<Path name="/SharpDevelop/Workbench/RoutedUICommands">
+		<RoutedUICommand id="SharpDevelop.CreateNewFile" text="Create new file" />
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/CommandBindings">
+		<CommandBinding id="CreateNewFile"
+		         command="SharpDevelop.CreateNewFile"
+		         class="ICSharpCode.SharpDevelop.Commands.TestCommand"
+		         lazy="true" />
+	</Path>
+
+	<Path name="/SharpDevelop/Workbench/InputBindings">
+		<InputBinding id="CreateNewFile1"
+		         command="SharpDevelop.CreateNewFile"
+				 gesture="Ctrl+M" />
+	</Path>
+	<!-- Commands registry test -->
+	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
 		<Class id    = ".NET"
 		       class = "ICSharpCode.SharpDevelop.NetAmbience"/>

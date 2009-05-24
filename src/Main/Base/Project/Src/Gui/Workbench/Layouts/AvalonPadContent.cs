@@ -10,6 +10,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using System.Windows.Input;
 using AvalonDock;
 using ICSharpCode.Core;
 
@@ -54,6 +55,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (padInstance != null) {
 					this.SetContent(padInstance.Control, padInstance);
 					placeholder = null;
+					
+					var contextName = padInstance.GetType().FullName;
+					
+					CommandsRegistry.LoadContext(contextName, (UIElement)Content);
+					
+					CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, delegate {
+															var bindings = CommandsRegistry.GetCommandBindings(contextName);
+															CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
+															CommandBindings.AddRange(bindings);
+														});
+					
+					CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, delegate {
+															var bindings = CommandsRegistry.GetInputBindings(contextName);
+															CommandsRegistry.RemoveManagedInputBindings(InputBindings);
+															InputBindings.AddRange(bindings);
+														});
+					CommandsRegistry.InvokeCommandBindingUpdateHandlers(contextName);
+					CommandsRegistry.InvokeInputBindingUpdateHandlers(contextName);
 				}
 			}
 		}

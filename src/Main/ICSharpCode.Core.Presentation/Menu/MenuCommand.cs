@@ -118,6 +118,10 @@ namespace ICSharpCode.Core.Presentation
 	{
 		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
 		{
+			//if(!string.IsNullOrEmpty(codon.Properties["command"])) {
+			//	this.Command = CommandsRegistry.GetRoutedUICommand(codon.Properties["command"]);
+			//}
+			
 			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
