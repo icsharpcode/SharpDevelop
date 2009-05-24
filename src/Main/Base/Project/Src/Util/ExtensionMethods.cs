@@ -37,6 +37,8 @@ namespace ICSharpCode.SharpDevelop
 		/// <code>if (MyEvent != null) MyEvent(x,y);</code>
 		/// would not be safe.
 		/// </summary>
+		/// <remarks>Using this method is only thread-safe under the Microsoft .NET memory model,
+		/// not under the less strict memory model in the CLI specification.</remarks>
 		public static void RaiseEvent(this EventHandler eventHandler, object sender, EventArgs e)
 		{
 			if (eventHandler != null) {

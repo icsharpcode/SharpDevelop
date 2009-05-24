@@ -13,7 +13,8 @@ using System.Windows.Threading;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// Description of WpfSynchronizeInvoke.
+	/// Implements the ISynchronizeInvoke interface by using a WPF dispatcher
+	/// to perform the cross-thread call.
 	/// </summary>
 	sealed class WpfSynchronizeInvoke : ISynchronizeInvoke
 	{

@@ -941,20 +941,18 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentException("item does not belong to this project", "item");
 			if (!item.IsAddedToProject)
 				return false;
+			MSBuildItemWrapper backend = (MSBuildItemWrapper)item.BuildItem;
 			
-			WorkbenchSingleton.AssertMainThread();
-			throw new NotImplementedException();
-			/*
-			lock (SyncRoot) {
+			using (var c = OpenCurrentConfiguration()) {
 				if (items.Remove(item)) {
 					itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
-					projectFile.RemoveItem(item.BuildItem);
+					c.Project.RemoveItem(backend.MSBuildItem);
 					item.BuildItem = null; // make the item free again
 					return true;
 				} else {
 					throw new InvalidOperationException("Expected that the item is added to this project!");
 				}
-			}*/
+			}
 		}
 		#endregion
 		

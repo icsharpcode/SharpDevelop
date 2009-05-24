@@ -59,6 +59,9 @@
     <None Include="AvalonEdit.AddIn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AvalonEditDisplayBinding.cs" />
     <Compile Include="Src\AvalonEditViewContent.cs" />

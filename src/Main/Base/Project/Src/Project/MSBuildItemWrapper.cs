@@ -1,11 +1,10 @@
-/*
- * Created by SharpDevelop.
- * User: Daniel
- * Date: 23.05.2009
- * Time: 01:58
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +22,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.project = project;
 			this.item = item;
+		}
+		
+		public MSBuild.ProjectItem MSBuildItem {
+			get { return item; }
 		}
 		
 		public IProject Project { 
@@ -68,8 +71,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			item.SetMetadataValue(name, value);
 		}
-		public IEnumerable<string> MetadataNames { 
-			get { return item.DirectMetadata.Select(m => m.Name); }
+		public IEnumerable<string> MetadataNames {
+			get { return item.DirectMetadata.Select(m => m.Name).ToList(); }
 		}
 	}
 }
