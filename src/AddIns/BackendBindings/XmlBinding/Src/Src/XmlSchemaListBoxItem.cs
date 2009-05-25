@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace ICSharpCode.XmlEditor
 {

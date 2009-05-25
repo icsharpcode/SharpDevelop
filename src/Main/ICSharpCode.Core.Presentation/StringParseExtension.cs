@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald"/>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at" />
 //     <version>$Revision$</version>
 // </file>
 
@@ -15,25 +15,20 @@ using System.Windows.Markup;
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// Markup extension that retrieves localized resource strings.
+	/// Markup extension that works like StringParser.Parse
 	/// </summary>
-	public class LocalizeExtension : MarkupExtension
+	public class StringParseExtension : MarkupExtension
 	{
-		public LocalizeExtension(string key)
-		{
-			this.key = key;
-		}
+		protected string text;
 		
-		protected string key;
+		public StringParseExtension(string text)
+		{
+			this.text = text;
+		}
 		
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
-			return ResourceService.GetString(key);
+			return StringParser.Parse(text);
 		}
 	}
-	
-
-	
-
-
 }

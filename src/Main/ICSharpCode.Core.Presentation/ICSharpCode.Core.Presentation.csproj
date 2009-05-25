@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="GetBitmapExtension.cs" />
+    <Compile Include="IOptionBindingContainer.cs" />
     <Compile Include="IStatusUpdate.cs" />
     <Compile Include="LocalizeExtension.cs" />
     <Compile Include="Menu\IMenuItemBuilder.cs" />
@@ -72,10 +73,12 @@
     <Compile Include="Menu\MenuService.cs" />
     <Compile Include="Menu\CoreMenuItem.cs" />
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="OptionBinding.cs" />
     <Compile Include="PixelSnapper.cs" />
     <Compile Include="PresentationResourceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SplitButton.cs" />
+    <Compile Include="StringParseExtension.cs" />
     <Compile Include="ToolBar\ToolBarButton.cs" />
     <Compile Include="ToolBar\ToolBarComboBox.cs" />
     <Compile Include="ToolBar\ToolBarService.cs" />

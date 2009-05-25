@@ -6,9 +6,9 @@
     >
     <DockPanel>
         <StackPanel DockPanel.Dock="Bottom" Height="25" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Margin="3,0" Content="{sd:Localize Global.OKButtonText}" />
-            <Button Margin="3,0" Content="{sd:Localize Global.CancelButtonText}" />
+            <Button Margin="3,0" Name="btnOK" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" />
+            <Button Margin="3,0" Name="btnCancel" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" />
         </StackPanel>
-        <ListBox Margin="5" />
+        <ListBox Margin="5" Name="schemaListBox" />
     </DockPanel>
 </Window>

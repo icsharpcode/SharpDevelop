@@ -85,8 +85,8 @@
     </Compile>
     <Compile Include="Src\XmlFormattingStrategy.cs">
     </Compile>
-    <Compile Include="Src\CodeCompletion\XmlCompletionData.cs" />
-    <Compile Include="Src\CodeCompletion\XmlCompletionDataCollection.cs" />
+    <Compile Include="Src\CodeCompletion\XmlCompletionItem.cs" />
+    <Compile Include="Src\CodeCompletion\XmlCompletionItemCollection.cs" />
     <Compile Include="Src\CodeCompletion\XmlCompletionDataImageList.cs" />
     <Compile Include="Src\CodeCompletion\XmlCompletionDataProvider.cs" />
     <Compile Include="Src\Commands\AddAttributeCommand.cs" />
@@ -115,8 +115,6 @@
     <Compile Include="Src\Gui\GoToSchemaDefinitionEditAction.cs" />
     <Compile Include="Src\Gui\IAddXmlNodeDialog.cs" />
     <Compile Include="Src\Gui\IXmlTreeView.cs" />
-    <Compile Include="Src\Gui\SelectXmlSchemaForm.cs">
-    </Compile>
     <Compile Include="Src\Gui\XmlDisplayBinding.cs" />
     <Compile Include="Src\Gui\XmlTreeView.cs" />
     <Compile Include="Src\Gui\XPathQueryControl.cs">
@@ -135,8 +133,6 @@
     <Compile Include="Src\Src\XmlCharacterDataTreeNode.cs" />
     <Compile Include="Src\Src\XmlCommentTreeNode.cs" />
     <Compile Include="Src\Src\XmlEditorAddInOptions.cs" />
-    <Compile Include="Src\Src\XmlEditorOptionsPanel.cs">
-    </Compile>
     <Compile Include="Src\Src\XmlElementTreeNode.cs" />
     <Compile Include="Src\Src\XmlSchemaAssociation.cs" />
     <Compile Include="Src\Src\XmlSchemaAssociationListBoxItem.cs" />
@@ -144,9 +140,6 @@
     <Compile Include="Src\Src\XmlSchemaCompletionDataCollection.cs" />
     <Compile Include="Src\Src\XmlSchemaListBoxItem.cs" />
     <Compile Include="Src\Src\XmlSchemaManager.cs" />
-    <Compile Include="Src\Src\XmlSchemasPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Src\XmlTextTreeNode.cs" />
     <Compile Include="Src\Src\XmlTreeEditor.cs">
     </Compile>

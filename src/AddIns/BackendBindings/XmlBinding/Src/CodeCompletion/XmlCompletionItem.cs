@@ -5,13 +5,13 @@
 //     <version>$Revision: 2932 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
+using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.XmlEditor
+namespace ICSharpCode.XmlBinding
 {
 	/// <summary>
-	/// Holds the text for  namespace, child element or attribute 
+	/// Holds the text for  namespace, child element or attribute
 	/// autocomplete (intellisense).
 	/// </summary>
 	public class XmlCompletionItem : DefaultCompletionItem
@@ -42,14 +42,14 @@ namespace ICSharpCode.XmlEditor
 		public XmlCompletionItem(string text, DataType dataType)
 			: this(text, String.Empty, dataType)
 		{
-		}		
+		}
 
 		public XmlCompletionItem(string text, string description, DataType dataType)
 			: base(text)
 		{
 			this.description = description;
-			this.dataType = dataType;  
-		}		
+			this.dataType = dataType;
+		}
 		
 		/// <summary>
 		/// Returns the xml item's documentation as retrieved from
@@ -65,16 +65,17 @@ namespace ICSharpCode.XmlEditor
 		{
 			base.Complete(context);
 			
-//			if (dataType == DataType.NamespaceUri) {
-//				textArea.InsertString(String.Concat("\"", text, "\""));
-//			} else {
-//				// Insert an attribute.
-//				Caret caret = textArea.Caret;
-//				textArea.InsertString(String.Concat(text, "=\"\""));	
-//				
-//				// Move caret into the middle of the attribute quotes.
-//				caret.Position = textArea.Document.OffsetToPosition(caret.Offset - 1);
-//			}
+			switch (dataType) {
+				case DataType.NamespaceUri:
+					context.Editor.Document.Insert(context.StartOffset, "\"");
+					context.Editor.Document.Insert(context.EndOffset, "\"");
+					break;
+				case DataType.XmlAttribute:
+					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
+					context.Editor.Caret.Offset--;
+					XmlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
+					break;
+			}
 		}
 	}
 }

@@ -18,6 +18,17 @@ namespace ICSharpCode.XmlBinding
 	/// </summary>
 	public class XmlCodeCompletionBinding : ICodeCompletionBinding
 	{
+		static XmlCodeCompletionBinding instance;
+		
+		public static XmlCodeCompletionBinding Instance {
+			get {
+				if (instance == null)
+					instance = new XmlCodeCompletionBinding();
+				
+				return instance;
+			}
+		}
+		
 		public XmlCodeCompletionBinding()
 		{
 		}
@@ -81,6 +92,25 @@ namespace ICSharpCode.XmlBinding
 		
 		public bool CtrlSpace(ITextEditor editor)
 		{
+			string text = editor.Document.Text;
+			int offset = editor.Caret.Offset;
+			
+			string extension = Path.GetExtension(editor.FileName);
+			string defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefix(extension);
+			XmlSchemaCompletionData defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData(extension);
+			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(XmlSchemaManager.SchemaCompletionDataItems,
+			                                                                   defaultSchemaCompletionData,
+			                                                                   defaultNamespacePrefix);
+			
+			// Attribute value completion.
+			if (XmlParser.IsInsideAttributeValue(text, offset)) {
+				XmlElementPath path = XmlParser.GetActiveElementStartPath(text, offset);
+				if (path.Elements.Count > 0) {
+					editor.ShowCompletionWindow(provider.GetAttributeValueCompletionData(path, XmlParser.GetAttributeNameAtIndex(text, offset)));
+					return true;
+				}
+			}
+			
 			return false;
 		}
 	}

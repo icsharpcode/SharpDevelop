@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald"/>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at" />
 //     <version>$Revision$</version>
 // </file>
 
@@ -15,25 +15,10 @@ using System.Windows.Markup;
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// Markup extension that retrieves localized resource strings.
+	/// Provides access to objects containing OptionBindings, such as OptionPanels.
 	/// </summary>
-	public class LocalizeExtension : MarkupExtension
+	public interface IOptionBindingContainer
 	{
-		public LocalizeExtension(string key)
-		{
-			this.key = key;
-		}
-		
-		protected string key;
-		
-		public override object ProvideValue(IServiceProvider serviceProvider)
-		{
-			return ResourceService.GetString(key);
-		}
+		void AddBinding(OptionBinding binding);
 	}
-	
-
-	
-
-
 }
