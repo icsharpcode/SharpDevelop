@@ -891,8 +891,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
-			if (primitiveExpression.LiteralFormat == LiteralFormat.None) {
+			if (primitiveExpression.Value == null) {
 				Append("None");
+			} else if (primitiveExpression.Value is Boolean) {
+				Append(primitiveExpression.Value.ToString());
 			} else {
 				Append(primitiveExpression.StringValue);
 			}

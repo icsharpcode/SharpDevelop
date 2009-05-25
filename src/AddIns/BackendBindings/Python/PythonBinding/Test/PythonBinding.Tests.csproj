@@ -97,6 +97,7 @@
     <Compile Include="Converter\ArrayConversionTestFixture.cs" />
     <Compile Include="Converter\AssignmentOperatorConversionTestFixture.cs" />
     <Compile Include="Converter\BitShiftConversionTestFixture.cs" />
+    <Compile Include="Converter\BooleanConversionTestFixture.cs" />
     <Compile Include="Converter\BreakAndContinueConversionTestFixture.cs" />
     <Compile Include="Converter\CallConstructorWithParametersConversionTestFixture.cs" />
     <Compile Include="Converter\ClassDestructorConversionTestFixture.cs" />
