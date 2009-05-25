@@ -97,8 +97,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 				CommandsRegistry.LoadContext(contextName, (UIElement)Content);
 				
-				CommandsRegistry.LoadContext(contextName, (UIElement)Content);
-				
 				CommandsRegistry.RegisterCommandBindingsUpdateHandler(
 					contextName,
 					delegate {

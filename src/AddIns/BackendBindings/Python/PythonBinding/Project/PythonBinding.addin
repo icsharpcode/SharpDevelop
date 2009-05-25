@@ -63,7 +63,7 @@
 					          icon="Icons.16x16.RunProgramIcon"
 					          class="ICSharpCode.PythonBinding.RunPythonCommand"
 					          label="&amp;Run"
-					          shortcut="Control|Shift|R"/>
+					          shortcut="Ctrl+Shift+R"/>
 				</ComplexCondition>
 				<Condition name="IsPythonRunning" action="Disable">
 					<MenuItem id="Stop"

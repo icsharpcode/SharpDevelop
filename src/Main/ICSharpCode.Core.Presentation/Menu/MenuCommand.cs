@@ -119,10 +119,12 @@ namespace ICSharpCode.Core.Presentation
 		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
 		{
 			if(!string.IsNullOrEmpty(codon.Properties["command"])) {
-				this.Command = CommandsRegistry.GetRoutedUICommand(codon.Properties["command"]);
+				var routedCommand = CommandsRegistry.GetRoutedUICommand(codon.Properties["command"]);
+				this.Command = routedCommand;
 			
-				var bindings = CommandsRegistry.GetInputBindings(null, codon.Properties["command"], null);
-				this.InputGestureText = "M: " + (bindings.Count > 0 ? ((KeyGesture)bindings[0].Gesture).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture) : "-");
+				var gestures = CommandsRegistry.GetInputGestures(CommandsRegistry.DefaultContext, routedCommand.Name, null);
+				var gesturesString = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
+				this.InputGestureText = "M: " + gesturesString;
 			} else {			
 				this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
 				if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
@@ -130,6 +132,7 @@ namespace ICSharpCode.Core.Presentation
 					if (inputBindingOwner != null) {
 						inputBindingOwner.InputBindings.Add(new InputBinding(this.Command, kg));
 					}
+					
 					this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 				}
 			}

@@ -15,7 +15,7 @@ namespace ICSharpCode.Core.Presentation
 			/// <param name="contextName">Context full name</param>
 			/// <param name="routedCommandName">Name of routed UI command which is triggered by this binding</param>
 			/// <param name="gesture">Gesture which triggers this binding</param>
-			public InputBindingInfo(string contextName, string routedCommandName, KeyGesture gesture) {
+			public InputBindingInfo(string contextName, string routedCommandName, InputGesture gesture) {
 				ContextName = contextName;
 			    RoutedCommandName = routedCommandName; 
 			    Gesture = gesture;
@@ -69,7 +69,7 @@ namespace ICSharpCode.Core.Presentation
 			/// <summary>
 			/// Gesture which triggers this binding
 			/// </summary>
-			public KeyGesture Gesture { 
+			public InputGesture Gesture { 
 				get; set; 
 			}
 		}

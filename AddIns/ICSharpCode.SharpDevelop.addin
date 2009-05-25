@@ -157,7 +157,7 @@
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ProjectScoutLabel}"
 		     icon     = "PadIcons.ProjectBrowser"
-		     shortcut = "Control|Alt|L"
+		     shortcut = "Ctrl+Alt+L"
 		     class    = "ICSharpCode.SharpDevelop.Project.ProjectBrowserPad"
 		     defaultPosition = "Left" />
 		
@@ -165,7 +165,7 @@
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
-		     shortcut = "Control|Shift|C"
+		     shortcut = "Ctrl+Shift+C"
 		     class    = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad"
 		     defaultPosition = "Right" />
 		
@@ -173,14 +173,14 @@
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ToolbarLabel}"
 		     icon     = "PadIcons.Toolbar"
-		     shortcut = "Control|Alt|X"
+		     shortcut = "Ctrl+Alt+X"
 		     class    = "ICSharpCode.SharpDevelop.Gui.ToolsPad"
 		     defaultPosition = "Left" />
 		
 		<Pad id       = "ErrorList"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ErrorList}"
-		     shortcut = "Control|Alt|K"
+		     shortcut = "Ctrl+Alt+K"
 		     icon     = "PadIcons.ErrorList"
 		     class    = "ICSharpCode.SharpDevelop.Gui.ErrorListPad"
 		     defaultPosition = "Bottom" />
@@ -196,7 +196,7 @@
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.OutputWindow}"
 		     icon     = "PadIcons.Output"
-		     shortcut = "Control|Alt|O"
+		     shortcut = "Ctrl+Alt+O"
 		     class    = "ICSharpCode.SharpDevelop.Gui.CompilerMessageView"
 		     defaultPosition = "Bottom" />
 		
@@ -212,7 +212,7 @@
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.FileScoutLabel}"
 		     icon     = "PadIcons.FileBrowser"
-		     shortcut = "Control|Alt|F"
+		     shortcut = "Ctrl+Alt+F"
 		     class    = "ICSharpCode.SharpDevelop.Gui.FileScout"
 		     defaultPosition = "Left, Hidden" />
 		
@@ -1237,7 +1237,7 @@
 				<MenuItem id          = "Project"
 				          label       = "${res:XML.MainMenu.FileMenu.New.Project}"
 				          icon        = "Icons.16x16.NewProjectIcon"
-				          shortcut    = "Control|Shift|N"
+				          shortcut    = "Ctrl+Shift+N"
 				          class       = "ICSharpCode.SharpDevelop.Project.Commands.CreateNewSolution"/>
 			</MenuItem>
 			
@@ -1252,7 +1252,7 @@
 				<MenuItem id = "Project"
 				          label = "${res:XML.MainMenu.FileMenu.Open.Project}"
 				          icon = "Icons.16x16.OpenProjectIcon"
-				          shortcut = "Control|Shift|O"
+				          shortcut = "Ctrl+Shift+O"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.LoadSolution"/>
 			</MenuItem>
 			
@@ -1267,7 +1267,7 @@
 				<Condition name = "SolutionOpen" action="Disable">
 					<MenuItem id = "CloseCombine"
 					          label = "${res:XML.MainMenu.FileMenu.Close.Project}"
-					          shortcut = "Control|Shift|F4"
+					          shortcut = "Ctrl+Shift+F4"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.CloseSolution"/>
 				</Condition>
 			</MenuItem>
@@ -1300,7 +1300,7 @@
 				<MenuItem id = "SaveAll"
 				          label = "${res:XML.MainMenu.FileMenu.SaveAll}"
 				          icon = "Icons.16x16.SaveAllIcon"
-				          shortcut = "Control|Shift|S"
+				          shortcut = "Ctrl+Shift+S"
 				          class = "ICSharpCode.SharpDevelop.Commands.SaveAllFiles"/>
 			</Condition>
 			
@@ -1394,7 +1394,7 @@
 					          label = "${res:XML.MainMenu.ToolMenu.InsColor}"
 					          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowColorDialog"/>
 					<MenuItem id       = "InsertGuid"
-					          shortcut = "Control|Shift|G"
+					          shortcut = "Ctrl+Shift+G"
 					          label    = "${res:XML.MainMenu.ToolMenu.InsGUID}"
 					          class    = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.InsertGuidCommand"/>
 				</MenuItem>
@@ -1608,7 +1608,7 @@
 					<MenuItem id       = "Break"
 					          label    = "${res:XML.MainMenu.DebugMenu.Break}"
 					          icon     = "Icons.16x16.Debug.Break"
-					          shortcut = "Control|Alt|B"
+					          shortcut = "Ctrl+Alt+B"
 					          class    = "ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand"
 						      command  = "SDDebugCommands.BreakDebugging" />
 				</Condition>
@@ -1937,7 +1937,7 @@
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunIncrementalSearch"/>
 			<MenuItem id = "SearchReverseIncremental"
 			          label = "${res:XML.MainMenu.SearchMenu.ReverseIncrementalSearch}"
-			          shortcut = "Control|Shift|E"
+			          shortcut = "Ctrl+Shift+E"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunReverseIncrementalSearch"/>
 			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
 			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->

@@ -68,6 +68,7 @@
     <Compile Include="CommandsService\CommandsService.cs" />
     <Compile Include="CommandsService\CommandsRegistry.cs" />
     <Compile Include="CommandsService\InputBindingInfo.cs" />
+    <Compile Include="CommandsService\InputGestureCollectionConverter.cs" />
     <Compile Include="CommandsService\ManagedCommandBinding.cs" />
     <Compile Include="CommandsService\ManagedInputBinding.cs" />
     <Compile Include="CommandsService\WpfCommandWrapper.cs" />

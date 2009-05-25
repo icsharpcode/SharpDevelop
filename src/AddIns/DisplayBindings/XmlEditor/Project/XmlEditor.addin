@@ -59,7 +59,7 @@
 				<MenuItem id = "ValidateXml"
 				          label = "${res:ICSharpCode.XmlEditor.ValidateXmlMenuLabel}"
 				          class = "ICSharpCode.XmlEditor.ValidateXmlCommand"
-				          shortcut = "Control|Shift|V" />
+				          shortcut = "Ctrl+Shift+V" />
 				<MenuItem id = "Separator1" type = "Separator"/>
 				<ComplexCondition action="Disable">
 					<Not>
@@ -81,7 +81,7 @@
 					<MenuItem id="RunTransform"
 					          label="${res:ICSharpCode.XmlEditor.RunXSLT}"
 					          class="ICSharpCode.XmlEditor.RunXslTransformCommand"
-					          shortcut="Control|Shift|T"/>
+					          shortcut="Ctrl+Shift+T"/>
 				</ComplexCondition>
 				<MenuItem id = "Separator2" type = "Separator"/>
 				<MenuItem id = "Format"

@@ -73,10 +73,9 @@ namespace ICSharpCode.Core.Presentation
 				routedCommands.Remove(routedCommandName);
 			}
 		}
-		
-		
+
 		/// <summary>
-		/// Register input binding
+		/// Register several input bindings with the same 
 		/// 
 		/// Registering input binding means that when provided gesture is met in specified 
 		/// context routed command will be invoked
@@ -84,7 +83,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="contextName">Context class full name</param>
 		/// <param name="routedCommandName">Routed UI command invoked on gesture run</param>
 		/// <param name="gesture">Gesture</param>
-		public static void RegisterInputBinding(string contextName, string routedCommandName, KeyGesture gesture) {			
+		public static void RegisterInputBinding(string contextName, string routedCommandName, InputGesture gesture) {			
 			var inputBindingInfo = new InputBindingInfo(contextName, routedCommandName, gesture);
 			inputBidnings.Add(inputBindingInfo);
 		}
@@ -97,7 +96,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="contextName">Context class full name</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="gesture">Gesture</param>
-		public static void UnregisterInputBindings(string contextName, string routedCommandName, KeyGesture gesture) {
+		public static void UnregisterInputBindings(string contextName, string routedCommandName, InputGesture gesture) {
 			for(int i = inputBidnings.Count - 1; i >= 0; i--) {
 				if((contextName == null || inputBidnings[i].ContextName == contextName)
 				   && (routedCommandName == null || inputBidnings[i].RoutedCommandName == routedCommandName)
@@ -344,7 +343,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="contextName">Context class full name</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="gesture">Gesture</param>
-		public static InputBindingCollection GetInputBindings(string contextName, string routedCommandName, KeyGesture gesture) {
+		public static InputBindingCollection GetInputBindings(string contextName, string routedCommandName, InputGesture gesture) {
 			var bindings = new InputBindingCollection();
 			
 			foreach(var binding in inputBidnings) {
@@ -357,6 +356,25 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			return bindings;
+		}
+		
+/// <summary>
+		/// Get list of input gestures from all input bindings which satisfy provided parameters
+		/// 
+		/// Null arguments are ignored
+		/// </summary>
+		/// <param name="contextName">Context class full name</param>
+		/// <param name="routedCommandName">Routed UI command name</param>
+		/// <param name="gesture">Gesture</param>
+		public static InputGestureCollection GetInputGestures(string contextName, string routedCommandName, InputGesture gesture) {
+			var bindings = GetInputBindings(contextName, routedCommandName, gesture);
+			var gestures = new InputGestureCollection();
+			
+			foreach(InputBinding binding in bindings) {
+				gestures.Add(binding.Gesture);
+			}
+			
+			return gestures;
 		}
 		
 		/// <summary>

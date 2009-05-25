@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Controls;
 
 using ICSharpCode.Core;
@@ -465,14 +466,35 @@ namespace ICSharpCode.SharpDevelop.Commands
 					if (!string.IsNullOrEmpty(padContent.Icon)) {
 						item.Icon = PresentationResourceService.GetPixelSnappedImage(padContent.Icon);
 					}
-					item.Command = new BringPadToFrontCommand(padContent);
+					
+					var routedCommandName = "SDViewCommands.ShowView_" + padContent.Class;
+					var routedCommandText = "Show view " + ICSharpCode.Core.Presentation.MenuService.ConvertLabel(StringParser.Parse(padContent.Title));
+					CommandsRegistry.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+					CommandsRegistry.RegisterCommandBinding(CommandsRegistry.DefaultContext, routedCommandName, routedCommandName, null, false);
+					CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext);
+					CommandsRegistry.LoadCommand(routedCommandName, new BringPadToFrontCommand(padContent));
+					
+					item.Command = CommandsRegistry.GetRoutedUICommand(routedCommandName);
+					
 					if (!string.IsNullOrEmpty(padContent.Shortcut)) {
-						var kg = Core.Presentation.MenuService.ParseShortcut(padContent.Shortcut);
-						WorkbenchSingleton.MainWindow.InputBindings.Add(
-							new System.Windows.Input.InputBinding(item.Command, kg)
-						);
-						item.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+						var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);						
+						foreach(InputGesture gesture in gestures) {
+							CommandsRegistry.RegisterInputBinding(CommandsRegistry.DefaultContext, routedCommandName, gesture);
+						}
+						
+						CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext);
+						
+						item.InputGestureText = "M: " + padContent.Shortcut;
 					}
+					
+//					item.Command = new BringPadToFrontCommand(padContent);
+//					if (!string.IsNullOrEmpty(padContent.Shortcut)) {
+//						var kg = Core.Presentation.MenuService.ParseShortcut(padContent.Shortcut);
+//						WorkbenchSingleton.MainWindow.InputBindings.Add(
+//							new System.Windows.Input.InputBinding(item.Command, kg)
+//						);
+//						item.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+//					}
 					
 					list.Add(item);
 				}
