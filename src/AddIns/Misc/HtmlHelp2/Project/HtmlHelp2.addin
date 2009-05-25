@@ -92,7 +92,7 @@
 		          insertbefore = "TocPadCommand"
 		          label        = "${res:AddIns.HtmlHelp2.DynamicHelp}"
 		          icon         = "HtmlHelp2.16x16.DynamicHelp"
-		          shortcut     = "Control|F1"
+		          shortcut     = "Ctrl+F1"
 		          class        = "HtmlHelp2.ShowDynamicHelpMenuCommand"/>
 	</Path>
 	

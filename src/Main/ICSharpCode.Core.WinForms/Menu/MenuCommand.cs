@@ -8,6 +8,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace ICSharpCode.Core.WinForms
 {
@@ -68,8 +69,11 @@ namespace ICSharpCode.Core.WinForms
 			Keys shortCut = Keys.None;
 			if (shortcutString.Length > 0) {
 				try {
-					foreach (string key in shortcutString.Split('|')) {
-						shortCut  |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), key);
+					foreach (string key in Regex.Split(shortcutString, @"\s*\+\s*")) {
+						string winKey = key;
+						if(key.ToLower() == "ctrl") winKey = "Control";
+
+						shortCut  |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), winKey);
 					}
 				} catch (Exception ex) {
 					MessageService.ShowError(ex);

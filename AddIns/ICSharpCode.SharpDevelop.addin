@@ -1231,7 +1231,7 @@
 				<MenuItem id           = "File"
 				          label        = "${res:XML.MainMenu.FileMenu.New.File}"
 				          icon         = "Icons.16x16.NewDocumentIcon"
-				          shortcut     = "Control|N"
+				          shortcut     = "Ctrl+N"
 				          class        = "ICSharpCode.SharpDevelop.Commands.CreateNewFile"/>
 				
 				<MenuItem id          = "Project"
@@ -1246,7 +1246,7 @@
 				<MenuItem id          = "File"
 				          label       = "${res:XML.MainMenu.FileMenu.Open.File}"
 				          icon        = "Icons.16x16.OpenFileIcon"
-				          shortcut    = "Control|O"
+				          shortcut    = "Ctrl+O"
 				          class       = "ICSharpCode.SharpDevelop.Commands.OpenFile"/>
 				
 				<MenuItem id = "Project"
@@ -1261,7 +1261,7 @@
 					<MenuItem id = "CloseFile"
 					          label = "${res:XML.MainMenu.FileMenu.Close.File}"
 					          icon  = "Icons.16x16.CloseFileIcon"
-					          shortcut = "Control|F4"
+					          shortcut = "Ctrl+F4"
 					          class ="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
 				</Condition>
 				<Condition name = "SolutionOpen" action="Disable">
@@ -1286,7 +1286,7 @@
 				<MenuItem id = "Save"
 				          label = "${res:XML.MainMenu.FileMenu.Save}"
 				          icon = "Icons.16x16.SaveIcon"
-				          shortcut = "Control|S"
+				          shortcut = "Ctrl+S"
 				          class = "ICSharpCode.SharpDevelop.Commands.SaveFile"/>
 			</Condition>
 			
@@ -1309,7 +1309,7 @@
 				<MenuItem id = "Print"
 				          label = "${res:XML.MainMenu.FileMenu.Print}"
 				          icon = "Icons.16x16.Print"
-				          shortcut = "Control|P"
+				          shortcut = "Ctrl+P"
 				          class = "ICSharpCode.SharpDevelop.Commands.Print"/>
 				<MenuItem id = "PrintPreview"
 				          label = "${res:XML.MainMenu.FileMenu.PrintPreview}"
@@ -1346,32 +1346,32 @@
 			          label = "${res:XML.MainMenu.EditMenu.Undo}"
 			          icon = "Icons.16x16.UndoIcon"
 			          type = "Item"
-			          shortcut = "Control|Z"
+			          shortcut = "Ctrl+Z"
 			          command = "ApplicationCommands.Undo"/>
 			<MenuItem id = "Redo"
 			          label = "${res:XML.MainMenu.EditMenu.Redo}"
 			          icon = "Icons.16x16.RedoIcon"
 			          type = "Item"
-			          shortcut = "Control|Y"
+			          shortcut = "Ctrl+Y"
 			          command = "ApplicationCommands.Redo"/>
 			<MenuItem id = "Separator1" type = "Separator"  />
 			<MenuItem id = "Cut"
 			          label = "${res:XML.MainMenu.EditMenu.Cut}"
 			          icon = "Icons.16x16.CutIcon"
 			          type = "Item"
-			          shortcut = "Control|X"
+			          shortcut = "Ctrl+X"
 			          command = "ApplicationCommands.Cut"/>
 			<MenuItem id = "Copy"
 			          label = "${res:XML.MainMenu.EditMenu.Copy}"
 			          icon = "Icons.16x16.CopyIcon"
 			          type = "Item"
-			          shortcut = "Control|C"
+			          shortcut = "Ctrl+C"
 			          command = "ApplicationCommands.Copy"/>
 			<MenuItem id = "Paste"
 			          label = "${res:XML.MainMenu.EditMenu.Paste}"
 			          icon = "Icons.16x16.PasteIcon"
 			          type = "Item"
-			          shortcut = "Control|V"
+			          shortcut = "Ctrl+V"
 			          command = "ApplicationCommands.Paste"/>
 			<MenuItem id = "Delete"
 			          label = "${res:XML.MainMenu.EditMenu.Delete}"
@@ -1402,7 +1402,7 @@
 			<MenuItem id = "SelectAll"
 			          label = "${res:XML.MainMenu.EditMenu.SelectAll}"
 			          type = "Item"
-			          shortcut = "Control|A"
+			          shortcut = "Ctrl+A"
 			          command = "ApplicationCommands.SelectAll"/>
 			<MenuItem id = "Separator4" type = "Separator"  />
 			<ComplexCondition action="Disable">
@@ -1567,7 +1567,7 @@
 						<MenuItem id       = "RunWithoutDebugger"
 						          label    = "${res:XML.MainMenu.DebugMenu.RunWithoutDebug}"
 						          icon     = "Icons.16x16.Debug.StartWithoutDebugging"
-						          shortcut = "Control|F5"
+						          shortcut = "Ctrl+F5"
 						          class    = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"
 						          command  = "SDDebugCommands.ExecuteWithoutDebugger" />
 					</Condition>
@@ -1693,7 +1693,7 @@
 				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GenerateCodeAction"/>
 				<MenuItem id = "ShowQuickHelp"
 				          label = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}"
-				          shortcut = "Control|Q"
+				          shortcut = "Ctrl+Q"
 				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.QuickDocumentation"/>
 			</Condition>
 			
@@ -1710,7 +1710,7 @@
 				<MenuItem id  = "NextWindow"
 				          label = "${res:XML.MainMenu.WindowMenu.NxtWindow}"
 				          icon = "Icons.16x16.NextWindowIcon"
-				          shortcut = "Control|Tab"
+				          shortcut = "Ctrl+Tab"
 				          class = "ICSharpCode.SharpDevelop.Commands.SelectNextWindow" />
 				<MenuItem id = "PrevWindow"
 				          label = "${res:XML.MainMenu.WindowMenu.PrvWindow}"
@@ -1857,7 +1857,7 @@
 		<MenuItem id = "Save"
 		          label = "${res:XML.MainMenu.FileMenu.Save}"
 		          icon = "Icons.16x16.SaveIcon"
-		          shortcut = "Control|S"
+		          shortcut = "Ctrl+S"
 		          class = "ICSharpCode.SharpDevelop.Commands.SaveFile"/>
 		<MenuItem id = "SaveAs"
 		          label = "${res:XML.MainMenu.FileMenu.SaveAs}"
@@ -1878,7 +1878,7 @@
 		          class= "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
 		<MenuItem id = "Indent"
 		          label = "${res:XML.TextAreaContextMenu.Indent}"
-		          shortcut = "Control|I"
+		          shortcut = "Ctrl+I"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
 		
 		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}"  type="Menu">
@@ -1933,7 +1933,7 @@
 		<MenuItem id = "Search" insertafter ="View" insertbefore ="Tools" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
 			<MenuItem id = "SearchIncremental"
 			          label = "${res:XML.MainMenu.SearchMenu.IncrementalSearch}"
-			          shortcut = "Control|E"
+			          shortcut = "Ctrl+E"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunIncrementalSearch"/>
 			<MenuItem id = "SearchReverseIncremental"
 			          label = "${res:XML.MainMenu.SearchMenu.ReverseIncrementalSearch}"
@@ -1943,7 +1943,7 @@
 			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
 			<MenuItem id = "ToggleBookmark"
 			          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
-			          shortcut = "Control|F2"
+			          shortcut = "Ctrl+F2"
 			          icon = "Bookmarks.ToggleMark"
 			          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
 			<MenuItem id = "PrevBookmark"
@@ -1963,12 +1963,12 @@
 			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "GotoLineNr"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"
-			          shortcut = "Control|G"
+			          shortcut = "Ctrl+G"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"/>
 			<MenuItem id = "Separator3" type = "Separator" />
 			<MenuItem id = "GotoBrace"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
-			          shortcut = "Control|B"
+			          shortcut = "Ctrl+B"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace"/>
 			<!--			</Condition> -->
 		</MenuItem>
@@ -2024,7 +2024,7 @@
 				          class= "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
 				<MenuItem id = "Indent"
 				          label = "${res:XML.TextAreaContextMenu.Indent}"
-				          shortcut = "Control|I"
+				          shortcut = "Ctrl+I"
 				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
 			</Condition>
 		</MenuItem>

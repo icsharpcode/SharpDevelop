@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop
 	/// "View -&gt; Debugger" menu.
 	/// </attribute>
 	/// <attribute name="shortcut" use="optional">
-	/// Shortcut that activates the 'Show pad' command (e.g. "Control|Alt|T").
+	/// Shortcut that activates the 'Show pad' command (e.g. "Ctrl+Alt+T").
 	/// </attribute>
 	/// <usage>Only in /Workspace/Parser</usage>
 	/// <returns>
