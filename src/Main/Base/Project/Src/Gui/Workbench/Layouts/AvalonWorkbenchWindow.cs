@@ -94,6 +94,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (newActiveViewContent != null) {
 				string contextName = newActiveViewContent.GetType().FullName;
+	
+				CommandsRegistry.LoadContext(contextName, (UIElement)Content);
 				
 				CommandsRegistry.LoadContext(contextName, (UIElement)Content);
 				

@@ -23,7 +23,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public string Name {
 			get {
-				return codon.Properties["id"];
+				return codon.Properties["name"];
 			}
 		}
 		

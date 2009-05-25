@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Windows.Input;
+using System.Windows.Documents;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.Core.Presentation
@@ -10,6 +11,22 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public static class CommandsService
 	{
+		private static void RegisterRoutedCommands(Type type) {
+			var typeProperties = type.GetProperties(BindingFlags.Static | BindingFlags.Public);
+			foreach(var property in typeProperties) {
+				var command = (RoutedUICommand)property.GetValue(null, null);				
+				CommandsRegistry.RegisterRoutedUICommand(type.Name + "." + command.Name, command.Text);
+			}
+		}
+		
+		public static void RegisterBuiltInRoutedUICommands() {
+			RegisterRoutedCommands(typeof(ApplicationCommands));
+			RegisterRoutedCommands(typeof(ComponentCommands));
+			RegisterRoutedCommands(typeof(MediaCommands));
+			RegisterRoutedCommands(typeof(NavigationCommands));
+			RegisterRoutedCommands(typeof(EditingCommands));
+		}
+		
 		public static void RegisterRoutedUICommands(object caller, string path) 
 		{
 			var descriptors = AddInTree.BuildItems<RoutedUICommandDescriptor>(path, caller, false);

@@ -30,8 +30,8 @@ namespace ICSharpCode.Core.Presentation
 		internal static Dictionary<string, System.Windows.Input.ICommand> commands = new Dictionary<string, System.Windows.Input.ICommand>();
 		internal static Dictionary<string, UIElement> contexts = new Dictionary<string, UIElement>();
 		
-		private static Dictionary<string, List<BindingsUpdatedHandler>> commandBindingsUpdateHandlers = new Dictionary<string, List<BindingsUpdatedHandler>>();
-		private static Dictionary<string, List<BindingsUpdatedHandler>> inputBindingsUpdateHandlers = new Dictionary<string, List<BindingsUpdatedHandler>>();
+		private static Dictionary<string, List<WeakReference>> commandBindingsUpdateHandlers = new Dictionary<string, List<WeakReference>>();
+		private static Dictionary<string, List<WeakReference>> inputBindingsUpdateHandlers = new Dictionary<string, List<WeakReference>>();
 
 		/// <summary>
 		/// Get reference to routed UI command by name
@@ -39,10 +39,11 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="routedCommandName">Routed command name</param>
 		/// <returns>Routed command instance</returns>
 		public static RoutedUICommand GetRoutedUICommand(string routedCommandName) {
-			RoutedUICommand routedUICommand;
-			routedCommands.TryGetValue(routedCommandName, out routedUICommand);
-			
-			return routedUICommand;
+			if(routedCommands.ContainsKey(routedCommandName)) {
+				return routedCommands[routedCommandName];
+			} else {
+				throw new IndexOutOfRangeException("Routed UI command with name " + routedCommandName + " was not found");
+			}
 		}
 
 		/// <summary>
@@ -59,7 +60,7 @@ namespace ICSharpCode.Core.Presentation
 			if(!routedCommands.ContainsKey(routedCommandName)) {
 				routedCommands.Add(routedCommandName, routedCommand);
 			} else {
-				throw new IndexOutOfRangeException("Routed command with name " + routedCommandName + " is already registered");
+				throw new IndexOutOfRangeException("Routed UI command with name " + routedCommandName + " is already registered");
 			}
 		}
 	
@@ -89,15 +90,15 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Remove input binding from global registry
+		/// Remove input bindings which satisfy provided arguments
 		/// 
-		/// Null attributes are ignored and oly bindings which satisfy not null arguments are removed
+		/// Null arguments are ignored
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="gesture">Gesture</param>
 		public static void UnregisterInputBindings(string contextName, string routedCommandName, KeyGesture gesture) {
-			for(var i = inputBidnings.Count - 1; i >= 0; i--) {
+			for(int i = inputBidnings.Count - 1; i >= 0; i--) {
 				if((contextName == null || inputBidnings[i].ContextName == contextName)
 				   && (routedCommandName == null || inputBidnings[i].RoutedCommandName == routedCommandName)
 				   && (gesture == null || inputBidnings[i].Gesture == gesture)) {
@@ -113,11 +114,27 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="handler">Update handler delegate</param>
 		public static void RegisterInputBindingUpdateHandler(string contextName, BindingsUpdatedHandler handler) {
 			if(!inputBindingsUpdateHandlers.ContainsKey(contextName)) {
-				inputBindingsUpdateHandlers.Add(contextName, new List<BindingsUpdatedHandler>());
+				inputBindingsUpdateHandlers.Add(contextName, new List<WeakReference>());
 			}
 			
-			inputBindingsUpdateHandlers[contextName].Add(handler);
+			inputBindingsUpdateHandlers[contextName].Add(new WeakReference(handler));
 		}
+	
+		/// <summary>
+		/// Remove input bindings update handler
+		/// </summary>
+		/// <param name="contextName">Context class full name</param>
+		/// <param name="handler">Update handler delegate</param>
+		public static void UnregisterInputBindingUpdateHandler(string contextName, BindingsUpdatedHandler handler) {
+			if(!inputBindingsUpdateHandlers.ContainsKey(contextName)) {
+				for(int i = inputBindingsUpdateHandlers[contextName].Count - 1; i >= 0; i++) {
+					if(inputBindingsUpdateHandlers[contextName][i].Target == handler) {
+						inputBindingsUpdateHandlers[contextName].RemoveAt(i);
+					}
+				}
+			}
+		}
+		
 		
 		/// <summary>
 		/// Invoke registered input bindings update handlers registered in specified context
@@ -127,13 +144,17 @@ namespace ICSharpCode.Core.Presentation
 			if(contextName != null) {
 				if(inputBindingsUpdateHandlers.ContainsKey(contextName)) {
 					foreach(var handler in inputBindingsUpdateHandlers[contextName]) {
-						handler.Invoke();
+						if(handler != null && handler.Target != null) {
+							((BindingsUpdatedHandler)handler.Target).Invoke();
+						}
 					}
 				}
 			} else {
 				foreach(var contextHandlers in inputBindingsUpdateHandlers) {
 					foreach(var handler in contextHandlers.Value) {
-						handler.Invoke();
+						if(handler != null && handler.Target != null) {
+							((BindingsUpdatedHandler)handler.Target).Invoke();
+						}
 					}
 				}
 			}
@@ -144,7 +165,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="inputBindingCollection"></param>
 		public static void RemoveManagedInputBindings(InputBindingCollection inputBindingCollection) {
-			for(var i = inputBindingCollection.Count - 1; i >= 0; i--) {
+			for(int i = inputBindingCollection.Count - 1; i >= 0; i--) {
 				if(inputBindingCollection[i] is ManagedInputBinding) {
 					inputBindingCollection.RemoveAt(i);
 				}
@@ -168,13 +189,15 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Remove registered command bindnig from global registry
+		/// Remove all command bindings which satisfy provided parameters
+		/// 
+		/// Null arguments are ignored
 		/// </summary>
-		/// <param name="contextName"></param>
-		/// <param name="routedCommandName"></param>
-		/// <param name="className"></param>
+		/// <param name="contextName">Context class full name</param>
+		/// <param name="routedCommandName">Routed UI command name</param>
+		/// <param name="className">Command full name to which invokation event is routed</param>
 		public static void UnregisterCommandBindings(string contextName, string routedCommandName, string className) {	
-			for(var i = commandBindings.Count - 1; i >= 0; i--) {
+			for(int i = commandBindings.Count - 1; i >= 0; i--) {
 				if((contextName == null || commandBindings[i].ContextName == contextName)
 				   && (routedCommandName == null || commandBindings[i].RoutedCommandName == routedCommandName)
 				   && (className == null || commandBindings[i].ClassName == className)) {
@@ -190,10 +213,25 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="handler">Update handler delegate</param>
 		public static void RegisterCommandBindingsUpdateHandler(string contextName, BindingsUpdatedHandler handler) {
 			if(!commandBindingsUpdateHandlers.ContainsKey(contextName)) {
-				commandBindingsUpdateHandlers.Add(contextName, new List<BindingsUpdatedHandler>());
+				commandBindingsUpdateHandlers.Add(contextName, new List<WeakReference>());
 			}
 			
-			commandBindingsUpdateHandlers[contextName].Add(handler);
+			commandBindingsUpdateHandlers[contextName].Add(new WeakReference(handler));
+		}
+	
+		/// <summary>
+		/// Remove handler command bindings update handler
+		/// </summary>
+		/// <param name="contextName">Context class full name</param>
+		/// <param name="handler">Update handler delegate</param>
+		public static void UnregisterCommandBindingsUpdateHandler(string contextName, BindingsUpdatedHandler handler) {
+			if(commandBindingsUpdateHandlers.ContainsKey(contextName)) {
+				for(int i = commandBindingsUpdateHandlers[contextName].Count - 1; i >= 0; i--) {
+					if(commandBindingsUpdateHandlers[contextName][i].Target == handler) {
+						commandBindingsUpdateHandlers[contextName].RemoveAt(i);
+					}
+				}
+			}
 		}
 		
 		/// <summary>
@@ -204,13 +242,17 @@ namespace ICSharpCode.Core.Presentation
 			if(contextName != null) {
 				if(commandBindingsUpdateHandlers.ContainsKey(contextName)) {
 					foreach(var handler in commandBindingsUpdateHandlers[contextName]) {
-						handler.Invoke();
+						if(handler != null && handler.Target != null) {
+							((BindingsUpdatedHandler)handler.Target).Invoke();
+						}
 					}
 				}
 			} else {
 				foreach(var contextHandlers in commandBindingsUpdateHandlers) {
 					foreach(var handler in contextHandlers.Value) {
-						handler.Invoke();
+						if(handler != null && handler.Target != null) {
+							((BindingsUpdatedHandler)handler.Target).Invoke();
+						}
 					}
 				}
 			}
@@ -221,7 +263,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="commandBindingsCollection"></param>
 		public static void RemoveManagedCommandBindings(CommandBindingCollection commandBindingsCollection) {
-			for(var i = commandBindingsCollection.Count - 1; i >= 0; i--) {
+			for(int i = commandBindingsCollection.Count - 1; i >= 0; i--) {
 				if(commandBindingsCollection[i] is ManagedCommandBinding) {
 					commandBindingsCollection.RemoveAt(i);
 				}
@@ -265,62 +307,105 @@ namespace ICSharpCode.Core.Presentation
 		
 		
 		/// <summary>
-		/// Get all commands bindings registered in provided context
+		/// Get list of all command bindings which satisfy provided parameters
+		/// 
+		/// Null arguments are ignored
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="routedCommandName">Context class full name</param>
+		/// <param name="className">Context class full name</param>
 		/// <returns>Collection of managed command bindings</returns>
-		public static CommandBindingCollection GetCommandBindings(string contextName) {
+		public static CommandBindingCollection GetCommandBindings(string contextName, string routedCommandName, string className) {
 			var bindings = new CommandBindingCollection();
 			
 			foreach(var binding in commandBindings) {
-				if(binding.ContextName != contextName) continue;
-				
-				var managedCommandBinding = new ManagedCommandBinding(binding.RoutedCommand);
-				
-				managedCommandBinding.CanExecute += delegate(Object sender, CanExecuteRoutedEventArgs e) {
-						if(binding.IsLazy && binding.Class == null) {
-							e.CanExecute = true;
-						} else if(binding.Class == null) {
-							e.CanExecute = false;
-						} else {
-							e.CanExecute = binding.Class.CanExecute(e.Parameter); 						
-						}
-					};
-				
-				managedCommandBinding.Executed += delegate(Object sender, ExecutedRoutedEventArgs e) {
-						if(binding.IsLazy && binding.Class == null) {
-							binding.AddIn.LoadRuntimeAssemblies();
-							
-							var command = (ICommand)binding.AddIn.CreateObject(binding.ClassName);
-							CommandsRegistry.LoadCommand(binding.ClassName, command);
-						}
-						
-						if(binding.Class != null) {
-							binding.Class.Execute(e.Parameter);
-						}
-					};
-				
-				bindings.Add(managedCommandBinding);
+				if((contextName == null || binding.ContextName == contextName)
+					&& (routedCommandName == null || binding.RoutedCommandName == routedCommandName)
+					&& (className == null || binding.ClassName == className)) {
+				   	
+					var handlers = new CommandBindingHandlersContainer(binding);
+					
+					var managedCommandBinding = new ManagedCommandBinding(binding.RoutedCommand);
+					managedCommandBinding.CanExecute += handlers.CanExecuteHandler;					
+					managedCommandBinding.Executed += handlers.ExecutedHanler;
+					
+					bindings.Add(managedCommandBinding);
+				}
 			}
 			
 			return bindings;
 		}
 		
 		/// <summary>
-		/// Get list of all input bindings registered in provided context
+		/// Get list of all input bindings which satisfy provided parameters
+		/// 
+		/// Null arguments are ignored
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
-		/// <returns>Collection of managed command bindings</returns>
-		public static InputBindingCollection GetInputBindings(string contextName) {
+		/// <param name="routedCommandName">Routed UI command name</param>
+		/// <param name="gesture">Gesture</param>
+		public static InputBindingCollection GetInputBindings(string contextName, string routedCommandName, KeyGesture gesture) {
 			var bindings = new InputBindingCollection();
 			
 			foreach(var binding in inputBidnings) {
-				if(binding.ContextName != contextName) continue;
-				
-				bindings.Add(new ManagedInputBinding(binding.RoutedCommand, binding.Gesture));
+				if((contextName == null || binding.ContextName == contextName)
+					&& (routedCommandName == null || binding.RoutedCommandName == routedCommandName)
+					&& (gesture == null || binding.Gesture == gesture)) {
+					
+					bindings.Add(new ManagedInputBinding(binding.RoutedCommand, binding.Gesture));
+				}
 			}
 			
 			return bindings;
+		}
+		
+		/// <summary>
+		/// Stores Executed and CanExecute event handlers used in command bindings
+		/// </summary>
+		class CommandBindingHandlersContainer 
+		{
+			private CommandBindingInfo binding;
+			
+			/// <summary>
+			/// Constructor
+			/// </summary>
+			/// <param name="binding">Reference to object holding command bining details</param>
+			public CommandBindingHandlersContainer(CommandBindingInfo binding) {
+				this.binding = binding;
+			}
+				
+			/// <summary>
+			/// CanExecute event handler
+			/// </summary>
+			/// <param name="sender">Object which raised this event</param>
+			/// <param name="e">Event arguments</param>
+			public void CanExecuteHandler(Object sender, CanExecuteRoutedEventArgs e) {
+				if(binding.IsLazy && binding.Class == null) {
+					e.CanExecute = true;
+				} else if(binding.Class == null) {
+					e.CanExecute = false;
+				} else {
+					e.CanExecute = binding.Class.CanExecute(e.Parameter); 						
+				}
+			}
+			
+			/// <summary>
+			/// Executed event handler
+			/// </summary>
+			/// <param name="sender">Object which raised this event</param>
+			/// <param name="e">Event arguments</param>
+			public void ExecutedHanler(Object sender, ExecutedRoutedEventArgs e) {
+				if(binding.IsLazy && binding.Class == null) {
+					binding.AddIn.LoadRuntimeAssemblies();
+					
+					var command = (ICommand)binding.AddIn.CreateObject(binding.ClassName);
+					CommandsRegistry.LoadCommand(binding.ClassName, command);
+				}
+				
+				if(binding.Class != null) {
+					binding.Class.Execute(e.Parameter);
+				}
+			}
 		}
 	}	
 }

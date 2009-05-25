@@ -24,7 +24,10 @@ namespace ICSharpCode.Core.Presentation
 		/// Not used because SharpDevelop's native command implementation
 		/// doesn't support it
 		/// </see>
-		public event EventHandler CanExecuteChanged;
+		public event EventHandler CanExecuteChanged {
+			add { }
+			remove { }
+		}
 		
 		/// <see cref="System.Windows.Input.ICommand.Execute(object)" />
 		public void Execute(object parameter)

@@ -2,6 +2,16 @@ using System;
 
 namespace ICSharpCode.Core
 {
+	/// <attribute name="command" use="required">
+	/// Name of routed UI command which is triggered by this binding
+	/// </attribute>
+	/// <attribute name="gesture" use="required">
+	/// Gesture which triggers this binding
+	/// </attribute>
+	/// <usage>Only in /SharpDevelop/Workbench/InputBindings</usage>
+	/// <returns>
+	/// InputBindingDescriptor object
+	/// </returns>
 	/// <summary>
 	/// Creates descriptor containing information about input binding
 	/// </summary>

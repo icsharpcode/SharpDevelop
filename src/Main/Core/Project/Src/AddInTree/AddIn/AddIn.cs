@@ -236,6 +236,7 @@ namespace ICSharpCode.Core
 								throw new AddInLoadException("Import node requires ONE attribute.");
 							}
 							string pathName = reader.GetAttribute(0);
+							
 							ExtensionPath extensionPath = addIn.GetExtensionPath(pathName);
 							if (!reader.IsEmptyElement) {
 								ExtensionPath.SetUp(extensionPath, reader, "Path");

@@ -82,6 +82,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			CommandsRegistry.DefaultContext = this.GetType().Name;
 			
+			CommandsService.RegisterBuiltInRoutedUICommands();
+			
 			// Load all commands and and key bindings from addin tree
 			CommandsService.RegisterRoutedUICommands(this, "/SharpDevelop/Workbench/RoutedUICommands");
 			CommandsService.RegisterCommandBindings(this, "/SharpDevelop/Workbench/CommandBindings");
@@ -91,16 +93,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			CommandsRegistry.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
 				
 			CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContext, delegate {
-																	var bindings = CommandsRegistry.GetCommandBindings(CommandsRegistry.DefaultContext);
+																	var bindings = CommandsRegistry.GetCommandBindings(CommandsRegistry.DefaultContext, null, null);
 																	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
 																	CommandBindings.AddRange(bindings);
 																});
 				
 			CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContext, delegate {
-																	var bindings = CommandsRegistry.GetInputBindings(CommandsRegistry.DefaultContext);
+																	var bindings = CommandsRegistry.GetInputBindings(CommandsRegistry.DefaultContext, null, null);
 																	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
 																	InputBindings.AddRange(bindings);
 																});
+			
 			CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext);
 			CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext);
 			

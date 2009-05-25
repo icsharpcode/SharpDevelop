@@ -67,6 +67,10 @@ namespace ICSharpCode.Core
 		
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
+			if(codon.Properties["command"] == "BuildCommands.Rebuild") 
+			{
+				
+			}
 			return new MenuItemDescriptor(caller, codon, subItems);
 		}
 	}
