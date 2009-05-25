@@ -228,15 +228,7 @@ namespace PythonBinding.Tests.Designer
 								"    self._listView1.Name = \"listView1\"\r\n" +
 								"    self._listView1.Size = System.Drawing.Size(204, 104)\r\n" +
 								"    self._listView1.TabIndex = 0\r\n" +
-								"    self._listView1.View = System.Windows.Forms.View.Details\r\n" +
-								"    # \r\n" +
-								"    # columnHeader1\r\n" +
-								"    # \r\n" +
-								"    self._columnHeader1.Text = \"columnHeader1\"\r\n" +
-								"    # \r\n" +
-								"    # columnHeader2\r\n" +
-								"    # \r\n" +
-								"    self._columnHeader2.Text = \"columnHeader2\"\r\n";
+								"    self._listView1.View = System.Windows.Forms.View.Details\r\n";
 
 			Assert.AreEqual(expectedCode, listViewPropertiesCode);
 		}

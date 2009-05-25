@@ -170,6 +170,7 @@
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
     <Compile Include="Designer\GenerateBackgroundWorkerTestFixture.cs" />
     <Compile Include="Designer\GenerateComboBoxItemsTestFixture.cs" />
+    <Compile Include="Designer\GenerateContextMenuStripTestFixture.cs" />
     <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
     <Compile Include="Designer\GeneratedControlOrderingTestFixture.cs" />
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
@@ -291,6 +292,7 @@
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
+    <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
     <Compile Include="Utils\MockClass.cs" />
     <Compile Include="Utils\MockComponentCreator.cs" />
     <Compile Include="Utils\MockDesignerGenerator.cs" />

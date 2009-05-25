@@ -283,16 +283,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		object GetPropertyValueFromAssignmentRhs(MemberExpression memberExpression)
 		{
-			object propertyValue = deserializer.Deserialize(memberExpression);
-			if (propertyValue == null) {
-				PythonControlFieldExpression field = PythonControlFieldExpression.Create(memberExpression);
-				if (field.MemberName.Length > 0) {
-					propertyValue = GetComponent(PythonControlFieldExpression.GetVariableName(field.MemberName));
-				} else {
-					propertyValue = field.FullMemberName;
-				}
-			}
-			return propertyValue;
+			return deserializer.Deserialize(memberExpression);
 		}
 		
 		/// <summary>

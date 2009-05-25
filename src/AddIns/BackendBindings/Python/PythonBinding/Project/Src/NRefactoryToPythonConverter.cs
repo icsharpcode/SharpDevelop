@@ -1476,25 +1476,7 @@ namespace ICSharpCode.PythonBinding
 			return (assignmentExpression.Op == AssignmentOperatorType.Subtract) &&
 				(assignmentExpression.Left is MemberReferenceExpression);
 		}
-		
-		/// <summary>
-		/// Creates an assign statement with the right hand side of the assignment using a binary operator.
-		/// </summary>
-		object CreateAssignmentStatementWithBinaryOperatorExpression(AssignmentExpression assignmentExpression, string binaryOperatorType)
-		{
-			// Create the left hand side of the assignment.
-			assignmentExpression.Left.AcceptVisitor(this, null);
-			
-			Append(" = ");
-
-			// Create the right hand side of the assignment.
-			assignmentExpression.Left.AcceptVisitor(this, null);
-			Append(" " + binaryOperatorType + " ");
-			assignmentExpression.Right.AcceptVisitor(this, null);
-
-			return null;
-		}
-		
+				
 		void Append(string code)
 		{
 			codeBuilder.Append(code);

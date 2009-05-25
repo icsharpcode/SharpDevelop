@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.Text;
 
 namespace ICSharpCode.PythonBinding
@@ -15,6 +16,7 @@ namespace ICSharpCode.PythonBinding
 		StringBuilder codeBuilder = new StringBuilder();
 		string indentString = "\t";
 		int indent;
+		bool insertedCreateComponentsContainer;
 		
 		public PythonCodeBuilder()
 		{
@@ -62,12 +64,38 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void AppendIndented(string text)
 		{
-			for (int i = 0; i < indent; ++i) {
-				codeBuilder.Append(indentString);
-			}			
+			codeBuilder.Append(GetIndentString());
 			codeBuilder.Append(text);
 		}
+
+		/// <summary>
+		/// Inserts a new line at the start of the code before everything else.
+		/// </summary>
+		public void InsertIndentedLine(string text)
+		{
+			text = GetIndentString() + text + "\r\n";
+			codeBuilder.Insert(0, text, 1);
+		}
 		
+		/// <summary>
+		/// Inserts the following line of code before all the other lines of code:
+		/// 
+		/// "self._components = System.ComponentModel.Container()"
+		/// 
+		/// This line will only be inserted once. Multiple calls to this method will only result in one
+		/// line of code being inserted.
+		/// </summary>
+		public void InsertCreateComponentsContainer()
+		{
+			if (!insertedCreateComponentsContainer) {
+				InsertIndentedLine("self._components = " + typeof(Container).FullName + "()");
+				insertedCreateComponentsContainer = true;
+			}
+		}
+		
+		/// <summary>
+		/// Inserts the text with a carriage return and newline at the end.
+		/// </summary>
 		public void AppendIndentedLine(string text)
 		{
 			AppendIndented(text + "\r\n");
@@ -92,6 +120,15 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public int Length {
 			get { return codeBuilder.Length; }
+		}
+		
+		string GetIndentString()
+		{
+			StringBuilder currentIndentString = new StringBuilder();
+			for (int i = 0; i < indent; ++i) {
+				currentIndentString.Append(indentString);
+			}
+			return currentIndentString.ToString();
 		}
 	}
 }

@@ -142,7 +142,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			Assert.AreEqual(designedForm, loader.RootComponent);
 		}
-		
+				
 		/// <summary>
 		/// The code that the designer loader will parse.
 		/// </summary>
