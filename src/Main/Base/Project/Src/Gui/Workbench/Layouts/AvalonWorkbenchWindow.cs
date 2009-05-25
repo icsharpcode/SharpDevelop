@@ -102,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				CommandsRegistry.RegisterCommandBindingsUpdateHandler(
 					contextName,
 					delegate {
-						var bindings = CommandsRegistry.GetCommandBindings(contextName);
+						var bindings = CommandsRegistry.GetCommandBindings(contextName, null, null);
 						CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
 						CommandBindings.AddRange(bindings);
 					});
@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				CommandsRegistry.RegisterInputBindingUpdateHandler(
 					contextName,
 					delegate {
-						var bindings = CommandsRegistry.GetInputBindings(contextName);
+						var bindings = CommandsRegistry.GetInputBindings(contextName, null, null);
 						CommandsRegistry.RemoveManagedInputBindings(InputBindings);
 						InputBindings.AddRange(bindings);
 					});

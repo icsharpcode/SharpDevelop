@@ -92,13 +92,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 					CommandsRegistry.LoadContext(contextName, (UIElement)Content);
 					
 					CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, delegate {
-					                                                      	var bindings = CommandsRegistry.GetCommandBindings(contextName);
+					                                                      	var bindings = CommandsRegistry.GetCommandBindings(contextName, null, null);
 					                                                      	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
 					                                                      	CommandBindings.AddRange(bindings);
 					                                                      });
 					
 					CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, delegate {
-					                                                   	var bindings = CommandsRegistry.GetInputBindings(contextName);
+					                                                   	var bindings = CommandsRegistry.GetInputBindings(contextName, null, null);
 					                                                   	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
 					                                                   	InputBindings.AddRange(bindings);
 					                                                   });
