@@ -27,13 +27,16 @@ namespace PythonBinding.Tests.Converter
 		FileProjectItem source;
 		FileProjectItem target;
 		MockProject sourceProject;
-		IProject targetProject;
+		PythonProject targetProject;
 		FileProjectItem textFileSource;
 		FileProjectItem textFileTarget;
 		MockTextEditorProperties mockTextEditorProperties;
 		ReferenceProjectItem ironPythonReference;
 		string sourceCode = "class Foo\r\n" +
 							"{\r\n" +
+							"    static void Main()\r\n" +
+							"    {\r\n" +
+							"    }\r\n" +
 							"}";
 		
 		[TestFixtureSetUp]
@@ -55,7 +58,7 @@ namespace PythonBinding.Tests.Converter
 			sourceProject = new MockProject();
 			sourceProject.Directory = @"d:\projects\test";
 			source = new FileProjectItem(sourceProject, ItemType.Compile, @"src\Program.cs");
-			targetProject = convertProjectCommand.CallCreateProject(@"d:\projects\test\converted", sourceProject);
+			targetProject = (PythonProject)convertProjectCommand.CallCreateProject(@"d:\projects\test\converted", sourceProject);
 			target = new FileProjectItem(targetProject, source.ItemType, source.Include);
 			source.CopyMetadataTo(target);
 			
@@ -124,6 +127,21 @@ namespace PythonBinding.Tests.Converter
 		public void IronPythonReferenceHintPath()
 		{
 			Assert.AreEqual(@"$(PythonBinPath)\IronPython.dll", ironPythonReference.GetMetadata("HintPath"));
+		}
+		
+		[Test]
+		public void MainFileIsProgramPyFile()
+		{
+			PropertyStorageLocations location;
+			Assert.AreEqual(@"src\Program.py", targetProject.GetProperty(null, null, "MainFile", out location));
+		}
+		
+		[Test]
+		public void PropertyStorageLocationForMainFilePropertyIsGlobal()
+		{
+			PropertyStorageLocations location;
+			targetProject.GetProperty(null, null, "MainFile", out location);
+			Assert.AreEqual(PropertyStorageLocations.Base, location);
 		}
 	}
 }

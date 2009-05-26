@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using ICSharpCode.NRefactory;
@@ -33,6 +34,7 @@ namespace ICSharpCode.PythonBinding
 		// references to fields or parameters.
 		List<ParameterDeclarationExpression> methodParameters = new List<ParameterDeclarationExpression>();
 		SupportedLanguage language;
+		List<MethodDeclaration> entryPointMethods;
 		
 		public NRefactoryToPythonConverter(SupportedLanguage language)
 		{
@@ -124,11 +126,20 @@ namespace ICSharpCode.PythonBinding
 			// Convert to NRefactory code DOM.
 			CompilationUnit unit = GenerateCompilationUnit(source, language);
 			
-			// Convert to Python code.
+			// Convert to Python code.3
+			entryPointMethods = new List<MethodDeclaration>();
 			codeBuilder = new StringBuilder();
 			unit.AcceptVisitor(this, null);
 			
 			return codeBuilder.ToString().TrimEnd();
+		}
+		
+		/// <summary>
+		/// Gets a list of possible entry point methods found when converting the
+		/// python source code.
+		/// </summary>
+		public ReadOnlyCollection<MethodDeclaration> EntryPointMethods {
+			get { return entryPointMethods.AsReadOnly(); }
 		}
 
 		/// <summary>
@@ -793,6 +804,9 @@ namespace ICSharpCode.PythonBinding
 			if (IsStatic(methodDeclaration)) {
 				AppendIndentedLine(methodDeclaration.Name + " = staticmethod(" + methodDeclaration.Name + ")");
 				AppendNewLine();
+				
+				// Save Main entry point method.
+				SaveMethodIfMainEntryPoint(methodDeclaration);
 			}
 			
 			return null;
@@ -1684,6 +1698,16 @@ namespace ICSharpCode.PythonBinding
 				return SupportedLanguage.VBNet;
 			}
 			return SupportedLanguage.CSharp;
-		}		
+		}
+		
+		/// <summary>
+		/// Saves the method declaration if it is a main entry point.
+		/// </summary>
+		void SaveMethodIfMainEntryPoint(MethodDeclaration method)
+		{
+			if (method.Name == "Main") {
+				entryPointMethods.Add(method);
+			}
+		}
 	}
 }
