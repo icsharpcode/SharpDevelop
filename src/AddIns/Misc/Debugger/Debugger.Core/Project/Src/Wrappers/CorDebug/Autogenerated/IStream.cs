@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -17,9 +17,9 @@ namespace Debugger.Wrappers.CorDebug
 	public partial class IStream
 	{
 		
-		private Debugger.Interop.CorDebug.IStream wrappedObject;
+		private Debugger.Interop.CorSym.IStream wrappedObject;
 		
-		internal Debugger.Interop.CorDebug.IStream WrappedObject
+		internal Debugger.Interop.CorSym.IStream WrappedObject
 		{
 			get
 			{
@@ -27,13 +27,13 @@ namespace Debugger.Wrappers.CorDebug
 			}
 		}
 		
-		public IStream(Debugger.Interop.CorDebug.IStream wrappedObject)
+		public IStream(Debugger.Interop.CorSym.IStream wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
 			ResourceManager.TrackCOMObject(wrappedObject, typeof(IStream));
 		}
 		
-		public static IStream Wrap(Debugger.Interop.CorDebug.IStream objectToWrap)
+		public static IStream Wrap(Debugger.Interop.CorSym.IStream objectToWrap)
 		{
 			if ((objectToWrap != null))
 			{
@@ -109,21 +109,21 @@ namespace Debugger.Wrappers.CorDebug
 			return pcbWritten;
 		}
 		
-		public Debugger.Interop.CorDebug._ULARGE_INTEGER RemoteSeek(Debugger.Interop.CorDebug._LARGE_INTEGER dlibMove, uint dwOrigin)
+		public Debugger.Interop.CorSym._ULARGE_INTEGER RemoteSeek(Debugger.Interop.CorSym._LARGE_INTEGER dlibMove, uint dwOrigin)
 		{
-			Debugger.Interop.CorDebug._ULARGE_INTEGER plibNewPosition;
+			Debugger.Interop.CorSym._ULARGE_INTEGER plibNewPosition;
 			this.WrappedObject.RemoteSeek(dlibMove, dwOrigin, out plibNewPosition);
 			return plibNewPosition;
 		}
 		
-		public void SetSize(Debugger.Interop.CorDebug._ULARGE_INTEGER libNewSize)
+		public void SetSize(Debugger.Interop.CorSym._ULARGE_INTEGER libNewSize)
 		{
 			this.WrappedObject.SetSize(libNewSize);
 		}
 		
-		public Debugger.Interop.CorDebug._ULARGE_INTEGER RemoteCopyTo(IStream pstm, Debugger.Interop.CorDebug._ULARGE_INTEGER cb, out Debugger.Interop.CorDebug._ULARGE_INTEGER pcbRead)
+		public Debugger.Interop.CorSym._ULARGE_INTEGER RemoteCopyTo(IStream pstm, Debugger.Interop.CorSym._ULARGE_INTEGER cb, out Debugger.Interop.CorSym._ULARGE_INTEGER pcbRead)
 		{
-			Debugger.Interop.CorDebug._ULARGE_INTEGER pcbWritten;
+			Debugger.Interop.CorSym._ULARGE_INTEGER pcbWritten;
 			this.WrappedObject.RemoteCopyTo(pstm.WrappedObject, cb, out pcbRead, out pcbWritten);
 			return pcbWritten;
 		}
@@ -138,17 +138,17 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Revert();
 		}
 		
-		public void LockRegion(Debugger.Interop.CorDebug._ULARGE_INTEGER libOffset, Debugger.Interop.CorDebug._ULARGE_INTEGER cb, uint dwLockType)
+		public void LockRegion(Debugger.Interop.CorSym._ULARGE_INTEGER libOffset, Debugger.Interop.CorSym._ULARGE_INTEGER cb, uint dwLockType)
 		{
 			this.WrappedObject.LockRegion(libOffset, cb, dwLockType);
 		}
 		
-		public void UnlockRegion(Debugger.Interop.CorDebug._ULARGE_INTEGER libOffset, Debugger.Interop.CorDebug._ULARGE_INTEGER cb, uint dwLockType)
+		public void UnlockRegion(Debugger.Interop.CorSym._ULARGE_INTEGER libOffset, Debugger.Interop.CorSym._ULARGE_INTEGER cb, uint dwLockType)
 		{
 			this.WrappedObject.UnlockRegion(libOffset, cb, dwLockType);
 		}
 		
-		public void Stat(out Debugger.Interop.CorDebug.tagSTATSTG pstatstg, uint grfStatFlag)
+		public void Stat(out Debugger.Interop.CorSym.tagSTATSTG pstatstg, uint grfStatFlag)
 		{
 			this.WrappedObject.Stat(out pstatstg, grfStatFlag);
 		}
@@ -156,7 +156,7 @@ namespace Debugger.Wrappers.CorDebug
 		public IStream Clone()
 		{
 			IStream ppstm;
-			Debugger.Interop.CorDebug.IStream out_ppstm;
+			Debugger.Interop.CorSym.IStream out_ppstm;
 			this.WrappedObject.Clone(out out_ppstm);
 			ppstm = IStream.Wrap(out_ppstm);
 			return ppstm;

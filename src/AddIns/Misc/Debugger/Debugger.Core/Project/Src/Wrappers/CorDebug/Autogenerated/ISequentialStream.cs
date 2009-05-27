@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -16,10 +16,9 @@ namespace Debugger.Wrappers.CorDebug
 	
 	public partial class ISequentialStream
 	{
+		private Debugger.Interop.CorSym.ISequentialStream wrappedObject;
 		
-		private Debugger.Interop.CorDebug.ISequentialStream wrappedObject;
-		
-		internal Debugger.Interop.CorDebug.ISequentialStream WrappedObject
+		internal Debugger.Interop.CorSym.ISequentialStream WrappedObject
 		{
 			get
 			{
@@ -27,13 +26,13 @@ namespace Debugger.Wrappers.CorDebug
 			}
 		}
 		
-		public ISequentialStream(Debugger.Interop.CorDebug.ISequentialStream wrappedObject)
+		public ISequentialStream(Debugger.Interop.CorSym.ISequentialStream wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
 			ResourceManager.TrackCOMObject(wrappedObject, typeof(ISequentialStream));
 		}
 		
-		public static ISequentialStream Wrap(Debugger.Interop.CorDebug.ISequentialStream objectToWrap)
+		public static ISequentialStream Wrap(Debugger.Interop.CorSym.ISequentialStream objectToWrap)
 		{
 			if ((objectToWrap != null))
 			{
