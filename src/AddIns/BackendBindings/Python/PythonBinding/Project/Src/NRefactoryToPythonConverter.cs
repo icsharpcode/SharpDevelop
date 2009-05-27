@@ -1185,7 +1185,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			// Add import statements for each using.
 			foreach (Using @using in usingDeclaration.Usings) {		
-				AppendIndentedLine("import " + @using.Name);
+				AppendIndentedLine("from " + @using.Name + " import *");
 			}
 			return null;
 		}
