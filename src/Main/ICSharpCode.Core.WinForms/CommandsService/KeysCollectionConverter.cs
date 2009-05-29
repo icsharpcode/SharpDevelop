@@ -1,19 +1,18 @@
 using System;
-using System.Windows.Input;
+using System.Windows.Forms;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
 
-namespace ICSharpCode.Core.Presentation
+namespace ICSharpCode.Core.WinForms
 {
 	/// <summary>
-	/// Converts input gesture from text representation to object and vice versa
-	/// 
-	/// Will be able to convert mouse and key gestures and handle gestures collections
+	/// Converts objects of different types to array of keys and 
+	/// convert enumerable back to objects of different type
 	/// </summary>
-	public class InputGestureCollectionConverter : TypeConverter
+	public class KeysCollectionConverter : TypeConverter
 	{
 		/// <summary>
 		/// Returns a value indicating whether this converter can convert an object in the 
@@ -24,6 +23,8 @@ namespace ICSharpCode.Core.Presentation
 		/// <returns>Array of keys</returns>
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) {
 			if (sourceType == typeof(string)) {
+				return true;
+			} if (sourceType == typeof(string[])) {
 				return true;
 			}
 			
@@ -38,7 +39,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="destinationType">Convertion destination type</param>
 		/// <returns>Destination object</returns>
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) {
-			if (destinationType == typeof(string)) {
+			if (destinationType == typeof(string) || destinationType == typeof(string[])) {
 				return true;
 			}
 			
@@ -46,57 +47,67 @@ namespace ICSharpCode.Core.Presentation
 		}
 
 		/// <summary>
-		/// Convert from object to input gesture collection
+		/// Convert from source object to array of keys
 		/// </summary>
 		/// <param name="context">An ITypeDescriptorContext that provides a format context, which can be used to extract additional information about the environment this converter is being invoked from. This parameter or properties of this parameter can be a null reference </param>
 		/// <param name="culture">Locale information which can influence convertion</param>
-		/// <param name="value">Input gesture collection</param>
+		/// <param name="value">Array of Keys</param>
 		/// <returns></returns>
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
-			if (value is string) {
-				var gestures = new InputGestureCollection();
-				var serializedGestures = Regex.Split((string)value, @"\s*\|\s*");
+			if(value is string || value is string[]) {
+				var gestures = new List<Keys>();
+				
+				string[] serializedGestures;
+				if(value is string) {
+					serializedGestures = Regex.Split((string)value, @"\s*\|\s*");
+				} else {
+					serializedGestures = (string[])value;
+				}
 				
 				foreach(var serializedGesture in serializedGestures) {
 					if(string.IsNullOrEmpty(serializedGesture)) continue;
 					
-					gestures.Add((InputGesture)new KeyGestureConverter().ConvertFromString(context, culture, serializedGesture));
+					gestures.Add((Keys)new KeysConverter().ConvertFromInvariantString(serializedGesture));
 				}
 				
-				return gestures;
+				return gestures.ToArray();
 			}
 			
 			return base.ConvertFrom(context, culture, value);
 		}
 		
 		/// <summary>
-		/// Converts the input gesture collection to the specified destination type
+		/// Converts array of keys to the specified destination type
 		/// </summary>
 		/// <param name="context">An ITypeDescriptorContext that provides a format context, which can be used to extract additional information about the environment this converter is being invoked from. This parameter or properties of this parameter can be a null reference </param>
 		/// <param name="culture">Locale information which can influence convertion</param>
-		/// <param name="value">Input gesture collection</param>
+		/// <param name="value">Array of keys</param>
 		/// <param name="destinationType">Convertion destination type</param>
 		/// <returns></returns>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {  
-			if(destinationType == typeof(string)) {
-				var sb = new StringBuilder();
-				var gesturesCollection = (InputGestureCollection)value;
-				foreach(var gesture in gesturesCollection) {
-					string serializedGesture;
-					if (gesture is KeyGesture) {
-						serializedGesture = (string)new KeyGestureConverter().ConvertTo(context, culture, gesture, typeof(string));
-					} else if (gesture is MouseGesture) {
-						serializedGesture = (string)new KeyGestureConverter().ConvertTo(context, culture, gesture, typeof(string));
-					} else {
-						continue;
-					}
-					
-					sb.AppendFormat("{0} | ", serializedGesture);
+			if(destinationType == typeof(string) || destinationType == typeof(string[]))
+			{
+				if(value == null) return null;
+			
+				var keysCollection = (IEnumerable<Keys>)value;
+				var serializedKeysCollection = new List<string>();
+				
+				foreach(var gesture in keysCollection) {
+					var serializedGesture = new KeysConverter().ConvertToInvariantString(gesture);
+					serializedKeysCollection.Add(serializedGesture);
 				}
 				
-				return sb.Length >= 3 ? sb.ToString(0, sb.Length - 3) : sb.ToString();
+				if(destinationType == typeof(string[])) {
+					return serializedKeysCollection.ToArray();
+				} else if(destinationType == typeof(string)) {
+					var sb = new StringBuilder();
+					foreach(var serializedGesture in serializedKeysCollection) {
+						sb.AppendFormat("{0} | ", serializedGesture);
+					}
+					
+					return sb.Length >= 3 ? sb.ToString(0, sb.Length - 3) : sb.ToString();
+				}
 			}
-			
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
 	}

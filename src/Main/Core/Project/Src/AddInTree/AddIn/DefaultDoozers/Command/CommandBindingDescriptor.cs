@@ -19,18 +19,14 @@ namespace ICSharpCode.Core
 		/// binding is triggered
 		/// </summary>
 		public string Class {
-			get {
-				return Codon.Properties["class"];
-			}
+			get; private set;
 		}
 		
 		/// <summary>
 		/// Full name of routed UI command which will trigger this binding
 		/// </summary>
 		public string Command {
-			get {
-				return Codon.Properties["command"];
-			}
+			get; private set;
 		}
 		
 		/// <summary>
@@ -39,9 +35,16 @@ namespace ICSharpCode.Core
 		/// UI element in which this binding will be valid
 		/// </summary>
 		public string Context {
-			get {
-				return Codon.Properties["context"];
-			}
+			get; private set;
+		}
+		
+		/// <summary>
+		/// Gestures.
+		/// 
+		/// Optional, if provided input bindings in the same context will be created
+		/// </summary>
+		public string Gestures {
+			get; private set;
 		}
 		
 		/// <summary>
@@ -63,6 +66,10 @@ namespace ICSharpCode.Core
 		public CommandBindingDescriptor(Codon codon)
 		{
 			Codon = codon;
+			Class = Codon.Properties["class"];
+			Command = Codon.Properties["command"];
+			Context = Codon.Properties["context"];
+			Gestures = Codon.Properties["gestures"];
 		}
 	}
 }

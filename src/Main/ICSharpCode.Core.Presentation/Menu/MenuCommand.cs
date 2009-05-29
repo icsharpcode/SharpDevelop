@@ -119,12 +119,18 @@ namespace ICSharpCode.Core.Presentation
 		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
 		{
 			if(!string.IsNullOrEmpty(codon.Properties["command"])) {
-				var routedCommand = CommandsRegistry.GetRoutedUICommand(codon.Properties["command"]);
-				this.Command = routedCommand;
-			
-				var gestures = CommandsRegistry.GetInputGestures(CommandsRegistry.DefaultContext, routedCommand.Name, null);
-				var gesturesString = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
-				this.InputGestureText = "M: " + gesturesString;
+				var routedCommandName = codon.Properties["command"];				
+				var routedCommand = CommandsRegistry.GetRoutedUICommand(routedCommandName);
+				
+				if(routedCommand == null) {
+					MessageService.ShowError("Routed command with name '" + routedCommandName + "' not registered");
+				} else {
+					this.Command = routedCommand;
+					
+					var gestures = CommandsRegistry.GetInputGestures(CommandsRegistry.DefaultContext, routedCommand.Name, null);
+					var gesturesString = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
+					this.InputGestureText = "M: " + gesturesString;
+				}
 			} else {			
 				this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
 				if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {

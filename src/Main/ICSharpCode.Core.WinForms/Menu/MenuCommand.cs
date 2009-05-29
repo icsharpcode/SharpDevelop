@@ -64,25 +64,6 @@ namespace ICSharpCode.Core.WinForms
 			
 		}
 		
-		public static Keys ParseShortcut(string shortcutString)
-		{
-			Keys shortCut = Keys.None;
-			if (shortcutString.Length > 0) {
-				try {
-					foreach (string key in Regex.Split(shortcutString, @"\s*\+\s*")) {
-						string winKey = key;
-						if(key.ToLower() == "ctrl") winKey = "Control";
-
-						shortCut  |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), winKey);
-					}
-				} catch (Exception ex) {
-					MessageService.ShowError(ex);
-					return System.Windows.Forms.Keys.None;
-				}
-			}
-			return shortCut;
-		}
-		
 		public MenuCommand(Codon codon, object caller, bool createCommand)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
@@ -94,8 +75,15 @@ namespace ICSharpCode.Core.WinForms
 			}
 			
 			UpdateText();
+			
+			GesturePlaceHolderRegistry.RegisterPlaceHolder(codon.Properties["class"], StringParser.Parse(codon.Properties["label"]));
+			GesturePlaceHolderRegistry.RegisterUpdateHandler(codon.Properties["class"], delegate {
+			                                                          	ShortcutKeys = GesturePlaceHolderRegistry.GetGestures(codon.Properties["class"])[0];
+			                                           });
+			GesturePlaceHolderRegistry.InvokeUpdateHandlers(codon.Properties["class"]);
+			
 			if (codon.Properties.Contains("shortcut")) {
-				ShortcutKeys =  ParseShortcut(codon.Properties["shortcut"]);
+				GesturePlaceHolderRegistry.InvokeUpdateHandlers(codon.Properties["class"]);
 			}
 		}
 		

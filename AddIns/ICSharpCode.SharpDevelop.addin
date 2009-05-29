@@ -52,9 +52,9 @@
 	</Runtime>
 	
 	
-	<!-- Commands registry test -->
+	<!-- Commands registry test
 	<Path name="/SharpDevelop/Workbench/RoutedUICommands">
-		<RoutedUICommand name="SharpDevelop.CreateNewFile" text="Create new file" />
+		<RoutedUICommand name="SDTestCommands.Test" text="Create new file" />
 		
 		<RoutedUICommand name="SDBuildCommands.BuildSolution" text="${res:XML.MainMenu.BuildMenu.BuildSolution}" />
 		<RoutedUICommand name="SDBuildCommands.RebuildSolution" text="${res:XML.MainMenu.BuildMenu.RebuildSolution}" />
@@ -72,6 +72,11 @@
 		<RoutedUICommand name="SDProjectCommands.AddExistingItemToSolution" text="${res:ProjectComponent.ContextMenu.AddItem}" />
 		<RoutedUICommand name="SDProjectCommands.AddNewSolutionFolderToSolution" text="${res:ProjectComponent.ContextMenu.NewSolutionFolder}" />
 
+		<RoutedUICommand name="SDProjectCommands.ShowSelectedProjectBrowserNodeProperties" text="${res:MainWindow.Windows.PropertiesScoutLabel}" />
+		<RoutedUICommand name="SDProjectCommands.ShowHiddenFilesInProjectBrowser" text="${res:Gui.ProjectBrowser.ShowAllFiles}" />
+		<RoutedUICommand name="SDProjectCommands.RefreshProjectBrowser" text="${res:AddIns.HtmlHelp2.Refresh}" />
+
+		
 		<RoutedUICommand name="SDDebugCommands.Execute" text="${res:XML.MainMenu.RunMenu.Run}" />
 		<RoutedUICommand name="SDDebugCommands.ExecuteWithoutDebugger" text="${res:XML.MainMenu.DebugMenu.RunWithoutDebug}" />
 		<RoutedUICommand name="SDDebugCommands.StopDebugging" text="${res:XML.MainMenu.DebugMenu.Stop}" />
@@ -83,16 +88,25 @@
 		<RoutedUICommand name="SDDebugCommands.StepInto" text="${res:XML.MainMenu.DebugMenu.StepInto}" />
 		<RoutedUICommand name="SDDebugCommands.StepOut" text="${res:XML.MainMenu.DebugMenu.StepOut}" />
 		<RoutedUICommand name="SDDebugCommands.ToggleBreakpoint" text="${res:XML.MainMenu.DebugMenu.ToggleBreakpoint}" />
+
+
+		<RoutedUICommand name="SDSearchCommands.ToggleBookmark" text="${res:XML.MainMenu.SearchMenu.ToggleBookmark}" />
+		<RoutedUICommand name="SDSearchCommands.PrevBookmark" text="${res:XML.MainMenu.SearchMenu.PrevBookmark}" />
+		<RoutedUICommand name="SDSearchCommands.NextBookmark" text="${res:XML.MainMenu.SearchMenu.NextBookmark}" />
+		<RoutedUICommand name="SDSearchCommands.ClearBookmarks" text="${res:XML.MainMenu.SearchMenu.ClearBookmarks}" />
+		<RoutedUICommand name="SDSearchCommands.GotoLineNumber" text="${res:XML.MainMenu.SearchMenu.GotoLineNr}" />
+		<RoutedUICommand name="SDSearchCommands.GotoBrace" text="${res:XML.MainMenu.SearchMenu.GotoBrace}" />
 	</Path>
+	-->
 	
 	<Path name="/SharpDevelop/Workbench/CommandBindings">
-		<CommandBinding command="SharpDevelop.CreateNewFile" class="ICSharpCode.SharpDevelop.Commands.TestCommand" />
+		<CommandBinding command="SDTestCommands.Test" class="ICSharpCode.SharpDevelop.Commands.TestCommand" gestures="Ctrl+M" />
 		
-		<CommandBinding command="SDBuildCommands.BuildSolution" class="ICSharpCode.SharpDevelop.Project.Commands.Build" />
-		<CommandBinding command="SDBuildCommands.RebuildSolution" class="ICSharpCode.SharpDevelop.Project.Commands.Rebuild" />
+		<CommandBinding command="SDBuildCommands.BuildSolution" class="ICSharpCode.SharpDevelop.Project.Commands.Build" gestures="F8" />
+		<CommandBinding command="SDBuildCommands.RebuildSolution" class="ICSharpCode.SharpDevelop.Project.Commands.Rebuild" gestures="Alt+F8" />
 		<CommandBinding command="SDBuildCommands.CleanSolution" class="ICSharpCode.SharpDevelop.Project.Commands.Clean" />	
-		<CommandBinding command="SDBuildCommands.BuildProject" class="ICSharpCode.SharpDevelop.Project.Commands.BuildProject" />
-		<CommandBinding command="SDBuildCommands.RebuildProject" class="ICSharpCode.SharpDevelop.Project.Commands.RebuildProject" />
+		<CommandBinding command="SDBuildCommands.BuildProject" class="ICSharpCode.SharpDevelop.Project.Commands.BuildProject" gestures="F9" />
+		<CommandBinding command="SDBuildCommands.RebuildProject" class="ICSharpCode.SharpDevelop.Project.Commands.RebuildProject" gestures="Alt+F9" />
 		<CommandBinding command="SDBuildCommands.CleanProject" class="ICSharpCode.SharpDevelop.Project.Commands.CleanProject" />	
 		<CommandBinding command="SDBuildCommands.AbortBuild" class="ICSharpCode.SharpDevelop.Project.Commands.AbortBuild" />
 		<CommandBinding command="SDBuildCommands.EditConfigurationsCommand" class="ICSharpCode.SharpDevelop.Project.Commands.EditConfigurationsCommand" />
@@ -101,39 +115,32 @@
 		<CommandBinding command="SDProjectCommands.AddExitingProjectToSolution" class="ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution" />		
 		<CommandBinding command="SDProjectCommands.AddExistingItemToSolution" class="ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution" />
 		<CommandBinding command="SDProjectCommands.AddNewSolutionFolderToSolution" class="ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution" />	
-
-		<CommandBinding command="SDDebugCommands.Execute" class="ICSharpCode.SharpDevelop.Project.Commands.Execute" />	
-		<CommandBinding command="SDDebugCommands.ExecuteWithoutDebugger" class="ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger" />
+		
+	
+		<CommandBinding command="SDDebugCommands.Execute" class="ICSharpCode.SharpDevelop.Project.Commands.Execute" gestures="F5" />	
+		<CommandBinding command="SDDebugCommands.ExecuteWithoutDebugger" class="ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger" gestures="Ctrl+F5" />
 		<CommandBinding command="SDDebugCommands.StopDebugging" class="ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand" />
 		<CommandBinding command="SDDebugCommands.AttachToProcess" class="ICSharpCode.SharpDevelop.Project.Commands.AttachToProcessCommand" />
 		<CommandBinding command="SDDebugCommands.DetachFromProcess" class="ICSharpCode.SharpDevelop.Project.Commands.DetachFromProcessCommand" />
-		<CommandBinding command="SDDebugCommands.BreakDebugging" class="ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand" />
-		<CommandBinding command="SDDebugCommands.ContinueDebugging" class="ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand" />
-		<CommandBinding command="SDDebugCommands.StepOver" class="ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand" />
-		<CommandBinding command="SDDebugCommands.StepInto" class="ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand" />
-		<CommandBinding command="SDDebugCommands.StepOut" class="ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand" />
-		<CommandBinding command="SDDebugCommands.ToggleBreakpoint" class="ICSharpCode.SharpDevelop.Project.Commands.ToggleBreakpointCommand" />	
+		<CommandBinding command="SDDebugCommands.BreakDebugging" class="ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand" gestures="Ctrl+Alt+B" />
+		<CommandBinding command="SDDebugCommands.ContinueDebugging" class="ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand" gestures="Ctrl+Alt+B" />
+		<CommandBinding command="SDDebugCommands.StepOver" class="ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand" gestures="F10" />
+		<CommandBinding command="SDDebugCommands.StepInto" class="ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand" gestures="F11" />
+		<CommandBinding command="SDDebugCommands.StepOut" class="ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand" gestures="Shift+F11" />
+		<CommandBinding command="SDDebugCommands.ToggleBreakpoint" class="ICSharpCode.SharpDevelop.Project.Commands.ToggleBreakpointCommand" gestures="F7" />
+
+
+		<CommandBinding command="SDSearchCommands.ToggleBookmark" class="ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark" gestures="Ctrl+F2" />
+		<CommandBinding command="SDSearchCommands.PrevBookmark" class="ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark" gestures="Alt+F2" />
+		<CommandBinding command="SDSearchCommands.NextBookmark" class="ICSharpCode.SharpDevelop.Bookmarks.NextBookmark" gestures="F2" />	
+		<CommandBinding command="SDSearchCommands.ClearBookmarks" class="ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks" />
+		<CommandBinding command="SDSearchCommands.GotoLineNumber" class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber" gestures="Ctrl+G" />
+		<CommandBinding command="SDSearchCommands.GotoBrace" class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace" gestures="Ctrl+B" />
+
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/InputBindings">
-		<InputBinding command="SharpDevelop.CreateNewFile" gesture="Ctrl+M" />
-	
-		<InputBinding command="SDBuildCommands.BuildSolution" gesture="F8" />
-		<InputBinding command="SDBuildCommands.RebuildSolution" gesture="Alt+F8" />
-	
-		<InputBinding command="SDBuildCommands.BuildProject" gesture="F9" />
-		<InputBinding command="SDBuildCommands.RebuildProject" gesture="Alt+F9" />
-		
-		<InputBinding command="SDDebugCommands.Execute" gesture="F5" />
-		<InputBinding command="SDDebugCommands.ExecuteWithoutDebugger" gesture="Control+F5" />
-		<InputBinding command="SDDebugCommands.BreakDebugging" gesture="Control+Alt+B" />
-		<InputBinding command="SDDebugCommands.ContinueDebugging" gesture="Control+Alt+B" />
-		<InputBinding command="SDDebugCommands.StepOver" gesture="F10" />
-		<InputBinding command="SDDebugCommands.StepInto" gesture="F11" />
-		<InputBinding command="SDDebugCommands.StepOut" gesture="Shift+F11" />
-		<InputBinding command="SDDebugCommands.ToggleBreakpoint" gesture="F7" />
 	</Path>
-	<!-- Commands registry test -->
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
 		<Class id    = ".NET"
@@ -265,17 +272,20 @@
 			<ToolbarItem id      = "Properties"
 			             icon    = "Icons.16x16.PropertiesIcon"
 			             tooltip = "${res:MainWindow.Windows.PropertiesScoutLabel}"
-			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"
+			             command = "SDProjectCommands.ShowSelectedProjectBrowserNodeProperties" />
 			<ToolbarItem id = "PropertySeparator" type = "Separator"/>
 			<ToolbarItem id      = "ShowAll"
 			             type    = "CheckBox"
 			             icon    = "ProjectBrowser.Toolbar.ShowHiddenFiles"
 			             tooltip = "${res:Gui.ProjectBrowser.ShowAllFiles}"
-			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ToggleShowAll"/>
+			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ToggleShowAll"
+			             command = "SDProjectCommands.ShowHiddenFilesInProjectBrowser" />
 			<ToolbarItem id      = "Refresh"
 			             icon    = "ProjectBrowser.Toolbar.Refresh"
 			             tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
-			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
+			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser" 
+			             command = "SDProjectCommands.RefreshProjectBrowser" />
 		</Condition>
 	</Path>
 	
@@ -292,16 +302,16 @@
 		          shortcut = "F8"
 		          icon  = "Icons.16x16.BuildCombine"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Build"
-		          command = "BuildCommands.Build" />
+		          command = "SDBuildCommands.Build" />
 		<MenuItem id = "Rebuild"
 		          label = "${res:XML.MainMenu.BuildMenu.RebuildSolution}"
-		          shortcut = "Alt|F8"
+		          shortcut = "Alt+F8"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"
-		          command = "BuildCommands.Rebuild" />
+		          command = "SDBuildCommands.Rebuild" />
 		<MenuItem id = "Clean"
 		          label = "${res:XML.MainMenu.BuildMenu.CleanSolution}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"
-		          command = "BuildCommands.Clean" />
+		          command = "SDBuildCommands.Clean" />
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
 		
 		
@@ -344,7 +354,8 @@
 		<MenuItem id    = "Properties"
 		          icon  = "Icons.16x16.PropertiesIcon"
 		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"
+		          command = "SDProjectCommands.ShowSelectedProjectBrowserNodeProperties" />
 	</Path>
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionFolderNode">
@@ -411,7 +422,8 @@
 		<MenuItem id    = "Properties"
 		          icon  = "Icons.16x16.PropertiesIcon"
 		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"
+		          command = "SDProjectCommands.ShowSelectedProjectBrowserNodeProperties" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/MissingProjectNode">
@@ -532,7 +544,8 @@
 			<MenuItem id    = "Properties"
 			          icon  = "Icons.16x16.PropertiesIcon"
 			          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"
+			          command = "SDProjectCommands.ShowSelectedProjectBrowserNodeProperties" />
 		</ComplexCondition>
 	</Path>
 	
@@ -735,7 +748,8 @@
 			<MenuItem id = "Properties"
 			          icon  = "Icons.16x16.PropertiesIcon"
 			          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"
+			          command = "SDProjectCommands.ShowSelectedProjectBrowserNodeProperties" />
 		</ComplexCondition>
 	</Path>
 	
@@ -914,40 +928,40 @@
 		<ToolbarItem id = "Cut"
 		             icon = "Icons.16x16.CutIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Cut.Description}"
-		             command = "Cut"/>
+		             command = "ApplicationCommands.Cut"/>
 		<ToolbarItem id = "Copy"
 		             icon = "Icons.16x16.CopyIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Copy.Description}"
-		             command = "Copy"/>
+		             command = "ApplicationCommands.Copy"/>
 		<ToolbarItem id = "Paste"
 		             icon = "Icons.16x16.PasteIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Paste.Description}"
-		             command = "Paste"/>
+		             command = "ApplicationCommands.Paste"/>
 		<ToolbarItem id = "Delete"
 		             icon = "Icons.16x16.DeleteIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Delete.Description}"
-		             command = "Delete"/>
+		             command = "ApplicationCommands.Delete"/>
 		<ToolbarItem id = "UndoRedoSeparator"  type = "Separator"/>
 		<ToolbarItem id      = "Undo"
 		             icon    = "Icons.16x16.UndoIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Undo.Description}"
-		             command = "Undo"/>
+		             command = "ApplicationCommands.Undo"/>
 		<ToolbarItem id      = "Redo"
 		             icon    = "Icons.16x16.RedoIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Redo.Description}"
-		             command = "Redo"/>
+		             command = "ApplicationCommands.Redo"/>
 		
 		<ToolbarItem id = "CompileSeparator" type = "Separator"/>
 		
 		<ToolbarItem id      = "Compile"
 		             icon    = "Icons.16x16.BuildCombine"
 		             tooltip = "${res:XML.MainMenu.RunMenu.Compile.Description}"
-		             class   = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.Build" />
 		
 		<ToolbarItem id      = "BuildProject"
 		             icon    = "Icons.16x16.BuildCurrentSelectedProject"
 		             tooltip = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
-		             class   = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"  />
 		
 		<ToolbarItem id = "DebuggerSeparator" type = "Separator"  />
 		
@@ -964,14 +978,16 @@
 						<ToolbarItem id      = "Run"
 						             icon    = "Icons.16x16.RunProgramIcon"
 						             tooltip = "${res:XML.MainMenu.RunMenu.Run.Description}"
-						             class   = "ICSharpCode.SharpDevelop.Project.Commands.Execute" />
+						             class   = "ICSharpCode.SharpDevelop.Project.Commands.Execute"
+						              />
 					</Condition>
 					
 					<Condition name="DebuggerSupports" debuggersupports = "StartWithoutDebugging">
 						<ToolbarItem id      = "RunWithoutDebugger"
 						             icon    = "Icons.16x16.Debug.StartWithoutDebugging"
 						             tooltip = "${res:XML.MainMenu.DebugMenu.RunWithoutDebug.Description}"
-						             class   = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"/>
+						             class   = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"
+						              />
 					</Condition>
 				</Condition>
 			</Condition>
@@ -1488,7 +1504,7 @@
 				/>
 				<MenuItem id       = "Rebuild"
 				          label    = "${res:XML.MainMenu.BuildMenu.RebuildSolution}"
-				          shortcut = "Alt|F8"
+				          shortcut = "Alt+F8"
 				          class    = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"
 				          command  = "SDBuildCommands.RebuildSolution" />
 				<MenuItem id    = "Clean"
@@ -1505,7 +1521,7 @@
 					          command  = "SDBuildCommands.BuildProject" />
 					<MenuItem id       = "Rebuild project"
 					          label    = "${res:XML.MainMenu.BuildMenu.RebuildProject}"
-					          shortcut = "Alt|F9"
+					          shortcut = "Alt+F9"
 					          class    = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"
 					          command  = "SDBuildCommands.RebuildProject" />
 					<MenuItem id    = "Clean project"
@@ -1689,7 +1705,7 @@
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
 				<MenuItem id = "GenerateCodeAction"
 				          label = "${res:XML.MainMenu.ToolMenu.GenerateCode}"
-				          shortcut = "Alt|Insert"
+				          shortcut = "Alt+Insert"
 				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GenerateCodeAction"/>
 				<MenuItem id = "ShowQuickHelp"
 				          label = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}"
@@ -1934,42 +1950,49 @@
 			<MenuItem id = "SearchIncremental"
 			          label = "${res:XML.MainMenu.SearchMenu.IncrementalSearch}"
 			          shortcut = "Ctrl+E"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunIncrementalSearch"/>
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunIncrementalSearch" 
+			          />
 			<MenuItem id = "SearchReverseIncremental"
 			          label = "${res:XML.MainMenu.SearchMenu.ReverseIncrementalSearch}"
 			          shortcut = "Ctrl+Shift+E"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunReverseIncrementalSearch"/>
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunReverseIncrementalSearch" />
 			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
 			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
 			<MenuItem id = "ToggleBookmark"
 			          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
 			          shortcut = "Ctrl+F2"
 			          icon = "Bookmarks.ToggleMark"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
+			          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"
+			          command="SDSearchCommands.ToggleBookmark" />
 			<MenuItem id = "PrevBookmark"
 			          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
-			          shortcut = "Alt|F2"
+			          shortcut = "Alt+F2"
 			          icon = "Bookmarks.GotoPrevInFile"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
+			          class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"
+			          command="SDSearchCommands.PrevBookmark" />
 			<MenuItem id = "NextBookmark"
 			          label = "${res:XML.MainMenu.SearchMenu.NextBookmark}"
 			          shortcut = "F2"
 			          icon = "Bookmarks.GotoNextInFile"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
+			          class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"
+			          command="SDSearchCommands.NextBookmark" />
 			<MenuItem id = "ClearBookmarks"
 			          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
 			          icon = "Bookmarks.ClearAll"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
+			          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"
+			          command="SDSearchCommands.ClearBookmarks" />
 			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "GotoLineNr"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"
 			          shortcut = "Ctrl+G"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"/>
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"
+			          command="SDSearchCommands.GotoLineNumber" />
 			<MenuItem id = "Separator3" type = "Separator" />
 			<MenuItem id = "GotoBrace"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
 			          shortcut = "Ctrl+B"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace"/>
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace"
+			          command="SDSearchCommands.GotoBrace" />
 			<!--			</Condition> -->
 		</MenuItem>
 	</Path>

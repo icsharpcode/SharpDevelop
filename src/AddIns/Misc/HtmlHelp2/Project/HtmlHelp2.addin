@@ -84,7 +84,7 @@
 		<MenuItem id           = "IndexResultsPadCommand"
 		          label        = "${res:AddIns.HtmlHelp2.IndexResults}"
 		          icon         = "HtmlHelp2.16x16.IndexResults"
-		          shortcut     = "Shift|Alt|F2"
+		          shortcut     = "Shift+Alt+F2"
 		          class        = "HtmlHelp2.ShowIndexResultsMenuCommand"
 		          insertafter  = "SearchPadCommand"
 		          insertbefore = "Separator1"/>

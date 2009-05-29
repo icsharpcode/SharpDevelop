@@ -467,25 +467,33 @@ namespace ICSharpCode.SharpDevelop.Commands
 						item.Icon = PresentationResourceService.GetPixelSnappedImage(padContent.Icon);
 					}
 					
+					// Dynamicaly create routed UI command for loaded pad
 					var routedCommandName = "SDViewCommands.ShowView_" + padContent.Class;
-					var routedCommandText = "Show view " + ICSharpCode.Core.Presentation.MenuService.ConvertLabel(StringParser.Parse(padContent.Title));
+					var routedCommandText = "Show view " + MenuService.ConvertLabel(StringParser.Parse(padContent.Title));
 					CommandsRegistry.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+					
+					// Register command which will activate loaded tab
+					CommandsRegistry.LoadCommand(routedCommandName, new BringPadToFrontCommand(padContent));
+					
+					// Register command binding in workbench
 					CommandsRegistry.RegisterCommandBinding(CommandsRegistry.DefaultContext, routedCommandName, routedCommandName, null, false);
 					CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext);
-					CommandsRegistry.LoadCommand(routedCommandName, new BringPadToFrontCommand(padContent));
 					
 					item.Command = CommandsRegistry.GetRoutedUICommand(routedCommandName);
 					
+					// If pad have shortcut specified add input binding
 					if (!string.IsNullOrEmpty(padContent.Shortcut)) {
 						var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);						
 						foreach(InputGesture gesture in gestures) {
 							CommandsRegistry.RegisterInputBinding(CommandsRegistry.DefaultContext, routedCommandName, gesture);
 						}
 						
-						CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext);
-						
 						item.InputGestureText = "M: " + padContent.Shortcut;
+					} else {
+						item.InputGestureText = "M: ";
 					}
+					
+					CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext);
 					
 //					item.Command = new BringPadToFrontCommand(padContent);
 //					if (!string.IsNullOrEmpty(padContent.Shortcut)) {

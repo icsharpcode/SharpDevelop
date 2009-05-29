@@ -7,15 +7,11 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public class InputBindingDescriptor
 	{
-		private Codon codon;
-		
 		/// <summary>
 		/// Full name of routed UI command which will be invoked when this binding is triggered
 		/// </summary>
 		public string Command {
-			get {
-				return codon.Properties["command"];
-			}
+			get; private set;
 		}
 		
 		/// <summary>
@@ -24,18 +20,14 @@ namespace ICSharpCode.Core
 		/// UI element in which this binding will be valid
 		/// </summary>
 		public string Context {
-			get {
-				return codon.Properties["context"];
-			}
+			get; private set;
 		}
 
 		/// <summary>
 		/// Description of gesture which will trigger this bindin
 		/// </summary>
 		public string Gesture {
-			get {
-				return codon.Properties["gesture"];
-			}
+			get; private set;
 		}
 		
 		/// <summary>
@@ -44,7 +36,9 @@ namespace ICSharpCode.Core
 		/// <param name="codon">Reference to codon used to create this descriptor</param>
 		public InputBindingDescriptor(Codon codon)
 		{
-			this.codon = codon;
+			Command = codon.Properties["command"];
+			Context = codon.Properties["context"];
+			Gesture = codon.Properties["gesture"];
 		}
 	}
 }

@@ -16,10 +16,16 @@ namespace ICSharpCode.SharpDevelop.Commands
 {
 	public class TestCommand : System.Windows.Input.ICommand
 	{
-		public event EventHandler CanExecuteChanged;
+		public event EventHandler CanExecuteChanged
+		{ 
+			add {} 
+			remove {}
+		}
 		
 		public void Execute(object parameter)
 		{
+			CommandsRegistry.GetRoutedUICommand("SDBuildCommands.BuildSolution").Execute(parameter, WorkbenchSingleton.MainWindow);
+			
 			System.Windows.MessageBox.Show("test");
 		}
 		

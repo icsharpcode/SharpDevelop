@@ -41,7 +41,20 @@ namespace ICSharpCode.Core.Presentation
 			foreach(var desc in descriptors) {
 				var contextName = !string.IsNullOrEmpty(desc.Context) ? desc.Context : CommandsRegistry.DefaultContext;
 				
+				// If routed with such name is not registered register routed command with text same as name
+				if(CommandsRegistry.GetRoutedUICommand(desc.Command) == null) {
+					CommandsRegistry.RegisterRoutedUICommand(desc.Command, desc.Command);
+				}
+				
 				CommandsRegistry.RegisterCommandBinding(contextName, desc.Command, desc.Class, desc.Codon.AddIn, desc.Lazy);
+				
+				// If gestures are provided register input binding in the same context
+				if(!string.IsNullOrEmpty(desc.Gestures)) {
+					var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(desc.Gestures);
+					foreach(InputGesture gesture in gestures) {
+						CommandsRegistry.RegisterInputBinding(contextName, desc.Command,  gesture);
+					}
+				}
 			}
 		}
 		

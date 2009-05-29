@@ -41,9 +41,9 @@ namespace ICSharpCode.Core.Presentation
 		public static RoutedUICommand GetRoutedUICommand(string routedCommandName) {
 			if(routedCommands.ContainsKey(routedCommandName)) {
 				return routedCommands[routedCommandName];
-			} else {
-				throw new IndexOutOfRangeException("Routed UI command with name " + routedCommandName + " was not found");
 			}
+			
+			return null;
 		}
 
 		/// <summary>
@@ -277,7 +277,15 @@ namespace ICSharpCode.Core.Presentation
 			foreach(var binding in commandBindings) {
 				if(binding.AddIn != addIn) continue;
 				
-				LoadCommand(binding.ClassName, addIn.CreateObject(binding.ClassName));
+				if(!commands.ContainsKey(binding.ClassName)){
+					var command = addIn.CreateObject(binding.ClassName);
+					var wpfCommand = command as System.Windows.Input.ICommand;
+					if(wpfCommand == null) {
+						wpfCommand = new WpfCommandWrapper((ICSharpCode.Core.ICommand)command);
+					}
+				
+					commands.Add(binding.ClassName, wpfCommand);
+				}
 			}
 		}
 		
@@ -292,8 +300,11 @@ namespace ICSharpCode.Core.Presentation
 				wpfCommand = new WpfCommandWrapper((ICSharpCode.Core.ICommand)command);
 			}
 			
-			commands.Add(commandName, wpfCommand);
+			if(!commands.ContainsKey(commandName)) {
+				commands.Add(commandName, wpfCommand);
+			}
 		}
+		
 		
 		/// <summary>
 		/// Load context
