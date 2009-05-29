@@ -28,30 +28,36 @@ namespace Debugger.AddIn.Visualizers.Graph
     /// </summary>
     public partial class VisualizerWPFWindow : Window
     {
-    	private WindowsDebugger _debuggerService;
+    	private WindowsDebugger debuggerService;
     	private EnumViewModel<LayoutDirection> layoutViewModel;
     	private ObjectGraph objectGraph;
+    	
+    	private PositionedGraph oldGraph;
+    	private PositionedGraph currentGraph;
+    	private GraphDrawer graphDrawer;
 
         public VisualizerWPFWindow()
         {
             InitializeComponent();
             
-        	_debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
-			if (_debuggerService == null)
+        	debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
+			if (debuggerService == null)
 				throw new ApplicationException("Only windows debugger is currently supported");
 				
-			_debuggerService.IsProcessRunningChanged += new EventHandler(debuggerService_IsProcessRunningChanged);
-			_debuggerService.DebugStopped += new EventHandler(_debuggerService_DebugStopped);
+			debuggerService.IsProcessRunningChanged += new EventHandler(debuggerService_IsProcessRunningChanged);
+			debuggerService.DebugStopped += new EventHandler(_debuggerService_DebugStopped);
 			
 			this.layoutViewModel = new EnumViewModel<LayoutDirection>();
             this.layoutViewModel.PropertyChanged += new PropertyChangedEventHandler(layoutViewModel_PropertyChanged);
             this.DataContext = this.layoutViewModel;
+            
+            this.graphDrawer = new GraphDrawer(this.canvas);
 		}
 		
 		public void debuggerService_IsProcessRunningChanged(object sender, EventArgs e)
 		{
 			// on step or breakpoint hit
-			if (!_debuggerService.IsProcessRunning)
+			if (!debuggerService.IsProcessRunning)
 			{
 				refreshGraph();
 			}
@@ -59,7 +65,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public void _debuggerService_DebugStopped(object sender, EventArgs e)
 		{
-			_debuggerService.IsProcessRunningChanged -= new EventHandler(debuggerService_IsProcessRunningChanged);
+			debuggerService.IsProcessRunningChanged -= new EventHandler(debuggerService_IsProcessRunningChanged);
 			this.Close();
 		}
         
@@ -78,11 +84,12 @@ namespace Debugger.AddIn.Visualizers.Graph
         
         void refreshGraph()
 		{
-			ObjectGraphBuilder graphBuilder = new ObjectGraphBuilder(_debuggerService);
+			ObjectGraphBuilder graphBuilder = new ObjectGraphBuilder(debuggerService);
 			this.objectGraph = null;
 			
 			try
 			{	
+				ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Building graph for expression: " + txtExpression.Text);
 				this.objectGraph = graphBuilder.BuildGraphForExpression(txtExpression.Text);
 			}
 			catch(DebuggerVisualizerException ex)
@@ -104,10 +111,15 @@ namespace Debugger.AddIn.Visualizers.Graph
         
         void layoutGraph(ObjectGraph graph)
         {
+        	ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Calculating graph layout");
         	Layout.TreeLayouter layouter = new Layout.TreeLayouter();
-			Layout.PositionedGraph posGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue);
+        	
+            this.oldGraph = this.currentGraph;
+			this.currentGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue);
 			
-			GraphDrawer.Draw(posGraph, canvas);
+			var graphDiff = new GraphMatcher().MatchGraphs(oldGraph, currentGraph);
+			this.graphDrawer.StartAnimation(oldGraph, currentGraph, graphDiff);
+			//this.graphDrawer.Draw(currentGraph);
         }
 		
 		void guiHandleException(System.Exception ex)

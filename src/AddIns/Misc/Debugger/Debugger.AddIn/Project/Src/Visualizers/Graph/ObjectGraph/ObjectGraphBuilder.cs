@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Services;
 using Debugger;
 using Debugger.MetaData;
-using Debugger.Wrappers.CorDebug;
 using Debugger.Expressions;
 using Debugger.AddIn.Visualizers.Graph.Utils;
 
@@ -159,10 +158,11 @@ namespace Debugger.AddIn.Visualizers.Graph
 		private ObjectNode createNewNode(Value permanentReference)
 		{
 			ObjectNode newNode = new ObjectNode();
+			newNode.HashCode = invokeGetHashCode(permanentReference);
 			
 			resultGraph.AddNode(newNode);
 			// remember this node's hashcode for quick lookup
-			objectNodesForHashCode.Add(invokeGetHashCode(permanentReference), newNode);
+			objectNodesForHashCode.Add(newNode.HashCode, newNode);
 			
 			// permanent reference to the object this node represents is useful for graph building, 
 			// and matching nodes in animations
@@ -189,9 +189,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 			{
 				// if there is a node with same hash code, check if it has also the same address
 				// (hash codes are not uniqe - http://stackoverflow.com/questions/750947/-net-unique-object-identifier)
-				ulong objectAddress = getObjectValue(value);
+				ulong objectAddress = value.GetObjectAddress();
 				ObjectNode nodeWithSameAddress = nodesWithSameHashCode.Find(
-					node => { return objectAddress == getObjectValue(node.PermanentReference); } );
+					node => { return objectAddress == node.PermanentReference.GetObjectAddress(); } );
 				return nodeWithSameAddress;
 			}
 		}
@@ -239,7 +239,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			return (!typeOfValue.IsClass) || typeOfValue.IsString;
 		}
 		
-		#region helpers
+		#region Expression helpers
 			
 		private Value getPermanentReference(Expression expr)
 		{
@@ -258,13 +258,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		private ulong getObjectAddress(Expression expr)
 		{
-			return getObjectValue(expr.Evaluate(debuggerService.DebuggedProcess));
-		}
-		
-		private ulong getObjectValue(Value val)
-		{
-			ICorDebugReferenceValue refVal = val.CorValue.CastTo<ICorDebugReferenceValue>();
-			return refVal.Value;
+			return expr.Evaluate(debuggerService.DebuggedProcess).GetObjectAddress();
 		}
 		
 		#endregion

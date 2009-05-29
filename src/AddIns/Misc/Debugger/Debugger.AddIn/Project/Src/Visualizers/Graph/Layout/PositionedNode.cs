@@ -12,13 +12,20 @@ using System.Windows;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Node with position information.
+	/// Node with added position information.
 	/// </summary>
 	public class PositionedNode
 	{
-		public PositionedNode(NodeControl nodeVisualControl)
+		private ObjectNode objectNode;
+		public ObjectNode ObjectNode
+		{
+			get { return objectNode; }
+		}
+		
+		public PositionedNode(NodeControl nodeVisualControl, ObjectNode objectNode)
 		{
 			this.nodeVisualControl = nodeVisualControl;
+			this.objectNode = objectNode;
 		}
 		
 		public double Left { get; set; }
