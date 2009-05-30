@@ -91,18 +91,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			// Register context and load all commands from addin
 			CommandsRegistry.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
-				
+			
 			CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContext, delegate {
-																	var bindings = CommandsRegistry.GetCommandBindings(CommandsRegistry.DefaultContext, null, null);
-																	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
-																	CommandBindings.AddRange(bindings);
-																});
-				
+			                                                      	var bindings = CommandsRegistry.GetCommandBindings(CommandsRegistry.DefaultContext, null, null);
+			                                                      	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
+			                                                      	CommandBindings.AddRange(bindings);
+			                                                      });
+			
 			CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContext, delegate {
-																	var bindings = CommandsRegistry.GetInputBindings(CommandsRegistry.DefaultContext, null, null);
-																	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
-																	InputBindings.AddRange(bindings);
-																});
+			                                                   	var bindings = CommandsRegistry.GetInputBindings(CommandsRegistry.DefaultContext, null, null);
+			                                                   	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
+			                                                   	InputBindings.AddRange(bindings);
+			                                                   });
 			
 			CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext);
 			CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext);
@@ -159,12 +159,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public ICollection<IViewContent> ViewContentCollection {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				return WorkbenchWindowCollection.SelectMany(w => w.ViewContents).ToList().AsReadOnly();
 			}
 		}
 		
 		public ICollection<IViewContent> PrimaryViewContents {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				return (from window in WorkbenchWindowCollection
 				        where window.ViewContents.Count > 0
 				        select window.ViewContents[0]
@@ -174,6 +176,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				if (workbenchLayout != null)
 					return workbenchLayout.WorkbenchWindows;
 				else
@@ -183,6 +186,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IList<PadDescriptor> PadContentCollection {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				return padDescriptorCollection.AsReadOnly();
 			}
 		}
@@ -191,6 +195,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				return activeWorkbenchWindow;
 			}
 			private set {
@@ -245,7 +250,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		IViewContent activeViewContent;
 		
 		public IViewContent ActiveViewContent {
-			get { return activeViewContent; }
+			get {
+				WorkbenchSingleton.AssertMainThread();
+				return activeViewContent;
+			}
 			private set {
 				if (activeViewContent != value) {
 					activeViewContent = value;
@@ -260,7 +268,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		object activeContent;
 		
 		public object ActiveContent {
-			get { return activeContent; }
+			get {
+				WorkbenchSingleton.AssertMainThread();
+				return activeContent;
+			}
 			private set {
 				if (activeContent != value) {
 					activeContent = value;
@@ -279,6 +290,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return workbenchLayout;
 			}
 			set {
+				WorkbenchSingleton.AssertMainThread();
+				
 				if (workbenchLayout != null) {
 					workbenchLayout.ActiveContentChanged -= OnActiveWindowChanged;
 					workbenchLayout.Detach();
@@ -305,6 +318,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowView(IViewContent content, bool switchToOpenedView)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			if (content == null)
 				throw new ArgumentNullException("content");
 			System.Diagnostics.Debug.Assert(WorkbenchLayout != null);
@@ -319,6 +333,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowPad(PadDescriptor content)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			if (content == null)
 				throw new ArgumentNullException("content");
 			if (padDescriptorCollection.Contains(content))
@@ -337,6 +352,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public PadDescriptor GetPad(Type type)
 		{
+			WorkbenchSingleton.AssertMainThread();
+			if (type == null)
+				throw new ArgumentNullException("type");
 			foreach (PadDescriptor pad in PadContentCollection) {
 				if (pad.Class == type.FullName) {
 					return pad;
@@ -352,6 +370,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void CloseAllViews()
 		{
+			WorkbenchSingleton.AssertMainThread();
 			try {
 				closeAll = true;
 				foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {

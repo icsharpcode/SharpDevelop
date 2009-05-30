@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Core.Presentation</RootNamespace>
     <AssemblyName>ICSharpCode.Core.Presentation</AssemblyName>
-    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
     <OutputPath>..\..\..\bin\</OutputPath>
@@ -51,6 +51,9 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -74,6 +77,7 @@
     <Compile Include="CommandsService\ManagedInputBinding.cs" />
     <Compile Include="CommandsService\WpfCommandWrapper.cs" />
     <Compile Include="ConditionalSeparator.cs" />
+    <Compile Include="DropDownButton.cs" />
     <Compile Include="GetBitmapExtension.cs" />
     <Compile Include="IStatusUpdate.cs" />
     <Compile Include="LocalizeExtension.cs" />
@@ -88,6 +92,7 @@
     <Compile Include="SplitButton.cs" />
     <Compile Include="ToolBar\ToolBarButton.cs" />
     <Compile Include="ToolBar\ToolBarComboBox.cs" />
+    <Compile Include="ToolBar\ToolBarDropDownButton.cs" />
     <Compile Include="ToolBar\ToolBarService.cs" />
     <Compile Include="ToolBar\ToolBarSplitButton.cs" />
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />

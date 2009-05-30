@@ -157,13 +157,16 @@
     </Compile>
     <Compile Include="Src\Gui\IImage.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
+    <Compile Include="Src\Gui\Pads\SearchResultPad\ISearchResult.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchFolderNode.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchResultNode.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchRootNode.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\ProvidedDocumentInformation.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResult.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultMatch.cs" />
+    <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPadToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPanel.cs" />
+    <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPad.cs" />
     <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPanelToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />

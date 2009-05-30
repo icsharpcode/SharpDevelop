@@ -72,10 +72,9 @@ namespace ICSharpCode.Core.Presentation
 					return "Label";
 					//return new ToolBarLabel(codon, caller);
 				case "DropDownButton":
-					return "DropDownButton";
-					//return new ToolBarDropDownButton(codon, caller, MenuService.CreateMenuItems(descriptor.SubItems));
+					return new ToolBarDropDownButton(codon, caller, MenuService.CreateUnexpandedMenuItems(null, descriptor.SubItems));
 				case "SplitButton":
-					return new ToolBarSplitButton(codon, caller, MenuService.CreateMenuItems(null, descriptor.SubItems));
+					return new ToolBarSplitButton(codon, caller, MenuService.CreateUnexpandedMenuItems(null, descriptor.SubItems));
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:
@@ -86,6 +85,7 @@ namespace ICSharpCode.Core.Presentation
 		static ToolBar CreateToolBar(object owner, AddInTreeNode treeNode)
 		{
 			ToolBar tb = new ToolBar();
+			ToolBarTray.SetIsLocked(tb, true);
 			tb.ItemsSource = CreateToolBarItems(treeNode.BuildChildItems<ToolbarItemDescriptor>(owner));
 			UpdateStatus(tb.ItemsSource); // setting Visible is only possible after the items have been added
 			//new LanguageChangeWatcher(toolStrip);

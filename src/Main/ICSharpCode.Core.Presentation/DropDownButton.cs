@@ -10,29 +10,28 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// A button that is split into two parts: the left part works like a normal button, the right part opens a drop-down menu when it is clicked.
+	/// A button that opens a drop-down menu when clicked.
 	/// </summary>
-	public class SplitButton : ButtonBase
+	public class DropDownButton : ButtonBase
 	{
 		public static readonly DependencyProperty DropDownMenuProperty
-			= DropDownButton.DropDownMenuProperty.AddOwner(typeof(SplitButton));
+			= DependencyProperty.Register("DropDownMenu", typeof(ContextMenu),
+			                              typeof(DropDownButton), new FrameworkPropertyMetadata(null));
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		protected static readonly DependencyPropertyKey IsDropDownMenuOpenPropertyKey
 			= DependencyProperty.RegisterReadOnly("IsDropDownMenuOpen", typeof(bool),
-			                                      typeof(SplitButton), new FrameworkPropertyMetadata(false));
+			                                      typeof(DropDownButton), new FrameworkPropertyMetadata(false));
 		
 		public static readonly DependencyProperty IsDropDownMenuOpenProperty = IsDropDownMenuOpenPropertyKey.DependencyProperty;
 		
-		static SplitButton()
+		static DropDownButton()
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(SplitButton), new FrameworkPropertyMetadata(typeof(SplitButton)));
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(DropDownButton), new FrameworkPropertyMetadata(typeof(DropDownButton)));
 		}
 		
 		public ContextMenu DropDownMenu {
@@ -45,37 +44,17 @@ namespace ICSharpCode.Core.Presentation
 			protected set { SetValue(IsDropDownMenuOpenPropertyKey, value); }
 		}
 		
-		FrameworkElement dropDownArrow;
-		
-		public override void OnApplyTemplate()
-		{
-			base.OnApplyTemplate();
-			dropDownArrow = (FrameworkElement)Template.FindName("PART_DropDownArrow", this);
-		}
-		
-		bool IsOverDropDownArrow(MouseEventArgs e)
-		{
-			if (dropDownArrow == null)
-				return false;
-			return e.GetPosition(dropDownArrow).X >= 0;
-		}
-		
 		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
-			if (IsOverDropDownArrow(e)) {
-				e.Handled = true;
-				if (DropDownMenu != null) {
-					DropDownMenu.Placement = PlacementMode.Bottom;
-					DropDownMenu.PlacementTarget = this;
-					DropDownMenu.IsOpen = true;
-					DropDownMenu.Closed += DropDownMenu_Closed;
-					this.IsDropDownMenuOpen = true;
-				}
-			} else {
-				base.OnMouseLeftButtonDown(e);
+			if (DropDownMenu != null && !IsDropDownMenuOpen) {
+				DropDownMenu.Placement = PlacementMode.Bottom;
+				DropDownMenu.PlacementTarget = this;
+				DropDownMenu.IsOpen = true;
+				DropDownMenu.Closed += DropDownMenu_Closed;
+				this.IsDropDownMenuOpen = true;
 			}
 		}
-
+		
 		void DropDownMenu_Closed(object sender, RoutedEventArgs e)
 		{
 			((ContextMenu)sender).Closed -= DropDownMenu_Closed;
@@ -84,10 +63,8 @@ namespace ICSharpCode.Core.Presentation
 		
 		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
 		{
-			if (!IsMouseCaptured && IsOverDropDownArrow(e)) {
+			if (!IsMouseCaptured) {
 				e.Handled = true;
-			} else {
-				base.OnMouseLeftButtonUp(e);
 			}
 		}
 	}

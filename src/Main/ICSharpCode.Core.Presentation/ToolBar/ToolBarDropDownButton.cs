@@ -6,32 +6,26 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// A tool bar button based on the AddIn-tree.
+	/// A tool bar button that opens a drop down menu.
 	/// </summary>
-	sealed class ToolBarButton : Button, IStatusUpdate
+	sealed class ToolBarDropDownButton : DropDownButton, IStatusUpdate
 	{
 		readonly Codon codon;
 		readonly object caller;
 		
-		public ToolBarButton(Codon codon, object caller, bool createCommand)
+		public ToolBarDropDownButton(Codon codon, object caller, IList subMenu)
 		{
 			ToolTipService.SetShowOnDisabled(this, true);
 			
 			this.codon = codon;
 			this.caller = caller;
-			
-			if(!string.IsNullOrEmpty(codon.Properties["command"])) {
-				this.Command = CommandsRegistry.GetRoutedUICommand(codon.Properties["command"]);
-			} else {
-				this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
-			}
 			
 			if (codon.Properties.Contains("icon")) {
 				var image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
@@ -41,9 +35,9 @@ namespace ICSharpCode.Core.Presentation
 			} else {
 				this.Content = codon.Id;
 			}
-			UpdateText();
 			
-			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.ButtonStyleKey);
+			this.DropDownMenu = MenuService.CreateContextMenu(subMenu);
+			UpdateText();
 		}
 		
 		public void UpdateText()
