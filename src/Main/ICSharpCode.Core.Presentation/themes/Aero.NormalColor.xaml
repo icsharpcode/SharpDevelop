@@ -2,8 +2,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:ICSharpCode.Core.Presentation"
 >
-	<!-- TODO: these colors don't get used currently - the StaticResource in generic.xaml doesn't pick them up, and DynamicResource doesn't work at all -->
-	<SolidColorBrush x:Key="DropDownButtonActiveBorder" Color="#FF3399FF"/>
-	<SolidColorBrush x:Key="DropDownButtonActiveBackground" Color="#FFC2E0FF"/>
-	<SolidColorBrush x:Key="SplitButtonPressedBackground" Color="#FF99CCFF"/>
+	<SolidColorBrush x:Key="{ComponentResourceKey {x:Type local:DropDownButton}, ActiveBorder}" Color="#FF3399FF"/>
+	<SolidColorBrush x:Key="{ComponentResourceKey {x:Type local:DropDownButton}, ActiveBackground}" Color="#FFC2E0FF"/>
+	<SolidColorBrush x:Key="{ComponentResourceKey {x:Type local:SplitButton}, PressedBackground}" Color="#FF99CCFF"/>
 </ResourceDictionary>
