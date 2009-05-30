@@ -55,6 +55,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets/Sets the foreground color.
 		/// </summary>
 		Color? ForegroundColor { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets an object with additional data for this text marker.
+		/// </summary>
+		object Tag { get; set; }
 	}
 	
 	public interface ITextMarkerService

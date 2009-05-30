@@ -243,6 +243,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\XmlBinding\Project\XmlEditor.csproj">
+      <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>
+      <Name>XmlEditor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Project\WixBinding.csproj">
       <Project>{e1b288a2-08ee-4318-8bbb-8ab72c69e33e}</Project>
       <Name>WixBinding</Name>
@@ -285,10 +289,6 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
     <Folder Include="PackageFiles" />
-    <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
-      <Project>{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}</Project>
-      <Name>XmlEditor</Name>
-    </ProjectReference>
     <Content Include="..\..\..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll">
       <Link>ICSharpCode.SharpDevelop.Dom.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

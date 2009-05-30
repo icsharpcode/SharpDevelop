@@ -113,6 +113,18 @@ namespace ICSharpCode.SharpDevelop.Editor
 					return avalonEditOptions.IndentationString;
 				}
 			}
+			
+			public bool ConvertTabsToSpaces {
+				get {
+					return avalonEditOptions.ConvertTabsToSpaces;
+				}
+			}
+			
+			public int IndendationSize {
+				get {
+					return avalonEditOptions.IndentationSize;
+				}
+			}
 		}
 		
 		public virtual string FileName {

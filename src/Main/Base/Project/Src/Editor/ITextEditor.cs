@@ -88,6 +88,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the text used for one indentation level.
 		/// </summary>
 		string IndentationString { get; }
+		
+		/// <summary>
+		/// Gets if tabs should be converted to spaces.
+		/// </summary>
+		bool ConvertTabsToSpaces { get; }
+		
+		/// <summary>
+		/// Gets the size of an indentation level.
+		/// </summary>
+		int IndendationSize { get; }
 	}
 	
 	public interface ITextEditorCaret

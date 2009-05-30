@@ -66,8 +66,8 @@
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
-      <Project>{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}</Project>
+    <ProjectReference Include="..\..\XmlBinding\Project\XmlEditor.csproj">
+      <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>
       <Name>XmlEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\XamlBinding\XamlBinding.csproj">

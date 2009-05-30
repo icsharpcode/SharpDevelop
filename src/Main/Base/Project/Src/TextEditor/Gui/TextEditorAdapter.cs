@@ -90,6 +90,18 @@ namespace ICSharpCode.SharpDevelop
 					return properties.ConvertTabsToSpaces ? new string(' ', properties.IndentationSize) : "\t";
 				}
 			}
+			
+			public bool ConvertTabsToSpaces {
+				get {
+					return properties.ConvertTabsToSpaces;
+				}
+			}
+			
+			public int IndendationSize {
+				get {
+					return properties.IndentationSize;
+				}
+			}
 		}
 		
 		static ICSharpCode.NRefactory.Location ToLocation(TextLocation position)

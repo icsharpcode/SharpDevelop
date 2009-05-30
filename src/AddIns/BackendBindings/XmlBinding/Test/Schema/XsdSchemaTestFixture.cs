@@ -5,12 +5,13 @@
 //     <version>$Revision: 1334 $</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.XmlEditor;
-using NUnit.Framework;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.IO;
 using System.Xml;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.XmlEditor;
+using NUnit.Framework;
 using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Schema
@@ -28,17 +29,17 @@ namespace XmlEditor.Tests.Schema
 		XmlElementPath enumPath;
 		XmlElementPath allElementPath;
 		XmlElementPath allElementAnnotationPath;
-		ICompletionData[] choiceAttributes;
-		ICompletionData[] elementAttributes;
-		ICompletionData[] simpleEnumElements;
-		ICompletionData[] enumAttributes;
-		ICompletionData[] elementFormDefaultAttributeValues;
-		ICompletionData[] blockDefaultAttributeValues;
-		ICompletionData[] finalDefaultAttributeValues;
-		ICompletionData[] mixedAttributeValues;
-		ICompletionData[] maxOccursAttributeValues;
-		ICompletionData[] allElementChildElements;
-		ICompletionData[] allElementAnnotationChildElements;
+		ICompletionItem[] choiceAttributes;
+		ICompletionItem[] elementAttributes;
+		ICompletionItem[] simpleEnumElements;
+		ICompletionItem[] enumAttributes;
+		ICompletionItem[] elementFormDefaultAttributeValues;
+		ICompletionItem[] blockDefaultAttributeValues;
+		ICompletionItem[] finalDefaultAttributeValues;
+		ICompletionItem[] mixedAttributeValues;
+		ICompletionItem[] maxOccursAttributeValues;
+		ICompletionItem[] allElementChildElements;
+		ICompletionItem[] allElementAnnotationChildElements;
 		
 		string namespaceURI = "http://www.w3.org/2001/XMLSchema";
 		string prefix = "xs";

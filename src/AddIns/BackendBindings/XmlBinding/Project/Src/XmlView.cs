@@ -392,8 +392,13 @@ namespace ICSharpCode.XmlEditor
 		static XmlTextWriter CreateXmlTextWriter(TextWriter textWriter, ITextEditor editor)
 		{
 			XmlTextWriter writer = new XmlTextWriter(textWriter);
-			writer.Indentation = editor.Options.IndentationString.Length;
-			writer.IndentChar = (editor.Options.IndentationString.Length > 0) ? editor.Options.IndentationString[0] : ' ';
+			if (editor.Options.ConvertTabsToSpaces) {
+				writer.Indentation = editor.Options.IndendationSize;
+				writer.IndentChar = ' ';
+			} else {
+				writer.Indentation = 1;
+				writer.IndentChar = '\t';
+			}
 			writer.Formatting = Formatting.Indented;
 			return writer;
 		}
