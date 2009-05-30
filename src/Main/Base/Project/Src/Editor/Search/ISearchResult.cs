@@ -6,8 +6,9 @@
 // </file>
 
 using System;
+using System.Collections;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Editor.Search
 {
 	/// <summary>
 	/// Represents the content of the search results pad.
@@ -28,5 +29,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// this method is called.
 		/// </summary>
 		object GetControl();
+		
+		/// <summary>
+		/// Gets the items for the toolbar that are visible only for this search result.
+		/// </summary>
+		IList GetToolbarItems();
 	}
 }

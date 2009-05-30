@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
@@ -22,7 +22,6 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
-using SearchAndReplace;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
@@ -151,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
 				cmd.Tag = c;
 				list.Add(cmd);
-			
+				
 				if (language.RefactoringProvider.SupportsExtractInterface) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.ExtractInterfaceCommand}", ExtractInterface);
 					cmd.Tag = c;
@@ -211,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 			}
 		}
-	
+		
 		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl)
 		{
 			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
@@ -286,19 +285,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IClass c = (IClass)item.Tag;
 			IEnumerable<IClass> derivedClasses = RefactoringService.FindDerivedClasses(c, ParserService.AllProjectContents, false);
 			
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
+			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
+			
 			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			foreach (IClass derivedClass in derivedClasses) {
 				if (derivedClass.CompilationUnit == null) continue;
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				
-				SearchResultMatch res = new SimpleSearchResultMatch(ClassNode.GetText(derivedClass), new Location(derivedClass.Region.BeginColumn, derivedClass.Region.BeginLine));
-				res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
+				ProvidedDocumentInformation documentInfo = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
+				SearchResultMatch res = new SimpleSearchResultMatch(documentInfo, ambience.Convert(derivedClass), new Location(derivedClass.Region.BeginColumn, derivedClass.Region.BeginLine));
 				results.Add(res);
 			}
-			SearchResultPanel.Instance.ShowSearchResults(new SearchResult(
+			SearchResultsPad.Instance.ShowSearchResults(
 				StringParser.Parse("${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new string[,] {{ "Name", c.Name }}),
 				results
-			));
+			);
+			SearchResultsPad.Instance.BringToFront();
 		}
 		
 		void FindReferences(object sender, EventArgs e)

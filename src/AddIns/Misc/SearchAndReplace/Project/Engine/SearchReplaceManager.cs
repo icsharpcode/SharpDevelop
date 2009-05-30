@@ -5,13 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;

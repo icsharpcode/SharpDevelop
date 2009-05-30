@@ -227,7 +227,7 @@
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.SearchResultsLabel}"
 		     icon     = "PadIcons.FindResults"
-		     class    = "ICSharpCode.SharpDevelop.Gui.SearchResultPad"
+		     class    = "ICSharpCode.SharpDevelop.Editor.Search.SearchResultsPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id       = "Bookmarks"
@@ -2190,15 +2190,16 @@
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.FindIcon"
 		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.ShowLast.ToolTip}">
-			<MenuItem id="RecentList" type="Builder" class="ICSharpCode.SharpDevelop.Gui.LastSearchResultsBuilder"/>
+			<MenuItem id="RecentList" type="Builder" class="ICSharpCode.SharpDevelop.Editor.Search.LastSearchResultsBuilder"/>
 			<MenuItem id="Separator" type="Separator"/>
 			<MenuItem id="ClearRecentList"
 			          type="Item"
 			          label="${res:MainWindow.Windows.SearchResultPanel.ClearHistory}"
-			          class="ICSharpCode.SharpDevelop.Gui.ClearSearchResultsList" />
+			          class="ICSharpCode.SharpDevelop.Editor.Search.ClearSearchResultsList" />
 		</ToolbarItem>
 	</Path>
 	
+	<!--
 	<Path name = "/SharpDevelop/Pads/SearchResultPanel/Toolbar">
 		<Condition name = "Ownerstate" ownerstate = "DefaultMode" action = "Exclude">
 			<ToolbarItem id      = "ExpandAll"
@@ -2227,6 +2228,7 @@
 			             class   = "SearchAndReplace.SelectViewMode"/>
 		</Condition>
 	</Path>
+	-->
 	
 	<Path name = "/Workspace/Icons">
 		<!-- Resources -->

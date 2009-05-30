@@ -87,8 +87,16 @@
     <Compile Include="Engine\TextIterator\ForwardTextIteratorBuilder.cs" />
     <Compile Include="Engine\TextIterator\ITextIterator.cs" />
     <Compile Include="Engine\TextSelection.cs" />
+    <Compile Include="Gui\DefaultSearchResult.cs" />
+    <Compile Include="Gui\ResultsTreeView.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>ResultsTreeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Gui\SearchAndReplaceDialog.cs" />
     <Compile Include="Gui\SearchAndReplacePanel.cs" />
+    <Compile Include="Gui\SearchNode.cs" />
+    <Compile Include="Gui\SearchResultNode.cs" />
+    <Compile Include="Gui\SearchRootNode.cs" />
     <Compile Include="SearchOptions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -124,5 +132,7 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Page Include="Gui\ResultsTreeView.xaml">
+    </Page>
   </ItemGroup>
 </Project>

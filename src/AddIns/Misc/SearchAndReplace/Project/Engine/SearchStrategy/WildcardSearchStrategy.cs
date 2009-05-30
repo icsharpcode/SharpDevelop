@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace SearchAndReplace
 {

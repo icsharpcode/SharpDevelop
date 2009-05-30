@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections;
 using System.IO;
@@ -13,6 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace

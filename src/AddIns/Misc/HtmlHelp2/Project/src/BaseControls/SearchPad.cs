@@ -1,3 +1,4 @@
+using ICSharpCode.SharpDevelop.Editor.Search;
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
@@ -327,9 +328,10 @@ namespace HtmlHelp2
 				{
 					searchResults.SearchResultsListView.EndUpdate();
 					searchResults.SetStatusMessage(searchTerm.Text);
-					SearchAndReplace.SearchResultPanel.Instance.ShowSearchResults(
-						new SearchAndReplace.SearchResult(searchTerm.Text, searchResults)
+					SearchResultsPad.Instance.ShowSearchResults(
+						new HelpSearchResult(searchTerm.Text, searchResults)
 					);
+					SearchResultsPad.Instance.BringToFront();
 					searchIsBusy = false;
 				}
 			}
@@ -379,5 +381,31 @@ namespace HtmlHelp2
 			useCurrentLang.Checked = false;
 		}
 		#endregion
+	}
+	
+	sealed class HelpSearchResult : ISearchResult
+	{
+		string searchTerm;
+		HtmlHelp2SearchResultsView view;
+		
+		public HelpSearchResult(string searchTerm, HtmlHelp2SearchResultsView view)
+		{
+			this.searchTerm = searchTerm;
+			this.view = view;
+		}
+		
+		public string Text {
+			get { return searchTerm; }
+		}
+		
+		public object GetControl()
+		{
+			return view;
+		}
+		
+		public System.Collections.IList GetToolbarItems()
+		{
+			return null;
+		}
 	}
 }

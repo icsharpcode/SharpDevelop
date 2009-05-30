@@ -5,13 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
-using System.Drawing;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
-namespace SearchAndReplace
+namespace ICSharpCode.SharpDevelop.Editor.Search
 {
 	public class SearchResultMatch
 	{
@@ -19,15 +16,13 @@ namespace SearchAndReplace
 		int    offset;
 		int    length;
 		
+		public ProvidedDocumentInformation ProvidedDocumentInformation {
+			set { providedDocumentInformation = value; }
+		}
+		
 		public string FileName {
 			get {
 				return providedDocumentInformation.FileName;
-			}
-		}
-		
-		public ProvidedDocumentInformation ProvidedDocumentInformation {
-			set {
-				providedDocumentInformation = value;
 			}
 		}
 		
@@ -59,6 +54,19 @@ namespace SearchAndReplace
 				throw new ArgumentOutOfRangeException("length");
 			if (offset < 0)
 				throw new ArgumentOutOfRangeException("offset");
+			this.offset   = offset;
+			this.length   = length;
+		}
+		
+		public SearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, int offset, int length)
+		{
+			if (providedDocumentInformation == null)
+				throw new ArgumentNullException("providedDocumentInformation");
+			if (length < 0)
+				throw new ArgumentOutOfRangeException("length");
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException("offset");
+			this.providedDocumentInformation = providedDocumentInformation;
 			this.offset   = offset;
 			this.length   = length;
 		}
@@ -112,7 +120,8 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public SimpleSearchResultMatch(string displayText, Location position) : base(0, 0)
+		public SimpleSearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, string displayText, Location position)
+			: base(providedDocumentInformation, 0, 0)
 		{
 			this.position = position;
 			this.displayText = displayText;

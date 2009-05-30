@@ -25,7 +25,7 @@
 		<CommandBinding command="SDSearchAndReplace.FindNextSelected" class="SearchAndReplace.FindNextSelected" lazy="true" gestures="Ctrl+F3" />
 		<CommandBinding command="SDSearchAndReplace.Replace" class="SearchAndReplace.Replace" lazy="true" gestures="Ctrl+R" />
 	</Path>
-		<!-- Commands registry test -->
+	<!-- Commands registry test -->
 	
 	<Path name="/SharpDevelop/Workbench/GesturePlaceHolder">
 		<GesturesPlaceHolder name="SDSearchAndReplace.Find" text="Find next" gestures="Ctrl+F" />
@@ -38,20 +38,20 @@
 		          label = "${res:XML.MainMenu.SearchMenu.Find}"
 		          icon = "Icons.16x16.FindIcon"
 		          shortcut = "Ctrl+F"
-		          class = "SearchAndReplace.Find" 
+		          class = "SearchAndReplace.Find"
 		          command="SDSearchAndReplace.Find" />
 		<MenuItem id = "FindNext"
 		          insertafter = "Find"
 		          label = "${res:XML.MainMenu.SearchMenu.FindNext}"
 		          icon = "Icons.16x16.FindNextIcon"
 		          shortcut = "F3"
-		          class = "SearchAndReplace.FindNext" 
+		          class = "SearchAndReplace.FindNext"
 		          command="SDSearchAndReplace.FindNext" />
 		<MenuItem id = "FindNextSelected"
 		          insertafter = "FindNext"
 		          label = "${res:XML.MainMenu.SearchMenu.FindNextSelected}"
 		          shortcut = "Ctrl+F3"
-		          class = "SearchAndReplace.FindNextSelected" 
+		          class = "SearchAndReplace.FindNextSelected"
 		          command="SDSearchAndReplace.FindNextSelected" />
 		<MenuItem id = "Replace"
 		          insertbefore = "SearchIncremental"
@@ -59,7 +59,7 @@
 		          label = "${res:XML.MainMenu.SearchMenu.Replace}"
 		          icon = "Icons.16x16.ReplaceIcon"
 		          shortcut = "Ctrl+R"
-		          class = "SearchAndReplace.Replace" 
+		          class = "SearchAndReplace.Replace"
 		          command="SDSearchAndReplace.Replace" />
 	</Path>
 	
@@ -97,5 +97,9 @@
 		<String text=".exe"/>
 		<String text=".dll"/>
 		<String text=".pdb"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/SearchResultPad/Factories">
+		<Class id="DefaultSearchResultFactory" class="SearchAndReplace.DefaultSearchResultFactory"/>
 	</Path>
 </AddIn>

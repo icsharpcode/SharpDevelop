@@ -5,14 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
 
-namespace SearchAndReplace
+namespace ICSharpCode.SharpDevelop.Editor.Search
 {
 	public class ProvidedDocumentInformation
 	{

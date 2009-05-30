@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Document;
-using SearchAndReplace.Tests.Utils;
 using NUnit.Framework;
 using SearchAndReplace;
+using SearchAndReplace.Tests.Utils;
 
 namespace SearchAndReplace.Tests
 {

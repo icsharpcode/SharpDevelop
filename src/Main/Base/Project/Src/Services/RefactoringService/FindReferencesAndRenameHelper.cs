@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,9 +16,9 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using SearchAndReplace;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -359,16 +359,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (list == null) return;
 			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
 			foreach (Reference r in list) {
-				SearchResultMatch res = new SearchResultMatch(r.Offset, r.Length);
-				res.ProvidedDocumentInformation = GetDocumentInformation(r.FileName);
+				SearchResultMatch res = new SearchResultMatch(GetDocumentInformation(r.FileName), r.Offset, r.Length);
 				results.Add(res);
 			}
-			SearchResultPanel.Instance.ShowSearchResults(new SearchResult(pattern, results));
+			SearchResultsPad.Instance.ShowSearchResults(pattern, results);
+			SearchResultsPad.Instance.BringToFront();
 		}
 		
 		sealed class FileView {
-			public IViewContent ViewContent { get; set; }
-			public OpenedFile OpenedFile { get; set; }
+			public IViewContent ViewContent;
+			public OpenedFile OpenedFile;
 		}
 		
 		public static void RenameReferences(List<Reference> list, string newName)

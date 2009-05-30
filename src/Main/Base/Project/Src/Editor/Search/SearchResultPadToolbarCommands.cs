@@ -8,24 +8,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Controls;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using System.Windows.Controls;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Editor.Search
 {
 	public class LastSearchResultsBuilder : IMenuItemBuilder
 	{
 		public ICollection BuildItems(Codon codon, object owner)
 		{
 			List<object> items = new List<object>();
-			foreach (ISearchResult searchResult in SearchResultPad.Instance.LastSearches) {
+			foreach (ISearchResult searchResult in SearchResultsPad.Instance.LastSearches) {
 				MenuItem menuItem = new MenuItem();
 				menuItem.Header = searchResult.Text;
 				// copy in local variable so that lambda refers to correct loop iteration
 				ISearchResult searchResultCopy = searchResult;
-				menuItem.Click += (sender, e) => SearchResultPad.Instance.ShowSearchResults(searchResultCopy);
+				menuItem.Click += (sender, e) => SearchResultsPad.Instance.ShowSearchResults(searchResultCopy);
 				items.Add(menuItem);
 			}
 			return items;
@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override void Run()
 		{
-			SearchResultPad.Instance.ClearLastSearchesList();
+			SearchResultsPad.Instance.ClearLastSearchesList();
 		}
 	}
 }
