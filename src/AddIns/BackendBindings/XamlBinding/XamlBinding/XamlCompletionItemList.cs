@@ -139,9 +139,9 @@ namespace ICSharpCode.XamlBinding
 					
 					if (viewContent != null || document != null) {
 						if (lastMember != null)
-							unit.ProjectContent.Language.CodeGenerator.InsertCodeAfter(lastMember, document.GetDocumentForFile(viewContent.PrimaryFile), node);
+							unit.ProjectContent.Language.CodeGenerator.InsertCodeAfter(lastMember, new RefactoringDocumentAdapter(document.GetDocumentForFile(viewContent.PrimaryFile)), node);
 						else
-							unit.ProjectContent.Language.CodeGenerator.InsertCodeAtEnd(part.Region, document.GetDocumentForFile(viewContent.PrimaryFile), node);
+							unit.ProjectContent.Language.CodeGenerator.InsertCodeAtEnd(part.Region, new RefactoringDocumentAdapter(document.GetDocumentForFile(viewContent.PrimaryFile)), node);
 					}
 					return;
 				}

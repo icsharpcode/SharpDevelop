@@ -5,22 +5,23 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
 using SearchAndReplace;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
@@ -223,7 +224,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					EventHandler eh = delegate {
 						var d = FindReferencesAndRenameHelper.GetDocument(c);
 						if (d != null)
-							codeGen.ImplementInterface(rtCopy, d, explicitImpl, c);
+							codeGen.ImplementInterface(rtCopy, new RefactoringDocumentAdapter(d), explicitImpl, c);
 						ParserService.ParseCurrentViewContent();
 					};
 					subItems.Add(new MenuCommand(ambience.Convert(interf), eh));

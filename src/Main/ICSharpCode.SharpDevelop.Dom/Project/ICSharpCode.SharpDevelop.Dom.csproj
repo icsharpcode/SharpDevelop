@@ -172,7 +172,7 @@
     <Compile Include="Src\ProjectContent\ParseInformation.cs" />
     <Compile Include="Src\HostCallback.cs" />
     <Compile Include="Src\Refactoring\CodeGenerator.cs" />
-    <Compile Include="Src\Refactoring\IDocument.cs" />
+    <Compile Include="Src\Refactoring\IRefactoringDocument.cs" />
     <Compile Include="Src\ClassFinder.cs" />
     <Compile Include="Src\Refactoring\NRefactoryCodeGenerator.cs" />
     <Compile Include="Src\Refactoring\RefactoringProvider.cs" />

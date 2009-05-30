@@ -8,14 +8,14 @@
 using ICSharpCode.NRefactory;
 using System;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 {
 	/// <summary>
 	/// A document representing a source code file for refactoring.
 	/// Line and column counting starts at 1.
 	/// Offset counting starts at 0.
 	/// </summary>
-	public interface IDocument : IServiceProvider
+	public interface IRefactoringDocument : IServiceProvider
 	{
 		/// <summary>
 		/// Gets the total text length.
@@ -44,12 +44,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the document line with the specified number.
 		/// </summary>
 		/// <param name="lineNumber">The number of the line to retrieve. The first line has number 1.</param>
-		IDocumentLine GetLine(int lineNumber);
+		IRefactoringDocumentLine GetLine(int lineNumber);
 		
 		/// <summary>
 		/// Gets the document line that contains the specified offset.
 		/// </summary>
-		IDocumentLine GetLineForOffset(int offset);
+		IRefactoringDocumentLine GetLineForOffset(int offset);
 		
 		int PositionToOffset(int line, int column);
 		Location OffsetToPosition(int offset);
@@ -92,17 +92,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// </summary>
 		/// <returns>An object that closes the undo group when Dispose() is called.</returns>
 		IDisposable OpenUndoGroup();
-		
-		/// <summary>
-		/// Creates a new text anchor at the specified position.
-		/// </summary>
-		ITextAnchor CreateAnchor(int offset);
 	}
 	
 	/// <summary>
-	/// A line inside a <see cref="IDocument"/>.
+	/// A line inside a <see cref="IRefactoringDocument"/>.
 	/// </summary>
-	public interface IDocumentLine
+	public interface IRefactoringDocumentLine
 	{
 		/// <summary>
 		/// Gets the starting offset of the line in the document's text.
@@ -135,71 +130,5 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the text on this line.
 		/// </summary>
 		string Text { get; }
-	}
-	
-	public interface ITextAnchor
-	{
-		/// <summary>
-		/// Gets the text location of this anchor.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">Thrown when trying to get the Offset from a deleted anchor.</exception>
-		Location Location { get; }
-		
-		/// <summary>
-		/// Gets the offset of the text anchor.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">Thrown when trying to get the Offset from a deleted anchor.</exception>
-		int Offset { get; }
-		
-		/// <summary>
-		/// Controls how the anchor moves.
-		/// </summary>
-		AnchorMovementType MovementType { get; set; }
-		
-		/// <summary>
-		/// Specifies whether the anchor survives deletion of the text containing it.
-		/// <c>false</c>: The anchor is deleted when the a selection that includes the anchor is deleted.
-		/// <c>true</c>: The anchor is not deleted.
-		/// </summary>
-		bool SurviveDeletion { get; set; }
-		
-		/// <summary>
-		/// Gets whether the anchor was deleted.
-		/// </summary>
-		bool IsDeleted { get; }
-		
-		/// <summary>
-		/// Occurs after the anchor was deleted.
-		/// </summary>
-		event EventHandler Deleted;
-		
-		/// <summary>
-		/// Gets the line number of the anchor.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">Thrown when trying to get the Offset from a deleted anchor.</exception>
-		int Line { get; }
-		
-		/// <summary>
-		/// Gets the column number of this anchor.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">Thrown when trying to get the Offset from a deleted anchor.</exception>
-		int Column { get; }
-	}
-	
-	/// <summary>
-	/// Defines how a text anchor moves.
-	/// </summary>
-	public enum AnchorMovementType
-	{
-		/// <summary>
-		/// Behaves like a start marker - when text is inserted at the anchor position, the anchor will stay
-		/// before the inserted text.
-		/// </summary>
-		BeforeInsertion,
-		/// <summary>
-		/// Behave like an end marker - when text is insered at the anchor position, the anchor will move
-		/// after the inserted text.
-		/// </summary>
-		AfterInsertion
 	}
 }

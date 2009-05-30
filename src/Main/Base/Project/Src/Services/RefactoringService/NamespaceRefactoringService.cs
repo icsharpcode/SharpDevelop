@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				PutEmptyLineAfterLastSystemNamespace(newUsings);
 			}
 			
-			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(document, cu.UsingScope.Usings, newUsings);
+			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new RefactoringDocumentAdapter(document), cu.UsingScope.Usings, newUsings);
 		}
 		
 		static void PutEmptyLineAfterLastSystemNamespace(List<IUsing> newUsings)
@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (sortExistingUsings) {
 				PutEmptyLineAfterLastSystemNamespace(newUsings);
 			}
-			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(document, cu.UsingScope.Usings, newUsings);
+			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new RefactoringDocumentAdapter(document), cu.UsingScope.Usings, newUsings);
 		}
 	}
 }

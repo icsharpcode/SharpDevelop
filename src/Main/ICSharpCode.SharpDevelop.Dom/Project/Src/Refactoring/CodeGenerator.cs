@@ -11,7 +11,6 @@ using System.Text;
 
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.AstBuilder;
-using ICSharpCode.SharpDevelop.Editor;
 using NR = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.Dom.Refactoring
@@ -252,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		}
 		
 		#region Code generation / insertion
-		public virtual void InsertCodeAfter(IMember member, IDocument document, params AbstractNode[] nodes)
+		public virtual void InsertCodeAfter(IMember member, IRefactoringDocument document, params AbstractNode[] nodes)
 		{
 			if (member is IMethodOrProperty) {
 				InsertCodeAfter(((IMethodOrProperty)member).BodyRegion.EndLine, document,
@@ -263,19 +262,19 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			}
 		}
 		
-		public virtual void InsertCodeAtEnd(DomRegion region, IDocument document, params AbstractNode[] nodes)
+		public virtual void InsertCodeAtEnd(DomRegion region, IRefactoringDocument document, params AbstractNode[] nodes)
 		{
 			InsertCodeAfter(region.EndLine - 1, document,
 			                GetIndentation(document, region.BeginLine) + options.IndentString, nodes);
 		}
 		
-		public virtual void InsertCodeInClass(IClass c, IDocument document, int targetLine, params AbstractNode[] nodes)
+		public virtual void InsertCodeInClass(IClass c, IRefactoringDocument document, int targetLine, params AbstractNode[] nodes)
 		{
 			InsertCodeAfter(targetLine, document,
 			                GetIndentation(document, c.Region.BeginLine) + options.IndentString, false, nodes);
 		}
 		
-		protected string GetIndentation(IDocument document, int line)
+		protected string GetIndentation(IRefactoringDocument document, int line)
 		{
 			string lineText = document.GetLine(line).Text;
 			return lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
@@ -285,7 +284,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		/// Generates code for <paramref name="nodes"/> and inserts it into <paramref name="document"/>
 		/// after the line <paramref name="insertLine"/>.
 		/// </summary>
-		protected void InsertCodeAfter(int insertLine, IDocument document, string indentation, params AbstractNode[] nodes)
+		protected void InsertCodeAfter(int insertLine, IRefactoringDocument document, string indentation, params AbstractNode[] nodes)
 		{
 			InsertCodeAfter(insertLine, document, indentation, true, nodes);
 		}
@@ -294,9 +293,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		/// Generates code for <paramref name="nodes"/> and inserts it into <paramref name="document"/>
 		/// after the line <paramref name="insertLine"/>.
 		/// </summary>
-		protected void InsertCodeAfter(int insertLine, IDocument document, string indentation, bool startWithEmptyLine, params AbstractNode[] nodes)
+		protected void InsertCodeAfter(int insertLine, IRefactoringDocument document, string indentation, bool startWithEmptyLine, params AbstractNode[] nodes)
 		{
-			IDocumentLine lineSegment = document.GetLine(insertLine + 1);
+			IRefactoringDocumentLine lineSegment = document.GetLine(insertLine + 1);
 			StringBuilder b = new StringBuilder();
 			for (int i = 0; i < nodes.Length; i++) {
 				if (options.EmptyLinesBetweenMembers) {
@@ -362,7 +361,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		#endregion
 		
 		#region Generate Changed Event
-		public virtual void CreateChangedEvent(IProperty property, IDocument document)
+		public virtual void CreateChangedEvent(IProperty property, IRefactoringDocument document)
 		{
 			ClassFinder targetContext = new ClassFinder(property);
 			string name = property.Name + "Changed";
@@ -443,7 +442,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				return member.DeclaringType.FullyQualifiedName;
 		}
 		
-		public virtual void ImplementInterface(IReturnType interf, IDocument document, bool explicitImpl, IClass targetClass)
+		public virtual void ImplementInterface(IReturnType interf, IRefactoringDocument document, bool explicitImpl, IClass targetClass)
 		{
 			List<AbstractNode> nodes = new List<AbstractNode>();
 			ImplementInterface(nodes, interf, explicitImpl, targetClass);
@@ -640,7 +639,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		#endregion
 		
 		#region Using statements
-		public virtual void ReplaceUsings(IDocument document, IList<IUsing> oldUsings, IList<IUsing> newUsings)
+		public virtual void ReplaceUsings(IRefactoringDocument document, IList<IUsing> oldUsings, IList<IUsing> newUsings)
 		{
 			if (oldUsings.Count == newUsings.Count) {
 				bool identical = true;

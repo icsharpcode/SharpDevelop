@@ -87,13 +87,17 @@
     <Compile Include="Src\Editor\CodeCompletion\TemplateCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\TextCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\DocumentUtilitites.cs" />
+    <Compile Include="Src\Editor\IDocument.cs" />
+    <Compile Include="Src\Editor\IDocumentLine.cs" />
     <Compile Include="Src\Editor\IFileDocumentProvider.cs" />
     <Compile Include="Src\Editor\IFormattingStrategy.cs" />
+    <Compile Include="Src\Editor\ITextAnchor.cs" />
     <Compile Include="Src\Editor\ITextAreaToolTipProvider.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Editor\ITextEditor.cs" />
     <Compile Include="Src\Editor\ITextMarker.cs" />
+    <Compile Include="Src\Editor\RefactoringDocumentAdapter.cs" />
     <Compile Include="Src\Editor\ToolTipRequestEventArgs.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>

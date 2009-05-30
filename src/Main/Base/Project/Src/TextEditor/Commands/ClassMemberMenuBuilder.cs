@@ -5,11 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
@@ -132,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			
 			CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
-			codeGen.InsertCodeAfter(member, new TextEditorDocument(textEditor.Document),
+			codeGen.InsertCodeAfter(member, new RefactoringDocumentAdapter(new TextEditorDocument(textEditor.Document)),
 			                        codeGen.CreateProperty(member, true, includeSetter));
 			ParserService.ParseCurrentViewContent();
 		}
@@ -142,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			MenuCommand item = (MenuCommand)sender;
 			IProperty member = (IProperty)item.Tag;
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
-			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateChangedEvent(member, new TextEditorDocument(textEditor.Document));
+			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateChangedEvent(member, new RefactoringDocumentAdapter(new TextEditorDocument(textEditor.Document)));
 			ParserService.ParseCurrentViewContent();
 		}
 		
@@ -152,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IEvent member = (IEvent)item.Tag;
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
-			codeGen.InsertCodeAfter(member, new TextEditorDocument(textEditor.Document),
+			codeGen.InsertCodeAfter(member, new RefactoringDocumentAdapter(new TextEditorDocument(textEditor.Document)),
 			                        codeGen.CreateOnEventMethod(member));
 			ParserService.ParseCurrentViewContent();
 		}
