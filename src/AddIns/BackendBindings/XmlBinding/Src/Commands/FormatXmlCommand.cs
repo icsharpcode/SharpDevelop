@@ -5,8 +5,10 @@
 //     <version>$Revision: -1 $</version>
 // </file>
 
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using System;
+using ICSharpCode.Core;
+using ICSharpCode.XmlEditor.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -18,11 +20,11 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			// Find active XmlView.
-						throw new NotImplementedException();
-//			XmlView xmlView = XmlView.ActiveXmlView;
-//			if (xmlView != null) {
-//				xmlView.FormatXml();
-//			}
+			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			
+			if (properties != null) {
+				properties.FormatXml();
+			}
 		}
 	}
 }

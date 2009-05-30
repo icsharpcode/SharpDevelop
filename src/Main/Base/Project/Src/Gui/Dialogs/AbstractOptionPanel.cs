@@ -33,7 +33,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public abstract void LoadOptions();
+		public virtual void LoadOptions()
+		{
+		}
 		
 		public virtual bool SaveOptions()
 		{

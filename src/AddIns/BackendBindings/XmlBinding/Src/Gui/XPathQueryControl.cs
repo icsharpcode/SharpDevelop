@@ -5,6 +5,7 @@
 //     <version>$Revision: -1 $</version>
 // </file>
 
+using ICSharpCode.XmlEditor.Gui;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,17 +13,17 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
 	public class XPathQueryControl : System.Windows.Forms.UserControl, IMementoCapable
-	{		
+	{
 		const int ErrorImageIndex = 0;
 		const string NamespacesProperty = "Namespaces";
 		const string PrefixColumnWidthProperty = "NamespacesDataGridView.PrefixColumn.Width";
@@ -174,14 +175,15 @@ namespace ICSharpCode.XmlEditor
 		public void RemoveXPathNodeTextMarkers()
 		{
 			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				ITextEditorControlProvider textEditorProvider = view as ITextEditorControlProvider;
+				ITextEditorProvider textEditorProvider = view as ITextEditorProvider;
 				if (textEditorProvider != null) {
+					// TODO : markers are currently not supported in AvalonEdit.
 //					XPathNodeTextMarker.RemoveMarkers(textEditorProvider.TextEditorControl.Document.MarkerStrategy);
 //					textEditorProvider.TextEditorControl.Refresh();
 				}
 			}
 		}
-				
+		
 		/// <summary>
 		/// Disposes resources used by the control.
 		/// </summary>
@@ -241,8 +243,8 @@ namespace ICSharpCode.XmlEditor
 			// 
 			// xPathComboBox
 			// 
-			this.xPathComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.xPathComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			                                                                  | System.Windows.Forms.AnchorStyles.Right)));
 			this.xPathComboBox.FormattingEnabled = true;
 			this.xPathComboBox.Location = new System.Drawing.Point(55, 3);
 			this.xPathComboBox.Name = "xPathComboBox";
@@ -265,9 +267,9 @@ namespace ICSharpCode.XmlEditor
 			// 
 			// tabControl
 			// 
-			this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			                                                                | System.Windows.Forms.AnchorStyles.Left)
+			                                                               | System.Windows.Forms.AnchorStyles.Right)));
 			this.tabControl.Controls.Add(this.xPathResultsTabPage);
 			this.tabControl.Controls.Add(this.namespacesTabPage);
 			this.tabControl.Location = new System.Drawing.Point(0, 30);
@@ -290,8 +292,8 @@ namespace ICSharpCode.XmlEditor
 			// xPathResultsListView
 			// 
 			this.xPathResultsListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-									this.matchColumnHeader,
-									this.lineColumnHeader});
+			                                           	this.matchColumnHeader,
+			                                           	this.lineColumnHeader});
 			this.xPathResultsListView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.xPathResultsListView.FullRowSelect = true;
 			this.xPathResultsListView.HideSelection = false;
@@ -337,8 +339,8 @@ namespace ICSharpCode.XmlEditor
 			// 
 			this.namespacesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.namespacesDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-									this.prefixColumn,
-									this.namespaceColumn});
+			                                             	this.prefixColumn,
+			                                             	this.namespaceColumn});
 			this.namespacesDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.namespacesDataGridView.Location = new System.Drawing.Point(3, 3);
 			this.namespacesDataGridView.MultiSelect = false;
@@ -401,8 +403,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void UpdateQueryButtonState()
 		{
-						throw new NotImplementedException();
-//			queryButton.Enabled = IsXPathQueryEntered && XmlView.IsXmlViewActive;
+			queryButton.Enabled = IsXPathQueryEntered && XmlDisplayBinding.XmlViewContentActive;
 		}
 		
 		bool IsXPathQueryEntered {
@@ -418,39 +419,39 @@ namespace ICSharpCode.XmlEditor
 		
 		void RunXPathQuery()
 		{
-						throw new NotImplementedException();
-//			XmlView view = XmlView.ActiveXmlView;
-//			if (view == null) {
-//				return;
-//			}
-//			
-//			try {
-//				MarkerStrategy markerStrategy = view.TextEditorControl.Document.MarkerStrategy;
-//				fileName = view.PrimaryFileName;
-//			
-//				// Clear previous XPath results.
-//				ClearResults();
-//				XPathNodeTextMarker.RemoveMarkers(markerStrategy);
-//
-//				// Run XPath query.
-//				XPathNodeMatch[] nodes = view.SelectNodes(xPathComboBox.Text, GetNamespaces());
-//				if (nodes.Length > 0) {
-//					AddXPathResults(nodes);
-//					XPathNodeTextMarker.AddMarkers(markerStrategy, nodes);
-//				} else {
-//					AddNoXPathResult();
-//				}
-//				AddXPathToHistory();
-//			} catch (XPathException xpathEx) {
-//				AddErrorResult(xpathEx);
-//			} catch (XmlException xmlEx) {
-//				AddErrorResult(xmlEx);
-//			} finally {
-//				BringResultsTabToFront();
-//				view.TextEditorControl.Refresh();
-//			}
+			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			if (properties == null) {
+				return;
+			}
+			
+			try {
+				// TODO : markers are currently not supported in AvalonEdit.
+				//MarkerStrategy markerStrategy = view.GetTextEditor().Document.MarkerStrategy;
+				fileName = properties.File.FileName;
+				
+				// Clear previous XPath results.
+				ClearResults();
+				//XPathNodeTextMarker.RemoveMarkers(markerStrategy);
+
+				// Run XPath query.
+				XPathNodeMatch[] nodes = properties.SelectNodes(xPathComboBox.Text, GetNamespaces());
+				if (nodes.Length > 0) {
+					AddXPathResults(nodes);
+					//XPathNodeTextMarker.AddMarkers(markerStrategy, nodes);
+				} else {
+					AddNoXPathResult();
+				}
+				AddXPathToHistory();
+			} catch (XPathException xpathEx) {
+				AddErrorResult(xpathEx);
+			} catch (XmlException xmlEx) {
+				AddErrorResult(xmlEx);
+			} finally {
+				BringResultsTabToFront();
+				//view.TextEditorControl.Refresh();
+			}
 		}
-	
+		
 		void ClearResults()
 		{
 			xPathResultsListView.Items.Clear();

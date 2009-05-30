@@ -8,7 +8,7 @@
 using ICSharpCode.SharpDevelop.Editor;
 using System;
 
-namespace ICSharpCode.XmlBinding
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	/// Description of XmlCompletionItemList.

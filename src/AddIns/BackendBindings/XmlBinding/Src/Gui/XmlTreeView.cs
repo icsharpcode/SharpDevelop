@@ -14,7 +14,7 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.XmlBinding.Gui;
+using ICSharpCode.XmlEditor.Gui;
 using System.Xml;
 
 namespace ICSharpCode.XmlEditor
@@ -132,20 +132,31 @@ namespace ICSharpCode.XmlEditor
 		protected override void LoadFromPrimary()
 		{
 			var provider = this.PrimaryViewContent as ITextEditorProvider;
-			treeViewContainer.LoadXml(provider.TextEditor.Document.Text);
+			treeViewContainer.LoadXml(provider.TextEditor.Document.Text, XmlView.GetProvider(Path.GetExtension(provider.TextEditor.FileName)));
 		}
 		
 		protected override void SaveToPrimary()
 		{
 			// Do not modify text in the primary view if the data is not well-formed XML
 			if (!treeViewContainer.IsErrorMessageTextBoxVisible) {
-				var provider = this.PrimaryViewContent as ITextEditorProvider;
-				var str = new StringWriter();
-				var writer = new XmlTextWriter(str);
+				ITextEditorProvider provider = this.PrimaryViewContent as ITextEditorProvider;
+				StringWriter str = new StringWriter();
+				XmlTextWriter writer = new XmlTextWriter(str);
 				
 				writer.Formatting = Formatting.Indented;
 				treeViewContainer.Document.WriteTo(writer);
 				provider.TextEditor.Document.Text = str.ToString();
+			}
+		}
+		
+		public string XmlContent {
+			get {
+				StringWriter str = new StringWriter();
+				XmlTextWriter writer = new XmlTextWriter(str);
+				
+				writer.Formatting = Formatting.Indented;
+				treeViewContainer.Document.WriteTo(writer);
+				return str.ToString();
 			}
 		}
 		

@@ -14,7 +14,7 @@ using System.Text;
 using System.Xml;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.XmlBinding
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	/// This class currently inserts the closing tags to typed openening tags

@@ -31,9 +31,4 @@ namespace ICSharpCode.Core.Presentation
 			return ResourceService.GetString(key);
 		}
 	}
-	
-
-	
-
-
 }

@@ -5,10 +5,12 @@
 //     <version>$Revision: -1 $</version>
 // </file>
 
+using ICSharpCode.XmlEditor.Gui;
 using System;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -17,26 +19,21 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class CreateSchemaCommand : AbstractMenuCommand
 	{
-		public CreateSchemaCommand()
-		{
-		}
-		
 		public override void Run()
 		{
 			// Find active XmlView.
-						throw new NotImplementedException();
-//			XmlView xmlView = XmlView.ActiveXmlView;
-//			if (xmlView != null) {
-//				// Create a schema based on the xml.
-//				string[] schemas = xmlView.InferSchema();
-//				if (schemas != null) {
-//					// Create a new file for each generated schema.
-//					for (int i = 0; i < schemas.Length; ++i) {
-//						string fileName = GenerateSchemaFileName(xmlView.TextEditorControl.FileName, i + 1);
-//						OpenNewXmlFile(fileName, schemas[i]);
-//					}
-//				}
-//			}
+			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			if (properties != null) {
+				// Create a schema based on the xml.
+				string[] schemas = properties.InferSchema();
+				if (schemas != null) {
+					// Create a new file for each generated schema.
+					for (int i = 0; i < schemas.Length; ++i) {
+						string fileName = GenerateSchemaFileName(properties.File.FileName, i + 1);
+						OpenNewXmlFile(fileName, schemas[i]);
+					}
+				}
+			}
 		}
 		
 		/// <summary>

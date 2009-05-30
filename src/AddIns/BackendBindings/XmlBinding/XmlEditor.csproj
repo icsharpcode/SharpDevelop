@@ -4,8 +4,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>ICSharpCode.XmlBinding</RootNamespace>
-    <AssemblyName>XmlBinding</AssemblyName>
+    <RootNamespace>ICSharpCode.XmlEditor</RootNamespace>
+    <AssemblyName>XmlEditor</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>C:\Users\Siegfried\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -71,6 +71,8 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\CodeCompletion\XmlCodeCompletionBinding.cs" />
     <Compile Include="Src\CodeCompletion\XmlCompletionItemList.cs" />
+    <Compile Include="Src\CodeCompletion\XmlSchemaCompletionData.cs" />
+    <Compile Include="Src\CodeCompletion\XmlSchemaCompletionDataCollection.cs" />
     <Compile Include="Src\Gui\Dialogs\SelectXmlSchema.xaml.cs">
       <DependentUpon>SelectXmlSchema.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -83,11 +85,28 @@
       <DependentUpon>XmlSchemasPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\XmlAttributePropertyDescriptor.cs" />
+    <Compile Include="Src\Gui\XmlAttributeTypeDescriptor.cs" />
+    <Compile Include="Src\Gui\XmlCharacterDataTreeNode.cs" />
+    <Compile Include="Src\Gui\XmlCommentTreeNode.cs" />
+    <Compile Include="Src\Gui\XmlEditorAddInOptions.cs" />
+    <Compile Include="Src\Gui\XmlElementTreeNode.cs" />
+    <Compile Include="Src\Gui\XmlSchemaAssociation.cs" />
+    <Compile Include="Src\Gui\XmlSchemaAssociationListBoxItem.cs" />
+    <Compile Include="Src\Gui\XmlSchemaListBoxItem.cs" />
+    <Compile Include="Src\Gui\XmlTextTreeNode.cs" />
+    <Compile Include="Src\Gui\XmlTreeEditor.cs" />
+    <Compile Include="Src\Gui\XmlTreeViewContainerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\XmlTreeViewControl.cs" />
+    <Compile Include="Src\Gui\XmlView.cs" />
+    <Compile Include="Src\Gui\XPathNodeMatch.cs" />
+    <Compile Include="Src\Gui\XPathNodeTextMarker.cs" />
     <Compile Include="Src\XmlFormattingStrategy.cs">
     </Compile>
     <Compile Include="Src\CodeCompletion\XmlCompletionItem.cs" />
     <Compile Include="Src\CodeCompletion\XmlCompletionItemCollection.cs" />
-    <Compile Include="Src\CodeCompletion\XmlCompletionDataImageList.cs" />
     <Compile Include="Src\CodeCompletion\XmlCompletionDataProvider.cs" />
     <Compile Include="Src\Commands\AddAttributeCommand.cs" />
     <Compile Include="Src\Commands\AddChildCommentCommand.cs" />
@@ -128,29 +147,9 @@
     <Compile Include="Src\Parser\QualifiedNameCollection.cs" />
     <Compile Include="Src\Parser\XmlElementPath.cs" />
     <Compile Include="Src\Parser\XmlParser.cs" />
-    <Compile Include="Src\Src\XmlAttributePropertyDescriptor.cs" />
-    <Compile Include="Src\Src\XmlAttributeTypeDescriptor.cs" />
-    <Compile Include="Src\Src\XmlCharacterDataTreeNode.cs" />
-    <Compile Include="Src\Src\XmlCommentTreeNode.cs" />
-    <Compile Include="Src\Src\XmlEditorAddInOptions.cs" />
-    <Compile Include="Src\Src\XmlElementTreeNode.cs" />
-    <Compile Include="Src\Src\XmlSchemaAssociation.cs" />
-    <Compile Include="Src\Src\XmlSchemaAssociationListBoxItem.cs" />
-    <Compile Include="Src\Src\XmlSchemaCompletionData.cs" />
-    <Compile Include="Src\Src\XmlSchemaCompletionDataCollection.cs" />
-    <Compile Include="Src\Src\XmlSchemaListBoxItem.cs" />
-    <Compile Include="Src\Src\XmlSchemaManager.cs" />
-    <Compile Include="Src\Src\XmlTextTreeNode.cs" />
-    <Compile Include="Src\Src\XmlTreeEditor.cs">
-    </Compile>
-    <Compile Include="Src\Src\XmlTreeViewContainerControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Src\XmlTreeViewControl.cs" />
-    <Compile Include="Src\Src\XPathNodeMatch.cs" />
-    <Compile Include="Src\Src\XPathNodeTextMarker.cs" />
     <Compile Include="Src\StylesheetAssignedCondition.cs" />
     <Compile Include="Src\XmlFoldingStrategy.cs" />
+    <Compile Include="Src\XmlSchemaManager.cs" />
     <Compile Include="Src\Xml\EncodedStringWriter.cs" />
     <Compile Include="Src\Xml\XmlEncoder.cs" />
     <Compile Include="Src\Xml\XmlNamespace.cs" />
@@ -159,6 +158,10 @@
     <EmbeddedResource Include="Resources\XmlTextTreeNodeIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>

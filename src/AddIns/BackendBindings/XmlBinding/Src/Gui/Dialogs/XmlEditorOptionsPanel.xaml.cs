@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 
-namespace ICSharpCode.XmlBinding.Gui.Dialogs
+namespace ICSharpCode.XmlEditor.Gui.Dialogs
 {
 	/// <summary>
 	/// Interaction logic for XmlEditorOptionsPanel.xaml
@@ -24,20 +24,6 @@ namespace ICSharpCode.XmlBinding.Gui.Dialogs
 		public XmlEditorOptionsPanel()
 		{
 			InitializeComponent();
-		}
-		
-		public override void LoadOptions()
-		{
-		}
-		
-		public override bool SaveOptions()
-		{
-			base.SaveOptions();
-			
-			XmlEditorAddInOptions.ShowAttributesWhenFolded = chkShowAttributesWhenFolded.IsChecked == true;
-			XmlEditorAddInOptions.ShowSchemaAnnotation = chkShowSchemaAnnotation.IsChecked == true;
-			
-			return true;
 		}
 	}
 }

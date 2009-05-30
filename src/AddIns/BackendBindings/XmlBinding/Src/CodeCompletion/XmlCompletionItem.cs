@@ -8,7 +8,7 @@
 using System;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.XmlBinding
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	/// Holds the text for  namespace, child element or attribute

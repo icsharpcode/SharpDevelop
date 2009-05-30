@@ -8,6 +8,8 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.XmlEditor.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -18,17 +20,14 @@ namespace ICSharpCode.XmlEditor
 	{
 		public override void Run()
 		{
-						throw new NotImplementedException();
-//			XmlView xmlView = XmlView.ActiveXmlView;
-//			if (xmlView != null) {
-//				if (xmlView.StylesheetFileName != null) {
-//					try {
-//						FileService.OpenFile(xmlView.StylesheetFileName);
-//					} catch (Exception ex) {
-//						MessageService.ShowError(ex);
-//					}
-//				}
-//			}
+			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			if (properties != null && properties.StylesheetFileName != null) {
+				try {
+					FileService.OpenFile(properties.StylesheetFileName);
+				} catch (Exception ex) {
+					MessageService.ShowError(ex);
+				}
+			}
 		}
 	}
 }

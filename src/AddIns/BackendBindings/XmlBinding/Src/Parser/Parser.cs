@@ -5,13 +5,13 @@
 //     <version>$Revision: -1 $</version>
 // </file>
 
-using ICSharpCode.XmlBinding.Gui;
+using ICSharpCode.XmlEditor.Gui;
 using System;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.XmlEditor;
 
-namespace ICSharpCode.XmlBinding.Parser
+namespace ICSharpCode.XmlEditor.Parser
 {
 	/// <summary>
 	/// Parser that does nothing except return empty compilation unit

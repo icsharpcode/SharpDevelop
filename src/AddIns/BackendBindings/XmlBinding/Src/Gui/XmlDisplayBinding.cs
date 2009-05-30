@@ -5,15 +5,16 @@
 //     <version>$Revision: -1 $</version>
 // </file>
 
-using ICSharpCode.XmlEditor;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.XmlEditor;
 
-namespace ICSharpCode.XmlBinding.Gui
+namespace ICSharpCode.XmlEditor.Gui
 {
 	/// <summary>
 	/// Display binding for the xml editor.
@@ -66,6 +67,7 @@ namespace ICSharpCode.XmlBinding.Gui
 
 //			// Did not find the XmlFoldingParser so default to those files defined by the
 //			// HighlightingManager.
+			// TODO : not supported in AvalonEdit
 //			IHighlightingStrategy strategy = HighlightingManager.Manager.FindHighlighter("XML");
 //			if (strategy != null) {
 //				return strategy.Extensions;
@@ -79,6 +81,16 @@ namespace ICSharpCode.XmlBinding.Gui
 			return (new List<IViewContent>() {
 			        	new XmlTreeView(viewContent)
 			        }).ToArray();
+		}
+		
+		public static bool XmlViewContentActive {
+			get {
+				ITextEditorProvider view = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+				if (view != null)
+					return IsFileNameHandled(view.TextEditor.FileName);
+				
+				return false;
+			}
 		}
 	}
 }

@@ -5,6 +5,7 @@
 //     <version>$Revision: -1 $</version>
 // </file>
 
+using ICSharpCode.XmlEditor.Gui;
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -19,14 +20,9 @@ namespace ICSharpCode.XmlEditor
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-						throw new NotImplementedException();
-//			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-//			if (window != null) {
-//				XmlView view = window.ActiveViewContent as XmlView;
-//				if (view != null) {
-//					return view.StylesheetFileName != null;
-//				}
-//			}
+			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			if (properties != null)
+				return properties.StylesheetFileName != null;
 			return false;
 		}
 	}

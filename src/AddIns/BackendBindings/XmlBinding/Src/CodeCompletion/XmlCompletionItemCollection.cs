@@ -5,7 +5,7 @@
 //     <version>$Revision: 1965 $</version>
 // </file>
 
-using ICSharpCode.XmlBinding;
+using ICSharpCode.XmlEditor;
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;

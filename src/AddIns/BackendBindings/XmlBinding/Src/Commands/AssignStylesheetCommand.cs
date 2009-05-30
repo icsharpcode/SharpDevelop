@@ -5,9 +5,11 @@
 //     <version>$Revision: -1 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.XmlEditor.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -19,19 +21,17 @@ namespace ICSharpCode.XmlEditor
 	{
 		public override void Run()
 		{
-						throw new NotImplementedException();
 			// Get active xml document.
-//			XmlView xmlView = XmlView.ActiveXmlView;
-//			if (xmlView != null) {
-//				
-//				// Prompt user for filename.
-//				string stylesheetFileName = BrowseForStylesheetFile();
-//				
-//				// Assign stylesheet.
-//				if (stylesheetFileName != null) {
-//					xmlView.StylesheetFileName = stylesheetFileName;
-//				}
-//			}
+			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			
+			if (properties != null) {
+				// Prompt user for filename.
+				string stylesheetFileName = BrowseForStylesheetFile();
+
+				// Assign stylesheet.
+				if (stylesheetFileName != null)
+					properties.StylesheetFileName = stylesheetFileName;
+			}
 		}
 		
 		public static string BrowseForStylesheetFile()

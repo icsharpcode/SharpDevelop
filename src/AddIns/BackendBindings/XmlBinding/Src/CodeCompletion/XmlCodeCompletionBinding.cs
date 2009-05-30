@@ -7,11 +7,11 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.XmlBinding.Parser;
+using ICSharpCode.XmlEditor.Parser;
 using ICSharpCode.XmlEditor;
 using System.IO;
 
-namespace ICSharpCode.XmlBinding
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	/// Description of XmlCodeCompletionBinding.

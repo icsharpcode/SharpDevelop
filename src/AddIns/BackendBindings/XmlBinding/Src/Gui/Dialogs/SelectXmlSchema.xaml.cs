@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace ICSharpCode.XmlBinding.Gui.Dialogs
+namespace ICSharpCode.XmlEditor.Gui.Dialogs
 {
     /// <summary>
     /// Interaction logic for SelectXmlSchema.xaml

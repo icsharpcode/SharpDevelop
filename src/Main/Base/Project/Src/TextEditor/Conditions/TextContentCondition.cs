@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Conditions
 {
@@ -25,10 +26,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Conditions
 		public bool IsValid(object caller, Condition condition)
 		{
 			string textcontent = condition.Properties["textcontent"];
-			if (caller is TextEditorControl) {
-				TextEditorControl ctrl = (TextEditorControl)caller;
-				if (ctrl.Document != null && ctrl.Document.HighlightingStrategy != null) {
-					return string.Equals(textcontent, ctrl.Document.HighlightingStrategy.Name, StringComparison.OrdinalIgnoreCase);
+			if (caller is WpfWorkbench) {
+				IViewContent content = (caller as WpfWorkbench).ActiveViewContent;
+				if (content is ITextEditorProvider) {
+					var ctrl = (content as ITextEditorProvider).TextEditor.GetService(typeof(AvalonEdit.TextEditor)) as AvalonEdit.TextEditor;
+					if (ctrl != null && ctrl.SyntaxHighlighting.Name != null) {
+						return string.Equals(textcontent, ctrl.SyntaxHighlighting.Name, StringComparison.OrdinalIgnoreCase);
+					}
 				}
 			}
 			return false;

@@ -5,21 +5,21 @@
        addInManagerHidden = "preinstalled">
 	
 	<Runtime>
-		<Import assembly = "XmlBinding.dll">
+		<Import assembly = "XmlEditor.dll">
 			<ConditionEvaluator name = "StylesheetAssigned" class = "ICSharpCode.XmlEditor.StylesheetAssignedCondition"/>
 		</Import>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/XML">
-		<Class id ="XmlFormatter" class = "ICSharpCode.XmlBinding.XmlFormattingStrategy"/>
+		<Class id ="XmlFormatter" class = "ICSharpCode.XmlEditor.XmlFormattingStrategy"/>
 	</Path>
 	
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
 		<CodeCompletionBinding
 			id = "Xml"
 			extensions  = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco"
-			class = "ICSharpCode.XmlBinding.XmlCodeCompletionBinding"
+			class = "ICSharpCode.XmlEditor.XmlCodeCompletionBinding"
 		/>
 	</Path>
 	
@@ -27,14 +27,14 @@
 		<DisplayBinding id               = "XmlTreeView"
 		                type             = "Secondary"
 		                insertbefore     = "Text"
-		                class            = "ICSharpCode.XmlBinding.Gui.XmlDisplayBinding"/>
+		                class            = "ICSharpCode.XmlEditor.Gui.XmlDisplayBinding"/>
 	</Path>
 	
 	<!-- Xml parser used to initiate the folding update -->
 	<Path name = "/Workspace/Parser">
 		<Parser id = "XmlFoldingParser"
 		        supportedextensions  = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco"
-		        class = "ICSharpCode.XmlBinding.Parser.Parser"/>
+		        class = "ICSharpCode.XmlEditor.Parser.Parser"/>
 	</Path>
 	
 	<!-- Extra project browser icons -->
@@ -58,7 +58,15 @@
 	
 	<!-- XML menu -->
 	<Path name = "/SharpDevelop/Workbench/MainMenu">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlView">
+		<ComplexCondition>
+			<Or>
+				<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlTreeView" />
+				<And>
+					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" />
+					<Condition name = "TextContent" textcontent="XML" />
+				</And>
+			</Or>
+			
 			<MenuItem id = "Xml" insertafter="View" insertbefore="Tools" label="&amp;XML" type = "Menu">
 				<MenuItem id = "CreateSchema"
 				          label = "${res:ICSharpCode.XmlEditor.CreateSchemaMenuLabel}"
@@ -95,7 +103,7 @@
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu}"
 				          class = "ICSharpCode.XmlEditor.FormatXmlCommand" />
 			</MenuItem>
-		</Condition>
+		</ComplexCondition>
 	</Path>
 	
 	<!-- Right click menu -->
@@ -157,12 +165,12 @@
 		<OptionPanel id = "XmlSchemasPanel"
 		             insertafter = "Markers"
 		             label = "${res:ICSharpCode.XmlEditor.XmlSchemasPanel.Title}"
-		             class = "ICSharpCode.XmlBinding.Gui.Dialogs.XmlSchemasPanel" />
+		             class = "ICSharpCode.XmlEditor.Gui.Dialogs.XmlSchemasPanel" />
 		<OptionPanel id = "XmlEditorOptionsPanel"
 		             insertafter = "Markers"
 		             insertbefore = "XmlSchemasPanel"
 		             label = "${res:ICSharpCode.XmlEditor.XmlEditorOptionsPanel.Title}"
-		             class = "ICSharpCode.XmlBinding.Gui.Dialogs.XmlEditorOptionsPanel" />
+		             class = "ICSharpCode.XmlEditor.Gui.Dialogs.XmlEditorOptionsPanel" />
 	</Path>
 	
 	<Path path = "/AddIns/XmlEditor/EditActions">

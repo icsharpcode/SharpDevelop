@@ -13,7 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 
-namespace ICSharpCode.XmlBinding.Parser
+namespace ICSharpCode.XmlEditor.Parser
 {
 	/// <summary>
 	/// Utility class that contains xml parsing routines used to determine
