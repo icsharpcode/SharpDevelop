@@ -229,7 +229,7 @@
       <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\XmlBinding\XmlEditor.csproj">
+    <ProjectReference Include="..\..\XmlBinding\Project\XmlEditor.csproj">
       <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>
       <Name>XmlEditor</Name>
       <Private>False</Private>

@@ -1,0 +1,80 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision: 1388 $</version>
+// </file>
+
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.XmlEditor;
+using NUnit.Framework;
+using System;
+using System.IO;
+
+namespace XmlEditor.Tests.Schema
+{
+	/// <summary>
+	/// Tests that element completion works for any child elements
+	/// inside an xs:all schema element.
+	/// </summary>
+	[TestFixture]
+	public class AllElementTestFixture : SchemaTestFixtureBase
+	{		
+		ICompletionData[] personElementChildren;
+		ICompletionData[] firstNameAttributes;
+		ICompletionData[] firstNameElementChildren;
+		
+		public override void FixtureInit()
+		{
+			XmlElementPath path = new XmlElementPath();
+			path.Elements.Add(new QualifiedName("person", "http://foo"));
+			personElementChildren = SchemaCompletionData.GetChildElementCompletionData(path);
+			
+			path.Elements.Add(new QualifiedName("firstname", "http://foo"));
+			firstNameAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			firstNameElementChildren = SchemaCompletionData.GetChildElementCompletionData(path);
+		}
+		
+		[Test]
+		public void PersonElementHasTwoChildElements()
+		{
+			Assert.AreEqual(2, personElementChildren.Length, 
+			                "Should be 2 child elements.");
+		}
+		
+		[Test]
+		public void FirstNameElementHasAttribute()
+		{
+			Assert.AreEqual(1, firstNameAttributes.Length, "Should have one attribute.");
+		}
+		
+		[Test]
+		public void FirstNameElementHasChildren()
+		{
+			Assert.AreEqual(2, firstNameElementChildren.Length, 
+			                "Should be 2 child elements.");
+		}
+		
+		protected override string GetSchema()
+		{
+			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" elementFormDefault=\"qualified\" targetNamespace=\"http://foo\">\r\n" +
+				"    <xs:element name=\"person\">\r\n" +
+				"      <xs:complexType>\r\n" +
+				"        <xs:all>\r\n" +
+				"          <xs:element name=\"firstname\">\r\n" +
+				"            <xs:complexType>\r\n" +
+                "              <xs:sequence>\r\n" +
+                "                <xs:element name=\"short\" type=\"xs:string\"/>\r\n" +
+                "                <xs:element name=\"title\" type=\"xs:string\"/>\r\n" +
+                "              </xs:sequence>\r\n" +
+                "              <xs:attribute name=\"id\"/>\r\n" +
+                "            </xs:complexType>\r\n" +
+				"          </xs:element>\r\n" +
+				"          <xs:element name=\"lastname\" type=\"xs:string\"/>\r\n" +
+				"        </xs:all>\r\n" +
+				"      </xs:complexType>\r\n" +
+				"    </xs:element>\r\n" +
+				"</xs:schema>";
+		}
+	}
+}

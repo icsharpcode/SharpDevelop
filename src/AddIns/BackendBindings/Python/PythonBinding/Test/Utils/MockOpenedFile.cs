@@ -39,5 +39,7 @@ namespace PythonBinding.Tests.Utils
 		public override void UnregisterView(IViewContent view)
 		{
 		}
+		
+		public override event EventHandler FileClosed;
 	}
 }
