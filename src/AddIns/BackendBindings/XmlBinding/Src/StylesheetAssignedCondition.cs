@@ -17,9 +17,9 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class StylesheetAssignedCondition : IConditionEvaluator
 	{
-		public bool IsValid(object caller, Condition condition)
+		public bool IsValid(object owner, Condition condition)
 		{
-			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
 			if (properties != null)
 				return properties.StylesheetFileName != null;
 			return false;

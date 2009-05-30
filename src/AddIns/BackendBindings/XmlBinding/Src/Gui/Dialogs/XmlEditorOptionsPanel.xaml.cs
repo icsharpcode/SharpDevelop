@@ -19,7 +19,7 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// Interaction logic for XmlEditorOptionsPanel.xaml
 	/// </summary>
-	public partial class XmlEditorOptionsPanel : AbstractOptionPanel
+	public partial class XmlEditorOptionsPanel : OptionPanel
 	{
 		public XmlEditorOptionsPanel()
 		{

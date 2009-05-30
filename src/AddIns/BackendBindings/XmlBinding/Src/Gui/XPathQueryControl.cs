@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
@@ -34,7 +35,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// The filename that the last query was executed on.
 		/// </summary>
-		string fileName = String.Empty;
+		string fileName = string.Empty;
 		
 		/// <summary>
 		/// The total number of xpath queries to remember.
@@ -150,7 +151,7 @@ namespace ICSharpCode.XmlEditor
 				lineColumnHeader.Width = memento.Get<int>(LineColumnWidthProperty, 60);
 				
 				// Set xpath query history.
-				XPathComboBox.Text = memento.Get(XPathComboBoxTextProperty, String.Empty);
+				XPathComboBox.Text = memento.Get(XPathComboBoxTextProperty, string.Empty);
 				string[] xpaths = memento.Get(XPathComboBoxItemsProperty, new string[0]);
 				foreach (string xpath in xpaths) {
 					xPathComboBox.Items.Add(xpath);
@@ -171,7 +172,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Removes all the XPath Node markers from all the open documents.
 		/// </summary>
-		public void RemoveXPathNodeTextMarkers()
+		public static void RemoveXPathNodeTextMarkers()
 		{
 			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				ITextEditorProvider textEditorProvider = view as ITextEditorProvider;
@@ -418,7 +419,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void RunXPathQuery()
 		{
-			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
 			if (properties == null) {
 				return;
 			}
@@ -467,7 +468,7 @@ namespace ICSharpCode.XmlEditor
 				ListViewItem item = new ListViewItem(node.DisplayValue);
 				if (node.HasLineInfo()) {
 					int line = node.LineNumber + 1;
-					item.SubItems.Add(line.ToString());
+					item.SubItems.Add(line.ToString(CultureInfo.InvariantCulture));
 				}
 				item.Tag = node;
 				xPathResultsListView.Items.Add(item);
@@ -482,14 +483,14 @@ namespace ICSharpCode.XmlEditor
 		void AddErrorResult(XmlException ex)
 		{
 			ListViewItem item = new ListViewItem(ex.Message, ErrorImageIndex);
-			item.SubItems.Add(ex.LineNumber.ToString());
+			item.SubItems.Add(ex.LineNumber.ToString(CultureInfo.InvariantCulture));
 			item.Tag = ex;
 			xPathResultsListView.Items.Add(item);
 		}
 		
 		void AddErrorResult(XPathException ex)
 		{
-			ListViewItem item = new ListViewItem(String.Concat(StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.XPathLabel}"), " ", ex.Message), ErrorImageIndex);
+			ListViewItem item = new ListViewItem(string.Concat(StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.XPathLabel}"), " ", ex.Message), ErrorImageIndex);
 			item.Tag = ex;
 			xPathResultsListView.Items.Add(item);
 		}
@@ -579,7 +580,7 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		void JumpTo(string fileName, int line, int column)
+		static void JumpTo(string fileName, int line, int column)
 		{
 			FileService.JumpToFilePosition(fileName, line + 1, column + 1);
 		}
@@ -588,37 +589,25 @@ namespace ICSharpCode.XmlEditor
 		/// Scrolls to the specified line and column and also selects the given
 		/// length of text at this location.
 		/// </summary>
-		void ScrollTo(string fileName, int line, int column, int length)
+		static void ScrollTo(string filename, int line, int column, int length)
 		{
-			throw new NotImplementedException();
-//			XmlView view = XmlView.ActiveXmlView;
-//			if (view != null && IsFileNameMatch(view)) {
-//				TextAreaControl textAreaControl = view.TextEditorControl.ActiveTextAreaControl;
-//				if (length > 0 && line < textAreaControl.Document.TotalNumberOfLines) {
-//					SelectionManager selectionManager = textAreaControl.SelectionManager;
-//					selectionManager.ClearSelection();
-//					TextLocation startPos = new TextLocation(column, line);
-//					TextLocation endPos = new TextLocation(column + length, line);
-//					selectionManager.SetSelection(startPos, endPos);
-//				}
-//				line = Math.Min(line, textAreaControl.Document.TotalNumberOfLines - 1);
-//				textAreaControl.ScrollTo(line, column);
-//			}
+			XmlView view = XmlView.ForFileName(filename);
+			if (view != null) {
+				ITextEditor editor = view.TextEditor;
+				if (editor == null) return;
+				int corLine = Math.Min(line, editor.Document.TotalNumberOfLines - 1);
+				editor.JumpTo(corLine, column);
+				if (length > 0 && line < editor.Document.TotalNumberOfLines) {
+					int offset = editor.Document.PositionToOffset(line, column);
+					editor.Select(offset, offset + length);
+				}
+			}
 		}
 		
-		void ScrollTo(string fileName, int line, int column)
+		static void ScrollTo(string fileName, int line, int column)
 		{
 			ScrollTo(fileName, line, column, 0);
 		}
-		
-//		/// <summary>
-//		/// Tests whether the specified view matches the filename the XPath
-//		/// results were found in.
-//		/// </summary>
-//		bool IsFileNameMatch(XmlView view)
-//		{
-//			return FileUtility.IsEqualFileName(fileName, view.PrimaryFileName);
-//		}
 		
 		/// <summary>
 		/// Gets the namespaces and prefixes as a string array.
@@ -648,25 +637,25 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the namespace prefix in the specified row.
 		/// </summary>
-		string GetPrefix(DataGridViewRow row)
+		static string GetPrefix(DataGridViewRow row)
 		{
 			string prefix = (string)row.Cells[0].Value;
 			if (prefix != null) {
 				return prefix;
 			}
-			return String.Empty;
+			return string.Empty;
 		}
 		
 		/// <summary>
 		/// Gets the namespace stored in the row.
 		/// </summary>
-		string GetNamespace(DataGridViewRow row)
+		static string GetNamespace(DataGridViewRow row)
 		{
 			string ns = (string)row.Cells[1].Value;
 			if (ns != null) {
 				return ns;
 			}
-			return String.Empty;
+			return string.Empty;
 		}
 		
 		/// <summary>

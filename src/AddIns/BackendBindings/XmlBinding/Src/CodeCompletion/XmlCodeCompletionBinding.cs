@@ -34,7 +34,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
-			string text = String.Concat(editor.Document.GetText(0, editor.Caret.Offset), ch);
+			string text = string.Concat(editor.Document.GetText(0, editor.Caret.Offset), ch);
 			string extension = Path.GetExtension(editor.FileName);
 			string defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefix(extension);
 			XmlSchemaCompletionData defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData(extension);

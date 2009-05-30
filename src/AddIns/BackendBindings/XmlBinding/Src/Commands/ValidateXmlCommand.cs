@@ -22,7 +22,7 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			// Find active XmlView.
-			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
 			if (properties != null) {
 				// Validate the xml.
 				properties.ValidateXml();

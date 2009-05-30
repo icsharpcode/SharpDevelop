@@ -6,15 +6,16 @@
 // </file>
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Xml;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -130,7 +131,7 @@ namespace ICSharpCode.XmlEditor
 		
 		protected override void LoadFromPrimary()
 		{
-			var provider = this.PrimaryViewContent as ITextEditorProvider;
+			ITextEditorProvider provider = this.PrimaryViewContent as ITextEditorProvider;
 			treeViewContainer.LoadXml(provider.TextEditor.Document.Text, XmlView.GetProvider(Path.GetExtension(provider.TextEditor.FileName)));
 		}
 		
@@ -139,7 +140,7 @@ namespace ICSharpCode.XmlEditor
 			// Do not modify text in the primary view if the data is not well-formed XML
 			if (!treeViewContainer.IsErrorMessageTextBoxVisible) {
 				ITextEditorProvider provider = this.PrimaryViewContent as ITextEditorProvider;
-				StringWriter str = new StringWriter();
+				StringWriter str = new StringWriter(CultureInfo.InvariantCulture);
 				XmlTextWriter writer = new XmlTextWriter(str);
 				
 				writer.Formatting = Formatting.Indented;
@@ -150,7 +151,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public string XmlContent {
 			get {
-				StringWriter str = new StringWriter();
+				StringWriter str = new StringWriter(CultureInfo.InvariantCulture);
 				XmlTextWriter writer = new XmlTextWriter(str);
 				
 				writer.Formatting = Formatting.Indented;

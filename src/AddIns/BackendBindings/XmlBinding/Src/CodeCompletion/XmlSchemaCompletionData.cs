@@ -26,9 +26,9 @@ namespace ICSharpCode.XmlEditor
 	/// </remarks>
 	public class XmlSchemaCompletionData
 	{
-		string namespaceUri = String.Empty;
+		string namespaceUri = string.Empty;
 		XmlSchema schema;
-		string fileName = String.Empty;
+		string fileName = string.Empty;
 		bool readOnly = false;
 		
 		/// <summary>
@@ -47,7 +47,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public XmlSchemaCompletionData(TextReader reader)
 		{
-			ReadSchema(String.Empty, reader);
+			ReadSchema(string.Empty, reader);
 		}
 		
 		/// <summary>
@@ -63,7 +63,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Creates the completion data from the specified schema file.
 		/// </summary>
-		public XmlSchemaCompletionData(string fileName) : this(String.Empty, fileName)
+		public XmlSchemaCompletionData(string fileName) : this(string.Empty, fileName)
 		{
 		}
 		
@@ -127,11 +127,11 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static string GetUri(string fileName)
 		{
-			string uri = String.Empty;
+			string uri = string.Empty;
 			
 			if (fileName != null) {
 				if (fileName.Length > 0) {
-					uri = String.Concat("file:///", fileName.Replace('\\', '/'));
+					uri = string.Concat("file:///", fileName.Replace('\\', '/'));
 				}
 			}
 			
@@ -143,7 +143,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public ICompletionItemList GetElementCompletionData()
 		{
-			return GetElementCompletionData(String.Empty);
+			return GetElementCompletionData(string.Empty);
 		}
 		
 		/// <summary>
@@ -606,11 +606,11 @@ namespace ICSharpCode.XmlEditor
 		/// Adds an element completion data to the collection if it does not 
 		/// already exist.
 		/// </summary>
-		void AddElement(XmlCompletionItemCollection data, string name, string prefix, string documentation)
+		static void AddElement(XmlCompletionItemCollection data, string name, string prefix, string documentation)
 		{
 			if (!data.Contains(name)) {
 				if (prefix.Length > 0) {
-					name = String.Concat(prefix, ":", name);
+					name = string.Concat(prefix, ":", name);
 				}
 				XmlCompletionItem item = new XmlCompletionItem(name, documentation);
 				data.Add(item);
@@ -621,7 +621,7 @@ namespace ICSharpCode.XmlEditor
 		/// Adds an element completion data to the collection if it does not 
 		/// already exist.
 		/// </summary>
-		void AddElement(XmlCompletionItemCollection data, string name, string prefix, XmlSchemaAnnotation annotation)
+		static void AddElement(XmlCompletionItemCollection data, string name, string prefix, XmlSchemaAnnotation annotation)
 		{
 			// Get any annotation documentation.
 			string documentation = GetDocumentation(annotation);
@@ -632,7 +632,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Adds elements to the collection if it does not already exist.
 		/// </summary>
-		void AddElements(XmlCompletionItemCollection lhs, XmlCompletionItemCollection rhs)
+		static void AddElements(XmlCompletionItemCollection lhs, XmlCompletionItemCollection rhs)
 		{
 			foreach (XmlCompletionItem data in rhs) {
 				if (!lhs.Contains(data)) {
@@ -648,9 +648,9 @@ namespace ICSharpCode.XmlEditor
 		/// All documentation elements are added.  All text nodes inside
 		/// the documentation element are added.
 		/// </remarks>
-		string GetDocumentation(XmlSchemaAnnotation annotation)
+		static string GetDocumentation(XmlSchemaAnnotation annotation)
 		{
-			string documentation = String.Empty;
+			string documentation = string.Empty;
 			
 			if (annotation != null) {
 				StringBuilder documentationBuilder = new StringBuilder();
@@ -810,18 +810,18 @@ namespace ICSharpCode.XmlEditor
 		/// <remarks>
 		/// Note the special handling of xml:lang attributes.
 		/// </remarks>
-		void AddAttribute(XmlCompletionItemCollection data, XmlSchemaAttribute attribute)
+		static void AddAttribute(XmlCompletionItemCollection data, XmlSchemaAttribute attribute)
 		{
 			string name = attribute.Name;
 			if (name == null) {
 				if (attribute.RefName.Namespace == "http://www.w3.org/XML/1998/namespace") {
-					name = String.Concat("xml:", attribute.RefName.Name);
+					name = string.Concat("xml:", attribute.RefName.Name);
 				}
 			}
 			
 			if (name != null) {
 				string documentation = GetDocumentation(attribute.Annotation);
-				XmlCompletionItem completionData = new XmlCompletionItem(name, documentation, XmlCompletionItem.DataType.XmlAttribute);
+				XmlCompletionItem completionData = new XmlCompletionItem(name, documentation, XmlCompletionDataType.XmlAttribute);
 				data.Add(completionData);
 			}
 		}
@@ -1102,7 +1102,7 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlCompletionItemCollection GetAttributeValueCompletionData(XmlSchemaSimpleTypeRestriction simpleTypeRestriction)
+		static XmlCompletionItemCollection GetAttributeValueCompletionData(XmlSchemaSimpleTypeRestriction simpleTypeRestriction)
 		{
 			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
@@ -1168,7 +1168,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the set of attribute values for an xs:boolean type.
 		/// </summary>
-		XmlCompletionItemCollection GetBooleanAttributeValueCompletionData()
+		static XmlCompletionItemCollection GetBooleanAttributeValueCompletionData()
 		{
 			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
@@ -1272,28 +1272,28 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Adds an attribute value to the completion data collection.
 		/// </summary>
-		void AddAttributeValue(XmlCompletionItemCollection data, string valueText)
+		static void AddAttributeValue(XmlCompletionItemCollection data, string valueText)
 		{
-			XmlCompletionItem completionData = new XmlCompletionItem(valueText, XmlCompletionItem.DataType.XmlAttributeValue);
+			XmlCompletionItem completionData = new XmlCompletionItem(valueText, XmlCompletionDataType.XmlAttributeValue);
 			data.Add(completionData);
 		}
 		
 		/// <summary>
 		/// Adds an attribute value to the completion data collection.
 		/// </summary>
-		void AddAttributeValue(XmlCompletionItemCollection data, string valueText, XmlSchemaAnnotation annotation)
+		static void AddAttributeValue(XmlCompletionItemCollection data, string valueText, XmlSchemaAnnotation annotation)
 		{
 			string documentation = GetDocumentation(annotation);
-			XmlCompletionItem completionData = new XmlCompletionItem(valueText, documentation, XmlCompletionItem.DataType.XmlAttributeValue);
+			XmlCompletionItem completionData = new XmlCompletionItem(valueText, documentation, XmlCompletionDataType.XmlAttributeValue);
 			data.Add(completionData);
 		}
 		
 		/// <summary>
 		/// Adds an attribute value to the completion data collection.
 		/// </summary>
-		void AddAttributeValue(XmlCompletionItemCollection data, string valueText, string description)
+		static void AddAttributeValue(XmlCompletionItemCollection data, string valueText, string description)
 		{
-			XmlCompletionItem completionData = new XmlCompletionItem(valueText, description, XmlCompletionItem.DataType.XmlAttributeValue);
+			XmlCompletionItem completionData = new XmlCompletionItem(valueText, description, XmlCompletionDataType.XmlAttributeValue);
 			data.Add(completionData);
 		}		
 		

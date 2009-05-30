@@ -94,16 +94,6 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		///   Copies the <see cref='XmlCompletionDataCollection'/> values to a one-dimensional <see cref='Array'/> instance at the 
-		///    specified index.
-		/// </summary>
-		public void CopyTo(ICompletionItem[] array, int index)
-		{
-			for (int i = index; i < this.Count; i++)
-				array[i] = this[i - index];
-		}
-		
-		/// <summary>
 		/// Returns an array of <see cref="ICompletionData"/> items.
 		/// </summary>
 		/// <returns></returns>

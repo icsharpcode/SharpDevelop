@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Globalization;
 using System.IO;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -21,7 +23,7 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			// Find active XmlView.
-			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
 			if (properties != null) {
 				// Create a schema based on the xml.
 				string[] schemas = properties.InferSchema();
@@ -38,7 +40,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Opens a new unsaved xml file in SharpDevelop.
 		/// </summary>
-		void OpenNewXmlFile(string fileName, string xml)
+		static void OpenNewXmlFile(string fileName, string xml)
 		{
 			FileService.NewFile(fileName, xml);
 		}
@@ -46,14 +48,14 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Generates an xsd filename based on the name of the original xml file.
 		/// </summary>
-		string GenerateSchemaFileName(string xmlFileName, int count)
+		static string GenerateSchemaFileName(string xmlFileName, int count)
 		{
 			string baseFileName = Path.GetFileNameWithoutExtension(xmlFileName);
-			string schemaFileName = String.Concat(baseFileName, ".xsd");
+			string schemaFileName = string.Concat(baseFileName, ".xsd");
 			if (count == 1) {
 				return schemaFileName;
 			}
-			return schemaFileName = String.Concat(baseFileName, count.ToString(), ".xsd");
+			return schemaFileName = string.Concat(baseFileName, count.ToString(CultureInfo.InvariantCulture), ".xsd");
 		}
 	}
 }

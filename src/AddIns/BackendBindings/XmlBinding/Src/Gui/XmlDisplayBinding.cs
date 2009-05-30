@@ -46,8 +46,11 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		static bool IsXmlFileExtension(string extension)
 		{
+			if (string.IsNullOrEmpty(extension))
+			    return false;
+			
 			foreach (string currentExtension in GetXmlFileExtensions()) {
-				if (String.Compare(extension, currentExtension, true) == 0) {
+				if (string.Compare(extension, currentExtension, StringComparison.OrdinalIgnoreCase) == 0) {
 					return true;
 				}
 			}

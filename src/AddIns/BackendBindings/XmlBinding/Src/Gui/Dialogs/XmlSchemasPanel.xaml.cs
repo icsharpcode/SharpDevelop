@@ -190,9 +190,9 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <returns>The schema file name the user selected; otherwise an 
 		/// empty string.</returns>
-		string BrowseForSchema()
+		static string BrowseForSchema()
 		{
-			string fileName = String.Empty;
+			string fileName = string.Empty;
 			
 			OpenFileDialog openFileDialog  = new OpenFileDialog();
 			openFileDialog.CheckFileExists = true;

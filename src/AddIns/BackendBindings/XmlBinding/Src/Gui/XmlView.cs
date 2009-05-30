@@ -34,6 +34,8 @@ namespace ICSharpCode.XmlEditor
 		/// <returns>null if the file is not a valid XML file, otherwise a XmlView instance with additional data used by the XML editor.</returns>
 		public static XmlView ForFile(OpenedFile file)
 		{
+			if (file == null)
+				return null;
 			if (!XmlDisplayBinding.IsFileNameHandled(file.FileName))
 				return null;
 			
@@ -48,13 +50,16 @@ namespace ICSharpCode.XmlEditor
 			return instance;
 		}
 		
+		public static XmlView ForFileName(string fileName)
+		{
+			return ForFile(FileService.GetOpenedFile(fileName));
+		}
+		
 		public OpenedFile File { get; set; }
 		
-		public static XmlView ForView(IViewContent view)
+		public static XmlView ForViewContent(IViewContent view)
 		{
-			if (view == null)
-				return null;
-			if (view.PrimaryFile == null)
+			if (view == null || view.PrimaryFile == null)
 				return null;
 			return ForFile(view.PrimaryFile);
 		}
@@ -81,29 +86,34 @@ namespace ICSharpCode.XmlEditor
 			                                     defaultNamespacePrefix);
 		}
 		
-		public ITextEditor GetTextEditor()
+		public ITextEditor TextEditor
 		{
-			foreach (IViewContent view in File.RegisteredViewContents) {
-				ITextEditorProvider provider = view as ITextEditorProvider;
-				
-				if (provider != null) {
-					IDocument document = provider.GetDocumentForFile(File);
-					if (document != null)
-						return provider.TextEditor;
+			get {
+				foreach (IViewContent view in File.RegisteredViewContents) {
+					ITextEditorProvider provider = view as ITextEditorProvider;
+					
+					if (provider != null) {
+						IDocument document = provider.GetDocumentForFile(File);
+						if (document != null)
+							return provider.TextEditor;
+					}
 				}
+				
+				return null;
 			}
-			
-			return null;
 		}
 		
-		public XmlTreeView GetXmlView()
+		public XmlTreeView View
 		{
-			foreach (IViewContent view in File.RegisteredViewContents) {
-				if (view is XmlTreeView)
-					return view as XmlTreeView;
+			get {
+				foreach (IViewContent view in File.RegisteredViewContents) {
+					XmlTreeView tree = view as XmlTreeView;
+					if (tree != null)
+						return tree;
+				}
+				
+				return null;
 			}
-			
-			return null;
 		}
 		
 		/// <summary>
@@ -152,7 +162,7 @@ namespace ICSharpCode.XmlEditor
 		/// and line position information aswell as the node found.</returns>
 		public XPathNodeMatch[] SelectNodes(string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
 		{
-			return SelectNodes(GetXmlView().XmlContent, xpath, namespaces);
+			return SelectNodes(View.XmlContent, xpath, namespaces);
 		}
 		
 		public void GoToSchemaDefinition()
@@ -160,7 +170,7 @@ namespace ICSharpCode.XmlEditor
 			// Find schema object for selected xml element or attribute.
 			XmlCompletionDataProvider provider = GetProvider();
 			XmlSchemaCompletionData currentSchemaCompletionData = provider.FindSchemaFromFileName(File.FileName);
-			ITextEditor editor = GetTextEditor();
+			ITextEditor editor = TextEditor;
 			
 			if (editor == null)
 				return;
@@ -169,7 +179,7 @@ namespace ICSharpCode.XmlEditor
 			
 			// Open schema.
 			if (schemaObject != null && schemaObject.SourceUri != null && schemaObject.SourceUri.Length > 0) {
-				string fileName = schemaObject.SourceUri.Replace("file:///", String.Empty);
+				string fileName = schemaObject.SourceUri.Replace("file:///", string.Empty);
 				FileService.JumpToFilePosition(fileName, schemaObject.LineNumber, schemaObject.LinePosition);
 			}
 		}
@@ -179,7 +189,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public bool IsWellFormed {
 			get {
-				ITextEditor editor = GetTextEditor();
+				ITextEditor editor = TextEditor;
 				if (editor == null)
 					return false;
 				
@@ -354,7 +364,7 @@ namespace ICSharpCode.XmlEditor
 			return null;
 		}
 		
-		void ShowErrorList()
+		static void ShowErrorList()
 		{
 			if (ErrorListPad.ShowAfterBuild && TaskService.SomethingWentWrong) {
 				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
@@ -395,7 +405,7 @@ namespace ICSharpCode.XmlEditor
 		/// well formed.</returns>
 		public string[] InferSchema()
 		{
-			ITextEditor editor = GetTextEditor();
+			ITextEditor editor = TextEditor;
 			if (editor == null)
 				return null;
 			
@@ -420,7 +430,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void FormatXml()
 		{
-			ITextEditor editor = GetTextEditor();
+			ITextEditor editor = TextEditor;
 			if (editor == null)
 				return;
 			
@@ -439,7 +449,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void ReplaceAll(string xml)
 		{
-			ITextEditor editor = GetTextEditor();
+			ITextEditor editor = TextEditor;
 			if (editor == null)
 				return;
 			
@@ -467,7 +477,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			string indentedText = string.Empty;
 			
-			ITextEditor editor = GetTextEditor();
+			ITextEditor editor = TextEditor;
 			if (editor == null)
 				return indentedText;
 
@@ -500,16 +510,14 @@ namespace ICSharpCode.XmlEditor
 			OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationStarted}"));
 
 			if (IsSchema) {
-				if (!ValidateSchema()) {
+				if (!ValidateSchema())
 					return;
-				}
 			} else {
-				if (!ValidateAgainstSchema()) {
+				if (!ValidateAgainstSchema())
 					return;
-				}
 			}
 			
-			OutputWindowWriteLine(String.Empty);
+			OutputWindowWriteLine(string.Empty);
 			OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationSuccess}"));
 		}
 		
@@ -517,7 +525,7 @@ namespace ICSharpCode.XmlEditor
 			get {
 				string extension = Path.GetExtension(File.FileName);
 				if (extension != null) {
-					return String.Compare(".xsd", extension, true) == 0;
+					return string.Compare(".xsd", extension, StringComparison.OrdinalIgnoreCase) == 0;
 				}
 				return false;
 			}
@@ -529,7 +537,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		bool ValidateAgainstSchema()
 		{
-			ITextEditor editor = GetTextEditor();
+			ITextEditor editor = TextEditor;
 			if (editor == null)
 				return false;
 			
@@ -578,7 +586,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		bool ValidateSchema()
 		{
-			ITextEditor editor = GetTextEditor();
+			ITextEditor editor = TextEditor;
 			if (editor == null)
 				return false;
 			
@@ -631,7 +639,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Displays the validation warning.
 		/// </summary>
-		void DisplayValidationWarning(string fileName, string message, int column, int line)
+		static void DisplayValidationWarning(string fileName, string message, int column, int line)
 		{
 			OutputWindowWriteLine(message);
 			AddTask(fileName, message, column, line, TaskType.Warning);
@@ -647,7 +655,7 @@ namespace ICSharpCode.XmlEditor
 				
 				TaskService.ClearExceptCommentTasks();
 				
-				ITextEditor editor = GetTextEditor();
+				ITextEditor editor = TextEditor;
 				if (editor == null)
 					return;
 				
@@ -749,7 +757,7 @@ namespace ICSharpCode.XmlEditor
 		/// window.</param>
 		static void OutputWindowWriteLine(string message)
 		{
-			Category.AppendText(String.Concat(message, Environment.NewLine));
+			Category.AppendText(string.Concat(message, Environment.NewLine));
 		}
 		
 		static MessageViewCategory category;
@@ -788,8 +796,8 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlException innerException = ex.InnerException as XmlException;
 			if (innerException != null) {
-				string fileName = innerException.SourceUri.Replace("file:///", String.Empty);
-				if (!String.IsNullOrEmpty(fileName)) {
+				string fileName = innerException.SourceUri.Replace("file:///", string.Empty);
+				if (!string.IsNullOrEmpty(fileName)) {
 					return fileName;
 				}
 			}

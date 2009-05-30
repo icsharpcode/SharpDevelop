@@ -22,8 +22,8 @@ namespace ICSharpCode.XmlEditor
 	{
 		public const string XmlSchemaNamespace = "http://www.w3.org/2001/XMLSchema";
 		
-		static XmlSchemaCompletionDataCollection schemas = null;
-		static XmlSchemaManager manager = null;
+		static XmlSchemaCompletionDataCollection schemas;
+		static XmlSchemaManager manager;
 		
 		public static event EventHandler UserSchemaAdded;
 		
@@ -76,7 +76,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static string GetNamespacePrefix(string extension)
 		{
-			string prefix = String.Empty;
+			string prefix = string.Empty;
 			
 			XmlSchemaAssociation association = XmlEditorAddInOptions.GetSchemaAssociation(extension);
 			if (association != null) {

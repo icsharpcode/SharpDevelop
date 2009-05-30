@@ -21,7 +21,7 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			// Get active xml document.
-			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
 			
 			if (properties != null) {
 				// Prompt user for filename.
@@ -48,7 +48,7 @@ namespace ICSharpCode.XmlEditor
 					string allFilesFilter = (string)node.BuildChildItem("AllFiles", null, null);
 					string xslFileFilter = (string)node.BuildChildItem("Xsl", null, null);
 					
-					dialog.Filter = String.Concat(xslFileFilter, "|", xmlFileFilter, "|", allFilesFilter);
+					dialog.Filter = string.Concat(xslFileFilter, "|", xmlFileFilter, "|", allFilesFilter);
 					dialog.FilterIndex = 1;
 				}
 				

@@ -112,7 +112,7 @@ namespace ICSharpCode.XmlEditor
 					QualifiedName name = this[Count - 1];
 					return name.Prefix;
 				}
-				return String.Empty;
+				return string.Empty;
 			}
 		}
 	}

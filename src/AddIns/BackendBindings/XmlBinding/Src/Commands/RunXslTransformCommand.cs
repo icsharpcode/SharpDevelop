@@ -27,7 +27,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public override void Run()
 		{
-			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
 			
 			if (properties != null) {
 				// Check to see if this view is actually a referenced stylesheet.
@@ -59,10 +59,10 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the xml view that is currently referencing the
 		/// specified stylesheet view.
 		/// </summary>
-		XmlView GetAssociatedXmlView(string stylesheetFileName)
+		static XmlView GetAssociatedXmlView(string stylesheetFileName)
 		{
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				XmlView prop = XmlView.ForView(content);
+				XmlView prop = XmlView.ForViewContent(content);
 				if (prop != null && !string.IsNullOrEmpty(prop.StylesheetFileName)) {
 					if (FileUtility.IsEqualFileName(prop.StylesheetFileName, stylesheetFileName)) {
 						return prop;
@@ -72,7 +72,7 @@ namespace ICSharpCode.XmlEditor
 			return null;
 		}
 		
-		string GetStylesheetContent(string fileName)
+		static string GetStylesheetContent(string fileName)
 		{
 			// File already open?
 			ITextEditorProvider view = FileService.GetOpenFile(fileName) as ITextEditorProvider;

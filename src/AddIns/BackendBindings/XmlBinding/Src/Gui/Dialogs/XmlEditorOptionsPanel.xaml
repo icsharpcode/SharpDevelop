@@ -1,8 +1,8 @@
-<gui:AbstractOptionPanel x:Class="ICSharpCode.XmlEditor.XmlEditorOptionsPanel"
+<gui:OptionPanel x:Class="ICSharpCode.XmlEditor.XmlEditorOptionsPanel"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
     xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
-	xmlns:addin="clr-namespace:ICSharpCode.XmlEditor"
+    xmlns:addin="clr-namespace:ICSharpCode.XmlEditor;assembly=XmlEditor"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StackPanel>
         <GroupBox Margin="5" Header="{sd:Localize ICSharpCode.XmlEditor.XmlEditorOptionsPanel.FoldingGroupLabel}">
@@ -16,4 +16,4 @@
                       IsChecked="{sd:OptionBinding addin:XmlEditorAddInOptions.ShowSchemaAnnotation}" />
         </GroupBox>
     </StackPanel>
-</gui:AbstractOptionPanel>
+</gui:OptionPanel>

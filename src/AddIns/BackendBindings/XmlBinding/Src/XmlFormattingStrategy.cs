@@ -36,12 +36,12 @@ namespace ICSharpCode.XmlEditor
 						char ch = editor.Document.GetCharAt(offset);
 						if (ch == '<') {
 							string reversedTag = stringBuilder.ToString().Trim();
-							if (!reversedTag.StartsWith("/") && !reversedTag.EndsWith("/")) {
+							if (!reversedTag.StartsWith("/", StringComparison.Ordinal) && !reversedTag.EndsWith("/", StringComparison.Ordinal)) {
 								bool validXml = true;
 								try {
 									XmlDocument doc = new XmlDocument();
 									doc.LoadXml(editor.Document.Text);
-								} catch (Exception) {
+								} catch (XmlException) {
 									validXml = false;
 								}
 								// only insert the tag, if something is missing
@@ -51,7 +51,7 @@ namespace ICSharpCode.XmlEditor
 										tag.Append(reversedTag[i]);
 									}
 									string tagString = tag.ToString();
-									if (tagString.Length > 0 && !tagString.StartsWith("!") && !tagString.StartsWith("?")) {
+									if (tagString.Length > 0 && !tagString.StartsWith("!", StringComparison.Ordinal) && !tagString.StartsWith("?", StringComparison.Ordinal)) {
 										editor.Document.Insert(editor.Caret.Offset, "</" + tagString + ">");
 									}
 								}
@@ -98,7 +98,7 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		#region Smart Indentation
-		private void TryIndent(ITextEditor editor, int begin, int end)
+		static void TryIndent(ITextEditor editor, int begin, int end)
 		{
 			string currentIndentation = "";
 			Stack tagStack = new Stack();

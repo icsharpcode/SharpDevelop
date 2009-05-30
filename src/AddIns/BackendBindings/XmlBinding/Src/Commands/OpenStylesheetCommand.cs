@@ -19,7 +19,7 @@ namespace ICSharpCode.XmlEditor
 	{
 		public override void Run()
 		{
-			XmlView properties = XmlView.ForView(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
 			if (properties != null && properties.StylesheetFileName != null) {
 				try {
 					FileService.OpenFile(properties.StylesheetFileName);

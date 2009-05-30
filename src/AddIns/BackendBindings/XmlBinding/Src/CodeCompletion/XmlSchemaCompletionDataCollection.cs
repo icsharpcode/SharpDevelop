@@ -5,9 +5,10 @@
 //     <version>$Revision: 1965 $</version>
 // </file>
 
-using ICSharpCode.XmlEditor;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -17,7 +18,7 @@ namespace ICSharpCode.XmlEditor
 	///   A collection that stores <see cref='XmlSchemaCompletionData'/> objects.
 	/// </summary>
 	[Serializable()]
-	public class XmlSchemaCompletionDataCollection : System.Collections.CollectionBase {
+	public class XmlSchemaCompletionDataCollection : Collection<XmlSchemaCompletionData> {
 		
 		/// <summary>
 		///   Initializes a new instance of <see cref='XmlSchemaCompletionDataCollection'/>.
@@ -48,27 +49,12 @@ namespace ICSharpCode.XmlEditor
 			this.AddRange(val);
 		}
 		
-		/// <summary>
-		///   Represents the entry at the specified index of the <see cref='XmlSchemaCompletionData'/>.
-		/// </summary>
-		/// <param name='index'>The zero-based index of the entry to locate in the collection.</param>
-		/// <value>The entry at the specified index of the collection.</value>
-		/// <exception cref='ArgumentOutOfRangeException'><paramref name='index'/> is outside the valid range of indexes for the collection.</exception>
-		public XmlSchemaCompletionData this[int index] {
-			get {
-				return ((XmlSchemaCompletionData)(List[index]));
-			}
-			set {
-				List[index] = value;
-			}
-		}
-		
 		public ICompletionItemList GetNamespaceCompletionData()
 		{
 			XmlCompletionItemList list = new XmlCompletionItemList();
 			
 			foreach (XmlSchemaCompletionData schema in this) {
-				XmlCompletionItem completionData = new XmlCompletionItem(schema.NamespaceUri, XmlCompletionItem.DataType.NamespaceUri);
+				XmlCompletionItem completionData = new XmlCompletionItem(schema.NamespaceUri, XmlCompletionDataType.NamespaceUri);
 				list.Items.Add(completionData);
 			}
 			
@@ -86,18 +72,6 @@ namespace ICSharpCode.XmlEditor
 			get {
 				return GetItem(namespaceUri);
 			}
-		}		
-		
-		/// <summary>
-		///   Adds a <see cref='XmlSchemaCompletionData'/> with the specified value to the 
-		///   <see cref='XmlSchemaCompletionDataCollection'/>.
-		/// </summary>
-		/// <param name='val'>The <see cref='XmlSchemaCompletionData'/> to add.</param>
-		/// <returns>The index at which the new element was inserted.</returns>
-		/// <seealso cref='XmlSchemaCompletionDataCollection.AddRange'/>
-		public int Add(XmlSchemaCompletionData val)
-		{
-			return List.Add(val);
 		}
 		
 		/// <summary>
@@ -130,87 +104,6 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		///   Gets a value indicating whether the 
-		///    <see cref='XmlSchemaCompletionDataCollection'/> contains the specified <see cref='XmlSchemaCompletionData'/>.
-		/// </summary>
-		/// <param name='val'>The <see cref='XmlSchemaCompletionData'/> to locate.</param>
-		/// <returns>
-		/// <see langword='true'/> if the <see cref='XmlSchemaCompletionData'/> is contained in the collection; 
-		///   otherwise, <see langword='false'/>.
-		/// </returns>
-		/// <seealso cref='XmlSchemaCompletionDataCollection.IndexOf'/>
-		public bool Contains(XmlSchemaCompletionData val)
-		{
-			return List.Contains(val);
-		}
-		
-		/// <summary>
-		///   Copies the <see cref='XmlSchemaCompletionDataCollection'/> values to a one-dimensional <see cref='Array'/> instance at the 
-		///    specified index.
-		/// </summary>
-		/// <param name='array'>The one-dimensional <see cref='Array'/> that is the destination of the values copied from <see cref='XmlSchemaCompletionDataCollection'/>.</param>
-		/// <param name='index'>The index in <paramref name='array'/> where copying begins.</param>
-		/// <exception cref='ArgumentException'>
-		///   <para><paramref name='array'/> is multidimensional.</para>
-		///   <para>-or-</para>
-		///   <para>The number of elements in the <see cref='XmlSchemaCompletionDataCollection'/> is greater than
-		///         the available space between <paramref name='arrayIndex'/> and the end of
-		///         <paramref name='array'/>.</para>
-		/// </exception>
-		/// <exception cref='ArgumentNullException'><paramref name='array'/> is <see langword='null'/>. </exception>
-		/// <exception cref='ArgumentOutOfRangeException'><paramref name='arrayIndex'/> is less than <paramref name='array'/>'s lowbound. </exception>
-		/// <seealso cref='Array'/>
-		public void CopyTo(XmlSchemaCompletionData[] array, int index)
-		{
-			List.CopyTo(array, index);
-		}
-		
-		/// <summary>
-		///    Returns the index of a <see cref='XmlSchemaCompletionData'/> in 
-		///       the <see cref='XmlSchemaCompletionDataCollection'/>.
-		/// </summary>
-		/// <param name='val'>The <see cref='XmlSchemaCompletionData'/> to locate.</param>
-		/// <returns>
-		///   The index of the <see cref='XmlSchemaCompletionData'/> of <paramref name='val'/> in the 
-		///   <see cref='XmlSchemaCompletionDataCollection'/>, if found; otherwise, -1.
-		/// </returns>
-		/// <seealso cref='XmlSchemaCompletionDataCollection.Contains'/>
-		public int IndexOf(XmlSchemaCompletionData val)
-		{
-			return List.IndexOf(val);
-		}
-		
-		/// <summary>
-		///   Inserts a <see cref='XmlSchemaCompletionData'/> into the <see cref='XmlSchemaCompletionDataCollection'/> at the specified index.
-		/// </summary>
-		/// <param name='index'>The zero-based index where <paramref name='val'/> should be inserted.</param>
-		/// <param name='val'>The <see cref='XmlSchemaCompletionData'/> to insert.</param>
-		/// <seealso cref='XmlSchemaCompletionDataCollection.Add'/>
-		public void Insert(int index, XmlSchemaCompletionData val)
-		{
-			List.Insert(index, val);
-		}
-		
-		/// <summary>
-		///  Returns an enumerator that can iterate through the <see cref='XmlSchemaCompletionDataCollection'/>.
-		/// </summary>
-		/// <seealso cref='IEnumerator'/>
-		public new XmlSchemaCompletionDataEnumerator GetEnumerator()
-		{
-			return new XmlSchemaCompletionDataEnumerator(this);
-		}
-		
-		/// <summary>
-		///   Removes a specific <see cref='XmlSchemaCompletionData'/> from the <see cref='XmlSchemaCompletionDataCollection'/>.
-		/// </summary>
-		/// <param name='val'>The <see cref='XmlSchemaCompletionData'/> to remove from the <see cref='XmlSchemaCompletionDataCollection'/>.</param>
-		/// <exception cref='ArgumentException'><paramref name='val'/> is not found in the Collection.</exception>
-		public void Remove(XmlSchemaCompletionData val)
-		{
-			List.Remove(val);
-		}
-		
-		/// <summary>
 		/// Gets the schema completion data with the same filename.
 		/// </summary>
 		/// <returns><see langword="null"/> if no matching schema found.</returns>
@@ -222,58 +115,6 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 			return null;
-		}
-		
-		/// <summary>
-		///   Enumerator that can iterate through a XmlSchemaCompletionDataCollection.
-		/// </summary>
-		/// <seealso cref='IEnumerator'/>
-		/// <seealso cref='XmlSchemaCompletionDataCollection'/>
-		/// <seealso cref='XmlSchemaCompletionData'/>
-		public class XmlSchemaCompletionDataEnumerator : System.Collections.IEnumerator
-		{
-			System.Collections.IEnumerator baseEnumerator;
-			System.Collections.IEnumerable temp;
-			
-			/// <summary>
-			///   Initializes a new instance of <see cref='XmlSchemaCompletionDataEnumerator'/>.
-			/// </summary>
-			public XmlSchemaCompletionDataEnumerator(XmlSchemaCompletionDataCollection mappings)
-			{
-				this.temp = ((System.Collections.IEnumerable)(mappings));
-				this.baseEnumerator = temp.GetEnumerator();
-			}
-			
-			/// <summary>
-			///   Gets the current <see cref='XmlSchemaCompletionData'/> in the <seealso cref='XmlSchemaCompletionDataCollection'/>.
-			/// </summary>
-			public XmlSchemaCompletionData Current {
-				get {
-					return ((XmlSchemaCompletionData)(baseEnumerator.Current));
-				}
-			}
-			
-			object System.Collections.IEnumerator.Current {
-				get {
-					return baseEnumerator.Current;
-				}
-			}
-			
-			/// <summary>
-			///   Advances the enumerator to the next <see cref='XmlSchemaCompletionData'/> of the <see cref='XmlSchemaCompletionDataCollection'/>.
-			/// </summary>
-			public bool MoveNext()
-			{
-				return baseEnumerator.MoveNext();
-			}
-			
-			/// <summary>
-			///   Sets the enumerator to its initial position, which is before the first element in the <see cref='XmlSchemaCompletionDataCollection'/>.
-			/// </summary>
-			public void Reset()
-			{
-				baseEnumerator.Reset();
-			}
 		}
 		
 		XmlSchemaCompletionData GetItem(string namespaceUri)

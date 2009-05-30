@@ -11,40 +11,41 @@ using ICSharpCode.SharpDevelop.Editor;
 namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
+	/// The type of text held in this object.
+	/// </summary>
+	public enum XmlCompletionDataType {
+		None = 0,
+		XmlElement = 1,
+		XmlAttribute = 2,
+		NamespaceUri = 3,
+		XmlAttributeValue = 4
+	}
+	
+	/// <summary>
 	/// Holds the text for  namespace, child element or attribute
 	/// autocomplete (intellisense).
 	/// </summary>
 	public class XmlCompletionItem : DefaultCompletionItem
 	{
-		DataType dataType = DataType.XmlElement;
-		string description = String.Empty;
-		
-		/// <summary>
-		/// The type of text held in this object.
-		/// </summary>
-		public enum DataType {
-			XmlElement = 1,
-			XmlAttribute = 2,
-			NamespaceUri = 3,
-			XmlAttributeValue = 4
-		}
+		XmlCompletionDataType dataType = XmlCompletionDataType.XmlElement;
+		string description = string.Empty;
 		
 		public XmlCompletionItem(string text)
-			: this(text, String.Empty, DataType.XmlElement)
+			: this(text, string.Empty, XmlCompletionDataType.XmlElement)
 		{
 		}
 		
 		public XmlCompletionItem(string text, string description)
-			: this(text, description, DataType.XmlElement)
+			: this(text, description, XmlCompletionDataType.XmlElement)
 		{
 		}
 
-		public XmlCompletionItem(string text, DataType dataType)
-			: this(text, String.Empty, dataType)
+		public XmlCompletionItem(string text, XmlCompletionDataType dataType)
+			: this(text, string.Empty, dataType)
 		{
 		}
 
-		public XmlCompletionItem(string text, string description, DataType dataType)
+		public XmlCompletionItem(string text, string description, XmlCompletionDataType dataType)
 			: base(text)
 		{
 			this.description = description;
@@ -66,11 +67,11 @@ namespace ICSharpCode.XmlEditor
 			base.Complete(context);
 			
 			switch (dataType) {
-				case DataType.NamespaceUri:
+				case XmlCompletionDataType.NamespaceUri:
 					context.Editor.Document.Insert(context.StartOffset, "\"");
 					context.Editor.Document.Insert(context.EndOffset, "\"");
 					break;
-				case DataType.XmlAttribute:
+				case XmlCompletionDataType.XmlAttribute:
 					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 					context.Editor.Caret.Offset--;
 					XmlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);

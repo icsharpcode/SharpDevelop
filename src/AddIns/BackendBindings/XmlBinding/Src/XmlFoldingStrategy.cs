@@ -21,9 +21,9 @@ namespace ICSharpCode.XmlEditor
 	{
 		int line = 0;
 		int col = 0;
-		string prefix = String.Empty;
-		string name = String.Empty;
-		string foldText = String.Empty;
+		string prefix = string.Empty;
+		string name = string.Empty;
+		string foldText = string.Empty;
 		
 		public XmlFoldStart(string prefix, string name, int line, int col)
 		{
@@ -57,7 +57,7 @@ namespace ICSharpCode.XmlEditor
 		public string Name {
 			get {
 				if (prefix.Length > 0) {
-					return String.Concat(prefix, ":", name);
+					return string.Concat(prefix, ":", name);
 				} else {
 					return name;
 				}
@@ -166,7 +166,7 @@ namespace ICSharpCode.XmlEditor
 					// Add 3 to the end col value to take into account the '-->'
 					int endCol = lines[lines.Length - 1].Length + startCol + 3;
 					int endLine = startLine + lines.Length - 1;
-					string foldText = String.Concat("<!--", lines[0], "-->");
+					string foldText = string.Concat("<!--", lines[0], "-->");
 					FoldMarker foldMarker = new FoldMarker(document, startLine, startCol, endLine, endCol, FoldType.TypeBody, foldText);
 					foldMarkers.Add(foldMarker);
 				}				
@@ -185,9 +185,9 @@ namespace ICSharpCode.XmlEditor
 			XmlFoldStart newFoldStart = new XmlFoldStart(reader.Prefix, reader.LocalName, reader.LineNumber - 1, reader.LinePosition - 2);
 			
 			if (showAttributesWhenFolded && reader.HasAttributes) {
-				newFoldStart.FoldText = String.Concat("<", newFoldStart.Name, " ", GetAttributeFoldText(reader), ">");
+				newFoldStart.FoldText = string.Concat("<", newFoldStart.Name, " ", GetAttributeFoldText(reader), ">");
 			} else {
-				newFoldStart.FoldText = String.Concat("<", newFoldStart.Name, ">");			
+				newFoldStart.FoldText = string.Concat("<", newFoldStart.Name, ">");			
 			}
 			
 			return newFoldStart;

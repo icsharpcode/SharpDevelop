@@ -71,14 +71,14 @@ namespace ICSharpCode.XmlEditor
 				view.ClearAttributes();
 				view.ShowTextContent(selectedTextNode.InnerText);
 			} else if (selectedElement != null) {
-				view.TextContent = String.Empty;
+				view.TextContent = string.Empty;
 				view.ShowAttributes(selectedElement.Attributes);
 			} else if (selectedComment != null) {
 				view.ClearAttributes();
 				view.ShowTextContent(selectedComment.InnerText);
 			} else {
 				view.ClearAttributes();
-				view.TextContent = String.Empty;
+				view.TextContent = string.Empty;
 			}
 		}
 		
@@ -101,7 +101,7 @@ namespace ICSharpCode.XmlEditor
 				string[] selectedAttributeNames = view.SelectNewAttributes(attributesNames);
 				if (selectedAttributeNames.Length > 0) {
 					foreach (string attributeName in selectedAttributeNames) {
-						selectedElement.SetAttribute(attributeName, String.Empty);
+						selectedElement.SetAttribute(attributeName, string.Empty);
 					}
 					view.IsDirty = true;
 					view.ShowAttributes(selectedElement.Attributes);
@@ -223,7 +223,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void AppendChildTextNode()
 		{
-			AppendChildTextNode(document.CreateTextNode(String.Empty));
+			AppendChildTextNode(document.CreateTextNode(string.Empty));
 		}
 		
 		/// <summary>
@@ -238,7 +238,7 @@ namespace ICSharpCode.XmlEditor
 			if (selectedNode != null) {
 				XmlElement parentElement = selectedNode.ParentNode as XmlElement;
 				if (parentElement != null) {
-					XmlText textNode = document.CreateTextNode(String.Empty);
+					XmlText textNode = document.CreateTextNode(string.Empty);
 					parentElement.InsertBefore(textNode, selectedNode);
 					view.IsDirty = true;
 					view.InsertTextNodeBefore(textNode);
@@ -258,7 +258,7 @@ namespace ICSharpCode.XmlEditor
 			if (selectedNode != null) {
 				XmlElement parentElement = selectedNode.ParentNode as XmlElement;
 				if (parentElement != null) {
-					XmlText textNode = document.CreateTextNode(String.Empty);
+					XmlText textNode = document.CreateTextNode(string.Empty);
 					parentElement.InsertAfter(textNode, selectedNode);
 					view.IsDirty = true;
 					view.InsertTextNodeAfter(textNode);
@@ -271,7 +271,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void AppendChildComment()
 		{
-			XmlComment comment = document.CreateComment(String.Empty);
+			XmlComment comment = document.CreateComment(string.Empty);
 			AppendChildComment(comment);
 		}
 		
@@ -283,7 +283,7 @@ namespace ICSharpCode.XmlEditor
 			XmlNode node = GetSelectedCommentOrElementOrTextNode();
 			if (node != null) {
 				XmlNode parentNode = node.ParentNode;
-				XmlComment comment = document.CreateComment(String.Empty);
+				XmlComment comment = document.CreateComment(string.Empty);
 				parentNode.InsertBefore(comment, node);
 				view.IsDirty = true;
 				view.InsertCommentBefore(comment);
@@ -298,7 +298,7 @@ namespace ICSharpCode.XmlEditor
 			XmlNode node = GetSelectedCommentOrElementOrTextNode();
 			if (node != null) {
 				XmlNode parentNode = node.ParentNode;
-				XmlComment comment = document.CreateComment(String.Empty);
+				XmlComment comment = document.CreateComment(string.Empty);
 				parentNode.InsertAfter(comment, node);
 				view.IsDirty = true;
 				view.InsertCommentAfter(comment);
@@ -428,7 +428,7 @@ namespace ICSharpCode.XmlEditor
 		/// Returns the path to the specified element starting from the
 		/// root element.
 		/// </summary>
-		XmlElementPath GetElementPath(XmlElement element)
+		static XmlElementPath GetElementPath(XmlElement element)
 		{
 			XmlElementPath path = new XmlElementPath();
 			XmlElement parentElement = element;
@@ -451,13 +451,13 @@ namespace ICSharpCode.XmlEditor
 			XmlElementPath elementPath = GetElementPath(element);
 			
 			List<string> elements = new List<string>();
-//			XmlSchemaCompletionData schemaCompletionData = completionDataProvider.FindSchema(elementPath);
-//			if (schemaCompletionData != null) {
-//				ICompletionData[] completionData = schemaCompletionData.GetChildElementCompletionData(elementPath);
-//				foreach (ICompletionData elementCompletionData in completionData) {
-//					elements.Add(elementCompletionData.Text);
-//				}
-//			}
+			XmlSchemaCompletionData schemaCompletionData = completionDataProvider.FindSchema(elementPath);
+			if (schemaCompletionData != null) {
+				ICompletionItem[] completionData = schemaCompletionData.GetChildElementCompletionData(elementPath);
+				foreach (ICompletionItem elementCompletionData in completionData) {
+					elements.Add(elementCompletionData.Text);
+				}
+			}
 			return elements.ToArray();
 		}
 		

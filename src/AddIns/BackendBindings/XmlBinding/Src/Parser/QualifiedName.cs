@@ -22,14 +22,14 @@ namespace ICSharpCode.XmlEditor
 	public class QualifiedName
 	{
 		XmlQualifiedName xmlQualifiedName = XmlQualifiedName.Empty;
-		string prefix = String.Empty;
+		string prefix = string.Empty;
 		
 		public QualifiedName()
 		{
 		}
 		
 		public QualifiedName(string name, string namespaceUri)
-			: this(name, namespaceUri, String.Empty)
+			: this(name, namespaceUri, string.Empty)
 		{
 		}
 		
@@ -113,12 +113,12 @@ namespace ICSharpCode.XmlEditor
 		public override string ToString()
 		{			
 			if (xmlQualifiedName.Namespace.Length > 0) {
-				string prefixToString = String.Empty;
-				if (!String.IsNullOrEmpty(prefix)) {
+				string prefixToString = string.Empty;
+				if (!string.IsNullOrEmpty(prefix)) {
 					prefixToString = prefix + ":";
 				}
-				return String.Concat(prefixToString, xmlQualifiedName.Name, " [", xmlQualifiedName.Namespace, "]");
-			} else if (!String.IsNullOrEmpty(prefix)) {
+				return string.Concat(prefixToString, xmlQualifiedName.Name, " [", xmlQualifiedName.Namespace, "]");
+			} else if (!string.IsNullOrEmpty(prefix)) {
 				return prefix + ":" + xmlQualifiedName.Name;
 			}
 			return xmlQualifiedName.Name;

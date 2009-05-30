@@ -12,19 +12,19 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// Represents an association between an xml schema and a file extension.
 	/// </summary>
-	public class XmlSchemaAssociation //: IXmlConvertable
+	public class XmlSchemaAssociation
 	{
-		string namespaceUri = String.Empty;
-		string extension = String.Empty;
-		string namespacePrefix = String.Empty;
+		string namespaceUri = string.Empty;
+		string extension = string.Empty;
+		string namespacePrefix = string.Empty;
 		
 		public XmlSchemaAssociation(string extension)
-			: this(extension, String.Empty, String.Empty)
+			: this(extension, string.Empty, string.Empty)
 		{
 		}
 		
 		public XmlSchemaAssociation(string extension, string namespaceUri)
-			: this(extension, namespaceUri, String.Empty)
+			: this(extension, namespaceUri, string.Empty)
 		{
 		}
 		
@@ -150,7 +150,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public string ConvertToString()
-		{	
+		{
 			return extension + "|" + namespaceUri + "|" + namespacePrefix;
 		}
 	}

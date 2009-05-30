@@ -21,7 +21,7 @@ namespace ICSharpCode.XmlEditor
 	{
 		XmlSchemaCompletionDataCollection schemaCompletionDataItems;
 		XmlSchemaCompletionData defaultSchemaCompletionData;
-		string defaultNamespacePrefix = String.Empty;
+		string defaultNamespacePrefix = string.Empty;
 		
 		public XmlCompletionDataProvider(XmlSchemaCompletionDataCollection schemaCompletionDataItems, XmlSchemaCompletionData defaultSchemaCompletionData, string defaultNamespacePrefix)
 		{
@@ -29,12 +29,6 @@ namespace ICSharpCode.XmlEditor
 			this.defaultSchemaCompletionData = defaultSchemaCompletionData;
 			this.defaultNamespacePrefix = defaultNamespacePrefix;
 		}
-		
-//		public override ImageList ImageList {
-//			get {
-//				return XmlCompletionDataImageList.GetImageList();
-//			}
-//		}
 		
 		/// <summary>
 		/// Finds the schema given the xml element path.

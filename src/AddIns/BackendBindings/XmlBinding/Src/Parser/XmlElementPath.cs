@@ -55,15 +55,16 @@ namespace ICSharpCode.XmlEditor
 		/// each path item has the same name and namespace.
 		/// </summary>
 		public override bool Equals(object obj) 
-		{	
-			if (!(obj is XmlElementPath)) return false;
+		{
+			XmlElementPath path = obj as XmlElementPath;
+			
+			if (path == null) return false;
 			if (this == obj) return true;
 			
-			XmlElementPath rhs = (XmlElementPath)obj;
-			if (elements.Count == rhs.elements.Count) {
+			if (elements.Count == path.elements.Count) {
 				
 				for (int i = 0; i < elements.Count; ++i) {
-					if (!elements[i].Equals(rhs.elements[i])) {
+					if (!elements[i].Equals(path.elements[i])) {
 						return false;
 					}
 				}
@@ -97,7 +98,7 @@ namespace ICSharpCode.XmlEditor
 				}
 				return toString.ToString();
 			}
-			return String.Empty;
+			return string.Empty;
 		}
 		
 		/// <summary>

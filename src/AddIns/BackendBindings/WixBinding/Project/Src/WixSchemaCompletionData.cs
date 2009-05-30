@@ -5,13 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
-
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.XmlEditor;
 
@@ -126,7 +126,7 @@ namespace ICSharpCode.WixBinding
 		/// Delegate that allows us to get a different type of completion data, but use
 		/// the same GetItems method to create a list of strings.
 		/// </summary>
-		delegate ICompletionData[] GetCompletionData(XmlElementPath path);
+		delegate ICompletionItem[] GetCompletionData(XmlElementPath path);
 		
 		/// <summary>
 		/// Gets the completion data text for the completion data items that are
@@ -136,7 +136,7 @@ namespace ICSharpCode.WixBinding
 		{
 			List<string> items = new List<string>();
 			XmlElementPath path = GetPath(elementName);
-			foreach (ICompletionData completionData in getCompletionData(path)) {
+			foreach (ICompletionItem completionData in getCompletionData(path)) {
 				items.Add(completionData.Text);
 			}
 			return items;

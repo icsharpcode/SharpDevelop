@@ -15,7 +15,10 @@ using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public abstract class AbstractOptionPanel : UserControl, IOptionPanel, IOptionBindingContainer
+	/// <summary>
+	/// Simple implementation of IOptionPanel with support for OptionBinding markup extensions.
+	/// </summary>
+	public class OptionPanel : UserControl, IOptionPanel, IOptionBindingContainer
 	{
 		public virtual object Owner { get; set; }
 		
@@ -47,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		public AbstractOptionPanel()
+		public OptionPanel()
 		{
 			this.bindings = new List<OptionBinding>();
 		}
