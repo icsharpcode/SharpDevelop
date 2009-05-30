@@ -7,7 +7,6 @@
 
 using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using SearchAndReplace;
 using SearchAndReplace.Tests.Utils;

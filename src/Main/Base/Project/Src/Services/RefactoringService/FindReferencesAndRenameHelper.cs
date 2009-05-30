@@ -252,8 +252,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
-			var strategy = ICSharpCode.TextEditor.Document.StringTextBufferStrategy.CreateTextBufferFromFile(fileName);
-			return new ProvidedDocumentInformation(strategy, fileName, 0);
+			string fileContent = ParserService.GetParseableFileContent(fileName);
+			return new ProvidedDocumentInformation(fileContent, fileName, 0);
 		}
 		
 		public static bool IsReadOnly(IClass c)

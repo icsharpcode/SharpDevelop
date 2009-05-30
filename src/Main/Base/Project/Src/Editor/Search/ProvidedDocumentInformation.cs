@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -12,11 +13,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 {
 	public class ProvidedDocumentInformation
 	{
-		IDocument           document;
-		ICSharpCode.TextEditor.Document.ITextBufferStrategy textBuffer;
-		string              fileName;
-		int                 currentOffset;
 		ITextEditor textEditor;
+		IDocument document;
+		string textBuffer;
+		string fileName;
+		int currentOffset;
 		
 		public string FileName {
 			get {
@@ -27,8 +28,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public IDocument Document {
 			get {
 				if (document == null) {
-					var factory = new ICSharpCode.TextEditor.Document.DocumentFactory();
-					document = new TextEditorDocument(factory.CreateFromTextBuffer(textBuffer));
+					TextDocument textDocument = new TextDocument();
+					textDocument.Text = textBuffer;
+					textDocument.UndoStack.ClearAll();
+					document = new AvalonEditDocumentAdapter(textDocument, null);
+					this.textBuffer = null;
 				}
 				return document;
 			}
@@ -66,11 +70,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public void Replace(int offset, int length, string pattern)
 		{
-			if (document != null) {
-				document.Replace(offset, length, pattern);
-			} else {
-				textBuffer.Replace(offset, length, pattern);
-			}
+			this.Document.Replace(offset, length, pattern);
 			
 			if (offset <= CurrentOffset) {
 				CurrentOffset = CurrentOffset - length + pattern.Length;
@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			this.endOffset = this.CurrentOffset;
 		}
 		
-		public ProvidedDocumentInformation(ICSharpCode.TextEditor.Document.ITextBufferStrategy textBuffer, string fileName, int currentOffset)
+		public ProvidedDocumentInformation(string textBuffer, string fileName, int currentOffset)
 		{
 			this.textBuffer    = textBuffer;
 			this.fileName      = fileName;

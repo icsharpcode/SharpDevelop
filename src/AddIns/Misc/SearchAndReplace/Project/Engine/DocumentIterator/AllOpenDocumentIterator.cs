@@ -5,15 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.Search;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Linq;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
@@ -43,7 +42,7 @@ namespace SearchAndReplace
 			GetCurIndex();
 			if (curIndex >= 0) {
 				IViewContent viewContent = WorkbenchSingleton.Workbench.ViewContentCollection.ToList()[curIndex];
-				if (viewContent is ITextEditorControlProvider) {
+				if (viewContent is ITextEditorProvider) {
 					return viewContent;
 				}
 			}
@@ -54,11 +53,10 @@ namespace SearchAndReplace
 			get {
 				IViewContent viewContent = GetCurrentTextEditorViewContent();
 				if (viewContent != null) {
-					TextEditorControl textEditor = (((ITextEditorControlProvider)viewContent).TextEditorControl);
-					TextEditorAdapter adapter = new TextEditorAdapter(textEditor);
-					return new ProvidedDocumentInformation(adapter.Document,
+					ITextEditor textEditor = (((ITextEditorProvider)viewContent).TextEditor);
+					return new ProvidedDocumentInformation(textEditor.Document,
 					                                       CurrentFileName,
-					                                       adapter);
+					                                       textEditor);
 				}
 				return null;
 			}
