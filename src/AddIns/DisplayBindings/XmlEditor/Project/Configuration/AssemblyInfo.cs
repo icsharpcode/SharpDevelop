@@ -22,6 +22,8 @@ using System.Runtime.InteropServices;
 // If you need to expose a type to COM, use [ComVisible(true)] on that type.
 [assembly: ComVisible(false)]
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("XmlEditor.Tests")]
+
 // The assembly version has following format :
 //
 // Major.Minor.Build.Revision

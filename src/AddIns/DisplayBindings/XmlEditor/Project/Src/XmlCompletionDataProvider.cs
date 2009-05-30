@@ -30,6 +30,53 @@ namespace ICSharpCode.XmlEditor
 			this.defaultNamespacePrefix = defaultNamespacePrefix;
 		}
 		
+		public ICompletionItemList GenerateCompletionData(string fileContent, char charTyped)
+		{
+			string text = String.Concat(fileContent, charTyped);
+			
+			switch (charTyped) {
+				case '=':
+					// Namespace intellisense.
+					if (XmlParser.IsNamespaceDeclaration(text, text.Length)) {
+						return schemaCompletionDataItems.GetNamespaceCompletionData();
+					}
+					break;
+				case '<':
+					// Child element intellisense.
+					XmlElementPath parentPath = XmlParser.GetParentElementPath(text);
+					if (parentPath.Elements.Count > 0) {
+						return GetChildElementCompletionData(parentPath);
+					} else if (defaultSchemaCompletionData != null) {
+						return defaultSchemaCompletionData.GetElementCompletionData(defaultNamespacePrefix);
+					}
+					break;
+					
+				case ' ':
+					// Attribute intellisense.
+					if (!XmlParser.IsInsideAttributeValue(text, text.Length)) {
+						XmlElementPath path = XmlParser.GetActiveElementStartPath(text, text.Length);
+						if (path.Elements.Count > 0) {
+							return GetAttributeCompletionData(path);
+						}
+					}
+					break;
+				default:
+					// Attribute value intellisense.
+					if (XmlParser.IsAttributeValueChar(charTyped)) {
+						string attributeName = XmlParser.GetAttributeName(text, text.Length);
+						if (attributeName.Length > 0) {
+							XmlElementPath elementPath = XmlParser.GetActiveElementStartPath(text, text.Length);
+							if (elementPath.Elements.Count > 0) {
+								return GetAttributeValueCompletionData(elementPath, attributeName);
+							}
+						}
+					}
+					break;
+			}
+			
+			return null;
+		}
+		
 		/// <summary>
 		/// Finds the schema given the xml element path.
 		/// </summary>
@@ -65,7 +112,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Gets the schema completion data that was created from the specified 
+		/// Gets the schema completion data that was created from the specified
 		/// schema filename.
 		/// </summary>
 		public XmlSchemaCompletionData FindSchemaFromFileName(string fileName)

@@ -23,7 +23,7 @@ namespace XmlEditor.Tests.Tree
 	[TestFixture]
 	public class XmlTreeViewClipboardHandlerTestFixture
 	{
-		XmlView xmlView;
+		MockXmlViewContent xmlView;
 		XmlTreeView view;
 		XmlTreeViewContainerControl treeViewContainer;
 		XmlTreeViewControl treeView;
@@ -37,14 +37,12 @@ namespace XmlEditor.Tests.Tree
 		{
 			MockOpenedFile openedFile = new MockOpenedFile("test.xml");
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			xmlView = new XmlView(new DefaultTextEditorProperties(), schemas);
-			xmlView.SetPrimaryFileUnitTestMode(openedFile);
-			view = new XmlTreeView(xmlView, null, null);
+			xmlView = new MockXmlViewContent();
+			view = new XmlTreeView(xmlView);
 			treeViewContainer = (XmlTreeViewContainerControl)view.Control;
 			treeView = treeViewContainer.TreeView;
 			clipboardHandler = view as IClipboardHandler;
-			
-			xmlView.XmlEditor.Text = "<html><body><p></p></body></html>";
+			xmlView.GetDocumentForFile(null).Text = "<html><body><p></p></body></html>";
 			openedFile.SwitchToView(view);
 			
 			htmlTreeNode = treeView.Nodes[0] as XmlElementTreeNode;

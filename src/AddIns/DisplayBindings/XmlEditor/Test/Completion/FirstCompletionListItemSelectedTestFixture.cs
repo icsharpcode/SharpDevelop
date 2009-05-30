@@ -5,7 +5,9 @@
 //     <version>$Revision: 3490 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
@@ -27,8 +29,8 @@ namespace XmlEditor.Tests.Completion
 	public class FirstCompletionListItemSelectedTestFixture
 	{
 		XmlCompletionDataProvider provider;
-		ICompletionData selectedCompletionData;
-		ICompletionData[] completionDataItems;
+		ICompletionItem selectedCompletionData;
+		ICompletionItemList completionDataItems;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -38,12 +40,8 @@ namespace XmlEditor.Tests.Completion
 			schemas.Add(schema);
 			provider = new XmlCompletionDataProvider(schemas, schema, String.Empty);
 			TextEditorControl textEditor = new TextEditorControl();
-			completionDataItems = provider.GenerateCompletionData(@"C:\Test.xml", textEditor.ActiveTextAreaControl.TextArea, '<');
-			using (CodeCompletionWindow completionWindow = CodeCompletionWindow.ShowCompletionWindow(null, textEditor, @"C:\Test.xml", provider, '<')) {
-				CodeCompletionListView listView = (CodeCompletionListView)completionWindow.Controls[0];
-				selectedCompletionData = listView.SelectedCompletionData;
-				completionWindow.Close();
-			}
+			completionDataItems = provider.GenerateCompletionData("", '<');
+			selectedCompletionData = completionDataItems.SuggestedItem;
 		}
 		
 		/// <summary>
@@ -54,7 +52,7 @@ namespace XmlEditor.Tests.Completion
 		public void HasGeneratedCompletionDataItems()
 		{
 			Assert.IsNotNull(completionDataItems);
-			Assert.IsTrue(completionDataItems.Length > 0);
+			Assert.IsTrue(completionDataItems.Items.ToArray().Length > 0);
 		}
 		
 		/// <summary>
@@ -64,7 +62,7 @@ namespace XmlEditor.Tests.Completion
 		[Test]
 		public void DefaultIndex()
 		{
-			Assert.AreEqual(0, provider.DefaultIndex);
+			Assert.True(completionDataItems.Items.FirstOrDefault() == selectedCompletionData);
 		}
 		
 		[Test]
@@ -81,8 +79,7 @@ namespace XmlEditor.Tests.Completion
 		[Test]
 		public void SelectedCompletionDataMatches()
 		{
-			List<ICompletionData> items = new List<ICompletionData>(completionDataItems);
-			items.Sort(DefaultCompletionData.Compare);
+			List<ICompletionItem> items = completionDataItems.Items.OrderBy(item => item.Text).ToList();
 			Assert.AreEqual(items[0].Text, selectedCompletionData.Text);
 		}
 	}

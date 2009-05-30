@@ -42,51 +42,12 @@ namespace ICSharpCode.XmlEditor
 			                                                                   defaultSchemaCompletionData,
 			                                                                   defaultNamespacePrefix);
 			
-			switch (ch) {
-				case '=':
-					// Namespace completion.
-					if (XmlParser.IsNamespaceDeclaration(text, text.Length)) {
-						editor.ShowCompletionWindow(XmlSchemaManager.SchemaCompletionDataItems.GetNamespaceCompletionData());
-						return CodeCompletionKeyPressResult.Completed;
-					}
-					break;
-				case '<':
-					// Child element completion.
-					XmlElementPath parentPath = XmlParser.GetParentElementPath(text);
-					if (parentPath.Elements.Count > 0) {
-						editor.ShowCompletionWindow(provider.GetChildElementCompletionData(parentPath));
-						return CodeCompletionKeyPressResult.Completed;
-					} else if (defaultSchemaCompletionData != null) {
-						editor.ShowCompletionWindow(defaultSchemaCompletionData.GetElementCompletionData(defaultNamespacePrefix));
-						return CodeCompletionKeyPressResult.Completed;
-					}
-					break;
-				case ' ':
-					// Attribute completion.
-					if (!XmlParser.IsInsideAttributeValue(text, text.Length)) {
-						XmlElementPath path = XmlParser.GetActiveElementStartPath(text, text.Length);
-						if (path.Elements.Count > 0) {
-							editor.ShowCompletionWindow(provider.GetAttributeCompletionData(path));
-							return CodeCompletionKeyPressResult.Completed;
-						}
-					}
-					break;
-				default:
-					// Attribute value completion.
-					if (XmlParser.IsAttributeValueChar(ch)) {
-						string attributeName = XmlParser.GetAttributeName(text, text.Length);
-						if (attributeName.Length > 0) {
-							XmlElementPath elementPath = XmlParser.GetActiveElementStartPath(text, text.Length);
-							if (elementPath.Elements.Count > 0) {
-								editor.ShowCompletionWindow(provider.GetAttributeValueCompletionData(elementPath, attributeName));
-								return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
-							}
-						}
-					}
-					break;
-			}
+			editor.ShowCompletionWindow(provider.GenerateCompletionData(text, ch));
 			
-			return CodeCompletionKeyPressResult.None;
+			if (ch == '<' || ch == ' ' || ch == '=')
+				return CodeCompletionKeyPressResult.Completed;
+			else
+				return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 		}
 		
 		public bool CtrlSpace(ITextEditor editor)

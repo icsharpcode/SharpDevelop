@@ -5,11 +5,13 @@
 //     <version>$Revision: 915 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
+using System;
+using System.Linq;
+using System.IO;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace XmlEditor.Tests.Schema
 {
@@ -20,7 +22,7 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class NamespaceCompletionTestFixture
 	{
-		ICompletionData[] namespaceCompletionData;
+		ICompletionItemList namespaceCompletionData;
 		string firstNamespace = "http://foo.com/foo.xsd";
 		string secondNamespace = "http://bar.com/bar.xsd";
 		
@@ -42,20 +44,20 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void NamespaceCount()
 		{
-			Assert.AreEqual(2, namespaceCompletionData.Length,
+			Assert.AreEqual(2, namespaceCompletionData.Items.ToArray().Length,
 			                "Should be 2 namespaces.");
 		}
 		
 		[Test]
 		public void ContainsFirstNamespace()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(namespaceCompletionData, firstNamespace));
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(namespaceCompletionData.Items.ToArray(), firstNamespace));
 		}
 		
 		[Test]
 		public void ContainsSecondNamespace()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(namespaceCompletionData, secondNamespace));
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(namespaceCompletionData.Items.ToArray(), secondNamespace));
 		}		
 		
 		string GetSchema(string namespaceURI)

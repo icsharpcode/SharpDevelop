@@ -5,11 +5,12 @@
 //     <version>$Revision: 915 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
+using System;
+using System.IO;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace XmlEditor.Tests.Schema
 {
@@ -19,10 +20,10 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class RestrictionElementTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] childElements;
-		ICompletionData[] attributes;
-		ICompletionData[] annotationChildElements;
-		ICompletionData[] choiceChildElements;
+		ICompletionItem[] childElements;
+		ICompletionItem[] attributes;
+		ICompletionItem[] annotationChildElements;
+		ICompletionItem[] choiceChildElements;
 		
 		public override void FixtureInit()
 		{			

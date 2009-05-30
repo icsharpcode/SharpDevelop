@@ -5,18 +5,19 @@
 //     <version>$Revision: 1228 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
+using System;
+using System.IO;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace XmlEditor.Tests.Schema
 {
 	[TestFixture]
 	public class MissingSchemaElementTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] barElementAttributes;
+		ICompletionItem[] barElementAttributes;
 		
 		public override void FixtureInit()
 		{

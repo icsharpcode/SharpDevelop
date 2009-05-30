@@ -30,7 +30,7 @@ namespace ICSharpCode.XmlEditor
 		bool attributesGridVisible = true;
 		
 		[Flags]
-		enum XmlTreeViewContainerControlStates {
+		internal enum XmlTreeViewContainerControlStates {
 			None                = 0,
 			ElementSelected     = 1,
 			RootElementSelected = 2,

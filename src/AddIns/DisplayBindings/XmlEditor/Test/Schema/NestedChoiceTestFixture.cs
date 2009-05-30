@@ -5,11 +5,12 @@
 //     <version>$Revision: 915 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
+using System;
+using System.IO;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace XmlEditor.Tests.Schema
 {
@@ -20,8 +21,8 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class NestedChoiceTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] noteChildElements;
-		ICompletionData[] titleChildElements;
+		ICompletionItem[] noteChildElements;
+		ICompletionItem[] titleChildElements;
 		
 		public override void FixtureInit()
 		{

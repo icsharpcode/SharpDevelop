@@ -131,21 +131,21 @@ namespace ICSharpCode.XmlEditor
 		
 		protected override void LoadFromPrimary()
 		{
-			ITextEditorProvider provider = this.PrimaryViewContent as ITextEditorProvider;
-			treeViewContainer.LoadXml(provider.TextEditor.Document.Text, XmlView.GetProvider(Path.GetExtension(provider.TextEditor.FileName)));
+			IFileDocumentProvider provider = this.PrimaryViewContent as IFileDocumentProvider;
+			treeViewContainer.LoadXml(provider.GetDocumentForFile(this.PrimaryFile).Text, XmlView.GetProvider(Path.GetExtension(this.PrimaryFileName)));
 		}
 		
 		protected override void SaveToPrimary()
 		{
 			// Do not modify text in the primary view if the data is not well-formed XML
-			if (!treeViewContainer.IsErrorMessageTextBoxVisible) {
-				ITextEditorProvider provider = this.PrimaryViewContent as ITextEditorProvider;
+			if (!treeViewContainer.IsErrorMessageTextBoxVisible && treeViewContainer.IsDirty) {
+				IFileDocumentProvider provider = this.PrimaryViewContent as IFileDocumentProvider;
 				StringWriter str = new StringWriter(CultureInfo.InvariantCulture);
 				XmlTextWriter writer = new XmlTextWriter(str);
 				
 				writer.Formatting = Formatting.Indented;
 				treeViewContainer.Document.WriteTo(writer);
-				provider.TextEditor.Document.Text = str.ToString();
+				provider.GetDocumentForFile(this.PrimaryFile).Text = str.ToString();
 			}
 		}
 		

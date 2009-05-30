@@ -5,12 +5,13 @@
 //     <version>$Revision: 915 $</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.XmlEditor;
-using NUnit.Framework;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.IO;
 using System.Xml;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.XmlEditor;
+using NUnit.Framework;
 
 namespace XmlEditor.Tests.Schema
 {
@@ -21,7 +22,7 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AttributeValueAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] barAttributeValuesCompletionData;
+		ICompletionItem[] barAttributeValuesCompletionData;
 		
 		public override void FixtureInit()
 		{	

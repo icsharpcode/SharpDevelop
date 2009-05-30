@@ -5,9 +5,9 @@
 //     <version>$Revision: 2760 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Windows.Forms;
-
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
@@ -20,13 +20,13 @@ namespace XmlEditor.Tests.Completion
 	[TestFixture]
 	public class ProcessKeyTests
 	{
-		XmlCompletionDataProvider provider;		
+		ICompletionItemList list;
 		
 		[SetUp]
 		public void Init()
 		{
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			provider = new XmlCompletionDataProvider(schemas, null, null);
+			list = new XmlCompletionDataProvider(schemas, null, null).GenerateCompletionData("", '<');
 		}
 		
 		/// <summary>
@@ -35,19 +35,19 @@ namespace XmlEditor.Tests.Completion
 		[Test]
 		public void SpaceChar()
 		{
-			Assert.AreEqual(CompletionDataProviderKeyResult.NormalKey, provider.ProcessKey(' '));
+			Assert.AreEqual(CompletionDataProviderKeyResult.NormalKey, list.ProcessInput(' '));
 		}
 		
 		[Test]
 		public void TabChar()
 		{
-			Assert.AreEqual(CompletionDataProviderKeyResult.InsertionKey, provider.ProcessKey('\t'));
+			Assert.AreEqual(CompletionDataProviderKeyResult.InsertionKey, list.ProcessInput('\t'));
 		}		
 
 		[Test]
 		public void ReturnChar()
 		{
-			Assert.AreEqual(CompletionDataProviderKeyResult.InsertionKey, provider.ProcessKey((char)Keys.Return));
+			Assert.AreEqual(CompletionDataProviderKeyResult.InsertionKey, list.ProcessInput((char)Keys.Return));
 		}		
 	}
 }
