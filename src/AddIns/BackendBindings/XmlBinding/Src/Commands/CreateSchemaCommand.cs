@@ -5,7 +5,6 @@
 //     <version>$Revision: -1 $</version>
 // </file>
 
-using ICSharpCode.XmlEditor.Gui;
 using System;
 using System.IO;
 using ICSharpCode.Core;

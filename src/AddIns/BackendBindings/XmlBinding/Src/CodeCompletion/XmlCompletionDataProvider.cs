@@ -10,7 +10,6 @@ using System;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.XmlEditor.Parser;
 
 namespace ICSharpCode.XmlEditor
 {

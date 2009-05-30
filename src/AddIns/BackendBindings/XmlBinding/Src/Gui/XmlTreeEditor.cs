@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Xml;
 using ICSharpCode.Core;
-using ICSharpCode.XmlEditor.Parser;
 
 namespace ICSharpCode.XmlEditor
 {

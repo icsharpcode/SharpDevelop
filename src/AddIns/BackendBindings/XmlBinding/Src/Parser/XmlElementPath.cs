@@ -8,7 +8,7 @@
 using System;
 using System.Text;
 
-namespace ICSharpCode.XmlEditor.Parser
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	/// Represents the path to an xml element starting from the root of the

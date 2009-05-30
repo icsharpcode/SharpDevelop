@@ -8,7 +8,7 @@
 using System;
 using System.Xml;
 
-namespace ICSharpCode.XmlEditor.Parser
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	/// An <see cref="XmlQualifiedName"/> with the namespace prefix.

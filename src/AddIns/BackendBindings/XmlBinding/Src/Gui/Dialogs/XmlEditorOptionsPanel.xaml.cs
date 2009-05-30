@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 
-namespace ICSharpCode.XmlEditor.Gui.Dialogs
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	/// Interaction logic for XmlEditorOptionsPanel.xaml

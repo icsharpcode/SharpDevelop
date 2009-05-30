@@ -20,10 +20,8 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.XmlEditor.Gui;
-using ICSharpCode.XmlEditor.Parser;
 
-namespace ICSharpCode.XmlEditor.Gui
+namespace ICSharpCode.XmlEditor
 {
 	public class XmlView
 	{

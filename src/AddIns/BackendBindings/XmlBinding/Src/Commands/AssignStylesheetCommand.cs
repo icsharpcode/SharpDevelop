@@ -9,7 +9,6 @@ using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.XmlEditor.Gui;
 
 namespace ICSharpCode.XmlEditor
 {

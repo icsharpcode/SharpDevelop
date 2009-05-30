@@ -5,7 +5,6 @@
 //     <version>$Revision: -1 $</version>
 // </file>
 
-using ICSharpCode.XmlEditor.Gui;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,10 +12,10 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 

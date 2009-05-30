@@ -14,7 +14,6 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.XmlEditor.Gui;
 using System.Xml;
 
 namespace ICSharpCode.XmlEditor

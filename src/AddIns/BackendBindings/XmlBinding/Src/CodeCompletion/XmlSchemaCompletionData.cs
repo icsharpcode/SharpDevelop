@@ -12,7 +12,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.XmlEditor.Parser;
 
 namespace ICSharpCode.XmlEditor
 {

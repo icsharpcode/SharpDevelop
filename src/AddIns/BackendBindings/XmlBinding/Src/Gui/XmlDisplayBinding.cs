@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 
-namespace ICSharpCode.XmlEditor.Gui
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	/// Display binding for the xml editor.

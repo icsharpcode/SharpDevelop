@@ -8,7 +8,6 @@
 using ICSharpCode.SharpDevelop.Gui;
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.XmlEditor.Gui;
 
 namespace ICSharpCode.XmlEditor
 {

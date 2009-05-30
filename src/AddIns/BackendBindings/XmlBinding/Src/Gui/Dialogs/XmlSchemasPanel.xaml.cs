@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 using Microsoft.Win32;
 
-namespace ICSharpCode.XmlEditor.Gui.Dialogs
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	/// Interaction logic for XmlSchemasPanel.xaml

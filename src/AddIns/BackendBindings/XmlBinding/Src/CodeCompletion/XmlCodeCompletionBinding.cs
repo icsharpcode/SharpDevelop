@@ -6,10 +6,9 @@
 // </file>
 
 using System;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.XmlEditor.Parser;
-using ICSharpCode.XmlEditor;
 using System.IO;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XmlEditor
 {

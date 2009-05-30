@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace ICSharpCode.XmlEditor.Parser
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
 	///   A collection that stores <see cref='QualifiedName'/> objects.
