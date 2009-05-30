@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
@@ -6,24 +6,20 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
-using NUnit.Framework;
 using PythonBinding.Tests.Utils;
+using NUnit.Framework;
 
 namespace PythonBinding.Tests
 {
-	/// <summary>
-	/// Tests that the RunPythonCommand class runs the Python console
-	/// passing the filename of the python script active in SharpDevelop.
-	/// </summary>
 	[TestFixture]
-	public class RunPythonCommandTestFixture
+	public class DebugPythonCommandTestFixture
 	{
 		MockDebugger debugger;
-		RunPythonCommand command;
+		RunDebugPythonCommand command;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -42,20 +38,14 @@ namespace PythonBinding.Tests
 			options.PythonFileName = @"C:\IronPython\ipy.exe";
 		
 			debugger = new MockDebugger();
-			command = new RunPythonCommand(workbench, options, debugger);
+			command = new RunDebugPythonCommand(workbench, options, debugger);
 			command.Run();
 		}
-		
+				
 		[Test]
-		public void RunPythonCommandIsAbstractCommand()
+		public void DebuggerStartMethodCalled()
 		{
-			Assert.IsNotNull(command as AbstractCommand);
-		}
-		
-		[Test]
-		public void DebuggerStartWithoutDebuggingMethodCalled()
-		{
-			Assert.IsTrue(debugger.StartWithoutDebuggingMethodCalled);
+			Assert.IsTrue(debugger.StartMethodCalled);
 		}
 		
 		[Test]
@@ -67,7 +57,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void ProcessInfoArgs()
 		{
-			Assert.AreEqual("\"C:\\Projects\\test.py\"", debugger.ProcessStartInfo.Arguments);
+			Assert.AreEqual("-D \"C:\\Projects\\test.py\"", debugger.ProcessStartInfo.Arguments);
 		}
 	}
 }

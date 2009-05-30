@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
@@ -7,26 +7,23 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.PythonBinding
 {
-	/// <summary>
-	/// Stops the Python console that is currently running.
-	/// </summary>
-	public class StopPythonCommand : AbstractMenuCommand
+	public class RunDebugPythonCommand : RunPythonCommand
 	{
-		public StopPythonCommand()
+		public RunDebugPythonCommand(IWorkbench workbench, AddInOptions options, IDebugger debugger) 
+			: base(workbench, options, debugger)
 		{
+			Debug = true;
 		}
 		
-		public override void Run()
+		public RunDebugPythonCommand()
+			: this(WorkbenchSingleton.Workbench, new AddInOptions(), DebuggerService.CurrentDebugger)
 		{
-			RunPythonCommand runCommand = RunPythonCommand.RunningCommand;
-			if (runCommand != null) {
-				runCommand.Stop();
-			}
 		}
 	}
 }
