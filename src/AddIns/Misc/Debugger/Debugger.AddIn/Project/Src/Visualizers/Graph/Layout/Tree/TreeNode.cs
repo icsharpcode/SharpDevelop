@@ -45,6 +45,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public abstract double MainSize { get; }
 		public abstract double LateralSize { get; }
 		
+		public double MainSizeWithMargin { get { return MainSize + MainMargin; } }
+		public double LateralSizeWithMargin { get { return LateralSize + LateralMargin; } }
+		
 		public abstract double MainMargin { get; }
 		public abstract double LateralMargin { get; }
 		
