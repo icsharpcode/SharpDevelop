@@ -197,5 +197,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 		}
+		
+		public object Tag { get; set; }
 	}
 }
