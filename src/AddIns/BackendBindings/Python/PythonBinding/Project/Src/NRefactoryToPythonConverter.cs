@@ -538,25 +538,6 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		/// <summary>
-		/// Saves the field information so it can be added to the
-		/// class constructor. This is done since python requires you
-		/// to initialize any class instance variables in the
-		/// __init__ method. For example, consider the equivalent 
-		/// C# and Python code:
-		/// 
-		/// class Foo
-		/// {
-		/// 	private int i = 0;
-		/// }
-		/// 
-		/// class Foo:
-		/// 	def __init__(self):
-		/// 		i = 0
-		/// 
-		/// The only difference is that the initialization is moved to the
-		/// class constructor.
-		/// </summary>
 		public object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{					
 			return null;
@@ -834,7 +815,11 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			Append(objectCreateExpression.CreateType.Type + "(");
+			Append(objectCreateExpression.CreateType.Type);
+			if (IsGenericType(objectCreateExpression)) {
+				AppendGenericTypes(objectCreateExpression);
+			}
+			Append("(");
 
 			// Add parameters.
 			bool firstParameter = true;
@@ -1708,6 +1693,35 @@ namespace ICSharpCode.PythonBinding
 			if (method.Name == "Main") {
 				entryPointMethods.Add(method);
 			}
+		}
+		
+		/// <summary>
+		/// Returns true if the object being created is a generic.
+		/// </summary>
+		static bool IsGenericType(ObjectCreateExpression expression)
+		{
+			return expression.CreateType.GenericTypes.Count > 0;
+		}
+		
+		/// <summary>
+		/// Appends the types used when creating a generic surrounded by square brackets.
+		/// </summary>
+		void AppendGenericTypes(ObjectCreateExpression expression)
+		{
+			Append("[");
+			List<TypeReference> typeRefs = expression.CreateType.GenericTypes;
+			for (int i = 0; i < typeRefs.Count; ++i) {
+				if (i != 0) {
+					Append(", ");
+				}
+				TypeReference typeRef = typeRefs[i];
+				if (typeRef.IsArrayType) {
+					Append("System.Array[" + typeRef.Type + "]");
+				} else {
+					Append(typeRef.Type);
+				}
+			}
+			Append("]");
 		}
 	}
 }
