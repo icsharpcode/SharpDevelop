@@ -237,6 +237,7 @@
     <Compile Include="Designer\PythonDesignerLoaderProviderTestFixture.cs" />
     <Compile Include="Designer\PythonDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\PythonPropertyAssignmentToStringTests.cs" />
+    <Compile Include="Designer\RemoveMainMenuStripFromFormTestFixture.cs" />
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
     <Compile Include="Designer\TextEditorIndentPassedToGeneratorTestFixture.cs" />
     <Compile Include="Designer\UnknownTypeTestFixture.cs" />

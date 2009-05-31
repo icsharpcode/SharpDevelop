@@ -500,7 +500,10 @@ namespace ICSharpCode.PythonBinding
 				string propertyName = propertyOwnerName + "." + propertyDescriptor.Name;
 				Control control = propertyValue as Control;
 				if (control != null) {
-					codeBuilder.AppendIndentedLine(propertyName + " = " + GetControlReference(control));
+					string controlRef = GetControlReference(control);
+					if (controlRef != null) {
+						codeBuilder.AppendIndentedLine(propertyName + " = " + controlRef);
+					}
 				} else {
 					codeBuilder.AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
 				}
@@ -726,8 +729,10 @@ namespace ICSharpCode.PythonBinding
 		{
 			if (IsRootComponent(control)) {
 				return "self";
+			} else if (!String.IsNullOrEmpty(control.Name)) {
+				return "self._" + control.Name;
 			}
-			return "self._" + control.Name;
+			return null;
 		}
 		
 		static ExtenderProvidedPropertyAttribute GetExtenderAttribute(PropertyDescriptor property)
