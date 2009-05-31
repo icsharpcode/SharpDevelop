@@ -8,33 +8,10 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
-	public class TestCommand : System.Windows.Input.ICommand
-	{
-		public event EventHandler CanExecuteChanged
-		{ 
-			add {} 
-			remove {}
-		}
-		
-		public void Execute(object parameter)
-		{
-			CommandsRegistry.GetRoutedUICommand("SDBuildCommands.BuildSolution").Execute(parameter, WorkbenchSingleton.MainWindow);
-			
-			System.Windows.MessageBox.Show("test");
-		}
-		
-		public bool CanExecute(object parameter)
-		{
-			return true;
-		}
-	}
-	
 	public class OptionsCommand : AbstractMenuCommand
 	{
 		public static bool? ShowTabbedOptions(string dialogTitle, AddInTreeNode node)

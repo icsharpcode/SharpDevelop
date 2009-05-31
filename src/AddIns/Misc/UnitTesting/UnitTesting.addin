@@ -21,7 +21,7 @@
 		     category = "Tools"
 		     title    = "${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
 		     icon     = "PadIcons.NUnitTest"
-		     shortcut = "Ctrl+Alt+T"
+		     shortcut = "Control|Alt|T"
 		     class    = "ICSharpCode.UnitTesting.UnitTestsPad"
 		     defaultPosition = "Right, Hidden" />
 	</Path>

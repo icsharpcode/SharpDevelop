@@ -117,13 +117,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public CodeEditor()
 		{
-			var contextName = this.GetType().FullName;
-			CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, this, CommandsRegistry.CreateCommandBindingUpdateHandler(CommandBindings, contextName, this));
-			CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, this, CommandsRegistry.CreateInputBindingUpdateHandler(InputBindings, contextName, this));
-			CommandsRegistry.RegisterCommandBinding(contextName, this, "SDWindowCommands.SplitView", OnSplitView, OnCanSplitView);
-			
-			CommandsRegistry.InvokeCommandBindingUpdateHandlers(contextName, this);
-			CommandsRegistry.InvokeInputBindingUpdateHandlers(contextName, this);
+			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
 			
 			textMarkerService = new TextMarkerService(this);
 			iconBarManager = new IconBarManager();
@@ -204,10 +198,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditor.Save(stream);
 		}
 		
-		void OnCanSplitView(object sender, CanExecuteRoutedEventArgs e)
-		{
-			e.CanExecute = true;
-		}
 		void OnSplitView(object sender, ExecutedRoutedEventArgs e)
 		{
 			if (secondaryTextEditor == null) {

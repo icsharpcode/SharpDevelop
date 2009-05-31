@@ -67,24 +67,24 @@
 		          insertafter  = "HtmlHelp2Separator2"
 		          label        = "${res:AddIns.HtmlHelp2.Contents}"
 		          icon         = "HtmlHelp2.16x16.Toc"
-		          shortcut     = "Ctrl+Alt+F1"
+		          shortcut     = "Control|Alt|F1"
 		          class        = "HtmlHelp2.ShowTocMenuCommand"/>
 		<MenuItem id           = "IndexPadCommand"
 		          label        = "${res:AddIns.HtmlHelp2.Index}"
 		          icon         = "HtmlHelp2.16x16.Index"
-		          shortcut     = "Ctrl+Alt+F2"
+		          shortcut     = "Control|Alt|F2"
 		          class        = "HtmlHelp2.ShowIndexMenuCommand"
 		          insertafter  = "TocPadCommand"/>
 		<MenuItem id           = "SearchPadCommand"
 		          label        = "${res:AddIns.HtmlHelp2.SearchCommand}"
 		          icon         = "HtmlHelp2.16x16.Search"
-		          shortcut     = "Ctrl+Alt+F3"
+		          shortcut     = "Control|Alt|F3"
 		          class        = "HtmlHelp2.ShowSearchMenuCommand"
 		          insertafter  = "IndexPadCommand"/>
 		<MenuItem id           = "IndexResultsPadCommand"
 		          label        = "${res:AddIns.HtmlHelp2.IndexResults}"
 		          icon         = "HtmlHelp2.16x16.IndexResults"
-		          shortcut     = "Shift+Alt+F2"
+		          shortcut     = "Shift|Alt|F2"
 		          class        = "HtmlHelp2.ShowIndexResultsMenuCommand"
 		          insertafter  = "SearchPadCommand"
 		          insertbefore = "Separator1"/>
@@ -92,7 +92,7 @@
 		          insertbefore = "TocPadCommand"
 		          label        = "${res:AddIns.HtmlHelp2.DynamicHelp}"
 		          icon         = "HtmlHelp2.16x16.DynamicHelp"
-		          shortcut     = "Ctrl+F1"
+		          shortcut     = "Control|F1"
 		          class        = "HtmlHelp2.ShowDynamicHelpMenuCommand"/>
 	</Path>
 	

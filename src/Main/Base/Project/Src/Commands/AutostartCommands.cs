@@ -125,25 +125,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 			//WorkbenchSingleton.MainForm.Focus(); // windows.forms focus workaround
 			
 			ParserService.StartParserThread();
-
-			// Register gesture place holders
-			var placeHolderDescriptors = AddInTree.BuildItems<GesturesPlaceHolderDescriptor>("/SharpDevelop/Workbench/GesturePlaceHolder", this, false);
-			foreach(var desc in placeHolderDescriptors) {
-				BaseGesturesPlaceHolderRegistry.RegisterPlaceHolder(desc.Name, desc.Text);
-				
-				if(!string.IsNullOrEmpty(desc.Gestures)) {
-					BaseGesturesPlaceHolderRegistry.AddGestures(desc.Name, desc.Gestures.Split(new []{'|'}));
-				}
-			}
-						
+			
 			// finally run the workbench window ...
 			//Application.AddMessageFilter(new FormKeyHandler());
 			//Application.Run(WorkbenchSingleton.MainForm);
-			
 			App application = new App();
 			System.Windows.Forms.Integration.WindowsFormsHost.EnableWindowsFormsInterop();
 			application.Run(WorkbenchSingleton.MainWindow);
-
+			
 			// save the workbench memento in the ide properties
 			try {
 				PropertyService.Set(workbenchMemento, WorkbenchSingleton.Workbench.CreateMemento());

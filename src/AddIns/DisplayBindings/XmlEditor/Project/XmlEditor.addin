@@ -59,7 +59,7 @@
 				<MenuItem id = "ValidateXml"
 				          label = "${res:ICSharpCode.XmlEditor.ValidateXmlMenuLabel}"
 				          class = "ICSharpCode.XmlEditor.ValidateXmlCommand"
-				          shortcut = "Ctrl+Shift+V" />
+				          shortcut = "Control|Shift|V" />
 				<MenuItem id = "Separator1" type = "Separator"/>
 				<ComplexCondition action="Disable">
 					<Not>
@@ -81,7 +81,7 @@
 					<MenuItem id="RunTransform"
 					          label="${res:ICSharpCode.XmlEditor.RunXSLT}"
 					          class="ICSharpCode.XmlEditor.RunXslTransformCommand"
-					          shortcut="Ctrl+Shift+T"/>
+					          shortcut="Control|Shift|T"/>
 				</ComplexCondition>
 				<MenuItem id = "Separator2" type = "Separator"/>
 				<MenuItem id = "Format"
@@ -96,17 +96,17 @@
 		<MenuItem id = "Cut"
 		          label = "${res:XML.TextAreaContextMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
-		          shortcut = "Ctrl+X"
+		          shortcut = "Control|X"
 		          class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
 		<MenuItem id = "Copy"
 		          label = "${res:XML.TextAreaContextMenu.Copy}"
 		          icon = "Icons.16x16.CopyIcon"
-		          shortcut = "Ctrl+C"
+		          shortcut = "Control|C"
 		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 		<MenuItem id = "Paste"
 		          label = "${res:XML.TextAreaContextMenu.Paste}"
 		          icon = "Icons.16x16.PasteIcon"
-		          shortcut = "Ctrl+V"
+		          shortcut = "Control|V"
 		          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
 		<MenuItem id = "Delete"
 		          label = "${res:XML.MainMenu.EditMenu.Delete}"
@@ -116,7 +116,7 @@
 		<MenuItem id = "Save"
 		          label = "${res:XML.MainMenu.FileMenu.Save}"
 		          icon = "Icons.16x16.SaveIcon"
-		          shortcut = "Ctrl+S"
+		          shortcut = "Control|S"
 		          class = "ICSharpCode.SharpDevelop.Commands.SaveFile"/>
 		<MenuItem id = "SaveAs"
 		          label = "${res:XML.MainMenu.FileMenu.SaveAs}"
@@ -127,7 +127,7 @@
 		<MenuItem id = "Separator2" type = "Separator"/>
 		<MenuItem id = "Indent"
 		          label = "${res:XML.TextAreaContextMenu.Indent}"
-		          shortcut = "Ctrl+I"
+		          shortcut = "Control|I"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
 		<MenuItem id = "HideXPathResults"
 			      label = "${res:ICSharpCode.XmlEditor.HideXPathResults}"
@@ -159,8 +159,8 @@
 	</Path>
 	
 	<Path path = "/AddIns/XmlEditor/EditActions">
-		<EditAction id = "XmlCompletionPopup" class = "ICSharpCode.XmlEditor.CodeCompletionPopupCommand"  keys = "Ctrl+Space"/>
-		<EditAction id = "GoToDefinition" class = "ICSharpCode.XmlEditor.GoToSchemaDefinitionEditAction" keys = "Ctrl+Enter"/>
+		<EditAction id = "XmlCompletionPopup" class = "ICSharpCode.XmlEditor.CodeCompletionPopupCommand"  keys = "Control|Space"/>
+		<EditAction id = "GoToDefinition" class = "ICSharpCode.XmlEditor.GoToSchemaDefinitionEditAction" keys = "Control|Enter"/>
 	</Path>
 
 	<!-- XPath Query pad -->
@@ -203,17 +203,17 @@
 		<MenuItem id = "Cut"
 		          label = "${res:XML.TextAreaContextMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
-		          shortcut = "Ctrl+X"
+		          shortcut = "Control|X"
 		          class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
 		<MenuItem id = "Copy"
 		          label = "${res:XML.TextAreaContextMenu.Copy}"
 		          icon = "Icons.16x16.CopyIcon"
-		          shortcut = "Ctrl+C"
+		          shortcut = "Control|C"
 		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 		<MenuItem id = "Paste"
 		          label = "${res:XML.TextAreaContextMenu.Paste}"
 		          icon = "Icons.16x16.PasteIcon"
-		          shortcut = "Ctrl+V"
+		          shortcut = "Control|V"
 		          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
 		<MenuItem id = "Delete"
 		          label = "${res:XML.MainMenu.EditMenu.Delete}"

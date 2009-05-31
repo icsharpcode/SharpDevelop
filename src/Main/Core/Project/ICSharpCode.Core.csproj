@@ -60,14 +60,6 @@
     <Compile Include="Src\AddInTree\AddIn\Codon.cs" />
     <Compile Include="Src\AddInTree\AddIn\ComplexCondition.cs" />
     <Compile Include="Src\AddInTree\AddIn\Condition.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\CommandBindingDescriptor.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\CommandBindingDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\GesturesPlaceHolderDescriptor.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\GesturesPlaceHolderDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\InputBindingDescriptor.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\InputBindingDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\RoutedUICommandDescriptor.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\RoutedUICommandDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\ExtensionPath.cs" />
     <Compile Include="Src\AddInTree\AddIn\IConditionEvaluator.cs" />
     <Compile Include="Src\AddInTree\AddIn\ICondition.cs" />
@@ -94,7 +86,6 @@
     <Compile Include="Src\AddInTree\TreePathNotFoundException.cs" />
     <Compile Include="Src\CoreException.cs" />
     <Compile Include="Src\Services\ApplicationStateInfoService.cs" />
-    <Compile Include="Src\Services\CommandsService\BaseGesturesPlaceHolderRegistry.cs" />
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.Minimal.cs" />
@@ -131,9 +122,7 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ITextBoxCommand.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Src\AddInTree\AddIn\DefaultDoozers\Command" />
     <Folder Include="Src\Services\LoggingService" />
-    <Folder Include="Src\Services\CommandsService" />
     <Folder Include="Src\Services\ResourceService" />
     <Content Include="..\..\..\..\data\schemas\AddIn.xsd">
       <Link>Src\AddInTree\AddIn\AddIn.xsd</Link>

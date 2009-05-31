@@ -43,7 +43,7 @@ namespace ICSharpCode.Core
 	/// clicking the item.
 	/// </attribute>
 	/// <attribute name="shortcut" use="optional">
-	/// Shortcut that activates the command (e.g. "Ctrl+S").
+	/// Shortcut that activates the command (e.g. "Control|S").
 	/// </attribute>
 	/// <children childTypes="MenuItem">
 	/// If "type" is "Menu", the item can have sub-menuitems.

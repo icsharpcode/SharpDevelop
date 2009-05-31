@@ -20,7 +20,7 @@
 		     insertafter  = "Bookmarks"
 		     insertbefore = "DefinitionView"
 		     icon         = "CodeCoverage.Icons.16x16.Pad"
-		     shortcut     = "Ctrl+Alt+G"
+		     shortcut     = "Control|Alt|G"
 		     class        = "ICSharpCode.CodeCoverage.CodeCoveragePad"
 		     defaultPosition = "Bottom, Hidden" />
 	</Path>
