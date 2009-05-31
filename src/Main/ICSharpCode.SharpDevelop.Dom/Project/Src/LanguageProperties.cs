@@ -309,6 +309,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return base.GetFindMemberReferencesTextFinder(member);
 				}
 			}
+			
+			public override bool ShowMember(IMember member, bool showStatic)
+			{
+				if (!base.ShowMember(member, showStatic))
+					return false;
+				// do not show 'Finalize' methods (they are not directly callable from C#)
+				IMethod method = member as IMethod;
+				if (method != null) {
+					if (method.Name == "Finalize" && method.Parameters.Count == 0)
+						return false;
+				}
+				return true;
+			}
 		}
 		#endregion
 		
