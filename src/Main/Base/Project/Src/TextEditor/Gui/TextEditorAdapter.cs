@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -88,6 +88,12 @@ namespace ICSharpCode.SharpDevelop
 			public string IndentationString {
 				get {
 					return properties.ConvertTabsToSpaces ? new string(' ', properties.IndentationSize) : "\t";
+				}
+			}
+			
+			public bool AutoInsertBlockEnd {
+				get {
+					return true;
 				}
 			}
 			

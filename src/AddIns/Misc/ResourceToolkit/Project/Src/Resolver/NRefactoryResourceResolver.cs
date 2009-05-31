@@ -487,7 +487,7 @@ namespace Hornung.ResourceToolkit.Resolver
 		/// <returns>The language properties of the specified file, or <c>null</c> if the language cannot be determined.</returns>
 		public static LanguageProperties GetLanguagePropertiesForFile(string fileName)
 		{
-			ICSharpCode.SharpDevelop.Dom.IParser p = ResourceResolverService.GetParser(fileName);
+			var p = ResourceResolverService.GetParser(fileName);
 			if (p == null) {
 				return null;
 			}

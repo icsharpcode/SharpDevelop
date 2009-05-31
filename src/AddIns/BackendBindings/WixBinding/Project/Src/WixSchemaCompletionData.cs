@@ -5,14 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.WixBinding
@@ -84,7 +84,7 @@ namespace ICSharpCode.WixBinding
 		{
 			XmlElementPath path = GetPath(elementName);
 			List<string> values = new List<string>();
-			foreach (ICompletionData data in GetAttributeValueCompletionData(path, attributeName)) {
+			foreach (ICompletionItem data in GetAttributeValueCompletionData(path, attributeName)) {
 				values.Add(data.Text);
 			}
 			return values.ToArray();

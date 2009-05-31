@@ -10,13 +10,11 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
-using System.Windows.Threading;
+using ICSharpCode.AvalonEdit.Editing;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {

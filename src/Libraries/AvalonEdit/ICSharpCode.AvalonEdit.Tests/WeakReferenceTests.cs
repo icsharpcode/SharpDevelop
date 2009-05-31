@@ -7,9 +7,9 @@
 
 using System;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Rendering;
 using NUnit.Framework;
-using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.Tests
 {

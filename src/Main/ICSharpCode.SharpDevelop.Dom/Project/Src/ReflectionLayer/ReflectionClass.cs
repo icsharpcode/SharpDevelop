@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 		static object ReplaceTypeByIReturnType(IProjectContent pc, object val)
 		{
 			if (val is Type) {
-				return ReflectionReturnType.Create(pc, null, (Type)val, false);
+				return ReflectionReturnType.Create(pc, null, (Type)val, false, false);
 			} else {
 				return val;
 			}

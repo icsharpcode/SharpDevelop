@@ -40,6 +40,37 @@ namespace ICSharpCode.SharpDevelop.Gui
 			placeholder.IsVisibleChanged += AvalonPadContent_IsVisibleChanged;
 		}
 		
+		public void ShowInDefaultPosition()
+		{
+			AnchorStyle style;
+			if ((descriptor.DefaultPosition & DefaultPadPositions.Top) != 0)
+				style = AnchorStyle.Top;
+			else if ((descriptor.DefaultPosition & DefaultPadPositions.Left) != 0)
+				style = AnchorStyle.Left;
+			else if ((descriptor.DefaultPosition & DefaultPadPositions.Bottom) != 0)
+				style = AnchorStyle.Bottom;
+			else
+				style = AnchorStyle.Right;
+			layout.DockingManager.Show(this, DockableContentState.Docked, style);
+			SetPaneSizeWorkaround(this.ContainerPane);
+			if ((descriptor.DefaultPosition & DefaultPadPositions.Hidden) != 0)
+				layout.DockingManager.Hide(this);
+		}
+		
+		static void SetPaneSizeWorkaround(Pane pane)
+		{
+			ResizingPanel panel = pane.Parent as ResizingPanel;
+			if (panel != null) {
+				if (panel.Orientation == Orientation.Horizontal) {
+					if (ResizingPanel.GetResizeWidth(pane).Value == 0)
+						ResizingPanel.SetResizeWidth(pane, new GridLength(200));
+				} else if (panel.Orientation == Orientation.Vertical) {
+					if (ResizingPanel.GetResizeHeight(pane).Value == 0)
+						ResizingPanel.SetResizeHeight(pane, new GridLength(150));
+				}
+			}
+		}
+		
 		void AvalonPadContent_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(LoadPadContentIfRequired));
@@ -63,6 +94,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (padInstance != null) {
 				padInstance.Dispose();
 			}
+		}
+		
+		public override string ToString()
+		{
+			return "[AvalonPadContent " + this.Name + "]";
 		}
 	}
 }

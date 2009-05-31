@@ -39,9 +39,7 @@ namespace XmlEditor.Tests.Tree
 		public void SetUpFixture()
 		{
 			// Need to initialize the properties service.
-			if (!PropertyService.Initialized) {
-				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
-			}
+			PropertyService.InitializeServiceForUnitTests();
 		}
 		
 		[SetUp]

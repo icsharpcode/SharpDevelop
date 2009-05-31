@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
-
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Editing;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -114,6 +114,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 				}
 			}
 			
+			public bool AutoInsertBlockEnd {
+				get {
+					return true;
+				}
+			}
+			
 			public bool ConvertTabsToSpaces {
 				get {
 					return avalonEditOptions.ConvertTabsToSpaces;
@@ -131,11 +137,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			get { return null; }
 		}
 		
-		public virtual void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider)
-		{
-		}
-		
-		public virtual void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
+		void ITextEditor.ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
 		{
 		}
 		

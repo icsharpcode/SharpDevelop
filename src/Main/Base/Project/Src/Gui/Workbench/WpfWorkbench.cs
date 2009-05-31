@@ -56,15 +56,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ISynchronizeInvoke SynchronizingObject { get; private set; }
 		public Window MainWindow { get { return this; } }
 		
-		List<PadDescriptor> padViewContentCollection = new List<PadDescriptor>();
+		List<PadDescriptor> padDescriptorCollection = new List<PadDescriptor>();
 		
 		ToolBar[] toolBars;
 		
 		public WpfWorkbench()
 		{
 			this.SynchronizingObject = new WpfSynchronizeInvoke(this.Dispatcher);
-			this.MainWin32Window = this.GetWin32Window();
 			InitializeComponent();
+		}
+		
+		protected override void OnSourceInitialized(EventArgs e)
+		{
+			this.MainWin32Window = this.GetWin32Window();
+			base.OnSourceInitialized(e);
 		}
 		
 		public void Initialize()
@@ -108,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		// keep a reference to the event handler to prevent it from being gargabe collected
+		// keep a reference to the event handler to prevent it from being garbage collected
 		// (CommandManager.RequerySuggested only keeps weak references to the event handlers)
 		EventHandler requerySuggestedEventHandler;
 
@@ -127,12 +132,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public ICollection<IViewContent> ViewContentCollection {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				return WorkbenchWindowCollection.SelectMany(w => w.ViewContents).ToList().AsReadOnly();
 			}
 		}
 		
 		public ICollection<IViewContent> PrimaryViewContents {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				return (from window in WorkbenchWindowCollection
 				        where window.ViewContents.Count > 0
 				        select window.ViewContents[0]
@@ -142,6 +149,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				if (workbenchLayout != null)
 					return workbenchLayout.WorkbenchWindows;
 				else
@@ -151,7 +159,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IList<PadDescriptor> PadContentCollection {
 			get {
-				return padViewContentCollection.AsReadOnly();
+				WorkbenchSingleton.AssertMainThread();
+				return padDescriptorCollection.AsReadOnly();
 			}
 		}
 		
@@ -159,6 +168,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
+				WorkbenchSingleton.AssertMainThread();
 				return activeWorkbenchWindow;
 			}
 			private set {
@@ -213,7 +223,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		IViewContent activeViewContent;
 		
 		public IViewContent ActiveViewContent {
-			get { return activeViewContent; }
+			get {
+				WorkbenchSingleton.AssertMainThread();
+				return activeViewContent;
+			}
 			private set {
 				if (activeViewContent != value) {
 					activeViewContent = value;
@@ -228,7 +241,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		object activeContent;
 		
 		public object ActiveContent {
-			get { return activeContent; }
+			get {
+				WorkbenchSingleton.AssertMainThread();
+				return activeContent;
+			}
 			private set {
 				if (activeContent != value) {
 					activeContent = value;
@@ -247,6 +263,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return workbenchLayout;
 			}
 			set {
+				WorkbenchSingleton.AssertMainThread();
+				
 				if (workbenchLayout != null) {
 					workbenchLayout.ActiveContentChanged -= OnActiveWindowChanged;
 					workbenchLayout.Detach();
@@ -273,6 +291,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowView(IViewContent content, bool switchToOpenedView)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			if (content == null)
 				throw new ArgumentNullException("content");
 			System.Diagnostics.Debug.Assert(WorkbenchLayout != null);
@@ -287,10 +306,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowPad(PadDescriptor content)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			if (content == null)
 				throw new ArgumentNullException("content");
+			if (padDescriptorCollection.Contains(content))
+				throw new ArgumentException("Pad is already loaded");
 			
-			padViewContentCollection.Add(content);
+			padDescriptorCollection.Add(content);
 			
 			if (WorkbenchLayout != null) {
 				WorkbenchLayout.ShowPad(content);
@@ -303,6 +325,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public PadDescriptor GetPad(Type type)
 		{
+			WorkbenchSingleton.AssertMainThread();
+			if (type == null)
+				throw new ArgumentNullException("type");
 			foreach (PadDescriptor pad in PadContentCollection) {
 				if (pad.Class == type.FullName) {
 					return pad;
@@ -318,6 +343,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void CloseAllViews()
 		{
+			WorkbenchSingleton.AssertMainThread();
 			try {
 				closeAll = true;
 				foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
@@ -433,7 +459,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnClosing(e);
 			if (!e.Cancel) {
+				Project.ProjectService.SaveSolutionPreferences();
+				
+				while (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count > 0) {
+					IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[0];
+					if (!window.CloseWindow(false)) {
+						e.Cancel = true;
+						return;
+					}
+				}
+				
+				Project.ProjectService.CloseSolution();
+				ParserService.StopParserThread();
+				
 				this.WorkbenchLayout = null;
+				
+				foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
+					padDescriptor.Dispose();
+				}
 			}
 		}
 	}

@@ -42,8 +42,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			LoggingService.Debug("ChooseLayoutCommand.Run()");
 			
 			var comboBox = (System.Windows.Controls.ComboBox)base.ComboBox;
-			string dataPath   = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
-			string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
+			string dataPath   = LayoutConfiguration.DataLayoutPath;
+			string configPath = LayoutConfiguration.ConfigLayoutPath;
 			if (!Directory.Exists(configPath)) {
 				Directory.CreateDirectory(configPath);
 			}
@@ -141,8 +141,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			if (MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.ResetToDefaultsQuestion}")) {
 				
 				foreach (LayoutConfiguration config in LayoutConfiguration.Layouts) {
-					string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
-					string dataPath   = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
+					string configPath = LayoutConfiguration.ConfigLayoutPath;
+					string dataPath   = LayoutConfiguration.DataLayoutPath;
 					if (File.Exists(Path.Combine(dataPath, config.FileName)) && File.Exists(Path.Combine(configPath, config.FileName))) {
 						try {
 							File.Delete(Path.Combine(configPath, config.FileName));

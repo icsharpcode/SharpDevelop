@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 

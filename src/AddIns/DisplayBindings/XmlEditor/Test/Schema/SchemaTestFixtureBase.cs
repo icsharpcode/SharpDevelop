@@ -5,11 +5,9 @@
 //     <version>$Revision: 1683 $</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
 using System.IO;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 

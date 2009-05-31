@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
-using ICSharpCode.NRefactory;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -76,8 +77,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// </summary>
 		IInsightWindow ActiveInsightWindow { get; }
 		
-		[Obsolete("Use the overload taking IEnumerable<IInsightItem>")]
-		void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider);
 		[Obsolete("Use the overload taking ICompletionItemList")]
 		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);
 	}
@@ -88,6 +87,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the text used for one indentation level.
 		/// </summary>
 		string IndentationString { get; }
+		
+		/// <summary>
+		/// Gets whether a '}' should automatically be inserted when a block is opened.
+		/// </summary>
+		bool AutoInsertBlockEnd { get; }
 		
 		/// <summary>
 		/// Gets if tabs should be converted to spaces.

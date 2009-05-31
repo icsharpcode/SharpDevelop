@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			List<AbstractNode> nodes = new List<AbstractNode>();
 			GenerateCode(nodes, items);
-			codeGen.InsertCodeInClass(selectedClass, new TextEditorDocument(textArea.Document), textArea.Caret.Line, nodes.ToArray());
+			codeGen.InsertCodeInClass(selectedClass, new RefactoringDocumentAdapter(new TextEditorDocument(textArea.Document)), textArea.Caret.Line, nodes.ToArray());
 			ParserService.ParseCurrentViewContent();
 		}
 		

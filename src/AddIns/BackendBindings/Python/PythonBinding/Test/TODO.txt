@@ -88,7 +88,12 @@ def main(args):
    Handle invalid event name.
    Check that += operator used.
    
-* ContextMenuStrip - designer does not generate the correct code.
+* ContextMenuStrip
+   
+  If the context menu is added for the first time and left open and displayed on the form when
+  switching to the source code you see an OwnerItem property added to the context menu variable:
+  
+  		self._contextMenuStrip1.OwnerItem = ContextMenuStrip
 
 * Look at fixing the compiled exe so it can be run from a different folder.
 

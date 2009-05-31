@@ -190,6 +190,18 @@ namespace Debugger
 			}
 		}
 		
+		public void UpdateSymbolsFromStream(Debugger.Wrappers.CorDebug.IStream pSymbolStream)
+		{
+			if (symReader != null) {
+				symReader.As<ISymUnmanagedDispose>().Destroy();
+			}
+			
+			symReader = metaData.GetSymReader(pSymbolStream);
+			if (symReader != null) {
+				OnSymbolsLoaded(new ModuleEventArgs(this));
+			}
+		}
+		
 		/// <summary> Sets all code as being 'my code'.  The code will be gradually
 		/// set to not-user-code as encountered acording to stepping options </summary>
 		public void ResetJustMyCodeStatus()

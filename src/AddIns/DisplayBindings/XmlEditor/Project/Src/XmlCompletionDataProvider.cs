@@ -5,12 +5,9 @@
 //     <version>$Revision: 2760 $</version>
 // </file>
 
-using ICSharpCode.XmlEditor;
 using System;
 using System.Linq;
-using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XmlEditor
 {

@@ -26,7 +26,7 @@ namespace Grunwald.BooBinding
 	/// </summary>
 	public class BooCodeGenerator : CodeGenerator
 	{
-		public override void InsertCodeAtEnd(DomRegion region, IDocument document, params AbstractNode[] nodes)
+		public override void InsertCodeAtEnd(DomRegion region, IRefactoringDocument document, params AbstractNode[] nodes)
 		{
 			InsertCodeAfter(region.EndLine, document,
 			                GetIndentation(document, region.BeginLine) + '\t', nodes);

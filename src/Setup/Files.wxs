@@ -780,6 +780,14 @@
 									<File Source="..\..\data\options\StandardHeader.xml" Id="StandardHeader.xml" Name="StandardHeader.xml" />
 								</Component>
 							</Directory>
+							<Directory Id="LayoutsFolder" Name="layouts">
+								<Component Guid="B982324C-D787-425E-BB2C-4EF4C983867D" Id="LayoutFiles" DiskId="1">
+									<File Source="..\..\data\layouts\Plain.xml" Name="Plain.xml" Id="Plain.xml" />
+									<File Source="..\..\data\layouts\Debug.xml" Name="Debug.xml" Id="Debug.xml" />
+									<File Source="..\..\data\layouts\Default.xml" Name="Default.xml" Id="Default.xml" />
+									<File Source="..\..\data\layouts\LayoutConfig.xml" Id="LayoutConfig.xml" Name="LayoutConfig.xml" />
+								</Component>
+							</Directory>
 							<Directory Id="ResourcesFolder" Name="resources">
 								<Directory Id="CssFolder" Name="css">
 									<Component Guid="458B2D53-EE43-4586-BDEB-E9AFF37F720B" Id="CssFiles" DiskId="1">
@@ -831,14 +839,6 @@
 										<File Source="..\..\data\resources\languages\sweden.png" Name="sweden.png" Id="sweden.png" />
 										<File Source="..\..\data\resources\languages\turkey.png" Name="turkey.png" Id="turkey.png" />
 										<File Source="..\..\data\resources\languages\uk.png" Name="uk.png" Id="uk.png" />
-									</Component>
-								</Directory>
-								<Directory Id="LayoutsFolder" Name="layouts">
-									<Component Guid="B982324C-D787-425E-BB2C-4EF4C983867D" Id="LayoutFiles" DiskId="1">
-										<File Source="..\..\data\resources\layouts\Plain.xml" Name="Plain.xml" Id="Plain.xml" />
-										<File Source="..\..\data\resources\layouts\Debug.xml" Name="Debug.xml" Id="Debug.xml" />
-										<File Source="..\..\data\resources\layouts\Default.xml" Name="Default.xml" Id="Default.xml" />
-										<File Source="..\..\data\resources\layouts\LayoutConfig.xml" Id="LayoutConfig.xml" Name="LayoutConfig.xml" />
 									</Component>
 								</Directory>
 								<Component Guid="D8322576-2925-4F43-ACB0-05369DC5FC67" Id="StringResourceFiles" DiskId="1">

@@ -22,11 +22,8 @@ namespace PythonBinding.Tests
 	[TestFixture]
 	public class RunPythonCommandTestFixture
 	{
-		MockProcessRunner processRunner;
-		MessageViewCategory messageViewCategory;
-		bool messageViewCategoryCleared;
-		MockPadDescriptor padDescriptor;
-		bool isRunning;
+		MockDebugger debugger;
+		RunPythonCommand command;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -38,90 +35,39 @@ namespace PythonBinding.Tests
 			workbenchWindow.ActiveViewContent = viewContent;
 			MockWorkbench workbench = new MockWorkbench();
 			workbench.ActiveWorkbenchWindow = workbenchWindow;
-			
-			// Create a dummy output window pad descriptor.
-			padDescriptor = new MockPadDescriptor();
-			
+
 			// Create the Python binding addin options.
 			Properties p = new Properties();
 			AddInOptions options = new AddInOptions(p);
 			options.PythonFileName = @"C:\IronPython\ipy.exe";
-			
-			// Create the process runner.
-			processRunner = new MockProcessRunner();
-			processRunner.OutputText = "Test\r\nOutput";
-			
-			// Create the message view category.
-			messageViewCategory = new MessageViewCategory("Python");
-			messageViewCategory.TextSet += MessageViewCategoryCleared;
-			
-			// Run the command.
-			RunPythonCommand command = new RunPythonCommand(workbench, options, processRunner, messageViewCategory, padDescriptor);
+		
+			debugger = new MockDebugger();
+			command = new RunPythonCommand(workbench, options, debugger);
 			command.Run();
-			
-			// Check that the IsPythonRunning thinks the command is still
-			// running.
-			IsPythonRunningCondition condition = new IsPythonRunningCondition();
-			isRunning = condition.IsValid(null, null);
-			
-			// The python console process exits.
-			processRunner.RaiseExitEvent();
 		}
 		
 		[Test]
-		public void CommandLine()
+		public void RunPythonCommandIsAbstractCommand()
 		{
-			// Check the correct filename was used to execute the command.
-			Assert.AreEqual("C:\\IronPython\\ipy.exe \"C:\\Projects\\test.py\"", processRunner.CommandLine);
+			Assert.IsNotNull(command as AbstractCommand);
 		}
 		
 		[Test]
-		public void MessageViewCategoryClearTextCalled()
+		public void DebuggerStartWithoutDebuggingMethodCalled()
 		{
-			Assert.IsTrue(messageViewCategoryCleared);
-		}
-		
-		/// <summary>
-		/// Message view category should have the command line
-		/// used to start the python console and any output from it.
-		/// </summary>
-		[Test]
-		public void MessageViewCategoryText()
-		{
-			string expectedText = "Running Python...\r\n" +
-				"C:\\IronPython\\ipy.exe \"C:\\Projects\\test.py\"\r\n" +
-				"Test\r\n" +
-				"Output\r\n";
-			Assert.AreEqual(expectedText, messageViewCategory.Text);
+			Assert.IsTrue(debugger.StartWithoutDebuggingMethodCalled);
 		}
 		
 		[Test]
-		public void OutputWindowPadBroughtToFront()
+		public void ProcessInfoFileName()
 		{
-			Assert.IsTrue(padDescriptor.BringPadToFrontCalled);
-		}
-
-		/// <summary>
-		/// Until the ipy.exe process exits the RunPythonCommand
-		/// should return true from the IsRunning property.
-		/// </summary>
-		[Test]
-		public void IsPythonRunningBeforeExit()
-		{
-			Assert.IsTrue(isRunning);
+			Assert.AreEqual(@"C:\IronPython\ipy.exe", debugger.ProcessStartInfo.FileName);
 		}
 		
 		[Test]
-		public void IsPythonRunningAfterExit()
+		public void ProcessInfoArgs()
 		{
-			IsPythonRunningCondition condition = new IsPythonRunningCondition();
-			Assert.IsFalse(condition.IsValid(null, null));
-		}
-		
-		void MessageViewCategoryCleared(object sender, TextEventArgs e)
-		{
-			if (e.Text == "")
-				messageViewCategoryCleared = true;
+			Assert.AreEqual("\"C:\\Projects\\test.py\"", debugger.ProcessStartInfo.Arguments);
 		}
 	}
 }

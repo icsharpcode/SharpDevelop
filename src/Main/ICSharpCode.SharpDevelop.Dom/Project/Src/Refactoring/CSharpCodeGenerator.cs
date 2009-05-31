@@ -8,7 +8,6 @@
 using System;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 {
@@ -44,12 +43,12 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		/// <summary>
 		/// Ensure that code is inserted correctly in {} code blocks - SD2-1180
 		/// </summary>
-		public override void InsertCodeAtEnd(DomRegion region, IDocument document, params AbstractNode[] nodes)
+		public override void InsertCodeAtEnd(DomRegion region, IRefactoringDocument document, params AbstractNode[] nodes)
 		{
 			string beginLineIndentation = GetIndentation(document, region.BeginLine);
 			int insertionLine = region.EndLine - 1;
 			
-			IDocumentLine endLine = document.GetLine(region.EndLine);
+			IRefactoringDocumentLine endLine = document.GetLine(region.EndLine);
 			string endLineText = endLine.Text;
 			int originalPos = region.EndColumn - 2; // -1 for column coordinate => offset, -1 because EndColumn is after the '}'
 			int pos = originalPos;

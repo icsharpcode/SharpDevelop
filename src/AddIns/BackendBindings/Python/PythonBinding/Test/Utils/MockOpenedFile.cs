@@ -40,6 +40,6 @@ namespace PythonBinding.Tests.Utils
 		{
 		}
 		
-		public override event EventHandler FileClosed;
+		public override event EventHandler FileClosed { add {} remove {} }
 	}
 }

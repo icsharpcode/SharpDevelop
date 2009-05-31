@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using ICSharpCode.NRefactory;
@@ -33,6 +34,7 @@ namespace ICSharpCode.PythonBinding
 		// references to fields or parameters.
 		List<ParameterDeclarationExpression> methodParameters = new List<ParameterDeclarationExpression>();
 		SupportedLanguage language;
+		List<MethodDeclaration> entryPointMethods;
 		
 		public NRefactoryToPythonConverter(SupportedLanguage language)
 		{
@@ -124,11 +126,20 @@ namespace ICSharpCode.PythonBinding
 			// Convert to NRefactory code DOM.
 			CompilationUnit unit = GenerateCompilationUnit(source, language);
 			
-			// Convert to Python code.
+			// Convert to Python code.3
+			entryPointMethods = new List<MethodDeclaration>();
 			codeBuilder = new StringBuilder();
 			unit.AcceptVisitor(this, null);
 			
 			return codeBuilder.ToString().TrimEnd();
+		}
+		
+		/// <summary>
+		/// Gets a list of possible entry point methods found when converting the
+		/// python source code.
+		/// </summary>
+		public ReadOnlyCollection<MethodDeclaration> EntryPointMethods {
+			get { return entryPointMethods.AsReadOnly(); }
 		}
 
 		/// <summary>
@@ -527,25 +538,6 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		/// <summary>
-		/// Saves the field information so it can be added to the
-		/// class constructor. This is done since python requires you
-		/// to initialize any class instance variables in the
-		/// __init__ method. For example, consider the equivalent 
-		/// C# and Python code:
-		/// 
-		/// class Foo
-		/// {
-		/// 	private int i = 0;
-		/// }
-		/// 
-		/// class Foo:
-		/// 	def __init__(self):
-		/// 		i = 0
-		/// 
-		/// The only difference is that the initialization is moved to the
-		/// class constructor.
-		/// </summary>
 		public object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
 		{					
 			return null;
@@ -793,6 +785,9 @@ namespace ICSharpCode.PythonBinding
 			if (IsStatic(methodDeclaration)) {
 				AppendIndentedLine(methodDeclaration.Name + " = staticmethod(" + methodDeclaration.Name + ")");
 				AppendNewLine();
+				
+				// Save Main entry point method.
+				SaveMethodIfMainEntryPoint(methodDeclaration);
 			}
 			
 			return null;
@@ -820,7 +815,11 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			Append(objectCreateExpression.CreateType.Type + "(");
+			Append(objectCreateExpression.CreateType.Type);
+			if (IsGenericType(objectCreateExpression)) {
+				AppendGenericTypes(objectCreateExpression);
+			}
+			Append("(");
 
 			// Add parameters.
 			bool firstParameter = true;
@@ -891,8 +890,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
-			if (primitiveExpression.LiteralFormat == LiteralFormat.None) {
+			if (primitiveExpression.Value == null) {
 				Append("None");
+			} else if (primitiveExpression.Value is Boolean) {
+				Append(primitiveExpression.Value.ToString());
 			} else {
 				Append(primitiveExpression.StringValue);
 			}
@@ -1169,7 +1170,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			// Add import statements for each using.
 			foreach (Using @using in usingDeclaration.Usings) {		
-				AppendIndentedLine("import " + @using.Name);
+				AppendIndentedLine("from " + @using.Name + " import *");
 			}
 			return null;
 		}
@@ -1476,25 +1477,7 @@ namespace ICSharpCode.PythonBinding
 			return (assignmentExpression.Op == AssignmentOperatorType.Subtract) &&
 				(assignmentExpression.Left is MemberReferenceExpression);
 		}
-		
-		/// <summary>
-		/// Creates an assign statement with the right hand side of the assignment using a binary operator.
-		/// </summary>
-		object CreateAssignmentStatementWithBinaryOperatorExpression(AssignmentExpression assignmentExpression, string binaryOperatorType)
-		{
-			// Create the left hand side of the assignment.
-			assignmentExpression.Left.AcceptVisitor(this, null);
-			
-			Append(" = ");
-
-			// Create the right hand side of the assignment.
-			assignmentExpression.Left.AcceptVisitor(this, null);
-			Append(" " + binaryOperatorType + " ");
-			assignmentExpression.Right.AcceptVisitor(this, null);
-
-			return null;
-		}
-		
+				
 		void Append(string code)
 		{
 			codeBuilder.Append(code);
@@ -1700,6 +1683,45 @@ namespace ICSharpCode.PythonBinding
 				return SupportedLanguage.VBNet;
 			}
 			return SupportedLanguage.CSharp;
-		}		
+		}
+		
+		/// <summary>
+		/// Saves the method declaration if it is a main entry point.
+		/// </summary>
+		void SaveMethodIfMainEntryPoint(MethodDeclaration method)
+		{
+			if (method.Name == "Main") {
+				entryPointMethods.Add(method);
+			}
+		}
+		
+		/// <summary>
+		/// Returns true if the object being created is a generic.
+		/// </summary>
+		static bool IsGenericType(ObjectCreateExpression expression)
+		{
+			return expression.CreateType.GenericTypes.Count > 0;
+		}
+		
+		/// <summary>
+		/// Appends the types used when creating a generic surrounded by square brackets.
+		/// </summary>
+		void AppendGenericTypes(ObjectCreateExpression expression)
+		{
+			Append("[");
+			List<TypeReference> typeRefs = expression.CreateType.GenericTypes;
+			for (int i = 0; i < typeRefs.Count; ++i) {
+				if (i != 0) {
+					Append(", ");
+				}
+				TypeReference typeRef = typeRefs[i];
+				if (typeRef.IsArrayType) {
+					Append("System.Array[" + typeRef.Type + "]");
+				} else {
+					Append(typeRef.Type);
+				}
+			}
+			Append("]");
+		}
 	}
 }

@@ -16,14 +16,22 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 using NUnit.Framework;
 
+[assembly: ICSharpCode.SharpDevelop.Tests.TypeTestAttribute(
+	42, typeof(System.Action<>), typeof(IDictionary<string, IList<TestAttribute>>))]
+
 namespace ICSharpCode.SharpDevelop.Tests
 {
+	public class TypeTestAttribute : Attribute
+	{
+		public TypeTestAttribute(int a1, Type a2, Type a3) {}
+	}
+	
 	[TestFixture]
 	public class ReflectionLayerTests : ReflectionOrCecilLayerTests
 	{
 		public ReflectionLayerTests()
 		{
-			pc = ParserService.DefaultProjectContentRegistry.Mscorlib;
+			mscorlib = ParserService.DefaultProjectContentRegistry.Mscorlib;
 		}
 		
 		protected override IClass GetClass(Type type)
@@ -33,6 +41,13 @@ namespace ICSharpCode.SharpDevelop.Tests
 			cu.ProjectContent.AddClassToNamespaceList(c);
 			return c;
 		}
+		
+		protected override IEnumerable<IAttribute> GetAssemblyAttributes(Assembly assembly)
+		{
+			var pc = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], ParserService.DefaultProjectContentRegistry);
+			pc.AddAssemblyAttributes(assembly);
+			return pc.GetAssemblyAttributes();
+		}
 	}
 	
 	[TestFixture]
@@ -40,12 +55,12 @@ namespace ICSharpCode.SharpDevelop.Tests
 	{
 		public ReflectionWithRoundTripLayerTests()
 		{
-			pc = ParserService.DefaultProjectContentRegistry.Mscorlib;
+			mscorlib = ParserService.DefaultProjectContentRegistry.Mscorlib;
 			
 			MemoryStream memory = new MemoryStream();
-			DomPersistence.WriteProjectContent((ReflectionProjectContent)pc, memory);
+			DomPersistence.WriteProjectContent((ReflectionProjectContent)mscorlib, memory);
 			memory.Position = 0;
-			pc = DomPersistence.LoadProjectContent(memory, ParserService.DefaultProjectContentRegistry);
+			mscorlib = DomPersistence.LoadProjectContent(memory, ParserService.DefaultProjectContentRegistry);
 		}
 		
 		protected override IClass GetClass(Type type)
@@ -60,6 +75,18 @@ namespace ICSharpCode.SharpDevelop.Tests
 			memory.Position = 0;
 			return DomPersistence.LoadProjectContent(memory, ParserService.DefaultProjectContentRegistry).Classes.Single();
 		}
+		
+		protected override IEnumerable<IAttribute> GetAssemblyAttributes(Assembly assembly)
+		{
+			var pc = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], ParserService.DefaultProjectContentRegistry);
+			pc.AddAssemblyAttributes(assembly);
+			
+			MemoryStream memory = new MemoryStream();
+			DomPersistence.WriteProjectContent(pc, memory);
+			
+			memory.Position = 0;
+			return DomPersistence.LoadProjectContent(memory, ParserService.DefaultProjectContentRegistry).GetAssemblyAttributes();
+		}
 	}
 	
 	[TestFixture]
@@ -67,27 +94,38 @@ namespace ICSharpCode.SharpDevelop.Tests
 	{
 		public CecilLayerTests()
 		{
-			pc = CecilReader.LoadAssembly(typeof(object).Assembly.Location, ParserService.DefaultProjectContentRegistry);
+			mscorlib = CecilReader.LoadAssembly(typeof(object).Assembly.Location, ParserService.DefaultProjectContentRegistry);
+		}
+		
+		IProjectContent LoadAssembly(Assembly assembly)
+		{
+			IProjectContent pc = CecilReader.LoadAssembly(assembly.Location, ParserService.DefaultProjectContentRegistry);
+			Assert.IsNotNull(pc);
+			return pc;
 		}
 		
 		protected override IClass GetClass(Type type)
 		{
-			IProjectContent pc = CecilReader.LoadAssembly(type.Assembly.Location, ParserService.DefaultProjectContentRegistry);
-			IClass c = pc.GetClassByReflectionName(type.FullName, false);
+			IClass c = LoadAssembly(type.Assembly).GetClassByReflectionName(type.FullName, false);
 			Assert.IsNotNull(c);
 			return c;
+		}
+		
+		protected override IEnumerable<IAttribute> GetAssemblyAttributes(Assembly assembly)
+		{
+			return LoadAssembly(assembly).GetAssemblyAttributes();
 		}
 	}
 	
 	public abstract class ReflectionOrCecilLayerTests
 	{
-		protected IProjectContent pc;
+		protected IProjectContent mscorlib;
 		
 		[Test]
 		public void InheritanceTest()
 		{
-			IClass c = pc.GetClass("System.SystemException", 0);
-			IClass c2 = pc.GetClass("System.Exception", 0);
+			IClass c = mscorlib.GetClass("System.SystemException", 0);
+			IClass c2 = mscorlib.GetClass("System.Exception", 0);
 			Assert.IsNotNull(c, "c is null");
 			Assert.IsNotNull(c2, "c2 is null");
 			//Assert.AreEqual(3, c.BaseTypes.Count); // Inherited interfaces are not reported by Cecil
@@ -116,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void GenericPropertyTest()
 		{
-			IClass c = pc.GetClass("System.Collections.Generic.Comparer", 1);
+			IClass c = mscorlib.GetClass("System.Collections.Generic.Comparer", 1);
 			IProperty def = c.Properties.First(p => p.Name == "Default");
 			ConstructedReturnType crt = def.ReturnType.CastToConstructedReturnType();
 			Assert.AreEqual("System.Collections.Generic.Comparer", crt.FullyQualifiedName);
@@ -126,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void PointerTypeTest()
 		{
-			IClass c = pc.GetClass("System.IntPtr", 1);
+			IClass c = mscorlib.GetClass("System.IntPtr", 1);
 			IMethod toPointer = c.Methods.First(p => p.Name == "ToPointer");
 			Assert.AreEqual("System.Void*", toPointer.ReturnType.DotNetName);
 			PointerReturnType prt = toPointer.ReturnType.CastToDecoratingReturnType<PointerReturnType>();
@@ -136,8 +174,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void ParameterComparisonTest()
 		{
-			DefaultParameter p1 = new DefaultParameter("a", pc.GetClass("System.String", 0).DefaultReturnType, DomRegion.Empty);
-			DefaultParameter p2 = new DefaultParameter("b", new GetClassReturnType(pc, "System.String", 0), DomRegion.Empty);
+			DefaultParameter p1 = new DefaultParameter("a", mscorlib.GetClass("System.String", 0).DefaultReturnType, DomRegion.Empty);
+			DefaultParameter p2 = new DefaultParameter("b", new GetClassReturnType(mscorlib, "System.String", 0), DomRegion.Empty);
 			IList<IParameter> a1 = new List<IParameter>();
 			IList<IParameter> a2 = new List<IParameter>();
 			a1.Add(p1);
@@ -145,8 +183,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual(0, DiffUtility.Compare(a1, a2));
 		}
 		
-		DefaultMethod GetMethod(IClass c, string name) {
-			IMethod result = c.Methods.FirstOrDefault(delegate(IMethod m) { return m.Name == name; });
+		DefaultMethod GetMethod(IClass c, string name)
+		{
+			IMethod result = c.Methods.FirstOrDefault(m => m.Name == name);
 			Assert.IsNotNull(result, "Method " + name + " not found");
 			return (DefaultMethod)result;
 		}
@@ -154,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void GenericDocumentationTagNamesTest()
 		{
-			DefaultClass c = (DefaultClass)pc.GetClass("System.Collections.Generic.List", 1);
+			DefaultClass c = (DefaultClass)mscorlib.GetClass("System.Collections.Generic.List", 1);
 			Assert.AreEqual("T:System.Collections.Generic.List`1",
 			                c.DocumentationTag);
 			Assert.AreEqual("M:System.Collections.Generic.List`1.Add(`0)",
@@ -168,7 +207,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void StaticModifierTest()
 		{
-			IClass c = pc.GetClass("System.Environment", 0);
+			IClass c = mscorlib.GetClass("System.Environment", 0);
 			Assert.IsNotNull(c, "System.Environment not found");
 			Assert.IsTrue(c.IsAbstract, "class should be abstract");
 			Assert.IsTrue(c.IsSealed, "class should be sealed");
@@ -178,7 +217,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void InnerClassReferenceTest()
 		{
-			IClass c = pc.GetClass("System.Environment", 0);
+			IClass c = mscorlib.GetClass("System.Environment", 0);
 			Assert.IsNotNull(c, "System.Environment not found");
 			IReturnType rt = GetMethod(c, "GetFolderPath").Parameters[0].ReturnType;
 			Assert.IsNotNull(rt, "ReturnType is null");
@@ -191,7 +230,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void InnerClassesTest()
 		{
-			IClass c = pc.GetClass("System.Environment.SpecialFolder", 0);
+			IClass c = mscorlib.GetClass("System.Environment.SpecialFolder", 0);
 			Assert.IsNotNull(c, "c is null");
 			Assert.AreEqual("System.Environment.SpecialFolder", c.FullyQualifiedName);
 		}
@@ -199,19 +238,19 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void VoidTest()
 		{
-			IClass c = pc.GetClass("System.Void", 0);
+			IClass c = mscorlib.GetClass("System.Void", 0);
 			Assert.IsNotNull(c, "System.Void not found");
-			Assert.AreSame(c.DefaultReturnType, pc.SystemTypes.Void, "pc.SystemTypes.Void is c.DefaultReturnType");
+			Assert.AreSame(c.DefaultReturnType, mscorlib.SystemTypes.Void, "pc.SystemTypes.Void is c.DefaultReturnType");
 		}
 		
 		[Test]
 		public void NestedClassInGenericClassTest()
 		{
-			IClass dictionary = pc.GetClass("System.Collections.Generic.Dictionary", 2);
+			IClass dictionary = mscorlib.GetClass("System.Collections.Generic.Dictionary", 2);
 			Assert.IsNotNull(dictionary);
-			IClass valueCollection = pc.GetClass("System.Collections.Generic.Dictionary.ValueCollection", 2);
+			IClass valueCollection = mscorlib.GetClass("System.Collections.Generic.Dictionary.ValueCollection", 2);
 			Assert.IsNotNull(valueCollection);
-			var dictionaryRT = new ConstructedReturnType(dictionary.DefaultReturnType, new[] { pc.SystemTypes.String, pc.SystemTypes.Int32 });
+			var dictionaryRT = new ConstructedReturnType(dictionary.DefaultReturnType, new[] { mscorlib.SystemTypes.String, mscorlib.SystemTypes.Int32 });
 			IProperty valueProperty = dictionaryRT.GetProperties().Find(p => p.Name == "Values");
 			Assert.AreSame(valueCollection, valueProperty.ReturnType.GetUnderlyingClass());
 		}
@@ -223,6 +262,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		protected abstract IClass GetClass(Type type);
+		protected abstract IEnumerable<IAttribute> GetAssemblyAttributes(Assembly assembly);
 		
 		[Test]
 		public void ReflectionParserTest()
@@ -259,6 +299,26 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual(1, m.TypeParameters[0].Constraints[0].CastToConstructedReturnType().TypeArguments.Count);
 			GenericReturnType grt = (GenericReturnType)m.TypeParameters[0].Constraints[0].CastToConstructedReturnType().TypeArguments[0];
 			Assert.AreSame(m.TypeParameters[0], grt.TypeParameter);
+		}
+		
+		[Test]
+		public void AssemblyAttribute()
+		{
+			var attributes = GetAssemblyAttributes(typeof(TypeTestAttribute).Assembly);
+			var typeTest = attributes.First(a => a.AttributeType.FullyQualifiedName == typeof(TypeTestAttribute).FullName);
+			Assert.AreEqual(3, typeTest.PositionalArguments.Count);
+			// first argument is (int)42
+			Assert.AreEqual(42, (int)typeTest.PositionalArguments[0]);
+			// second argument is typeof(System.Action<>)
+			IReturnType rt = (IReturnType)typeTest.PositionalArguments[1];
+			Assert.IsNull(rt.CastToConstructedReturnType()); // rt must not be constructed - it's just an unbound type
+			Assert.AreEqual("System.Action", rt.FullyQualifiedName);
+			Assert.AreEqual(1, rt.TypeArgumentCount);
+			// third argument is typeof(IDictionary<string, IList<TestAttribute>>)
+			ConstructedReturnType crt = ((IReturnType)typeTest.PositionalArguments[2]).CastToConstructedReturnType();
+			Assert.AreEqual("System.Collections.Generic.IDictionary", crt.FullyQualifiedName);
+			Assert.AreEqual("System.String", crt.TypeArguments[0].FullyQualifiedName);
+			Assert.AreEqual("System.Collections.Generic.IList{NUnit.Framework.TestAttribute}", crt.TypeArguments[1].DotNetName);
 		}
 	}
 }

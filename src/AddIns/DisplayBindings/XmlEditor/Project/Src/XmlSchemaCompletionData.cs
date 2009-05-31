@@ -5,13 +5,13 @@
 //     <version>$Revision: 1965 $</version>
 // </file>
 
-using ICSharpCode.XmlEditor;
 using System;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
-using ICSharpCode.SharpDevelop.Editor;
+
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XmlEditor
 {

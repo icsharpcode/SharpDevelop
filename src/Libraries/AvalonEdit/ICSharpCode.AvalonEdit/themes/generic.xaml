@@ -1,14 +1,14 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:gui="clr-namespace:ICSharpCode.AvalonEdit.Gui"
+	xmlns:editing="clr-namespace:ICSharpCode.AvalonEdit.Editing"
 >
 	<ResourceDictionary.MergedDictionaries>
-		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/Gui/TextEditor.xaml" />
+		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/TextEditor.xaml" />
 		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/CodeCompletion/CompletionList.xaml" />
 		<ResourceDictionary Source="/ICSharpCode.AvalonEdit;component/CodeCompletion/InsightWindow.xaml" />
 	</ResourceDictionary.MergedDictionaries>
 	
-	<Style TargetType="{x:Type gui:LineNumberMargin}">
+	<Style TargetType="{x:Type editing:LineNumberMargin}">
 		<Setter Property="TextBlock.Foreground" Value="Gray"/>
 		<Setter Property="Control.Cursor" Value="/ICSharpCode.AvalonEdit;component/themes/RightArrow.cur"/>
 	</Style>

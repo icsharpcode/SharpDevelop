@@ -5,13 +5,12 @@
 //     <version>$Revision: 3490 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Linq;
+
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;

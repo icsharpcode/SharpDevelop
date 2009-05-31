@@ -31,11 +31,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 		}
 		
-		private TreeNode createTreeNode(NodeControl nodeVisualControl)
-		{
-			return TreeNode.Create(this.layoutDirection, nodeVisualControl);
-		}
-		
 		/// <summary>
 		/// Calculates layout for given <see cref="ObjectGraph" />.
 		/// </summary>
@@ -66,7 +61,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			nodeVisualControl.GraphNode = objectGraphNode;
 			nodeVisualControl.Measure(new Size(500, 500));
 			
-			TreeNode newTreeNode = createTreeNode(nodeVisualControl);
+			TreeNode newTreeNode = TreeNode.Create(this.layoutDirection, nodeVisualControl, objectGraphNode);
 			newTreeNode.HorizontalMargin = horizNodeMargin;
 			newTreeNode.VerticalMargin = vertNodeMargin;
 			resultGraph.nodes.Add(newTreeNode);
@@ -88,7 +83,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 					subtreeSize += newChild.SubtreeSize;
 				}
 			}
-			subtreeSize = Math.Max(newTreeNode.LateralSize + newTreeNode.LateralMargin, subtreeSize);
+			subtreeSize = Math.Max(newTreeNode.LateralSizeWithMargin, subtreeSize);
 			newTreeNode.SubtreeSize = subtreeSize;
 			
 			return newTreeNode;
@@ -102,9 +97,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <param name="mainStart"></param>
 		private void calculateNodePosRecursive(TreeNode node, double lateralStart, double mainStart)
 		{
+			double childsSubtreeSize = node.Childs.Sum(child => child.SubtreeSize);
 			// center this node
-			double subtreeSize = node.Childs.Sum(child => child.SubtreeSize);
-			double center = node.Childs.Count() == 0 ? 0 : 0.5 * (subtreeSize - (node.LateralSize + node.LateralMargin));
+			double center = node.ChildEdges.Count() == 0 ? 0 : 0.5 * (childsSubtreeSize - (node.LateralSizeWithMargin));
+			if (center < 0)
+			{
+				// if root is larger than subtree, it would be shifted below lateralStart
+				// -> make whole layout start at lateralStart
+				lateralStart -= center;
+			}
 			
 			// design alternatives
 			// node.MainPos += center;  // used this
@@ -115,7 +116,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			node.MainCoord = mainStart;
 			
 			double childLateral = lateralStart;
-			double childsMainFixed = node.MainCoord + node.MainSize + node.MainMargin;
+			double childsMainFixed = node.MainCoord + node.MainSizeWithMargin;
 			foreach (TreeNode child in node.Childs)
 			{
 				calculateNodePosRecursive(child, childLateral, childsMainFixed);

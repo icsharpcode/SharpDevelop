@@ -41,6 +41,16 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
+		public ISymUnmanagedReader GetSymReader(Debugger.Wrappers.CorDebug.IStream stream)
+		{
+			try {
+				ISymUnmanagedBinder symBinder = new ISymUnmanagedBinder(new Debugger.Interop.CorSym.CorSymBinder_SxSClass());
+				return symBinder.GetReaderFromStream(metaData, stream);
+			} catch {
+				return null;
+			}
+		}
+		
 		~MetaDataImport()
 		{
 			Dispose();

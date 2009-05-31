@@ -24,7 +24,7 @@ namespace ICSharpCode.XamlBinding
 		public ResolveResult ResolvedExpression { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public char PressedKey { get; set; }
-		public IEntity Entity { get; set; }
+		public string RawAttributeValue { get; set; }
 		public int ValueStartOffset { get; set; }
 		public XamlContextDescription Description { get; set; }
 		

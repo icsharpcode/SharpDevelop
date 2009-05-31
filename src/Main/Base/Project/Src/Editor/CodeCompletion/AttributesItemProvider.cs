@@ -9,7 +9,7 @@ using System;
 using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
 	/// Provides code completion for attribute names.

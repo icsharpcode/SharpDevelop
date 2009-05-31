@@ -38,8 +38,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			foreach (CustomAttribute att in attributes) {
 				DefaultAttribute a = new DefaultAttribute(CreateType(pc, null, att.Constructor.DeclaringType));
-				foreach (object o in att.ConstructorParameters) {
-					a.PositionalArguments.Add(o);
+				// Currently Cecil returns string instead of TypeReference for typeof() arguments to attributes
+				var parameters = att.Constructor.Parameters;
+				for (int i = 0; i < Math.Min(parameters.Count, att.ConstructorParameters.Count); i++) {
+					object o = att.ConstructorParameters[i];
+					if (parameters[i].ParameterType.FullName == "System.Type" && o is string) {
+						try {
+							a.PositionalArguments.Add(ReflectionReturnType.Parse(pc, (string)o));
+						} catch (ReflectionTypeNameSyntaxError ex) {
+							LoggingService.Warn(ex);
+							a.PositionalArguments.Add(o);
+						}
+					} else {
+						a.PositionalArguments.Add(o);
+					}
 				}
 				foreach (DictionaryEntry entry in att.Properties) {
 					a.NamedArguments.Add(entry.Key.ToString(), entry.Value);
@@ -142,11 +154,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			                           AssemblyDefinition assembly, ProjectContentRegistry registry)
 				: base(fullName, fileName, referencedAssemblies, registry)
 			{
-				AddAttributes(this, this.AssemblyCompilationUnit.Attributes, assembly.CustomAttributes);
 				foreach (ModuleDefinition module in assembly.Modules) {
 					AddTypes(module.Types);
 				}
+				AddAttributes(this, this.AssemblyCompilationUnit.Attributes, assembly.CustomAttributes);
 				InitializeSpecialClasses();
+				this.AssemblyCompilationUnit.Freeze();
 			}
 			
 			void AddTypes(TypeDefinitionCollection types)

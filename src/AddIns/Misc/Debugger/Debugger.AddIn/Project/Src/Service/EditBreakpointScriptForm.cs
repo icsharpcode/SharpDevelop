@@ -68,7 +68,7 @@ namespace Debugger.AddIn.Service
 		bool CheckSyntax()
 		{
 			SupportedLanguage language = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), this.cmbLanguage.SelectedItem.ToString().Replace("#", "Sharp"), true);
-			using (IParser parser = ParserFactory.CreateParser(language, new StringReader(this.txtCode.Document.TextContent))) {
+			using (var parser = ParserFactory.CreateParser(language, new StringReader(this.txtCode.Document.TextContent))) {
 				parser.ParseExpression();
 				if (parser.Errors.Count > 0) {
 					MessageService.ShowError(parser.Errors.ErrorOutput);

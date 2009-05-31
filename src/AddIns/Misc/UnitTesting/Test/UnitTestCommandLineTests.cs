@@ -221,6 +221,6 @@ namespace UnitTesting.Tests
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"MyTests.TestFixture+InnerTest\"";
 			Assert.AreEqual(expectedCommandLine, helper.GetArguments());
-		}		
+		}
 	}
 }

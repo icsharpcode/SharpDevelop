@@ -5,16 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace SearchAndReplace
 {
@@ -38,24 +37,21 @@ namespace SearchAndReplace
 		public static void Replace(IProgressMonitor monitor)
 		{
 			SetSearchOptions();
-			if (lastResult != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
+			if (lastResult != null) {
+				ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 				if (provider != null) {
-					TextEditorControl textarea = provider.TextEditorControl;
-					SelectionManager selectionManager = textarea.ActiveTextAreaControl.TextArea.SelectionManager;
+					ITextEditor textarea = provider.TextEditor;
 					
-					if (selectionManager.SelectionCollection.Count == 1
-					    && selectionManager.SelectionCollection[0].Offset == lastResult.Offset
-					    && selectionManager.SelectionCollection[0].Length == lastResult.Length
+					if (textarea.SelectionStart == lastResult.Offset
+					    && textarea.SelectionLength == lastResult.Length
 					    && lastResult.FileName == textarea.FileName)
 					{
 						string replacePattern = lastResult.TransformReplacePattern(SearchOptions.ReplacePattern);
 						
-						textarea.BeginUpdate();
-						selectionManager.ClearSelection();
-						textarea.Document.Replace(lastResult.Offset, lastResult.Length, replacePattern);
-						textarea.ActiveTextAreaControl.Caret.Position = textarea.Document.OffsetToPosition(lastResult.Offset + replacePattern.Length);
-						textarea.EndUpdate();
+						using (textarea.Document.OpenUndoGroup()) {
+							textarea.Document.Replace(lastResult.Offset, lastResult.Length, replacePattern);
+							textarea.Select(lastResult.Offset + replacePattern.Length, 0); // clear selection and set caret position
+						}
 					}
 				}
 			}
@@ -72,24 +68,21 @@ namespace SearchAndReplace
 		
 		public static bool ReplaceNextInSelection(IProgressMonitor monitor)
 		{
-			if (lastResult != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
+			if (lastResult != null) {
+				ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 				if (provider != null) {
-					TextEditorControl textarea = provider.TextEditorControl;
-					SelectionManager selectionManager = textarea.ActiveTextAreaControl.TextArea.SelectionManager;
+					ITextEditor textarea = provider.TextEditor;
 					
-					if (selectionManager.SelectionCollection.Count == 1
-					    && selectionManager.SelectionCollection[0].Offset == lastResult.Offset
-					    && selectionManager.SelectionCollection[0].Length == lastResult.Length
+					if (textarea.SelectionStart == lastResult.Offset
+					    && textarea.SelectionLength == lastResult.Length
 					    && lastResult.FileName == textarea.FileName)
 					{
 						string replacePattern = lastResult.TransformReplacePattern(SearchOptions.ReplacePattern);
 						
-						textarea.BeginUpdate();
-						selectionManager.ClearSelection();
-						textarea.Document.Replace(lastResult.Offset, lastResult.Length, replacePattern);
-						textarea.ActiveTextAreaControl.Caret.Position = textarea.Document.OffsetToPosition(lastResult.Offset + replacePattern.Length);
-						textarea.EndUpdate();
+						using (textarea.Document.OpenUndoGroup()) {
+							textarea.Document.Replace(lastResult.Offset, lastResult.Length, replacePattern);
+							textarea.Select(lastResult.Offset + replacePattern.Length, 0); // clear selection and set caret position
+						}
 						
 						textSelection.Length -= lastResult.Length - replacePattern.Length;
 					}
@@ -385,11 +378,11 @@ namespace SearchAndReplace
 		
 		static void ClearSelection()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
-				if (provider != null) {
-					provider.TextEditorControl.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
-				}
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			if (provider != null) {
+				ITextEditor editor = provider.TextEditor;
+				if (editor.SelectionLength > 0)
+					editor.Select(editor.Caret.Offset, 0);
 			}
 		}
 	}

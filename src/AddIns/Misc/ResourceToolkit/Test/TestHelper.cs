@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Project;
 using System;
 using System.Collections.Generic;
-
 using Hornung.ResourceToolkit;
 using Hornung.ResourceToolkit.Resolver;
 using ICSharpCode.SharpDevelop.Dom;

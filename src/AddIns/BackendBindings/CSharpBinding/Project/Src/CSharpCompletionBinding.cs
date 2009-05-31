@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -186,7 +187,7 @@ namespace CSharpBinding
 					return true;
 				case "override":
 					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new OverrideCompletionDataProvider(), ' ');
+					new OverrideCompletionItemProvider().ShowCompletion(editor);
 					return true;
 				case "new":
 					return ShowNewCompletion(editor);

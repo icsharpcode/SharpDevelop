@@ -56,6 +56,6 @@ namespace XmlEditor.Tests.Utils
 			base.SwitchedToView(view);
 		}
 		
-		public override event EventHandler FileClosed;
+		public override event EventHandler FileClosed { add {} remove {} }
 	}
 }

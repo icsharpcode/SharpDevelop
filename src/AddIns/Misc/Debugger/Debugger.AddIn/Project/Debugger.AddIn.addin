@@ -122,7 +122,8 @@
 		     title    = "${res:MainWindow.Windows.Debug.Watch}"
 		     icon     = "PadIcons.LocalVariables"
 		     shortcut = "Control|Alt|W"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.WatchPad"/>
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.WatchPad"
+		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 	
 	<Path name ="/SharpDevelop/Pads/WatchPad/ContextMenu">

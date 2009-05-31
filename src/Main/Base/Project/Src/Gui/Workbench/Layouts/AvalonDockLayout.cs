@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -121,58 +122,36 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Dictionary<PadDescriptor, AvalonPadContent> pads = new Dictionary<PadDescriptor, AvalonPadContent>();
 		Dictionary<string, AvalonPadContent> padsByClass = new Dictionary<string, AvalonPadContent>();
 		
-		public void ShowPad(PadDescriptor content)
+		public void ShowPad(PadDescriptor padDescriptor)
 		{
 			AvalonPadContent pad;
-			if (pads.TryGetValue(content, out pad)) {
+			if (pads.TryGetValue(padDescriptor, out pad)) {
 				dockingManager.Show(pad);
 			} else {
-				pad = new AvalonPadContent(this, content);
-				pads.Add(content, pad);
-				padsByClass.Add(content.Class, pad);
-				AnchorStyle style;
-				if ((content.DefaultPosition & DefaultPadPositions.Top) != 0)
-					style = AnchorStyle.Top;
-				else if ((content.DefaultPosition & DefaultPadPositions.Left) != 0)
-					style = AnchorStyle.Left;
-				else if ((content.DefaultPosition & DefaultPadPositions.Bottom) != 0)
-					style = AnchorStyle.Bottom;
-				else
-					style = AnchorStyle.Right;
-				dockingManager.Show(pad, DockableContentState.Docked, style);
-				SetPaneSizeWorkaround(pad.ContainerPane);
-				if ((content.DefaultPosition & DefaultPadPositions.Hidden) != 0)
-					dockingManager.Hide(pad);
+				LoggingService.Debug("Add pad " + padDescriptor.Class + " at " + padDescriptor.DefaultPosition);
+				
+				pad = new AvalonPadContent(this, padDescriptor);
+				pads.Add(padDescriptor, pad);
+				padsByClass.Add(padDescriptor.Class, pad);
+				pad.ShowInDefaultPosition();
 			}
 		}
 		
-		static void SetPaneSizeWorkaround(Pane pane)
+		public void ActivatePad(PadDescriptor padDescriptor)
 		{
-			ResizingPanel panel = pane.Parent as ResizingPanel;
-			if (panel.Orientation == Orientation.Horizontal) {
-				if (ResizingPanel.GetResizeWidth(pane).Value == 0)
-					ResizingPanel.SetResizeWidth(pane, new GridLength(200));
-			} else if (panel.Orientation == Orientation.Vertical) {
-				if (ResizingPanel.GetResizeHeight(pane).Value == 0)
-					ResizingPanel.SetResizeHeight(pane, new GridLength(150));
-			}
+			ShowPad(padDescriptor);
 		}
 		
-		public void ActivatePad(PadDescriptor content)
-		{
-			ShowPad(content);
-		}
-		
-		public void HidePad(PadDescriptor content)
+		public void HidePad(PadDescriptor padDescriptor)
 		{
 			AvalonPadContent p;
-			if (pads.TryGetValue(content, out p))
+			if (pads.TryGetValue(padDescriptor, out p))
 				dockingManager.Hide(p);
 		}
 		
-		public void UnloadPad(PadDescriptor content)
+		public void UnloadPad(PadDescriptor padDescriptor)
 		{
-			AvalonPadContent p = pads[content];
+			AvalonPadContent p = pads[padDescriptor];
 			dockingManager.Hide(p);
 			DockablePane pane = p.Parent as DockablePane;
 			if (pane != null)
@@ -180,10 +159,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			p.Dispose();
 		}
 		
-		public bool IsVisible(PadDescriptor padContent)
+		public bool IsVisible(PadDescriptor padDescriptor)
 		{
 			AvalonPadContent p;
-			if (pads.TryGetValue(padContent, out p))
+			if (pads.TryGetValue(padDescriptor, out p))
 				return p.IsVisible;
 			else
 				return false;
@@ -218,10 +197,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			Busy = true;
 			try {
+				bool isPlainLayout = LayoutConfiguration.CurrentLayoutName == "Plain";
 				if (File.Exists(LayoutConfiguration.CurrentLayoutFileName)) {
-					dockingManager.RestoreLayout(LayoutConfiguration.CurrentLayoutFileName);
-				} else {
-					LoadDefaultLayoutConfiguration();
+					LoadLayout(LayoutConfiguration.CurrentLayoutFileName, isPlainLayout);
+				} else if (File.Exists(LayoutConfiguration.CurrentLayoutTemplateFileName)) {
+					LoadLayout(LayoutConfiguration.CurrentLayoutTemplateFileName, isPlainLayout);
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
@@ -234,10 +214,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void LoadDefaultLayoutConfiguration()
+		void LoadLayout(string fileName, bool hideAllLostPads)
 		{
-			if (File.Exists(LayoutConfiguration.CurrentLayoutTemplateFileName)) {
-				dockingManager.RestoreLayout(LayoutConfiguration.CurrentLayoutTemplateFileName);
+			LoggingService.Info("Loading layout file: " + fileName + ", hideAllLostPads=" + hideAllLostPads);
+			DockableContent[] oldContents = dockingManager.DockableContents;
+			dockingManager.RestoreLayout(fileName);
+			DockableContent[] newContents = dockingManager.DockableContents;
+			// Restoring a AvalonDock layout will remove pads that are not
+			// stored in the layout file.
+			// We'll re-add those lost pads.
+			foreach (DockableContent lostContent in oldContents.Except(newContents)) {
+				AvalonPadContent padContent = lostContent as AvalonPadContent;
+				if (padContent != null && !hideAllLostPads) {
+					padContent.ShowInDefaultPosition();
+				} else {
+					dockingManager.Hide(lostContent);
+				}
 			}
 		}
 		

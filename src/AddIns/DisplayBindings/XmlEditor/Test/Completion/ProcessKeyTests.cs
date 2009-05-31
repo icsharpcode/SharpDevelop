@@ -7,8 +7,7 @@
 
 using System;
 using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;

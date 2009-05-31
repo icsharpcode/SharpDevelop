@@ -72,5 +72,61 @@ namespace PythonBinding.Tests.Designer
 			codeBuilder.AppendIndentedLine("abc");
 			Assert.AreEqual("\tabc\r\n", codeBuilder.ToString());
 		}
+		
+		[Test]
+		public void InitialIndentWhenCodeBuilderCreatedIsZero()
+		{
+			Assert.AreEqual(0, codeBuilder.Indent);
+		}
+		
+		[Test]
+		public void IncreaseIndentByOne()
+		{
+			codeBuilder.IncreaseIndent();
+			Assert.AreEqual(1, codeBuilder.Indent);
+		}
+		
+		[Test]
+		public void LengthAfterAddingText()
+		{
+			codeBuilder.Append("abc");
+			Assert.AreEqual(3, codeBuilder.Length);
+		}
+		
+		[Test]
+		public void IndentPassedToConstructor()
+		{
+			codeBuilder = new PythonCodeBuilder(2);
+			codeBuilder.AppendIndented("abc");
+			Assert.AreEqual("\t\tabc", codeBuilder.ToString());
+		}
+		
+		[Test]
+		public void InsertIndentedLine()
+		{
+			codeBuilder.IncreaseIndent();
+			codeBuilder.AppendIndentedLine("def");
+			codeBuilder.InsertIndentedLine("abc");
+			Assert.AreEqual("\tabc\r\n\tdef\r\n", codeBuilder.ToString());
+		}
+		
+		/// <summary>
+		/// Check that the "self._components = System.ComponentModel.Container()" line is generated
+		/// the once and before any other lines of code.
+		/// </summary>
+		[Test]
+		public void AppendCreateComponentsContainerTwice()
+		{
+			codeBuilder.IndentString = "  ";
+			codeBuilder.IncreaseIndent();
+			codeBuilder.AppendIndentedLine("self._listView = System.Windows.Forms.ListView()");
+			codeBuilder.InsertCreateComponentsContainer();
+			codeBuilder.InsertCreateComponentsContainer();
+			
+			string expectedCode = "  self._components = System.ComponentModel.Container()\r\n" +
+				"  self._listView = System.Windows.Forms.ListView()\r\n";
+			
+			Assert.AreEqual(expectedCode, codeBuilder.ToString());
+		}
 	}
 }

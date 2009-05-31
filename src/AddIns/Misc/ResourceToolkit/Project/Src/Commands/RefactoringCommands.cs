@@ -14,7 +14,6 @@ using Hornung.ResourceToolkit.Refactoring;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
-using SearchAndReplace;
 
 namespace Hornung.ResourceToolkit.Commands
 {

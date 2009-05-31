@@ -5,10 +5,8 @@
 //     <version>$Revision: 1388 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
-using System.IO;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 

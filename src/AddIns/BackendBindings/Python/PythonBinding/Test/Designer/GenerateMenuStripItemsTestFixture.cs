@@ -26,7 +26,6 @@ namespace PythonBinding.Tests.Designer
 		Size openMenuItemSize;
 		Size exitMenuItemSize;
 		Size editMenuItemSize;
-		bool nonVisualComponents;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -77,7 +76,6 @@ namespace PythonBinding.Tests.Designer
 				editMenuItemSize = editMenuItem.Size;
 
 				PythonDesignerRootComponent rootComponent = new PythonDesignerRootComponent(form);
-				nonVisualComponents = rootComponent.HasNonVisualChildComponents();
 				
 				PythonControl pythonForm = new PythonControl("    ");
 				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
@@ -145,12 +143,6 @@ namespace PythonBinding.Tests.Designer
 								"    self.PerformLayout()\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
-		}
-
-		[Test]
-		public void NoNonVisualComponents()
-		{
-			Assert.IsFalse(nonVisualComponents);
 		}
 		
 		string SizeToString(Size size)

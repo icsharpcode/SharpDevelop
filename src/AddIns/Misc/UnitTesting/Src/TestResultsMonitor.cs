@@ -138,19 +138,24 @@ namespace ICSharpCode.UnitTesting
 		string ReadTextAdded()
 		{
 			StringBuilder text = null;
-			using (FileStream fs = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
-				if (fs.Length > 0) {
-					text = new StringBuilder();
-					int bytesRead = 0;
-					fs.Seek(filePosition, SeekOrigin.Begin);
-					do {
-						bytesRead = fs.Read(bytes, 0, BytesBufferLength);
-						if (bytesRead > 0) {
-							filePosition += bytesRead;
-							text.Append(UTF8Encoding.UTF8.GetString(bytes, 0, bytesRead));
-						}
-					} while (bytesRead > 0 && filePosition < fs.Length);
+			try {
+				using (FileStream fs = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+					if (fs.Length > 0) {
+						text = new StringBuilder();
+						int bytesRead = 0;
+						fs.Seek(filePosition, SeekOrigin.Begin);
+						do {
+							bytesRead = fs.Read(bytes, 0, BytesBufferLength);
+							if (bytesRead > 0) {
+								filePosition += bytesRead;
+								text.Append(UTF8Encoding.UTF8.GetString(bytes, 0, bytesRead));
+							}
+						} while (bytesRead > 0 && filePosition < fs.Length);
+					}
 				}
+			} catch (FileNotFoundException) {
+				// Test was aborted before it even started execution
+				return null;
 			}
 			if (text != null) {
 				return text.ToString();

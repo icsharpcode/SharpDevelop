@@ -16,13 +16,12 @@ using System.Windows.Shapes;
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// A button with drop-down menu.
+	/// A button that is split into two parts: the left part works like a normal button, the right part opens a drop-down menu when it is clicked.
 	/// </summary>
 	public class SplitButton : ButtonBase
 	{
 		public static readonly DependencyProperty DropDownMenuProperty
-			= DependencyProperty.Register("DropDownMenu", typeof(ContextMenu),
-			                              typeof(SplitButton), new FrameworkPropertyMetadata(null));
+			= DropDownButton.DropDownMenuProperty.AddOwner(typeof(SplitButton));
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		protected static readonly DependencyPropertyKey IsDropDownMenuOpenPropertyKey
@@ -46,24 +45,24 @@ namespace ICSharpCode.Core.Presentation
 			protected set { SetValue(IsDropDownMenuOpenPropertyKey, value); }
 		}
 		
-		FrameworkElement dropDownButton;
+		FrameworkElement dropDownArrow;
 		
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
-			dropDownButton = (FrameworkElement)Template.FindName("PART_DropDownButton", this);
+			dropDownArrow = (FrameworkElement)Template.FindName("PART_DropDownArrow", this);
 		}
 		
-		bool IsOverDropDownButton(MouseEventArgs e)
+		bool IsOverDropDownArrow(MouseEventArgs e)
 		{
-			if (dropDownButton == null)
+			if (dropDownArrow == null)
 				return false;
-			return e.GetPosition(dropDownButton).X >= 0;
+			return e.GetPosition(dropDownArrow).X >= 0;
 		}
 		
 		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
-			if (IsOverDropDownButton(e)) {
+			if (IsOverDropDownArrow(e)) {
 				e.Handled = true;
 				if (DropDownMenu != null) {
 					DropDownMenu.Placement = PlacementMode.Bottom;
@@ -85,7 +84,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
 		{
-			if (!IsMouseCaptured && IsOverDropDownButton(e)) {
+			if (!IsMouseCaptured && IsOverDropDownArrow(e)) {
 				e.Handled = true;
 			} else {
 				base.OnMouseLeftButtonUp(e);

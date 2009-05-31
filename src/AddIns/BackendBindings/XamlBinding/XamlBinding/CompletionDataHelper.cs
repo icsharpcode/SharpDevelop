@@ -5,13 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
-
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -91,6 +91,7 @@ namespace ICSharpCode.XamlBinding
 				ResolvedExpression = rr,
 				AttributeName = attribute,
 				AttributeValue = value,
+				RawAttributeValue = attributeValue,
 				ValueStartOffset = offsetFromValueStart,
 				Path = (path == null || path.Elements.Count == 0) ? null : path
 			};
@@ -421,7 +422,7 @@ namespace ICSharpCode.XamlBinding
 			return null;
 		}
 		
-		static MarkupExtensionInfo GetInnermostMarkup(MarkupExtensionInfo markup)
+		public static MarkupExtensionInfo GetInnermostMarkup(MarkupExtensionInfo markup)
 		{
 			var lastPair = markup.NamedArguments.LastOrDefault();
 			var last = markup.PositionalArguments.LastOrDefault();

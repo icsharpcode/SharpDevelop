@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.XmlEditor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XmlEditor
 {

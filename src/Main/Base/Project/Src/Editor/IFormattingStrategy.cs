@@ -10,7 +10,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
-	/// Indentation strategy.
+	/// Indentation and formatting strategy.
 	/// </summary>
 	public interface IFormattingStrategy
 	{

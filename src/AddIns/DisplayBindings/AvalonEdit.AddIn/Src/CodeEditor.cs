@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -15,12 +16,12 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Indentation;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
@@ -146,7 +147,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.Background = Brushes.White;
 			textEditor.FontFamily = new FontFamily("Consolas");
 			textEditor.FontSize = 13;
-			textEditor.TextArea.TextEntered += TextArea_TextInput;
+			textEditor.TextArea.TextEntering += TextArea_TextEntering;
+			textEditor.TextArea.TextEntered += TextArea_TextEntered;
 			textEditor.MouseHover += textEditor_MouseHover;
 			textEditor.MouseHoverStopped += textEditor_MouseHoverStopped;
 			textEditor.TextArea.Caret.PositionChanged += caret_PositionChanged;
@@ -171,15 +173,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void textEditor_TextArea_TextView_ContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
-			ITextEditorComponent component = (ITextEditorComponent)sender;
-			ITextEditor adapter = (ITextEditor)component.GetService(typeof(ITextEditor));
+			ITextEditor adapter = GetAdapterFromSender(sender);
 			MenuService.CreateContextMenu(adapter, contextMenuPath).IsOpen = true;
 		}
 		
 		void textEditor_TextArea_TextView_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			ITextEditorComponent component = (ITextEditorComponent)sender;
-			TextEditor textEditor = (TextEditor)component.GetService(typeof(TextEditor));
+			TextEditor textEditor = GetTextEditorFromSender(sender);
 			var position = textEditor.GetPositionFromPoint(e.GetPosition(textEditor));
 			if (position.HasValue) {
 				textEditor.TextArea.Caret.Position = position.Value;
@@ -305,15 +305,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void TextArea_TextInput(object sender, TextCompositionEventArgs e)
+		void TextArea_TextEntering(object sender, TextCompositionEventArgs e)
 		{
 			// don't start new code completion if there is still a completion window open
 			if (completionWindow != null)
 				return;
 			
-			TextArea textArea = (TextArea)sender;
-			ITextEditor adapter = (ITextEditor)textArea.GetService(typeof(ITextEditor));
-			Debug.Assert(adapter != null);
+			if (e.Handled)
+				return;
+			
+			ITextEditor adapter = GetAdapterFromSender(sender);
 			
 			foreach (char c in e.Text) {
 				foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
@@ -343,18 +344,37 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		TextEditor GetTextEditorFromRoutedCommand(object sender)
+		void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
 		{
-			TextArea textArea = (TextArea)sender;
+			if (e.Text.Length > 0 && !e.Handled) {
+				if (formattingStrategy != null) {
+					formattingStrategy.FormatLine(GetAdapterFromSender(sender), e.Text[0]);
+				}
+			}
+		}
+		
+		ITextEditor GetAdapterFromSender(object sender)
+		{
+			ITextEditorComponent textArea = (ITextEditorComponent)sender;
+			ITextEditor textEditor = (ITextEditor)textArea.GetService(typeof(ITextEditor));
+			if (textEditor == null)
+				throw new InvalidOperationException("could not find TextEditor service");
+			return textEditor;
+		}
+		
+		TextEditor GetTextEditorFromSender(object sender)
+		{
+			ITextEditorComponent textArea = (ITextEditorComponent)sender;
 			TextEditor textEditor = (TextEditor)textArea.GetService(typeof(TextEditor));
-			Debug.Assert(textEditor != null);
+			if (textEditor == null)
+				throw new InvalidOperationException("could not find TextEditor service");
 			return textEditor;
 		}
 		
 		void OnCodeCompletion(object sender, ExecutedRoutedEventArgs e)
 		{
 			CloseExistingCompletionWindows();
-			TextEditor textEditor = GetTextEditorFromRoutedCommand(sender);
+			TextEditor textEditor = GetTextEditorFromSender(sender);
 			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 				if (cc.CtrlSpace(GetAdapter(textEditor))) {
 					e.Handled = true;
@@ -365,7 +385,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void OnDeleteLine(object sender, ExecutedRoutedEventArgs e)
 		{
-			TextEditor textEditor = GetTextEditorFromRoutedCommand(sender);
+			TextEditor textEditor = GetTextEditorFromSender(sender);
 			e.Handled = true;
 			using (textEditor.Document.RunUpdate()) {
 				DocumentLine currentLine = textEditor.Document.GetLineByNumber(textEditor.TextArea.Caret.Line);

@@ -78,6 +78,13 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Gets the root component.
+		/// </summary>
+		public IComponent RootComponent {
+			get { return base.LoaderHost.RootComponent; }
+		}
+		
+		/// <summary>
 		/// Creates a new instance of the specified type.
 		/// </summary>
 		public object CreateInstance(Type type, ICollection arguments, string name, bool addToContainer)

@@ -59,7 +59,7 @@ namespace WixBinding.Tests.Utils
 			{
 			}
 			
-			public override event EventHandler FileClosed;
+			public override event EventHandler FileClosed { add {} remove {} }
 		}
 		
 		#pragma warning disable 67

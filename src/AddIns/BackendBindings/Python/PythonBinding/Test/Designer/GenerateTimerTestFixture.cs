@@ -20,8 +20,8 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateTimerTestFixture
 	{
 		string generatedPythonCode;
-		bool hasNonVisualChildComponents;
 		bool hasIContainerConstructor;		
+
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
@@ -38,25 +38,16 @@ namespace PythonBinding.Tests.Designer
 				descriptors = TypeDescriptor.GetProperties(timer);
 				namePropertyDescriptor = descriptors.Find("Interval", false);
 				namePropertyDescriptor.SetValue(timer, 1000);
-				
-				string indentString = "    ";
-				PythonDesignerRootComponent designerRootComponent = new PythonDesignerRootComponent(form);
-				hasNonVisualChildComponents = designerRootComponent.HasNonVisualChildComponents();
-				
+								
 				PythonDesignerComponent component = new PythonDesignerComponent(timer);
 				hasIContainerConstructor = component.HasIContainerConstructor();
 			
+				string indentString = "    ";
 				PythonControl pythonControl = new PythonControl(indentString);
 				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form);
 			}
 		}
-		
-		[Test]
-		public void HasNonVisualChildComponents()
-		{
-			Assert.IsTrue(hasNonVisualChildComponents);
-		}
-				
+						
 		[Test]
 		public void GeneratedCode()
 		{

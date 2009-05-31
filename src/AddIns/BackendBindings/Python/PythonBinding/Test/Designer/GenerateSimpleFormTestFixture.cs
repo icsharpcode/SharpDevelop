@@ -44,7 +44,7 @@ namespace PythonBinding.Tests.Designer
 				codeBuilder.IncreaseIndent();
 				PythonDesignerRootComponent designerRootComponent = new PythonDesignerRootComponent(form);
 				propertyOwnerName = designerRootComponent.GetPropertyOwnerName();
-				designerRootComponent.AppendComponentProperties(codeBuilder);
+				designerRootComponent.AppendComponentProperties(codeBuilder, true, false);
 				formPropertiesCode = codeBuilder.ToString();
 			}
 		}

@@ -5,10 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Gui;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using ICSharpCode.AvalonEdit.Rendering;
 using NUnit.Framework;
 
 namespace ICSharpCode.AvalonEdit.Document.Tests

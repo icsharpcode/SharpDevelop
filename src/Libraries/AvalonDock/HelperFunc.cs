@@ -1,0 +1,161 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Controls;
+using System.Windows.Threading;
+using System.Threading;
+
+namespace AvalonDock
+{
+    internal static class HelperFunc
+    {
+        //public static bool AreVeryClose(double v1, double v2)
+        //{
+        //    if (Math.Abs(v1 - v2) < 0.000001)
+        //        return true;
+            
+        //    return false;
+        //}
+        public static bool AreClose(double v1, double v2)
+        {
+            if (v1 == v2)
+            {
+                return true;
+            }
+            double num = ((Math.Abs(v1) + Math.Abs(v2)) + 10.0) * 2.2204460492503131E-16;
+            double num2 = v1 - v2;
+            return ((-num < num2) && (num > num2));
+        }
+
+        public static double MultiplyCheckNaN(double v1, double v2)
+        {
+            //inf * 0 = 1
+            if (double.IsInfinity(v1) &&
+                v2 == 0.0)
+                return 1.0;
+            if (double.IsInfinity(v2) &&
+                v1 == 0.0)
+                return 1.0;
+
+            return v1 * v2;
+        }
+
+
+        public static bool IsLessThen(double v1, double v2)
+        {
+            if (AreClose(v1, v2))
+                return false;
+
+            return v1 < v2;
+        }
+
+        public static Point PointToScreenWithoutFlowDirection(FrameworkElement element, Point point)
+        { 
+            if (FrameworkElement.GetFlowDirection(element) == FlowDirection.RightToLeft)
+            {
+                Point leftToRightPoint = new Point(
+                    element.ActualWidth - point.X,
+                    point.Y);
+                return element.PointToScreenDPI(leftToRightPoint);
+            }
+
+            return element.PointToScreenDPI(point);
+        }
+
+        public static T FindVisualAncestor<T>(this DependencyObject obj, bool includeThis) where T : DependencyObject
+        {
+            if (!includeThis)
+                obj = VisualTreeHelper.GetParent(obj);
+
+            while (obj != null && (!(obj is T)))
+            {
+                obj = VisualTreeHelper.GetParent(obj);
+            }
+
+            return obj as T;
+        }
+
+        public static bool IsLogicalChildContained<T>(this DependencyObject obj) where T : DependencyObject
+        {
+            foreach (object child in LogicalTreeHelper.GetChildren(obj))
+            {
+                if (child is T)
+                    return true;
+
+                if (child is DependencyObject)
+                {
+
+                    bool res = (child as DependencyObject).IsLogicalChildContained<T>();
+                    if (res)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static T GetLogicalChildContained<T>(this DependencyObject obj) where T : DependencyObject
+        {
+            foreach (object child in LogicalTreeHelper.GetChildren(obj))
+            {
+                if (child is T)
+                    return child as T;
+
+                if (child is DependencyObject)
+                {
+
+                    T childFound = (child as DependencyObject).GetLogicalChildContained<T>();
+                    if (childFound != null)
+                        return childFound;
+                }
+            }
+
+            return null;
+        }
+
+        public static DockablePane FindChildDockablePane(this DockingManager manager, AnchorStyle desideredAnchor)
+        {
+            foreach (UIElement childObject in LogicalTreeHelper.GetChildren(manager))
+            {
+                DockablePane foundPane = FindChildDockablePane(childObject, desideredAnchor);
+                if (foundPane != null)
+                    return foundPane;
+            }
+
+            return null;
+        }
+
+        static DockablePane FindChildDockablePane(UIElement parent, AnchorStyle desideredAnchor)
+        {
+            if (parent is DockablePane && ((DockablePane)parent).Anchor == desideredAnchor)
+                return parent as DockablePane;
+
+            if (parent is ResizingPanel)
+            {
+                foreach (UIElement childObject in ((ResizingPanel)parent).Children)
+                {
+                    DockablePane foundPane = FindChildDockablePane(childObject, desideredAnchor);
+                    if (foundPane != null)
+                        return foundPane;
+                }
+            }
+
+            return null;
+        }
+
+
+        public static Point PointToScreenDPI(this Visual visual, Point pt)
+        {
+            Point resultPt = visual.PointToScreen(pt);
+            return TransformToDeviceDPI(visual, resultPt);
+        }
+
+        public static Point TransformToDeviceDPI(this Visual visual, Point pt)
+        {
+            Matrix m = PresentationSource.FromVisual(visual).CompositionTarget.TransformToDevice;
+            return new Point(pt.X / m.M11, pt.Y /m.M22);
+        }
+    }
+}

@@ -40,9 +40,6 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AvalonDock">
-      <HintPath>..\..\..\Libraries\AvalonDock\AvalonDock.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -87,16 +84,29 @@
     <Compile Include="Src\Editor\CodeCompletion\MethodInsightItem.cs" />
     <Compile Include="Src\Editor\CodeCompletion\MethodInsightProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCodeCompletionBinding.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\OverrideCompletionItem.cs">
+    </Compile>
+    <Compile Include="Src\Editor\CodeCompletion\OverrideCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\TemplateCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\TextCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\DocumentUtilitites.cs" />
+    <Compile Include="Src\Editor\IDocument.cs" />
+    <Compile Include="Src\Editor\IDocumentLine.cs" />
     <Compile Include="Src\Editor\IFileDocumentProvider.cs" />
     <Compile Include="Src\Editor\IFormattingStrategy.cs" />
+    <Compile Include="Src\Editor\ITextAnchor.cs" />
     <Compile Include="Src\Editor\ITextAreaToolTipProvider.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Editor\ITextEditor.cs" />
     <Compile Include="Src\Editor\ITextMarker.cs" />
+    <Compile Include="Src\Editor\RefactoringDocumentAdapter.cs" />
+    <Compile Include="Src\Editor\Search\ISearchResult.cs" />
+    <Compile Include="Src\Editor\Search\ISearchResultFactory.cs" />
+    <Compile Include="Src\Editor\Search\ProvidedDocumentInformation.cs" />
+    <Compile Include="Src\Editor\Search\SearchResultMatch.cs" />
+    <Compile Include="Src\Editor\Search\SearchResultsPad.cs" />
+    <Compile Include="Src\Editor\Search\SearchResultPadToolbarCommands.cs" />
     <Compile Include="Src\Editor\ToolTipRequestEventArgs.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
@@ -160,14 +170,6 @@
     </Compile>
     <Compile Include="Src\Gui\IImage.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
-    <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchFolderNode.cs" />
-    <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchResultNode.cs" />
-    <Compile Include="Src\Gui\Pads\SearchResultPad\Nodes\SearchRootNode.cs" />
-    <Compile Include="Src\Gui\Pads\SearchResultPad\ProvidedDocumentInformation.cs" />
-    <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResult.cs" />
-    <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultMatch.cs" />
-    <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPanel.cs" />
-    <Compile Include="Src\Gui\Pads\SearchResultPad\SearchResultPanelToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <None Include="Src\Gui\Workbench\Layouts\SimpleWorkbenchLayout.cs" />
@@ -671,7 +673,6 @@
     <Compile Include="Src\Project\ChooseStorageLocationButton.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerGridControl.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\NodeBuilder\NodeBuilders.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\OverrideCompletionDataProvider.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskView.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPad.cs" />
     <Compile Include="Src\Gui\FormLocationHelper.cs" />
@@ -780,6 +781,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\AvalonDock\AvalonDock.csproj">
+      <Project>{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}</Project>
+      <Name>AvalonDock</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
@@ -801,8 +806,7 @@
     </ProjectReference>
     <Folder Include="Src\Editor\AvalonEdit" />
     <Folder Include="Src\Editor\CodeCompletion" />
-    <Folder Include="Src\Gui\Pads\SearchResultPad" />
-    <Folder Include="Src\Gui\Pads\SearchResultPad\Nodes" />
+    <Folder Include="Src\Editor\Search" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">
       <Link>ICSharpCode.SharpDevelop.addin</Link>

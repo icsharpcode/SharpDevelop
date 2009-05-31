@@ -322,16 +322,12 @@ namespace ICSharpCode.XmlEditor
 			// Count the number of double quotes and single quotes that exist
 			// before the first equals sign encountered going backwards to
 			// the start of the active element.
-			bool foundEqualsSign = false;
 			int doubleQuotesCount = 0;
 			int singleQuotesCount = 0;
 			char lastQuoteChar = ' ';
 			for (int i = index - 1; i > elementStartIndex; --i) {
 				char ch = xml[i];
-				if (ch == '=') {
-					foundEqualsSign = true;
-					break;
-				} else if (ch == '\"') {
+				if (ch == '\"') {
 					lastQuoteChar = ch;
 					++doubleQuotesCount;
 				} else if (ch == '\'') {
@@ -340,18 +336,13 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 			
-			bool isInside = false;
-			
-			if (foundEqualsSign) {
-				// Odd number of quotes?
-				if ((lastQuoteChar == '\"') && ((doubleQuotesCount % 2) > 0)) {
-					isInside = true;
-				} else if ((lastQuoteChar == '\'') && ((singleQuotesCount %2) > 0)) {
-					isInside = true;
-				}
+			// Odd number of quotes?
+			if ((lastQuoteChar == '\"') && ((doubleQuotesCount % 2) > 0)) {
+				return true;
+			} else if ((lastQuoteChar == '\'') && ((singleQuotesCount %2) > 0)) {
+				return true;
 			}
-			
-			return isInside;
+			return false;
 		}
 		
 		/// <summary>

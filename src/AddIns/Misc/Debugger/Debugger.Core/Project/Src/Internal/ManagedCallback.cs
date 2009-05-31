@@ -290,7 +290,16 @@ namespace Debugger
 		public void UpdateModuleSymbols(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule, IStream pSymbolStream)
 		{
 			EnterCallback(PausedReason.Other, "UpdateModuleSymbols", pAppDomain);
-
+			
+			foreach (Module module in process.Modules) {
+				if (module.CorModule == pModule) {
+					process.TraceMessage("UpdateModuleSymbols: Found module: " + pModule.Name);
+					module.UpdateSymbolsFromStream(pSymbolStream);
+					process.Debugger.SetBreakpointsInModule(module);
+					break;
+				}
+			}
+			
 			ExitCallback();
 		}
 

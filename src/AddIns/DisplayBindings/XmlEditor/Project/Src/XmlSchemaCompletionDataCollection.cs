@@ -6,12 +6,11 @@
 // </file>
 
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XmlEditor
 {

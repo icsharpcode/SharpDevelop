@@ -5,13 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
@@ -37,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		protected override void InitContent()
 		{
-			foreach (IMethod m in OverrideCompletionDataProvider.GetOverridableMethods(currentClass)) {
+			foreach (IMethod m in OverrideCompletionItemProvider.GetOverridableMethods(currentClass)) {
 				Content.Add(new MethodWrapper(m));
 			}
 			Content.Sort();

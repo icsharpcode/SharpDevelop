@@ -7,7 +7,7 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Rendering;
 using NUnit.Framework;
 
 namespace ICSharpCode.AvalonEdit.Document.Tests
