@@ -25,6 +25,8 @@ namespace PythonBinding.Tests.Designer
 		MockDesignerLoaderHost host;
 		ListViewItem listViewItem1;
 		object instance;
+		Type type;
+		string typeName;
 		
 		[SetUp]
 		public void Init()
@@ -37,6 +39,8 @@ namespace PythonBinding.Tests.Designer
 			using (designerSerializationManager.CreateSession()) {	
 				listViewItem1 = (ListViewItem)loader.CreateInstance(typeof(ListViewItem), new object[0], "listViewItem1", false);
 				instance = loader.GetInstance("listViewItem1");
+				typeName = typeof(Int32).FullName;
+				type = loader.GetType(typeName);
 			}
 		}
 		
@@ -45,6 +49,18 @@ namespace PythonBinding.Tests.Designer
 		public void GetListViewInstance()
 		{
 			Assert.AreEqual(listViewItem1, instance);
+		}
+		
+		[Test]
+		public void GetTypeFromLoader()
+		{
+			Assert.AreEqual(typeof(Int32), type);
+		}
+		
+		[Test]
+		public void TypeNameUsed()
+		{
+			Assert.AreEqual(typeName, host.TypeResolutionService.LastTypeNameResolved);
 		}
 	}
 }

@@ -42,6 +42,11 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public static readonly string LabelsProperty = "Labels";
 		
+		/// <summary>
+		/// The name of the create xml file property stored in SharpDevelop's options.
+		/// </summary>
+		public static readonly string CreateXmlOutputFileProperty = "CreateXmlOutputFile";
+
 		Properties properties;
 		
 		public UnitTestingOptions()
@@ -92,6 +97,14 @@ namespace ICSharpCode.UnitTesting
 		public bool Labels {
 			get { return properties.Get<bool>(LabelsProperty, false); }
 			set { properties.Set<bool>(LabelsProperty, value); }
+		}
+		
+		/// <summary>
+		/// Creates an XML output file.
+		/// </summary>
+		public bool CreateXmlOutputFile {
+			get { return properties.Get<bool>(CreateXmlOutputFileProperty, false); }
+			set { properties.Set<bool>(CreateXmlOutputFileProperty, value); }
 		}		
 	}
 }

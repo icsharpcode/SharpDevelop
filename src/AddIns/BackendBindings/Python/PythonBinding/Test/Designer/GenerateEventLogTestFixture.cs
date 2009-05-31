@@ -47,7 +47,6 @@ namespace PythonBinding.Tests.Designer
 		public void GeneratedCode()
 		{
 			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._components = System.ComponentModel.Container()\r\n" +
 								"    self._eventLog1 = System.Diagnostics.EventLog()\r\n" +
 								"    self._eventLog1.BeginInit()\r\n" +
 								"    self.SuspendLayout()\r\n" +

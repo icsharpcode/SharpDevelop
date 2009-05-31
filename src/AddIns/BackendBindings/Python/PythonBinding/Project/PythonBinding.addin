@@ -55,21 +55,23 @@
 			          insertbefore="Tools"
 			          label="&amp;Python"
 			          type="Menu">
-				<ComplexCondition action="Disable">
-					<Not>
-						<Condition name="IsPythonRunning"/>
-					</Not>
+				<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False" action="Disable">
 					<MenuItem id="Run"
 					          icon="Icons.16x16.RunProgramIcon"
+					          class="ICSharpCode.PythonBinding.RunDebugPythonCommand"
+					          label="${res:XML.MainMenu.RunMenu.Run}"
+					          shortcut="Control|Shift|R"/>
+					<MenuItem id="RunWithoutDebugger"
+					          icon="Icons.16x16.Debug.StartWithoutDebugging"
 					          class="ICSharpCode.PythonBinding.RunPythonCommand"
-					          label="&amp;Run"
-					          shortcut="Ctrl+Shift+R"/>
-				</ComplexCondition>
-				<Condition name="IsPythonRunning" action="Disable">
+					          label="${res:XML.MainMenu.DebugMenu.RunWithoutDebug}"
+					          shortcut="Control|Shift|W"/>
+				</Condition>
+				<Condition name="IsProcessRunning" isdebugging="True" action="Disable">
 					<MenuItem id="Stop"
-					          icon="Icons.16x16.Debug.StopProcess"
-					          class="ICSharpCode.PythonBinding.StopPythonCommand"
-					          label="&amp;Stop"/>
+					          icon="Icons.16x16.StopProcess"
+					          class="ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand"
+					          label="${res:XML.MainMenu.DebugMenu.Stop}"/>
 				</Condition>
 			</MenuItem>
 		</Condition>

@@ -84,8 +84,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 					AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, name, null));
 				}
 			}
-			ReflectionClass.AddAttributes(this, assemblyCompilationUnit.Attributes, CustomAttributeData.GetCustomAttributes(assembly));
 			InitializeSpecialClasses();
+			AddAssemblyAttributes(assembly);
+			assemblyCompilationUnit.Freeze();
+		}
+		
+		/// <summary>
+		/// Adds assembly attributes from the specified assembly.
+		/// 
+		/// The constructor already does this, this method is meant for unit tests only!
+		/// </summary>
+		public void AddAssemblyAttributes(Assembly assembly)
+		{
+			ReflectionClass.AddAttributes(this, assemblyCompilationUnit.Attributes, CustomAttributeData.GetCustomAttributes(assembly));
 		}
 		
 		public ReflectionProjectContent(string assemblyFullName, string assemblyLocation, DomAssemblyName[] referencedAssemblies, ProjectContentRegistry registry)

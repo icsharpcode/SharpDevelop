@@ -88,7 +88,7 @@
 		</ComplexCondition>
 	</Path>
 	
-	<Path name="/SharpDevelop/Workbench/MainMenu/QualityTools/Test">
+	<Path name="/SharpDevelop/Workbench/MainMenu/Analysis/Test">
 		<ComplexCondition action="Disable">
 			<And>
 				<Condition name="SolutionOpen"/>

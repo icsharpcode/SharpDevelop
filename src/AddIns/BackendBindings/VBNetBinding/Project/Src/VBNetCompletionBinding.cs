@@ -32,7 +32,7 @@ namespace VBNetBinding
 		public override CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			if(ch == '(' && EnableMethodInsight && CodeCompletionOptions.InsightEnabled) {
-				editor.ShowInsightWindow(new MethodInsightDataProvider());
+				editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
 				return CodeCompletionKeyPressResult.Completed;
 			} else if(ch == ',' && CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
 				if (InsightRefreshOnComma(editor, ch))

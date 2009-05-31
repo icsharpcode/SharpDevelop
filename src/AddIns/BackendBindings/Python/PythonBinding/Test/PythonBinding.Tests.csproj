@@ -106,6 +106,7 @@
     <Compile Include="Converter\ArrayConversionTestFixture.cs" />
     <Compile Include="Converter\AssignmentOperatorConversionTestFixture.cs" />
     <Compile Include="Converter\BitShiftConversionTestFixture.cs" />
+    <Compile Include="Converter\BooleanConversionTestFixture.cs" />
     <Compile Include="Converter\BreakAndContinueConversionTestFixture.cs" />
     <Compile Include="Converter\CallConstructorWithParametersConversionTestFixture.cs" />
     <Compile Include="Converter\ClassDestructorConversionTestFixture.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Converter\ConvertToPythonProjectCommandTestFixture.cs" />
     <Compile Include="Converter\EventHandlerWithObjectCreationTestFixture.cs" />
     <Compile Include="Converter\ForeachConversionWithMethodCallTestFixture.cs" />
+    <Compile Include="Converter\GenericListConversionTestFixture.cs" />
     <Compile Include="Converter\IntegerMethodParameterTestFixture.cs" />
     <Compile Include="Converter\BaseClassReferenceTestFixture.cs" />
     <Compile Include="Converter\BinaryOperatorConversionTests.cs" />
@@ -141,6 +143,7 @@
     <Compile Include="Converter\NullConversionTestFixture.cs" />
     <Compile Include="Converter\ObjectCreationTestFixture.cs" />
     <Compile Include="Converter\ObjectInitializerConversionTestFixture.cs" />
+    <Compile Include="Converter\ProjectHasStartupObjectTestFixture.cs" />
     <Compile Include="Converter\PropertyConversionTestFixture.cs" />
     <Compile Include="Converter\PropertyWithGetSetStatementsTestfixture.cs" />
     <Compile Include="Converter\RemoveHandlerConversionTestFixture.cs" />
@@ -159,6 +162,7 @@
     <Compile Include="Converter\VBClassConversionTestFixture.cs" />
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
+    <Compile Include="DebugPythonCommandTestFixture.cs" />
     <Compile Include="Designer\CreateDesignerComponentTests.cs" />
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
     <Compile Include="Designer\DeserializeAssignmentTestFixtureBase.cs" />
@@ -179,6 +183,7 @@
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
     <Compile Include="Designer\GenerateBackgroundWorkerTestFixture.cs" />
     <Compile Include="Designer\GenerateComboBoxItemsTestFixture.cs" />
+    <Compile Include="Designer\GenerateContextMenuStripTestFixture.cs" />
     <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
     <Compile Include="Designer\GeneratedControlOrderingTestFixture.cs" />
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
@@ -199,6 +204,7 @@
     <Compile Include="Designer\GenerateSimpleFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTextBoxFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTimerTestFixture.cs" />
+    <Compile Include="Designer\GenerateToolTipFormTestFixture.cs" />
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
     <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
@@ -226,6 +232,7 @@
     <Compile Include="Designer\LoadTextBoxOnPanelTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxTestFixture.cs" />
     <Compile Include="Designer\LoadTimerTestFixture.cs" />
+    <Compile Include="Designer\LoadToolTipTestFixture.cs" />
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
@@ -240,6 +247,7 @@
     <Compile Include="Designer\PythonDesignerLoaderProviderTestFixture.cs" />
     <Compile Include="Designer\PythonDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\PythonPropertyAssignmentToStringTests.cs" />
+    <Compile Include="Designer\RemoveMainMenuStripFromFormTestFixture.cs" />
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
     <Compile Include="Designer\TextEditorIndentPassedToGeneratorTestFixture.cs" />
     <Compile Include="Designer\UnknownTypeTestFixture.cs" />
@@ -281,7 +289,6 @@
     <Compile Include="Resolver\ResolveSystemNamespaceTestFixture.cs" />
     <Compile Include="Resolver\ResolveUnknownNamespaceTestFixture.cs" />
     <Compile Include="RunPythonCommandTestFixture.cs" />
-    <Compile Include="StopPythonCommandTestFixture.cs" />
     <Compile Include="Utils\AddedComponent.cs" />
     <Compile Include="Utils\AddInHelper.cs" />
     <Compile Include="Utils\BrowseButtonInfo.cs" />
@@ -298,8 +305,10 @@
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
+    <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
     <Compile Include="Utils\MockClass.cs" />
     <Compile Include="Utils\MockComponentCreator.cs" />
+    <Compile Include="Utils\MockDebugger.cs" />
     <Compile Include="Utils\MockDesignerGenerator.cs" />
     <Compile Include="Utils\MockDesignerLoaderHost.cs" />
     <Compile Include="Utils\MockEditableViewContent.cs" />
@@ -351,6 +360,10 @@
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
       <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>

@@ -77,8 +77,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// </summary>
 		IInsightWindow ActiveInsightWindow { get; }
 		
-		[Obsolete("Use the overload taking IEnumerable<IInsightItem>")]
-		void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider);
 		[Obsolete("Use the overload taking ICompletionItemList")]
 		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);
 	}

@@ -20,7 +20,6 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateBackgroundWorkerTestFixture
 	{
 		string generatedPythonCode;
-		bool hasNonVisualChildComponents;
 		bool hasIContainerConstructor;
 		
 		[TestFixtureSetUp]
@@ -40,29 +39,19 @@ namespace PythonBinding.Tests.Designer
 				propertyDescriptor = descriptors.Find("WorkerReportsProgress", false);
 				propertyDescriptor.SetValue(worker, true);
 				
-				string indentString = "    ";
-				PythonDesignerRootComponent designerRootComponent = new PythonDesignerRootComponent(form);
-				hasNonVisualChildComponents = designerRootComponent.HasNonVisualChildComponents();
-				
 				PythonDesignerComponent component = new PythonDesignerComponent(worker);
 				hasIContainerConstructor = component.HasIContainerConstructor();
-				
+
+				string indentString = "    ";
 				PythonControl pythonControl = new PythonControl(indentString);
 				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form);
 			}
 		}
-		
-		[Test]
-		public void HasNonVisualChildComponents()
-		{
-			Assert.IsTrue(hasNonVisualChildComponents);
-		}
-				
+						
 		[Test]
 		public void GeneratedCode()
 		{
 			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._components = System.ComponentModel.Container()\r\n" +
 								"    self._backgroundWorker1 = System.ComponentModel.BackgroundWorker()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +

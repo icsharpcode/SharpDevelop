@@ -95,7 +95,16 @@ namespace PythonBinding.Tests.Designer
 			CallExpression expression = PythonParserHelper.GetCallExpression(code);
 			PythonControlFieldExpression field = PythonControlFieldExpression.Create(expression);
 			AssertAreEqual(field, String.Empty, "Items", "Add", "self.Items");
-		}		
+		}
+		
+		[Test]
+		public void SetToolTipMethodCall()
+		{
+			string code = "self._toolTip1.SetToolTip(self, \"Test\")";
+			CallExpression expression = PythonParserHelper.GetCallExpression(code);
+			PythonControlFieldExpression field = PythonControlFieldExpression.Create(expression);
+			AssertAreEqual(field, "toolTip1", "_toolTip1", "SetToolTip", "self._toolTip1");
+		}
 		
 		[Test]
 		public void GetMemberNames()
@@ -182,7 +191,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			string expected = "Variable: " + variableName + " Member: " + memberName + " Method: " + methodName + " FullMemberName: " + fullMemberName;
 			string actual = "Variable: " + field.VariableName + " Member: " + field.MemberName + " Method: " + field.MethodName + " FullMemberName: " + field.FullMemberName;
-			Assert.AreEqual(expected, actual);
+			Assert.AreEqual(expected, actual, actual);
 		}
 	}
 }

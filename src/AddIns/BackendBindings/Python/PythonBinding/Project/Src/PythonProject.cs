@@ -61,6 +61,18 @@ namespace ICSharpCode.PythonBinding
 			return base.GetDefaultItemType(fileName);
 		}
 		
+		public void AddMainFile(string fileName)
+		{
+			SetProperty(null, null, "MainFile", fileName, PropertyStorageLocations.Base, true);
+		}
+		
+		/// <summary>
+		/// Returns true if a main file is already defined for this project.
+		/// </summary>
+		public bool HasMainFile {
+			get { return GetProperty(null, null, "MainFile") != null; }
+		}
+		
 		protected override void Create(ProjectCreateInformation information)
 		{
 			base.Create(information);

@@ -12,6 +12,7 @@ namespace Debugger.Interop.CorDebug
     using System;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
+    using Debugger.Interop.CorSym;
 
     [ComImport, Guid("6DC3FA01-D7CB-11D2-8A95-0080C792E5D8"), InterfaceType((short) 1)]
     public interface ICorDebugEditAndContinueSnapshot

@@ -84,6 +84,10 @@ namespace PythonBinding.Tests.Designer
 			return null;
 		}
 		
+		public IComponent RootComponent {
+			get { return null; }
+		}
+		
 		public object CreateInstance(Type type, ICollection arguments, string name, bool addToContainer)
 		{
 			throw new NotImplementedException();

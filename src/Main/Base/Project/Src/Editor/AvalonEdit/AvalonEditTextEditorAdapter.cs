@@ -125,10 +125,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 			get { return null; }
 		}
 		
-		void ITextEditor.ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider)
-		{
-		}
-		
 		void ITextEditor.ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
 		{
 		}

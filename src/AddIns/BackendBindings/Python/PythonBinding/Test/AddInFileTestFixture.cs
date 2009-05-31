@@ -28,6 +28,7 @@ namespace PythonBinding.Tests
 		Codon fileFilterCodon;
 		Codon pythonMenuCodon;
 		Codon pythonRunMenuItemCodon;
+		Codon pythonWithoutDebuggerRunMenuItemCodon;
 		Codon pythonStopMenuItemCodon;
 		Codon fileTemplatesCodon;
 		Codon optionsPanelCodon;
@@ -63,6 +64,7 @@ namespace PythonBinding.Tests
 				
 				const string runMenuExtensionPath = "/SharpDevelop/Workbench/MainMenu/Python";
 				pythonRunMenuItemCodon = GetCodon(runMenuExtensionPath, "Run");
+				pythonWithoutDebuggerRunMenuItemCodon = GetCodon(runMenuExtensionPath, "RunWithoutDebugger");
 				pythonStopMenuItemCodon = GetCodon(runMenuExtensionPath, "Stop");
 				
 				fileTemplatesCodon = GetCodon("/SharpDevelop/BackendBindings/Templates", "Python");
@@ -232,7 +234,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void PythonStopMenuItemLabel()
 		{
-			Assert.AreEqual("&Stop", pythonStopMenuItemCodon["label"]);
+			Assert.AreEqual("${res:XML.MainMenu.DebugMenu.Stop}", pythonStopMenuItemCodon["label"]);
 		}
 		
 		[Test]
@@ -244,19 +246,19 @@ namespace PythonBinding.Tests
 		[Test]
 		public void PythonStopMenuItemClass()
 		{
-			Assert.AreEqual("ICSharpCode.PythonBinding.StopPythonCommand", pythonStopMenuItemCodon["class"]);
+			Assert.AreEqual("ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand", pythonStopMenuItemCodon["class"]);
 		}
 		
 		[Test]
 		public void PythonStopMenuItemIcon()
 		{
-			Assert.AreEqual("Icons.16x16.Debug.StopProcess", pythonStopMenuItemCodon["icon"]);
+			Assert.AreEqual("Icons.16x16.StopProcess", pythonStopMenuItemCodon["icon"]);
 		}		
 		
 		[Test]
 		public void PythonRunMenuItemLabel()
 		{
-			Assert.AreEqual("&Run", pythonRunMenuItemCodon["label"]);
+			Assert.AreEqual("${res:XML.MainMenu.RunMenu.Run}", pythonRunMenuItemCodon["label"]);
 		}
 		
 		[Test]
@@ -268,13 +270,13 @@ namespace PythonBinding.Tests
 		[Test]
 		public void PythonRunMenuItemClass()
 		{
-			Assert.AreEqual("ICSharpCode.PythonBinding.RunPythonCommand", pythonRunMenuItemCodon["class"]);
+			Assert.AreEqual("ICSharpCode.PythonBinding.RunDebugPythonCommand", pythonRunMenuItemCodon["class"]);
 		}
 		
 		[Test]
 		public void PythonRunMenuItemShortcut()
 		{
-			Assert.AreEqual("Ctrl+Shift+R", pythonRunMenuItemCodon["shortcut"]);
+			Assert.AreEqual("Control|Shift|R", pythonRunMenuItemCodon["shortcut"]);
 		}
 		
 		[Test]
@@ -290,25 +292,25 @@ namespace PythonBinding.Tests
 		}
 		
 		[Test]
-		public void PythonRunMenuNotConditionExists()
+		public void PythonRunMenuConditionName()
 		{
-			NegatedCondition notCondition = pythonRunMenuItemCodon.Conditions[0] as NegatedCondition;
-			Assert.IsNotNull(notCondition);
+			Condition condition = pythonRunMenuItemCodon.Conditions[0] as Condition;
+			Assert.IsNotNull("IsProcessRunning", condition.Name);
 		}
 		
 		[Test]
-		public void PythonRunMenuNotCondition()
+		public void PythonRunMenuConditionIsDebuggingProperty()
 		{
-			NegatedCondition notCondition = pythonRunMenuItemCodon.Conditions[0] as NegatedCondition;
-			
-			// Use reflection to get the ICondition associated with the not 
-			// condition.
-			Type type = notCondition.GetType();
-			FieldInfo fieldInfo = type.GetField("condition", BindingFlags.NonPublic | BindingFlags.Instance);
-			ICondition condition = fieldInfo.GetValue(notCondition) as ICondition;
-			
-			Assert.AreEqual("IsPythonRunning", condition.Name);
+			Condition condition = pythonRunMenuItemCodon.Conditions[0] as Condition;
+			Assert.AreEqual("False", condition["isdebugging"]);
 		}
+		
+		[Test]
+		public void PythonRunMenuConditionIsProcessRunningProperty()
+		{
+			Condition condition = pythonRunMenuItemCodon.Conditions[0] as Condition;
+			Assert.AreEqual("False", condition["isprocessrunning"]);
+		}		
 		
 		[Test]
 		public void PythonRunMenuConditionAction()
@@ -318,17 +320,30 @@ namespace PythonBinding.Tests
 		}
 
 		[Test]
-		public void PythonStopMenuConditionAction()
+		public void PythonStopMenuHasSingleCondition()
 		{
-			ICondition condition = pythonStopMenuItemCodon.Conditions[0];
-			Assert.AreEqual(ConditionFailedAction.Disable, condition.Action);
+			Assert.AreEqual(1, pythonStopMenuItemCodon.Conditions.Length);
 		}
 		
 		[Test]
 		public void PythonStopMenuConditionName()
 		{
+			Condition condition = pythonStopMenuItemCodon.Conditions[0] as Condition;
+			Assert.IsNotNull("IsProcessRunning", condition.Name);
+		}
+		
+		[Test]
+		public void PythonStopMenuConditionIsDebuggingProperty()
+		{
+			Condition condition = pythonStopMenuItemCodon.Conditions[0] as Condition;
+			Assert.AreEqual("True", condition["isdebugging"]);
+		}
+		
+		[Test]
+		public void PythonStopMenuConditionAction()
+		{
 			ICondition condition = pythonStopMenuItemCodon.Conditions[0];
-			Assert.AreEqual("IsPythonRunning", condition.Name);
+			Assert.AreEqual(ConditionFailedAction.Disable, condition.Action);
 		}
 		
 		[Test]
@@ -703,6 +718,48 @@ namespace PythonBinding.Tests
 		{
 			Condition condition = convertVBNetProjectCodon.Conditions[0] as Condition;
 			Assert.AreEqual("VBNet", condition["activeproject"]);
+		}
+
+		[Test]
+		public void PythonRunWithoutDebuggerMenuItemLabel()
+		{
+			Assert.AreEqual("${res:XML.MainMenu.DebugMenu.RunWithoutDebug}", pythonWithoutDebuggerRunMenuItemCodon["label"]);
+		}
+		
+		[Test]
+		public void PythonRunWithoutDebuggerMenuItemIsMenuItem()
+		{
+			Assert.AreEqual("MenuItem", pythonWithoutDebuggerRunMenuItemCodon.Name);
+		}
+		
+		[Test]
+		public void PythonRunWithoutDebuggerMenuItemClass()
+		{
+			Assert.AreEqual("ICSharpCode.PythonBinding.RunPythonCommand", pythonWithoutDebuggerRunMenuItemCodon["class"]);
+		}
+		
+		[Test]
+		public void PythonRunWithoutDebuggerMenuItemShortcut()
+		{
+			Assert.AreEqual("Control|Shift|W", pythonWithoutDebuggerRunMenuItemCodon["shortcut"]);
+		}
+		
+		[Test]
+		public void PythonRunWithoutDebuggerMenuItemIcon()
+		{
+			Assert.AreEqual("Icons.16x16.Debug.StartWithoutDebugging", pythonWithoutDebuggerRunMenuItemCodon["icon"]);
+		}
+		
+		[Test]
+		public void PythonDebugRunMenuHasSingleCondition()
+		{
+			Assert.AreEqual(1, pythonWithoutDebuggerRunMenuItemCodon.Conditions.Length);
+		}
+						
+		[Test]
+		public void PythonDebugRunConditionIsSameAsPythonRunCondition()
+		{
+			Assert.AreEqual(pythonWithoutDebuggerRunMenuItemCodon.Conditions[0], pythonRunMenuItemCodon.Conditions[0]);
 		}
 		
 		Codon GetCodon(string name, string extensionPath)

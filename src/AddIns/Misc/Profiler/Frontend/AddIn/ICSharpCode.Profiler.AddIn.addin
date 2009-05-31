@@ -8,7 +8,8 @@
 		<Import assembly="ICSharpCode.Profiler.AddIn.dll" />
 	</Runtime>
 	
-	<Path name="/SharpDevelop/Workbench/MainMenu/QualityTools/Profiler">
+	<Path name="/SharpDevelop/Workbench/MainMenu/Analysis">
+		<MenuItem id="Profiler" label="Profiler" type="Menu" insertbefore="Separator1">
 			<ComplexCondition action="Disable">
 				<And>
 					<Condition name = "ProjectActive" activeproject="*" />
@@ -24,6 +25,7 @@
 				class="ICSharpCode.Profiler.AddIn.Commands.ProfileExecutable"
 				label="Select executable to profile"
 			/>
+		</MenuItem>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">

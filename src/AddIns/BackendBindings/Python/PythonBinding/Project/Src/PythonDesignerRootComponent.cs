@@ -41,37 +41,14 @@ namespace ICSharpCode.PythonBinding
 		public override void AppendComponent(PythonCodeBuilder codeBuilder)
 		{
 			// Add the child components first.
-			foreach (PythonDesignerComponent component in GetChildComponents()) {
+			foreach (PythonDesignerComponent component in GetContainerComponents()) {
 				component.AppendComponent(codeBuilder);
 			}
 			
 			// Add root component
-			AppendComponentProperties(codeBuilder, false, false, true);
+			AppendComponentProperties(codeBuilder, false, true);
 		}
-		
-		/// <summary>
-		/// Gets the child components in reverse order since the forms designer has them reversed.
-		/// </summary>
-		public override PythonDesignerComponent[] GetChildComponents()
-		{
-			PythonDesignerComponent[] components = base.GetChildComponents();
-			Array.Reverse(components);
-			return components;
-		}
-		
-		/// <summary>
-		/// Returns true if non-visual components (e.g. Timer) are associated with this root component.
-		/// </summary>	
-		public bool HasNonVisualChildComponents()
-		{
-			foreach (IComponent containerComponent in Component.Site.Container.Components) {
-				if (IsNonVisualComponent(containerComponent)) {
-					return true;
-				}
-			}
-			return false;
-		}
-		
+				
 		public PythonDesignerComponent[] GetNonVisualChildComponents()
 		{
 			List<PythonDesignerComponent> components = new List<PythonDesignerComponent>();
@@ -83,39 +60,7 @@ namespace ICSharpCode.PythonBinding
 			}
 			return components.ToArray();
 		}
-		
-		/// <summary>
-		/// Appends an expression that creates an instance of the Container to hold non-visual components
-		/// </summary>
-		public void AppendCreateComponentsContainer(PythonCodeBuilder codeBuilder)
-		{
-			codeBuilder.AppendIndentedLine("self._components = " + typeof(Container).FullName + "()");
-		}
-		
-		/// <summary>
-		/// Appends code to create all the non-visual component.
-		/// </summary>
-		public void AppendCreateNonVisualComponents(PythonCodeBuilder codeBuilder)
-		{
-			foreach (PythonDesignerComponent component in GetNonVisualChildComponents()) {
-				if (component.HasIContainerConstructor()) {
-					component.AppendCreateInstance(codeBuilder, "self._components");
-				} else {
-					component.AppendCreateInstance(codeBuilder);
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Appends code to set all the non-visual component properties.
-		/// </summary>
-		public void AppendNonVisualComponents(PythonCodeBuilder codeBuilder)
-		{
-			foreach (PythonDesignerComponent component in GetNonVisualChildComponents()) {
-				component.AppendComponent(codeBuilder);
-			}
-		}
-		
+				
 		/// <summary>
 		/// Adds BeginInit method call for any non-visual components that implement the 
 		/// System.ComponentModel.ISupportInitialize interface.
@@ -142,5 +87,14 @@ namespace ICSharpCode.PythonBinding
 				}
 			}			
 		}
+		
+		/// <summary>
+		/// Reverses the ordering when adding items to the Controls collection.
+		/// </summary>
+		public override void AppendMethodCallWithArrayParameter(PythonCodeBuilder codeBuilder, string propertyOwnerName, object propertyOwner, PropertyDescriptor propertyDescriptor)
+		{
+			bool reverse = propertyDescriptor.Name == "Controls";
+			AppendMethodCallWithArrayParameter(codeBuilder, propertyOwnerName, propertyOwner, propertyDescriptor, reverse);
+		}		
 	}
 }

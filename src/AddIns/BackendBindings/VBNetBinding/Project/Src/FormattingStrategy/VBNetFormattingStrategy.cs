@@ -608,7 +608,8 @@ namespace VBNetBinding.FormattingStrategy
 				}
 				
 				if (IsBlockStart(lexer, currentToken, prevToken)) {
-					ApplyToRange(textArea, indentation, oldLine, currentToken.Location.Line, begin, end);
+					int line = GetLastVisualLine(currentToken.Location.Line, textArea);
+					ApplyToRange(textArea, indentation, oldLine, line, begin, end);
 					
 					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
 						Indent(textArea, indentation);
@@ -620,7 +621,7 @@ namespace VBNetBinding.FormattingStrategy
 					if (currentToken.Kind == Tokens.Interface)
 						inInterface = true;
 					
-					oldLine = currentToken.Location.Line;
+					oldLine = line;
 				}
 				
 				prevToken = currentToken;
@@ -635,6 +636,16 @@ namespace VBNetBinding.FormattingStrategy
 			ApplyToRange(textArea, indentation, oldLine, newLine, begin, end);
 			
 			return indentation.Peek().Length;
+		}
+		
+		int GetLastVisualLine(int line, TextArea area)
+		{
+			string text = StripComment(area.Document.GetText(area.Document.GetLineSegment(line - 1)));
+			while (text.EndsWith("_", StringComparison.Ordinal)) {
+				line++;
+				text = StripComment(area.Document.GetText(area.Document.GetLineSegment(line - 1)));
+			}
+			return line;
 		}
 
 		void Unindent(Stack<string> indentation)

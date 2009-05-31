@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Profiling
@@ -54,21 +55,31 @@ namespace ICSharpCode.SharpDevelop.Profiling
 		}
 		
 		public static string GetSessionFileName(IProject project)
-		{
-			AbstractProject currentProj = ProjectService.CurrentProject as AbstractProject;
-			
-			if (currentProj == null)
-				throw new InvalidOperationException("Can not profile project");
-			
-			string filePart = @"ProfilingSessions\Session" +
+		{			
+			string filename = @"ProfilingSessions\Session" +
 				DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) +
 				".sdps";
 			
-			string path = Path.Combine(currentProj.Directory, filePart);
+			string path = Path.Combine(project.Directory, filename);
 			
 			Directory.CreateDirectory(Path.GetDirectoryName(path));
 			
 			return path;
+		}
+		
+		public static void AddSessionToProject(IProject project, string path)
+		{		
+			Action updater = () => {
+				FileService.OpenFile(path);
+				if (!project.ReadOnly) {
+					FileProjectItem file = new FileProjectItem(project, ItemType.Content, "ProfilingSessions\\" + Path.GetFileName(path));
+					ProjectService.AddProjectItem(project, file);
+					ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+					project.Save();
+				}
+			};
+			
+			WorkbenchSingleton.SafeThreadCall(updater);
 		}
 	}
 }

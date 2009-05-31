@@ -184,15 +184,10 @@
     <Compile Include="Src\Interop\CorDebug\ICorDebugValue2.cs" />
     <Compile Include="Src\Interop\CorDebug\ICorDebugValueBreakpoint.cs" />
     <Compile Include="Src\Interop\CorDebug\ICorDebugValueEnum.cs" />
-    <Compile Include="Src\Interop\CorDebug\ISequentialStream.cs" />
-    <Compile Include="Src\Interop\CorDebug\IStream.cs" />
-    <Compile Include="Src\Interop\CorDebug\tagSTATSTG.cs" />
     <Compile Include="Src\Interop\CorDebug\_COR_IL_MAP.cs" />
     <Compile Include="Src\Interop\CorDebug\_COR_VERSION.cs" />
     <Compile Include="Src\Interop\CorDebug\_FILETIME.cs" />
-    <Compile Include="Src\Interop\CorDebug\_LARGE_INTEGER.cs" />
     <Compile Include="Src\Interop\CorDebug\_SECURITY_ATTRIBUTES.cs" />
-    <Compile Include="Src\Interop\CorDebug\_ULARGE_INTEGER.cs" />
     <Compile Include="Src\Interop\CorSym\CorSymAddrKind.cs" />
     <Compile Include="Src\Interop\CorSym\CorSymBinder_deprecated.cs" />
     <Compile Include="Src\Interop\CorSym\CorSymBinder_deprecatedClass.cs" />

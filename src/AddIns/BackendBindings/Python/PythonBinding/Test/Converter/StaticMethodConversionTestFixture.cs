@@ -35,12 +35,20 @@ namespace PythonBinding.Tests.Converter
 						"    }\r\n" +
 						"}";
 	
+		string python;
+		NRefactoryToPythonConverter converter;
+		
+		[SetUp]
+		public void Init()
+		{
+			converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
+			converter.IndentString = "    ";
+			python = converter.Convert(csharp);
+		}
+		
 		[Test]
 		public void ConvertedPythonCode()
 		{
-			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
-			converter.IndentString = "    ";
-			string python = converter.Convert(csharp);
 			string expectedPython = "class Foo(object):\r\n" +
 									"    def Main(args):\r\n" +
 									"        pass\r\n" +
@@ -54,8 +62,19 @@ namespace PythonBinding.Tests.Converter
 									"\r\n" +
 									"    def Run(self):\r\n" +
 									"        pass";
-			
 			Assert.AreEqual(expectedPython, python);
+		}
+		
+		[Test]
+		public void EntryPointMethodFound()
+		{
+			Assert.AreEqual(1, converter.EntryPointMethods.Count);
+		}
+		
+		[Test]
+		public void MainEntryPointMethodNameIsMain()
+		{
+			Assert.AreEqual("Main", converter.EntryPointMethods[0].Name);
 		}
 	}
 }

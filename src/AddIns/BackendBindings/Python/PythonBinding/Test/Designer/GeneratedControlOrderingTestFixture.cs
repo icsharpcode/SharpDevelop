@@ -36,6 +36,14 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
 				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 				namePropertyDescriptor.SetValue(form, "MainForm");
+				
+				Button button = (Button)host.CreateComponent(typeof(Button), "button1");
+				button.Location = new Point(0, 0);
+				button.Size = new Size(10, 10);
+				button.Text = "button1";
+				button.TabIndex = 0;
+				button.UseCompatibleTextRendering = false;
+				form.Controls.Add(button);
 
 				RadioButton radioButton = (RadioButton)host.CreateComponent(typeof(RadioButton), "radioButton1");
 				radioButton.Location = new Point(20, 0);
@@ -44,16 +52,6 @@ namespace PythonBinding.Tests.Designer
 				radioButton.TabIndex = 1;
 				radioButton.UseCompatibleTextRendering = false;
 				form.Controls.Add(radioButton);
-				
-				// Add button after radio button to simulate the forms designer
-				// behaviour of adding the controls in reverse order to the Controls collection.
-				Button button = (Button)host.CreateComponent(typeof(Button), "button1");
-				button.Location = new Point(0, 0);
-				button.Size = new Size(10, 10);
-				button.Text = "button1";
-				button.TabIndex = 0;
-				button.UseCompatibleTextRendering = false;
-				form.Controls.Add(button);
 				
 				string indentString = "    ";
 				PythonControl pythonForm = new PythonControl(indentString);

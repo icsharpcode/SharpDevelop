@@ -36,7 +36,7 @@ namespace PythonBinding.Tests.Converter
 			string expectedPython = "class Foo(object):\r\n" +
 				"\tdef Assign(self):\r\n" +
 				"\t\telements = System.Array.CreateInstance(System.Int32, 10)\r\n" +
-				"\t\tlist = List()\r\n" +
+				"\t\tlist = List[System.Array[System.Int32]]()\r\n" +
 				"\t\tlist.Add(elements.Clone())";
 			
 			Assert.AreEqual(expectedPython, python);
