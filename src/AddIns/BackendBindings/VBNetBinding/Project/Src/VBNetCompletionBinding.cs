@@ -77,7 +77,7 @@ namespace VBNetBinding
 					return true;
 				case "overrides":
 					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new OverrideCompletionDataProvider(), ' ');
+					new OverrideCompletionItemProvider().ShowCompletion(editor);
 					return true;
 				case "return":
 					if (IsInComment(editor)) return false;

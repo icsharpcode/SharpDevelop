@@ -125,11 +125,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 			get { return null; }
 		}
 		
-		public virtual void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider)
+		void ITextEditor.ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider)
 		{
 		}
 		
-		public virtual void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
+		void ITextEditor.ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
 		{
 		}
 		

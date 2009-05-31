@@ -84,6 +84,9 @@
     <Compile Include="Src\Editor\CodeCompletion\MethodInsightItem.cs" />
     <Compile Include="Src\Editor\CodeCompletion\MethodInsightProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCodeCompletionBinding.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\OverrideCompletionItem.cs">
+    </Compile>
+    <Compile Include="Src\Editor\CodeCompletion\OverrideCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\TemplateCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\TextCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\DocumentUtilitites.cs" />
@@ -670,7 +673,6 @@
     <Compile Include="Src\Project\ChooseStorageLocationButton.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerGridControl.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\NodeBuilder\NodeBuilders.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\OverrideCompletionDataProvider.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskView.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPad.cs" />
     <Compile Include="Src\Gui\FormLocationHelper.cs" />

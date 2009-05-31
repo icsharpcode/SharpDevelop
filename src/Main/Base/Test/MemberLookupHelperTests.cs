@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.Core;
-using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
@@ -425,8 +426,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			// get a class deriving from Form
 			IClass form = swf.GetClass("System.Windows.Forms.PrintPreviewDialog", 0);
-			IMethod[] methods = DefaultEditor.Gui.Editor.OverrideCompletionDataProvider.GetOverridableMethods(form);
-			IProperty[] properties = DefaultEditor.Gui.Editor.OverrideCompletionDataProvider.GetOverridableProperties(form);
+			IMethod[] methods = OverrideCompletionItemProvider.GetOverridableMethods(form);
+			IProperty[] properties = OverrideCompletionItemProvider.GetOverridableProperties(form);
 			Assert.AreEqual(1, properties.Where(m=>m.Name=="AutoScroll").Count());
 			Assert.AreEqual(1, properties.Where(m=>m.Name=="CanRaiseEvents").Count());
 			Assert.AreEqual(1, methods.Where(m=>m.Name=="AdjustFormScrollbars").Count());

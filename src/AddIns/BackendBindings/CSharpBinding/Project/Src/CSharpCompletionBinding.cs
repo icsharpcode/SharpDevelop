@@ -186,7 +186,7 @@ namespace CSharpBinding
 					return true;
 				case "override":
 					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new OverrideCompletionDataProvider(), ' ');
+					new OverrideCompletionItemProvider().ShowCompletion(editor);
 					return true;
 				case "new":
 					return ShowNewCompletion(editor);

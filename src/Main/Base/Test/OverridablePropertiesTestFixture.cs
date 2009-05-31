@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -38,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	
 		IProperty[] GetOverridableProperties(IClass baseClass)
 		{
-			return OverrideCompletionDataProvider.GetOverridableProperties(new MockClass("DerivedClass") { BaseType = baseClass.DefaultReturnType });
+			return OverrideCompletionItemProvider.GetOverridableProperties(new MockClass("DerivedClass") { BaseType = baseClass.DefaultReturnType });
 		}
 		
 		/// <summary>
@@ -72,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			property.IsOverridable = true;
 			returnType.Properties.Add(property);
 			
-			IProperty[] properties = OverrideCompletionDataProvider.GetOverridableProperties(c);
+			IProperty[] properties = OverrideCompletionItemProvider.GetOverridableProperties(c);
 			
 			AssertArePropertiesEqual(expectedProperties, properties);
 		}
@@ -115,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[ExpectedException(typeof(ArgumentException))]
 		public void NullArgument()
 		{
-			OverrideCompletionDataProvider.GetOverridableProperties(null);
+			OverrideCompletionItemProvider.GetOverridableProperties(null);
 		}
 		
 		void AssertArePropertiesEqual(List<IProperty> expectedProperties, IProperty[] properties)
