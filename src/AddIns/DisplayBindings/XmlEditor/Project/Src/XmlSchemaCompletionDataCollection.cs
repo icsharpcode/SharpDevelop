@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -49,7 +50,7 @@ namespace ICSharpCode.XmlEditor
 			this.AddRange(val);
 		}
 		
-		public ICompletionItemList GetNamespaceCompletionData()
+		public DefaultCompletionItemList GetNamespaceCompletionData()
 		{
 			XmlCompletionItemList list = new XmlCompletionItemList();
 			
@@ -59,7 +60,7 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			list.SortItems();
-			
+			list.SuggestedItem = list.Items.FirstOrDefault();
 			return list;
 		}
 		

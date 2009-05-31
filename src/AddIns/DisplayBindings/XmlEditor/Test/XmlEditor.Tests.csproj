@@ -14,7 +14,7 @@
     <DebugType>Full</DebugType>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -212,7 +212,7 @@
     <ProjectReference Include="..\Project\XmlEditor.csproj">
       <Project>{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}</Project>
       <Name>XmlEditor</Name>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <Folder Include="XPathQuery" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

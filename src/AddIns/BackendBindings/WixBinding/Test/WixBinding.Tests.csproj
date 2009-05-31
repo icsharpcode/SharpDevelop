@@ -293,10 +293,6 @@
       <Link>ICSharpCode.SharpDevelop.Dom.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\..\..\..\AddIns\AddIns\DisplayBindings\XmlEditor\XmlEditor.dll">
-      <Link>XmlEditor.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Folder Include="PropertyGrid" />
     <Folder Include="DirectoryImport" />
     <Folder Include="Diff" />

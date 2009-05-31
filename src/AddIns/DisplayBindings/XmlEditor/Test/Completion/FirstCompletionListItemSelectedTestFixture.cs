@@ -38,7 +38,7 @@ namespace XmlEditor.Tests.Completion
 			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(ResourceManager.GetXhtmlStrictSchema());
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
 			schemas.Add(schema);
-			provider = new XmlCompletionDataProvider(schemas, schema, String.Empty);
+			provider = new XmlCompletionDataProvider(schemas, schema, string.Empty);
 			TextEditorControl textEditor = new TextEditorControl();
 			completionDataItems = provider.GenerateCompletionData("", '<');
 			selectedCompletionData = completionDataItems.SuggestedItem;

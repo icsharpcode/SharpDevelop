@@ -7,6 +7,7 @@
 
 using ICSharpCode.XmlEditor;
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
@@ -34,20 +35,22 @@ namespace ICSharpCode.XmlEditor
 		{
 			string text = String.Concat(fileContent, charTyped);
 			
+			DefaultCompletionItemList list = null;
+			
 			switch (charTyped) {
 				case '=':
 					// Namespace intellisense.
 					if (XmlParser.IsNamespaceDeclaration(text, text.Length)) {
-						return schemaCompletionDataItems.GetNamespaceCompletionData();
+						list = schemaCompletionDataItems.GetNamespaceCompletionData();
 					}
 					break;
 				case '<':
 					// Child element intellisense.
 					XmlElementPath parentPath = XmlParser.GetParentElementPath(text);
 					if (parentPath.Elements.Count > 0) {
-						return GetChildElementCompletionData(parentPath);
+						list = GetChildElementCompletionData(parentPath);
 					} else if (defaultSchemaCompletionData != null) {
-						return defaultSchemaCompletionData.GetElementCompletionData(defaultNamespacePrefix);
+						list = defaultSchemaCompletionData.GetElementCompletionData(defaultNamespacePrefix);
 					}
 					break;
 					
@@ -56,7 +59,7 @@ namespace ICSharpCode.XmlEditor
 					if (!XmlParser.IsInsideAttributeValue(text, text.Length)) {
 						XmlElementPath path = XmlParser.GetActiveElementStartPath(text, text.Length);
 						if (path.Elements.Count > 0) {
-							return GetAttributeCompletionData(path);
+							list = GetAttributeCompletionData(path);
 						}
 					}
 					break;
@@ -67,14 +70,19 @@ namespace ICSharpCode.XmlEditor
 						if (attributeName.Length > 0) {
 							XmlElementPath elementPath = XmlParser.GetActiveElementStartPath(text, text.Length);
 							if (elementPath.Elements.Count > 0) {
-								return GetAttributeValueCompletionData(elementPath, attributeName);
+								list = GetAttributeValueCompletionData(elementPath, attributeName);
 							}
 						}
 					}
 					break;
 			}
 			
-			return null;
+			if (list != null) {
+				list.SortItems();
+				list.SuggestedItem = list.Items.FirstOrDefault();
+			}
+			
+			return list;
 		}
 		
 		/// <summary>
@@ -120,7 +128,7 @@ namespace ICSharpCode.XmlEditor
 			return schemaCompletionDataItems.GetSchemaFromFileName(fileName);
 		}
 		
-		public ICompletionItemList GetChildElementCompletionData(XmlElementPath path)
+		public DefaultCompletionItemList GetChildElementCompletionData(XmlElementPath path)
 		{
 			XmlCompletionItemList list = new XmlCompletionItemList();
 			
@@ -130,11 +138,11 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			list.SortItems();
-			
+			list.SuggestedItem = list.Items.FirstOrDefault();
 			return list;
 		}
 		
-		public ICompletionItemList GetAttributeCompletionData(XmlElementPath path)
+		public DefaultCompletionItemList GetAttributeCompletionData(XmlElementPath path)
 		{
 			var list = new XmlCompletionItemList();
 			
@@ -144,11 +152,11 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			list.SortItems();
-			
+			list.SuggestedItem = list.Items.FirstOrDefault();
 			return list;
 		}
 		
-		public ICompletionItemList GetAttributeValueCompletionData(XmlElementPath path, string name)
+		public DefaultCompletionItemList GetAttributeValueCompletionData(XmlElementPath path, string name)
 		{
 			var list = new XmlCompletionItemList();
 			
@@ -158,7 +166,7 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			list.SortItems();
-			
+			list.SuggestedItem = list.Items.FirstOrDefault();
 			return list;
 		}
 	}

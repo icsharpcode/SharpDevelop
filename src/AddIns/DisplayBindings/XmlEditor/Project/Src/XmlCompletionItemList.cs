@@ -21,7 +21,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public override CompletionItemListKeyResult ProcessInput(char key)
 		{
-			if (key == ':' || key == '.')
+			if (key == ':' || key == '.' || key == ' ')
 				return CompletionItemListKeyResult.NormalKey;
 			
 			return base.ProcessInput(key);
