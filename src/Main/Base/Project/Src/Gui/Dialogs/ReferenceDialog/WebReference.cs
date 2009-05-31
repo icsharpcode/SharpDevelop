@@ -289,7 +289,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			CodeDomProvider provider = null;
 			
-			ICSharpCode.SharpDevelop.Dom.IParser parser = ParserService.GetParser(fileName);
+			IParser parser = ParserService.GetParser(fileName);
 			if (parser != null) {
 				provider = parser.Language.CodeDomProvider;
 			}

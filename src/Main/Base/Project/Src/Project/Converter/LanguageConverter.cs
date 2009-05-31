@@ -237,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			FixExtensionOfExtraProperties(targetItem, sourceExtension, targetExtension);
 			if (sourceExtension.Equals(Path.GetExtension(sourceItem.FileName), StringComparison.OrdinalIgnoreCase)) {
 				string code = ParserService.GetParseableFileContent(sourceItem.FileName);
-				IParser p = ParserFactory.CreateParser(sourceLanguage, new StringReader(code));
+				var p = ParserFactory.CreateParser(sourceLanguage, new StringReader(code));
 				p.Parse();
 				if (p.Errors.Count > 0) {
 					conversionLog.AppendLine();

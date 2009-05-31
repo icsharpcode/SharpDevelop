@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Project;
 using System;
 using Hornung.ResourceToolkit;
 using Hornung.ResourceToolkit.Resolver;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 
