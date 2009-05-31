@@ -92,20 +92,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// Register context and load all commands from addin
 			CommandsRegistry.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
 			
-			CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContext, delegate {
-			                                                      	var bindings = CommandsRegistry.GetCommandBindings(CommandsRegistry.DefaultContext, null, null);
-			                                                      	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
-			                                                      	CommandBindings.AddRange(bindings);
-			                                                      });
-			
-			CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContext, delegate {
-			                                                   	var bindings = CommandsRegistry.GetInputBindings(CommandsRegistry.DefaultContext, null, null);
-			                                                   	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
-			                                                   	InputBindings.AddRange(bindings);
-			                                                   });
-			
-			CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext);
-			CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext);
+			CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContext, null, CommandsRegistry.CreateCommandBindingUpdateHandler(CommandBindings, CommandsRegistry.DefaultContext, null));
+			CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContext, null, CommandsRegistry.CreateInputBindingUpdateHandler(InputBindings, CommandsRegistry.DefaultContext, null));
+			CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext, null);
+			CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext, null);
 			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath);
 			

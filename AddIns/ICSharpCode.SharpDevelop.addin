@@ -52,7 +52,6 @@
 	</Runtime>
 	
 	
-	<!-- Commands registry test
 	<Path name="/SharpDevelop/Workbench/RoutedUICommands">
 		<RoutedUICommand name="SDTestCommands.Test" text="Create new file" />
 		
@@ -64,8 +63,6 @@
 		<RoutedUICommand name="SDBuildCommands.CleanProject" text="${res:XML.MainMenu.BuildMenu.CleanProject}" />
 		<RoutedUICommand name="SDBuildCommands.AbortBuild" text="${res:XML.MainMenu.BuildMenu.AbortBuild}" />
 		<RoutedUICommand name="SDBuildCommands.EditConfigurationsCommand" text="${res:XML.MainMenu.BuildMenu.EditConfigurationsPlatforms}" />
-	
-		<RoutedUICommand name="SDWindowCommands.SplitView" text="TODO: Split view" />
 	
 		<RoutedUICommand name="SDProjectCommands.AddNewProjectToSolution" text="${res:ProjectComponent.ContextMenu.NewProject}" />
 		<RoutedUICommand name="SDProjectCommands.AddExitingProjectToSolution" text="${res:ProjectComponent.ContextMenu.ExistingProject}" />
@@ -96,8 +93,10 @@
 		<RoutedUICommand name="SDSearchCommands.ClearBookmarks" text="${res:XML.MainMenu.SearchMenu.ClearBookmarks}" />
 		<RoutedUICommand name="SDSearchCommands.GotoLineNumber" text="${res:XML.MainMenu.SearchMenu.GotoLineNr}" />
 		<RoutedUICommand name="SDSearchCommands.GotoBrace" text="${res:XML.MainMenu.SearchMenu.GotoBrace}" />
+
+		<RoutedUICommand name="SDWindowCommands.SplitView" text="Split view" />
 	</Path>
-	-->
+	
 	
 	<Path name="/SharpDevelop/Workbench/CommandBindings">
 		<CommandBinding command="SDTestCommands.Test" class="ICSharpCode.SharpDevelop.Commands.TestCommand" gestures="Ctrl+M" />
@@ -136,7 +135,6 @@
 		<CommandBinding command="SDSearchCommands.ClearBookmarks" class="ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks" />
 		<CommandBinding command="SDSearchCommands.GotoLineNumber" class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber" gestures="Ctrl+G" />
 		<CommandBinding command="SDSearchCommands.GotoBrace" class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace" gestures="Ctrl+B" />
-	
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/InputBindings">

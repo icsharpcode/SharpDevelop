@@ -127,9 +127,9 @@ namespace ICSharpCode.Core.Presentation
 				} else {
 					this.Command = routedCommand;
 					
-					var gestures = CommandsRegistry.GetInputGestures(CommandsRegistry.DefaultContext, routedCommand.Name, null);
+					var gestures = CommandsRegistry.GetInputGestures(CommandsRegistry.DefaultContext, null, routedCommand.Name, null);
 					var gesturesString = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
-					this.InputGestureText = "M: " + gesturesString;
+					this.InputGestureText = gesturesString;
 				}
 			} else {			
 				this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);

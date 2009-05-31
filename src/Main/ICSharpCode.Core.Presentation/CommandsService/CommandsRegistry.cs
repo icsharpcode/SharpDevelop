@@ -15,6 +15,11 @@ namespace ICSharpCode.Core.Presentation
 	public static class CommandsRegistry
 	{
 		/// <summary>
+		/// This element is used to represent null key in dictionary
+		/// </summary>
+		private static UIElement NullUIElement = new UIElement();
+		
+		/// <summary>
 		/// Default application context.
 		/// 
 		/// This should be set to the root UI element
@@ -30,8 +35,8 @@ namespace ICSharpCode.Core.Presentation
 		internal static Dictionary<string, System.Windows.Input.ICommand> commands = new Dictionary<string, System.Windows.Input.ICommand>();
 		internal static Dictionary<string, UIElement> contexts = new Dictionary<string, UIElement>();
 		
-		private static Dictionary<string, List<WeakReference>> commandBindingsUpdateHandlers = new Dictionary<string, List<WeakReference>>();
-		private static Dictionary<string, List<WeakReference>> inputBindingsUpdateHandlers = new Dictionary<string, List<WeakReference>>();
+		private static Dictionary<string, Dictionary<UIElement, List<BindingsUpdatedHandler>>> commandBindingsUpdateHandlers = new Dictionary<string, Dictionary<UIElement, List<BindingsUpdatedHandler>>>();
+		private static Dictionary<string, Dictionary<UIElement, List<BindingsUpdatedHandler>>> inputBindingsUpdateHandlers = new Dictionary<string, Dictionary<UIElement, List<BindingsUpdatedHandler>>>();
 
 		/// <summary>
 		/// Get reference to routed UI command by name
@@ -45,20 +50,48 @@ namespace ICSharpCode.Core.Presentation
 			
 			return null;
 		}
+		
+		/// <summary>
+		/// Checks whether routed UI command registered
+		/// </summary>
+		/// <param name="routedCommandName">Routed command name</param>
+		/// <returns>Returns value specifting whether routed UI command is registered</returns>
+		public static bool IsRoutedUICommandRegistered(string routedCommandName) {
+			return GetRoutedUICommand(routedCommandName) != null;
+		}
 
 		/// <summary>
 		/// Register new routed command in the global registry
 		/// 
-		/// Routed command name should be uniq in SharpDevelop scope. 
-		/// Use "." to emulate namespaces
+		/// Routed command name should be unique in SharpDevelop scope. 
+		/// Use "." to organize commands into groups
 		/// </summary>
 		/// <param name="routedCommandName">Routed command name</param>
 		/// <param name="text">Short text describing command functionality</param>
 		public static void RegisterRoutedUICommand(string routedCommandName, string text) {
-			var routedCommand = new RoutedUICommand(text, routedCommandName, typeof(UIElement));
+			var routedCommand = new RoutedUICommand(text, routedCommandName, typeof(CommandsRegistry));
 			
 			if(!routedCommands.ContainsKey(routedCommandName)) {
 				routedCommands.Add(routedCommandName, routedCommand);
+			} else {
+				var test = routedCommands[routedCommandName];
+				throw new IndexOutOfRangeException("Routed UI command with name " + routedCommandName + " is already registered");
+			}
+		}
+
+		/// <summary>
+		/// Register existing routed command in the global registry
+		/// 
+		/// Routed command then can be accessed 
+		/// Routed command name should be uniq in SharpDevelop scope. 
+		/// Use "." to organize commands into groups
+		/// </summary>
+		/// <param name="routedCommandName">Existing routed command</param>
+		public static void RegisterRoutedUICommand(RoutedUICommand existingRoutedUICommand) {
+			string routedCommandName = existingRoutedUICommand.OwnerType.Name + "." + existingRoutedUICommand.Name;
+			
+			if(!routedCommands.ContainsKey(routedCommandName)) {
+				routedCommands.Add(existingRoutedUICommand.OwnerType.Name + "." + existingRoutedUICommand.Name, existingRoutedUICommand);
 			} else {
 				throw new IndexOutOfRangeException("Routed UI command with name " + routedCommandName + " is already registered");
 			}
@@ -75,16 +108,17 @@ namespace ICSharpCode.Core.Presentation
 		}
 
 		/// <summary>
-		/// Register several input bindings with the same 
+		/// Register input binding in context
 		/// 
-		/// Registering input binding means that when provided gesture is met in specified 
-		/// context routed command will be invoked
+		/// Registering input binding means that when specified gesture is met in specified 
+		/// context routed command is invoked
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Context class instance. If instance is provided this input binding only applies to provided UI element</param>
 		/// <param name="routedCommandName">Routed UI command invoked on gesture run</param>
 		/// <param name="gesture">Gesture</param>
-		public static void RegisterInputBinding(string contextName, string routedCommandName, InputGesture gesture) {			
-			var inputBindingInfo = new InputBindingInfo(contextName, routedCommandName, gesture);
+		public static void RegisterInputBinding(string contextName, UIElement contextInstance, string routedCommandName, InputGesture gesture) {			
+			var inputBindingInfo = new InputBindingInfo(contextName, contextInstance, routedCommandName, gesture);
 			inputBidnings.Add(inputBindingInfo);
 		}
 		
@@ -94,11 +128,13 @@ namespace ICSharpCode.Core.Presentation
 		/// Null arguments are ignored
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Unregister binding assigned to specific context instance</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="gesture">Gesture</param>
-		public static void UnregisterInputBindings(string contextName, string routedCommandName, InputGesture gesture) {
+		public static void UnregisterInputBindings(string contextName, UIElement contextInstance, string routedCommandName, InputGesture gesture) {
 			for(int i = inputBidnings.Count - 1; i >= 0; i--) {
 				if((contextName == null || inputBidnings[i].ContextName == contextName)
+				   && (contextInstance == null || inputBidnings[i].Context == null || inputBidnings[i].Context == contextInstance)
 				   && (routedCommandName == null || inputBidnings[i].RoutedCommandName == routedCommandName)
 				   && (gesture == null || inputBidnings[i].Gesture == gesture)) {
 					inputBidnings.RemoveAt(i);
@@ -110,25 +146,40 @@ namespace ICSharpCode.Core.Presentation
 		/// Register delegate which will be invoked on change in input bindings in specified context
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Register update handler which will trigger only if input bindings registered for this object where triggered</param>
 		/// <param name="handler">Update handler delegate</param>
-		public static void RegisterInputBindingUpdateHandler(string contextName, BindingsUpdatedHandler handler) {
-			if(!inputBindingsUpdateHandlers.ContainsKey(contextName)) {
-				inputBindingsUpdateHandlers.Add(contextName, new List<WeakReference>());
+		public static void RegisterInputBindingUpdateHandler(string contextName, UIElement contextInstance, BindingsUpdatedHandler handler) {
+			if(contextInstance == null) {
+				contextInstance = NullUIElement;
 			}
 			
-			inputBindingsUpdateHandlers[contextName].Add(new WeakReference(handler));
+			if(!inputBindingsUpdateHandlers.ContainsKey(contextName)) {
+				inputBindingsUpdateHandlers.Add(contextName, new Dictionary<UIElement, List<BindingsUpdatedHandler>>());
+			}
+			
+			if(!inputBindingsUpdateHandlers[contextName].ContainsKey(contextInstance)) {
+				inputBindingsUpdateHandlers[contextName].Add(contextInstance, new List<BindingsUpdatedHandler>());
+			}
+			
+			inputBindingsUpdateHandlers[contextName][contextInstance].Add(handler);
 		}
 	
 		/// <summary>
 		/// Remove input bindings update handler
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Unregister update handler which was triggered only if input bindings registered for specific instance where updated</param>
 		/// <param name="handler">Update handler delegate</param>
-		public static void UnregisterInputBindingUpdateHandler(string contextName, BindingsUpdatedHandler handler) {
+		public static void UnregisterInputBindingUpdateHandler(string contextName, UIElement contextInstance, BindingsUpdatedHandler handler) {
+			if(contextInstance == null) {
+				contextInstance = NullUIElement;
+			}
 			if(!inputBindingsUpdateHandlers.ContainsKey(contextName)) {
-				for(int i = inputBindingsUpdateHandlers[contextName].Count - 1; i >= 0; i++) {
-					if(inputBindingsUpdateHandlers[contextName][i].Target == handler) {
-						inputBindingsUpdateHandlers[contextName].RemoveAt(i);
+				if(!inputBindingsUpdateHandlers[contextName].ContainsKey(contextInstance)) {
+					for(int i = inputBindingsUpdateHandlers[contextName][contextInstance].Count - 1; i >= 0; i++) {
+						if(inputBindingsUpdateHandlers[contextName][contextInstance][i] == handler) {
+							inputBindingsUpdateHandlers[contextName][contextInstance].RemoveAt(i);
+						}
 					}
 				}
 			}
@@ -139,20 +190,36 @@ namespace ICSharpCode.Core.Presentation
 		/// Invoke registered input bindings update handlers registered in specified context
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
-		public static void InvokeInputBindingUpdateHandlers(string contextName) {
+		public static void InvokeInputBindingUpdateHandlers(string contextName, UIElement contextInstance) {
+			if(contextInstance == null) {
+				contextInstance = NullUIElement;
+			}
+			
 			if(contextName != null) {
 				if(inputBindingsUpdateHandlers.ContainsKey(contextName)) {
-					foreach(var handler in inputBindingsUpdateHandlers[contextName]) {
-						if(handler != null && handler.Target != null) {
-							((BindingsUpdatedHandler)handler.Target).Invoke();
+					if(contextInstance == NullUIElement) {
+						foreach(var instanceHandlers in inputBindingsUpdateHandlers[contextName]) {
+							foreach(var handler in instanceHandlers.Value) {
+								if(handler != null) {
+									((BindingsUpdatedHandler)handler).Invoke();
+								}
+							}
 						}
 					}
+				} else if(inputBindingsUpdateHandlers[contextName].ContainsKey(contextInstance)) {
+		          	foreach(var handler in inputBindingsUpdateHandlers[contextName][contextInstance]) {
+						if(handler != null) {
+							((BindingsUpdatedHandler)handler).Invoke();
+						}
+		          	}
 				}
 			} else {
 				foreach(var contextHandlers in inputBindingsUpdateHandlers) {
-					foreach(var handler in contextHandlers.Value) {
-						if(handler != null && handler.Target != null) {
-							((BindingsUpdatedHandler)handler.Target).Invoke();
+					foreach(var instanceHandlers in contextHandlers.Value) {
+						foreach(var handler in instanceHandlers.Value) {
+							if(handler != null) {
+								((BindingsUpdatedHandler)handler).Invoke();
+							}
 						}
 					}
 				}
@@ -178,12 +245,26 @@ namespace ICSharpCode.Core.Presentation
 		/// in specified context event is routed to specified command (implementing ICommand class)
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Register update handler which is triggered only if input bindings registered for specific instance are updated</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="className">Command full name to which invokation event is routed</param>
 		/// <param name="addIn">Add-in in which hosts the command</param>
 		/// <param name="isLazy">Load add-in referenced assemblies on command invocation</param>
-		public static void RegisterCommandBinding(string contextName, string routedCommandName, string className, AddIn addIn, bool isLazy) {
-			var commandBindingInfo = new CommandBindingInfo(contextName, routedCommandName, className, addIn, isLazy);
+		public static void RegisterCommandBinding(string contextName, UIElement contextInstance, string routedCommandName, string className, AddIn addIn, bool isLazy) {
+			var commandBindingInfo = new CommandBindingInfo(contextName, contextInstance, routedCommandName, className, addIn, isLazy);
+			commandBindings.Add(commandBindingInfo);
+		}
+		
+		/// <summary>
+		/// Register command binding which when triggered provided delegates are invoked
+		/// </summary>
+		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Register update handler which is triggered only if input bindings registered for specific instance are updated</param>
+		/// <param name="routedCommandName">Routed UI command name</param>
+		/// <param name="executedEventHandler">Delegate which is called when binding is triggered</param>
+		/// <param name="canExecuteEventHandler">Delegate which is called to check whether executedEventHandler can be invoked</param>
+		public static void RegisterCommandBinding(string contextName, UIElement contextInstance, string routedCommandName, ExecutedRoutedEventHandler executedEventHandler, CanExecuteRoutedEventHandler canExecuteEventHandler) {
+			var commandBindingInfo = new CommandBindingInfo(contextName, contextInstance, routedCommandName, executedEventHandler, canExecuteEventHandler);
 			commandBindings.Add(commandBindingInfo);
 		}
 		
@@ -193,11 +274,13 @@ namespace ICSharpCode.Core.Presentation
 		/// Null arguments are ignored
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Unregister update handler which was triggered only if command bindings registered for specific instance where updated</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="className">Command full name to which invokation event is routed</param>
-		public static void UnregisterCommandBindings(string contextName, string routedCommandName, string className) {	
+		public static void UnregisterCommandBindings(string contextName, UIElement contextInstance, string routedCommandName, string className) {	
 			for(int i = commandBindings.Count - 1; i >= 0; i--) {
 				if((contextName == null || commandBindings[i].ContextName == contextName)
+				   && (contextInstance == null || commandBindings[i].Context == null || commandBindings[i].Context == contextInstance)
 				   && (routedCommandName == null || commandBindings[i].RoutedCommandName == routedCommandName)
 				   && (className == null || commandBindings[i].ClassName == className)) {
 					inputBidnings.RemoveAt(i);
@@ -209,25 +292,39 @@ namespace ICSharpCode.Core.Presentation
 		/// Register delegate which will be invoked on any chage in command bindings of specified context
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Register update handler which is triggered only if input bindings registered for specific instance are updated</param>
 		/// <param name="handler">Update handler delegate</param>
-		public static void RegisterCommandBindingsUpdateHandler(string contextName, BindingsUpdatedHandler handler) {
+		public static void RegisterCommandBindingsUpdateHandler(string contextName, UIElement contextInstance, BindingsUpdatedHandler handler) {
+			if(contextInstance == null) {
+				contextInstance = NullUIElement;
+			}
 			if(!commandBindingsUpdateHandlers.ContainsKey(contextName)) {
-				commandBindingsUpdateHandlers.Add(contextName, new List<WeakReference>());
+				commandBindingsUpdateHandlers.Add(contextName, new Dictionary<UIElement, List<BindingsUpdatedHandler>>());
 			}
 			
-			commandBindingsUpdateHandlers[contextName].Add(new WeakReference(handler));
+			if(!commandBindingsUpdateHandlers[contextName].ContainsKey(contextInstance)) {
+				commandBindingsUpdateHandlers[contextName].Add(contextInstance, new List<BindingsUpdatedHandler>());
+			}
+			
+			commandBindingsUpdateHandlers[contextName][contextInstance].Add(handler);
 		}
 	
 		/// <summary>
 		/// Remove handler command bindings update handler
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Unregister update handler which was triggered only if input bindings registered for specific instance were updated</param>
 		/// <param name="handler">Update handler delegate</param>
-		public static void UnregisterCommandBindingsUpdateHandler(string contextName, BindingsUpdatedHandler handler) {
+		public static void UnregisterCommandBindingsUpdateHandler(string contextName, UIElement contextInstance, BindingsUpdatedHandler handler) {
+			if(contextInstance == null) {
+				contextInstance = NullUIElement;
+			}
 			if(commandBindingsUpdateHandlers.ContainsKey(contextName)) {
-				for(int i = commandBindingsUpdateHandlers[contextName].Count - 1; i >= 0; i--) {
-					if(commandBindingsUpdateHandlers[contextName][i].Target == handler) {
-						commandBindingsUpdateHandlers[contextName].RemoveAt(i);
+				if(commandBindingsUpdateHandlers[contextName].ContainsKey(contextInstance)) {
+					for(int i = commandBindingsUpdateHandlers[contextName][contextInstance].Count - 1; i >= 0; i--) {
+						if(commandBindingsUpdateHandlers[contextName][contextInstance][i] == handler) {
+							commandBindingsUpdateHandlers[contextName][contextInstance].RemoveAt(i);
+						}
 					}
 				}
 			}
@@ -237,20 +334,37 @@ namespace ICSharpCode.Core.Presentation
 		/// Invoke registered command bindings update handlers registered in specified context
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
-		public static void InvokeCommandBindingUpdateHandlers(string contextName) {
+		/// <param name="contextInstance">Invoke update handlers which handle update only in specifyc context</param>
+		public static void InvokeCommandBindingUpdateHandlers(string contextName, UIElement contextInstance) {
+			if(contextInstance == null) {
+				contextInstance = NullUIElement;
+			}
+			
 			if(contextName != null) {
 				if(commandBindingsUpdateHandlers.ContainsKey(contextName)) {
-					foreach(var handler in commandBindingsUpdateHandlers[contextName]) {
-						if(handler != null && handler.Target != null) {
-							((BindingsUpdatedHandler)handler.Target).Invoke();
+					if(contextInstance == NullUIElement) {
+						foreach(var instanceHandlers in commandBindingsUpdateHandlers[contextName]) {
+							foreach(var handler in instanceHandlers.Value) {
+								if(handler != null) {
+									((BindingsUpdatedHandler)handler).Invoke();
+								}
+							}
+						}
+					} else if(commandBindingsUpdateHandlers[contextName].ContainsKey(contextInstance)) {
+						foreach(var handler in commandBindingsUpdateHandlers[contextName][contextInstance]) {
+							if(handler != null) {
+								((BindingsUpdatedHandler)handler).Invoke();
+							}
 						}
 					}
 				}
 			} else {
 				foreach(var contextHandlers in commandBindingsUpdateHandlers) {
-					foreach(var handler in contextHandlers.Value) {
-						if(handler != null && handler.Target != null) {
-							((BindingsUpdatedHandler)handler.Target).Invoke();
+					foreach(var instanceHandlers in contextHandlers.Value) {
+						foreach(var handler in instanceHandlers.Value) {
+							if(handler != null) {
+								((BindingsUpdatedHandler)handler).Invoke();
+							}
 						}
 					}
 				}
@@ -305,7 +419,6 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		
 		/// <summary>
 		/// Load context
 		/// </summary>
@@ -322,22 +435,22 @@ namespace ICSharpCode.Core.Presentation
 		/// Null arguments are ignored
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Get command bindings assigned only to specific context</param>
 		/// <param name="routedCommandName">Context class full name</param>
 		/// <param name="className">Context class full name</param>
 		/// <returns>Collection of managed command bindings</returns>
-		public static CommandBindingCollection GetCommandBindings(string contextName, string routedCommandName, string className) {
+		public static CommandBindingCollection GetCommandBindings(string contextName, UIElement contextInstance, string routedCommandName, string className) {
 			var bindings = new CommandBindingCollection();
 			
 			foreach(var binding in commandBindings) {
 				if((contextName == null || binding.ContextName == contextName)
+				    && (contextInstance == null || binding.Context == null || binding.Context == contextInstance)
 					&& (routedCommandName == null || binding.RoutedCommandName == routedCommandName)
 					&& (className == null || binding.ClassName == className)) {
 				   	
-					var handlers = new CommandBindingHandlersContainer(binding);
-					
 					var managedCommandBinding = new ManagedCommandBinding(binding.RoutedCommand);
-					managedCommandBinding.CanExecute += handlers.CanExecuteHandler;					
-					managedCommandBinding.Executed += handlers.ExecutedHanler;
+					managedCommandBinding.CanExecute += binding.CanExecuteEventHandler;					
+					managedCommandBinding.Executed += binding.ExecutedEventHandler;
 					
 					bindings.Add(managedCommandBinding);
 				}
@@ -352,13 +465,15 @@ namespace ICSharpCode.Core.Presentation
 		/// Null arguments are ignored
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Get input bindings assigned only to specific context</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="gesture">Gesture</param>
-		public static InputBindingCollection GetInputBindings(string contextName, string routedCommandName, InputGesture gesture) {
+		public static InputBindingCollection GetInputBindings(string contextName, UIElement contextInstance, string routedCommandName, InputGesture gesture) {
 			var bindings = new InputBindingCollection();
 			
 			foreach(var binding in inputBidnings) {
 				if((contextName == null || binding.ContextName == contextName)
+				   && (contextInstance == null || binding.Context == null || binding.Context == contextInstance)
 					&& (routedCommandName == null || binding.RoutedCommandName == routedCommandName)
 					&& (gesture == null || binding.Gesture == gesture)) {
 					
@@ -369,16 +484,17 @@ namespace ICSharpCode.Core.Presentation
 			return bindings;
 		}
 		
-/// <summary>
+		/// <summary>
 		/// Get list of input gestures from all input bindings which satisfy provided parameters
 		/// 
 		/// Null arguments are ignored
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
+		/// <param name="contextInstance">Get gestures assigned only to specific context</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="gesture">Gesture</param>
-		public static InputGestureCollection GetInputGestures(string contextName, string routedCommandName, InputGesture gesture) {
-			var bindings = GetInputBindings(contextName, routedCommandName, gesture);
+		public static InputGestureCollection GetInputGestures(string contextName, UIElement contextInstance, string routedCommandName, InputGesture gesture) {
+			var bindings = GetInputBindings(contextName, contextInstance, routedCommandName, gesture);
 			var gestures = new InputGestureCollection();
 			
 			foreach(InputBinding binding in bindings) {
@@ -389,52 +505,64 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Stores Executed and CanExecute event handlers used in command bindings
+		/// Create default BindingUpdateHandler which will update command bindings in specified context
 		/// </summary>
-		class CommandBindingHandlersContainer 
+		/// <param name="bindingsCollection">Collection which should be updated with latest bindings</param>
+		/// <param name="contextName">Context name which was used to register command bindings</param>
+		/// <param name="contextInstance">Reference to instance which is used to find command bindings registered in specific context instance</param>
+		/// <returns>Bindings updated handler</returns>
+		public static BindingsUpdatedHandler CreateCommandBindingUpdateHandler(CommandBindingCollection bindingsCollection, string contextName, UIElement contextInstance) {
+			return new CommonCommandBindingUpdateDelegate(bindingsCollection, contextName, contextInstance).UpdateCommandBinding;
+		}
+		
+		/// <summary>
+		/// Create default BindingUpdateHandler which will update input bindings in specified context
+		/// </summary>
+		/// <param name="bindingsCollection">Collection which should be updated with latest bindings</param>
+		/// <param name="contextName">Context name which was used to register input bindings</param>
+		/// <param name="contextInstance">Reference to instance which is used to find command bindings registered in specific context instance</param>
+		/// <returns>Bindings updated handler</returns>
+		public static BindingsUpdatedHandler CreateInputBindingUpdateHandler(InputBindingCollection bindingsCollection, string contextName, UIElement contextInstance) {
+			return new CommonInputBindingUpdateDelegate(bindingsCollection, contextName, contextInstance).UpdateInputBinding;
+		}
+		
+		class CommonCommandBindingUpdateDelegate
 		{
-			private CommandBindingInfo binding;
+			CommandBindingCollection bindingsCollection;
+			string contextName;
+			UIElement contextInstance;
 			
-			/// <summary>
-			/// Constructor
-			/// </summary>
-			/// <param name="binding">Reference to object holding command bining details</param>
-			public CommandBindingHandlersContainer(CommandBindingInfo binding) {
-				this.binding = binding;
-			}
-				
-			/// <summary>
-			/// CanExecute event handler
-			/// </summary>
-			/// <param name="sender">Object which raised this event</param>
-			/// <param name="e">Event arguments</param>
-			public void CanExecuteHandler(Object sender, CanExecuteRoutedEventArgs e) {
-				if(binding.IsLazy && binding.Class == null) {
-					e.CanExecute = true;
-				} else if(binding.Class == null) {
-					e.CanExecute = false;
-				} else {
-					e.CanExecute = binding.Class.CanExecute(e.Parameter); 						
-				}
+			public CommonCommandBindingUpdateDelegate(CommandBindingCollection bindingsCollection, string contextName, UIElement contextInstance) {
+				this.bindingsCollection = bindingsCollection;
+				this.contextName = contextName;
+				this.contextInstance = contextInstance;
 			}
 			
-			/// <summary>
-			/// Executed event handler
-			/// </summary>
-			/// <param name="sender">Object which raised this event</param>
-			/// <param name="e">Event arguments</param>
-			public void ExecutedHanler(Object sender, ExecutedRoutedEventArgs e) {
-				if(binding.IsLazy && binding.Class == null) {
-					binding.AddIn.LoadRuntimeAssemblies();
-					
-					var command = (ICommand)binding.AddIn.CreateObject(binding.ClassName);
-					CommandsRegistry.LoadCommand(binding.ClassName, command);
-				}
-				
-				if(binding.Class != null) {
-					binding.Class.Execute(e.Parameter);
-				}
+			public void UpdateCommandBinding() {	
+            	var newBindings = CommandsRegistry.GetCommandBindings(contextName, contextInstance, null, null);
+            	CommandsRegistry.RemoveManagedCommandBindings(bindingsCollection);
+            	bindingsCollection.AddRange(newBindings);
 			}
 		}
+		
+		
+		class CommonInputBindingUpdateDelegate
+		{
+			InputBindingCollection bindingsCollection;
+			string contextName;
+			UIElement contextInstance;
+			
+			public CommonInputBindingUpdateDelegate(InputBindingCollection bindingsCollection, string contextName, UIElement contextInstance) {
+				this.bindingsCollection = bindingsCollection;
+				this.contextName = contextName;
+				this.contextInstance = contextInstance;
+			}
+			
+			public void UpdateInputBinding() {	
+            	var newBindings = CommandsRegistry.GetInputBindings(contextName, contextInstance, null, null);
+            	CommandsRegistry.RemoveManagedInputBindings(bindingsCollection);
+            	bindingsCollection.AddRange(newBindings);
+			}
+		}	
 	}	
 }

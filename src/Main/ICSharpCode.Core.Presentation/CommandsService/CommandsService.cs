@@ -11,11 +11,11 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public static class CommandsService
 	{
-		private static void RegisterRoutedCommands(Type type) {
+		public static void RegisterRoutedCommands(Type type) {
 			var typeProperties = type.GetProperties(BindingFlags.Static | BindingFlags.Public);
 			foreach(var property in typeProperties) {
 				var command = (RoutedUICommand)property.GetValue(null, null);				
-				CommandsRegistry.RegisterRoutedUICommand(type.Name + "." + command.Name, command.Text);
+				CommandsRegistry.RegisterRoutedUICommand(command);
 			}
 		}
 		
@@ -46,13 +46,13 @@ namespace ICSharpCode.Core.Presentation
 					CommandsRegistry.RegisterRoutedUICommand(desc.Command, desc.Command);
 				}
 				
-				CommandsRegistry.RegisterCommandBinding(contextName, desc.Command, desc.Class, desc.Codon.AddIn, desc.Lazy);
+				CommandsRegistry.RegisterCommandBinding(contextName, null, desc.Command, desc.Class, desc.Codon.AddIn, desc.Lazy);
 				
 				// If gestures are provided register input binding in the same context
 				if(!string.IsNullOrEmpty(desc.Gestures)) {
 					var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(desc.Gestures);
 					foreach(InputGesture gesture in gestures) {
-						CommandsRegistry.RegisterInputBinding(contextName, desc.Command,  gesture);
+						CommandsRegistry.RegisterInputBinding(contextName, null, desc.Command, gesture);
 					}
 				}
 			}
@@ -65,7 +65,7 @@ namespace ICSharpCode.Core.Presentation
 				var contextName = !string.IsNullOrEmpty(desc.Context) ? desc.Context : CommandsRegistry.DefaultContext;
 				
 				var gesture = (KeyGesture)new KeyGestureConverter().ConvertFromInvariantString(desc.Gesture);
-				CommandsRegistry.RegisterInputBinding(contextName, desc.Command, gesture);
+				CommandsRegistry.RegisterInputBinding(contextName, null, desc.Command, gesture);
 			}
 		}
 	}

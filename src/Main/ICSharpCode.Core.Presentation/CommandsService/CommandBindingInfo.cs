@@ -9,6 +9,8 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public class CommandBindingInfo 
 	{		
+		private UIElement contextInstance;
+		
 		/// <summary>
 		/// Constructor
 		/// </summary>
@@ -23,6 +25,30 @@ namespace ICSharpCode.Core.Presentation
 			ClassName = className;
 			IsLazy = isLazy;
 			AddIn = addIn;
+		}
+
+		public CommandBindingInfo(string contextName, UIElement contextInstance, string routedCommandName, string className, AddIn addIn, bool isLazy) {
+			RoutedCommandName = routedCommandName;
+			ContextName = contextName;
+			ClassName = className;
+			IsLazy = isLazy;
+			AddIn = addIn;
+			this.contextInstance = contextInstance;
+		}		
+		
+		public CommandBindingInfo(string contextName, string routedCommandName, ExecutedRoutedEventHandler executedHandler, CanExecuteRoutedEventHandler canExecuteHandler) {
+			RoutedCommandName = routedCommandName;
+			ContextName = contextName;
+			this.executedEventHandler = executedHandler;
+			this.canExecutedEventHandler = canExecuteHandler;
+		}
+		
+		public CommandBindingInfo(string contextName, UIElement contextInstance, string routedCommandName, ExecutedRoutedEventHandler executedHandler, CanExecuteRoutedEventHandler canExecuteHandler) {
+			RoutedCommandName = routedCommandName;
+			ContextName = contextName;
+			this.executedEventHandler = executedHandler;
+			this.canExecutedEventHandler = canExecuteHandler;
+			this.contextInstance = contextInstance;
 		}
 		
 		/// <summary>
@@ -101,10 +127,14 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public UIElement Context { 
 			get {
-				UIElement context;
-				CommandsRegistry.contexts.TryGetValue(ContextName, out context);
-				
-				return context;
+				if(contextInstance != null) {
+					return contextInstance;
+				} else {
+					UIElement context;
+					CommandsRegistry.contexts.TryGetValue(ContextName, out context);
+					
+					return context;
+				}
 			}
 		}
 		
@@ -117,6 +147,39 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public bool IsLazy{
 			get; private set;
+		}
+		
+		private ExecutedRoutedEventHandler executedEventHandler;
+		public void ExecutedEventHandler(object sender, ExecutedRoutedEventArgs e) {
+			if(executedEventHandler != null) {
+				executedEventHandler.Invoke(sender, e);
+			} else {
+				if(IsLazy && Class == null) {
+					AddIn.LoadRuntimeAssemblies();
+					
+					var command = (ICommand)AddIn.CreateObject(ClassName);
+					CommandsRegistry.LoadCommand(ClassName, command);
+				}
+				
+				if(Class != null) {
+					Class.Execute(e.Parameter);
+				}
+			}
+		}
+		
+		private CanExecuteRoutedEventHandler canExecutedEventHandler;
+		public void CanExecuteEventHandler(object sender, CanExecuteRoutedEventArgs e) {
+			if(canExecutedEventHandler != null) {
+				canExecutedEventHandler.Invoke(sender, e);
+			} else {
+				if(IsLazy && Class == null) {
+					e.CanExecute = true;
+				} else if(Class == null) {
+					e.CanExecute = false;
+				} else {
+					e.CanExecute = Class.CanExecute(e.Parameter); 						
+				}				
+			}
 		}
 	}
 }

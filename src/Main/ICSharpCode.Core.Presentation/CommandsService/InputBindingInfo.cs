@@ -9,6 +9,8 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public class InputBindingInfo
 		{
+			private UIElement contextInstance;
+			
 			/// <summary>
 			/// Constructor
 			/// </summary>
@@ -20,6 +22,14 @@ namespace ICSharpCode.Core.Presentation
 			    RoutedCommandName = routedCommandName; 
 			    Gesture = gesture;
 			}
+			
+			public InputBindingInfo(string contextName, UIElement contextInstance, string routedCommandName, InputGesture gesture) {
+				ContextName = contextName;
+			    RoutedCommandName = routedCommandName; 
+			    Gesture = gesture;
+			    this.contextInstance = contextInstance;
+			}
+			
 			
 			/// <summary>
 			/// Context class full name
@@ -37,10 +47,14 @@ namespace ICSharpCode.Core.Presentation
 			/// </summary>
 			public UIElement Context { 
 				get {
-					UIElement context;
-					CommandsRegistry.contexts.TryGetValue(ContextName, out context);
-					
-					return context;
+					if(contextInstance != null) {
+						return contextInstance;
+					} else {
+						UIElement context;
+						CommandsRegistry.contexts.TryGetValue(ContextName, out context);
+						
+						return context;
+					}
 				}
 			}
 			

@@ -456,6 +456,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			get;
 		}
 		
+		public List<string> bindingsAssigned = new List<string>();
+		
 		public ICollection BuildItems(Codon codon, object owner)
 		{
 			ArrayList list = new ArrayList();
@@ -467,33 +469,32 @@ namespace ICSharpCode.SharpDevelop.Commands
 						item.Icon = PresentationResourceService.GetPixelSnappedImage(padContent.Icon);
 					}
 					
-					// Dynamicaly create routed UI command for loaded pad
 					var routedCommandName = "SDViewCommands.ShowView_" + padContent.Class;
 					var routedCommandText = "Show view " + MenuService.ConvertLabel(StringParser.Parse(padContent.Title));
-					CommandsRegistry.RegisterRoutedUICommand(routedCommandName, routedCommandText);
 					
-					// Register command which will activate loaded tab
-					CommandsRegistry.LoadCommand(routedCommandName, new BringPadToFrontCommand(padContent));
-					
-					// Register command binding in workbench
-					CommandsRegistry.RegisterCommandBinding(CommandsRegistry.DefaultContext, routedCommandName, routedCommandName, null, false);
-					CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext);
-					
-					item.Command = CommandsRegistry.GetRoutedUICommand(routedCommandName);
-					
-					// If pad have shortcut specified add input binding
-					if (!string.IsNullOrEmpty(padContent.Shortcut)) {
-						var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);						
-						foreach(InputGesture gesture in gestures) {
-							CommandsRegistry.RegisterInputBinding(CommandsRegistry.DefaultContext, routedCommandName, gesture);
+					// TODO: fix this hack
+					if(!bindingsAssigned.Contains(routedCommandName)) {
+						// Dynamicaly create routed UI command to loaded pad and bindings for it
+						CommandsRegistry.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+						CommandsRegistry.LoadCommand(routedCommandName, new BringPadToFrontCommand(padContent));
+						CommandsRegistry.RegisterCommandBinding(CommandsRegistry.DefaultContext, null, routedCommandName, routedCommandName, null, false);
+						
+						// If pad have shortcut specified add input binding
+						if (!string.IsNullOrEmpty(padContent.Shortcut)) {
+							var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);						
+							foreach(InputGesture gesture in gestures) {
+								CommandsRegistry.RegisterInputBinding(CommandsRegistry.DefaultContext, null, routedCommandName, gesture);
+							}
 						}
 						
-						item.InputGestureText = "M: " + padContent.Shortcut;
-					} else {
-						item.InputGestureText = "M: ";
+						bindingsAssigned.Add(routedCommandName);
 					}
 					
-					CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext);
+					CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext, null);
+					CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext, null);
+					
+					item.InputGestureText = padContent.Shortcut;
+					item.Command = CommandsRegistry.GetRoutedUICommand(routedCommandName);
 					
 //					item.Command = new BringPadToFrontCommand(padContent);
 //					if (!string.IsNullOrEmpty(padContent.Shortcut)) {
