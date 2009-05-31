@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
 			services.AutoClearSelection = false;
 			
-			new ICSharpCode.SharpDevelop.Editor.TemplateCompletionItemProvider().ShowCompletion(sdtac.Adapter);
+			new ICSharpCode.SharpDevelop.Editor.CodeCompletion.TemplateCompletionItemProvider().ShowCompletion(sdtac.Adapter);
 		}
 	}
 	

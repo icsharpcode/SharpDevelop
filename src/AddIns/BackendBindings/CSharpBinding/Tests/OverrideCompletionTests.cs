@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Linq;
+using ICSharpCode.SharpDevelop.Editor;
 using NUnit.Framework;
 
 namespace CSharpBinding.Tests

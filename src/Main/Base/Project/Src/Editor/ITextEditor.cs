@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
-using ICSharpCode.NRefactory;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {

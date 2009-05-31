@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			Get<NumericUpDown>("dataUsageCacheItemCount").Value = CodeCompletionOptions.DataUsageCacheItemCount;
 			
 			ControlDictionary["clearDataUseCacheButton"].Click += delegate(object sender, EventArgs e) {
-				ICSharpCode.SharpDevelop.Editor.CodeCompletionDataUsageCache.ResetCache();
+				ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionDataUsageCache.ResetCache();
 			};
 			
 			Get<CheckBox>("useTooltips").CheckedChanged += delegate(object sender, EventArgs e) {

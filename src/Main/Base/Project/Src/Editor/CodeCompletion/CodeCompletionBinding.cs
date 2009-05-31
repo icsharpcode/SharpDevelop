@@ -11,7 +11,7 @@ using System.IO;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
 	/// Interface that gives backend bindings the possibility to control what characters and

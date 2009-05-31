@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
-
 using ICSharpCode.AvalonEdit.Editing;
 
 namespace ICSharpCode.SharpDevelop.Editor

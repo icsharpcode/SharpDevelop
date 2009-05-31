@@ -8,7 +8,7 @@
 using ICSharpCode.SharpDevelop.Dom;
 using System;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
 	/// An insight item that represents an entity.

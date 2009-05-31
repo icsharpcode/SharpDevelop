@@ -10,7 +10,7 @@ using System.Collections;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	public class CtrlSpaceCompletionItemProvider : CodeCompletionItemProvider
 	{

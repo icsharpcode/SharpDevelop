@@ -5,11 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace PythonBinding.Tests.Utils

@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	public interface ICompletionItem
 	{
