@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -25,7 +26,7 @@ namespace ICSharpCode.XmlEditor
 		XPathNodeTextMarker(IDocument document, int offset, XPathNodeMatch node)
 		{
 			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
-			marker = markerService.Create(offset, node.DisplayValue.Length);
+			marker = markerService.Create(offset, node.Value.Length);
 			marker.Tag = this;
 		}
 		
@@ -55,9 +56,12 @@ namespace ICSharpCode.XmlEditor
 		public static void RemoveMarkers(IDocument document)
 		{
 			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
-			foreach (ITextMarker marker in markerService.TextMarkers) {
-				if (marker.Tag is XPathNodeTextMarker)
-					marker.Delete();
+			
+			ITextMarker[] list = markerService.TextMarkers.ToArray();
+			
+			foreach (ITextMarker item in list) {
+				if (item.Tag is XPathNodeTextMarker)
+					item.Delete();
 			}
 		}
 	}

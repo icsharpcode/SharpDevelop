@@ -103,7 +103,7 @@ namespace XmlEditor.Tests.Tree
 			view.Copy();
 			view.Paste();
 			
-			Assert.IsTrue(xmlView.IsDirty);
+			Assert.IsTrue(view.IsDirty);
 			Assert.AreEqual(htmlTreeNode.Text, htmlTreeNode.LastNode.Text);
 		}
 		
@@ -115,7 +115,7 @@ namespace XmlEditor.Tests.Tree
 			treeView.SelectedNode = htmlTreeNode;
 			view.Paste();
 			
-			Assert.IsTrue(xmlView.IsDirty);
+			Assert.IsTrue(view.IsDirty);
 			Assert.AreEqual(paragraphTreeNode.Text, htmlTreeNode.LastNode.Text);
 		}
 		
@@ -127,7 +127,7 @@ namespace XmlEditor.Tests.Tree
 			clipboardHandler.Delete();
 			
 			Assert.AreEqual(0, treeView.Nodes.Count);
-			Assert.IsTrue(xmlView.IsDirty);
+			Assert.IsTrue(view.IsDirty);
 		}
 	}
 }

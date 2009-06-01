@@ -83,7 +83,7 @@ namespace ICSharpCode.XmlEditor
 			XmlSchemaCompletionData defaultSchemaCompletionData;
 			XmlSchemaCompletionDataCollection schemas;
 			
-			if (PropertyService.Initialized) {
+			if (PropertyService.DataDirectory != null) {
 				schemas = XmlSchemaManager.SchemaCompletionDataItems;
 				defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefix(extension);
 				defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData(extension);
@@ -202,21 +202,26 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public bool IsWellFormed {
 			get {
-				ITextEditor editor = TextEditor;
-				if (editor == null)
-					return false;
-				
-				try	{
-					XmlDocument Document = new XmlDocument();
-					Document.LoadXml(editor.Document.Text);
-					return true;
-				} catch(XmlException ex) {
-					AddTask(editor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
-				} catch (WebException ex) {
-					AddTask(editor.FileName, ex.Message, 0, 0, TaskType.Error);
-				}
-				return false;
+				return CheckIsWellFormed();
 			}
+		}
+
+		public bool CheckIsWellFormed()
+		{
+			ITextEditor editor = TextEditor;
+			if (editor == null) return false;
+			try {
+				XmlDocument Document = new XmlDocument();
+				Document.LoadXml(editor.Document.Text);
+				return true;
+			}
+			catch (XmlException ex) {
+				AddTask(editor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
+			}
+			catch (WebException ex) {
+				AddTask(editor.FileName, ex.Message, 0, 0, TaskType.Error);
+			}
+			return false;
 		}
 		
 		static void AddTask(string fileName, string message, int column, int line, TaskType taskType)

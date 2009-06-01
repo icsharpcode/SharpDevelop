@@ -25,12 +25,14 @@ namespace ICSharpCode.XmlEditor
 	public class XmlTreeView : AbstractSecondaryViewContent, IClipboardHandler
 	{
 		XmlTreeViewContainerControl treeViewContainer;
+		bool ignoreDirtyChange;
 		
 		public XmlTreeView(IViewContent parent)
 			: base(parent)
 		{
 			this.TabPageText = "XML Tree";
 			this.treeViewContainer = new XmlTreeViewContainerControl();
+			this.treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
 			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
 			treeViewContainer.TreeView.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/ContextMenu");
 		}
@@ -133,19 +135,23 @@ namespace ICSharpCode.XmlEditor
 		{
 			IFileDocumentProvider provider = this.PrimaryViewContent as IFileDocumentProvider;
 			treeViewContainer.LoadXml(provider.GetDocumentForFile(this.PrimaryFile).Text, XmlView.GetProvider(Path.GetExtension(this.PrimaryFileName)));
+			XmlView view = XmlView.ForFile(this.PrimaryFile);
+			if (view != null) {
+				view.CheckIsWellFormed();
+			}
 		}
 		
 		protected override void SaveToPrimary()
 		{
 			// Do not modify text in the primary view if the data is not well-formed XML
 			if (!treeViewContainer.IsErrorMessageTextBoxVisible && treeViewContainer.IsDirty) {
-				IFileDocumentProvider provider = this.PrimaryViewContent as IFileDocumentProvider;
-				StringWriter str = new StringWriter(CultureInfo.InvariantCulture);
-				XmlTextWriter writer = new XmlTextWriter(str);
-				
-				writer.Formatting = Formatting.Indented;
-				treeViewContainer.Document.WriteTo(writer);
-				provider.GetDocumentForFile(this.PrimaryFile).Text = str.ToString();
+				XmlView view = XmlView.ForFile(this.PrimaryFile);
+				if (view != null) {
+					view.ReplaceAll(treeViewContainer.Document.OuterXml);
+					ignoreDirtyChange = true;
+					treeViewContainer.IsDirty = false;
+					ignoreDirtyChange = false;
+				}
 			}
 		}
 		
@@ -168,6 +174,13 @@ namespace ICSharpCode.XmlEditor
 		public override bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
 		{
 			return false;
+		}
+		
+		void TreeViewContainerDirtyChanged(object source, EventArgs e)
+		{
+			if (!ignoreDirtyChange) {
+				this.PrimaryFile.IsDirty = treeViewContainer.IsDirty;
+			}
 		}
 	}
 }
