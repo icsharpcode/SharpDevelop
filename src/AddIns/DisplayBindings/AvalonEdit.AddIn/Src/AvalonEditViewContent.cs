@@ -26,6 +26,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public AvalonEditViewContent(OpenedFile file)
 		{
+			this.TabPageText = "${res:FormsDesigner.DesignTabPages.SourceTabPage}";
+			
 			this.Files.Add(file);
 			file.ForceInitializeView(this);
 			codeEditor.Document.Changed += textEditor_Document_Changed;
