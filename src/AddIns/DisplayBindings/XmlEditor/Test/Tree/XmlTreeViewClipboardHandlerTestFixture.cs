@@ -37,7 +37,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			MockOpenedFile openedFile = new MockOpenedFile("test.xml");
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			xmlView = new MockXmlViewContent();
+			xmlView = new MockXmlViewContent(openedFile);
 			view = new XmlTreeView(xmlView);
 			treeViewContainer = (XmlTreeViewContainerControl)view.Control;
 			treeView = treeViewContainer.TreeView;

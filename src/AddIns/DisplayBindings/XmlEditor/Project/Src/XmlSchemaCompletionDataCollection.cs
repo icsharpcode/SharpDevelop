@@ -97,8 +97,7 @@ namespace ICSharpCode.XmlEditor
 		/// <seealso cref='XmlSchemaCompletionDataCollection.Add'/>
 		public void AddRange(XmlSchemaCompletionDataCollection val)
 		{
-			for (int i = 0; i < val.Count; i++)
-			{
+			for (int i = 0; i < val.Count; i++) {
 				this.Add(val[i]);
 			}
 		}

@@ -17,12 +17,13 @@ namespace XmlEditor.Tests.Utils
 	/// </summary>
 	public class MockXmlViewContent : AbstractViewContent, IFileDocumentProvider
 	{
+		OpenedFile file;
 		AvalonEditDocumentAdapter document;
 		
-		public MockXmlViewContent()
+		public MockXmlViewContent(OpenedFile file)
 		{
+			this.file = file;
 			this.document = new AvalonEditDocumentAdapter();
-			this.Files.Add(new MockOpenedFile("test.xml"));
 		}
 		
 		public override object Control {

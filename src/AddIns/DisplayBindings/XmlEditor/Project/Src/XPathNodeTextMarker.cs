@@ -22,9 +22,9 @@ namespace ICSharpCode.XmlEditor
 		static List<XPathNodeTextMarker> markers = new List<XPathNodeTextMarker>();
 		ITextMarker marker;
 		
-		XPathNodeTextMarker(ITextEditor editor, int offset, XPathNodeMatch node)
+		XPathNodeTextMarker(IDocument document, int offset, XPathNodeMatch node)
 		{
-			ITextMarkerService markerService = editor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			marker = markerService.Create(offset, node.DisplayValue.Length);
 			marker.Tag = this;
 		}
@@ -32,29 +32,29 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Adds markers for each XPathNodeMatch.
 		/// </summary>
-		public static void AddMarkers(ITextEditor editor, XPathNodeMatch[] nodes)
+		public static void AddMarkers(IDocument document, XPathNodeMatch[] nodes)
 		{
 			foreach (XPathNodeMatch node in nodes) {
-				AddMarker(editor, node);
+				AddMarker(document, node);
 			}
 		}
 		
 		/// <summary>
 		/// Adds a single marker for the XPathNodeMatch.
 		/// </summary>
-		public static void AddMarker(ITextEditor editor, XPathNodeMatch node)
+		public static void AddMarker(IDocument document, XPathNodeMatch node)
 		{
 			if (node.HasLineInfo() && node.Value.Length > 0) {
-				markers.Add(new XPathNodeTextMarker(editor, editor.Document.PositionToOffset(node.LineNumber, node.LinePosition), node));
+				markers.Add(new XPathNodeTextMarker(document, document.PositionToOffset(node.LineNumber + 1, node.LinePosition), node));
 			}
 		}
 		
 		/// <summary>
 		/// Removes all the XPathNodeMarkers from the marker strategy.
 		/// </summary>
-		public static void RemoveMarkers(ITextEditor editor)
+		public static void RemoveMarkers(IDocument document)
 		{
-			ITextMarkerService markerService = editor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			foreach (ITextMarker marker in markerService.TextMarkers) {
 				if (marker.Tag is XPathNodeTextMarker)
 					marker.Delete();

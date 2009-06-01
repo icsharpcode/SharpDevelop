@@ -56,7 +56,8 @@ namespace ICSharpCode.XmlEditor
 		public void AddRange(XmlCompletionItem[] val)
 		{
 			for (int i = 0; i < val.Length; i++) {
-				this.Add(val[i]);
+				if (!Contains(val[i].Text))
+					this.Add(val[i]);
 			}
 		}
 		
@@ -70,7 +71,8 @@ namespace ICSharpCode.XmlEditor
 		public void AddRange(XmlCompletionItemCollection val)
 		{
 			for (int i = 0; i < val.Count; i++)
-				this.Add(val[i]);
+				if (!Contains(val[i].Text))
+					this.Add(val[i]);
 		}
 		
 		public bool Contains(string name)

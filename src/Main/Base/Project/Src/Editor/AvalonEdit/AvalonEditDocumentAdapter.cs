@@ -41,6 +41,15 @@ namespace ICSharpCode.SharpDevelop.Editor
 			this.document = new TextDocument();
 		}
 		
+		/// <summary>
+		/// Used in Unit Tests
+		/// </summary>
+		public AvalonEditDocumentAdapter(IServiceProvider parentServiceProvider)
+		{
+			this.document = new TextDocument();
+			this.parentServiceProvider = parentServiceProvider;
+		}
+		
 		sealed class LineAdapter : IDocumentLine
 		{
 			readonly DocumentLine line;
