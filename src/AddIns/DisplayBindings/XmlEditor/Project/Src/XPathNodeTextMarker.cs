@@ -45,7 +45,7 @@ namespace ICSharpCode.XmlEditor
 		public static void AddMarker(IDocument document, XPathNodeMatch node)
 		{
 			if (node.HasLineInfo() && node.Value.Length > 0) {
-				markers.Add(new XPathNodeTextMarker(document, document.PositionToOffset(node.LineNumber + 1, node.LinePosition), node));
+				markers.Add(new XPathNodeTextMarker(document, document.PositionToOffset(node.LineNumber + 1, node.LinePosition + 1), node));
 			}
 		}
 		

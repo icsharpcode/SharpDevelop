@@ -23,6 +23,7 @@ namespace XmlEditor.Tests.Utils
 		public MockXmlViewContent(OpenedFile file)
 		{
 			this.file = file;
+			this.Files.Add(file);
 			this.document = new AvalonEditDocumentAdapter();
 		}
 		

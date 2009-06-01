@@ -79,9 +79,22 @@ namespace ICSharpCode.XmlEditor
 		
 		public static XmlCompletionDataProvider GetProvider(string extension)
 		{
-			string defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefix(extension);
-			XmlSchemaCompletionData defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData(extension);
-			return new XmlCompletionDataProvider(XmlSchemaManager.SchemaCompletionDataItems,
+			string defaultNamespacePrefix;
+			XmlSchemaCompletionData defaultSchemaCompletionData;
+			XmlSchemaCompletionDataCollection schemas;
+			
+			if (PropertyService.Initialized) {
+				schemas = XmlSchemaManager.SchemaCompletionDataItems;
+				defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefix(extension);
+				defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData(extension);
+			} else {
+				// for NUnit tests
+				defaultNamespacePrefix = string.Empty;
+				schemas = new XmlSchemaCompletionDataCollection();
+				defaultSchemaCompletionData = null;
+			}
+
+			return new XmlCompletionDataProvider(schemas,
 			                                     defaultSchemaCompletionData,
 			                                     defaultNamespacePrefix);
 		}
