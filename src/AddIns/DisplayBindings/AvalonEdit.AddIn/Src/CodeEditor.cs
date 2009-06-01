@@ -154,8 +154,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.Caret.PositionChanged += caret_PositionChanged;
 			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
-			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
-				new CommandBinding(CustomCommands.DeleteLine, OnDeleteLine));
 			
 			textView.BackgroundRenderers.Add(textMarkerService);
 			textView.LineTransformers.Add(textMarkerService);
@@ -380,17 +378,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					e.Handled = true;
 					break;
 				}
-			}
-		}
-		
-		void OnDeleteLine(object sender, ExecutedRoutedEventArgs e)
-		{
-			TextEditor textEditor = GetTextEditorFromSender(sender);
-			e.Handled = true;
-			using (textEditor.Document.RunUpdate()) {
-				DocumentLine currentLine = textEditor.Document.GetLineByNumber(textEditor.TextArea.Caret.Line);
-				textEditor.Select(currentLine.Offset, currentLine.TotalLength);
-				textEditor.SelectedText = string.Empty;
 			}
 		}
 		

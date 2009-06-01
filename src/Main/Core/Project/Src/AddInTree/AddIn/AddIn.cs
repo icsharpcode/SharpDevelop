@@ -29,18 +29,27 @@ namespace ICSharpCode.Core
 
 		public object CreateObject(string className)
 		{
+			Type t = FindType(className);
+			if (t != null)
+				return Activator.CreateInstance(t);
+			else
+				return null;
+		}
+		
+		public Type FindType(string className)
+		{
 			LoadDependencies();
 			foreach (Runtime runtime in runtimes) {
-				object o = runtime.CreateInstance(className);
-				if (o != null) {
-					return o;
+				Type t = runtime.FindType(className);
+				if (t != null) {
+					return t;
 				}
 			}
 			if (hasShownErrorMessage) {
-				LoggingService.Error("Cannot create object: " + className);
+				LoggingService.Error("Cannot find class: " + className);
 			} else {
 				hasShownErrorMessage = true;
-				MessageService.ShowError("Cannot create object: " + className + "\nFuture missing objects will not cause an error message.");
+				MessageService.ShowError("Cannot find class: " + className + "\nFuture missing objects will not cause an error message.");
 			}
 			return null;
 		}

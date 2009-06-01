@@ -25,10 +25,10 @@ namespace ICSharpCode.AvalonEdit.Indentation
 			TextDocument document = line.Document;
 			DocumentLine previousLine = line.PreviousLine;
 			if (previousLine != null) {
-				ISegment indentationSegment = TextUtilities.GetIndentation(document, previousLine.Offset);
+				ISegment indentationSegment = TextUtilities.GetWhitespaceAfter(document, previousLine.Offset);
 				string indentation = document.GetText(indentationSegment);
 				// copy indentation to line
-				indentationSegment = TextUtilities.GetIndentation(document, line.Offset);
+				indentationSegment = TextUtilities.GetWhitespaceAfter(document, line.Offset);
 				document.Replace(indentationSegment, indentation);
 			}
 		}

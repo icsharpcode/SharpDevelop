@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <returns>The indentation text.</returns>
 		public static string GetIndentation(IDocument document, int offset)
 		{
-			ISegment segment = TextUtilities.GetIndentation(GetTextSource(document), offset);
+			ISegment segment = TextUtilities.GetWhitespaceAfter(GetTextSource(document), offset);
 			return document.GetText(segment.Offset, segment.Length);
 		}
 		

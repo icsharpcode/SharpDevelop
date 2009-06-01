@@ -48,7 +48,6 @@
 			<Doozer name="Directory" class="ICSharpCode.SharpDevelop.DirectoryDoozer"/>
 			<Doozer name="TaskBoundAdditionalLogger" class="ICSharpCode.SharpDevelop.Project.TaskBoundAdditionalLoggerDoozer"/>
 		</Import>
-		<Import assembly=":ICSharpCode.TextEditor"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -1645,7 +1644,7 @@
 				<MenuItem id = "SplitView"
 				          label = "${res:XML.MainMenu.WindowMenu.Split}"
 				          icon  = "Icons.16x16.SplitWindow"
-				          command = "SplitView"/>
+				          command = "ICSharpCode.SharpDevelop.SharpDevelopRoutedCommands.SplitView"/>
 				<MenuItem id    = "CloseAll"
 				          label = "${res:XML.MainMenu.FileMenu.CloseAll}"
 				          icon  = "Icons.16x16.CloseAllDocuments"
@@ -1855,60 +1854,10 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit">
-		<MenuItem insertafter = "Delete" insertbefore = "SelectAll" id = "Separator2" type = "Separator" />
-		<MenuItem insertafter = "Separator2" insertbefore = "Separator3" id = "Format" label = "${res:XML.MainMenu.EditMenu.FormatMenu}" type="Menu">
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
-				
-				<MenuItem id = "RemoveLeadingWs"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.RemoveLeadingWS"/>
-				<MenuItem id = "RemoveTrailingWs"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.RemoveTrailingWS"/>
-				<MenuItem id = "Seperator1" type = "Separator" />
-				<MenuItem id = "UpperCase"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}"
-				          icon = "Icons.16x16.LowerToUpperCase"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToUpperCase"/>
-				<MenuItem id = "LowerCase"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}"
-				          icon = "Icons.16x16.UpperToLowerCase"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToLowerCase"/>
-				<MenuItem id = "Capitalize"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.CapitalizeAction"/>
-				<MenuItem id = "InvertCase"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.InvertCaseAction"/>
-				<MenuItem id = "Separator2" type = "Separator" />
-				<MenuItem id = "SortSelection"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.SortSelection"/>
-				<MenuItem id = "Separator3" type = "Separator" />
-				<MenuItem id = "Tabs2Spaces"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertTabsToSpaces"/>
-				<MenuItem id = "Spaces2Tabs"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertSpacesToTabs"/>
-				<MenuItem id = "LeadingTabs2Spaces"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertLeadingTabsToSpaces"/>
-				<MenuItem id = "LeadingSpaces2Tabs"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertLeadingSpacesToTabs"/>
-				<MenuItem id = "Separator4" type = "Separator" />
-				<MenuItem id = "Comment"
-				          icon  = "Icons.16x16.CommentRegion"
-				          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
-				          class= "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
-				<MenuItem id = "Indent"
-				          label = "${res:XML.TextAreaContextMenu.Indent}"
-				          shortcut = "Control|I"
-				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
-			</Condition>
+		<MenuItem insertafter = "Delete" id = "Separator2" type = "Separator" />
+		<MenuItem id = "Format" label = "${res:XML.MainMenu.EditMenu.FormatMenu}" type="Menu">
 		</MenuItem>
-		<MenuItem insertafter = "Format" insertbefore = "Separator3" id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu">
+		<MenuItem id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu">
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
 				<MenuItem id          = "ToggleFolding"
 				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
@@ -1924,7 +1873,7 @@
 				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowDefinitionsOnly"/>
 			</Condition>
 		</MenuItem>
-		<MenuItem insertafter = "Separator2" insertbefore = "SelectAll" id = "Separator3" type = "Separator" />
+		<MenuItem insertbefore = "SelectAll" id = "Separator3" type = "Separator" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog">

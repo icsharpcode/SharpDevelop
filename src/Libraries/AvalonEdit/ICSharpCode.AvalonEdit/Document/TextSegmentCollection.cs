@@ -80,8 +80,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		void OnDocumentChanged(DocumentChangeEventArgs e)
 		{
-			RemoveText(e.Offset, e.RemovalLength);
-			InsertText(e.Offset, e.InsertionLength);
+			foreach (OffsetChangeMapEntry entry in e.OffsetChangeMap) {
+				RemoveText(entry.Offset, entry.RemovalLength);
+				InsertText(entry.Offset, entry.InsertionLength);
+			}
 		}
 		#endregion
 		

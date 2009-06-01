@@ -20,45 +20,64 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public static class MenuService
 	{
-		static List<Type> commandClasses = new List<Type> {
-			typeof(ApplicationCommands),
-			typeof(NavigationCommands)
-		};
+		static Dictionary<string, System.Windows.Input.ICommand> knownCommands = LoadDefaultKnownCommands();
+		
+		static Dictionary<string, System.Windows.Input.ICommand> LoadDefaultKnownCommands()
+		{
+			var knownCommands = new Dictionary<string, System.Windows.Input.ICommand>();
+			foreach (Type t in new Type[] { typeof(ApplicationCommands), typeof(NavigationCommands) }) {
+				foreach (PropertyInfo p in t.GetProperties()) {
+					knownCommands.Add(p.Name, (System.Windows.Input.ICommand)p.GetValue(null, null));
+				}
+			}
+			return knownCommands;
+		}
 		
 		/// <summary>
 		/// Gets a known WPF command.
 		/// </summary>
+		/// <param name="addIn">The addIn definition that defines the command class.</param>
 		/// <param name="commandName">The name of the command, e.g. "Copy".</param>
 		/// <returns>The WPF ICommand with the given name, or null if thecommand was not found.</returns>
-		public static System.Windows.Input.ICommand GetRegisteredCommand(string commandName)
+		public static System.Windows.Input.ICommand GetRegisteredCommand(AddIn addIn, string commandName)
 		{
+			if (addIn == null)
+				throw new ArgumentNullException("addIn");
 			if (commandName == null)
 				throw new ArgumentNullException("commandName");
-			lock (commandClasses) {
-				foreach (Type t in commandClasses) {
-					PropertyInfo p = t.GetProperty(commandName, BindingFlags.Public | BindingFlags.Static);
-					if (p != null) {
-						return (System.Windows.Input.ICommand)(p.GetValue(null, null));
-					}
-					FieldInfo f = t.GetField(commandName, BindingFlags.Public | BindingFlags.Static);
-					if (f != null) {
-						return (System.Windows.Input.ICommand)(f.GetValue(null));
-					}
-				}
-				return null;
+			System.Windows.Input.ICommand command;
+			lock (knownCommands) {
+				if (knownCommands.TryGetValue(commandName, out command))
+					return command;
 			}
+			int pos = commandName.LastIndexOf('.');
+			if (pos > 0) {
+				string className = commandName.Substring(0, pos);
+				string propertyName = commandName.Substring(pos + 1);
+				Type classType = addIn.FindType(className);
+				if (classType != null) {
+					PropertyInfo p = classType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Static);
+					if (p != null)
+						return (System.Windows.Input.ICommand)p.GetValue(null, null);
+					FieldInfo f = classType.GetField(propertyName, BindingFlags.Public | BindingFlags.Static);
+					if (f != null)
+						return (System.Windows.Input.ICommand)f.GetValue(null);
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>
-		/// 
+		/// Registers a WPF command for use with the &lt;MenuItem command="name"&gt; syntax.
 		/// </summary>
-		public static void RegisterCommandClass(Type commandClass)
+		public static void RegisterKnownCommand(string name, System.Windows.Input.ICommand command)
 		{
-			if (commandClass == null)
-				throw new ArgumentNullException("commandClass");
-			lock (commandClasses) {
-				if (!commandClasses.Contains(commandClass))
-					commandClasses.Add(commandClass);
+			if (name == null)
+				throw new ArgumentNullException("name");
+			if (command == null)
+				throw new ArgumentNullException("command");
+			lock (knownCommands) {
+				knownCommands.Add(name, command);
 			}
 		}
 		

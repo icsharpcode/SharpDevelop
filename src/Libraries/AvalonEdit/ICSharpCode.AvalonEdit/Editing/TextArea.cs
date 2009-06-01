@@ -346,7 +346,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <summary>
 		/// Code that updates only the caret but not the selection can cause confusion when
 		/// keys like 'Delete' delete the (possibly invisible) selected text and not the
-		/// text around the caret (where the will jump to).
+		/// text around the caret.
 		/// 
 		/// So we'll ensure that the caret is inside the selection.
 		/// (when the caret is not in the selection, we'll clear the selection)
