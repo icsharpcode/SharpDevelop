@@ -78,5 +78,11 @@ namespace ICSharpCode.XmlEditor
 					break;
 			}
 		}
+		
+		public override string ToString()
+		{
+			return "[" + this.Text + "]";
+		}
+		
 	}
 }

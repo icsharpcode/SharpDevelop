@@ -22,6 +22,7 @@ namespace XmlEditor.Tests.Utils
 		public MockXmlViewContent()
 		{
 			this.document = new AvalonEditDocumentAdapter();
+			this.Files.Add(new MockOpenedFile("test.xml"));
 		}
 		
 		public override object Control {

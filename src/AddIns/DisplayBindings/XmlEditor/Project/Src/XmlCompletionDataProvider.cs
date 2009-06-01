@@ -90,7 +90,7 @@ namespace ICSharpCode.XmlEditor
 			if (path.Elements.Count > 0) {
 				string namespaceUri = path.Elements[0].Namespace;
 				if (namespaceUri.Length > 0) {
-					return XmlSchemaManager.SchemaCompletionDataItems[namespaceUri];
+					return schemaCompletionDataItems[namespaceUri];
 				} else if (defaultSchemaCompletionData != null) {
 					
 					// Use the default schema namespace if none
