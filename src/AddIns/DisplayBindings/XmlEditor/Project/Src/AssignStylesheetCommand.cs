@@ -21,15 +21,15 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			// Get active xml document.
-			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView xmlView = XmlView.ActiveXmlView;
 			
-			if (properties != null) {
+			if (xmlView != null) {
 				// Prompt user for filename.
 				string stylesheetFileName = BrowseForStylesheetFile();
 
 				// Assign stylesheet.
 				if (stylesheetFileName != null)
-					properties.StylesheetFileName = stylesheetFileName;
+					xmlView.StylesheetFileName = stylesheetFileName;
 			}
 		}
 		

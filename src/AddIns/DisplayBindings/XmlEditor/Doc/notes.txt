@@ -1,0 +1,175 @@
+Xml Intellisense
+----------------
+
+In order to be able to provide intellisense for an xml document we need a schema.  From the schema we can determine an element's attributes and its child elements.  Without resorting to writing our own xml schema parser, can we retrieve this information from the schema?
+
+XmlSchema class
+---------------
+
+The .Net framework provides us with the XmlSchema class.  It provides us with two methods that of interest to us when reading rather than creating an xml schema.
+
+1) Read - Reads an XML Schema definition language (XSD) schema.
+
+2) Compile - Compiles the XML Schema definition language (XSD) Schema Object Model (SOM) into schema information for validation. Used to check the syntactic and semantic structure of the programmatically-built SOM. Semantic validation checking is performed during compilation.
+
+Let us first look at the Read method and see what we can get from it.
+
+The read method seems to do a first parse of the schema, the XmlSchema.Elements property is not populated, about the only thing that is populated is the Items property, which seems to be pretty much a mirror image of what is in the xsd file.  
+
+Quickstart sample from Microsoft
+--------------------------------
+
+XmlSchemaObjectModel sample
+
+http://go.microsoft.com/fwlink/?linkid=3268&url=/quickstart/howto/doc/XML/XmlSchemaObjectModel.aspx
+
+A sample provided by Microsoft adds two schemas to an XmlSchemaCollection, outputs the schema xsd based on what was read in, then generates an xml documentrepresentative of the read in schema.
+
+            XmlNameTable myXmlNameTable = new NameTable();
+            XmlSchemaCollection myXmlSchemaCollection = new XmlSchemaCollection(myXmlNameTable);
+            myXmlSchemaCollection.Add(null, "books.xsd");
+            myXmlSchemaCollection.Add(null, "poschema.xsd");
+
+            foreach(XmlSchema myTempXmlSchema in myXmlSchemaCollection)
+            {
+                myXmlSchema = myTempXmlSchema;
+
+                // Write out the various schema parts
+                WriteXSDSchema();
+
+                // Write out an example of the XML for the schema
+                WriteExample();
+
+            }
+
+
+    void WriteXSDSchema()
+    {
+        myXmlTextWriter.WriteStartElement("schema", XmlSchema.Namespace);
+        myXmlTextWriter.WriteAttributeString("targetNamespace", myXmlSchema.TargetNamespace);
+        foreach(XmlSchemaInclude include in myXmlSchema.Includes)
+        {
+            myXmlTextWriter.WriteStartElement("include", XmlSchema.Namespace);
+            myXmlTextWriter.WriteAttributeString("schemaLocation", include.SchemaLocation);
+            myXmlTextWriter.WriteEndElement();
+        }
+
+        foreach(object item in myXmlSchema.Items)
+        {
+            if (item is XmlSchemaAttribute)
+                WriteXmlSchemaAttribute((XmlSchemaAttribute)item);      //attribute
+            else if (item is XmlSchemaComplexType)
+                WriteXmlSchemaComplexType((XmlSchemaComplexType)item);  //complexType
+            else if (item is XmlSchemaSimpleType)
+                WriteXmlSchemaSimpleType((XmlSchemaSimpleType)item);    //simpleType
+            else if (item is XmlSchemaElement)
+                WriteXmlSchemaElement((XmlSchemaElement)item);          //element
+            else if (item is XmlSchemaAnnotation)
+                WriteXmlSchemaAnnotation((XmlSchemaAnnotation)item);    //annotation
+            else if (item is XmlSchemaAttributeGroup)
+                WriteXmlSchemaAttributeGroup((XmlSchemaAttributeGroup)item); //attributeGroup
+            else if (item is XmlSchemaNotation)
+                WriteXmlSchemaNotation((XmlSchemaNotation)item);        //notation
+            else if (item is XmlSchemaGroup)
+                WriteXmlSchemaGroup((XmlSchemaGroup)item);              //group
+            else
+                Console.WriteLine("Not Implemented.");
+        }
+        myXmlTextWriter.WriteEndElement();
+    }
+
+    // Write out the example of the XSD usage
+    void WriteExample()
+    {
+        foreach(XmlSchemaElement element in myXmlSchema.Elements.Values)
+            WriteExampleElement(element);
+    }
+
+    // Write some example elements
+    void WriteExampleElement(XmlSchemaElement element)
+    {
+        myXmlTextWriter.WriteStartElement(element.QualifiedName.Name, element.QualifiedName.Namespace);
+        if (element.ElementType is XmlSchemaComplexType)
+        {
+            XmlSchemaComplexType type = (XmlSchemaComplexType)element.ElementType;
+            if (type.ContentModel != null)
+                Console.WriteLine("Not Implemented for this ContentModel");
+            WriteExampleAttributes(type.Attributes);
+            WriteExampleParticle(type.Particle);
+        }
+        else
+            WriteExampleValue(element.ElementType);
+
+        myXmlTextWriter.WriteEndElement();
+    }
+
+Now how does this work?  The WriteExample code iterates through the XmlSchema.Elements.Values collection and outputs some data for each XmlSchemaElement.  The Elements property is not generated when you only do an XmlSchema.Read.  What is actually happening is that the schema is being compiled aswell.  I stumbled across this not using Reflector, but when changing the sample code to read in NAnt's 0.84 schema.  Reading in NAnt-0.84.xsd the code threw an exception since one of the types (formatter) was defined twice, even though the schema is valid as far as I can tell.  The exception was thrown at the line
+
+ myXmlSchemaCollection.Add(null, "nant-0.84.xsd");
+
+The exception call stack showed that XmlSchemaCollection.Add method calls XmlSchema.Compile.
+
+So it looks like we need to compile the XmlSchema object to get it to do a second parse.
+
+Xhtml1-Strict
+-------------
+
+Fun and games getting this to load in the XmlSchema object.
+
+First, set the XmlResolver to null on the XmlTextReader.  If this is not done the reader tries to look for referenced DTDs in the assembly folder.  When the resolver is set to null it looks for the DTDs in the same folder as the .xsd itself which seems more reasonable.  
+
+XmlSchema throws an exception because the xhtml1-strict.xsd redefines the xml namespace via the string xmlns:xml="http://www.w3.org/XML/1998/namespace" at the top of the file.  According to the w3 spec this is valid, but the XmlSchema class does not like it.
+
+
+Xml Editor handling property changes
+------------------------------------
+
+The properties are changed from inside SharpDevelop.  Options are:
+
+1) Directly access the SharpDevelop properties each time the control is about to do something.
+2) Control exposes properties which need to be changed via another object, not the editor, 
+   when they have changed.
+3) Control exposes a property object with a defined interface which the user of the control
+   can set.  This object is checked whenever the control attempts to do something.  This
+   object can access the SharpDevelop properties.
+
+I want to keep the Xml Editor control only dependent on the SharpDevelop Text Editor.  This rules out option 1.
+
+
+Schemas
+-------
+
+System schemas
+--------------
+
+System schemas will live in the C:\Program Files\SharpDevelop\data\schemas folder.  
+
+The PropertyService gives us a DataDirectory property which usually points to C:\Program Files\SharpDevelop\data so we can use this.
+
+If the folder does not exist it is not created since access to C:\Program Files can be restricted.
+
+User schemas
+------------
+
+User schemas will live in C:\Documents and Settings\web\Application Data\.ICSharpCode\SharpDevelop\schemas folder.
+
+The PropertyService gives us a ConfigDirectory which points to the parent of the above folder (i.e. SharpDevelop above the schemas folder).
+
+
+XmlEditor addin
+---------------
+
+The binary and its addin file will exist in AddIns/AddIns/DisplayBindings/XmlEditor
+
+Folding
+-------
+
+The standard way in SharpDevelop that folds are added is via the parser.  The SharpDevelop has a parser thread which checks if the current view's text has changed, then looks for a parser that can handle that particular filename.  This parser then parses the contents and the IParseInformation is sent to the view's IParseInformationListener.ParseInformationUpdated method.  This method then usually uses the parse info to update the foldings.
+
+Now, the SharpDevelop parsers are programming language orientated, so a lot of the properties and objects are not relevant to parsed xml, so do we create a parser just to update the folds?  The fold updating still needs to be done on a background thread, because folds aren't massively important, so creating our own extra thread is out of the question.  We could trigger a fold update on every key press, but again this is overkill and will be probably be slow.
+
+Enabling searching in the xml editor
+------------------------------------
+
+The view class needs to implement the ITextEditorControlProvider otherwise the search menu options are disabled.
+

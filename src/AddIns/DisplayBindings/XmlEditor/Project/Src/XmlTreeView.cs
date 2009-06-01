@@ -30,7 +30,7 @@ namespace ICSharpCode.XmlEditor
 		public XmlTreeView(IViewContent parent)
 			: base(parent)
 		{
-			this.TabPageText = "XML Tree";
+			this.TabPageText = "${res:ICSharpCode.XmlEditor.XmlTreeView.Title}";
 			this.treeViewContainer = new XmlTreeViewContainerControl();
 			this.treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
 			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
@@ -181,6 +181,19 @@ namespace ICSharpCode.XmlEditor
 			if (!ignoreDirtyChange) {
 				this.PrimaryFile.IsDirty = treeViewContainer.IsDirty;
 			}
+		}
+		
+		bool disposed;
+		
+		public override void Dispose()
+		{
+			LoggingService.Debug("XmlTreeView.Dispose");
+			
+			if (!disposed) {
+				disposed = true;
+				treeViewContainer.Dispose();
+			}
+			base.Dispose();
 		}
 	}
 }

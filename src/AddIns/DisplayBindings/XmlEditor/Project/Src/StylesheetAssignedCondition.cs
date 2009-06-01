@@ -19,9 +19,9 @@ namespace ICSharpCode.XmlEditor
 	{
 		public bool IsValid(object owner, Condition condition)
 		{
-			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
-			if (properties != null)
-				return properties.StylesheetFileName != null;
+			XmlView xmlView = XmlView.ActiveXmlView;
+			if (xmlView != null)
+				return xmlView.StylesheetFileName != null;
 			return false;
 		}
 	}

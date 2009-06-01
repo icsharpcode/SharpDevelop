@@ -65,12 +65,8 @@
 		<ComplexCondition>
 			<Or>
 				<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlTreeView" />
-				<And>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" />
-					<Condition name = "TextContent" textcontent="XML" />
-				</And>
+				<Condition name = "TextContent" textcontent="XML" />
 			</Or>
-			
 			<MenuItem id = "Xml" insertafter="View" insertbefore="Tools" label="&amp;XML" type = "Menu">
 				<MenuItem id = "CreateSchema"
 				          label = "${res:ICSharpCode.XmlEditor.CreateSchemaMenuLabel}"

@@ -27,27 +27,27 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public override void Run()
 		{
-			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView xmlView = XmlView.ActiveXmlView;
 			
-			if (properties != null) {
+			if (xmlView != null) {
 				// Check to see if this view is actually a referenced stylesheet.
-				if (!string.IsNullOrEmpty(properties.File.FileName)) {
+				if (!string.IsNullOrEmpty(xmlView.File.FileName)) {
 					
-					XmlView assocFile = GetAssociatedXmlView(properties.File.FileName);
+					XmlView assocFile = GetAssociatedXmlView(xmlView.File.FileName);
 					if (assocFile != null) {
 						LoggingService.Debug("Using associated xml file.");
-						properties = assocFile;
+						xmlView = assocFile;
 					}
 				}
 				
 				// Assign a stylesheet.
-				if (properties.StylesheetFileName == null) {
-					properties.StylesheetFileName = AssignStylesheetCommand.BrowseForStylesheetFile();
+				if (xmlView.StylesheetFileName == null) {
+					xmlView.StylesheetFileName = AssignStylesheetCommand.BrowseForStylesheetFile();
 				}
 				
-				if (properties.StylesheetFileName != null) {
+				if (xmlView.StylesheetFileName != null) {
 					try {
-						properties.RunXslTransform(GetStylesheetContent(properties.StylesheetFileName));
+						xmlView.RunXslTransform(GetStylesheetContent(xmlView.StylesheetFileName));
 					} catch (Exception ex) {
 						MessageService.ShowError(ex);
 					}
@@ -62,10 +62,10 @@ namespace ICSharpCode.XmlEditor
 		static XmlView GetAssociatedXmlView(string stylesheetFileName)
 		{
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				XmlView prop = XmlView.ForViewContent(content);
-				if (prop != null && !string.IsNullOrEmpty(prop.StylesheetFileName)) {
-					if (FileUtility.IsEqualFileName(prop.StylesheetFileName, stylesheetFileName)) {
-						return prop;
+				XmlView view = XmlView.ForViewContent(content);
+				if (view != null && !string.IsNullOrEmpty(view.StylesheetFileName)) {
+					if (FileUtility.IsEqualFileName(view.StylesheetFileName, stylesheetFileName)) {
+						return view;
 					}
 				}
 			}

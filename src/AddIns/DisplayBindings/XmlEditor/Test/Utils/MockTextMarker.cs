@@ -51,23 +51,9 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
-		public Nullable<Color> BackgroundColor {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
+		public Nullable<Color> BackgroundColor { get; set; }
 		
-		public Nullable<Color> ForegroundColor {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
+		public Nullable<Color> ForegroundColor { get; set; }
 		
 		public object Tag { get; set; }
 		

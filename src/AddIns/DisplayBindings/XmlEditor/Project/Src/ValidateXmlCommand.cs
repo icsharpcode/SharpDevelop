@@ -22,10 +22,10 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			// Find active XmlView.
-			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
-			if (properties != null) {
+			XmlView xmlView = XmlView.ActiveXmlView;
+			if (xmlView != null) {
 				// Validate the xml.
-				properties.ValidateXml();
+				xmlView.ValidateXml();
 			}
 		}
 	}

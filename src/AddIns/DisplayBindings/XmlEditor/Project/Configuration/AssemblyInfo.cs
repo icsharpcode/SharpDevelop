@@ -1,33 +1,22 @@
-﻿#region Using directives
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
 
-using System;
 using System.Reflection;
-using System.Runtime.InteropServices;
 
-#endregion
+// Information about this assembly is defined by the following
+// attributes.
+//
+// change them to the information which is associated with the assembly
+// you compile.
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
 [assembly: AssemblyTitle("XmlEditor")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("SharpDevelop Xml Editor AddIn")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("XmlEditor")]
-[assembly: AssemblyCopyright("Copyright 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-// This sets the default COM visibility of types in the assembly to invisible.
-// If you need to expose a type to COM, use [ComVisible(true)] on that type.
-[assembly: ComVisible(false)]
-
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("XmlEditor.Tests")]
-
-// The assembly version has following format :
-//
-// Major.Minor.Build.Revision
-//
-// You can specify all the values or you can use the default the Revision and 
-// Build Numbers by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.*")]

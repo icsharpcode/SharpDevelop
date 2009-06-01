@@ -68,6 +68,9 @@
     <None Include="XmlEditor.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddAttributeCommand.cs" />
     <Compile Include="Src\AddChildCommentCommand.cs" />
@@ -77,7 +80,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\AssignStylesheetCommand.cs" />
-    <Compile Include="Src\CodeCompletionPopupCommand.cs" />
     <Compile Include="Src\CreateSchemaCommand.cs" />
     <Compile Include="Src\EncodedStringWriter.cs" />
     <Compile Include="Src\FormatXmlCommand.cs" />

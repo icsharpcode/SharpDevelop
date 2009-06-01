@@ -129,6 +129,12 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		public static XmlView ActiveXmlView {
+			get {
+				return XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
+			}
+		}
+		
 		/// <summary>
 		/// Finds the xml nodes that match the specified xpath.
 		/// </summary>
@@ -175,7 +181,7 @@ namespace ICSharpCode.XmlEditor
 		/// and line position information aswell as the node found.</returns>
 		public XPathNodeMatch[] SelectNodes(string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
 		{
-			return SelectNodes(View.XmlContent, xpath, namespaces);
+			return SelectNodes(TextEditor.Document.Text, xpath, namespaces);
 		}
 		
 		public void GoToSchemaDefinition()

@@ -177,9 +177,7 @@ namespace ICSharpCode.XmlEditor
 			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				ITextEditorProvider textEditorProvider = view as ITextEditorProvider;
 				if (textEditorProvider != null) {
-					// TODO : markers are currently not supported in AvalonEdit.
-//					XPathNodeTextMarker.RemoveMarkers(textEditorProvider.TextEditorControl.Document.MarkerStrategy);
-//					textEditorProvider.TextEditorControl.Refresh();
+					XPathNodeTextMarker.RemoveMarkers(textEditorProvider.TextEditor.Document);
 				}
 			}
 		}
@@ -419,25 +417,24 @@ namespace ICSharpCode.XmlEditor
 		
 		void RunXPathQuery()
 		{
-			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
-			if (properties == null) {
+			XmlView xmlView = XmlView.ActiveXmlView;
+			if (xmlView == null) {
 				return;
 			}
 			
 			try {
 				// TODO : markers are currently not supported in AvalonEdit.
-				//MarkerStrategy markerStrategy = view.GetTextEditor().Document.MarkerStrategy;
-				fileName = properties.File.FileName;
+				fileName = xmlView.File.FileName;
 				
 				// Clear previous XPath results.
 				ClearResults();
-				//XPathNodeTextMarker.RemoveMarkers(markerStrategy);
+				XPathNodeTextMarker.RemoveMarkers(xmlView.TextEditor.Document);
 
 				// Run XPath query.
-				XPathNodeMatch[] nodes = properties.SelectNodes(xPathComboBox.Text, GetNamespaces());
+				XPathNodeMatch[] nodes = xmlView.SelectNodes(xPathComboBox.Text, GetNamespaces());
 				if (nodes.Length > 0) {
 					AddXPathResults(nodes);
-					//XPathNodeTextMarker.AddMarkers(markerStrategy, nodes);
+					XPathNodeTextMarker.AddMarkers(xmlView.TextEditor.Document, nodes);
 				} else {
 					AddNoXPathResult();
 				}
@@ -448,7 +445,6 @@ namespace ICSharpCode.XmlEditor
 				AddErrorResult(xmlEx);
 			} finally {
 				BringResultsTabToFront();
-				//view.TextEditorControl.Refresh();
 			}
 		}
 		
@@ -595,11 +591,11 @@ namespace ICSharpCode.XmlEditor
 			if (view != null) {
 				ITextEditor editor = view.TextEditor;
 				if (editor == null) return;
-				int corLine = Math.Min(line, editor.Document.TotalNumberOfLines - 1);
-				editor.JumpTo(corLine, column);
+				int corLine = Math.Min(line + 1, editor.Document.TotalNumberOfLines - 1);
+				editor.JumpTo(corLine, column + 1);
 				if (length > 0 && line < editor.Document.TotalNumberOfLines) {
-					int offset = editor.Document.PositionToOffset(line, column);
-					editor.Select(offset, offset + length);
+					int offset = editor.Document.PositionToOffset(line + 1, column + 1);
+					editor.Select(offset, length);
 				}
 			}
 		}

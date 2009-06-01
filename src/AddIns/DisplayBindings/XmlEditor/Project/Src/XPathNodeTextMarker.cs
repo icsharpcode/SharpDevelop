@@ -8,7 +8,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Windows.Media;
 
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -19,7 +19,7 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class XPathNodeTextMarker
 	{	
-		public static readonly Color MarkerBackColor = Color.FromArgb(159, 255, 162);
+		public static readonly Color MarkerBackColor = Color.FromArgb(255, 159, 255, 162);
 		static List<XPathNodeTextMarker> markers = new List<XPathNodeTextMarker>();
 		ITextMarker marker;
 		
@@ -28,6 +28,7 @@ namespace ICSharpCode.XmlEditor
 			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			marker = markerService.Create(offset, node.Value.Length);
 			marker.Tag = this;
+			marker.BackgroundColor = MarkerBackColor;
 		}
 		
 		/// <summary>

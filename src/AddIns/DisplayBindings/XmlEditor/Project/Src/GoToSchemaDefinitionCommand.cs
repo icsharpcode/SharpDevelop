@@ -20,10 +20,10 @@ namespace ICSharpCode.XmlEditor
 	{
 		public override void Run()
 		{
-			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView xmlView = XmlView.ActiveXmlView;
 			
-			if (properties != null) {
-				properties.GoToSchemaDefinition();
+			if (xmlView != null) {
+				xmlView.GoToSchemaDefinition();
 			}
 		}
 	}

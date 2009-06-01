@@ -19,10 +19,10 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			// Find active XmlView.
-			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
+			XmlView xmlView = XmlView.ActiveXmlView;
 			
-			if (properties != null) {
-				properties.FormatXml();
+			if (xmlView != null) {
+				xmlView.FormatXml();
 			}
 		}
 	}

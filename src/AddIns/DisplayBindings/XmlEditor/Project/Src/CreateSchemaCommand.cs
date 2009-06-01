@@ -23,14 +23,14 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			// Find active XmlView.
-			XmlView properties = XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
-			if (properties != null) {
+			XmlView xmlView = XmlView.ActiveXmlView;
+			if (xmlView != null) {
 				// Create a schema based on the xml.
-				string[] schemas = properties.InferSchema();
+				string[] schemas = xmlView.InferSchema();
 				if (schemas != null) {
 					// Create a new file for each generated schema.
 					for (int i = 0; i < schemas.Length; ++i) {
-						string fileName = GenerateSchemaFileName(properties.File.FileName, i + 1);
+						string fileName = GenerateSchemaFileName(xmlView.File.FileName, i + 1);
 						OpenNewXmlFile(fileName, schemas[i]);
 					}
 				}
