@@ -69,7 +69,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			treeView.SelectedNode = null;
 			
-			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlState.Nothing, 
+			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlStates.None, 
 				treeViewContainer.InternalState,
 				"OwnerState should be Nothing.");
 		}
@@ -79,7 +79,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			treeView.SelectedNode = htmlTreeNode;
 			
-			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlState.RootElementSelected | XmlTreeViewContainerControl.XmlTreeViewContainerControlState.ElementSelected, 
+			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlStates.RootElementSelected | XmlTreeViewContainerControl.XmlTreeViewContainerControlStates.ElementSelected, 
 				treeViewContainer.InternalState,
 				"OwnerState should be RootElementSelected and ElementSelected.");
 		}
@@ -89,7 +89,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			treeView.SelectedNode = bodyTreeNode;
 			
-			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlState.ElementSelected, 
+			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlStates.ElementSelected, 
 				treeViewContainer.InternalState,
 				"OwnerState should be ElementSelected.");
 		}
@@ -103,7 +103,7 @@ namespace XmlEditor.Tests.Tree
 			Assert.IsNotNull(treeViewContainer.AttributesGrid.SelectedGridItem,
 				"Sanity check - should have a grid item selected.");
 			
-			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlState.ElementSelected | XmlTreeViewContainerControl.XmlTreeViewContainerControlState.AttributeSelected, 
+			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlStates.ElementSelected | XmlTreeViewContainerControl.XmlTreeViewContainerControlStates.AttributeSelected, 
 				treeViewContainer.InternalState,
 				"OwnerState should be ElementSelected and AttributeSelected.");
 		}
@@ -113,7 +113,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			treeView.SelectedNode = textTreeNode;
 			
-			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlState.TextNodeSelected, 
+			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlStates.TextNodeSelected, 
 				treeViewContainer.InternalState,
 				"OwnerState should be TextNodeSelected.");
 		}
@@ -123,7 +123,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			treeView.SelectedNode = commentTreeNode;
 			
-			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlState.CommentSelected, 
+			Assert.AreEqual(XmlTreeViewContainerControl.XmlTreeViewContainerControlStates.CommentSelected, 
 				treeViewContainer.InternalState,
 				"OwnerState should be CommentSelected.");
 		}

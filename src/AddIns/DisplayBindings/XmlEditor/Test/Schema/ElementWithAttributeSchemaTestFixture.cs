@@ -5,11 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using System;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace XmlEditor.Tests.Schema
 {
@@ -19,7 +18,7 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ElementWithAttributeSchemaTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] attributeCompletionData;
+		ICompletionItem[] attributeCompletionData;
 		string attributeName;
 		
 		public override void FixtureInit()
@@ -48,7 +47,7 @@ namespace XmlEditor.Tests.Schema
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foobar", "http://www.w3schools.com"));
-			ICompletionData[] attributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			ICompletionItem[] attributes = SchemaCompletionData.GetAttributeCompletionData(path);
 			
 			Assert.AreEqual(0, attributes.Length, "Should not find attributes for unknown element.");
 		}

@@ -96,6 +96,18 @@ namespace ICSharpCode.SharpDevelop
 					return true;
 				}
 			}
+			
+			public bool ConvertTabsToSpaces {
+				get {
+					return properties.ConvertTabsToSpaces;
+				}
+			}
+			
+			public int IndendationSize {
+				get {
+					return properties.IndentationSize;
+				}
+			}
 		}
 		
 		static ICSharpCode.NRefactory.Location ToLocation(TextLocation position)

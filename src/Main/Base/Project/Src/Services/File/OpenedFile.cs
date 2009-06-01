@@ -104,6 +104,8 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public event EventHandler FileNameChanged;
 		
+		public abstract event EventHandler FileClosed;
+		
 		/// <summary>
 		/// Use this method to save the file to disk using a new name.
 		/// </summary>
@@ -436,6 +438,8 @@ namespace ICSharpCode.SharpDevelop
 			if (registeredViews.Count == 0) {
 				FileService.OpenedFileClosed(this);
 				
+				FileClosed.RaiseEvent(this, EventArgs.Empty);
+				
 				if (fileChangeWatcher != null) {
 					fileChangeWatcher.Dispose();
 					fileChangeWatcher = null;
@@ -471,5 +475,7 @@ namespace ICSharpCode.SharpDevelop
 					fileChangeWatcher.Enabled = true;
 			}
 		}
+		
+		public override event EventHandler FileClosed;
 	}
 }

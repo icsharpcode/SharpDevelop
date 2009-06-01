@@ -113,9 +113,9 @@ namespace ICSharpCode.XmlEditor
 		{
 			value = navigator.Name;
 			if (navigator.IsEmptyElement) {
-				displayValue = String.Concat("<", value, "/>");
+				displayValue = string.Concat("<", value, "/>");
 			} else {
-				displayValue = String.Concat("<", value, ">");
+				displayValue = string.Concat("<", value, ">");
 			}
 		}
 		
@@ -146,7 +146,7 @@ namespace ICSharpCode.XmlEditor
 		void SetAttributeValue(XPathNavigator navigator)
 		{
 			value = navigator.Name;
-			displayValue = String.Concat("@", value);
+			displayValue = string.Concat("@", value);
 		}
 		
 		/// <summary>

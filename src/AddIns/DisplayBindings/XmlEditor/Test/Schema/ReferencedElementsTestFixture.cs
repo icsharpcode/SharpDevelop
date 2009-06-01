@@ -5,19 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using System;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace XmlEditor.Tests.Schema
 {
 	[TestFixture]
 	public class ReferencedElementsTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] shipOrderAttributes;
-		ICompletionData[] shipToAttributes;
+		ICompletionItem[] shipOrderAttributes;
+		ICompletionItem[] shipToAttributes;
 		XmlElementPath shipToPath;
 		XmlElementPath shipOrderPath;
 		
@@ -75,7 +74,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ShipOrderHasShipToChildElement()
 		{
-			ICompletionData[] data = SchemaCompletionData.GetChildElementCompletionData(shipOrderPath);
+			ICompletionItem[] data = SchemaCompletionData.GetChildElementCompletionData(shipOrderPath);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "shipto"), 
 			                "Incorrect child element name.");
 		}
@@ -90,7 +89,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ShipToHasNameChildElement()
 		{
-			ICompletionData[] data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
+			ICompletionItem[] data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "name"), 
 			                "Incorrect child element name.");
 		}		
@@ -98,7 +97,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ShipToHasAddressChildElement()
 		{
-			ICompletionData[] data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
+			ICompletionItem[] data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "address"), 
 			                "Incorrect child element name.");
 		}		

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -23,7 +24,7 @@ namespace XmlEditor.Tests.Tree
 	[TestFixture]
 	public class XmlTreeViewClipboardHandlerTestFixture
 	{
-		XmlView xmlView;
+		MockXmlViewContent xmlView;
 		XmlTreeView view;
 		XmlTreeViewContainerControl treeViewContainer;
 		XmlTreeViewControl treeView;
@@ -37,14 +38,12 @@ namespace XmlEditor.Tests.Tree
 		{
 			MockOpenedFile openedFile = new MockOpenedFile("test.xml");
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			xmlView = new XmlView(new DefaultTextEditorProperties(), schemas);
-			xmlView.SetPrimaryFileUnitTestMode(openedFile);
-			view = new XmlTreeView(xmlView, null, null);
+			xmlView = new MockXmlViewContent(openedFile);
+			view = new XmlTreeView(xmlView);
 			treeViewContainer = (XmlTreeViewContainerControl)view.Control;
 			treeView = treeViewContainer.TreeView;
 			clipboardHandler = view as IClipboardHandler;
-			
-			xmlView.XmlEditor.Text = "<html><body><p></p></body></html>";
+			xmlView.GetDocumentForFile(null).Text = "<html><body><p></p></body></html>";
 			openedFile.SwitchToView(view);
 			
 			htmlTreeNode = treeView.Nodes[0] as XmlElementTreeNode;
@@ -104,7 +103,7 @@ namespace XmlEditor.Tests.Tree
 			view.Copy();
 			view.Paste();
 			
-			Assert.IsTrue(xmlView.IsDirty);
+			Assert.IsTrue(view.IsDirty);
 			Assert.AreEqual(htmlTreeNode.Text, htmlTreeNode.LastNode.Text);
 		}
 		
@@ -116,7 +115,7 @@ namespace XmlEditor.Tests.Tree
 			treeView.SelectedNode = htmlTreeNode;
 			view.Paste();
 			
-			Assert.IsTrue(xmlView.IsDirty);
+			Assert.IsTrue(view.IsDirty);
 			Assert.AreEqual(paragraphTreeNode.Text, htmlTreeNode.LastNode.Text);
 		}
 		
@@ -128,7 +127,7 @@ namespace XmlEditor.Tests.Tree
 			clipboardHandler.Delete();
 			
 			Assert.AreEqual(0, treeView.Nodes.Count);
-			Assert.IsTrue(xmlView.IsDirty);
+			Assert.IsTrue(view.IsDirty);
 		}
 	}
 }

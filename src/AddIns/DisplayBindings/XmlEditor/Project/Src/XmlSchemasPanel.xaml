@@ -1,0 +1,47 @@
+<UserControl x:Class="ICSharpCode.XmlEditor.XmlSchemasPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<UserControl.Resources>
+		<Style TargetType="{x:Type ListBoxItem}">
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding ReadOnly}" Value="True">
+					<Setter Property="Foreground" Value="Gray" />
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+	</UserControl.Resources>
+	<StackPanel>
+		<GroupBox Header="{sd:Localize ICSharpCode.XmlEditor.XmlSchemaPanel.SchemasGroupBoxText}">
+			<DockPanel>
+				<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+					<Button Margin="3,0" Name="btnAdd" Content="{sd:StringParse ${res:Global.AddButtonText}...}" Click="BtnAddClick" />
+					<Button Margin="3,0" Name="btnRemove" IsEnabled="False" Content="{sd:Localize Global.RemoveButtonText}" Click="BtnRemoveClick" />
+				</StackPanel>
+				<ListBox Name="schemaListBox" Height="100" Margin="5" SelectionChanged="SchemaListBoxSelectionChanged" />
+			</DockPanel>
+		</GroupBox>
+		<GroupBox Header="{sd:Localize ICSharpCode.XmlEditor.XmlSchemaPanel.FileExtensionsGroupBoxText}">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Label Grid.Column="0" Grid.Row="0" Content="{sd:Localize ICSharpCode.XmlEditor.XmlSchemaPanel.FileExtensionLabelText}" />
+				<Label Grid.Column="0" Grid.Row="1" Content="{sd:Localize ICSharpCode.XmlEditor.XmlSchemaPanel.SchemaLabelText}" />
+				<Label Grid.Column="0" Grid.Row="2" Content="{sd:Localize ICSharpCode.XmlEditor.XmlSchemaPanel.NamespacePrefixLabelText}" />
+				<ComboBox Name="fileExtensionComboBox" Grid.Column="1" Grid.Row="0" Margin="3" SelectionChanged="FileExtensionComboBoxSelectionChanged" />
+				<DockPanel Grid.Column="1" Grid.Row="1">
+					<Button Name="ChangeSchema" DockPanel.Dock="Right" Margin="3" Content="..." Click="BtnChangeSchemaClick" />
+					<TextBox Name="schemaTextBox" Margin="3" />
+				</DockPanel>
+				<TextBox Name="namespacePrefixTextBox" Grid.Column="1" Grid.Row="2" Margin="3" TextChanged="NamespacePrefixTextBoxTextChanged" />
+			</Grid>
+		</GroupBox>
+	</StackPanel>
+</UserControl>

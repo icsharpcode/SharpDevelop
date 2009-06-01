@@ -60,7 +60,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public bool CanParse(string fileName)
 		{
-			return XmlView.IsFileNameHandled(fileName);
+			return XmlDisplayBinding.IsFileNameHandled(fileName);
 		}
 		#endregion
 	}

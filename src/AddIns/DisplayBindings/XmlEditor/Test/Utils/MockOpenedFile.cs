@@ -55,5 +55,7 @@ namespace XmlEditor.Tests.Utils
 				throw new ArgumentException("registeredViews does not contain view");
 			base.SwitchedToView(view);
 		}
+		
+		public override event EventHandler FileClosed { add {} remove {} }
 	}
 }

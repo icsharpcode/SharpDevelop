@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using System;
+using System.Linq;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace XmlEditor.Tests.Schema
 {
@@ -39,7 +39,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void TextElementHasOneAttribute()
 		{
-			ICompletionData[] attributesCompletionData = SchemaCompletionData.GetAttributeCompletionData(textElementPath);
+			ICompletionItem[] attributesCompletionData = SchemaCompletionData.GetAttributeCompletionData(textElementPath);
 			
 			Assert.AreEqual(1, attributesCompletionData.Length, 
 			                "Should have 1 text attribute.");
@@ -48,7 +48,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void TextElementAttributeName()
 		{
-			ICompletionData[] attributesCompletionData = SchemaCompletionData.GetAttributeCompletionData(textElementPath);
+			ICompletionItem[] attributesCompletionData = SchemaCompletionData.GetAttributeCompletionData(textElementPath);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributesCompletionData, "foo"),
 			              "Unexpected text attribute name.");
 		}
@@ -56,7 +56,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void NoteElementHasChildElement()
 		{
-			ICompletionData[] childElementCompletionData
+			ICompletionItem[] childElementCompletionData
 				= SchemaCompletionData.GetChildElementCompletionData(noteElementPath);
 			
 			Assert.AreEqual(1, childElementCompletionData.Length,
@@ -66,7 +66,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void NoteElementHasNoAttributes()
 		{	
-			ICompletionData[] attributeCompletionData
+			ICompletionItem[] attributeCompletionData
 				= SchemaCompletionData.GetAttributeCompletionData(noteElementPath);
 			
 			Assert.AreEqual(0, attributeCompletionData.Length,
@@ -76,19 +76,19 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void OneRootElement()
 		{
-			ICompletionData[] elementCompletionData
+			ICompletionItemList elementCompletionData
 				= SchemaCompletionData.GetElementCompletionData();
 			
-			Assert.AreEqual(1, elementCompletionData.Length, "Should be 1 root element.");
+			Assert.AreEqual(1, elementCompletionData.Items.ToArray().Length, "Should be 1 root element.");
 		}
 		
 		[Test]
 		public void RootElementIsNote()
 		{
-			ICompletionData[] elementCompletionData
+			ICompletionItemList elementCompletionData
 				= SchemaCompletionData.GetElementCompletionData();
 			
-			Assert.IsTrue(Contains(elementCompletionData, "note"), 
+			Assert.IsTrue(Contains(elementCompletionData.Items.ToArray(), "note"),
 			              "Should be called note.");
 		}
 		

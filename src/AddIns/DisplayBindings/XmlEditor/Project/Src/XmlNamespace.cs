@@ -14,8 +14,8 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class XmlNamespace
 	{
-		string prefix = String.Empty;
-		string uri = String.Empty;
+		string prefix = string.Empty;
+		string uri = string.Empty;
 		
 		const string prefixToStringStart = "Prefix [";
 		const string uriToStringMiddle = "] Uri [";
@@ -40,27 +40,27 @@ namespace ICSharpCode.XmlEditor
 		
 		public override string ToString()
 		{
-			return String.Concat(prefixToStringStart, prefix, uriToStringMiddle, uri, "]");
+			return string.Concat(prefixToStringStart, prefix, uriToStringMiddle, uri, "]");
 		}
 		
 		/// <summary>
 		/// Creates an XmlNamespace instance from the given string that is in the
 		/// format returned by ToString.
 		/// </summary>
-		public static XmlNamespace FromString(string s)
+		public static XmlNamespace FromString(string namespaceString)
 		{
-			int prefixIndex = s.IndexOf(prefixToStringStart);
+			int prefixIndex = namespaceString.IndexOf(prefixToStringStart, StringComparison.Ordinal);
 			if (prefixIndex >= 0) {
 				prefixIndex += prefixToStringStart.Length;
-				int uriIndex = s.IndexOf(uriToStringMiddle, prefixIndex);
+				int uriIndex = namespaceString.IndexOf(uriToStringMiddle, prefixIndex, StringComparison.Ordinal);
 				if (uriIndex >= 0) {
-					string prefix = s.Substring(prefixIndex, uriIndex - prefixIndex);
+					string prefix = namespaceString.Substring(prefixIndex, uriIndex - prefixIndex);
 					uriIndex += uriToStringMiddle.Length;
-					string uri = s.Substring(uriIndex, s.Length - (uriIndex + 1));
+					string uri = namespaceString.Substring(uriIndex, namespaceString.Length - (uriIndex + 1));
 					return new XmlNamespace(prefix, uri);
 				}
 			}
-			return new XmlNamespace(String.Empty, String.Empty);
+			return new XmlNamespace(string.Empty, string.Empty);
 		}
 	}
 }

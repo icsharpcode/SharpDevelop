@@ -17,15 +17,11 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class StylesheetAssignedCondition : IConditionEvaluator
 	{
-		public bool IsValid(object caller, Condition condition)
+		public bool IsValid(object owner, Condition condition)
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window != null) {
-				XmlView view = window.ActiveViewContent as XmlView;
-				if (view != null) {
-					return view.StylesheetFileName != null;
-				}
-			}
+			XmlView xmlView = XmlView.ActiveXmlView;
+			if (xmlView != null)
+				return xmlView.StylesheetFileName != null;
 			return false;
 		}
 	}

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using ICSharpCode.Core;
 
@@ -19,9 +20,10 @@ namespace ICSharpCode.XmlEditor
 	{
 		public override void Run()
 		{
-			XmlView view = XmlView.ActiveXmlView;
-			if (view != null) {
-				view.GoToSchemaDefinition();
+			XmlView xmlView = XmlView.ActiveXmlView;
+			
+			if (xmlView != null) {
+				xmlView.GoToSchemaDefinition();
 			}
 		}
 	}

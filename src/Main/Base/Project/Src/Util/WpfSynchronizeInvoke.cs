@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop
 		public IAsyncResult BeginInvoke(Delegate method, object[] args)
 		{
 			DispatcherOperation op;
-			if (args.Length == 0)
+			if (args == null || args.Length == 0)
 				op = dispatcher.BeginInvoke(DispatcherPriority.Normal, method);
 			else if (args.Length == 1)
 				op = dispatcher.BeginInvoke(DispatcherPriority.Normal, method, args[0]);

@@ -5,11 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using System;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace XmlEditor.Tests.Schema
 {
@@ -23,8 +22,8 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class GroupRefAsCompositorTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] rootChildElements;
-		ICompletionData[] fooAttributes;
+		ICompletionItem[] rootChildElements;
+		ICompletionItem[] fooAttributes;
 		
 		public override void FixtureInit()
 		{

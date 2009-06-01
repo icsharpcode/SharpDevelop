@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -14,7 +16,7 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class XmlSchemaListBoxItem
 	{
-		string namespaceUri = String.Empty;
+		string namespaceUri = string.Empty;
 		bool readOnly = false;
 		
 		/// <summary>

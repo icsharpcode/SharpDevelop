@@ -6,54 +6,64 @@
 // </file>
 
 using System;
-using System.Drawing;
-using ICSharpCode.TextEditor.Document;
+using System.Linq;
+using System.Collections.Generic;
+using System.Windows.Media;
+
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
 {
-	/// <summary>
-	/// A text marker for an XPath query match.
+ 	/// <summary>
+	/// A text marker for an XPath query match. Wraps ITextMarker.
 	/// </summary>
-	public class XPathNodeTextMarker : TextMarker
+	public class XPathNodeTextMarker
 	{	
-		public static readonly Color MarkerBackColor = Color.FromArgb(159, 255, 162);
+		public static readonly Color MarkerBackColor = Color.FromArgb(255, 159, 255, 162);
+		static List<XPathNodeTextMarker> markers = new List<XPathNodeTextMarker>();
+		ITextMarker marker;
 		
-		public XPathNodeTextMarker(int offset, XPathNodeMatch node) : base(offset, node.Value.Length, TextMarkerType.SolidBlock, MarkerBackColor)
+		XPathNodeTextMarker(IDocument document, int offset, XPathNodeMatch node)
 		{
+			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			marker = markerService.Create(offset, node.Value.Length);
+			marker.Tag = this;
+			marker.BackgroundColor = MarkerBackColor;
 		}
 		
 		/// <summary>
 		/// Adds markers for each XPathNodeMatch.
 		/// </summary>
-		public static void AddMarkers(MarkerStrategy markerStrategy, XPathNodeMatch[] nodes)
+		public static void AddMarkers(IDocument document, XPathNodeMatch[] nodes)
 		{
 			foreach (XPathNodeMatch node in nodes) {
-				AddMarker(markerStrategy, node);
+				AddMarker(document, node);
 			}
 		}
 		
 		/// <summary>
 		/// Adds a single marker for the XPathNodeMatch.
 		/// </summary>
-		public static void AddMarker(MarkerStrategy markerStrategy, XPathNodeMatch node)
+		public static void AddMarker(IDocument document, XPathNodeMatch node)
 		{
 			if (node.HasLineInfo() && node.Value.Length > 0) {
-				LineSegment lineSegment = markerStrategy.Document.GetLineSegment(node.LineNumber);
-				markerStrategy.AddMarker(new XPathNodeTextMarker(lineSegment.Offset + node.LinePosition, node));
+				markers.Add(new XPathNodeTextMarker(document, document.PositionToOffset(node.LineNumber + 1, node.LinePosition + 1), node));
 			}
 		}
 		
 		/// <summary>
 		/// Removes all the XPathNodeMarkers from the marker strategy.
 		/// </summary>
-		public static void RemoveMarkers(MarkerStrategy markerStrategy)
+		public static void RemoveMarkers(IDocument document)
 		{
-			markerStrategy.RemoveAll(IsXPathNodeTextMarkerMatch);
-		}
-		
-		static bool IsXPathNodeTextMarkerMatch(TextMarker marker)
-		{
-			return marker is XPathNodeTextMarker;
+			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			
+			ITextMarker[] list = markerService.TextMarkers.ToArray();
+			
+			foreach (ITextMarker item in list) {
+				if (item.Tag is XPathNodeTextMarker)
+					item.Delete();
+			}
 		}
 	}
 }

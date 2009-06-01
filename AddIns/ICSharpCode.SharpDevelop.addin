@@ -1716,10 +1716,6 @@
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CodeTemplatePanel"/>
 	</Path>
 	
-	<Path name = "/AddIns/DefaultTextEditor/Formatter/XML">
-		<Class id ="XmlFormatter" class = "ICSharpCode.SharpDevelop.DefaultEditor.XmlFormattingStrategy"/>
-	</Path>
-	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "OldText"
 		                insertafter = "Text"

@@ -101,6 +101,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets whether a '}' should automatically be inserted when a block is opened.
 		/// </summary>
 		bool AutoInsertBlockEnd { get; }
+		
+		/// <summary>
+		/// Gets if tabs should be converted to spaces.
+		/// </summary>
+		bool ConvertTabsToSpaces { get; }
+		
+		/// <summary>
+		/// Gets the size of an indentation level.
+		/// </summary>
+		int IndendationSize { get; }
 	}
 	
 	public interface ITextEditorCaret

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -21,15 +22,14 @@ namespace ICSharpCode.XmlEditor
 		{
 			// Get active xml document.
 			XmlView xmlView = XmlView.ActiveXmlView;
+			
 			if (xmlView != null) {
-				
 				// Prompt user for filename.
 				string stylesheetFileName = BrowseForStylesheetFile();
-				
+
 				// Assign stylesheet.
-				if (stylesheetFileName != null) {
+				if (stylesheetFileName != null)
 					xmlView.StylesheetFileName = stylesheetFileName;
-				}
 			}
 		}
 		
@@ -48,7 +48,7 @@ namespace ICSharpCode.XmlEditor
 					string allFilesFilter = (string)node.BuildChildItem("AllFiles", null, null);
 					string xslFileFilter = (string)node.BuildChildItem("Xsl", null, null);
 					
-					dialog.Filter = String.Concat(xslFileFilter, "|", xmlFileFilter, "|", allFilesFilter);
+					dialog.Filter = string.Concat(xslFileFilter, "|", xmlFileFilter, "|", allFilesFilter);
 					dialog.FilterIndex = 1;
 				}
 				

@@ -61,11 +61,6 @@ namespace ICSharpCode.XmlEditor
 				markup = new StringBuilder();
 			}
 			
-			public void EndMarkup()
-			{
-				BeginMarkup();
-			}
-			
 			/// <summary>
 			/// Returns the string written to this text writer after the
 			/// BeginMarkup method was called.
