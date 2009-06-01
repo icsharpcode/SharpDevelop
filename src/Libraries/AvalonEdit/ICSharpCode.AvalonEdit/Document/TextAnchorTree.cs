@@ -19,6 +19,36 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// </summary>
 	sealed class TextAnchorTree
 	{
+		// The text anchor tree has difficult requirements:
+		// - it must QUICKLY update the offset in all anchors whenever there is a document change
+		// - it must not reference text anchors directly, using weak references instead
+		
+		// Clearly, we cannot afford updating an Offset property on all anchors (that would be O(N)).
+		// So instead, the anchors need to be able to calculate their offset from a data structure
+		// that can be efficiently updated.
+		
+		// This implementation is built using an augmented red-black-tree.
+		// There is a 'TextAnchorNode' for each text anchor.
+		// Such a node represents a section of text (just the length is stored) with a (weakly referenced) text anchor at the end.
+		
+		// Basically, you can imagine the list of text anchors as a sorted list of text anchors, where each anchor
+		// just stores the distance to the previous anchor.
+		// (next node = TextAnchorNode.Successor, distance = TextAnchorNode.length)
+		// Distances are never negative, so this representation means anchors are always sorted by offset
+		// (the order of anchors at the same offset is undefined)
+		
+		// Of course, a linked list of anchors would be way too slow (one would need to traverse the whole list
+		// every time the offset of an anchor is being looked up).
+		// Instead, we use a red-black-tree. We aren't actually using the tree for sorting - it's just a binary tree
+		// as storage format for what's conceptually a list, the red-black properties are used to keep the tree balanced.
+		// Other balanced binary trees would work, too.
+		
+		// What makes the tree-form efficient is that is augments the data by a 'totalLength'. Where 'length'
+		// represents the distance to the previous node, 'totalLength' is the sum of all 'length' values in the subtree
+		// under that node.
+		// This allows computing the Offset from an anchor by walking up the list of parent nodes instead of going
+		// through all predecessor nodes. So computing the Offset runs in O(log N).
+		
 		readonly TextDocument document;
 		readonly List<TextAnchorNode> nodesToDelete = new List<TextAnchorNode>();
 		TextAnchorNode root;
@@ -35,16 +65,15 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		#region Insert Text
-		public void InsertText(int offset, int length)
+		void InsertText(int offset, int length)
 		{
-			//Log("InsertText(" + offset + ", " + length + ")");
 			if (length == 0 || root == null || offset > root.totalLength)
 				return;
 			
 			// find the range of nodes that are placed exactly at offset
 			// beginNode is inclusive, endNode is exclusive
 			if (offset == root.totalLength) {
-				PerformInsertText(root.RightMost, null, length);
+				PerformInsertText(FindActualBeginNode(root.RightMost), null, length);
 			} else {
 				TextAnchorNode endNode = FindNode(ref offset);
 				Debug.Assert(endNode.length > 0);
@@ -54,21 +83,31 @@ namespace ICSharpCode.AvalonEdit.Document
 					endNode.length += length;
 					UpdateAugmentedData(endNode);
 				} else {
-					PerformInsertText(endNode.Predecessor, endNode, length);
+					PerformInsertText(FindActualBeginNode(endNode.Predecessor), endNode, length);
 				}
 			}
 			DeleteMarkedNodes();
 		}
 		
-		void PerformInsertText(TextAnchorNode beginNode, TextAnchorNode endNode, int length)
+		TextAnchorNode FindActualBeginNode(TextAnchorNode node)
 		{
 			// now find the actual beginNode
-			while (beginNode != null && beginNode.length == 0)
-				beginNode = beginNode.Predecessor;
-			if (beginNode == null) {
+			while (node != null && node.length == 0)
+				node = node.Predecessor;
+			if (node == null) {
 				// no predecessor = beginNode is first node in tree
-				beginNode = root.LeftMost;
+				node = root.LeftMost;
 			}
+			return node;
+		}
+		
+		// Sorts the nodes in the range [beginNode, endNode) by MovementType
+		// and inserts the length between the BeforeInsertion and the AfterInsertion nodes.
+		void PerformInsertText(TextAnchorNode beginNode, TextAnchorNode endNode, int length)
+		{
+			Debug.Assert(beginNode != null);
+			// endNode may be null at the end of the anchor tree
+			
 			// now we need to sort the nodes in the range [beginNode, endNode); putting those with
 			// MovementType.BeforeInsertion in front of those with MovementType.AfterInsertion
 			List<TextAnchorNode> beforeInsert = new List<TextAnchorNode>();
@@ -136,18 +175,42 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		#endregion
 		
-		#region Remove Text
-		public void RemoveText(int offset, int length, DelayedEvents delayedEvents)
+		#region Remove or Replace text
+		public void HandleTextChange(OffsetChangeMapEntry entry, DelayedEvents delayedEvents)
 		{
-			//Log("RemoveText(" + offset + ", " + length + ")");
-			if (length == 0 || root == null || offset >= root.totalLength)
+			//Log("HandleTextChange(" + entry + ")");
+			if (entry.RemovalLength == 0) {
+				// This is a pure insertion.
+				// Unlike a replace with removal, a pure insertion can result in nodes at the same location
+				// to split depending on their MovementType.
+				// Thus, we handle this case on a separate code path
+				// (the code below looks like it does something similar, but it can only split
+				// the set of deletion survivors, not all nodes at an offset)
+				InsertText(entry.Offset, entry.InsertionLength);
+				return;
+			}
+			// When handling a replacing text change, we need to:
+			// - find all anchors in the deleted segment and delete them / move them to the appropriate
+			//   surviving side.
+			// - adjust the segment size between the left and right side
+			
+			int offset = entry.Offset;
+			int remainingRemovalLength = entry.RemovalLength;
+			// if the text change is happening after the last anchor, we don't have to do anything
+			if (root == null || offset >= root.totalLength)
 				return;
 			TextAnchorNode node = FindNode(ref offset);
-			while (node != null && offset + length > node.length) {
+			TextAnchorNode firstDeletionSurvivor = null;
+			// go forward through the tree and delete all nodes in the removal segment
+			while (node != null && offset + remainingRemovalLength > node.length) {
 				TextAnchor anchor = (TextAnchor)node.Target;
 				if (anchor != null && anchor.SurviveDeletion) {
-					// shorten node
-					length -= node.length - offset;
+					if (firstDeletionSurvivor == null)
+						firstDeletionSurvivor = node;
+					// This node should be deleted, but it wants to survive.
+					// We'll just remove the deleted length segment, so the node will be positioned
+					// in front of the removed segment.
+					remainingRemovalLength -= node.length - offset;
 					node.length = offset;
 					offset = 0;
 					UpdateAugmentedData(node);
@@ -155,7 +218,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				} else {
 					// delete node
 					TextAnchorNode s = node.Successor;
-					length -= node.length;
+					remainingRemovalLength -= node.length;
 					RemoveNode(node);
 					// we already deleted the node, don't delete it twice
 					nodesToDelete.Remove(node);
@@ -164,8 +227,35 @@ namespace ICSharpCode.AvalonEdit.Document
 					node = s;
 				}
 			}
+			// 'node' now is the first anchor after the deleted segment.
+			// If there are no anchors after the deleted segment, 'node' is null.
+			
+			// firstDeletionSurvivor was set to the first node surviving deletion.
+			// Because all non-surviving nodes up to 'node' were deleted, the node range
+			// [firstDeletionSurvivor, node) now refers to the set of all deletion survivors.
+			
+			// do the remaining job of the removal
 			if (node != null) {
-				node.length -= length;
+				node.length -= remainingRemovalLength;
+				Debug.Assert(node.length >= 0);
+			}
+			if (entry.InsertionLength > 0) {
+				// we are performing a replacement
+				if (firstDeletionSurvivor != null) {
+					// We got deletion survivors which need to be split into BeforeInsertion
+					// and AfterInsertion groups.
+					// Take care that we don't regroup everything at offset, but only the deletion
+					// survivors - from firstDeletionSurvivor (inclusive) to node (exclusive).
+					// This ensures that nodes immediately before or after the replaced segment
+					// stay where they are (independent from their MovementType)
+					PerformInsertText(firstDeletionSurvivor, node, entry.InsertionLength);
+				} else if (node != null) {
+					// No deletion survivors:
+					// just perform the insertion
+					node.length += entry.InsertionLength;
+				}
+			}
+			if (node != null) {
 				UpdateAugmentedData(node);
 			}
 			DeleteMarkedNodes();

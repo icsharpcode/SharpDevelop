@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Utils;
 using System;
 
 namespace ICSharpCode.AvalonEdit.Document
@@ -47,15 +48,17 @@ namespace ICSharpCode.AvalonEdit.Document
 				OffsetChangeMap map = offsetChangeMap;
 				if (map == null) {
 					// create OffsetChangeMap on demand
-					map = new OffsetChangeMap();
-					if (this.RemovalLength > 0)
-						map.Add(new OffsetChangeMapEntry(this.Offset, -this.RemovalLength));
-					if (this.InsertionLength > 0)
-						map.Add(new OffsetChangeMapEntry(this.Offset, this.InsertionLength));
+					map = new OffsetChangeMap(1);
+					map.Add(CreateSingleChangeMapEntry());
 					offsetChangeMap = map;
 				}
 				return map;
 			}
+		}
+		
+		internal OffsetChangeMapEntry CreateSingleChangeMapEntry()
+		{
+			return new OffsetChangeMapEntry(this.Offset, this.RemovalLength, this.InsertionLength);
 		}
 		
 		/// <summary>
@@ -74,16 +77,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			if (offsetChangeMap != null)
 				return offsetChangeMap.GetNewOffset(offset, movementType);
-			if (offset >= this.Offset) {
-				if (offset <= this.Offset + this.RemovalLength) {
-					offset = this.Offset;
-					if (movementType == AnchorMovementType.AfterInsertion)
-						offset += this.InsertionLength;
-				} else {
-					offset += this.InsertionLength - this.RemovalLength;
-				}
-			}
-			return offset;
+			else
+				return CreateSingleChangeMapEntry().GetNewOffset(offset, movementType);
 		}
 		
 		/// <summary>
@@ -99,8 +94,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public DocumentChangeEventArgs(int offset, int removalLength, string insertedText, OffsetChangeMap offsetChangeMap)
 		{
-			if (insertedText == null)
-				throw new ArgumentNullException("insertedText");
+			ThrowUtil.CheckNotNegative(offset, "offset");
+			ThrowUtil.CheckNotNegative(removalLength, "removalLength");
+			ThrowUtil.CheckNotNull(insertedText, "insertedText");
 			
 			this.Offset = offset;
 			this.RemovalLength = removalLength;

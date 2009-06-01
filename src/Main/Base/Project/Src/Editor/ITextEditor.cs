@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Sets the selection.
 		/// </summary>
 		/// <param name="selectionStart">Start offset of the selection</param>
-		/// <param name="selectionLength">End offset of the selection</param>
+		/// <param name="selectionLength">Length of the selection</param>
 		void Select(int selectionStart, int selectionLength);
 		
 		/// <summary>

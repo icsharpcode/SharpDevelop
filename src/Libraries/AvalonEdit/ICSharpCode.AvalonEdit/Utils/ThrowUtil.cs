@@ -25,10 +25,17 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// public VisualLineText(string text) : base(ThrowUtil.CheckNull(text, "text").Length)
 		/// </code>
 		/// </example>
-		public static T CheckNull<T>(T val, string parameterName) where T : class
+		public static T CheckNotNull<T>(T val, string parameterName) where T : class
 		{
 			if (val == null)
 				throw new ArgumentNullException(parameterName);
+			return val;
+		}
+		
+		public static int CheckNotNegative(int val, string parameterName)
+		{
+			if (val < 0)
+				throw new ArgumentOutOfRangeException(parameterName, val, "value must not be negative");
 			return val;
 		}
 		

@@ -131,6 +131,28 @@ namespace ICSharpCode.AvalonEdit.Document.Tests
 		}
 		
 		[Test]
+		public void MoveAnchorsDuringReplace()
+		{
+			document.Text = "abcd";
+			TextAnchor start = document.CreateAnchor(1);
+			TextAnchor middleDeletable = document.CreateAnchor(2);
+			TextAnchor middleSurvivorLeft = document.CreateAnchor(2);
+			middleSurvivorLeft.SurviveDeletion = true;
+			middleSurvivorLeft.MovementType = AnchorMovementType.BeforeInsertion;
+			TextAnchor middleSurvivorRight = document.CreateAnchor(2);
+			middleSurvivorRight.SurviveDeletion = true;
+			middleSurvivorRight.MovementType = AnchorMovementType.AfterInsertion;
+			TextAnchor end = document.CreateAnchor(3);
+			document.Replace(1, 2, "BxC");
+			
+			Assert.AreEqual(1, start.Offset);
+			Assert.IsTrue(middleDeletable.IsDeleted);
+			Assert.AreEqual(1, middleSurvivorLeft.Offset);
+			Assert.AreEqual(4, middleSurvivorRight.Offset);
+			Assert.AreEqual(4, end.Offset);
+		}
+		
+		[Test]
 		public void CreateAndMoveAnchors()
 		{
 			List<TextAnchor> anchors = new List<TextAnchor>();
@@ -139,7 +161,7 @@ namespace ICSharpCode.AvalonEdit.Document.Tests
 			for (int t = 0; t < 250; t++) {
 				//Console.Write("t = " + t + " ");
 				int c = rnd.Next(50);
-				switch (rnd.Next(4)) {
+				switch (rnd.Next(5)) {
 					case 0:
 						//Console.WriteLine("Add c=" + c + " anchors");
 						for (int i = 0; i < c; i++) {
@@ -193,6 +215,31 @@ namespace ICSharpCode.AvalonEdit.Document.Tests
 								}
 							} else if (expectedOffsets[i] > removalOffset) {
 								expectedOffsets[i] -= removalLength;
+							}
+						}
+						break;
+					case 4:
+						int replaceOffset = rnd.Next(document.TextLength);
+						int replaceRemovalLength = rnd.Next(document.TextLength - replaceOffset);
+						int replaceInsertLength = rnd.Next(1000);
+						//Console.WriteLine("ReplaceOffset=" + replaceOffset + " RemovalLength="+replaceRemovalLength + " InsertLength=" + replaceInsertLength);
+						document.Replace(replaceOffset, replaceRemovalLength, new string(' ', replaceInsertLength));
+						for (int i = anchors.Count - 1; i >= 0; i--) {
+							if (expectedOffsets[i] > replaceOffset && expectedOffsets[i] < replaceOffset + replaceRemovalLength) {
+								if (anchors[i].SurviveDeletion) {
+									if (anchors[i].MovementType == AnchorMovementType.AfterInsertion)
+										expectedOffsets[i] = replaceOffset + replaceInsertLength;
+									else
+										expectedOffsets[i] = replaceOffset;
+								} else {
+									Assert.IsTrue(anchors[i].IsDeleted);
+									anchors.RemoveAt(i);
+									expectedOffsets.RemoveAt(i);
+								}
+							} else if (expectedOffsets[i] > replaceOffset) {
+								expectedOffsets[i] += replaceInsertLength - replaceRemovalLength;
+							} else if (expectedOffsets[i] == replaceOffset && replaceRemovalLength == 0 && anchors[i].MovementType == AnchorMovementType.AfterInsertion) {
+								expectedOffsets[i] += replaceInsertLength - replaceRemovalLength;
 							}
 						}
 						break;

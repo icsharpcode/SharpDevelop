@@ -334,7 +334,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			Replace(offset, length, text, null);
 		}
 		
-			/// <summary>
+		/// <summary>
 		/// Replaces text.
 		/// Runtime:
 		///  for updating the text buffer: m=size of new text, d=distance to last change, n=total text length
@@ -351,23 +351,44 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			if (text == null)
 				throw new ArgumentNullException("text");
+			// Please see OffsetChangeMappingType XML comments for details on how these modes work.
 			switch (offsetChangeMappingType) {
-				case OffsetChangeMappingType.RemoveAndInsert:
+				case OffsetChangeMappingType.Normal:
 					Replace(offset, length, text, null);
 					break;
+				case OffsetChangeMappingType.RemoveAndInsert:
+					if (length == 0 || text.Length == 0) {
+						// only insertion or only removal?
+						// OffsetChangeMappingType doesn't matter, just use Normal.
+						Replace(offset, length, text, null);
+					} else {
+						OffsetChangeMap map = new OffsetChangeMap(2);
+						map.Add(new OffsetChangeMapEntry(offset, length, 0));
+						map.Add(new OffsetChangeMapEntry(offset, 0, text.Length));
+						Replace(offset, length, text, map);
+					}
+					break;
 				case OffsetChangeMappingType.CharacterReplace:
-					if (text.Length > length) {
+					if (length == 0 || text.Length == 0) {
+						// only insertion or only removal?
+						// OffsetChangeMappingType doesn't matter, just use Normal.
+						Replace(offset, length, text, null);
+					} else if (text.Length > length) {
 						OffsetChangeMap map = new OffsetChangeMap(1);
-						map.Add(new OffsetChangeMapEntry(offset + length, text.Length - length));
+						// look at OffsetChangeMappingType.CharacterReplace XML comments on why we need to replace
+						// the last 
+						map.Add(new OffsetChangeMapEntry(offset + length - 1, 1, 1 + text.Length - length));
 						Replace(offset, length, text, map);
 					} else if (text.Length < length) {
 						OffsetChangeMap map = new OffsetChangeMap(1);
-						map.Add(new OffsetChangeMapEntry(offset + length - text.Length, text.Length - length));
+						map.Add(new OffsetChangeMapEntry(offset + length - text.Length, length - text.Length, 0));
 						Replace(offset, length, text, map);
 					} else {
 						Replace(offset, length, text, OffsetChangeMap.Empty);
 					}
 					break;
+				default:
+					throw new ArgumentOutOfRangeException("offsetChangeMappingType", offsetChangeMappingType, "Invalid enum value");
 			}
 		}
 		
@@ -384,10 +405,11 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <param name="text">The new text.</param>
 		/// <param name="offsetChangeMap">The offsetChangeMap determines how offsets inside the old text are mapped to the new text.
 		/// This affects how the anchors and segments inside the replaced region behave.
-		/// If you pass null (the default when using one of the other overloads), the offsets are changed as if
-		/// the old text is removed first and the new text is inserted later (OffsetChangeMappingType.RemoveAndInsert).
-		/// If you pass OffsetChangeMap.Empty, then everything will stay in its old place.
-		/// The offsetChangeMap must be a valid 'explanation' for the document change</param>
+		/// If you pass null (the default when using one of the other overloads), the offsets are changed as
+		/// in OffsetChangeMappingType.Normal mode.
+		/// If you pass OffsetChangeMap.Empty, then everything will stay in its old place (OffsetChangeMappingType.CharacterReplace mode).
+		/// The offsetChangeMap must be a valid 'explanation' for the document change. See <see cref="OffsetChangeMap.IsValidForDocumentChange"/>.
+		/// </param>
 		public void Replace(int offset, int length, string text, OffsetChangeMap offsetChangeMap)
 		{
 			if (text == null)
@@ -416,6 +438,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			if (length == 0 && text.Length == 0)
 				return;
+			
+			// trying to replace a single character in 'Normal' mode?
+			// for single characters, 'CharacterReplace' mode is equivalent, but more performant
+			// (we don't have to touch the anchorTree at all in 'CharacterReplace' mode)
+			if (length == 1 && text.Length == 1 && offsetChangeMap == null)
+				offsetChangeMap = OffsetChangeMap.Empty;
 			
 			DocumentChangeEventArgs args = new DocumentChangeEventArgs(offset, length, text, offsetChangeMap);
 			
@@ -446,12 +474,10 @@ namespace ICSharpCode.AvalonEdit.Document
 			
 			// update text anchors
 			if (offsetChangeMap == null) {
-				anchorTree.RemoveText(offset, length, delayedEvents);
-				anchorTree.InsertText(offset, text.Length);
+				anchorTree.HandleTextChange(args.CreateSingleChangeMapEntry(), delayedEvents);
 			} else {
 				foreach (OffsetChangeMapEntry entry in offsetChangeMap) {
-					anchorTree.RemoveText(entry.Offset, entry.RemovalLength, delayedEvents);
-					anchorTree.InsertText(entry.Offset, entry.InsertionLength);
+					anchorTree.HandleTextChange(entry, delayedEvents);
 				}
 			}
 			
