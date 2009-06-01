@@ -5,18 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using AST = ICSharpCode.NRefactory.Ast;
 
 namespace CSharpBinding
@@ -61,9 +60,8 @@ namespace CSharpBinding
 						if (resolveResult != null && resolveResult.ResolvedType != null) {
 							IClass underlyingClass = resolveResult.ResolvedType.GetUnderlyingClass();
 							if (underlyingClass != null && underlyingClass.IsTypeInInheritanceTree(ParserService.CurrentProjectContent.GetClass("System.MulticastDelegate", 0))) {
-								EventHandlerCompletitionDataProvider eventHandlerProvider = new EventHandlerCompletitionDataProvider(result.Expression, resolveResult);
-								eventHandlerProvider.InsertSpace = true;
-								editor.ShowCompletionWindow(eventHandlerProvider, ch);
+								EventHandlerCompletionItemProvider eventHandlerProvider = new EventHandlerCompletionItemProvider(result.Expression, resolveResult);
+								eventHandlerProvider.ShowCompletion(editor);
 								return CodeCompletionKeyPressResult.Completed;
 							}
 						}

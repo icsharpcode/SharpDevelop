@@ -5,10 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
+using System.Windows.Input;
+
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -27,6 +29,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		IDocument Document { get; }
 		ITextEditorCaret Caret { get; }
 		ITextEditorOptions Options { get; }
+		
+		IFormattingStrategy FormattingStrategy { get; }
 		
 		/// <summary>
 		/// Gets the start offset of the selection.
@@ -54,6 +58,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Is raised when the selection changes.
 		/// </summary>
 		event EventHandler SelectionChanged;
+		
+		/// <summary>
+		/// Is raised before a key is pressed.
+		/// </summary>
+		event KeyEventHandler KeyPress;
 		
 		/// <summary>
 		/// Sets the caret to the specified line/column and brings the caret into view.

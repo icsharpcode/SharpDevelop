@@ -110,8 +110,16 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		/// <inheritdoc/>
 		public virtual void Complete(CompletionContext context, ICompletionItem item)
 		{
+			if (context == null)
+				throw new ArgumentNullException("context");
 			if (item == null)
 				throw new ArgumentNullException("item");
+			if (InsertSpace) {
+				InsertSpace = false;
+				context.Editor.Document.Insert(context.StartOffset, " ");
+				context.StartOffset++;
+				context.EndOffset++;
+			}
 			item.Complete(context);
 		}
 	}

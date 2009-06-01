@@ -33,6 +33,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return codeEditor.FileName; }
 		}
 		
+		public override IFormattingStrategy FormattingStrategy {
+			get { return codeEditor.FormattingStrategy; }
+		}
+		
 		public override void ShowCompletionWindow(ICompletionItemList data)
 		{
 			if (data == null || !data.Items.Any())

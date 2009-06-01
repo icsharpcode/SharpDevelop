@@ -6,30 +6,25 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using System.Windows.Input;
 
 namespace CSharpBinding
 {
-	public class EventHandlerCompletitionDataProvider : AbstractCompletionDataProvider
+	public class EventHandlerCompletionItemProvider : AbstractCompletionItemProvider
 	{
 		string expression;
 		ResolveResult resolveResult;
 		IReturnType resolvedReturnType;
 		IClass resolvedClass;
 		
-		public EventHandlerCompletitionDataProvider(string expression, ResolveResult resolveResult)
+		public EventHandlerCompletionItemProvider(string expression, ResolveResult resolveResult)
 		{
 			this.expression = expression;
 			this.resolveResult = resolveResult;
@@ -37,16 +32,14 @@ namespace CSharpBinding
 			this.resolvedClass = resolvedReturnType.GetUnderlyingClass();
 		}
 		
-		/// <summary>
-		/// Generates the completion data. This method is called by the text editor control.
-		/// </summary>
-		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
-			List<ICompletionData> completionData = new List<ICompletionData>();
+			DefaultCompletionItemList result = new DefaultCompletionItemList();
+			result.InsertSpace = true;
 			
 			// delegate {  }
-			completionData.Add(new DelegateCompletionData("delegate {  };", 3,
-			                                              "${res:CSharpBinding.InsertAnonymousMethod}"));
+			result.Items.Add(new DelegateCompletionItem("delegate {  };", 3,
+			                                           "${res:CSharpBinding.InsertAnonymousMethod}"));
 
 			CSharpAmbience ambience = new CSharpAmbience();
 			// get eventHandler type name incl. type argument list
@@ -73,8 +66,8 @@ namespace CSharpBinding
 				// delegate(object sender, EventArgs e) {  };
 				StringBuilder anonMethodWithParametersBuilder =
 					new StringBuilder("delegate(").Append(parameterString.ToString()).Append(") {  };");
-				completionData.Add(new DelegateCompletionData(anonMethodWithParametersBuilder.ToString(), 3,
-				                                              "${res:CSharpBinding.InsertAnonymousMethodWithParameters}"));
+				result.Items.Add(new DelegateCompletionItem(anonMethodWithParametersBuilder.ToString(), 3,
+				                                            "${res:CSharpBinding.InsertAnonymousMethodWithParameters}"));
 
 				// new EventHandler(ClassName_EventName);
 				IClass callingClass = resolveResult.CallingClass;
@@ -109,13 +102,13 @@ namespace CSharpBinding
 				newHandlerCodeBuilder.Append("}");
 
 				// ...and add it to the completionData.
-				completionData.Add(new NewEventHandlerCompletionData(
+				result.Items.Add(new NewEventHandlerCompletionItem(
 					newHandlerTextBuilder.ToString(),
 					2+newHandlerName.Length,
 					newHandlerName.Length,
 					"new " + eventHandlerFullyQualifiedTypeName + 
 					"(" + newHandlerName + StringParser.Parse(")\n${res:CSharpBinding.GenerateNewHandlerInstructions}\n")
-					+ CodeCompletionData.ConvertDocumentation(resolvedClass.Documentation),
+					+ CodeCompletionItem.ConvertDocumentation(resolvedClass.Documentation),
 					resolveResult,
 					newHandlerCodeBuilder.ToString()
 				));
@@ -139,12 +132,13 @@ namespace CSharpBinding
 							}
 						}
 						if (ok) {
-							completionData.Add(new CodeCompletionData(method));
+							result.Items.Add(new CodeCompletionItem(method));
 						}
 					}
 				}
 			}
-			return completionData.ToArray();
+			result.SortItems();
+			return result;
 		}
 		
 		string BuildHandlerName()
@@ -171,107 +165,103 @@ namespace CSharpBinding
 			return handlerNameBuilder.ToString();
 		}
 		
-		private class DelegateCompletionData : DefaultCompletionData
+		sealed class DelegateCompletionItem : DefaultCompletionItem
 		{
 			int cursorOffset;
 			
-			public DelegateCompletionData(string text, int cursorOffset, string documentation)
-				: base(text, StringParser.Parse(documentation), ClassBrowserIconService.Delegate.ImageIndex)
+			public DelegateCompletionItem(string text, int cursorOffset, string documentation)
+				: base(text)
 			{
 				this.cursorOffset = cursorOffset;
+				this.Description = StringParser.Parse(documentation);
+				this.Image = ClassBrowserIconService.Delegate;
 			}
 			
-			public override bool InsertAction(TextArea textArea, char ch)
+			public override void Complete(CompletionContext context)
 			{
-				bool r = base.InsertAction(textArea, ch);
-				textArea.Caret.Column -= cursorOffset;
-				return r;
+				base.Complete(context);
+				context.Editor.Caret.Column -= cursorOffset;
 			}
 		}
 		
-		private class NewEventHandlerCompletionData : DefaultCompletionData
+		sealed class NewEventHandlerCompletionItem : DefaultCompletionItem
 		{
 			int selectionBeginOffset;
 			int selectionLength;
-			TextArea textArea;
 			ResolveResult resolveResult;
 			string newHandlerCode;
 			
-			public NewEventHandlerCompletionData(string text, int selectionBeginOffset, int selectionLength, string documentation, ResolveResult resolveResult, string newHandlerCode)
-				: base(text, StringParser.Parse(documentation), ClassBrowserIconService.Delegate.ImageIndex)
+			ITextEditor editor;
+			
+			public NewEventHandlerCompletionItem(string text, int selectionBeginOffset, int selectionLength, string documentation, ResolveResult resolveResult, string newHandlerCode)
+				: base(text)
 			{
 				this.selectionBeginOffset = selectionBeginOffset;
 				this.selectionLength = selectionLength;
 				this.resolveResult = resolveResult;
 				this.newHandlerCode = newHandlerCode;
+				
+				this.Description = StringParser.Parse(documentation);
+				this.Image = ClassBrowserIconService.Delegate;
 			}
 			
-			public override bool InsertAction(TextArea textArea, char ch)
+			public override void Complete(CompletionContext context)
 			{
-				bool r = base.InsertAction(textArea, ch);
+				base.Complete(context);
 				
+				// save a reference to the relevant textArea so that we can remove our event handlers after the next keystroke
+				editor = context.Editor;
 				// select suggested name
-				textArea.Caret.Column -= this.selectionBeginOffset;
-				int selectBegin = textArea.Caret.Offset;
-				textArea.SelectionManager.SetSelection(
-					textArea.Document.OffsetToPosition(selectBegin),
-					textArea.Document.OffsetToPosition(selectBegin + this.selectionLength));
+				editor.Caret.Column -= this.selectionBeginOffset;
+				editor.Select(editor.Caret.Offset, this.selectionLength);
 
 				// TODO: refactor ToolTip architecture to allow for showing a tooltip relative to the current caret position so that we can show our "press TAB to create this method" text as a text-based tooltip
 				
 				// TODO: skip the auto-insert step if the method already exists, or change behavior so that it moves the caret inside the existing method.
 
-				// attatch our keydown filter to catch the next character pressed
-				textArea.PreviewKeyDown += new PreviewKeyDownEventHandler(NewEventHandlerPreviewKeyDown);
-
-				// save a reference to the relevant textArea so that we can remove our keydown filter after the next keystroke
-				this.textArea = textArea;
-				
-				return r;
+				// attach our keydown filter to catch the next character pressed
+				editor.SelectionChanged += EditorSelectionChanged;
+				editor.KeyPress += EditorKeyPress;
 			}
 			
-			public void NewEventHandlerPreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+			
+			void RemoveEventHandlers()
 			{
-				if (e.KeyCode == Keys.Tab
-				    || e.KeyCode == Keys.Enter
-				    || e.KeyCode == Keys.Return) {
-
-					textArea.BeginUpdate();
-					textArea.Document.UndoStack.StartUndoGroup();
-					
-					textArea.SelectionManager.ClearSelection();
-					
-					// is there a better way to calculate the optimal insertion point?
-					DomRegion region = resolveResult.CallingMember.BodyRegion;
-					textArea.Caret.Line = region.EndLine - 1;
-					textArea.Caret.Column = region.EndColumn;
-					
-					textArea.InsertString(this.newHandlerCode);
-
-					textArea.Document.FormattingStrategy.IndentLines(textArea, region.EndLine, textArea.Caret.Line);
-					
-					textArea.Caret.Line -= 1;
-
-					LineSegment segment = textArea.Document.GetLineSegment(textArea.Caret.Line);
-
-					textArea.SelectionManager.SetSelection(
-						textArea.Document.OffsetToPosition(TextUtilities.GetFirstNonWSChar(textArea.Document, segment.Offset)),
-						textArea.Document.OffsetToPosition(segment.Offset+segment.Length));
-
-					textArea.Document.UndoStack.EndUndoGroup();
-					textArea.EndUpdate();
-					
-					textArea.DoProcessDialogKey += new DialogKeyProcessor(IgnoreNextDialogKey);
+				if (editor != null) {
+					editor.SelectionChanged -= EditorSelectionChanged;
+					editor.KeyPress -= EditorKeyPress;
+					editor = null;
 				}
-				
-				// detatch our keydown filter to return to the normal processing state
-				this.textArea.PreviewKeyDown -= new PreviewKeyDownEventHandler(NewEventHandlerPreviewKeyDown);
-				
 			}
 			
-			bool IgnoreNextDialogKey(Keys keyData) {
-				this.textArea.DoProcessDialogKey -= new DialogKeyProcessor(IgnoreNextDialogKey);
-				return true; // yes, we've processed this key
+			void EditorSelectionChanged(object sender, EventArgs e)
+			{
+				RemoveEventHandlers();
+			}
+			
+			void EditorKeyPress(object sender, KeyEventArgs e)
+			{
+				if (e.Key == Key.Tab || e.Key == Key.Enter || e.Key == Key.Return) {
+					using (editor.Document.OpenUndoGroup()) {
+					
+						// is there a better way to calculate the optimal insertion point?
+						DomRegion region = resolveResult.CallingMember.BodyRegion;
+						editor.Caret.Line = region.EndLine;
+						editor.Caret.Column = region.EndColumn;
+						
+						editor.Document.Insert(editor.Caret.Offset, this.newHandlerCode);
+	
+						editor.FormattingStrategy.IndentLines(editor, region.EndLine, editor.Caret.Line);
+						
+						IDocumentLine line = editor.Document.GetLine(editor.Caret.Line - 1);
+						int indentationLength = DocumentUtilitites.GetIndentation(editor.Document, line.Offset).Length;
+						
+						editor.Select(line.Offset + indentationLength, line.Length - indentationLength);
+					}
+					e.Handled = true;
+				}
+				// detatch our keydown filter to return to the normal processing state
+				RemoveEventHandlers();
 			}
 		}
 	}

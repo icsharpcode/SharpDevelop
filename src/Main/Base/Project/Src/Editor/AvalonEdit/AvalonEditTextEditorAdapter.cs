@@ -5,12 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
+
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -67,6 +69,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		public ITextEditorCaret Caret { get; private set; }
 		public ITextEditorOptions Options { get; private set; }
+		
+		public virtual IFormattingStrategy FormattingStrategy { 
+			get { return DefaultFormattingStrategy.DefaultInstance; }
+		}
 		
 		sealed class CaretAdapter : ITextEditorCaret
 		{
@@ -159,6 +165,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 		}
 		
+		public event KeyEventHandler KeyPress {
+			add    { textEditor.TextArea.PreviewKeyDown += value; }
+			remove { textEditor.TextArea.PreviewKeyDown -= value; }
+		}
+		
 		public event EventHandler SelectionChanged {
 			add    { textEditor.TextArea.SelectionChanged += value; }
 			remove { textEditor.TextArea.SelectionChanged -= value; }
@@ -167,6 +178,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public void Select(int selectionStart, int selectionLength)
 		{
 			textEditor.Select(selectionStart, selectionLength);
+			textEditor.TextArea.Caret.BringCaretToView();
 		}
 		
 		public void JumpTo(int line, int column)

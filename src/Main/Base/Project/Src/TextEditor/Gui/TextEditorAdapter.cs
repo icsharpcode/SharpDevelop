@@ -118,6 +118,10 @@ namespace ICSharpCode.SharpDevelop
 		public ITextEditorCaret Caret { get; private set; }
 		public ITextEditorOptions Options { get; private set; }
 		
+		public virtual Editor.IFormattingStrategy FormattingStrategy { 
+			get { return Editor.DefaultFormattingStrategy.DefaultInstance; }
+		}
+		
 		public string FileName {
 			get { return editor.FileName; }
 		}
@@ -186,6 +190,11 @@ namespace ICSharpCode.SharpDevelop
 			set {
 				throw new NotImplementedException();
 			}
+		}
+		
+		public event System.Windows.Input.KeyEventHandler KeyPress {
+			add    { throw new NotImplementedException(); }
+			remove { throw new NotImplementedException(); }
 		}
 		
 		public event EventHandler SelectionChanged {
