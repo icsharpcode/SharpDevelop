@@ -98,6 +98,8 @@ namespace VBNetBinding
 					                                                           "Explicit Off",
 					                                                           "Strict On",
 					                                                           "Strict Off",
+					                                                           "Infer On",
+					                                                           "Infer Off",
 					                                                           "Compare Binary",
 					                                                           "Compare Text"), ' ');
 					return true;

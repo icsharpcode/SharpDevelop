@@ -10,6 +10,7 @@
 		<Subcategory>SharpDevelop</Subcategory>
 		<Icon>VBNet.Project.ControlLibrary</Icon>
 		<Description>${res:Templates.Project.SharpDevelopAddin.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -19,6 +20,10 @@
 	</Actions>
 	
 	<Project language="VBNet">
+		<CreateActions>
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
+		</CreateActions>
+		
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
 		</PropertyGroup>

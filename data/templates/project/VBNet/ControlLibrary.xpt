@@ -10,6 +10,7 @@
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.ControlLibrary</Icon>
 		<Description>${res:Templates.Project.UserControlLibrary.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -18,6 +19,10 @@
 	</Actions>
 
 	<Project language = "VBNet">
+		<CreateActions>
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
+		</CreateActions>
+		
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />
