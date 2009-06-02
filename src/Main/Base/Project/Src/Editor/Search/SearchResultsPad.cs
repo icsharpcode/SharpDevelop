@@ -98,25 +98,25 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			SearchResultsShown.RaiseEvent(this, EventArgs.Empty);
 		}
 		
-		public void ShowSearchResults(string pattern, IEnumerable<SearchResultMatch> matches)
+		public void ShowSearchResults(string title, IEnumerable<SearchResultMatch> matches)
 		{
-			ShowSearchResults(CreateSearchResult(pattern, matches));
+			ShowSearchResults(CreateSearchResult(title, matches));
 		}
 		
 		public event EventHandler SearchResultsShown;
 		
-		public static ISearchResult CreateSearchResult(string pattern, IEnumerable<SearchResultMatch> matches)
+		public static ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches)
 		{
-			if (pattern == null)
-				throw new ArgumentNullException("pattern");
+			if (title == null)
+				throw new ArgumentNullException("title");
 			if (matches == null)
 				throw new ArgumentNullException("matches");
 			foreach (ISearchResultFactory factory in AddInTree.BuildItems<ISearchResultFactory>("/SharpDevelop/Pads/SearchResultPad/Factories", null)) {
-				ISearchResult result = factory.CreateSearchResult(pattern, matches);
+				ISearchResult result = factory.CreateSearchResult(title, matches);
 				if (result != null)
 					return result;
 			}
-			return new DummySearchResult { Text = pattern };
+			return new DummySearchResult { Text = title };
 		}
 		
 		sealed class DummySearchResult : ISearchResult

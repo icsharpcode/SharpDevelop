@@ -9,7 +9,7 @@
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 		</Keywords>
-		<Keywords fontWeight="bold" foreground="#00EEE0E0">
+		<Keywords fontWeight="bold" foreground="#E0E000">
 			<Word>HACK</Word>
 			<Word>UNDONE</Word>
 		</Keywords>

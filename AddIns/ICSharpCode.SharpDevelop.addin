@@ -1370,17 +1370,7 @@
 		</Condition> <!-- end PROJECT menu -->
 		
 		<MenuItem id = "Build" label = "${res:XML.MainMenu.BuildMenu}" type="Menu">
-			<ComplexCondition action="Disable">
-				<Or>
-					<!--<And>
-						<Or>
-							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-							<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
-						</Or>
-						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
-					</And>-->
-					<Condition name = "SolutionOpen"/>
-				</Or>
+			<Condition name = "SolutionOpen" action="Disable">
 				<MenuItem id       = "Build"
 				          label    = "${res:XML.MainMenu.BuildMenu.BuildSolution}"
 				          shortcut = "F8"
@@ -1431,7 +1421,7 @@
 				<MenuItem id = "EditConfigurations"
 				          label = "${res:XML.MainMenu.BuildMenu.EditConfigurationsPlatforms}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.EditConfigurationsCommand"/>
-			</ComplexCondition>
+			</Condition>
 		</MenuItem> <!-- end BUILD menu -->
 		
 		<MenuItem id = "Debug" label = "${res:XML.MainMenu.DebugMenu}" type="Menu">

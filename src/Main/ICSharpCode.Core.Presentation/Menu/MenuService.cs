@@ -105,7 +105,7 @@ namespace ICSharpCode.Core.Presentation
 				ItemsSource = new object[1]
 			};
 			contextMenu.Opened += (sender, args) => {
-				contextMenu.ItemsSource = ExpandMenuBuilders(subItems);
+				contextMenu.ItemsSource = ExpandMenuBuilders(subItems, true);
 				args.Handled = true;
 			};
 			return contextMenu;
@@ -113,7 +113,8 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static IList CreateMenuItems(UIElement inputBindingOwner, object owner, string addInTreePath)
 		{
-			return ExpandMenuBuilders(CreateUnexpandedMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false)));
+			IList items = CreateUnexpandedMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
+			return ExpandMenuBuilders(items, false);
 		}
 		
 		sealed class MenuItemBuilderPlaceholder
@@ -146,7 +147,7 @@ namespace ICSharpCode.Core.Presentation
 			return result;
 		}
 		
-		static IList ExpandMenuBuilders(ICollection input)
+		static IList ExpandMenuBuilders(ICollection input, bool addDummyEntryIfMenuEmpty)
 		{
 			ArrayList result = new ArrayList(input.Count);
 			foreach (object o in input) {
@@ -163,6 +164,9 @@ namespace ICSharpCode.Core.Presentation
 						statusUpdate.UpdateText();
 					}
 				}
+			}
+			if (addDummyEntryIfMenuEmpty && result.Count == 0) {
+				result.Add(new MenuItem { Header = "(empty menu)", IsEnabled = false });
 			}
 			return result;
 		}
@@ -184,11 +188,12 @@ namespace ICSharpCode.Core.Presentation
 					return new MenuCommand(inputBindingOwner, codon, descriptor.Caller, createCommand);
 				case "Menu":
 					var item = new CoreMenuItem(codon, descriptor.Caller) {
-						ItemsSource = new object[1]
+						ItemsSource = new object[1],
+						SetEnabled = true
 					};
 					var subItems = CreateUnexpandedMenuItems(inputBindingOwner, descriptor.SubItems);
 					item.SubmenuOpened += (sender, args) => {
-						item.ItemsSource = ExpandMenuBuilders(subItems);
+						item.ItemsSource = ExpandMenuBuilders(subItems, true);
 						args.Handled = true;
 					};
 					return item;
@@ -198,7 +203,7 @@ namespace ICSharpCode.Core.Presentation
 						throw new NotSupportedException("Menu item builder " + codon.Properties["class"] + " does not implement IMenuItemBuilder");
 					return new MenuItemBuilderPlaceholder(builder, descriptor.Codon, descriptor.Caller);
 				default:
-					throw new System.NotSupportedException("unsupported menu item type : " + type);
+					throw new NotSupportedException("unsupported menu item type : " + type);
 			}
 		}
 		

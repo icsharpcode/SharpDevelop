@@ -15,6 +15,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	/// </summary>
 	public interface ISearchResultFactory
 	{
-		ISearchResult CreateSearchResult(string pattern, IEnumerable<SearchResultMatch> matches);
+		ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches);
 	}
 }
