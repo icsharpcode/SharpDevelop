@@ -107,13 +107,20 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			ObjectNode thisNode = createNewNode(rootValue); 
 			
+			// David: by calling this, we get an array of values, most of them probably invalid,
+			// it would be nice to be able to get a collection of 'values' 
+			// that are valid (basically a snapshot of object's state)
+			// - a collection of custom objects, 
+			// that contain the string value and DebugType,
+			// and can enumerate child values.
+			// It would be also nice to return IEnumerable or ReadonlyCollection
+			// http://blogs.msdn.com/ericlippert/archive/2008/09/22/arrays-considered-somewhat-harmful.aspx
 			/*string[] memberValues = rootValue.GetMemberValuesAsString(_bindingFlags);
 			foreach	(string memberValue in memberValues)
 			{
 				//Value memberValuePerm = memberValue.GetPermanentReference();
 				
 			}*/
-
 			
 			foreach(Expression memberExpr in rootValue.Expression.AppendObjectMembers(rootValue.Type, _bindingFlags))
 			{
@@ -123,27 +130,30 @@ namespace Debugger.AddIn.Visualizers.Graph
 				if (isOfAtomicType(memberExpr))
 				{
 					// atomic members are added to the list of node's "properties"
-				    string memberValueAsString = memberExpr.Evaluate(debuggerService.DebuggedProcess).AsString;
-				    thisNode.AddProperty(memberName, memberValueAsString);
+					string memberValueAsString = memberExpr.Evaluate(debuggerService.DebuggedProcess).AsString;
+				    thisNode.AddAtomicProperty(memberName, memberValueAsString, memberExpr);
 				}
 				else
 				{
+					ObjectNode targetNode = null;
 					if (!isNull(memberExpr))
 					{
 						// for object members, edges are added
-						
 						Value memberValue = getPermanentReference(memberExpr);
 						
 						// if node for memberValue already exists, only add edge to it (so loops etc. are solved correctly)
-						ObjectNode targetNode = getNodeForValue(memberValue);
+						targetNode = getNodeForValue(memberValue);
 						if (targetNode == null)
 						{
 							// if no node for memberValue exists, build the subgraph for the value
 							targetNode = buildGraphRecursive(memberValue);
 						}
-						// add the edge
-						thisNode.AddNamedEdge(targetNode, memberName);
 					}
+					else 
+					{
+						targetNode = null;
+					}
+					thisNode.AddComplexProperty(memberName, "", memberExpr, targetNode);
 				}
 			}
 			
@@ -203,7 +213,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <returns>Hash code of the object in the debugee.</returns>
 		private int invokeGetHashCode(Value value)
 		{
-			// Dadid: I had hard time finding out how to invoke static method
+			// David: I had hard time finding out how to invoke static method
 			// value.InvokeMethod is nice for instance methods.
 			// what about MethodInfo.Invoke() ?
 			// also, there could be an overload that takes 1 parameter instead of array

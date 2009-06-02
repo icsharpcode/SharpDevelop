@@ -13,7 +13,7 @@ namespace Debugger.AddIn.Visualizers.Graph
     /// <summary>
     /// Named edge in the <see cref="ObjectGraph" />.
     /// </summary>
-    public class ObjectEdge : NamedEdge<ObjectNode>
+    /*public class ObjectEdge : NamedEdge<ObjectNode>
     {
-    }
+    }*/
 }

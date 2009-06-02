@@ -11,7 +11,7 @@ using System.Text;
 namespace Debugger.AddIn.Visualizers.Graph
 {
     /// <summary>
-    /// Primitive property (int, string, etc.) of an object, in string form.
+    /// Primitive property  of an object, in string form.
     /// </summary>
     public class ObjectProperty
     {
@@ -23,5 +23,17 @@ namespace Debugger.AddIn.Visualizers.Graph
         /// e.g. "19"
         /// </summary>
         public string Value { get; set; }
+        /// <summary>
+        /// Expression used for obtaining this property
+        /// </summary>
+        public Debugger.Expressions.Expression Expression { get; set; }
+        /// <summary>
+        /// Node that this property points to. Can be null. Always null if <see cref="IsAtomic"/> is true.
+        /// </summary>
+        public ObjectNode TargetNode { get; set; }
+        /// <summary>
+        /// Is this property of atomic type? (int, string, etc.)
+        /// </summary>
+        public bool IsAtomic { get; set; }
     }
 }

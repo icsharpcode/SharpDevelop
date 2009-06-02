@@ -44,7 +44,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				return;
 			}
 			
-			double seconds = 1;
+			double seconds = 0.5;
 			var durationMove = new Duration(TimeSpan.FromSeconds(seconds));
 			var durationFade = durationMove;
 			

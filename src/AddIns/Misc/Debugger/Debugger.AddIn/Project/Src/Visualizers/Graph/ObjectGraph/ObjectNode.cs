@@ -7,21 +7,22 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Debugger.Expressions;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
 	/// Node in the <see cref="ObjectGraph" />.
 	/// </summary>
-    public class ObjectNode
-    {
-    	/// <summary>
+	public class ObjectNode
+	{
+		/// <summary>
 		/// Additional info useful for internal algorithms, not to be visible to the user.
 		/// </summary>
-    	internal Debugger.Value PermanentReference { get; set; }
-    	internal int HashCode { get; set; }
-    	
-        private List<ObjectEdge> _edges = new List<ObjectEdge>();
+		internal Debugger.Value PermanentReference { get; set; }
+		internal int HashCode { get; set; }
+		
+		/*private List<ObjectEdge> _edges = new List<ObjectEdge>();
         /// <summary>
         /// Outgoing edges.
         /// </summary>
@@ -36,23 +37,67 @@ namespace Debugger.AddIn.Visualizers.Graph
         internal void AddNamedEdge(ObjectNode targetNode, string edgeName)
         {
             _edges.Add(new ObjectEdge { Name = edgeName, SourceNode = this, TargetNode = targetNode });
-        }
+        }*/
+		
+		class PropertyComparer : IComparer<ObjectProperty>
+		{
+			public int Compare(ObjectProperty prop1, ObjectProperty prop2)
+			{
+				return prop1.Name.CompareTo(prop2.Name);
+			}
+		}
+		
+		private static PropertyComparer propertySortComparer = new PropertyComparer();
+		
+		private bool sorted = false;
 
-        private List<ObjectProperty> _properties = new List<ObjectProperty>();
-        /// <summary>
-        /// Properties representing atomic string values as part of the node.
-        /// </summary>
-        public List<ObjectProperty> Properties
-        {
-            get { return _properties; }
-        }
+		private List<ObjectProperty> _properties = new List<ObjectProperty>();
+		/// <summary>
+		/// Properties (either atomic or complex) of the object this node represents.
+		/// </summary>
+		public List<ObjectProperty> Properties
+		{
+			get 
+			{ 
+				if (!sorted)
+				{
+					_properties.Sort(propertySortComparer);
+					sorted = true;
+				}
+				return _properties; 
+			}
+		}
+		/// <summary>
+		/// Only complex properties filtered out of <see cref="Properties"/>
+		/// </summary>
+		public IEnumerable<ObjectProperty> ComplexProperties
+		{
+			get
+			{
+				foreach	(var property in Properties)
+				{
+					if (!property.IsAtomic)
+						yield return property;
+				}
+			}
+		}
 
-        /// <summary>
-        /// Adds string property.
-        /// </summary>
-        internal void AddProperty(string name, string value)
-        {
-            _properties.Add(new ObjectProperty { Name = name, Value = value });
-        }
-    }
+		/// <summary>
+		/// Adds primitive property.
+		/// </summary>
+		internal void AddAtomicProperty(string name, string value, Expression expression)
+		{
+			_properties.Add(new ObjectProperty
+			                { Name = name, Value = value, Expression = expression, IsAtomic = true, TargetNode = null });
+		}
+		
+		/// <summary>
+		/// Adds complex property.
+		/// </summary>
+		internal void AddComplexProperty(string name, string value, Expression expression, ObjectNode targetNode)
+		{
+			_properties.Add(new ObjectProperty
+			                { Name = name, Value = value, Expression = expression, IsAtomic = false, TargetNode = targetNode });
+		}
+	}
 }

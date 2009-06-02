@@ -68,19 +68,22 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			treeNodeFor[objectGraphNode] = newTreeNode;
 			
 			double subtreeSize = 0;
-			foreach	(ObjectEdge edge in objectGraphNode.Edges)
+			foreach	(ObjectProperty property in objectGraphNode.ComplexProperties)
 			{
-				ObjectNode neighbor = edge.TargetNode;
-				if (seenNodes.ContainsKey(neighbor))
+				if (property.TargetNode != null)
 				{
-					newTreeNode.AdditionalNeighbors.Add(new TreeEdge { Name = edge.Name, SourceNode = newTreeNode, TargetNode = treeNodeFor[neighbor]});
-				}
-				else
-				{
-					TreeNode newChild = buildTreeRecursive(neighbor);
-					newTreeNode.ChildEdges.Add(new TreeEdge { Name = edge.Name, SourceNode = newTreeNode, TargetNode = newChild});
-					
-					subtreeSize += newChild.SubtreeSize;
+					ObjectNode neighbor = property.TargetNode;
+					if (seenNodes.ContainsKey(neighbor))
+					{
+						newTreeNode.AdditionalNeighbors.Add(new TreeEdge { Name = property.Name, SourceNode = newTreeNode, TargetNode = treeNodeFor[neighbor]});
+					}
+					else
+					{
+						TreeNode newChild = buildTreeRecursive(neighbor);
+						newTreeNode.ChildEdges.Add(new TreeEdge { Name = property.Name, SourceNode = newTreeNode, TargetNode = newChild});
+						
+						subtreeSize += newChild.SubtreeSize;
+					}
 				}
 			}
 			subtreeSize = Math.Max(newTreeNode.LateralSizeWithMargin, subtreeSize);
