@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media.TextFormatting;
@@ -185,9 +186,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		static void MoveCaretToStartOfLine(TextArea textArea, VisualLine visualLine)
 		{
 			int newVC = visualLine.GetNextCaretPosition(-1, LogicalDirection.Forward, CaretPositioningMode.WordStart);
-			// in empty lines (whitespace only), jump to the end
 			if (newVC < 0)
-				newVC = visualLine.VisualLength;
+				throw ThrowUtil.NoValidCaretPosition();
 			// when the caret is already at the start of the text, jump to start before whitespace
 			if (newVC == textArea.Caret.VisualColumn)
 				newVC = 0;
@@ -211,18 +211,40 @@ namespace ICSharpCode.AvalonEdit.Editing
 				SetCaretPosition(textArea, pos, visualLine.GetRelativeOffset(pos) + visualLine.FirstDocumentLine.Offset);
 			} else {
 				// move to start of next line
-				SetCaretPosition(textArea, 0, visualLine.LastDocumentLine.Offset + visualLine.LastDocumentLine.TotalLength);
+				DocumentLine nextDocumentLine = visualLine.LastDocumentLine.NextLine;
+				if (nextDocumentLine != null) {
+					VisualLine nextLine = textArea.TextView.GetOrConstructVisualLine(nextDocumentLine);
+					pos = nextLine.GetNextCaretPosition(-1, LogicalDirection.Forward, mode);
+					if (pos < 0)
+						throw ThrowUtil.NoValidCaretPosition();
+					SetCaretPosition(textArea, pos, nextLine.GetRelativeOffset(pos) + nextLine.FirstDocumentLine.Offset);
+				} else {
+					// at end of document
+					Debug.Assert(visualLine.LastDocumentLine.Offset + visualLine.LastDocumentLine.TotalLength == textArea.Document.TextLength);
+					SetCaretPosition(textArea, -1, textArea.Document.TextLength);
+				}
 			}
 		}
-
+		
 		static void MoveCaretLeft(TextArea textArea, TextViewPosition caretPosition, VisualLine visualLine, CaretPositioningMode mode)
 		{
 			int pos = visualLine.GetNextCaretPosition(caretPosition.VisualColumn, LogicalDirection.Backward, mode);
 			if (pos >= 0) {
 				SetCaretPosition(textArea, pos, visualLine.GetRelativeOffset(pos) + visualLine.FirstDocumentLine.Offset);
-			} else if (caretPosition.Line > 1) {
-				DocumentLine prevLine = textArea.Document.GetLineByNumber(caretPosition.Line - 1);
-				SetCaretPosition(textArea, -1, prevLine.Offset + prevLine.Length);
+			} else {
+				// move to end of previous line
+				DocumentLine previousDocumentLine = visualLine.FirstDocumentLine.PreviousLine;
+				if (previousDocumentLine != null) {
+					VisualLine previousLine = textArea.TextView.GetOrConstructVisualLine(previousDocumentLine);
+					pos = previousLine.GetNextCaretPosition(previousLine.VisualLength + 1, LogicalDirection.Backward, mode);
+					if (pos < 0)
+						throw ThrowUtil.NoValidCaretPosition();
+					SetCaretPosition(textArea, pos, previousLine.GetRelativeOffset(pos) + previousLine.FirstDocumentLine.Offset);
+				} else {
+					// at start of document
+					Debug.Assert(visualLine.FirstDocumentLine.Offset == 0);
+					SetCaretPosition(textArea, 0, 0);
+				}
 			}
 		}
 		#endregion

@@ -232,16 +232,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 						if (textArea.Selection.IsEmpty)
 							selectingCommand.Execute(args.Parameter, textArea);
 						textArea.RemoveSelectedText();
-						if (selectingCommand == EditingCommands.SelectLeftByWord) {
-							// Special case: when Ctrl+Backspace deletes until the start of the line,
-							// also delete the previous line delimiter.
-							// This allows deleting lines that consist only of indentation using a single
-							// press on Ctrl+Backspace.
-							if (textArea.Caret.Column == 1 && textArea.Caret.VisualColumn == 0 && textArea.Caret.Line > 1) {
-								DocumentLine previousLine = textArea.Document.GetLineByNumber(textArea.Caret.Line - 1);
-								textArea.Document.Remove(previousLine.EndOffset, previousLine.DelimiterLength);
-							}
-						}
 					}
 					textArea.Caret.BringCaretToView();
 					args.Handled = true;

@@ -191,6 +191,11 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// <param name="mode">The mode for caret positioning.</param>
 		/// <returns>The offset of the next caret position, or -1 if there is no further caret position
 		/// in the text source.</returns>
+		/// <remarks>
+		/// This method is NOT equivalent to the actual caret movement when using VisualLine.GetNextCaretPosition.
+		/// In real caret movement, there are additional caret stops at line starts and ends. However, this method
+		/// doesn't know anything about lines: it is often called with a textSource that represents only a single VisualTextElement.
+		/// </remarks>
 		public static int GetNextCaretPosition(ITextSource textSource, int offset, LogicalDirection direction, CaretPositioningMode mode)
 		{
 			if (textSource == null)

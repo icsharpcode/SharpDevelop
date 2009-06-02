@@ -334,7 +334,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (direction == LogicalDirection.Backward) {
 				// Search Backwards:
 				// If the last element doesn't handle line borders, return the line end as caret stop
-				if (visualColumn > this.VisualLength && !elements[elements.Count-1].HandlesLineBorders) {
+				// (we don't check the mode here: we treat a line end as word start, border, etc.
+				if (visualColumn > this.VisualLength && !elements[elements.Count-1].HandlesLineBorders && HasImplicitStopAtLineEnd(mode)) {
 					return this.VisualLength;
 				}
 				// skip elements that start after or at visualColumn
@@ -350,14 +351,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					if (pos >= 0)
 						return pos;
 				}
-				// if we've found nothing, and the first element doesn't handle line borders,
-				// return the line start as caret stop
-				if (visualColumn > 0 && !elements[0].HandlesLineBorders)
+				// If we've found nothing, and the first element doesn't handle line borders,
+				// return the line start as normal caret stop.
+				if (visualColumn > 0 && !elements[0].HandlesLineBorders && HasImplicitStopAtLineStart(mode))
 					return 0;
 			} else {
 				// Search Forwards:
 				// If the first element doesn't handle line borders, return the line start as caret stop
-				if (visualColumn < 0 && !elements[0].HandlesLineBorders)
+				if (visualColumn < 0 && !elements[0].HandlesLineBorders && HasImplicitStopAtLineStart(mode))
 					return 0;
 				// skip elements that end before or at visualColumn
 				for (i = 0; i < elements.Count; i++) {
@@ -374,11 +375,21 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				}
 				// if we've found nothing, and the last element doesn't handle line borders,
 				// return the line end as caret stop
-				if (visualColumn < this.VisualLength && !elements[elements.Count-1].HandlesLineBorders)
+				if (visualColumn < this.VisualLength && !elements[elements.Count-1].HandlesLineBorders && HasImplicitStopAtLineEnd(mode))
 					return this.VisualLength;
 			}
 			// we've found nothing, return -1 and let the caret search continue in the next line
 			return -1;
+		}
+		
+		static bool HasImplicitStopAtLineStart(CaretPositioningMode mode)
+		{
+			return mode == CaretPositioningMode.Normal;
+		}
+		
+		static bool HasImplicitStopAtLineEnd(CaretPositioningMode mode)
+		{
+			return true;
 		}
 	}
 }

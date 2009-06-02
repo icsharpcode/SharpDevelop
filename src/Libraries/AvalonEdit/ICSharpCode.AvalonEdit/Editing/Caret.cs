@@ -5,13 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 
@@ -58,7 +58,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		/// <summary>
 		/// Gets/Sets the position of the caret.
-		/// Retrieving this property will validate the visual column.
+		/// Retrieving this property will validate the visual column (which can be expensive).
 		/// Use the <see cref="Location"/> property instead if you don't need the visual column.
 		/// </summary>
 		public TextViewPosition Position {
@@ -264,7 +264,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 				// then try backwards
 				newVisualColumn = visualLine.GetNextCaretPosition(position.VisualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.Normal);
 			}
-			if (newVisualColumn >= 0 && newVisualColumn != position.VisualColumn) {
+			if (newVisualColumn < 0)
+				throw ThrowUtil.NoValidCaretPosition();
+			if (newVisualColumn != position.VisualColumn) {
 				int newOffset = visualLine.GetRelativeOffset(newVisualColumn) + firstDocumentLineOffset;
 				this.Position = new TextViewPosition(textView.Document.GetLocation(newOffset), newVisualColumn);
 			}
@@ -294,7 +296,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (textView != null) {
 				VisualLine visualLine = textView.GetOrConstructVisualLine(textView.Document.GetLineByNumber(position.Line));
-				textView.MakeVisible(CalcCaretRectangle(visualLine));
+				Rect caretRectangle = CalcCaretRectangle(visualLine);
+				caretRectangle.Inflate(30, 30); // leave at least 30 pixels distance to the view border
+				textView.MakeVisible(caretRectangle);
 			}
 		}
 		

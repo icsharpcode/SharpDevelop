@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// Use this method to throw an ArgumentNullException when using parameters for base
 		/// constructor calls.
 		/// <code>
-		/// public VisualLineText(string text) : base(ThrowUtil.CheckNull(text, "text").Length)
+		/// public VisualLineText(string text) : base(ThrowUtil.CheckNotNull(text, "text").Length)
 		/// </code>
 		/// </example>
 		public static T CheckNotNull<T>(T val, string parameterName) where T : class
@@ -42,6 +42,11 @@ namespace ICSharpCode.AvalonEdit.Utils
 		public static InvalidOperationException NoDocumentAssigned()
 		{
 			throw new InvalidOperationException("Document is null");
+		}
+		
+		public static InvalidOperationException NoValidCaretPosition()
+		{
+			throw new InvalidOperationException("Could not find a valid caret position in the line");
 		}
 	}
 }

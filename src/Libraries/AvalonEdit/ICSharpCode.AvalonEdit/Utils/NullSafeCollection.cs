@@ -13,7 +13,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// <summary>
 	/// A collection that cannot contain null values.
 	/// </summary>
-	public sealed class NullSafeCollection<T> : Collection<T> where T : class
+	public class NullSafeCollection<T> : Collection<T> where T : class
 	{
 		/// <inheritdoc/>
 		protected override void InsertItem(int index, T item)
