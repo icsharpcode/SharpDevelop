@@ -5,20 +5,21 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.CodeCoverage;
-using ICSharpCode.TextEditor.Document;
-using NUnit.Framework;
+using ICSharpCode.SharpDevelop.Tests.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ICSharpCode.CodeCoverage;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
+using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests
 {
 	[TestFixture]
 	public class CodeCoverageMarkersInvalidEndColumnTestFixture
 	{
-		List<CodeCoverageTextMarker> markers;
+		List<ITextMarker> markers;
 		
 		[SetUp]
 		public void Init()
@@ -28,9 +29,9 @@ namespace ICSharpCode.CodeCoverage.Tests
 				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
 			} catch (Exception) {}
 			
-			IDocument document = MockDocument.Create();
-			document.TextContent = "abcdefg\r\nabc";
-			MarkerStrategy markerStrategy = new MarkerStrategy(document);
+			IDocument document = MockTextMarkerService.CreateDocumentWithMockService();
+			ITextMarkerService markerStrategy = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			document.Text = "abcdefg\r\nabc";
 			
 			string xml = "<PartCoverReport>\r\n" +
 				"\t<file id=\"1\" url=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
@@ -49,10 +50,10 @@ namespace ICSharpCode.CodeCoverage.Tests
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));
 			CodeCoverageMethod method = results.Modules[0].Methods[0];
 			CodeCoverageHighlighter highlighter = new CodeCoverageHighlighter();
-			highlighter.AddMarkers(markerStrategy, method.SequencePoints);
+			highlighter.AddMarkers(document, method.SequencePoints);
 			
-			markers = new List<CodeCoverageTextMarker>();
-			foreach (CodeCoverageTextMarker marker in markerStrategy.TextMarker) {
+			markers = new List<ITextMarker>();
+			foreach (ITextMarker marker in markerStrategy.TextMarkers) {
 				markers.Add(marker);
 			}
 		}

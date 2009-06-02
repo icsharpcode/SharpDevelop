@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop;
 using System.Collections.Generic;
 
-namespace XmlEditor.Tests.Utils
+namespace ICSharpCode.SharpDevelop.Tests.Utils
 {
 	/// <summary>
 	/// Description of MockOpenedFile.

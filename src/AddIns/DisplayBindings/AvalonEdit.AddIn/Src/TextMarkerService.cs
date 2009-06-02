@@ -63,6 +63,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return markers.UpCast<TextMarker, ITextMarker>(); }
 		}
 		
+		public void RemoveAll(Predicate<ITextMarker> predicate)
+		{
+			if (predicate == null)
+				throw new ArgumentNullException("predicate");
+			foreach (TextMarker m in markers.ToArray()) {
+				if (predicate(m))
+					m.Delete();
+			}
+		}
+		
 		internal void Remove(TextMarker marker)
 		{
 			markers.Remove(marker);

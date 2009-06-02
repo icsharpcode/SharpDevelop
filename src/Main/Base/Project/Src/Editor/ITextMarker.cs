@@ -64,11 +64,20 @@ namespace ICSharpCode.SharpDevelop.Editor
 	
 	public interface ITextMarkerService
 	{
+		/// <summary>
+		/// Creates a new text marker. The text marker will be invisible at first,
+		/// you need to set one of the Color properties to make it visible.
+		/// </summary>
 		ITextMarker Create(int startOffset, int length);
 		
 		/// <summary>
 		/// Gets the list of text markers.
 		/// </summary>
 		IEnumerable<ITextMarker> TextMarkers { get; }
+		
+		/// <summary>
+		/// Removes all text markers that match the condition.
+		/// </summary>
+		void RemoveAll(Predicate<ITextMarker> predicate);
 	}
 }

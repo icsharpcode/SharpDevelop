@@ -7,16 +7,26 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Editor;
+using System.ComponentModel.Design;
 using System.Windows.Media;
 
-namespace XmlEditor.Tests.Utils
+using ICSharpCode.SharpDevelop.Editor;
+
+namespace ICSharpCode.SharpDevelop.Tests.Utils
 {
 	/// <summary>
 	/// Description of MockTextEditor.
 	/// </summary>
 	public class MockTextMarkerService : ITextMarkerService
 	{
+		public static IDocument CreateDocumentWithMockService()
+		{
+			ServiceContainer container = new ServiceContainer();
+			container.AddService(typeof(ITextMarkerService), new MockTextMarkerService());
+			
+			return new AvalonEditDocumentAdapter(container);
+		}
+		
 		List<ITextMarker> markers;
 		
 		public MockTextMarkerService()
@@ -35,6 +45,14 @@ namespace XmlEditor.Tests.Utils
 			ITextMarker m = new MockTextMarker(this.markers, startOffset, startOffset + length, length);
 			this.markers.Add(m);
 			return m;
+		}
+		
+		public void RemoveAll(Predicate<ITextMarker> predicate)
+		{
+			foreach (ITextMarker m in markers.ToArray()) {
+				if (predicate(m))
+					m.Delete();
+			}
 		}
 	}
 }

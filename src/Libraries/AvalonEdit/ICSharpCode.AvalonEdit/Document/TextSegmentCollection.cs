@@ -879,6 +879,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				TextSegment current = root.LeftMost;
 				while (current != null) {
 					yield return (T)current;
+					// TODO: check if collection was modified during enumeration
 					current = current.Successor;
 				}
 			}

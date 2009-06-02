@@ -128,9 +128,6 @@
     <Compile Include="Utils\DerivedXmlTreeView.cs" />
     <Compile Include="Utils\DerivedXmlTreeViewContainerControl.cs" />
     <Compile Include="Utils\MockAddXmlNodeDialog.cs" />
-    <Compile Include="Utils\MockOpenedFile.cs" />
-    <Compile Include="Utils\MockTextMarkerService.cs" />
-    <Compile Include="Utils\MockTextMarker.cs" />
     <Compile Include="Utils\MockXmlViewContent.cs" />
     <Compile Include="Utils\ResourceManager.cs" />
     <Compile Include="Schema\XhtmlStrictSchemaTestFixture.cs" />
@@ -216,6 +213,11 @@
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>
       <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Test\ICSharpCode.SharpDevelop.Tests.csproj">
+      <Project>{4980B743-B32F-4aba-AABD-45E2CAD3568D}</Project>
+      <Name>ICSharpCode.SharpDevelop.Tests</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>

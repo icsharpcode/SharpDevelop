@@ -5,8 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Tests.Utils;
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor.Document;

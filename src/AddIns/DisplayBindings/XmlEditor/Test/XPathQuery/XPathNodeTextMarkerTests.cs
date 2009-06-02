@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Tests.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,11 +28,7 @@ namespace XmlEditor.Tests.XPathQuery
 			string xml = "<root><foo/></root>";
 			XPathNodeMatch[] nodes = XmlView.SelectNodes(xml, "//root");
 			
-			ServiceContainer container = new ServiceContainer();
-			container.AddService(typeof(ITextMarkerService), new MockTextMarkerService());
-
-			
-			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(container);
+			IDocument doc = MockTextMarkerService.CreateDocumentWithMockService();
 			doc.Text = xml;
 			XPathNodeTextMarker.AddMarkers(doc, nodes);
 			

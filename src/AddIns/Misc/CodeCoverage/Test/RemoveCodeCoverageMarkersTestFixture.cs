@@ -5,20 +5,22 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.CodeCoverage;
-using ICSharpCode.TextEditor.Document;
-using NUnit.Framework;
+using ICSharpCode.SharpDevelop.Tests.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ICSharpCode.CodeCoverage;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
+using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests
 {
 	[TestFixture]
 	public class RemoveCodeCoverageMarkersTestFixture
 	{
-		MarkerStrategy markerStrategy;
+		IDocument document;
+		ITextMarkerService markerStrategy;
 	
 		[TestFixtureSetUp]
 		public void SetUpTestFixture()
@@ -28,12 +30,12 @@ namespace ICSharpCode.CodeCoverage.Tests
 				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
 			} catch (Exception) {}
 			
-			IDocument document = MockDocument.Create();
+			document = MockTextMarkerService.CreateDocumentWithMockService();
+			markerStrategy = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			string code = "\t\t{\r\n" +
 				"\t\t\tint count = 0;\r\n" +
 				"\t\t}\r\n";
-			document.TextContent = code;
-			markerStrategy = new MarkerStrategy(document);
+			document.Text = code;
 			
 			string xml = "<PartCoverReport>\r\n" +
 				"\t<file id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\"/>\r\n" +
@@ -50,11 +52,11 @@ namespace ICSharpCode.CodeCoverage.Tests
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));
 			CodeCoverageMethod method = results.Modules[0].Methods[0];
 			CodeCoverageHighlighter highlighter = new CodeCoverageHighlighter();
-			highlighter.AddMarkers(markerStrategy, method.SequencePoints);	
+			highlighter.AddMarkers(document, method.SequencePoints);	
 			
 			// Add non-code coverage markers.
-			markerStrategy.AddMarker(new TextMarker(0, 2, TextMarkerType.Underlined));
-			markerStrategy.AddMarker(new TextMarker(4, 5, TextMarkerType.Underlined));
+			markerStrategy.Create(0, 2);
+			markerStrategy.Create(4, 5);
 		}
 		
 		[Test]
@@ -65,7 +67,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			
 			// Remove code coverage markers.
 			CodeCoverageHighlighter highlighter = new CodeCoverageHighlighter();
-			highlighter.RemoveMarkers(markerStrategy);
+			highlighter.RemoveMarkers(document);
 			
 			// Check that code coverage markers have been removed.
 			Assert.IsFalse(ContainsCodeCoverageMarkers(markerStrategy));	
@@ -74,26 +76,24 @@ namespace ICSharpCode.CodeCoverage.Tests
 			Assert.IsTrue(ContainsNonCodeCoverageMarkers(markerStrategy));
 		}
 		
-		static bool ContainsCodeCoverageMarkers(MarkerStrategy markerStrategy)
+		static bool ContainsCodeCoverageMarkers(ITextMarkerService markerStrategy)
 		{			
-			foreach (TextMarker marker in markerStrategy.TextMarker) {
-				if (marker is CodeCoverageTextMarker) {
+			foreach (ITextMarker marker in markerStrategy.TextMarkers) {
+				if (marker.Tag == typeof(CodeCoverageHighlighter)) {
 					return true;
 				}
 			}
 			return false;
 		}
 		
-		static bool ContainsNonCodeCoverageMarkers(MarkerStrategy markerStrategy)
+		static bool ContainsNonCodeCoverageMarkers(ITextMarkerService markerStrategy)
 		{			
-			int count = 0;
-			foreach (TextMarker marker in markerStrategy.TextMarker) {
-				if (marker is CodeCoverageTextMarker) {
-					return false;
+			foreach (ITextMarker marker in markerStrategy.TextMarkers) {
+				if (marker.Tag != typeof(CodeCoverageHighlighter)) {
+					return true;
 				}
-				count++;
 			}
-			return count > 0;
+			return false;
 		}
 
 	}

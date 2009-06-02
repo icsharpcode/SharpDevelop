@@ -5,11 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -100,13 +99,12 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		public static void ShowCodeCoverage(TextEditorControl textEditor, string fileName)
+		public static void ShowCodeCoverage(ITextEditor textEditor, string fileName)
 		{
 			foreach (CodeCoverageResults results in CodeCoverageService.Results) {
 				List<CodeCoverageSequencePoint> sequencePoints = results.GetSequencePoints(fileName);
 				if (sequencePoints.Count > 0) {
-					codeCoverageHighlighter.AddMarkers(textEditor.Document.MarkerStrategy, sequencePoints);
-					textEditor.Refresh();
+					codeCoverageHighlighter.AddMarkers(textEditor.Document, sequencePoints);
 				}
 			}
 		}
@@ -122,10 +120,9 @@ namespace ICSharpCode.CodeCoverage
 		static void HideCodeCoverage()
 		{
 			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				TextEditorDisplayBindingWrapper textEditor = view as TextEditorDisplayBindingWrapper;
-				if (textEditor != null) {
-					codeCoverageHighlighter.RemoveMarkers(textEditor.TextEditorControl.Document.MarkerStrategy);
-					textEditor.TextEditorControl.Refresh();
+				ITextEditorProvider editorProvider = view as ITextEditorProvider;
+				if (editorProvider != null) {
+					codeCoverageHighlighter.RemoveMarkers(editorProvider.TextEditor.Document);
 				}
 			}
 		}
@@ -139,9 +136,9 @@ namespace ICSharpCode.CodeCoverage
 		
 		static void ShowCodeCoverage(IViewContent view)
 		{
-			TextEditorDisplayBindingWrapper displayBindingWrapper = view as TextEditorDisplayBindingWrapper;
-			if (displayBindingWrapper != null && displayBindingWrapper.TextEditorControl != null && view.PrimaryFileName != null) {
-				ShowCodeCoverage(displayBindingWrapper.TextEditorControl, view.PrimaryFileName);
+			ITextEditorProvider editorProvider = view as ITextEditorProvider;
+			if (editorProvider != null && view.PrimaryFileName != null) {
+				ShowCodeCoverage(editorProvider.TextEditor, view.PrimaryFileName);
 			}
 		}
 		

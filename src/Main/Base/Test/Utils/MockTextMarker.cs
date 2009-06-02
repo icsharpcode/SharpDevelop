@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Editor;
 using System.Windows.Media;
 
-namespace XmlEditor.Tests.Utils
+namespace ICSharpCode.SharpDevelop.Tests.Utils
 {
 	public class MockTextMarker : ITextMarker
 	{
