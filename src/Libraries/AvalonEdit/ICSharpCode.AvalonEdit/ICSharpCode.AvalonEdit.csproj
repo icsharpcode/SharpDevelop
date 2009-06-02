@@ -164,6 +164,7 @@
       <DependentUpon>IReadOnlySectionProvider.cs</DependentUpon>
     </Compile>
     <Compile Include="Highlighting\DocumentHighlighter.cs" />
+    <Compile Include="Highlighting\HighlightedInlineBuilder.cs" />
     <Compile Include="Highlighting\HighlightedLine.cs" />
     <Compile Include="Highlighting\HighlightedSection.cs" />
     <Compile Include="Highlighting\HighlightingBrush.cs" />
