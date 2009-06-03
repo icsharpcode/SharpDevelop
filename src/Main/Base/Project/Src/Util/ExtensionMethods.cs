@@ -310,7 +310,7 @@ namespace ICSharpCode.SharpDevelop
 			var r = new System.Windows.Controls.MenuItem();
 			r.Header = MenuService.ConvertLabel(item.Text);
 			if (item.ImageIndex >= 0)
-				r.Icon = ClassBrowserIconService.GetImageByIndex(item.ImageIndex).CreatePixelSnappedImage();
+				r.Icon = ClassBrowserIconService.GetImageByIndex(item.ImageIndex).CreateImage();
 			r.Click += delegate { item.PerformClick(); };
 			return r;
 		}

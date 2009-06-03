@@ -94,7 +94,6 @@
     <Compile Include="Src\InsertTextNodeBeforeCommand.cs" />
     <Compile Include="Src\IXmlTreeView.cs" />
     <Compile Include="Src\OpenStylesheetCommand.cs" />
-    <Compile Include="Src\Parser.cs" />
     <Compile Include="Src\QualifiedName.cs" />
     <Compile Include="Src\QualifiedNameCollection.cs" />
     <Compile Include="Src\RemoveAttributeCommand.cs" />
