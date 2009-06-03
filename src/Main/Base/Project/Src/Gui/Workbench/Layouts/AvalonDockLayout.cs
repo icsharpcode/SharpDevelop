@@ -45,6 +45,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			dockingManager.Loaded += dockingManager_Loaded;
 		}
 		
+		#if DEBUG
+		internal void WriteState(TextWriter output)
+		{
+			
+		}
+		#endif
+		
 		void dockingManager_Loaded(object sender, RoutedEventArgs e)
 		{
 			// LoadConfiguration doesn't do anything until the docking manager is loaded,

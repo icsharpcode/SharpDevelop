@@ -237,10 +237,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			viewContents.ForEach(vc => vc.Dispose());
 		}
 		
+		class TabControlWithoutShortcuts : TabControl
+		{
+			protected override void OnKeyDown(KeyEventArgs e)
+			{
+				// We don't call base.KeyDown to prevent the TabControl from handling Ctrl+Tab.
+				// Instead, we let the key press bubble up to the DocumentPane.
+			}
+		}
+		
 		private void CreateViewTabControl()
 		{
 			if (viewTabControl == null) {
-				viewTabControl = new TabControl();
+				viewTabControl = new TabControlWithoutShortcuts();
 				viewTabControl.TabStripPlacement = Dock.Bottom;
 				this.SetContent(viewTabControl);
 				
@@ -412,6 +421,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 		}
+		
 		// Forward focus to the content.
 		/// <inheritdoc/>
 		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
@@ -422,6 +432,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Keyboard.Focus(content);
 				e.Handled = true;
 			}
+		}
+		
+		public override string ToString()
+		{
+			return "[AvalonWorkbenchWindow: " + this.Title + "]";
 		}
 	}
 }

@@ -299,9 +299,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			LoadViewContentMemento(content);
 			
 			WorkbenchLayout.ShowView(content, switchToOpenedView);
-			if (switchToOpenedView) {
-				content.WorkbenchWindow.SelectWindow();
-			}
 		}
 		
 		public void ShowPad(PadDescriptor content)
@@ -479,5 +476,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 		}
+		
+		#if DEBUG
+		protected override void OnPreviewKeyDown(KeyEventArgs e)
+		{
+			base.OnPreviewKeyDown(e);
+			if (!e.Handled && e.Key == Key.D && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
+				StringWriter output = new StringWriter();
+				output.WriteLine("Keyboard.FocusedElement = " + GetElementName(Keyboard.FocusedElement));
+				output.WriteLine("ActiveContent = " + GetElementName(this.ActiveContent));
+				output.WriteLine("ActiveViewContent = " + GetElementName(this.ActiveViewContent));
+				output.WriteLine("ActiveWorkbenchWindow = " + GetElementName(this.ActiveWorkbenchWindow));
+				((AvalonDockLayout)workbenchLayout).WriteState(output);
+				LoggingService.Debug(output.ToString());
+			}
+		}
+		
+		static string GetElementName(object element)
+		{
+			if (element == null)
+				return "<null>";
+			else
+				return element.GetType().FullName + ": " + element.ToString();
+		}
+		#endif
 	}
 }
