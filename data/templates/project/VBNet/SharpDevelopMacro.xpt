@@ -26,6 +26,7 @@
 		
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
+			<OptionInfer>On</OptionInfer>
 		</PropertyGroup>
 
 		<ProjectItems>

@@ -21,6 +21,7 @@
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<OptionInfer>On</OptionInfer>
 			
 			<PlatformFamilyName>PocketPC</PlatformFamilyName>
 			<PlatformID>WinCE</PlatformID>

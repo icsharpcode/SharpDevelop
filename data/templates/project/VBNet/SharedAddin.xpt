@@ -34,6 +34,7 @@
 			<OutputType>Library</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
 			<RegisterForComInterop>true</RegisterForComInterop>
+			<OptionInfer>On</OptionInfer>
 		</PropertyGroup>
 		
 		<Files>

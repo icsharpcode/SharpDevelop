@@ -26,6 +26,7 @@
 		<PropertyGroup>
 			<OutputType>Exe</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<OptionInfer>On</OptionInfer>
 		</PropertyGroup>
 		
 		<ProjectItems>

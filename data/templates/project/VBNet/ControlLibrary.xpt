@@ -43,6 +43,7 @@
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<OptionInfer>On</OptionInfer>
 		</PropertyGroup>
 		
 		<Files>

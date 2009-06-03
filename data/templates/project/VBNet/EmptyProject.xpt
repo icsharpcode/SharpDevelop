@@ -21,5 +21,8 @@
 			<Import Include="System" />
 			<Import Include="Microsoft.VisualBasic" />
 		</ProjectItems>
+		<PropertyGroup>
+			<OptionInfer>On</OptionInfer>
+		</PropertyGroup>
 	</Project>
 </Template>

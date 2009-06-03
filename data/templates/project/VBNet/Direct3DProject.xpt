@@ -48,6 +48,7 @@
 			<OutputType>WinExe</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
 			<StartupObject>${StandardNamespace}.MainClass</StartupObject>
+			<OptionInfer>On</OptionInfer>
 		</PropertyGroup>
 		
 		<Files>
