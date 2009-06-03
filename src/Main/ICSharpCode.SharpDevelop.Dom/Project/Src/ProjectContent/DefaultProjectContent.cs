@@ -79,6 +79,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		// NamespaceStruct behaves like a reference type because it only consists of readonly references!
 		protected struct NamespaceStruct
 		{
 			public readonly List<IClass> Classes;
@@ -88,6 +89,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				this.Classes = new List<IClass>();
 				this.SubNamespaces = new List<string>();
+			}
+			
+			public NamespaceStruct MergeWith(NamespaceStruct other)
+			{
+				NamespaceStruct newStruct = new NamespaceStruct(null);
+				newStruct.Classes.AddRange(this.Classes);
+				newStruct.Classes.AddRange(other.Classes);
+				newStruct.SubNamespaces.AddRange(this.SubNamespaces);
+				newStruct.SubNamespaces.AddRange(other.SubNamespaces);
+				return newStruct;
 			}
 		}
 		
@@ -130,7 +141,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 				Dictionary<string, NamespaceStruct> oldList = namespaces[0];
 				d = new Dictionary<string, NamespaceStruct>(oldList.Count, language.NameComparer);
 				foreach (KeyValuePair<string, NamespaceStruct> pair in oldList) {
-					d.Add(pair.Key, pair.Value);
+					NamespaceStruct ns;
+					if (d.TryGetValue(pair.Key, out ns)) {
+						// we got a name conflict due to the new NameComparer.
+						// This happens if a C# assembly contains the namespace "a" and "A",
+						// and now we're trying to get a dictionary for use in VB.
+						d[pair.Key] = ns.MergeWith(pair.Value);
+					} else {
+						d.Add(pair.Key, pair.Value);
+					}
 				}
 			} else {
 				d = new Dictionary<string, NamespaceStruct>(language.NameComparer);
@@ -394,7 +413,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// use the same namespaceStruct for all dictionaries
 			foreach (Dictionary<string, NamespaceStruct> otherDict in namespaces) {
 				if (otherDict == dict) continue;
-				otherDict.Add(nSpace, namespaceStruct);
+				NamespaceStruct existingNamespaceStruct;
+				if (otherDict.TryGetValue(nSpace, out existingNamespaceStruct))
+					otherDict[nSpace] = existingNamespaceStruct.MergeWith(namespaceStruct);
+				else
+					otherDict.Add(nSpace, namespaceStruct);
 			}
 			if (nSpace.Length == 0)
 				return;
