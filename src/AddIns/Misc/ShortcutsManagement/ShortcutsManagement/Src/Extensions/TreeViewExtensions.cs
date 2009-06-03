@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 namespace ICSharpCode.ShortcutsManagement
 {
@@ -18,7 +19,7 @@ namespace ICSharpCode.ShortcutsManagement
     	/// </summary>
     	/// <param name="parentContainer">TreeView or TreeViewItem</param>
     	/// <param name="path">Path to the selected item</param>
-        public static void SelectItem(this ItemsControl parentContainer, List<object> path)
+        public static void SelectItem(this ItemsControl parentContainer, List<object> path, bool setFocus)
         {
             var head = path.First();
             var tail = path.GetRange(1, path.Count - 1);
@@ -27,6 +28,11 @@ namespace ICSharpCode.ShortcutsManagement
             if (itemContainer != null && itemContainer.Items.Count == 0)
             {
                 itemContainer.IsSelected = true;
+
+                if(setFocus)
+                {
+                    Keyboard.Focus(itemContainer);
+                }
 
                 var selectMethod = typeof(TreeViewItem).GetMethod("Select", BindingFlags.NonPublic | BindingFlags.Instance);
                 selectMethod.Invoke(itemContainer, new object[] { true });
@@ -39,12 +45,12 @@ namespace ICSharpCode.ShortcutsManagement
                 {
                     itemContainer.ItemContainerGenerator.StatusChanged += delegate
                     {
-                        SelectItem(itemContainer, tail);
+                        SelectItem(itemContainer, tail, setFocus);
                     };
                 }
                 else
                 {
-                    SelectItem(itemContainer, tail);
+                    SelectItem(itemContainer, tail, setFocus);
                 }
             }
         }

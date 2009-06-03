@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace ICSharpCode.ShortcutsManagement
 {
@@ -11,7 +13,7 @@ namespace ICSharpCode.ShortcutsManagement
 		/// <summary>
 		/// List of keyboard gestures which will invoke provided action
 		/// </summary>
-        public List<string> Gestures
+        public InputGestureCollection Gestures
         {
             get;
             private set;
@@ -66,11 +68,15 @@ namespace ICSharpCode.ShortcutsManagement
         /// </summary>
         /// <param name="shortcutName">Shortcut action name</param>
         /// <param name="gestures">Gestures</param>
-        public Shortcut(string shortcutName, List<string> gestures)
+        public Shortcut(string shortcutName, InputGestureCollection gestures)
         {
             IsVisible = true;
             Name = shortcutName;
-            Gestures = gestures ?? new List<string>();
+            Gestures = new InputGestureCollection();
+            if(gestures != null)
+            {
+                Gestures.AddRange(gestures);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

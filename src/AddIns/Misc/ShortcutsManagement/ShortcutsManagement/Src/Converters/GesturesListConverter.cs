@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Input;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.ShortcutsManagement
 {
@@ -10,10 +12,9 @@ namespace ICSharpCode.ShortcutsManagement
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is IEnumerable<string> && (targetType == typeof(string) || targetType.IsSubclassOf(typeof(string))))
+            if (value is InputGestureCollection && (targetType == typeof(string) || targetType.IsSubclassOf(typeof(string))))
             {
-                var enumerableValue = (IEnumerable<string>)value;
-                return string.Join(" | ", enumerableValue.ToArray());
+                return new InputGestureCollectionConverter().ConvertToInvariantString(value);
             }
 
             return value.ToString();

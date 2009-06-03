@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace ICSharpCode.ShortcutsManagement
 {
@@ -64,7 +65,11 @@ namespace ICSharpCode.ShortcutsManagement
                     var matchedText = match.Groups[2].Value;
                     if (!string.IsNullOrEmpty(matchedText))
                     {
-                        textBlock.Inlines.Add(new Bold(new Run(matchedText)));
+                        var matchedRun = new Run(matchedText);
+                        
+                        matchedRun.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CEDEF7"));
+                        matchedRun.Foreground = new SolidColorBrush((Color) ColorConverter.ConvertFromString("#000000"));
+                        textBlock.Inlines.Add(matchedRun);
                     }
 
                     var matchedTextSuffix = match.Groups[3].Value;
