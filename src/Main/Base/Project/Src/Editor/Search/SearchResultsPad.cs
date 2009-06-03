@@ -70,6 +70,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public void ClearLastSearchesList()
 		{
 			lastSearches.Clear();
+			contentPlaceholder.SetContent(null);
 		}
 		
 		public void ShowSearchResults(ISearchResult result)

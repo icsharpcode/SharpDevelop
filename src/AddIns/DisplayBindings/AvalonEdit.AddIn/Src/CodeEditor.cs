@@ -62,7 +62,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			set {
 				if (document != value) {
+					if (document != null)
+						document.UpdateFinished -= DocumentUpdateFinished;
+					
 					document = value;
+					
+					if (document != null)
+						document.UpdateFinished += DocumentUpdateFinished;
 					
 					if (DocumentChanged != null) {
 						DocumentChanged(this, EventArgs.Empty);
@@ -222,31 +228,36 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		public event EventHandler CaretPositionChanged;
+		bool caretPositionWasChanged;
+		
 		void caret_PositionChanged(object sender, EventArgs e)
 		{
-			InvalidateQuickClassBrowserCaretPosition();
+			Debug.Assert(sender is Caret);
+			if (sender == this.ActiveTextEditor.TextArea.Caret) {
+				if (document.IsInUpdate)
+					caretPositionWasChanged = true;
+				else
+					HandleCaretPositionChange();
+			}
 		}
 		
-		bool quickClassBrowserCaretPositionInvalid;
-		
-		/// <summary>
-		/// Only call 'SelectItemAtCaretPosition' once when the caret position
-		/// changes multiple times (e.g. running refactoring which causes lots of caret changes).
-		/// </summary>
-		void InvalidateQuickClassBrowserCaretPosition()
+		void DocumentUpdateFinished(object sender, EventArgs e)
 		{
-			if (!quickClassBrowserCaretPositionInvalid) {
-				quickClassBrowserCaretPositionInvalid = true;
-				Dispatcher.BeginInvoke(
-					DispatcherPriority.Normal,
-					new Action(
-						delegate {
-							quickClassBrowserCaretPositionInvalid = false;
-							if (quickClassBrowser != null) {
-								quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
-							}
-						}));
+			if (caretPositionWasChanged) {
+				caretPositionWasChanged = false;
+				HandleCaretPositionChange();
 			}
+		}
+		
+		void HandleCaretPositionChange()
+		{
+			if (quickClassBrowser != null) {
+				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
+			}
+			var caret = this.ActiveTextEditor.TextArea.Caret;
+			StatusBarService.SetCaretPosition(caret.Column, caret.Line, caret.Column);
+			CaretPositionChanged.RaiseEvent(this, EventArgs.Empty);
 		}
 		
 		public void JumpTo(int line, int column)
@@ -458,13 +469,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.Children.Add(quickClassBrowser);
 				}
 				quickClassBrowser.Update(parseInfo.MostRecentCompilationUnit);
-				InvalidateQuickClassBrowserCaretPosition();
+				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
 			} else {
 				if (quickClassBrowser != null) {
 					this.Children.Remove(quickClassBrowser);
 					quickClassBrowser = null;
 				}
 			}
+			iconBarManager.UpdateClassMemberBookmarks(parseInfo);
 		}
 	}
 }

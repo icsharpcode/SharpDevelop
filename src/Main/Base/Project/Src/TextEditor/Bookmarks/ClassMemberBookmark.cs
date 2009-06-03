@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public virtual IImage Image { 
 			get {
-				return null;
+				return ClassBrowserIconService.GetIcon(@class);
 			}
 		}
 		
