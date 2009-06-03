@@ -370,6 +370,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		void AddClassToNamespaceListInternal2(IClass addClass)
 		{
+			bool isReplacingExistingClass = false;
 			string fullyQualifiedName = addClass.FullyQualifiedName;
 			IClass oldDictionaryClass;
 			if (GetClasses(language).TryGetValue(fullyQualifiedName, out oldDictionaryClass)) {
@@ -382,6 +383,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					gcc.Set(addClass);
 					gcc.Set(oldDictionaryClass);
 					addClass = gcc;
+					isReplacingExistingClass = true;
 				}
 			}
 			
@@ -394,10 +396,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			CreateNamespace(nSpace);
 			List<IClass> classList = GetNamespaces(this.language)[nSpace].Classes;
-			for (int i = 0; i < classList.Count; i++) {
-				if (classList[i].FullyQualifiedName == fullyQualifiedName) {
-					classList[i] = addClass;
-					return;
+			if (isReplacingExistingClass) {
+				for (int i = 0; i < classList.Count; i++) {
+					if (classList[i].FullyQualifiedName == fullyQualifiedName) {
+						classList[i] = addClass;
+						return;
+					}
 				}
 			}
 			classList.Add(addClass);

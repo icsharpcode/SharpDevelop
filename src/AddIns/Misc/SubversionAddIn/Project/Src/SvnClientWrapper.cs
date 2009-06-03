@@ -113,7 +113,6 @@ namespace ICSharpCode.Svn
 		#endregion
 		
 		SvnClient client;
-		Dictionary<string, Status> statusCache = new Dictionary<string, Status>(StringComparer.OrdinalIgnoreCase);
 		
 		public SvnClientWrapper()
 		{
@@ -129,7 +128,6 @@ namespace ICSharpCode.Svn
 			if (client != null)
 				client.Dispose();
 			client = null;
-			statusCache = null;
 		}
 		
 		#region Authorization
@@ -203,7 +201,6 @@ namespace ICSharpCode.Svn
 		public void ClearStatusCache()
 		{
 			CheckNotDisposed();
-			statusCache.Clear();
 		}
 		
 		public Status SingleStatus(string filename)
@@ -212,29 +209,22 @@ namespace ICSharpCode.Svn
 			BeforeOperation("stat");
 			try {
 				filename = FileUtility.NormalizePath(filename);
-				Status result;
-				if (statusCache.TryGetValue(filename, out result)) {
-					Debug("SVN: SingleStatus retrieved from cache " + result.TextStatus);
-					return result;
-				}
 				SvnStatusArgs args = new SvnStatusArgs {
 					Revision = SvnRevision.Working,
 					RetrieveAllEntries = true,
-					RetrieveIgnoredEntries = true
+					RetrieveIgnoredEntries = true,
+					Depth = SvnDepth.Empty
 				};
+				Status result = null;
 				client.Status(
 					filename, args,
 					delegate (object sender, SvnStatusEventArgs e) {
-						string dir = e.FullPath;
-						Debug("SVN: SingleStatus.callback(" + dir + "," + e.LocalContentStatus + ")");
-						Status s = new Status {
+						Debug("SVN: SingleStatus.callback(" + e.FullPath + "," + e.LocalContentStatus + ")");
+						System.Diagnostics.Debug.Assert(filename.Equals(e.FullPath, StringComparison.OrdinalIgnoreCase));
+						result = new Status {
 							Copied = e.LocalCopied,
 							TextStatus = ToStatusKind(e.LocalContentStatus)
 						};
-						statusCache[dir] = s;
-						if (StringComparer.OrdinalIgnoreCase.Equals(filename, dir)) {
-							result = s;
-						}
 					}
 				);
 				if (result != null) {
