@@ -5,17 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -28,6 +29,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -175,6 +177,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return textEditor;
 		}
 		
+		protected virtual void DisposeTextEditor(TextEditor textEditor)
+		{
+			// detach IconBarMargin from IconBarManager
+			textEditor.TextArea.LeftMargins.OfType<IconBarMargin>().Single().TextView = null;
+		}
+		
 		void textEditor_TextArea_TextView_ContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
 			ITextEditor adapter = GetAdapterFromSender(sender);
@@ -222,6 +230,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			} else {
 				// remove secondary editor
 				this.Children.Remove(secondaryTextEditor);
+				DisposeTextEditor(secondaryTextEditor);
 				secondaryTextEditor = null;
 				secondaryTextEditorAdapter = null;
 				this.RowDefinitions.RemoveAt(this.RowDefinitions.Count - 1);
