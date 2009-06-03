@@ -26,7 +26,12 @@ namespace ICSharpCode.Core.Presentation
 			
 			this.codon = codon;
 			this.caller = caller;
-			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
+			
+			if(!string.IsNullOrEmpty(codon.Properties["command"])) {
+				this.Command = CommandsRegistry.GetRoutedUICommand(codon.Properties["command"]);
+			} else {
+				this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
+			}
 			
 			if (codon.Properties.Contains("icon")) {
 				var image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));

@@ -87,8 +87,16 @@ namespace SearchAndReplace
 			SetSearchAndReplaceMode();
 			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", false);
 			
-			searchKeyboardShortcut = GetKeyboardShortcut(SearchMenuAddInPath, "Find");
-			replaceKeyboardShortcut = GetKeyboardShortcut(SearchMenuAddInPath, "Replace");
+			// Register shortcuts in "search & replace" dialog
+			GesturePlaceHolderRegistry.RegisterUpdateHandler("SDSearchAndReplace.Find", delegate {
+			                                                                    	searchKeyboardShortcut = GesturePlaceHolderRegistry.GetGestures("SDSearchAndReplace.Find")[0];
+			                                                                    });
+			GesturePlaceHolderRegistry.RegisterUpdateHandler("SDSearchAndReplace.Replace", delegate { 
+			                                                                    	replaceKeyboardShortcut = GesturePlaceHolderRegistry.GetGestures("SDSearchAndReplace.Find")[0];
+			                                                                    });
+			
+			GesturePlaceHolderRegistry.InvokeUpdateHandlers("SDSearchAndReplace.Find");
+			GesturePlaceHolderRegistry.InvokeUpdateHandlers("SDSearchAndReplace.FindReplace");
 		}
 		
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -144,17 +152,17 @@ namespace SearchAndReplace
 		/// Gets the keyboard shortcut for the menu item with the given addin tree
 		/// path and given codon id.
 		/// </summary>
-		Keys GetKeyboardShortcut(string path, string id)
+		Keys[] GetKeyboardShortcut(string path, string id)
 		{
 			AddInTreeNode node = AddInTree.GetTreeNode(path);
 			if (node != null) {
 				foreach (Codon codon in node.Codons) {
 					if (codon.Id == id) {
-						return MenuCommand.ParseShortcut(codon.Properties["shortcut"]);
+						return (Keys[])new KeysCollectionConverter().ConvertFromInvariantString(codon.Properties["shortcut"]);
 					}
 				}
 			}
-			return Keys.None;
+			return new Keys[] { Keys.None };
 		}
 	}
 }

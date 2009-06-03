@@ -11,30 +11,56 @@
 		<Import assembly = "SearchAndReplace.dll"/>
 	</Runtime>
 	
+	<!-- Commands registry test -->
+	<Path name="/SharpDevelop/Workbench/RoutedUICommands">
+		<RoutedUICommand name="SDSearchAndReplace.Find" text="${res:XML.MainMenu.SearchMenu.Find}" />
+		<RoutedUICommand name="SDSearchAndReplace.FindNext" text="${res:XML.MainMenu.SearchMenu.FindNext}" />
+		<RoutedUICommand name="SDSearchAndReplace.FindNextSelected" text="${res:XML.MainMenu.SearchMenu.FindNextSelected}" />
+		<RoutedUICommand name="SDSearchAndReplace.Replace" text="${res:XML.MainMenu.SearchMenu.Replace}" />
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/CommandBindings">
+		<CommandBinding command="SDSearchAndReplace.Find" class="SearchAndReplace.Find" lazy="true" gestures="Ctrl+F" />
+		<CommandBinding command="SDSearchAndReplace.FindNext" class="SearchAndReplace.FindNext" lazy="true" gestures="F3" />
+		<CommandBinding command="SDSearchAndReplace.FindNextSelected" class="SearchAndReplace.FindNextSelected" lazy="true" gestures="Ctrl+F3" />
+		<CommandBinding command="SDSearchAndReplace.Replace" class="SearchAndReplace.Replace" lazy="true" gestures="Ctrl+R" />
+	</Path>
+	<!-- Commands registry test -->
+	
+	<Path name="/SharpDevelop/Workbench/GesturePlaceHolder">
+		<GesturesPlaceHolder name="SDSearchAndReplace.Find" text="Find next" gestures="Ctrl+F" />
+		<GesturesPlaceHolder name="SDSearchAndReplace.Replace" text="Find next" gestures="F3" />
+	</Path>
+	
+	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Search">
 		<MenuItem id = "Find"
 		          label = "${res:XML.MainMenu.SearchMenu.Find}"
 		          icon = "Icons.16x16.FindIcon"
-		          shortcut = "Control|F"
-		          class = "SearchAndReplace.Find"/>
+		          shortcut = "Ctrl+F"
+		          class = "SearchAndReplace.Find"
+		          command="SDSearchAndReplace.Find" />
 		<MenuItem id = "FindNext"
 		          insertafter = "Find"
 		          label = "${res:XML.MainMenu.SearchMenu.FindNext}"
 		          icon = "Icons.16x16.FindNextIcon"
 		          shortcut = "F3"
-		          class = "SearchAndReplace.FindNext"/>
+		          class = "SearchAndReplace.FindNext"
+		          command="SDSearchAndReplace.FindNext" />
 		<MenuItem id = "FindNextSelected"
 		          insertafter = "FindNext"
 		          label = "${res:XML.MainMenu.SearchMenu.FindNextSelected}"
-		          shortcut = "Control|F3"
-		          class = "SearchAndReplace.FindNextSelected"/>
+		          shortcut = "Ctrl+F3"
+		          class = "SearchAndReplace.FindNextSelected"
+		          command="SDSearchAndReplace.FindNextSelected" />
 		<MenuItem id = "Replace"
 		          insertbefore = "SearchIncremental"
 		          insertafter = "FindNextSelected"
 		          label = "${res:XML.MainMenu.SearchMenu.Replace}"
 		          icon = "Icons.16x16.ReplaceIcon"
-		          shortcut = "Control|R"
-		          class = "SearchAndReplace.Replace"/>
+		          shortcut = "Ctrl+R"
+		          class = "SearchAndReplace.Replace"
+		          command="SDSearchAndReplace.Replace" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/DefaultEditor/SearchAndReplace/WildcardHelpPath">

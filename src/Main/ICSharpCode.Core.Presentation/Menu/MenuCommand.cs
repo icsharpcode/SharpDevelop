@@ -118,13 +118,29 @@ namespace ICSharpCode.Core.Presentation
 	{
 		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
 		{
-			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
-			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
-				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
-				if (inputBindingOwner != null) {
-					inputBindingOwner.InputBindings.Add(new InputBinding(this.Command, kg));
+			if(!string.IsNullOrEmpty(codon.Properties["command"])) {
+				var routedCommandName = codon.Properties["command"];				
+				var routedCommand = CommandsRegistry.GetRoutedUICommand(routedCommandName);
+				
+				if(routedCommand == null) {
+					MessageService.ShowError("Routed command with name '" + routedCommandName + "' not registered");
+				} else {
+					this.Command = routedCommand;
+					
+					var gestures = CommandsRegistry.GetInputGestures(CommandsRegistry.DefaultContext, null, routedCommand.Name, null);
+					var gesturesString = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
+					this.InputGestureText = gesturesString;
 				}
-				this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			} else {			
+				this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
+				if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
+					KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
+					if (inputBindingOwner != null) {
+						inputBindingOwner.InputBindings.Add(new InputBinding(this.Command, kg));
+					}
+					
+					this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+				}
 			}
 		}
 	}

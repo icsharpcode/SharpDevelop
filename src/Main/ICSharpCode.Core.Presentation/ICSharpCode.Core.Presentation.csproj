@@ -67,6 +67,15 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CommandsService\CommandBindingInfo.cs" />
+    <Compile Include="CommandsService\CommandsService.cs" />
+    <Compile Include="CommandsService\CommandsRegistry.cs" />
+    <Compile Include="CommandsService\GesturePlaceHolderRegistry.cs" />
+    <Compile Include="CommandsService\InputBindingInfo.cs" />
+    <Compile Include="CommandsService\InputGestureCollectionConverter.cs" />
+    <Compile Include="CommandsService\ManagedCommandBinding.cs" />
+    <Compile Include="CommandsService\ManagedInputBinding.cs" />
+    <Compile Include="CommandsService\WpfCommandWrapper.cs" />
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="DropDownButton.cs" />
     <Compile Include="GetBitmapExtension.cs" />
@@ -95,6 +104,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Menu" />
+    <Folder Include="CommandsService" />
     <Folder Include="themes" />
     <Folder Include="ToolBar" />
     <Page Include="themes\Aero.NormalColor.xaml" />

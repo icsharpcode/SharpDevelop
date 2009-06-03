@@ -40,7 +40,7 @@
 		<MenuItem id = "Save"
 		          label = "${res:XML.MainMenu.FileMenu.Save}"
 		          icon = "Icons.16x16.SaveIcon"
-		          shortcut = "Control|S"
+		          shortcut = "Ctrl+S"
 		          class = "ICSharpCode.SharpDevelop.Commands.SaveFile"/>
 		<MenuItem id = "SaveAs"
 		          label = "${res:XML.MainMenu.FileMenu.SaveAs}"

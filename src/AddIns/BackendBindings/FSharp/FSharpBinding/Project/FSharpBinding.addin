@@ -109,7 +109,7 @@
 		<Condition name = "ProjectActive" activeproject="F#">
 			<MenuItem id = "SendToFSharpInteractive"
 				  label = "Send To F# Interactive"
-				  shortcut = "Alt|Return"
+				  shortcut = "Alt+Return"
 				  class= "FSharpBinding.SentToFSharpInteractive"/>
 		</Condition>
 	</Path>

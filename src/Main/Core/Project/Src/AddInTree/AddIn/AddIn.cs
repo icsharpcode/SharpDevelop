@@ -54,6 +54,13 @@ namespace ICSharpCode.Core
 		}
 		
 		bool dependenciesLoaded;
+
+		/// <summary>
+		/// Specifies whether all add-in dependencies and referenced assemblies are loaded
+		/// </summary>
+		public bool DependenciesLoaded {
+			get { return dependenciesLoaded; }
+		}
 		
 		void LoadDependencies()
 		{
@@ -236,6 +243,7 @@ namespace ICSharpCode.Core
 								throw new AddInLoadException("Import node requires ONE attribute.");
 							}
 							string pathName = reader.GetAttribute(0);
+							
 							ExtensionPath extensionPath = addIn.GetExtensionPath(pathName);
 							if (!reader.IsEmptyElement) {
 								ExtensionPath.SetUp(extensionPath, reader, "Path");

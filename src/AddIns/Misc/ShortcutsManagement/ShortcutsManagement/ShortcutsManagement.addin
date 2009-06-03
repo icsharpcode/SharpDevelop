@@ -1,0 +1,19 @@
+﻿<AddIn name        = "ShortcutsPrototype"
+       author      = "Sergej Andrejev"
+       url         = ""
+       description = "Addin allows managing application shortcuts">
+    	
+	<Manifest>
+		<Identity name="ShortcutsManagement" version = "@SharpDevelopCoreVersion"/>
+	</Manifest>
+    
+    <Runtime>
+        <Import assembly = "ICSharpCode.ShortcutsManagement.exe"/>
+    </Runtime>
+    
+    <Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+		    <OptionPanel id = "ShortcutsManagement"
+			             label = "Shortcuts management"
+			             class = "ICSharpCode.ShortcutsManagement.ShortcutsManagementOptionsPanel" />
+	  </Path>
+</AddIn>
