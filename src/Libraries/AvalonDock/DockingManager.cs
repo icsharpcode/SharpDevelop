@@ -511,8 +511,8 @@ namespace AvalonDock
             base.OnInitialized(e);
 
             this.CommandBindings.Clear();
-            this.CommandBindings.Add(new CommandBinding(ShowNavigatorWindowCommand, OnExecuteCommand, OnCanExecuteCommand));
-            this.CommandBindings.Add(new CommandBinding(ShowDocumentNavigatorWindowCommand, OnExecuteCommand, OnCanExecuteCommand));
+            //this.CommandBindings.Add(new CommandBinding(ShowNavigatorWindowCommand, OnExecuteCommand, OnCanExecuteCommand));
+            //this.CommandBindings.Add(new CommandBinding(ShowDocumentNavigatorWindowCommand, OnExecuteCommand, OnCanExecuteCommand));
         }
 
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
