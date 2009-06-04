@@ -84,7 +84,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			p.parameters = DefaultParameter.Clone(this.Parameters);
 			p.typeParameters = new List<ITypeParameter>(this.typeParameters);
 			p.CopyDocumentationFrom(this);
-			p.documentationTag = DocumentationTag;
 			p.isExtensionMethod = this.isExtensionMethod;
 			foreach (ExplicitInterfaceImplementation eii in InterfaceImplementations) {
 				p.InterfaceImplementations.Add(eii.Clone());
@@ -101,29 +100,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		string documentationTag;
-		
 		public override string DocumentationTag {
 			get {
-				if (documentationTag == null) {
-					string dotnetName = this.DotNetName;
-					StringBuilder b = new StringBuilder("M:", dotnetName.Length + 2);
-					b.Append(dotnetName);
-					IList<IParameter> paras = this.Parameters;
-					if (paras.Count > 0) {
-						b.Append('(');
-						for (int i = 0; i < paras.Count; ++i) {
-							if (i > 0) b.Append(',');
-							IReturnType rt = paras[i].ReturnType;
-							if (rt != null) {
-								b.Append(rt.DotNetName);
-							}
+				string dotnetName = this.DotNetName;
+				StringBuilder b = new StringBuilder("M:", dotnetName.Length + 2);
+				b.Append(dotnetName);
+				IList<IParameter> paras = this.Parameters;
+				if (paras.Count > 0) {
+					b.Append('(');
+					for (int i = 0; i < paras.Count; ++i) {
+						if (i > 0) b.Append(',');
+						IReturnType rt = paras[i].ReturnType;
+						if (rt != null) {
+							b.Append(rt.DotNetName);
 						}
-						b.Append(')');
 					}
-					documentationTag = b.ToString();
+					b.Append(')');
 				}
-				return documentationTag;
+				return b.ToString();
 			}
 		}
 		

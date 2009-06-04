@@ -430,8 +430,6 @@
 				<ComponentRef Id="FSharpEmptyClassTemplate"/>	
 				
 				<ComponentRef Id="ReflectorAddInDll"/>
-				<ComponentRef Id="ReflectorAddInIpcServerDll"/>
-				<ComponentRef Id="ReflectorAddInIpcServerAddInDll"/>
 			
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
 				<ComponentRef Id="SourceAnalysisAddin"/>
