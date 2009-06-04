@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static string ConfigLayoutPath {
 			get {
-				return Path.Combine(PropertyService.ConfigDirectory, "layouts");
+				return Path.Combine(PropertyService.ConfigDirectory, "layouts2");
 			}
 		}
 		

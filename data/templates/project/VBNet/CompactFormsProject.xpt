@@ -8,6 +8,7 @@
 		<Subcategory>Compact Framework</Subcategory>
 		<Icon>VBNet.Project.Form</Icon>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
+		<SupportedTargetFrameworks>CF 2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -20,10 +21,10 @@
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<OptionInfer>On</OptionInfer>
 			
 			<PlatformFamilyName>PocketPC</PlatformFamilyName>
 			<PlatformID>WinCE</PlatformID>
-			<TargetFrameworkVersion>CF 2.0</TargetFrameworkVersion>
 			
 			<StartupObject>${StandardNamespace}.MainForm</StartupObject>
 		</PropertyGroup>

@@ -26,6 +26,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		readonly static string contextMenuPath = "/SharpDevelop/Workbench/OpenFileTab/ContextMenu";
 		
+		AvalonDockLayout dockLayout;
+		
+		public AvalonWorkbenchWindow(AvalonDockLayout dockLayout)
+		{
+			if (dockLayout == null)
+				throw new ArgumentNullException("dockLayout");
+			
+			FocusManager.SetIsFocusScope(this, true);
+			this.IsFloatingAllowed = true;
+			this.dockLayout = dockLayout;
+			viewContents = new ViewContentCollection(this);
+			
+			OnTitleNameChanged(this, EventArgs.Empty);
+		}
+		
 		public bool IsDisposed { get { return false; } }
 		
 		#region IOwnerState
@@ -202,21 +217,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SelectWindow()
 		{
-			dockLayout.DockingManager.Show(this);
-		}
-		
-		AvalonDockLayout dockLayout;
-		
-		public AvalonWorkbenchWindow(AvalonDockLayout dockLayout)
-		{
-			if (dockLayout == null)
-				throw new ArgumentNullException("dockLayout");
-			
-			this.IsFloatingAllowed = true;
-			this.dockLayout = dockLayout;
-			viewContents = new ViewContentCollection(this);
-			
-			OnTitleNameChanged(this, EventArgs.Empty);
+			this.SetAsActive();
 		}
 		
 		public override void OnApplyTemplate()
@@ -422,16 +423,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		// Forward focus to the content.
-		/// <inheritdoc/>
-		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+		protected override void FocusContent()
 		{
-			base.OnGotKeyboardFocus(e);
-			UIElement content = this.Content as UIElement;
-			if (content != null && !content.IsKeyboardFocusWithin) {
-				Keyboard.Focus(content);
-				e.Handled = true;
-			}
+			LoggingService.Debug("Trying to set focus to: " + FocusManager.GetFocusedElement(this));
+			Keyboard.Focus(FocusManager.GetFocusedElement(this));
+			LoggingService.Debug("Focus was set to: " + Keyboard.FocusedElement);
 		}
 		
 		public override string ToString()

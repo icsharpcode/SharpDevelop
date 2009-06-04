@@ -1003,7 +1003,7 @@ namespace ICSharpCode.PythonBinding
 
 				// Create if/elif/else body.
 				IncreaseIndent();
-				section.AcceptChildren(this, data);
+				CreateSwitchCaseBody(section);
 				DecreaseIndent();
 						
 				firstSection = false;
@@ -1671,6 +1671,27 @@ namespace ICSharpCode.PythonBinding
 			switchExpression.AcceptVisitor(this, null);
 			Append(" == ");
 			label.Label.AcceptVisitor(this, null);
+		}
+		
+		/// <summary>
+		/// Creates the statements inside a switch case statement.
+		/// </summary>
+		void CreateSwitchCaseBody(SwitchSection section)
+		{
+			int statementsAdded = 0;
+			foreach (INode node in section.Children) {
+				if (node is BreakStatement) {
+					// ignore.
+				} else {
+					statementsAdded++;
+					node.AcceptVisitor(this, null);
+				}
+			}
+
+			// Check for empty body.
+			if (statementsAdded == 0) {
+				AppendIndentedLine("pass");
+			}
 		}
 		
 		/// <summary>

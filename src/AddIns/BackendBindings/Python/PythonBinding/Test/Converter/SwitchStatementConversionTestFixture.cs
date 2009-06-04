@@ -25,29 +25,41 @@ namespace PythonBinding.Tests.Converter
 							"    public int Run(int i)\r\n" +
 							"    {\r\n" +
 							"        switch (i) {\r\n" +
+							"            case 7:\r\n" +
+							"                i = 4;\r\n" +
+							"                break;\r\n" +
 							"            case 10:\r\n" +
 							"                return 0;\r\n" +
 							"            case 9:\r\n" +
 							"                return 2;\r\n" +
+							"            case 8:\r\n" +
+							"                break;\r\n" +
 							"            default:\r\n" +
 							"                return -1;\r\n" +
 							"        }\r\n" +
+							"        return i;\r\n" +
 							"    }\r\n" +
 							"}";
 
 			string expectedPython = "class Foo(object):\r\n" +
-									"\tdef Run(self, i):\r\n" +
-									"\t\tif i == 10:\r\n" +
-									"\t\t\treturn 0\r\n" +
-									"\t\telif i == 9:\r\n" +
-									"\t\t\treturn 2\r\n" +
-									"\t\telse:\r\n" +
-									"\t\t\treturn -1";
+									"  def Run(self, i):\r\n" +
+									"    if i == 7:\r\n" +
+									"      i = 4\r\n" +
+									"    elif i == 10:\r\n" +
+									"      return 0\r\n" +
+									"    elif i == 9:\r\n" +
+									"      return 2\r\n" +
+									"    elif i == 8:\r\n" +
+									"      pass\r\n" +
+									"    else:\r\n" +
+									"      return -1\r\n" +
+									"    return i";
 	
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
+			converter.IndentString = "  ";
 			string code = converter.Convert(csharp);
 			
-			Assert.AreEqual(expectedPython, code);
+			Assert.AreEqual(expectedPython, code, code);
 		}	
 		
 		[Test]
@@ -70,15 +82,16 @@ namespace PythonBinding.Tests.Converter
 							"}";
 
 			string expectedPython = "class Foo(object):\r\n" +
-									"\tdef Run(self, i):\r\n" +
-									"\t\tif i == 10 or i == 11:\r\n" +
-									"\t\t\treturn 0\r\n" +
-									"\t\telif i == 9:\r\n" +
-									"\t\t\treturn 2\r\n" +
-									"\t\telse:\r\n" +
-									"\t\t\treturn -1";
+									"  def Run(self, i):\r\n" +
+									"    if i == 10 or i == 11:\r\n" +
+									"      return 0\r\n" +
+									"    elif i == 9:\r\n" +
+									"      return 2\r\n" +
+									"    else:\r\n" +
+									"      return -1";
 	
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
+			converter.IndentString = "  ";
 			string code = converter.Convert(csharp);
 			
 			Assert.AreEqual(expectedPython, code);

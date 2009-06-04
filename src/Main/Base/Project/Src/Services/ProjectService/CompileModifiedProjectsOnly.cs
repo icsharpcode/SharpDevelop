@@ -214,7 +214,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			Dictionary<ProjectBuildOptions, ICollection<IBuildable>> cachedBuildDependencies = new Dictionary<ProjectBuildOptions, ICollection<IBuildable>>();
-			
+			ICollection<IBuildable> cachedBuildDependenciesForNullOptions;
+				
 			public ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
 			{
 				List<IBuildable> result = new List<IBuildable>();
@@ -222,7 +223,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					result.Add(factory.GetWrapper(b));
 				}
 				lock (cachedBuildDependencies) {
-					cachedBuildDependencies[buildOptions] = result;
+					if (buildOptions != null)
+						cachedBuildDependencies[buildOptions] = result;
+					else
+						cachedBuildDependenciesForNullOptions = result;
 				}
 				return result;
 			}
@@ -254,7 +258,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					if (lastCompilationPass != null && Setting == BuildOnExecuteSetting.BuildModifiedAndDependent) {
 						lock (cachedBuildDependencies) {
-							if (cachedBuildDependencies[buildOptions].OfType<Wrapper>().Any(w=>w.WasRecompiledAfter(lastCompilationPass))) {
+							var dependencies = buildOptions != null ? cachedBuildDependencies[buildOptions] : cachedBuildDependenciesForNullOptions;
+							if (dependencies.OfType<Wrapper>().Any(w=>w.WasRecompiledAfter(lastCompilationPass))) {
 								lastCompilationPass = null;
 							}
 						}
