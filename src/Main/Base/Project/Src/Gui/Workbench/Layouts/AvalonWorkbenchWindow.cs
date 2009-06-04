@@ -33,7 +33,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (dockLayout == null)
 				throw new ArgumentNullException("dockLayout");
 			
-			FocusManager.SetIsFocusScope(this, true);
 			this.IsFloatingAllowed = true;
 			this.dockLayout = dockLayout;
 			viewContents = new ViewContentCollection(this);
@@ -421,13 +420,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 					base.Icon = new PixelSnapper(new Image { Source = value });
 				}
 			}
-		}
-		
-		protected override void FocusContent()
-		{
-			LoggingService.Debug("Trying to set focus to: " + FocusManager.GetFocusedElement(this));
-			Keyboard.Focus(FocusManager.GetFocusedElement(this));
-			LoggingService.Debug("Focus was set to: " + Keyboard.FocusedElement);
 		}
 		
 		public override string ToString()
