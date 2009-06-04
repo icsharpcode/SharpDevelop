@@ -275,6 +275,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		
 		void ProjectServiceSolutionChanged(object sender, EventArgs e)
 		{
+			classBrowserTreeView.BeginUpdate();
 			classBrowserTreeView.Nodes.Clear();
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
@@ -283,7 +284,9 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 					}
 					ProjectNodeBuilders.AddProjectNode(classBrowserTreeView, project);
 				}
+				classBrowserTreeView.Sort();
 			}
+			classBrowserTreeView.EndUpdate();
 		}
 		
 		void ProjectServiceSolutionClosed(object sender, EventArgs e)
