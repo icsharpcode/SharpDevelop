@@ -5,22 +5,20 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Rendering;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
-using ICSharpCode.AvalonEdit.CodeCompletion;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit
@@ -62,6 +60,12 @@ namespace ICSharpCode.AvalonEdit
 			this.Document = new TextDocument();
 			textArea.SetBinding(TextArea.DocumentProperty, new Binding(DocumentProperty.Name) { Source = this });
 			textArea.SetBinding(TextArea.OptionsProperty, new Binding(OptionsProperty.Name) { Source = this });
+		}
+		
+		/// <inheritdoc/>
+		protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer()
+		{
+			return new TextEditorAutomationPeer(this);
 		}
 		
 		// Forward focus to TextArea.
@@ -253,6 +257,14 @@ namespace ICSharpCode.AvalonEdit
 			get {
 				return textArea;
 			}
+		}
+		
+		/// <summary>
+		/// Gets the scroll viewer used by the text editor.
+		/// This property can return null if the template has not been applied / does not contain a scroll viewer.
+		/// </summary>
+		internal ScrollViewer ScrollViewer {
+			get { return scrollViewer; }
 		}
 		
 		bool CanExecute(RoutedUICommand command)
