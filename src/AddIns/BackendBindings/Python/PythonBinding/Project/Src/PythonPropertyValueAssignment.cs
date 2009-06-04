@@ -61,7 +61,7 @@ namespace ICSharpCode.PythonBinding
 				AnchorStyles anchor = (AnchorStyles)propertyValue;
 				return GetAnchorStyleAsString(anchor);
 			} else if (propertyType.IsEnum) {
-				return propertyType.FullName + "." + propertyValue.ToString();
+				return propertyType.FullName.Replace('+', '.') + "." + propertyValue.ToString();
 			}
 			return propertyValue.ToString();
 		}
