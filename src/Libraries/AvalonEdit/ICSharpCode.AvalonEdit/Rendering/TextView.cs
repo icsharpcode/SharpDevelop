@@ -304,6 +304,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			return layers[index];
 		}
+		
+		/// <inheritdoc/>
+		protected override System.Collections.IEnumerator LogicalChildren {
+			get { return layers.GetEnumerator(); }
+		}
 		#endregion
 		
 		#region Redraw methods / VisualLine invalidation
@@ -1455,6 +1460,21 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (heightTree == null)
 				throw ThrowUtil.NoDocumentAssigned();
 			return heightTree.GetLineByVisualPosition(visualTop);
+		}
+		
+		/// <inheritdoc/>
+		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged(e);
+			if (e.Property == Control.ForegroundProperty
+			    || e.Property == Control.FontFamilyProperty
+			    || e.Property == Control.FontSizeProperty
+			    || e.Property == Control.FontStretchProperty
+			    || e.Property == Control.FontStyleProperty
+			    || e.Property == Control.FontWeightProperty)
+			{
+				Redraw();
+			}
 		}
 	}
 }

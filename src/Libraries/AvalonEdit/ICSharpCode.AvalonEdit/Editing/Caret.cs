@@ -5,15 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -24,7 +26,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 	{
 		readonly TextArea textArea;
 		readonly TextView textView;
-		CaretLayer caretAdorner;
+		readonly CaretLayer caretAdorner;
 		bool visible;
 		
 		internal Caret(TextArea textArea)
@@ -345,6 +347,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (caretAdorner != null) {
 				caretAdorner.Hide();
 			}
+		}
+		
+		/// <summary>
+		/// Gets/Sets the color of the caret.
+		/// </summary>
+		public Brush CaretBrush {
+			get { return caretAdorner.CaretBrush; }
+			set { caretAdorner.CaretBrush = value; }
 		}
 	}
 }
