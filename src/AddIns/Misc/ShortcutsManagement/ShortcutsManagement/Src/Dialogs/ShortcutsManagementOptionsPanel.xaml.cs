@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using ICSharpCode.SharpDevelop;
 
@@ -23,7 +24,12 @@ namespace ICSharpCode.ShortcutsManagement
         {
             if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2)
             {
-                MessageBox.Show("Changing shortcut");
+                if (shortcutsTreeView.SelectedItem is Shortcut)
+                {
+                    var receiver = ((ShortcutsProvider)Resources["ShortcutsReceiver"]);
+                    var shortcut = (Shortcut)shortcutsTreeView.SelectedItem;
+                    new ShortcutManagementWindow(shortcut, receiver).ShowDialog();
+                }
             }
         }
 
@@ -56,11 +62,25 @@ namespace ICSharpCode.ShortcutsManagement
                 
             // If Up/Down is pressed switch focus to shortcuts tree
             var keyboardDevice = (KeyboardDevice)e.Device;
+            
             if (keyboardDevice.Modifiers == ModifierKeys.None
                 && Array.IndexOf(new[] { Key.Up, Key.Down }, e.Key) >= 0)
             {
                 SelectFirstVisibleShortcut(shortcutsTreeView, receiver.GetAddIns(), true);
                 
+                return;
+            }
+
+            // If enter is pressed open shortcut configuration
+            if (keyboardDevice.Modifiers == ModifierKeys.None && e.Key == Key.Enter)
+            {
+                e.Handled = true;
+                if (shortcutsTreeView.SelectedItem is Shortcut)
+                {
+                    var shortcut = (Shortcut) shortcutsTreeView.SelectedItem;
+                    new ShortcutManagementWindow(shortcut, receiver).ShowDialog();
+                }
+
                 return;
             }
 

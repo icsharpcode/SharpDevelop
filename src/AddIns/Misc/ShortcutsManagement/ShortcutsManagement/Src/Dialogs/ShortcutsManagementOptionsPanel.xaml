@@ -3,15 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:ShortcutsManagement="clr-namespace:ICSharpCode.ShortcutsManagement"
+             xmlns:ShortcutsManagement="clr-namespace:ICSharpCode.ShortcutsManagement" 
+             xmlns:Converters="clr-namespace:ICSharpCode.ShortcutsManagement.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" Padding="10" >
     
     <UserControl.Resources>
         <ShortcutsManagement:ShortcutsProvider x:Key="ShortcutsReceiver" />
-        <ShortcutsManagement:GesturesListConverter x:Key="GesturesListConverter" />
-        <ShortcutsManagement:ShortcutsTreeConverter x:Key="ShortcutsTreeConverter" />
-        <ShortcutsManagement:TypeNameConverter x:Key="TypeNameConverter" />
+        <Converters:GesturesListConverter x:Key="GesturesListConverter" />
+        <Converters:ShortcutsTreeConverter x:Key="ShortcutsTreeConverter" />
+        <Converters:TypeNameConverter x:Key="TypeNameConverter" />
         
         <ImageSource x:Key="KeyImage">..\..\Resources\key_enter.png</ImageSource>
         <ImageSource x:Key="KeyImagePressed">..\..\Resources\key_enter_pressed.png</ImageSource>
@@ -67,10 +68,6 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="30" />
-        </Grid.ColumnDefinitions>
 
         <TreeView x:Name="shortcutsTreeView" ItemsSource="{Binding Source={StaticResource AddIns}}" Grid.Column="0" Grid.Row="0" FocusManager.FocusedElement="{Binding ElementName=searchTextBox}" PreviewKeyDown="shortcutsTreeView_PreviewKeyDown">
             <TreeView.Resources>
@@ -112,6 +109,7 @@
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Path=IsVisible}" Value="false">
                                         <Setter Property="Visibility" Value="Collapsed" />
+                                        <Setter Property="IsEnabled" Value="False" />
                                     </DataTrigger>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter TargetName="InnerBorder" Property="Panel.Background" Value="{StaticResource SelectedItemBackground}" />
@@ -152,21 +150,25 @@
             </TreeView.Resources>
         </TreeView>
 
-        <TextBox x:Name="searchTextBox" TextChanged="searchTextBox_TextChanged" PreviewKeyDown="searchTextBox_PreviewKeyDown" Grid.Column="0" Grid.Row="1">
-            <TextBox.Resources>
-                <Style TargetType="{x:Type TextBox}">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type TextBoxBase}">
-                                <Border Name="Border" CornerRadius="0,0,8,8" Padding="2" Background="#FFF" BorderBrush="#888" BorderThickness="1,0,1,1">
-                                    <ScrollViewer Margin="0" x:Name="PART_ContentHost"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </TextBox.Resources>
-        </TextBox>
-        <ToggleButton x:Name="searchTypeToggleButton" Grid.Column="1" Grid.Row="1" Style="{StaticResource ShortcutsTreeSearchType}" ClickMode="Press" Click="searchTypeToggleButton_Click" />
+        <Border Name="Border" CornerRadius="0,0,8,8" Padding="2" Background="#FFF" BorderBrush="#888" BorderThickness="1,0,1,1" Grid.Column="0" Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBox x:Name="searchTextBox" TextChanged="searchTextBox_TextChanged" PreviewKeyDown="searchTextBox_PreviewKeyDown" Grid.Column="0" >
+                    <TextBox.Template>
+                        <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                            <Border Name="Border" Padding="2" Background="#FFF" BorderThickness="0">
+                                <ScrollViewer Margin="0" x:Name="PART_ContentHost"/>
+                            </Border>
+                        </ControlTemplate>
+                    </TextBox.Template>
+                </TextBox>
+                
+                <ToggleButton x:Name="searchTypeToggleButton" Style="{StaticResource ShortcutsTreeSearchType}" ClickMode="Press" Click="searchTypeToggleButton_Click" Grid.Column="1" />
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

@@ -7,13 +7,7 @@ using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.ShortcutsManagement
 {
-    internal enum FilterType
-    {
-        Gesture,
-        Action
-    }
-
-    internal class ShortcutsProvider
+    public class ShortcutsProvider
     {
         private readonly ObservableCollection<AddIn> addins = new ObservableCollection<AddIn>();
         
@@ -185,7 +179,7 @@ namespace ICSharpCode.ShortcutsManagement
                 addins[1].Categories.Add(new ShortcutCategory("Uncategorized"));
                     addins[1].Categories[0].Shortcuts.Add(new Shortcut("Quick find", GetGestures("Ctrl + F")));
                     addins[1].Categories[0].Shortcuts.Add(new Shortcut("Quick replace", GetGestures("Ctrl + H")));
-                    addins[1].Categories[0].Shortcuts.Add(new Shortcut("Find in files", GetGestures("Ctrl + Shift + F")));
+                    addins[1].Categories[0].Shortcuts.Add(new Shortcut("Find in files", GetGestures("Ctrl + Shift + F | Ctrl + Shift + H | Ctrl + I")));
                     addins[1].Categories[0].Shortcuts.Add(new Shortcut("Replace in files", GetGestures("Ctrl + Shift + H")));
                     addins[1].Categories[0].Shortcuts.Add(new Shortcut("Find symbol", null));
 

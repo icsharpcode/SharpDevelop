@@ -85,6 +85,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Src\Dialogs\ShortcutManagementWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Src\Dialogs\ShortcutsManagementOptionsPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -107,6 +111,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Src\Converters\InputGestureConverter.cs" />
     <Compile Include="Src\Data\AddIn.cs" />
     <Compile Include="Src\Converters\GesturesListConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -124,6 +130,9 @@
     </Compile>
     <Compile Include="Src\Data\Shortcut.cs" />
     <Compile Include="Src\Data\ShortcutCategory.cs" />
+    <Compile Include="Src\Dialogs\ShortcutManagementWindow.xaml.cs">
+      <DependentUpon>ShortcutManagementWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Dialogs\ShortcutsManagementOptionsPanel.xaml.cs">
       <DependentUpon>ShortcutsManagementOptionsPanel.xaml</DependentUpon>
     </Compile>
@@ -146,6 +155,8 @@
   <ItemGroup>
     <Resource Include="Resources\key_enter.png" />
     <Resource Include="Resources\key_enter_pressed.png" />
+    <Resource Include="Resources\add-smaller.png" />
+    <Resource Include="Resources\16-square-red-remove.png" />
     <Content Include="ShortcutsManagement.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
