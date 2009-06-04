@@ -79,5 +79,17 @@ namespace PythonBinding.Tests.Designer
 			string expectedText = "System.Environment.SpecialFolder.ProgramFiles";
 			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(folder));
 		}
+		
+		/// <summary>
+		/// Ensures that when the user types in "\t" the code for a string property in the forms designer
+		/// the actual string is generated is "\\t".
+		/// </summary>
+		[Test]
+		public void BackslashCharactersEncodedInStrings()
+		{
+			string text = @"c:\temp";
+			string expectedText = "\"c:\\\\temp\"";
+			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(text));
+		}
 	}
 }

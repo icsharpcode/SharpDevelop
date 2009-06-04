@@ -36,7 +36,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			Type propertyType = propertyValue.GetType();
 			if (propertyType == typeof(String)) {
-				return "\"" + propertyValue + "\"";
+				return GetQuotedString((string)propertyValue);
 			} else if (propertyType == typeof(Size)) {
 				Size size = (Size)propertyValue;
 				return size.GetType().FullName + "(" + size.Width + ", " + size.Height + ")";
@@ -128,6 +128,11 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return text.ToString();
+		}
+		
+		static string GetQuotedString(string text)
+		{
+			return "\"" + text.Replace(@"\", @"\\") + "\"";
 		}
 	}
 }
