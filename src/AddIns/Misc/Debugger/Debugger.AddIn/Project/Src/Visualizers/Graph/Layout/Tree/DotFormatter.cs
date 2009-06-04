@@ -17,24 +17,24 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// Converts <see cref="PositionedGraph/> to Graphviz's string (dot format) and back (from plain format).
 	/// </summary>
-	public class DotGraph
+	public abstract class DotFormatter
 	{
-		private PositionedGraph posGraph;
+		protected PositionedGraph posGraph;
 		
-		NeatoPositionTransform transform;
+		protected NeatoPositionTransform transform;
 		
-		// state (node and edge names) needed for converting back
-		private Dictionary<PositionedNode, string> nodeNames = new Dictionary<PositionedNode, string>();
-		private Dictionary<PositionedEdge, string> edgeNames = new Dictionary<PositionedEdge, string>();
+		// state (node and edge names) needed for parsing back
+		protected Dictionary<PositionedNode, string> nodeNames = new Dictionary<PositionedNode, string>();
+		protected Dictionary<PositionedEdge, string> edgeNames = new Dictionary<PositionedEdge, string>();
 		
-		private CultureInfo formatCulture = CultureInfo.GetCultureInfo("en-US");
+		protected CultureInfo formatCulture = CultureInfo.GetCultureInfo("en-US");
 		
 		/// <summary>
 		/// Used for generating node and edge names.
 		/// </summary>
-		private IdGenerator genId = new IdGenerator();
+		protected IdGenerator genId = new IdGenerator();
 		
-		public DotGraph(PositionedGraph posGraph)
+		public DotFormatter(PositionedGraph posGraph)
 		{
 			if (posGraph.Nodes.Count() == 0)
 			{
@@ -44,54 +44,33 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.transform = new NeatoPositionTransform(this.posGraph.BoundingRect);
 		}
 		
+		protected abstract void appendPosNode(PositionedNode node, StringBuilder builder);
+		
+		protected abstract void appendPosEdge(PositionedEdge edge, StringBuilder builder);
+		
 		/// <summary>
-		/// Gets Graphviz's dot format string for the positioned graph.
+		/// Gets Graphviz's dot format string for wrapped positioned graph.
 		/// </summary>
-		public string DotGraphString
+		public string OutputGraphInDotFormat()
 		{
-			get
+			StringBuilder dotStringBuilder = new StringBuilder("digraph G { node [shape = box];");
+			
+			foreach	(PositionedNode posNode in this.posGraph.Nodes)
 			{
-				StringBuilder dotStringBuilder = new StringBuilder("digraph G { node [shape = box];");
-				
-				foreach	(PositionedNode posNode in this.posGraph.Nodes)
-				{
-					appendPosNode(posNode, dotStringBuilder);
-				}
-				foreach	(PositionedEdge posEdge in this.posGraph.Edges)
-				{
-					appendPosEdge(posEdge, dotStringBuilder);
-				}
-				
-				dotStringBuilder.AppendLine("}");
-				return dotStringBuilder.ToString();
+				appendPosNode(posNode, dotStringBuilder);
 			}
-		}
-		
-		private void appendPosNode(PositionedNode node, StringBuilder builder)
-		{
-			string nodeName = genId.GetNextId().ToString();
-			nodeNames[node] = nodeName;
+			foreach	(PositionedEdge posEdge in this.posGraph.Edges)
+			{
+				appendPosEdge(posEdge, dotStringBuilder);
+			}
 			
-			Rect neatoInput = transform.NodeToNeatoInput(node);
-			
-			string dotFormatNode =
-				string.Format(formatCulture,
-				              "{0} [pos=\"{1},{2}!\" width=\"{3}\" height=\"{4}\"];",
-				              nodeName, neatoInput.Location.X, neatoInput.Location.Y, neatoInput.Width, neatoInput.Height);
-			builder.AppendLine(dotFormatNode);
-		}
-		
-		private void appendPosEdge(PositionedEdge edge, StringBuilder builder)
-		{
-			string sourceNodeName = nodeNames[edge.SourceNode];
-			string targetNodeName = nodeNames[edge.TargetNode];
-			
-			builder.AppendLine(string.Format("{0} -> {1}", sourceNodeName, targetNodeName));
+			dotStringBuilder.AppendLine("}");
+			return dotStringBuilder.ToString();
 		}
 		
 		private bool validateSplinePoints(PositionedEdge edge)
 		{
-			// must have correct number of points: one start point and 3 points for every bezier segment
+			// must have correct number of points: one start point and 3 points per bezier segment
 			return ((edge.SplinePoints.Count - 1) % 3) == 0;
 		}
 		
@@ -112,6 +91,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				transform.NeatoShiftX = neatoFirstNodePos.X - firstNodePosOur.X;
 				transform.NeatoShiftY = neatoFirstNodePos.Y - firstNodePosOur.Y;
 				
+				// assume that edges on output are in the same order as posGraph.Edges (!)
 				foreach (PositionedEdge posEdge in posGraph.Edges)
 				{
 					skipAfterPattern(reader, "edge ");

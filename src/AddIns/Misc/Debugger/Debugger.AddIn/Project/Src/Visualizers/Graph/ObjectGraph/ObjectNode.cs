@@ -51,7 +51,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		private bool sorted = false;
 
-		private List<ObjectProperty> _properties = new List<ObjectProperty>();
+		private List<ObjectProperty> properties = new List<ObjectProperty>();
 		/// <summary>
 		/// Properties (either atomic or complex) of the object this node represents.
 		/// </summary>
@@ -61,10 +61,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 			{ 
 				if (!sorted)
 				{
-					_properties.Sort(propertySortComparer);
+					properties.Sort(propertySortComparer);
 					sorted = true;
 				}
-				return _properties; 
+				return properties; 
 			}
 		}
 		/// <summary>
@@ -87,7 +87,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		internal void AddAtomicProperty(string name, string value, Expression expression)
 		{
-			_properties.Add(new ObjectProperty
+			properties.Add(new ObjectProperty
 			                { Name = name, Value = value, Expression = expression, IsAtomic = true, TargetNode = null });
 		}
 		
@@ -96,7 +96,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		internal void AddComplexProperty(string name, string value, Expression expression, ObjectNode targetNode)
 		{
-			_properties.Add(new ObjectProperty
+			properties.Add(new ObjectProperty
 			                { Name = name, Value = value, Expression = expression, IsAtomic = false, TargetNode = targetNode });
 		}
 	}

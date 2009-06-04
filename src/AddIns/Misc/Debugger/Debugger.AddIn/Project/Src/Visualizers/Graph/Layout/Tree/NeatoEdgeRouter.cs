@@ -30,14 +30,19 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <returns><see cref="PositionedGraph" /> with preserved node positions and calculated edge positions.</returns>
 		public PositionedGraph CalculateEdges(PositionedGraph graphWithNodesPositioned)
 		{
-			DotGraph dotGraph = new DotGraph(graphWithNodesPositioned);
+			DotFormatter dotFormatter = new RecordDotFormatter(graphWithNodesPositioned);
 			
+			// start Neato.exe
 			NeatoProcess neatoProcess = NeatoProcess.Start();
-			// convert PosGraph to .dot string, pass to neato.exe
-			string dotGraphStringWithPositions = neatoProcess.CalculatePositions(dotGraph.DotGraphString);
+			
+			// convert PosGraph to .dot string
+			string dotGraphString = dotFormatter.OutputGraphInDotFormat();
+				
+			// pass to neato.exe
+			string dotGraphStringWithPositions = neatoProcess.CalculatePositions(dotGraphString);
 			
 			// parse edge positions from neato's plain output format
-			PositionedGraph result = dotGraph.ParseEdgePositions(dotGraphStringWithPositions);
+			PositionedGraph result = dotFormatter.ParseEdgePositions(dotGraphStringWithPositions);
 			
 			return result;
 		}

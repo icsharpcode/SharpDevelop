@@ -9,9 +9,13 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Description of TreeEdge.
+	/// Edge in the tree-layouted <see cref="PositionedGraph"/>.
 	/// </summary>
-	public class TreeEdge : PositionedEdge
+	public class TreeGraphEdge : PositionedEdge
 	{
+		/// <summary>
+		/// Is this a main edges making up the tree?
+		/// </summary>
+		public bool IsTreeEdge { get; set; }
 	}
 }

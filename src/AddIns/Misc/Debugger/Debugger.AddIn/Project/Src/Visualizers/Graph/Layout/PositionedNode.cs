@@ -12,20 +12,39 @@ using System.Windows;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Node with added position information.
+	/// ObjectNode with added position information.
 	/// </summary>
 	public class PositionedNode
 	{
 		private ObjectNode objectNode;
+		/// <summary>
+		/// Underlying ObjectNode.
+		/// </summary>
 		public ObjectNode ObjectNode
 		{
 			get { return objectNode; }
 		}
 		
-		public PositionedNode(NodeControl nodeVisualControl, ObjectNode objectNode)
+		private List<PositionedNodeProperty> properties = new List<PositionedNodeProperty>();
+		public List<PositionedNodeProperty> Properties
 		{
-			this.nodeVisualControl = nodeVisualControl;
+			get
+			{
+				return this.properties;
+			}
+		}
+		
+		/// <summary>
+		/// Creates new PositionedNode.
+		/// </summary>
+		/// <param name="objectNode">Underlying ObjectNode.</param>
+		public PositionedNode(ObjectNode objectNode)
+		{
 			this.objectNode = objectNode;
+			
+			this.nodeVisualControl = new NodeControl();
+			this.nodeVisualControl.GraphNode = this.objectNode;	// display
+			this.nodeVisualControl.Measure(new Size(500, 500));
 		}
 		
 		public double Left { get; set; }
@@ -67,7 +86,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			get
 			{
-				return new PositionedEdge[]{};
+				foreach	(PositionedNodeProperty property in this.Properties)
+				{
+					yield return property.Edge;
+				}
 			}
 		}
 	}

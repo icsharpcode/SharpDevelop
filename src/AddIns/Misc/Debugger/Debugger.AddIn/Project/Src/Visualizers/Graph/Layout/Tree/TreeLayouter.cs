@@ -57,11 +57,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			seenNodes.Add(objectGraphNode, null);
 			
-			NodeControl nodeVisualControl = new NodeControl();
-			nodeVisualControl.GraphNode = objectGraphNode;
-			nodeVisualControl.Measure(new Size(500, 500));
-			
-			TreeNode newTreeNode = TreeNode.Create(this.layoutDirection, nodeVisualControl, objectGraphNode);
+			TreeNode newTreeNode = TreeNode.Create(this.layoutDirection, objectGraphNode);
 			newTreeNode.HorizontalMargin = horizNodeMargin;
 			newTreeNode.VerticalMargin = vertNodeMargin;
 			resultGraph.nodes.Add(newTreeNode);
@@ -73,17 +69,22 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				if (property.TargetNode != null)
 				{
 					ObjectNode neighbor = property.TargetNode;
+					TreeNode targetTreeNode = null;
+					bool newEdgeIsTreeEdge = false;
 					if (seenNodes.ContainsKey(neighbor))
 					{
-						newTreeNode.AdditionalNeighbors.Add(new TreeEdge { Name = property.Name, SourceNode = newTreeNode, TargetNode = treeNodeFor[neighbor]});
+						targetTreeNode = treeNodeFor[neighbor];
+						newEdgeIsTreeEdge = false;
 					}
 					else
 					{
-						TreeNode newChild = buildTreeRecursive(neighbor);
-						newTreeNode.ChildEdges.Add(new TreeEdge { Name = property.Name, SourceNode = newTreeNode, TargetNode = newChild});
-						
-						subtreeSize += newChild.SubtreeSize;
+						targetTreeNode = buildTreeRecursive(neighbor);
+						newEdgeIsTreeEdge = true;
+						subtreeSize += targetTreeNode.SubtreeSize;
 					}
+					var posNodeProperty = new PositionedNodeProperty(property);
+					posNodeProperty.Edge = new TreeGraphEdge	{ IsTreeEdge = newEdgeIsTreeEdge, Name = property.Name, SourceNode = newTreeNode, TargetNode = targetTreeNode };
+					newTreeNode.Properties.Add(posNodeProperty);
 				}
 			}
 			subtreeSize = Math.Max(newTreeNode.LateralSizeWithMargin, subtreeSize);
