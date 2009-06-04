@@ -130,9 +130,13 @@ namespace ICSharpCode.PythonBinding
 			return text.ToString();
 		}
 		
+		/// <summary>
+		/// Returns the string enclosed by double quotes.
+		/// Escapes any double quotes or backslashes in the string itself.
+		/// </summary>
 		static string GetQuotedString(string text)
 		{
-			return "\"" + text.Replace(@"\", @"\\") + "\"";
+			return "\"" + text.Replace(@"\", @"\\").Replace("\"", "\\\"") + "\"";
 		}
 	}
 }

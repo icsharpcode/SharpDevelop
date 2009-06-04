@@ -91,5 +91,13 @@ namespace PythonBinding.Tests.Designer
 			string expectedText = "\"c:\\\\temp\"";
 			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(text));
 		}
+		
+		[Test]
+		public void DoubleQuoteCharactersEncodedInStrings()
+		{
+			string text = "c:\\te\"mp";
+			string expectedText = "\"c:\\\\te\\\"mp\"";
+			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(text));
+		}
 	}
 }
