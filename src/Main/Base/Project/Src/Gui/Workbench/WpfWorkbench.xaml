@@ -9,6 +9,6 @@
 		<Menu Name="mainMenu" DockPanel.Dock="Top"/>
 		<!-- Toolbars will be inserted here (index: 1) -->
 		<!-- Statusbar will be inserted here (index: Count-2) -->
-		<ContentControl Name="mainContent"/>
+		<ContentControl Name="mainContent" Focusable="False"/>
 	</DockPanel>
 </Window>

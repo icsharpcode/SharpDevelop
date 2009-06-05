@@ -283,10 +283,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Inserts text.
 		/// Runtime:
-		///  for updating the text buffer: m=size of new text, d=distance to last change
+		///  for updating the text buffer: m=size of new text, d=distance to last change, n=total text length
 		/// 	usual:	O(m+d)
 		/// 	rare:	O(m+n)
-		///  for updating the document lines: O(m*log n), m=number of changed lines
+		///  for updating the document lines: O(m*log n), m=number of changed lines, n=total number of lines in document
 		/// </summary>
 		public void Insert(int offset, string text)
 		{
@@ -295,11 +295,19 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Removes text.
+		/// </summary>
+		public void Remove(ISegment segment)
+		{
+			Replace(segment, string.Empty);
+		}
+		
+		/// <summary>
+		/// Removes text.
 		/// Runtime:
-		///  for updating the text buffer: d=distance to last change
+		///  for updating the text buffer: d=distance to last change, n=total text length
 		/// 	usual:	O(d)
 		/// 	rare:	O(n)
-		///  for updating the document lines: O(m*log n), m=number of changed lines
+		///  for updating the document lines: O(m*log n), m=number of changed lines, n=total number of lines in document
 		/// </summary>
 		public void Remove(int offset, int length)
 		{
@@ -315,60 +323,140 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			if (segment == null)
 				throw new ArgumentNullException("segment");
-			Replace(segment.Offset, segment.Length, text);
+			Replace(segment.Offset, segment.Length, text, null);
+		}
+		
+		/// <summary>
+		/// Replaces text.
+		/// </summary>
+		public void Replace(int offset, int length, string text)
+		{
+			Replace(offset, length, text, null);
 		}
 		
 		/// <summary>
 		/// Replaces text.
 		/// Runtime:
-		///  for updating the text buffer: m=size of new text, d=distance to last change
+		///  for updating the text buffer: m=size of new text, d=distance to last change, n=total text length
 		/// 	usual:	O(m+d)
 		/// 	rare:	O(m+n)
-		///  for updating the document lines: O(m*log n), m=number of changed lines
+		///  for updating the document lines: O(m*log n), m=number of changed lines, n=total number of lines in document
 		/// </summary>
-		public void Replace(int offset, int length, string text)
+		/// <param name="offset">The starting offset of the text to be replaced.</param>
+		/// <param name="length">The length of the text to be replaced.</param>
+		/// <param name="text">The new text.</param>
+		/// <param name="offsetChangeMappingType">The offsetChangeMappingType determines how offsets inside the old text are mapped to the new text.
+		/// This affects how the anchors and segments inside the replaced region behave.</param>
+		public void Replace(int offset, int length, string text, OffsetChangeMappingType offsetChangeMappingType)
 		{
-			if (inDocumentChanging)
-				throw new InvalidOperationException("Cannot change document within another document change.");
+			if (text == null)
+				throw new ArgumentNullException("text");
+			// Please see OffsetChangeMappingType XML comments for details on how these modes work.
+			switch (offsetChangeMappingType) {
+				case OffsetChangeMappingType.Normal:
+					Replace(offset, length, text, null);
+					break;
+				case OffsetChangeMappingType.RemoveAndInsert:
+					if (length == 0 || text.Length == 0) {
+						// only insertion or only removal?
+						// OffsetChangeMappingType doesn't matter, just use Normal.
+						Replace(offset, length, text, null);
+					} else {
+						OffsetChangeMap map = new OffsetChangeMap(2);
+						map.Add(new OffsetChangeMapEntry(offset, length, 0));
+						map.Add(new OffsetChangeMapEntry(offset, 0, text.Length));
+						Replace(offset, length, text, map);
+					}
+					break;
+				case OffsetChangeMappingType.CharacterReplace:
+					if (length == 0 || text.Length == 0) {
+						// only insertion or only removal?
+						// OffsetChangeMappingType doesn't matter, just use Normal.
+						Replace(offset, length, text, null);
+					} else if (text.Length > length) {
+						OffsetChangeMap map = new OffsetChangeMap(1);
+						// look at OffsetChangeMappingType.CharacterReplace XML comments on why we need to replace
+						// the last 
+						map.Add(new OffsetChangeMapEntry(offset + length - 1, 1, 1 + text.Length - length));
+						Replace(offset, length, text, map);
+					} else if (text.Length < length) {
+						OffsetChangeMap map = new OffsetChangeMap(1);
+						map.Add(new OffsetChangeMapEntry(offset + length - text.Length, length - text.Length, 0));
+						Replace(offset, length, text, map);
+					} else {
+						Replace(offset, length, text, OffsetChangeMap.Empty);
+					}
+					break;
+				default:
+					throw new ArgumentOutOfRangeException("offsetChangeMappingType", offsetChangeMappingType, "Invalid enum value");
+			}
+		}
+		
+		/// <summary>
+		/// Replaces text.
+		/// Runtime:
+		///  for updating the text buffer: m=size of new text, d=distance to last change, n=total text length
+		/// 	usual:	O(m+d)
+		/// 	rare:	O(m+n)
+		///  for updating the document lines: O(m*log n), m=number of changed lines, n=total number of lines in document
+		/// </summary>
+		/// <param name="offset">The starting offset of the text to be replaced.</param>
+		/// <param name="length">The length of the text to be replaced.</param>
+		/// <param name="text">The new text.</param>
+		/// <param name="offsetChangeMap">The offsetChangeMap determines how offsets inside the old text are mapped to the new text.
+		/// This affects how the anchors and segments inside the replaced region behave.
+		/// If you pass null (the default when using one of the other overloads), the offsets are changed as
+		/// in OffsetChangeMappingType.Normal mode.
+		/// If you pass OffsetChangeMap.Empty, then everything will stay in its old place (OffsetChangeMappingType.CharacterReplace mode).
+		/// The offsetChangeMap must be a valid 'explanation' for the document change. See <see cref="OffsetChangeMap.IsValidForDocumentChange"/>.
+		/// </param>
+		public void Replace(int offset, int length, string text, OffsetChangeMap offsetChangeMap)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
 			BeginUpdate();
-			// protect document change against corruption by other changes inside the event handlers
-			inDocumentChanging = true;
 			try {
-				VerifyRange(offset, length);
-				if (text == null)
-					throw new ArgumentNullException("text");
-				if (length == 0 && text.Length == 0)
-					return;
-				
-				fireTextChanged = true;
-				
-				DocumentChangeEventArgs args = new DocumentChangeEventArgs(offset, length, text);
-				
-				// fire DocumentChanging event
-				if (Changing != null)
-					Changing(this, args);
-				
-				DelayedEvents delayedEvents = new DelayedEvents();
-				
-				// now do the real work
-				anchorTree.RemoveText(offset, length, delayedEvents);
-				ReplaceInternal(offset, length, text);
-				anchorTree.InsertText(offset, text.Length);
-				
-				delayedEvents.RaiseEvents();
-				
-				// fire DocumentChanged event
-				if (Changed != null)
-					Changed(this, args);
+				if (inDocumentChanging)
+					throw new InvalidOperationException("Cannot change document within another document change.");
+				// protect document change against corruption by other changes inside the event handlers
+				inDocumentChanging = true;
+				try {
+					// The range verification must wait until after the BeginUpdate() call because the document
+					// might be modified inside the UpdateStarted event.
+					VerifyRange(offset, length);
+					
+					DoReplace(offset, length, text, offsetChangeMap);
+				} finally {
+					inDocumentChanging = false;
+				}
 			} finally {
-				inDocumentChanging = false;
 				EndUpdate();
 			}
 		}
 		
-		void ReplaceInternal(int offset, int length, string text)
+		void DoReplace(int offset, int length, string text, OffsetChangeMap offsetChangeMap)
 		{
+			if (length == 0 && text.Length == 0)
+				return;
+			
+			// trying to replace a single character in 'Normal' mode?
+			// for single characters, 'CharacterReplace' mode is equivalent, but more performant
+			// (we don't have to touch the anchorTree at all in 'CharacterReplace' mode)
+			if (length == 1 && text.Length == 1 && offsetChangeMap == null)
+				offsetChangeMap = OffsetChangeMap.Empty;
+			
+			DocumentChangeEventArgs args = new DocumentChangeEventArgs(offset, length, text, offsetChangeMap);
+			
+			// fire DocumentChanging event
+			if (Changing != null)
+				Changing(this, args);
+			
+			fireTextChanged = true;
+			DelayedEvents delayedEvents = new DelayedEvents();
+			
+			// now update the textBuffer and lineTree
 			if (offset == 0 && length == textBuffer.Length) {
+				// optimize replacing the whole document
 				textBuffer.Text = text;
 				lineManager.Rebuild(text);
 			} else {
@@ -383,6 +471,22 @@ namespace ICSharpCode.AvalonEdit.Document
 				lineTree.CheckProperties();
 				#endif
 			}
+			
+			// update text anchors
+			if (offsetChangeMap == null) {
+				anchorTree.HandleTextChange(args.CreateSingleChangeMapEntry(), delayedEvents);
+			} else {
+				foreach (OffsetChangeMapEntry entry in offsetChangeMap) {
+					anchorTree.HandleTextChange(entry, delayedEvents);
+				}
+			}
+			
+			// raise delayed events after our data structures are consistent again
+			delayedEvents.RaiseEvents();
+			
+			// fire DocumentChanged event
+			if (Changed != null)
+				Changed(this, args);
 		}
 		#endregion
 		

@@ -65,6 +65,58 @@ End Class";
 			RunFormatTest(code, expected);
 		}
 		
+		[Test]
+		public void IfLineContinuationTest()
+		{
+			string expected = @"Public Class Test
+	Private Sub Tester()
+		If True _
+			Then
+			test()
+		End If
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+If True _
+Then
+test()
+End If
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
+		public void IfMultiLineContinuationTest()
+		{
+			string expected = @"Public Class Test
+	Private Sub Tester()
+		If IsCorrect(i) _
+			And _
+			IsHIgherThan(i, 5) _
+			Then
+			test()
+		End If
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+If IsCorrect(i) _
+And _
+IsHIgherThan(i, 5) _
+Then
+test()
+End If
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
 		void RunFormatTest(string code, string expectedCode)
 		{
 			using (TextEditorControl editor = new TextEditorControl()) {

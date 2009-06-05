@@ -21,12 +21,12 @@ namespace ICSharpCode.XamlBinding
 				string argumentName = null;
 				
 				var token = tokenizer.NextToken();
-				while (token.Kind != MarkupExtensionTokenKind.EOF) {
+				while (token.Kind != MarkupExtensionTokenKind.EndOfFile) {
 					switch (token.Kind) {
 						case MarkupExtensionTokenKind.TypeName:
-							info.Type = token.Value;
+							info.ExtensionType = token.Value;
 							break;
-						case MarkupExtensionTokenKind.Membername:
+						case MarkupExtensionTokenKind.MemberName:
 							argumentName = token.Value;
 							break;
 						case MarkupExtensionTokenKind.String:
@@ -49,6 +49,9 @@ namespace ICSharpCode.XamlBinding
 		
 		public static AttributeValue ParseValue(string text)
 		{
+			if (string.IsNullOrEmpty(text))
+				return new AttributeValue(string.Empty);
+			
 			if (text.StartsWith("{", StringComparison.OrdinalIgnoreCase))
 				return new AttributeValue(Parse(text));
 			else

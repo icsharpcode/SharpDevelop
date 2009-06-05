@@ -9,7 +9,7 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	public class TemplateCompletionItemProvider : AbstractCompletionItemProvider
 	{

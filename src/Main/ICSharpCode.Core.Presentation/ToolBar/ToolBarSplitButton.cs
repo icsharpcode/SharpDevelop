@@ -33,6 +33,8 @@ namespace ICSharpCode.Core.Presentation
 				image.Height = 16;
 				image.SetResourceReference(StyleProperty, ToolBarService.ImageStyleKey);
 				this.Content = new PixelSnapper(image);
+			} else {
+				this.Content = codon.Id;
 			}
 			
 			menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
@@ -46,9 +48,6 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void UpdateText()
 		{
-			if (codon.Properties.Contains("label")){
-				this.Content = StringParser.Parse(codon.Properties["label"]);
-			}
 			if (codon.Properties.Contains("tooltip")) {
 				this.ToolTip = StringParser.Parse(codon.Properties["tooltip"]);
 			}

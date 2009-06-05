@@ -49,16 +49,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			} else {
 				guiBuildProgressMonitor = new CancellableProgressMonitor(StatusBarService.CreateProgressMonitor());
 				Gui.WorkbenchSingleton.Workbench.GetPad(typeof(Gui.CompilerMessageView)).BringPadToFront();
-				GuiBuildStarted.RaiseEvent(null, new BuildEventArgs(project, options));
+				ProjectService.RaiseEventBuildStarted(new BuildEventArgs(project, options));
 				StartBuild(project, options,
 				           new MessageViewSink(TaskService.BuildMessageViewCategory),
 				           guiBuildProgressMonitor);
 			}
 		}
-		
-		// TODO: in 4.0, replace ProjectService.BuildStarted/BuildFinished with these events
-		public static event EventHandler<BuildEventArgs> GuiBuildStarted;
-		public static event EventHandler<BuildEventArgs> GuiBuildFinished;
 		
 		/// <summary>
 		/// Gets whether there is a build currently running inside the SharpDevelop GUI.
@@ -110,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				WorkbenchSingleton.SafeThreadAsyncCall(
 					delegate {
 						guiBuildProgressMonitor = null;
-						GuiBuildFinished.RaiseEvent(null, new BuildEventArgs(buildable, options, results));
+						ProjectService.RaiseEventBuildFinished(new BuildEventArgs(buildable, options, results));
 					});
 			}
 		}

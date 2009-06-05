@@ -36,12 +36,15 @@ namespace ICSharpCode.PythonBinding
 				ConstantExpression constantExpression = a.Expression as ConstantExpression;
 				MemberExpression memberExpression = a.Expression as MemberExpression;
 				CallExpression callExpression = a.Expression as CallExpression;
+				NameExpression nameExpression = a.Expression as NameExpression;
 				if (constantExpression != null) {
 					args.Add(constantExpression.Value);
 				} else if (memberExpression != null) {
 					args.Add(Deserialize(memberExpression));
-				} else if(callExpression != null) {
+				} else if (callExpression != null) {
 					args.Add(Deserialize(callExpression));
+				} else if (nameExpression != null) {
+					args.Add(Deserialize(nameExpression));
 				}
 			}
 			return args;
@@ -71,7 +74,7 @@ namespace ICSharpCode.PythonBinding
 			}
 			return null;
 		}
-		
+				
 		/// <summary>
 		/// Deserializes expressions of the form:
 		/// 
@@ -85,7 +88,7 @@ namespace ICSharpCode.PythonBinding
 			int value = Convert.ToInt32(lhs) | Convert.ToInt32(rhs);
 			return Enum.ToObject(lhs.GetType(), value);			
 		}
-
+		
 		/// <summary>
 		/// Deserializes expressions of the form:
 		/// 
@@ -125,6 +128,19 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return componentCreator.GetInstance(PythonControlFieldExpression.GetVariableName(field.MemberName));
+		}
+		
+		/// <summary>
+		/// Deserializes expressions of the form:
+		/// 
+		/// 1) self
+		/// </summary>
+		object Deserialize(NameExpression nameExpression)
+		{
+			if ("self" == nameExpression.Name.ToString().ToLowerInvariant()) {
+				return componentCreator.RootComponent;
+			}
+			return null;
 		}
 		
 		Type GetType(PythonControlFieldExpression field)

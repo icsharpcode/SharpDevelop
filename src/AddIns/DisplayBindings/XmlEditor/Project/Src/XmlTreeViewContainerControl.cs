@@ -28,11 +28,10 @@ namespace ICSharpCode.XmlEditor
 		bool dirty;
 		bool errorMessageTextBoxVisible;
 		bool attributesGridVisible = true;
-		bool textBoxVisible;
 		
 		[Flags]
-		public enum XmlTreeViewContainerControlState {
-			Nothing             = 0,
+		internal enum XmlTreeViewContainerControlStates {
+			None                = 0,
 			ElementSelected     = 1,
 			RootElementSelected = 2,
 			AttributeSelected   = 4,
@@ -53,21 +52,21 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public Enum InternalState {
 			get {
-				XmlTreeViewContainerControlState state = XmlTreeViewContainerControlState.Nothing;
+				XmlTreeViewContainerControlStates state = XmlTreeViewContainerControlStates.None;
 				if (SelectedElement != null) {
-					state |= XmlTreeViewContainerControlState.ElementSelected;
+					state |= XmlTreeViewContainerControlStates.ElementSelected;
 					if (SelectedElement == Document.DocumentElement) {
-						state |= XmlTreeViewContainerControlState.RootElementSelected;
+						state |= XmlTreeViewContainerControlStates.RootElementSelected;
 					}
 				}
 				if (SelectedAttribute != null) {
-					state |= XmlTreeViewContainerControlState.AttributeSelected;
+					state |= XmlTreeViewContainerControlStates.AttributeSelected;
 				}
 				if (SelectedTextNode != null) {
-					state = XmlTreeViewContainerControlState.TextNodeSelected;
+					state = XmlTreeViewContainerControlStates.TextNodeSelected;
 				}
 				if (SelectedComment != null) {
-					state = XmlTreeViewContainerControlState.CommentSelected;
+					state = XmlTreeViewContainerControlStates.CommentSelected;
 				}
 				return state;
 			}
@@ -155,13 +154,13 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Displays the specified xml as a tree.
 		/// </summary>
-		public void LoadXml(string xml, XmlCompletionDataProvider completionDataProvider)
+		public void LoadXml(string xml, XmlCompletionDataProvider provider)
 		{
 			textBox.Clear();
 			IsAttributesGridVisible = true;
 			ClearAttributes();
 			
-			editor = new XmlTreeEditor(this, completionDataProvider);
+			editor = new XmlTreeEditor(this, provider);
 			editor.LoadXml(xml);
 			
 			// Expand document element node.
@@ -826,7 +825,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// This method is protected so we can test it.
 		/// </summary>
-		protected void AttributesGridPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+		protected void AttributesGridPropertyValueChanged(object sender, PropertyValueChangedEventArgs e)
 		{
 			bool previousIsDirty = dirty;
 			editor.AttributeValueChanged();
@@ -907,7 +906,6 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		bool IsTextBoxVisible {
 			set {
-				textBoxVisible = value;
 				if (value) {
 					textBox.BringToFront();
 					textBox.TabStop = true;

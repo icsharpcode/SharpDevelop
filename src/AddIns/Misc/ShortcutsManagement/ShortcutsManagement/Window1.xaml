@@ -1,0 +1,10 @@
+﻿<Window x:Class="ICSharpCode.ShortcutsManagement.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ICSharpCode.ShortcutsManagement"
+    Title="Window1" Height="300" Width="460" MinWidth="460">
+
+    <Grid>
+	<local:ShortcutsManagementOptionsPanel />
+    </Grid>
+</Window>

@@ -55,28 +55,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Shows a new <see cref="IPadContent"/>.
 		/// </summary>
-		void ShowPad(PadDescriptor content);
+		void ShowPad(PadDescriptor padDescriptor);
 		
 		/// <summary>
 		/// Activates a pad (Show only makes it visible but Activate does
 		/// bring it to foreground)
 		/// </summary>
-		void ActivatePad(PadDescriptor content);
+		void ActivatePad(PadDescriptor padDescriptor);
 		
 		/// <summary>
 		/// Hides a <see cref="IPadContent"/>.
 		/// </summary>
-		void HidePad(PadDescriptor content);
+		void HidePad(PadDescriptor padDescriptor);
 		
 		/// <summary>
 		/// Closes and disposes a <see cref="IPadContent"/>.
 		/// </summary>
-		void UnloadPad(PadDescriptor content);
+		void UnloadPad(PadDescriptor padDescriptor);
 		
 		/// <summary>
 		/// returns true, if padContent is visible;
 		/// </summary>
-		bool IsVisible(PadDescriptor padContent);
+		bool IsVisible(PadDescriptor padDescriptor);
 		
 		/// <summary>
 		/// Shows a new <see cref="IViewContent"/> and optionally switches to it.

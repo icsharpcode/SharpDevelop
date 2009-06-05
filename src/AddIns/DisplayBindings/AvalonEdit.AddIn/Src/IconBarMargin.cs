@@ -7,13 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -38,16 +37,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		protected override void OnTextViewChanged(TextView oldTextView, TextView newTextView)
 		{
 			if (oldTextView != null) {
-				oldTextView.VisualLinesChanged -= TextViewVisualLinesChanged;
+				oldTextView.VisualLinesChanged -= OnRedrawRequested;
+				manager.RedrawRequested -= OnRedrawRequested;
 			}
 			base.OnTextViewChanged(oldTextView, newTextView);
 			if (newTextView != null) {
-				newTextView.VisualLinesChanged += TextViewVisualLinesChanged;
+				newTextView.VisualLinesChanged += OnRedrawRequested;
+				manager.RedrawRequested += OnRedrawRequested;
 			}
 			InvalidateVisual();
 		}
 		
-		void TextViewVisualLinesChanged(object sender, EventArgs e)
+		void OnRedrawRequested(object sender, EventArgs e)
 		{
 			InvalidateVisual();
 		}

@@ -111,21 +111,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class Build : AbstractBuildMenuCommand
 	{
-		public override void BeforeBuild()
-		{
-			base.BeforeBuild();
-			ProjectService.RaiseEventStartBuild();
-		}
-		
 		public override void StartBuild()
 		{
 			BuildEngine.BuildInGui(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Build, CallbackMethod));
-		}
-		
-		public override void AfterBuild()
-		{
-			ProjectService.RaiseEventEndBuild(new BuildEventArgs(LastBuildResults));
-			base.AfterBuild();
 		}
 	}
 	
@@ -212,21 +200,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			this.targetProject = targetProject;
 		}
 		
-		public override void BeforeBuild()
-		{
-			base.BeforeBuild();
-			ProjectService.RaiseEventStartBuild();
-		}
-		
 		public override void StartBuild()
 		{
 			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Build, CallbackMethod));
-		}
-		
-		public override void AfterBuild()
-		{
-			ProjectService.RaiseEventEndBuild(new BuildEventArgs(LastBuildResults));
-			base.AfterBuild();
 		}
 	}
 	

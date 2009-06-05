@@ -10,6 +10,7 @@
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.FullProject</Icon>
 		<Description>${res:Templates.Project.Direct3DApplication.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -19,6 +20,10 @@
 	
 	<!-- Template Content -->
 	<Project language="VBNet">
+		<CreateActions>
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
+		</CreateActions>
+		
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />
@@ -43,6 +48,7 @@
 			<OutputType>WinExe</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
 			<StartupObject>${StandardNamespace}.MainClass</StartupObject>
+			<OptionInfer>On</OptionInfer>
 		</PropertyGroup>
 		
 		<Files>

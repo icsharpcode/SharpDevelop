@@ -17,9 +17,9 @@ namespace ICSharpCode.XamlBinding
 {
 	public class MarkupExtensionInfo
 	{
-		public string Type { get; set; }
-		public IList<AttributeValue> PositionalArguments { get; set; }
-		public IDictionary<string, AttributeValue> NamedArguments { get; set; }
+		public string ExtensionType { get; set; }
+		public IList<AttributeValue> PositionalArguments { get; private set; }
+		public IDictionary<string, AttributeValue> NamedArguments { get; private set; }
 				
 		public MarkupExtensionInfo()
 			: this(string.Empty, new List<AttributeValue>(), new Dictionary<string, AttributeValue>())
@@ -28,7 +28,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public MarkupExtensionInfo(string type, IList<AttributeValue> posArgs, IDictionary<string, AttributeValue> namedArgs)
 		{
-			this.Type = type;
+			this.ExtensionType = type;
 			this.PositionalArguments = posArgs;
 			this.NamedArguments = namedArgs;
 		}
@@ -57,7 +57,6 @@ namespace ICSharpCode.XamlBinding
 				throw new ArgumentNullException("value");
 			
 			this.stringValue = value;
-			this.extensionValue = null;
 		}
 		
 		public AttributeValue(MarkupExtensionInfo value)
@@ -65,7 +64,6 @@ namespace ICSharpCode.XamlBinding
 			if (value == null)
 				throw new ArgumentNullException("value");
 			
-			this.stringValue = null;
 			this.extensionValue = value;
 		}
 	}

@@ -90,8 +90,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 			startup.RunInitialization();
 			
 			// Register events to marshal back
-			Project.ProjectService.StartBuild += delegate { this.callback.StartBuild(); };
-			Project.ProjectService.EndBuild   += delegate { this.callback.EndBuild(); };
+			Project.ProjectService.BuildStarted   += delegate { this.callback.StartBuild(); };
+			Project.ProjectService.BuildFinished  += delegate { this.callback.EndBuild(); };
 			Project.ProjectService.SolutionLoaded += delegate { this.callback.SolutionLoaded(); };
 			Project.ProjectService.SolutionClosed += delegate { this.callback.SolutionClosed(); };
 			Project.ProjectService.SolutionConfigurationChanged += delegate { this.callback.SolutionConfigurationChanged(); };

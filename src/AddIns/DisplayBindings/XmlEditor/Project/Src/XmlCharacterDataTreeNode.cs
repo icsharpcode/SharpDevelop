@@ -18,7 +18,7 @@ namespace ICSharpCode.XmlEditor
 	{
 		XmlCharacterData characterData;
 		
-		public XmlCharacterDataTreeNode(XmlCharacterData characterData)
+		protected XmlCharacterDataTreeNode(XmlCharacterData characterData)
 		{
 			this.characterData = characterData;
 		}
@@ -50,11 +50,11 @@ namespace ICSharpCode.XmlEditor
 					if (lines.Length == 1) {
 						return line;
 					} else {
-						return String.Concat(line, "...");
+						return string.Concat(line, "...");
 					}
 				}
 			}
-			return String.Empty;
+			return string.Empty;
 		}
 	}
 }

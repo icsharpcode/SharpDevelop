@@ -553,22 +553,34 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public static void RaiseEventStartBuild()
+		/// <summary>
+		/// Raises the <see cref="BuildStarted"/> event.
+		/// 
+		/// You do not need to call this method if you use BuildEngine.BuildInGui - the build
+		/// engine will call these events itself.
+		/// </summary>
+		public static void RaiseEventBuildStarted(BuildEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException("e");
 			WorkbenchSingleton.AssertMainThread();
 			building = true;
-			if (StartBuild != null) {
-				StartBuild(null, EventArgs.Empty);
-			}
+			BuildStarted.RaiseEvent(null, e);
 		}
 		
-		public static void RaiseEventEndBuild(BuildEventArgs e)
+		/// <summary>
+		/// Raises the <see cref="BuildFinished"/> event.
+		/// 
+		/// You do not need to call this method if you use BuildEngine.BuildInGui - the build
+		/// engine will call these events itself.
+		/// </summary>
+		public static void RaiseEventBuildFinished(BuildEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException("e");
 			WorkbenchSingleton.AssertMainThread();
 			building = false;
-			if (EndBuild != null) {
-				EndBuild(null, e);
-			}
+			BuildFinished.RaiseEvent(null, e);
 		}
 		
 		public static void RemoveSolutionFolder(string guid)
@@ -646,8 +658,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static event ProjectEventHandler ProjectAdded;
 		public static event SolutionFolderEventHandler SolutionFolderRemoved;
 		
-		public static event EventHandler StartBuild;
-		public static event EventHandler<BuildEventArgs> EndBuild;
+		public static event EventHandler<BuildEventArgs> BuildStarted;
+		public static event EventHandler<BuildEventArgs> BuildFinished;
 		
 		public static event SolutionConfigurationEventHandler SolutionConfigurationChanged;
 		
@@ -703,12 +715,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("options");
 			this.Buildable = buildable;
 			this.Options = options;
-			this.Results = results;
-		}
-		
-		public BuildEventArgs(BuildResults results)
-		{
-			// TODO: remove this constructor in 4.0
 			this.Results = results;
 		}
 	}

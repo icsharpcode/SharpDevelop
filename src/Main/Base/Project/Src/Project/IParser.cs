@@ -5,15 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Dom;
 using System;
-//using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Dom
+namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
-	/// TODO: find a better matching namespace - this class is in ICSharpCode.SharpDevelop.dll,
-	/// not in Dom!
+	/// Represents a language parser that produces ICompilationUnit instances
+	/// for code files.
 	/// </summary>
 	public interface IParser
 	{

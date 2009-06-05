@@ -40,9 +40,7 @@ namespace XmlEditor.Tests.Tree
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			if (!PropertyService.Initialized) {
-				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
-			}
+			PropertyService.InitializeServiceForUnitTests();
 		}
 		
 		[SetUp]
@@ -183,7 +181,7 @@ namespace XmlEditor.Tests.Tree
 			customNameTextBox.Text = "<element>";
 			dialog.CallCustomNameTextBoxTextChanged();
 			
-			string error = dialog.GetError();
+			string error = dialog.ErrorText;
 			string expectedError = null;
 			
 			try {
@@ -202,7 +200,7 @@ namespace XmlEditor.Tests.Tree
 			customNameTextBox.Text = "xsl:test:this";
 			dialog.CallCustomNameTextBoxTextChanged();
 			
-			string error = dialog.GetError();
+			string error = dialog.ErrorText;
 			Assert.IsFalse(okButton.Enabled);
 			Assert.IsTrue(error.Length > 0);
 		}
@@ -213,7 +211,7 @@ namespace XmlEditor.Tests.Tree
 			customNameTextBox.Text = "xsl:test";
 			dialog.CallCustomNameTextBoxTextChanged();
 			
-			string error = dialog.GetError();
+			string error = dialog.ErrorText;
 			Assert.IsTrue(okButton.Enabled);
 			Assert.AreEqual(0, error.Length);
 		}
@@ -224,7 +222,7 @@ namespace XmlEditor.Tests.Tree
 			customNameTextBox.Text = ":test";
 			dialog.CallCustomNameTextBoxTextChanged();
 			
-			string error = dialog.GetError();
+			string error = dialog.ErrorText;
 			Assert.IsFalse(okButton.Enabled);
 			Assert.IsTrue(error.Length > 0);
 		}
@@ -237,7 +235,7 @@ namespace XmlEditor.Tests.Tree
 			dialog.CallCustomNameTextBoxTextChanged();
 			
 			Assert.IsTrue(okButton.Enabled);
-			Assert.AreEqual(0, dialog.GetError().Length);
+			Assert.AreEqual(0, dialog.ErrorText.Length);
 		}
 		
 		[Test]

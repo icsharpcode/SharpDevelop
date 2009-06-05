@@ -5,51 +5,52 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.XmlEditor;
-using NUnit.Framework;
+using ICSharpCode.SharpDevelop.Tests.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
 using System.Xml;
 using System.Xml.XPath;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.XmlEditor;
+using NUnit.Framework;
 using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.XPathQuery
 {
 	[TestFixture]
 	public class XPathNodeTextMarkerTests
-	{		
+	{
 		[Test]
 		public void OneNodeMarked()
 		{
 			string xml = "<root><foo/></root>";
 			XPathNodeMatch[] nodes = XmlView.SelectNodes(xml, "//root");
 			
-			IDocument doc = MockDocument.Create();
-			doc.TextContent = xml;
-			MarkerStrategy markerStrategy = new MarkerStrategy(doc);
-			XPathNodeTextMarker.AddMarkers(markerStrategy, nodes);
+			IDocument doc = MockTextMarkerService.CreateDocumentWithMockService();
+			doc.Text = xml;
+			XPathNodeTextMarker.AddMarkers(doc, nodes);
 			
-			List<TextMarker> markers = new List<TextMarker>();
-			foreach (TextMarker marker in markerStrategy.TextMarker) {
+			ITextMarkerService service = doc.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			
+			List<ITextMarker> markers = new List<ITextMarker>();
+			foreach (ITextMarker marker in service.TextMarkers) {
 				markers.Add(marker);
 			}
 			
 			// Remove markers.
-			XPathNodeTextMarker.RemoveMarkers(markerStrategy);
-			List<TextMarker> markersAfterRemove = new List<TextMarker>();
-			foreach (TextMarker markerAfterRemove in markerStrategy.TextMarker) {
-				markers.Add(markerAfterRemove);
+			XPathNodeTextMarker.RemoveMarkers(doc);
+			List<ITextMarker> markersAfterRemove = new List<ITextMarker>();
+			foreach (ITextMarker markerAfterRemove in service.TextMarkers) {
+				markersAfterRemove.Add(markerAfterRemove);
 			}
 
-			XPathNodeTextMarker xpathNodeTextMarker = (XPathNodeTextMarker)markers[0];
-			Assert.AreEqual(1, markers.Count);
-			Assert.AreEqual(1, xpathNodeTextMarker.Offset);
-			Assert.AreEqual(4, xpathNodeTextMarker.Length);
-			Assert.AreEqual(TextMarkerType.SolidBlock, xpathNodeTextMarker.TextMarkerType);
-			Assert.AreEqual(0, markersAfterRemove.Count);
-			Assert.AreEqual(XPathNodeTextMarker.MarkerBackColor, xpathNodeTextMarker.Color);
+			ITextMarker xpathNodeTextMarker = markers[0];
+			Assert.AreEqual(1, markers.Count, "markers.Count");
+			Assert.AreEqual(1, xpathNodeTextMarker.StartOffset, "startoffset");
+			Assert.AreEqual(4, xpathNodeTextMarker.Length, "length");
+			Assert.AreEqual(0, markersAfterRemove.Count, "afterremove.count");
 		}
 		
 		/// <summary>
@@ -62,13 +63,17 @@ namespace XmlEditor.Tests.XPathQuery
 			string xml = "<!----><root/>";
 			XPathNodeMatch[] nodes = XmlView.SelectNodes(xml, "//comment()");
 			
-			IDocument doc = MockDocument.Create();
-			doc.TextContent = xml;
-			MarkerStrategy markerStrategy = new MarkerStrategy(doc);
-			XPathNodeTextMarker.AddMarkers(markerStrategy, nodes);
+			ServiceContainer container = new ServiceContainer();
+			container.AddService(typeof(MockTextMarkerService), new MockTextMarkerService());
 			
-			List<TextMarker> markers = new List<TextMarker>();
-			foreach (TextMarker marker in markerStrategy.TextMarker) {
+			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(container);
+			doc.Text = xml;
+			XPathNodeTextMarker.AddMarkers(doc, nodes);
+			
+			ITextMarkerService service = doc.GetService(typeof(MockTextMarkerService)) as ITextMarkerService;
+			
+			List<ITextMarker> markers = new List<ITextMarker>();
+			foreach (ITextMarker marker in service.TextMarkers) {
 				markers.Add(marker);
 			}
 			
@@ -89,13 +94,17 @@ namespace XmlEditor.Tests.XPathQuery
 				"<Xml1></Xml1>";
 			XPathNodeMatch[] nodes = XmlView.SelectNodes(xml, "//namespace::*");
 			
-			IDocument doc = MockDocument.Create();
-			doc.TextContent = xml;
-			MarkerStrategy markerStrategy = new MarkerStrategy(doc);
-			XPathNodeTextMarker.AddMarkers(markerStrategy, nodes);
+			ServiceContainer container = new ServiceContainer();
+			container.AddService(typeof(MockTextMarkerService), new MockTextMarkerService());
 			
-			List<TextMarker> markers = new List<TextMarker>();
-			foreach (TextMarker marker in markerStrategy.TextMarker) {
+			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(container);
+			doc.Text = xml;
+			XPathNodeTextMarker.AddMarkers(doc, nodes);
+			
+			ITextMarkerService service = doc.GetService(typeof(MockTextMarkerService)) as ITextMarkerService;
+			
+			List<ITextMarker> markers = new List<ITextMarker>();
+			foreach (ITextMarker marker in service.TextMarkers) {
 				markers.Add(marker);
 			}
 			Assert.AreEqual(0, markers.Count);

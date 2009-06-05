@@ -5,12 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using System;
+using System.Xml;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
-using System.Xml;
 using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Schema
@@ -23,7 +22,7 @@ namespace XmlEditor.Tests.Schema
 	{
 		XmlSchemaCompletionData schemaCompletionData;
 		XmlElementPath h1Path;
-		ICompletionData[] h1Attributes;
+		ICompletionItem[] h1Attributes;
 		string namespaceURI = "http://www.w3.org/1999/xhtml";
 		
 		[TestFixtureSetUp]

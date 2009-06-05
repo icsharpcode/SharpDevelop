@@ -80,6 +80,14 @@ namespace XmlEditor.Tests.Parser
 		}
 		
 		[Test]
+		public void InMarkupExtensionNamedParameterTest()
+		{
+			string xaml = "<Test val1=\"{Binding Value, Path=Control}\" />";
+			int offset = "<Test val1=\"{Binding Value, Path=".Length;
+			Assert.IsTrue(XmlParser.IsInsideAttributeValue(xaml, offset));
+		}
+		
+		[Test]
 		public void LeftCurlyBracketIsValidAttributeValueChar()
 		{
 			Assert.IsTrue(XmlParser.IsAttributeValueChar('{'));

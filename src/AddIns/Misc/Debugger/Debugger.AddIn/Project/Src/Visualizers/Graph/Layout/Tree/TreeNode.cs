@@ -18,11 +18,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public abstract class TreeNode : PositionedNode
 	{
-		public static TreeNode Create(LayoutDirection direction, NodeControl nodeVisualControl)
+		public static TreeNode Create(LayoutDirection direction, NodeControl nodeVisualControl, ObjectNode objectNode)
 		{
 			switch (direction) {
-					case LayoutDirection.TopBottom:	return new TreeNodeTB(nodeVisualControl);
-					case LayoutDirection.LeftRight: return new TreeNodeLR(nodeVisualControl);
+					case LayoutDirection.TopBottom:	return new TreeNodeTB(nodeVisualControl, objectNode);
+					case LayoutDirection.LeftRight: return new TreeNodeLR(nodeVisualControl, objectNode);
 					default: throw new DebuggerVisualizerException("Unsupported layout direction: " + direction.ToString());
 			}
 		}
@@ -30,7 +30,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public double HorizontalMargin { get; set; }
 		public double VerticalMargin { get; set; }
 		
-		protected TreeNode(NodeControl nodeVisualControl) : base(nodeVisualControl)
+		protected TreeNode(NodeControl nodeVisualControl, ObjectNode objectNode) : base(nodeVisualControl, objectNode)
 		{
 		}
 		
@@ -44,6 +44,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public abstract double MainSize { get; }
 		public abstract double LateralSize { get; }
+		
+		public double MainSizeWithMargin { get { return MainSize + MainMargin; } }
+		public double LateralSizeWithMargin { get { return LateralSize + LateralMargin; } }
 		
 		public abstract double MainMargin { get; }
 		public abstract double LateralMargin { get; }

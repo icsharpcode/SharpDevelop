@@ -94,7 +94,7 @@ namespace PythonBinding.Tests.Designer
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
 			
-			Assert.AreEqual(expectedCode, generatedPythonCode);
+			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}
 	}
 }

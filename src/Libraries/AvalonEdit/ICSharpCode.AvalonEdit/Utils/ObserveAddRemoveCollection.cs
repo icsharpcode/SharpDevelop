@@ -12,6 +12,8 @@ namespace ICSharpCode.AvalonEdit.Utils
 {
 	/// <summary>
 	/// A collection where adding and removing items causes a callback.
+	/// It is valid for the onAdd callback to throw an exception - this will prevent the new item from
+	/// being added to the collection.
 	/// </summary>
 	sealed class ObserveAddRemoveCollection<T> : Collection<T>
 	{
@@ -54,7 +56,8 @@ namespace ICSharpCode.AvalonEdit.Utils
 				if (onAdd != null)
 					onAdd(item);
 			} catch {
-				// when adding the new item fails, just remove the old one
+				// When adding the new item fails, just remove the old one
+				// (we cannot keep the old item since we already successfully called onRemove for it)
 				base.RemoveAt(index);
 				throw;
 			}

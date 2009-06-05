@@ -55,7 +55,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		public void UpdateEnabledState()
 		{
-			CommandManager.InvalidateRequerySuggested();
 			//splitButton.IsEnabled = NavigationService.CanNavigateBack;
 			//splitButton.IsDropDownEnabled = NavigationService.Count>1;
 		}

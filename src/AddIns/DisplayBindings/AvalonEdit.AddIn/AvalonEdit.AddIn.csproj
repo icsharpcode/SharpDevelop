@@ -74,7 +74,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\SharpDevelopCompletionWindow.cs" />
-    <Compile Include="Src\SharpDevelopInsightWindow.cs" />
+    <Compile Include="Src\SharpDevelopInsightWindow.cs">
+    </Compile>
     <Compile Include="Src\TextMarkerService.cs" />
   </ItemGroup>
   <ItemGroup>

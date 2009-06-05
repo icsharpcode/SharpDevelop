@@ -48,6 +48,8 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public PadDescriptor(Codon codon)
 		{
+			if (codon == null)
+				throw new ArgumentNullException("codon");
 			addIn = codon.AddIn;
 			shortcut = codon.Properties["shortcut"];
 			category = codon.Properties["category"];
@@ -64,6 +66,12 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public PadDescriptor(Type padType, string title, string icon)
 		{
+			if (padType == null)
+				throw new ArgumentNullException("padType");
+			if (title == null)
+				throw new ArgumentNullException("title");
+			if (icon == null)
+				throw new ArgumentNullException("icon");
 			this.padType = padType;
 			this.@class = padType.FullName;
 			this.title = title;
@@ -151,10 +159,8 @@ namespace ICSharpCode.SharpDevelop
 		
 		public void CreatePad()
 		{
-			#if DEBUG
 			if (WorkbenchSingleton.InvokeRequired)
 				throw new InvalidOperationException("This action could trigger pad creation and is only valid on the main thread!");
-			#endif
 			if (!padContentCreated) {
 				padContentCreated = true;
 				try {
@@ -178,6 +184,11 @@ namespace ICSharpCode.SharpDevelop
 				WorkbenchSingleton.Workbench.WorkbenchLayout.ShowPad(this);
 			}
 			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this);
+		}
+		
+		public override string ToString()
+		{
+			return "[PadDescriptor " + this.Class + "]";
 		}
 	}
 }

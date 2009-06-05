@@ -168,8 +168,11 @@
     <Compile Include="Src\TreeModel\StackFrameNode.cs" />
     <Compile Include="Src\TreeModel\Utils.cs" />
     <Compile Include="Src\Visualizers\Graph\DebuggerVisualizerException.cs" />
+    <Compile Include="Src\Visualizers\Graph\Drawing\CanvasLocationAdapter.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\GraphDrawer.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\GraphDiff.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\GraphMatcher.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedGraph.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedNode.cs" />
@@ -191,8 +194,9 @@
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphBuilder.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectNode.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectProperty.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectPropertyCollection.cs" />
     <Compile Include="Src\Visualizers\Graph\ShowObjectGraphVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\Graph\Utils\DebuggerHelpers.cs" />
+    <Compile Include="Src\Visualizers\Graph\Utils\DictionaryExtensions.cs" />
     <Compile Include="Src\Visualizers\Graph\Utils\Lookup.cs" />
     <Compile Include="Src\Visualizers\Graph\Utils\LookupValueCollection.cs" />
     <Compile Include="Src\Visualizers\Graph\VisualizerWinFormsControl.cs" />

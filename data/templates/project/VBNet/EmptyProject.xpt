@@ -9,6 +9,7 @@
 		<Category>VBNet</Category>
 		<Icon>VBNet.Project.EmptyProject</Icon>
 		<Description>${res:Templates.Project.EmptyProject.Description}</Description>
+		<SupportedTargetFrameworks>v2.0;CF</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<Project language = "VBNet">
@@ -20,5 +21,8 @@
 			<Import Include="System" />
 			<Import Include="Microsoft.VisualBasic" />
 		</ProjectItems>
+		<PropertyGroup>
+			<OptionInfer>On</OptionInfer>
+		</PropertyGroup>
 	</Project>
 </Template>

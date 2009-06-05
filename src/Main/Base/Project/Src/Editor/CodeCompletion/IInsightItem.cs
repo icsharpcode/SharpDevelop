@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
 	/// An item in the insight window.

@@ -37,12 +37,18 @@
     <OutputPath>..\..\..\..\..\AddIns\AddIns\BackendBindings\CSharpBinding\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
@@ -65,7 +71,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Src\CSharpCompletionBinding.cs" />
-    <Compile Include="Src\EventHandlerCompletitionDataProvider.cs" />
+    <Compile Include="Src\EventHandlerCompletionItemProvider.cs" />
     <Compile Include="Src\Project\VBNetToCSharpConverter.cs" />
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>

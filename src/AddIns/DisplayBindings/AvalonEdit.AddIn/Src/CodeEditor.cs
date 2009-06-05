@@ -9,6 +9,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,15 +19,17 @@ using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Indentation;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -61,7 +64,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			set {
 				if (document != value) {
+					if (document != null)
+						document.UpdateFinished -= DocumentUpdateFinished;
+					
 					document = value;
+					
+					if (document != null)
+						document.UpdateFinished += DocumentUpdateFinished;
 					
 					if (DocumentChanged != null) {
 						DocumentChanged(this, EventArgs.Empty);
@@ -146,14 +155,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.Background = Brushes.White;
 			textEditor.FontFamily = new FontFamily("Consolas");
 			textEditor.FontSize = 13;
-			textEditor.TextArea.TextEntered += TextArea_TextInput;
+			textEditor.TextArea.TextEntering += TextArea_TextEntering;
+			textEditor.TextArea.TextEntered += TextArea_TextEntered;
 			textEditor.MouseHover += textEditor_MouseHover;
 			textEditor.MouseHoverStopped += textEditor_MouseHoverStopped;
 			textEditor.TextArea.Caret.PositionChanged += caret_PositionChanged;
 			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
-			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
-				new CommandBinding(CustomCommands.DeleteLine, OnDeleteLine));
 			
 			textView.BackgroundRenderers.Add(textMarkerService);
 			textView.LineTransformers.Add(textMarkerService);
@@ -169,17 +177,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return textEditor;
 		}
 		
+		protected virtual void DisposeTextEditor(TextEditor textEditor)
+		{
+			// detach IconBarMargin from IconBarManager
+			textEditor.TextArea.LeftMargins.OfType<IconBarMargin>().Single().TextView = null;
+		}
+		
 		void textEditor_TextArea_TextView_ContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
-			ITextEditorComponent component = (ITextEditorComponent)sender;
-			ITextEditor adapter = (ITextEditor)component.GetService(typeof(ITextEditor));
+			ITextEditor adapter = GetAdapterFromSender(sender);
 			MenuService.CreateContextMenu(adapter, contextMenuPath).IsOpen = true;
 		}
 		
 		void textEditor_TextArea_TextView_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			ITextEditorComponent component = (ITextEditorComponent)sender;
-			TextEditor textEditor = (TextEditor)component.GetService(typeof(TextEditor));
+			TextEditor textEditor = GetTextEditorFromSender(sender);
 			var position = textEditor.GetPositionFromPoint(e.GetPosition(textEditor));
 			if (position.HasValue) {
 				textEditor.TextArea.Caret.Position = position.Value;
@@ -218,37 +230,43 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			} else {
 				// remove secondary editor
 				this.Children.Remove(secondaryTextEditor);
+				DisposeTextEditor(secondaryTextEditor);
 				secondaryTextEditor = null;
 				secondaryTextEditorAdapter = null;
 				this.RowDefinitions.RemoveAt(this.RowDefinitions.Count - 1);
 			}
 		}
 		
+		public event EventHandler CaretPositionChanged;
+		bool caretPositionWasChanged;
+		
 		void caret_PositionChanged(object sender, EventArgs e)
 		{
-			InvalidateQuickClassBrowserCaretPosition();
+			Debug.Assert(sender is Caret);
+			if (sender == this.ActiveTextEditor.TextArea.Caret) {
+				if (document.IsInUpdate)
+					caretPositionWasChanged = true;
+				else
+					HandleCaretPositionChange();
+			}
 		}
 		
-		bool quickClassBrowserCaretPositionInvalid;
-		
-		/// <summary>
-		/// Only call 'SelectItemAtCaretPosition' once when the caret position
-		/// changes multiple times (e.g. running refactoring which causes lots of caret changes).
-		/// </summary>
-		void InvalidateQuickClassBrowserCaretPosition()
+		void DocumentUpdateFinished(object sender, EventArgs e)
 		{
-			if (!quickClassBrowserCaretPositionInvalid) {
-				quickClassBrowserCaretPositionInvalid = true;
-				Dispatcher.BeginInvoke(
-					DispatcherPriority.Normal,
-					new Action(
-						delegate {
-							quickClassBrowserCaretPositionInvalid = false;
-							if (quickClassBrowser != null) {
-								quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
-							}
-						}));
+			if (caretPositionWasChanged) {
+				caretPositionWasChanged = false;
+				HandleCaretPositionChange();
 			}
+		}
+		
+		void HandleCaretPositionChange()
+		{
+			if (quickClassBrowser != null) {
+				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
+			}
+			var caret = this.ActiveTextEditor.TextArea.Caret;
+			StatusBarService.SetCaretPosition(caret.Column, caret.Line, caret.Column);
+			CaretPositionChanged.RaiseEvent(this, EventArgs.Empty);
 		}
 		
 		public void JumpTo(int line, int column)
@@ -305,15 +323,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void TextArea_TextInput(object sender, TextCompositionEventArgs e)
+		void TextArea_TextEntering(object sender, TextCompositionEventArgs e)
 		{
 			// don't start new code completion if there is still a completion window open
 			if (completionWindow != null)
 				return;
 			
-			TextArea textArea = (TextArea)sender;
-			ITextEditor adapter = (ITextEditor)textArea.GetService(typeof(ITextEditor));
-			Debug.Assert(adapter != null);
+			if (e.Handled)
+				return;
+			
+			ITextEditor adapter = GetAdapterFromSender(sender);
 			
 			foreach (char c in e.Text) {
 				foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
@@ -343,34 +362,42 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		TextEditor GetTextEditorFromRoutedCommand(object sender)
+		void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
 		{
-			TextArea textArea = (TextArea)sender;
+			if (e.Text.Length > 0 && !e.Handled) {
+				if (formattingStrategy != null) {
+					formattingStrategy.FormatLine(GetAdapterFromSender(sender), e.Text[0]);
+				}
+			}
+		}
+		
+		ITextEditor GetAdapterFromSender(object sender)
+		{
+			ITextEditorComponent textArea = (ITextEditorComponent)sender;
+			ITextEditor textEditor = (ITextEditor)textArea.GetService(typeof(ITextEditor));
+			if (textEditor == null)
+				throw new InvalidOperationException("could not find TextEditor service");
+			return textEditor;
+		}
+		
+		TextEditor GetTextEditorFromSender(object sender)
+		{
+			ITextEditorComponent textArea = (ITextEditorComponent)sender;
 			TextEditor textEditor = (TextEditor)textArea.GetService(typeof(TextEditor));
-			Debug.Assert(textEditor != null);
+			if (textEditor == null)
+				throw new InvalidOperationException("could not find TextEditor service");
 			return textEditor;
 		}
 		
 		void OnCodeCompletion(object sender, ExecutedRoutedEventArgs e)
 		{
 			CloseExistingCompletionWindows();
-			TextEditor textEditor = GetTextEditorFromRoutedCommand(sender);
+			TextEditor textEditor = GetTextEditorFromSender(sender);
 			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 				if (cc.CtrlSpace(GetAdapter(textEditor))) {
 					e.Handled = true;
 					break;
 				}
-			}
-		}
-		
-		void OnDeleteLine(object sender, ExecutedRoutedEventArgs e)
-		{
-			TextEditor textEditor = GetTextEditorFromRoutedCommand(sender);
-			e.Handled = true;
-			using (textEditor.Document.RunUpdate()) {
-				DocumentLine currentLine = textEditor.Document.GetLineByNumber(textEditor.TextArea.Caret.Line);
-				textEditor.Select(currentLine.Offset, currentLine.TotalLength);
-				textEditor.SelectedText = string.Empty;
 			}
 		}
 		
@@ -451,13 +478,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.Children.Add(quickClassBrowser);
 				}
 				quickClassBrowser.Update(parseInfo.MostRecentCompilationUnit);
-				InvalidateQuickClassBrowserCaretPosition();
+				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
 			} else {
 				if (quickClassBrowser != null) {
 					this.Children.Remove(quickClassBrowser);
 					quickClassBrowser = null;
 				}
 			}
+			iconBarManager.UpdateClassMemberBookmarks(parseInfo);
 		}
 	}
 }

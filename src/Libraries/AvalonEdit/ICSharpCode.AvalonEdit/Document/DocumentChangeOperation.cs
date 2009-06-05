@@ -18,23 +18,25 @@ namespace ICSharpCode.AvalonEdit.Document
 		int offset;
 		string removedText;
 		string insertedText;
+		OffsetChangeMap offsetChangeMap;
 		
-		public DocumentChangeOperation(TextDocument document, int offset, string removedText, string insertedText)
+		public DocumentChangeOperation(TextDocument document, int offset, string removedText, string insertedText, OffsetChangeMap offsetChangeMap)
 		{
 			this.document = document;
 			this.offset = offset;
 			this.removedText = removedText;
 			this.insertedText = insertedText;
+			this.offsetChangeMap = offsetChangeMap;
 		}
 		
 		public void Undo()
 		{
-			document.Replace(offset, insertedText.Length, removedText);
+			document.Replace(offset, insertedText.Length, removedText, offsetChangeMap != null ? offsetChangeMap.Invert() : null);
 		}
 		
 		public void Redo()
 		{
-			document.Replace(offset, removedText.Length, insertedText);
+			document.Replace(offset, removedText.Length, insertedText, offsetChangeMap);
 		}
 	}
 }

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
@@ -49,7 +50,10 @@ namespace SearchAndReplace
 		
 		public static void ShowSearchResults(string pattern, List<SearchResultMatch> results)
 		{
-			SearchResultPanel.Instance.ShowSearchResults(new SearchResult(pattern, results));
+			string title = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",
+			                                  new string[,] {{ "Pattern", pattern }});
+			SearchResultsPad.Instance.ShowSearchResults(title, results);
+			SearchResultsPad.Instance.BringToFront();
 		}
 		
 		public static void FindAll(IProgressMonitor monitor)

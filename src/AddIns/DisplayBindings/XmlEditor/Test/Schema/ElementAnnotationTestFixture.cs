@@ -5,12 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using System;
+using System.Linq;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
-using System.Xml;
 
 namespace XmlEditor.Tests.Schema
 {
@@ -21,8 +20,8 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ElementAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] fooChildElementCompletionData;
-		ICompletionData[] rootElementCompletionData;
+		ICompletionItem[] fooChildElementCompletionData;
+		ICompletionItemList rootElementCompletionData;
 		
 		public override void FixtureInit()
 		{
@@ -37,7 +36,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void RootElementDocumentation()
 		{
-			Assert.AreEqual("Documentation for foo element.", rootElementCompletionData[0].Description);
+			Assert.AreEqual("Documentation for foo element.", rootElementCompletionData.Items.ToArray()[0].Description);
 		}
 		
 		[Test]

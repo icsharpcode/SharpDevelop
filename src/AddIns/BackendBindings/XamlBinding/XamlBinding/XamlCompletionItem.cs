@@ -5,8 +5,10 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Linq;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -71,6 +73,93 @@ namespace ICSharpCode.XamlBinding
 			context.Editor.Document.Replace(context.StartOffset, context.Length, this.HandlerName);
 			
 			context.EndOffset = context.StartOffset + this.HandlerName.Length;
+		}
+	}
+	
+	class MarkupExtensionInsightItem : IInsightItem
+	{
+		IMethod ctor;
+		
+		public MarkupExtensionInsightItem(IMethod entity)
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			this.ctor = entity;
+		}
+		
+		public IMethod Ctor {
+			get { return ctor; }
+		}
+		
+		string headerText;
+		bool descriptionCreated;
+		string description;
+		
+		public object Header {
+			get {
+				if (headerText == null) {
+					IAmbience ambience = AmbienceService.GetCurrentAmbience();
+					ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
+					headerText = ambience.Convert(ctor);
+					headerText = headerText.Insert(headerText.LastIndexOf(')'), (ctor.Parameters.Count > 0 ? ", " : "") + "Named Parameters ...");
+				}
+				return headerText;
+			}
+		}
+		
+		public object Content {
+			get {
+				if (!descriptionCreated) {
+					string entityDoc = ctor.Documentation;
+					if (!string.IsNullOrEmpty(entityDoc)) {
+						description = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(entityDoc);
+					}
+					descriptionCreated = true;
+				}
+				return description;
+			}
+		}
+	}
+	
+	class MemberInsightItem : IInsightItem
+	{
+		string insightText;
+		string headerText;
+		string description;
+		bool descriptionCreated;
+		IMember member;
+		
+		public IMember Member {
+			get { return member; }
+		}
+		
+		public MemberInsightItem(IMember member, string insightText)
+		{
+			this.member = member;
+			this.insightText = insightText;
+		}
+		
+		public object Header {
+			get {
+				if (headerText == null) {
+					headerText = this.member.Name + "=\"" + insightText + "\"";
+				}
+				
+				return headerText;
+			}
+		}
+		
+		public object Content {
+			get {
+				if (!descriptionCreated) {
+					string entityDoc = member.Documentation;
+					if (!string.IsNullOrEmpty(entityDoc)) {
+						description = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(entityDoc);
+					}
+					descriptionCreated = true;
+				}
+				return description;
+			}
 		}
 	}
 }

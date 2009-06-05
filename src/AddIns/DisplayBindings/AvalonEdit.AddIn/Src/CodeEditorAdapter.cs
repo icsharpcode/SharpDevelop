@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -31,6 +31,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public override string FileName {
 			get { return codeEditor.FileName; }
+		}
+		
+		public override IFormattingStrategy FormattingStrategy {
+			get { return codeEditor.FormattingStrategy; }
 		}
 		
 		public override void ShowCompletionWindow(ICompletionItemList data)

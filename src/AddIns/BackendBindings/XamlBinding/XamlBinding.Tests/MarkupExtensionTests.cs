@@ -22,7 +22,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			MarkupExtensionToken token = null;
 			var tokens = new List<MarkupExtensionToken>();
 			
-			while ((token = tokenizer.NextToken()).Kind != MarkupExtensionTokenKind.EOF)
+			while ((token = tokenizer.NextToken()).Kind != MarkupExtensionTokenKind.EndOfFile)
 				tokens.Add(token);
 			
 			Assert.AreEqual(new List<MarkupExtensionToken> {
@@ -40,7 +40,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			
 			AttributeValue value = MarkupExtensionParser.ParseValue(markup);
 			
-			Assert.AreEqual("x:Type", value.ExtensionValue.Type);
+			Assert.AreEqual("x:Type", value.ExtensionValue.ExtensionType);
 			Assert.AreEqual(1, value.ExtensionValue.PositionalArguments.Count);
 			Assert.AreEqual("CheckBox", value.ExtensionValue.PositionalArguments[0].StringValue);
 		}

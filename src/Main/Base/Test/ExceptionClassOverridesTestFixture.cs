@@ -31,9 +31,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			if (!PropertyService.Initialized) {
-				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
-			}
+			PropertyService.InitializeServiceForUnitTests();
 		}
 		
 		/// <summary>

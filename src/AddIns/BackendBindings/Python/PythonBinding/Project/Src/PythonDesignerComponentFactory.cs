@@ -31,7 +31,9 @@ namespace ICSharpCode.PythonBinding
 		public static PythonDesignerComponent CreateDesignerComponent(PythonDesignerComponent parent, IComponent component)
 		{
 			if (component is ListView) {
-				return new PythonListViewComponent(parent,component);
+				return new PythonListViewComponent(parent, component);
+			} else if (component is ContextMenuStrip) {
+				return new PythonContextMenuComponent(parent, component);
 			}
 			return new PythonDesignerComponent(parent, component);
 		}

@@ -43,15 +43,19 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public string GenerateInitializeComponentMethod(Control control)
 		{
+			PythonCodeBuilder methodCodeBuilder = new PythonCodeBuilder();
+			methodCodeBuilder.IndentString = indentString;
+			
+			methodCodeBuilder.AppendIndentedLine("def InitializeComponent(self):");
+						
 			codeBuilder = new PythonCodeBuilder();
 			codeBuilder.IndentString = indentString;
-			
-			codeBuilder.AppendIndentedLine("def InitializeComponent(self):");
 			codeBuilder.IncreaseIndent();
 			
 			GenerateInitializeComponentMethodBodyInternal(control);
 			
-			return codeBuilder.ToString();
+			methodCodeBuilder.Append(codeBuilder.ToString());
+			return methodCodeBuilder.ToString();
 		}
 		
 		/// <summary>
@@ -73,20 +77,13 @@ namespace ICSharpCode.PythonBinding
 		void GenerateInitializeComponentMethodBodyInternal(Control control)
 		{
 			PythonDesignerRootComponent rootDesignerComponent = PythonDesignerComponentFactory.CreateDesignerRootComponent(control);
-			if (rootDesignerComponent.HasNonVisualChildComponents()) {
-				rootDesignerComponent.AppendCreateComponentsContainer(codeBuilder);
-				rootDesignerComponent.AppendCreateNonVisualComponents(codeBuilder);
-				rootDesignerComponent.AppendNonVisualComponentsBeginInit(codeBuilder);
-			}
-			rootDesignerComponent.AppendCreateChildComponents(codeBuilder);
+			rootDesignerComponent.AppendCreateContainerComponents(codeBuilder);
+			rootDesignerComponent.AppendNonVisualComponentsBeginInit(codeBuilder);
 			rootDesignerComponent.AppendChildComponentsSuspendLayout(codeBuilder);
 			rootDesignerComponent.AppendSuspendLayout(codeBuilder);
-			rootDesignerComponent.AppendNonVisualComponents(codeBuilder);
 			rootDesignerComponent.AppendComponent(codeBuilder);
 			rootDesignerComponent.AppendChildComponentsResumeLayout(codeBuilder);
-			if (rootDesignerComponent.HasNonVisualChildComponents()) {
-				rootDesignerComponent.AppendNonVisualComponentsEndInit(codeBuilder);
-			}
+			rootDesignerComponent.AppendNonVisualComponentsEndInit(codeBuilder);
 			rootDesignerComponent.AppendResumeLayout(codeBuilder);
 		}
 	}

@@ -20,45 +20,64 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public static class MenuService
 	{
-		static List<Type> commandClasses = new List<Type> {
-			typeof(ApplicationCommands),
-			typeof(NavigationCommands)
-		};
+		static Dictionary<string, System.Windows.Input.ICommand> knownCommands = LoadDefaultKnownCommands();
+		
+		static Dictionary<string, System.Windows.Input.ICommand> LoadDefaultKnownCommands()
+		{
+			var knownCommands = new Dictionary<string, System.Windows.Input.ICommand>();
+			foreach (Type t in new Type[] { typeof(ApplicationCommands), typeof(NavigationCommands) }) {
+				foreach (PropertyInfo p in t.GetProperties()) {
+					knownCommands.Add(p.Name, (System.Windows.Input.ICommand)p.GetValue(null, null));
+				}
+			}
+			return knownCommands;
+		}
 		
 		/// <summary>
 		/// Gets a known WPF command.
 		/// </summary>
+		/// <param name="addIn">The addIn definition that defines the command class.</param>
 		/// <param name="commandName">The name of the command, e.g. "Copy".</param>
 		/// <returns>The WPF ICommand with the given name, or null if thecommand was not found.</returns>
-		public static System.Windows.Input.ICommand GetRegisteredCommand(string commandName)
+		public static System.Windows.Input.ICommand GetRegisteredCommand(AddIn addIn, string commandName)
 		{
+			if (addIn == null)
+				throw new ArgumentNullException("addIn");
 			if (commandName == null)
 				throw new ArgumentNullException("commandName");
-			lock (commandClasses) {
-				foreach (Type t in commandClasses) {
-					PropertyInfo p = t.GetProperty(commandName, BindingFlags.Public | BindingFlags.Static);
-					if (p != null) {
-						return (System.Windows.Input.ICommand)(p.GetValue(null, null));
-					}
-					FieldInfo f = t.GetField(commandName, BindingFlags.Public | BindingFlags.Static);
-					if (f != null) {
-						return (System.Windows.Input.ICommand)(f.GetValue(null));
-					}
-				}
-				return null;
+			System.Windows.Input.ICommand command;
+			lock (knownCommands) {
+				if (knownCommands.TryGetValue(commandName, out command))
+					return command;
 			}
+			int pos = commandName.LastIndexOf('.');
+			if (pos > 0) {
+				string className = commandName.Substring(0, pos);
+				string propertyName = commandName.Substring(pos + 1);
+				Type classType = addIn.FindType(className);
+				if (classType != null) {
+					PropertyInfo p = classType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Static);
+					if (p != null)
+						return (System.Windows.Input.ICommand)p.GetValue(null, null);
+					FieldInfo f = classType.GetField(propertyName, BindingFlags.Public | BindingFlags.Static);
+					if (f != null)
+						return (System.Windows.Input.ICommand)f.GetValue(null);
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>
-		/// 
+		/// Registers a WPF command for use with the &lt;MenuItem command="name"&gt; syntax.
 		/// </summary>
-		public static void RegisterCommandClass(Type commandClass)
+		public static void RegisterKnownCommand(string name, System.Windows.Input.ICommand command)
 		{
-			if (commandClass == null)
-				throw new ArgumentNullException("commandClass");
-			lock (commandClasses) {
-				if (!commandClasses.Contains(commandClass))
-					commandClasses.Add(commandClass);
+			if (name == null)
+				throw new ArgumentNullException("name");
+			if (command == null)
+				throw new ArgumentNullException("command");
+			lock (knownCommands) {
+				knownCommands.Add(name, command);
 			}
 		}
 		
@@ -86,7 +105,7 @@ namespace ICSharpCode.Core.Presentation
 				ItemsSource = new object[1]
 			};
 			contextMenu.Opened += (sender, args) => {
-				contextMenu.ItemsSource = ExpandMenuBuilders(subItems);
+				contextMenu.ItemsSource = ExpandMenuBuilders(subItems, true);
 				args.Handled = true;
 			};
 			return contextMenu;
@@ -94,7 +113,8 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static IList CreateMenuItems(UIElement inputBindingOwner, object owner, string addInTreePath)
 		{
-			return CreateMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
+			IList items = CreateUnexpandedMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
+			return ExpandMenuBuilders(items, false);
 		}
 		
 		sealed class MenuItemBuilderPlaceholder
@@ -116,7 +136,7 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		internal static IList CreateMenuItems(UIElement inputBindingOwner, IEnumerable descriptors)
+		internal static IList CreateUnexpandedMenuItems(UIElement inputBindingOwner, IEnumerable descriptors)
 		{
 			ArrayList result = new ArrayList();
 			if (descriptors != null) {
@@ -124,10 +144,10 @@ namespace ICSharpCode.Core.Presentation
 					result.Add(CreateMenuItemFromDescriptor(inputBindingOwner, descriptor));
 				}
 			}
-			return ExpandMenuBuilders(result);
+			return result;
 		}
 		
-		static IList ExpandMenuBuilders(ICollection input)
+		static IList ExpandMenuBuilders(ICollection input, bool addDummyEntryIfMenuEmpty)
 		{
 			ArrayList result = new ArrayList(input.Count);
 			foreach (object o in input) {
@@ -144,6 +164,9 @@ namespace ICSharpCode.Core.Presentation
 						statusUpdate.UpdateText();
 					}
 				}
+			}
+			if (addDummyEntryIfMenuEmpty && result.Count == 0) {
+				result.Add(new MenuItem { Header = "(empty menu)", IsEnabled = false });
 			}
 			return result;
 		}
@@ -165,11 +188,12 @@ namespace ICSharpCode.Core.Presentation
 					return new MenuCommand(inputBindingOwner, codon, descriptor.Caller, createCommand);
 				case "Menu":
 					var item = new CoreMenuItem(codon, descriptor.Caller) {
-						ItemsSource = new object[1]
+						ItemsSource = new object[1],
+						SetEnabled = true
 					};
-					var subItems = CreateMenuItems(inputBindingOwner, descriptor.SubItems);
+					var subItems = CreateUnexpandedMenuItems(inputBindingOwner, descriptor.SubItems);
 					item.SubmenuOpened += (sender, args) => {
-						item.ItemsSource = ExpandMenuBuilders(subItems);
+						item.ItemsSource = ExpandMenuBuilders(subItems, true);
 						args.Handled = true;
 					};
 					return item;
@@ -179,7 +203,7 @@ namespace ICSharpCode.Core.Presentation
 						throw new NotSupportedException("Menu item builder " + codon.Properties["class"] + " does not implement IMenuItemBuilder");
 					return new MenuItemBuilderPlaceholder(builder, descriptor.Codon, descriptor.Caller);
 				default:
-					throw new System.NotSupportedException("unsupported menu item type : " + type);
+					throw new NotSupportedException("unsupported menu item type : " + type);
 			}
 		}
 		

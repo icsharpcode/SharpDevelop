@@ -35,8 +35,8 @@ namespace SearchAndReplace
 		void OnKeyPress(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Enter) {
-				CommitSearch();
 				e.Handled = true;
+				CommitSearch();
 			}
 		}
 		

@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.XmlEditor;
-using NUnit.Framework;
+using ICSharpCode.Core;
 using System;
 using System.IO;
 using System.Xml.Schema;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.XmlEditor;
+using NUnit.Framework;
 using XmlEditor.Tests.Schema;
 using XmlEditor.Tests.Utils;
 

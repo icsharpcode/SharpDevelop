@@ -192,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				string newNamespace = c.Namespace;
 				MenuItem subItem = new MenuItem();
 				subItem.Header = "using " + newNamespace;
-				subItem.Icon = ClassBrowserIconService.Namespace.Bitmap;
+				subItem.Icon = ClassBrowserIconService.Namespace.CreateImage();
 				item.Items.Add(subItem);
 				subItem.Click += delegate {
 					NamespaceRefactoringService.AddUsingDeclaration(callingClass.CompilationUnit, textArea.Document, newNamespace, true);
@@ -282,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (cu != null && cu.FileName != null && !region.IsEmpty) {
 				MenuItem gotoDefinitionItem = new MenuItem();
 				gotoDefinitionItem.Header = MenuService.ConvertLabel(StringParser.Parse("${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"));
-				gotoDefinitionItem.Icon = ClassBrowserIconService.GotoArrow.CreatePixelSnappedImage();
+				gotoDefinitionItem.Icon = ClassBrowserIconService.GotoArrow.CreateImage();
 				gotoDefinitionItem.InputGestureText = new KeyGesture(Key.Enter, ModifierKeys.Control).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 				gotoDefinitionItem.Click += delegate {
 					FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn);

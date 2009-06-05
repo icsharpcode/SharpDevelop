@@ -5,6 +5,7 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.Ast;
@@ -40,8 +41,27 @@ namespace ICSharpCode.XamlBinding
 				
 				if (cItem.Entity is IProperty || cItem.Entity is IEvent) {
 					if (context.Editor.Document.GetCharAt(context.StartOffset - 1) != '.') {
-						context.Editor.Document.Insert(context.EndOffset, "=\"\"");
-						context.Editor.Caret.Offset--;
+						if (!item.Text.EndsWith("=", StringComparison.OrdinalIgnoreCase)) {
+							context.Editor.Document.Insert(context.EndOffset, "=\"\"");
+							context.Editor.Caret.Offset--;
+						} else {
+							XamlContext xamlContext = CompletionDataHelper.ResolveContext(context.Editor, context.CompletionChar);
+							if (!string.IsNullOrEmpty(xamlContext.RawAttributeValue)) {
+								string valuePart = xamlContext.RawAttributeValue.Substring(0, xamlContext.ValueStartOffset);
+								AttributeValue value = MarkupExtensionParser.ParseValue(valuePart);
+								
+								if (value != null && !value.IsString) {
+									var markup = CompletionDataHelper.GetInnermostMarkup(value.ExtensionValue);
+									if (markup.NamedArguments.Count > 0 || markup.PositionalArguments.Count > 0) {
+										int oldOffset = context.Editor.Caret.Offset;
+										context.Editor.Caret.Offset = context.StartOffset;
+										string word = context.Editor.GetWordBeforeCaret();
+										
+										context.Editor.Caret.Offset = oldOffset;
+									}
+								}
+							}
+						}
 						
 						XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 					}
@@ -84,7 +104,7 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		void CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem)
+		static void CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem)
 		{
 			ParseInformation p = ParserService.GetParseInformation(context.Editor.FileName);
 			var unit = p.MostRecentCompilationUnit;
@@ -112,7 +132,7 @@ namespace ICSharpCode.XamlBinding
 					ParametrizedNode node = CodeGenerator.ConvertMember(method, new ClassFinder(part, context.Editor.Caret.Line, context.Editor.Caret.Column));
 					
 					node.Name = completionItem.HandlerName;
-										
+					
 					node.Modifier = Modifiers.None;
 					
 					IViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName);
@@ -120,9 +140,9 @@ namespace ICSharpCode.XamlBinding
 					
 					if (viewContent != null || document != null) {
 						if (lastMember != null)
-							unit.ProjectContent.Language.CodeGenerator.InsertCodeAfter(lastMember, document.GetDocumentForFile(viewContent.PrimaryFile), node);
+							unit.ProjectContent.Language.CodeGenerator.InsertCodeAfter(lastMember, new RefactoringDocumentAdapter(document.GetDocumentForFile(viewContent.PrimaryFile)), node);
 						else
-							unit.ProjectContent.Language.CodeGenerator.InsertCodeAtEnd(part.Region, document.GetDocumentForFile(viewContent.PrimaryFile), node);
+							unit.ProjectContent.Language.CodeGenerator.InsertCodeAtEnd(part.Region, new RefactoringDocumentAdapter(document.GetDocumentForFile(viewContent.PrimaryFile)), node);
 					}
 					return;
 				}

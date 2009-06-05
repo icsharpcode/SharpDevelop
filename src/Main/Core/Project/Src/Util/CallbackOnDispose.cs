@@ -16,10 +16,9 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public sealed class CallbackOnDispose : IDisposable
 	{
-		// TODO: in 4.0, use System.Action and make this class public
-		System.Threading.ThreadStart callback;
+		Action callback;
 		
-		public CallbackOnDispose(System.Threading.ThreadStart callback)
+		public CallbackOnDispose(Action callback)
 		{
 			if (callback == null)
 				throw new ArgumentNullException("callback");
@@ -28,7 +27,7 @@ namespace ICSharpCode.Core
 		
 		public void Dispose()
 		{
-			System.Threading.ThreadStart action = Interlocked.Exchange(ref callback, null);
+			Action action = Interlocked.Exchange(ref callback, null);
 			if (action != null) {
 				action();
 				#if DEBUG

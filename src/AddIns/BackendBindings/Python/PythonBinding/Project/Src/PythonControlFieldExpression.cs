@@ -261,6 +261,8 @@ namespace ICSharpCode.PythonBinding
 			int endIndex = name.IndexOf('.');
 			if (endIndex > 0) {
 				return GetVariableName(name.Substring(0, endIndex));
+			} else if (name.StartsWith("_")) {
+				return GetVariableName(name);
 			}
 			return String.Empty;
 		}

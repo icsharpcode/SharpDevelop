@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -19,27 +19,56 @@
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\Siegfried\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -99,7 +128,7 @@
     <Compile Include="Utils\DerivedXmlTreeView.cs" />
     <Compile Include="Utils\DerivedXmlTreeViewContainerControl.cs" />
     <Compile Include="Utils\MockAddXmlNodeDialog.cs" />
-    <Compile Include="Utils\MockOpenedFile.cs" />
+    <Compile Include="Utils\MockXmlViewContent.cs" />
     <Compile Include="Utils\ResourceManager.cs" />
     <Compile Include="Schema\XhtmlStrictSchemaTestFixture.cs" />
     <Compile Include="Schema\XsdSchemaTestFixture.cs" />
@@ -132,7 +161,6 @@
     <Compile Include="XPathQuery\XPathResultsListViewColumnWidthsTestFixture.cs" />
     <Compile Include="XPathQuery\XPathQueryHistoryTestFixture.cs" />
     <Compile Include="XPathQuery\XPathNodeTextMarkerTests.cs" />
-    <Compile Include="Utils\MockDocument.cs" />
     <Compile Include="Parser\ActiveElementUnderCursorTests.cs" />
     <Compile Include="Parser\AttributeNameUnderCursorTests.cs" />
     <Compile Include="Schema\FindAttributeFromComplexTypeTestFixture.cs" />
@@ -186,14 +214,23 @@
       <Name>ICSharpCode.TextEditor</Name>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Test\ICSharpCode.SharpDevelop.Tests.csproj">
+      <Project>{4980B743-B32F-4aba-AABD-45E2CAD3568D}</Project>
+      <Name>ICSharpCode.SharpDevelop.Tests</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Project\XmlEditor.csproj">
-      <Project>{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}</Project>
+      <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>
       <Name>XmlEditor</Name>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <Folder Include="XPathQuery" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

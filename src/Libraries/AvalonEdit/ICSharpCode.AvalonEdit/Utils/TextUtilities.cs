@@ -10,7 +10,6 @@ using System.Globalization;
 using System.Windows.Documents;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {
@@ -28,8 +27,10 @@ namespace ICSharpCode.AvalonEdit.Utils
 			"RS", "US"
 		};
 		
+		// DEL (ASCII 127) and
 		// the names of the control characters in the C1 block (Unicode 128 to 159)
-		static readonly string[] c1Table = {
+		static readonly string[] delAndC1Table = {
+			"DEL",
 			"PAD", "HOP", "BPH", "NBH", "IND", "NEL", "SSA", "ESA", "HTS", "HTJ",
 			"VTS", "PLD", "PLU", "RI", "SS2", "SS3", "DCS", "PU1", "PU2", "STS",
 			"CCH", "MW", "SPA", "EPA", "SOS", "SGCI", "SCI", "CSI", "ST", "OSC",
@@ -45,23 +46,23 @@ namespace ICSharpCode.AvalonEdit.Utils
 			int num = (int)controlCharacter;
 			if (num < c0Table.Length)
 				return c0Table[num];
-			else if (num == 127)
-				return "DEL";
-			else if (num >= 128 && num < 128 + c1Table.Length)
-				return c1Table[num - 128];
+			else if (num >= 127 && num <= 159)
+				return delAndC1Table[num - 127];
 			else
 				return num.ToString("x4", CultureInfo.InvariantCulture);
 		}
 		#endregion
 		
-		#region GetIndentation
+		#region GetWhitespace
 		/// <summary>
-		/// Gets all indentation starting at offset.
+		/// Gets all whitespace (' ' and '\t', but no newlines) after offset.
 		/// </summary>
 		/// <param name="textSource">The text source.</param>
-		/// <param name="offset">The offset where the indentation starts.</param>
-		/// <returns>The segment containing the indentation.</returns>
-		public static ISegment GetIndentation(ITextSource textSource, int offset)
+		/// <param name="offset">The offset where the whitespace starts.</param>
+		/// <returns>The segment containing the whitespace.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
+		                                                 Justification = "WPF uses 'Whitespace'")]
+		public static ISegment GetWhitespaceAfter(ITextSource textSource, int offset)
 		{
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");
@@ -72,6 +73,57 @@ namespace ICSharpCode.AvalonEdit.Utils
 					break;
 			}
 			return new SimpleSegment(offset, pos - offset);
+		}
+		
+		/// <summary>
+		/// Gets all whitespace (' ' and '\t', but no newlines) before offset.
+		/// </summary>
+		/// <param name="textSource">The text source.</param>
+		/// <param name="offset">The offset where the whitespace ends.</param>
+		/// <returns>The segment containing the whitespace.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
+		                                                 Justification = "WPF uses 'Whitespace'")]
+		public static ISegment GetWhitespaceBefore(ITextSource textSource, int offset)
+		{
+			if (textSource == null)
+				throw new ArgumentNullException("textSource");
+			int pos;
+			for (pos = offset - 1; pos >= 0; pos--) {
+				char c = textSource.GetCharAt(pos);
+				if (c != ' ' && c != '\t')
+					break;
+			}
+			return new SimpleSegment(pos, offset - pos);
+		}
+		
+		/// <summary>
+		/// Gets the leading whitespace segment on the document line.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
+		                                                 Justification = "WPF uses 'Whitespace'")]
+		public static ISegment GetLeadingWhitespace(DocumentLine documentLine)
+		{
+			if (documentLine == null)
+				throw new ArgumentNullException("documentLine");
+			return GetWhitespaceAfter(documentLine.Document, documentLine.Offset);
+		}
+		
+		/// <summary>
+		/// Gets the trailing whitespace segment on the document line.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
+		                                                 Justification = "WPF uses 'Whitespace'")]
+		public static ISegment GetTrailingWhitespace(DocumentLine documentLine)
+		{
+			if (documentLine == null)
+				throw new ArgumentNullException("documentLine");
+			ISegment segment = GetWhitespaceBefore(documentLine.Document, documentLine.EndOffset);
+			// If the whole line consists of whitespace, we consider all of it as leading whitespace,
+			// so return an empty segment as trailing whitespace.
+			if (segment.Offset == documentLine.Offset)
+				return new SimpleSegment(documentLine.EndOffset, 0);
+			else
+				return segment;
 		}
 		#endregion
 		
@@ -139,6 +191,11 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// <param name="mode">The mode for caret positioning.</param>
 		/// <returns>The offset of the next caret position, or -1 if there is no further caret position
 		/// in the text source.</returns>
+		/// <remarks>
+		/// This method is NOT equivalent to the actual caret movement when using VisualLine.GetNextCaretPosition.
+		/// In real caret movement, there are additional caret stops at line starts and ends. However, this method
+		/// doesn't know anything about lines: it is often called with a textSource that represents only a single VisualTextElement.
+		/// </remarks>
 		public static int GetNextCaretPosition(ITextSource textSource, int offset, LogicalDirection direction, CaretPositioningMode mode)
 		{
 			if (textSource == null)

@@ -6,8 +6,11 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory;
 using System.Collections.Generic;
+using System.Windows.Input;
+
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -26,6 +29,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		IDocument Document { get; }
 		ITextEditorCaret Caret { get; }
 		ITextEditorOptions Options { get; }
+		
+		IFormattingStrategy FormattingStrategy { get; }
 		
 		/// <summary>
 		/// Gets the start offset of the selection.
@@ -46,13 +51,18 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Sets the selection.
 		/// </summary>
 		/// <param name="selectionStart">Start offset of the selection</param>
-		/// <param name="selectionLength">End offset of the selection</param>
+		/// <param name="selectionLength">Length of the selection</param>
 		void Select(int selectionStart, int selectionLength);
 		
 		/// <summary>
 		/// Is raised when the selection changes.
 		/// </summary>
 		event EventHandler SelectionChanged;
+		
+		/// <summary>
+		/// Is raised before a key is pressed.
+		/// </summary>
+		event KeyEventHandler KeyPress;
 		
 		/// <summary>
 		/// Sets the caret to the specified line/column and brings the caret into view.
@@ -76,8 +86,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// </summary>
 		IInsightWindow ActiveInsightWindow { get; }
 		
-		[Obsolete("Use the overload taking IEnumerable<IInsightItem>")]
-		void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider);
 		[Obsolete("Use the overload taking ICompletionItemList")]
 		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);
 	}
@@ -88,6 +96,21 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the text used for one indentation level.
 		/// </summary>
 		string IndentationString { get; }
+		
+		/// <summary>
+		/// Gets whether a '}' should automatically be inserted when a block is opened.
+		/// </summary>
+		bool AutoInsertBlockEnd { get; }
+		
+		/// <summary>
+		/// Gets if tabs should be converted to spaces.
+		/// </summary>
+		bool ConvertTabsToSpaces { get; }
+		
+		/// <summary>
+		/// Gets the size of an indentation level.
+		/// </summary>
+		int IndendationSize { get; }
 	}
 	
 	public interface ITextEditorCaret

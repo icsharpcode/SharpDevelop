@@ -5,14 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.CodeCoverage
@@ -311,7 +310,7 @@ namespace ICSharpCode.CodeCoverage
 			textEditorControl.ActiveTextAreaControl.ScrollTo(int.MaxValue);
 			textEditorControl.ActiveTextAreaControl.Caret.Line = line - 1;
 			textEditorControl.ActiveTextAreaControl.ScrollToCaret(); 
-			CodeCoverageService.ShowCodeCoverage(textEditorControl, fileName);
+			CodeCoverageService.ShowCodeCoverage(new TextEditorAdapter(textEditorControl), fileName);
 		}
 		
 		void CreateTreeView()

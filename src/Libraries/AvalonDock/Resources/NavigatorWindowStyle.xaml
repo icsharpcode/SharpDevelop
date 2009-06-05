@@ -1,0 +1,145 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ad="clr-namespace:AvalonDock">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/AvalonDock;component/Resources/Brushes.xaml"/>
+        <ResourceDictionary Source="/AvalonDock;component/Resources/Common.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+    
+    <Style TargetType="{x:Type ad:NavigatorWindow}">
+        <Style.Resources>
+            <Style x:Key="listItemStyle" TargetType="ListBoxItem">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border x:Name="intBorder" >
+                            <ContentPresenter Margin="0,2,0,2"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" TargetName="intBorder" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" TargetName="intBorder" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="listBoxStyle" TargetType="ListBox">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBox">
+                            <ScrollViewer>
+                            <ItemsPresenter/>
+                            </ScrollViewer>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            <DataTemplate x:Key="listContentTemplate" DataType="{x:Type ad:NavigatorWindowItem}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Background="Transparent">
+					<ad:AlignedImage>
+						<Border Width="16" Height="16">
+							<Border.Background>
+								<VisualBrush Stretch="None" Visual="{Binding Path=Icon}"/>
+							</Border.Background>
+						</Border>
+					</ad:AlignedImage>
+                    <TextBlock Margin="4,0,0,0" Text="{Binding Path=Title}"/>
+                    
+                </StackPanel>
+            </DataTemplate>
+
+        </Style.Resources>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ad:NavigatorWindow}">
+                    <Border BorderThickness="1" BorderBrush="DarkGray" CornerRadius="5" Height="440" Width="550" >
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#FFFFFFFF" Offset="0" />
+                                <GradientStop Color="#FFCAD1FF" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <Border BorderThickness="0,0,0,1" CornerRadius="5,5,0,0" BorderBrush="DarkGray" Height="60" VerticalAlignment="Top">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#FF0018C7" Offset="0" />
+                                        <GradientStop Color="#FFA5B0FF" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Grid>
+                                    <WrapPanel Margin="10" Orientation="Horizontal">
+                                        <!--<Image x:Name ="icon" Source="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedContent.IconSource}" Height="16" Width="16"/>-->
+                                        <Border Width="16" Height="16">
+                                            <Border.Background>
+                                                <VisualBrush Stretch="None" Visual="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedContent.ItemContent.Icon, Mode=OneWay}"/>
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock x:Name="title" Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedContent.Title}" Margin="5,0,0,0" FontSize="12" FontWeight="Bold"  Foreground="White"/>
+                                    </WrapPanel>
+                                    <TextBlock Margin="20, 35, 0, 0" Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedContent.ContentTypeDescription}" />
+                                </Grid>
+                            </Border>
+
+                            <StackPanel Orientation="Horizontal" Margin="20, 70, 230, 20">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="Active Tool Windows" FontSize="11" FontWeight="Bold" Foreground="Black"/>
+                                    <ListBox 
+                                        x:Name="ToolWindowsList" 
+                                        Style="{StaticResource listBoxStyle}" 
+                                        ItemContainerStyle="{StaticResource listItemStyle}" 
+                                        Margin="0,10,0,0"
+                                        SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedToolWindow}"
+                                        ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DockableContents}"
+                                        ItemTemplate="{StaticResource listContentTemplate}"
+                                        />
+                                </StackPanel>
+                                <Grid>
+                                <StackPanel Orientation="Vertical" Margin="20,0,0,0">
+                                    <TextBlock Text="Active Documents" FontSize="11" FontWeight="Bold" Foreground="Black"/>
+                                    <ListBox 
+                                          x:Name="DocumentList" 
+                                          Style="{StaticResource listBoxStyle}"
+                                          ItemContainerStyle="{StaticResource listItemStyle}" 
+                                          SelectionMode="Single"
+                                          Margin="0,10,0,0"
+                                          SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedContent}"
+                                          ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Documents}"
+                                          ItemTemplate="{StaticResource listContentTemplate}"
+                                          Height="300"
+                                        >
+                                    </ListBox>
+                                        
+                                </StackPanel>
+                                </Grid>
+                            </StackPanel>
+
+                            <Border Margin="0,50,20,0" BorderThickness="1" BorderBrush="DarkGray" HorizontalAlignment="Right" Height="250" Width="200" Padding="4">
+                                <Border>
+                                    <Border.Background>
+                                        <VisualBrush AlignmentX="Left" AlignmentY="Top" Stretch="Uniform" Visual="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedContent.ItemContent.Content, Mode=OneWay}"/>
+                                    </Border.Background>
+                                </Border>
+                            </Border>
+                            
+                            <Border BorderThickness="0,0,0,1" CornerRadius="0,0,5,5" Background="#FFADD8E6" BorderBrush="DarkGray" Height="30" VerticalAlignment="Bottom">
+                                <TextBlock Margin="20, 5, 0, 0" Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedContent.InfoTip}" TextWrapping="Wrap" TextTrimming="WordEllipsis"/>
+                            </Border>
+                        </Grid>
+
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

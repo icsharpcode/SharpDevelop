@@ -21,7 +21,7 @@ namespace ICSharpCode.XamlBinding
 	{
 		public static readonly XamlExpressionFinder Instance = new XamlExpressionFinder();
 
-		bool IsValidChar(char c)
+		static bool IsValidChar(char c)
 		{
 			return char.IsLetterOrDigit(c) || c == '_' || c == ':' || c == '.';
 		}
@@ -54,7 +54,7 @@ namespace ICSharpCode.XamlBinding
 			return "";
 		}
 
-		ExpressionContext GetContext(string text, int offset)
+		static ExpressionContext GetContext(string text, int offset)
 		{
 			XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(text, offset);
 			if (path == null || path.Elements.Count == 0) {

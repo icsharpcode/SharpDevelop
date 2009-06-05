@@ -55,9 +55,9 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		public void RemoveXPathHighlighting()
+		public static void RemoveXPathHighlighting()
 		{
-			xPathQueryControl.RemoveXPathNodeTextMarkers();
+			XPathQueryControl.RemoveXPathNodeTextMarkers();
 		}
 		
 		void ActiveViewContentChanged(object source, EventArgs e)

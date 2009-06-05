@@ -30,9 +30,7 @@ namespace PythonBinding.Tests
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			if (!PropertyService.Initialized) {
-				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
-			}
+			PropertyService.InitializeServiceForUnitTests();
 			textAreaControl = new SharpDevelopTextAreaControl();
 			codeCompletionBinding = new DerivedPythonCodeCompletionBinding();
 			handlesImportKeyword = codeCompletionBinding.HandleKeyword(new TextEditorAdapter(textAreaControl), "from");

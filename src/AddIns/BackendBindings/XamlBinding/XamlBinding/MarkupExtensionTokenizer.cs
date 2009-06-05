@@ -46,7 +46,7 @@ namespace ICSharpCode.XamlBinding
 			if (tokens.Count > 0)
 				return tokens.Dequeue();
 			else
-				return new MarkupExtensionToken(MarkupExtensionTokenKind.EOF, "");
+				return new MarkupExtensionToken(MarkupExtensionTokenKind.EndOfFile, "");
 		}
 		
 		void AddToken(MarkupExtensionTokenKind kind, string val)
@@ -137,7 +137,7 @@ namespace ICSharpCode.XamlBinding
 			}
 			string valueText = b.ToString();
 			if (pos < text.Length && text[pos] == '=') {
-				AddToken(MarkupExtensionTokenKind.Membername, valueText.Trim());
+				AddToken(MarkupExtensionTokenKind.MemberName, valueText.Trim());
 			} else {
 				AddToken(MarkupExtensionTokenKind.String, valueText);
 			}

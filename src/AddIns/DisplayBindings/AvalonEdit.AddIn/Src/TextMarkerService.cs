@@ -5,15 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Gui;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -60,6 +61,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public IEnumerable<ITextMarker> TextMarkers {
 			get { return markers.UpCast<TextMarker, ITextMarker>(); }
+		}
+		
+		public void RemoveAll(Predicate<ITextMarker> predicate)
+		{
+			if (predicate == null)
+				throw new ArgumentNullException("predicate");
+			foreach (TextMarker m in markers.ToArray()) {
+				if (predicate(m))
+					m.Delete();
+			}
 		}
 		
 		internal void Remove(TextMarker marker)
@@ -197,5 +208,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 		}
+		
+		public object Tag { get; set; }
 	}
 }

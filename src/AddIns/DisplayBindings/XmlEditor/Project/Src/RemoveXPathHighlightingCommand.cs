@@ -14,10 +14,7 @@ namespace ICSharpCode.XmlEditor
 	{
 		public override void Run()
 		{
-			XPathQueryPad pad = XPathQueryPad.Instance;
-			if (pad != null) {
-				pad.RemoveXPathHighlighting();
-			}
+			XPathQueryPad.RemoveXPathHighlighting();
 		}
 	}
 }

@@ -19,7 +19,7 @@ using ICSharpCode.TextEditor;
 using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
 	/// Base class for C# and VB Code Completion Binding.

@@ -141,6 +141,23 @@ namespace UnitTesting.Tests
 			UnitTestingOptions options = new UnitTestingOptions(newProperties);
 			
 			Assert.IsTrue(options.Labels);
-		}		
+		}
+		
+		[Test]
+		public void SetCreateXmlOutputFileProperty()
+		{
+			defaultOptions.CreateXmlOutputFile = true;
+			Assert.IsTrue(p.Get<bool>(UnitTestingOptions.CreateXmlOutputFileProperty, false));
+		}
+		
+		[Test]
+		public void CreateXmlOutputFileSetToTrueInProperties()
+		{
+			Properties newProperties = new Properties();
+			newProperties.Set<bool>(UnitTestingOptions.CreateXmlOutputFileProperty, true);
+			UnitTestingOptions options = new UnitTestingOptions(newProperties);
+			
+			Assert.IsTrue(options.CreateXmlOutputFile);
+		}
 	}
 }

@@ -172,8 +172,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			RecentOpen recentOpen = FileService.RecentOpen;
 			
-			if (recentOpen.RecentFile.Count > 0) {
-				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentFile.Count];
+			if (recentOpen.RecentProject.Count > 0) {
+				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentProject.Count];
 				
 				for (int i = 0; i < recentOpen.RecentProject.Count; ++i) {
 					// variable inside loop, so that anonymous method refers to correct recent file

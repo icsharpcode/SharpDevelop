@@ -41,7 +41,7 @@ namespace Debugger.AddIn.Visualizers.Graph
         /// <summary>
         /// All edges in the graph.
         /// </summary>
-        public IEnumerable<ObjectEdge> Edges
+        /*public IEnumerable<ObjectEdge> Edges
         {
             get 
             {
@@ -53,6 +53,6 @@ namespace Debugger.AddIn.Visualizers.Graph
             		}
             	}
         	}
-        }
+        }*/
     }
 }

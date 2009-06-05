@@ -6,10 +6,14 @@
 // </file>
 
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.TextEditor.Document;
@@ -42,9 +46,9 @@ namespace ICSharpCode.PythonBinding
 		protected override IProject CreateProject(string targetProjectDirectory, IProject sourceProject)
 		{
 			// Add IronPython reference.
-			IProject targetProject = base.CreateProject(targetProjectDirectory, sourceProject);
+			PythonProject targetProject = (PythonProject)base.CreateProject(targetProjectDirectory, sourceProject);
 			IProjectItemListProvider targetProjectItems = targetProject as IProjectItemListProvider;
-			targetProjectItems.AddProjectItem(CreateIronPythonReference(targetProject));
+			targetProjectItems.AddProjectItem(CreateIronPythonReference(targetProject));			
 			return targetProject;
 		}
 		
@@ -55,14 +59,30 @@ namespace ICSharpCode.PythonBinding
 		{
 			NRefactoryToPythonConverter converter = NRefactoryToPythonConverter.Create(sourceItem.Include);
 			if (converter != null) {
-				targetItem.Include = Path.ChangeExtension(sourceItem.Include, ".py");
+				targetItem.Include = ChangeExtension(sourceItem.Include);
 
 				string code = GetParseableFileContent(sourceItem.FileName);
 				string pythonCode = converter.Convert(code);
+				
+				PythonProject pythonTargetProject = (PythonProject)targetItem.Project;
+				if ((converter.EntryPointMethods.Count > 0) && !pythonTargetProject.HasMainFile) {
+					pythonTargetProject.AddMainFile(targetItem.Include);
+				}
+				
 				SaveFile(targetItem.FileName, pythonCode, textEditorProperties.Encoding);
 			} else {
 				LanguageConverterConvertFile(sourceItem, targetItem);
 			}
+		}
+
+		/// <summary>
+		/// Adds the MainFile property since adding it in the CreateProject method would mean
+		/// it gets removed via the base class CopyProperties method.
+		/// </summary>
+		protected override void CopyProperties(IProject sourceProject, IProject targetProject)
+		{
+			base.CopyProperties(sourceProject, targetProject);
+			AddMainFile(sourceProject, (PythonProject)targetProject);
 		}
 		
 		/// <summary>
@@ -90,11 +110,56 @@ namespace ICSharpCode.PythonBinding
 			return ParserService.GetParseableFileContent(fileName);
 		}
 		
+		/// <summary>
+		/// Gets the project content for the specified project.
+		/// </summary>
+		protected virtual IProjectContent GetProjectContent(IProject project)
+		{
+			return ParserService.GetProjectContent(project);
+		}
+		
 		ReferenceProjectItem CreateIronPythonReference(IProject project)
 		{
 			ReferenceProjectItem reference = new ReferenceProjectItem(project, "IronPython");
 			reference.SetMetadata("HintPath", @"$(PythonBinPath)\IronPython.dll");
 			return reference;
+		}
+				
+		/// <summary>
+		/// Adds a MainFile if the source project has a StartupObject.
+		/// </summary>
+		void AddMainFile(IProject sourceProject, PythonProject targetProject)
+		{
+			string startupObject = GetStartupObject(sourceProject);
+			if (startupObject != null) {
+				IClass c = FindClass(sourceProject, startupObject);
+				if (c != null) {
+					string fileName = FileUtility.GetRelativePath(sourceProject.Directory, c.CompilationUnit.FileName);
+					targetProject.AddMainFile(ChangeExtension(fileName));
+				}
+			}			
+		}
+		
+		string GetStartupObject(IProject project)
+		{
+			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
+			if (msbuildProject != null) {
+				return msbuildProject.GetProperty(null, null, "StartupObject");
+			}
+			return null;
+		}
+		
+		IClass FindClass(IProject project, string name)
+		{
+			return GetProjectContent(project).GetClass(name, 0);
+		}
+				
+		/// <summary>
+		/// Changes the extension to ".py"
+		/// </summary>
+		static string ChangeExtension(string fileName)
+		{
+			return Path.ChangeExtension(fileName, ".py");	
 		}
 	}
 }

@@ -43,13 +43,12 @@
 		
 		<Files>
 			<File name="App.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application x:Class="${StandardNamespace}.App"
-    xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    StartupUri="Window1.xaml"
-    >
-    <Application.Resources>
-         
-    </Application.Resources>
+	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	StartupUri="Window1.xaml">
+	<Application.Resources>
+		 
+	</Application.Resources>
 </Application>]]></File>
 			<File name="App.xaml.cs" SubType="Code" DependentUpon="App.xaml"><![CDATA[using System;
 using System.Windows;
@@ -79,7 +78,8 @@ namespace ${StandardNamespace}
 		
 	</Grid>
 </Window>]]></File>
-			<File name="Window1.xaml.cs" SubType="Code" DependentUpon="Window1.xaml"><![CDATA[using System;
+			<File name="Window1.xaml.cs" SubType="Code" DependentUpon="Window1.xaml"><![CDATA[${StandardHeader.C#}
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -88,8 +88,6 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ${StandardNamespace}
 {

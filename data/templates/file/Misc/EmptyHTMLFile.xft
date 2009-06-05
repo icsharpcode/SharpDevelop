@@ -12,13 +12,13 @@
 
 	<Files>
 		<File name="${FullName}" language="HTML"><![CDATA[
-<Html>
-	<Head>
-		<Title></Title>
-	</Head>
-	<Body>
-	</Body>
-</Html>]]>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+	</body>
+</html>]]>
 		</File>
 	</Files>
 	

@@ -18,7 +18,31 @@ using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
-	public enum XamlContext {
+	public class XamlContext {
+		public XmlElementPath Path { get; set; }
+		public string AttributeName { get; set; }
+		public ResolveResult ResolvedExpression { get; set; }
+		public AttributeValue AttributeValue { get; set; }
+		public char PressedKey { get; set; }
+		public string RawAttributeValue { get; set; }
+		public int ValueStartOffset { get; set; }
+		public XamlContextDescription Description { get; set; }
+		
+		public XamlContext() {}
+		
+		public override string ToString()
+		{
+			return "[XamlContext" + 
+				" Description: " + Description +
+				" Path: " + Path +
+				" AttributeName: " + AttributeName +
+				" ValueStartOffset: " + ValueStartOffset +
+				" ]";
+		}
+		
+	}
+	
+	public enum XamlContextDescription {
 		/// <summary>
 		/// After '&lt;'
 		/// </summary>
@@ -34,6 +58,10 @@ namespace ICSharpCode.XamlBinding
 		/// <summary>
 		/// Inside '="{}"'
 		/// </summary>
-		InMarkupExtension
+		InMarkupExtension,
+		/// <summary>
+		/// Inside '&lt;!-- --&gt;'
+		/// </summary>
+		InComment
 	}
 }

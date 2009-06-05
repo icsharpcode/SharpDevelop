@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Document;
-using SearchAndReplace.Tests.Utils;
 using NUnit.Framework;
 using SearchAndReplace;
+using SearchAndReplace.Tests.Utils;
 
 namespace SearchAndReplace.Tests
 {
@@ -33,9 +33,7 @@ namespace SearchAndReplace.Tests
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			if (!PropertyService.Initialized) {
-				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
-			}
+			PropertyService.InitializeServiceForUnitTests();
 		}
 		
 		[SetUp]

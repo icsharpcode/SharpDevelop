@@ -5,15 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace SearchAndReplace
 {
@@ -51,21 +53,21 @@ namespace SearchAndReplace
 				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 					if (content.PrimaryFileName != null &&
 					    FileUtility.IsEqualFileName(content.PrimaryFileName, fileName) &&
-					    content is ITextEditorControlProvider)
+					    content is ITextEditorProvider)
 					{
-						document = (((ITextEditorControlProvider)content).TextEditorControl).Document;
-						return new ProvidedDocumentInformation(new TextEditorDocument(document),
+						document = (((ITextEditorProvider)content).TextEditor).Document;
+						return new ProvidedDocumentInformation(document,
 						                                       fileName,
 						                                       0);
 					}
 				}
-				ITextBufferStrategy strategy = null;
+				string fileContent;
 				try {
-					strategy = StringTextBufferStrategy.CreateTextBufferFromFile(fileName);
+					fileContent = ParserService.GetParseableFileContent(fileName);
 				} catch (Exception) {
 					return null;
 				}
-				return new ProvidedDocumentInformation(strategy, 
+				return new ProvidedDocumentInformation(fileContent, 
 				                                       fileName, 
 				                                       0);
 			}

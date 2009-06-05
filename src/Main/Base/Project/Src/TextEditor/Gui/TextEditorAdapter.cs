@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -90,6 +90,24 @@ namespace ICSharpCode.SharpDevelop
 					return properties.ConvertTabsToSpaces ? new string(' ', properties.IndentationSize) : "\t";
 				}
 			}
+			
+			public bool AutoInsertBlockEnd {
+				get {
+					return true;
+				}
+			}
+			
+			public bool ConvertTabsToSpaces {
+				get {
+					return properties.ConvertTabsToSpaces;
+				}
+			}
+			
+			public int IndendationSize {
+				get {
+					return properties.IndentationSize;
+				}
+			}
 		}
 		
 		static ICSharpCode.NRefactory.Location ToLocation(TextLocation position)
@@ -111,6 +129,10 @@ namespace ICSharpCode.SharpDevelop
 		public ICSharpCode.SharpDevelop.Editor.IDocument Document { get; private set; }
 		public ITextEditorCaret Caret { get; private set; }
 		public ITextEditorOptions Options { get; private set; }
+		
+		public virtual Editor.IFormattingStrategy FormattingStrategy { 
+			get { return Editor.DefaultFormattingStrategy.DefaultInstance; }
+		}
 		
 		public string FileName {
 			get { return editor.FileName; }
@@ -180,6 +202,11 @@ namespace ICSharpCode.SharpDevelop
 			set {
 				throw new NotImplementedException();
 			}
+		}
+		
+		public event System.Windows.Input.KeyEventHandler KeyPress {
+			add    { throw new NotImplementedException(); }
+			remove { throw new NotImplementedException(); }
 		}
 		
 		public event EventHandler SelectionChanged {

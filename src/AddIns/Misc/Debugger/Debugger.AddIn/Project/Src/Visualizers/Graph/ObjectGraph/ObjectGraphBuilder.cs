@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Services;
 using Debugger;
 using Debugger.MetaData;
-using Debugger.Wrappers.CorDebug;
 using Debugger.Expressions;
 using Debugger.AddIn.Visualizers.Graph.Utils;
 
@@ -43,16 +42,20 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// The underlying debugger service used for getting expression values.
 		/// </summary>
-		private WindowsDebugger _debuggerService;
+		private WindowsDebugger debuggerService;
 		/// <summary>
 		/// The resulting object graph.
 		/// </summary>
-		private ObjectGraph _resultGraph;
+		private ObjectGraph resultGraph;
+		/// <summary>
+		/// System.Runtime.CompilerServices.GetHashCode method, for obtaining non-overriden hash codes from debuggee.
+		/// </summary>
+		private MethodInfo hashCodeMethod;
 		
 		/// <summary>
 		/// Given hash code, lookup already existing node(s) with this hash code.
 		/// </summary>
-		private Lookup<string, ObjectNode> objectNodesForHashCode = new Lookup<string, ObjectNode>();
+		private Lookup<int, ObjectNode> objectNodesForHashCode = new Lookup<int, ObjectNode>();
 		
 		/// <summary>
 		/// Binding flags for getting member expressions.
@@ -66,7 +69,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="debuggerService">Debugger service.</param>
 		public ObjectGraphBuilder(WindowsDebugger debuggerService)
 		{
-			_debuggerService = debuggerService;
+			this.debuggerService = debuggerService;
+			
+			DebugType helpersType =  DebugType.Create(debuggerService.DebuggedProcess, null, "System.Runtime.CompilerServices.RuntimeHelpers");
+			this.hashCodeMethod = helpersType.GetMember("GetHashCode", BindingFlags.Public | BindingFlags.Static | BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
 		}
 		
 		/// <summary>
@@ -81,15 +87,15 @@ namespace Debugger.AddIn.Visualizers.Graph
 				throw new DebuggerVisualizerException("Expression cannot be empty.");
 			}
 			
-			_resultGraph = new ObjectGraph();
+			resultGraph = new ObjectGraph();
 			
 			// empty graph for null expression
-			if (!_debuggerService.GetValueFromName(expression).IsNull)
+			if (!debuggerService.GetValueFromName(expression).IsNull)
 			{
-				_resultGraph.Root = buildGraphRecursive(_debuggerService.GetValueFromName(expression).GetPermanentReference());
+				resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference());
 			}
 			
-			return _resultGraph;
+			return resultGraph;
 		}
 		
 		/// <summary>
@@ -101,13 +107,20 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			ObjectNode thisNode = createNewNode(rootValue); 
 			
+			// David: by calling this, we get an array of values, most of them probably invalid,
+			// it would be nice to be able to get a collection of 'values' 
+			// that are valid (basically a snapshot of object's state)
+			// - a collection of custom objects, 
+			// that contain the string value and DebugType,
+			// and can enumerate child values.
+			// It would be also nice to return IEnumerable or ReadonlyCollection
+			// http://blogs.msdn.com/ericlippert/archive/2008/09/22/arrays-considered-somewhat-harmful.aspx
 			/*string[] memberValues = rootValue.GetMemberValuesAsString(_bindingFlags);
 			foreach	(string memberValue in memberValues)
 			{
 				//Value memberValuePerm = memberValue.GetPermanentReference();
 				
 			}*/
-
 			
 			foreach(Expression memberExpr in rootValue.Expression.AppendObjectMembers(rootValue.Type, _bindingFlags))
 			{
@@ -117,27 +130,30 @@ namespace Debugger.AddIn.Visualizers.Graph
 				if (isOfAtomicType(memberExpr))
 				{
 					// atomic members are added to the list of node's "properties"
-				    string memberValueAsString = memberExpr.Evaluate(_debuggerService.DebuggedProcess).AsString;
-				    thisNode.AddProperty(memberName, memberValueAsString);
+					string memberValueAsString = memberExpr.Evaluate(debuggerService.DebuggedProcess).AsString;
+				    thisNode.AddAtomicProperty(memberName, memberValueAsString, memberExpr);
 				}
 				else
 				{
+					ObjectNode targetNode = null;
 					if (!isNull(memberExpr))
 					{
 						// for object members, edges are added
-						
 						Value memberValue = getPermanentReference(memberExpr);
 						
 						// if node for memberValue already exists, only add edge to it (so loops etc. are solved correctly)
-						ObjectNode targetNode = getNodeForValue(memberValue);
+						targetNode = getNodeForValue(memberValue);
 						if (targetNode == null)
 						{
 							// if no node for memberValue exists, build the subgraph for the value
 							targetNode = buildGraphRecursive(memberValue);
 						}
-						// add the edge
-						thisNode.AddNamedEdge(targetNode, memberName);
 					}
+					else 
+					{
+						targetNode = null;
+					}
+					thisNode.AddComplexProperty(memberName, "", memberExpr, targetNode);
 				}
 			}
 			
@@ -152,10 +168,11 @@ namespace Debugger.AddIn.Visualizers.Graph
 		private ObjectNode createNewNode(Value permanentReference)
 		{
 			ObjectNode newNode = new ObjectNode();
+			newNode.HashCode = invokeGetHashCode(permanentReference);
 			
-			_resultGraph.AddNode(newNode);
+			resultGraph.AddNode(newNode);
 			// remember this node's hashcode for quick lookup
-			objectNodesForHashCode.Add(invokeGetHashCode(permanentReference), newNode);
+			objectNodesForHashCode.Add(newNode.HashCode, newNode);
 			
 			// permanent reference to the object this node represents is useful for graph building, 
 			// and matching nodes in animations
@@ -171,7 +188,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <returns></returns>
 		private ObjectNode getNodeForValue(Value value)
 		{
-			string objectHashCode = invokeGetHashCode(value);
+			int objectHashCode = invokeGetHashCode(value);
 			// are there any nodes with the same hash code?
 			LookupValueCollection<ObjectNode> nodesWithSameHashCode = objectNodesForHashCode[objectHashCode];
 			if (nodesWithSameHashCode == null)
@@ -182,9 +199,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 			{
 				// if there is a node with same hash code, check if it has also the same address
 				// (hash codes are not uniqe - http://stackoverflow.com/questions/750947/-net-unique-object-identifier)
-				ulong objectAddress = getObjectValue(value);
+				ulong objectAddress = value.GetObjectAddress();
 				ObjectNode nodeWithSameAddress = nodesWithSameHashCode.Find(
-					node => { return objectAddress == getObjectValue(node.PermanentReference); } );
+					node => { return objectAddress == node.PermanentReference.GetObjectAddress(); } );
 				return nodeWithSameAddress;
 			}
 		}
@@ -194,11 +211,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="value">Valid value.</param>
 		/// <returns>Hash code of the object in the debugee.</returns>
-		private string invokeGetHashCode(Value value)
+		private int invokeGetHashCode(Value value)
 		{
-			MethodInfo method = value.Type.GetMember("GetHashCode", BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
-			string hashCode = value.InvokeMethod(method, null).AsString;
-			return hashCode;
+			// David: I had hard time finding out how to invoke static method
+			// value.InvokeMethod is nice for instance methods.
+			// what about MethodInfo.Invoke() ?
+			// also, there could be an overload that takes 1 parameter instead of array
+			string defaultHashCode = Eval.InvokeMethod(this.hashCodeMethod, null, new Value[]{value}).AsString;
+			
+			//MethodInfo method = value.Type.GetMember("GetHashCode", BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
+			//string hashCode = value.InvokeMethod(method, null).AsString;
+			return int.Parse(defaultHashCode);
 		}
 		
 		/// <summary>
@@ -207,7 +230,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="expr">Expression to be checked.</param>
 		private void checkIsOfSupportedType(Expression expr)
 		{
-			DebugType typeOfValue = expr.Evaluate(_debuggerService.DebuggedProcess).Type;
+			DebugType typeOfValue = expr.Evaluate(debuggerService.DebuggedProcess).Type;
 			if (typeOfValue.IsArray)
 			{
 				// arrays will be supported of course in the final version
@@ -222,36 +245,30 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <returns>True if expression's type is atomic, False otherwise.</returns>
 		private bool isOfAtomicType(Expression expr)
 		{
-			DebugType typeOfValue = expr.Evaluate(_debuggerService.DebuggedProcess).Type;
+			DebugType typeOfValue = expr.Evaluate(debuggerService.DebuggedProcess).Type;
 			return (!typeOfValue.IsClass) || typeOfValue.IsString;
 		}
 		
-		#region helpers
+		#region Expression helpers
 			
 		private Value getPermanentReference(Expression expr)
 		{
-			return expr.Evaluate(_debuggerService.DebuggedProcess).GetPermanentReference();
+			return expr.Evaluate(debuggerService.DebuggedProcess).GetPermanentReference();
 		}
 		
 		private bool isNull(Expression expr)
 		{
-			return expr.Evaluate(_debuggerService.DebuggedProcess).IsNull;
+			return expr.Evaluate(debuggerService.DebuggedProcess).IsNull;
 		}
 		
 		private DebugType getType(Expression expr)
 		{
-			return expr.Evaluate(_debuggerService.DebuggedProcess).Type;
+			return expr.Evaluate(debuggerService.DebuggedProcess).Type;
 		}
 		
 		private ulong getObjectAddress(Expression expr)
 		{
-			return getObjectValue(expr.Evaluate(_debuggerService.DebuggedProcess));
-		}
-		
-		private ulong getObjectValue(Value val)
-		{
-			ICorDebugReferenceValue refVal = val.CorValue.CastTo<ICorDebugReferenceValue>();
-			return refVal.Value;
+			return expr.Evaluate(debuggerService.DebuggedProcess).GetObjectAddress();
 		}
 		
 		#endregion

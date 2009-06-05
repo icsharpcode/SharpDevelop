@@ -213,13 +213,18 @@ namespace ICSharpCode.PythonBinding
 			}
 			return null;
 		}		
-		
+				
 		/// <summary>
 		/// Appends code that creates an instance of the component.
 		/// </summary>
 		public virtual void AppendCreateInstance(PythonCodeBuilder codeBuilder)
 		{			
-			AppendComponentCreation(codeBuilder, component);
+			if (HasIContainerConstructor()) {
+				codeBuilder.InsertCreateComponentsContainer();
+				AppendCreateInstance(codeBuilder, "self._components");
+			} else {
+				AppendComponentCreation(codeBuilder, component);
+			}
 		}
 		
 		public void AppendCreateInstance(PythonCodeBuilder codeBuilder, string parameters)
@@ -236,13 +241,33 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Adds all the components that have been added to the design surface container.
+		/// </summary>
+		public void AppendCreateContainerComponents(PythonCodeBuilder codeBuilder)
+		{
+			AppendCreateChildComponents(codeBuilder, GetContainerComponents());
+		}
+		
+		/// <summary>
+		/// Gets all the components added to the design surface container excluding the
+		/// root component.
+		/// </summary>
+		public PythonDesignerComponent[] GetContainerComponents()
+		{
+			List<PythonDesignerComponent> components = new List<PythonDesignerComponent>();
+			ComponentCollection containerComponents = Component.Site.Container.Components;
+			for (int i = 1; i < containerComponents.Count; ++i) {
+				components.Add(PythonDesignerComponentFactory.CreateDesignerComponent(this, containerComponents[i]));
+			}
+			return components.ToArray();
+		}		
+		
+		/// <summary>
 		/// Appends the component's properties.
 		/// </summary>
 		public virtual void AppendComponent(PythonCodeBuilder codeBuilder)
 		{
-			AppendComment(codeBuilder);
 			AppendComponentProperties(codeBuilder);
-			AppendChildComponentProperties(codeBuilder);
 		}
 		
 		/// <summary>
@@ -366,37 +391,15 @@ namespace ICSharpCode.PythonBinding
 		{
 			codeBuilder.AppendIndentedLine("self._" + component.Site.Name + " = " + component.GetType().FullName + "(" + parameters + ")");
 		}
-		
+				
 		/// <summary>
 		/// Generates the code for the component's properties.
 		/// </summary>
 		public void AppendComponentProperties(PythonCodeBuilder codeBuilder)
 		{
-			AppendComponentProperties(codeBuilder, true, false, false);
+			AppendComponentProperties(codeBuilder, true, true);
 		}
-		
-		/// <summary>
-		/// Appends the properties of any component that is contained in a collection property that is
-		/// marked as DesignerSerializationVisibility.Content.
-		/// </summary>
-		public void AppendChildComponentProperties(PythonCodeBuilder codeBuilder)
-		{
-			foreach (PropertyDescriptor property in PythonDesignerComponent.GetSerializableContentProperties(component)) {
-				object propertyCollection = property.GetValue(component);
-				ICollection collection = propertyCollection as ICollection;
-				if (collection != null) {
-					foreach (object childObject in collection) {
-						IComponent childComponent = childObject as IComponent;
-						if (childComponent != null) {
-							PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(this, childComponent);
-							if (designerComponent.IsSited) {
-								designerComponent.AppendComponentProperties(codeBuilder, true, true, true);
-							}
-						}
-					}
-				}
-			}
-		}		
+			
 		/// <summary>
 		/// Generates python code for an object's properties when the object is not an IComponent.
 		/// </summary>
@@ -447,11 +450,19 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Appends an array as a parameter and its associated method call. 
 		/// </summary>
+		public virtual void AppendMethodCallWithArrayParameter(PythonCodeBuilder codeBuilder, string propertyOwnerName, object propertyOwner, PropertyDescriptor propertyDescriptor)
+		{
+			AppendMethodCallWithArrayParameter(codeBuilder, propertyOwnerName, propertyOwner, propertyDescriptor, false);
+		}
+		
+		/// <summary>
+		/// Appends an array as a parameter and its associated method call. 
+		/// </summary>
 		/// <remarks>
 		/// Looks for the AddRange method first. If that does not exist or is hidden from the designer the
 		/// Add method is looked for.
 		/// </remarks>
-		public static void AppendMethodCallWithArrayParameter(PythonCodeBuilder codeBuilder, string propertyOwnerName, object propertyOwner, PropertyDescriptor propertyDescriptor)
+		public static void AppendMethodCallWithArrayParameter(PythonCodeBuilder codeBuilder, string propertyOwnerName, object propertyOwner, PropertyDescriptor propertyDescriptor, bool reverse)
 		{			
 			IComponent component = propertyOwner as IComponent;
 			ICollection collectionProperty = propertyDescriptor.GetValue(propertyOwner) as ICollection;
@@ -463,6 +474,9 @@ namespace ICSharpCode.PythonBinding
 				} else {
 					MethodInfo addMethod = GetAddSerializationMethod(collectionProperty);
 					ParameterInfo[] parameters = addMethod.GetParameters();
+					if (reverse) {
+						collectionProperty = ReverseCollection(collectionProperty);
+					}
 					foreach (object item in collectionProperty) {
 						IComponent collectionComponent = item as IComponent;
 						if (PythonDesignerComponent.IsSitedComponent(collectionComponent)) {
@@ -478,16 +492,18 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void AppendProperty(PythonCodeBuilder codeBuilder, string propertyOwnerName, object obj, PropertyDescriptor propertyDescriptor)
 		{			
-			object propertyValue = propertyDescriptor.GetValue(obj);
-			if (propertyValue == null) {
-				return;
-			}
-			
-			if (propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible) {
+			object propertyValue = propertyDescriptor.GetValue(obj);			
+			ExtenderProvidedPropertyAttribute extender = GetExtenderAttribute(propertyDescriptor);
+			if (extender != null) {
+				AppendExtenderProperty(codeBuilder, propertyOwnerName, extender, propertyDescriptor, propertyValue);
+			} else if (propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible) {
 				string propertyName = propertyOwnerName + "." + propertyDescriptor.Name;
 				Control control = propertyValue as Control;
 				if (control != null) {
-					codeBuilder.AppendIndentedLine(propertyName + " = " + GetControlReference(control));
+					string controlRef = GetControlReference(control);
+					if (controlRef != null) {
+						codeBuilder.AppendIndentedLine(propertyName + " = " + controlRef);
+					}
 				} else {
 					codeBuilder.AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
 				}
@@ -496,6 +512,22 @@ namespace ICSharpCode.PythonBinding
 				AppendMethodCallWithArrayParameter(codeBuilder, propertyOwnerName, obj, propertyDescriptor);
 			}
 		}
+
+		/// <summary>
+		/// Appends an extender provider property.
+		/// </summary>
+		public void AppendExtenderProperty(PythonCodeBuilder codeBuilder, string propertyOwnerName, ExtenderProvidedPropertyAttribute extender, PropertyDescriptor propertyDescriptor, object propertyValue)
+		{
+			IComponent component = extender.Provider as IComponent;
+			codeBuilder.AppendIndented("self._" + component.Site.Name);
+			codeBuilder.Append(".Set" + propertyDescriptor.Name);
+			codeBuilder.Append("(");
+			codeBuilder.Append(propertyOwnerName);
+			codeBuilder.Append(", ");
+			codeBuilder.Append(PythonPropertyValueAssignment.ToString(propertyValue));
+			codeBuilder.Append(")");
+			codeBuilder.AppendLine();
+		}
 		
 		/// <summary>
 		/// Appends the properties of the object to the code builder.
@@ -503,7 +535,9 @@ namespace ICSharpCode.PythonBinding
 		public void AppendProperties(PythonCodeBuilder codeBuilder, string propertyOwnerName, object obj)
 		{
 			foreach (PropertyDescriptor property in GetSerializableProperties(obj)) {
-				AppendProperty(codeBuilder, propertyOwnerName, obj, property);
+				if (!IgnoreProperty(property)) {
+					AppendProperty(codeBuilder, propertyOwnerName, obj, property);
+				}
 			}
 		}
 		
@@ -518,18 +552,19 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Generates python code for the component.
 		/// </summary>
-		public void AppendComponentProperties(PythonCodeBuilder codeBuilder, bool addComponentNameToProperty, bool addChildComponentProperties, bool addComment)
+		public void AppendComponentProperties(PythonCodeBuilder codeBuilder, bool addComponentNameToProperty, bool addComment)
 		{			
-			if (addComment) {
+			PythonCodeBuilder propertiesBuilder = new PythonCodeBuilder(codeBuilder.Indent);
+			propertiesBuilder.IndentString = codeBuilder.IndentString;
+			
+			AppendProperties(propertiesBuilder);
+			AppendEventHandlers(propertiesBuilder, eventBindingService);
+
+			// Add comment if we have added some properties or event handlers.
+			if (addComment && propertiesBuilder.Length > 0) {
 				AppendComment(codeBuilder);
 			}
-
-			AppendProperties(codeBuilder);
-			AppendEventHandlers(codeBuilder, eventBindingService);
-
-			if (addChildComponentProperties) {	
-				AppendChildComponentProperties(codeBuilder);
-			}
+			codeBuilder.Append(propertiesBuilder.ToString());
 		}
 		
 		/// <summary>
@@ -588,6 +623,14 @@ namespace ICSharpCode.PythonBinding
 			get { return component; }
 		}
 		
+		/// <summary>
+		/// Return true to prevent the property from being added to the generated code. 
+		/// </summary>
+		protected virtual bool IgnoreProperty(PropertyDescriptor property)
+		{
+			return false;
+		}
+		
 		static bool HasSitedComponents(PythonDesignerComponent[] components)
 		{	
 			foreach (PythonDesignerComponent component in components) {
@@ -603,7 +646,6 @@ namespace ICSharpCode.PythonBinding
 			foreach (PythonDesignerComponent designerComponent in childComponents) {
 				if (designerComponent.IsSited) {
 					designerComponent.AppendCreateInstance(codeBuilder);
-					designerComponent.AppendCreateChildComponents(codeBuilder);
 				}
 			}
 		}
@@ -687,8 +729,31 @@ namespace ICSharpCode.PythonBinding
 		{
 			if (IsRootComponent(control)) {
 				return "self";
+			} else if (!String.IsNullOrEmpty(control.Name)) {
+				return "self._" + control.Name;
 			}
-			return "self._" + control.Name;
+			return null;
+		}
+		
+		static ExtenderProvidedPropertyAttribute GetExtenderAttribute(PropertyDescriptor property)
+		{
+			foreach (Attribute attribute in property.Attributes) {
+				ExtenderProvidedPropertyAttribute extenderAttribute = attribute as ExtenderProvidedPropertyAttribute;
+				if (extenderAttribute != null) {
+					return extenderAttribute;
+				}
+			}
+			return null;
+		}
+		
+		static ICollection ReverseCollection(ICollection collection)
+		{
+			List<object> reversedCollection = new List<object>();
+			foreach (object item in collection) {
+				reversedCollection.Add(item);
+			}
+			reversedCollection.Reverse();
+			return reversedCollection;
 		}
 	}
 }

@@ -53,7 +53,6 @@ namespace CSharpBinding.FormattingStrategy
 		}
 		#endregion
 		
-		/*
 		#region Private functions
 		bool NeedCurlyBracket(string text)
 		{
@@ -130,7 +129,7 @@ namespace CSharpBinding.FormattingStrategy
 		}
 		
 		
-		bool IsInsideStringOrComment(TextArea textArea, LineSegment curLine, int cursorOffset)
+		bool IsInsideStringOrComment(ITextEditor textArea, IDocumentLine curLine, int cursorOffset)
 		{
 			// scan cur line if it is inside a string or single line comment (//)
 			bool insideString  = false;
@@ -164,7 +163,7 @@ namespace CSharpBinding.FormattingStrategy
 			return insideString;
 		}
 		
-		bool IsInsideDocumentationComment(TextArea textArea, LineSegment curLine, int cursorOffset)
+		bool IsInsideDocumentationComment(ITextEditor textArea, IDocumentLine curLine, int cursorOffset)
 		{
 			for (int i = curLine.Offset; i < cursorOffset; ++i) {
 				char ch = textArea.Document.GetCharAt(i);
@@ -246,8 +245,8 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			int regions = 0;
 			int endregions = 0;
-			foreach (LineSegment line in document.LineSegmentCollection) {
-				string text = document.GetText(line).Trim();
+			for (int i = 1; i <= document.TotalNumberOfLines; i++) {
+				string text = document.GetLine(i).Text.Trim();
 				if (text.StartsWith("#region")) {
 					++regions;
 				} else if (text.StartsWith("#endregion")) {
@@ -256,26 +255,27 @@ namespace CSharpBinding.FormattingStrategy
 			}
 			return regions > endregions;
 		}
-		public override void FormatLine(TextArea textArea, int lineNr, int cursorOffset, char ch) // used for comment tag formater/inserter
+		
+		public override void FormatLine(ITextEditor textArea, char ch) // used for comment tag formater/inserter
 		{
-			textArea.Document.UndoStack.StartUndoGroup();
-			FormatLineInternal(textArea, lineNr, cursorOffset, ch);
-			textArea.Document.UndoStack.EndUndoGroup();
+			using (textArea.Document.OpenUndoGroup()) {
+				FormatLineInternal(textArea, textArea.Caret.Line, textArea.Caret.Offset, ch);
+			}
 		}
 		
-		void FormatLineInternal(TextArea textArea, int lineNr, int cursorOffset, char ch)
+		void FormatLineInternal(ITextEditor textArea, int lineNr, int cursorOffset, char ch)
 		{
-			LineSegment curLine   = textArea.Document.GetLineSegment(lineNr);
-			LineSegment lineAbove = lineNr > 0 ? textArea.Document.GetLineSegment(lineNr - 1) : null;
-			string terminator = textArea.TextEditorProperties.LineTerminator;
+			IDocumentLine curLine   = textArea.Document.GetLine(lineNr);
+			IDocumentLine lineAbove = lineNr > 1 ? textArea.Document.GetLine(lineNr - 1) : null;
+			string terminator = DocumentUtilitites.GetLineTerminator(textArea.Document, lineNr);
 			
+			string curLineText;
 			//// local string for curLine segment
-			string curLineText="";
 			if (ch == '/') {
-				curLineText   = textArea.Document.GetText(curLine);
-				string lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
+				curLineText = curLine.Text;
+				string lineAboveText = lineAbove == null ? "" : lineAbove.Text;
 				if (curLineText != null && curLineText.EndsWith("///") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("///"))) {
-					string indentation = base.GetIndentation(textArea, lineNr);
+					string indentation = DocumentUtilitites.GetIndentation(textArea.Document, curLine.Offset);
 					object member = GetMemberAfter(textArea, lineNr);
 					if (member != null) {
 						StringBuilder sb = new StringBuilder();
@@ -306,8 +306,7 @@ namespace CSharpBinding.FormattingStrategy
 						}
 						textArea.Document.Insert(cursorOffset, sb.ToString());
 						
-						textArea.Refresh();
-						textArea.Caret.Position = textArea.Document.OffsetToPosition(cursorOffset + indentation.Length + "/// ".Length + " <summary>".Length + terminator.Length);
+						textArea.Caret.Offset = cursorOffset + indentation.Length + "/// ".Length + " <summary>".Length + terminator.Length;
 					}
 				}
 				return;
@@ -321,7 +320,7 @@ namespace CSharpBinding.FormattingStrategy
 			switch (ch) {
 				case '>':
 					if (IsInsideDocumentationComment(textArea, curLine, cursorOffset)) {
-						curLineText  = textArea.Document.GetText(curLine);
+						curLineText = curLine.Text;
 						int column = textArea.Caret.Offset - curLine.Offset;
 						int index = Math.Min(column - 1, curLineText.Length - 1);
 						
@@ -351,29 +350,24 @@ namespace CSharpBinding.FormattingStrategy
 				case ']':
 				case '}':
 				case '{':
-					if (textArea.Document.TextEditorProperties.IndentStyle == IndentStyle.Smart) {
-						textArea.Document.FormattingStrategy.IndentLine(textArea, lineNr);
-					}
+					//if (textArea.Document.TextEditorProperties.IndentStyle == IndentStyle.Smart) {
+					IndentLine(textArea, curLine);
+					//}
 					break;
 				case '\n':
-					string  lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
+					string lineAboveText = lineAbove == null ? "" : lineAbove.Text;
 					//// curLine might have some text which should be added to indentation
-					curLineText = "";
-					if (curLine.Length > 0) {
-						curLineText = textArea.Document.GetText(curLine);
-					}
+					curLineText = curLine.Text;
 					
-					LineSegment nextLine      = lineNr + 1 < textArea.Document.TotalNumberOfLines ? textArea.Document.GetLineSegment(lineNr + 1) : null;
-					string      nextLineText  = lineNr + 1 < textArea.Document.TotalNumberOfLines ? textArea.Document.GetText(nextLine) : "";
-					
-					int addCursorOffset = 0;
-					
-					if (lineAboveText.Trim().StartsWith("#region") && NeedEndregion(textArea.Document)) {
-						textArea.Document.Insert(curLine.Offset, "#endregion");
-						textArea.Caret.Column = IndentLine(textArea, lineNr);
+					if (lineAbove != null && lineAbove.Text.Trim().StartsWith("#region")
+					    && NeedEndregion(textArea.Document))
+					{
+						textArea.Document.Insert(cursorOffset, "#endregion");
 						return;
 					}
 					
+					/*
+					int addCursorOffset = 0;
 					if (lineAbove.HighlightSpanStack != null && !lineAbove.HighlightSpanStack.IsEmpty) {
 						if (!lineAbove.HighlightSpanStack.Peek().StopEOL) {	// case for /* style comments
 							int index = lineAboveText.IndexOf("/*");
@@ -421,18 +415,18 @@ namespace CSharpBinding.FormattingStrategy
 								addCursorOffset = 1;
 							}
 						}
-					}
-					int result = IndentLine(textArea, lineNr) + addCursorOffset;
-					if (textArea.TextEditorProperties.AutoInsertCurlyBracket) {
-						string oldLineText = TextUtilities.GetLineAsString(textArea.Document, lineNr - 1);
+					}*/
+					if (textArea.Options.AutoInsertBlockEnd && lineAbove != null) {
+						string oldLineText = lineAbove.Text;
 						if (oldLineText.EndsWith("{")) {
-							if (NeedCurlyBracket(textArea.Document.TextContent)) {
-								textArea.Document.Insert(curLine.Offset + curLine.Length, terminator + "}");
-								IndentLine(textArea, lineNr + 1);
+							if (NeedCurlyBracket(textArea.Document.Text)) {
+								int insertionPoint = curLine.Offset + curLine.Length;
+								textArea.Document.Insert(insertionPoint, terminator + "}");
+								IndentLine(textArea, textArea.Document.GetLine(lineNr + 1));
+								textArea.Caret.Offset = insertionPoint;
 							}
 						}
 					}
-					textArea.Caret.Column = result;
 					return;
 			}
 		}
@@ -549,6 +543,7 @@ namespace CSharpBinding.FormattingStrategy
 		}
 		#endregion
 		
+		/*
 		#region SearchBracketBackward
 		public override int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)
 		{

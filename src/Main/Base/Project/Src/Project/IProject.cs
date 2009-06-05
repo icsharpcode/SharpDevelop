@@ -85,6 +85,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets/Sets the name of the project.
+		/// 
+		/// Only the getter is thread-safe.
 		/// </summary>
 		/// <remarks>
 		/// Name already exists in ISolutionFolder, it's repeated here to prevent
@@ -262,6 +264,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		/// <summary>
 		/// Gets the list of projects on which this project depends.
+		/// This method is thread-safe.
 		/// </summary>
 		ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions);
 		
@@ -273,16 +276,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets the name of the buildable item.
+		/// This property is thread-safe.
 		/// </summary>
 		string Name { get; }
 		
 		/// <summary>
 		/// Gets the parent solution.
+		/// This property is thread-safe.
 		/// </summary>
 		Solution ParentSolution { get; }
 		
 		/// <summary>
 		/// Creates the project-specific build options.
+		/// This member must be implemented thread-safe.
 		/// </summary>
 		/// <param name="options">The global build options.</param>
 		/// <param name="isRootBuildable">Specifies whether this project is the main buildable item.

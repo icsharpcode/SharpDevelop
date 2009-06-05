@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
 	/// Base class for completion item providers.
@@ -226,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 						}
 						string entityDoc = entity.Documentation;
 						if (!string.IsNullOrEmpty(entityDoc)) {
-							string documentation = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(entityDoc);
+							string documentation = ConvertDocumentation(entityDoc);
 							if (!string.IsNullOrEmpty(documentation)) {
 								description += Environment.NewLine + documentation;
 							}
@@ -235,6 +235,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 					return description;
 				}
 			}
+		}
+		
+		public static string ConvertDocumentation(string xmlDocumentation)
+		{
+			return ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(xmlDocumentation);
 		}
 		#endregion
 	}

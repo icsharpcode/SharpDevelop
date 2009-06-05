@@ -6,10 +6,8 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using System.Linq;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -17,57 +15,39 @@ namespace ICSharpCode.XmlEditor
 	/// Provides the autocomplete (intellisense) data for an
 	/// xml document that specifies a known schema.
 	/// </summary>
-	public class XmlCompletionDataProvider : AbstractCompletionDataProvider
+	public class XmlCompletionDataProvider
 	{
 		XmlSchemaCompletionDataCollection schemaCompletionDataItems;
 		XmlSchemaCompletionData defaultSchemaCompletionData;
-		string defaultNamespacePrefix = String.Empty;
+		string defaultNamespacePrefix = string.Empty;
 		
 		public XmlCompletionDataProvider(XmlSchemaCompletionDataCollection schemaCompletionDataItems, XmlSchemaCompletionData defaultSchemaCompletionData, string defaultNamespacePrefix)
 		{
 			this.schemaCompletionDataItems = schemaCompletionDataItems;
 			this.defaultSchemaCompletionData = defaultSchemaCompletionData;
 			this.defaultNamespacePrefix = defaultNamespacePrefix;
-			DefaultIndex = 0;
 		}
 		
-		public override ImageList ImageList {
-			get {
-				return XmlCompletionDataImageList.GetImageList();
-			}
-		}
-
-		/// <summary>
-		/// Overrides the default behaviour and allows special xml
-		/// characters such as '.' and ':' to be used as completion data.
-		/// </summary>
-		public override CompletionDataProviderKeyResult ProcessKey(char key)
+		public ICompletionItemList GenerateCompletionData(string fileContent, char charTyped)
 		{
-			if (key == '\r' || key == '\t') {
-				return CompletionDataProviderKeyResult.InsertionKey;
-			}
-			return CompletionDataProviderKeyResult.NormalKey;
-		}
-		
-		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
-		{
-			preSelection = null;
-			string text = String.Concat(textArea.Document.GetText(0, textArea.Caret.Offset), charTyped);
+			string text = String.Concat(fileContent, charTyped);
+			
+			DefaultCompletionItemList list = null;
 			
 			switch (charTyped) {
 				case '=':
 					// Namespace intellisense.
 					if (XmlParser.IsNamespaceDeclaration(text, text.Length)) {
-						return schemaCompletionDataItems.GetNamespaceCompletionData();;
+						list = schemaCompletionDataItems.GetNamespaceCompletionData();
 					}
 					break;
 				case '<':
 					// Child element intellisense.
 					XmlElementPath parentPath = XmlParser.GetParentElementPath(text);
 					if (parentPath.Elements.Count > 0) {
-						return GetChildElementCompletionData(parentPath);
+						list = GetChildElementCompletionData(parentPath);
 					} else if (defaultSchemaCompletionData != null) {
-						return defaultSchemaCompletionData.GetElementCompletionData(defaultNamespacePrefix);
+						list = defaultSchemaCompletionData.GetElementCompletionData(defaultNamespacePrefix);
 					}
 					break;
 					
@@ -76,28 +56,30 @@ namespace ICSharpCode.XmlEditor
 					if (!XmlParser.IsInsideAttributeValue(text, text.Length)) {
 						XmlElementPath path = XmlParser.GetActiveElementStartPath(text, text.Length);
 						if (path.Elements.Count > 0) {
-							return GetAttributeCompletionData(path);
+							list = GetAttributeCompletionData(path);
 						}
 					}
 					break;
-					
 				default:
-					
 					// Attribute value intellisense.
 					if (XmlParser.IsAttributeValueChar(charTyped)) {
 						string attributeName = XmlParser.GetAttributeName(text, text.Length);
 						if (attributeName.Length > 0) {
 							XmlElementPath elementPath = XmlParser.GetActiveElementStartPath(text, text.Length);
 							if (elementPath.Elements.Count > 0) {
-								preSelection = charTyped.ToString();
-								return GetAttributeValueCompletionData(elementPath, attributeName);
+								list = GetAttributeValueCompletionData(elementPath, attributeName);
 							}
 						}
 					}
 					break;
 			}
 			
-			return null;
+			if (list != null) {
+				list.SortItems();
+				list.SuggestedItem = list.Items.FirstOrDefault();
+			}
+			
+			return list;
 		}
 		
 		/// <summary>
@@ -135,7 +117,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Gets the schema completion data that was created from the specified 
+		/// Gets the schema completion data that was created from the specified
 		/// schema filename.
 		/// </summary>
 		public XmlSchemaCompletionData FindSchemaFromFileName(string fileName)
@@ -143,40 +125,46 @@ namespace ICSharpCode.XmlEditor
 			return schemaCompletionDataItems.GetSchemaFromFileName(fileName);
 		}
 		
-		ICompletionData[] GetChildElementCompletionData(XmlElementPath path)
+		public DefaultCompletionItemList GetChildElementCompletionData(XmlElementPath path)
 		{
-			ICompletionData[] completionData = null;
+			XmlCompletionItemList list = new XmlCompletionItemList();
 			
 			XmlSchemaCompletionData schema = FindSchema(path);
 			if (schema != null) {
-				completionData = schema.GetChildElementCompletionData(path);
+				list.Items.AddRange(schema.GetChildElementCompletionData(path));
 			}
 			
-			return completionData;
+			list.SortItems();
+			list.SuggestedItem = list.Items.FirstOrDefault();
+			return list;
 		}
 		
-		ICompletionData[] GetAttributeCompletionData(XmlElementPath path)
+		public DefaultCompletionItemList GetAttributeCompletionData(XmlElementPath path)
 		{
-			ICompletionData[] completionData = null;
+			var list = new XmlCompletionItemList();
 			
 			XmlSchemaCompletionData schema = FindSchema(path);
 			if (schema != null) {
-				completionData = schema.GetAttributeCompletionData(path);
+				list.Items.AddRange(schema.GetAttributeCompletionData(path));
 			}
 			
-			return completionData;
+			list.SortItems();
+			list.SuggestedItem = list.Items.FirstOrDefault();
+			return list;
 		}
 		
-		ICompletionData[] GetAttributeValueCompletionData(XmlElementPath path, string name)
+		public DefaultCompletionItemList GetAttributeValueCompletionData(XmlElementPath path, string name)
 		{
-			ICompletionData[] completionData = null;
+			var list = new XmlCompletionItemList();
 			
 			XmlSchemaCompletionData schema = FindSchema(path);
 			if (schema != null) {
-				completionData = schema.GetAttributeValueCompletionData(path, name);
+				list.Items.AddRange(schema.GetAttributeValueCompletionData(path, name));
 			}
 			
-			return completionData;
+			list.SortItems();
+			list.SuggestedItem = list.Items.FirstOrDefault();
+			return list;
 		}
 	}
 }

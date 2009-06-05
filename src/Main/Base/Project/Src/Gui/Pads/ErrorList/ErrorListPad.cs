@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					InternalShowResults();
 			};
 			
-			ProjectService.EndBuild       += ProjectServiceEndBuild;
+			ProjectService.BuildFinished  += ProjectServiceEndBuild;
 			ProjectService.SolutionLoaded += OnSolutionOpen;
 			ProjectService.SolutionClosed += OnSolutionClosed;
 			

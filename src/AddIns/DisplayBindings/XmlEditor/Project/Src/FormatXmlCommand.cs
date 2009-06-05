@@ -5,6 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui;
+using System;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.XmlEditor
@@ -18,6 +20,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			// Find active XmlView.
 			XmlView xmlView = XmlView.ActiveXmlView;
+			
 			if (xmlView != null) {
 				xmlView.FormatXml();
 			}

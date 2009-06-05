@@ -43,12 +43,11 @@
 			<Doozer name="EditAction" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.EditActionDoozer"/>
 			<Doozer name="SyntaxMode" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
-			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.Editor.CodeCompletionBindingDoozer"/>
+			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionBindingDoozer"/>
 			<Doozer name="Debugger" class="ICSharpCode.SharpDevelop.Debugging.DebuggerDoozer"/>
 			<Doozer name="Directory" class="ICSharpCode.SharpDevelop.DirectoryDoozer"/>
 			<Doozer name="TaskBoundAdditionalLogger" class="ICSharpCode.SharpDevelop.Project.TaskBoundAdditionalLoggerDoozer"/>
 		</Import>
-		<Import assembly=":ICSharpCode.TextEditor"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -136,7 +135,7 @@
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.SearchResultsLabel}"
 		     icon     = "PadIcons.FindResults"
-		     class    = "SearchAndReplace.SearchResultPanel"
+		     class    = "ICSharpCode.SharpDevelop.Editor.Search.SearchResultsPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id       = "Bookmarks"
@@ -1371,17 +1370,7 @@
 		</Condition> <!-- end PROJECT menu -->
 		
 		<MenuItem id = "Build" label = "${res:XML.MainMenu.BuildMenu}" type="Menu">
-			<ComplexCondition action="Disable">
-				<Or>
-					<!--<And>
-						<Or>
-							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-							<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
-						</Or>
-						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
-					</And>-->
-					<Condition name = "SolutionOpen"/>
-				</Or>
+			<Condition name = "SolutionOpen" action="Disable">
 				<MenuItem id       = "Build"
 				          label    = "${res:XML.MainMenu.BuildMenu.BuildSolution}"
 				          shortcut = "F8"
@@ -1432,7 +1421,7 @@
 				<MenuItem id = "EditConfigurations"
 				          label = "${res:XML.MainMenu.BuildMenu.EditConfigurationsPlatforms}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.EditConfigurationsCommand"/>
-			</ComplexCondition>
+			</Condition>
 		</MenuItem> <!-- end BUILD menu -->
 		
 		<MenuItem id = "Debug" label = "${res:XML.MainMenu.DebugMenu}" type="Menu">
@@ -1538,6 +1527,53 @@
 			</ComplexCondition>
 		</MenuItem> <!-- end DEBUG menu -->
 		
+		<MenuItem id = "Search" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
+			<MenuItem id = "SearchIncremental"
+			          label = "${res:XML.MainMenu.SearchMenu.IncrementalSearch}"
+			          shortcut = "Control|E"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunIncrementalSearch"/>
+			<MenuItem id = "SearchReverseIncremental"
+			          label = "${res:XML.MainMenu.SearchMenu.ReverseIncrementalSearch}"
+			          shortcut = "Control|Shift|E"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunReverseIncrementalSearch"/>
+			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
+			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
+			<MenuItem id = "ToggleBookmark"
+			          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
+			          shortcut = "Control|F2"
+			          icon = "Bookmarks.ToggleMark"
+			          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
+			<MenuItem id = "PrevBookmark"
+			          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
+			          shortcut = "Alt|F2"
+			          icon = "Bookmarks.GotoPrevInFile"
+			          class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
+			<MenuItem id = "NextBookmark"
+			          label = "${res:XML.MainMenu.SearchMenu.NextBookmark}"
+			          shortcut = "F2"
+			          icon = "Bookmarks.GotoNextInFile"
+			          class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
+			<MenuItem id = "ClearBookmarks"
+			          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
+			          icon = "Bookmarks.ClearAll"
+			          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
+			<MenuItem id = "Separator2" type = "Separator" />
+			<MenuItem id = "GotoLineNr"
+			          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"
+			          shortcut = "Control|G"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"/>
+			<MenuItem id = "Separator3" type = "Separator" />
+			<MenuItem id = "GotoBrace"
+			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
+			          shortcut = "Control|B"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace"/>
+			<!--			</Condition> -->
+		</MenuItem>
+		
+		<MenuItem id="Analysis" label="${res:XML.MainMenu.Analysis}" type="Menu">
+			<MenuItem id="Separator1" type="Separator" />
+		</MenuItem>
+		
 		<MenuItem id = "Tools" label = "${res:XML.MainMenu.ToolMenu}" type="Menu">
 			<MenuItem id = "ToolBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Commands.ToolMenuBuilder" />
 			<MenuItem id = "Separator1" type = "Separator" />
@@ -1598,7 +1634,7 @@
 				<MenuItem id = "SplitView"
 				          label = "${res:XML.MainMenu.WindowMenu.Split}"
 				          icon  = "Icons.16x16.SplitWindow"
-				          command = "SplitView"/>
+				          command = "ICSharpCode.SharpDevelop.SharpDevelopRoutedCommands.SplitView"/>
 				<MenuItem id    = "CloseAll"
 				          label = "${res:XML.MainMenu.FileMenu.CloseAll}"
 				          icon  = "Icons.16x16.CloseAllDocuments"
@@ -1659,6 +1695,8 @@
 		</MenuItem> <!-- end HELP menu -->
 	</Path> <!-- end Main Menu -->
 	
+	<!-- create empty /Workspace/Tools path - it's included by the main menu -->
+	<Path name = "/Workspace/Tools"/>
 	
 	<!-- TEXT EDITOR -->
 	
@@ -1666,10 +1704,6 @@
 		<OptionPanel id = "CodeTemplates"
 		             label = "${res:Dialog.Options.CodeTemplatesText}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CodeTemplatePanel"/>
-	</Path>
-	
-	<Path name = "/AddIns/DefaultTextEditor/Formatter/XML">
-		<Class id ="XmlFormatter" class = "ICSharpCode.SharpDevelop.DefaultEditor.XmlFormattingStrategy"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
@@ -1805,107 +1839,11 @@
 		</Condition>
 	</Path>
 	
-	
-	<Path name = "/SharpDevelop/Workbench/MainMenu">
-		<MenuItem id = "Search" insertafter ="View" insertbefore ="Tools" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
-			<MenuItem id = "SearchIncremental"
-			          label = "${res:XML.MainMenu.SearchMenu.IncrementalSearch}"
-			          shortcut = "Control|E"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunIncrementalSearch"/>
-			<MenuItem id = "SearchReverseIncremental"
-			          label = "${res:XML.MainMenu.SearchMenu.ReverseIncrementalSearch}"
-			          shortcut = "Control|Shift|E"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunReverseIncrementalSearch"/>
-			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
-			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
-			<MenuItem id = "ToggleBookmark"
-			          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
-			          shortcut = "Control|F2"
-			          icon = "Bookmarks.ToggleMark"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
-			<MenuItem id = "PrevBookmark"
-			          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
-			          shortcut = "Alt|F2"
-			          icon = "Bookmarks.GotoPrevInFile"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
-			<MenuItem id = "NextBookmark"
-			          label = "${res:XML.MainMenu.SearchMenu.NextBookmark}"
-			          shortcut = "F2"
-			          icon = "Bookmarks.GotoNextInFile"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
-			<MenuItem id = "ClearBookmarks"
-			          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
-			          icon = "Bookmarks.ClearAll"
-			          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
-			<MenuItem id = "Separator2" type = "Separator" />
-			<MenuItem id = "GotoLineNr"
-			          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"
-			          shortcut = "Control|G"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"/>
-			<MenuItem id = "Separator3" type = "Separator" />
-			<MenuItem id = "GotoBrace"
-			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
-			          shortcut = "Control|B"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace"/>
-			<!--			</Condition> -->
-		</MenuItem>
-	</Path>
-	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit">
-		<MenuItem insertafter = "Delete" insertbefore = "SelectAll" id = "Separator2" type = "Separator" />
-		<MenuItem insertafter = "Separator2" insertbefore = "Separator3" id = "Format" label = "${res:XML.MainMenu.EditMenu.FormatMenu}" type="Menu">
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
-				
-				<MenuItem id = "RemoveLeadingWs"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.RemoveLeadingWS"/>
-				<MenuItem id = "RemoveTrailingWs"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.RemoveTrailingWS"/>
-				<MenuItem id = "Seperator1" type = "Separator" />
-				<MenuItem id = "UpperCase"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}"
-				          icon = "Icons.16x16.LowerToUpperCase"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToUpperCase"/>
-				<MenuItem id = "LowerCase"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}"
-				          icon = "Icons.16x16.UpperToLowerCase"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToLowerCase"/>
-				<MenuItem id = "Capitalize"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.CapitalizeAction"/>
-				<MenuItem id = "InvertCase"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.InvertCaseAction"/>
-				<MenuItem id = "Separator2" type = "Separator" />
-				<MenuItem id = "SortSelection"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.SortSelection"/>
-				<MenuItem id = "Separator3" type = "Separator" />
-				<MenuItem id = "Tabs2Spaces"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertTabsToSpaces"/>
-				<MenuItem id = "Spaces2Tabs"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertSpacesToTabs"/>
-				<MenuItem id = "LeadingTabs2Spaces"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertLeadingTabsToSpaces"/>
-				<MenuItem id = "LeadingSpaces2Tabs"
-				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
-				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertLeadingSpacesToTabs"/>
-				<MenuItem id = "Separator4" type = "Separator" />
-				<MenuItem id = "Comment"
-				          icon  = "Icons.16x16.CommentRegion"
-				          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
-				          class= "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
-				<MenuItem id = "Indent"
-				          label = "${res:XML.TextAreaContextMenu.Indent}"
-				          shortcut = "Control|I"
-				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
-			</Condition>
+		<MenuItem insertafter = "Delete" id = "Separator2" type = "Separator" />
+		<MenuItem id = "Format" label = "${res:XML.MainMenu.EditMenu.FormatMenu}" type="Menu">
 		</MenuItem>
-		<MenuItem insertafter = "Format" insertbefore = "Separator3" id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu">
+		<MenuItem id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu">
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
 				<MenuItem id          = "ToggleFolding"
 				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
@@ -1921,7 +1859,7 @@
 				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowDefinitionsOnly"/>
 			</Condition>
 		</MenuItem>
-		<MenuItem insertafter = "Separator2" insertbefore = "SelectAll" id = "Separator3" type = "Separator" />
+		<MenuItem insertbefore = "SelectAll" id = "Separator3" type = "Separator" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog">
@@ -2039,6 +1977,21 @@
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteAllMarks"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Pads/SearchResultPad/Toolbar">
+		<ToolbarItem id      = "ShowLast"
+		             type    = "DropDownButton"
+		             icon    = "Icons.16x16.FindIcon"
+		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.ShowLast.ToolTip}">
+			<MenuItem id="RecentList" type="Builder" class="ICSharpCode.SharpDevelop.Editor.Search.LastSearchResultsBuilder"/>
+			<MenuItem id="Separator" type="Separator"/>
+			<MenuItem id="ClearRecentList"
+			          type="Item"
+			          label="${res:MainWindow.Windows.SearchResultPanel.ClearHistory}"
+			          class="ICSharpCode.SharpDevelop.Editor.Search.ClearSearchResultsList" />
+		</ToolbarItem>
+	</Path>
+	
+	<!--
 	<Path name = "/SharpDevelop/Pads/SearchResultPanel/Toolbar">
 		<Condition name = "Ownerstate" ownerstate = "DefaultMode" action = "Exclude">
 			<ToolbarItem id      = "ExpandAll"
@@ -2067,6 +2020,7 @@
 			             class   = "SearchAndReplace.SelectViewMode"/>
 		</Condition>
 	</Path>
+	-->
 	
 	<Path name = "/Workspace/Icons">
 		<!-- Resources -->
@@ -2125,14 +2079,6 @@
 			<MenuItem id    = "DebugViewMenuBuilder"
 			          type  = "Builder"
 			          class = "ICSharpCode.SharpDevelop.Commands.DebugViewMenuBuilder"/>
-		</MenuItem>
-	</Path>
-	
-	<Path name="/SharpDevelop/Workbench/MainMenu">
-		<MenuItem id="QualityTools" label="Quality Tools" insertbefore="Tools" type="Menu">
-			<MenuItem id="Profiler" label="Profiler" type="Menu" />
-			<MenuItem id="Test" label="Test" type="Menu" />
-			<MenuItem id="Separator1" type="Separator" />
 		</MenuItem>
 	</Path>
 	

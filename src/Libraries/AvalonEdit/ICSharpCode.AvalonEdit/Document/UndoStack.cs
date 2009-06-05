@@ -275,7 +275,8 @@ namespace ICSharpCode.AvalonEdit.Document
 				document,
 				e.Offset,
 				document.GetText(e.Offset, e.RemovalLength),
-				e.InsertedText));
+				e.InsertedText,
+				e.OffsetChangeMapOrNull));
 		}
 		
 		/// <summary>

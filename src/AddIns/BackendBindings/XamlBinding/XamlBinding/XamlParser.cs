@@ -5,6 +5,7 @@
 //     <version>$Revision: 2568 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Project;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -91,7 +92,7 @@ namespace ICSharpCode.XamlBinding
 			return cu;
 		}
 
-		IReturnType TypeFromXmlNode(XamlCompilationUnit cu, XmlReader r)
+		static IReturnType TypeFromXmlNode(XamlCompilationUnit cu, XmlReader r)
 		{
 			return cu.CreateType(r.NamespaceURI, r.LocalName);
 		}

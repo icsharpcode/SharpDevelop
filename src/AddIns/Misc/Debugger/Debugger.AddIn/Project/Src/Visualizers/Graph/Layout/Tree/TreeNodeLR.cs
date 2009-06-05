@@ -10,11 +10,11 @@ using Debugger.AddIn.Visualizers.Graph.Drawing;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Description of TreeNodeLR.
+	/// TreeNode used in LR layout mode.
 	/// </summary>
 	public class TreeNodeLR: TreeNode
 	{
-		public TreeNodeLR(NodeControl nodeControl) : base(nodeControl)
+		public TreeNodeLR(NodeControl nodeControl, ObjectNode objectNode) : base(nodeControl, objectNode)
 		{
 		}
 		

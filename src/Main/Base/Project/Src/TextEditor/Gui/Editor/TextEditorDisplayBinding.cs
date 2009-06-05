@@ -24,15 +24,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	{
 		static TextEditorDisplayBinding()
 		{
-			// load #D-specific syntax highlighting files here
-			string modeDir = Path.Combine(PropertyService.ConfigDirectory, "modes");
-			if (!Directory.Exists(modeDir)) {
-				Directory.CreateDirectory(modeDir);
+			// ConfigDirectory is null during unit tests
+			if (PropertyService.ConfigDirectory != null) {
+				// load #D-specific syntax highlighting files here
+				string modeDir = Path.Combine(PropertyService.ConfigDirectory, "modes");
+				if (!Directory.Exists(modeDir)) {
+					Directory.CreateDirectory(modeDir);
+				}
+				
+				HighlightingManager.Manager.AddSyntaxModeFileProvider(new ICSharpCode.SharpDevelop.DefaultEditor.Codons.AddInTreeSyntaxModeProvider());
+				HighlightingManager.Manager.AddSyntaxModeFileProvider(new FileSyntaxModeProvider(Path.Combine(PropertyService.DataDirectory, "modes")));
+				HighlightingManager.Manager.AddSyntaxModeFileProvider(new FileSyntaxModeProvider(modeDir));
 			}
-			
-			HighlightingManager.Manager.AddSyntaxModeFileProvider(new ICSharpCode.SharpDevelop.DefaultEditor.Codons.AddInTreeSyntaxModeProvider());
-			HighlightingManager.Manager.AddSyntaxModeFileProvider(new FileSyntaxModeProvider(Path.Combine(PropertyService.DataDirectory, "modes")));
-			HighlightingManager.Manager.AddSyntaxModeFileProvider(new FileSyntaxModeProvider(modeDir));
 			ClipboardHandling.Initialize();
 		}
 		

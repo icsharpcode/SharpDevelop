@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -100,7 +100,7 @@ namespace Debugger.Wrappers.CorSym
 			return ISymUnmanagedReader.Wrap(this.WrappedObject.GetReaderForFile(importer, filename, searchPath));
 		}
 		
-		public ISymUnmanagedReader GetReaderFromStream(object importer, IStream pstream)
+		public ISymUnmanagedReader GetReaderFromStream(object importer, Debugger.Wrappers.CorDebug.IStream pstream)
 		{
 			return ISymUnmanagedReader.Wrap(this.WrappedObject.GetReaderFromStream(importer, pstream.WrappedObject));
 		}

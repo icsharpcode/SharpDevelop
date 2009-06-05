@@ -227,6 +227,11 @@ namespace ICSharpCode.SharpDevelop
 			return new System.Drawing.Rectangle(r.TopLeft.ToSystemDrawing(), r.Size.ToSystemDrawing());
 		}
 		
+		public static System.Drawing.Color ToSystemDrawing(this System.Windows.Media.Color c)
+		{
+			return System.Drawing.Color.FromArgb(c.A, c.R, c.G, c.B);
+		}
+		
 		public static Point ToWpf(this System.Drawing.Point p)
 		{
 			return new Point(p.X, p.Y);
@@ -240,6 +245,11 @@ namespace ICSharpCode.SharpDevelop
 		public static Rect ToWpf(this System.Drawing.Rectangle rect)
 		{
 			return new Rect(rect.Location.ToWpf(), rect.Size.ToWpf());
+		}
+		
+		public static System.Windows.Media.Color ToWpf(this System.Drawing.Color c)
+		{
+			return System.Windows.Media.Color.FromArgb(c.A, c.R, c.G, c.B);
 		}
 		#endregion
 		
@@ -302,7 +312,7 @@ namespace ICSharpCode.SharpDevelop
 			var r = new System.Windows.Controls.MenuItem();
 			r.Header = MenuService.ConvertLabel(item.Text);
 			if (item.ImageIndex >= 0)
-				r.Icon = ClassBrowserIconService.GetImageByIndex(item.ImageIndex).CreatePixelSnappedImage();
+				r.Icon = ClassBrowserIconService.GetImageByIndex(item.ImageIndex).CreateImage();
 			r.Click += delegate { item.PerformClick(); };
 			return r;
 		}

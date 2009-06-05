@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	/// <summary>
 	/// Container class for the parameters available to the Complete function.

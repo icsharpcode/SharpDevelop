@@ -131,7 +131,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void RestoreViewState(Properties properties)
 		{
-			TreeViewHelper.ApplyViewStateString(properties.Get(ViewStatePropertyName, String.Empty), this);
+			TreeViewHelper.ApplyViewStateString(properties.Get(ViewStatePropertyName, string.Empty), this);
 		}
 		
 		/// <summary>

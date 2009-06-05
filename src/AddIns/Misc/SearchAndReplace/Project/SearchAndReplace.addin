@@ -72,4 +72,8 @@
 		<String text=".dll"/>
 		<String text=".pdb"/>
 	</Path>
+	
+	<Path name="/SharpDevelop/Pads/SearchResultPad/Factories">
+		<Class id="DefaultSearchResultFactory" class="SearchAndReplace.DefaultSearchResultFactory"/>
+	</Path>
 </AddIn>

@@ -6,12 +6,13 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -26,9 +27,9 @@ namespace ICSharpCode.XmlEditor
 	/// </remarks>
 	public class XmlSchemaCompletionData
 	{
-		string namespaceUri = String.Empty;
+		string namespaceUri = string.Empty;
 		XmlSchema schema;
-		string fileName = String.Empty;
+		string fileName = string.Empty;
 		bool readOnly = false;
 		
 		/// <summary>
@@ -47,7 +48,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public XmlSchemaCompletionData(TextReader reader)
 		{
-			ReadSchema(String.Empty, reader);
+			ReadSchema(string.Empty, reader);
 		}
 		
 		/// <summary>
@@ -63,7 +64,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Creates the completion data from the specified schema file.
 		/// </summary>
-		public XmlSchemaCompletionData(string fileName) : this(String.Empty, fileName)
+		public XmlSchemaCompletionData(string fileName) : this(string.Empty, fileName)
 		{
 		}
 		
@@ -127,11 +128,11 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static string GetUri(string fileName)
 		{
-			string uri = String.Empty;
+			string uri = string.Empty;
 			
 			if (fileName != null) {
 				if (fileName.Length > 0) {
-					uri = String.Concat("file:///", fileName.Replace('\\', '/'));
+					uri = string.Concat("file:///", fileName.Replace('\\', '/'));
 				}
 			}
 			
@@ -141,17 +142,17 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
-		public ICompletionData[] GetElementCompletionData()
+		public DefaultCompletionItemList GetElementCompletionData()
 		{
-			return GetElementCompletionData(String.Empty);
+			return GetElementCompletionData(string.Empty);
 		}
 		
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
-		public ICompletionData[] GetElementCompletionData(string namespacePrefix)
+		public DefaultCompletionItemList GetElementCompletionData(string namespacePrefix)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
 				if (element.Name != null) {
@@ -161,16 +162,20 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 			
-			return data.ToArray();
+			var list = new XmlCompletionItemList();
+			list.Items.AddRange(data.ToArray());
+			list.SortItems();
+			
+			return list;
 		}
 		
 		/// <summary>
 		/// Gets the attribute completion data for the xml element that exists
 		/// at the end of the specified path.
 		/// </summary>
-		public ICompletionData[] GetAttributeCompletionData(XmlElementPath path)
+		public ICompletionItem[] GetAttributeCompletionData(XmlElementPath path)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 					
 			// Locate matching element.
 			XmlSchemaElement element = FindElement(path);
@@ -188,9 +193,9 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the child element completion data for the xml element that exists
 		/// at the end of the specified path.
 		/// </summary>
-		public ICompletionData[] GetChildElementCompletionData(XmlElementPath path)
+		public ICompletionItem[] GetChildElementCompletionData(XmlElementPath path)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 		
 			// Locate matching element.
 			XmlSchemaElement element = FindElement(path);
@@ -206,9 +211,9 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the autocomplete data for the specified attribute value.
 		/// </summary>
-		public ICompletionData[] GetAttributeValueCompletionData(XmlElementPath path, string name)
+		public ICompletionItem[] GetAttributeValueCompletionData(XmlElementPath path, string name)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			// Locate matching element.
 			XmlSchemaElement element = FindElement(path);
@@ -435,9 +440,9 @@ namespace ICSharpCode.XmlEditor
 			return matchedElement;
 		}		
 		
-		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaElement element, string prefix)
+		XmlCompletionItemCollection GetChildElementCompletionData(XmlSchemaElement element, string prefix)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			XmlSchemaComplexType complexType = GetElementAsComplexType(element);
 			
@@ -448,9 +453,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaComplexType complexType, string prefix)
+		XmlCompletionItemCollection GetChildElementCompletionData(XmlSchemaComplexType complexType, string prefix)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			XmlSchemaSequence sequence = complexType.Particle as XmlSchemaSequence;
 			XmlSchemaChoice choice = complexType.Particle as XmlSchemaChoice;
@@ -473,9 +478,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaObjectCollection items, string prefix)
+		XmlCompletionItemCollection GetChildElementCompletionData(XmlSchemaObjectCollection items, string prefix)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			foreach (XmlSchemaObject schemaObject in items) {
 				
@@ -513,9 +518,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaComplexContent complexContent, string prefix)
+		XmlCompletionItemCollection GetChildElementCompletionData(XmlSchemaComplexContent complexContent, string prefix)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			XmlSchemaComplexContentExtension extension = complexContent.Content as XmlSchemaComplexContentExtension;
 			if (extension != null) {
@@ -530,9 +535,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaComplexContentExtension extension, string prefix)
+		XmlCompletionItemCollection GetChildElementCompletionData(XmlSchemaComplexContentExtension extension, string prefix)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			XmlSchemaComplexType complexType = FindNamedType(schema, extension.BaseTypeName);
 			if (complexType != null) {
@@ -557,9 +562,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}		
 		
-		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaGroupRef groupRef, string prefix)
+		XmlCompletionItemCollection GetChildElementCompletionData(XmlSchemaGroupRef groupRef, string prefix)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 
 			XmlSchemaGroup group = FindGroup(groupRef.RefName.Name);
 			if (group != null) {
@@ -576,9 +581,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}		
 		
-		XmlCompletionDataCollection GetChildElementCompletionData(XmlSchemaComplexContentRestriction restriction, string prefix)
+		XmlCompletionItemCollection GetChildElementCompletionData(XmlSchemaComplexContentRestriction restriction, string prefix)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 
 			// Add any elements.
 			if (restriction.Particle != null) {
@@ -602,14 +607,14 @@ namespace ICSharpCode.XmlEditor
 		/// Adds an element completion data to the collection if it does not 
 		/// already exist.
 		/// </summary>
-		void AddElement(XmlCompletionDataCollection data, string name, string prefix, string documentation)
+		static void AddElement(XmlCompletionItemCollection data, string name, string prefix, string documentation)
 		{
 			if (!data.Contains(name)) {
 				if (prefix.Length > 0) {
-					name = String.Concat(prefix, ":", name);
+					name = string.Concat(prefix, ":", name);
 				}
-				XmlCompletionData completionData = new XmlCompletionData(name, documentation);
-				data.Add(completionData);
+				XmlCompletionItem item = new XmlCompletionItem(name, documentation);
+				data.Add(item);
 			}				
 		}
 		
@@ -617,7 +622,7 @@ namespace ICSharpCode.XmlEditor
 		/// Adds an element completion data to the collection if it does not 
 		/// already exist.
 		/// </summary>
-		void AddElement(XmlCompletionDataCollection data, string name, string prefix, XmlSchemaAnnotation annotation)
+		static void AddElement(XmlCompletionItemCollection data, string name, string prefix, XmlSchemaAnnotation annotation)
 		{
 			// Get any annotation documentation.
 			string documentation = GetDocumentation(annotation);
@@ -628,10 +633,10 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Adds elements to the collection if it does not already exist.
 		/// </summary>
-		void AddElements(XmlCompletionDataCollection lhs, XmlCompletionDataCollection rhs)
+		static void AddElements(XmlCompletionItemCollection lhs, XmlCompletionItemCollection rhs)
 		{
-			foreach (XmlCompletionData data in rhs) {
-				if (!lhs.Contains(data)) {
+			foreach (XmlCompletionItem data in rhs) {
+				if (!lhs.Contains(data.Text)) {
 					lhs.Add(data);
 				}
 			}
@@ -644,9 +649,9 @@ namespace ICSharpCode.XmlEditor
 		/// All documentation elements are added.  All text nodes inside
 		/// the documentation element are added.
 		/// </remarks>
-		string GetDocumentation(XmlSchemaAnnotation annotation)
+		static string GetDocumentation(XmlSchemaAnnotation annotation)
 		{
-			string documentation = String.Empty;
+			string documentation = string.Empty;
 			
 			if (annotation != null) {
 				StringBuilder documentationBuilder = new StringBuilder();
@@ -672,9 +677,9 @@ namespace ICSharpCode.XmlEditor
 			return documentation;
 		}
 		
-		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaElement element)
+		XmlCompletionItemCollection GetAttributeCompletionData(XmlSchemaElement element)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			XmlSchemaComplexType complexType = GetElementAsComplexType(element);
 			
@@ -685,9 +690,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}	
 		
-		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaComplexContentRestriction restriction)
+		XmlCompletionItemCollection GetAttributeCompletionData(XmlSchemaComplexContentRestriction restriction)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 									
 			data.AddRange(GetAttributeCompletionData(restriction.Attributes));
 			
@@ -699,9 +704,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaComplexType complexType)
+		XmlCompletionItemCollection GetAttributeCompletionData(XmlSchemaComplexType complexType)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			data = GetAttributeCompletionData(complexType.Attributes);
 
@@ -725,9 +730,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaComplexContentExtension extension)
+		XmlCompletionItemCollection GetAttributeCompletionData(XmlSchemaComplexContentExtension extension)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 									
 			data.AddRange(GetAttributeCompletionData(extension.Attributes));
 			XmlSchemaComplexType baseComplexType = FindNamedType(schema, extension.BaseTypeName);
@@ -738,9 +743,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}		
 		
-		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaSimpleContent simpleContent)
+		XmlCompletionItemCollection GetAttributeCompletionData(XmlSchemaSimpleContent simpleContent)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 						
 			XmlSchemaSimpleContentExtension extension = simpleContent.Content as XmlSchemaSimpleContentExtension;
 			if (extension != null) {
@@ -750,18 +755,18 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}		
 		
-		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaSimpleContentExtension extension)
+		XmlCompletionItemCollection GetAttributeCompletionData(XmlSchemaSimpleContentExtension extension)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 									
 			data.AddRange(GetAttributeCompletionData(extension.Attributes));
 
 			return data;
 		}		
 		
-		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaObjectCollection attributes)
+		XmlCompletionItemCollection GetAttributeCompletionData(XmlSchemaObjectCollection attributes)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			foreach (XmlSchemaObject schemaObject in attributes) {
 				XmlSchemaAttribute attribute = schemaObject as XmlSchemaAttribute;
@@ -806,18 +811,18 @@ namespace ICSharpCode.XmlEditor
 		/// <remarks>
 		/// Note the special handling of xml:lang attributes.
 		/// </remarks>
-		void AddAttribute(XmlCompletionDataCollection data, XmlSchemaAttribute attribute)
+		static void AddAttribute(XmlCompletionItemCollection data, XmlSchemaAttribute attribute)
 		{
 			string name = attribute.Name;
 			if (name == null) {
 				if (attribute.RefName.Namespace == "http://www.w3.org/XML/1998/namespace") {
-					name = String.Concat("xml:", attribute.RefName.Name);
+					name = string.Concat("xml:", attribute.RefName.Name);
 				}
 			}
 			
 			if (name != null) {
 				string documentation = GetDocumentation(attribute.Annotation);
-				XmlCompletionData completionData = new XmlCompletionData(name, documentation, XmlCompletionData.DataType.XmlAttribute);
+				XmlCompletionItem completionData = new XmlCompletionItem(name, documentation, XmlCompletionDataType.XmlAttribute);
 				data.Add(completionData);
 			}
 		}
@@ -825,9 +830,9 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets attribute completion data from a group ref.
 		/// </summary>
-		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaAttributeGroupRef groupRef)
+		XmlCompletionItemCollection GetAttributeCompletionData(XmlSchemaAttributeGroupRef groupRef)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			XmlSchemaAttributeGroup group = FindAttributeGroup(schema, groupRef.RefName.Name);
 			if (group != null) {
 				data = GetAttributeCompletionData(group.Attributes);
@@ -1059,9 +1064,9 @@ namespace ICSharpCode.XmlEditor
 			return matchedGroup;
 		}
 		
-		XmlCompletionDataCollection GetAttributeValueCompletionData(XmlSchemaElement element, string name)
+		XmlCompletionItemCollection GetAttributeValueCompletionData(XmlSchemaElement element, string name)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			XmlSchemaComplexType complexType = GetElementAsComplexType(element);
 			if (complexType != null) {
@@ -1074,9 +1079,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlCompletionDataCollection GetAttributeValueCompletionData(XmlSchemaAttribute attribute)
+		XmlCompletionItemCollection GetAttributeValueCompletionData(XmlSchemaAttribute attribute)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			if (attribute.SchemaType != null) {
 				XmlSchemaSimpleTypeRestriction simpleTypeRestriction = attribute.SchemaType.Content as XmlSchemaSimpleTypeRestriction;
@@ -1098,9 +1103,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlCompletionDataCollection GetAttributeValueCompletionData(XmlSchemaSimpleTypeRestriction simpleTypeRestriction)
+		static XmlCompletionItemCollection GetAttributeValueCompletionData(XmlSchemaSimpleTypeRestriction simpleTypeRestriction)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			foreach (XmlSchemaObject schemaObject in simpleTypeRestriction.Facets) {
 				XmlSchemaEnumerationFacet enumFacet = schemaObject as XmlSchemaEnumerationFacet;
@@ -1112,9 +1117,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlCompletionDataCollection GetAttributeValueCompletionData(XmlSchemaSimpleTypeUnion union)
+		XmlCompletionItemCollection GetAttributeValueCompletionData(XmlSchemaSimpleTypeUnion union)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			foreach (XmlSchemaObject schemaObject in union.BaseTypes) {
 				XmlSchemaSimpleType simpleType = schemaObject as XmlSchemaSimpleType;
@@ -1126,9 +1131,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}		
 		
-		XmlCompletionDataCollection GetAttributeValueCompletionData(XmlSchemaSimpleType simpleType)
+		XmlCompletionItemCollection GetAttributeValueCompletionData(XmlSchemaSimpleType simpleType)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			XmlSchemaSimpleTypeRestriction simpleTypeRestriction = simpleType.Content as XmlSchemaSimpleTypeRestriction;
 			XmlSchemaSimpleTypeUnion union = simpleType.Content as XmlSchemaSimpleTypeUnion;
@@ -1145,9 +1150,9 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}		
 			
-		XmlCompletionDataCollection GetAttributeValueCompletionData(XmlSchemaSimpleTypeList list)
+		XmlCompletionItemCollection GetAttributeValueCompletionData(XmlSchemaSimpleTypeList list)
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			if (list.ItemType != null) {
 				data.AddRange(GetAttributeValueCompletionData(list.ItemType));
@@ -1164,9 +1169,9 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the set of attribute values for an xs:boolean type.
 		/// </summary>
-		XmlCompletionDataCollection GetBooleanAttributeValueCompletionData()
+		static XmlCompletionItemCollection GetBooleanAttributeValueCompletionData()
 		{
-			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 			
 			AddAttributeValue(data, "0");
 			AddAttributeValue(data, "1");
@@ -1268,28 +1273,28 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Adds an attribute value to the completion data collection.
 		/// </summary>
-		void AddAttributeValue(XmlCompletionDataCollection data, string valueText)
+		static void AddAttributeValue(XmlCompletionItemCollection data, string valueText)
 		{
-			XmlCompletionData completionData = new XmlCompletionData(valueText, XmlCompletionData.DataType.XmlAttributeValue);
+			XmlCompletionItem completionData = new XmlCompletionItem(valueText, XmlCompletionDataType.XmlAttributeValue);
 			data.Add(completionData);
 		}
 		
 		/// <summary>
 		/// Adds an attribute value to the completion data collection.
 		/// </summary>
-		void AddAttributeValue(XmlCompletionDataCollection data, string valueText, XmlSchemaAnnotation annotation)
+		static void AddAttributeValue(XmlCompletionItemCollection data, string valueText, XmlSchemaAnnotation annotation)
 		{
 			string documentation = GetDocumentation(annotation);
-			XmlCompletionData completionData = new XmlCompletionData(valueText, documentation, XmlCompletionData.DataType.XmlAttributeValue);
+			XmlCompletionItem completionData = new XmlCompletionItem(valueText, documentation, XmlCompletionDataType.XmlAttributeValue);
 			data.Add(completionData);
 		}
 		
 		/// <summary>
 		/// Adds an attribute value to the completion data collection.
 		/// </summary>
-		void AddAttributeValue(XmlCompletionDataCollection data, string valueText, string description)
+		static void AddAttributeValue(XmlCompletionItemCollection data, string valueText, string description)
 		{
-			XmlCompletionData completionData = new XmlCompletionData(valueText, description, XmlCompletionData.DataType.XmlAttributeValue);
+			XmlCompletionItem completionData = new XmlCompletionItem(valueText, description, XmlCompletionDataType.XmlAttributeValue);
 			data.Add(completionData);
 		}		
 		
@@ -1313,7 +1318,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Adds any elements that have the specified substitution group.
 		/// </summary>
-		void AddSubstitionGroupElements(XmlCompletionDataCollection data, XmlQualifiedName group, string prefix)
+		void AddSubstitionGroupElements(XmlCompletionItemCollection data, XmlQualifiedName group, string prefix)
 		{
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
 				if (element.SubstitutionGroup == group) {

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Utils;
 using System;
 
 namespace ICSharpCode.AvalonEdit.Document
@@ -37,33 +38,75 @@ namespace ICSharpCode.AvalonEdit.Document
 			get { return InsertedText.Length; }
 		}
 		
+		volatile OffsetChangeMap offsetChangeMap;
+		
+		/// <summary>
+		/// Gets the OffsetChangeMap associated with this document change.
+		/// </summary>
+		public OffsetChangeMap OffsetChangeMap {
+			get {
+				OffsetChangeMap map = offsetChangeMap;
+				if (map == null) {
+					// create OffsetChangeMap on demand
+					map = new OffsetChangeMap(1);
+					map.Add(CreateSingleChangeMapEntry());
+					offsetChangeMap = map;
+				}
+				return map;
+			}
+		}
+		
+		internal OffsetChangeMapEntry CreateSingleChangeMapEntry()
+		{
+			return new OffsetChangeMapEntry(this.Offset, this.RemovalLength, this.InsertionLength);
+		}
+		
+		/// <summary>
+		/// Gets the OffsetChangeMap, or null if the default offset map (=removal followed by insertion) is being used.
+		/// </summary>
+		internal OffsetChangeMap OffsetChangeMapOrNull {
+			get {
+				return offsetChangeMap;
+			}
+		}
+		
 		/// <summary>
 		/// Gets the new offset where the specified offset moves after this document change.
 		/// </summary>
 		public int GetNewOffset(int offset, AnchorMovementType movementType)
 		{
-			if (offset >= this.Offset) {
-				if (offset <= this.Offset + this.RemovalLength) {
-					offset = this.Offset;
-					if (movementType == AnchorMovementType.AfterInsertion)
-						offset += this.InsertionLength;
-				} else {
-					offset += this.InsertionLength - this.RemovalLength;
-				}
-			}
-			return offset;
+			if (offsetChangeMap != null)
+				return offsetChangeMap.GetNewOffset(offset, movementType);
+			else
+				return CreateSingleChangeMapEntry().GetNewOffset(offset, movementType);
 		}
 		
 		/// <summary>
 		/// Creates a new DocumentChangeEventArgs object.
 		/// </summary>
 		public DocumentChangeEventArgs(int offset, int removalLength, string insertedText)
+			: this(offset, removalLength, insertedText, null)
 		{
-			if (insertedText == null)
-				throw new ArgumentNullException("insertedText");
+		}
+		
+		/// <summary>
+		/// Creates a new DocumentChangeEventArgs object.
+		/// </summary>
+		public DocumentChangeEventArgs(int offset, int removalLength, string insertedText, OffsetChangeMap offsetChangeMap)
+		{
+			ThrowUtil.CheckNotNegative(offset, "offset");
+			ThrowUtil.CheckNotNegative(removalLength, "removalLength");
+			ThrowUtil.CheckNotNull(insertedText, "insertedText");
+			
 			this.Offset = offset;
 			this.RemovalLength = removalLength;
 			this.InsertedText = insertedText;
+			
+			if (offsetChangeMap != null) {
+				if (!offsetChangeMap.IsValidForDocumentChange(offset, removalLength, insertedText.Length))
+					throw new ArgumentException("OffsetChangeMap is not valid for this document change", "offsetChangeMap");
+				this.offsetChangeMap = offsetChangeMap;
+			}
 		}
 	}
 }

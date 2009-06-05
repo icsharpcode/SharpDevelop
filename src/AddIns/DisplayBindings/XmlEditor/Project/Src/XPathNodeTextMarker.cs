@@ -6,54 +6,56 @@
 // </file>
 
 using System;
-using System.Drawing;
-using ICSharpCode.TextEditor.Document;
+using System.Linq;
+using System.Collections.Generic;
+using System.Windows.Media;
+
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
-	/// A text marker for an XPath query match.
+	/// Creates and removes text marker for an XPath query match.
 	/// </summary>
-	public class XPathNodeTextMarker : TextMarker
-	{	
-		public static readonly Color MarkerBackColor = Color.FromArgb(159, 255, 162);
-		
-		public XPathNodeTextMarker(int offset, XPathNodeMatch node) : base(offset, node.Value.Length, TextMarkerType.SolidBlock, MarkerBackColor)
-		{
-		}
+	public static class XPathNodeTextMarker
+	{
+		public static readonly Color MarkerBackColor = Color.FromArgb(255, 159, 255, 162);
 		
 		/// <summary>
 		/// Adds markers for each XPathNodeMatch.
 		/// </summary>
-		public static void AddMarkers(MarkerStrategy markerStrategy, XPathNodeMatch[] nodes)
+		public static void AddMarkers(IDocument document, XPathNodeMatch[] nodes)
 		{
 			foreach (XPathNodeMatch node in nodes) {
-				AddMarker(markerStrategy, node);
+				AddMarker(document, node);
 			}
 		}
 		
 		/// <summary>
 		/// Adds a single marker for the XPathNodeMatch.
 		/// </summary>
-		public static void AddMarker(MarkerStrategy markerStrategy, XPathNodeMatch node)
+		public static void AddMarker(IDocument document, XPathNodeMatch node)
 		{
 			if (node.HasLineInfo() && node.Value.Length > 0) {
-				LineSegment lineSegment = markerStrategy.Document.GetLineSegment(node.LineNumber);
-				markerStrategy.AddMarker(new XPathNodeTextMarker(lineSegment.Offset + node.LinePosition, node));
+				int offset = document.PositionToOffset(node.LineNumber + 1, node.LinePosition + 1);
+				ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+				if (markerService != null) {
+					ITextMarker marker = markerService.Create(offset, node.Value.Length);
+					marker.Tag = typeof(XPathNodeTextMarker);
+					marker.BackgroundColor = MarkerBackColor;
+				}
 			}
 		}
 		
 		/// <summary>
 		/// Removes all the XPathNodeMarkers from the marker strategy.
 		/// </summary>
-		public static void RemoveMarkers(MarkerStrategy markerStrategy)
+		public static void RemoveMarkers(IDocument document)
 		{
-			markerStrategy.RemoveAll(IsXPathNodeTextMarkerMatch);
-		}
-		
-		static bool IsXPathNodeTextMarkerMatch(TextMarker marker)
-		{
-			return marker is XPathNodeTextMarker;
+			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			if (markerService != null) {
+				markerService.RemoveAll(marker => marker.Tag == typeof(XPathNodeTextMarker));
+			}
 		}
 	}
 }

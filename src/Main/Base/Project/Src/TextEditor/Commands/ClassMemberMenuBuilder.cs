@@ -5,21 +5,22 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
-using SearchAndReplace;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
@@ -132,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			
 			CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
-			codeGen.InsertCodeAfter(member, new TextEditorDocument(textEditor.Document),
+			codeGen.InsertCodeAfter(member, new RefactoringDocumentAdapter(new TextEditorDocument(textEditor.Document)),
 			                        codeGen.CreateProperty(member, true, includeSetter));
 			ParserService.ParseCurrentViewContent();
 		}
@@ -142,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			MenuCommand item = (MenuCommand)sender;
 			IProperty member = (IProperty)item.Tag;
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
-			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateChangedEvent(member, new TextEditorDocument(textEditor.Document));
+			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateChangedEvent(member, new RefactoringDocumentAdapter(new TextEditorDocument(textEditor.Document)));
 			ParserService.ParseCurrentViewContent();
 		}
 		
@@ -152,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IEvent member = (IEvent)item.Tag;
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
-			codeGen.InsertCodeAfter(member, new TextEditorDocument(textEditor.Document),
+			codeGen.InsertCodeAfter(member, new RefactoringDocumentAdapter(new TextEditorDocument(textEditor.Document)),
 			                        codeGen.CreateOnEventMethod(member));
 			ParserService.ParseCurrentViewContent();
 		}
@@ -192,15 +193,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				IMember m = MemberLookupHelper.FindSimilarMember(derivedClass, member);
 				if (m != null && !m.Region.IsEmpty) {
 					string matchText = ambience.Convert(m);
-					SearchResultMatch res = new SimpleSearchResultMatch(matchText, new Location(m.Region.BeginColumn, m.Region.BeginLine));
-					res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(m.DeclaringType.CompilationUnit.FileName);
+					ProvidedDocumentInformation documentInfo = FindReferencesAndRenameHelper.GetDocumentInformation(m.DeclaringType.CompilationUnit.FileName);
+					SearchResultMatch res = new SimpleSearchResultMatch(documentInfo, matchText, new Location(m.Region.BeginColumn, m.Region.BeginLine));
 					results.Add(res);
 				}
 			}
-			SearchResultPanel.Instance.ShowSearchResults(new SearchResult(
+			SearchResultsPad.Instance.ShowSearchResults(
 				StringParser.Parse("${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.Name }}),
 				results
-			));
+			);
+			SearchResultsPad.Instance.BringToFront();
 		}
 		
 		void FindReferences(object sender, EventArgs e)

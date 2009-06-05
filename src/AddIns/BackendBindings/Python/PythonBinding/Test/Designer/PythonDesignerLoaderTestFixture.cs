@@ -67,7 +67,7 @@ namespace PythonBinding.Tests.Designer
 			
 			designedForm = new Form();
 			designedForm.Name = "NewMainForm";
-			mockDesignerLoaderHost.RootComponent = designedForm;			
+			mockDesignerLoaderHost.RootComponent = designedForm;	
 			loader.CallPerformFlush();
 		}
 		
@@ -137,6 +137,12 @@ namespace PythonBinding.Tests.Designer
 			Assert.AreEqual(expectedProperty, loader.GetEventProperty(e));
 		}
 		
+		[Test]
+		public void GetRootComponentFromLoader()
+		{
+			Assert.AreEqual(designedForm, loader.RootComponent);
+		}
+				
 		/// <summary>
 		/// The code that the designer loader will parse.
 		/// </summary>

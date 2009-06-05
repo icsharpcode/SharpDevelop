@@ -5,8 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor
@@ -14,24 +16,41 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// Displays the resulting output from an XSL transform.
 	/// </summary>
-	public class XslOutputView : XmlView
+	public static class XslOutputView
 	{
-		public XslOutputView()
-		{
-			TitleName = StringParser.Parse("${res:ICSharpCode.XmlEditor.XslOutputView.Title}");
-			TextEditorControl.FileName = String.Empty;
+		static IViewContent instance;
+		static ITextEditor editor;
+		
+		public static ITextEditor EditorInstance {
+			get {
+				if (editor == null) {
+					instance = FileService.NewFile("xslOutput.xml", "");
+					editor = (instance as ITextEditorProvider).TextEditor;
+					instance.Disposed += new EventHandler(InstanceDisposed);
+				}
+				
+				return editor;
+			}
 		}
 		
-		public static XslOutputView Instance {
+		public static IViewContent Instance {
 			get {
-				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-					if (content is XslOutputView) {
-						LoggingService.Debug("XslOutputView instance exists.");
-						return (XslOutputView)content;
-					}
+				if (instance == null) {
+					instance = FileService.NewFile("xslOutput.xml", "");
+					editor = (instance as ITextEditorProvider).TextEditor;
+					instance.Disposed += new EventHandler(InstanceDisposed);
+				} else {
+					instance.WorkbenchWindow.SelectWindow();
 				}
-				return null;
+				
+				return instance;
 			}
+		}
+
+		static void InstanceDisposed(object sender, EventArgs e)
+		{
+			instance = null;
+			editor = null;
 		}
 	}
 }

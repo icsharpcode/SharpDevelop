@@ -10,7 +10,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
-	/// Indentation strategy.
+	/// Indentation and formatting strategy.
 	/// </summary>
 	public interface IFormattingStrategy
 	{
@@ -32,6 +32,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 	
 	public class DefaultFormattingStrategy : IFormattingStrategy
 	{
+		internal static readonly DefaultFormattingStrategy DefaultInstance = new DefaultFormattingStrategy();
+		
 		public virtual void FormatLine(ITextEditor editor, char charTyped)
 		{
 		}

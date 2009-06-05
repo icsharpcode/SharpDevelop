@@ -75,9 +75,9 @@ namespace ICSharpCode.XamlBinding
 				do {
 					LoggingService.Debug("name: " + reader.Name + " value: " + reader.Value);
 					int start = reader.Name.IndexOf(':') + 1;
-					string plainName = reader.Name.Substring(start, reader.Name.Length - start).ToLowerInvariant();
+					string plainName = reader.Name.Substring(start, reader.Name.Length - start).ToUpperInvariant();
 					
-					if (plainName == name.ToLowerInvariant())
+					if (plainName == name.ToUpperInvariant())
 						return reader.Value;
 				} while (reader.MoveToNextAttribute());
 			} catch (XmlException) { }
@@ -212,6 +212,7 @@ namespace ICSharpCode.XamlBinding
 			if (index == -1) return null;
 			text = text.Substring(index);
 			int endIndex = text.IndexOfAny(new char[] { '<', '>' });
+			if (endIndex == -1) return null;
 			text = text.Substring(0, endIndex).Trim(' ', '\t', '\n', '\r', '/');
 			LoggingService.Debug("text: '" + text + "'");
 			text = "<" + name + " " + text + " />";
@@ -224,9 +225,27 @@ namespace ICSharpCode.XamlBinding
 			var list = Utils.GetXmlNamespacesForOffset(xaml, offset);
 			var item = list.FirstOrDefault(i => i.Value == CompletionDataHelper.XamlNamespace);
 			
-			if (item.Key.StartsWith("xmlns:"))
+			if (item.Key.StartsWith("xmlns:", StringComparison.OrdinalIgnoreCase))
 				return item.Key.Substring("xmlns:".Length);
 			return string.Empty;
+		}
+		
+		public static bool IsInsideXmlComment(string xaml, int offset)
+		{
+			if (xaml == null)
+				throw new ArgumentNullException("xaml");
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException("offset", offset, "Value must be between 0 and " + (xaml.Length - 1));
+			
+			if (offset >= xaml.Length)
+				offset = xaml.Length - 1;
+			
+			string interestingPart = xaml.Substring(0, offset);
+			int end = interestingPart.LastIndexOf("-->", StringComparison.OrdinalIgnoreCase);
+			
+			interestingPart = (end > -1) ? interestingPart.Substring(end, interestingPart.Length - end) : interestingPart;
+			
+			return interestingPart.LastIndexOf("<!--", StringComparison.OrdinalIgnoreCase) != -1;
 		}
 	}
 }

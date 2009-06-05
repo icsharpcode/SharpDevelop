@@ -13,6 +13,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.XmlEditor
 {
+
 	/// <summary>
 	/// Keeps track of all the schemas that the Xml Editor is aware
 	/// of.
@@ -21,16 +22,12 @@ namespace ICSharpCode.XmlEditor
 	{
 		public const string XmlSchemaNamespace = "http://www.w3.org/2001/XMLSchema";
 		
-		static XmlSchemaCompletionDataCollection schemas = null;
-		static XmlSchemaManager manager = null;
+		static XmlSchemaCompletionDataCollection schemas;
+		static XmlSchemaManager manager;
 		
 		public static event EventHandler UserSchemaAdded;
 		
 		public static event EventHandler UserSchemaRemoved;
-		
-		XmlSchemaManager()
-		{
-		}
 	
 		/// <summary>
 		/// Determines whether the specified namespace is actually the W3C namespace for
@@ -49,7 +46,7 @@ namespace ICSharpCode.XmlEditor
 				if (schemas == null) {
 					schemas = new XmlSchemaCompletionDataCollection();
 					manager = new XmlSchemaManager();
-					manager.ReadSchemas();
+					ReadSchemas();
 				}
 
 				return schemas;
@@ -79,7 +76,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static string GetNamespacePrefix(string extension)
 		{
-			string prefix = String.Empty;
+			string prefix = string.Empty;
 			
 			XmlSchemaAssociation association = XmlEditorAddInOptions.GetSchemaAssociation(extension);
 			if (association != null) {
@@ -131,7 +128,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Reads the system and user added schemas.
 		/// </summary>
-		void ReadSchemas()
+		static void ReadSchemas()
 		{
 			// MSBuild schemas are in framework directory:
 			ReadSchemas(RuntimeEnvironment.GetRuntimeDirectory(), true);
@@ -142,7 +139,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Reads all .xsd files in the specified folder.
 		/// </summary>
-		void ReadSchemas(string folder, bool readOnly)
+		static void ReadSchemas(string folder, bool readOnly)
 		{
 			if (Directory.Exists(folder)) {
 				foreach (string fileName in Directory.GetFiles(folder, "*.xsd")) {
@@ -157,7 +154,7 @@ namespace ICSharpCode.XmlEditor
 		/// <remarks>
 		/// If the schema namespace exists in the collection it is not added.
 		/// </remarks>
-		void ReadSchema(string fileName, bool readOnly)
+		static void ReadSchema(string fileName, bool readOnly)
 		{
 			try {
 				string baseUri = XmlSchemaCompletionData.GetUri(fileName);

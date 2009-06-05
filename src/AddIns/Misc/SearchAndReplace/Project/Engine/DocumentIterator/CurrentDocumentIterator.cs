@@ -5,11 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
 
 namespace SearchAndReplace
 {
@@ -21,7 +22,7 @@ namespace SearchAndReplace
 		{
 			Reset();
 		}
-			
+		
 		public string CurrentFileName {
 			get {
 				if (!SearchReplaceUtilities.IsTextAreaSelected) {
@@ -33,16 +34,15 @@ namespace SearchAndReplace
 		
 		public ProvidedDocumentInformation Current {
 			get {
-				if (!SearchReplaceUtilities.IsTextAreaSelected) {
+				ITextEditor textEditor = SearchReplaceUtilities.GetActiveTextEditor();
+				if (textEditor != null)
+					return new ProvidedDocumentInformation(textEditor.Document, CurrentFileName, textEditor);
+				else
 					return null;
-				}
-				TextEditorControl textEditor = (((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveViewContent).TextEditorControl);
-				TextEditorAdapter adapter = new TextEditorAdapter(textEditor);
-				return new ProvidedDocumentInformation(adapter.Document, CurrentFileName, adapter);
 			}
 		}
-			
-		public bool MoveForward() 
+		
+		public bool MoveForward()
 		{
 			if (!SearchReplaceUtilities.IsTextAreaSelected) {
 				return false;
@@ -60,7 +60,7 @@ namespace SearchAndReplace
 			return MoveForward();
 		}
 		
-		public void Reset() 
+		public void Reset()
 		{
 			didRead = false;
 		}

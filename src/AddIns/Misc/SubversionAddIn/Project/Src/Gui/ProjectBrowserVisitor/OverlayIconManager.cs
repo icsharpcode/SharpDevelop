@@ -87,6 +87,7 @@ namespace ICSharpCode.Svn
 		}
 		
 		static Queue<AbstractProjectBrowserTreeNode> queue = new Queue<AbstractProjectBrowserTreeNode>();
+		static bool threadRunning;
 		
 		public static void Enqueue(AbstractProjectBrowserTreeNode node)
 		{
@@ -94,7 +95,8 @@ namespace ICSharpCode.Svn
 				return;
 			lock (queue) {
 				queue.Enqueue(node);
-				if (queue.Count == 1) {
+				if (!threadRunning) {
+					threadRunning = true;
 					ThreadPool.QueueUserWorkItem(Run);
 				}
 			}
@@ -105,8 +107,6 @@ namespace ICSharpCode.Svn
 			if (subversionDisabled)
 				return;
 			lock (queue) {
-				bool wasEmpty = queue.Count == 0;
-				
 				queue.Enqueue(node);
 				// use breadth-first search
 				Queue<AbstractProjectBrowserTreeNode> q = new Queue<AbstractProjectBrowserTreeNode>();
@@ -122,7 +122,8 @@ namespace ICSharpCode.Svn
 					}
 				}
 				
-				if (wasEmpty) {
+				if (!threadRunning) {
+					threadRunning = true;
 					ThreadPool.QueueUserWorkItem(Run);
 				}
 			}
@@ -150,6 +151,7 @@ namespace ICSharpCode.Svn
 				AbstractProjectBrowserTreeNode node;
 				lock (queue) {
 					if (queue.Count == 0) {
+						threadRunning = false;
 						ClearStatusCache();
 						LoggingService.Debug("SVN: OverlayIconManager Thread finished");
 						return;

@@ -13,6 +13,7 @@
 		<Category>VBNet</Category>
 		<Icon>VBNet.Project.Library</Icon>
 		<Description>${res:Templates.Project.SharedAddin.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -33,6 +34,7 @@
 			<OutputType>Library</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
 			<RegisterForComInterop>true</RegisterForComInterop>
+			<OptionInfer>On</OptionInfer>
 		</PropertyGroup>
 		
 		<Files>

@@ -247,7 +247,7 @@ namespace ICSharpCode.SharpDevelop
 			if (UseFullyQualifiedTypeNames) {
 				builder.Append(name);
 			} else {
-				string rtNamespace = returnType.Namespace;
+				string rtNamespace = returnType.Namespace + ".";
 				if (name.StartsWith(rtNamespace, StringComparison.Ordinal)) {
 					builder.Append(name, rtNamespace.Length, name.Length - rtNamespace.Length);
 				}

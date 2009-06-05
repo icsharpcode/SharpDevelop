@@ -72,7 +72,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 				
 			// just a simple message for checking the graph is build ok, will be replaced by graph drawing of course
-			lblInfo.Text = string.Format("Done. Number of graph nodes: {0}, number of edges: {1}", graph.Nodes.Count(), graph.Edges.Count());
+			//lblInfo.Text = string.Format("Done. Number of graph nodes: {0}, number of edges: {1}", graph.Nodes.Count(), graph.Edges.Count());
 		}
 		
 		void guiHandleException(System.Exception ex)

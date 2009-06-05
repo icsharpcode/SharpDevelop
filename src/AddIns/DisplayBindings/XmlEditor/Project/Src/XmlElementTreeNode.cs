@@ -91,7 +91,7 @@ namespace ICSharpCode.XmlEditor
 		static string GetDisplayText(XmlElement element)
 		{
 			if (element.Prefix.Length > 0) {
-				return String.Concat(element.Prefix, ":", element.LocalName);
+				return string.Concat(element.Prefix, ":", element.LocalName);
 			}
 			return element.LocalName;
 		}

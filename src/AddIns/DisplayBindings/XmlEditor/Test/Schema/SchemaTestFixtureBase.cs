@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.XmlEditor;
-using NUnit.Framework;
 using System;
 using System.IO;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.XmlEditor;
+using NUnit.Framework;
 
 namespace XmlEditor.Tests.Schema
 {
@@ -53,11 +53,11 @@ namespace XmlEditor.Tests.Schema
 		/// <summary>
 		/// Checks whether the specified name exists in the completion data.
 		/// </summary>
-		public static bool Contains(ICompletionData[] items, string name)
+		public static bool Contains(ICompletionItem[] items, string name)
 		{
 			bool Contains = false;
 			
-			foreach (ICompletionData data in items) {
+			foreach (ICompletionItem data in items) {
 				if (data.Text == name) {
 					Contains = true;
 					break;
@@ -71,11 +71,11 @@ namespace XmlEditor.Tests.Schema
 		/// Checks whether the completion data specified by name has
 		/// the correct description.
 		/// </summary>
-		public static bool ContainsDescription(ICompletionData[] items, string name, string description)
+		public static bool ContainsDescription(ICompletionItem[] items, string name, string description)
 		{
 			bool Contains = false;
 			
-			foreach (ICompletionData data in items) {
+			foreach (ICompletionItem data in items) {
 				if (data.Text == name) {
 					if (data.Description == description) {
 						Contains = true;
@@ -91,11 +91,11 @@ namespace XmlEditor.Tests.Schema
 		/// Gets a count of the number of occurrences of a particular name
 		/// in the completion data.
 		/// </summary>
-		public static int GetItemCount(ICompletionData[] items, string name)
+		public static int GetItemCount(ICompletionItem[] items, string name)
 		{
 			int count = 0;
 			
-			foreach (ICompletionData data in items) {
+			foreach (ICompletionItem data in items) {
 				if (data.Text == name) {
 					++count;
 				}

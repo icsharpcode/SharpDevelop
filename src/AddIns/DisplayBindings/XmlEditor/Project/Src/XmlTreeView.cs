@@ -6,9 +6,15 @@
 // </file>
 
 using System;
+using System.Globalization;
+using System.IO;
 using System.Windows.Forms;
+using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor
@@ -18,69 +24,17 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class XmlTreeView : AbstractSecondaryViewContent, IClipboardHandler
 	{
-		XmlTreeViewContainerControl treeViewContainer = new XmlTreeViewContainerControl();
-		XmlView xmlView;
-		bool disposed;
+		XmlTreeViewContainerControl treeViewContainer;
 		bool ignoreDirtyChange;
 		
-		public XmlTreeView(XmlView xmlView) : this(xmlView, null, null)
-		{
-			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
-			treeViewContainer.TreeView.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/ContextMenu");
-		}
-		
-		/// <summary>
-		/// Creates an XmlTreeView with the specified context menu strips.
-		/// This constructor is only used to test the XmlTreeView class.
-		/// </summary>
-		public XmlTreeView(XmlView xmlView, ContextMenuStrip attributesGridContextMenuStrip, ContextMenuStrip treeViewContextMenuStrip)
-			: base(xmlView)
+		public XmlTreeView(IViewContent parent)
+			: base(parent)
 		{
 			this.TabPageText = "${res:ICSharpCode.XmlEditor.XmlTreeView.Title}";
-			
-			this.xmlView = xmlView;
-			treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
-			treeViewContainer.AttributesGrid.ContextMenuStrip = attributesGridContextMenuStrip;
-			treeViewContainer.TreeView.ContextMenuStrip = treeViewContextMenuStrip;
-		}
-		
-		public override object Control {
-			get {
-				return treeViewContainer;
-			}
-		}
-		
-		public override void Dispose()
-		{
-			LoggingService.Debug("XmlTreeView.Dispose");
-			
-			if (!disposed) {
-				disposed = true;
-				treeViewContainer.Dispose();
-			}
-			base.Dispose();
-		}
-		
-		protected override void LoadFromPrimary()
-		{
-			LoggingService.Debug("XmlTreeView.LoadFromPrimary");
-			
-			XmlEditorControl xmlEditor = xmlView.XmlEditor;
-			XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(xmlEditor.SchemaCompletionDataItems, xmlEditor.DefaultSchemaCompletionData, xmlEditor.DefaultNamespacePrefix);
-			treeViewContainer.LoadXml(xmlView.Text, completionDataProvider);
-			xmlView.CheckIsWellFormed();
-		}
-		
-		protected override void SaveToPrimary()
-		{
-			LoggingService.Debug("XmlTreeView.SaveToPrimary");
-			
-			if (treeViewContainer.IsDirty) {
-				xmlView.ReplaceAll(treeViewContainer.Document.OuterXml);
-				ignoreDirtyChange = true;
-				treeViewContainer.IsDirty = false;
-				ignoreDirtyChange = false;
-			}
+			this.treeViewContainer = new XmlTreeViewContainerControl();
+			this.treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
+			treeViewContainer.AttributesGrid.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu");
+			treeViewContainer.TreeView.ContextMenuStrip = MenuService.CreateContextMenu(treeViewContainer, "/AddIns/XmlEditor/XmlTree/ContextMenu");
 		}
 		
 		#region IClipboardHandler implementation
@@ -171,11 +125,75 @@ namespace ICSharpCode.XmlEditor
 		
 		#endregion
 		
+		public override object Control {
+			get {
+				return this.treeViewContainer;
+			}
+		}
+		
+		protected override void LoadFromPrimary()
+		{
+			IFileDocumentProvider provider = this.PrimaryViewContent as IFileDocumentProvider;
+			treeViewContainer.LoadXml(provider.GetDocumentForFile(this.PrimaryFile).Text, XmlView.GetProvider(Path.GetExtension(this.PrimaryFileName)));
+			XmlView view = XmlView.ForFile(this.PrimaryFile);
+			if (view != null) {
+				view.CheckIsWellFormed();
+			}
+		}
+		
+		protected override void SaveToPrimary()
+		{
+			// Do not modify text in the primary view if the data is not well-formed XML
+			if (!treeViewContainer.IsErrorMessageTextBoxVisible && treeViewContainer.IsDirty) {
+				XmlView view = XmlView.ForFile(this.PrimaryFile);
+				if (view != null) {
+					view.ReplaceAll(treeViewContainer.Document.OuterXml);
+					ignoreDirtyChange = true;
+					treeViewContainer.IsDirty = false;
+					ignoreDirtyChange = false;
+				}
+			}
+		}
+		
+		public string XmlContent {
+			get {
+				StringWriter str = new StringWriter(CultureInfo.InvariantCulture);
+				XmlTextWriter writer = new XmlTextWriter(str);
+				
+				writer.Formatting = Formatting.Indented;
+				treeViewContainer.Document.WriteTo(writer);
+				return str.ToString();
+			}
+		}
+		
+		public override bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
+		{
+			return false;
+		}
+		
+		public override bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
+		{
+			return false;
+		}
+		
 		void TreeViewContainerDirtyChanged(object source, EventArgs e)
 		{
 			if (!ignoreDirtyChange) {
 				this.PrimaryFile.IsDirty = treeViewContainer.IsDirty;
 			}
+		}
+		
+		bool disposed;
+		
+		public override void Dispose()
+		{
+			LoggingService.Debug("XmlTreeView.Dispose");
+			
+			if (!disposed) {
+				disposed = true;
+				treeViewContainer.Dispose();
+			}
+			base.Dispose();
 		}
 	}
 }

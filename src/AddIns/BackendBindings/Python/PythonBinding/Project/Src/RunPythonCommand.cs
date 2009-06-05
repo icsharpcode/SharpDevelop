@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
 
@@ -18,116 +20,55 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class RunPythonCommand : AbstractMenuCommand
 	{
-		IProcessRunner processRunner;
+		IDebugger debugger;
 		AddInOptions options;
 		IWorkbench workbench;
-		MessageViewCategory category;
-		IPadDescriptor outputWindowPad;
-		static MessageViewCategory categorySingleton;
-		static RunPythonCommand runningCommand;
+		bool debug;
 		
 		public RunPythonCommand()
-			: this(WorkbenchSingleton.Workbench, new AddInOptions(), new PythonProcessRunner(), PythonMessageViewCategory, new PythonOutputWindowPadDescriptor())
+			: this(WorkbenchSingleton.Workbench, new AddInOptions(), DebuggerService.CurrentDebugger)
 		{
 		}
 		
-		public RunPythonCommand(IWorkbench workbench, AddInOptions options, IProcessRunner processRunner, MessageViewCategory category, IPadDescriptor outputWindowPad)
+		public RunPythonCommand(IWorkbench workbench, AddInOptions options, IDebugger debugger)
 		{
-			this.processRunner = processRunner;
-			this.options = options;
 			this.workbench = workbench;
-			this.category = category;
-			this.outputWindowPad = outputWindowPad;
-			
-			processRunner.OutputLineReceived += OutputLineReceived;
-			processRunner.ProcessExited += ProcessExited;
+			this.debugger = debugger;
+			this.options = options;
 		}
 		
-		/// <summary>
-		/// Indicates whether the command is still running.
-		/// </summary>
-		public static bool IsRunning {
-			get {
-				return runningCommand != null;
-			}
+		public bool Debug {
+			get { return debug; }
+			set { debug = value; }
 		}
 		
-		/// <summary>
-		/// Gets the command that is currently running.
-		/// </summary>
-		public static RunPythonCommand RunningCommand {
-			get {
-				return runningCommand;
-			}
-		}
-		
-		/// <summary>
-		/// Runs the python console passing the filename to the currently
-		/// active python script.
-		/// </summary>
 		public override void Run()
 		{
+			if (debug) {
+				debugger.Start(CreateProcessStartInfo());
+			} else {
+				debugger.StartWithoutDebugging(CreateProcessStartInfo());
+			}
+		}
+		
+		ProcessStartInfo CreateProcessStartInfo()
+		{
+			ProcessStartInfo info = new ProcessStartInfo();
+			info.FileName = options.PythonFileName;
+			info.Arguments = GetArguments();
+				
+			return info;
+		}
+		
+		string GetArguments()
+		{
 			// Get the python script filename.
-			string fileName = workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName;
+			string pythonScriptFileName = "\"" + workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName + "\"";
 			
-			// Clear the output window.
-			outputWindowPad.BringPadToFront();
-			category.ClearText();
-			
-			// Start the python console app passing the python script filename.
-			CategoryWriteLine("Running Python...");
-			string args = String.Concat('\"', fileName, '\"');
-			CategoryWriteLine(String.Concat(options.PythonFileName, " ", args));
-			processRunner.Start(options.PythonFileName, args);
-			
-			runningCommand = this;
-		}
-		
-		/// <summary>
-		/// Stops the python console.
-		/// </summary>
-		public void Stop()
-		{
-			if (runningCommand != null) {
-				runningCommand = null;
-				processRunner.Kill();
+			if (Debug) {
+				return "-D " + pythonScriptFileName;
 			}
+			return pythonScriptFileName;
 		}
-		
-		/// <summary>
-		/// Creates the single instance of the 
-		/// </summary>
-		static MessageViewCategory PythonMessageViewCategory {
-			get {
-				if (categorySingleton == null) {
-					MessageViewCategory.Create(ref categorySingleton, "Python");
-				}
-				return categorySingleton;
-			}
-		}
-		
-		/// <summary>
-		/// Handler for the ProcessRunner's output line received event.
-		/// </summary>
-		void OutputLineReceived(object source, LineReceivedEventArgs e)
-		{
-			CategoryWriteLine(e.Line);
-		}
-		
-		/// <summary>
-		/// Handler for the process exit event.
-		/// </summary>
-		void ProcessExited(object source, EventArgs e)
-		{
-			runningCommand = null;
-		}
-		
-		/// <summary>
-        /// Writes a line of text to the output window.
-        /// </summary>
-        void CategoryWriteLine(string message)
-        {
-        	category.AppendText(String.Concat(message, Environment.NewLine));
-        }
 	}
 }

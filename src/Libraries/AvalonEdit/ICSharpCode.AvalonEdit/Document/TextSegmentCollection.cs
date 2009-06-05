@@ -35,6 +35,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		// Implementation: this is basically a mixture of an augmented interval tree
 		// and the TextAnchorTree.
 		
+		// WARNING: you need to understand how interval trees (the version with the augmented 'high'/'max' field)
+		// and how the TextAnchorTree works before you have any chance of understanding this code.
+		
 		// This means that every node holds two "segments":
 		// one like the segments in the text anchor tree to support efficient offset changes
 		// and another that is the interval as seen by the user
@@ -80,8 +83,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		void OnDocumentChanged(DocumentChangeEventArgs e)
 		{
-			RemoveText(e.Offset, e.RemovalLength);
-			InsertText(e.Offset, e.InsertionLength);
+			foreach (OffsetChangeMapEntry entry in e.OffsetChangeMap) {
+				RemoveText(entry.Offset, entry.RemovalLength);
+				InsertText(entry.Offset, entry.InsertionLength);
+			}
 		}
 		#endregion
 		
@@ -874,6 +879,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				TextSegment current = root.LeftMost;
 				while (current != null) {
 					yield return (T)current;
+					// TODO: check if collection was modified during enumeration
 					current = current.Successor;
 				}
 			}

@@ -33,7 +33,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		{
 			this.DisplayName = StringParser.Parse(this.Name);
 			ScanProjectAssemblies();
-			ProjectService.EndBuild         += RescanProjectAssemblies;
+			ProjectService.BuildFinished    += RescanProjectAssemblies;
 			ProjectService.SolutionLoaded   += RescanProjectAssemblies;
 			ProjectService.ProjectItemAdded += ProjectItemAdded;
 		}
@@ -42,7 +42,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		{
 			if (!disposed) {
 				disposed = true;
-				ProjectService.EndBuild         -= RescanProjectAssemblies;
+				ProjectService.BuildFinished    -= RescanProjectAssemblies;
 				ProjectService.SolutionLoaded   -= RescanProjectAssemblies;
 				ProjectService.ProjectItemAdded -= ProjectItemAdded;
 			}

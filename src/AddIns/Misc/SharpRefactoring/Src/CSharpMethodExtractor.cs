@@ -47,7 +47,7 @@ namespace SharpRefactoring
 		
 		public override bool Extract()
 		{
-			using (IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader("class Tmp { void Test() {\n " + this.currentSelection.SelectedText + "\n}}"))) {
+			using (var parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader("class Tmp { void Test() {\n " + this.currentSelection.SelectedText + "\n}}"))) {
 				parser.Parse();
 				
 				if (parser.Errors.Count > 0) {
