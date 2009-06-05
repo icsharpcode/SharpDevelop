@@ -17,9 +17,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// Creates new PositionedNodeProperty.
 		/// </summary>
 		/// <param name="objectProperty">Underlying <see cref="ObjectProperty"/></param>
-		public PositionedNodeProperty(ObjectProperty objectProperty)
+		public PositionedNodeProperty(ObjectProperty objectProperty, PositionedNode containingNode)
 		{
 			this.objectProperty = objectProperty;
+			this.containingNode = containingNode;
 		}
 		
 		private ObjectProperty objectProperty;
@@ -28,7 +29,16 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public ObjectProperty ObjectProperty
 		{
-			get { return objectProperty; }
+			get { return this.objectProperty; }
+		}
+		
+		private PositionedNode containingNode;
+		/// <summary>
+		/// <see cref="PositionedNode"/> which contains this Property.
+		/// </summary>
+		public PositionedNode ContainingNode
+		{
+			get { return this.containingNode; }
 		}
 		
 		/// <summary>

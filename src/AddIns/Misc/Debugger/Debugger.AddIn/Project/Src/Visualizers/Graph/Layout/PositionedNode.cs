@@ -34,6 +34,13 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
+		public PositionedNodeProperty AddProperty(ObjectProperty objectProperty)
+		{
+			var newProperty = new PositionedNodeProperty(objectProperty, this);
+			this.Properties.Add(newProperty);
+			return newProperty;
+		}
+		
 		/// <summary>
 		/// Creates new PositionedNode.
 		/// </summary>
@@ -88,7 +95,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			{
 				foreach	(PositionedNodeProperty property in this.Properties)
 				{
-					yield return property.Edge;
+					if (property.Edge != null)
+						yield return property.Edge;
 				}
 			}
 		}

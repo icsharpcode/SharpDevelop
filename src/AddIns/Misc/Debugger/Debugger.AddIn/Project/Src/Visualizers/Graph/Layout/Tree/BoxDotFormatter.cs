@@ -35,8 +35,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		protected override void appendPosEdge(PositionedEdge edge, StringBuilder builder)
 		{
-			string sourceNodeName = nodeNames[edge.SourceNode];
-			string targetNodeName = nodeNames[edge.TargetNode];
+			string sourceNodeName = nodeNames[edge.Source.ContainingNode];
+			string targetNodeName = nodeNames[edge.Target];
 			
 			builder.AppendLine(string.Format("{0} -> {1}", sourceNodeName, targetNodeName));
 		}

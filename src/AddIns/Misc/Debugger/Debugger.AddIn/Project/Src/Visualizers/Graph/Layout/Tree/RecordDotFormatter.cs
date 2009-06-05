@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 
@@ -16,8 +17,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class RecordDotFormatter : DotFormatter
 	{
+		private Dictionary<PositionedNodeProperty, string> propertyIds = new Dictionary<PositionedNodeProperty, string>();
+		
 		public RecordDotFormatter(PositionedGraph posGraph) : base(posGraph)
 		{
+		}
+		
+		protected override string getGraphHeader()
+		{
+			return "digraph G { rankdir=LR; node [shape = record];";
 		}
 		
 		protected override void appendPosNode(PositionedNode node, StringBuilder builder)
@@ -27,13 +35,17 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			
 			Rect neatoInput = transform.NodeToNeatoInput(node);
 			
-			/*LEFT [
-	pos="0,0!"
-	width="1", height="1"
-	label = "<f0> a| <f1> b| <f2> c|<f3>d"];*/
-
 			StringBuilder recordLabel = new StringBuilder();
-			
+			for (int i = 0; i < node.Properties.Count; i++)
+			{
+				string propertyId = "f" + genId.GetNextId().ToString();
+				propertyIds[node.Properties[i]] = propertyId;
+				recordLabel.Append(string.Format("<{0}> l", propertyId));
+				if (i < node.Properties.Count - 1)
+				{
+					recordLabel.Append("|");
+				}
+			}
 			
 			string dotFormatNode =
 				string.Format(formatCulture,
@@ -46,10 +58,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		protected override void appendPosEdge(PositionedEdge edge, StringBuilder builder)
 		{
-			string sourceNodeName = nodeNames[edge.SourceNode];
-			string targetNodeName = nodeNames[edge.TargetNode];
+			string sourceNodeName = nodeNames[edge.Source.ContainingNode];
+			string sourcePropertyName = propertyIds[edge.Source];
+			string targetNodeName = nodeNames[edge.Target];
 			
-			builder.AppendLine(string.Format("{0} -> {1}", sourceNodeName, targetNodeName));
+			builder.AppendLine(string.Format("{0}:{1} -> {2}", sourceNodeName, sourcePropertyName, targetNodeName));
 		}
 	}
 }

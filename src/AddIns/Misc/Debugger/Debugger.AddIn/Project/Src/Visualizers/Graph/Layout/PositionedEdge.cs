@@ -13,7 +13,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// Edge with position information.
 	/// </summary>
-	public class PositionedEdge : NamedEdge<PositionedNode>
+	public class PositionedEdge : NamedEdge<PositionedNodeProperty, PositionedNode>
 	{
 		private IList<Point> splinePoints = new List<Point>();
 		

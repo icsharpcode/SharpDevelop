@@ -71,7 +71,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			get
 			{
 				foreach (PositionedEdge outEdge in this.ChildEdges)
-					yield return (TreeNode)outEdge.TargetNode;
+					yield return (TreeNode)outEdge.Target;
 			}
 		}
 	}

@@ -48,12 +48,22 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		protected abstract void appendPosEdge(PositionedEdge edge, StringBuilder builder);
 		
+		protected virtual string getGraphHeader()
+		{
+			return "digraph G { node [shape = box];";
+		}
+		
+		protected virtual string getGraphFooter()
+		{
+			return "}";
+		}
+		
 		/// <summary>
 		/// Gets Graphviz's dot format string for wrapped positioned graph.
 		/// </summary>
 		public string OutputGraphInDotFormat()
 		{
-			StringBuilder dotStringBuilder = new StringBuilder("digraph G { node [shape = box];");
+			StringBuilder dotStringBuilder = new StringBuilder(getGraphHeader());
 			
 			foreach	(PositionedNode posNode in this.posGraph.Nodes)
 			{
@@ -64,7 +74,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				appendPosEdge(posEdge, dotStringBuilder);
 			}
 			
-			dotStringBuilder.AppendLine("}");
+			dotStringBuilder.AppendLine(getGraphFooter());
 			return dotStringBuilder.ToString();
 		}
 		

@@ -43,7 +43,16 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			public int Compare(ObjectProperty prop1, ObjectProperty prop2)
 			{
-				return prop1.Name.CompareTo(prop2.Name);
+				// order by IsAtomic, Name
+				int atomic = prop2.IsAtomic.CompareTo(prop1.IsAtomic);
+				if (atomic != 0)
+				{
+					return atomic;
+				}
+				else
+				{
+					return prop1.Name.CompareTo(prop2.Name);
+				}
 			}
 		}
 		

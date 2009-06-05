@@ -64,7 +64,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			treeNodeFor[objectGraphNode] = newTreeNode;
 			
 			double subtreeSize = 0;
-			foreach	(ObjectProperty property in objectGraphNode.ComplexProperties)
+			foreach	(ObjectProperty property in objectGraphNode.Properties)
 			{
 				if (property.TargetNode != null)
 				{
@@ -82,9 +82,13 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 						newEdgeIsTreeEdge = true;
 						subtreeSize += targetTreeNode.SubtreeSize;
 					}
-					var posNodeProperty = new PositionedNodeProperty(property);
-					posNodeProperty.Edge = new TreeGraphEdge	{ IsTreeEdge = newEdgeIsTreeEdge, Name = property.Name, SourceNode = newTreeNode, TargetNode = targetTreeNode };
-					newTreeNode.Properties.Add(posNodeProperty);
+					var posNodeProperty = newTreeNode.AddProperty(property);
+					posNodeProperty.Edge = new TreeGraphEdge { IsTreeEdge = newEdgeIsTreeEdge, Name = property.Name, Source = posNodeProperty, Target = targetTreeNode };
+				}
+				else
+				{
+					// PositionedNodeProperty.Edge is null
+					newTreeNode.AddProperty(property);
 				}
 			}
 			subtreeSize = Math.Max(newTreeNode.LateralSizeWithMargin, subtreeSize);
