@@ -4,11 +4,10 @@
     xmlns:ShortcutsManagement="clr-namespace:ICSharpCode.ShortcutsManagement"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
     xmlns:Converters="clr-namespace:ICSharpCode.ShortcutsManagement.Converters"
-    Title="{Binding Path=Name}" Height="300" Width="300">
+    Title="{Binding Path=Name}" MinHeight="400" MinWidth="400">
 
     <Window.Resources>
         <Converters:InputGestureConverter x:Key="InputGestureConverter" />
-        <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
         <LinearGradientBrush x:Key="SelectedItemBackground" StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#3194FF" Offset="0" />
@@ -25,9 +24,8 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
-            <RowDefinition Height="80" />
-            <RowDefinition Height="80" />
-            <RowDefinition />
+            <RowDefinition Height="50*" />
+            <RowDefinition Height="50*" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
@@ -50,7 +48,7 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
                                 <StackPanel>
-                                    <Border x:Name="ListBoxItemBorder" CornerRadius="6" Padding="2" Background="{TemplateBinding Background}">
+                                    <Border x:Name="ListBoxItemBorder" CornerRadius="6" Padding="10, 5" Background="{TemplateBinding Background}">
                                         <ContentPresenter />
                                     </Border>
                                 </StackPanel>
@@ -93,8 +91,10 @@
         </ListBox>
 
         <Label x:Name="otherCommandsLabel" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top">Other commands</Label>
-        <ListBox x:Name="otherCommandsListBox" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Margin="3,3,3,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <!-- <ListBox x:Name="otherCommandsListBox" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Margin="3,3,3,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" /> -->
 
+        <ShortcutsManagement:ShortcutsManagementOptionsPanel x:Name="shortcutsManagementOptionsPanel" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" IsSearchable="False" Padding="3" />
+        
         <Grid  Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -102,8 +102,8 @@
                 <ColumnDefinition Width="80" />
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="resetButton" Grid.Column="1" Margin="3,3,3,3">Reset</Button>
-            <Button Command="Save"  x:Name="saveButton" Grid.Column="2" Margin="3,3,3,3">Save</Button>
+            <Button Click="resetButton_Click" x:Name="resetButton" Grid.Column="1" Margin="3,3,3,3">Reset</Button>
+            <Button Click="saveButton_Click" x:Name="saveButton" Grid.Column="2" Margin="3,3,3,3">Save</Button>
         </Grid>
     </Grid>
 

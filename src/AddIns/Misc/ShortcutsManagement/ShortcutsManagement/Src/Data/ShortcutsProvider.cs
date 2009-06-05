@@ -1,37 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Windows.Input;
 using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.ShortcutsManagement
 {
-    public class ShortcutsProvider
+    public static class ShortcutsProvider
     {
-        private readonly ObservableCollection<AddIn> addins = new ObservableCollection<AddIn>();
-        
         /// <summary>
-        /// Get list of add-ins containing shortcuts
+        /// Filter addins containing shortcuts with matching gesture
         /// </summary>
-        /// <returns>List of add-ins</returns>
-        public ObservableCollection<AddIn> GetAddIns()
+        /// <param name="keyGestureTemplate">Gesture template (Uncompleted gesture)</param>
+        public static void FilterGesture(ICollection<AddIn> addins, KeyGestureTemplate keyGestureTemplate, bool strictMatch)
         {
-            return addins;
+            FilterGesture(addins, new List<KeyGestureTemplate> {keyGestureTemplate}, strictMatch);
         }
 
         /// <summary>
         /// Filter addins containing shortcuts with matching gesture
         /// </summary>
-        /// <param name="keyEventArgs">Key event</param>
-        public void FilterGesture(InputEventArgs keyEventArgs)
+        /// <param name="keyGestureTemplate">Gesture template (Uncompleted gesture)</param>
+        public static void FilterGesture(ICollection<AddIn> addins, ICollection<KeyGestureTemplate> keyGestureTemplateCollection, bool strictMatch)
         {
             foreach (var addIn in addins)
             {
                 var subCategoryIsVisible = false;
                 foreach (var category in addIn.Categories)
                 {
-                    if (FilterGesture(category, keyEventArgs))
+                    if (FilterGesture(category, keyGestureTemplateCollection, strictMatch))
                     {
                         subCategoryIsVisible = true;
                     }
@@ -45,14 +42,14 @@ namespace ICSharpCode.ShortcutsManagement
         /// Filter categories containing shortcuts with matching gesture
         /// </summary>
         /// <param name="category">Category to filter</param>
-        /// <param name="keyEventArgs">Key event</param>
+        /// <param name="keyGestureTemplate">Uncompleted gesture</param>
         /// <returns></returns>
-        private static bool FilterGesture(ShortcutCategory category, InputEventArgs keyEventArgs)
+        private static bool FilterGesture(ShortcutCategory category, ICollection<KeyGestureTemplate> keyGestureTemplateCollection, bool strictMatch)
         {
             var isSubElementVisible = false;
             foreach (var subCategory in category.SubCategories)
             {
-                if (FilterGesture(subCategory, keyEventArgs))
+                if (FilterGesture(subCategory, keyGestureTemplateCollection, strictMatch))
                 {
                     isSubElementVisible = true;
                 }
@@ -63,10 +60,13 @@ namespace ICSharpCode.ShortcutsManagement
                 var gestureMatched = false;
                 foreach (InputGesture gesture in shortcut.Gestures)
                 {
-                    if(gesture.Matches(null, keyEventArgs))
+                    foreach (var template in keyGestureTemplateCollection)
                     {
-                        gestureMatched = true;
-                        break;
+                        if (template == null || (gesture is KeyGesture && template.Matches((KeyGesture)gesture, strictMatch)))
+                        {
+                            gestureMatched = true;
+                            break;
+                        }   
                     }
                 }
 
@@ -89,7 +89,7 @@ namespace ICSharpCode.ShortcutsManagement
         /// contains filter string
         /// </summary>
         /// <param name="filterString">Filter string</param>
-        public void Filter(string filterString)
+        public static void Filter(ICollection<AddIn> addins, string filterString)
         {
             foreach (var addIn in addins)
             {
@@ -148,44 +148,6 @@ namespace ICSharpCode.ShortcutsManagement
             }
 
             return category.IsVisible = (forseMatch.HasValue && forseMatch.Value) || isSubElementVisible;
-        }
-
-        private static InputGestureCollection GetGestures(string gesturesString)
-        {
-            var converter = new InputGestureCollectionConverter();
-            return (InputGestureCollection)converter.ConvertFromInvariantString(gesturesString);
-        }
-
-        public ShortcutsProvider()
-        {
-        	// Test data
-            addins.Add(new AddIn("SharpDevelop"));
-                addins[0].Categories.Add(new ShortcutCategory("Editing"));
-                    addins[0].Categories[0].Shortcuts.Add(new Shortcut("Copy",  GetGestures("Ctrl + C")));
-                    addins[0].Categories[0].Shortcuts.Add(new Shortcut("Paste", GetGestures("Ctrl + V | Ctrl+Insert")));
-                    addins[0].Categories[0].Shortcuts.Add(new Shortcut("Cut",   GetGestures("Ctrl + X")));
-                    addins[0].Categories[0].Shortcuts.Add(new Shortcut("Undo",  GetGestures("Ctrl + Z")));
-                    addins[0].Categories[0].Shortcuts.Add(new Shortcut("Redo",  GetGestures("Ctrl + Y")));
-                addins[0].Categories.Add(new ShortcutCategory("Building"));
-                    addins[0].Categories[1].Shortcuts.Add(new Shortcut("Build", GetGestures("Ctrl + Shift+B")));
-                    addins[0].Categories[1].Shortcuts.Add(new Shortcut("Run",   GetGestures("F5")));
-                    addins[0].Categories[1].Shortcuts.Add(new Shortcut("Run without debuger", GetGestures("Ctrl + F5")));
-                    addins[0].Categories[1].Shortcuts.Add(new Shortcut("Attach debuger", GetGestures("Ctrl + F8")));
-                addins[0].Categories.Add(new ShortcutCategory("Uncategorized"));
-                    addins[0].Categories[2].Shortcuts.Add(new Shortcut("Attach debuger", GetGestures("Ctrl + F8")));
-
-
-            addins.Add(new AddIn("Search & replace"));
-                addins[1].Categories.Add(new ShortcutCategory("Uncategorized"));
-                    addins[1].Categories[0].Shortcuts.Add(new Shortcut("Quick find", GetGestures("Ctrl + F")));
-                    addins[1].Categories[0].Shortcuts.Add(new Shortcut("Quick replace", GetGestures("Ctrl + H")));
-                    addins[1].Categories[0].Shortcuts.Add(new Shortcut("Find in files", GetGestures("Ctrl + Shift + F | Ctrl + Shift + H | Ctrl + I")));
-                    addins[1].Categories[0].Shortcuts.Add(new Shortcut("Replace in files", GetGestures("Ctrl + Shift + H")));
-                    addins[1].Categories[0].Shortcuts.Add(new Shortcut("Find symbol", null));
-
-            addins.Add(new AddIn("Unspecified"));
-                addins[2].Categories.Add(new ShortcutCategory("Uncategorized"));
-                    addins[2].Categories[0].Shortcuts.Add(new Shortcut("Test regex expression", null));
         }
     }
 }

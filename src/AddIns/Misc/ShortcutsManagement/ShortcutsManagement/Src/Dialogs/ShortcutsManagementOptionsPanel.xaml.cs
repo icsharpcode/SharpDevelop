@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using ICSharpCode.SharpDevelop;
 
@@ -14,6 +14,54 @@ namespace ICSharpCode.ShortcutsManagement
     /// </summary>
     public partial class ShortcutsManagementOptionsPanel : UserControl, IOptionPanel
     {
+        enum SearchType
+        {
+            Gesture,
+            Word
+        }
+
+        private string lastSearchWord;
+        private KeyGestureTemplate lastSearchGesture;
+        private SearchType lastSearchType;
+
+        public static readonly DependencyProperty IsSearchableProperty = DependencyProperty.Register(
+            "IsSearchable",
+            typeof(Boolean),
+            typeof(ShortcutsManagementOptionsPanel),
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender, OnIsSearchableChanged));
+
+        public Boolean IsSearchable
+        {
+            get
+            {
+                return (Boolean)GetValue(IsSearchableProperty);
+            }
+            set
+            {
+                SetValue(IsSearchableProperty, value);
+            }
+        }
+
+        public static void OnIsSearchableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var panel = (ShortcutsManagementOptionsPanel)d;
+            var oldValue = (Boolean)e.OldValue;
+            var newValue = (Boolean)e.NewValue;
+
+            if(oldValue != newValue)
+            {
+                panel.searchSection.Visibility = newValue ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private ICollection<AddIn> AddIns
+        {
+            get
+            {
+                return (ICollection<AddIn>)DataContext;
+            }
+        }
+
         public ShortcutsManagementOptionsPanel()
         {
             InitializeComponent();
@@ -26,10 +74,30 @@ namespace ICSharpCode.ShortcutsManagement
             {
                 if (shortcutsTreeView.SelectedItem is Shortcut)
                 {
-                    var receiver = ((ShortcutsProvider)Resources["ShortcutsReceiver"]);
-                    var shortcut = (Shortcut)shortcutsTreeView.SelectedItem;
-                    new ShortcutManagementWindow(shortcut, receiver).ShowDialog();
+                    ShowShortcutManagementWindow((Shortcut)shortcutsTreeView.SelectedItem);
                 }
+            }
+        }
+
+        private void ShowShortcutManagementWindow(Shortcut shortcut)
+        {
+            var shortcutManagementWindow = new ShortcutManagementWindow(shortcut, AddIns);
+            shortcutManagementWindow.ShowDialog();
+
+            shortcut.Gestures.Add(new KeyGesture(Key.L, ModifierKeys.Control));
+            if (shortcutManagementWindow.IsShortcutModified)
+            {
+                shortcut.Gestures.Clear();
+                shortcut.Gestures.AddRange(shortcutManagementWindow.ModifiedShortcut.Gestures);
+            }
+
+            if (lastSearchType == SearchType.Gesture)
+            {
+                ShortcutsProvider.FilterGesture(AddIns, lastSearchGesture, false);
+            }
+            else
+            {
+                ShortcutsProvider.Filter(AddIns, lastSearchWord);
             }
         }
 
@@ -42,12 +110,13 @@ namespace ICSharpCode.ShortcutsManagement
         {
             if (!searchTypeToggleButton.IsChecked.HasValue || searchTypeToggleButton.IsChecked.Value) return;
 
-            var receiver = ((ShortcutsProvider)Resources["ShortcutsReceiver"]);
-            receiver.Filter(searchTextBox.Text);
+            lastSearchWord = searchTextBox.Text;
+            lastSearchType = SearchType.Word;
+            ShortcutsProvider.Filter(AddIns, searchTextBox.Text);
 
             if (!string.IsNullOrEmpty(searchTextBox.Text))
             {
-                SelectFirstVisibleShortcut(shortcutsTreeView, receiver.GetAddIns(), false);
+                SelectFirstVisibleShortcut(shortcutsTreeView, AddIns, false);
             }
             else
             {
@@ -58,28 +127,22 @@ namespace ICSharpCode.ShortcutsManagement
 
         private void searchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            var receiver = ((ShortcutsProvider)Resources["ShortcutsReceiver"]);
-                
             // If Up/Down is pressed switch focus to shortcuts tree
             var keyboardDevice = (KeyboardDevice)e.Device;
             
             if (keyboardDevice.Modifiers == ModifierKeys.None
                 && Array.IndexOf(new[] { Key.Up, Key.Down }, e.Key) >= 0)
             {
-                SelectFirstVisibleShortcut(shortcutsTreeView, receiver.GetAddIns(), true);
+                SelectFirstVisibleShortcut(shortcutsTreeView, AddIns, true);
                 
                 return;
             }
 
             // If enter is pressed open shortcut configuration
-            if (keyboardDevice.Modifiers == ModifierKeys.None && e.Key == Key.Enter)
+            if (keyboardDevice.Modifiers == ModifierKeys.None && e.Key == Key.Enter && shortcutsTreeView.SelectedItem is Shortcut)
             {
                 e.Handled = true;
-                if (shortcutsTreeView.SelectedItem is Shortcut)
-                {
-                    var shortcut = (Shortcut) shortcutsTreeView.SelectedItem;
-                    new ShortcutManagementWindow(shortcut, receiver).ShowDialog();
-                }
+                ShowShortcutManagementWindow((Shortcut)shortcutsTreeView.SelectedItem);
 
                 return;
             }
@@ -88,9 +151,13 @@ namespace ICSharpCode.ShortcutsManagement
 
             e.Handled = true;
 
-            receiver.FilterGesture(e);
+            var keyGestureTemplate = new KeyGestureTemplate(e.Key, Keyboard.Modifiers);
 
-            SelectFirstVisibleShortcut(shortcutsTreeView, receiver.GetAddIns(), false);
+            lastSearchGesture = keyGestureTemplate;
+            lastSearchType = SearchType.Gesture;
+            ShortcutsProvider.FilterGesture(AddIns, keyGestureTemplate, false);
+
+            SelectFirstVisibleShortcut(shortcutsTreeView, AddIns, false);
 
             searchTextBox.Text = GesturesHelper.GetGestureFromKeyEventArgument(e);
         }
@@ -99,8 +166,9 @@ namespace ICSharpCode.ShortcutsManagement
         {
             searchTextBox.Text = "";
 
-            var receiver = ((ShortcutsProvider)Resources["ShortcutsReceiver"]);
-            receiver.Filter("");
+            lastSearchWord = "";
+            lastSearchType = SearchType.Word;
+            ShortcutsProvider.Filter(AddIns, "");
             shortcutsTreeView.SetExpandAll(false);
         }
 
@@ -158,5 +226,6 @@ namespace ICSharpCode.ShortcutsManagement
                 return;
             }
         }
+
     }
 }

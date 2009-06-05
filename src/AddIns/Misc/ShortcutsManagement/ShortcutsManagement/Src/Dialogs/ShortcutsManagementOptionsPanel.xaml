@@ -6,10 +6,9 @@
              xmlns:ShortcutsManagement="clr-namespace:ICSharpCode.ShortcutsManagement" 
              xmlns:Converters="clr-namespace:ICSharpCode.ShortcutsManagement.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" Padding="10" >
+             d:DesignHeight="300" d:DesignWidth="300" >
     
     <UserControl.Resources>
-        <ShortcutsManagement:ShortcutsProvider x:Key="ShortcutsReceiver" />
         <Converters:GesturesListConverter x:Key="GesturesListConverter" />
         <Converters:ShortcutsTreeConverter x:Key="ShortcutsTreeConverter" />
         <Converters:TypeNameConverter x:Key="TypeNameConverter" />
@@ -17,8 +16,6 @@
         <ImageSource x:Key="KeyImage">..\..\Resources\key_enter.png</ImageSource>
         <ImageSource x:Key="KeyImagePressed">..\..\Resources\key_enter_pressed.png</ImageSource>
 
-        <ObjectDataProvider x:Key="AddIns"  ObjectInstance="{StaticResource ShortcutsReceiver}" MethodName="GetAddIns" />
-        
         <SolidColorBrush x:Key="GlyphBrush" Color="#444" />
         <LinearGradientBrush x:Key="SelectedItemBackground" StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#3194FF" Offset="0" />
@@ -66,10 +63,10 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="Auto"  />
         </Grid.RowDefinitions>
 
-        <TreeView x:Name="shortcutsTreeView" ItemsSource="{Binding Source={StaticResource AddIns}}" Grid.Column="0" Grid.Row="0" FocusManager.FocusedElement="{Binding ElementName=searchTextBox}" PreviewKeyDown="shortcutsTreeView_PreviewKeyDown">
+        <TreeView x:Name="shortcutsTreeView" ItemsSource="{Binding}" Grid.Column="0" Grid.Row="0" FocusManager.FocusedElement="{Binding ElementName=searchTextBox}" PreviewKeyDown="shortcutsTreeView_PreviewKeyDown">
             <TreeView.Resources>
                 
                 <Style TargetType="{x:Type TreeViewItem}">
@@ -144,13 +141,13 @@
                         </Grid.ColumnDefinitions>
                         
                         <TextBlock Text="{Binding Name}" ShortcutsManagement:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" Grid.Column="0" />
-                        <TextBlock Text="{Binding Gestures, Converter={StaticResource GesturesListConverter}}" Grid.Column="1" TextAlignment="Right"  />
+                        <TextBlock Text="{Binding Gestures, Converter={StaticResource GesturesListConverter}}" Grid.Column="1" TextAlignment="Right" Padding="20,0,0,0" />
                     </Grid>
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
         </TreeView>
 
-        <Border Name="Border" CornerRadius="0,0,8,8" Padding="2" Background="#FFF" BorderBrush="#888" BorderThickness="1,0,1,1" Grid.Column="0" Grid.Row="1">
+        <Border x:Name="searchSection" Visibility="Collapsed"  CornerRadius="0,0,8,8" Padding="2" Background="#FFF" BorderBrush="#888" BorderThickness="1,0,1,1" Grid.Column="0" Grid.Row="1">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />

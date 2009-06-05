@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ICSharpCode.ShortcutsManagement
 {
@@ -18,17 +11,56 @@ namespace ICSharpCode.ShortcutsManagement
     /// </summary>
     public partial class ShortcutManagementWindow : Window
     {
-        private ShortcutsProvider shortcutsProvider;
-        private Shortcut shortcut;
+        private Shortcut shortcutCopy;
+
+        public Shortcut ModifiedShortcut
+        {
+            get; private set;
+        }
+
+        public bool IsShortcutModified
+        {
+            get; private set;
+        }
+
+        private ICollection<AddIn> AddIns
+        {
+            get; set;
+        }
+            
         private InputGesture lastEnteredInputGesture;
 
-        public ShortcutManagementWindow(Shortcut shortcut, ShortcutsProvider provider)
+        public ShortcutManagementWindow(Shortcut shortcut, ICollection<AddIn> addIns)
         {
-            DataContext = shortcut;
-            this.shortcut = shortcut;
-            shortcutsProvider = provider;
-
+            shortcutCopy = (Shortcut)shortcut.Clone();
+            shortcutCopy.Gestures.CollectionChanged += Gestures_CollectionChanged;
+            DataContext = shortcutCopy;
+            
             InitializeComponent();
+
+            AddIns = addIns;
+            shortcutsManagementOptionsPanel.DataContext = AddIns;
+            FilterSimilarShortcuts();
+            shortcutsManagementOptionsPanel.shortcutsTreeView.SetExpandAll(true);
+        }
+
+        void Gestures_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            FilterSimilarShortcuts();
+        }
+
+        private void FilterSimilarShortcuts()
+        {
+            var templates = new List<KeyGestureTemplate>();
+            foreach (var gesture in shortcutCopy.Gestures)
+            {
+                if (gesture is KeyGesture)
+                {
+                    templates.Add(new KeyGestureTemplate((KeyGesture)gesture));
+                }
+            }
+
+            ShortcutsProvider.FilterGesture(AddIns, templates, true);
         }
 
         private void shortcutTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -45,19 +77,33 @@ namespace ICSharpCode.ShortcutsManagement
             catch (NotSupportedException)
             { }
         }
-
+       
         private void removeGestureButton_Click(object sender, RoutedEventArgs e)
         {
             var tag = ((Button) sender).Tag as InputGesture;
-            shortcut.Gestures.Remove(tag);
+            shortcutCopy.Gestures.Remove(tag);
         }
 
         private void addGestureButton_Click(object sender, RoutedEventArgs e)
         {
-            if(lastEnteredInputGesture != null)
+            if(lastEnteredInputGesture != null && !shortcutCopy.ContainsGesture(lastEnteredInputGesture))
             {
-                shortcut.Gestures.Add(lastEnteredInputGesture);
+                shortcutCopy.Gestures.Add(lastEnteredInputGesture);
             }
+        }
+
+        private void saveButton_Click(object sender, RoutedEventArgs e)
+        {
+            IsShortcutModified = true;
+            ModifiedShortcut = shortcutCopy;
+
+            Close();
+        }
+
+        private void resetButton_Click(object sender, RoutedEventArgs e)
+        {
+            IsShortcutModified = false;
+            Close();
         }
     }
 }

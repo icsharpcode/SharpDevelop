@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -9,8 +10,10 @@ namespace ICSharpCode.ShortcutsManagement
     /// <summary>
     /// Shortcut
     /// </summary>
-	public class Shortcut : INotifyPropertyChanged
+	public class Shortcut : INotifyPropertyChanged, ICloneable
     {
+        private ObservableCollection<InputGesture> gestures;
+
 		/// <summary>
 		/// List of keyboard gestures which will invoke provided action
 		/// </summary>
@@ -82,6 +85,32 @@ namespace ICSharpCode.ShortcutsManagement
                     Gestures.Add(gesture);
                 }
             }
+
+            Gestures.CollectionChanged += delegate { InvokePropertyChanged("Gestures"); };
+        }
+
+        public bool ContainsGesture(InputGesture gesture)
+        {
+            foreach (var existingGesture in Gestures)
+            {
+                if(existingGesture == gesture)
+                {
+                    return true;
+                }
+
+                if(existingGesture is KeyGesture && gesture is KeyGesture)
+                {
+                    var existingKeyGesture = (KeyGesture) existingGesture;
+                    var keyGesture = (KeyGesture) gesture;
+                    
+                    if(existingKeyGesture.Key == keyGesture.Key && existingKeyGesture.Modifiers == keyGesture.Modifiers)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -96,6 +125,17 @@ namespace ICSharpCode.ShortcutsManagement
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        public object Clone()
+        {
+            var clone = new Shortcut(Name, null);
+            foreach (var gesture in Gestures)
+            {
+                clone.Gestures.Add(gesture);
+            }
+
+            return clone;
         }
     }
 }
