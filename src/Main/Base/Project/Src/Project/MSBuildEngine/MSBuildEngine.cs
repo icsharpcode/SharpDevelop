@@ -159,34 +159,30 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void RunBuild(object state)
 		{
-			var projectCollection = new MSBuild.ProjectCollection();
-			MSBuildBasedProject.InitializeMSBuildProjectProperties(projectCollection);
+			Dictionary<string, string> globalProperties = new Dictionary<string, string>();
+			MSBuildBasedProject.InitializeMSBuildProjectProperties(globalProperties);
 			
 			Solution solution = project.ParentSolution;
-			projectCollection.SetGlobalProperty("SolutionDir", EnsureBackslash(solution.Directory));
-			projectCollection.SetGlobalProperty("SolutionExt", ".sln");
-			projectCollection.SetGlobalProperty("SolutionFileName", Path.GetFileName(solution.FileName));
-			projectCollection.SetGlobalProperty("SolutionPath", solution.FileName);
+			globalProperties["SolutionDir"] = EnsureBackslash(solution.Directory);
+			globalProperties["SolutionExt"] = ".sln";
+			globalProperties["SolutionFileName"] = Path.GetFileName(solution.FileName);
+			globalProperties["SolutionPath"] = solution.FileName;
 			
-			foreach (var pair in options.Properties) {
-				projectCollection.SetGlobalProperty(pair.Key, pair.Value);
+			foreach (KeyValuePair<string, string> pair in options.Properties) {
+				globalProperties[pair.Key] = pair.Value;
 			}
-			projectCollection.SetGlobalProperty("Configuration", options.Configuration);
+			globalProperties["Configuration"] = options.Configuration;
 			if (options.Platform == "Any CPU")
-				projectCollection.SetGlobalProperty("Platform", "AnyCPU");
+				globalProperties["Platform"] = "AnyCPU";
 			else
-				projectCollection.SetGlobalProperty("Platform", options.Platform);
+				globalProperties["Platform"] = options.Platform;
 
 			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
 			
-			var projectFile = ProjectRootElement.Open(project.FileName, projectCollection);
+			ProjectRootElement projectFile = ProjectRootElement.Open(project.FileName);
 			foreach (string import in additionalTargetFiles)
 				projectFile.AddImport(import);
-			string toolsVersion = projectFile.ToolsVersion;
-			if (string.IsNullOrEmpty(toolsVersion))
-				toolsVersion = projectCollection.DefaultToolsVersion;
-			var evalProject = new MSBuild.Project(projectFile, null, toolsVersion, projectCollection);
-			var projectInstance = evalProject.CreateProjectInstance();
+			ProjectInstance projectInstance = MSBuildInternals.LoadProjectInstance(projectFile, globalProperties);
 			
 			string[] targets = { options.Target.TargetName };
 			BuildRequestData requestData = new BuildRequestData(projectInstance, targets, new HostServices());
@@ -200,7 +196,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			feedbackSink.Done(submission.BuildResult.OverallResult == Microsoft.Build.Execution.BuildResultCode.Success);
 		}
 		
-			/*
+		/*
 			WorkerManager.ShowError = MessageService.ShowError;
 			BuildWorker.BuildSettings settings = new BuildWorker.BuildSettings();
 			SharpDevelopLogger logger = new SharpDevelopLogger(this);

@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 				throw new ArgumentNullException("title");
 			if (matches == null)
 				throw new ArgumentNullException("matches");
-			foreach (ISearchResultFactory factory in AddInTree.BuildItems<ISearchResultFactory>("/SharpDevelop/Pads/SearchResultPad/Factories", null)) {
+			foreach (ISearchResultFactory factory in AddInTree.BuildItems<ISearchResultFactory>("/SharpDevelop/Pads/SearchResultPad/Factories", null, false)) {
 				ISearchResult result = factory.CreateSearchResult(title, matches);
 				if (result != null)
 					return result;

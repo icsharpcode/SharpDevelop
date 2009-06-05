@@ -6,6 +6,8 @@
 // </file>
 
 using Microsoft.Build.Construction;
+using Microsoft.Build.Execution;
+using Microsoft.Build.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using ICSharpCode.Core;
 using MSBuild = Microsoft.Build;
+using ProjectCollection = Microsoft.Build.Evaluation.ProjectCollection;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -31,7 +34,34 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// MSBuild does not support multi-threading, so every invocation of MSBuild that
 		/// runs inside the SharpDevelop process must lock on this object to prevent conflicts.
 		/// </summary>
-		public readonly static object InProcessMSBuildLock = new object();
+		public readonly static object GlobalProjectCollectionLock = new object();
+		
+		internal static void UnloadProject(MSBuild.Evaluation.Project project)
+		{
+			lock (GlobalProjectCollectionLock) {
+				ProjectCollection.GlobalProjectCollection.UnloadProject(project);
+			}
+		}
+		
+		internal static MSBuild.Evaluation.Project LoadProject(ProjectRootElement rootElement, IDictionary<string, string> globalProps)
+		{
+			lock (GlobalProjectCollectionLock) {
+				string toolsVersion = rootElement.ToolsVersion;
+				if (string.IsNullOrEmpty(toolsVersion))
+					toolsVersion = ProjectCollection.GlobalProjectCollection.DefaultToolsVersion;
+				return new MSBuild.Evaluation.Project(rootElement, globalProps, toolsVersion, ProjectCollection.GlobalProjectCollection);
+			}
+		}
+		
+		internal static ProjectInstance LoadProjectInstance(ProjectRootElement rootElement, IDictionary<string, string> globalProps)
+		{
+			lock (GlobalProjectCollectionLock) {
+				string toolsVersion = rootElement.ToolsVersion;
+				if (string.IsNullOrEmpty(toolsVersion))
+					toolsVersion = ProjectCollection.GlobalProjectCollection.DefaultToolsVersion;
+				return new ProjectInstance(rootElement, globalProps, toolsVersion, ProjectCollection.GlobalProjectCollection);
+			}
+		}
 		
 		const string MSBuildXmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 		
@@ -105,7 +135,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				tempProject = baseProject;
 			}
 		}
-		*/
+		 */
 		
 		internal static PropertyStorageLocations GetLocationFromCondition(MSBuild.Construction.ProjectElement element)
 		{
@@ -207,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return new MSBuild.Engine(MSBuild.ToolsetDefinitionLocations.Registry
 			                          | MSBuild.ToolsetDefinitionLocations.ConfigurationFile);
 		}
-		*/
+		 */
 		
 		/*
 		/// <summary>
@@ -230,7 +260,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			EndXmlManipulation(project);
 		}
-		*/
+		 */
 		
 		/*
 		/// <summary>
@@ -272,61 +302,75 @@ namespace ICSharpCode.SharpDevelop.Project
 			prop.SetValue(item, oldValue, null);
 			return result;
 		}
-		*/
+		 */
 		
 		internal static void ResolveAssemblyReferences(MSBuildBasedProject baseProject, ReferenceProjectItem[] referenceReplacements)
 		{
-			/*
-			MSBuild.Engine tempEngine;
-			MSBuild.Project tempProject;
-			IEnumerable<ReferenceProjectItem> references;
+			ProjectInstance project = baseProject.CreateProjectInstance();
+			project.SetProperty("BuildingProject", "false");
 			
-			lock (baseProject.SyncRoot) {
-				// create a copy of the project
-				tempEngine = CreateEngine();
-				tempProject = tempEngine.CreateNewProject();
-				// tell MSBuild the path so that projects containing <Import Project="relativePath" />
-				// can be loaded
-				tempProject.FullFileName = baseProject.MSBuildProject.FullFileName;
-				MSBuildBasedProject.InitializeMSBuildProject(tempProject);
-				tempProject.LoadXml(baseProject.MSBuildProject.Xml);
-				tempProject.SetProperty("Configuration", baseProject.ActiveConfiguration);
-				tempProject.SetProperty("Platform", baseProject.ActivePlatform);
-				tempProject.SetProperty("BuildingProject", "false");
+			List<ProjectItemInstance> references = (
+				from item in project.Items
+				where ItemType.ReferenceItemTypes.Contains(new ItemType(item.ItemType))
+				select item
+			).ToList();
+			
+			ReferenceProjectItem[] referenceProjectItems;
+			
+			if (referenceReplacements == null) {
+				// Remove the "Private" meta data.
+				// This is necessary to detect the default value for "Private"
+				foreach (ProjectItemInstance reference in references) {
+					reference.RemoveMetadata("Private");
+				}
 				
-				if (referenceReplacements == null) {
-					references = baseProject.GetItemsOfType(ItemType.Reference).OfType<ReferenceProjectItem>();
-					
-					// remove the "Private" meta data
-					foreach (MSBuild.BuildItemGroup itemGroup in tempProject.ItemGroups) {
-						// skip item groups from imported projects
-						if (itemGroup.IsImported)
-							continue;
-						foreach (MSBuild.BuildItem item in itemGroup) {
-							if (item.Name == ItemType.Reference.ItemName) {
-								item.RemoveMetadata("Private");
-							}
-						}
-					}
+				referenceProjectItems = baseProject.Items.OfType<ReferenceProjectItem>().ToArray();
+			} else {
+				foreach (ProjectItemInstance reference in references) {
+					project.RemoveItem(reference);
+				}
+				foreach (ReferenceProjectItem item in referenceReplacements) {
+					project.AddItem("Reference", item.Include);
+				}
+				referenceProjectItems = referenceReplacements;
+			}
+			
+			string[] targets = { "ResolveAssemblyReferences" };
+			BuildRequestData requestData = new BuildRequestData(project, targets, new HostServices());
+			BuildSubmission submission = ParallelMSBuildManager.StartBuild(requestData, new SimpleErrorLogger(), null);
+			LoggingService.Debug("Started build for ResolveAssemblyReferences");
+			submission.WaitHandle.WaitOne();
+			BuildResult result = submission.BuildResult;
+			if (result == null)
+				throw new InvalidOperationException("BuildResult is null");
+			LoggingService.Debug("Build for ResolveAssemblyReferences finished: " + result.OverallResult);
+			
+			
+			var referenceDict = new Dictionary<string, ReferenceProjectItem>();
+			foreach (ReferenceProjectItem item in referenceProjectItems) {
+				// references could be duplicate, so we cannot use referenceDict.Add or reference.ToDictionary
+				referenceDict[item.Include] = item;
+			}
+			
+			
+			foreach (ProjectItemInstance item in project.GetItems("_ResolveAssemblyReferenceResolvedFiles")) {
+				string originalInclude = item.GetMetadataValue("OriginalItemSpec");
+				ReferenceProjectItem reference;
+				if (referenceDict.TryGetValue(originalInclude, out reference)) {
+					reference.AssemblyName = new Dom.DomAssemblyName(item.GetMetadataValue("FusionName"));
+					//string fullPath = item.GetEvaluatedMetadata("FullPath"); is incorrect for relative paths
+					string fullPath = FileUtility.GetAbsolutePath(baseProject.Directory, item.GetMetadataValue("Identity"));
+					reference.FileName = fullPath;
+					reference.Redist = item.GetMetadataValue("Redist");
+					LoggingService.Debug("Got information about " + originalInclude + "; fullpath=" + fullPath);
+					reference.DefaultCopyLocalValue = bool.Parse(item.GetMetadataValue("CopyLocal"));
 				} else {
-					references = referenceReplacements;
-					
-					// replace all references in the project with the referenceReplacements
-					foreach (MSBuild.BuildItemGroup itemGroup in tempProject.ItemGroups) {
-						// skip item groups from imported projects
-						if (itemGroup.IsImported)
-							continue;
-						foreach (MSBuild.BuildItem item in itemGroup.ToArray()) {
-							if (item.Name == ItemType.Reference.ItemName) {
-								itemGroup.RemoveItem(item);
-							}
-						}
-					}
-					foreach (ReferenceProjectItem item in referenceReplacements) {
-						tempProject.AddNewItem("Reference", item.Include, true);
-					}
+					LoggingService.Warn("Unknown item " + originalInclude);
 				}
 			}
+			
+			/*
+			
 			var referenceDict = new Dictionary<string, ReferenceProjectItem>();
 			foreach (ReferenceProjectItem item in references) {
 				// references could be duplicate, so we cannot use referenceDict.Add or reference.ToDictionary
@@ -362,8 +406,33 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			
-			tempEngine.UnloadAllProjects(); // unload temp project
-			*/
+			tempEngine.UnloadAllProjects(); // unload temp project*/
+		}
+		
+		sealed class SimpleErrorLogger : ILogger
+		{
+			#region ILogger interface implementation
+			public LoggerVerbosity Verbosity { get; set; }
+			public string Parameters { get; set; }
+			
+			public void Initialize(IEventSource eventSource)
+			{
+				eventSource.ErrorRaised     += OnError;
+				eventSource.WarningRaised   += OnWarning;
+			}
+			
+			public void Shutdown()
+			{
+			}
+			#endregion
+			
+			void OnError(object sender, BuildErrorEventArgs e)
+			{
+			}
+			
+			void OnWarning(object sender, BuildWarningEventArgs e)
+			{
+			}
 		}
 	}
 }

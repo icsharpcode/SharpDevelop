@@ -53,10 +53,7 @@ namespace ICSharpCode.SharpDevelop
 			project.ResolveAssemblyReferences();
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
-				if (item.ItemType == ItemType.Reference
-				    || item.ItemType == ItemType.ProjectReference
-				    || item.ItemType == ItemType.COMReference)
-				{
+				if (ItemType.ReferenceItemTypes.Contains(item.ItemType)) {
 					ReferenceProjectItem reference = item as ReferenceProjectItem;
 					if (reference != null) {
 						// TODO: Translate me

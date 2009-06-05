@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -20,6 +21,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static readonly ItemType Reference = new ItemType("Reference");
 		public static readonly ItemType ProjectReference = new ItemType("ProjectReference");
 		public static readonly ItemType COMReference = new ItemType("COMReference");
+		
+		public static readonly ReadOnlyCollectionWrapper<ItemType> ReferenceItemTypes
+			= new ReadOnlyCollectionWrapper<ItemType>(new List<ItemType> { Reference, ProjectReference, COMReference });
 		
 		/// <summary>
 		/// Item type for imported VB namespaces

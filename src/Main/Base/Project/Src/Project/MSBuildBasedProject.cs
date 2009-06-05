@@ -31,8 +31,6 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class MSBuildBasedProject : AbstractProject, IProjectItemListProvider
 	{
-		readonly MSBuild.ProjectCollection projectCollection;
-		
 		/// <summary>
 		/// The underlying MSBuild project.
 		/// </summary>
@@ -55,18 +53,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public MSBuildBasedProject()
 		{
-			projectCollection = new MSBuild.ProjectCollection();
-			this.projectFile = ProjectRootElement.Create(projectCollection);
-			this.userProjectFile = ProjectRootElement.Create(projectCollection);
+			this.projectFile = ProjectRootElement.Create();
+			this.userProjectFile = ProjectRootElement.Create();
 		}
 		
 		public override void Dispose()
 		{
 			base.Dispose();
-			// unload evaluatingTempProject if necessary:
-			//MSBuildInternals.EnsureCorrectTempProject(project, null, null, ref evaluatingTempProject);
+			UnloadCurrentlyOpenProject();
 			// unload project + userProject:
-			projectCollection.UnloadAllProjects();
+			projectFile = null;
+			userProjectFile = null;
 		}
 		
 		public override int MinimumSolutionVersion {
@@ -151,8 +148,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Create new project
 		protected virtual void Create(ProjectCreateInformation information)
 		{
-			InitializeMSBuildProjectProperties(projectCollection);
-			
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
 			
@@ -309,11 +304,22 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		MSBuild.Project currentlyOpenProject;
 		
-		void ReconfigureCurrentlyOpenProject()
+		void UnloadCurrentlyOpenProject()
 		{
 			if (currentlyOpenProject != null) {
-				projectCollection.UnloadProject(currentlyOpenProject);
+				MSBuildInternals.UnloadProject(currentlyOpenProject);
 				currentlyOpenProject = null;
+			}
+		}
+		
+		/// <summary>
+		/// Creates an MSBuild project instance.
+		/// This method is thread-safe.
+		/// </summary>
+		public Microsoft.Build.Execution.ProjectInstance CreateProjectInstance()
+		{
+			using (var c = OpenCurrentConfiguration()) {
+				return c.Project.CreateProjectInstance();
 			}
 		}
 		
@@ -342,12 +348,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				
 				Dictionary<string, string> globalProps = new Dictionary<string, string>();
+				InitializeMSBuildProjectProperties(globalProps);
 				globalProps["Configuration"] = configuration;
 				globalProps["Platform"] = platform;
-				string toolsVersion = projectFile.ToolsVersion;
-				if (string.IsNullOrEmpty(toolsVersion))
-					toolsVersion = projectCollection.DefaultToolsVersion;
-				var project = new MSBuild.Project(projectFile, globalProps, toolsVersion, projectCollection);
+				MSBuild.Project project = MSBuildInternals.LoadProject(projectFile, globalProps);
 				if (openCurrentConfiguration)
 					currentlyOpenProject = project;
 				return new ConfiguredProject(this, project, !openCurrentConfiguration);
@@ -356,12 +360,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				// If there's no exception, the lock will be left when the ConfiguredProject
 				// is disposed.
 				if (lockTaken)
-			 		System.Threading.Monitor.Exit(this.SyncRoot);
+					System.Threading.Monitor.Exit(this.SyncRoot);
 				throw;
 			}
 		}
 		
-		sealed class ConfiguredProject : IDisposable 
+		sealed class ConfiguredProject : IDisposable
 		{
 			readonly MSBuildBasedProject p;
 			readonly bool unloadProjectOnDispose;
@@ -394,10 +398,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void Dispose()
 			{
-				if (unloadProjectOnDispose) {
-					p.projectCollection.UnloadProject(this.Project);
+				try {
+					if (unloadProjectOnDispose) {
+						MSBuildInternals.UnloadProject(this.Project);
+					}
+				} finally {
+					System.Threading.Monitor.Exit(p.SyncRoot);
 				}
-				System.Threading.Monitor.Exit(p.SyncRoot);
 			}
 		}
 		
@@ -495,7 +502,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return l;
 		}
-		*/
+		 */
 		#endregion
 		
 		#region SetProperty
@@ -740,8 +747,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		enum PropertyPosition
 		{
-		    UseExistingOrCreateAfterLastPropertyGroup,
-		    UseExistingOrCreateAfterLastImport
+			UseExistingOrCreateAfterLastPropertyGroup,
+			UseExistingOrCreateAfterLastImport
 		}
 		
 		void MSBuildSetProperty(ProjectRootElement targetProject, string propertyName, string newValue,
@@ -785,7 +792,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				bool propertyRemoved = false;
 				foreach (var property in propertyGroup.Properties.ToList()) {
 					if (property.Name == propertyName) {
-						propertyGroup.RemoveChild(property);						
+						propertyGroup.RemoveChild(property);
 						propertyRemoved = true;
 					}
 				}
@@ -1018,14 +1025,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Set compilation properties (MSBuildProperties and AddInTree/AdditionalPropertiesPath).
 		/// </summary>
-		internal static void InitializeMSBuildProjectProperties(MSBuild.ProjectCollection collection)
-		{
-			Dictionary<string, string> props = new Dictionary<string, string>();
-			InitializeMSBuildProjectProperties(props);
-			foreach (var pair in props)
-				collection.SetGlobalProperty(pair.Key, pair.Value);
-		}
-		
 		internal static void InitializeMSBuildProjectProperties(IDictionary<string, string> globalProperties)
 		{
 			foreach (KeyValuePair<string, string> entry in MSBuildEngine.MSBuildProperties) {
@@ -1063,10 +1062,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.FileName = fileName;
 			
-			InitializeMSBuildProjectProperties(projectCollection);
-			
 			//try {
-				projectFile = ProjectRootElement.Open(fileName, projectCollection);
+			projectFile = ProjectRootElement.Open(fileName);
 			/*} catch (MSBuild.InvalidProjectFileException ex) {
 				LoggingService.Warn(ex);
 				LoggingService.Warn("ErrorCode = " + ex.ErrorCode);
@@ -1101,7 +1098,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			string userFileName = fileName + ".user";
 			if (File.Exists(userFileName)) {
 				//try {
-					userProjectFile = ProjectRootElement.Open(userFileName, projectCollection);
+				userProjectFile = ProjectRootElement.Open(userFileName);
 				/*} catch (MSBuild.InvalidProjectFileException ex) {
 					throw new ProjectLoadException("Error loading user part " + userFileName + ":\n" + ex.Message);
 				}*/
@@ -1133,11 +1130,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Save(string fileName)
 		{
 			lock (SyncRoot) {
-				projectFile.Save(fileName);
-				bool userProjectDirty = userProjectFile.HasUnsavedChanges;
-				string userFile = fileName + ".user";
-				if (File.Exists(userFile) || userProjectFile.Count > 0) {
-					userProjectFile.Save(userFile);
+				// we need the global lock - if the file is being renamed,
+				// MSBuild will update the global project collection
+				lock (MSBuildInternals.GlobalProjectCollectionLock) {
+					projectFile.Save(fileName);
+					//bool userProjectDirty = userProjectFile.HasUnsavedChanges;
+					string userFile = fileName + ".user";
+					if (File.Exists(userFile) || userProjectFile.Count > 0) {
+						userProjectFile.Save(userFile);
+					}
 				}
 			}
 			FileUtility.RaiseFileSaved(new FileNameEventArgs(fileName));
@@ -1149,7 +1150,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (!isLoading) {
 				lock (SyncRoot) {
-					ReconfigureCurrentlyOpenProject();
+					UnloadCurrentlyOpenProject();
 					CreateItemsListFromMSBuild();
 				}
 			}
@@ -1160,7 +1161,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (!isLoading) {
 				lock (SyncRoot) {
-					ReconfigureCurrentlyOpenProject();
+					UnloadCurrentlyOpenProject();
 					CreateItemsListFromMSBuild();
 				}
 			}
@@ -1231,7 +1232,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (prop != null && !string.IsNullOrEmpty(prop.Value)) {
 						platformNames.Add(prop.Value);
 					}
-				} else { 
+				} else {
 					string gConfiguration, gPlatform;
 					MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition, out gConfiguration, out gPlatform);
 					if (gConfiguration != null) {
@@ -1444,7 +1445,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return true;
 			}
 		}
-		*/
+		 */
 		#endregion
 	}
 }
