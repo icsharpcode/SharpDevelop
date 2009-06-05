@@ -15,7 +15,6 @@ using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

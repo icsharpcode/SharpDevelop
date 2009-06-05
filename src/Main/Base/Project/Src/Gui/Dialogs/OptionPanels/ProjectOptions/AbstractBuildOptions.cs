@@ -14,7 +14,6 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using StringPair = System.Collections.Generic.KeyValuePair<System.String, System.String>;
-using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {

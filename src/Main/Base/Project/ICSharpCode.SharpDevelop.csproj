@@ -55,7 +55,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>

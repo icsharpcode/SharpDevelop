@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
+using Microsoft.Build.Logging;
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 
@@ -18,7 +19,14 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// 
 	/// MSBuild only allows a single BuildManager to build at one time, and loggers
 	/// are specified globally for that BuildManager.
-	/// This class allows 
+	/// 
+	/// This class allows to run multiple indepent builds concurrently. Logging events
+	/// will be forwarded to the appropriate logger.
+	/// 
+	/// Note: due to MSBuild limitations, all projects being built must be from the same ProjectCollection.
+	/// SharpDevelop simply uses the predefined ProjectCollection.GlobalProjectCollection.
+	/// Code accessing that collection (even if indirectly through MSBuild) should lock on
+	/// MSBuildInternals.GlobalProjectCollectionLock.
 	/// </summary>
 	public static class ParallelMSBuildManager
 	{
@@ -31,8 +39,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			lock (enableDisableLock) {
 				if (enableCount == 0) {
 					BuildParameters parameters = new BuildParameters();
-					parameters.Loggers = new ILogger[] { new CentralLogger() };
-					BuildManager.DefaultBuildManager.BeginBuild(parameters);		
+					parameters.Loggers = new ILogger[] {
+						new CentralLogger(),
+						#if DEBUG
+						new ConsoleLogger(LoggerVerbosity.Normal),
+						#endif
+					};
+					BuildManager.DefaultBuildManager.BeginBuild(parameters);
 				}
 				enableCount++;
 			}
@@ -70,8 +83,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				lock (submissionEventSourceMapping) {
 					submissionEventSourceMapping.Add(submission.SubmissionId, eventSource);
 				}
-				// TODO: when will the logger be shut down?
-				submission.ExecuteAsync(OnComplete, callback);
+				RunningBuild build = new RunningBuild(eventSource, logger, callback);
+				submission.ExecuteAsync(build.OnComplete, null);
 				return submission;
 			} catch (Exception ex) {
 				LoggingService.Warn("Got exception starting build (exception will be rethrown)", ex);
@@ -80,20 +93,39 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void OnComplete(BuildSubmission submission)
+		sealed class RunningBuild
 		{
-			DisableBuildEngine();
+			ILogger logger;
+			BuildSubmissionCompleteCallback callback;
+			EventSource eventSource;
 			
-			lock (submissionEventSourceMapping) {
-				submissionEventSourceMapping.Remove(submission.SubmissionId);
+			public RunningBuild(EventSource eventSource, ILogger logger, BuildSubmissionCompleteCallback callback)
+			{
+				this.eventSource = eventSource;
+				this.logger = logger;
+				this.callback = callback;
 			}
-			BuildSubmissionCompleteCallback callback = submission.AsyncContext as BuildSubmissionCompleteCallback;
-			if (callback != null)
-				callback(submission);
+			
+			internal void OnComplete(BuildSubmission submission)
+			{
+				DisableBuildEngine();
+				
+				lock (submissionEventSourceMapping) {
+					submissionEventSourceMapping.Remove(submission.SubmissionId);
+				}
+				if (submission.BuildResult.Exception != null) {
+					LoggingService.Error(submission.BuildResult.Exception);
+					eventSource.ForwardEvent(new BuildErrorEventArgs(null, null, null, 0, 0, 0, 0, submission.BuildResult.Exception.ToString(), null, null));
+				}
+				if (logger != null)
+					logger.Shutdown();
+				if (callback != null)
+					callback(submission);
+			}
 		}
 		
 		sealed class CentralLogger : INodeLogger, IEventRedirector
-		{	
+		{
 			public void Initialize(IEventSource eventSource, int nodeCount)
 			{
 				Initialize(eventSource);
@@ -113,20 +145,27 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void ForwardEvent(Microsoft.Build.Framework.BuildEventArgs e)
 			{
-				if (e.BuildEventContext == null) {
-					if (e is BuildStartedEventArgs || e is BuildFinishedEventArgs) {
-						// these two don't have context set, so we cannot forward them
-						// this isn't a problem because we know ourselves when we start/stop a build
-						return;
-					} else {
-						throw new InvalidOperationException("BuildEventContext is null on " + e.ToString());
+				try {
+					if (e.BuildEventContext == null) {
+						if (e is BuildStartedEventArgs || e is BuildFinishedEventArgs) {
+							// these two don't have context set, so we cannot forward them
+							// this isn't a problem because we know ourselves when we start/stop a build
+							return;
+						} else {
+							throw new InvalidOperationException("BuildEventContext is null on " + e.ToString());
+						}
 					}
+					EventSource redirector;
+					lock (submissionEventSourceMapping) {
+						if (!submissionEventSourceMapping.TryGetValue(e.BuildEventContext.SubmissionId, out redirector)) {
+							LoggingService.Warn("Could not deliver build event: " + e + ":\n" + e.Message);
+						}
+					}
+					if (redirector != null)
+						redirector.ForwardEvent(e);
+				} catch (Exception ex) {
+					MessageService.ShowError(ex, "Error in build logger");
 				}
-				IEventRedirector redirector;
-				lock (submissionEventSourceMapping) {
-					redirector = submissionEventSourceMapping[e.BuildEventContext.SubmissionId];
-				}
-				redirector.ForwardEvent(e);
 			}
 		}
 	}

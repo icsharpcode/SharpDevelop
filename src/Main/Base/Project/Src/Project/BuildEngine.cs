@@ -482,7 +482,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void OnBuildFinished(BuildNode node, bool success)
 		{
-			ICSharpCode.Core.LoggingService.Info("Finished building " + node.project.Name);
+			ICSharpCode.Core.LoggingService.Info("Finished building " + node.project.Name +", success=" + success);
 			lock (this) {
 				if (node.buildFinished) {
 					throw new InvalidOperationException("This node already finished building, do not call IBuildFeedbackSink.Done() multiple times!");

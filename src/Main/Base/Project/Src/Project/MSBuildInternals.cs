@@ -31,8 +31,10 @@ namespace ICSharpCode.SharpDevelop.Project
 	public static class MSBuildInternals
 	{
 		/// <summary>
-		/// MSBuild does not support multi-threading, so every invocation of MSBuild that
-		/// runs inside the SharpDevelop process must lock on this object to prevent conflicts.
+		/// Note: due to MSBuild limitations, all projects being built must be from the same ProjectCollection.
+		/// SharpDevelop simply uses the predefined ProjectCollection.GlobalProjectCollection.
+		/// Code accessing that collection (even if indirectly through MSBuild) should lock on
+		/// MSBuildInternals.GlobalProjectCollectionLock.
 		/// </summary>
 		public readonly static object GlobalProjectCollectionLock = new object();
 		
@@ -82,60 +84,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			return MSBuild.Evaluation.ProjectCollection.Unescape(text);
 		}
 		#endregion
-		
-		/*
-		internal static void EnsureCorrectTempProject(MSBuild.Project baseProject,
-		                                              string configuration, string platform,
-		                                              ref MSBuild.Project tempProject)
-		{
-			if (configuration == null && platform == null) {
-				// unload temp project
-				if (tempProject != null && tempProject != baseProject) {
-					tempProject.ParentEngine.UnloadAllProjects();
-				}
-				tempProject = null;
-				return;
-			}
-			if (configuration == null)
-				configuration = baseProject.GetEvaluatedProperty("Configuration");
-			if (platform == null)
-				platform = baseProject.GetEvaluatedProperty("Platform");
-			
-			if (tempProject != null
-			    && tempProject.GetEvaluatedProperty("Configuration") == configuration
-			    && tempProject.GetEvaluatedProperty("Platform") == platform)
-			{
-				// already correct
-				return;
-			}
-			if (baseProject.GetEvaluatedProperty("Configuration") == configuration
-			    && baseProject.GetEvaluatedProperty("Platform") == platform)
-			{
-				tempProject = baseProject;
-				return;
-			}
-			// create new project
-			
-			// unload old temp project
-			if (tempProject != null && tempProject != baseProject) {
-				tempProject.ParentEngine.UnloadAllProjects();
-			}
-			try {
-				MSBuild.Engine engine = CreateEngine();
-				tempProject = engine.CreateNewProject();
-				// tell MSBuild the path so that projects containing <Import Project="relativePath" />
-				// can be loaded
-				tempProject.FullFileName = baseProject.FullFileName;
-				MSBuildBasedProject.InitializeMSBuildProject(tempProject);
-				tempProject.LoadXml(baseProject.Xml);
-				tempProject.SetProperty("Configuration", configuration);
-				tempProject.SetProperty("Platform", platform);
-			} catch (Exception ex) {
-				ICSharpCode.Core.MessageService.ShowWarning(ex.ToString());
-				tempProject = baseProject;
-			}
-		}
-		 */
 		
 		internal static PropertyStorageLocations GetLocationFromCondition(MSBuild.Construction.ProjectElement element)
 		{
@@ -189,120 +137,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				platform = null;
 			}
 		}
-		
-		/*
-		/// <summary>
-		/// Evaluates the specified condition in the project and specified configuration/platform.
-		/// WARNING: EvaluateCondition might add a temporary property group and remove it again,
-		/// which invalidates enumerators over the list of property groups!
-		/// </summary>
-		internal static bool EvaluateCondition(MSBuild.Project project,
-		                                       string configuration, string platform,
-		                                       string condition,
-		                                       ref MSBuild.Project tempProject)
-		{
-			if (string.IsNullOrEmpty(condition)) {
-				return true;
-			}
-			EnsureCorrectTempProject(project, configuration, platform, ref tempProject);
-			return EvaluateCondition(tempProject, condition);
-		}
-		
-		/// <summary>
-		/// Evaluates the specified condition in the project.
-		/// WARNING: EvaluateCondition might add a temporary property group and remove it again,
-		/// which invalidates enumerators over the list of property groups!
-		/// </summary>
-		internal static bool EvaluateCondition(MSBuild.Project project,
-		                                       string condition)
-		{
-			const string propertyName = "MSBuildInternalsEvaluateConditionDummyPropertyName";
-			MSBuild.BuildPropertyGroup pGroup = project.AddNewPropertyGroup(true);
-			pGroup.AddNewProperty(propertyName, "ConditionFalse");
-			pGroup.AddNewProperty(propertyName, "ConditionTrue").Condition = condition;
-			bool result = project.GetEvaluatedProperty(propertyName) == "ConditionTrue";
-			project.RemovePropertyGroup(pGroup);
-			return result;
-		}
-		
-		
-		public static MSBuild.BuildProperty GetProperty(MSBuild.BuildPropertyGroup pg, string name)
-		{
-			return pg.Cast<MSBuild.BuildProperty>().FirstOrDefault(p => p.Name == name);
-		}
-		
-		
-		public static MSBuild.Engine CreateEngine()
-		{
-			return new MSBuild.Engine(MSBuild.ToolsetDefinitionLocations.Registry
-			                          | MSBuild.ToolsetDefinitionLocations.ConfigurationFile);
-		}
-		 */
-		
-		/*
-		/// <summary>
-		/// Removes all &lt;Import&gt; nodes from a project.
-		/// </summary>
-		public static void ClearImports(MSBuild.Project project)
-		{
-			if (project == null)
-				throw new ArgumentNullException("project");
-			
-			XmlElement xmlProject = BeginXmlManipulation(project);
-			List<XmlNode> nodesToRemove = new List<XmlNode>();
-			foreach (XmlNode node in xmlProject.ChildNodes) {
-				if (node.NodeType == XmlNodeType.Element && node.Name == "Import") {
-					nodesToRemove.Add(node);
-				}
-			}
-			foreach (XmlNode node in nodesToRemove) {
-				xmlProject.RemoveChild(node);
-			}
-			EndXmlManipulation(project);
-		}
-		 */
-		
-		/*
-		/// <summary>
-		/// Changes the value of the ProjectPath property on an existing import.
-		/// Note: this methods causes the project to recreate all imports, so existing import
-		/// instances might not be affected.
-		/// </summary>
-		public static void SetImportProjectPath(MSBuildBasedProject project, MSBuild.Import import,
-		                                        string newRawPath)
-		{
-			if (project == null)
-				throw new ArgumentNullException("project");
-			if (import == null)
-				throw new ArgumentNullException("import");
-			if (newRawPath == null)
-				throw new ArgumentNullException("newRawPath");
-			
-			lock (project.SyncRoot) {
-				XmlAttribute a = (XmlAttribute)typeof(MSBuild.Import).InvokeMember(
-					"ProjectPathAttribute",
-					BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-					null, import, null
-				);
-				a.Value = newRawPath;
-				EndXmlManipulation(project.MSBuildProject);
-			}
-			project.CreateItemsListFromMSBuild();
-		}
-		
-		/// <summary>
-		/// Gets all custom metadata names defined directly on the item, ignoring defaulted metadata entries.
-		/// </summary>
-		public static IList<string> GetCustomMetadataNames(MSBuild.BuildItem item)
-		{
-			PropertyInfo prop = typeof(MSBuild.BuildItem).GetProperty("ItemDefinitionLibrary", BindingFlags.Instance | BindingFlags.NonPublic);
-			object oldValue = prop.GetValue(item, null);
-			prop.SetValue(item, null, null);
-			IList<string> result = (IList<string>)item.CustomMetadataNames;
-			prop.SetValue(item, oldValue, null);
-			return result;
-		}
-		 */
 		
 		internal static void ResolveAssemblyReferences(MSBuildBasedProject baseProject, ReferenceProjectItem[] referenceReplacements)
 		{
@@ -368,45 +202,6 @@ namespace ICSharpCode.SharpDevelop.Project
 					LoggingService.Warn("Unknown item " + originalInclude);
 				}
 			}
-			
-			/*
-			
-			var referenceDict = new Dictionary<string, ReferenceProjectItem>();
-			foreach (ReferenceProjectItem item in references) {
-				// references could be duplicate, so we cannot use referenceDict.Add or reference.ToDictionary
-				referenceDict[item.Include] = item;
-			}
-			
-			
-			#if DEBUG
-			//engine.RegisterLogger(new MSBuild.ConsoleLogger(Microsoft.Build.Framework.LoggerVerbosity.Detailed));
-			#endif
-			
-			//Environment.CurrentDirectory = Path.GetDirectoryName(tempProject.FullFileName);
-			lock (MSBuildInternals.InProcessMSBuildLock) {
-				if (!tempProject.Build("ResolveAssemblyReferences")) {
-					LoggingService.Warn("ResolveAssemblyReferences exited with error");
-					return;
-				}
-			}
-			
-			foreach (MSBuild.BuildItem item in tempProject.GetEvaluatedItemsByName("_ResolveAssemblyReferenceResolvedFiles")) {
-				string originalInclude = item.GetEvaluatedMetadata("OriginalItemSpec");
-				ReferenceProjectItem reference;
-				if (referenceDict.TryGetValue(originalInclude, out reference)) {
-					reference.AssemblyName = new Dom.DomAssemblyName(item.GetEvaluatedMetadata("FusionName"));
-					//string fullPath = item.GetEvaluatedMetadata("FullPath"); is incorrect for relative paths
-					string fullPath = FileUtility.GetAbsolutePath(baseProject.Directory, item.GetEvaluatedMetadata("Identity"));
-					reference.FileName = fullPath;
-					reference.Redist = item.GetEvaluatedMetadata("Redist");
-					//LoggingService.Debug("Got information about " + originalInclude + "; fullpath=" + fullPath);
-					reference.DefaultCopyLocalValue = bool.Parse(item.GetEvaluatedMetadata("CopyLocal"));
-				} else {
-					LoggingService.Warn("Unknown item " + originalInclude);
-				}
-			}
-			
-			tempEngine.UnloadAllProjects(); // unload temp project*/
 		}
 		
 		sealed class SimpleErrorLogger : ILogger

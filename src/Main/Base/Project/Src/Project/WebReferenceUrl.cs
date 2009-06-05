@@ -11,7 +11,6 @@ using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

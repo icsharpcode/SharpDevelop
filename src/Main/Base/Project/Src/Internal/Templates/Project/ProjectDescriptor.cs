@@ -15,7 +15,6 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using Import = System.Collections.Generic.KeyValuePair<System.String, System.String>;
-using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {

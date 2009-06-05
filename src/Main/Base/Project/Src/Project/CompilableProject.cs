@@ -14,7 +14,6 @@ using System.IO;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
-using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

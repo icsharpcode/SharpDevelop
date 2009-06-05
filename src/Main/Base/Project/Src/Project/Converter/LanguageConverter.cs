@@ -18,7 +18,6 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Project.Commands;
-using MSBuild = Microsoft.Build.BuildEngine;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter

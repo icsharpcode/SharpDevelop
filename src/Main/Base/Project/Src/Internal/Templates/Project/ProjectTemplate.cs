@@ -379,6 +379,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						projectCreateInformation.Solution.Save();
 						ProjectService.OnSolutionCreated(new SolutionEventArgs(projectCreateInformation.Solution));
 						projectCreateInformation.Solution.Dispose();
+					} else {
+						project.Dispose();
 					}
 					return solutionLocation;
 				} else {
