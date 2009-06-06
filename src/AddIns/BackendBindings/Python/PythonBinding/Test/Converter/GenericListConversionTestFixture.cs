@@ -44,8 +44,8 @@ namespace PythonBinding.Tests.Converter
 									"\r\n" +
 									"class Foo(object):\r\n" +
 									"    def __init__(self):\r\n" +
-									"        list = List[System.String]()\r\n" +
-									"        dictionary = Dictionary[System.String, System.Int32]()"; 
+									"        list = List[str]()\r\n" +
+									"        dictionary = Dictionary[str, int]()"; 
 			
 			Assert.AreEqual(expectedPython, python);
 		}	

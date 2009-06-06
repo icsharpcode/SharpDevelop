@@ -12,34 +12,29 @@ using NUnit.Framework;
 
 namespace PythonBinding.Tests.Converter
 {
-	/// <summary>
-	/// Tests that an array cast is correctly converted to Python.
-	/// </summary>
 	[TestFixture]
-	public class ArrayCastConversionTestFixture
+	public class TypeofConversionTestFixture
 	{
-		string csharp = "class Foo\r\n" +
+		string typeofIntCode = "class Foo\r\n" +
 						"{\r\n" +
-						"    public void Assign()\r\n" +
+						"    public string ToString()\r\n" +
 						"    {\r\n" +
-						"        int[] elements = new int[10];\r\n" +
-						"        List<int[]> list = new List<int[]>();\r\n" + 
-						"        list.Add((int[])elements.Clone());\r\n" +
+						"        typeof(int).FullName;\r\n" +
 						"    }\r\n" +
 						"}";
-		
+				
 		[Test]
-		public void GeneratedPythonSourceCode()
+		public void ConvertedTypeOfIntegerCode()
 		{
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
-			string python = converter.Convert(csharp);
+			converter.IndentString = "    ";
+			string python = converter.Convert(typeofIntCode);
 			string expectedPython = "class Foo(object):\r\n" +
-				"\tdef Assign(self):\r\n" +
-				"\t\telements = System.Array.CreateInstance(int, 10)\r\n" +
-				"\t\tlist = List[System.Array[int]]()\r\n" +
-				"\t\tlist.Add(elements.Clone())";
+									"    def ToString(self):\r\n" +
+									"        clr.GetClrType(int).FullName";
 			
 			Assert.AreEqual(expectedPython, python);
 		}
+
 	}
 }

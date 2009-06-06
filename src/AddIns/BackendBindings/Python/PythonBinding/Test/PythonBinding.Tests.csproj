@@ -148,6 +148,7 @@
     <Compile Include="Converter\TernaryOperatorConversionTestFixture.cs" />
     <Compile Include="Converter\ThrowExceptionConversionTestFixture.cs" />
     <Compile Include="Converter\TryCatchFinallyConversionTestFixture.cs" />
+    <Compile Include="Converter\TypeofConversionTestFixture.cs" />
     <Compile Include="Converter\UnaryOperatorConversionTests.cs" />
     <Compile Include="Converter\UsingStatementConversionTestFixture.cs" />
     <Compile Include="Converter\VBClassConversionTestFixture.cs" />

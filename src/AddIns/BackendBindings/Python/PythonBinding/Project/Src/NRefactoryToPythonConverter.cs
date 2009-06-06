@@ -210,7 +210,7 @@ namespace ICSharpCode.PythonBinding
 	
 		public object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			string arrayType = arrayCreateExpression.CreateType.Type;
+			string arrayType = GetTypeName(arrayCreateExpression.CreateType);
 			if (arrayCreateExpression.ArrayInitializer.CreateExpressions.Count == 0) {
 				Append("System.Array.CreateInstance(" + arrayType);
 				if (arrayCreateExpression.Arguments.Count > 0) {
@@ -1095,7 +1095,7 @@ namespace ICSharpCode.PythonBinding
 		public object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			Append("clr.GetClrType(");
-			Append(typeOfExpression.TypeReference.Type);
+			Append(GetTypeName(typeOfExpression.TypeReference));
 			Append(")");
 			return null;
 		}
@@ -1735,9 +1735,9 @@ namespace ICSharpCode.PythonBinding
 				}
 				TypeReference typeRef = typeRefs[i];
 				if (typeRef.IsArrayType) {
-					Append("System.Array[" + typeRef.Type + "]");
+					Append("System.Array[" + GetTypeName(typeRef) + "]");
 				} else {
-					Append(typeRef.Type);
+					Append(GetTypeName(typeRef));
 				}
 			}
 			Append("]");
@@ -1748,6 +1748,20 @@ namespace ICSharpCode.PythonBinding
 			if (!codeBuilder.IsPreviousLineEmpty) {
 				codeBuilder.AppendLine();
 			}
+		}
+		
+		/// <summary>
+		/// If the type is String or Int32 then it returns "str" and "int".
+		/// </summary>
+		string GetTypeName(TypeReference typeRef)
+		{
+			string name = typeRef.Type;
+			if (name == typeof(String).FullName) {
+				return "str";
+			} else if ((name == typeof(int).FullName) || ((name == typeof(int).Name))) {
+				return "int";
+			}
+			return name;
 		}
 	}
 }
