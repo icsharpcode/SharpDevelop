@@ -379,6 +379,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IEnumerable<IClass> ClassInheritanceTree {
 			get {
+				IClass compoundClass = GetCompoundClass();
+				if (compoundClass != this)
+					return compoundClass.ClassInheritanceTree;
+				
 				// Notes:
 				// the ClassInheritanceTree must work even if the following things happen:
 				// - cyclic inheritance

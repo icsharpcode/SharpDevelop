@@ -2784,5 +2784,27 @@ class Form {
 			var mgrr = Resolve<MethodGroupResolveResult>(program, "this.KeyDown", 4);
 			Assert.AreEqual("Test.KeyDown", mgrr.GetMethodIfSingleOverload().FullyQualifiedName);
 		}
+		
+		[Test]
+		public void ProtectedMemberVisibleWhenBaseTypeReferenceIsInOtherPart()
+		{
+			string program = @"using System;
+partial class A {
+	void M1() {
+		
+	}
+}
+partial class A : B { }
+class B
+{
+	protected int x;
+}";
+			var mrr = Resolve<MemberResolveResult>(program, "x", 4);
+			Assert.AreEqual("B.x", mrr.ResolvedMember.FullyQualifiedName);
+			
+			var rr = Resolve<ResolveResult>(program, "this", 4);
+			var completionData = rr.GetCompletionData(mrr.ResolvedMember.DeclaringType.ProjectContent);
+			Assert.IsTrue(completionData.OfType<IField>().Any(f => f.FullyQualifiedName == "B.x"));
+		}
 	}
 }
