@@ -401,7 +401,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		CompletionWindow completionWindow;
+		SharpDevelopCompletionWindow completionWindow;
 		SharpDevelopInsightWindow insightWindow;
 		
 		void CloseExistingCompletionWindows()
@@ -414,26 +414,44 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		public SharpDevelopCompletionWindow ActiveCompletionWindow {
+			get { return completionWindow; }
+		}
+		
 		public SharpDevelopInsightWindow ActiveInsightWindow {
 			get { return insightWindow; }
 		}
 		
-		internal void NotifyCompletionWindowOpened(CompletionWindow window)
+		internal void ShowCompletionWindow(SharpDevelopCompletionWindow window)
 		{
 			CloseExistingCompletionWindows();
 			completionWindow = window;
 			window.Closed += delegate {
 				completionWindow = null;
 			};
+			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
+				delegate {
+					if (completionWindow == window) {
+						window.Show();
+					}
+				}
+			));
 		}
 		
-		internal void NotifyInsightWindowOpened(SharpDevelopInsightWindow window)
+		internal void ShowInsightWindow(SharpDevelopInsightWindow window)
 		{
 			CloseExistingCompletionWindows();
 			insightWindow = window;
 			window.Closed += delegate {
 				insightWindow = null;
 			};
+			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
+				delegate {
+					if (insightWindow == window) {
+						window.Show();
+					}
+				}
+			));
 		}
 		
 		IFormattingStrategy formattingStrategy;

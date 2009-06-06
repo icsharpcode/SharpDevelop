@@ -53,13 +53,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.AddHandler(MouseUpEvent, new MouseButtonEventHandler(OnMouseUp), true);
 			
 			startOffset = endOffset = this.TextArea.Caret.Offset;
+			
+			AttachEvents();
 		}
 		
 		#region Event Handlers
-		/// <summary>
-		/// Attaches events to the text area.
-		/// </summary>
-		protected virtual void AttachEvents()
+		void AttachEvents()
 		{
 			document = this.TextArea.Document;
 			if (document != null) {
@@ -203,7 +202,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		protected override void OnSourceInitialized(EventArgs e)
 		{
 			base.OnSourceInitialized(e);
-			AttachEvents();
 			
 			if (document != null && this.StartOffset != this.TextArea.Caret.Offset) {
 				SetPosition(new TextViewPosition(document.GetLocation(this.StartOffset)));

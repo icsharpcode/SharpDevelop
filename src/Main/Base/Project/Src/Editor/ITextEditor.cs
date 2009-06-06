@@ -71,7 +71,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		string FileName { get; }
 		
-		void ShowCompletionWindow(ICompletionItemList data);
+		ICompletionListWindow ShowCompletionWindow(ICompletionItemList data);
+		
+		/// <summary>
+		/// Gets the completion window that is currently open.
+		/// </summary>
+		ICompletionListWindow ActiveCompletionWindow { get; }
 		
 		/// <summary>
 		/// Open a new insight window showing the specific insight items.

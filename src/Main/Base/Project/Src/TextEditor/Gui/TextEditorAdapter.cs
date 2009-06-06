@@ -151,11 +151,18 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public void ShowCompletionWindow(ICompletionItemList items)
+		public ICompletionListWindow ActiveCompletionWindow {
+			get {
+				return null;
+			}
+		}
+		
+		public ICompletionListWindow ShowCompletionWindow(ICompletionItemList items)
 		{
 			if (sdtac != null) {
 				sdtac.ShowCompletionWindow(new CompletionItemListAdapter(items), '.');
 			}
+			return null;
 		}
 		
 		public string GetWordBeforeCaret()

@@ -513,6 +513,7 @@ namespace ICSharpCode.XmlEditor
 			try	{
 				XmlTextReader reader = new XmlTextReader(new StringReader(xml));
 				reader.WhitespaceHandling = WhitespaceHandling.None;
+				reader.XmlResolver = null;
 
 				StringWriter indentedXmlWriter = new StringWriter();
 				XmlTextWriter writer = CreateXmlTextWriter(indentedXmlWriter, editor);

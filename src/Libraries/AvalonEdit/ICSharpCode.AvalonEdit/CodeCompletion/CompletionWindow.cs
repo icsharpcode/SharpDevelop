@@ -32,6 +32,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		public CompletionWindow(TextArea textArea) : base(textArea)
 		{
 			// keep height automatic
+			this.CloseAutomatically = true;
 			this.SizeToContent = SizeToContent.Height;
 			this.Width = 175;
 			this.Content = completionList;
@@ -45,6 +46,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			
 			completionList.InsertionRequested += completionList_InsertionRequested;
 			completionList.SelectionChanged += completionList_SelectionChanged;
+			AttachEvents();
 		}
 		
 		#region ToolTip handling
@@ -85,17 +87,19 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			// prevent CompletionWindow from growing too large
 			if (this.ActualHeight > 300) {
-				this.SizeToContent = SizeToContent.Manual;
+				if (this.SizeToContent == SizeToContent.Height)
+					this.SizeToContent = SizeToContent.Manual;
+				else if (this.SizeToContent == SizeToContent.WidthAndHeight)
+					this.SizeToContent = SizeToContent.Width;
 				this.Height = 300;
+				
 			}
 			
 			base.OnSourceInitialized(e);
 		}
 		
-		/// <inheritdoc/>
-		protected override void AttachEvents()
+		void AttachEvents()
 		{
-			base.AttachEvents();
 			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
 			this.TextArea.MouseWheel += textArea_MouseWheel;
 			this.TextArea.PreviewTextInput += textArea_PreviewTextInput;
@@ -186,9 +190,21 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		
 		/// <summary>
+		/// Gets/Sets whether the completion window should close automatically.
+		/// The default value is true.
+		/// </summary>
+		public bool CloseAutomatically { get; set; }
+		
+		/// <inheritdoc/>
+		protected override bool CloseOnFocusLost {
+			get { return this.CloseAutomatically; }
+		}
+		
+		/// <summary>
 		/// When this flag is set, code completion closes if the caret moves to the
 		/// beginning of the allowed range. This is useful in Ctrl+Space and "complete when typing",
 		/// but not in dot-completion.
+		/// Has no effect if CloseAutomatically is false.
 		/// </summary>
 		public bool CloseWhenCaretAtBeginning { get; set; }
 		
@@ -196,12 +212,14 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			int offset = this.TextArea.Caret.Offset;
 			if (offset == this.StartOffset) {
-				if (CloseWhenCaretAtBeginning)
+				if (CloseAutomatically && CloseWhenCaretAtBeginning)
 					Close();
 				return;
 			}
 			if (offset < this.StartOffset || offset > this.EndOffset) {
-				Close();
+				if (CloseAutomatically) {
+					Close();
+				}
 			} else {
 				TextDocument document = this.TextArea.Document;
 				if (document != null) {

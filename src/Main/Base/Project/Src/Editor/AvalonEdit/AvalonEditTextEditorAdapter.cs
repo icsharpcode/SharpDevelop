@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public ITextEditorCaret Caret { get; private set; }
 		public ITextEditorOptions Options { get; private set; }
 		
-		public virtual IFormattingStrategy FormattingStrategy { 
+		public virtual IFormattingStrategy FormattingStrategy {
 			get { return DefaultFormattingStrategy.DefaultInstance; }
 		}
 		
@@ -143,14 +143,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 			get { return null; }
 		}
 		
-		void ITextEditor.ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
-		{
-		}
-		
-		public virtual void ShowCompletionWindow(ICompletionItemList data)
-		{
-		}
-		
 		public object GetService(Type serviceType)
 		{
 			return textEditor.TextArea.GetService(serviceType);
@@ -207,6 +199,22 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 		
 		public virtual IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
+		{
+			return null;
+		}
+		
+		
+		void ITextEditor.ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
+		{
+		}
+		
+		public virtual ICompletionListWindow ActiveCompletionWindow {
+			get {
+				return null;
+			}
+		}
+		
+		public virtual ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)
 		{
 			return null;
 		}
