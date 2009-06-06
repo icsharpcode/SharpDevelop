@@ -52,7 +52,9 @@ namespace ICSharpCode.XmlEditor
 									}
 									string tagString = tag.ToString();
 									if (tagString.Length > 0 && !tagString.StartsWith("!", StringComparison.Ordinal) && !tagString.StartsWith("?", StringComparison.Ordinal)) {
+										int caretOffset = editor.Caret.Offset;
 										editor.Document.Insert(editor.Caret.Offset, "</" + tagString + ">");
+										editor.Caret.Offset = caretOffset;
 									}
 								}
 							}
