@@ -10,7 +10,7 @@
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
-    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <OutputType>Library</OutputType>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Resources\ICSharpCode.TextEditor.snk</AssemblyOriginatorKeyFile>
@@ -213,7 +213,4 @@
     <EmbeddedResource Include="Resources\Patch-Mode.xshd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
-  </PropertyGroup>
 </Project>

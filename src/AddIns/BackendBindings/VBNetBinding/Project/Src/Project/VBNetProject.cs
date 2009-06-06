@@ -46,8 +46,7 @@ namespace VBNetBinding
 			return new VBNetAmbience();
 		}
 		
-		public VBNetProject(IMSBuildEngineProvider provider, string fileName, string projectName)
-			: base(provider)
+		public VBNetProject(string fileName, string projectName)
 		{
 			this.Name = projectName;
 			InitVB();
@@ -58,7 +57,6 @@ namespace VBNetBinding
 		public const string ExtendedTargetsFile = @"$(SharpDevelopBinPath)\SharpDevelop.Build.VisualBasic.targets";
 		
 		public VBNetProject(ProjectCreateInformation info)
-			: base(info.Solution)
 		{
 			InitVB();
 			
@@ -120,6 +118,7 @@ namespace VBNetBinding
 			}
 		}
 		
+		/*
 		protected override void AddOrRemoveExtensions()
 		{
 			// Test if SharpDevelop-Build extensions are required
@@ -154,6 +153,6 @@ namespace VBNetBinding
 					}
 				}
 			}
-		}
+		}*/
 	}
 }

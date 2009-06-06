@@ -23,9 +23,9 @@ namespace VBNetBinding
 			}
 		}
 		
-		public IProject LoadProject(IMSBuildEngineProvider provider, string fileName, string projectName)
+		public IProject LoadProject(string fileName, string projectName)
 		{
-			return new VBNetProject(provider, fileName, projectName);
+			return new VBNetProject(fileName, projectName);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)
