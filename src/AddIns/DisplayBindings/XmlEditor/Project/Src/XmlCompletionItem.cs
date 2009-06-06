@@ -69,7 +69,7 @@ namespace ICSharpCode.XmlEditor
 			switch (dataType) {
 				case XmlCompletionDataType.NamespaceUri:
 					context.Editor.Document.Insert(context.StartOffset, "\"");
-					context.Editor.Document.Insert(context.EndOffset, "\"");
+					context.Editor.Document.Insert(context.EndOffset + 1, "\"");
 					break;
 				case XmlCompletionDataType.XmlAttribute:
 					context.Editor.Document.Insert(context.EndOffset, "=\"\"");

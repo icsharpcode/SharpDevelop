@@ -141,7 +141,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public DefaultCompletionItemList GetAttributeCompletionData(XmlElementPath path)
 		{
-			var list = new XmlCompletionItemList();
+			XmlCompletionItemList list = new XmlCompletionItemList();
 			
 			XmlSchemaCompletionData schema = FindSchema(path);
 			if (schema != null) {
@@ -155,7 +155,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public DefaultCompletionItemList GetAttributeValueCompletionData(XmlElementPath path, string name)
 		{
-			var list = new XmlCompletionItemList();
+			XmlCompletionItemList list = new XmlCompletionItemList();
 			
 			XmlSchemaCompletionData schema = FindSchema(path);
 			if (schema != null) {
