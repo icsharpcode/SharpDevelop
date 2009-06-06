@@ -166,7 +166,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		bool IsFileOpen(string fileName)
 		{
 			if (viewContentFileNamesCollection == null) {
-				viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction<IList<string>>(FileService.GetOpenFiles);
+				try {
+					viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction<IList<string>>(FileService.GetOpenFiles);
+				} catch (InvalidOperationException ex) {
+					// can happen if the user closes SharpDevelop while the parser thread is running
+					LoggingService.Warn(ex);
+					viewContentFileNamesCollection = new string[0];
+				}
 			}
 			foreach (string contentName in viewContentFileNamesCollection) {
 				if (contentName != null) {
