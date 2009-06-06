@@ -85,6 +85,8 @@ namespace XmlEditor.Tests.Parser
 			string xaml = "<Test val1=\"{Binding Value, Path=Control}\" />";
 			int offset = "<Test val1=\"{Binding Value, Path=".Length;
 			Assert.IsTrue(XmlParser.IsInsideAttributeValue(xaml, offset));
+			Assert.AreEqual("{Binding Value, Path=Control}", XmlParser.GetAttributeValueAtIndex(xaml, offset));
+			Assert.AreEqual("val1", XmlParser.GetAttributeNameAtIndex(xaml, offset));
 		}
 		
 		[Test]
