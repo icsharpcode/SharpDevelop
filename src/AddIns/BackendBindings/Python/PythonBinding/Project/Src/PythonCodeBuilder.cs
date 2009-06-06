@@ -44,6 +44,22 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
+		/// Returns true if the line before the current one contains no text or only whitespace.
+		/// </summary>
+		public bool IsPreviousLineEmpty {
+			get { 
+				string code = ToString();
+				int end = MoveToPreviousLineEnd(code, code.Length - 1);
+				if (end > 0) {
+					int start = MoveToPreviousLineEnd(code, end);
+					string line = code.Substring(start + 1, end - start);
+					return line.Trim().Length == 0;
+				}
+				return code.StartsWith("\r\n");
+			}
+		}
+		
+		/// <summary>
 		/// Appends text at the end of the current code.
 		/// </summary>
 		public void Append(string text)
@@ -129,6 +145,21 @@ namespace ICSharpCode.PythonBinding
 				currentIndentString.Append(indentString);
 			}
 			return currentIndentString.ToString();
+		}
+		
+		/// <summary>
+		/// Returns the index of the end of the previous line.
+		/// </summary>
+		/// <param name="index">This is the index to start working backwards from.</param>
+		int MoveToPreviousLineEnd(string code, int index)
+		{
+			while (index >= 0) {
+				if (code[index] == '\r') {
+					return index - 1;
+				}
+				--index;
+			}
+			return -1;
 		}
 	}
 }

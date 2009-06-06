@@ -23,9 +23,8 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class NRefactoryToPythonConverter : IAstVisitor
 	{
-		int indent;
 		string indentString = "\t";
-		StringBuilder codeBuilder;
+		PythonCodeBuilder codeBuilder;
 		
 		// Holds the constructor for the class being converted. This is used to identify class fields.
 		PythonConstructorInfo constructorInfo;
@@ -126,12 +125,13 @@ namespace ICSharpCode.PythonBinding
 			// Convert to NRefactory code DOM.
 			CompilationUnit unit = GenerateCompilationUnit(source, language);
 			
-			// Convert to Python code.3
+			// Convert to Python code.
 			entryPointMethods = new List<MethodDeclaration>();
-			codeBuilder = new StringBuilder();
+			codeBuilder = new PythonCodeBuilder();
+			codeBuilder.IndentString = indentString;
 			unit.AcceptVisitor(this, null);
 			
-			return codeBuilder.ToString().TrimEnd();
+			return codeBuilder.ToString().Trim();
 		}
 		
 		/// <summary>
@@ -450,7 +450,7 @@ namespace ICSharpCode.PythonBinding
 			AppendIndented("while ");
 			doLoopStatement.Condition.AcceptVisitor(this, data);
 			Append(":");
-			AppendNewLine();
+			AppendLine();
 			
 			IncreaseIndent();
 			doLoopStatement.EmbeddedStatement.AcceptVisitor(this, data);
@@ -465,7 +465,7 @@ namespace ICSharpCode.PythonBinding
 			AppendIndented("elif ");
 			elseIfSection.Condition.AcceptVisitor(this, data);
 			Append(":");
-			AppendNewLine();
+			AppendLine();
 			
 			// Convert else if body statements.
 			IncreaseIndent();
@@ -534,7 +534,7 @@ namespace ICSharpCode.PythonBinding
 			// Convert the expression.
 			AppendIndented(String.Empty);
 			expressionStatement.Expression.AcceptVisitor(this, data);
-			AppendNewLine();
+			AppendLine();
 			return null;
 		}
 		
@@ -554,7 +554,7 @@ namespace ICSharpCode.PythonBinding
 			// Convert the for loop's initializers.
 			AppendIndented(String.Empty);
 			CreateInitStatement(foreachStatement);
-			AppendNewLine();
+			AppendLine();
 
 			// Convert the for loop's test expression.
 			AppendIndentedLine("while enumerator.MoveNext():");
@@ -598,7 +598,7 @@ namespace ICSharpCode.PythonBinding
 			AppendIndented("while ");
 			forStatement.Condition.AcceptVisitor(this, data);
 			Append(":");
-			AppendNewLine();
+			AppendLine();
 					
 			// Visit the for loop's body.
 			IncreaseIndent();
@@ -641,7 +641,7 @@ namespace ICSharpCode.PythonBinding
 			AppendIndented("if ");
 			ifElseStatement.Condition.AcceptVisitor(this, data);
 			Append(":");
-			AppendNewLine();
+			AppendLine();
 			
 			// Convert true statements.
 			IncreaseIndent();
@@ -747,7 +747,7 @@ namespace ICSharpCode.PythonBinding
 			
 				// Generate the variable initializer.
 				variableDeclaration.Initializer.AcceptVisitor(this, data);
-				AppendNewLine();
+				AppendLine();
 			}
 			return null;
 		}
@@ -770,7 +770,7 @@ namespace ICSharpCode.PythonBinding
 			// Add the parameters.
 			AddParameters(methodDeclaration);
 			methodParameters = methodDeclaration.Parameters;
-			AppendNewLine();
+			AppendLine();
 			
 			IncreaseIndent();
 			if (methodDeclaration.Body.Children.Count > 0) {
@@ -780,11 +780,11 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			DecreaseIndent();
-			AppendNewLine();
+			AppendLine();
 			
 			if (IsStatic(methodDeclaration)) {
 				AppendIndentedLine(methodDeclaration.Name + " = staticmethod(" + methodDeclaration.Name + ")");
-				AppendNewLine();
+				AppendLine();
 				
 				// Save Main entry point method.
 				SaveMethodIfMainEntryPoint(methodDeclaration);
@@ -909,18 +909,18 @@ namespace ICSharpCode.PythonBinding
 			IncreaseIndent();
 			propertyDeclaration.GetRegion.Block.AcceptVisitor(this, data);
 			DecreaseIndent();
-			AppendNewLine();
+			AppendLine();
 		
 			// Add set statements.
 			AppendIndentedLine("def set_" + propertyName + "(self, value):");
 			IncreaseIndent();
 			propertyDeclaration.SetRegion.Block.AcceptVisitor(this, data);
 			DecreaseIndent();
-			AppendNewLine();
+			AppendLine();
 			
 			// Add property definition.
 			AppendIndentedLine(String.Concat(propertyName, " = property(fget=get_", propertyName, ", fset=set_", propertyName, ")"));
-			AppendNewLine();
+			AppendLine();
 			
 			return null;
 		}
@@ -969,7 +969,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			AppendIndented("return ");
 			returnStatement.Expression.AcceptVisitor(this, data);
-			AppendNewLine();
+			AppendLine();
 			return null;
 		}
 		
@@ -1029,7 +1029,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			AppendIndented("raise ");
 		 	throwStatement.Expression.AcceptVisitor(this, data);
-		 	AppendNewLine();
+		 	AppendLine();
 			return null;
 		}
 		
@@ -1050,7 +1050,7 @@ namespace ICSharpCode.PythonBinding
 				AppendIndented("except ");
 				Append(catchClause.TypeReference.Type);
 				Append(", " + catchClause.VariableName + ":");
-				AppendNewLine();
+				AppendLine();
 			
 				// Convert catch child statements.
 				IncreaseIndent();
@@ -1072,6 +1072,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
+			AppendLineIfPreviousLineIsNotEmpty();
 			AppendIndentedLine("class " + typeDeclaration.Name + "(object):");
 			IncreaseIndent();
 			if (typeDeclaration.Children.Count > 0) {
@@ -1184,7 +1185,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			AppendIndented(variableDeclaration.Name + " = ");
 			variableDeclaration.Initializer.AcceptVisitor(this, data);
-			AppendNewLine();
+			AppendLine();
 			return null;
 		}
 		
@@ -1485,10 +1486,7 @@ namespace ICSharpCode.PythonBinding
 		
 		void AppendIndented(string code)
 		{
-			for (int i = 0; i < indent; ++i) {
-				codeBuilder.Append(indentString);
-			}
-			codeBuilder.Append(code);
+			codeBuilder.AppendIndented(code);
 		}
 		
 		void AppendIndentedPassStatement()
@@ -1498,22 +1496,22 @@ namespace ICSharpCode.PythonBinding
 		
 		void AppendIndentedLine(string code)
 		{
-			AppendIndented(code + "\r\n");
+			codeBuilder.AppendIndentedLine(code);
 		}
 		
-		void AppendNewLine()
+		void AppendLine()
 		{
-			Append("\r\n");
+			codeBuilder.AppendLine();
 		}
 		
 		void IncreaseIndent()
 		{
-			++indent;
+			codeBuilder.IncreaseIndent();
 		}
 		
 		void DecreaseIndent()
 		{
-			--indent;
+			codeBuilder.DecreaseIndent();
 		}
 		
 		void CreateConstructor(PythonConstructorInfo constructorInfo)
@@ -1525,7 +1523,7 @@ namespace ICSharpCode.PythonBinding
 			} else {
 				AppendIndented("def __init__(self):");
 			}
-			AppendNewLine();
+			AppendLine();
 			
 			// Add fields at start of constructor.
 			IncreaseIndent();
@@ -1540,11 +1538,11 @@ namespace ICSharpCode.PythonBinding
 			
 			if (!IsEmptyConstructor(constructorInfo.Constructor)) {
 				constructorInfo.Constructor.Body.AcceptVisitor(this, null);
-				AppendNewLine();
+				AppendLine();
 			} else if (constructorInfo.Fields.Count == 0) {
 				AppendIndentedPassStatement();
 			} else {
-				AppendNewLine();
+				AppendLine();
 			}
 			
 			DecreaseIndent();
@@ -1658,7 +1656,7 @@ namespace ICSharpCode.PythonBinding
 			}	
 			
 			Append(":");
-			AppendNewLine();
+			AppendLine();
 		}
 		
 		/// <summary>
@@ -1743,6 +1741,13 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			Append("]");
+		}
+		
+		void AppendLineIfPreviousLineIsNotEmpty()
+		{
+			if (!codeBuilder.IsPreviousLineEmpty) {
+				codeBuilder.AppendLine();
+			}
 		}
 	}
 }

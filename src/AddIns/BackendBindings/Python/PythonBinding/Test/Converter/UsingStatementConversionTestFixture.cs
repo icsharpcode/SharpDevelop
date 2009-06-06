@@ -26,6 +26,7 @@ namespace PythonBinding.Tests.Converter
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string python = converter.Convert(csharp);
 			string expectedPython = "from System import *\r\n" +
+									"\r\n" +
 									"class Foo(object):\r\n" +
 									"\tpass";
 			
@@ -45,6 +46,7 @@ namespace PythonBinding.Tests.Converter
 			string python = converter.Convert(csharp);
 			string expectedPython = "from System import *\r\n" +
 									"from System.Drawing import *\r\n" +
+									"\r\n" +
 									"class Foo(object):\r\n" +
 									"\tpass";
 			

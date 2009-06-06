@@ -128,5 +128,65 @@ namespace PythonBinding.Tests.Designer
 			
 			Assert.AreEqual(expectedCode, codeBuilder.ToString());
 		}
+		
+		[Test]
+		public void PreviousLineIsEmptyNewLine()
+		{
+			codeBuilder.AppendLine();
+			Assert.IsTrue(codeBuilder.IsPreviousLineEmpty);
+		}
+		
+		[Test]
+		public void PreviousLineIsNotEmptyNewLine()
+		{
+			codeBuilder.AppendIndentedLine("abc");
+			Assert.IsFalse(codeBuilder.IsPreviousLineEmpty);
+		}
+		
+		[Test]
+		public void PreviousLineDoesNotExist()
+		{
+			Assert.IsFalse(codeBuilder.IsPreviousLineEmpty);
+		}
+		
+		[Test]
+		public void PreviousLineIsEmptyAndCurrentLineHasText()
+		{
+			codeBuilder.AppendLine();
+			codeBuilder.Append("abc");
+			Assert.IsTrue(codeBuilder.IsPreviousLineEmpty);
+		}
+		
+		[Test]
+		public void PreviousLineIsMadeUpOfWhiteSpace()
+		{
+			codeBuilder.AppendIndentedLine("  \t  ");
+			Assert.IsTrue(codeBuilder.IsPreviousLineEmpty);			
+		}
+		
+		[Test]
+		public void TwoLinesWithPreviousLineMadeUpOfWhiteSpace()
+		{
+			codeBuilder.AppendIndentedLine("1st");
+			codeBuilder.AppendIndentedLine("  \t  ");
+			Assert.IsTrue(codeBuilder.IsPreviousLineEmpty);			
+		}
+		
+		[Test]
+		public void TwoLinesWithPreviousEmptyLine()
+		{
+			codeBuilder.AppendIndentedLine("1st");
+			codeBuilder.AppendLine();
+			codeBuilder.Append("abc");
+			Assert.IsTrue(codeBuilder.IsPreviousLineEmpty);			
+		}
+		
+		[Test]
+		public void TwoLinesWithNoPreviousEmptyLine()
+		{
+			codeBuilder.AppendIndentedLine("First");
+			codeBuilder.AppendIndentedLine("Second");
+			Assert.IsFalse(codeBuilder.IsPreviousLineEmpty);
+		}		
 	}
 }
