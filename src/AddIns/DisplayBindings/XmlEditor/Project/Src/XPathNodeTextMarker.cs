@@ -54,7 +54,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			if (markerService != null) {
-				markerService.RemoveAll(marker => marker.Tag == typeof(XPathNodeTextMarker));
+				markerService.RemoveAll(marker => (Type)marker.Tag == typeof(XPathNodeTextMarker));
 			}
 		}
 	}

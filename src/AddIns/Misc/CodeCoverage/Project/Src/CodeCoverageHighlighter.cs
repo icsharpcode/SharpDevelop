@@ -59,7 +59,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			if (markerService != null) {
-				markerService.RemoveAll(marker => marker.Tag == typeof(CodeCoverageHighlighter));
+				markerService.RemoveAll(marker => (Type)marker.Tag == typeof(CodeCoverageHighlighter));
 			}
 		}
 		

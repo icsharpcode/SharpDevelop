@@ -20,14 +20,13 @@ namespace ICSharpCode.PythonBinding
 	{
 		public const string DefaultTargetsFile = @"$(PythonBinPath)\SharpDevelop.Build.Python.targets";
 		
-		public PythonProject(IMSBuildEngineProvider provider, string fileName, string projectName)
-			: base(provider)
+		public PythonProject(string fileName, string projectName)
 		{
 			Name = projectName;
 			LoadProject(fileName);
 		}
 		
-		public PythonProject(ProjectCreateInformation info) : base(info.Solution)
+		public PythonProject(ProjectCreateInformation info)
 		{
 			Create(info);
 		}

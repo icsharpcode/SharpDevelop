@@ -26,9 +26,9 @@ namespace ICSharpCode.PythonBinding
 			get { return LanguageName; }
 		}
 		
-		public IProject LoadProject(IMSBuildEngineProvider engineProvider, string fileName, string projectName)
+		public IProject LoadProject(string fileName, string projectName)
 		{
-			return new PythonProject(engineProvider, fileName, projectName);
+			return new PythonProject(fileName, projectName);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)
