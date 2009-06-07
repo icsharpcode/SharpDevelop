@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Build.Logging;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Logging;
+using System.Linq;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -72,18 +73,27 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <param name="logger">The logger that received build output.</param>
 		/// <param name="callback">Callback that is run when the build is complete</param>
 		/// <returns>The build submission that was started.</returns>
-		public static BuildSubmission StartBuild(BuildRequestData requestData, ILogger logger, BuildSubmissionCompleteCallback callback)
+		public static BuildSubmission StartBuild(BuildRequestData requestData, IEnumerable<ILogger> loggers, BuildSubmissionCompleteCallback callback)
 		{
+			if (requestData == null)
+				throw new ArgumentNullException("requestData");
+			ILogger[] loggersArray;
+			if (loggers == null)
+				loggersArray = new ILogger[0];
+			else
+				loggersArray = loggers.ToArray(); // iterate through logger enumerable once
 			EnableBuildEngine();
 			try {
 				BuildSubmission submission = BuildManager.DefaultBuildManager.PendBuildRequest(requestData);
 				EventSource eventSource = new EventSource();
-				if (logger != null)
-					logger.Initialize(eventSource);
+				foreach (ILogger logger in loggersArray) {
+					if (logger != null)
+						logger.Initialize(eventSource);
+				}
 				lock (submissionEventSourceMapping) {
 					submissionEventSourceMapping.Add(submission.SubmissionId, eventSource);
 				}
-				RunningBuild build = new RunningBuild(eventSource, logger, callback);
+				RunningBuild build = new RunningBuild(eventSource, loggersArray, callback);
 				submission.ExecuteAsync(build.OnComplete, null);
 				return submission;
 			} catch (Exception ex) {
@@ -95,14 +105,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		sealed class RunningBuild
 		{
-			ILogger logger;
+			ILogger[] loggers;
 			BuildSubmissionCompleteCallback callback;
 			EventSource eventSource;
 			
-			public RunningBuild(EventSource eventSource, ILogger logger, BuildSubmissionCompleteCallback callback)
+			public RunningBuild(EventSource eventSource, ILogger[] loggers, BuildSubmissionCompleteCallback callback)
 			{
 				this.eventSource = eventSource;
-				this.logger = logger;
+				this.loggers = loggers;
 				this.callback = callback;
 			}
 			
@@ -117,8 +127,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					LoggingService.Error(submission.BuildResult.Exception);
 					eventSource.ForwardEvent(new BuildErrorEventArgs(null, null, null, 0, 0, 0, 0, submission.BuildResult.Exception.ToString(), null, null));
 				}
-				if (logger != null)
-					logger.Shutdown();
+				foreach (ILogger logger in loggers) {
+					if (logger != null)
+						logger.Shutdown();
+				}
 				if (callback != null)
 					callback(submission);
 			}

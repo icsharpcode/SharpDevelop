@@ -5,21 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+using ICSharpCode.Core;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
-using ICSharpCode.Core;
 using MSBuild = Microsoft.Build;
 using ProjectCollection = Microsoft.Build.Evaluation.ProjectCollection;
 
@@ -171,7 +165,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			string[] targets = { "ResolveAssemblyReferences" };
 			BuildRequestData requestData = new BuildRequestData(project, targets, new HostServices());
-			BuildSubmission submission = ParallelMSBuildManager.StartBuild(requestData, new SimpleErrorLogger(), null);
+			ILogger[] loggers = { new SimpleErrorLogger() };
+			BuildSubmission submission = ParallelMSBuildManager.StartBuild(requestData, loggers, null);
 			LoggingService.Debug("Started build for ResolveAssemblyReferences");
 			submission.WaitHandle.WaitOne();
 			BuildResult result = submission.BuildResult;
@@ -212,8 +207,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void Initialize(IEventSource eventSource)
 			{
-				eventSource.ErrorRaised     += OnError;
-				eventSource.WarningRaised   += OnWarning;
+				eventSource.ErrorRaised += OnError;
+				eventSource.WarningRaised += OnWarning;
 			}
 			
 			public void Shutdown()
@@ -223,10 +218,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			void OnError(object sender, BuildErrorEventArgs e)
 			{
+				TaskService.BuildMessageViewCategory.AppendLine(e.Message);
 			}
 			
 			void OnWarning(object sender, BuildWarningEventArgs e)
 			{
+				TaskService.BuildMessageViewCategory.AppendLine(e.Message);
 			}
 		}
 	}

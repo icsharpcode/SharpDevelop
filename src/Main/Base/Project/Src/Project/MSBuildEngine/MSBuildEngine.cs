@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Build.Construction;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using Microsoft.Build.Construction;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using MSBuild = Microsoft.Build.Evaluation;
@@ -71,6 +71,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			MSBuildProperties = new SortedList<string, string>();
 			MSBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
+			// 'BuildingInsideVisualStudio' tells MSBuild that we took care of building a project's dependencies
+			// before trying to build the project itself. This speeds up compilation because it prevents MSBuild from
+			// repeatedly looking if a project needs to be rebuilt.
 			MSBuildProperties.Add("BuildingInsideVisualStudio", "true");
 		}
 		
@@ -182,11 +185,25 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectRootElement projectFile = ProjectRootElement.Open(project.FileName);
 			foreach (string import in additionalTargetFiles)
 				projectFile.AddImport(import);
+			
+			if (globalProperties.ContainsKey("BuildingInsideVisualStudio")) {
+				// When we set BuildingInsideVisualStudio, MSBuild skips its own change detection
+				// because in Visual Studio, the host compiler does the change detection.
+				// We override the property '_ComputeNonExistentFileProperty' which is responsible
+				// for recompiling each time - our _ComputeNonExistentFileProperty does nothing,
+				// which re-enables the MSBuild's usual change detection.
+				projectFile.AddTarget("_ComputeNonExistentFileProperty");
+			}
+			
 			ProjectInstance projectInstance = MSBuildInternals.LoadProjectInstance(projectFile, globalProperties);
 			
 			string[] targets = { options.Target.TargetName };
 			BuildRequestData requestData = new BuildRequestData(projectInstance, targets, new HostServices());
-			ParallelMSBuildManager.StartBuild(requestData, new SharpDevelopLogger(this), OnComplete);
+			ILogger[] loggers = {
+				new SharpDevelopLogger(this),
+				new BuildLogFileLogger(projectFile.FullPath + ".log", LoggerVerbosity.Diagnostic)
+			};
+			ParallelMSBuildManager.StartBuild(requestData, loggers, OnComplete);
 		}
 		
 		void OnComplete(BuildSubmission submission)
