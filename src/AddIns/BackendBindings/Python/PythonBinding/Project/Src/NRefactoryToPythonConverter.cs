@@ -195,6 +195,8 @@ namespace ICSharpCode.PythonBinding
 					return "and";
 				case BinaryOperatorType.LogicalOr:
 					return "or";
+				case BinaryOperatorType.ExclusiveOr:
+					return "^";
 				case BinaryOperatorType.Modulus:
 					return "%";
 				case BinaryOperatorType.Multiply:
