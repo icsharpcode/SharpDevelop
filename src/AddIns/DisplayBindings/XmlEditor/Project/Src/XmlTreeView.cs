@@ -134,7 +134,7 @@ namespace ICSharpCode.XmlEditor
 		protected override void LoadFromPrimary()
 		{
 			IFileDocumentProvider provider = this.PrimaryViewContent as IFileDocumentProvider;
-			treeViewContainer.LoadXml(provider.GetDocumentForFile(this.PrimaryFile).Text, XmlView.GetProvider(Path.GetExtension(this.PrimaryFileName)));
+			treeViewContainer.LoadXml(provider.GetDocumentForFile(this.PrimaryFile).Text, XmlCodeCompletionBinding.GetProvider(Path.GetExtension(this.PrimaryFileName)));
 			XmlView view = XmlView.ForFile(this.PrimaryFile);
 			if (view != null) {
 				view.CheckIsWellFormed();
