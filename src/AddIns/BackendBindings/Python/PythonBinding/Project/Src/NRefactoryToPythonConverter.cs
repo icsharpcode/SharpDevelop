@@ -32,6 +32,8 @@ namespace ICSharpCode.PythonBinding
 		// Holds the parameters of the current method. This is used to identify
 		// references to fields or parameters.
 		List<ParameterDeclarationExpression> methodParameters = new List<ParameterDeclarationExpression>();
+		MethodDeclaration currentMethod;
+		
 		SupportedLanguage language;
 		List<MethodDeclaration> entryPointMethods;
 		
@@ -147,9 +149,8 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public string GenerateMainMethodCall(MethodDeclaration methodDeclaration)
 		{
-			TypeDeclaration typeDeclaration = methodDeclaration.Parent as TypeDeclaration;
 			StringBuilder code = new StringBuilder();
-			code.Append(typeDeclaration.Name);
+			code.Append(GetTypeName(methodDeclaration));
 			code.Append('.');
 			code.Append(methodDeclaration.Name);
 			code.Append('(');
@@ -729,7 +730,12 @@ namespace ICSharpCode.PythonBinding
 				memberRefExpression.TargetObject.AcceptVisitor(this, data);
 				Append("." +  memberRefExpression.MemberName);
 			} else if (identifierExpression != null) {
-				Append("self." + identifierExpression.Identifier);
+				if (IsStatic(currentMethod)) {
+					Append(GetTypeName(currentMethod) + ".");
+				} else {
+					Append("self.");
+				}
+				Append(identifierExpression.Identifier);
 			}
 				
 			// Create method parameters
@@ -783,6 +789,7 @@ namespace ICSharpCode.PythonBinding
 		public object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			// Add method name.
+			currentMethod = methodDeclaration;
 			string methodName = methodDeclaration.Name;
 			AppendIndented("def " + methodName);
 					
@@ -808,6 +815,8 @@ namespace ICSharpCode.PythonBinding
 				// Save Main entry point method.
 				SaveMethodIfMainEntryPoint(methodDeclaration);
 			}
+			
+			currentMethod = null;
 			
 			return null;
 		}
@@ -1787,6 +1796,15 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return name;
+		}
+		
+		/// <summary>
+		/// Gets the type name that defines the method.
+		/// </summary>
+		static string GetTypeName(MethodDeclaration methodDeclaration)
+		{
+			TypeDeclaration type = methodDeclaration.Parent as TypeDeclaration;
+			return type.Name;
 		}
 	}
 }
