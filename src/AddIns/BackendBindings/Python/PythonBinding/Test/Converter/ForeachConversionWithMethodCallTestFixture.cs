@@ -32,7 +32,9 @@ namespace PythonBinding.Tests.Converter
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			converter.IndentString = "  ";
 			string code = converter.Convert(environmentSpecialFolderCode);
-			string expectedCode = "class Foo(object):\r\n" +
+			string expectedCode = "import clr\r\n" +
+									"\r\n" +
+									"class Foo(object):\r\n" +
 									"  def PrintEnvironmentVariables(self):\r\n" +
 									"    enumerator = Environment.SpecialFolder.GetValues(clr.GetClrType(Environment.SpecialFolder)).GetEnumerator()\r\n" +
 									"    while enumerator.MoveNext():\r\n" +

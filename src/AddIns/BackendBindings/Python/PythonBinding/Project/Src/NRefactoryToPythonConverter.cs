@@ -1124,6 +1124,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
+			codeBuilder.InsertIndentedLine("import clr");
 			Append("clr.GetClrType(");
 			Append(GetTypeName(typeOfExpression.TypeReference));
 			Append(")");

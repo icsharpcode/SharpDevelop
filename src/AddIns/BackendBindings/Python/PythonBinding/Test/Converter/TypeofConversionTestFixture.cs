@@ -29,12 +29,13 @@ namespace PythonBinding.Tests.Converter
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			converter.IndentString = "    ";
 			string python = converter.Convert(typeofIntCode);
-			string expectedPython = "class Foo(object):\r\n" +
+			string expectedPython = "import clr\r\n" +
+									"\r\n" +
+									"class Foo(object):\r\n" +
 									"    def ToString(self):\r\n" +
 									"        clr.GetClrType(int).FullName";
 			
 			Assert.AreEqual(expectedPython, python);
 		}
-
 	}
 }
