@@ -35,10 +35,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		static readonly object enableDisableLock = new object();
 		static int enableCount;
 		
-		static void EnableBuildEngine()
+		/// <summary>
+		/// Enables the underlying build engine.
+		/// Call this method only if you are requesting multiple builds in a series (e.g. building the solution).
+		/// A counter is increment to remember how many users of this class need the build engine.
+		/// For each EnableBuildEngine() call, you need to call DisableBuildEngine() exactly once!
+		/// </summary>
+		public static void EnableBuildEngine()
 		{
 			lock (enableDisableLock) {
 				if (enableCount == 0) {
+					LoggingService.Info("ParallelMSBuildManager starting up...");
 					BuildParameters parameters = new BuildParameters();
 					parameters.Loggers = new ILogger[] {
 						new CentralLogger(),
@@ -46,19 +53,25 @@ namespace ICSharpCode.SharpDevelop.Project
 						new ConsoleLogger(LoggerVerbosity.Normal),
 						#endif
 					};
+					parameters.EnableNodeReuse = false;
+					parameters.MaxNodeCount = BuildOptions.DefaultParallelProjectCount;
 					BuildManager.DefaultBuildManager.BeginBuild(parameters);
 				}
 				enableCount++;
 			}
 		}
 		
-		static void DisableBuildEngine()
+		/// <summary>
+		/// Decrements the counter and disables the underlying build engine if the counter reaches 0.
+		/// </summary>
+		public static void DisableBuildEngine()
 		{
 			lock (enableDisableLock) {
 				enableCount--;
 				if (enableCount == 0) {
 					BuildManager.DefaultBuildManager.EndBuild();
 					BuildManager.DefaultBuildManager.ResetCaches();
+					LoggingService.Info("ParallelMSBuildManager shut down!");
 				}
 			}
 		}

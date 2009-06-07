@@ -208,6 +208,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				options.SolutionPlatform = solution.Preferences.ActivePlatform;
 			
 			BuildEngine engine = new BuildEngine(options, project);
+			ParallelMSBuildManager.EnableBuildEngine(); // matching disable call will be done in BuildEngine.ReportDone()
 			engine.buildStart = DateTime.Now;
 			engine.combinedBuildFeedbackSink = realtimeBuildFeedbackSink;
 			engine.progressMonitor = progressMonitor;
@@ -551,6 +552,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		void ReportDone()
 		{
+			ParallelMSBuildManager.DisableBuildEngine();
 			if (combinedBuildFeedbackSink != null) {
 				if (combinedBuildFeedbackSink is MessageViewSink) {
 					// Special case GUI-builds so that they have more information available:

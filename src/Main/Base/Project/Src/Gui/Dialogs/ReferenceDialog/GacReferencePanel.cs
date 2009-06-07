@@ -180,7 +180,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listView.Items.AddRange(shortItemList);
 			
 			Thread resolveVersionsThread = new Thread(ResolveVersionsThread);
-			resolveVersionsThread.SetApartmentState(ApartmentState.STA);
 			resolveVersionsThread.IsBackground = true;
 			resolveVersionsThread.Name = "resolveVersionsThread";
 			resolveVersionsThread.Priority = ThreadPriority.BelowNormal;

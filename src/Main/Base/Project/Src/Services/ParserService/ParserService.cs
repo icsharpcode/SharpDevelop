@@ -129,7 +129,6 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			loadSolutionProjectsThread = new Thread(new ThreadStart(LoadSolutionProjects));
-			loadSolutionProjectsThread.SetApartmentState(ApartmentState.STA); // allow loadSolutionProjects thread access to MSBuild
 			loadSolutionProjectsThread.Name = "loadSolutionProjects";
 			loadSolutionProjectsThread.Priority = ThreadPriority.BelowNormal;
 			loadSolutionProjectsThread.IsBackground = true;
@@ -174,19 +173,25 @@ namespace ICSharpCode.SharpDevelop
 			}
 			WorkbenchSingleton.SafeThreadAsyncCall(ProjectService.ParserServiceCreatedProjectContents);
 			try {
+				int workAmount = 0;
 				// multiply Count with 2 so that the progress bar is only at 50% when references are done
 				progressMonitor.BeginTask("Loading references...", createdContents.Count * 2, false);
-				int workAmount = 0;
-				for (int i = 0; i < createdContents.Count; i++) {
-					if (abortLoadSolutionProjectsThread) return;
-					ParseProjectContent newContent = createdContents[i];
-					progressMonitor.WorkDone = i;
-					try {
-						newContent.Initialize1(progressMonitor);
-						workAmount += newContent.GetInitializationWorkAmount();
-					} catch (Exception e) {
-						MessageService.ShowError(e, "Error while initializing project references:" + newContent);
+				
+				ParallelMSBuildManager.EnableBuildEngine();
+				try {
+					for (int i = 0; i < createdContents.Count; i++) {
+						if (abortLoadSolutionProjectsThread) return;
+						ParseProjectContent newContent = createdContents[i];
+						progressMonitor.WorkDone = i;
+						try {
+							newContent.Initialize1(progressMonitor);
+							workAmount += newContent.GetInitializationWorkAmount();
+						} catch (Exception e) {
+							MessageService.ShowError(e, "Error while initializing project references:" + newContent);
+						}
 					}
+				} finally {
+					ParallelMSBuildManager.DisableBuildEngine();
 				}
 				// multiply workamount with two and start at workAmount so that the progress bar continues
 				// from 50% towards 100%.
@@ -297,7 +302,6 @@ namespace ICSharpCode.SharpDevelop
 					if (reParseThread == null) {
 						LoggingService.Info("Starting reParse thread");
 						reParseThread = new Thread(new ThreadStart(ReparseProjects));
-						reParseThread.SetApartmentState(ApartmentState.STA); // allow reParseThread access to MSBuild
 						reParseThread.Name = "reParse";
 						reParseThread.Priority = ThreadPriority.BelowNormal;
 						reParseThread.IsBackground = true;
