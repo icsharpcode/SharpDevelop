@@ -182,7 +182,10 @@ namespace ICSharpCode.SharpDevelop.Project
 
 			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
 			
-			ProjectRootElement projectFile = ProjectRootElement.Open(project.FileName);
+			// Use a temporary project collection to prevent MSBuild from opening the element from the global collection
+			// - we don't want to modify the ProjectRootElement opened as project because we don't want to save
+			// back our changes to disk.
+			ProjectRootElement projectFile = ProjectRootElement.Open(project.FileName, new MSBuild.ProjectCollection());
 			foreach (string import in additionalTargetFiles)
 				projectFile.AddImport(import);
 			

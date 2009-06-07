@@ -35,8 +35,7 @@ namespace Grunwald.BooBinding
 			get { return BooLanguageProperties.Instance; }
 		}
 		
-		public BooProject(IMSBuildEngineProvider provider, string fileName, string projectName)
-			: base(provider)
+		public BooProject(string fileName, string projectName)
 		{
 			this.Name = projectName;
 			Init();
@@ -44,7 +43,6 @@ namespace Grunwald.BooBinding
 		}
 		
 		public BooProject(ProjectCreateInformation info)
-			: base(info.Solution)
 		{
 			Init();
 			Create(info);

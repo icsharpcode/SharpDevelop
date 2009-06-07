@@ -14,7 +14,6 @@ using System.IO;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.WixBinding
 {
@@ -34,15 +33,13 @@ namespace ICSharpCode.WixBinding
 		
 		delegate bool IsFileNameMatch(string fileName);
 		
-		public WixProject(IMSBuildEngineProvider provider, string fileName, string projectName)
-			: base(provider)
+		public WixProject(string fileName, string projectName)
 		{
 			Name = projectName;
 			LoadProject(fileName);
 		}
 		
 		public WixProject(ProjectCreateInformation info)
-			: base(info.Solution)
 		{
 			Create(info);
 		}
@@ -91,9 +88,9 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Adds the ability to creates Wix Library and Wix Object project items.
 		/// </summary>
-		public override ProjectItem CreateProjectItem(BuildItem item)
+		public override ProjectItem CreateProjectItem(IProjectItemBackendStore item)
 		{
-			switch (item.Name) {
+			switch (item.ItemType.ItemName) {
 				case WixItemType.LibraryName:
 					return new WixLibraryProjectItem(this, item);
 				case WixItemType.ExtensionName:
@@ -232,9 +229,9 @@ namespace ICSharpCode.WixBinding
 			SetProperty("OutputType", "Package");
 			
 			string wixToolPath = @"$(SharpDevelopBinPath)\Tools\Wix";
-			AddGuardedProperty("WixToolPath", wixToolPath, false);
-			AddGuardedProperty("WixTargetsPath", @"$(WixToolPath)\wix.targets", false);
-			AddGuardedProperty("WixTasksPath", @"$(WixToolPath)\WixTasks.dll", false);
+			AddGuardedProperty("WixToolPath", wixToolPath);
+			AddGuardedProperty("WixTargetsPath", @"$(WixToolPath)\wix.targets");
+			AddGuardedProperty("WixTasksPath", @"$(WixToolPath)\WixTasks.dll");
 			
 			this.AddImport(DefaultTargetsFile, null);
 		}

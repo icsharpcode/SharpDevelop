@@ -23,9 +23,9 @@ namespace Grunwald.BooBinding
 			}
 		}
 		
-		public IProject LoadProject(IMSBuildEngineProvider provider, string fileName, string projectName)
+		public IProject LoadProject(string fileName, string projectName)
 		{
-			return new BooProject(provider, fileName, projectName);
+			return new BooProject(fileName, projectName);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)

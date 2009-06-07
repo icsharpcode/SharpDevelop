@@ -33,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		#region Manage StartBuild/EndBuild of BuildManager.DefaultBuildManager
 		static readonly object enableDisableLock = new object();
+		static bool buildIsRunning;
 		static int enableCount;
 		
 		/// <summary>
@@ -41,11 +42,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// A counter is increment to remember how many users of this class need the build engine.
 		/// For each EnableBuildEngine() call, you need to call DisableBuildEngine() exactly once!
 		/// </summary>
-		public static void EnableBuildEngine()
+		/// <param name="beginBuild">Specifies whether the build engine should be started immediately.
+		/// If false (default), the build engine will start on the first StartBuild() call.</param>
+		public static void EnableBuildEngine(bool beginBuild = false)
 		{
 			lock (enableDisableLock) {
-				if (enableCount == 0) {
-					LoggingService.Info("ParallelMSBuildManager starting up...");
+				if (!buildIsRunning && beginBuild) {
+					LoggingService.Info("ParallelMSBuildManager starting...");
+					buildIsRunning = true;
 					BuildParameters parameters = new BuildParameters();
 					parameters.Loggers = new ILogger[] {
 						new CentralLogger(),
@@ -68,7 +72,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			lock (enableDisableLock) {
 				enableCount--;
-				if (enableCount == 0) {
+				if (enableCount == 0 && buildIsRunning) {
+					buildIsRunning = false;
 					BuildManager.DefaultBuildManager.EndBuild();
 					BuildManager.DefaultBuildManager.ResetCaches();
 					LoggingService.Info("ParallelMSBuildManager shut down!");
@@ -95,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				loggersArray = new ILogger[0];
 			else
 				loggersArray = loggers.ToArray(); // iterate through logger enumerable once
-			EnableBuildEngine();
+			EnableBuildEngine(true);
 			try {
 				BuildSubmission submission = BuildManager.DefaultBuildManager.PendBuildRequest(requestData);
 				EventSource eventSource = new EventSource();
