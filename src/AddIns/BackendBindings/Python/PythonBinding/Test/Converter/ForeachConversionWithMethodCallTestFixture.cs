@@ -25,18 +25,7 @@ namespace PythonBinding.Tests.Converter
 					"    }\r\n" +
 					"  }\r\n" +
 					"}";
-		
-		string intCode = "class Foo\r\n" +
-					"{\r\n" +
-					"  public void PrintIntegers(int[] items)\r\n" +
-					"  {\r\n" +
-					"    foreach (int i in items)\r\n" +
-					"    {\r\n" +
-					"        Console.WriteLine(i);\r\n" +
-					"    }\r\n" +
-					"  }\r\n" +
-					"}";
-	
+			
 		[Test]
 		public void ConvertedEnvironmentSpecialFolderCode()
 		{
@@ -49,21 +38,6 @@ namespace PythonBinding.Tests.Converter
 									"    while enumerator.MoveNext():\r\n" +
 									"      folder = enumerator.Current\r\n" +
 									"      Console.WriteLine(\"{0}={1}\\n\", folder, Environment.GetFolderPath(folder))";		
-			Assert.AreEqual(expectedCode, code);
-		}
-		
-		[Test]
-		public void ConvertedIntCode()
-		{
-			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
-			converter.IndentString = "  ";
-			string code = converter.Convert(intCode);
-			string expectedCode = "class Foo(object):\r\n" +
-									"  def PrintIntegers(self, items):\r\n" +
-									"    enumerator = items.GetEnumerator()\r\n" +
-									"    while enumerator.MoveNext():\r\n" +
-									"      i = enumerator.Current\r\n" +
-									"      Console.WriteLine(i)";
 			Assert.AreEqual(expectedCode, code);
 		}		
 	}

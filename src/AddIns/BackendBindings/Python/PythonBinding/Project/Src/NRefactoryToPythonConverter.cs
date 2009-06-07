@@ -1118,9 +1118,6 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		/// <summary>
-		/// Converts a unary operator expression to a code dom expression.
-		/// </summary>
 		public object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			switch (unaryOperatorExpression.Op) {
@@ -1209,10 +1206,6 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 
-		/// <summary>
-		/// Converts an NRefactory MemberReferenceExpression to a
-		/// code dom's CodeFieldReferenceExpression.
-		/// </summary>
 		public object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
@@ -1387,10 +1380,13 @@ namespace ICSharpCode.PythonBinding
 		{
 			IdentifierExpression identifierExpression = foreachStatement.Expression as IdentifierExpression;
 			InvocationExpression invocationExpression = foreachStatement.Expression as InvocationExpression;
+			MemberReferenceExpression memberRefExpression = foreachStatement.Expression as MemberReferenceExpression;
 			if (identifierExpression != null) {
 				Append(identifierExpression.Identifier);
 			} else if (invocationExpression != null) {
 				invocationExpression.AcceptVisitor(this, null);
+			} else if (memberRefExpression != null) {
+				memberRefExpression.AcceptVisitor(this, null);
 			}
 		}
 				
