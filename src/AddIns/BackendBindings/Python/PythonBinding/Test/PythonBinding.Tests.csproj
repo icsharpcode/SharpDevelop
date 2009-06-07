@@ -106,6 +106,7 @@
     <Compile Include="Converter\ConvertToPythonProjectCommandTestFixture.cs" />
     <Compile Include="Converter\EventHandlerWithObjectCreationTestFixture.cs" />
     <Compile Include="Converter\ForeachConversionWithMethodCallTestFixture.cs" />
+    <Compile Include="Converter\GenerateMainMethodCallTestFixture.cs" />
     <Compile Include="Converter\GenericListConversionTestFixture.cs" />
     <Compile Include="Converter\IntegerMethodParameterTestFixture.cs" />
     <Compile Include="Converter\BaseClassReferenceTestFixture.cs" />

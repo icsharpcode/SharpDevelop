@@ -76,5 +76,11 @@ namespace PythonBinding.Tests.Converter
 		{
 			Assert.AreEqual("Main", converter.EntryPointMethods[0].Name);
 		}
+		
+		[Test]
+		public void GenerateCodeToCallMainMethod()
+		{
+			Assert.AreEqual("Foo.Main(None)", converter.GenerateMainMethodCall(converter.EntryPointMethods[0]));
+		}
 	}
 }

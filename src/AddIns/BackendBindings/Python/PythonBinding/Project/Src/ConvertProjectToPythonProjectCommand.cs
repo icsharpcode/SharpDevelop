@@ -67,6 +67,9 @@ namespace ICSharpCode.PythonBinding
 				PythonProject pythonTargetProject = (PythonProject)targetItem.Project;
 				if ((converter.EntryPointMethods.Count > 0) && !pythonTargetProject.HasMainFile) {
 					pythonTargetProject.AddMainFile(targetItem.Include);
+					
+					// Add code to call main method at the end of the file.
+					pythonCode += "\r\n\r\n" + converter.GenerateMainMethodCall(converter.EntryPointMethods[0]);
 				}
 				
 				SaveFile(targetItem.FileName, pythonCode, textEditorProperties.Encoding);

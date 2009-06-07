@@ -141,6 +141,25 @@ namespace ICSharpCode.PythonBinding
 		public ReadOnlyCollection<MethodDeclaration> EntryPointMethods {
 			get { return entryPointMethods.AsReadOnly(); }
 		}
+		
+		/// <summary>
+		/// Generates code to call the main entry point.
+		/// </summary>
+		public string GenerateMainMethodCall(MethodDeclaration methodDeclaration)
+		{
+			TypeDeclaration typeDeclaration = methodDeclaration.Parent as TypeDeclaration;
+			StringBuilder code = new StringBuilder();
+			code.Append(typeDeclaration.Name);
+			code.Append('.');
+			code.Append(methodDeclaration.Name);
+			code.Append('(');
+			if (methodDeclaration.Parameters.Count > 0) {
+				code.Append("None");
+			}
+			code.Append(')');
+			
+			return code.ToString();
+		}
 
 		/// <summary>
 		/// Converts from the NRefactory's binary operator type to a string.
