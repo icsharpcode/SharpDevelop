@@ -83,7 +83,7 @@ namespace PythonBinding.Tests.Converter
 		{
 			string expectedCode = "class Foo(object):\r\n" +
 									"    def Run(self):\r\n" +
-									"        i = System.Array[int]((1, 2, 3, 4))\r\n" +
+									"        i = Array[int]((1, 2, 3, 4))\r\n" +
 									"        i[0] = 5\r\n" +
 									"        return i";
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
@@ -98,7 +98,7 @@ namespace PythonBinding.Tests.Converter
 		{
 			string expectedCode = "class Foo(object):\r\n" +
 									"    def Run(self):\r\n" +
-									"        i = System.Array[str]((\"a\", \"b\"))\r\n" +
+									"        i = Array[str]((\"a\", \"b\"))\r\n" +
 									"        i[0] = \"c\"\r\n" +
 									"        return i";
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
@@ -113,7 +113,7 @@ namespace PythonBinding.Tests.Converter
 		{
 			string expectedCode = "class Foo(object):\r\n" +
 									"    def Run(self):\r\n" +
-									"        i = System.Array[Bar]((Bar(), Bar()))\r\n" +
+									"        i = Array[Bar]((Bar(), Bar()))\r\n" +
 									"        i[0] = Bar()\r\n" +
 									"        return i";
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
@@ -128,7 +128,7 @@ namespace PythonBinding.Tests.Converter
 		{
 			string expectedCode = "class Foo(object):\r\n" +
 									"    def Run(self):\r\n" +
-									"        i = System.Array[Uri]((Uri(\"a\"), Uri(\"b\")))\r\n" +
+									"        i = Array[Uri]((Uri(\"a\"), Uri(\"b\")))\r\n" +
 									"        i[0] = Uri(\"c\")\r\n" +
 									"        return i";
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
@@ -143,7 +143,7 @@ namespace PythonBinding.Tests.Converter
 		{
 			string expectedCode = "class Foo(object):\r\n" +
 									"    def Run(self):\r\n" +
-									"        i = System.Array[System.UInt32]((1, 2, 3, 4))\r\n" +
+									"        i = Array[UInt32]((1, 2, 3, 4))\r\n" +
 									"        i[0] = 5\r\n" +
 									"        return i";
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
@@ -158,7 +158,7 @@ namespace PythonBinding.Tests.Converter
 		{
 			string expectedCode = "class Foo(object):\r\n" +
 									"    def Run(self):\r\n" +
-									"        i = System.Array[int]((1, 2, 3, 4))\r\n" +
+									"        i = Array[int]((1, 2, 3, 4))\r\n" +
 									"        i[0] = 5\r\n" +
 									"        return i";
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);

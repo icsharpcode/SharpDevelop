@@ -32,12 +32,13 @@ namespace PythonBinding.Tests.Converter
 		public void GeneratedPythonSourceCode()
 		{
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
+			converter.IndentString = "    ";
 			string python = converter.Convert(csharp);
 			string expectedPython = "class Foo(object):\r\n" +
-				"\tdef Assign(self):\r\n" +
-				"\t\telements = System.Array.CreateInstance(int, 10)\r\n" +
-				"\t\tlist = List[System.Array[int]]()\r\n" +
-				"\t\tlist.Add(elements.Clone())";
+				"    def Assign(self):\r\n" +
+				"        elements = Array.CreateInstance(int, 10)\r\n" +
+				"        list = List[Array[int]]()\r\n" +
+				"        list.Add(elements.Clone())";
 			
 			Assert.AreEqual(expectedPython, python);
 		}

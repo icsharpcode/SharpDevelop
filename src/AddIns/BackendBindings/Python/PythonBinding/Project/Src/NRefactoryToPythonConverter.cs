@@ -212,7 +212,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			string arrayType = GetTypeName(arrayCreateExpression.CreateType);
 			if (arrayCreateExpression.ArrayInitializer.CreateExpressions.Count == 0) {
-				Append("System.Array.CreateInstance(" + arrayType);
+				Append("Array.CreateInstance(" + arrayType);
 				if (arrayCreateExpression.Arguments.Count > 0) {
 					foreach (Expression expression in arrayCreateExpression.Arguments) {
 						Append(", ");
@@ -223,7 +223,7 @@ namespace ICSharpCode.PythonBinding
 					Append(", 0)");
 				}
 			} else {
-				Append("System.Array[" + arrayType + "]");
+				Append("Array[" + arrayType + "]");
 	
 				// Add initializers.
 				Append("((");
@@ -1735,7 +1735,7 @@ namespace ICSharpCode.PythonBinding
 				}
 				TypeReference typeRef = typeRefs[i];
 				if (typeRef.IsArrayType) {
-					Append("System.Array[" + GetTypeName(typeRef) + "]");
+					Append("Array[" + GetTypeName(typeRef) + "]");
 				} else {
 					Append(GetTypeName(typeRef));
 				}
@@ -1753,6 +1753,10 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// If the type is String or Int32 then it returns "str" and "int".
 		/// </summary>
+		/// <remarks>If the type is a keyword (e.g. uint) then the TypeRef.Type returns 
+		/// the full type name. It returns the short type name if the type is not a keyword. So
+		/// this method will strip the namespace from the name.
+		/// </remarks>
 		string GetTypeName(TypeReference typeRef)
 		{
 			string name = typeRef.Type;
@@ -1760,6 +1764,12 @@ namespace ICSharpCode.PythonBinding
 				return "str";
 			} else if ((name == typeof(int).FullName) || ((name == typeof(int).Name))) {
 				return "int";
+			} else if (typeRef.IsKeyword) {
+				// Remove namespace from type name.
+				int index = name.LastIndexOf('.');
+				if (index > 0) {
+					return name.Substring(index + 1);
+				}
 			}
 			return name;
 		}
