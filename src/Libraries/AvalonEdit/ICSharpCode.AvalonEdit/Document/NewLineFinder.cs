@@ -51,6 +51,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public static string NormalizeNewLines(string input, string newLine)
 		{
+			if (input == null)
+				return null;
 			Debug.Assert(IsNewLine(newLine));
 			SimpleSegment ds = NextNewLine(input, 0);
 			if (ds == SimpleSegment.Invalid) // text does not contain any new lines
