@@ -213,8 +213,8 @@ namespace AvalonDock
             }
             set
             {
-                if (_activeDocument != value &&
-                    value.ContainerPane is DocumentPane)
+                if (_activeDocument != value/* &&
+                    value.ContainerPane is DocumentPane*/)
                 {
                     List<ManagedContent> listOfAllDocuments = FindContents<ManagedContent>();
                     listOfAllDocuments.ForEach((ManagedContent cnt) =>
@@ -685,6 +685,9 @@ namespace AvalonDock
             //remove the pane from its original children collection
             FrameworkElement parentElement = paneToAnchor.Parent as FrameworkElement;
 
+            if (anchor == AnchorStyle.None)
+                anchor = AnchorStyle.Right;
+
             //Change anchor border according to FlowDirection
             if (FlowDirection == FlowDirection.RightToLeft)
             {
@@ -801,6 +804,9 @@ namespace AvalonDock
         /// <param name="anchor"></param>
         public void Anchor(Pane paneToAnchor, Pane relativePane, AnchorStyle anchor)
         {
+            if (anchor == AnchorStyle.None)
+                anchor = AnchorStyle.Right;
+
             //Change anchor border according to FlowDirection
             if (FlowDirection == FlowDirection.RightToLeft)
             {
@@ -832,6 +838,9 @@ namespace AvalonDock
         /// <param name="anchor"></param>
         public void Anchor(DockablePane paneToAnchor, DocumentPane relativePane, AnchorStyle anchor)
         {
+            if (anchor == AnchorStyle.None)
+                anchor = AnchorStyle.Right;
+
             //get a reference to the resizingpanel container of relativePane
             ResizingPanel relativePaneContainer = LogicalTreeHelper.GetParent(relativePane) as ResizingPanel;
             DocumentPaneResizingPanel relativeDocumentPaneContainer = relativePane.GetParentDocumentPaneResizingPanel();
@@ -981,6 +990,9 @@ namespace AvalonDock
         /// <param name="anchor"></param>
         public void Anchor(DocumentPane paneToAnchor, DocumentPane relativePane, AnchorStyle anchor)
         {
+            if (anchor == AnchorStyle.None)
+                anchor = AnchorStyle.Right;
+
             //get a reference to the resizingpanel container of relativePane
             ResizingPanel relativePaneContainer = LogicalTreeHelper.GetParent(relativePane) as ResizingPanel;
             DocumentPaneResizingPanel relativeDocumentPaneContainer = relativePane.GetParentDocumentPaneResizingPanel();
@@ -1083,6 +1095,9 @@ namespace AvalonDock
         /// <param name="anchor"></param>
         public void Anchor(DockablePane paneToAnchor, DockablePane relativePane, AnchorStyle anchor)
         {
+            if (anchor == AnchorStyle.None)
+                anchor = AnchorStyle.Right;
+
             //get a refernce to the resizingpanel container of relativePane
             ResizingPanel relativePaneContainer = LogicalTreeHelper.GetParent(relativePane) as ResizingPanel;
             Orientation requestedOrientation =
@@ -1536,7 +1551,7 @@ namespace AvalonDock
         /// <param name="desideredState">State desidered</param>
         public void Show(DockableContent content, DockableContentState desideredState)
         {
-            Show(content, desideredState, AnchorStyle.Right);
+            Show(content, desideredState, AnchorStyle.None);
         }
 
         /// <summary>
@@ -1696,6 +1711,14 @@ namespace AvalonDock
                         DockablePane newHostpane = new DockablePane();
                         newHostpane.Items.Add(content);
 
+                        if (desideredAnchor == AnchorStyle.None &&
+                            content.SavedStateAndPosition != null &&
+                            content.SavedStateAndPosition.Anchor != AnchorStyle.None)
+                            desideredAnchor = content.SavedStateAndPosition.Anchor;
+
+                        if (desideredAnchor == AnchorStyle.None)
+                            desideredAnchor = AnchorStyle.Right;
+
                         if (desideredAnchor == AnchorStyle.Left ||
                             desideredAnchor == AnchorStyle.Right)
                         {
@@ -1705,7 +1728,8 @@ namespace AvalonDock
                                 !double.IsNaN(content.SavedStateAndPosition.Width))
                                 w = content.SavedStateAndPosition.Width;
 
-                            //ResizingPanel.SetResizeWidth(newHostpane, w);
+                            ResizingPanel.SetResizeWidth(newHostpane, new GridLength(w));
+                            ResizingPanel.SetEffectiveSize(newHostpane, new Size(w, 0.0));
                         }
                         else
                         {
@@ -1715,7 +1739,8 @@ namespace AvalonDock
                                 !double.IsNaN(content.SavedStateAndPosition.Height))
                                 h = content.SavedStateAndPosition.Height;
 
-                            //ResizingPanel.SetResizeHeight(newHostpane, h);
+                            ResizingPanel.SetResizeHeight(newHostpane, new GridLength(h));
+                            ResizingPanel.SetEffectiveSize(newHostpane, new Size(0.0, h));
                         }
 
                         Anchor(newHostpane, desideredAnchor);
@@ -2474,13 +2499,18 @@ namespace AvalonDock
         {
             if (content.State == DockableContentState.AutoHide)
             {
-                if ((content.Parent as DockablePane).Items.Count == 1)
+                DockablePane parentContainer = content.Parent as DockablePane;
+                if (parentContainer != null &&
+                    parentContainer.Items.Count == 1)
                     ToggleAutoHide(content.Parent as DockablePane);
             }
             if (content.State == DockableContentState.DockableWindow ||
                 content.State == DockableContentState.FloatingWindow)
             {
-                if ((content.Parent as DockablePane).Items.Count == 1)
+                DockablePane parentContainer = content.Parent as DockablePane;
+
+                if (parentContainer != null &&
+                    parentContainer.Items.Count == 1)
                 {
                     FloatingWindow floatingWindow = Window.GetWindow(content) as FloatingWindow;
                     floatingWindow.Close();
@@ -2493,6 +2523,11 @@ namespace AvalonDock
             content.DetachFromContainerPane();
         }
 
+
+        public delegate void DeserializationCallbackHandler(object sender, DeserializationCallbackEventArgs e);
+        public DeserializationCallbackHandler DeserializationCallback { get; set; }
+
+
         void ShowAllHiddenContents()
         {
             while (_hiddenContents.Count > 0)
@@ -2502,7 +2537,7 @@ namespace AvalonDock
             }
         }
 
-        void RestoreDocumentPaneLayout(XmlElement childElement, out DocumentPane mainExistingDocumentPane, out DocumentPaneResizingPanel existingDocumentPanel)
+        void RestoreDocumentPaneLayout(XmlElement childElement, out DocumentPane mainExistingDocumentPane, out DocumentPaneResizingPanel existingDocumentPanel, DockableContent[] dockableContents)
         {
             mainExistingDocumentPane = (Content is DocumentPane) ? Content as DocumentPane : GetMainDocumentPane(Content as ResizingPanel);
             existingDocumentPanel = mainExistingDocumentPane.GetParentDocumentPaneResizingPanel();
@@ -2534,16 +2569,35 @@ namespace AvalonDock
             {
                 if (contentElement.HasAttribute("Name"))
                 {
-                    foreach (DockableContent content in DockableContents)
+                    DockableContent foundContent = null;
+                    string contentName = contentElement.GetAttribute("Name");
+                    foreach (DockableContent content in dockableContents)
                     {
-                        if (content.Name == contentElement.GetAttribute("Name"))
+                        if (content.Name == contentName)
                         {
-                            DetachContentFromDockingManager(content);
-                            mainExistingDocumentPane.Items.Add(content);
-                            content.SetStateToDocument();
-                            content.RestoreLayout(contentElement);
+                            foundContent = content;
                             break;
                         }
+                    }
+
+                    if (foundContent == null &&
+                        DeserializationCallback != null)
+                    {
+                        DeserializationCallbackEventArgs e = new DeserializationCallbackEventArgs(contentName);
+                        DeserializationCallback(this, e);
+
+                        foundContent = e.Content;
+                    }
+
+
+                    if (foundContent != null)
+                    {
+                        DetachContentFromDockingManager(foundContent);
+                        mainExistingDocumentPane.Items.Add(foundContent);
+                        foundContent.SetStateToDocument();
+
+                        //call custom layout persistence method
+                        foundContent.RestoreLayout(contentElement);
                     }
                 }
             }
@@ -2593,23 +2647,39 @@ namespace AvalonDock
                     {
                         if (contentElement.HasAttribute("Name"))
                         {
+                            DockableContent foundContent = null;
+                            string contentName = contentElement.GetAttribute("Name");
                             foreach (DockableContent content in dockableContents)
                             {
-                                if (content.Name == contentElement.GetAttribute("Name"))
+                                if (content.Name == contentName)
                                 {
-                                    DetachContentFromDockingManager(content);
-                                    pane.Items.Add(content);
-                                    content.SetStateToDock();
-                                    if (contentElement.HasAttribute("AutoHide") &&
-                                        XmlConvert.ToBoolean(contentElement.GetAttribute("AutoHide")) &&
-                                        pane.Items.Count == 1)
-                                        toggleAutoHide = true;
-
-                                    //call custom layout persistence method
-                                    content.RestoreLayout(contentElement);
-
+                                    foundContent = content;
                                     break;
                                 }
+                            }
+
+                            if (foundContent == null &&
+                                DeserializationCallback != null)
+                            {
+                                DeserializationCallbackEventArgs e = new DeserializationCallbackEventArgs(contentName);
+                                DeserializationCallback(this, e);
+
+                                foundContent = e.Content;
+                            }
+
+
+                            if (foundContent != null)
+                            {
+                                DetachContentFromDockingManager(foundContent);
+                                pane.Items.Add(foundContent);
+                                foundContent.SetStateToDock();
+                                if (contentElement.HasAttribute("AutoHide") &&
+                                    XmlConvert.ToBoolean(contentElement.GetAttribute("AutoHide")) &&
+                                    pane.Items.Count == 1)
+                                    toggleAutoHide = true;
+
+                                //call custom layout persistence method
+                                foundContent.RestoreLayout(contentElement);
                             }
                         }
                     }
@@ -2629,7 +2699,7 @@ namespace AvalonDock
                     DocumentPaneResizingPanel existingDocumentPanel = null;
                     DocumentPane mainExistingDocumentPane = null;
 
-                    RestoreDocumentPaneLayout(childElement, out mainExistingDocumentPane, out existingDocumentPanel);
+                    RestoreDocumentPaneLayout(childElement, out mainExistingDocumentPane, out existingDocumentPanel, dockableContents);
 
                     if (existingDocumentPanel != null)
                     {
@@ -2723,7 +2793,7 @@ namespace AvalonDock
                 DocumentPaneResizingPanel existingDocumentPanel = null;
                 DocumentPane mainExistingDocumentPane = null;
 
-                RestoreDocumentPaneLayout(rootElement, out mainExistingDocumentPane, out existingDocumentPanel);
+                RestoreDocumentPaneLayout(rootElement, out mainExistingDocumentPane, out existingDocumentPanel, actualContents);
 
                 if (existingDocumentPanel != null)
                 {
@@ -2776,14 +2846,24 @@ namespace AvalonDock
                 foreach (XmlElement contentElement in paneElement.ChildNodes)
                 {
                     #region Find the content to transfer
+                    string contentToFindName  = contentElement.GetAttribute("Name");
                     foreach (DockableContent content in actualContents)
                     {
-                        if (contentElement.GetAttribute("Name") == content.Name)
+                        if (contentToFindName == content.Name)
                         {
                             contentToTransfer = content;
                             break;
                         }
-                    } 
+                    }
+
+                    if (contentToTransfer == null &&
+                        DeserializationCallback != null)
+                    {
+                        DeserializationCallbackEventArgs e = new DeserializationCallbackEventArgs(contentToFindName);
+                        DeserializationCallback(this, e);
+
+                        contentToTransfer = e.Content;
+                    }
                     #endregion
                 
                 
