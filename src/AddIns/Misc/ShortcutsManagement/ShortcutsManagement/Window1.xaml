@@ -6,11 +6,11 @@
     Title="Window1" Height="300" Width="460" MinWidth="460">
 
     <Window.Resources>
-        <local:ShortcutsProvider x:Key="ShortcutsReceiver" />
+        <local:ShortcutsFinder x:Key="ShortcutsReceiver" />
         <ObjectDataProvider x:Key="AddIns"  ObjectInstance="{StaticResource ShortcutsReceiver}" MethodName="GetAddIns" />
     </Window.Resources>
     
     <Grid>
-	<local:ShortcutsManagementOptionsPanel x:Name="shortcutsManagementOptionsPanel" Margin="5" IsSearchable="True"/>
+	<local:ShortcutsManagementOptionsPanel x:Name="optionsPanel" Margin="5" />
     </Grid>
 </Window>

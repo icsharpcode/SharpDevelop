@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -12,10 +10,8 @@ namespace ICSharpCode.ShortcutsManagement
     /// </summary>
 	public class Shortcut : INotifyPropertyChanged, ICloneable
     {
-        private ObservableCollection<InputGesture> gestures;
-
 		/// <summary>
-		/// List of keyboard gestures which will invoke provided action
+		/// List of input gestures which will invoke this action
 		/// </summary>
         public ObservableCollection<InputGesture> Gestures
         {
@@ -24,25 +20,35 @@ namespace ICSharpCode.ShortcutsManagement
         }
 
 
-        private string name;
+        private string _text;
         
         /// <summary>
-        /// Shortcut action name
+        /// Shortcut action name (displayed to user)
         /// </summary>
-        public string Name
+        public string Text
         {
             get
             {
-                return name;
+                return _text;
             }
             set
             {
-                if(name != value)
+                if(_text != value)
                 {
-                    name = value;
-                    InvokePropertyChanged("Name");
+                    _text = value;
+                    InvokePropertyChanged("Text");
                 }
             }
+        }
+
+        /// <summary>
+        /// Shortcut Id.
+        /// 
+        /// This value is used to identify shortcut clones
+        /// </summary>
+        public string Id
+        {
+            get; set;
         }
 
         private bool isVisible;
@@ -60,8 +66,7 @@ namespace ICSharpCode.ShortcutsManagement
             }
             set
             {
-                if(isVisible != value)
-                {
+                if(isVisible != value) {
                     isVisible = value;
                     InvokePropertyChanged("IsVisible");
                 }
@@ -69,42 +74,44 @@ namespace ICSharpCode.ShortcutsManagement
         }
 
         /// <summary>
-        /// Create new shortcut
+        /// Create new instance of shortcut
         /// </summary>
-        /// <param name="shortcutName">Shortcut action name</param>
+        /// <param name="shortcutText">Shortcut action name (displayed to user)</param>
         /// <param name="gestures">Gestures</param>
-        public Shortcut(string shortcutName, InputGestureCollection gestures)
+        public Shortcut(string shortcutText, InputGestureCollection gestures)
         {
             IsVisible = true;
-            Name = shortcutName;
+            Id = Guid.NewGuid().ToString();
+            Text = shortcutText;
+
             Gestures = new ObservableCollection<InputGesture>();
-            if(gestures != null)
-            {
-                foreach (InputGesture gesture in gestures)
-                {
+            if(gestures != null) {
+                foreach (InputGesture gesture in gestures) {
                     Gestures.Add(gesture);
                 }
             }
 
+            // On changes in gestures collection notify that whole property has changed
             Gestures.CollectionChanged += delegate { InvokePropertyChanged("Gestures"); };
         }
 
+        /// <summary>
+        /// Determines whether provided gesture is already assigned to this action
+        /// </summary>
+        /// <param name="gesture">Input gesture</param>
+        /// <returns>True if provided gesture is assigned to this action. Otherwise false</returns>
         public bool ContainsGesture(InputGesture gesture)
         {
-            foreach (var existingGesture in Gestures)
-            {
-                if(existingGesture == gesture)
-                {
+            foreach (var existingGesture in Gestures) {
+                if(existingGesture == gesture) {
                     return true;
                 }
 
-                if(existingGesture is KeyGesture && gesture is KeyGesture)
-                {
+                if(existingGesture is KeyGesture && gesture is KeyGesture) {
                     var existingKeyGesture = (KeyGesture) existingGesture;
                     var keyGesture = (KeyGesture) gesture;
                     
-                    if(existingKeyGesture.Key == keyGesture.Key && existingKeyGesture.Modifiers == keyGesture.Modifiers)
-                    {
+                    if(existingKeyGesture.Key == keyGesture.Key && existingKeyGesture.Modifiers == keyGesture.Modifiers) {
                         return true;
                     }
                 }
@@ -113,12 +120,26 @@ namespace ICSharpCode.ShortcutsManagement
             return false;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        /// <summary>
+        /// Make a deep copy of this object
+        /// </summary>
+        /// <returns>Deep copy of action</returns>
+        public object Clone()
+        {
+            var clone = new Shortcut(Text, null);
+            clone.Id = Id;
+
+            foreach (var gesture in Gestures) {
+                clone.Gestures.Add(gesture);
+            }
+
+            return clone;
+        }
 
         /// <summary>
         /// Invoke dependency property changed event
         /// </summary>
-        /// <param name="propertyName">Name of dependency property from this classs</param>
+        /// <param name="propertyName">Text of dependency property from this classs</param>
         private void InvokePropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -127,15 +148,9 @@ namespace ICSharpCode.ShortcutsManagement
             }
         }
 
-        public object Clone()
-        {
-            var clone = new Shortcut(Name, null);
-            foreach (var gesture in Gestures)
-            {
-                clone.Gestures.Add(gesture);
-            }
-
-            return clone;
-        }
+        /// <summary>
+        /// Notify observers about property changes
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

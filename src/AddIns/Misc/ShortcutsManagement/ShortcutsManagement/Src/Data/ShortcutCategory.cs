@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace ICSharpCode.ShortcutsManagement
@@ -6,7 +7,7 @@ namespace ICSharpCode.ShortcutsManagement
 	/// <summary>
 	/// Shortcut category
 	/// </summary>
-    public class ShortcutCategory : INotifyPropertyChanged
+    public class ShortcutCategory : INotifyPropertyChanged, ICloneable
     {
         private string name;
         
@@ -26,7 +27,7 @@ namespace ICSharpCode.ShortcutsManagement
                 if (name != value)
                 {
                     name = value;
-                    InvokePropertyChanged("Name");
+                    InvokePropertyChanged("Text");
                 }
             }
         }
@@ -46,8 +47,7 @@ namespace ICSharpCode.ShortcutsManagement
             }
             set
             {
-                if (isVisible != value)
-                {
+                if (isVisible != value) {
                     isVisible = value;
                     InvokePropertyChanged("IsVisible");
                 }
@@ -73,7 +73,7 @@ namespace ICSharpCode.ShortcutsManagement
         }
 
         /// <summary>
-        /// Create new category
+        /// Create new instance of category
         /// </summary>
         /// <param name="categoryName">Category name</param>
         public ShortcutCategory(string categoryName)
@@ -84,18 +84,64 @@ namespace ICSharpCode.ShortcutsManagement
             Name = categoryName;
         }
 
+	    /// <summary>
+	    /// Make a deep copy of category object
+	    /// </summary>
+	    /// <returns>Deep copy of this category</returns>
+        public object Clone()
+	    {
+	        var clonedCategory = new ShortcutCategory(Name);
+	        
+            foreach (var subCategory in SubCategories) {
+	            clonedCategory.SubCategories.Add((ShortcutCategory)subCategory.Clone());
+	        }
+
+            foreach (var shortcut in Shortcuts) {
+                clonedCategory.Shortcuts.Add((Shortcut)shortcut.Clone());
+            }
+
+	        return clonedCategory;
+	    }
+
+        /// <summary>
+        /// Find shortcut shortcut by ID in this category and subcategories
+        /// </summary>
+        /// <param name="shortcutId">Shortcut ID</param>
+        /// <returns>Shortcut with ID equal to provided one</returns>
+        public Shortcut FindShortcut(string shortcutId)
+        {
+            // Search for shortcut in shortcuts assigned to this category
+            foreach (var s in Shortcuts) {
+                if(s.Id == shortcutId) {
+                    return s;
+                }
+            }
+
+            // Search for shortcut in sub categories
+            foreach (var category in SubCategories) {
+                Shortcut foundShortcut;
+                if ((foundShortcut = category.FindShortcut(shortcutId)) != null) {
+                    return foundShortcut;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Invoke dependency property changed event
         /// </summary>
-        /// <param name="propertyName">Name of dependency property from this classs</param>
+        /// <param name="propertyName">Text of dependency property from this classs</param>
         private void InvokePropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-            {
+            if (PropertyChanged != null) {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
 
+        /// <summary>
+        /// Notify observers about property changes
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

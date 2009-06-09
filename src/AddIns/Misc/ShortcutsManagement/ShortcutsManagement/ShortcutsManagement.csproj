@@ -55,6 +55,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Luna">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -90,6 +93,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Src\Dialogs\ShortcutsManagementOptionsPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Src\Dialogs\ShortcutsTreeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -112,9 +119,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="Src\Converters\InputGestureConverter.cs" />
+    <Compile Include="Src\Converters\GesturesCollectionConverter.cs" />
+    <Compile Include="Src\Converters\InputGestureConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Converters\ShortcutCategorySubElementsMergedConverter.cs" />
     <Compile Include="Src\Data\AddIn.cs" />
-    <Compile Include="Src\Converters\GesturesListConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -131,15 +141,17 @@
     <Compile Include="Src\Data\KeyGestureTemplate.cs" />
     <Compile Include="Src\Data\Shortcut.cs" />
     <Compile Include="Src\Data\ShortcutCategory.cs" />
+    <Compile Include="Src\Data\ShortcutsFinder.cs" />
     <Compile Include="Src\Dialogs\ShortcutManagementWindow.xaml.cs">
       <DependentUpon>ShortcutManagementWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\Dialogs\ShortcutsManagementOptionsPanel.xaml.cs">
       <DependentUpon>ShortcutsManagementOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Data\ShortcutsProvider.cs" />
-    <Compile Include="Src\Converters\ShortcutsTreeConverter.cs" />
-    <Compile Include="Src\Extensions\GesturesHelper.cs" />
+    <Compile Include="Src\Dialogs\ShortcutsTreeView.xaml.cs">
+      <DependentUpon>ShortcutsTreeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Extensions\TextBlockBehavior.cs" />
     <Compile Include="Src\Extensions\TreeViewExtensions.cs" />
     <Compile Include="Src\Converters\TypeNameConverter.cs" />
@@ -158,6 +170,8 @@
     <Resource Include="Resources\key_enter_pressed.png" />
     <Resource Include="Resources\add-smaller.png" />
     <Resource Include="Resources\16-square-red-remove.png" />
+    <Resource Include="Resources\add_correction_16x16.gif" />
+    <Resource Include="Resources\edit_add.png" />
     <Content Include="ShortcutsManagement.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
