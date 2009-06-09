@@ -218,6 +218,7 @@
     <Compile Include="Designer\LoadFontTestFixture.cs" />
     <Compile Include="Designer\LoadFormTestFixtureBase.cs" />
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
+    <Compile Include="Designer\LoadFormWithSysPathAppendStatementTestFixture.cs" />
     <Compile Include="Designer\LoadListViewFormTestFixture.cs" />
     <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />

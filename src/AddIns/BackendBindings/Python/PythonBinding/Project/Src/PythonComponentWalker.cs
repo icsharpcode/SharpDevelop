@@ -47,7 +47,7 @@ namespace ICSharpCode.PythonBinding
 			ast.Walk(this);
 			
 			// Did we find the InitializeComponent method?
-			if (component == null) {
+			if (!FoundInitializeComponentMethod) {
 				throw new PythonComponentWalkerException("Unable to find InitializeComponents method.");
 			}
 			return component;
@@ -92,6 +92,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(AssignmentStatement node)
 		{			
+			if (!FoundInitializeComponentMethod) {
+				return false;
+			}
+			
 			if (node.Left.Count > 0) {
 				MemberExpression lhsMemberExpression = node.Left[0] as MemberExpression;
 				NameExpression lhsNameExpression = node.Left[0] as NameExpression;
@@ -123,6 +127,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(ConstantExpression node)
 		{
+			if (!FoundInitializeComponentMethod) {
+				return false;
+			}
+
 			if (fieldExpression.IsSelfReference) {
 				SetPropertyValue(fieldExpression.MemberName, node.Value);
 			} else {
@@ -133,6 +141,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(CallExpression node)
 		{			
+			if (!FoundInitializeComponentMethod) {
+				return false;
+			}
+				
 			if (walkingAssignment) {
 				WalkAssignmentRhs(node);
 			} else {
@@ -143,6 +155,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(NameExpression node)
 		{
+			if (!FoundInitializeComponentMethod) {
+				return false;
+			}
+			
 			SetPropertyValue(fieldExpression.MemberName, node.Name.ToString());
 			return false;
 		}
@@ -154,6 +170,10 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public override bool Walk(AugmentedAssignStatement node)
 		{
+			if (!FoundInitializeComponentMethod) {
+				return false;
+			}
+			
 			MemberExpression eventExpression = node.Left as MemberExpression;
 			string eventName = eventExpression.Name.ToString();
 			PythonControlFieldExpression field = PythonControlFieldExpression.Create(eventExpression);
@@ -369,6 +389,10 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return null;
+		}
+		
+		bool FoundInitializeComponentMethod {
+			get { return component != null; }
 		}
 	}
 }
