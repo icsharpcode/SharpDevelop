@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.ShortcutsManagement.Data;
 
 namespace ICSharpCode.ShortcutsManagement
 {
@@ -80,9 +81,6 @@ namespace ICSharpCode.ShortcutsManagement
             // Display similar shortcuts (Shortcuts with the same input gestures assigned to them)
             shortcutsManagementOptionsPanel.DataContext = addInsCopy;
             shortcutsManagementOptionsPanel.Loaded += delegate { FilterSimilarShortcuts(); };
-
-            // Window title
-            Title = shortcut.Text;
         }
 
         /// <summary>

@@ -3,4 +3,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>C:\VSC\SharpDevelop40\SharpDevelop\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
+  <PropertyGroup>
+    <ProjectView>ShowAllFiles</ProjectView>
+  </PropertyGroup>
 </Project>

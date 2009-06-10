@@ -1,7 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Input;
-using ICSharpCode.Core.Presentation;
+﻿using System.Windows;
 
 namespace ICSharpCode.ShortcutsManagement
 {
@@ -10,11 +7,9 @@ namespace ICSharpCode.ShortcutsManagement
     /// </summary>
     public partial class Window1 : Window
     {
-        
         public Window1()
         {
             InitializeComponent();
-
         }
     }
 }

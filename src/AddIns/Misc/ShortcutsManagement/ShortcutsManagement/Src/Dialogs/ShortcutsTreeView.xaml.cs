@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.ShortcutsManagement.Data;
 
 namespace ICSharpCode.ShortcutsManagement
 {

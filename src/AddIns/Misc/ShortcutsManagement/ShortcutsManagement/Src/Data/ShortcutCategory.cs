@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace ICSharpCode.ShortcutsManagement
+namespace ICSharpCode.ShortcutsManagement.Data
 {
 	/// <summary>
 	/// Shortcut category

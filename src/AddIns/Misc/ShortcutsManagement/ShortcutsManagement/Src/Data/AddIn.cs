@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace ICSharpCode.ShortcutsManagement
+namespace ICSharpCode.ShortcutsManagement.Data
 {
 	/// <summary>
 	/// Add-in where shortcuts were registered

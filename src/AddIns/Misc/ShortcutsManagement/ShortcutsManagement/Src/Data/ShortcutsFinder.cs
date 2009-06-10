@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Input;
 
-namespace ICSharpCode.ShortcutsManagement
+namespace ICSharpCode.ShortcutsManagement.Data
 {
     /// <summary>
     /// Filters and hides shortcuts from add-in collection

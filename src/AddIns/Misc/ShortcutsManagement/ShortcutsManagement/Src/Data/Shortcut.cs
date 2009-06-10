@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace ICSharpCode.ShortcutsManagement
+namespace ICSharpCode.ShortcutsManagement.Data
 {
     /// <summary>
     /// Shortcut

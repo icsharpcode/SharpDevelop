@@ -5,11 +5,9 @@
     xmlns:System="clr-namespace:System;assembly=mscorlib"
     Title="Window1" Height="300" Width="460" MinWidth="460">
 
+
     <Window.Resources>
-        <local:ShortcutsFinder x:Key="ShortcutsReceiver" />
-        <ObjectDataProvider x:Key="AddIns"  ObjectInstance="{StaticResource ShortcutsReceiver}" MethodName="GetAddIns" />
     </Window.Resources>
-    
     <Grid>
 	<local:ShortcutsManagementOptionsPanel x:Name="optionsPanel" Margin="5" />
     </Grid>

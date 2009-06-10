@@ -1,0 +1,160 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Converters="clr-namespace:ICSharpCode.ShortcutsManagement.Converters">
+
+
+
+
+
+
+
+
+
+    <LinearGradientBrush x:Key="SelectedItemBackground" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#3194FF" Offset="0" />
+        <GradientStop Color="#3984F7" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="SelectedItemForeground" Color="#FFF" />
+
+    <Style x:Key="RemoveButton" TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Image Source="..\..\Resources\16-square-red-remove.png" Width="16"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="AddButton" TargetType="Button">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Image Source="..\..\Resources\add_correction_16x16.gif" Width="16" />
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style x:Key="GesturesListBox" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <StackPanel>
+                        <Border x:Name="ListBoxItemBorder" CornerRadius="6" Padding="10, 5" Background="{TemplateBinding Background}">
+                            <ContentPresenter />
+                        </Border>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="ListBoxItemBorder" Property="Panel.Background" Value="{StaticResource SelectedItemBackground}" />
+                            <Setter TargetName="ListBoxItemBorder" Property="TextElement.Foreground" Value="{StaticResource SelectedItemForeground}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style x:Key="KeyToggleButton" TargetType="ToggleButton">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Image x:Name="searchTypeImage" Source="..\..\Resources\key_enter.png" />
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Source" TargetName="searchTypeImage" Value="..\..\Resources\key_enter_pressed.png"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+
+
+
+
+
+
+    <Converters:GesturesListConverter x:Key="GesturesListConverter" />
+    <Converters:ShortcutCategorySubElementsMergedConverter x:Key="ShortcutsTreeConverter" />
+    <Converters:TypeNameConverter x:Key="TypeNameConverter" />
+    <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+    
+    <Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid Width="15" Height="13" Background="Transparent">
+                        <Path x:Name="expandPath" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="1,1,1,1" Fill="#444" Data="M 4 0 L 8 4 L 4 8 Z"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Data" TargetName="expandPath" Value="M 0 4 L 8 4 L 4 8 Z"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ShortcutsTreeItem" TargetType="{x:Type TreeViewItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TreeViewItem">
+                    <Border Name="OuterBorder" BorderThickness="2" CornerRadius="8" >
+                        <StackPanel>
+                            <Border Name="InnerBorder" Background="White" BorderThickness="0.6" CornerRadius="8" Padding="6" >
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="19" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleButton Grid.Column="0" x:Name="treeViewItemToggleButton" Style="{StaticResource ExpandCollapseToggleStyle}" IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press" />
+                                    <ContentPresenter Name="PART_Header" ContentSource="Header" VerticalAlignment="Center"  Grid.Column="1" />
+                                </Grid>
+                            </Border>
+                            <ItemsPresenter x:Name="ItemsHost" />
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanded" Value="false">
+                            <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="HasItems" Value="false">
+                            <Setter TargetName="treeViewItemToggleButton" Property="Visibility" Value="Hidden"/>
+                        </Trigger>
+                        <DataTrigger Binding="{Binding Converter={StaticResource TypeNameConverter}}" Value="ShortcutCategory">
+                            <Setter TargetName="InnerBorder" Property="Panel.Background" Value="#DEDE00" />
+                            <Setter TargetName="InnerBorder" Property="TextElement.Foreground" Value="#FFFFFF" />
+                            <Setter TargetName="OuterBorder" Property="Margin" Value="20,0,0,0" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Converter={StaticResource TypeNameConverter}}" Value="AddIn">
+                            <Setter TargetName="InnerBorder" Property="Panel.Background" Value="#FFFFFF" />
+                            <Setter TargetName="InnerBorder" Property="TextElement.Foreground" Value="#000000" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=IsVisible}" Value="false">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="InnerBorder" Property="Panel.Background" Value="{StaticResource SelectedItemBackground}" />
+                            <Setter TargetName="InnerBorder" Property="TextElement.Foreground" Value="{StaticResource SelectedItemForeground}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Converters:InputGestureConverter x:Key="InputGestureConverter" />
+</ResourceDictionary>

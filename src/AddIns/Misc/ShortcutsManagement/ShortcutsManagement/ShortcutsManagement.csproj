@@ -88,6 +88,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Src\Dialogs\Resources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Src\Dialogs\ShortcutManagementWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -159,6 +163,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.resx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -166,12 +171,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\key_enter.png" />
-    <Resource Include="Resources\key_enter_pressed.png" />
-    <Resource Include="Resources\add-smaller.png" />
     <Resource Include="Resources\16-square-red-remove.png" />
     <Resource Include="Resources\add_correction_16x16.gif" />
-    <Resource Include="Resources\edit_add.png" />
+    <Resource Include="Resources\key_enter.png" />
+    <Resource Include="Resources\key_enter_pressed.png" />
     <Content Include="ShortcutsManagement.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

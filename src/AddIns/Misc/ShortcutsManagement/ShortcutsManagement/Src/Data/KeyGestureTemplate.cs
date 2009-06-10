@@ -2,7 +2,7 @@
 using System.Text;
 using System.Windows.Input;
 
-namespace ICSharpCode.ShortcutsManagement
+namespace ICSharpCode.ShortcutsManagement.Data
 {
     /// <summary>
     /// Describes full key gesture or part of key gesture
