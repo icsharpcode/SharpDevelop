@@ -24,8 +24,17 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Full name of routed UI command which will trigger this binding
+		/// 
+		/// If command with provided name is not yet registered it's created automatically
 		/// </summary>
 		public string Command {
+			get; private set;
+		}
+		
+		/// <summary>
+		/// Override routed command text (string visible to user) if specified
+		/// </summary>
+		public string CommandText {
 			get; private set;
 		}
 		
@@ -44,6 +53,14 @@ namespace ICSharpCode.Core
 		/// Optional, if provided input bindings in the same context will be created
 		/// </summary>
 		public string Gestures {
+			get; private set;
+		}
+		
+		/// <summary>
+		/// If input binding is created in the same context (this is done by setting <see cref="Gestures" /> property)
+		/// assign this input binding to provided category
+		/// </summary>
+		public string Category {
 			get; private set;
 		}
 		
@@ -68,8 +85,10 @@ namespace ICSharpCode.Core
 			Codon = codon;
 			Class = Codon.Properties["class"];
 			Command = Codon.Properties["command"];
+			CommandText = Codon.Properties["commandtext"];
 			Context = Codon.Properties["context"];
 			Gestures = Codon.Properties["gestures"];
+			Category = Codon.Properties["category"];
 		}
 	}
 }

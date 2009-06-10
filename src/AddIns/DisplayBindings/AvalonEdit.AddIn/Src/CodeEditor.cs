@@ -120,7 +120,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var contextName = this.GetType().FullName;
 			CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, this, CommandsRegistry.CreateCommandBindingUpdateHandler(CommandBindings, contextName, this));
 			CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, this, CommandsRegistry.CreateInputBindingUpdateHandler(InputBindings, contextName, this));
-			CommandsRegistry.RegisterCommandBinding(contextName, this, "SDWindowCommands.SplitView", OnSplitView, OnCanSplitView);
+			
+			var commandBindingInfo = new CommandBindingInfo();
+			commandBindingInfo.ContextName = contextName;
+			commandBindingInfo.Context = this;
+			commandBindingInfo.RoutedCommandName = "SDWindowCommands.SplitView";
+			commandBindingInfo.ExecutedEventHandler = OnSplitView;
+			commandBindingInfo.CanExecutedEventHandler = OnCanSplitView;
+			
+			CommandsRegistry.RegisterCommandBinding(commandBindingInfo);
 			
 			CommandsRegistry.InvokeCommandBindingUpdateHandlers(contextName, this);
 			CommandsRegistry.InvokeInputBindingUpdateHandlers(contextName, this);

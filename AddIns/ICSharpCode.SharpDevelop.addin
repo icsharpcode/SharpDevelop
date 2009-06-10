@@ -99,42 +99,152 @@
 	
 	
 	<Path name="/SharpDevelop/Workbench/CommandBindings">
-		<CommandBinding command="SDTestCommands.Test" class="ICSharpCode.SharpDevelop.Commands.TestCommand" gestures="Ctrl+M" />
-		
-		<CommandBinding command="SDBuildCommands.BuildSolution" class="ICSharpCode.SharpDevelop.Project.Commands.Build" gestures="F8" />
-		<CommandBinding command="SDBuildCommands.RebuildSolution" class="ICSharpCode.SharpDevelop.Project.Commands.Rebuild" gestures="Alt+F8" />
-		<CommandBinding command="SDBuildCommands.CleanSolution" class="ICSharpCode.SharpDevelop.Project.Commands.Clean" />
-		<CommandBinding command="SDBuildCommands.BuildProject" class="ICSharpCode.SharpDevelop.Project.Commands.BuildProject" gestures="F9" />
-		<CommandBinding command="SDBuildCommands.RebuildProject" class="ICSharpCode.SharpDevelop.Project.Commands.RebuildProject" gestures="Alt+F9" />
-		<CommandBinding command="SDBuildCommands.CleanProject" class="ICSharpCode.SharpDevelop.Project.Commands.CleanProject" />
-		<CommandBinding command="SDBuildCommands.AbortBuild" class="ICSharpCode.SharpDevelop.Project.Commands.AbortBuild" />
-		<CommandBinding command="SDBuildCommands.EditConfigurationsCommand" class="ICSharpCode.SharpDevelop.Project.Commands.EditConfigurationsCommand" />
-		
-		<CommandBinding command="SDProjectCommands.AddNewProjectToSolution" class="ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution" />
-		<CommandBinding command="SDProjectCommands.AddExitingProjectToSolution" class="ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution" />
-		<CommandBinding command="SDProjectCommands.AddExistingItemToSolution" class="ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution" />
-		<CommandBinding command="SDProjectCommands.AddNewSolutionFolderToSolution" class="ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution" />
+		<CommandBinding 
+			command="SDTestCommands.Test" 
+			class="ICSharpCode.SharpDevelop.Commands.TestCommand" 
+			gestures="Ctrl+M" 
+			category="Test" />
 		
 		
-		<CommandBinding command="SDDebugCommands.Execute" class="ICSharpCode.SharpDevelop.Project.Commands.Execute" gestures="F5" />
-		<CommandBinding command="SDDebugCommands.ExecuteWithoutDebugger" class="ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger" gestures="Ctrl+F5" />
-		<CommandBinding command="SDDebugCommands.StopDebugging" class="ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand" />
-		<CommandBinding command="SDDebugCommands.AttachToProcess" class="ICSharpCode.SharpDevelop.Project.Commands.AttachToProcessCommand" />
-		<CommandBinding command="SDDebugCommands.DetachFromProcess" class="ICSharpCode.SharpDevelop.Project.Commands.DetachFromProcessCommand" />
-		<CommandBinding command="SDDebugCommands.BreakDebugging" class="ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand" gestures="Ctrl+Alt+B" />
-		<CommandBinding command="SDDebugCommands.ContinueDebugging" class="ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand" gestures="Ctrl+Alt+B" />
-		<CommandBinding command="SDDebugCommands.StepOver" class="ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand" gestures="F10" />
-		<CommandBinding command="SDDebugCommands.StepInto" class="ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand" gestures="F11" />
-		<CommandBinding command="SDDebugCommands.StepOut" class="ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand" gestures="Shift+F11" />
-		<CommandBinding command="SDDebugCommands.ToggleBreakpoint" class="ICSharpCode.SharpDevelop.Project.Commands.ToggleBreakpointCommand" gestures="F7" />
+		<CommandBinding 
+			command="SDBuildCommands.BuildSolution" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.Build" 
+			gestures="F8" 
+			category="Building" />
+		<CommandBinding 
+			command="SDBuildCommands.RebuildSolution" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.Rebuild" 
+			gestures="Alt+F8" 
+			category="Building" />
+		<CommandBinding 
+			command="SDBuildCommands.CleanSolution" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.Clean" 
+			category="Building" />
+		<CommandBinding 
+			command="SDBuildCommands.BuildProject" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.BuildProject" 
+			gestures="F9" 
+			category="Building" />
+		<CommandBinding 
+			command="SDBuildCommands.RebuildProject" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.RebuildProject" 
+			gestures="Alt+F9" 
+			category="Building" />
+		<CommandBinding 
+			command="SDBuildCommands.CleanProject" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.CleanProject" 
+			category="Buildin" />
+		<CommandBinding 
+			command="SDBuildCommands.AbortBuild" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.AbortBuild" 
+			category="Buildin" />
+		<CommandBinding 
+			command="SDBuildCommands.EditConfigurationsCommand" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.EditConfigurationsCommand" 
+			category="Buildin" />
 		
 		
-		<CommandBinding command="SDSearchCommands.ToggleBookmark" class="ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark" gestures="Ctrl+F2" />
-		<CommandBinding command="SDSearchCommands.PrevBookmark" class="ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark" gestures="Alt+F2" />
-		<CommandBinding command="SDSearchCommands.NextBookmark" class="ICSharpCode.SharpDevelop.Bookmarks.NextBookmark" gestures="F2" />
-		<CommandBinding command="SDSearchCommands.ClearBookmarks" class="ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks" />
-		<CommandBinding command="SDSearchCommands.GotoLineNumber" class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber" gestures="Ctrl+G" />
-		<CommandBinding command="SDSearchCommands.GotoBrace" class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace" gestures="Ctrl+B" />
+		<CommandBinding 
+			command="SDProjectCommands.AddNewProjectToSolution" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution" 
+			category="Project" />
+		<CommandBinding 
+			command="SDProjectCommands.AddExitingProjectToSolution" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution" 
+			category="Project" />
+		<CommandBinding 
+			command="SDProjectCommands.AddExistingItemToSolution" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution" 
+			category="Project" />
+		<CommandBinding 
+			command="SDProjectCommands.AddNewSolutionFolderToSolution" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution" 
+			category="Project" />
+		
+		
+		<CommandBinding 
+			command="SDDebugCommands.Execute" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.Execute" 
+			gestures="F5" 
+			category="Debugger" />
+		<CommandBinding 
+			command="SDDebugCommands.ExecuteWithoutDebugger" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger" 
+			gestures="Ctrl+F5" 
+			category="Debugger" />
+		<CommandBinding 
+			command="SDDebugCommands.StopDebugging" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand" 
+			category="Debugger" />
+		<CommandBinding 
+			command="SDDebugCommands.AttachToProcess" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.AttachToProcessCommand" 
+			category="Project" />
+		<CommandBinding 
+			command="SDDebugCommands.DetachFromProcess" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.DetachFromProcessCommand" 
+			category="Debugger" />
+		<CommandBinding 
+			command="SDDebugCommands.BreakDebugging" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand" 
+			gestures="Ctrl+Alt+B" 
+			category="Debugger" />
+		<CommandBinding 
+			command="SDDebugCommands.ContinueDebugging" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand" 
+			gestures="Ctrl+Alt+B | Ctrl+Alt+D" 
+			category="Debugger" />
+		<CommandBinding 
+			command="SDDebugCommands.StepOver" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand" 
+			gestures="F10" 
+			category="Debugger" />
+		<CommandBinding 
+			command="SDDebugCommands.StepInto" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand" 
+			gestures="F11" 
+			category="Debugger" />
+		<CommandBinding 
+			command="SDDebugCommands.StepOut" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand" 
+			gestures="Shift+F11" 
+			category="Debugger" />
+		<CommandBinding 
+			command="SDDebugCommands.ToggleBreakpoint" 
+			class="ICSharpCode.SharpDevelop.Project.Commands.ToggleBreakpointCommand" 
+			gestures="F7" 
+			category="Debugger" />
+		
+		
+		<CommandBinding 
+			command="SDSearchCommands.ToggleBookmark" 
+			class="ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark" 
+			gestures="Ctrl+F2" 
+			category="Search" />
+		<CommandBinding 
+			command="SDSearchCommands.PrevBookmark" 
+			class="ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark" 
+			gestures="Alt+F2" 
+			category="Search" />
+		<CommandBinding 
+			command="SDSearchCommands.NextBookmark" 
+			class="ICSharpCode.SharpDevelop.Bookmarks.NextBookmark" 
+			gestures="F2" 
+			category="Search" />
+		<CommandBinding 
+			command="SDSearchCommands.ClearBookmarks" 
+			class="ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks" 
+			category="Search" />
+		<CommandBinding 
+			command="SDSearchCommands.GotoLineNumber" 
+			class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber" 
+			gestures="Ctrl+G" 
+			category="Search" />
+		<CommandBinding 
+			command="SDSearchCommands.GotoBrace" 
+			class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace" 
+			gestures="Ctrl+B" 
+			category="Search" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/InputBindings">

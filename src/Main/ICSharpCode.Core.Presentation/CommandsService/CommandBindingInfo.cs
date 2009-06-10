@@ -11,44 +11,8 @@ namespace ICSharpCode.Core.Presentation
 	{		
 		private UIElement contextInstance;
 		
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="contextName">Context full name</param>
-		/// <param name="routedCommandName">Name of routed UI command which triggers this binding</param>
-		/// <param name="className">Command full name</param>
-		/// <param name="addIn">Add-in where command is registered</param>
-		/// <param name="isLazy">Lazy load command</param>
-		public CommandBindingInfo(string contextName, string routedCommandName, string className, AddIn addIn, bool isLazy) {
-			RoutedCommandName = routedCommandName;
-			ContextName = contextName;
-			ClassName = className;
-			IsLazy = isLazy;
-			AddIn = addIn;
-		}
-
-		public CommandBindingInfo(string contextName, UIElement contextInstance, string routedCommandName, string className, AddIn addIn, bool isLazy) {
-			RoutedCommandName = routedCommandName;
-			ContextName = contextName;
-			ClassName = className;
-			IsLazy = isLazy;
-			AddIn = addIn;
-			this.contextInstance = contextInstance;
-		}		
-		
-		public CommandBindingInfo(string contextName, string routedCommandName, ExecutedRoutedEventHandler executedHandler, CanExecuteRoutedEventHandler canExecuteHandler) {
-			RoutedCommandName = routedCommandName;
-			ContextName = contextName;
-			this.executedEventHandler = executedHandler;
-			this.canExecutedEventHandler = canExecuteHandler;
-		}
-		
-		public CommandBindingInfo(string contextName, UIElement contextInstance, string routedCommandName, ExecutedRoutedEventHandler executedHandler, CanExecuteRoutedEventHandler canExecuteHandler) {
-			RoutedCommandName = routedCommandName;
-			ContextName = contextName;
-			this.executedEventHandler = executedHandler;
-			this.canExecutedEventHandler = canExecuteHandler;
-			this.contextInstance = contextInstance;
+		public CommandBindingInfo()
+		{
 		}
 		
 		/// <summary>
@@ -58,7 +22,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <seealso cref="RoutedCommand"></seealso>
 		public string RoutedCommandName { 
-			get; private set;
+			get; set;
 		}
 		
 		/// <summary>
@@ -77,7 +41,7 @@ namespace ICSharpCode.Core.Presentation
 		/// Add-in to which binded command belongs
 		/// </summary>
 		public AddIn AddIn {
-			get; private set;
+			get; set;
 		}
 		
 		/// <summary>
@@ -87,8 +51,10 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <seealso cref="Class"></seealso>
 		public string ClassName {
-			get; private set;
+			get; set;
 		}
+		
+		private System.Windows.Input.ICommand classInstance;
 		
 		/// <summary>
 		/// Binded command instance
@@ -99,14 +65,22 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <seealso cref="ClassName"></seealso>
 		public System.Windows.Input.ICommand Class { 
+			set {
+				classInstance = value;
+			}
 			get {
+				if(classInstance != null) {
+					return classInstance;
+				}
+				
 				if(AddIn != null && (AddIn.DependenciesLoaded || IsLazy)) {
 					CommandsRegistry.LoadAddinCommands(AddIn);
 				}
 				
 				System.Windows.Input.ICommand command;
 				CommandsRegistry.commands.TryGetValue(ClassName, out command);
-				
+				classInstance = command;
+
 				return command;
 			}
 		}
@@ -117,7 +91,7 @@ namespace ICSharpCode.Core.Presentation
 		/// Described binding will be valid in this context
 		/// </summary>
 		public string ContextName{
-			get; private set;
+			get; set;
 		}
 					
 		/// <summary>
@@ -126,6 +100,9 @@ namespace ICSharpCode.Core.Presentation
 		/// Described binding will be valid in this context
 		/// </summary>
 		public UIElement Context { 
+			set {
+				contextInstance = value;
+			}
 			get {
 				if(contextInstance != null) {
 					return contextInstance;
@@ -146,13 +123,22 @@ namespace ICSharpCode.Core.Presentation
 		/// to false then this binding can't be triggered until add-in is loaded.
 		/// </summary>
 		public bool IsLazy{
-			get; private set;
+			get; set;
 		}
 		
-		private ExecutedRoutedEventHandler executedEventHandler;
-		public void ExecutedEventHandler(object sender, ExecutedRoutedEventArgs e) {
-			if(executedEventHandler != null) {
-				executedEventHandler.Invoke(sender, e);
+		public ExecutedRoutedEventHandler ExecutedEventHandler
+		{
+			get; set;
+		}
+		
+		public CanExecuteRoutedEventHandler CanExecutedEventHandler
+		{
+			get; set;
+		}
+
+		internal void GeneratedExecutedEventHandler(object sender, ExecutedRoutedEventArgs e) {
+			if(ExecutedEventHandler != null) {
+				ExecutedEventHandler.Invoke(sender, e);
 			} else {
 				if(IsLazy && Class == null) {
 					AddIn.LoadRuntimeAssemblies();
@@ -167,10 +153,9 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		private CanExecuteRoutedEventHandler canExecutedEventHandler;
-		public void CanExecuteEventHandler(object sender, CanExecuteRoutedEventArgs e) {
-			if(canExecutedEventHandler != null) {
-				canExecutedEventHandler.Invoke(sender, e);
+		internal void GeneratedCanExecuteEventHandler(object sender, CanExecuteRoutedEventArgs e) {
+			if(CanExecutedEventHandler != null) {
+				CanExecutedEventHandler.Invoke(sender, e);
 			} else {
 				if(IsLazy && Class == null) {
 					e.CanExecute = true;

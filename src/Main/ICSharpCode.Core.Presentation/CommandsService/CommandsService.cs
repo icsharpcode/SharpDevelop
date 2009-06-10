@@ -43,17 +43,37 @@ namespace ICSharpCode.Core.Presentation
 				
 				// If routed with such name is not registered register routed command with text same as name
 				if(CommandsRegistry.GetRoutedUICommand(desc.Command) == null) {
-					CommandsRegistry.RegisterRoutedUICommand(desc.Command, desc.Command);
+					var commandText = string.IsNullOrEmpty(desc.CommandText) ? desc.Command : desc.CommandText;
+					CommandsRegistry.RegisterRoutedUICommand(desc.Command, commandText);
 				}
 				
-				CommandsRegistry.RegisterCommandBinding(contextName, null, desc.Command, desc.Class, desc.Codon.AddIn, desc.Lazy);
+				var commandBindingInfo = new CommandBindingInfo();
+				commandBindingInfo.ContextName = contextName;
+				commandBindingInfo.RoutedCommandName = desc.Command;
+				commandBindingInfo.ClassName = desc.Class;
+				commandBindingInfo.AddIn = desc.Codon.AddIn;
+				commandBindingInfo.IsLazy = desc.Lazy;
+				CommandsRegistry.RegisterCommandBinding(commandBindingInfo);
 				
 				// If gestures are provided register input binding in the same context
 				if(!string.IsNullOrEmpty(desc.Gestures)) {
 					var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(desc.Gestures);
-					foreach(InputGesture gesture in gestures) {
-						CommandsRegistry.RegisterInputBinding(contextName, null, desc.Command, gesture);
+					
+					var inputBindingInfo = new InputBindingInfo();
+					inputBindingInfo.ContextName = contextName;
+					inputBindingInfo.AddIn = desc.Codon.AddIn;
+					inputBindingInfo.RoutedCommandName = desc.Command;
+					inputBindingInfo.Gestures = gestures;
+					
+					if(!string.IsNullOrEmpty(desc.CommandText)) {
+						inputBindingInfo.RoutedCommandText = desc.CommandText;
 					}
+					
+					if(!string.IsNullOrEmpty(desc.Category)) {
+						inputBindingInfo.CategoryName = desc.Category;
+					}
+					
+					CommandsRegistry.RegisterInputBinding(inputBindingInfo);
 				}
 			}
 		}
@@ -62,10 +82,24 @@ namespace ICSharpCode.Core.Presentation
 		{
 			var descriptors = AddInTree.BuildItems<InputBindingDescriptor>(path, caller, false);
 			foreach(var desc in descriptors) {
+				var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(desc.Gestures);
 				var contextName = !string.IsNullOrEmpty(desc.Context) ? desc.Context : CommandsRegistry.DefaultContext;
 				
-				var gesture = (KeyGesture)new KeyGestureConverter().ConvertFromInvariantString(desc.Gesture);
-				CommandsRegistry.RegisterInputBinding(contextName, null, desc.Command, gesture);
+				var inputBindingInfo = new InputBindingInfo();
+				inputBindingInfo.ContextName = contextName;
+				inputBindingInfo.AddIn = desc.Codon.AddIn;
+				inputBindingInfo.RoutedCommandName = desc.Command;
+				inputBindingInfo.Gestures = gestures;
+				
+				if(!string.IsNullOrEmpty(desc.CommandText)) {
+					inputBindingInfo.RoutedCommandText = desc.CommandText;
+				}
+				
+				if(!string.IsNullOrEmpty(desc.Category)) {
+					inputBindingInfo.CategoryName = desc.Category;
+				}
+				
+				CommandsRegistry.RegisterInputBinding(inputBindingInfo);
 			}
 		}
 	}

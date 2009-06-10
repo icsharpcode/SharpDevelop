@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -474,17 +475,32 @@ namespace ICSharpCode.SharpDevelop.Commands
 					
 					// TODO: fix this hack
 					if(!bindingsAssigned.Contains(routedCommandName)) {
+						var addIn = AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop");
+						
 						// Dynamicaly create routed UI command to loaded pad and bindings for it
 						CommandsRegistry.RegisterRoutedUICommand(routedCommandName, routedCommandText);
 						CommandsRegistry.LoadCommand(routedCommandName, new BringPadToFrontCommand(padContent));
-						CommandsRegistry.RegisterCommandBinding(CommandsRegistry.DefaultContext, null, routedCommandName, routedCommandName, null, false);
+						
+						var commandBindingInfo = new CommandBindingInfo();
+						commandBindingInfo.ClassName = routedCommandName;
+						commandBindingInfo.ContextName = CommandsRegistry.DefaultContext;
+						commandBindingInfo.RoutedCommandName = routedCommandName;
+						commandBindingInfo.AddIn = addIn;
+							
+						CommandsRegistry.RegisterCommandBinding(commandBindingInfo);
 						
 						// If pad have shortcut specified add input binding
 						if (!string.IsNullOrEmpty(padContent.Shortcut)) {
-							var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);						
-							foreach(InputGesture gesture in gestures) {
-								CommandsRegistry.RegisterInputBinding(CommandsRegistry.DefaultContext, null, routedCommandName, gesture);
-							}
+							var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);
+							
+							var inputBindingInfo = new InputBindingInfo();
+							inputBindingInfo.ContextName = CommandsRegistry.DefaultContext;
+							inputBindingInfo.RoutedCommandName = routedCommandName;
+							inputBindingInfo.Gestures = gestures;
+							inputBindingInfo.CategoryName = "Views";
+							inputBindingInfo.AddIn = addIn;
+							
+							CommandsRegistry.RegisterInputBinding(inputBindingInfo);
 						}
 						
 						bindingsAssigned.Add(routedCommandName);
