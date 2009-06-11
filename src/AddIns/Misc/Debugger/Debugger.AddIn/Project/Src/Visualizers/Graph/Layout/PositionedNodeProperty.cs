@@ -23,6 +23,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.containingNode = containingNode;
 		}
 		
+		public bool IsExpanded { get; set; }
+		
 		private ObjectProperty objectProperty;
 		/// <summary>
 		/// Underlying <see cref="ObjectProperty"/>.
@@ -45,5 +47,25 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// Edge outgoing from this property to another <see cref="PositionedNode"/>.
 		/// </summary>
 		public PositionedEdge Edge { get; set; }
+		
+		/// <summary>
+		/// e.g. "Age"
+		/// </summary>
+		public string Name { get { return this.objectProperty.Name; } }
+		
+		/// <summary>
+		/// e.g. "19"
+		/// </summary>
+		public string Value { get { return this.objectProperty.Value; } }
+		
+		/// <summary>
+		/// Full Debugger expression used to obtain value of this property.
+		/// </summary>
+		public Debugger.Expressions.Expression Expression { get { return this.objectProperty.Expression; } }
+		
+		/// <summary>
+        /// Is this property of atomic type? (int, string, etc.)
+        /// </summary>
+		public bool IsAtomic { get { return this.objectProperty.IsAtomic; } }
 	}
 }

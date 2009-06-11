@@ -16,7 +16,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class PositionedGraph
 	{
-		internal List<PositionedNode> nodes = new List<PositionedNode>();
+		private List<PositionedNode> nodes = new List<PositionedNode>();
 		
 		public System.Windows.Rect BoundingRect
 		{
@@ -37,6 +37,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public IEnumerable<PositionedNode> Nodes
 		{
 			get { return nodes; }
+		}
+		
+		internal void AddNode(PositionedNode node)
+		{
+			this.nodes.Add(node);
 		}
 		
 		/// <summary>

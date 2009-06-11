@@ -36,7 +36,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		/// <param name="objectGraph"></param>
 		/// <returns></returns>
-		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction)
+		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction, ExpandedNodes expandedNodes)
 		{
 			layoutDirection = direction;
 
@@ -44,7 +44,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			treeNodeFor = new Dictionary<ObjectNode, TreeNode>();
 			seenNodes = new Dictionary<ObjectNode, object>();
 
-			TreeNode tree = buildTreeRecursive(objectGraph.Root);
+			TreeNode tree = buildTreeRecursive(objectGraph.Root, expandedNodes);
 			calculateNodePosRecursive(tree, 0, 0);
 			
 			var neatoRouter = new NeatoEdgeRouter();
@@ -53,14 +53,14 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return resultGraph;
 		}
 		
-		private TreeNode buildTreeRecursive(ObjectNode objectGraphNode)
+		private TreeNode buildTreeRecursive(ObjectNode objectGraphNode, ExpandedNodes expandedNodes)
 		{
 			seenNodes.Add(objectGraphNode, null);
 			
 			TreeNode newTreeNode = TreeNode.Create(this.layoutDirection, objectGraphNode);
 			newTreeNode.HorizontalMargin = horizNodeMargin;
 			newTreeNode.VerticalMargin = vertNodeMargin;
-			resultGraph.nodes.Add(newTreeNode);
+			resultGraph.AddNode(newTreeNode);
 			treeNodeFor[objectGraphNode] = newTreeNode;
 			
 			double subtreeSize = 0;
@@ -78,19 +78,20 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 					}
 					else
 					{
-						targetTreeNode = buildTreeRecursive(neighbor);
+						targetTreeNode = buildTreeRecursive(neighbor, expandedNodes);
 						newEdgeIsTreeEdge = true;
 						subtreeSize += targetTreeNode.SubtreeSize;
 					}
-					var posNodeProperty = newTreeNode.AddProperty(property);
+					var posNodeProperty = newTreeNode.AddProperty(property, expandedNodes.IsExpanded(property.Expression.Code));
 					posNodeProperty.Edge = new TreeGraphEdge { IsTreeEdge = newEdgeIsTreeEdge, Name = property.Name, Source = posNodeProperty, Target = targetTreeNode };
 				}
 				else
 				{
-					// PositionedNodeProperty.Edge is null
-					newTreeNode.AddProperty(property);
+					// property.Edge stays null
+					newTreeNode.AddProperty(property, expandedNodes.IsExpanded(property.Expression.Code));
 				}
 			}
+			newTreeNode.Measure();
 			subtreeSize = Math.Max(newTreeNode.LateralSizeWithMargin, subtreeSize);
 			newTreeNode.SubtreeSize = subtreeSize;
 			

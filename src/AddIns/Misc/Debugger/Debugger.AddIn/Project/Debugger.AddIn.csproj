@@ -170,13 +170,17 @@
     <Compile Include="Src\Visualizers\Graph\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\CanvasLocationAdapter.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\GraphDrawer.cs" />
-    <Compile Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml.cs" />
+    <Compile Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml.cs">
+      <DependentUpon>NodeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Visualizers\Graph\ExpandedNodes.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\GraphDiff.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\GraphMatcher.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedGraph.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedNode.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedNodeProperty.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\PositionedPropertyEventArgs.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\BoxDotFormatter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\DotFormatter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\IdGenerator.cs" />
@@ -190,7 +194,6 @@
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNode.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNodeLR.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNodeTB.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraphVisualizerViewContent.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraph.cs" />
@@ -202,11 +205,6 @@
     <Compile Include="Src\Visualizers\Graph\Utils\DictionaryExtensions.cs" />
     <Compile Include="Src\Visualizers\Graph\Utils\Lookup.cs" />
     <Compile Include="Src\Visualizers\Graph\Utils\LookupValueCollection.cs" />
-    <Compile Include="Src\Visualizers\Graph\VisualizerWinFormsControl.cs" />
-    <Compile Include="Src\Visualizers\Graph\VisualizerWinFormsControl.Designer.cs" />
-    <Compile Include="Src\Visualizers\Graph\VisualizerWPFControl.xaml.cs">
-      <DependentUpon>VisualizerWPFControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml.cs">
       <DependentUpon>VisualizerWPFWindow.xaml</DependentUpon>
     </Compile>
@@ -300,7 +298,6 @@
     <Folder Include="Src\Visualizers\Graph\Utils" />
     <Folder Include="Src\Visualizers\PresentationBindings" />
     <Page Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml" />
-    <Page Include="Src\Visualizers\Graph\VisualizerWPFControl.xaml" />
     <Page Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml" />
   </ItemGroup>
   <ItemGroup>

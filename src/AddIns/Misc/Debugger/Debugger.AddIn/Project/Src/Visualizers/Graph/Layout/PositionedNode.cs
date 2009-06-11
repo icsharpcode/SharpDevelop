@@ -25,6 +25,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			get { return objectNode; }
 		}
 		
+		public event EventHandler<PositionedPropertyEventArgs> Expanded;
+		public event EventHandler<PositionedPropertyEventArgs> Collapsed;
+		
 		private List<PositionedNodeProperty> properties = new List<PositionedNodeProperty>();
 		public List<PositionedNodeProperty> Properties
 		{
@@ -34,10 +37,13 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		public PositionedNodeProperty AddProperty(ObjectProperty objectProperty)
+		public PositionedNodeProperty AddProperty(ObjectProperty objectProperty, bool isExpanded)
 		{
 			var newProperty = new PositionedNodeProperty(objectProperty, this);
+			newProperty.IsExpanded = isExpanded;
 			this.Properties.Add(newProperty);
+			this.nodeVisualControl.AddProperty(newProperty);
+			
 			return newProperty;
 		}
 		
@@ -49,8 +55,25 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			this.objectNode = objectNode;
 			
-			this.nodeVisualControl = new NodeControl();
-			this.nodeVisualControl.GraphNode = this.objectNode;	// display
+			this.nodeVisualControl = new NodeControl(this);	// display
+			this.nodeVisualControl.Expanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Expanded);
+			this.nodeVisualControl.Collapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Collapsed);
+		}
+
+		private void NodeVisualControl_Expanded(object sender, PositionedPropertyEventArgs e)
+		{
+			// propagage event
+			OnPropertyExpanded(this, e);
+		}
+		
+		private void NodeVisualControl_Collapsed(object sender, PositionedPropertyEventArgs e)
+		{
+			// propagate event
+			OnPropertyCollapsed(this, e);
+		}
+		
+		public void Measure()
+		{
 			this.nodeVisualControl.Measure(new Size(500, 500));
 		}
 		
@@ -100,5 +123,23 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				}
 			}
 		}
+		
+		#region event helpers
+		protected virtual void OnPropertyExpanded(object sender, PositionedPropertyEventArgs propertyArgs)
+		{
+			if (this.Expanded != null)
+			{
+				this.Expanded(sender, propertyArgs);
+			}
+		}
+
+		protected virtual void OnPropertyCollapsed(object sender, PositionedPropertyEventArgs propertyArgs)
+		{
+			if (this.Collapsed != null)
+			{
+				this.Collapsed(sender, propertyArgs);
+			}
+		}
+		#endregion
 	}
 }

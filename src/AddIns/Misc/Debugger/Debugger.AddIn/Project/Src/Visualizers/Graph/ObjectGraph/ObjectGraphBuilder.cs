@@ -80,7 +80,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="expression">Expression valid in the program being debugged (eg. variable name)</param>
 		/// <returns>Object graph</returns>
-		public ObjectGraph BuildGraphForExpression(string expression)
+		public ObjectGraph BuildGraphForExpression(string expression, ExpandedNodes expandedNodes)
 		{
 			if (string.IsNullOrEmpty(expression))
 			{
@@ -92,7 +92,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			// empty graph for null expression
 			if (!debuggerService.GetValueFromName(expression).IsNull)
 			{
-				resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference());
+				resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference(), expandedNodes);
 			}
 			
 			return resultGraph;
@@ -103,7 +103,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="rootValue">The Value for which the subgraph will be built.</param>
 		/// <returns>ObjectNode representing the value + all recursive members.</returns>
-		private ObjectNode buildGraphRecursive(Value rootValue)
+		private ObjectNode buildGraphRecursive(Value rootValue, ExpandedNodes expandedNodes)
 		{
 			ObjectNode thisNode = createNewNode(rootValue); 
 			
@@ -136,7 +136,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				else
 				{
 					ObjectNode targetNode = null;
-					if (!isNull(memberExpr))
+					if (!isNull(memberExpr) && expandedNodes.IsExpanded(memberExpr.Code))
 					{
 						// for object members, edges are added
 						Value memberValue = getPermanentReference(memberExpr);
@@ -146,7 +146,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 						if (targetNode == null)
 						{
 							// if no node for memberValue exists, build the subgraph for the value
-							targetNode = buildGraphRecursive(memberValue);
+							targetNode = buildGraphRecursive(memberValue, expandedNodes);
 						}
 					}
 					else 

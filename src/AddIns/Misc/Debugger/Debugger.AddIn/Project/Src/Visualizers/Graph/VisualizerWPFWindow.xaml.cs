@@ -35,6 +35,11 @@ namespace Debugger.AddIn.Visualizers.Graph
     	private PositionedGraph oldGraph;
     	private PositionedGraph currentGraph;
     	private GraphDrawer graphDrawer;
+    	
+    	/// <summary>
+    	/// Long-lived map telling which nodes the user expanded.
+    	/// </summary>
+    	private ExpandedNodes expandedNodes;
 
         public VisualizerWPFWindow()
         {
@@ -52,6 +57,8 @@ namespace Debugger.AddIn.Visualizers.Graph
             this.DataContext = this.layoutViewModel;
             
             this.graphDrawer = new GraphDrawer(this.canvas);
+            
+            this.expandedNodes = new ExpandedNodes();
 		}
 		
 		public void debuggerService_IsProcessRunningChanged(object sender, EventArgs e)
@@ -90,7 +97,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			try
 			{	
 				ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Building graph for expression: " + txtExpression.Text);
-				this.objectGraph = graphBuilder.BuildGraphForExpression(txtExpression.Text);
+				this.objectGraph = graphBuilder.BuildGraphForExpression(txtExpression.Text, expandedNodes);
 			}
 			catch(DebuggerVisualizerException ex)
 			{
@@ -115,7 +122,8 @@ namespace Debugger.AddIn.Visualizers.Graph
         	Layout.TreeLayouter layouter = new Layout.TreeLayouter();
         	
             this.oldGraph = this.currentGraph;
-			this.currentGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue);
+			this.currentGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expandedNodes);
+			registerExpandCollapseEvents(this.currentGraph);
 			
 			var graphDiff = new GraphMatcher().MatchGraphs(oldGraph, currentGraph);
 			this.graphDrawer.StartAnimation(oldGraph, currentGraph, graphDiff);
@@ -125,6 +133,27 @@ namespace Debugger.AddIn.Visualizers.Graph
 		void guiHandleException(System.Exception ex)
 		{
 			MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+		}
+		
+		void registerExpandCollapseEvents(PositionedGraph posGraph)
+		{
+			foreach (var node in posGraph.Nodes)
+			{
+				node.Expanded += new EventHandler<PositionedPropertyEventArgs>(node_Expanded);
+				node.Collapsed += new EventHandler<PositionedPropertyEventArgs>(node_Collapsed);
+			}
+		}
+
+		void node_Expanded(object sender, PositionedPropertyEventArgs e)
+		{
+			expandedNodes.Expand(e.Property.Expression.Code);
+			refreshGraph();
+		}
+		
+		void node_Collapsed(object sender, PositionedPropertyEventArgs e)
+		{
+			expandedNodes.Collapse(e.Property.Expression.Code);
+			refreshGraph();
 		}
     }
 }
