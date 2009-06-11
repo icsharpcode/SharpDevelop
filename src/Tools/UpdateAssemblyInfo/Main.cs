@@ -60,6 +60,13 @@ namespace UpdateAssemblyInfo
 					string versionNumber = GetMajorVersion() + "." + revisionNumber;
 					UpdateStartup();
 					UpdateRedirectionConfig(versionNumber);
+					foreach (string arg in args) {
+						if (arg == "--REVISION") {
+							using (StreamWriter writer = new StreamWriter("REVISION")) {
+								writer.Write(revisionNumber);
+							}
+						}
+					}
 					return 0;
 				}
 			} catch (Exception ex) {
