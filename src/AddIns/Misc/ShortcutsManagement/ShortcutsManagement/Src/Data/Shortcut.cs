@@ -9,7 +9,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
     /// <summary>
     /// Shortcut
     /// </summary>
-	public class Shortcut : INotifyPropertyChanged, ICloneable
+	public class Shortcut : INotifyPropertyChanged, IShortcutTreeEntry
     {
 		/// <summary>
 		/// List of input gestures which will invoke this action
@@ -21,25 +21,30 @@ namespace ICSharpCode.ShortcutsManagement.Data
         }
 
 
-        private string _text;
+        private string _name;
         
         /// <summary>
         /// Shortcut action name (displayed to user)
         /// </summary>
-        public string Text
+        public string Name
         {
             get
             {
-                return _text;
+                return _name;
             }
             set
             {
-                if(_text != value)
+                if(_name != value)
                 {
-                    _text = value;
-                    InvokePropertyChanged("Text");
+                    _name = value;
+                    InvokePropertyChanged("Name");
                 }
             }
+        }
+
+        public void SortSubEntries() 
+        {
+            
         }
 
         /// <summary>
@@ -83,7 +88,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         {
             IsVisible = true;
             Id = Guid.NewGuid().ToString();
-            Text = shortcutText;
+            Name = shortcutText;
 
             Gestures = new ObservableCollection<InputGesture>();
             if(gestures != null) {
@@ -127,7 +132,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <returns>Deep copy of action</returns>
         public object Clone()
         {
-            var clone = new Shortcut(Text, null);
+            var clone = new Shortcut(Name, null);
             clone.Id = Id;
 
             foreach (var gesture in Gestures) {
@@ -140,7 +145,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <summary>
         /// Invoke dependency property changed event
         /// </summary>
-        /// <param name="propertyName">Text of dependency property from this classs</param>
+        /// <param name="propertyName">Name of dependency property from this classs</param>
         private void InvokePropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -153,5 +158,19 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// Notify observers about property changes
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+
+        public int CompareTo(object obj)
+        {
+            if (obj is AddIn) return -1;
+            if (obj is ShortcutCategory) return -1;
+
+            var shortcutObj = (Shortcut)obj;
+            return Name.CompareTo(shortcutObj.Name);
+        }
+
+        public Shortcut FindShortcut(string shortcutId) {
+            return Id == shortcutId ? this : null;
+        }
     }
 }

@@ -7,7 +7,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
 	/// <summary>
 	/// Add-in where shortcuts were registered
 	/// </summary>
-    public class AddIn : INotifyPropertyChanged, ICloneable
+    public class AddIn : INotifyPropertyChanged, IShortcutTreeEntry
     {
         private string name;
         
@@ -26,7 +26,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
             {
                 if (name != value) {
                     name = value;
-                    InvokePropertyChanged("Text");
+                    InvokePropertyChanged("Name");
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <summary>
         /// Invoke dependency property changed event
         /// </summary>
-        /// <param name="propertyName">Text of dependency property from this classs</param>
+        /// <param name="propertyName">Name of dependency property from this classs</param>
         private void InvokePropertyChanged(string propertyName)
         {
             if (PropertyChanged != null) {
@@ -115,12 +115,12 @@ namespace ICSharpCode.ShortcutsManagement.Data
 	        return clonedAddIn;
 	    }
 
-        public void SortEntries() 
+        public void SortSubEntries() 
         {
             Categories.Sort((a, b) => a.Name.CompareTo(b.Name));
             foreach (var category in Categories)
             {
-                category.SortEntries();
+                category.SortSubEntries();
             }
         }
 
@@ -128,5 +128,13 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// Notify observers about property changes
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+	    public int CompareTo(object obj) {
+            if (obj is ShortcutCategory) return 1;
+            if (obj is Shortcut) return 1;
+
+            var addInObj = (AddIn)obj;
+	        return Name.CompareTo(addInObj.Name);
+	    }
     }
 }

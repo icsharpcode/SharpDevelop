@@ -4,9 +4,10 @@
 
 
 
-
-
-
+    <Converters:GesturesListConverter x:Key="GesturesListConverter" />
+    <Converters:ShortcutCategorySubElementsMergedConverter x:Key="ShortcutsTreeConverter" />
+    <Converters:TypeNameConverter x:Key="TypeNameConverter" />
+    <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
 
 
@@ -75,18 +76,6 @@
     </Style>
 
 
-
-
-
-
-
-
-
-    <Converters:GesturesListConverter x:Key="GesturesListConverter" />
-    <Converters:ShortcutCategorySubElementsMergedConverter x:Key="ShortcutsTreeConverter" />
-    <Converters:TypeNameConverter x:Key="TypeNameConverter" />
-    <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-
     
     <Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
         <Setter Property="Focusable" Value="False"/>
@@ -94,7 +83,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
                     <Grid Width="15" Height="13" Background="Transparent">
-                        <Path x:Name="expandPath" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="1,1,1,1" Fill="#444" Data="M 4 0 L 8 4 L 4 8 Z"/>
+                        <Path x:Name="expandPath" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="1" Fill="#444" Data="M 4 0 L 8 4 L 4 8 Z"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
@@ -110,9 +99,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TreeViewItem">
-                    <Border Name="OuterBorder" BorderThickness="2" CornerRadius="8" >
+                    <Border Name="OuterBorder" BorderThickness="2" CornerRadius="8" Margin="20,0,0,0">
                         <StackPanel>
-                            <Border Name="InnerBorder" Background="White" BorderThickness="0.6" CornerRadius="8" Padding="6" >
+                            <Border Name="InnerBorder" Background="White" BorderThickness="0.6" CornerRadius="8" Padding="0,6,6,6" >
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="19" />
@@ -135,10 +124,9 @@
                         <DataTrigger Binding="{Binding Converter={StaticResource TypeNameConverter}}" Value="ShortcutCategory">
                             <Setter TargetName="InnerBorder" Property="Panel.Background" Value="#DEDE00" />
                             <Setter TargetName="InnerBorder" Property="TextElement.Foreground" Value="#FFFFFF" />
-                            <Setter TargetName="OuterBorder" Property="Margin" Value="20,0,0,0" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Converter={StaticResource TypeNameConverter}}" Value="AddIn">
-                            <Setter TargetName="InnerBorder" Property="Panel.Background" Value="#FFFFFF" />
+                            <Setter TargetName="InnerBorder" Property="Panel.Background" Value="#AEFFA8" />
                             <Setter TargetName="InnerBorder" Property="TextElement.Foreground" Value="#000000" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Path=IsVisible}" Value="false">

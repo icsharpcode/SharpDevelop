@@ -7,7 +7,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
 	/// <summary>
 	/// Shortcut category
 	/// </summary>
-    public class ShortcutCategory : INotifyPropertyChanged, ICloneable
+    public class ShortcutCategory : INotifyPropertyChanged, IShortcutTreeEntry
     {
         private string name;
         
@@ -27,7 +27,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
                 if (name != value)
                 {
                     name = value;
-                    InvokePropertyChanged("Text");
+                    InvokePropertyChanged("Name");
                 }
             }
         }
@@ -103,14 +103,14 @@ namespace ICSharpCode.ShortcutsManagement.Data
 	        return clonedCategory;
 	    }
 
-        public void SortEntries()
+        public void SortSubEntries()
         {
             SubCategories.Sort((a, b) => a.Name.CompareTo(b.Name));
-            Shortcuts.Sort((a, b) => a.Text.CompareTo(b.Text));
+            Shortcuts.Sort((a, b) => a.Name.CompareTo(b.Name));
 
             foreach (var category in SubCategories)
             {
-                category.SortEntries();
+                category.SortSubEntries();
             }
         }
 
@@ -142,7 +142,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <summary>
         /// Invoke dependency property changed event
         /// </summary>
-        /// <param name="propertyName">Text of dependency property from this classs</param>
+        /// <param name="propertyName">Name of dependency property from this classs</param>
         private void InvokePropertyChanged(string propertyName)
         {
             if (PropertyChanged != null) {
@@ -154,5 +154,14 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// Notify observers about property changes
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public int CompareTo(object obj)
+        {
+            if (obj is AddIn) return -1;
+            if (obj is Shortcut) return 1;
+
+            var categoryObj = (ShortcutCategory)obj;
+            return Name.CompareTo(categoryObj.Name);
+        }
     }
 }

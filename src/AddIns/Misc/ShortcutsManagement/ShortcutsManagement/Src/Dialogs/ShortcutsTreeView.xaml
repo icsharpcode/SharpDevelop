@@ -55,7 +55,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         
-                        <TextBlock Text="{Binding Text}" ShortcutsManagement:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" Grid.Column="0" />
+                        <TextBlock Text="{Binding Name}" ShortcutsManagement:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" Grid.Column="0" />
                         <TextBlock Text="{Binding Gestures, Converter={StaticResource GesturesListConverter}}" Grid.Column="1" TextAlignment="Right" Padding="20,0,0,0" />
                         <Button x:Name="removeShortcutButton" Style="{StaticResource RemoveButton}" Visibility="Hidden" Grid.Column="2" Tag="{Binding}" Click="removeShortcutButton_Click" />
                     </Grid>

@@ -142,6 +142,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Src\Data\IShortcutTreeEntry.cs" />
     <Compile Include="Src\Data\KeyGestureTemplate.cs" />
     <Compile Include="Src\Data\Shortcut.cs" />
     <Compile Include="Src\Data\ShortcutCategory.cs" />

@@ -12,7 +12,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <summary>
         /// Collection of add-ins containing shortcuts and shortcut categories
         /// </summary>
-        public ICollection<AddIn> AddIns
+        public ICollection<IShortcutTreeEntry> RootEntries
         {
             get; set;
         }
@@ -20,9 +20,9 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <summary>
         /// Create new instance of <see cref="ShortcutsFinder"/>
         /// </summary>
-        /// <param name="addIns"></param>
-        public ShortcutsFinder(ICollection<AddIn> addIns) {
-            AddIns = addIns;
+        /// <param name="rootEntries"></param>
+        public ShortcutsFinder(ICollection<IShortcutTreeEntry> rootEntries) {
+            RootEntries = rootEntries;
         }
 
         /// <summary>
@@ -34,16 +34,30 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <param name="shortcut">Shortcut to be heden</param>
         public void HideShortcut(Shortcut shortcut)
         {
-            foreach (var addIn in AddIns) {
+            foreach (var entry in RootEntries) {
                 var subCategoryIsVisible = false;
-                foreach (var category in addIn.Categories) {
-                    if (HideShortcut(category, shortcut)) {
-                        subCategoryIsVisible = true;
+
+                var rootAddIn = entry as AddIn;
+                if (rootAddIn != null) {
+                    foreach (var category in rootAddIn.Categories) {
+                        if (HideShortcut(category, shortcut)) {
+                            subCategoryIsVisible = true;
+                        }
                     }
+
+                    // Hide add-in if it doesn't have any visible sub-elements
+                    rootAddIn.IsVisible = subCategoryIsVisible;
                 }
 
-                // Hide add-in if it doesn't have any visible sub-elements
-                addIn.IsVisible = subCategoryIsVisible;
+                var rootCategory = entry as ShortcutCategory;
+                if(rootCategory != null) {
+                    HideShortcut(rootCategory, shortcut);
+                }
+
+                var rootShortcut = entry as Shortcut;
+                if (rootShortcut != null) {
+                    shortcut.IsVisible = false;
+                }
             }
         }
 
@@ -96,16 +110,38 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <param name="strictMatch">If false filter gestures which with only partial match</param>
         public void FilterGesture(ICollection<KeyGestureTemplate> keyGestureTemplateCollection, bool strictMatch)
         {
-            foreach (var addIn in AddIns) {
+            foreach (var entry in RootEntries)
+            {
                 var subCategoryIsVisible = false;
-                foreach (var category in addIn.Categories) {
-                    if (FilterGesture(category, keyGestureTemplateCollection, strictMatch)) {
-                        subCategoryIsVisible = true;
+                
+                var rootAddIn = entry as AddIn;
+                if (rootAddIn != null)
+                {
+                    foreach (var category in rootAddIn.Categories) {
+                        if (FilterGesture(category, keyGestureTemplateCollection, strictMatch)) {
+                            subCategoryIsVisible = true;
+                        }
                     }
+
+                    // Hide add-in if it doesn't have any visible sub-elements
+                    rootAddIn.IsVisible = subCategoryIsVisible;
                 }
 
-                // Hide add-in if it doesn't have any visible sub-elements
-                addIn.IsVisible = subCategoryIsVisible;
+                var rootCategory = entry as ShortcutCategory;
+                if (rootCategory != null) {
+                    FilterGesture(rootCategory, keyGestureTemplateCollection, strictMatch);
+                }
+
+                var rootShortcut = entry as Shortcut;
+                if (rootShortcut != null) {
+                    rootShortcut.IsVisible = false;
+                    foreach (var template in keyGestureTemplateCollection) {
+                        if (template.MatchesCollection(new InputGestureCollection(rootShortcut.Gestures), strictMatch)) {
+                            rootShortcut.IsVisible = true;
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -128,13 +164,11 @@ namespace ICSharpCode.ShortcutsManagement.Data
             // Apply filter to shortcuts
             foreach (var shortcut in category.Shortcuts) {
                 var gestureMatched = false;
-                foreach (InputGesture gesture in shortcut.Gestures) {
-                    foreach (var template in keyGestureTemplateCollection) {
-                        if (template == null || (gesture is KeyGesture && template.Matches((KeyGesture)gesture, strictMatch))) {
-                            gestureMatched = true;
-                            break;
-                        }   
-                    }
+                foreach (var template in keyGestureTemplateCollection) {
+                    if (template.MatchesCollection(new InputGestureCollection(shortcut.Gestures), strictMatch)) {
+                        gestureMatched = true;
+                        break;
+                    }   
                 }
 
                 if (gestureMatched) {
@@ -160,21 +194,35 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <param name="filterString">Filter string</param>
         public void Filter(string filterString)
         {
-            foreach (var addIn in AddIns) {
-                // If add-in name matches filter string show all sub-elements
-                var addInNameContainsFilterString = !string.IsNullOrEmpty(filterString) && addIn.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0;
+            foreach (var entry in RootEntries) {
+                var rootAddIn = entry as AddIn;
+                if (rootAddIn != null) {
+                    // If add-in name matches filter string show all sub-elements
+                    var addInNameContainsFilterString = !string.IsNullOrEmpty(filterString) && rootAddIn.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0;
 
-                // Apply filter to categories
-                var subCategoryIsVisible = false;
-                foreach (var category in addIn.Categories) {
-                    if(Filter(category, filterString, addInNameContainsFilterString ? (bool?) true : null)) {
-                        subCategoryIsVisible = true;
+                    // Apply filter to categories
+                    var subCategoryIsVisible = false;
+
+                    foreach (var category in rootAddIn.Categories) {
+                        if (Filter(category, filterString, addInNameContainsFilterString ? (bool?) true : null)) {
+                            subCategoryIsVisible = true;
+                        }
                     }
+
+                    // If last category in add-in was hidden and addin name does not contain 
+                    // part of the filter then hide add-in
+                    rootAddIn.IsVisible = addInNameContainsFilterString || subCategoryIsVisible;
                 }
 
-                // If last category in add-in was hidden and addin name does not contain 
-                // part of the filter then hide add-in
-                addIn.IsVisible = addInNameContainsFilterString || subCategoryIsVisible;
+                var rootCategory = entry as ShortcutCategory;
+                if (rootCategory != null) {
+                    Filter(rootCategory, filterString, null);
+                }
+
+                var rootShortcut = entry as Shortcut;
+                if (rootShortcut != null) {
+                    rootShortcut.IsVisible = rootShortcut.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0;
+                }
             }
         }
 	
@@ -204,7 +252,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
 
             // Filter shortcuts which text match the filter
             foreach (var shortcut in category.Shortcuts) {
-                if ((forseMatch.HasValue && forseMatch.Value) || shortcut.Text.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0) {
+                if ((forseMatch.HasValue && forseMatch.Value) || shortcut.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0) {
                     shortcut.IsVisible = true;
                     isSubElementVisible = true;
                 }

@@ -33,35 +33,62 @@ namespace ICSharpCode.ShortcutsManagement
             InitializeComponent();
 
             // Test data
-            var addins = new ObservableCollection<ShortcutManagement.AddIn>();
-            addins.Add(new ShortcutManagement.AddIn("SharpDevelop"));
-            addins[0].Categories.Add(new ShortcutCategory("Editing"));
-            addins[0].Categories[0].Shortcuts.Add(new Shortcut("Copy", GetGestures("Ctrl + C")));
-            addins[0].Categories[0].Shortcuts.Add(new Shortcut("Paste", GetGestures("Ctrl + V | Ctrl+Insert")));
-            addins[0].Categories[0].Shortcuts.Add(new Shortcut("Cut", GetGestures("Ctrl + X")));
-            addins[0].Categories[0].Shortcuts.Add(new Shortcut("Undo", GetGestures("Ctrl + Z")));
-            addins[0].Categories[0].Shortcuts.Add(new Shortcut("Redo", GetGestures("Ctrl + Y")));
-            addins[0].Categories.Add(new ShortcutCategory("Building"));
-            addins[0].Categories[1].Shortcuts.Add(new Shortcut("Build", GetGestures("Ctrl + Shift+B")));
-            addins[0].Categories[1].Shortcuts.Add(new Shortcut("Run", GetGestures("F5")));
-            addins[0].Categories[1].Shortcuts.Add(new Shortcut("Run without debuger", GetGestures("Ctrl + F5")));
-            addins[0].Categories[1].Shortcuts.Add(new Shortcut("Attach debuger", GetGestures("Ctrl + F8")));
-            addins[0].Categories.Add(new ShortcutCategory("Uncategorized"));
-            addins[0].Categories[2].Shortcuts.Add(new Shortcut("Attach debuger", GetGestures("Ctrl + F8")));
+            var rootEntries = new ObservableCollection<IShortcutTreeEntry>();
 
-            addins.Add(new ShortcutManagement.AddIn("Search & replace"));
-            addins[1].Categories.Add(new ShortcutCategory("Uncategorized"));
-            addins[1].Categories[0].Shortcuts.Add(new Shortcut("Quick find", GetGestures("Ctrl + F")));
-            addins[1].Categories[0].Shortcuts.Add(new Shortcut("Quick replace", GetGestures("Ctrl + H")));
-            addins[1].Categories[0].Shortcuts.Add(new Shortcut("Find in files", GetGestures("Ctrl + Shift + F | Ctrl + Shift + H | Ctrl + I")));
-            addins[1].Categories[0].Shortcuts.Add(new Shortcut("Replace in files", GetGestures("Ctrl + Shift + H")));
-            addins[1].Categories[0].Shortcuts.Add(new Shortcut("Find symbol", null));
+            var addin1 = new ShortcutManagement.AddIn("SharpDevelop");
+            rootEntries.Add(addin1);
+            addin1.Categories.Add(new ShortcutCategory("Editing"));
+            addin1.Categories[0].Shortcuts.Add(new Shortcut("Copy", GetGestures("Ctrl + C")));
+            addin1.Categories[0].Shortcuts.Add(new Shortcut("Paste", GetGestures("Ctrl + V | Ctrl+Insert")));
+            addin1.Categories[0].Shortcuts.Add(new Shortcut("Cut", GetGestures("Ctrl + X")));
+            addin1.Categories[0].Shortcuts.Add(new Shortcut("Undo", GetGestures("Ctrl + Z")));
+            addin1.Categories[0].Shortcuts.Add(new Shortcut("Redo", GetGestures("Ctrl + Y")));
+            addin1.Categories.Add(new ShortcutCategory("Building"));
+            addin1.Categories[1].Shortcuts.Add(new Shortcut("Build", GetGestures("Ctrl + Shift+B")));
+            addin1.Categories[1].Shortcuts.Add(new Shortcut("Run", GetGestures("F5")));
+            addin1.Categories[1].Shortcuts.Add(new Shortcut("Run without debuger", GetGestures("Ctrl + F5")));
+            addin1.Categories[1].Shortcuts.Add(new Shortcut("Attach debuger", GetGestures("Ctrl + F8")));
+            addin1.Categories.Add(new ShortcutCategory("Uncategorized"));
+            addin1.Categories[2].Shortcuts.Add(new Shortcut("Attach debuger", GetGestures("Ctrl + F8")));
 
-            addins.Add(new ShortcutManagement.AddIn("Unspecified"));
-            addins[2].Categories.Add(new ShortcutCategory("Uncategorized"));
-            addins[2].Categories[0].Shortcuts.Add(new Shortcut("Test regex expression", null));
+            var addin2 = new ShortcutManagement.AddIn("Search & replace");
+            rootEntries.Add(addin2);
+            addin2.Categories.Add(new ShortcutCategory("Uncategorized"));
+            addin2.Categories[0].Shortcuts.Add(new Shortcut("Quick find", GetGestures("Ctrl + F")));
+            addin2.Categories[0].Shortcuts.Add(new Shortcut("Quick replace", GetGestures("Ctrl + H")));
+            addin2.Categories[0].SubCategories.Add(new ShortcutCategory("Subcategory 3"));
+            addin2.Categories[0].SubCategories[0].SubCategories.Add(new ShortcutCategory("Subcategory 4"));
+            addin2.Categories[0].SubCategories[0].SubCategories[0].Shortcuts.Add(new Shortcut("Shortcut N", GetGestures("Ctrl + N")));
+            addin2.Categories[0].SubCategories[0].SubCategories[0].Shortcuts.Add(new Shortcut("Shortcut O", GetGestures("Ctrl + O")));
+            addin2.Categories[0].SubCategories[0].Shortcuts.Add(new Shortcut("Shortcut L", GetGestures("Ctrl + L")));
+            addin2.Categories[0].SubCategories[0].Shortcuts.Add(new Shortcut("Shortcut M", GetGestures("Ctrl + M")));
+            addin2.Categories[0].Shortcuts.Add(new Shortcut("Find in files", GetGestures("Ctrl + Shift + F | Ctrl + Shift + H | Ctrl + I")));
+            addin2.Categories[0].Shortcuts.Add(new Shortcut("Replace in files", GetGestures("Ctrl + Shift + H")));
+            addin2.Categories[0].Shortcuts.Add(new Shortcut("Find symbol", null));
 
-            shortcutsManagementOptionsPanel.DataContext = addins;
+            var addin3 = new ShortcutManagement.AddIn("Unspecified");
+            rootEntries.Add(addin3);
+            addin3.Categories.Add(new ShortcutCategory("Uncategorized"));
+            addin3.Categories[0].Shortcuts.Add(new Shortcut("Test regex expression", null));
+
+            var rootCategory = new ShortcutCategory("Without addin");
+            rootEntries.Add(rootCategory);
+            rootCategory.SubCategories.Add(new ShortcutCategory("Subcategory 1"));
+            rootCategory.SubCategories[0].Shortcuts.Add(new Shortcut("Shortcut H", GetGestures("Ctrl + H")));
+            rootCategory.SubCategories[0].Shortcuts.Add(new Shortcut("Shortcut I", GetGestures("Ctrl + I")));
+            rootCategory.SubCategories.Add(new ShortcutCategory("Subcategory 2"));
+            rootCategory.SubCategories[0].Shortcuts.Add(new Shortcut("Shortcut J", GetGestures("Ctrl + J")));
+            rootCategory.SubCategories[0].Shortcuts.Add(new Shortcut("Shortcut K", GetGestures("Ctrl + K")));
+            rootCategory.Shortcuts.Add(new Shortcut("Shortcut A", GetGestures("Ctrl + A")));
+            rootCategory.Shortcuts.Add(new Shortcut("Shortcut B", GetGestures("Ctrl + B")));
+            rootCategory.Shortcuts.Add(new Shortcut("Shortcut C", GetGestures("Ctrl + C")));
+            rootCategory.Shortcuts.Add(new Shortcut("Shortcut D", GetGestures("Ctrl + D")));
+            rootCategory.Shortcuts.Add(new Shortcut("Shortcut E", null));
+
+            rootEntries.Add(new Shortcut("Shortcut F", GetGestures("Ctrl + F")));
+            rootEntries.Add(new Shortcut("Shortcut G", GetGestures("Ctrl + G")));
+
+            shortcutsManagementOptionsPanel.DataContext = rootEntries;
         }
 
         public void LoadOptions()
@@ -70,8 +97,8 @@ namespace ICSharpCode.ShortcutsManagement
             var unspecifiedAddInSection = new ShortcutManagement.AddIn("Unspecified");
             unspecifiedAddInSection.Categories.Add(new ShortcutCategory("Uncategorized"));
 
-            var addIns = new List<ShortcutManagement.AddIn>();
-            addIns.Add(unspecifiedAddInSection);
+            var rootEntries = new List<IShortcutTreeEntry>();
+            rootEntries.Add(unspecifiedAddInSection);
 
             var addInsMap = new Dictionary<AddIn, ShortcutManagement.AddIn>();
             var categoriesMap = new Dictionary<ShortcutManagement.AddIn, Dictionary<string, ShortcutCategory>>();
@@ -88,7 +115,7 @@ namespace ICSharpCode.ShortcutsManagement
                     addinSection.Categories.Add(new ShortcutCategory("Uncategorized"));
                     addInsMap.Add(inputBindingInfo.AddIn, addinSection);
                     categoriesMap.Add(addinSection, new Dictionary<string, ShortcutCategory>());
-                    addIns.Add(addinSection);
+                    rootEntries.Add(addinSection);
                 }
 
                 ShortcutCategory categorySection;
@@ -117,14 +144,14 @@ namespace ICSharpCode.ShortcutsManagement
                 shortcutsMap.Add(shortcut, inputBindingInfo);
             }
 
-            addIns.Sort((a, b) => a.Name.CompareTo(b.Name));
-            foreach (var addIn in addIns)
+            rootEntries.Sort();
+            foreach (var entry in rootEntries)
             {
-                addIn.SortEntries();
+                entry.SortSubEntries();
             }
 
-            new ShortcutsFinder(addIns).Filter("");
-            shortcutsManagementOptionsPanel.DataContext = addIns;
+            new ShortcutsFinder(rootEntries).Filter("");
+            shortcutsManagementOptionsPanel.DataContext = rootEntries;
         }
 
         public bool SaveOptions() {

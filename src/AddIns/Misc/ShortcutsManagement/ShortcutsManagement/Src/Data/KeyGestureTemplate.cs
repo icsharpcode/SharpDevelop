@@ -108,6 +108,19 @@ namespace ICSharpCode.ShortcutsManagement.Data
             return modifierMatches && keyMatches;
         }
 
+        public bool MatchesCollection(InputGestureCollection gestures, bool strictMatch) 
+        {
+            foreach (InputGesture gesture in gestures)
+            {
+                if(gesture is KeyGesture && Matches((KeyGesture)gesture, strictMatch))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Returns string that represents <see cref="KeyGestureTemplate"/>
         /// </summary>

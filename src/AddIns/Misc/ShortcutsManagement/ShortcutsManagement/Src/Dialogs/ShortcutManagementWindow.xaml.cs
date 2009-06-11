@@ -29,12 +29,12 @@ namespace ICSharpCode.ShortcutsManagement
         /// <summary>
         /// Deep copy of addins list (including copies of categories and shortcuts)
         /// </summary>
-        private readonly ICollection<AddIn> addInsCopy = new ObservableCollection<AddIn>();
+        private readonly ICollection<IShortcutTreeEntry> rootEntriesCopy = new ObservableCollection<IShortcutTreeEntry>();
 
         /// <summary>
         /// List of all addins
         /// </summary>
-        private readonly ICollection<AddIn> addInsOriginal;
+        private readonly ICollection<IShortcutTreeEntry> rootEntriesOriginal;
 
         /// <summary>
         /// List of modified shortcuts. 
@@ -53,22 +53,20 @@ namespace ICSharpCode.ShortcutsManagement
         /// Initializes new <see cref="ShortcutManagementWindow" /> class
         /// </summary>
         /// <param name="shortcut">Shortcut</param>
-        /// <param name="addIns">List of all other add-ins containing shortcuts and categories. This list is used to find dupliate shortcuts</param>
-        public ShortcutManagementWindow(Shortcut shortcut, ICollection<AddIn> addIns)
+        /// <param name="rootEntries">List of all other add-ins containing shortcuts and categories. This list is used to find dupliate shortcuts</param>
+        public ShortcutManagementWindow(Shortcut shortcut, ICollection<IShortcutTreeEntry> rootEntries)
         {
             shortcutOriginal = shortcut;
-            addInsOriginal = addIns;
+            rootEntriesOriginal = rootEntries;
 
             // Make a deep copy of all add-ins, categories and shortcuts
             var shortcutCopyFound = false;
-            foreach (var addIn in addIns)
-            {
-                var clonedAddIn = (AddIn) addIn.Clone();
-                addInsCopy.Add(clonedAddIn);
+            foreach (var entry in rootEntriesOriginal) {
+                var clonedAddIn = (IShortcutTreeEntry)entry.Clone();
+                rootEntriesCopy.Add(clonedAddIn);
 
                 // Find copy of modified shortcut in copied add-ins collection
-                if (shortcutCopyFound == false && (shortcutCopy = clonedAddIn.FindShortcut(shortcutOriginal.Id)) != null)
-                {
+                if (shortcutCopyFound == false && (shortcutCopy = clonedAddIn.FindShortcut(shortcutOriginal.Id)) != null) {
                     shortcutCopy.Gestures.CollectionChanged += Gestures_CollectionChanged;
                     modifiedShortcuts.Add(shortcutCopy);
                     DataContext = shortcutCopy;
@@ -79,7 +77,7 @@ namespace ICSharpCode.ShortcutsManagement
             InitializeComponent();
 
             // Display similar shortcuts (Shortcuts with the same input gestures assigned to them)
-            shortcutsManagementOptionsPanel.DataContext = addInsCopy;
+            shortcutsManagementOptionsPanel.DataContext = rootEntriesCopy;
             shortcutsManagementOptionsPanel.Loaded += delegate { FilterSimilarShortcuts(); };
         }
 
@@ -97,7 +95,7 @@ namespace ICSharpCode.ShortcutsManagement
 
             // Find shortcuts with same gesture and hide them.
             // Also hide modified shortcut from this list
-            var finder = new ShortcutsFinder(addInsCopy);
+            var finder = new ShortcutsFinder(rootEntriesCopy);
             finder.FilterGesture(templates, true);
             finder.HideShortcut(shortcutCopy);
 
@@ -206,8 +204,8 @@ namespace ICSharpCode.ShortcutsManagement
         {
             // Move modifications from shortcut copies to original shortcut objects
             foreach (var relatedShortcutCopy in modifiedShortcuts) {
-                foreach (var addin in addInsOriginal) {
-                    var originalRelatedShortcut = addin.FindShortcut(relatedShortcutCopy.Id);
+                foreach (var rootEntry in rootEntriesOriginal) {
+                    var originalRelatedShortcut = rootEntry.FindShortcut(relatedShortcutCopy.Id);
                     if(originalRelatedShortcut != null) {
                         originalRelatedShortcut.Gestures.Clear();
                         originalRelatedShortcut.Gestures.AddRange(relatedShortcutCopy.Gestures);

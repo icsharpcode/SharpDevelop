@@ -70,10 +70,10 @@ namespace ICSharpCode.ShortcutsManagement
         /// <summary>
         /// List of add-ins containing shortcut categories and shortcuts
         /// </summary>
-        private ICollection<AddIn> AddIns
+        private ICollection<IShortcutTreeEntry> RootEntries
         {
             get {
-                return (ICollection<AddIn>)DataContext;
+                return (ICollection<IShortcutTreeEntry>)DataContext;
             }
         }
 
@@ -96,21 +96,54 @@ namespace ICSharpCode.ShortcutsManagement
 
         private void ShowShortcutManagementWindow(Shortcut shortcut)
         {
-            var shortcutManagementWindow = new ShortcutManagementWindow(shortcut, AddIns);
+            var shortcutManagementWindow = new ShortcutManagementWindow(shortcut, RootEntries);
             shortcutManagementWindow.ShowDialog();
         }
 
         public void SelectFirstVisibleShortcut(bool setFocus)
         {
-            // Select first visible shortcut
-            var selectedAddIn = AddIns.FirstOrDefault(a => a.IsVisible);
-            if (selectedAddIn != null) {
-                var selectedCategory = selectedAddIn.Categories.FirstOrDefault(c => c.IsVisible);
+            var path = new List<IShortcutTreeEntry>();
+            foreach (var entry in RootEntries) {
+                if (entry != null && entry.IsVisible) {
+                    path.Add(entry);
+                    FindFirstVisibleItemPath(entry, path);
+                    shortcutsTreeView.SelectItem(path.Cast<object>().ToList(), setFocus);
+                    
+                    return;
+                }
+            }
+        }
+
+        private void FindFirstVisibleItemPath(IShortcutTreeEntry parent, List<IShortcutTreeEntry> path) 
+        {
+            var addIn = parent as AddIn;
+            if(addIn != null)
+            {
+                var selectedCategory = addIn.Categories.FirstOrDefault(a => a.IsVisible);
                 if (selectedCategory != null) {
-                    var selectedShortcut = selectedCategory.Shortcuts.FirstOrDefault(s => s.IsVisible);
-                    if (selectedShortcut != null) {
-                        shortcutsTreeView.SelectItem(new List<object> { selectedAddIn, selectedCategory, selectedShortcut }, setFocus);
-                    }
+                    path.Add(selectedCategory);
+                    FindFirstVisibleItemPath(selectedCategory, path);
+                    return;
+                }
+            }
+
+            var category = parent as ShortcutCategory;
+            if (category != null)
+            {
+                var selectedCategory = category.SubCategories.FirstOrDefault(a => a.IsVisible);
+                if (selectedCategory != null)
+                {
+                    path.Add(selectedCategory);
+                    FindFirstVisibleItemPath(selectedCategory, path);
+                    return;
+                }
+
+                var selectedShortcut = category.Shortcuts.FirstOrDefault(a => a.IsVisible);
+                if (selectedShortcut != null)
+                {
+                    path.Add(selectedShortcut);
+                    FindFirstVisibleItemPath(selectedShortcut, path);
+                    return;
                 }
             }
         }
@@ -185,7 +218,7 @@ namespace ICSharpCode.ShortcutsManagement
         {
             if (!searchTypeToggleButton.IsChecked.HasValue || searchTypeToggleButton.IsChecked.Value) return;
 
-            new ShortcutsFinder(AddIns).Filter(searchTextBox.Text);
+            new ShortcutsFinder(RootEntries).Filter(searchTextBox.Text);
 
             if (!string.IsNullOrEmpty(searchTextBox.Text)) {
                 SelectFirstVisibleShortcut(false);
@@ -223,7 +256,7 @@ namespace ICSharpCode.ShortcutsManagement
 
             // Filter shortcuts with similar gestures assigned and display entered gesture inside search textbox
             var keyGestureTemplate = new KeyGestureTemplate(e.Key, Keyboard.Modifiers);
-            new ShortcutsFinder(AddIns).FilterGesture(keyGestureTemplate, false);
+            new ShortcutsFinder(RootEntries).FilterGesture(keyGestureTemplate, false);
             SelectFirstVisibleShortcut(false);
             searchTextBox.Text = new KeyGestureTemplate(e).ToString();
 
@@ -239,7 +272,7 @@ namespace ICSharpCode.ShortcutsManagement
         {
             searchTextBox.Text = "";
 
-            new ShortcutsFinder(AddIns).Filter("");
+            new ShortcutsFinder(RootEntries).Filter("");
             shortcutsTreeView.SetExpandAll(false);
         }
     }
