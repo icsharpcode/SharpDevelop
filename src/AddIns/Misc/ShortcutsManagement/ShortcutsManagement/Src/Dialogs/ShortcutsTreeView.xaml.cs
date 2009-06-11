@@ -82,7 +82,7 @@ namespace ICSharpCode.ShortcutsManagement
         /// </summary>
         public ShortcutsTreeView()
         {
-            InitializeComponent(); 
+            InitializeComponent();
         }
 
         private void shortcutEntry_MouseDown(object sender, MouseButtonEventArgs e)

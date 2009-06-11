@@ -9,6 +9,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -26,11 +27,36 @@ namespace ICSharpCode.Core.Presentation
 			
 			this.codon = codon;
 			this.caller = caller;
+
 			
-			if(!string.IsNullOrEmpty(codon.Properties["command"])) {
-				this.Command = CommandsRegistry.GetRoutedUICommand(codon.Properties["command"]);
-			} else {
-				this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
+			string routedCommandName = null;
+			string routedCommandText = null;
+			
+			if(codon.Properties.Contains("command")) {
+				routedCommandName = codon.Properties["command"];				
+				routedCommandText = codon.Properties["command"];
+			} else if(codon.Properties.Contains("link") || codon.Properties.Contains("class")) {
+				routedCommandName = string.IsNullOrEmpty(codon.Properties["link"]) ? codon.Properties["class"] : codon.Properties["link"];
+				routedCommandText = "Menu item \"" + codon.Properties["label"] + "\"";
+			}
+
+			var routedCommand = CommandsRegistry.GetRoutedUICommand(routedCommandName);
+			if(routedCommand == null) {
+				routedCommand = CommandsRegistry.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+			}
+			   
+			this.Command = routedCommand;
+			
+			if(!codon.Properties.Contains("command") && (codon.Properties.Contains("link") || codon.Properties.Contains("class"))) {
+				var commandBindingInfo = new CommandBindingInfo();
+				commandBindingInfo.AddIn = codon.AddIn;
+				commandBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
+				commandBindingInfo.Class = CommandWrapper.GetCommand(codon, caller, createCommand);
+				commandBindingInfo.RoutedCommandName = routedCommandName;
+				commandBindingInfo.IsLazy = true;
+				
+				CommandsRegistry.RegisterCommandBinding(commandBindingInfo);
+				CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
 			}
 			
 			if (codon.Properties.Contains("icon")) {

@@ -72,7 +72,6 @@
 		<RoutedUICommand name="SDProjectCommands.ShowSelectedProjectBrowserNodeProperties" text="${res:MainWindow.Windows.PropertiesScoutLabel}" />
 		<RoutedUICommand name="SDProjectCommands.ShowHiddenFilesInProjectBrowser" text="${res:Gui.ProjectBrowser.ShowAllFiles}" />
 		<RoutedUICommand name="SDProjectCommands.RefreshProjectBrowser" text="${res:AddIns.HtmlHelp2.Refresh}" />
-
 		
 		<RoutedUICommand name="SDDebugCommands.Execute" text="${res:XML.MainMenu.RunMenu.Run}" />
 		<RoutedUICommand name="SDDebugCommands.ExecuteWithoutDebugger" text="${res:XML.MainMenu.DebugMenu.RunWithoutDebug}" />
@@ -107,6 +106,11 @@
 		
 		
 		<CommandBinding 
+			command = "SDProjectCommands.ShowSelectedProjectBrowserNodeProperties"
+			class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"
+			category="Project viewer" />
+		
+		<CommandBinding 
 			command="SDBuildCommands.BuildSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Build" 
 			gestures="F8" 
@@ -115,7 +119,8 @@
 			command="SDBuildCommands.RebuildSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Rebuild" 
 			gestures="Alt+F8" 
-			category="Building" />
+			category="Building"
+		/>
 		<CommandBinding 
 			command="SDBuildCommands.CleanSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Clean" 
@@ -192,7 +197,7 @@
 		<CommandBinding 
 			command="SDDebugCommands.ContinueDebugging" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand" 
-			gestures="Ctrl+Alt+B | Ctrl+Alt+D" 
+			gestures="Ctrl+Alt+B | Ctrl+Alt+D"
 			category="Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.StepOver" 
@@ -1400,7 +1405,7 @@
 			<Condition name = "WindowActive" activewindow="*" action="Disable">
 				<MenuItem id = "Reloadfile"
 				          label = "${res:XML.MainMenu.FileMenu.Reload}"
-				          shortcut = "Shift|Control|U"
+				          shortcut = "Ctrl+Shift+U"
 				          class = "ICSharpCode.SharpDevelop.Commands.ReloadFile" />
 			</Condition>
 			
@@ -1909,7 +1914,7 @@
 			          class = "ICSharpCode.SharpDevelop.Commands.ShowSensitiveHelp"/>
 			<MenuItem id = "Help"
 			          label = "${res:XML.MainMenu.HelpMenu.Topics}"
-			          shortcut = "Alt|F1"
+			          shortcut = "Alt+F1"
 			          link = "http://wiki.sharpdevelop.net/"/>
 			<MenuItem id = "Separator1" type = "Separator" />
 			<MenuItem id    = "ViewReadme"

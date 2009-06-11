@@ -13,6 +13,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		public CommandBindingInfo()
 		{
+			ContextName = CommandsRegistry.DefaultContextName;
 		}
 		
 		/// <summary>
@@ -45,11 +46,11 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Binded command full name
+		/// Binded command class full name
 		/// 
-		/// This command is invoke when this binding is triggered
+		/// Instance of this class is created as soon as user executes the command. See
+		/// <see cref="IsLazy" /> for details
 		/// </summary>
-		/// <seealso cref="Class"></seealso>
 		public string ClassName {
 			get; set;
 		}
@@ -59,11 +60,10 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Binded command instance
 		/// 
-		/// This command is invoke when this binding is triggered. If this value is equal 
-		/// to null then add-in is not loaded yet, see <see cref="IsLazy">IsLazy</see> attribute
+		/// Reference to the command which is invoke when the binding is triggered. If this value is equal 
+		/// to null then add-in is not loaded yet, see <see cref="IsLazy" /> attribute
 		/// for details
 		/// </summary>
-		/// <seealso cref="ClassName"></seealso>
 		public System.Windows.Input.ICommand Class { 
 			set {
 				classInstance = value;
@@ -71,6 +71,10 @@ namespace ICSharpCode.Core.Presentation
 			get {
 				if(classInstance != null) {
 					return classInstance;
+				}
+				
+				if(ExecutedEventHandler != null || CanExecutedEventHandler != null) {
+					return null;
 				}
 				
 				if(AddIn != null && (AddIn.DependenciesLoaded || IsLazy)) {
@@ -86,18 +90,14 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Context class full name
-		/// 
-		/// Described binding will be valid in this context
+		/// Name of the class which owns this binding
 		/// </summary>
 		public string ContextName{
 			get; set;
 		}
 					
 		/// <summary>
-		/// Context class instance
-		/// 
-		/// Described binding will be valid in this context
+		/// Instance of class which owns this binding
 		/// </summary>
 		public UIElement Context { 
 			set {
@@ -120,9 +120,10 @@ namespace ICSharpCode.Core.Presentation
 		/// 
 		/// If lazy load is enabled then all add-in references are loaded when this 
 		/// command is invoked. Otherwice if add-in is not loaded and IsLazy is set
-		/// to false then this binding can't be triggered until add-in is loaded.
+		/// to false then this binding can't be triggered until it is loaded manualy is loaded
+		/// using <see cref="CommandsRegistry.LoadCommand" /> or <see cref="CommandsRegistry.LoadAddInCommands" />.
 		/// </summary>
-		public bool IsLazy{
+		public bool IsLazy {
 			get; set;
 		}
 		
@@ -154,7 +155,9 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		internal void GeneratedCanExecuteEventHandler(object sender, CanExecuteRoutedEventArgs e) {
-			if(CanExecutedEventHandler != null) {
+			if(CanExecutedEventHandler == null && ExecutedEventHandler != null) {
+				e.CanExecute = true;
+			} else if(CanExecutedEventHandler != null) {
 				CanExecutedEventHandler.Invoke(sender, e);
 			} else {
 				if(IsLazy && Class == null) {

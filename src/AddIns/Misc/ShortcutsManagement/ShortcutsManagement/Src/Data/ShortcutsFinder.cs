@@ -162,7 +162,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         {
             foreach (var addIn in AddIns) {
                 // If add-in name matches filter string show all sub-elements
-                var addInNameContainsFilterString = addIn.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0;
+                var addInNameContainsFilterString = !string.IsNullOrEmpty(filterString) && addIn.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0;
 
                 // Apply filter to categories
                 var subCategoryIsVisible = false;
@@ -189,7 +189,8 @@ namespace ICSharpCode.ShortcutsManagement.Data
         private static bool Filter(ShortcutCategory category, string filterString, bool? forseMatch)
         {
             // If category name matches filter show all sub-categories and shortcuts
-            if(category.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0) {
+            if (!string.IsNullOrEmpty(filterString) && category.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0)
+            {
                 forseMatch = true;
             }
 
@@ -203,9 +204,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
 
             // Filter shortcuts which text match the filter
             foreach (var shortcut in category.Shortcuts) {
-                if (
-                     (forseMatch.HasValue && forseMatch.Value) 
-                  || shortcut.Text.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0) {
+                if ((forseMatch.HasValue && forseMatch.Value) || shortcut.Text.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0) {
                     shortcut.IsVisible = true;
                     isSubElementVisible = true;
                 }

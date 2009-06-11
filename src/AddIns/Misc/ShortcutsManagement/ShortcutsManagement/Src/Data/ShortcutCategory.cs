@@ -103,6 +103,17 @@ namespace ICSharpCode.ShortcutsManagement.Data
 	        return clonedCategory;
 	    }
 
+        public void SortEntries()
+        {
+            SubCategories.Sort((a, b) => a.Name.CompareTo(b.Name));
+            Shortcuts.Sort((a, b) => a.Text.CompareTo(b.Text));
+
+            foreach (var category in SubCategories)
+            {
+                category.SortEntries();
+            }
+        }
+
         /// <summary>
         /// Find shortcut shortcut by ID in this category and subcategories
         /// </summary>

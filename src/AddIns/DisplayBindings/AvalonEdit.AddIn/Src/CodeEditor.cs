@@ -118,8 +118,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public CodeEditor()
 		{
 			var contextName = this.GetType().FullName;
-			CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, this, CommandsRegistry.CreateCommandBindingUpdateHandler(CommandBindings, contextName, this));
-			CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, this, CommandsRegistry.CreateInputBindingUpdateHandler(InputBindings, contextName, this));
+			
+			
+			CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, this, delegate {
+            	var newBindings = CommandsRegistry.FindCommandBindings(contextName, this, null, null);
+            	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
+            	CommandBindings.AddRange(newBindings);
+			});
+			
+			CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, this, delegate {            	
+            	var newBindings = CommandsRegistry.FindInputBindings(contextName, this, null);
+            	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
+            	InputBindings.AddRange(newBindings);
+			});
 			
 			var commandBindingInfo = new CommandBindingInfo();
 			commandBindingInfo.ContextName = contextName;

@@ -12,28 +12,8 @@ namespace ICSharpCode.Core.Presentation
 			private UIElement contextInstance;
 			
 			public InputBindingInfo() {
-				
+				ContextName = CommandsRegistry.DefaultContextName;
 			}
-			
-			/// <summary>
-			/// Constructor
-			/// </summary>
-			/// <param name="contextName">Context full name</param>
-			/// <param name="routedCommandName">Name of routed UI command which is triggered by this binding</param>
-			/// <param name="gesture">Gesture which triggers this binding</param>
-			public InputBindingInfo(string contextName, string routedCommandName, InputGestureCollection gestures) {
-				ContextName = contextName;
-			    RoutedCommandName = routedCommandName; 
-			    Gestures = gestures;
-			}
-			
-			public InputBindingInfo(string contextName, UIElement contextInstance, string routedCommandName, InputGestureCollection gestures) {
-				ContextName = contextName;
-			    RoutedCommandName = routedCommandName; 
-			    Gestures = gestures;
-			    this.contextInstance = contextInstance;
-			}
-			
 			
 			/// <summary>
 			/// Context class full name

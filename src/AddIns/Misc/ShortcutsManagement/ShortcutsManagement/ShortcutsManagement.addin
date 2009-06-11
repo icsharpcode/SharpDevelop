@@ -1,4 +1,4 @@
-﻿<AddIn name        = "ShortcutsPrototype"
+﻿<AddIn name        = "ShortcutsManagement"
        author      = "Sergej Andrejev"
        url         = ""
        description = "Addin allows managing application shortcuts">

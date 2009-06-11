@@ -31,7 +31,7 @@ namespace ICSharpCode.ShortcutsManagement.Converters
                 foreach (var gesture in (ObservableCollection<InputGesture>)value) {
                     inputGestureCollection.Add(gesture);
                 }
-                return new InputGestureCollectionConverter().ConvertToInvariantString(inputGestureCollection).Replace("+", " + ").Replace("|", " | ");
+                return new InputGestureCollectionConverter().ConvertToInvariantString(inputGestureCollection).Replace("|", " | ");
             }
 
             return value.ToString();

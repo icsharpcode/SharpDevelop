@@ -17,6 +17,8 @@ namespace ICSharpCode.ShortcutsManagement
     /// </summary>
     public partial class ShortcutsManagementOptionsPanel : UserControl, IOptionPanel
     {
+        private readonly Dictionary<Shortcut, InputBindingInfo> shortcutsMap = new Dictionary<Shortcut, InputBindingInfo>();
+
         private static InputGestureCollection GetGestures(string gesturesString)
         {
             var converter = new InputGestureCollectionConverter();
@@ -68,13 +70,14 @@ namespace ICSharpCode.ShortcutsManagement
             var unspecifiedAddInSection = new ShortcutManagement.AddIn("Unspecified");
             unspecifiedAddInSection.Categories.Add(new ShortcutCategory("Uncategorized"));
 
-            var addIns = new ObservableCollection<ShortcutManagement.AddIn>();
+            var addIns = new List<ShortcutManagement.AddIn>();
             addIns.Add(unspecifiedAddInSection);
 
             var addInsMap = new Dictionary<AddIn, ShortcutManagement.AddIn>();
             var categoriesMap = new Dictionary<ShortcutManagement.AddIn, Dictionary<string, ShortcutCategory>>();
 
-            foreach(var inputBindingInfo in CommandsRegistry.InputBidnings) {
+            var inputBindingInfos = CommandsRegistry.FindInputBindingInfos(null, null, null);
+            foreach(var inputBindingInfo in inputBindingInfos) {
                 ShortcutManagement.AddIn addinSection;
                 if(inputBindingInfo.AddIn == null) {
                     addinSection = unspecifiedAddInSection;
@@ -89,8 +92,12 @@ namespace ICSharpCode.ShortcutsManagement
                 }
 
                 ShortcutCategory categorySection;
-                if(string.IsNullOrEmpty(inputBindingInfo.CategoryName) || !categoriesMap[addinSection].ContainsKey(inputBindingInfo.CategoryName)) {
+                if(string.IsNullOrEmpty(inputBindingInfo.CategoryName)) {
                     categorySection = addinSection.Categories[0];
+                } else if(!categoriesMap[addinSection].ContainsKey(inputBindingInfo.CategoryName)) {
+                    categorySection = new ShortcutCategory(inputBindingInfo.CategoryName);
+                    addinSection.Categories.Add(categorySection);
+                    categoriesMap[addinSection].Add(inputBindingInfo.CategoryName, categorySection);
                 } else {
                     categorySection = categoriesMap[addinSection][inputBindingInfo.CategoryName];
                 }
@@ -106,12 +113,32 @@ namespace ICSharpCode.ShortcutsManagement
 
                 var shortcut = new Shortcut(shortcutText, inputBindingInfo.Gestures);
                 categorySection.Shortcuts.Add(shortcut);
+
+                shortcutsMap.Add(shortcut, inputBindingInfo);
             }
 
+            addIns.Sort((a, b) => a.Name.CompareTo(b.Name));
+            foreach (var addIn in addIns)
+            {
+                addIn.SortEntries();
+            }
+
+            new ShortcutsFinder(addIns).Filter("");
             shortcutsManagementOptionsPanel.DataContext = addIns;
         }
 
         public bool SaveOptions() {
+
+            foreach (var pair in shortcutsMap)
+            {
+                var shortcut = pair.Key;
+                var inputBindingInfo = pair.Value;
+
+                inputBindingInfo.Gestures = new InputGestureCollection(shortcut.Gestures);
+            }
+
+            CommandsRegistry.InvokeInputBindingUpdateHandlers(null, null);
+
             return true;
         }
 

@@ -471,7 +471,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					}
 					
 					var routedCommandName = "SDViewCommands.ShowView_" + padContent.Class;
-					var routedCommandText = "Show view " + MenuService.ConvertLabel(StringParser.Parse(padContent.Title));
+					var routedCommandText = "Show view \"" + MenuService.ConvertLabel(StringParser.Parse(padContent.Title)) + "\"";
 					
 					// TODO: fix this hack
 					if(!bindingsAssigned.Contains(routedCommandName)) {
@@ -483,7 +483,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						
 						var commandBindingInfo = new CommandBindingInfo();
 						commandBindingInfo.ClassName = routedCommandName;
-						commandBindingInfo.ContextName = CommandsRegistry.DefaultContext;
+						commandBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
 						commandBindingInfo.RoutedCommandName = routedCommandName;
 						commandBindingInfo.AddIn = addIn;
 							
@@ -494,7 +494,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 							var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);
 							
 							var inputBindingInfo = new InputBindingInfo();
-							inputBindingInfo.ContextName = CommandsRegistry.DefaultContext;
+							inputBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
 							inputBindingInfo.RoutedCommandName = routedCommandName;
 							inputBindingInfo.Gestures = gestures;
 							inputBindingInfo.CategoryName = "Views";
@@ -506,10 +506,15 @@ namespace ICSharpCode.SharpDevelop.Commands
 						bindingsAssigned.Add(routedCommandName);
 					}
 					
-					CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext, null);
-					CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext, null);
+					CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {
+					                                                   		var updatedGestures = CommandsRegistry.FindInputGestures(CommandsRegistry.DefaultContextName, null, routedCommandName);
+					                                                   		item.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+					                                                   });
 					
-					item.InputGestureText = padContent.Shortcut;
+					CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
+					CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
+					
+				
 					item.Command = CommandsRegistry.GetRoutedUICommand(routedCommandName);
 					
 //					item.Command = new BringPadToFrontCommand(padContent);

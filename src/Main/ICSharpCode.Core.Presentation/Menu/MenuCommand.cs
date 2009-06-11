@@ -13,6 +13,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Text;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -118,29 +119,51 @@ namespace ICSharpCode.Core.Presentation
 	{
 		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
 		{
-			if(!string.IsNullOrEmpty(codon.Properties["command"])) {
-				var routedCommandName = codon.Properties["command"];				
-				var routedCommand = CommandsRegistry.GetRoutedUICommand(routedCommandName);
+			string routedCommandName = null;
+			string routedCommandText = null;
+			
+			if(codon.Properties.Contains("command")) {
+				routedCommandName = codon.Properties["command"];				
+				routedCommandText = codon.Properties["command"];
+			} else if(codon.Properties.Contains("link") || codon.Properties.Contains("class")) {
+				routedCommandName = string.IsNullOrEmpty(codon.Properties["link"]) ? codon.Properties["class"] : codon.Properties["link"];
+				routedCommandText = "Menu item \"" + codon.Properties["label"] + "\"";
+			}
+
+			var routedCommand = CommandsRegistry.GetRoutedUICommand(routedCommandName);
+			if(routedCommand == null) {
+				routedCommand = CommandsRegistry.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+			}
+			   
+			this.Command = routedCommand;
+			
+			if(!codon.Properties.Contains("command") && (codon.Properties.Contains("link") || codon.Properties.Contains("class"))) {
+				var commandBindingInfo = new CommandBindingInfo();
+				commandBindingInfo.AddIn = codon.AddIn;
+				commandBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
+				commandBindingInfo.Class = CommandWrapper.GetCommand(codon, caller, createCommand);
+				commandBindingInfo.RoutedCommandName = routedCommandName;
+				commandBindingInfo.IsLazy = true;
 				
-				if(routedCommand == null) {
-					MessageService.ShowError("Routed command with name '" + routedCommandName + "' not registered");
-				} else {
-					this.Command = routedCommand;
-					
-					var gestures = CommandsRegistry.GetInputGestures(CommandsRegistry.DefaultContext, null, routedCommand.Name, null);
-					var gesturesString = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
-					this.InputGestureText = gesturesString;
-				}
-			} else {			
-				this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
-				if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
-					KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
-					if (inputBindingOwner != null) {
-						inputBindingOwner.InputBindings.Add(new InputBinding(this.Command, kg));
-					}
-					
-					this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
-				}
+				CommandsRegistry.RegisterCommandBinding(commandBindingInfo);
+				CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
+			}
+			
+			if(codon.Properties.Contains("shortcut")) {
+				var shortcut = codon.Properties["shortcut"];
+				var inputBindingInfo = new InputBindingInfo();
+				inputBindingInfo.AddIn = codon.AddIn;
+				inputBindingInfo.CategoryName = "Menu items";
+				inputBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
+				inputBindingInfo.RoutedCommandName = routedCommandName;
+				inputBindingInfo.Gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(codon.Properties["gestures"]);
+			
+				CommandsRegistry.RegisterInputBinding(inputBindingInfo);
+				CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {
+				                                                   		var updatedGestures = CommandsRegistry.FindInputGestures(null, null, routedCommandName);
+				                                                   		this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+				                                                   });
+				CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
 			}
 		}
 	}

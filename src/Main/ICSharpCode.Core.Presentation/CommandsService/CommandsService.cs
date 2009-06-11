@@ -39,7 +39,7 @@ namespace ICSharpCode.Core.Presentation
 		{
 			var descriptors = AddInTree.BuildItems<CommandBindingDescriptor>(path, caller, false);
 			foreach(var desc in descriptors) {
-				var contextName = !string.IsNullOrEmpty(desc.Context) ? desc.Context : CommandsRegistry.DefaultContext;
+				var contextName = !string.IsNullOrEmpty(desc.Context) ? desc.Context : CommandsRegistry.DefaultContextName;
 				
 				// If routed with such name is not registered register routed command with text same as name
 				if(CommandsRegistry.GetRoutedUICommand(desc.Command) == null) {
@@ -83,7 +83,7 @@ namespace ICSharpCode.Core.Presentation
 			var descriptors = AddInTree.BuildItems<InputBindingDescriptor>(path, caller, false);
 			foreach(var desc in descriptors) {
 				var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(desc.Gestures);
-				var contextName = !string.IsNullOrEmpty(desc.Context) ? desc.Context : CommandsRegistry.DefaultContext;
+				var contextName = !string.IsNullOrEmpty(desc.Context) ? desc.Context : CommandsRegistry.DefaultContextName;
 				
 				var inputBindingInfo = new InputBindingInfo();
 				inputBindingInfo.ContextName = contextName;

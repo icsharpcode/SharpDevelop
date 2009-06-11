@@ -97,9 +97,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 				CommandsRegistry.LoadContext(contextName, (UIElement)Content);
 				
+				CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, null, delegate {
+	            	var newBindings = CommandsRegistry.FindCommandBindings(contextName, null, null, null);
+	            	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
+	            	CommandBindings.AddRange(newBindings);
+				});
 				
-				CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, null, CommandsRegistry.CreateCommandBindingUpdateHandler(CommandBindings, contextName, null));
-				CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, null, CommandsRegistry.CreateInputBindingUpdateHandler(InputBindings, contextName, null));
+				CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, null, delegate {            	
+	            	var newBindings = CommandsRegistry.FindInputBindings(contextName, null, null);
+	            	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
+	            	InputBindings.AddRange(newBindings);
+				});
+				
 				CommandsRegistry.InvokeCommandBindingUpdateHandlers(contextName, null);
 				CommandsRegistry.InvokeInputBindingUpdateHandlers(contextName, null);
 			}

@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			CommandsRegistry.DefaultContext = this.GetType().Name;
+			CommandsRegistry.DefaultContextName = this.GetType().Name;
 			
 			CommandsService.RegisterBuiltInRoutedUICommands();
 			
@@ -92,10 +92,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// Register context and load all commands from addin
 			CommandsRegistry.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
 			
-			CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContext, null, CommandsRegistry.CreateCommandBindingUpdateHandler(CommandBindings, CommandsRegistry.DefaultContext, null));
-			CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContext, null, CommandsRegistry.CreateInputBindingUpdateHandler(InputBindings, CommandsRegistry.DefaultContext, null));
-			CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContext, null);
-			CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContext, null);
+			CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {
+            	var newBindings = CommandsRegistry.FindCommandBindings(CommandsRegistry.DefaultContextName, null, null, null);
+            	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
+            	CommandBindings.AddRange(newBindings);
+			 });
+			
+			CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {            	
+            	var newBindings = CommandsRegistry.FindInputBindings(null, null, null);
+            	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
+            	InputBindings.AddRange(newBindings);
+	        });
+			
+			CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
+			CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
 			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath);
 			

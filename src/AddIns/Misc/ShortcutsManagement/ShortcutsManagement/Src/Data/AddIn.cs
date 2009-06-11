@@ -115,6 +115,15 @@ namespace ICSharpCode.ShortcutsManagement.Data
 	        return clonedAddIn;
 	    }
 
+        public void SortEntries() 
+        {
+            Categories.Sort((a, b) => a.Name.CompareTo(b.Name));
+            foreach (var category in Categories)
+            {
+                category.SortEntries();
+            }
+        }
+
         /// <summary>
         /// Notify observers about property changes
         /// </summary>
