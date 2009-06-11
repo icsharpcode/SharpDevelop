@@ -240,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 			throw new NotImplementedException();
 		}
 		
-		public ProjectItem CreateProjectItem(Microsoft.Build.BuildEngine.BuildItem item)
+		public ProjectItem CreateProjectItem(IProjectItemBackendStore item)
 		{
 			throw new NotImplementedException();
 		}

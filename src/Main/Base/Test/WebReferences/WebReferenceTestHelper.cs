@@ -28,7 +28,6 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			bool readOnly = false;
 			
 			public TestProject(string languageName)
-				: base(new Solution())
 			{
 				this.languageName = languageName;
 			}
