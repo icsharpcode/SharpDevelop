@@ -148,6 +148,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public bool ReportUnknownEvents { get; set; }
 		
 		List<string> interestingTasks = new List<string>();
+		string temporaryFileName;
 		
 		/// <summary>
 		/// The list of task names for which TaskStarted and TaskFinished events should be
@@ -194,29 +195,39 @@ namespace ICSharpCode.SharpDevelop.Project
 					return new ParallelMSBuildManager(new MSBuild.ProjectCollection());
 				});
 			
-			// Use a temporary project collection to prevent MSBuild from opening the element from the global collection
-			// - we don't want to modify the ProjectRootElement opened as project because we don't want to save
-			// back our changes to disk.
-			ProjectRootElement projectFile = ProjectRootElement.Open(project.FileName, manager.ProjectCollection);
-			foreach (string import in additionalTargetFiles)
-				projectFile.AddImport(import);
-			
-			if (globalProperties.ContainsKey("BuildingInsideVisualStudio")) {
-				// When we set BuildingInsideVisualStudio, MSBuild skips its own change detection
-				// because in Visual Studio, the host compiler does the change detection.
-				// We override the property '_ComputeNonExistentFileProperty' which is responsible
-				// for recompiling each time - our _ComputeNonExistentFileProperty does nothing,
-				// which re-enables the MSBuild's usual change detection.
-				projectFile.AddTarget("_ComputeNonExistentFileProperty");
+			// Using projects with in-memory modifications doesn't work with parallel build.
+			// As a work-around, we'll write our modifications to a file and force MSBuild to include that file using a custom property.
+			temporaryFileName = Path.GetTempFileName();
+			using (StreamWriter w = new StreamWriter(temporaryFileName)) {
+				w.WriteLine("<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
+				
+				foreach (string import in additionalTargetFiles) {
+					w.WriteLine("  <Import Project=\"" + import + "\" />");
+				}
+				
+				if (globalProperties.ContainsKey("BuildingInsideVisualStudio")) {
+					// When we set BuildingInsideVisualStudio, MSBuild skips its own change detection
+					// because in Visual Studio, the host compiler does the change detection.
+					// We override the target '_ComputeNonExistentFileProperty' which is responsible
+					// for recompiling each time - our _ComputeNonExistentFileProperty does nothing,
+					// which re-enables the MSBuild's usual change detection.
+					w.WriteLine("  <Target Name=\"_ComputeNonExistentFileProperty\" />");
+				}
+				w.WriteLine("</Project>");
+				
+				// inject our imports at the end of 'Microsoft.Common.Targets' by replacing the CodeAnalysisTargets.
+				if (globalProperties.ContainsKey("CodeAnalysisTargets")) {
+					w.WriteLine("  <Import Project=\"" + globalProperties["CodeAnalysisTargets"] + "\" />");
+				}
+				globalProperties["CodeAnalysisTargets"] = temporaryFileName;
 			}
 			
-			ProjectInstance projectInstance = MSBuildInternals.LoadProjectInstance(manager.ProjectCollection, projectFile, globalProperties);
-			
+			string fileName = project.FileName;
 			string[] targets = { options.Target.TargetName };
-			BuildRequestData requestData = new BuildRequestData(projectInstance, targets, new HostServices());
+			BuildRequestData requestData = new BuildRequestData(fileName, globalProperties, null, targets, new HostServices());
 			ILogger[] loggers = {
 				new SharpDevelopLogger(this),
-				new BuildLogFileLogger(projectFile.FullPath + ".log", LoggerVerbosity.Diagnostic)
+				new BuildLogFileLogger(fileName + ".log", LoggerVerbosity.Diagnostic)
 			};
 			manager.StartBuild(requestData, loggers, OnComplete);
 		}
@@ -454,6 +465,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void Shutdown()
 			{
+				if (worker.temporaryFileName != null) {
+					File.Delete(worker.temporaryFileName);
+					worker.temporaryFileName = null;
+				}
 			}
 			#endregion
 		}
