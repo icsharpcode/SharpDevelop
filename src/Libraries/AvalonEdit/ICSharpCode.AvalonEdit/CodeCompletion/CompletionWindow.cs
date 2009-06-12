@@ -98,12 +98,15 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			base.OnSourceInitialized(e);
 		}
 		
+		InputHandler myInputHandler;
+		
 		void AttachEvents()
 		{
 			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
 			this.TextArea.MouseWheel += textArea_MouseWheel;
 			this.TextArea.PreviewTextInput += textArea_PreviewTextInput;
-			this.TextArea.ActiveInputHandler = new InputHandler(this);
+			myInputHandler = new InputHandler(this);
+			this.TextArea.ActiveInputHandler = myInputHandler;
 		}
 		
 		/// <inheritdoc/>
@@ -113,7 +116,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.TextArea.MouseWheel -= textArea_MouseWheel;
 			this.TextArea.PreviewTextInput -= textArea_PreviewTextInput;
 			base.DetachEvents();
-			this.TextArea.ActiveInputHandler = this.TextArea.DefaultInputHandler;
+			if (this.TextArea.ActiveInputHandler == myInputHandler)
+				this.TextArea.ActiveInputHandler = this.TextArea.DefaultInputHandler;
 		}
 		
 		#region InputHandler
