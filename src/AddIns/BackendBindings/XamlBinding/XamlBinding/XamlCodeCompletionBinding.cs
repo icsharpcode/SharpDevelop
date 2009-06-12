@@ -5,13 +5,15 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
@@ -189,6 +191,30 @@ namespace ICSharpCode.XamlBinding
 								editor.ShowInsightWindow(CompletionDataHelper.MemberInsight(mrr));
 							}
 							
+							if (context.AttributeName == "Property" && context.Path.Elements.LastOrDefault().Name == "Setter") {
+								int offset = Utils.GetParentElementStart(editor);
+								string[] attributes = Utils.GetListOfExistingAttributeNames(editor.Document.Text, offset);
+								
+								if (attributes.Contains("TargetType")) {
+									AttributeValue value = MarkupExtensionParser.ParseValue(Utils.GetAttributeValue(editor.Document.Text, offset, "TargetType"));
+									if (!value.IsString) {
+										TypeResolveResult trr = CompletionDataHelper.ResolveMarkupExtensionType(value.ExtensionValue, info, editor, context.Path);
+										
+										var typeName = CompletionDataHelper.ResolveType(GetTypeNameFromTypeExtension(value.ExtensionValue), context, editor);
+										
+										if (trr != null && trr.ResolvedClass != null && trr.ResolvedClass.FullyQualifiedName == "System.Windows.Markup.TypeExtension"
+										    && typeName != null && typeName != null) {
+						/*					completionList.Items.AddRange(
+												typeName.ResolvedClass.Properties
+												.Where(p => p.IsPublic && p.CanSet)
+												.Select(prop => new DefaultCompletionItem(prop.Name))
+												.Cast<ICompletionItem>()
+											);*/
+										}
+									}
+								}
+							}
+							
 							if (context.AttributeName.StartsWith("xmlns"))
 								completionList.Items.AddRange(CompletionDataHelper.CreateListForXmlnsCompletion(info.BestCompilationUnit.ProjectContent));
 							
@@ -203,6 +229,21 @@ namespace ICSharpCode.XamlBinding
 				}
 			}
 			return false;
+		}
+		
+		static string GetTypeNameFromTypeExtension(MarkupExtensionInfo info)
+		{
+			var item = info.PositionalArguments.FirstOrDefault();
+			if (item != null && item.IsString) {
+				return item.StringValue;
+			} else {
+				if (info.NamedArguments.TryGetValue("typename", out item)) {
+					if (item.IsString)
+						return item.StringValue;
+				}
+			}
+			
+			return string.Empty;
 		}
 
 		static bool DoMarkupExtensionCompletion(ITextEditor editor, ParseInformation info, XamlContext context)

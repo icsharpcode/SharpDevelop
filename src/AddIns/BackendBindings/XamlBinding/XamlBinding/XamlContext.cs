@@ -28,6 +28,7 @@ namespace ICSharpCode.XamlBinding
 		public int ValueStartOffset { get; set; }
 		public XamlContextDescription Description { get; set; }
 		public bool Forced { get; set; }
+		public Dictionary<string, string> XmlnsDefinitions { get; set; }
 		
 		public XamlContext() {}
 		
@@ -40,7 +41,6 @@ namespace ICSharpCode.XamlBinding
 				" ValueStartOffset: " + ValueStartOffset +
 				" ]";
 		}
-		
 	}
 	
 	public enum XamlContextDescription {

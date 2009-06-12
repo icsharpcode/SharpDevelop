@@ -90,6 +90,12 @@ namespace ICSharpCode.XamlBinding
 			if (Utils.IsInsideXmlComment(text, offset))
 				description = XamlContextDescription.InComment;
 			
+			Dictionary<string, string> xmlnsDefs = new Dictionary<string, string>();
+			
+			using (XmlTextReader reader = CreateReaderAtTarget(editor.Document.Text, editor.Caret.Line, editor.Caret.Column)) {
+				
+			}
+			
 			var context = new XamlContext() {
 				PressedKey = typedValue,
 				Description = description,
@@ -98,7 +104,8 @@ namespace ICSharpCode.XamlBinding
 				AttributeValue = value,
 				RawAttributeValue = attributeValue,
 				ValueStartOffset = offsetFromValueStart,
-				Path = (path == null || path.Elements.Count == 0) ? null : path
+				Path = (path == null || path.Elements.Count == 0) ? null : path,
+				XmlnsDefinitions = xmlnsDefs
 			};
 			
 			LoggingService.Debug(context);
@@ -355,7 +362,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			var ctors = trr.ResolvedType.GetMethods().Where(m => m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count);
 			if (ctors.Any(ctor => ctor.Parameters.Count >= markup.PositionalArguments.Count)) {
-				list.Items.AddRange(trr.ResolvedType.GetProperties().Select(p => new XamlCodeCompletionItem(p, p.Name + "=")).Cast<ICompletionItem>());
+				list.Items.AddRange(trr.ResolvedType.GetProperties().Where(p => p.CanSet && p.IsPublic).Select(p => new XamlCodeCompletionItem(p, p.Name + "=")).Cast<ICompletionItem>());
 			}
 		}
 		
@@ -542,11 +549,10 @@ namespace ICSharpCode.XamlBinding
 		
 		public static MarkupExtensionInfo GetInnermostMarkup(MarkupExtensionInfo markup)
 		{
-			var lastPair = markup.NamedArguments.LastOrDefault();
 			var last = markup.PositionalArguments.LastOrDefault();
 			
 			if (markup.NamedArguments.Count > 0)
-				last = lastPair.Value;
+				last = markup.NamedArguments.LastOrDefault().Value;
 			
 			if (last != null) {
 				if (!last.IsString) {
@@ -557,13 +563,20 @@ namespace ICSharpCode.XamlBinding
 			return markup;
 		}
 
-		static TypeResolveResult ResolveMarkupExtensionType(MarkupExtensionInfo markup, ParseInformation info, ITextEditor editor, XmlElementPath path)
+		public static TypeResolveResult ResolveMarkupExtensionType(MarkupExtensionInfo markup, ParseInformation info, ITextEditor editor, XmlElementPath path)
 		{
 			XamlResolver resolver = new XamlResolver();
 			TypeResolveResult trr = resolver.Resolve(new ExpressionResult(markup.ExtensionType, new XamlExpressionContext(path, null, false)), info, editor.Document.Text) as TypeResolveResult;
 			if (trr == null) trr = resolver.Resolve(new ExpressionResult(markup.ExtensionType + "Extension", new XamlExpressionContext(path, null, false)), info, editor.Document.Text) as TypeResolveResult;
 			
 			return trr;
+		}
+		
+		public static TypeResolveResult ResolveType(string name, XamlContext context, ITextEditor editor)
+		{
+			return new XamlResolver()
+				.Resolve(new ExpressionResult(name, new XamlExpressionContext(context.Path, null, false)),
+					ParserService.GetParseInformation(editor.FileName), editor.Document.Text) as TypeResolveResult;
 		}
 		
 		public static IEnumerable<ICompletionItem> AddMatchingEventHandlers(ITextEditor editor, IMethod delegateInvoker)

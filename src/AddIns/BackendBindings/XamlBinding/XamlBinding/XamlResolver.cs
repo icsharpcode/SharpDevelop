@@ -77,6 +77,7 @@ namespace ICSharpCode.XamlBinding
 
 		ResolveResult ResolveElementName(XmlReader r, string exp)
 		{
+			//Utils.GetXmlNamespacesForOffset(
 			string xmlNamespace;
 			string name;
 			this.resolveExpression = exp;

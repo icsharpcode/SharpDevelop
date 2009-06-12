@@ -5,14 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
@@ -234,7 +236,8 @@ namespace ICSharpCode.XamlBinding
 			var list = Utils.GetXmlNamespacesForOffset(text, offset);
 			
 			foreach (var item in list) {
-				namespaceDecls += item.Key + "=\"" + item.Value + "\" ";
+				if (!Regex.IsMatch(text, item.Key + "\\s*=\\s*\""))
+					namespaceDecls += item.Key + "=\"" + item.Value + "\" ";
 			}
 			
 			text = "<" + name + " " + newText + " " + namespaceDecls + " />";
