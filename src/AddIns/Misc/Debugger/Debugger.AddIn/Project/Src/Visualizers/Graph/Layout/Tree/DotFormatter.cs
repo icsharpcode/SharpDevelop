@@ -23,11 +23,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		protected NeatoPositionTransform transform;
 		
+		protected NeatoDoubleFormatter neatoDoubleFormatter = new NeatoDoubleFormatter();
+		
 		// state (node and edge names) needed for parsing back
 		protected Dictionary<PositionedNode, string> nodeNames = new Dictionary<PositionedNode, string>();
 		protected Dictionary<PositionedEdge, string> edgeNames = new Dictionary<PositionedEdge, string>();
-		
-		protected CultureInfo formatCulture = CultureInfo.GetCultureInfo("en-US");
 		
 		/// <summary>
 		/// Used for generating node and edge names.
@@ -136,7 +136,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		private double readDouble(TextReader reader)
 		{
-			return double.Parse(readWord(reader), formatCulture);
+			return double.Parse(readWord(reader), this.neatoDoubleFormatter.DoubleCulture);
 		}
 		
 		private int readInt(TextReader reader)

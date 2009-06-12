@@ -185,6 +185,7 @@
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\DotFormatter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\IdGenerator.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\LayoutDirection.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoDoubleFormatter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoEdgeRouter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoPositionTransform.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoProcess.cs" />

@@ -12,7 +12,7 @@ using System.Windows;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// <see cref="DotFormatter"/> that treats nodes as records of properties. 
+	/// <see cref="DotFormatter"/> that treats nodes as records of properties.
 	/// Edges start at property, end at node.
 	/// </summary>
 	public class RecordDotFormatter : DotFormatter
@@ -48,9 +48,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 			
 			string dotFormatNode =
-				string.Format(formatCulture,
+				string.Format(this.neatoDoubleFormatter,
 				              "{0} [pos=\"{1},{2}!\" width=\"{3}\" height=\"{4}\" label=\"{5}\"];",
-				              nodeName, 
+				              nodeName,
 				              neatoInput.Location.X, neatoInput.Location.Y, neatoInput.Width, neatoInput.Height,
 				              recordLabel.ToString());
 			builder.AppendLine(dotFormatNode);

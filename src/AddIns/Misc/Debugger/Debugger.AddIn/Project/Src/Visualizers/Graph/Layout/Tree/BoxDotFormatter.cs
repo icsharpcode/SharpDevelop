@@ -27,7 +27,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			Rect neatoInput = transform.NodeToNeatoInput(node);
 			
 			string dotFormatNode =
-				string.Format(formatCulture,
+				string.Format(this.neatoDoubleFormatter,
 				              "{0} [pos=\"{1},{2}!\" width=\"{3}\" height=\"{4}\"];",
 				              nodeName, neatoInput.Location.X, neatoInput.Location.Y, neatoInput.Width, neatoInput.Height);
 			builder.AppendLine(dotFormatNode);
