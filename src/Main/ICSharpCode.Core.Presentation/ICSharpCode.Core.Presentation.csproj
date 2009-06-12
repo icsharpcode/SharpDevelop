@@ -71,6 +71,7 @@
     <Compile Include="CommandsService\CommandsService.cs" />
     <Compile Include="CommandsService\CommandsRegistry.cs" />
     <Compile Include="CommandsService\GesturePlaceHolderRegistry.cs" />
+    <Compile Include="CommandsService\InputBindingCategory.cs" />
     <Compile Include="CommandsService\InputBindingInfo.cs" />
     <Compile Include="CommandsService\InputGestureCollectionConverter.cs" />
     <Compile Include="CommandsService\InputGestureCollectionExtensions.cs" />

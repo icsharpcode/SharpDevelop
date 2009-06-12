@@ -261,7 +261,8 @@ namespace ICSharpCode.ShortcutsManagement.Data
                 }
             }
 
-            return category.IsVisible = (forseMatch.HasValue && forseMatch.Value) || isSubElementVisible;
+            // Show category if has sub elements, forced or matches search filter
+            return category.IsVisible = (forseMatch.HasValue && forseMatch.Value && (category.SubCategories.Count > 0 || category.Shortcuts.Count > 0)) || isSubElementVisible;
         }
     }
 }

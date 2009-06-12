@@ -471,7 +471,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					}
 					
 					var routedCommandName = "SDViewCommands.ShowView_" + padContent.Class;
-					var routedCommandText = "Show view \"" + MenuService.ConvertLabel(StringParser.Parse(padContent.Title)) + "\"";
+					var routedCommandText = MenuService.ConvertLabel(StringParser.Parse(padContent.Title));
 					
 					// TODO: fix this hack
 					if(!bindingsAssigned.Contains(routedCommandName)) {
@@ -497,7 +497,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 							inputBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
 							inputBindingInfo.RoutedCommandName = routedCommandName;
 							inputBindingInfo.Gestures = gestures;
-							inputBindingInfo.CategoryName = "Views";
+							inputBindingInfo.Categories.AddRange(CommandsRegistry.RegisterInputBindingCategories("Menu Items/Views"));
 							inputBindingInfo.AddIn = addIn;
 							
 							CommandsRegistry.RegisterInputBinding(inputBindingInfo);

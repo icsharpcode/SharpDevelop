@@ -153,7 +153,7 @@ namespace ICSharpCode.Core.Presentation
 				var shortcut = codon.Properties["shortcut"];
 				var inputBindingInfo = new InputBindingInfo();
 				inputBindingInfo.AddIn = codon.AddIn;
-				inputBindingInfo.CategoryName = "Menu items";
+				inputBindingInfo.Categories.AddRange(CommandsRegistry.RegisterInputBindingCategories("Menu Items"));
 				inputBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
 				inputBindingInfo.RoutedCommandName = routedCommandName;
 				inputBindingInfo.Gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(codon.Properties["gestures"]);

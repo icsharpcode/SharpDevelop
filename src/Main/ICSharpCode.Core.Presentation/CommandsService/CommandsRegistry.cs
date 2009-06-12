@@ -5,6 +5,8 @@ using System.Windows;
 using ICSharpCode.Core;
 using System.Threading;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -39,6 +41,8 @@ namespace ICSharpCode.Core.Presentation
 		private static Dictionary<string, Dictionary<UIElement, List<BindingsUpdatedHandler>>> commandBindingsUpdateHandlers = new Dictionary<string, Dictionary<UIElement, List<BindingsUpdatedHandler>>>();
 		private static Dictionary<string, Dictionary<UIElement, List<BindingsUpdatedHandler>>> inputBindingsUpdateHandlers = new Dictionary<string, Dictionary<UIElement, List<BindingsUpdatedHandler>>>();
 
+		private static List<InputBindingCategory> categories = new List<InputBindingCategory>();
+		
 		/// <summary>
 		/// Get reference to routed UI command by name
 		/// </summary>
@@ -110,12 +114,20 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 
+		/// <summary>
+		/// Register input binding by specifying this binding parameters
+		/// </summary>
+		/// <param name="inputBindingInfo">Input binding parameters</param>
 		public static void RegisterInputBinding(InputBindingInfo inputBindingInfo)
 		{
 			inputBidnings.Add(inputBindingInfo);
 			CommandsRegistry.InvokeCommandBindingUpdateHandlers(inputBindingInfo.ContextName, null);
 		}
 		
+		/// <summary>
+		/// Unregister input binding
+		/// </summary>
+		/// <param name="inputBindingInfo">Input binding parameters</param>
 		public static void UnregisterInputBinding(InputBindingInfo inputBindingInfo)
 		{
 			inputBidnings.Remove(inputBindingInfo);
@@ -129,7 +141,6 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="contextName">Context class full name</param>
 		/// <param name="contextInstance">Unregister binding assigned to specific context instance</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
-		/// <param name="gesture">Gesture</param>
 		public static ICollection<InputBindingInfo> FindInputBindingInfos(string contextName, UIElement contextInstance, string routedCommandName) {
 			var foundBindings = new List<InputBindingInfo>();
 			for(int i = inputBidnings.Count - 1; i >= 0; i--) {
@@ -228,9 +239,9 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Remove all managed input bindings from input bindings collection
+		/// Remove all managed input bindings from <see cref="InputBindingCollection" />
 		/// </summary>
-		/// <param name="inputBindingCollection"></param>
+		/// <param name="inputBindingCollection">Input binding cllection containing managed input bindings</param>
 		public static void RemoveManagedInputBindings(InputBindingCollection inputBindingCollection) {
 			for(int i = inputBindingCollection.Count - 1; i >= 0; i--) {
 				if(inputBindingCollection[i] is ManagedInputBinding) {
@@ -239,10 +250,18 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Register command binding by specifying command binding parameters
+		/// </summary>
+		/// <param name="commandBindingInfo">Command binding parameters</param>
 		public static void RegisterCommandBinding(CommandBindingInfo commandBindingInfo) {
 			commandBindings.Add(commandBindingInfo);
 		}
 		
+		/// <summary>
+		/// Unregister command binding
+		/// </summary>
+		/// <param name="commandBindingInfo">Command binding parameters</param>
 		public static void UnregisterCommandBinding(CommandBindingInfo commandBindingInfo) {
 			commandBindings.Remove(commandBindingInfo);
 		}
@@ -331,9 +350,9 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Remove all managed command bindungs from command bindings collection
+		/// Remove all managed command bindings from <see cref="CommandBindingCollection" />
 		/// </summary>
-		/// <param name="commandBindingsCollection"></param>
+		/// <param name="commandBindingsCollection">Command binding cllection containing managed input bindings</param>
 		public static void RemoveManagedCommandBindings(CommandBindingCollection commandBindingsCollection) {
 			for(int i = commandBindingsCollection.Count - 1; i >= 0; i--) {
 				if(commandBindingsCollection[i] is ManagedCommandBinding) {
@@ -343,9 +362,9 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Load all registered commands in addin
+		/// Load all registered commands in add-in
 		/// </summary>
-		/// <param name="addIn">Addin</param>
+		/// <param name="addIn">Add-in</param>
 		public static void LoadAddinCommands(AddIn addIn) {		
 			foreach(var binding in commandBindings) {
 				if(binding.AddIn != addIn) continue;
@@ -363,7 +382,8 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Load command
+		/// Register command object (either instance of <see cref="System.Windows.Input.ICommand" /> or <see cref="ICSharpCode.Core.ICommand" />)
+		/// which can be identified by command name
 		/// </summary>
 		/// <param name="commandName">Command name</param>
 		/// <param name="command">Command instance</param>
@@ -379,7 +399,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Load context
+		/// Register binding owner instance which can be identified by unique name
 		/// </summary>
 		/// <param name="contextName">Context class full name</param>
 		/// <param name="context">Context class instance</param>
@@ -478,6 +498,47 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			return gestures;
+		}
+		
+		/// <summary>
+		/// Register input binding category
+		/// 
+		/// Format:
+		/// , - Separates categories
+		/// / - Describes hierarchy meaning category to the left is child of the category to the right
+		/// 
+		/// <code>parent/child</code>
+		/// </summary>
+		/// <param name="categoriesString">String representing list of categories.</param>
+		/// <returns>Returns list of categories which can be assigned to input binding</returns>
+		public static List<InputBindingCategory> RegisterInputBindingCategories(string categoriesString) {			
+			var registeredCategories = new List<InputBindingCategory>();
+
+			// Split categories
+			var categoryPaths = Regex.Split(categoriesString, @"\s*\,\s*");
+			foreach(var categoryPath in categoryPaths) {
+				// Split category path
+				var pathEntries = Regex.Split(categoryPath, @"\s*\/\s*").ToList();
+				
+				var accumulatedPath = "";
+				InputBindingCategory parentCategory = null;
+				
+				// In a loop create category hierarchy specified in a path
+				foreach(var categoryPathEntry in pathEntries) {
+					accumulatedPath += "/" + categoryPathEntry;
+					var matchingCategory = categories.FirstOrDefault(c => c.Path == accumulatedPath);
+					if(matchingCategory == null) {
+						matchingCategory = new InputBindingCategory(categoryPathEntry, parentCategory);
+						matchingCategory.Path = accumulatedPath;
+						categories.Add(matchingCategory);
+					}
+					parentCategory = matchingCategory;
+				}
+				
+				registeredCategories.Add(parentCategory);
+			}
+			
+			return registeredCategories;
 		}
 	}	
 }

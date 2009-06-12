@@ -128,8 +128,16 @@
   </data>
   <data name="Global.CancelButtonText" xml:space="preserve">
     <value>_Cancel</value>
+    <comment>For testing outside SD</comment>
   </data>
   <data name="Global.OKButtonText" xml:space="preserve">
     <value>_OK</value>
+    <comment>For testing outside SD</comment>
+  </data>
+  <data name="ShortcutsManagement.UnspecifiedAddInName" xml:space="preserve">
+    <value>Unspecified</value>
+  </data>
+  <data name="ShortcutsManagement.UnspecifiedCategoryName" xml:space="preserve">
+    <value>Uncategorized</value>
   </data>
 </root>

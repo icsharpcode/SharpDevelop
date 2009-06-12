@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -13,6 +14,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			public InputBindingInfo() {
 				ContextName = CommandsRegistry.DefaultContextName;
+				Categories = new List<InputBindingCategory>();
 			}
 			
 			/// <summary>
@@ -90,8 +92,8 @@ namespace ICSharpCode.Core.Presentation
 				get; set; 
 			}
 			
-			public string CategoryName {
-				get; set;
+			public List<InputBindingCategory> Categories {
+				get; private set;
 			}
 		}
 }

@@ -70,7 +70,7 @@ namespace ICSharpCode.Core.Presentation
 					}
 					
 					if(!string.IsNullOrEmpty(desc.Category)) {
-						inputBindingInfo.CategoryName = desc.Category;
+						inputBindingInfo.Categories.AddRange(CommandsRegistry.RegisterInputBindingCategories(desc.Category));
 					}
 					
 					CommandsRegistry.RegisterInputBinding(inputBindingInfo);
@@ -96,7 +96,7 @@ namespace ICSharpCode.Core.Presentation
 				}
 				
 				if(!string.IsNullOrEmpty(desc.Category)) {
-					inputBindingInfo.CategoryName = desc.Category;
+					inputBindingInfo.Categories.AddRange(CommandsRegistry.RegisterInputBindingCategories(desc.Category));
 				}
 				
 				CommandsRegistry.RegisterInputBinding(inputBindingInfo);

@@ -128,6 +128,7 @@
                         <DataTrigger Binding="{Binding Converter={StaticResource TypeNameConverter}}" Value="AddIn">
                             <Setter TargetName="InnerBorder" Property="Panel.Background" Value="#AEFFA8" />
                             <Setter TargetName="InnerBorder" Property="TextElement.Foreground" Value="#000000" />
+                            <Setter TargetName="OuterBorder" Property="Margin" Value="0" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Path=IsVisible}" Value="false">
                             <Setter Property="Visibility" Value="Collapsed" />
