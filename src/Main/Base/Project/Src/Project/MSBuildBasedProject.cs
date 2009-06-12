@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Microsoft.Build.Evaluation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +13,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -29,8 +29,13 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// require locking on the SyncRoot. Methods that return underlying MSBuild objects require that
 	/// the caller locks on the SyncRoot.
 	/// </summary>
-	public class MSBuildBasedProject : AbstractProject, IProjectItemListProvider
+	public abstract class MSBuildBasedProject : AbstractProject, IProjectItemListProvider
 	{
+		/// <summary>
+		/// The project collection that contains this project.
+		/// </summary>
+		ProjectCollection projectCollection;
+		
 		/// <summary>
 		/// The underlying MSBuild project.
 		/// </summary>
@@ -50,12 +55,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			"PostBuildEvent",
 			"PreBuildEvent"
 		);
-		
-		public MSBuildBasedProject()
-		{
-			this.projectFile = ProjectRootElement.Create();
-			this.userProjectFile = ProjectRootElement.Create();
-		}
 		
 		public override void Dispose()
 		{
@@ -146,14 +145,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Create new project
-		protected virtual void Create(ProjectCreateInformation information)
+		protected MSBuildBasedProject(ProjectCreateInformation information)
 		{
+			this.projectCollection = information.Solution.MSBuildProjectCollection;
+			this.projectFile = ProjectRootElement.Create(projectCollection);
+			this.userProjectFile = ProjectRootElement.Create(projectCollection);
+			
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
 			
 			projectFile.FullPath = information.OutputProjectFileName;
 			projectFile.ToolsVersion = "4.0";
 			projectFile.DefaultTargets = "Build";
+			userProjectFile.FullPath = information.OutputProjectFileName + ".user";
 			
 			base.IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
 			projectFile.AddProperty(ProjectGuidPropertyName, IdGuid);
@@ -307,7 +311,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		void UnloadCurrentlyOpenProject()
 		{
 			if (currentlyOpenProject != null) {
-				MSBuildInternals.UnloadProject(currentlyOpenProject);
+				MSBuildInternals.UnloadProject(projectCollection, currentlyOpenProject);
 				currentlyOpenProject = null;
 			}
 		}
@@ -351,7 +355,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				InitializeMSBuildProjectProperties(globalProps);
 				globalProps["Configuration"] = configuration;
 				globalProps["Platform"] = platform;
-				MSBuild.Project project = MSBuildInternals.LoadProject(projectFile, globalProps);
+				MSBuild.Project project = MSBuildInternals.LoadProject(projectCollection, projectFile, globalProps);
 				if (openCurrentConfiguration)
 					currentlyOpenProject = project;
 				return new ConfiguredProject(this, project, !openCurrentConfiguration);
@@ -400,7 +404,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				try {
 					if (unloadProjectOnDispose) {
-						MSBuildInternals.UnloadProject(this.Project);
+						MSBuildInternals.UnloadProject(p.projectCollection, this.Project);
 					}
 				} finally {
 					System.Threading.Monitor.Exit(p.SyncRoot);
@@ -1046,24 +1050,26 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		protected virtual void LoadProject(string fileName)
+		protected MSBuildBasedProject(ProjectLoadInformation loadInformation)
 		{
-			lock (SyncRoot) {
-				isLoading = true;
-				try {
-					LoadProjectInternal(fileName);
-				} finally {
-					isLoading = false;
-				}
+			if (loadInformation == null)
+				throw new ArgumentNullException("loadInformation");
+			this.Name = loadInformation.ProjectName;
+			isLoading = true;
+			try {
+				LoadProjectInternal(loadInformation);
+			} finally {
+				isLoading = false;
 			}
 		}
 		
-		void LoadProjectInternal(string fileName)
+		void LoadProjectInternal(ProjectLoadInformation loadInformation)
 		{
-			this.FileName = fileName;
+			this.projectCollection = loadInformation.ParentSolution.MSBuildProjectCollection;
+			this.FileName = loadInformation.FileName;
 			
 			//try {
-			projectFile = ProjectRootElement.Open(fileName);
+			projectFile = ProjectRootElement.Open(loadInformation.FileName, projectCollection);
 			/*} catch (MSBuild.InvalidProjectFileException ex) {
 				LoggingService.Warn(ex);
 				LoggingService.Warn("ErrorCode = " + ex.ErrorCode);
@@ -1095,13 +1101,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}*/
 			
-			string userFileName = fileName + ".user";
+			string userFileName = loadInformation.FileName + ".user";
 			if (File.Exists(userFileName)) {
 				//try {
-				userProjectFile = ProjectRootElement.Open(userFileName);
+				userProjectFile = ProjectRootElement.Open(userFileName, projectCollection);
 				/*} catch (MSBuild.InvalidProjectFileException ex) {
 					throw new ProjectLoadException("Error loading user part " + userFileName + ":\n" + ex.Message);
 				}*/
+			} else {
+				userProjectFile = ProjectRootElement.Create(userFileName, projectCollection);
 			}
 			
 			this.ActiveConfiguration = GetEvaluatedProperty("Configuration") ?? this.ActiveConfiguration;

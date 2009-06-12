@@ -22,9 +22,9 @@ namespace ICSharpCode.ILAsmBinding
 			}
 		}
 		
-		public IProject LoadProject(string fileName, string projectName)
+		public IProject LoadProject(ProjectLoadInformation loadInformation)
 		{
-			return new ILAsmProject(fileName, projectName);
+			return new ILAsmProject(loadInformation);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)

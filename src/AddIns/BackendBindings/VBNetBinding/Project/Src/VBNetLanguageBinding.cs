@@ -23,9 +23,9 @@ namespace VBNetBinding
 			}
 		}
 		
-		public IProject LoadProject(string fileName, string projectName)
+		public IProject LoadProject(ProjectLoadInformation loadInformation)
 		{
-			return new VBNetProject(fileName, projectName);
+			return new VBNetProject(loadInformation);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)

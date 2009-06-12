@@ -41,29 +41,21 @@ namespace CSharpBinding
 			reparseCodeSensitiveProperties.Add("DefineConstants");
 		}
 		
-		public CSharpProject(string fileName, string projectName)
-		{
-			this.Name = projectName;
-			Init();
-			LoadProject(fileName);
-		}
-		
-		public CSharpProject(ProjectCreateInformation info)
+		public CSharpProject(ProjectLoadInformation loadInformation)
+			: base(loadInformation)
 		{
 			Init();
-			Create(info);
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.CSharp.Targets";
 		public const string ExtendedTargetsFile = @"$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets";
 		
-		protected override void Create(ProjectCreateInformation information)
+		public CSharpProject(ProjectCreateInformation info)
+			: base(info)
 		{
-			this.AddImport(DefaultTargetsFile, null);
+			Init();
 			
-			// Add import before base.Create call - base.Create will call AddOrRemoveExtensions, which
-			// needs to change the import when the compact framework is targeted.
-			base.Create(information);
+			this.AddImport(DefaultTargetsFile, null);
 			
 			SetProperty("Debug", null, "CheckForOverflowUnderflow", "True",
 			            PropertyStorageLocations.ConfigurationSpecific, true);

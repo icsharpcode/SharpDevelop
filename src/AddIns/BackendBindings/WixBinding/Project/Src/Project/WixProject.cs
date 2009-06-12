@@ -33,15 +33,22 @@ namespace ICSharpCode.WixBinding
 		
 		delegate bool IsFileNameMatch(string fileName);
 		
-		public WixProject(string fileName, string projectName)
+		public WixProject(ProjectLoadInformation info)
+			: base(info)
 		{
-			Name = projectName;
-			LoadProject(fileName);
 		}
 		
 		public WixProject(ProjectCreateInformation info)
+			: base(info)
 		{
-			Create(info);
+			SetProperty("OutputType", "Package");
+			
+			string wixToolPath = @"$(SharpDevelopBinPath)\Tools\Wix";
+			AddGuardedProperty("WixToolPath", wixToolPath);
+			AddGuardedProperty("WixTargetsPath", @"$(WixToolPath)\wix.targets");
+			AddGuardedProperty("WixTasksPath", @"$(WixToolPath)\WixTasks.dll");
+			
+			this.AddImport(DefaultTargetsFile, null);
 		}
 		
 		public override string Language {
@@ -217,23 +224,6 @@ namespace ICSharpCode.WixBinding
 				return ItemType.Compile;
 			else
 				return base.GetDefaultItemType(fileName);
-		}
-		
-		/// <summary>
-		/// Creates a WixProject with the default settings in its MSBuild file.
-		/// </summary>
-		protected override void Create(ProjectCreateInformation information)
-		{
-			base.Create(information);
-			
-			SetProperty("OutputType", "Package");
-			
-			string wixToolPath = @"$(SharpDevelopBinPath)\Tools\Wix";
-			AddGuardedProperty("WixToolPath", wixToolPath);
-			AddGuardedProperty("WixTargetsPath", @"$(WixToolPath)\wix.targets");
-			AddGuardedProperty("WixTasksPath", @"$(WixToolPath)\WixTasks.dll");
-			
-			this.AddImport(DefaultTargetsFile, null);
 		}
 		
 		/// <summary>

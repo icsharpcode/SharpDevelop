@@ -46,25 +46,21 @@ namespace VBNetBinding
 			return new VBNetAmbience();
 		}
 		
-		public VBNetProject(string fileName, string projectName)
+		public VBNetProject(ProjectLoadInformation info)
+			: base(info)
 		{
-			this.Name = projectName;
 			InitVB();
-			LoadProject(fileName);
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.VisualBasic.Targets";
 		public const string ExtendedTargetsFile = @"$(SharpDevelopBinPath)\SharpDevelop.Build.VisualBasic.targets";
 		
 		public VBNetProject(ProjectCreateInformation info)
+			: base(info)
 		{
 			InitVB();
 			
 			this.AddImport(DefaultTargetsFile, null);
-			
-			// Add import before Create call - base.Create will call AddOrRemoveExtensions, which
-			// needs to change the import when the compact framework is targeted.
-			Create(info);
 			
 			SetProperty("Debug", null, "DefineConstants", "DEBUG=1,TRACE=1",
 			            PropertyStorageLocations.ConfigurationSpecific, true);

@@ -177,7 +177,7 @@ namespace ICSharpCode.SharpDevelop
 				// multiply Count with 2 so that the progress bar is only at 50% when references are done
 				progressMonitor.BeginTask("Loading references...", createdContents.Count * 2, false);
 				
-				ParallelMSBuildManager.EnableBuildEngine();
+				ParallelMSBuildManager.EnableBuildEngine(false);
 				try {
 					for (int i = 0; i < createdContents.Count; i++) {
 						if (abortLoadSolutionProjectsThread) return;

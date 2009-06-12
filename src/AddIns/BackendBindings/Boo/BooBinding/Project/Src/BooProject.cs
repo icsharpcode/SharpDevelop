@@ -35,17 +35,23 @@ namespace Grunwald.BooBinding
 			get { return BooLanguageProperties.Instance; }
 		}
 		
-		public BooProject(string fileName, string projectName)
+		public BooProject(ProjectLoadInformation info)
+			: base(info)
 		{
-			this.Name = projectName;
 			Init();
-			LoadProject(fileName);
 		}
 		
 		public BooProject(ProjectCreateInformation info)
+			: base(info)
 		{
 			Init();
-			Create(info);
+			
+			SetProperty("Debug", null, "DefineConstants", "DEBUG;TRACE",
+			            PropertyStorageLocations.ConfigurationSpecific, false);
+			SetProperty("Release", null, "DefineConstants", "TRACE",
+			            PropertyStorageLocations.ConfigurationSpecific, false);
+			SetProperty("Strict", "True");
+			
 			string rspFile = Path.Combine(BooBinPath, "booc.rsp");
 			if (File.Exists(rspFile)) {
 				using (StreamReader r = new StreamReader(rspFile)) {
@@ -59,17 +65,6 @@ namespace Grunwald.BooBinding
 				}
 			}
 			this.AddImport("$(BooBinPath)\\Boo.Microsoft.Build.targets", null);
-		}
-		
-		protected override void Create(ProjectCreateInformation information)
-		{
-			base.Create(information);
-			
-			SetProperty("Debug", null, "DefineConstants", "DEBUG;TRACE",
-			            PropertyStorageLocations.ConfigurationSpecific, false);
-			SetProperty("Release", null, "DefineConstants", "TRACE",
-			            PropertyStorageLocations.ConfigurationSpecific, false);
-			SetProperty("Strict", "True");
 		}
 		
 		void AddReference(string assembly)

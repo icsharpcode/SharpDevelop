@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		/// <param name="beginBuild">Specifies whether the build engine should be started immediately.
 		/// If false (default), the build engine will start on the first StartBuild() call.</param>
-		public static void EnableBuildEngine(bool beginBuild = false)
+		public static void EnableBuildEngine(bool beginBuild)
 		{
 			lock (enableDisableLock) {
 				if (!buildIsRunning && beginBuild) {
@@ -58,7 +58,9 @@ namespace ICSharpCode.SharpDevelop.Project
 						#endif
 					};
 					parameters.EnableNodeReuse = false;
-					parameters.MaxNodeCount = BuildOptions.DefaultParallelProjectCount;
+					// parallel build seems to break in-memory modifications of the project (additionalTargetFiles+_ComputeNonExistentFileProperty),
+					// so we keep it disabled for the moment.
+					parameters.MaxNodeCount = 1; //BuildOptions.DefaultParallelProjectCount;
 					BuildManager.DefaultBuildManager.BeginBuild(parameters);
 				}
 				enableCount++;

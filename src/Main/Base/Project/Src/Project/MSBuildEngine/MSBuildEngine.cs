@@ -182,6 +182,7 @@ namespace ICSharpCode.SharpDevelop.Project
 
 			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
 			
+			/*
 			// Use a temporary project collection to prevent MSBuild from opening the element from the global collection
 			// - we don't want to modify the ProjectRootElement opened as project because we don't want to save
 			// back our changes to disk.
@@ -206,7 +207,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				new SharpDevelopLogger(this),
 				new BuildLogFileLogger(projectFile.FullPath + ".log", LoggerVerbosity.Diagnostic)
 			};
-			ParallelMSBuildManager.StartBuild(requestData, loggers, OnComplete);
+			ParallelMSBuildManager.StartBuild(requestData, loggers, OnComplete);*/
 		}
 		
 		void OnComplete(BuildSubmission submission)

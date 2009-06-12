@@ -32,7 +32,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public Solution()
 		{
 			preferences = new SolutionPreferences(this);
+			this.MSBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
 		}
+		
+		public Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection { get; private set; }
 		
 		#region Enumerate projects/folders
 		public IProject FindProjectContainingFile(string fileName)
@@ -526,7 +529,10 @@ namespace ICSharpCode.SharpDevelop.Project
 						SolutionFolder newFolder = SolutionFolder.ReadFolder(sr, title, location, guid);
 						newSolution.AddFolder(newFolder);
 					} else {
-						IProject newProject = LanguageBindingService.LoadProject(newSolution, location, title, projectGuid, progressMonitor);
+						ProjectLoadInformation loadInfo = new ProjectLoadInformation(newSolution, location, title);
+						loadInfo.TypeGuid = projectGuid;
+						loadInfo.ProgressMonitor = progressMonitor;
+						IProject newProject = LanguageBindingService.LoadProject(loadInfo);
 						ReadProjectSections(sr, newProject.ProjectSections);
 						newProject.IdGuid = guid;
 						newSolution.AddFolder(newProject);

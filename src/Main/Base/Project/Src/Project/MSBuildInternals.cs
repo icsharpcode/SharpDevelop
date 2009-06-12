@@ -32,34 +32,34 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public readonly static object GlobalProjectCollectionLock = new object();
 		
-		internal static void UnloadProject(MSBuild.Evaluation.Project project)
+		internal static void UnloadProject(MSBuild.Evaluation.ProjectCollection projectCollection, MSBuild.Evaluation.Project project)
 		{
 			lock (GlobalProjectCollectionLock) {
-				ProjectCollection.GlobalProjectCollection.UnloadProject(project);
+				projectCollection.UnloadProject(project);
 			}
 		}
 		
-		internal static MSBuild.Evaluation.Project LoadProject(ProjectRootElement rootElement, IDictionary<string, string> globalProps)
-		{
-			lock (GlobalProjectCollectionLock) {
-				string toolsVersion = rootElement.ToolsVersion;
-				if (string.IsNullOrEmpty(toolsVersion))
-					toolsVersion = ProjectCollection.GlobalProjectCollection.DefaultToolsVersion;
-				return new MSBuild.Evaluation.Project(rootElement, globalProps, toolsVersion, ProjectCollection.GlobalProjectCollection);
-			}
-		}
-		
-		internal static ProjectInstance LoadProjectInstance(ProjectRootElement rootElement, IDictionary<string, string> globalProps)
+		internal static MSBuild.Evaluation.Project LoadProject(MSBuild.Evaluation.ProjectCollection projectCollection, ProjectRootElement rootElement, IDictionary<string, string> globalProps)
 		{
 			lock (GlobalProjectCollectionLock) {
 				string toolsVersion = rootElement.ToolsVersion;
 				if (string.IsNullOrEmpty(toolsVersion))
-					toolsVersion = ProjectCollection.GlobalProjectCollection.DefaultToolsVersion;
-				return new ProjectInstance(rootElement, globalProps, toolsVersion, ProjectCollection.GlobalProjectCollection);
+					toolsVersion = projectCollection.DefaultToolsVersion;
+				return new MSBuild.Evaluation.Project(rootElement, globalProps, toolsVersion, projectCollection);
 			}
 		}
 		
-		const string MSBuildXmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
+		internal static ProjectInstance LoadProjectInstance(MSBuild.Evaluation.ProjectCollection projectCollection, ProjectRootElement rootElement, IDictionary<string, string> globalProps)
+		{
+			lock (GlobalProjectCollectionLock) {
+				string toolsVersion = rootElement.ToolsVersion;
+				if (string.IsNullOrEmpty(toolsVersion))
+					toolsVersion = projectCollection.DefaultToolsVersion;
+				return new ProjectInstance(rootElement, globalProps, toolsVersion, projectCollection);
+			}
+		}
+		
+		public const string MSBuildXmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 		
 		#region Escaping
 		/// <summary>

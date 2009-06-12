@@ -23,9 +23,9 @@ namespace Grunwald.BooBinding
 			}
 		}
 		
-		public IProject LoadProject(string fileName, string projectName)
+		public IProject LoadProject(ProjectLoadInformation loadInformation)
 		{
-			return new BooProject(fileName, projectName);
+			return new BooProject(loadInformation);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)

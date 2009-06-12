@@ -63,15 +63,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		protected readonly Set<string> reparseCodeSensitiveProperties = new Set<string>();
 		
-		protected CompilableProject()
-			: base()
+		protected CompilableProject(ICSharpCode.SharpDevelop.Internal.Templates.ProjectCreateInformation information)
+			: base(information)
 		{
-		}
-		
-		protected override void Create(ICSharpCode.SharpDevelop.Internal.Templates.ProjectCreateInformation information)
-		{
-			base.Create(information);
-			
 			this.OutputType = OutputType.Exe;
 			this.RootNamespace = information.RootNamespace;
 			this.AssemblyName = information.ProjectName;
@@ -100,6 +94,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			            PropertyStorageLocations.ConfigurationSpecific, true);
 			SetProperty("Release", null, "Optimize", "True",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
+		}
+		
+		protected CompilableProject(ProjectLoadInformation information)
+			: base(information)
+		{
 		}
 		
 		/// <summary>
@@ -343,7 +342,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
 				return guids.Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
 			}
-		}		
+		}
 		
 		public string TestPageFileName {
 			get {
@@ -450,7 +449,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 				}
-				*/
+				 */
 			}
 			AddOrRemoveExtensions();
 		}
