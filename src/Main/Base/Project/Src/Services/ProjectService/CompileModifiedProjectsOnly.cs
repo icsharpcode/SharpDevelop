@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return new IBuildable[0];
 			}
 			
-			public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+			public void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
 			{
 			}
 		}
@@ -245,11 +245,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				return lastCompilationPass.Index > comparisonPass.Index;
 			}
 			
-			public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+			public void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
 			{
 				IProject p = wrapped as IProject;
 				if (p == null) {
-					wrapped.StartBuild(buildOptions, feedbackSink);
+					wrapped.StartBuild(buildServices, buildOptions, feedbackSink);
 				} else {
 					lock (unmodifiedProjects) {
 						if (!unmodifiedProjects.TryGetValue(p, out lastCompilationPass)) {
@@ -272,7 +272,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						feedbackSink.Done(true);
 					} else {
 						lastCompilationPass = factory.CurrentPass;
-						wrapped.StartBuild(buildOptions, new BuildFeedbackSink(p, feedbackSink, factory.CurrentPass));
+						wrapped.StartBuild(buildServices, buildOptions, new BuildFeedbackSink(p, feedbackSink, factory.CurrentPass));
 					}
 				}
 			}

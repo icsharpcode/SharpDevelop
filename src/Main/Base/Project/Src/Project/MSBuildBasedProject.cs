@@ -36,6 +36,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		ProjectCollection projectCollection;
 		
+		internal ProjectCollection MSBuildProjectCollection {
+			get { return projectCollection; }
+		}
+		
 		/// <summary>
 		/// The underlying MSBuild project.
 		/// </summary>
@@ -1004,23 +1008,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			return result;
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
-			MSBuildEngine.StartBuild(this, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
+			MSBuildEngine.StartBuild(this, buildServices, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
 		}
-		
-		/*
-		internal static void RunMSBuild(Solution solution, IProject project,
-		                                string configuration, string platform, BuildOptions options)
-		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
-			oldMSBuildEngine engine = new oldMSBuildEngine();
-			engine.Configuration = configuration;
-			engine.Platform = platform;
-			engine.MessageView = TaskService.BuildMessageViewCategory;
-			engine.Run(solution, project, options);
-		}
-		 */
 		#endregion
 		
 		#region Loading
@@ -1140,7 +1131,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			lock (SyncRoot) {
 				// we need the global lock - if the file is being renamed,
 				// MSBuild will update the global project collection
-				lock (MSBuildInternals.GlobalProjectCollectionLock) {
+				lock (MSBuildInternals.SolutionProjectCollectionLock) {
 					projectFile.Save(fileName);
 					//bool userProjectDirty = userProjectFile.HasUnsavedChanges;
 					string userFile = fileName + ".user";

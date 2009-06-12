@@ -78,10 +78,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		
-		public static void StartBuild(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
+		public static void StartBuild(IProject project, ThreadSafeServiceContainer serviceContainer, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
+			if (serviceContainer == null)
+				throw new ArgumentNullException("serviceContainer");
 			if (options == null)
 				throw new ArgumentNullException("options");
 			if (feedbackSink == null)
@@ -91,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			MSBuildEngine engine = new MSBuildEngine(project, options, feedbackSink);
 			engine.additionalTargetFiles = additionalTargetFiles;
+			engine.serviceContainer = serviceContainer;
 			engine.StartBuild();
 		}
 		
@@ -98,6 +101,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		ProjectBuildOptions options;
 		IBuildFeedbackSink feedbackSink;
 		IEnumerable<string> additionalTargetFiles;
+		ThreadSafeServiceContainer serviceContainer;
 		
 		private MSBuildEngine(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
@@ -182,11 +186,18 @@ namespace ICSharpCode.SharpDevelop.Project
 
 			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
 			
-			/*
+			// Get ParallelMSBuildManager (or create a new one if one doesn't exist already).
+			// The serviceContainer will automatically dispose it after the build has completed.
+			ParallelMSBuildManager manager = (ParallelMSBuildManager)serviceContainer.GetOrCreateService(
+				typeof(ParallelMSBuildManager),
+				delegate {
+					return new ParallelMSBuildManager(new MSBuild.ProjectCollection());
+				});
+			
 			// Use a temporary project collection to prevent MSBuild from opening the element from the global collection
 			// - we don't want to modify the ProjectRootElement opened as project because we don't want to save
 			// back our changes to disk.
-			ProjectRootElement projectFile = ProjectRootElement.Open(project.FileName, new MSBuild.ProjectCollection());
+			ProjectRootElement projectFile = ProjectRootElement.Open(project.FileName, manager.ProjectCollection);
 			foreach (string import in additionalTargetFiles)
 				projectFile.AddImport(import);
 			
@@ -199,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectFile.AddTarget("_ComputeNonExistentFileProperty");
 			}
 			
-			ProjectInstance projectInstance = MSBuildInternals.LoadProjectInstance(projectFile, globalProperties);
+			ProjectInstance projectInstance = MSBuildInternals.LoadProjectInstance(manager.ProjectCollection, projectFile, globalProperties);
 			
 			string[] targets = { options.Target.TargetName };
 			BuildRequestData requestData = new BuildRequestData(projectInstance, targets, new HostServices());
@@ -207,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				new SharpDevelopLogger(this),
 				new BuildLogFileLogger(projectFile.FullPath + ".log", LoggerVerbosity.Diagnostic)
 			};
-			ParallelMSBuildManager.StartBuild(requestData, loggers, OnComplete);*/
+			manager.StartBuild(requestData, loggers, OnComplete);
 		}
 		
 		void OnComplete(BuildSubmission submission)

@@ -25,23 +25,22 @@ namespace ICSharpCode.SharpDevelop.Project
 	public static class MSBuildInternals
 	{
 		/// <summary>
-		/// Note: due to MSBuild limitations, all projects being built must be from the same ProjectCollection.
-		/// SharpDevelop simply uses the predefined ProjectCollection.GlobalProjectCollection.
-		/// Code accessing that collection (even if indirectly through MSBuild) should lock on
-		/// MSBuildInternals.GlobalProjectCollectionLock.
+		/// SharpDevelop uses one project collection per solution.
+		/// Code accessing one of those collection (even if indirectly through MSBuild) should lock on
+		/// MSBuildInternals.SolutionProjectCollectionLock.
 		/// </summary>
-		public readonly static object GlobalProjectCollectionLock = new object();
+		public readonly static object SolutionProjectCollectionLock = new object();
 		
 		internal static void UnloadProject(MSBuild.Evaluation.ProjectCollection projectCollection, MSBuild.Evaluation.Project project)
 		{
-			lock (GlobalProjectCollectionLock) {
+			lock (SolutionProjectCollectionLock) {
 				projectCollection.UnloadProject(project);
 			}
 		}
 		
 		internal static MSBuild.Evaluation.Project LoadProject(MSBuild.Evaluation.ProjectCollection projectCollection, ProjectRootElement rootElement, IDictionary<string, string> globalProps)
 		{
-			lock (GlobalProjectCollectionLock) {
+			lock (SolutionProjectCollectionLock) {
 				string toolsVersion = rootElement.ToolsVersion;
 				if (string.IsNullOrEmpty(toolsVersion))
 					toolsVersion = projectCollection.DefaultToolsVersion;
@@ -51,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		internal static ProjectInstance LoadProjectInstance(MSBuild.Evaluation.ProjectCollection projectCollection, ProjectRootElement rootElement, IDictionary<string, string> globalProps)
 		{
-			lock (GlobalProjectCollectionLock) {
+			lock (SolutionProjectCollectionLock) {
 				string toolsVersion = rootElement.ToolsVersion;
 				if (string.IsNullOrEmpty(toolsVersion))
 					toolsVersion = projectCollection.DefaultToolsVersion;
@@ -166,14 +165,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			string[] targets = { "ResolveAssemblyReferences" };
 			BuildRequestData requestData = new BuildRequestData(project, targets, new HostServices());
 			ILogger[] loggers = { new SimpleErrorLogger() };
-			BuildSubmission submission = ParallelMSBuildManager.StartBuild(requestData, loggers, null);
-			LoggingService.Debug("Started build for ResolveAssemblyReferences");
-			submission.WaitHandle.WaitOne();
-			BuildResult result = submission.BuildResult;
-			if (result == null)
-				throw new InvalidOperationException("BuildResult is null");
-			LoggingService.Debug("Build for ResolveAssemblyReferences finished: " + result.OverallResult);
 			
+			using (ParallelMSBuildManager buildManager = new ParallelMSBuildManager(baseProject.MSBuildProjectCollection)) {
+				BuildSubmission submission = buildManager.StartBuild(requestData, loggers, null);
+				LoggingService.Debug("Started build for ResolveAssemblyReferences");
+				submission.WaitHandle.WaitOne();
+				BuildResult result = submission.BuildResult;
+				if (result == null)
+					throw new InvalidOperationException("BuildResult is null");
+				LoggingService.Debug("Build for ResolveAssemblyReferences finished: " + result.OverallResult);
+			}
 			
 			var referenceDict = new Dictionary<string, ReferenceProjectItem>();
 			foreach (ReferenceProjectItem item in referenceProjectItems) {

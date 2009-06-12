@@ -1178,7 +1178,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return result;
 		}
 		
-		void IBuildable.StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+		void IBuildable.StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
 		{
 			// building a solution finishes immediately: we only care for the dependencies
 			feedbackSink.Done(true);

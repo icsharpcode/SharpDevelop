@@ -7,11 +7,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+
 using ICSharpCode.Core;
+using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
-using System.Linq;
+using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -23,77 +27,114 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// 
 	/// This class allows to run multiple indepent builds concurrently. Logging events
 	/// will be forwarded to the appropriate logger.
-	/// 
-	/// Note: due to MSBuild limitations, all projects being built must be from the same ProjectCollection.
-	/// SharpDevelop simply uses the predefined ProjectCollection.GlobalProjectCollection.
-	/// Code accessing that collection (even if indirectly through MSBuild) should lock on
-	/// MSBuildInternals.GlobalProjectCollectionLock.
 	/// </summary>
-	public static class ParallelMSBuildManager
+	public sealed class ParallelMSBuildManager : IDisposable
 	{
-		#region Manage StartBuild/EndBuild of BuildManager.DefaultBuildManager
-		static readonly object enableDisableLock = new object();
-		static bool buildIsRunning;
-		static int enableCount;
-		
 		/// <summary>
-		/// Enables the underlying build engine.
-		/// Call this method only if you are requesting multiple builds in a series (e.g. building the solution).
-		/// A counter is increment to remember how many users of this class need the build engine.
-		/// For each EnableBuildEngine() call, you need to call DisableBuildEngine() exactly once!
+		/// MSBuild only allows a single build to run at one time - so if multiple ParallelMSBuildManager
+		/// are present, we synchronize them using this global lock.
 		/// </summary>
-		/// <param name="beginBuild">Specifies whether the build engine should be started immediately.
-		/// If false (default), the build engine will start on the first StartBuild() call.</param>
-		public static void EnableBuildEngine(bool beginBuild)
+		static readonly object globalBuildEngineLock = new object();
+		
+		static bool globalBuildEngineLockTaken;
+		
+		static void EnterGlobalBuildEngineLock()
 		{
-			lock (enableDisableLock) {
-				if (!buildIsRunning && beginBuild) {
-					LoggingService.Info("ParallelMSBuildManager starting...");
-					buildIsRunning = true;
-					BuildParameters parameters = new BuildParameters();
-					parameters.Loggers = new ILogger[] {
-						new CentralLogger(),
-						#if DEBUG
-						new ConsoleLogger(LoggerVerbosity.Normal),
-						#endif
-					};
-					parameters.EnableNodeReuse = false;
-					// parallel build seems to break in-memory modifications of the project (additionalTargetFiles+_ComputeNonExistentFileProperty),
-					// so we keep it disabled for the moment.
-					parameters.MaxNodeCount = 1; //BuildOptions.DefaultParallelProjectCount;
-					BuildManager.DefaultBuildManager.BeginBuild(parameters);
-				}
-				enableCount++;
+			lock (globalBuildEngineLock) {
+				while (globalBuildEngineLockTaken)
+					Monitor.Wait(globalBuildEngineLock);
+				globalBuildEngineLockTaken = true;
 			}
 		}
 		
+		static void LeaveGlobalBuildEngineLock()
+		{
+			lock (globalBuildEngineLock) {
+				Debug.Assert(globalBuildEngineLockTaken);
+				globalBuildEngineLockTaken = false;
+				Monitor.Pulse(globalBuildEngineLock);
+			}
+		}
+		
+		public ProjectCollection ProjectCollection { get; private set; }
+		
 		/// <summary>
-		/// Decrements the counter and disables the underlying build engine if the counter reaches 0.
+		/// Creates a new ParallelMSBuildManager for the project collection.
+		/// WARNING: only a single ParallelMSBuildManager can build at a time, others will wait.
+		/// Ensure you dispose the ParallelMSBuildManager when you are done with it, otherwise all future
+		/// ParallelMSBuildManagers will deadlock!
 		/// </summary>
-		public static void DisableBuildEngine()
+		public ParallelMSBuildManager(ProjectCollection projectCollection)
+		{
+			if (projectCollection == null)
+				throw new ArgumentNullException("projectCollection");
+			this.ProjectCollection = projectCollection;
+		}
+		
+		#region Manage StartBuild/EndBuild
+		readonly object enableDisableLock = new object();
+		bool buildIsRunning;
+		
+		void StartupBuildEngine()
 		{
 			lock (enableDisableLock) {
-				enableCount--;
-				if (enableCount == 0 && buildIsRunning) {
-					buildIsRunning = false;
+				if (buildIsRunning)
+					return;
+				buildIsRunning = true;
+				
+				LoggingService.Info("ParallelMSBuildManager: waiting for start permission...");
+				EnterGlobalBuildEngineLock();
+				
+				LoggingService.Info("ParallelMSBuildManager: got start permisson, starting...");
+				BuildParameters parameters = new BuildParameters(this.ProjectCollection);
+				parameters.Loggers = new ILogger[] {
+					new CentralLogger(this),
+					#if DEBUG
+					new ConsoleLogger(LoggerVerbosity.Normal),
+					#endif
+				};
+				parameters.EnableNodeReuse = false;
+				// parallel build seems to break in-memory modifications of the project (additionalTargetFiles+_ComputeNonExistentFileProperty),
+				// so we keep it disabled for the moment.
+				parameters.MaxNodeCount = BuildOptions.DefaultParallelProjectCount;
+				BuildManager.DefaultBuildManager.BeginBuild(parameters);
+			}
+		}
+		
+		
+		/// <summary>
+		/// Shuts down the build engine and allows other managers to build.
+		/// </summary>
+		public void Dispose()
+		{
+			lock (enableDisableLock) {
+				if (!buildIsRunning)
+					return;
+				buildIsRunning = false;
+				try {
+					LoggingService.Info("ParallelMSBuildManager shutting down...");
 					BuildManager.DefaultBuildManager.EndBuild();
 					BuildManager.DefaultBuildManager.ResetCaches();
 					LoggingService.Info("ParallelMSBuildManager shut down!");
+				} finally {
+					LeaveGlobalBuildEngineLock();
 				}
 			}
 		}
 		#endregion
 		
-		static readonly Dictionary<int, EventSource> submissionEventSourceMapping = new Dictionary<int, EventSource>();
+		readonly Dictionary<int, EventSource> submissionEventSourceMapping = new Dictionary<int, EventSource>();
 		
 		/// <summary>
 		/// Starts building.
+		/// This method blocks if another ParallelMSBuildManager is currently building.
+		/// However, it doe
 		/// </summary>
 		/// <param name="requestData">The requested build.</param>
 		/// <param name="logger">The logger that received build output.</param>
 		/// <param name="callback">Callback that is run when the build is complete</param>
 		/// <returns>The build submission that was started.</returns>
-		public static BuildSubmission StartBuild(BuildRequestData requestData, IEnumerable<ILogger> loggers, BuildSubmissionCompleteCallback callback)
+		public BuildSubmission StartBuild(BuildRequestData requestData, IEnumerable<ILogger> loggers, BuildSubmissionCompleteCallback callback)
 		{
 			if (requestData == null)
 				throw new ArgumentNullException("requestData");
@@ -102,35 +143,32 @@ namespace ICSharpCode.SharpDevelop.Project
 				loggersArray = new ILogger[0];
 			else
 				loggersArray = loggers.ToArray(); // iterate through logger enumerable once
-			EnableBuildEngine(true);
-			try {
-				BuildSubmission submission = BuildManager.DefaultBuildManager.PendBuildRequest(requestData);
-				EventSource eventSource = new EventSource();
-				foreach (ILogger logger in loggersArray) {
-					if (logger != null)
-						logger.Initialize(eventSource);
-				}
-				lock (submissionEventSourceMapping) {
-					submissionEventSourceMapping.Add(submission.SubmissionId, eventSource);
-				}
-				RunningBuild build = new RunningBuild(eventSource, loggersArray, callback);
-				submission.ExecuteAsync(build.OnComplete, null);
-				return submission;
-			} catch (Exception ex) {
-				LoggingService.Warn("Got exception starting build (exception will be rethrown)", ex);
-				DisableBuildEngine();
-				throw;
+			
+			StartupBuildEngine();
+			BuildSubmission submission = BuildManager.DefaultBuildManager.PendBuildRequest(requestData);
+			EventSource eventSource = new EventSource();
+			foreach (ILogger logger in loggersArray) {
+				if (logger != null)
+					logger.Initialize(eventSource);
 			}
+			lock (submissionEventSourceMapping) {
+				submissionEventSourceMapping.Add(submission.SubmissionId, eventSource);
+			}
+			RunningBuild build = new RunningBuild(this, eventSource, loggersArray, callback);
+			submission.ExecuteAsync(build.OnComplete, null);
+			return submission;
 		}
 		
 		sealed class RunningBuild
 		{
+			ParallelMSBuildManager manager;
 			ILogger[] loggers;
 			BuildSubmissionCompleteCallback callback;
 			EventSource eventSource;
 			
-			public RunningBuild(EventSource eventSource, ILogger[] loggers, BuildSubmissionCompleteCallback callback)
+			public RunningBuild(ParallelMSBuildManager manager, EventSource eventSource, ILogger[] loggers, BuildSubmissionCompleteCallback callback)
 			{
+				this.manager = manager;
 				this.eventSource = eventSource;
 				this.loggers = loggers;
 				this.callback = callback;
@@ -138,10 +176,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			internal void OnComplete(BuildSubmission submission)
 			{
-				DisableBuildEngine();
-				
-				lock (submissionEventSourceMapping) {
-					submissionEventSourceMapping.Remove(submission.SubmissionId);
+				lock (manager.submissionEventSourceMapping) {
+					manager.submissionEventSourceMapping.Remove(submission.SubmissionId);
 				}
 				if (submission.BuildResult.Exception != null) {
 					LoggingService.Error(submission.BuildResult.Exception);
@@ -158,6 +194,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		sealed class CentralLogger : INodeLogger, IEventRedirector
 		{
+			readonly ParallelMSBuildManager parentManager;
+			
+			public CentralLogger(ParallelMSBuildManager parentManager)
+			{
+				this.parentManager = parentManager;
+			}
+			
 			public void Initialize(IEventSource eventSource, int nodeCount)
 			{
 				Initialize(eventSource);
@@ -188,8 +231,8 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 					EventSource redirector;
-					lock (submissionEventSourceMapping) {
-						if (!submissionEventSourceMapping.TryGetValue(e.BuildEventContext.SubmissionId, out redirector)) {
+					lock (parentManager.submissionEventSourceMapping) {
+						if (!parentManager.submissionEventSourceMapping.TryGetValue(e.BuildEventContext.SubmissionId, out redirector)) {
 							LoggingService.Warn("Could not deliver build event: " + e + ":\n" + e.Message);
 						}
 					}

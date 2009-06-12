@@ -763,6 +763,7 @@
     <Compile Include="Src\Project\BuildTarget.cs" />
     <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
+    <Compile Include="Src\Util\ThreadSafeServiceProvider.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
     <Compile Include="Src\Util\WpfSynchronizeInvoke.cs" />
     <Compile Include="Src\Util\WorkerThread.cs" />

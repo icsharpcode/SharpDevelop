@@ -177,22 +177,18 @@ namespace ICSharpCode.SharpDevelop
 				// multiply Count with 2 so that the progress bar is only at 50% when references are done
 				progressMonitor.BeginTask("Loading references...", createdContents.Count * 2, false);
 				
-				ParallelMSBuildManager.EnableBuildEngine(false);
-				try {
-					for (int i = 0; i < createdContents.Count; i++) {
-						if (abortLoadSolutionProjectsThread) return;
-						ParseProjectContent newContent = createdContents[i];
-						progressMonitor.WorkDone = i;
-						try {
-							newContent.Initialize1(progressMonitor);
-							workAmount += newContent.GetInitializationWorkAmount();
-						} catch (Exception e) {
-							MessageService.ShowError(e, "Error while initializing project references:" + newContent);
-						}
+				for (int i = 0; i < createdContents.Count; i++) {
+					if (abortLoadSolutionProjectsThread) return;
+					ParseProjectContent newContent = createdContents[i];
+					progressMonitor.WorkDone = i;
+					try {
+						newContent.Initialize1(progressMonitor);
+						workAmount += newContent.GetInitializationWorkAmount();
+					} catch (Exception e) {
+						MessageService.ShowError(e, "Error while initializing project references:" + newContent);
 					}
-				} finally {
-					ParallelMSBuildManager.DisableBuildEngine();
 				}
+				
 				// multiply workamount with two and start at workAmount so that the progress bar continues
 				// from 50% towards 100%.
 				progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount * 2, false);
