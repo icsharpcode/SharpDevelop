@@ -27,6 +27,9 @@ namespace ICSharpCode.XamlBinding
 							info.ExtensionType = token.Value;
 							break;
 						case MarkupExtensionTokenKind.MemberName:
+							// if there is an open member without a value add the member name
+							if (argumentName != null)
+								info.NamedArguments.Add(argumentName, new AttributeValue(string.Empty));
 							argumentName = token.Value;
 							break;
 						case MarkupExtensionTokenKind.String:

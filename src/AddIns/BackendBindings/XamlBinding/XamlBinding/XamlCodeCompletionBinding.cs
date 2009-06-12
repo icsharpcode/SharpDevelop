@@ -41,13 +41,12 @@ namespace ICSharpCode.XamlBinding
 			
 			switch (ch) {
 				case '<':
+					context.Description = (context.Description == XamlContextDescription.None) ? XamlContextDescription.AtTag : context.Description;
 					list = CompletionDataHelper.CreateListForContext(editor, context);
 					editor.ShowCompletionWindow(list);
 					return CodeCompletionKeyPressResult.Completed;
-				case '>': // XML tag completion
-					if (DoXmlTagCompletion(editor))
-						return CodeCompletionKeyPressResult.EatKey;
-					break;
+				case '>':
+					return CodeCompletionKeyPressResult.None;
 				case '"':
 					if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
 						int search = editor.Caret.Offset + 1;
@@ -77,6 +76,7 @@ namespace ICSharpCode.XamlBinding
 					break;
 				case '.':
 					if (context.Path != null && !XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
+						context.Description = XamlContextDescription.AtTag;
 						list = CompletionDataHelper.CreateListForContext(editor, context);
 						editor.ShowCompletionWindow(list);
 						return CodeCompletionKeyPressResult.Completed;
@@ -84,20 +84,26 @@ namespace ICSharpCode.XamlBinding
 					break;
 				case ':':
 					if (context.Path != null && XmlParser.GetQualifiedAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset) == null) {
-						list = CompletionDataHelper.CreateListForContext(editor, context);
-						editor.ShowCompletionWindow(list);
-						return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
+						if (!context.AttributeName.StartsWith("xmlns")) {
+							list = CompletionDataHelper.CreateListForContext(editor, context);
+							editor.ShowCompletionWindow(list);
+							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
+						}
 					}
 					break;
 				case '/': // ignore '/' when trying to type '/>'
 					return CodeCompletionKeyPressResult.None;
 				case '=':
 					if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
-						int searchOffset = editor.Caret.Offset + 1;
-						while (char.IsWhiteSpace(editor.Document.GetCharAt(searchOffset)))
-							searchOffset++;
+						int searchOffset = editor.Caret.Offset;
 						
-						if (editor.Document.GetCharAt(searchOffset) != '"') {
+						while (searchOffset < editor.Document.TextLength - 1) {
+							searchOffset++;
+							if (!char.IsWhiteSpace(editor.Document.GetCharAt(searchOffset)))
+							    break;
+						}
+						
+						if (searchOffset >= editor.Document.TextLength || editor.Document.GetCharAt(searchOffset) != '"') {
 							editor.Document.Insert(editor.Caret.Offset, "=\"\"");
 							editor.Caret.Offset--;
 						} else {
@@ -110,9 +116,13 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				default:
-					editor.Document.Insert(editor.Caret.Offset, ch.ToString());
-					this.CtrlSpace(editor);
-					return CodeCompletionKeyPressResult.EatKey;
+					if (context.Description != XamlContextDescription.None && !char.IsWhiteSpace(context.PressedKey)) {
+						editor.Document.Insert(editor.Caret.Offset, ch.ToString());
+						if (!context.AttributeName.StartsWith("xmlns"))
+							this.CtrlSpace(editor);
+						return CodeCompletionKeyPressResult.EatKey;
+					}
+					break;
 			}
 			
 			return CodeCompletionKeyPressResult.None;
@@ -148,12 +158,13 @@ namespace ICSharpCode.XamlBinding
 		public bool CtrlSpace(ITextEditor editor)
 		{
 			XamlContext context = CompletionDataHelper.ResolveContext(editor, ' ');
+			context.Forced = true;
 			
 			var info = ParserService.GetParseInformation(editor.FileName);
 			if (context.Path != null) {
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
 					var list = CompletionDataHelper.CreateListForContext(editor, context) as XamlCompletionItemList;
-					string starter = editor.GetWordBeforeCaret().Trim('<');
+					string starter = editor.GetWordBeforeCaret().Trim('<', '>');
 					if (!string.IsNullOrEmpty(starter) && !starter.EndsWith(StringComparison.Ordinal, ' ', '\t', '\n', '\r'))
 						list.PreselectionLength = starter.Length;
 					editor.ShowCompletionWindow(list);
@@ -167,15 +178,26 @@ namespace ICSharpCode.XamlBinding
 						
 						if (!DoMarkupExtensionCompletion(editor, info, context)) {
 							XamlResolver resolver = new XamlResolver();
+							var completionList = new XamlCompletionItemList();
+							
 							var mrr = resolver.Resolve(new ExpressionResult(context.AttributeName, new XamlExpressionContext(context.Path, context.AttributeName, false)),
 							                           info, editor.Document.Text) as MemberResolveResult;
 							if (mrr != null && mrr.ResolvedType != null) {
 								var c = mrr.ResolvedType.GetUnderlyingClass();
-								var completionList = new XamlCompletionItemList();
+								
 								completionList.Items.AddRange(CompletionDataHelper.MemberCompletion(editor, mrr.ResolvedType));
-								editor.ShowCompletionWindow(completionList);
 								editor.ShowInsightWindow(CompletionDataHelper.MemberInsight(mrr));
 							}
+							
+							if (context.AttributeName.StartsWith("xmlns"))
+								completionList.Items.AddRange(CompletionDataHelper.CreateListForXmlnsCompletion(info.BestCompilationUnit.ProjectContent));
+							
+							ICompletionListWindow window = editor.ShowCompletionWindow(completionList);
+							
+							if (context.AttributeName.StartsWith("xmlns"))
+								window.Width = double.NaN;
+							
+							return true;
 						}
 					}
 				}

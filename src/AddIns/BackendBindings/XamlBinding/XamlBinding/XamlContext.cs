@@ -27,6 +27,7 @@ namespace ICSharpCode.XamlBinding
 		public string RawAttributeValue { get; set; }
 		public int ValueStartOffset { get; set; }
 		public XamlContextDescription Description { get; set; }
+		public bool Forced { get; set; }
 		
 		public XamlContext() {}
 		
@@ -43,6 +44,10 @@ namespace ICSharpCode.XamlBinding
 	}
 	
 	public enum XamlContextDescription {
+		/// <summary>
+		/// Outside any tag
+		/// </summary>
+		None,
 		/// <summary>
 		/// After '&lt;'
 		/// </summary>

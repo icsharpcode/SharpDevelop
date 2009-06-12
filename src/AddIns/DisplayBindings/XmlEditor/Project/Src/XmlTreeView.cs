@@ -137,7 +137,7 @@ namespace ICSharpCode.XmlEditor
 			treeViewContainer.LoadXml(provider.GetDocumentForFile(this.PrimaryFile).Text, XmlCodeCompletionBinding.GetProvider(Path.GetExtension(this.PrimaryFileName)));
 			XmlView view = XmlView.ForFile(this.PrimaryFile);
 			if (view != null) {
-				view.CheckIsWellFormed();
+				XmlView.CheckIsWellFormed(view.TextEditor);
 			}
 		}
 		
@@ -147,7 +147,7 @@ namespace ICSharpCode.XmlEditor
 			if (!treeViewContainer.IsErrorMessageTextBoxVisible && treeViewContainer.IsDirty) {
 				XmlView view = XmlView.ForFile(this.PrimaryFile);
 				if (view != null) {
-					view.ReplaceAll(treeViewContainer.Document.OuterXml);
+					XmlView.ReplaceAll(treeViewContainer.Document.OuterXml, view.TextEditor);
 					ignoreDirtyChange = true;
 					treeViewContainer.IsDirty = false;
 					ignoreDirtyChange = false;

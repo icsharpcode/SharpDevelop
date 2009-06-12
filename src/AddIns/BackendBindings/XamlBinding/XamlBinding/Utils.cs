@@ -5,13 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 
@@ -64,7 +64,8 @@ namespace ICSharpCode.XamlBinding
 			if (text == null)
 				return null;
 			
-			XmlReader reader = XmlTextReader.Create(new StringReader(text));
+			XmlTextReader reader = new XmlTextReader(new StringReader(text));
+			reader.XmlResolver = null;
 			
 			try {
 				reader.ReadToFollowing("Test");
@@ -74,13 +75,14 @@ namespace ICSharpCode.XamlBinding
 				
 				do {
 					LoggingService.Debug("name: " + reader.Name + " value: " + reader.Value);
-					int start = reader.Name.IndexOf(':') + 1;
-					string plainName = reader.Name.Substring(start, reader.Name.Length - start).ToUpperInvariant();
+					string plainName = reader.Name.ToUpperInvariant();
 					
 					if (plainName == name.ToUpperInvariant())
 						return reader.Value;
 				} while (reader.MoveToNextAttribute());
-			} catch (XmlException) { }
+			} catch (XmlException e) {
+				Debug.Print(e.ToString());
+			}
 			
 			return null;
 		}
@@ -183,7 +185,12 @@ namespace ICSharpCode.XamlBinding
 					LoggingService.Debug("name: " + reader.Name + " value: " + reader.Value);
 					list.Add(reader.Name);
 				} while (reader.MoveToNextAttribute());
-			} catch (XmlException) { }
+			} catch (XmlException e) {
+				Debug.Print(e.ToString());
+			}
+			
+			foreach (var item in list)
+				Debug.Print(item);
 			
 			return list.ToArray();
 		}
@@ -203,19 +210,34 @@ namespace ICSharpCode.XamlBinding
 			
 			return startIndex;
 		}
+		
+		static char[] whitespace = new char[] {' ', '\t', '\n', '\r'};
 
 		static string SimplifyToSingleElement(string text, int offset, string name)
 		{
 			int index = XmlParser.GetActiveElementStartIndex(text, offset);
 			if (index == -1) return null;
-			index = text.IndexOf(' ', index);
+			index = text.IndexOfAny(whitespace, index);
 			if (index == -1) return null;
-			text = text.Substring(index);
-			int endIndex = text.IndexOfAny(new char[] { '<', '>' });
-			if (endIndex == -1) return null;
-			text = text.Substring(0, endIndex).Trim(' ', '\t', '\n', '\r', '/');
-			LoggingService.Debug("text: '" + text + "'");
-			text = "<" + name + " " + text + " />";
+			string newText = text.Substring(index);
+			int endIndex = newText.IndexOfAny(new char[] { '<', '>' });
+			if (endIndex == -1)
+				endIndex = newText.Length;
+			newText = newText.Substring(0, endIndex).Trim(' ', '\t', '\n', '\r', '/');
+			LoggingService.Debug("text: '" + newText + "'");
+			if (!newText.EndsWith("\"") && newText.LastIndexOfAny(whitespace) > -1) {
+				newText = newText.Substring(0, newText.LastIndexOfAny(whitespace));
+			}
+			
+			string namespaceDecls = "";
+			
+			var list = Utils.GetXmlNamespacesForOffset(text, offset);
+			
+			foreach (var item in list) {
+				namespaceDecls += item.Key + "=\"" + item.Value + "\" ";
+			}
+			
+			text = "<" + name + " " + newText + " " + namespaceDecls + " />";
 			
 			return text;
 		}
@@ -237,7 +259,7 @@ namespace ICSharpCode.XamlBinding
 			if (offset < 0)
 				throw new ArgumentOutOfRangeException("offset", offset, "Value must be between 0 and " + (xaml.Length - 1));
 			
-			if (offset >= xaml.Length)
+			if (offset >= xaml.Length && offset > 0)
 				offset = xaml.Length - 1;
 			
 			string interestingPart = xaml.Substring(0, offset);
@@ -246,6 +268,30 @@ namespace ICSharpCode.XamlBinding
 			interestingPart = (end > -1) ? interestingPart.Substring(end, interestingPart.Length - end) : interestingPart;
 			
 			return interestingPart.LastIndexOf("<!--", StringComparison.OrdinalIgnoreCase) != -1;
+		}
+		
+		public static int GetParentElementStart(ITextEditor editor)
+		{
+			Stack<int> offsetStack = new Stack<int>();
+			using (XmlTextReader xmlReader = new XmlTextReader(new StringReader(editor.Document.GetText(0, editor.Caret.Offset)))) {
+				try {
+					xmlReader.XmlResolver = null; // prevent XmlTextReader from loading external DTDs
+					while (xmlReader.Read()) {
+						switch (xmlReader.NodeType) {
+							case XmlNodeType.Element:
+								if (!xmlReader.IsEmptyElement) {
+									offsetStack.Push(editor.Document.PositionToOffset(xmlReader.LineNumber, xmlReader.LinePosition));
+								}
+								break;
+							case XmlNodeType.EndElement:
+								offsetStack.Pop();
+								break;
+						}
+					}
+				} catch (XmlException) { }
+			}
+			
+			return (offsetStack.Count > 0) ? offsetStack.Pop() : -1;
 		}
 	}
 }

@@ -14,24 +14,27 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XamlBinding
 {
-	class XamlCompletionItem : CodeCompletionItem
+	class XamlCodeCompletionItem : CodeCompletionItem
 	{
-		public XamlCompletionItem(IEntity entity, string prefix)
+		public XamlCodeCompletionItem(IEntity entity, string prefix, bool addOpeningBrace)
 			: base(entity)
 		{
 			if (string.IsNullOrEmpty(prefix))
 				this.Text = entity.Name;
 			else
 				this.Text = prefix + ":" + entity.Name;
+			
+			if (addOpeningBrace)
+				this.Text = "<" + this.Text;
 		}
 		
-		public XamlCompletionItem(IEntity entity)
+		public XamlCodeCompletionItem(IEntity entity)
 			: base(entity)
 		{
 			this.Text = entity.Name;
 		}
 		
-		public XamlCompletionItem(string text, IEntity entity)
+		public XamlCodeCompletionItem(IEntity entity, string text)
 			: base(entity)
 		{
 			this.Text = text;
@@ -40,6 +43,86 @@ namespace ICSharpCode.XamlBinding
 		public override string ToString()
 		{
 			return "[" + this.Text + "]";
+		}
+	}
+	
+	class XamlCompletionItem : DefaultCompletionItem
+	{
+		string prefix, @namespace, name;
+		
+		public XamlCompletionItem(string prefix, string @namespace, string name)
+			: base(prefix + ":" + name)
+		{
+			this.prefix = prefix;
+			this.@namespace = @namespace;
+			this.name = name;
+		}
+		
+		public XamlCompletionItem(string @namespace, string name)
+			: base(name)
+		{
+			this.prefix = "";
+			this.@namespace = @namespace;
+			this.name = name;
+		}
+		
+		public string Prefix {
+			get { return prefix; }
+		}
+		
+		public string Namespace {
+			get { return @namespace; }
+		}
+		
+		public string Name {
+			get { return name; }
+		}
+	}
+	
+	class XmlnsCompletionItem : DefaultCompletionItem
+	{
+		string @namespace, assembly;
+		bool isUrl;
+		
+		public bool IsUrl {
+			get { return isUrl; }
+		}
+		
+		public XmlnsCompletionItem(string @namespace, string assembly)
+			: base(@namespace + " (" + assembly + ")")
+		{
+			this.@namespace = @namespace;
+			this.assembly = assembly;
+		}
+		
+		public XmlnsCompletionItem(string @namespace, bool isUrl)
+			: base(@namespace)
+		{
+			this.@namespace = @namespace;
+			this.isUrl = isUrl;
+			this.assembly = string.Empty;
+		}
+		
+		public string Namespace {
+			get { return @namespace; }
+		}
+		
+		public string Assembly {
+			get { return assembly; }
+		}
+		
+		public override void Complete(CompletionContext context)
+		{
+			if (isUrl)
+				base.Complete(context);
+			else {
+				ITextEditor editor = context.Editor;
+				string newText = "clr-namespace:" + @namespace;
+				if (!string.IsNullOrEmpty(assembly))
+					newText += ";assembly=" + assembly;
+				editor.Document.Replace(context.StartOffset, context.Length, newText);
+				context.EndOffset = context.StartOffset + newText.Length;
+			}
 		}
 	}
 	

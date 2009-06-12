@@ -391,7 +391,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void OnCodeCompletion(object sender, ExecutedRoutedEventArgs e)
 		{
-			CloseExistingCompletionWindows();
+			CloseExistingCompletionWindow();
 			TextEditor textEditor = GetTextEditorFromSender(sender);
 			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 				if (cc.CtrlSpace(GetAdapter(textEditor))) {
@@ -404,11 +404,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		SharpDevelopCompletionWindow completionWindow;
 		SharpDevelopInsightWindow insightWindow;
 		
-		void CloseExistingCompletionWindows()
+		void CloseExistingCompletionWindow()
 		{
 			if (completionWindow != null) {
 				completionWindow.Close();
 			}
+		}
+		
+		void CloseExistingInsightWindow()
+		{
 			if (insightWindow != null) {
 				insightWindow.Close();
 			}
@@ -424,7 +428,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		internal void ShowCompletionWindow(SharpDevelopCompletionWindow window)
 		{
-			CloseExistingCompletionWindows();
+			CloseExistingCompletionWindow();
 			completionWindow = window;
 			window.Closed += delegate {
 				completionWindow = null;
@@ -440,7 +444,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		internal void ShowInsightWindow(SharpDevelopInsightWindow window)
 		{
-			CloseExistingCompletionWindows();
+			CloseExistingInsightWindow();
 			insightWindow = window;
 			window.Closed += delegate {
 				insightWindow = null;

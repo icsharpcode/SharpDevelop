@@ -180,5 +180,11 @@ namespace UnitTesting.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public string AssemblyName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

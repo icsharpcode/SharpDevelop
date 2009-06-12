@@ -9,8 +9,9 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
+using System.IO;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -33,6 +34,10 @@ namespace ICSharpCode.SharpDevelop
 			get {
 				return project;
 			}
+		}
+		
+		public string AssemblyName {
+			get { return project.AssemblyName; }
 		}
 		
 		bool initializing;

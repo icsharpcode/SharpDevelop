@@ -5,10 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
@@ -36,15 +39,26 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		public static QualifiedName LastOrDefault(this QualifiedNameCollection collection)
+		public static IEnumerable<ICompletionItem> RemoveEvents(this IEnumerable<ICompletionItem> list)
 		{
-			if (collection == null)
-				throw new ArgumentNullException("collection");
-			
-			if (collection.Count > 0)
-				return collection[collection.Count - 1];
-			
-			return null;
+			foreach (var item in list) {
+				if (item is XamlCodeCompletionItem) {
+					var comItem = item as XamlCodeCompletionItem;
+					if (!(comItem.Entity is IEvent))
+						yield return item;
+				} else yield return item;
+			}
+		}
+		
+		public static IEnumerable<ICompletionItem> RemoveProperties(this IEnumerable<ICompletionItem> list)
+		{
+			foreach (var item in list) {
+				if (item is XamlCodeCompletionItem) {
+					var comItem = item as XamlCodeCompletionItem;
+					if (!(comItem.Entity is IProperty))
+						yield return item;
+				} else yield return item;
+			}
 		}
 	}
 }

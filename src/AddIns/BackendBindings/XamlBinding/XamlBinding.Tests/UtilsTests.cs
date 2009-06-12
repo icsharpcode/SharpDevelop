@@ -98,5 +98,37 @@ namespace ICSharpCode.XamlBinding.Tests
 			
 			Assert.AreEqual(expectedResult, actualResult);
 		}
+		
+		[Test]
+		public void ExistingAttributesTest()
+		{
+			string xaml = "<UserControl\n" +
+				"\txmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
+				"\txmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
+				"\txmlns:toolkit=\"clr-namespace:System.Windows.Controls;assembly=PresentationFramework\"\n" +
+				"\txmlns:chartingToolkit=\"clr-namespace:XamlTest\" ";
+			
+			var list = Utils.GetListOfExistingAttributeNames(xaml, xaml.Length);
+			var expected = new List<string> { "xmlns", "xmlns:x", "xmlns:toolkit", "xmlns:chartingToolkit" };
+			
+			Assert.AreEqual(expected.Count, list.Length, "Wrong count!");
+			Assert.AreEqual(list, expected, "Wrong elements!");
+		}
+		
+		[Test]
+		public void ExistingAttributesWithInvalidSyntaxTest()
+		{
+			string xaml = "<UserControl\n" +
+				"\txmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
+				"\txmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
+				"\txmlns:toolkit=\"clr-namespace:System.Windows.Controls;assembly=PresentationFramework\"\n" +
+				"\txmlns:chartingToolkit=\"clr-namespace:XamlTest\" asd ";
+			
+			var list = Utils.GetListOfExistingAttributeNames(xaml, xaml.Length);
+			var expected = new List<string> { "xmlns", "xmlns:x", "xmlns:toolkit", "xmlns:chartingToolkit" };
+			
+			Assert.AreEqual(expected.Count, list.Length, "Wrong count!");
+			Assert.AreEqual(list, expected, "Wrong elements!");
+		}
 	}
 }

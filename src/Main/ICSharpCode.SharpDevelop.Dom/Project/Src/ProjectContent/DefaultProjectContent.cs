@@ -1020,5 +1020,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 		}
+		
+		/// <inheritdoc/>
+		public virtual string AssemblyName {
+			get {
+				return null;
+			}
+		}
 	}
 }

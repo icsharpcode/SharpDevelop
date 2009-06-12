@@ -186,10 +186,14 @@ namespace ICSharpCode.XmlEditor
 		public bool IsWellFormed {
 			get { return CheckIsWellFormed(); }
 		}
-
+		
 		public bool CheckIsWellFormed()
 		{
-			ITextEditor editor = TextEditor;
+			return CheckIsWellFormed(TextEditor);
+		}
+
+		public static bool CheckIsWellFormed(ITextEditor editor)
+		{
 			if (editor == null) return false;
 			try {
 				XmlDocument Document = new XmlDocument();
@@ -429,14 +433,13 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Pretty prints the xml.
 		/// </summary>
-		public void FormatXml()
+		public static void FormatXml(ITextEditor editor)
 		{
-			ITextEditor editor = TextEditor;
 			if (editor == null) return;
 			
 			TaskService.ClearExceptCommentTasks();
-			if (IsWellFormed) {
-				ReplaceAll(editor.Document.Text);
+			if (CheckIsWellFormed(editor)) {
+				ReplaceAll(editor.Document.Text, editor);
 			} else {
 				ShowErrorList();
 			}
@@ -446,12 +449,11 @@ namespace ICSharpCode.XmlEditor
 		/// Replaces the entire text of the xml view with the xml in the
 		/// specified. The xml will be formatted.
 		/// </summary>
-		public void ReplaceAll(string xml)
+		public static void ReplaceAll(string xml, ITextEditor editor)
 		{
-			ITextEditor editor = TextEditor;
 			if (editor == null) return;
 			
-			string formattedXml = SimpleFormat(IndentedFormat(xml));
+			string formattedXml = SimpleFormat(IndentedFormat(xml, editor));
 			editor.Document.Text = formattedXml;
 			//UpdateFolding(); // TODO : add again when folding is implemented in AvalonEdit
 		}
@@ -471,11 +473,9 @@ namespace ICSharpCode.XmlEditor
 		/// <returns>A pretty print version of the specified xml.  If the
 		/// string is not well formed xml the original string is returned.
 		/// </returns>
-		string IndentedFormat(string xml)
+		static string IndentedFormat(string xml, ITextEditor editor)
 		{
 			string indentedText = string.Empty;
-			
-			ITextEditor editor = TextEditor;
 			if (editor == null) return indentedText;
 
 			try	{
@@ -676,7 +676,7 @@ namespace ICSharpCode.XmlEditor
 		void ShowTransformOutput(string xml)
 		{
 			// Pretty print the xml.
-			xml = SimpleFormat(IndentedFormat(xml));
+			xml = SimpleFormat(IndentedFormat(xml, TextEditor));
 			
 			// Display the output xml.
 			XslOutputView.EditorInstance.Document.Text = xml;
