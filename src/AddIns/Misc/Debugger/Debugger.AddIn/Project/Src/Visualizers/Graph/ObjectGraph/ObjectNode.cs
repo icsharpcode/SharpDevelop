@@ -103,10 +103,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Adds complex property.
 		/// </summary>
-		internal void AddComplexProperty(string name, string value, Expression expression, ObjectNode targetNode)
+		internal void AddComplexProperty(string name, string value, Expression expression, ObjectNode targetNode, bool isNull)
 		{
 			properties.Add(new ObjectProperty
-			                { Name = name, Value = value, Expression = expression, IsAtomic = false, TargetNode = targetNode });
+			                { Name = name, Value = value, Expression = expression, IsAtomic = false, TargetNode = targetNode, IsNull = isNull });
 		}
 	}
 }

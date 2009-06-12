@@ -25,12 +25,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 			return expandedNodes.ContainsKey(expression) && (expandedNodes[expression] == true);
 		}
 		
-		public void Expand(string expression)
+		public void SetExpanded(string expression)
 		{
 			expandedNodes[expression] = true;
 		}
 		
-		public void Collapse(string expression)
+		public void SetCollapsed(string expression)
 		{
 			expandedNodes[expression] = false;
 		}

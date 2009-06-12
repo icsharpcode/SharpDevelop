@@ -136,7 +136,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 				else
 				{
 					ObjectNode targetNode = null;
-					if (!isNull(memberExpr) && expandedNodes.IsExpanded(memberExpr.Code))
+					bool memberIsNull = isNull(memberExpr);
+					if (!memberIsNull && expandedNodes.IsExpanded(memberExpr.Code))
 					{
 						// for object members, edges are added
 						Value memberValue = getPermanentReference(memberExpr);
@@ -153,7 +154,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 					{
 						targetNode = null;
 					}
-					thisNode.AddComplexProperty(memberName, "", memberExpr, targetNode);
+					thisNode.AddComplexProperty(memberName, "", memberExpr, targetNode, memberIsNull);
 				}
 			}
 			

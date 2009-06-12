@@ -31,13 +31,18 @@ namespace Debugger.AddIn.Visualizers.Graph
         public Debugger.Expressions.Expression Expression { get; set; }
         
         /// <summary>
+        /// Is this property of atomic type? (int, string, etc.)
+        /// </summary>
+        public bool IsAtomic { get; set; }
+        
+        /// <summary>
         /// Node that this property points to. Can be null. Always null if <see cref="IsAtomic"/> is true.
         /// </summary>
         public ObjectNode TargetNode { get; set; }
         
         /// <summary>
-        /// Is this property of atomic type? (int, string, etc.)
+        /// Is this property value null? Only meaningful if <see cref="IsAtomic"/> is false.
         /// </summary>
-        public bool IsAtomic { get; set; }
+        public bool IsNull { get; set; }
     }
 }

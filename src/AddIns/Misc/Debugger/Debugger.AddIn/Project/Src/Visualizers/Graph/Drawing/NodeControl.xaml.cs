@@ -67,7 +67,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			var row = new RowDefinition();
 			propertyGrid.RowDefinitions.Add(row);
 			
-			if (!property.IsAtomic)
+			if (!property.IsAtomic && !property.IsNull)
 			{
 				Button btnExpandCollapse = new Button();
 				btnExpandCollapse.Tag = property;

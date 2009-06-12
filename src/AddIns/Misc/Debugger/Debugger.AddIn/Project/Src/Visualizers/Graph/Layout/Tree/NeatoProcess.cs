@@ -73,10 +73,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <returns>Same graph in Graphviz plain with position information added.</returns>
 		public string CalculatePositions(string dotGraph)
 		{
-			using (var writer = new StreamWriter(@"D:\__prog__\Graphviz\logIn.gv"))
+			/*using (var writer = new StreamWriter("logIn.gv"))
 			{
 				writer.Write(dotGraph);
-			}
+			}*/
 			
 			neatoProcess.StandardInput.Write(dotGraph);
 			neatoProcess.StandardInput.Flush();

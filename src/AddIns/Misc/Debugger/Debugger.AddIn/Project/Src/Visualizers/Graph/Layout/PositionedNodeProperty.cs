@@ -67,5 +67,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
         /// Is this property of atomic type? (int, string, etc.)
         /// </summary>
 		public bool IsAtomic { get { return this.objectProperty.IsAtomic; } }
+		
+		/// <summary>
+        /// Is the value of this property null?
+        /// </summary>
+		public bool IsNull { get { return this.objectProperty.IsNull; } }
 	}
 }

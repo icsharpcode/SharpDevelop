@@ -146,13 +146,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 
 		void node_Expanded(object sender, PositionedPropertyEventArgs e)
 		{
-			expandedNodes.Expand(e.Property.Expression.Code);
+			expandedNodes.SetExpanded(e.Property.Expression.Code);
 			refreshGraph();
 		}
 		
 		void node_Collapsed(object sender, PositionedPropertyEventArgs e)
 		{
-			expandedNodes.Collapse(e.Property.Expression.Code);
+			expandedNodes.SetCollapsed(e.Property.Expression.Code);
 			refreshGraph();
 		}
     }
