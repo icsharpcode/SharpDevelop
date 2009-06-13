@@ -53,6 +53,8 @@ namespace ICSharpCode.XamlBinding
 			int offsetFromValueStart = Utils.GetOffsetFromValueStart(text, offset);
 			AttributeValue value = null;
 			
+			value = MarkupExtensionParser.ParseValue(attributeValue);
+			
 			XamlContextDescription description = XamlContextDescription.InTag;
 			
 			if (path == null || path.Elements.Count == 0) {
@@ -363,7 +365,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public static IEnumerable<IInsightItem> CreateMarkupExtensionInsight(XamlCompletionContext context, ParseInformation info, ITextEditor editor)
 		{
-			var markup = GetInnermostMarkup(context.AttributeValue.ExtensionValue);
+			var markup = Utils.GetInnermostMarkup(context.AttributeValue.ExtensionValue);
 			var trr = ResolveMarkupExtensionType(markup, context);
 			
 			if (trr != null) {
@@ -384,7 +386,7 @@ namespace ICSharpCode.XamlBinding
 			var list = new XamlCompletionItemList();
 			var path = XmlParser.GetActiveElementStartPathAtIndex(editor.Document.Text, editor.Caret.Offset);
 			
-			var markup = GetInnermostMarkup(context.AttributeValue.ExtensionValue);
+			var markup = Utils.GetInnermostMarkup(context.AttributeValue.ExtensionValue);
 			
 			var trr = ResolveMarkupExtensionType(markup, context);
 			
@@ -592,22 +594,6 @@ namespace ICSharpCode.XamlBinding
 		static IMethod FindCompletableCtor(IList<IMethod> ctors, int index)
 		{
 			return null;
-		}
-		
-		public static MarkupExtensionInfo GetInnermostMarkup(MarkupExtensionInfo markup)
-		{
-			var last = markup.PositionalArguments.LastOrDefault();
-			
-			if (markup.NamedArguments.Count > 0)
-				last = markup.NamedArguments.LastOrDefault().Value;
-			
-			if (last != null) {
-				if (!last.IsString) {
-					return GetInnermostMarkup(last.ExtensionValue);
-				}
-			}
-			
-			return markup;
 		}
 
 		public static TypeResolveResult ResolveMarkupExtensionType(MarkupExtensionInfo markup, XamlCompletionContext context)

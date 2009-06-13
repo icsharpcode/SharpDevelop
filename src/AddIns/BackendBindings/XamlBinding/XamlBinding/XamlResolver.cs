@@ -23,6 +23,7 @@ namespace ICSharpCode.XamlBinding
 	public class XamlResolver : IResolver
 	{
 		IClass callingClass;
+		string fileContent;
 		string resolveExpression;
 		int caretLine, caretColumn;
 		XamlContext context;
@@ -32,25 +33,57 @@ namespace ICSharpCode.XamlBinding
 			this.resolveExpression = expressionResult.Expression;
 			this.caretLine = expressionResult.Region.BeginLine;
 			this.caretColumn = expressionResult.Region.BeginColumn;
+			this.fileContent = fileContent;
 			this.callingClass = parseInfo.BestCompilationUnit.GetInnermostClass(caretLine, caretColumn);
-			this.context = CompletionDataHelper.ResolveContext(fileContent, parseInfo.MostRecentCompilationUnit.FileName, caretLine, caretColumn);
-			if (context == null)
-				return null;
-			if (string.IsNullOrEmpty(context.AttributeName)) {
-				return ResolveElementName(expressionResult.Expression);
-			}
-			else if (context.Description == XamlContextDescription.InAttributeValue) {
-				MemberResolveResult mrr = ResolveAttribute(context.AttributeName);
-				if (mrr != null) {
-					return ResolveAttributeValue(mrr.ResolvedMember, resolveExpression);
-				}
-			}
-			else {
-				// in attribute name
-				return ResolveAttribute(resolveExpression);
+			this.context = expressionResult.Context as XamlContext ?? CompletionDataHelper.ResolveContext(fileContent, parseInfo.MostRecentCompilationUnit.FileName, caretLine, caretColumn);
+			
+			switch (this.context.Description) {
+				case XamlContextDescription.AtTag:
+					return ResolveElementName(resolveExpression);
+				case XamlContextDescription.InTag:
+					return ResolveAttribute(resolveExpression);
+				case XamlContextDescription.InAttributeValue:
+					MemberResolveResult mrr = ResolveAttribute(context.AttributeName);
+					if (mrr != null) {
+						return ResolveAttributeValue(mrr.ResolvedMember, resolveExpression) ?? mrr;
+					}
+					break;
+				case XamlContextDescription.InMarkupExtension:
+					return ResolveMarkupExtension(resolveExpression);
 			}
 			
 			return null;
+		}
+		
+		ResolveResult ResolveMarkupExtension(string expression)
+		{
+			if (context.AttributeValue.IsString)
+				return null;
+			
+			object data = Utils.GetMarkupDataAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
+			
+			// resolve markup extension type
+			if ((data as string) == expression) {
+				return ResolveElementName(expression + "Extension") ?? ResolveElementName(expression);
+			} else {
+				var value = data as AttributeValue;
+				if (value != null && value.IsString) {
+					return ResolveElementName(expression) ?? ResolveAttribute(expression);
+				}
+				
+				if (data is KeyValuePair<string, AttributeValue>) {
+					var pair = (KeyValuePair<string, AttributeValue>)data;
+					var member = ResolveAttribute(pair.Key);
+					if (pair.Value.StartOffset + pair.Key.Length >= context.ValueStartOffset) {
+						return member;
+					} else {
+						if (pair.Value.IsString && member != null)
+							return ResolveAttributeValue(member.ResolvedMember, expression);
+					}
+				}
+				
+				return null;
+			}
 		}
 
 		ResolveResult ResolveElementName(string exp)

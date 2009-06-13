@@ -206,5 +206,53 @@ namespace ICSharpCode.XamlBinding
 			
 			return r;
 		}
+		
+		
+		public static MarkupExtensionInfo GetInnermostMarkup(MarkupExtensionInfo markup)
+		{
+			var last = markup.PositionalArguments.LastOrDefault();
+			
+			if (markup.NamedArguments.Count > 0)
+				last = markup.NamedArguments.LastOrDefault().Value;
+			
+			if (last != null) {
+				if (!last.IsString) {
+					return GetInnermostMarkup(last.ExtensionValue);
+				}
+			}
+			
+			return markup;
+		}
+		
+		/// <summary>
+		/// Gets the of a markup extension at the given position.
+		/// </summary>
+		/// <param name="info">The markup extension data to parse.</param>
+		/// <param name="offset">The offset to look at.</param>
+		/// <returns>
+		/// A string, if the at offset is the extension type. <br />
+		/// An AttributeValue, if at the offset is a positional argument. <br />
+		/// A KeyValuePair&lt;string, AttributeValue&gt;, if at the offset is a named argument.
+		/// </returns>
+		public static object GetMarkupDataAtPosition(MarkupExtensionInfo info, int offset)
+		{
+			object previous = info.ExtensionType;
+			
+			Debug.Print("offset: " + offset);
+			
+			foreach (var item in info.PositionalArguments) {
+				if (item.StartOffset > offset)
+					break;
+				previous = item.IsString ? item : GetMarkupDataAtPosition(item.ExtensionValue, offset - item.StartOffset);
+			}
+			
+			foreach (var pair in info.NamedArguments) {
+				if (pair.Value.StartOffset > offset)
+					break;
+				previous = pair.Value.IsString ? pair.Value : GetMarkupDataAtPosition(pair.Value.ExtensionValue, offset - pair.Value.StartOffset);
+			}
+			
+			return previous;
+		}
 	}
 }

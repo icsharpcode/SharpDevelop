@@ -51,7 +51,7 @@ namespace ICSharpCode.XamlBinding
 								AttributeValue value = MarkupExtensionParser.ParseValue(valuePart);
 								
 								if (value != null && !value.IsString) {
-									var markup = CompletionDataHelper.GetInnermostMarkup(value.ExtensionValue);
+									var markup = Utils.GetInnermostMarkup(value.ExtensionValue);
 									if (markup.NamedArguments.Count > 0 || markup.PositionalArguments.Count > 0) {
 										int oldOffset = context.Editor.Caret.Offset;
 										context.Editor.Caret.Offset = context.StartOffset;
