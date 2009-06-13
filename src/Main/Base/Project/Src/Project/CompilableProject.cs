@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override string OutputAssemblyFullPath {
 			get {
 				string outputPath = GetEvaluatedProperty("OutputPath") ?? "";
-				return Path.Combine(Path.Combine(Directory, outputPath), AssemblyName + GetExtension(OutputType));
+				return FileUtility.NormalizePath(Path.Combine(Path.Combine(Directory, outputPath), AssemblyName + GetExtension(OutputType)));
 			}
 		}
 		
@@ -175,9 +175,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string OutputFullPath {
 			get {
 				string outputPath = GetEvaluatedProperty("OutputPath");
-				// Path.GetFullPath() cleans up any back references.
+				// FileUtility.NormalizePath() cleans up any back references.
 				// e.g. C:\windows\system32\..\system becomes C:\windows\system
-				return Path.GetFullPath(Path.Combine(Directory, outputPath));
+				return FileUtility.NormalizePath(Path.Combine(Directory, outputPath));
 			}
 		}
 		

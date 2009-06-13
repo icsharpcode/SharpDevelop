@@ -14,9 +14,15 @@ namespace UnitTesting.Tests.Utils
 	public class MockCSharpProject : CompilableProject
 	{
 		public MockCSharpProject()
+			: this(new Solution(), "Dummy")
+		{
+		}
+		
+		public MockCSharpProject(Solution solution, string name)
 			: base(new ProjectCreateInformation {
-			       	Solution = new Solution(),
-			       	ProjectName = "DummyName"
+			       	Solution = solution,
+			       	ProjectName = name,
+			       	OutputProjectFileName = "c:\\temp\\" + name + ".csproj"
 			       })
 		{
 		}

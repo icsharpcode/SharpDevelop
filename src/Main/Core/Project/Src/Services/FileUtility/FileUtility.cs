@@ -148,6 +148,8 @@ namespace ICSharpCode.Core
 		
 		public static bool IsUrl(string path)
 		{
+			if (path == null)
+				throw new ArgumentNullException("path");
 			return path.IndexOf("://", StringComparison.Ordinal) > 0;
 		}
 		

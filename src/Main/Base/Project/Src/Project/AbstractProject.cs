@@ -114,6 +114,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				return fileName ?? "";
 			}
 			set {
+				if (value == null)
+					throw new ArgumentNullException();
 				WorkbenchSingleton.AssertMainThread();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
 				

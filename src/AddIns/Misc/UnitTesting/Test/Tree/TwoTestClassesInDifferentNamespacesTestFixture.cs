@@ -44,8 +44,7 @@ namespace UnitTesting.Tests.Tree
 			solution = new Solution();
 			
 			// Create a project to display in the test tree view.
-			project = new MockCSharpProject(solution);
-			project.Name = "TestProject";
+			project = new MockCSharpProject(solution, "TestProject");
 			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);

@@ -27,6 +27,7 @@ namespace UnitTesting.Tests
 			project.FileName = @"C:\Projects\MyTests\MyTests.csproj";
 			project.AssemblyName = "MyTests";
 			project.OutputType = OutputType.Library;
+			project.SetProperty("OutputPath", "."); // don't create bin/Debug
 			helper = new UnitTestApplicationStartHelper();
 		}
 		
