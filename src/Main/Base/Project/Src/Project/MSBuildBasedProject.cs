@@ -765,6 +765,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (treatPropertyValueAsLiteral)
 				newValue = MSBuildInternals.Escape(newValue);
+			if (groupCondition == null) {
+				// MSBuild uses an empty string when there's no condition, so we need to do the same
+				// for the comparison to succeed.
+				groupCondition = string.Empty;
+			}
 			foreach (var propertyGroup in targetProject.PropertyGroups) {
 				if (propertyGroup.Condition == groupCondition) {
 					foreach (var property in propertyGroup.Properties.ToList()) {
@@ -778,8 +783,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (var propertyGroup in targetProject.PropertyGroups) {
 				if (propertyGroup.Condition == groupCondition) {
 					propertyGroup.AddProperty(propertyName, newValue);
+					return;
 				}
 			}
+			
 			var newGroup = targetProject.AddPropertyGroup();
 			newGroup.Condition = groupCondition;
 			newGroup.AddProperty(propertyName, newValue);

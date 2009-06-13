@@ -227,7 +227,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			BuildRequestData requestData = new BuildRequestData(fileName, globalProperties, null, targets, new HostServices());
 			ILogger[] loggers = {
 				new SharpDevelopLogger(this),
-				new BuildLogFileLogger(fileName + ".log", LoggerVerbosity.Diagnostic)
+				//new BuildLogFileLogger(fileName + ".log", LoggerVerbosity.Diagnostic)
 			};
 			manager.StartBuild(requestData, loggers, OnComplete);
 		}
@@ -284,37 +284,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				buildInProcess = true;
 			}
 			LoggingService.Info("Start job (buildInProcess=" + buildInProcess + "): " + job.ToString());
-			
-			if (buildInProcess) {
-				settings.BuildDoneCallback = delegate(bool success) {
-					LoggingService.Debug("BuildInProcess: Received BuildDoneCallback");
-					if (Interlocked.Exchange(ref isBuildingInProcess, 0) != 1) {
-						MessageService.ShowError("isBuildingInProcess should have been 1!");
-					}
-					logger.FlushCurrentError();
-					feedbackSink.Done(success);
-				};
-				
-				Thread thread = new Thread(new ThreadStart(
-					delegate {
-						LoggingService.Debug("Acquiring InProcessMSBuildLock");
-						lock (MSBuildInternals.InProcessMSBuildLock) {
-							WorkerManager.RunBuildInProcess(job, settings);
-							LoggingService.Debug("Leaving InProcessMSBuildLock");
-						}
-					}));
-				thread.Name = "InProcess build thread " + thread.ManagedThreadId;
-				thread.SetApartmentState(ApartmentState.STA);
-				thread.Start();
-			} else {
-				settings.BuildDoneCallback = delegate(bool success) {
-					LoggingService.Debug("BuildOutOfProcess: Received BuildDoneCallback");
-					logger.FlushCurrentError();
-					feedbackSink.Done(success);
-				};
-				
-				WorkerManager.StartBuild(job, settings);
-			}*/
+		*/
 		
 		static string EnsureBackslash(string path)
 		{
