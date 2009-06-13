@@ -31,9 +31,10 @@ namespace Debugger.AddIn.Visualizers.Graph
     	private WindowsDebugger debuggerService;
     	private EnumViewModel<LayoutDirection> layoutViewModel;
     	private ObjectGraph objectGraph;
+    	private ObjectGraphBuilder objectGraphBuilder;
     	
-    	private PositionedGraph oldGraph;
-    	private PositionedGraph currentGraph;
+    	private PositionedGraph oldPosGraph;
+    	private PositionedGraph currentPosGraph;
     	private GraphDrawer graphDrawer;
     	
     	/// <summary>
@@ -91,42 +92,43 @@ namespace Debugger.AddIn.Visualizers.Graph
         
         void refreshGraph()
 		{
-			ObjectGraphBuilder graphBuilder = new ObjectGraphBuilder(debuggerService);
-			this.objectGraph = null;
-			
+        	this.objectGraph = rebuildGraph();
+			layoutGraph(this.objectGraph);	
+			//GraphDrawer drawer = new GraphDrawer(graph);
+			//drawer.Draw(canvas);
+		}
+        
+        ObjectGraph rebuildGraph()
+        {
+        	this.objectGraphBuilder = new ObjectGraphBuilder(debuggerService);
 			try
 			{	
 				ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Building graph for expression: " + txtExpression.Text);
-				this.objectGraph = graphBuilder.BuildGraphForExpression(txtExpression.Text, expandedNodes);
+				return this.objectGraphBuilder.BuildGraphForExpression(txtExpression.Text, this.expandedNodes);
 			}
 			catch(DebuggerVisualizerException ex)
 			{
 				guiHandleException(ex);
-				return;
+				return null;
 			}
 			catch(Debugger.GetValueException ex)
 			{
 				guiHandleException(ex);
-				return;
+				return null;
 			}
-			
-			layoutGraph(this.objectGraph);
-				
-			//GraphDrawer drawer = new GraphDrawer(graph);
-			//drawer.Draw(canvas);
-		}
+        }
         
         void layoutGraph(ObjectGraph graph)
         {
         	ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Calculating graph layout");
         	Layout.TreeLayouter layouter = new Layout.TreeLayouter();
         	
-            this.oldGraph = this.currentGraph;
-			this.currentGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expandedNodes);
-			registerExpandCollapseEvents(this.currentGraph);
+            this.oldPosGraph = this.currentPosGraph;
+			this.currentPosGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expandedNodes);
+			registerExpandCollapseEvents(this.currentPosGraph);
 			
-			var graphDiff = new GraphMatcher().MatchGraphs(oldGraph, currentGraph);
-			this.graphDrawer.StartAnimation(oldGraph, currentGraph, graphDiff);
+			var graphDiff = new GraphMatcher().MatchGraphs(oldPosGraph, currentPosGraph);
+			this.graphDrawer.StartAnimation(oldPosGraph, currentPosGraph, graphDiff);
 			//this.graphDrawer.Draw(currentGraph);
         }
 		
@@ -146,14 +148,22 @@ namespace Debugger.AddIn.Visualizers.Graph
 
 		void node_Expanded(object sender, PositionedPropertyEventArgs e)
 		{
+			// remember this property is expanded (for later graph rebuilds)
 			expandedNodes.SetExpanded(e.Property.Expression.Code);
-			refreshGraph();
+			
+			// add edge (+ possibly node) to underlying object graph (no need to rebuild)
+			e.Property.ObjectProperty.TargetNode = this.objectGraphBuilder.ObtainNodeForExpression(e.Property.Expression);
+			layoutGraph(this.objectGraph);
 		}
 		
 		void node_Collapsed(object sender, PositionedPropertyEventArgs e)
 		{
+			// remember this property is collapsed (for later graph rebuilds)
 			expandedNodes.SetCollapsed(e.Property.Expression.Code);
-			refreshGraph();
+			
+			// just remove edge from underlying object graph (no need to rebuild)
+			e.Property.ObjectProperty.TargetNode = null;
+			layoutGraph(this.objectGraph);
 		}
     }
 }

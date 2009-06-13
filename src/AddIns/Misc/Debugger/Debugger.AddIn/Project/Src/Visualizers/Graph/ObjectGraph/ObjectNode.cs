@@ -17,10 +17,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 	public class ObjectNode
 	{
 		/// <summary>
-		/// Additional info useful for internal algorithms, not to be visible to the user.
+		/// Permanent reference to the value in the the debugee this node represents.
 		/// </summary>
-		internal Debugger.Value PermanentReference { get; set; }
+		internal Debugger.Value DebuggerValue { get; set; }
+		/// <summary>
+		/// Hash code in the debuggee of the DebuggerValue this node represents.
+		/// </summary>
 		internal int HashCode { get; set; }
+		/// <summary>
+		/// Expression used to obtain this node.
+		/// </summary>
+		public Expressions.Expression Expression { get { return this.DebuggerValue.Expression; } }
 		
 		/*private List<ObjectEdge> _edges = new List<ObjectEdge>();
         /// <summary>

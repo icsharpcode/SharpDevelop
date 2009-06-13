@@ -43,10 +43,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// The underlying debugger service used for getting expression values.
 		/// </summary>
 		private WindowsDebugger debuggerService;
-		/// <summary>
-		/// The resulting object graph.
-		/// </summary>
+
 		private ObjectGraph resultGraph;
+		/// <summary>
+		/// Underlying object graph data struture.
+		/// </summary>
+		public ObjectGraph ResultGraph { get { return this.resultGraph; } }
+		
 		/// <summary>
 		/// System.Runtime.CompilerServices.GetHashCode method, for obtaining non-overriden hash codes from debuggee.
 		/// </summary>
@@ -60,7 +63,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Binding flags for getting member expressions.
 		/// </summary>
-		private readonly Debugger.MetaData.BindingFlags _bindingFlags = 
+		private readonly Debugger.MetaData.BindingFlags _bindingFlags =
 			BindingFlags.Public | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
 		
 		/// <summary>
@@ -92,37 +95,52 @@ namespace Debugger.AddIn.Visualizers.Graph
 			// empty graph for null expression
 			if (!debuggerService.GetValueFromName(expression).IsNull)
 			{
-				resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference(), expandedNodes);
+				//resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference(), expandedNodes);
+				resultGraph.Root = createNewNode(debuggerService.GetValueFromName(expression).GetPermanentReference());
+				loadNodeProperties(resultGraph.Root);
+				loadChildrenRecursive(resultGraph.Root, expandedNodes);
 			}
 			
 			return resultGraph;
 		}
 		
-		/// <summary>
-		/// Builds the subgraph representing given value.
-		/// </summary>
-		/// <param name="rootValue">The Value for which the subgraph will be built.</param>
-		/// <returns>ObjectNode representing the value + all recursive members.</returns>
-		private ObjectNode buildGraphRecursive(Value rootValue, ExpandedNodes expandedNodes)
+		public ObjectNode ObtainNodeForExpression(Expression expr, out bool createdNewNode)
 		{
-			ObjectNode thisNode = createNewNode(rootValue); 
-			
-			// David: by calling this, we get an array of values, most of them probably invalid,
-			// it would be nice to be able to get a collection of 'values' 
-			// that are valid (basically a snapshot of object's state)
-			// - a collection of custom objects, 
-			// that contain the string value and DebugType,
-			// and can enumerate child values.
-			// It would be also nice to return IEnumerable or ReadonlyCollection
-			// http://blogs.msdn.com/ericlippert/archive/2008/09/22/arrays-considered-somewhat-harmful.aspx
-			/*string[] memberValues = rootValue.GetMemberValuesAsString(_bindingFlags);
-			foreach	(string memberValue in memberValues)
+			return ObtainNodeForValue(getPermanentReference(expr), out createdNewNode);
+		}
+		
+		public ObjectNode ObtainNodeForExpression(Expression expr)
+		{
+			bool createdNewNode; // ignore (caller is not interested, otherwise he would use the other overload)
+			return ObtainNodeForExpression(expr, out createdNewNode);
+		}
+		
+		/// <summary>
+		/// Returns node in the graph that represents given value, or returns new node if no node found.
+		/// </summary>
+		/// <param name="value">Value for which to obtain the node/</param>
+		/// <param name="createdNew">True if new node was created, false if existing node was returned.</param>
+		public ObjectNode ObtainNodeForValue(Value value, out bool createdNew)
+		{
+			createdNew = false;
+			ObjectNode nodeForValue = getExistingNodeForValue(value);
+			if (nodeForValue == null)
 			{
-				//Value memberValuePerm = memberValue.GetPermanentReference();
-				
-			}*/
-			
-			foreach(Expression memberExpr in rootValue.Expression.AppendObjectMembers(rootValue.Type, _bindingFlags))
+				// if no node for memberValue exists, create it
+				nodeForValue = createNewNode(value);
+				loadNodeProperties(nodeForValue);
+				createdNew = true;
+			}
+			return nodeForValue;
+		}
+		
+		/// <summary>
+		/// Fills node contents by adding properties.
+		/// </summary>
+		/// <param name="thisNode"></param>
+		private void loadNodeProperties(ObjectNode thisNode)
+		{
+			foreach(Expression memberExpr in thisNode.DebuggerValue.Expression.AppendObjectMembers(thisNode.DebuggerValue.Type, _bindingFlags))
 			{
 				checkIsOfSupportedType(memberExpr);
 				
@@ -131,34 +149,48 @@ namespace Debugger.AddIn.Visualizers.Graph
 				{
 					// atomic members are added to the list of node's "properties"
 					string memberValueAsString = memberExpr.Evaluate(debuggerService.DebuggedProcess).AsString;
-				    thisNode.AddAtomicProperty(memberName, memberValueAsString, memberExpr);
+					thisNode.AddAtomicProperty(memberName, memberValueAsString, memberExpr);
 				}
 				else
 				{
+					// for object members, complex properties are added
 					ObjectNode targetNode = null;
 					bool memberIsNull = isNull(memberExpr);
-					if (!memberIsNull && expandedNodes.IsExpanded(memberExpr.Code))
-					{
-						// for object members, edges are added
-						Value memberValue = getPermanentReference(memberExpr);
-						
-						// if node for memberValue already exists, only add edge to it (so loops etc. are solved correctly)
-						targetNode = getNodeForValue(memberValue);
-						if (targetNode == null)
-						{
-							// if no node for memberValue exists, build the subgraph for the value
-							targetNode = buildGraphRecursive(memberValue, expandedNodes);
-						}
-					}
-					else 
-					{
-						targetNode = null;
-					}
 					thisNode.AddComplexProperty(memberName, "", memberExpr, targetNode, memberIsNull);
 				}
 			}
-			
-			return thisNode;
+		}
+		
+		/// <summary>
+		/// Creates child nodes of this node for each complex property and connects them to property.TargetNode.
+		/// </summary>
+		/// <param name="thisNode"></param>
+		/// <param name="expandedNodes"></param>
+		private void loadChildrenRecursive(ObjectNode thisNode, ExpandedNodes expandedNodes)
+		{
+			foreach(ObjectProperty complexProperty in thisNode.ComplexProperties)
+			{
+				Expression memberExpr = complexProperty.Expression;
+				ObjectNode targetNode = null;
+				if (!complexProperty.IsNull && expandedNodes.IsExpanded(memberExpr.Code))
+				{
+					Value memberValue = getPermanentReference(memberExpr);
+					
+					bool createdNew;
+					// get existing node (loop) or create new
+					targetNode = ObtainNodeForValue(memberValue, out createdNew);
+					if (createdNew)
+					{
+						// if member node is new, recursively build its subtree
+						loadChildrenRecursive(targetNode, expandedNodes);
+					}
+				}
+				else
+				{
+					targetNode = null;
+				}
+				complexProperty.TargetNode = targetNode;
+			}
 		}
 		
 		/// <summary>
@@ -175,9 +207,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 			// remember this node's hashcode for quick lookup
 			objectNodesForHashCode.Add(newNode.HashCode, newNode);
 			
-			// permanent reference to the object this node represents is useful for graph building, 
+			// permanent reference to the object this node represents is useful for graph building,
 			// and matching nodes in animations
-			newNode.PermanentReference = permanentReference;
+			newNode.DebuggerValue = permanentReference;
 			
 			return newNode;
 		}
@@ -187,7 +219,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="value">Valid value representing an instance.</param>
 		/// <returns></returns>
-		private ObjectNode getNodeForValue(Value value)
+		private ObjectNode getExistingNodeForValue(Value value)
 		{
 			int objectHashCode = invokeGetHashCode(value);
 			// are there any nodes with the same hash code?
@@ -202,7 +234,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				// (hash codes are not uniqe - http://stackoverflow.com/questions/750947/-net-unique-object-identifier)
 				ulong objectAddress = value.GetObjectAddress();
 				ObjectNode nodeWithSameAddress = nodesWithSameHashCode.Find(
-					node => { return objectAddress == node.PermanentReference.GetObjectAddress(); } );
+					node => { return node.DebuggerValue.GetObjectAddress() == objectAddress; } );
 				return nodeWithSameAddress;
 			}
 		}
@@ -251,7 +283,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		}
 		
 		#region Expression helpers
-			
+		
 		private Value getPermanentReference(Expression expr)
 		{
 			return expr.Evaluate(debuggerService.DebuggedProcess).GetPermanentReference();
