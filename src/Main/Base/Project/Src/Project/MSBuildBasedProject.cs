@@ -69,6 +69,30 @@ namespace ICSharpCode.SharpDevelop.Project
 			userProjectFile = null;
 		}
 		
+		/// <summary>
+		/// Gets the MSBuild.Construction project file.
+		/// You must lock on the project's SyncRoot before accessing the MSBuild project file!
+		/// </summary>
+		public ProjectRootElement MSBuildProjectFile {
+			get {
+				if (projectFile ==  null)
+					throw new ObjectDisposedException("MSBuildBasedProject");
+				return projectFile;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the MSBuild.Construction project file.
+		/// You must lock on the project's SyncRoot before accessing the MSBuild project file!
+		/// </summary>
+		public ProjectRootElement MSBuildUserProjectFile {
+			get {
+				if (projectFile ==  null)
+					throw new ObjectDisposedException("MSBuildBasedProject");
+				return userProjectFile;
+			}
+		}
+		
 		public override int MinimumSolutionVersion {
 			get {
 				lock (SyncRoot) {
@@ -331,11 +355,23 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// calls OpenConfiguration for the current configuration
+		/// </summary>
 		ConfiguredProject OpenCurrentConfiguration()
 		{
 			return OpenConfiguration(null, null);
 		}
 		
+		/// <summary>
+		/// Provides access to the underlying MSBuild.Evaluation project.
+		/// Usage:
+		/// using (ConfiguredProject c = OpenCurrentConfiguration()) {
+		///    // access c.Project only in this block
+		/// }
+		/// This method is thread-safe: calling it locks the SyncRoot. You have to dispose
+		/// the ConfiguredProject instance to unlock the SyncRoot.
+		/// </summary>
 		ConfiguredProject OpenConfiguration(string configuration, string platform)
 		{
 			bool lockTaken = false;
@@ -379,7 +415,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			readonly bool unloadProjectOnDispose;
 			public readonly MSBuild.Project Project;
 			
-			public ConfiguredProject(MSBuildBasedProject parent, MSBuild.Project project, bool unloadProjectOnDispose)
+			internal ConfiguredProject(MSBuildBasedProject parent, MSBuild.Project project, bool unloadProjectOnDispose)
 			{
 				this.p = parent;
 				this.Project = project;

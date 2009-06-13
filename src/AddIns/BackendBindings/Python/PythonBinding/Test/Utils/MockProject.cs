@@ -12,7 +12,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Build.BuildEngine;
 
 namespace PythonBinding.Tests.Utils
 {

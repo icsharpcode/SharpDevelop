@@ -5,20 +5,20 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Microsoft.Build.Construction;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Windows.Forms;
-using System.Runtime.Serialization;
-
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.SharpDevelop.Project.Commands;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -73,22 +73,22 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			if (sp != null && tp != null) {
 				lock (sp.SyncRoot) {
 					lock (tp.SyncRoot) {
-						throw new NotImplementedException();
-						/*
-						tp.MSBuildProject.RemoveAllPropertyGroups();
-						foreach (MSBuild.BuildPropertyGroup spg in sp.MSBuildProject.PropertyGroups) {
-							if (spg.IsImported) continue;
-							MSBuild.BuildPropertyGroup tpg = tp.MSBuildProject.AddNewPropertyGroup(false);
+						// Remove all PropertyGroups in target project:
+						foreach (ProjectPropertyGroupElement tpg in tp.MSBuildProjectFile.PropertyGroups) {
+							tp.MSBuildProjectFile.RemoveChild(tpg);
+						}
+						// Copy all PropertyGroups from source project to target project:
+						foreach (ProjectPropertyGroupElement spg in sp.MSBuildProjectFile.PropertyGroups) {
+							ProjectPropertyGroupElement tpg = tp.MSBuildProjectFile.AddPropertyGroup();
 							tpg.Condition = spg.Condition;
-							foreach (MSBuild.BuildProperty sprop in spg) {
-								MSBuild.BuildProperty tprop = tpg.AddNewProperty(sprop.Name, sprop.Value);
+							foreach (ProjectPropertyElement sprop in spg.Properties) {
+								ProjectPropertyElement tprop = tpg.AddProperty(sprop.Name, sprop.Value);
 								tprop.Condition = sprop.Condition;
 							}
 						}
 						
 						// use the newly created IdGuid instead of the copied one
 						tp.SetProperty(MSBuildBasedProject.ProjectGuidPropertyName, tp.IdGuid);
-						*/
 					}
 				}
 			}
