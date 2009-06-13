@@ -5,10 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Internal.Templates;
+using System;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System;
 
 namespace WixBinding.Tests.Project
 {
@@ -25,9 +26,14 @@ namespace WixBinding.Tests.Project
 		public void SetUpFixture()
 		{
 			wixNodeBuilder = new WixProjectNodeBuilder();
-			project = new MSBuildBasedProject(MSBuildInternals.CreateEngine());
+			project = new MSBuildBasedProject(
+				new ProjectCreateInformation {
+					OutputProjectFileName = @"C:\Projects\Test\test.csproj",
+					Solution = new Solution(),
+					ProjectName = "test"
+				}
+			);
 			project.IdGuid = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
-			project.FileName = @"C:\Projects\Test\test.csproj";
 		}
 		
 		[Test]

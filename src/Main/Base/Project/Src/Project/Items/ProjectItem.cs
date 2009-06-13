@@ -344,16 +344,67 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			// use CreateProjectItem to ensure the clone has the same class
 			//  (derived from ProjectItem)
-			ProjectItem copy = targetProject.CreateProjectItem(CloneBuildItem());
+			ProjectItem copy = targetProject.CreateProjectItem(new CloneBuildItem(this));
 			// remove reference to cloned item, leaving an unbound project item
 			copy.BuildItem = null;
 			return copy;
 			
 		}
 		
-		IProjectItemBackendStore CloneBuildItem()
+		class CloneBuildItem : IProjectItemBackendStore
 		{
-			throw new NotImplementedException();
+			ProjectItem parent;
+			
+			public CloneBuildItem(ProjectItem parent)
+			{
+				this.parent = parent;
+			}
+			
+			/// Gets the owning project.
+			public IProject Project {
+				get { throw new NotSupportedException(); }
+			}
+			
+			public string UnevaluatedInclude {
+				get { return parent.Include; }
+				set { throw new NotSupportedException(); }
+			}
+			public string EvaluatedInclude {
+				get { return parent.Include; }
+				set { throw new NotSupportedException(); }
+			}
+			public ItemType ItemType {
+				get { return parent.ItemType; }
+				set { throw new NotSupportedException(); }
+			}
+			
+			public string GetEvaluatedMetadata(string name)
+			{
+				return parent.GetEvaluatedMetadata(name);
+			}
+			public string GetMetadata(string name)
+			{
+				return parent.GetMetadata(name);
+			}
+			public bool HasMetadata(string name)
+			{
+				return parent.HasMetadata(name);
+			}
+			public void RemoveMetadata(string name)
+			{
+				parent.RemoveMetadata(name);
+			}
+			public void SetEvaluatedMetadata(string name, string value)
+			{
+				parent.SetEvaluatedMetadata(name, value);
+			}
+			public void SetMetadata(string name, string value)
+			{
+				parent.SetMetadata(name, value);
+			}
+			public IEnumerable<string> MetadataNames { 
+				get { return parent.MetadataNames; }
+			}
 		}
 		
 		object ICloneable.Clone()
