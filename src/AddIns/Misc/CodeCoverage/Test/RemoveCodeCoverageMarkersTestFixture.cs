@@ -79,7 +79,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		static bool ContainsCodeCoverageMarkers(ITextMarkerService markerStrategy)
 		{			
 			foreach (ITextMarker marker in markerStrategy.TextMarkers) {
-				if (marker.Tag == typeof(CodeCoverageHighlighter)) {
+				if ((Type)marker.Tag == typeof(CodeCoverageHighlighter)) {
 					return true;
 				}
 			}
@@ -89,7 +89,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		static bool ContainsNonCodeCoverageMarkers(ITextMarkerService markerStrategy)
 		{			
 			foreach (ITextMarker marker in markerStrategy.TextMarkers) {
-				if (marker.Tag != typeof(CodeCoverageHighlighter)) {
+				if ((Type)marker.Tag != typeof(CodeCoverageHighlighter)) {
 					return true;
 				}
 			}

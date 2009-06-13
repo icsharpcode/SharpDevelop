@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// require locking on the SyncRoot. Methods that return underlying MSBuild objects require that
 	/// the caller locks on the SyncRoot.
 	/// </summary>
-	public abstract class MSBuildBasedProject : AbstractProject, IProjectItemListProvider
+	public class MSBuildBasedProject : AbstractProject, IProjectItemListProvider
 	{
 		/// <summary>
 		/// The project collection that contains this project.
@@ -149,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Create new project
-		protected MSBuildBasedProject(ProjectCreateInformation information)
+		public MSBuildBasedProject(ProjectCreateInformation information)
 		{
 			this.projectCollection = information.Solution.MSBuildProjectCollection;
 			this.projectFile = ProjectRootElement.Create(projectCollection);
@@ -1048,7 +1048,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		protected MSBuildBasedProject(ProjectLoadInformation loadInformation)
+		public MSBuildBasedProject(ProjectLoadInformation loadInformation)
 		{
 			if (loadInformation == null)
 				throw new ArgumentNullException("loadInformation");

@@ -5,14 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.CodeCoverage;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
-using NUnit.Framework;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using System;
 using System.IO;
 using System.Text;
 using System.Xml;
+using ICSharpCode.CodeCoverage;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
+using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests
 {
@@ -60,8 +61,12 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[Test]
 		public void PartCoverSettingsFileName()
 		{
-			MSBuildBasedProject project = new MSBuildBasedProject(MSBuildInternals.CreateEngine());
-			project.FileName = @"C:\temp\test.csproj";
+			MSBuildBasedProject project = new MSBuildBasedProject(
+				new ProjectCreateInformation {
+					Solution = new Solution(),
+					OutputProjectFileName = @"C:\temp\test.csproj",
+					ProjectName = "test"
+				});
 			
 			Assert.AreEqual(@"C:\temp\test.PartCover.Settings", PartCoverSettings.GetFileName(project));
 		}

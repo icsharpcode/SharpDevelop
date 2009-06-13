@@ -78,7 +78,7 @@
     <Compile Include="Src\TestPrograms\ThreadName.cs" />
     <Compile Include="Src\TestPrograms\ValueType.cs" />
     <Compile Include="Src\TestPrograms\_Template.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\*.xml" />
+    <EmbeddedResource Include="Src\TestPrograms\_Template.cs" />
     <EmbeddedResource Include="Src\TestPrograms\ArrayValue.cs" />
     <EmbeddedResource Include="Src\TestPrograms\Break.cs" />
     <EmbeddedResource Include="Src\TestPrograms\Breakpoint.cs" />
