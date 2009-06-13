@@ -174,6 +174,20 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Is raised after the document has changed.
 		/// </summary>
 		public event EventHandler<DocumentChangeEventArgs> Changed;
+		
+		/// <inheritdoc/>
+		public ITextSource CreateSnapshot()
+		{
+			VerifyAccess();
+			// It would be nice to have a text buffer that allows efficient snapshots,
+			// but this will do for the moment.
+			return new StringTextSource(textBuffer.Text);
+		}
+		
+		System.IO.TextReader ITextSource.CreateReader(int offset, int length)
+		{
+			return CreateSnapshot().CreateReader(offset, length);
+		}
 		#endregion
 		
 		#region BeginUpdate / EndUpdate
@@ -376,7 +390,7 @@ namespace ICSharpCode.AvalonEdit.Document
 					} else if (text.Length > length) {
 						OffsetChangeMap map = new OffsetChangeMap(1);
 						// look at OffsetChangeMappingType.CharacterReplace XML comments on why we need to replace
-						// the last 
+						// the last
 						map.Add(new OffsetChangeMapEntry(offset + length - 1, 1, 1 + text.Length - length));
 						Replace(offset, length, text, map);
 					} else if (text.Length < length) {

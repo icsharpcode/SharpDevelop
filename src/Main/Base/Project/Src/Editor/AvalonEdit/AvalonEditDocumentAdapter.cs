@@ -158,6 +158,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 			return document.GetText(offset, length);
 		}
 		
+		public System.IO.TextReader CreateReader()
+		{
+			return CreateSnapshot().CreateReader();
+		}
+		
+		public ITextBuffer CreateSnapshot()
+		{
+			return new AvalonEditTextSourceAdapter(document.CreateSnapshot());
+		}
+		
 		public void StartUndoableAction()
 		{
 			document.BeginUpdate();

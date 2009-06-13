@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -52,6 +53,18 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <remarks>This is the same as Text.Substring, but is more efficient because
 		///  it doesn't require creating a String object for the whole document.</remarks>
 		string GetText(int offset, int length);
+		
+		/// <summary>
+		/// Creates a snapshot of the current text.
+		/// The snapshot text source will be immutable and thread-safe.
+		/// </summary>
+		ITextSource CreateSnapshot();
+		
+		/// <summary>
+		/// Creates a text reader.
+		/// If the text is changed while a reader is active, the reader will continue to read from the old text version.
+		/// </summary>
+		TextReader CreateReader(int offset, int length);
 	}
 	
 	/// <summary>
@@ -87,7 +100,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <inheritdoc/>
 		public string Text {
 			get {
-				return baseTextSource.GetText(viewedSegment.Offset, viewedSegment.Length); 
+				return baseTextSource.GetText(viewedSegment.Offset, viewedSegment.Length);
 			}
 		}
 		
@@ -106,6 +119,18 @@ namespace ICSharpCode.AvalonEdit.Document
 		public string GetText(int offset, int length)
 		{
 			return baseTextSource.GetText(viewedSegment.Offset + offset, length);
+		}
+		
+		/// <inheritdoc/>
+		public ITextSource CreateSnapshot()
+		{
+			return new TextSourceView(baseTextSource.CreateSnapshot(), new SimpleSegment(viewedSegment.Offset, viewedSegment.Length));
+		}
+		
+		/// <inheritdoc/>
+		public TextReader CreateReader(int offset, int length)
+		{
+			return baseTextSource.CreateReader(viewedSegment.Offset + offset, length);
 		}
 	}
 	
@@ -152,6 +177,18 @@ namespace ICSharpCode.AvalonEdit.Document
 		public string GetText(int offset, int length)
 		{
 			return text.Substring(offset, length);
+		}
+		
+		/// <inheritdoc/>
+		public TextReader CreateReader(int offset, int length)
+		{
+			return new StringReader(text.Substring(offset, length));
+		}
+		
+		/// <inheritdoc/>
+		public ITextSource CreateSnapshot()
+		{
+			return this; // StringTextSource already is immutable
 		}
 	}
 }
