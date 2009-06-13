@@ -213,12 +213,13 @@ namespace ICSharpCode.SharpDevelop.Project
 					// which re-enables the MSBuild's usual change detection.
 					w.WriteLine("  <Target Name=\"_ComputeNonExistentFileProperty\" />");
 				}
-				w.WriteLine("</Project>");
 				
 				// inject our imports at the end of 'Microsoft.Common.Targets' by replacing the CodeAnalysisTargets.
 				if (globalProperties.ContainsKey("CodeAnalysisTargets")) {
 					w.WriteLine("  <Import Project=\"" + globalProperties["CodeAnalysisTargets"] + "\" />");
 				}
+				w.WriteLine("</Project>");
+				
 				globalProperties["CodeAnalysisTargets"] = temporaryFileName;
 			}
 			
