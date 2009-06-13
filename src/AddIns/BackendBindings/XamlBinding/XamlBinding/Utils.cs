@@ -24,54 +24,25 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public static class Utils
 	{
-		public static bool HasMatchingEndTag(string tagname, string text, int offset)
+		internal static bool IsReaderAtTarget(XmlTextReader r, int line, int col)
 		{
-			int index = XmlParser.GetActiveElementStartIndex(text, offset);
-			if (index == -1)
+			if (r.LineNumber > line)
+				return true;
+			else if (r.LineNumber == line)
+				return r.LinePosition >= col;
+			else
 				return false;
-			
-			text = text.Substring(index);
-			
-			var path = XmlParser.GetActiveElementStartPathAtIndex(text, index);
-			
-			XmlReader reader = XmlTextReader.Create(new StringReader(text));
-			int startTags = 0;
-			try {
-				while (reader.Read()) {
-					switch (reader.NodeType) {
-						case XmlNodeType.Element:
-							if (!reader.IsEmptyElement)
-								startTags++;
-							break;
-						case XmlNodeType.EndElement:
-							startTags--;
-							if (startTags == 0 && tagname == reader.Name) {
-								return true;
-							}
-							break;
-					}
-				}
-			} catch (XmlException e) {
-				Debug.Print(e.ToString());
-				return false;
-			}
-			
-			return false;
 		}
 		
-		public static string GetAttributeValue(string text, int offset, string name)
+		public static string GetAttributeValue(string text, int line, int col, string name)
 		{
-			text = SimplifyToSingleElement(text, offset, "Test");
-			
-			if (text == null)
-				return null;
-			
-			XmlTextReader reader = new XmlTextReader(new StringReader(text));
-			reader.XmlResolver = null;
-			
-			try {
-				reader.ReadToFollowing("Test");
+			try {			
+				XmlTextReader reader = new XmlTextReader(new StringReader(text));
+				reader.XmlResolver = null;
 				
+				while (reader.Read() && !IsReaderAtTarget(reader, line, col)) { }
+			
+
 				if (!reader.MoveToFirstAttribute())
 					return null;
 				
@@ -89,68 +60,6 @@ namespace ICSharpCode.XamlBinding
 			return null;
 		}
 		
-		public static Dictionary<string, string> GetXmlNamespacesForOffset(string fileContent, int offset)
-		{
-			if (fileContent == null)
-				throw new ArgumentNullException("fileContent");
-			if (offset < 0 || offset > fileContent.Length)
-				throw new ArgumentOutOfRangeException("offset", offset, "Value must be between 0 and " + fileContent.Length);
-			
-			var map = new Dictionary<string, string>();
-			
-			int endIndex = fileContent.IndexOfAny(new char[] {'<', '>'}, offset);
-			if (endIndex > -1)
-				fileContent = fileContent.Substring(0, endIndex + 1);
-			
-			int lastWhiteSpacePos = fileContent.LastIndexOfAny(new char[] {' ', '\t', '\n', '\r'});
-			
-			bool inDouble = false, inSingle = false;
-			
-			for (int i = 0; i < fileContent.Length; i++) {
-				if (fileContent[i] == '"' && !inSingle)
-					inDouble = !inDouble;
-				if (fileContent[i] == '\'' && !inDouble)
-					inSingle = !inSingle;
-				if (fileContent[i] == '>') {
-					int lastDelimiterPos = fileContent.Substring(0, i + 1).LastIndexOfAny(new char[] {'>', '/'});
-					if (inDouble) {
-						fileContent.Insert(lastDelimiterPos, "\"");
-						i++;
-						inDouble = false;
-					}
-					if (inSingle) {
-						fileContent.Insert(lastDelimiterPos, "'");
-						inSingle = false;
-						i++;
-					}
-				}
-			}
-
-			fileContent = fileContent.Replace("<?", " ").Replace("?>", " ").Replace("<", " ").Replace("/>", " ").Replace(">", " ").Replace("\n", " ").Replace("\r", " ").Replace("\t", " ");
-			while (fileContent.Contains("  "))
-				fileContent = fileContent.Replace("  ", " ");
-
-			fileContent = fileContent.Replace("= \"", "=\"");
-			fileContent = fileContent.Replace(" =\"", "=\"");
-			
-			Debug.Print(fileContent);
-			
-			string[] data = fileContent.Split(' ');
-			
-			var filter1 = data.Where(s => s.StartsWith("xmlns"));
-			
-			foreach (string item in filter1) {
-				string[] parts = item.Split(new char[] {'='}, 2);
-				if (parts.Length == 2) {
-					if (map.ContainsKey(parts[0])) // replace namespace with new one
-						map.Remove(parts[0]);
-					map.Add(parts[0], parts[1].Trim('"', '\''));
-				}
-			}
-			
-			return map;
-		}
-		
 		public static int GetOffsetFromValueStart(string xaml, int offset)
 		{
 			if (xaml == null)
@@ -166,29 +75,25 @@ namespace ICSharpCode.XamlBinding
 			return offset - start - 1;
 		}
 		
-		public static string[] GetListOfExistingAttributeNames(string text, int offset)
+		public static string[] GetListOfExistingAttributeNames(string text, int line, int col)
 		{
 			List<string> list = new List<string>();
-			
-			text = SimplifyToSingleElement(text, offset, "Test");
 			
 			if (text == null)
 				return list.ToArray();
 			
-			XmlReader reader = XmlTextReader.Create(new StringReader(text));
-			
-			try {
-				reader.ReadToFollowing("Test");
-				
-				if (!reader.MoveToFirstAttribute())
-					return list.ToArray();
-				
-				do {
-					LoggingService.Debug("name: " + reader.Name + " value: " + reader.Value);
-					list.Add(reader.Name);
-				} while (reader.MoveToNextAttribute());
-			} catch (XmlException e) {
-				Debug.Print(e.ToString());
+			using (XmlReader reader = CreateReaderAtTarget(text, line, col)) {
+				try {
+					if (!reader.MoveToFirstAttribute())
+						return list.ToArray();
+					
+					do {
+						LoggingService.Debug("name: " + reader.Name + " value: " + reader.Value);
+						list.Add(reader.Name);
+					} while (reader.MoveToNextAttribute());
+				} catch (XmlException e) {
+					Debug.Print(e.ToString());
+				}
 			}
 			
 			foreach (var item in list)
@@ -214,44 +119,13 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		static char[] whitespace = new char[] {' ', '\t', '\n', '\r'};
-
-		static string SimplifyToSingleElement(string text, int offset, string name)
-		{
-			int index = XmlParser.GetActiveElementStartIndex(text, offset);
-			if (index == -1) return null;
-			index = text.IndexOfAny(whitespace, index);
-			if (index == -1) return null;
-			string newText = text.Substring(index);
-			int endIndex = newText.IndexOfAny(new char[] { '<', '>' });
-			if (endIndex == -1)
-				endIndex = newText.Length;
-			newText = newText.Substring(0, endIndex).Trim(' ', '\t', '\n', '\r', '/');
-			LoggingService.Debug("text: '" + newText + "'");
-			if (!newText.EndsWith("\"") && newText.LastIndexOfAny(whitespace) > -1) {
-				newText = newText.Substring(0, newText.LastIndexOfAny(whitespace));
-			}
-			
-			string namespaceDecls = "";
-			
-			var list = Utils.GetXmlNamespacesForOffset(text, offset);
-			
-			foreach (var item in list) {
-				if (!Regex.IsMatch(text, item.Key + "\\s*=\\s*\""))
-					namespaceDecls += item.Key + "=\"" + item.Value + "\" ";
-			}
-			
-			text = "<" + name + " " + newText + " " + namespaceDecls + " />";
-			
-			return text;
-		}
 		
-		public static string GetXamlNamespacePrefix(string xaml, int offset)
+		public static string GetXamlNamespacePrefix(XamlContext context)
 		{
-			var list = Utils.GetXmlNamespacesForOffset(xaml, offset);
-			var item = list.FirstOrDefault(i => i.Value == CompletionDataHelper.XamlNamespace);
-			
-			if (item.Key.StartsWith("xmlns:", StringComparison.OrdinalIgnoreCase))
-				return item.Key.Substring("xmlns:".Length);
+			var item = context.XmlnsDefinitions.FirstOrDefault(i => i.Value == CompletionDataHelper.XamlNamespace);
+
+            if (item.Key != null)
+                return item.Key;
 			return string.Empty;
 		}
 		
@@ -271,6 +145,28 @@ namespace ICSharpCode.XamlBinding
 			interestingPart = (end > -1) ? interestingPart.Substring(end, interestingPart.Length - end) : interestingPart;
 			
 			return interestingPart.LastIndexOf("<!--", StringComparison.OrdinalIgnoreCase) != -1;
+		}
+		
+		public static int GetOffsetFromFilePos(string content, int line, int col)
+		{
+			if (line < 1)
+				return 0;
+			if (line == 1)
+				return (col > 0) ? col - 1 : 0;
+			
+			int offset = -1;
+			
+			while (line > 1) {
+				int tmp = content.IndexOf('\n', offset + 1);
+				if (tmp > -1) {
+					offset = tmp;
+					line--;
+				} else {
+					return content.Length;
+				}
+			}
+			       
+			return offset + col - 1;
 		}
 		
 		public static int GetParentElementStart(ITextEditor editor)
@@ -295,6 +191,20 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return (offsetStack.Count > 0) ? offsetStack.Pop() : -1;
+		}
+		
+		public 	static XmlTextReader CreateReaderAtTarget(string fileContent, int caretLine, int caretColumn)
+		{
+			XmlTextReader r = new XmlTextReader(new StringReader(fileContent));
+			r.XmlResolver = null;
+			
+			try {
+				r.WhitespaceHandling = WhitespaceHandling.Significant;
+				// move reader to correct position
+				while (r.Read() && !IsReaderAtTarget(r, caretLine, caretColumn)) { }
+			} catch (XmlException) {}
+			
+			return r;
 		}
 	}
 }

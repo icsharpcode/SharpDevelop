@@ -45,7 +45,7 @@ namespace ICSharpCode.XamlBinding
 							context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 							context.Editor.Caret.Offset--;
 						} else {
-							XamlContext xamlContext = CompletionDataHelper.ResolveContext(context.Editor, context.CompletionChar);
+							XamlCompletionContext xamlContext = CompletionDataHelper.ResolveCompletionContext(context.Editor, context.CompletionChar);
 							if (!string.IsNullOrEmpty(xamlContext.RawAttributeValue)) {
 								string valuePart = xamlContext.RawAttributeValue.Substring(0, xamlContext.ValueStartOffset);
 								AttributeValue value = MarkupExtensionParser.ParseValue(valuePart);
@@ -80,7 +80,7 @@ namespace ICSharpCode.XamlBinding
 							insertionString = " ";
 						}
 						
-						string prefix = Utils.GetXamlNamespacePrefix(context.Editor.Document.Text, context.StartOffset);
+						string prefix = Utils.GetXamlNamespacePrefix(CompletionDataHelper.ResolveCompletionContext(context.Editor, context.CompletionChar));
 						if (!string.IsNullOrEmpty(prefix))
 							prefix += ":";
 						

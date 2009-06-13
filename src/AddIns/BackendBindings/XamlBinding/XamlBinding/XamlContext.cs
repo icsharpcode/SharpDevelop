@@ -5,12 +5,12 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
@@ -18,19 +18,22 @@ using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
-	public class XamlContext {
+	public class XamlContext : ExpressionContext {
 		public XmlElementPath Path { get; set; }
 		public string AttributeName { get; set; }
-		public ResolveResult ResolvedExpression { get; set; }
 		public AttributeValue AttributeValue { get; set; }
-		public char PressedKey { get; set; }
 		public string RawAttributeValue { get; set; }
 		public int ValueStartOffset { get; set; }
 		public XamlContextDescription Description { get; set; }
-		public bool Forced { get; set; }
 		public Dictionary<string, string> XmlnsDefinitions { get; set; }
+		public ParseInformation ParseInformation { get; set; }
 		
 		public XamlContext() {}
+		
+		public override bool ShowEntry(object o)
+		{
+			return true;
+		}
 		
 		public override string ToString()
 		{
@@ -41,6 +44,12 @@ namespace ICSharpCode.XamlBinding
 				" ValueStartOffset: " + ValueStartOffset +
 				" ]";
 		}
+	}
+	
+	public class XamlCompletionContext : XamlContext {
+		public char PressedKey { get; set; }	
+		public bool Forced { get; set; }	
+		public ITextEditor Editor { get; set; }
 	}
 	
 	public enum XamlContextDescription {

@@ -35,7 +35,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			ParseInformation info = ParserService.GetParseInformation(editor.FileName);
 			
-			XamlContext context = CompletionDataHelper.ResolveContext(editor, ch);
+			XamlCompletionContext context = CompletionDataHelper.ResolveCompletionContext(editor, ch);
 			ICompletionItemList list;
 			
 			if (context.Description == XamlContextDescription.InComment)
@@ -72,7 +72,7 @@ namespace ICSharpCode.XamlBinding
 						editor.Document.Insert(editor.Caret.Offset, "{}");
 						editor.Caret.Offset--;
 						
-						DoMarkupExtensionCompletion(editor, info, CompletionDataHelper.ResolveContext(editor, '{'));
+						DoMarkupExtensionCompletion(editor, info, CompletionDataHelper.ResolveCompletionContext(editor, '{'));
 						return CodeCompletionKeyPressResult.EatKey;
 					}
 					break;
@@ -130,36 +130,9 @@ namespace ICSharpCode.XamlBinding
 			return CodeCompletionKeyPressResult.None;
 		}
 		
-		static bool DoXmlTagCompletion(ITextEditor editor)
-		{
-			int offset = editor.Caret.Offset;
-			if (offset > 0) {
-				int searchOffset = offset - 1;
-				char c = editor.Document.GetCharAt(searchOffset);
-				while (char.IsWhiteSpace(c)) {
-					searchOffset--;
-					c = editor.Document.GetCharAt(searchOffset);
-				}
-				if (c != '/') {
-					string document = editor.Document.Text.Insert(offset, ">");
-					XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(document, offset);
-					if (path != null && path.Elements.Count > 0) {
-						QualifiedName last = path.Elements[path.Elements.Count - 1];
-						if (!Utils.HasMatchingEndTag(last.Name, document, offset) && !last.Name.StartsWith("/") && !last.Name.StartsWith("!--")) {
-							editor.Document.Insert(offset, "></" + last.Name + ">");
-							editor.Caret.Offset = offset + 1;
-							return true;
-						}
-					}
-				}
-			}
-			
-			return false;
-		}
-
 		public bool CtrlSpace(ITextEditor editor)
 		{
-			XamlContext context = CompletionDataHelper.ResolveContext(editor, ' ');
+			XamlCompletionContext context = CompletionDataHelper.ResolveCompletionContext(editor, ' ');
 			context.Forced = true;
 			
 			var info = ParserService.GetParseInformation(editor.FileName);
@@ -182,34 +155,35 @@ namespace ICSharpCode.XamlBinding
 							XamlResolver resolver = new XamlResolver();
 							var completionList = new XamlCompletionItemList();
 							
-							var mrr = resolver.Resolve(new ExpressionResult(context.AttributeName, new XamlExpressionContext(context.Path, context.AttributeName, false)),
-							                           info, editor.Document.Text) as MemberResolveResult;
+							var mrr = resolver.Resolve(new ExpressionResult(context.AttributeName, context),
+							                           context.ParseInformation, context.Editor.Document.Text) as MemberResolveResult;
 							if (mrr != null && mrr.ResolvedType != null) {
 								var c = mrr.ResolvedType.GetUnderlyingClass();
 								
-								completionList.Items.AddRange(CompletionDataHelper.MemberCompletion(editor, mrr.ResolvedType));
+								completionList.Items.AddRange(CompletionDataHelper.MemberCompletion(context, mrr.ResolvedType));
 								editor.ShowInsightWindow(CompletionDataHelper.MemberInsight(mrr));
 							}
 							
 							if (context.AttributeName == "Property" && context.Path.Elements.LastOrDefault().Name == "Setter") {
 								int offset = Utils.GetParentElementStart(editor);
-								string[] attributes = Utils.GetListOfExistingAttributeNames(editor.Document.Text, offset);
+								var loc = editor.Document.OffsetToPosition(offset);
+								string[] attributes = Utils.GetListOfExistingAttributeNames(editor.Document.Text, loc.Line, loc.Column);
 								
 								if (attributes.Contains("TargetType")) {
-									AttributeValue value = MarkupExtensionParser.ParseValue(Utils.GetAttributeValue(editor.Document.Text, offset, "TargetType"));
+									AttributeValue value = MarkupExtensionParser.ParseValue(Utils.GetAttributeValue(editor.Document.Text, loc.Line, loc.Column, "TargetType"));
 									if (!value.IsString) {
-										TypeResolveResult trr = CompletionDataHelper.ResolveMarkupExtensionType(value.ExtensionValue, info, editor, context.Path);
+										TypeResolveResult trr = CompletionDataHelper.ResolveMarkupExtensionType(value.ExtensionValue, context);
 										
-										var typeName = CompletionDataHelper.ResolveType(GetTypeNameFromTypeExtension(value.ExtensionValue), context, editor);
+										var typeName = CompletionDataHelper.ResolveType(GetTypeNameFromTypeExtension(value.ExtensionValue), context);
 										
 										if (trr != null && trr.ResolvedClass != null && trr.ResolvedClass.FullyQualifiedName == "System.Windows.Markup.TypeExtension"
 										    && typeName != null && typeName != null) {
-						/*					completionList.Items.AddRange(
+											completionList.Items.AddRange(
 												typeName.ResolvedClass.Properties
 												.Where(p => p.IsPublic && p.CanSet)
 												.Select(prop => new DefaultCompletionItem(prop.Name))
 												.Cast<ICompletionItem>()
-											);*/
+											);
 										}
 									}
 								}
@@ -246,7 +220,7 @@ namespace ICSharpCode.XamlBinding
 			return string.Empty;
 		}
 
-		static bool DoMarkupExtensionCompletion(ITextEditor editor, ParseInformation info, XamlContext context)
+		static bool DoMarkupExtensionCompletion(ITextEditor editor, ParseInformation info, XamlCompletionContext context)
 		{
 			if (context.AttributeValue != null && !context.AttributeValue.IsString) {
 				var completionList = CompletionDataHelper.CreateMarkupExtensionCompletion(context, info, editor);
