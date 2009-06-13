@@ -65,6 +65,7 @@
 	
 	<ItemGroup>
 		<CleanupFiles Include="..\..\bin\*"/>
+		<CleanupFiles Include="..\Main\GlobalAssemblyInfo.cs"/>
 		<CleanupDirectories Include="..\..\bin\UnitTests"/>
 		<CleanupDirectories Include="..\..\bin\Tools"/>
 		<CleanupDirectories Include="..\..\bin\setup\help"/>

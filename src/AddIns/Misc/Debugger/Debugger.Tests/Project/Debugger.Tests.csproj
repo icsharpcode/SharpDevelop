@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0"  DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>Debugger.Tests</RootNamespace>
@@ -21,6 +21,7 @@
     <FileAlignment>4096</FileAlignment>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>219,414</NoWarn>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>DEBUG;TRACE;TEST_CODE</DefineConstants>
@@ -31,7 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -78,7 +79,41 @@
     <Compile Include="Src\TestPrograms\ValueType.cs" />
     <Compile Include="Src\TestPrograms\_Template.cs" />
     <EmbeddedResource Include="Src\TestPrograms\*.xml" />
-    <EmbeddedResource Include="Src\TestPrograms\*.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\ArrayValue.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\Break.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\Breakpoint.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\Callstack.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\DebuggeeKilled.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\DebugTypes.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\DefinedTypes.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\Exception.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\ExceptionCustom.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\Expressions.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\FileRelease.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\FunctionArgumentVariables.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\FunctionLifetime.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\FunctionLocalVariables.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\FunctionVariablesLifetime.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\GenericDictionary.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\Generics.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\HelloWorld.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\MainThreadExit.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\MemoryReadWrite.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\Metadata.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\MetadataIdentity.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\ObjectValue.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\PrimitiveValue.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\PropertyVariable.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\PropertyVariableForm.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\SetIP.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\SimpleProgram.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\StackOverflow.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\Stepping.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\Symbols.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\TerminatePausedProcess.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\TerminateRunningProcess.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\ThreadName.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\ValueType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

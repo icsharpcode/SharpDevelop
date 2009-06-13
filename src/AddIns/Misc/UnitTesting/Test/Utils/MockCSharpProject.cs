@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using System;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -13,12 +14,10 @@ namespace UnitTesting.Tests.Utils
 	public class MockCSharpProject : CompilableProject
 	{
 		public MockCSharpProject()
-			: base(new Solution())
-		{
-		}
-		
-		public MockCSharpProject(Solution solution)
-			: base(solution)
+			: base(new ProjectCreateInformation {
+			       	Solution = new Solution(),
+			       	ProjectName = "DummyName"
+			       })
 		{
 		}
 		
