@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -41,6 +42,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			this.DialogResult = false;
 			Close();
+		}
+		
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			foreach (IDisposable op in tabbedOptions.OptionPanels.OfType<IDisposable>()) {
+				op.Dispose();
+			}
 		}
 	}
 }
