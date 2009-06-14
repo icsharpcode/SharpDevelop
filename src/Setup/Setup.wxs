@@ -265,7 +265,9 @@
 				<ComponentRef Id="NUnitUtilDll"/>
 				<ComponentRef Id="NUnitConsoleFiles"/>
 				<ComponentRef Id="NUnitConsoleX86Files"/>
-				<ComponentRef Id="NUnitCoreDll"/>
+				<ComponentRef Id="NUnitConsoleDotnet2Files"/>
+				<ComponentRef Id="NUnitConsoleDotnet2X86Files"/>
+			 	<ComponentRef Id="NUnitCoreDll"/>
 				<ComponentRef Id="NUnitFrameworkDll"/>
 				<ComponentRef Id="NUnitConsoleRunnerDll"/>
 				<ComponentRef Id="NUnitCoreInterfacesDll"/>
@@ -340,9 +342,8 @@
 				<ComponentRef Id="ClassCanvasDll"/>
 				<ComponentRef Id="DiagramsDll"/>
 				
-				<!--
-				<ComponentRef Id="XamlBindingFiles"/>
-				-->
+				<ComponentRef Id="ICSharpCodeXamlBindingDll"/>
+				<ComponentRef Id="XamlBindingAddin"/>
 				
 				<ComponentRef Id="WorkflowDesignerAddin"/>
 				<ComponentRef Id="WorkflowDesignerDll"/>

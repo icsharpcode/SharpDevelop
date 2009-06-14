@@ -280,7 +280,7 @@
 									</Directory>
 									<Directory Id="WixDocFolder" Name="doc">
 										<Component Guid="2F5AC556-CE36-47EA-AB6C-F8623AA4A6BE" Id="WixDocFiles" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\WiX.chm" Name="Wix.chm" Id="Wix.chm" />
+											<File Source="..\..\bin\Tools\Wix\doc\WiX.chm" Name="WiX.chm" Id="WiX.chm" />
 											<File Source="..\..\bin\Tools\Wix\doc\wix.xsd" Name="wix.xsd" Id="wix.xsd" KeyPath="yes" />
 											<File Source="..\..\bin\Tools\Wix\doc\wixloc.xsd" Name="wixloc.xsd" Id="wixloc.xsd" />
 										</Component>
@@ -434,6 +434,14 @@
 											<File Source="..\..\bin\Tools\NUnit\lib\nunit.util.dll" Name="nunit.util.dll" Id="lib.nunit.util.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
+									<Component Guid="FAEE921D-6A1D-48AD-A1AF-7AB39548D1F9" Id="NUnitConsoleDotnet2Files" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-dotnet2.exe" Name="nunit-console-dotnet2.exe" Id="nunit_console_dotnet2.exe" KeyPath="yes" />
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-dotnet2.exe.config" Name="nunit-console-dotnet2.exe.config" Id="nunit_console_dotnet2.exe.config" />
+									</Component>
+									<Component Guid="6ACE3D5E-9042-4898-BD43-BD39E8DCB879" Id="NUnitConsoleDotnet2X86Files" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-dotnet2-x86.exe" Name="nunit-console-dotnet2-x86.exe" Id="nunit_console_dotnet2_x86.exe" KeyPath="yes" />
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-dotnet2-x86.exe.config" Name="nunit-console-dotnet2-x86.exe.config" Id="nunit_console_dotnet2_x86.exe.config" />
+									</Component>
 								</Directory>
 								<Directory Id="PartCover" Name="PartCover">
 									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">
@@ -736,7 +744,7 @@
 									<File Source="..\..\doc\technotes\TheFineArtOfCommenting.rtf" Id="TheFineArtOfCommenting.rtf" Name="TheFineArtOfCommenting.rtf" />
 								</Component>
 								<Component Guid="B5E6404F-E602-42AA-9C3A-996425AC3B40" Id="AddInWritingHelpWebsiteShortcut" DiskId="1">
-									<File Id="AddInWritingHelp.url" Name="Addin Writing Help.url" Source="..\..\doc\technotes\AddIn Writing Help.url" KeyPath="yes" />
+									<File Id="AddInWritingHelp.url" Name="AddIn Writing Help.url" Source="..\..\doc\technotes\AddIn Writing Help.url" KeyPath="yes" />
 								</Component>
 							</Directory>
 						</Directory>
@@ -1281,6 +1289,14 @@
 											</Component>
 										</Directory>
 									</Directory>-->
+									<Directory Id="XamlBinding" Name="XamlBinding">
+										<Component Guid="34D119F8-F7C8-40DD-B354-FA50A3349033" Id="ICSharpCodeXamlBindingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.XamlBinding.dll" Name="ICSharpCode.XamlBinding.dll" Id="ICSharpCode.XamlBinding.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="4113C6DC-D11B-45FA-9D38-D3DD0A92C280" Id="XamlBindingAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.addin" Name="XamlBinding.addin" Id="XamlBinding.addin" KeyPath="yes" />
+										</Component>
+									</Directory>
 								</Directory>
 								<Directory Id="DisplayBindingsFolder" Name="DisplayBindings">
 									<Directory Id="FormsDesignerFolder" Name="FormsDesigner">
@@ -1389,6 +1405,14 @@
 										</Component>
 										<Component Guid="28171341-2A36-49DD-ACBC-815EE648A1DA" Id="ICSharpCodeAvalonEditAddInDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\AvalonEdit\ICSharpCode.AvalonEdit.AddIn.dll" Name="ICSharpCode.AvalonEdit.AddIn.dll" Id="ICSharpCode.AvalonEdit.AddIn.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Directory Id="HexEditor" Name="HexEditor">
+										<Component Guid="9C299282-1F4C-485B-BEB1-9D84AC4CAA8A" Id="HexEditorAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.addin" Name="HexEditor.addin" Id="HexEditor.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="1606B107-445F-4233-B72A-D4546A8393BC" Id="HexEditorDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.dll" Name="HexEditor.dll" Id="HexEditor.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 								</Directory>
@@ -1543,14 +1567,6 @@
 										</Component>
 										<Component Guid="F944B0F5-14EC-4DED-A7BE-BDE9299B19A6" Id="SharpRefactoringDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SharpRefactoring\SharpRefactoring.dll" Name="SharpRefactoring.dll" Id="SharpRefactoring.dll" KeyPath="yes" />
-										</Component>
-									</Directory>
-									<Directory Id="HexEditor" Name="HexEditor">
-										<Component Guid="3D3049CE-B0A4-48F1-8572-EF21574BDFC7" Id="HexEditorAddin" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.addin" Name="HexEditor.addin" Id="HexEditor.addin" KeyPath="yes" />
-										</Component>
-										<Component Guid="24FC7133-5D3F-43DB-964B-62C99BBE3F93" Id="HexEditorDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.dll" Name="HexEditor.dll" Id="HexEditor.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="HexEditor.dll" AssemblyManifest="HexEditor.dll" />
 										</Component>
 									</Directory>
 									<!--<Directory Id="Profiler" Name="Profiler">
