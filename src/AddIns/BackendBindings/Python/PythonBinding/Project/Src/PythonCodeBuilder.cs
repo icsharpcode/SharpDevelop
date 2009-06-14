@@ -42,20 +42,21 @@ namespace ICSharpCode.PythonBinding
 		{
 			return codeBuilder.ToString();
 		}
-		
+				
 		/// <summary>
-		/// Returns true if the line before the current one contains no text or only whitespace.
+		/// Returns true if the previous line contains code. If the previous line contains a
+		/// comment or is an empty line then it returns false;
 		/// </summary>
-		public bool IsPreviousLineEmpty {
-			get { 
+		public bool PreviousLineIsCode {
+			get { 				
 				string code = ToString();
 				int end = MoveToPreviousLineEnd(code, code.Length - 1);
 				if (end > 0) {
 					int start = MoveToPreviousLineEnd(code, end);
-					string line = code.Substring(start + 1, end - start);
-					return line.Trim().Length == 0;
+					string line = code.Substring(start + 1, end - start).Trim();
+					return (line.Length > 0) && (!line.Trim().StartsWith("#"));
 				}
-				return code.StartsWith("\r\n");
+				return false;
 			}
 		}
 		
@@ -115,7 +116,26 @@ namespace ICSharpCode.PythonBinding
 		public void AppendIndentedLine(string text)
 		{
 			AppendIndented(text + "\r\n");
+		}
+
+		public void AppendLineIfPreviousLineIsCode()
+		{
+			if (PreviousLineIsCode) {
+				codeBuilder.AppendLine();
+			}
 		}		
+
+		/// <summary>
+		/// Appends the specified text to the end of the previous line.
+		/// </summary>
+		public void AppendToPreviousLine(string text)
+		{
+			string code = ToString();
+			int end = MoveToPreviousLineEnd(code, code.Length - 1);
+			if (end > 0) {
+				codeBuilder.Insert(end + 1, text);
+			}
+		}
 		
 		public void IncreaseIndent()
 		{

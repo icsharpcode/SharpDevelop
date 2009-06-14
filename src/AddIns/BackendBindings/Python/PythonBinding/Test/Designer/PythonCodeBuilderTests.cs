@@ -133,20 +133,27 @@ namespace PythonBinding.Tests.Designer
 		public void PreviousLineIsEmptyNewLine()
 		{
 			codeBuilder.AppendLine();
-			Assert.IsTrue(codeBuilder.IsPreviousLineEmpty);
+			Assert.IsFalse(codeBuilder.PreviousLineIsCode);
+		}
+		
+		[Test]
+		public void PreviousLineIsComment()
+		{
+			codeBuilder.AppendIndentedLine("# comment");
+			Assert.IsFalse(codeBuilder.PreviousLineIsCode);
 		}
 		
 		[Test]
 		public void PreviousLineIsNotEmptyNewLine()
 		{
 			codeBuilder.AppendIndentedLine("abc");
-			Assert.IsFalse(codeBuilder.IsPreviousLineEmpty);
+			Assert.IsTrue(codeBuilder.PreviousLineIsCode);
 		}
 		
 		[Test]
 		public void PreviousLineDoesNotExist()
 		{
-			Assert.IsFalse(codeBuilder.IsPreviousLineEmpty);
+			Assert.IsFalse(codeBuilder.PreviousLineIsCode);
 		}
 		
 		[Test]
@@ -154,14 +161,14 @@ namespace PythonBinding.Tests.Designer
 		{
 			codeBuilder.AppendLine();
 			codeBuilder.Append("abc");
-			Assert.IsTrue(codeBuilder.IsPreviousLineEmpty);
+			Assert.IsFalse(codeBuilder.PreviousLineIsCode);
 		}
 		
 		[Test]
 		public void PreviousLineIsMadeUpOfWhiteSpace()
 		{
 			codeBuilder.AppendIndentedLine("  \t  ");
-			Assert.IsTrue(codeBuilder.IsPreviousLineEmpty);			
+			Assert.IsFalse(codeBuilder.PreviousLineIsCode);			
 		}
 		
 		[Test]
@@ -169,7 +176,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			codeBuilder.AppendIndentedLine("1st");
 			codeBuilder.AppendIndentedLine("  \t  ");
-			Assert.IsTrue(codeBuilder.IsPreviousLineEmpty);			
+			Assert.IsFalse(codeBuilder.PreviousLineIsCode);			
 		}
 		
 		[Test]
@@ -178,7 +185,7 @@ namespace PythonBinding.Tests.Designer
 			codeBuilder.AppendIndentedLine("1st");
 			codeBuilder.AppendLine();
 			codeBuilder.Append("abc");
-			Assert.IsTrue(codeBuilder.IsPreviousLineEmpty);			
+			Assert.IsFalse(codeBuilder.PreviousLineIsCode);			
 		}
 		
 		[Test]
@@ -186,7 +193,15 @@ namespace PythonBinding.Tests.Designer
 		{
 			codeBuilder.AppendIndentedLine("First");
 			codeBuilder.AppendIndentedLine("Second");
-			Assert.IsFalse(codeBuilder.IsPreviousLineEmpty);
-		}		
+			Assert.IsTrue(codeBuilder.PreviousLineIsCode);
+		}
+		
+		[Test]
+		public void AppendToPreviousLine()
+		{
+			codeBuilder.AppendIndentedLine("abc");
+			codeBuilder.AppendToPreviousLine(" # comment");
+			Assert.AreEqual("abc # comment\r\n", codeBuilder.ToString());
+		}
 	}
 }
