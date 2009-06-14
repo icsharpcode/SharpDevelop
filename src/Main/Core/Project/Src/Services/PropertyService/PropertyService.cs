@@ -76,7 +76,7 @@ namespace ICSharpCode.Core
 		{
 			if (properties == null)
 				throw new InvalidOperationException("Service is not initialized.");
-			if (string.IsNullOrEmpty(configDirectory) || string.IsNullOrEmpty(dataDirectory) || string.IsNullOrEmpty(propertyXmlRootNodeName))
+			if (string.IsNullOrEmpty(configDirectory) || string.IsNullOrEmpty(propertyXmlRootNodeName))
 				throw new InvalidOperationException("No file name was specified on service creation");
 			if (!Directory.Exists(configDirectory)) {
 				Directory.CreateDirectory(configDirectory);
@@ -113,7 +113,7 @@ namespace ICSharpCode.Core
 		
 		public static void Save()
 		{
-			if (string.IsNullOrEmpty(configDirectory) || string.IsNullOrEmpty(dataDirectory) || string.IsNullOrEmpty(propertyXmlRootNodeName))
+			if (string.IsNullOrEmpty(configDirectory) || string.IsNullOrEmpty(propertyXmlRootNodeName))
 				throw new InvalidOperationException("No file name was specified on service creation");
 			using (MemoryStream ms = new MemoryStream()) {
 				XmlTextWriter writer = new XmlTextWriter(ms, Encoding.UTF8);

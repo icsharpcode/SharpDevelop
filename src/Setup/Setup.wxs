@@ -177,7 +177,6 @@
 				<ComponentRef Id="ComponentInspectorExe"/>
 				<ComponentRef Id="ComponentInspectorCoreDll"/>
 				<ComponentRef Id="ComponentInspectorICSharpCodeCoreDll"/>
-				<ComponentRef Id="ComponentInspectorLog4NetDll"/>
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
 				

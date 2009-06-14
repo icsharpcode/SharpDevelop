@@ -219,9 +219,6 @@
 									<Component Guid="F2643529-834A-4EDE-B0C2-36E0A031E997" Id="ComponentInspectorICSharpCodeCoreDll" DiskId="1">
 										<File Source="..\..\bin\Tools\ComponentInspector\ICSharpCode.Core.dll" Id="ComponentInspector.ICSharpCode.Core.dll" Name="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ComponentInspector.ICSharpCode.Core.dll" AssemblyManifest="ComponentInspector.ICSharpCode.Core.dll" KeyPath="yes" />
 									</Component>
-									<Component Id="ComponentInspectorLog4NetDll" Guid="56394DB5-3D3A-47ED-B99A-24AB2D0C5E88" DiskId="1">
-										<File Source="..\..\bin\Tools\ComponentInspector\log4net.dll" Name="log4net.dll" Id="ComponentInspector.log4net.dll" Assembly=".net" AssemblyApplication="ComponentInspector.log4net.dll" AssemblyManifest="ComponentInspector.log4net.dll" KeyPath="yes" />
-									</Component>
 								</Directory>
 								<Directory Id="WixFolder" Name="Wix">
 									<Component Guid="78F8DB04-62B1-4A2F-A0D5-D8D890FE5D02" Id="WixVSExtension" DiskId="1">
