@@ -179,7 +179,7 @@ namespace UpdateAssemblyInfo
 		static string ReadRevisionFromFile()
 		{
 			try {
-				using (StreamReader reader = new StreamReader(@"..\REVISION")) {
+				using (StreamReader reader = new StreamReader(@"REVISION")) {
 					return reader.ReadLine();
 				}
 			} catch (Exception e) {
