@@ -1395,12 +1395,13 @@ namespace ICSharpCode.PythonBinding
 				} else {
 					codeBuilder.AppendToPreviousLine(" #" + comment.CommentText);
 				}
+			} else if (comment.CommentType == CommentType.Block) {
+				AppendMultilineComment(comment);
 			}
 		}
 		
 		void IOutputFormatter.PrintPreprocessingDirective(PreprocessingDirective directive, bool forceWriteInPreviousBlock)
 		{
-			
 		}
 		
 		void IOutputFormatter.PrintBlankLine(bool forceWriteInPreviousBlock)
@@ -1867,6 +1868,19 @@ namespace ICSharpCode.PythonBinding
 		{
 			TypeDeclaration type = methodDeclaration.Parent as TypeDeclaration;
 			return type.Name;
+		}
+		
+		void AppendMultilineComment(Comment comment)
+		{
+			string[] lines = comment.CommentText.Split(new char[] {'\n'});
+			for (int i = 0; i < lines.Length; ++i) {
+				string line = "# " + lines[i].Trim();
+				if ((i == 0) && !comment.CommentStartsLine) {
+					codeBuilder.AppendToPreviousLine(" " + line);
+				} else {
+					AppendIndentedLine(line);
+				}
+			}
 		}
 	}
 }

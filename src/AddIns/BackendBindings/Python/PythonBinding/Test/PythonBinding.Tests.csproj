@@ -130,6 +130,7 @@
     <Compile Include="Converter\MethodWithBodyConversionTestFixture.cs" />
     <Compile Include="Converter\IfStatementConversionTestFixture.cs" />
     <Compile Include="Converter\ModulusOperatorConversionTestFixture.cs" />
+    <Compile Include="Converter\MultiLineCommentTestFixture.cs" />
     <Compile Include="Converter\NestedClassConversionTestFixture.cs" />
     <Compile Include="Converter\NestedIfStatementConversionTestFixture.cs" />
     <Compile Include="Converter\NullConversionTestFixture.cs" />
