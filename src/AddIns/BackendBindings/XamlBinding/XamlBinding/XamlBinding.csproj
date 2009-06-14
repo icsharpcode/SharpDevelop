@@ -80,7 +80,6 @@
     <Compile Include="XamlContext.cs" />
     <Compile Include="XamlExpressionContext.cs" />
     <Compile Include="XamlExpressionFinder.cs">
-      <DependentUpon>XamlExpressionContext.cs</DependentUpon>
     </Compile>
     <Compile Include="XamlColorizer.cs" />
     <Compile Include="MarkupExtensionParseException.cs" />

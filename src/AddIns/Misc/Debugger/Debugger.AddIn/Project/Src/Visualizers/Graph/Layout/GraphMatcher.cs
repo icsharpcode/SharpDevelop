@@ -94,7 +94,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		private bool isSameAddress(PositionedNode node1, PositionedNode node2)
 		{
-			return node1.ObjectNode.PermanentReference.GetObjectAddress() == node2.ObjectNode.PermanentReference.GetObjectAddress();
+			return node1.ObjectNode.DebuggerValue.GetObjectAddress() == node2.ObjectNode.DebuggerValue.GetObjectAddress();
 		}
 	}
 }

@@ -48,6 +48,10 @@ namespace AvalonDock
     public enum AnchorStyle
     {
         /// <summary>
+        /// No anchor style, while content is hosted in a <see cref="DocumentPane"/> or a <see cref="FloatingWindow"/>
+        /// </summary>
+        None,
+        /// <summary>
         /// Top border anchor
         /// </summary>
         Top,
@@ -135,7 +139,7 @@ namespace AvalonDock
 
         // Using a DependencyProperty as the backing store for Anchor.  This enables animation, styling, binding, etc...
         public static readonly DependencyPropertyKey AnchorPropertyKey =
-            DependencyProperty.RegisterAttachedReadOnly("Anchor", typeof(AnchorStyle), typeof(DockablePane), new UIPropertyMetadata(AnchorStyle.Left));
+            DependencyProperty.RegisterAttachedReadOnly("Anchor", typeof(AnchorStyle), typeof(DockablePane), new UIPropertyMetadata(AnchorStyle.None));
 
 
         public override void OnApplyTemplate()

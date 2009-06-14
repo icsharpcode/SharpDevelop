@@ -66,6 +66,8 @@ namespace ICSharpCode.XamlBinding.Tests
 			int offset = "<Test val1=\"{Bin".Length;
 			
 			Assert.AreEqual(true, XmlParser.IsInsideAttributeValue(xaml, offset));
+			Assert.AreEqual("{Binding Value}", XmlParser.GetAttributeValueAtIndex(xaml, offset));
+			Assert.AreEqual("val1", XmlParser.GetAttributeNameAtIndex(xaml, offset));
 		}
 		
 		[Test]
@@ -75,6 +77,8 @@ namespace ICSharpCode.XamlBinding.Tests
 			int offset = "<Test val1=\"{Binding Value, Path=".Length;
 			
 			Assert.AreEqual(true, XmlParser.IsInsideAttributeValue(xaml, offset));
+			Assert.AreEqual("{Binding Value, Path=Control}", XmlParser.GetAttributeValueAtIndex(xaml, offset));
+			Assert.AreEqual("val1", XmlParser.GetAttributeNameAtIndex(xaml, offset));
 		}
 	}
 }

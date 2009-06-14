@@ -505,7 +505,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				foreach (FileDescriptionTemplate newfile in item.Template.FileDescriptionTemplates) {
 					if (!IsFilenameAvailable(StringParser.Parse(newfile.Name))) {
-						MessageService.ShowError("Filename " + StringParser.Parse(newfile.Name) + " is in use.\nChoose another one");
+						MessageService.ShowError(string.Format("Filename {0} is in use.\nChoose another one", StringParser.Parse(newfile.Name))); // TODO : translate
 						return;
 					}
 				}

@@ -115,6 +115,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets whether internals in the project content are visible to the other project content.
 		/// </summary>
 		bool InternalsVisibleTo(IProjectContent otherProjectContent);
+		
+		/// <summary>
+		/// Gets the name of the assembly.
+		/// </summary>
+		string AssemblyName {
+			get;
+		}
 	}
 	
 	[Flags]

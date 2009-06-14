@@ -26,7 +26,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public override CompletionItemListKeyResult ProcessInput(char key)
 		{
-			if (key == ':')
+			if (key == ':' || key == '/')
 				return CompletionItemListKeyResult.NormalKey;
 			
 			return base.ProcessInput(key);
@@ -36,8 +36,8 @@ namespace ICSharpCode.XamlBinding
 		{
 			base.Complete(context, item);
 			
-			if (item is XamlCompletionItem) {
-				XamlCompletionItem cItem = item as XamlCompletionItem;
+			if (item is XamlCodeCompletionItem) {
+				XamlCodeCompletionItem cItem = item as XamlCodeCompletionItem;
 				
 				if (cItem.Entity is IProperty || cItem.Entity is IEvent) {
 					if (context.Editor.Document.GetCharAt(context.StartOffset - 1) != '.') {
@@ -45,17 +45,22 @@ namespace ICSharpCode.XamlBinding
 							context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 							context.Editor.Caret.Offset--;
 						} else {
-							XamlContext xamlContext = CompletionDataHelper.ResolveContext(context.Editor, context.CompletionChar);
+							XamlCompletionContext xamlContext = CompletionDataHelper.ResolveCompletionContext(context.Editor, context.CompletionChar);
 							if (!string.IsNullOrEmpty(xamlContext.RawAttributeValue)) {
 								string valuePart = xamlContext.RawAttributeValue.Substring(0, xamlContext.ValueStartOffset);
 								AttributeValue value = MarkupExtensionParser.ParseValue(valuePart);
 								
 								if (value != null && !value.IsString) {
-									var markup = CompletionDataHelper.GetInnermostMarkup(value.ExtensionValue);
+									var markup = Utils.GetInnermostMarkup(value.ExtensionValue);
 									if (markup.NamedArguments.Count > 0 || markup.PositionalArguments.Count > 0) {
 										int oldOffset = context.Editor.Caret.Offset;
 										context.Editor.Caret.Offset = context.StartOffset;
-										string word = context.Editor.GetWordBeforeCaret();
+										string word = context.Editor.GetWordBeforeCaret().Trim();
+										
+										if (!word.EndsWith(",") && markup.ExtensionType != word) {
+											context.Editor.Document.Insert(context.Editor.Caret.Offset, ", ");
+											oldOffset += 2;
+										}
 										
 										context.Editor.Caret.Offset = oldOffset;
 									}
@@ -75,7 +80,7 @@ namespace ICSharpCode.XamlBinding
 							insertionString = " ";
 						}
 						
-						string prefix = Utils.GetXamlNamespacePrefix(context.Editor.Document.Text, context.StartOffset);
+						string prefix = Utils.GetXamlNamespacePrefix(CompletionDataHelper.ResolveCompletionContext(context.Editor, context.CompletionChar));
 						if (!string.IsNullOrEmpty(prefix))
 							prefix += ":";
 						
@@ -96,11 +101,21 @@ namespace ICSharpCode.XamlBinding
 						XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 					}
 				}
-			} else {
-				if (item is NewEventCompletionItem) {
-					NewEventCompletionItem eventItem = item as NewEventCompletionItem;
-					CreateEventHandlerCode(context, eventItem);
-				}
+			}
+			
+			if (item is NewEventCompletionItem) {
+				NewEventCompletionItem eventItem = item as NewEventCompletionItem;
+				CreateEventHandlerCode(context, eventItem);
+			}
+			
+			if (item is XmlnsCompletionItem) {
+				context.Editor.Caret.Offset++;
+			}
+			
+			if (item is XamlCompletionItem) {
+				XamlCompletionItem xamlItem = item as XamlCompletionItem;
+				context.Editor.Document.Insert(context.EndOffset, "=\"\"");
+				context.Editor.Caret.Offset--;
 			}
 		}
 		

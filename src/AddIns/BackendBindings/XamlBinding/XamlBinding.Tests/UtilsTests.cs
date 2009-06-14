@@ -18,64 +18,6 @@ namespace ICSharpCode.XamlBinding.Tests
 	public class UtilsTests
 	{
 		[Test]
-		public void XmlNamespacesForOffsetSimple()
-		{
-			string xaml = File.ReadAllText("Test1.xaml");
-			int offset = xaml.IndexOf("CheckBox") + "CheckBox ".Length;
-			
-			var expectedResult = new Dictionary<string, string> {
-				{"xmlns", "http://schemas.microsoft.com/netfx/2007/xaml/presentation"},
-				{"xmlns:x", "http://schemas.microsoft.com/winfx/2006/xaml"}
-			};
-			
-			var result = Utils.GetXmlNamespacesForOffset(xaml, offset);
-			
-			foreach (var p in result)
-				Debug.Print(p.Key + " " + p.Value);
-			
-			Assert.AreEqual(expectedResult, result, "Is not equal");
-		}
-		
-		[Test]
-		public void XmlNamespacesForOffsetSimple2()
-		{
-			string xaml = File.ReadAllText("Test2.xaml");
-			int offset = xaml.IndexOf("CheckBox") + "CheckBox ".Length;
-			
-			var expectedResult = new Dictionary<string, string> {
-				{"xmlns", "http://schemas.microsoft.com/netfx/2007/xaml/presentation"},
-				{"xmlns:x", "http://schemas.microsoft.com/winfx/2006/xaml"},
-				{"xmlns:y", "clr-namespace:ICSharpCode.Profiler.Controls;assembly=ICSharpCode.Profiler.Controls"}
-			};
-			
-			var result = Utils.GetXmlNamespacesForOffset(xaml, offset);
-			
-			foreach (var p in result)
-				Debug.Print(p.Key + " " + p.Value);
-			
-			Assert.AreEqual(expectedResult, result, "Is not equal");
-		}
-		
-		[Test]
-		public void XmlNamespacesForOffsetComplex()
-		{
-			string xaml = File.ReadAllText("Test3.xaml");
-			int offset = xaml.IndexOf("CheckBox") + "CheckBox ".Length;
-			
-			var expectedResult = new Dictionary<string, string> {
-				{"xmlns", "http://schemas.microsoft.com/netfx/2007/xaml/presentation"},
-				{"xmlns:x", "clr-namespace:ICSharpCode.Profiler.Controls;assembly=ICSharpCode.Profiler.Controls"}
-			};
-			
-			var result = Utils.GetXmlNamespacesForOffset(xaml, offset);
-			
-			foreach (var p in result)
-				Debug.Print(p.Key + " " + p.Value);
-			
-			Assert.AreEqual(expectedResult, result, "Is not equal");
-		}
-		
-		[Test]
 		public void DiffTestSimple()
 		{
 			string xaml = "<Test val1=\"Test\" />";
@@ -97,6 +39,113 @@ namespace ICSharpCode.XamlBinding.Tests
 			int actualResult = Utils.GetOffsetFromValueStart(xaml, offset);
 			
 			Assert.AreEqual(expectedResult, actualResult);
+		}
+		
+		[Test]
+		public void GetOffsetTest1()
+		{
+			string text = @"SharpDevelop uses the MSBuild
+libraries for compilation. But when you compile a project
+inside SharpDevelop, there's more going on than a
+simple call to MSBuild.";
+			
+			int expected = 0;
+			int line = 1;
+			int col = 1;
+			
+			int result = Utils.GetOffsetFromFilePos(text, line, col);
+			
+			Assert.AreEqual(expected, result);
+		}
+		
+		[Test]
+		public void GetOffsetTest2()
+		{
+			string text = @"SharpDevelop uses the MSBuild
+libraries for compilation. But when you compile a project
+inside SharpDevelop, there's more going on than a
+simple call to MSBuild.";
+			
+			int expected = 4;
+			int line = 1;
+			int col = 5;
+			
+			int result = Utils.GetOffsetFromFilePos(text, line, col);
+			
+			Assert.AreEqual(expected, result);
+		}
+		
+		[Test]
+		public void GetOffsetTest3()
+		{
+			string text = @"SharpDevelop uses the MSBuild
+libraries for compilation. But when you compile a project
+inside SharpDevelop, there's more going on than a
+simple call to MSBuild.";
+			
+			int expected = 0;
+			int line = 0;
+			int col = 5;
+			
+			int result = Utils.GetOffsetFromFilePos(text, line, col);
+			
+			Assert.AreEqual(expected, result);
+		}
+		
+		[Test]
+		public void GetOffsetTest4()
+		{
+			string text = @"SharpDevelop uses the MSBuild
+libraries for compilation. But when you compile a project
+inside SharpDevelop, there's more going on than a
+simple call to MSBuild.";
+			
+			int expected = @"SharpDevelop uses the MSBuild
+libraries".Length - 1;
+			int line = 2;
+			int col = 10;
+			
+			int result = Utils.GetOffsetFromFilePos(text, line, col);
+			
+			Assert.AreEqual(expected, result);
+		}
+
+		[Test]
+		public void GetOffsetTest5()
+		{
+			string text = @"SharpDevelop uses the MSBuild
+libraries for compilation. But when you compile a project
+inside SharpDevelop, there's more going on than a
+simple call to MSBuild.";
+			
+			int expected = text.Length;
+			int line = 10;
+			int col = 10;
+			
+			int result = Utils.GetOffsetFromFilePos(text, line, col);
+			
+			Assert.AreEqual(expected, result);
+		}
+		
+		[Test]
+		public void GetOffsetTest6()
+		{
+			string text = @"SharpDevelop uses the MSBuild
+libraries for compilation. But when you compile a project
+inside SharpDevelop, there's more going on than a
+simple call to MSBuild.";
+			
+			int expected = @"SharpDevelop uses the MSBuild
+libraries for compilation. But when you compile a project
+inside SharpDevelop, there's more going on than a
+simple".Length - 1;
+			
+			int line = 4;
+			int col = 7;
+			
+			int result = Utils.GetOffsetFromFilePos(text, line, col);
+			
+			Assert.AreEqual(expected, result);
 		}
 	}
 }

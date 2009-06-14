@@ -17,10 +17,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 	public class ObjectNode
 	{
 		/// <summary>
-		/// Additional info useful for internal algorithms, not to be visible to the user.
+		/// Permanent reference to the value in the the debugee this node represents.
 		/// </summary>
-		internal Debugger.Value PermanentReference { get; set; }
+		internal Debugger.Value DebuggerValue { get; set; }
+		/// <summary>
+		/// Hash code in the debuggee of the DebuggerValue this node represents.
+		/// </summary>
 		internal int HashCode { get; set; }
+		/// <summary>
+		/// Expression used to obtain this node.
+		/// </summary>
+		public Expressions.Expression Expression { get { return this.DebuggerValue.Expression; } }
 		
 		/*private List<ObjectEdge> _edges = new List<ObjectEdge>();
         /// <summary>
@@ -43,7 +50,16 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			public int Compare(ObjectProperty prop1, ObjectProperty prop2)
 			{
-				return prop1.Name.CompareTo(prop2.Name);
+				// order by IsAtomic, Name
+				int atomic = prop2.IsAtomic.CompareTo(prop1.IsAtomic);
+				if (atomic != 0)
+				{
+					return atomic;
+				}
+				else
+				{
+					return prop1.Name.CompareTo(prop2.Name);
+				}
 			}
 		}
 		
@@ -51,7 +67,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		private bool sorted = false;
 
-		private List<ObjectProperty> _properties = new List<ObjectProperty>();
+		private List<ObjectProperty> properties = new List<ObjectProperty>();
 		/// <summary>
 		/// Properties (either atomic or complex) of the object this node represents.
 		/// </summary>
@@ -61,10 +77,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 			{ 
 				if (!sorted)
 				{
-					_properties.Sort(propertySortComparer);
+					properties.Sort(propertySortComparer);
 					sorted = true;
 				}
-				return _properties; 
+				return properties; 
 			}
 		}
 		/// <summary>
@@ -87,17 +103,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		internal void AddAtomicProperty(string name, string value, Expression expression)
 		{
-			_properties.Add(new ObjectProperty
+			properties.Add(new ObjectProperty
 			                { Name = name, Value = value, Expression = expression, IsAtomic = true, TargetNode = null });
 		}
 		
 		/// <summary>
 		/// Adds complex property.
 		/// </summary>
-		internal void AddComplexProperty(string name, string value, Expression expression, ObjectNode targetNode)
+		internal void AddComplexProperty(string name, string value, Expression expression, ObjectNode targetNode, bool isNull)
 		{
-			_properties.Add(new ObjectProperty
-			                { Name = name, Value = value, Expression = expression, IsAtomic = false, TargetNode = targetNode });
+			properties.Add(new ObjectProperty
+			                { Name = name, Value = value, Expression = expression, IsAtomic = false, TargetNode = targetNode, IsNull = isNull });
 		}
 	}
 }

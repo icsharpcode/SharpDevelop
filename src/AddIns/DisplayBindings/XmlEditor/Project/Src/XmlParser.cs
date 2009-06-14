@@ -243,12 +243,15 @@ namespace ICSharpCode.XmlEditor
 				}
 				
 				// Find equals sign.
+				bool foundQuoteChar = false;
 				for (int i = index; i > elementStartIndex; --i) {
 					char ch = xml[i];
-					if (ch == '=') {
+					if (ch == '=' && foundQuoteChar) {
 						index = i;
 						ignoreEqualsSign = true;
 						break;
+					} else if (IsQuoteChar(ch)) {
+						foundQuoteChar = true;
 					}
 				}
 			} else {
@@ -364,11 +367,14 @@ namespace ICSharpCode.XmlEditor
 			
 			// Find equals sign.
 			int equalsSignIndex = -1;
+			bool foundQuoteChar = false;
 			for (int i = index; i > elementStartIndex; --i) {
 				char ch = xml[i];
-				if (ch == '=') {
+				if (ch == '=' && foundQuoteChar) {
 					equalsSignIndex = i;
 					break;
+				} else if (IsQuoteChar(ch)) {
+					foundQuoteChar = true;
 				}
 			}
 			
@@ -378,12 +384,12 @@ namespace ICSharpCode.XmlEditor
 			
 			// Find attribute value.
 			char quoteChar = ' ';
-			bool foundQuoteChar = false;
+			foundQuoteChar = false;
 			StringBuilder attributeValue = new StringBuilder();
 			for (int i = equalsSignIndex; i < xml.Length; ++i) {
 				char ch = xml[i];
 				if (!foundQuoteChar) {
-					if (ch == '\"' || ch == '\'') {
+					if (IsQuoteChar(ch)) {
 						quoteChar = ch;
 						foundQuoteChar = true;
 					}
@@ -391,7 +397,7 @@ namespace ICSharpCode.XmlEditor
 					if (ch == quoteChar) {
 						// End of attribute value.
 						return attributeValue.ToString();
-					} else if (IsAttributeValueChar(ch) || (ch == '\"' || ch == '\'')) {
+					} else if (IsAttributeValueChar(ch) || IsQuoteChar(ch)) {
 						attributeValue.Append(ch);
 					} else {
 						// Invalid character found.
@@ -782,6 +788,11 @@ namespace ICSharpCode.XmlEditor
 				return GetActiveElementStartPath(xml, currentIndex, elementText, namespaces);
 			}
 			return new XmlElementPath();
+		}
+		
+		static bool IsQuoteChar(char ch)
+		{
+			return (ch == '\"') || (ch == '\'');
 		}
 	}
 }

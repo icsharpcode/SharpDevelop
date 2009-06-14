@@ -12,20 +12,69 @@ using System.Windows;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Node with added position information.
+	/// ObjectNode with added position information.
 	/// </summary>
 	public class PositionedNode
 	{
 		private ObjectNode objectNode;
+		/// <summary>
+		/// Underlying ObjectNode.
+		/// </summary>
 		public ObjectNode ObjectNode
 		{
 			get { return objectNode; }
 		}
 		
-		public PositionedNode(NodeControl nodeVisualControl, ObjectNode objectNode)
+		public event EventHandler<PositionedPropertyEventArgs> Expanded;
+		public event EventHandler<PositionedPropertyEventArgs> Collapsed;
+		
+		private List<PositionedNodeProperty> properties = new List<PositionedNodeProperty>();
+		public List<PositionedNodeProperty> Properties
 		{
-			this.nodeVisualControl = nodeVisualControl;
+			get
+			{
+				return this.properties;
+			}
+		}
+		
+		public PositionedNodeProperty AddProperty(ObjectProperty objectProperty, bool isExpanded)
+		{
+			var newProperty = new PositionedNodeProperty(objectProperty, this);
+			newProperty.IsExpanded = isExpanded;
+			this.Properties.Add(newProperty);
+			this.nodeVisualControl.AddProperty(newProperty);
+			
+			return newProperty;
+		}
+		
+		/// <summary>
+		/// Creates new PositionedNode.
+		/// </summary>
+		/// <param name="objectNode">Underlying ObjectNode.</param>
+		public PositionedNode(ObjectNode objectNode)
+		{
 			this.objectNode = objectNode;
+			
+			this.nodeVisualControl = new NodeControl(this);	// display
+			this.nodeVisualControl.Expanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Expanded);
+			this.nodeVisualControl.Collapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Collapsed);
+		}
+
+		private void NodeVisualControl_Expanded(object sender, PositionedPropertyEventArgs e)
+		{
+			// propagage event
+			OnPropertyExpanded(this, e);
+		}
+		
+		private void NodeVisualControl_Collapsed(object sender, PositionedPropertyEventArgs e)
+		{
+			// propagate event
+			OnPropertyCollapsed(this, e);
+		}
+		
+		public void Measure()
+		{
+			this.nodeVisualControl.Measure(new Size(500, 500));
 		}
 		
 		public double Left { get; set; }
@@ -67,8 +116,30 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			get
 			{
-				return new PositionedEdge[]{};
+				foreach	(PositionedNodeProperty property in this.Properties)
+				{
+					if (property.Edge != null)
+						yield return property.Edge;
+				}
 			}
 		}
+		
+		#region event helpers
+		protected virtual void OnPropertyExpanded(object sender, PositionedPropertyEventArgs propertyArgs)
+		{
+			if (this.Expanded != null)
+			{
+				this.Expanded(sender, propertyArgs);
+			}
+		}
+
+		protected virtual void OnPropertyCollapsed(object sender, PositionedPropertyEventArgs propertyArgs)
+		{
+			if (this.Collapsed != null)
+			{
+				this.Collapsed(sender, propertyArgs);
+			}
+		}
+		#endregion
 	}
 }

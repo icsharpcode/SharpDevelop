@@ -31,6 +31,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		public InsightWindow(TextArea textArea) : base(textArea)
 		{
 			this.CloseAutomatically = true;
+			AttachEvents();
 		}
 		
 		/// <summary>
@@ -44,10 +45,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			get { return this.CloseAutomatically; }
 		}
 		
-		/// <inheritdoc/>
-		protected override void AttachEvents()
+		void AttachEvents()
 		{
-			base.AttachEvents();
 			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
 		}
 		

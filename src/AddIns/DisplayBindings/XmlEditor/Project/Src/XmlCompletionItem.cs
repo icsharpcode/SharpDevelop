@@ -28,10 +28,10 @@ namespace ICSharpCode.XmlEditor
 	public class XmlCompletionItem : DefaultCompletionItem
 	{
 		XmlCompletionDataType dataType = XmlCompletionDataType.XmlElement;
-		string description = string.Empty;
+		string description = String.Empty;
 		
 		public XmlCompletionItem(string text)
-			: this(text, string.Empty, XmlCompletionDataType.XmlElement)
+			: this(text, String.Empty, XmlCompletionDataType.XmlElement)
 		{
 		}
 		
@@ -41,7 +41,7 @@ namespace ICSharpCode.XmlEditor
 		}
 
 		public XmlCompletionItem(string text, XmlCompletionDataType dataType)
-			: this(text, string.Empty, dataType)
+			: this(text, String.Empty, dataType)
 		{
 		}
 
@@ -57,9 +57,11 @@ namespace ICSharpCode.XmlEditor
 		/// the xs:annotation/xs:documentation element.
 		/// </summary>
 		public override string Description {
-			get {
-				return description;
-			}
+			get { return description; }
+		}
+		
+		public XmlCompletionDataType DataType {
+			get { return dataType; }
 		}
 		
 		public override void Complete(CompletionContext context)
@@ -69,7 +71,7 @@ namespace ICSharpCode.XmlEditor
 			switch (dataType) {
 				case XmlCompletionDataType.NamespaceUri:
 					context.Editor.Document.Insert(context.StartOffset, "\"");
-					context.Editor.Document.Insert(context.EndOffset, "\"");
+					context.Editor.Document.Insert(context.EndOffset + 1, "\"");
 					break;
 				case XmlCompletionDataType.XmlAttribute:
 					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
@@ -83,6 +85,5 @@ namespace ICSharpCode.XmlEditor
 		{
 			return "[" + this.Text + "]";
 		}
-		
 	}
 }

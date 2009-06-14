@@ -65,7 +65,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			int index = -1;
 			List<HighlightingInfo> infos = new List<HighlightingInfo>();
-			
+		/*	
 			do {
 				index = line.Text.IndexOf('=', index + 1);
 				if (index > -1) {
@@ -76,7 +76,7 @@ namespace ICSharpCode.XamlBinding
 						infos.Add(new HighlightingInfo(expr, startIndex, startIndex + expr.Length, line.Offset, path));
 					}
 				}
-			} while (index > -1);
+			} while (index > -1);*/
 			
 			return infos.ToArray();
 		}
@@ -105,15 +105,15 @@ namespace ICSharpCode.XamlBinding
 			int startOffset;
 			int endOffset;
 			int lineOffset;
-			XmlElementPath path;
+			XamlContext context;
 			
-			public HighlightingInfo(string token, int startOffset, int endOffset, int lineOffset, XmlElementPath path)
+			public HighlightingInfo(string token, int startOffset, int endOffset, int lineOffset, XamlContext context)
 			{
 				this.token = token;
 				this.startOffset = startOffset;
 				this.endOffset = endOffset;
 				this.lineOffset = lineOffset;
-				this.path = path;
+				this.context = context;
 			}
 			
 			public string Token {
@@ -132,12 +132,12 @@ namespace ICSharpCode.XamlBinding
 				get { return lineOffset; }
 			}
 			
-			public XmlElementPath Path {
-				get { return path; }
+			public XamlContext Context {
+				get { return context; }
 			}
 			
 			public ExpressionResult GetExpressionResult() {
-				return new ExpressionResult(token, new XamlExpressionContext(path, token, false));
+				return new ExpressionResult(token, context);
 			}
 		}
 	}

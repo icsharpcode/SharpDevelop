@@ -11,18 +11,19 @@ using Debugger.AddIn.Visualizers.Graph.Drawing;
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
-	/// Abstract ancestor of TreeNodeLR and TreeNodeTB.
+	/// Node in tree-layouted <see cref="PositionedGraph"/>.
+	/// This is the abstract ancestor of TreeNodeLR and TreeNodeTB.
 	/// There are 2 dimensions - "main" and "lateral".
 	/// Main dimension is the dimension in which the graph depth grows (vertical when TB, horizontal when LR).
 	/// Lateral dimension is the other dimension. Siblings are placed next to each other in Lateral dimension.
 	/// </summary>
 	public abstract class TreeNode : PositionedNode
 	{
-		public static TreeNode Create(LayoutDirection direction, NodeControl nodeVisualControl, ObjectNode objectNode)
+		public static TreeNode Create(LayoutDirection direction, ObjectNode objectNode)
 		{
 			switch (direction) {
-					case LayoutDirection.TopBottom:	return new TreeNodeTB(nodeVisualControl, objectNode);
-					case LayoutDirection.LeftRight: return new TreeNodeLR(nodeVisualControl, objectNode);
+					case LayoutDirection.TopBottom:	return new TreeNodeTB(objectNode);
+					case LayoutDirection.LeftRight: return new TreeNodeLR(objectNode);
 					default: throw new DebuggerVisualizerException("Unsupported layout direction: " + direction.ToString());
 			}
 		}
@@ -30,7 +31,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public double HorizontalMargin { get; set; }
 		public double VerticalMargin { get; set; }
 		
-		protected TreeNode(NodeControl nodeVisualControl, ObjectNode objectNode) : base(nodeVisualControl, objectNode)
+		protected TreeNode(ObjectNode objectNode) : base(objectNode)
 		{
 		}
 		
@@ -51,12 +52,17 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public abstract double MainMargin { get; }
 		public abstract double LateralMargin { get; }
 		
-		private List<TreeEdge> childs = new List<TreeEdge>();
-		public List<TreeEdge> ChildEdges
+		public IEnumerable<PositionedEdge> ChildEdges 
 		{
-			get
-			{
-				return childs;
+			get 
+			{ 
+				foreach (TreeGraphEdge childEdge in Edges)
+				{
+					if (childEdge.IsTreeEdge)
+					{
+						yield return childEdge;
+					}
+				}
 			}
 		}
 		
@@ -64,28 +70,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			get
 			{
-				foreach (TreeEdge childEdge in ChildEdges)
-					yield return (TreeNode)childEdge.TargetNode;
-			}
-		}
-		
-		private List<TreeEdge> additionalNeighbors = new List<TreeEdge>();
-		public List<TreeEdge> AdditionalNeighbors
-		{
-			get
-			{
-				return additionalNeighbors;
-			}
-		}
-		
-		public override IEnumerable<PositionedEdge> Edges 
-		{
-			get 
-			{ 
-				foreach (TreeEdge childEdge in ChildEdges)
-					yield return childEdge;
-				foreach (TreeEdge neighborEdge in AdditionalNeighbors)
-					yield return neighborEdge;
+				foreach (PositionedEdge outEdge in this.ChildEdges)
+					yield return (TreeNode)outEdge.Target;
 			}
 		}
 	}

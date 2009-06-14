@@ -76,6 +76,7 @@
     <Compile Include="AlignedImage.cs" />
     <Compile Include="AvalonDockBrushes.cs" />
     <Compile Include="ContextMenuElement.cs" />
+    <Compile Include="DeserializationCallbackEventArgs.cs" />
     <Compile Include="DockableContent.cs" />
     <Compile Include="DockableFloatingWindow.cs" />
     <Compile Include="DockablePane.cs" />

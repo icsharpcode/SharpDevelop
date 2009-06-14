@@ -117,6 +117,29 @@ namespace AvalonDock
 
         }
 
+        #region Active Content Management
+        ManagedContent lastActiveContent = null;
+
+        protected override void OnActivated(EventArgs e)
+        {
+            if (Manager != null)
+            {
+                lastActiveContent = Manager.ActiveContent;
+                Manager.ActiveContent = HostedPane.SelectedItem as ManagedContent;
+            }
+
+            base.OnActivated(e);
+        }
+
+        protected override void OnDeactivated(EventArgs e)
+        {
+            if (Manager != null && lastActiveContent != null)
+            {
+                Manager.ActiveContent = lastActiveContent;
+            }
+            base.OnDeactivated(e);
+        } 
+        #endregion
 
 
         public abstract Pane ClonePane();
@@ -367,7 +390,6 @@ namespace AvalonDock
 
         }
         #endregion
-
 
         #region INotifyPropertyChanged Members
 

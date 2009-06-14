@@ -5,14 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -52,7 +54,9 @@ namespace ICSharpCode.XmlEditor
 									}
 									string tagString = tag.ToString();
 									if (tagString.Length > 0 && !tagString.StartsWith("!", StringComparison.Ordinal) && !tagString.StartsWith("?", StringComparison.Ordinal)) {
+										int caretOffset = editor.Caret.Offset;
 										editor.Document.Insert(editor.Caret.Offset, "</" + tagString + ">");
+										editor.Caret.Offset = caretOffset;
 									}
 								}
 							}
@@ -66,7 +70,7 @@ namespace ICSharpCode.XmlEditor
 				Debug.Assert(false, e.ToString());
 			}
 			if (charTyped == '\n') {
-				IndentLine(editor, editor.Document.GetLineForOffset(editor.Caret.Offset));
+				IndentLine(editor, editor.Document.GetLine(editor.Caret.Line));
 			}
 			editor.Document.EndUndoableAction();
 		}
@@ -97,11 +101,11 @@ namespace ICSharpCode.XmlEditor
 				editor.Document.EndUndoableAction();
 			}
 		}
-		#region Smart Indentation
+		
 		static void TryIndent(ITextEditor editor, int begin, int end)
 		{
 			string currentIndentation = "";
-			Stack tagStack = new Stack();
+			Stack<string> tagStack = new Stack<string>();
 			IDocument document = editor.Document;
 			string tab = editor.Options.IndentationString;
 			int nextLine = begin; // in #dev coordinates
@@ -116,16 +120,16 @@ namespace ICSharpCode.XmlEditor
 						if (tagStack.Count == 0)
 							currentIndentation = "";
 						else
-							currentIndentation = (string)tagStack.Pop();
+							currentIndentation = tagStack.Pop();
 					}
 					if (r.NodeType == XmlNodeType.EndElement) {
 						if (tagStack.Count == 0)
 							currentIndentation = "";
 						else
-							currentIndentation = (string)tagStack.Pop();
+							currentIndentation = tagStack.Pop();
 					}
 					
-					while (r.LineNumber >= nextLine) { // caution: here we compare 1-based and 0-based line numbers
+					while (r.LineNumber > nextLine) { // caution: here we compare 1-based and 0-based line numbers
 						if (nextLine > end) break;
 						if (lastType == XmlNodeType.CDATA || lastType == XmlNodeType.Comment) {
 							nextLine++;
@@ -138,7 +142,7 @@ namespace ICSharpCode.XmlEditor
 						string newText;
 						// special case: opening tag has closing bracket on extra line: remove one indentation level
 						if (lineText.Trim() == ">")
-							newText = (string)tagStack.Peek() + lineText.Trim();
+							newText = tagStack.Peek() + lineText.Trim();
 						else
 							newText = currentIndentation + lineText.Trim();
 						
@@ -154,9 +158,9 @@ namespace ICSharpCode.XmlEditor
 					if (r.NodeType == XmlNodeType.Element) {
 						tagStack.Push(currentIndentation);
 						if (r.LineNumber < begin)
-							currentIndentation = DocumentUtilitites.GetIndentation(editor.Document, r.LineNumber - 1);
+							currentIndentation = DocumentUtilitites.GetIndentation(editor.Document, editor.Document.PositionToOffset(r.LineNumber, 1));
 						if (r.Name.Length < 16)
-							attribIndent = currentIndentation + new String(' ', 2 + r.Name.Length);
+							attribIndent = currentIndentation + new string(' ', 2 + r.Name.Length);
 						else
 							attribIndent = currentIndentation + tab;
 						currentIndentation += tab;
@@ -168,15 +172,12 @@ namespace ICSharpCode.XmlEditor
 						if (r.LineNumber != startLine)
 							attribIndent = currentIndentation; // change to tab-indentation
 						r.MoveToAttribute(r.AttributeCount - 1);
-						while (r.LineNumber >= nextLine) {
+						while (r.LineNumber > nextLine) {
 							if (nextLine > end) break;
 							// set indentation of 'nextLine'
 							IDocumentLine line = document.GetLine(nextLine);
-							string lineText = line.Text;
-							string newText = attribIndent + lineText.Trim();
-							if (newText != lineText) {
-								document.Replace(line.Offset, line.Length, newText);
-							}
+							string newText = attribIndent + line.Text.Trim();
+							document.SmartReplaceLine(line, newText);
 							nextLine++;
 						}
 					}
@@ -184,6 +185,6 @@ namespace ICSharpCode.XmlEditor
 				r.Close();
 			}
 		}
-		#endregion
+		
 	}
 }

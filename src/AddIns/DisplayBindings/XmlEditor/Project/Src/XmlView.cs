@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -59,59 +59,38 @@ namespace ICSharpCode.XmlEditor
 		
 		public static XmlView ForViewContent(IViewContent view)
 		{
-			if (view == null || view.PrimaryFile == null)
+			if ((view == null) || (view.PrimaryFile == null)) {
 				return null;
+			}
 			return ForFile(view.PrimaryFile);
 		}
 
 		static void FileClosedHandler(object sender, EventArgs e)
 		{
-			if (sender is OpenedFile)
+			if (sender is OpenedFile) {
 				mapping.Remove(sender as OpenedFile);
+			}
 		}
 		
 		public string StylesheetFileName { get; set; }
 		
 		public XmlCompletionDataProvider GetProvider()
 		{
-			return GetProvider(Path.GetExtension(File.FileName));
+			return XmlCodeCompletionBinding.GetProvider(Path.GetExtension(File.FileName));
 		}
-		
-		public static XmlCompletionDataProvider GetProvider(string extension)
-		{
-			string defaultNamespacePrefix;
-			XmlSchemaCompletionData defaultSchemaCompletionData;
-			XmlSchemaCompletionDataCollection schemas;
-			
-			if (PropertyService.DataDirectory != null) {
-				schemas = XmlSchemaManager.SchemaCompletionDataItems;
-				defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefix(extension);
-				defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData(extension);
-			} else {
-				// for NUnit tests
-				defaultNamespacePrefix = string.Empty;
-				schemas = new XmlSchemaCompletionDataCollection();
-				defaultSchemaCompletionData = null;
-			}
-
-			return new XmlCompletionDataProvider(schemas,
-			                                     defaultSchemaCompletionData,
-			                                     defaultNamespacePrefix);
-		}
-		
+				
 		public ITextEditor TextEditor
 		{
 			get {
 				foreach (IViewContent view in File.RegisteredViewContents) {
 					ITextEditorProvider provider = view as ITextEditorProvider;
-					
 					if (provider != null) {
 						IDocument document = provider.GetDocumentForFile(File);
-						if (document != null)
+						if (document != null) {
 							return provider.TextEditor;
+						}
 					}
 				}
-				
 				return null;
 			}
 		}
@@ -121,18 +100,16 @@ namespace ICSharpCode.XmlEditor
 			get {
 				foreach (IViewContent view in File.RegisteredViewContents) {
 					XmlTreeView tree = view as XmlTreeView;
-					if (tree != null)
+					if (tree != null) {
 						return tree;
+					}
 				}
-				
 				return null;
 			}
 		}
 		
 		public static XmlView ActiveXmlView {
-			get {
-				return XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent);
-			}
+			get { return XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent); }
 		}
 		
 		/// <summary>
@@ -207,24 +184,24 @@ namespace ICSharpCode.XmlEditor
 		/// Checks that the xml in this view is well-formed.
 		/// </summary>
 		public bool IsWellFormed {
-			get {
-				return CheckIsWellFormed();
-			}
+			get { return CheckIsWellFormed(); }
 		}
-
+		
 		public bool CheckIsWellFormed()
 		{
-			ITextEditor editor = TextEditor;
+			return CheckIsWellFormed(TextEditor);
+		}
+
+		public static bool CheckIsWellFormed(ITextEditor editor)
+		{
 			if (editor == null) return false;
 			try {
 				XmlDocument Document = new XmlDocument();
 				Document.LoadXml(editor.Document.Text);
 				return true;
-			}
-			catch (XmlException ex) {
+			} catch (XmlException ex) {
 				AddTask(editor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
-			}
-			catch (WebException ex) {
+			} catch (WebException ex) {
 				AddTask(editor.FileName, ex.Message, 0, 0, TaskType.Error);
 			}
 			return false;
@@ -435,8 +412,7 @@ namespace ICSharpCode.XmlEditor
 		public string[] InferSchema()
 		{
 			ITextEditor editor = TextEditor;
-			if (editor == null)
-				return null;
+			if (editor == null)	return null;
 			
 			TaskService.ClearExceptCommentTasks();
 			if (IsWellFormed) {
@@ -457,16 +433,13 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Pretty prints the xml.
 		/// </summary>
-		public void FormatXml()
+		public static void FormatXml(ITextEditor editor)
 		{
-			ITextEditor editor = TextEditor;
-			if (editor == null)
-				return;
+			if (editor == null) return;
 			
 			TaskService.ClearExceptCommentTasks();
-			
-			if (IsWellFormed) {
-				ReplaceAll(editor.Document.Text);
+			if (CheckIsWellFormed(editor)) {
+				ReplaceAll(editor.Document.Text, editor);
 			} else {
 				ShowErrorList();
 			}
@@ -476,13 +449,11 @@ namespace ICSharpCode.XmlEditor
 		/// Replaces the entire text of the xml view with the xml in the
 		/// specified. The xml will be formatted.
 		/// </summary>
-		public void ReplaceAll(string xml)
+		public static void ReplaceAll(string xml, ITextEditor editor)
 		{
-			ITextEditor editor = TextEditor;
-			if (editor == null)
-				return;
+			if (editor == null) return;
 			
-			string formattedXml = SimpleFormat(IndentedFormat(xml));
+			string formattedXml = SimpleFormat(IndentedFormat(xml, editor));
 			editor.Document.Text = formattedXml;
 			//UpdateFolding(); // TODO : add again when folding is implemented in AvalonEdit
 		}
@@ -502,17 +473,15 @@ namespace ICSharpCode.XmlEditor
 		/// <returns>A pretty print version of the specified xml.  If the
 		/// string is not well formed xml the original string is returned.
 		/// </returns>
-		string IndentedFormat(string xml)
+		static string IndentedFormat(string xml, ITextEditor editor)
 		{
 			string indentedText = string.Empty;
-			
-			ITextEditor editor = TextEditor;
-			if (editor == null)
-				return indentedText;
+			if (editor == null) return indentedText;
 
 			try	{
 				XmlTextReader reader = new XmlTextReader(new StringReader(xml));
 				reader.WhitespaceHandling = WhitespaceHandling.None;
+				reader.XmlResolver = null;
 
 				StringWriter indentedXmlWriter = new StringWriter();
 				XmlTextWriter writer = CreateXmlTextWriter(indentedXmlWriter, editor);
@@ -523,7 +492,6 @@ namespace ICSharpCode.XmlEditor
 			} catch(Exception) {
 				indentedText = xml;
 			}
-
 			return indentedText;
 		}
 		
@@ -539,14 +507,14 @@ namespace ICSharpCode.XmlEditor
 			OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationStarted}"));
 
 			if (IsSchema) {
-				if (!ValidateSchema())
+				if (!ValidateSchema()) { 
 					return;
-			} else {
-				if (!ValidateAgainstSchema())
-					return;
+				}
+			} else if (!ValidateAgainstSchema()) {
+				return;
 			}
 			
-			OutputWindowWriteLine(string.Empty);
+			OutputWindowWriteLine(String.Empty);
 			OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationSuccess}"));
 		}
 		
@@ -554,7 +522,7 @@ namespace ICSharpCode.XmlEditor
 			get {
 				string extension = Path.GetExtension(File.FileName);
 				if (extension != null) {
-					return string.Compare(".xsd", extension, StringComparison.OrdinalIgnoreCase) == 0;
+					return String.Compare(".xsd", extension, StringComparison.OrdinalIgnoreCase) == 0;
 				}
 				return false;
 			}
@@ -567,8 +535,7 @@ namespace ICSharpCode.XmlEditor
 		bool ValidateAgainstSchema()
 		{
 			ITextEditor editor = TextEditor;
-			if (editor == null)
-				return false;
+			if (editor == null) return false;
 			
 			try {
 				StringReader stringReader = new StringReader(editor.Document.Text);
@@ -616,8 +583,7 @@ namespace ICSharpCode.XmlEditor
 		bool ValidateSchema()
 		{
 			ITextEditor editor = TextEditor;
-			if (editor == null)
-				return false;
+			if (editor == null) return false;
 			
 			StringReader stringReader = new StringReader(editor.Document.Text);
 			XmlTextReader xmlReader = new XmlTextReader(stringReader);
@@ -685,8 +651,7 @@ namespace ICSharpCode.XmlEditor
 				TaskService.ClearExceptCommentTasks();
 				
 				ITextEditor editor = TextEditor;
-				if (editor == null)
-					return;
+				if (editor == null) return;
 				
 				if (IsWellFormed) {
 					if (IsValidXsl(xsl)) {
@@ -711,7 +676,7 @@ namespace ICSharpCode.XmlEditor
 		void ShowTransformOutput(string xml)
 		{
 			// Pretty print the xml.
-			xml = SimpleFormat(IndentedFormat(xml));
+			xml = SimpleFormat(IndentedFormat(xml, TextEditor));
 			
 			// Display the output xml.
 			XslOutputView.EditorInstance.Document.Text = xml;
@@ -818,9 +783,6 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Tries to get the filename from the inner exception otherwise returns the default filename.
 		/// </summary>
-		/// <param name="ex"></param>
-		/// <param name="defaultFileName"></param>
-		/// <returns></returns>
 		static string GetFileNameFromInnerException(Exception ex, string defaultFileName)
 		{
 			XmlException innerException = ex.InnerException as XmlException;

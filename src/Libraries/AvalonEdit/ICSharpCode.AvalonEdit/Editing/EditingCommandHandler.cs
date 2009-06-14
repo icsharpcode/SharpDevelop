@@ -208,14 +208,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TransformSelectedLines(
 				delegate (TextArea textArea, DocumentLine line) {
-						int offset = line.Offset;
-						ISegment s = TextUtilities.GetSingleIndentationSegment(line.Document, offset, textArea.Options.IndentationSize);
-						if (s.Length > 0) {
-							s = textArea.ReadOnlySectionProvider.GetDeletableSegments(s).FirstOrDefault();
-							if (s != null && s.Length > 0) {
-								textArea.Document.Remove(s.Offset, s.Length);
-							}
+					int offset = line.Offset;
+					ISegment s = TextUtilities.GetSingleIndentationSegment(line.Document, offset, textArea.Options.IndentationSize);
+					if (s.Length > 0) {
+						s = textArea.ReadOnlySectionProvider.GetDeletableSegments(s).FirstOrDefault();
+						if (s != null && s.Length > 0) {
+							textArea.Document.Remove(s.Offset, s.Length);
 						}
+					}
 				}, target, args, DefaultSegmentType.CurrentLine);
 		}
 		#endregion
@@ -344,12 +344,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 				string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
 				string text = NewLineFinder.NormalizeNewLines(Clipboard.GetText(), newLine);
 				
-				bool fullLine = textArea.Options.CutCopyWholeLine && Clipboard.ContainsData(LineSelectedType);
-				if (fullLine) {
-					DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-					textArea.Document.Insert(currentLine.Offset, text);
-				} else {
-					textArea.ReplaceSelectionWithText(text);
+				if (!string.IsNullOrEmpty(text)) {
+					bool fullLine = textArea.Options.CutCopyWholeLine && Clipboard.ContainsData(LineSelectedType);
+					if (fullLine) {
+						DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
+						textArea.Document.Insert(currentLine.Offset, text);
+					} else {
+						textArea.ReplaceSelectionWithText(text);
+					}
 				}
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;

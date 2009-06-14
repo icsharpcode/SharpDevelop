@@ -37,11 +37,12 @@ namespace Debugger.AddIn.Visualizers.Graph
         {
             get { return _nodes; }
         }
-        
+       
+        /*
         /// <summary>
         /// All edges in the graph.
         /// </summary>
-        /*public IEnumerable<ObjectEdge> Edges
+        public IEnumerable<ObjectEdge> Edges
         {
             get 
             {

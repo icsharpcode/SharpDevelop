@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.IO;
 using System.Text;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
@@ -72,6 +73,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <returns>Same graph in Graphviz plain with position information added.</returns>
 		public string CalculatePositions(string dotGraph)
 		{
+			/*using (var writer = new StreamWriter("logIn.gv"))
+			{
+				writer.Write(dotGraph);
+			}*/
+			
 			neatoProcess.StandardInput.Write(dotGraph);
 			neatoProcess.StandardInput.Flush();
 			neatoProcess.StandardInput.Close();

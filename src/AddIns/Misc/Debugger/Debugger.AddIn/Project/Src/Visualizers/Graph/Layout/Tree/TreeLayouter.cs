@@ -36,7 +36,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		/// <param name="objectGraph"></param>
 		/// <returns></returns>
-		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction)
+		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction, ExpandedNodes expandedNodes)
 		{
 			layoutDirection = direction;
 
@@ -44,7 +44,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			treeNodeFor = new Dictionary<ObjectNode, TreeNode>();
 			seenNodes = new Dictionary<ObjectNode, object>();
 
-			TreeNode tree = buildTreeRecursive(objectGraph.Root);
+			TreeNode tree = buildTreeRecursive(objectGraph.Root, expandedNodes);
 			calculateNodePosRecursive(tree, 0, 0);
 			
 			var neatoRouter = new NeatoEdgeRouter();
@@ -53,39 +53,45 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return resultGraph;
 		}
 		
-		private TreeNode buildTreeRecursive(ObjectNode objectGraphNode)
+		private TreeNode buildTreeRecursive(ObjectNode objectGraphNode, ExpandedNodes expandedNodes)
 		{
 			seenNodes.Add(objectGraphNode, null);
 			
-			NodeControl nodeVisualControl = new NodeControl();
-			nodeVisualControl.GraphNode = objectGraphNode;
-			nodeVisualControl.Measure(new Size(500, 500));
-			
-			TreeNode newTreeNode = TreeNode.Create(this.layoutDirection, nodeVisualControl, objectGraphNode);
+			TreeNode newTreeNode = TreeNode.Create(this.layoutDirection, objectGraphNode);
 			newTreeNode.HorizontalMargin = horizNodeMargin;
 			newTreeNode.VerticalMargin = vertNodeMargin;
-			resultGraph.nodes.Add(newTreeNode);
+			resultGraph.AddNode(newTreeNode);
 			treeNodeFor[objectGraphNode] = newTreeNode;
 			
 			double subtreeSize = 0;
-			foreach	(ObjectProperty property in objectGraphNode.ComplexProperties)
+			foreach	(ObjectProperty property in objectGraphNode.Properties)
 			{
 				if (property.TargetNode != null)
 				{
 					ObjectNode neighbor = property.TargetNode;
+					TreeNode targetTreeNode = null;
+					bool newEdgeIsTreeEdge = false;
 					if (seenNodes.ContainsKey(neighbor))
 					{
-						newTreeNode.AdditionalNeighbors.Add(new TreeEdge { Name = property.Name, SourceNode = newTreeNode, TargetNode = treeNodeFor[neighbor]});
+						targetTreeNode = treeNodeFor[neighbor];
+						newEdgeIsTreeEdge = false;
 					}
 					else
 					{
-						TreeNode newChild = buildTreeRecursive(neighbor);
-						newTreeNode.ChildEdges.Add(new TreeEdge { Name = property.Name, SourceNode = newTreeNode, TargetNode = newChild});
-						
-						subtreeSize += newChild.SubtreeSize;
+						targetTreeNode = buildTreeRecursive(neighbor, expandedNodes);
+						newEdgeIsTreeEdge = true;
+						subtreeSize += targetTreeNode.SubtreeSize;
 					}
+					var posNodeProperty = newTreeNode.AddProperty(property, expandedNodes.IsExpanded(property.Expression.Code));
+					posNodeProperty.Edge = new TreeGraphEdge { IsTreeEdge = newEdgeIsTreeEdge, Name = property.Name, Source = posNodeProperty, Target = targetTreeNode };
+				}
+				else
+				{
+					// property.Edge stays null
+					newTreeNode.AddProperty(property, expandedNodes.IsExpanded(property.Expression.Code));
 				}
 			}
+			newTreeNode.Measure();
 			subtreeSize = Math.Max(newTreeNode.LateralSizeWithMargin, subtreeSize);
 			newTreeNode.SubtreeSize = subtreeSize;
 			

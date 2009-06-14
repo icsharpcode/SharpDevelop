@@ -391,7 +391,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void OnCodeCompletion(object sender, ExecutedRoutedEventArgs e)
 		{
-			CloseExistingCompletionWindows();
+			CloseExistingCompletionWindow();
 			TextEditor textEditor = GetTextEditorFromSender(sender);
 			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 				if (cc.CtrlSpace(GetAdapter(textEditor))) {
@@ -401,39 +401,61 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		CompletionWindow completionWindow;
+		SharpDevelopCompletionWindow completionWindow;
 		SharpDevelopInsightWindow insightWindow;
 		
-		void CloseExistingCompletionWindows()
+		void CloseExistingCompletionWindow()
 		{
 			if (completionWindow != null) {
 				completionWindow.Close();
 			}
+		}
+		
+		void CloseExistingInsightWindow()
+		{
 			if (insightWindow != null) {
 				insightWindow.Close();
 			}
+		}
+		
+		public SharpDevelopCompletionWindow ActiveCompletionWindow {
+			get { return completionWindow; }
 		}
 		
 		public SharpDevelopInsightWindow ActiveInsightWindow {
 			get { return insightWindow; }
 		}
 		
-		internal void NotifyCompletionWindowOpened(CompletionWindow window)
+		internal void ShowCompletionWindow(SharpDevelopCompletionWindow window)
 		{
-			CloseExistingCompletionWindows();
+			CloseExistingCompletionWindow();
 			completionWindow = window;
 			window.Closed += delegate {
 				completionWindow = null;
 			};
+			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
+				delegate {
+					if (completionWindow == window) {
+						window.Show();
+					}
+				}
+			));
 		}
 		
-		internal void NotifyInsightWindowOpened(SharpDevelopInsightWindow window)
+		internal void ShowInsightWindow(SharpDevelopInsightWindow window)
 		{
-			CloseExistingCompletionWindows();
+			CloseExistingInsightWindow();
 			insightWindow = window;
 			window.Closed += delegate {
 				insightWindow = null;
 			};
+			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
+				delegate {
+					if (insightWindow == window) {
+						window.Show();
+					}
+				}
+			));
 		}
 		
 		IFormattingStrategy formattingStrategy;

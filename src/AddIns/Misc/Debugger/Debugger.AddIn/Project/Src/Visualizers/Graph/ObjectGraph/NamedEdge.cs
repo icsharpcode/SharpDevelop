@@ -28,11 +28,11 @@ namespace Debugger.AddIn.Visualizers.Graph
         /// <summary>
         /// Target node of the edge.
         /// </summary>
-        public TTarget TargetNode { get; set; }
+        public TTarget Target { get; set; }
         
         /// <summary>
         /// Source node of the edge.
         /// </summary>
-        public TSource SourceNode { get; set; }
+        public TSource Source { get; set; }
 	}
 }

@@ -77,9 +77,11 @@
     <Compile Include="Src\Editor\CodeCompletion\CtrlSpaceCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItem.cs" />
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemList.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\ICompletionListWindow.cs" />
     <Compile Include="Src\Editor\CodeCompletion\IInsightItem.cs" />
     <Compile Include="Src\Editor\CodeCompletion\IInsightWindow.cs" />
     <Compile Include="Src\Editor\CodeCompletion\IndexerInsightProvider.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\ICompletionWindow.cs" />
     <Compile Include="Src\Editor\CodeCompletion\MethodInsightItem.cs" />
     <Compile Include="Src\Editor\CodeCompletion\MethodInsightProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCodeCompletionBinding.cs" />
