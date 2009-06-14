@@ -15,7 +15,7 @@ using UnitTesting.Tests.Utils;
 namespace UnitTesting.Tests
 {
 	/// <summary>
-	/// If the project explicitly targets 32 bit (x86) architecture then nunit-console-x86.exe should be 
+	/// If the project explicitly targets 32 bit (x86) architecture then nunit-console-x86.exe should be
 	/// used. Otherwise the normal nunit-console.exe is used.
 	/// </summary>
 	[TestFixture]
@@ -42,7 +42,22 @@ namespace UnitTesting.Tests
 			MockCSharpProject project = new MockCSharpProject();
 			UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
 			helper.Initialize(project, null);
-			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console.exe", helper.UnitTestApplication);
+			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-dotnet2.exe", helper.UnitTestApplication);
+		}
+		
+		
+		[Test]
+		public void NUnitConsole32BitUsedWhenTargetCpuIs32BitDotnet2()
+		{
+			MockCSharpProject project = new MockCSharpProject();
+			project.ActiveConfiguration = "Debug";
+			project.ActivePlatform = "AnyCPU";
+			project.SetProperty("PlatformTarget", "x86");
+			project.SetProperty("TargetFrameworkVersion", "v3.5");
+			
+			UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
+			helper.Initialize(project, null);
+			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-dotnet2-x86.exe", helper.UnitTestApplication);
 		}
 		
 		[Test]
@@ -52,10 +67,11 @@ namespace UnitTesting.Tests
 			project.ActiveConfiguration = "Debug";
 			project.ActivePlatform = "AnyCPU";
 			project.SetProperty("PlatformTarget", "x86");
-				
+			project.SetProperty("TargetFrameworkVersion", "v4.0");
+			
 			UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
 			helper.Initialize(project, null);
-			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-x86.exe", helper.UnitTestApplication);			
+			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-x86.exe", helper.UnitTestApplication);
 		}
 		
 		[Test]
@@ -66,7 +82,7 @@ namespace UnitTesting.Tests
 			helper.Initialize(project, null);
 			
 			Assert.AreEqual(project.GetType().BaseType, typeof(AbstractProject), "MissingProject should be derived from AbstractProject.");
-			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console.exe", helper.UnitTestApplication);			
+			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console.exe", helper.UnitTestApplication);
 		}
 	}
 }

@@ -2,8 +2,8 @@
 copy nunit-console.exe nunit-console-x86.exe
 "%programfiles%\Microsoft.net\sdk\v2.0\bin\corflags" /32bit+ nunit-console-x86.exe
 @IF %ERRORLEVEL% NEQ 0 GOTO err
-copy nunit-console.exe nunit-console-dotnet4.exe
-copy nunit-console-x86.exe nunit-console-dotnet4-x86.exe
+copy nunit-console.exe nunit-console-dotnet2.exe
+copy nunit-console-x86.exe nunit-console-dotnet2-x86.exe
 @exit /B 0
 :err
 @PAUSE

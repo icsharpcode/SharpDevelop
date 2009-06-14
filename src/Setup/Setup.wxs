@@ -158,7 +158,6 @@
 				<ComponentRef Id="SharpDevelopDocFiles"/>
 				<ComponentRef Id="ICSharpCodeBuildTasksDll"/>
 				<ComponentRef Id="BuildTasksTargetFiles"/>
-				<ComponentRef Id="BuildWorkerFiles"/>
 				<ComponentRef Id="ICSharpCodeCoreDll"/>
 				<ComponentRef Id="ICSharpCodeCoreWinFormsDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
@@ -419,10 +418,10 @@
 				<ComponentRef Id="PythonBindingDll"/>	
 				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>				
 
-				<ComponentRef Id="FSharpBindingDll"/>
+				<!--<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	
 				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
-				<ComponentRef Id="FSharpEmptyClassTemplate"/>	
+				<ComponentRef Id="FSharpEmptyClassTemplate"/>-->
 				
 				<ComponentRef Id="ReflectorAddInDll"/>
 				<ComponentRef Id="ReflectorAddInIpcServerDll"/>
@@ -440,13 +439,13 @@
 				<ComponentRef Id="AvalonEditAddInAddin"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditAddInDll"/>
 				
-				<ComponentRef Id="Hook32Dll"/>
+				<!--<ComponentRef Id="Hook32Dll"/>
 				<ComponentRef Id="Hook64Dll"/>
 				<ComponentRef Id="ICSharpCodeProfilerAddInAddin"/>
 				<ComponentRef Id="ICSharpCodeProfilerAddInDll"/>
 				<ComponentRef Id="ICSharpCodeProfilerControllerDll"/>
 				<ComponentRef Id="ICSharpCodeProfilerControlsDll"/>
-				<ComponentRef Id="SystemDataSQLiteDll"/>
+				<ComponentRef Id="SystemDataSQLiteDll"/>-->
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

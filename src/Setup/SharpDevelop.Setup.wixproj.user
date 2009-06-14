@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <SetupProductBuildVersion>4260</SetupProductBuildVersion>
+    <SetupProductBuildVersion>4289</SetupProductBuildVersion>
     <DefineConstants>PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
   </PropertyGroup>
 </Project>

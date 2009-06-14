@@ -28,6 +28,7 @@ namespace UnitTesting.Tests
 			project.AssemblyName = "MyTests";
 			project.OutputType = OutputType.Library;
 			project.SetProperty("OutputPath", "."); // don't create bin/Debug
+			project.SetProperty("TargetFrameworkVersion", "v4.0");
 			helper = new UnitTestApplicationStartHelper();
 		}
 		

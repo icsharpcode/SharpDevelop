@@ -698,10 +698,6 @@
 							<Component Guid="3730EF42-5257-4EB2-9DA1-57151E5EB5A3" Id="AgaControlsDll" DiskId="1">
 								<File Source="..\..\bin\Aga.Controls.dll" Id="Aga.Controls.dll" Name="Aga.Controls.dll" Assembly=".net" AssemblyApplication="Aga.Controls.dll" AssemblyManifest="Aga.Controls.dll" KeyPath="yes" />
 							</Component>
-							<Component Guid="28E09E1C-B1E4-4ABC-9EA8-D37255CDD9E3" Id="BuildWorkerFiles" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker.exe" Id="ICSharpCode.SharpDevelop.BuildWorker.exe" Name="ICSharpCode.SharpDevelop.BuildWorker.exe" />
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker.exe.config" Id="ICSharpCode.SharpDevelop.BuildWorker.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker.exe.config" />
-							</Component>
 							<Component Guid="2EC34D8A-CF14-4E1F-A512-9A596A1C256D" Id="ICSharpCodeCoreWinFormsDll" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Core.WinForms.dll" Name="ICSharpCode.Core.WinForms.dll" Id="ICSharpCode.Core.WinForms.dll" KeyPath="yes" />
 							</Component>
@@ -721,7 +717,6 @@
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
 								<File Source="..\..\doc\BuiltWithSharpDevelop.png" Id="BuiltWithSharpDevelop.png" Name="BuiltWithSharpDevelop.png" />
-								<File Source="..\..\doc\ChangeLog.xml" Id="ChangeLog.xml" Name="ChangeLog.xml" />
 								<File Source="..\..\doc\copyright.txt" Id="copyright.txt" Name="copyright.txt" />
 								<File Source="..\..\doc\license.txt" Name="license.txt" Id="DocFolderLicense.txt" />
 								<File Source="..\..\doc\readme.rtf" Name="readme.rtf" Id="readme.rtf" />
@@ -1270,7 +1265,7 @@
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.ExtensionAttribute.dll" Name="Microsoft.Scripting.ExtensionAttribute.dll" Id="Microsoft.Scripting.ExtensionAttribute.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.ExtensionAttribute.dll" />
 										</Component>
 									</Directory>
-									<Directory Id="FSharpBinding" Name="FSharpBinding">
+									<!--<Directory Id="FSharpBinding" Name="FSharpBinding">
 										<Component Guid="6B4F28AF-133C-4FEB-98DB-67A5405AEB12" Id="FSharpBindingAddin" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\FSharpBinding.addin" Name="FSharpBinding.addin" Id="FSharpBinding.addin" KeyPath="yes" />
 										</Component>
@@ -1285,7 +1280,7 @@
 												<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="Templates.EmptyClass1.xft" KeyPath="yes" />
 											</Component>
 										</Directory>
-									</Directory>
+									</Directory>-->
 								</Directory>
 								<Directory Id="DisplayBindingsFolder" Name="DisplayBindings">
 									<Directory Id="FormsDesignerFolder" Name="FormsDesigner">
@@ -1558,7 +1553,7 @@
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.dll" Name="HexEditor.dll" Id="HexEditor.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="HexEditor.dll" AssemblyManifest="HexEditor.dll" />
 										</Component>
 									</Directory>
-									<Directory Id="Profiler" Name="Profiler">
+									<!--<Directory Id="Profiler" Name="Profiler">
 										<Component Guid="C46A4B2C-D5DE-4548-B4A9-4B0AB8C105F3" Id="Hook32Dll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\Profiler\Hook32.dll" Name="Hook32.dll" Id="Hook32.dll" KeyPath="yes" />
 										</Component>
@@ -1580,7 +1575,7 @@
 										<Component Guid="30373CF2-3D49-41E1-987F-5C870531FB75" Id="SystemDataSQLiteDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\Profiler\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="System.Data.SQLite.dll" KeyPath="yes" />
 										</Component>
-									</Directory>
+									</Directory>-->
 								</Directory>
 							</Directory>
 						</Directory>

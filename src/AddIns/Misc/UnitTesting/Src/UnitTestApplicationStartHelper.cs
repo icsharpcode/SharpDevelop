@@ -39,8 +39,8 @@ namespace ICSharpCode.UnitTesting
 		public string UnitTestApplication {
 			get {
 				string exe = "nunit-console";
-				if (IsDotNet40Project(project)) {
-					exe += "-dotnet4";
+				if (ProjectUsesDotnet20Runtime(project)) {
+					exe += "-dotnet2";
 				}
 				if (IsPlatformTarget32Bit(project)) {
 					exe += "-x86";
@@ -207,17 +207,17 @@ namespace ICSharpCode.UnitTesting
 			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
 			if (msbuildProject != null) {
 				string platformTarget = msbuildProject.GetEvaluatedProperty("PlatformTarget");
-				return String.Compare(platformTarget, "x86", true) == 0;
+				return String.Equals(platformTarget, "x86", StringComparison.OrdinalIgnoreCase);
 			}
 			return false;
 		}
 		
-		bool IsDotNet40Project(IProject project)
+		bool ProjectUsesDotnet20Runtime(IProject project)
 		{
 			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
 			if (msbuildProject != null) {
 				string targetFrameworkVersion = msbuildProject.GetEvaluatedProperty("TargetFrameworkVersion");
-				return String.Compare(targetFrameworkVersion, "v4.0", true) == 0;
+				return !String.Equals(targetFrameworkVersion, "v4.0", StringComparison.OrdinalIgnoreCase);
 			}
 			return false;
 		}
