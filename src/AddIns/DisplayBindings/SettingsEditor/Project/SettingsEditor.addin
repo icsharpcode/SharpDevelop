@@ -1,7 +1,12 @@
 <AddIn name        = "Settings Editor"
        author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Edits project settings">
+       description = "Edits project settings"
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.SettingsEditor"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "SettingsEditor.dll"/>
