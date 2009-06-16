@@ -8,12 +8,12 @@ namespace ICSharpCode.Core.Presentation
 	/// Stores details about command binding
 	/// </summary>
 	public class CommandBindingInfo 
-	{		
-		private UIElement contextInstance;
-		
+	{	
 		public CommandBindingInfo()
 		{
-			ContextName = CommandsRegistry.DefaultContextName;
+			IsModifyed = true;
+			OldCommandBindings = new CommandBindingCollection();
+			NewCommandBindings = new CommandBindingCollection();
 		}
 		
 		/// <summary>
@@ -90,28 +90,105 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Name of the class which owns this binding
+		/// Store name of object owning this binding (can only be used with named objects)
+		/// 
+		/// Named objects can be registered throgut <see cref="CommandsRegistry.RegisterNamedUIElementInstance" />
 		/// </summary>
-		public string ContextName{
+		public string OwnerInstanceName{
 			get; set;
 		}
+		
+		private UIElement ownerInstance;
+		
+		/// <summary>
+		/// Stores instance of object which is owning this binding
+		/// </summary>
+		public UIElement OwnerInstance{
+			get {
+				if(OwnerInstanceName != null && ownerInstance == null) {
+					ownerInstance = CommandsRegistry.GetNamedUIElementInstance(OwnerInstanceName);
+				}
+				
+				return ownerInstance;
+			}
+			set {
+				ownerInstance = value;
+			}
+		}
+	
+		/// <summary>
+		/// Assembly qualified name of the class owning this instance
+		/// 
+		/// Named type can be registered throgut <see cref="CommandsRegistry.RegisterNamedUIType" />
+		/// </summary>
+		public string OwnerTypeName{
+			get; set;
+		}
+		
+		private Type ownerType;
 					
 		/// <summary>
-		/// Instance of class which owns this binding
+		/// Stores type owning this binding
 		/// </summary>
-		public UIElement Context { 
+		public Type OwnerType { 
 			set {
-				contextInstance = value;
+				ownerType = value;
 			}
 			get {
-				if(contextInstance != null) {
-					return contextInstance;
-				} else {
-					UIElement context;
-					CommandsRegistry.contexts.TryGetValue(ContextName, out context);
-					
-					return context;
+				if(ownerType == null && OwnerTypeName != null) {
+					ownerType = Type.GetType(OwnerTypeName);
+					CommandsRegistry.RegisterNamedUIType(OwnerTypeName, ownerType);
 				}
+				
+				return ownerType;
+			}
+		}
+	
+		/// <summary>
+		/// Default binding update handler update owner or type bindings (depending on input binding info type)
+		/// so they would always contain latest version
+		/// </summary>	
+		private BindingsUpdatedHandler defaultCommandBindingHandler;
+		
+		/// <summary>
+		/// Default command binding handler. Updates command binding if binding info changes
+		/// </summary>
+		internal BindingsUpdatedHandler DefaultCommandBindingHandler
+		{
+			get {
+				if(defaultCommandBindingHandler == null && (OwnerTypeName != null || OwnerType != null)) {
+	 				defaultCommandBindingHandler = delegate {
+						if(OwnerType != null && IsModifyed) {
+							GenerateCommandBindings();
+							
+							foreach(ManagedCommandBinding binding in OldCommandBindings) {
+								CommandsRegistry.RemoveClassCommandBinding(OwnerType, binding);
+							}
+							
+							foreach(ManagedCommandBinding binding in NewCommandBindings) {
+								CommandManager.RegisterClassCommandBinding(OwnerType, binding);
+							}
+							
+							IsModifyed = false;
+						}
+					};
+				} else if(defaultCommandBindingHandler == null && (OwnerInstanceName != null || OwnerInstance != null)) {
+		 			defaultCommandBindingHandler = delegate {
+						if(OwnerInstance != null && IsModifyed) {
+							GenerateCommandBindings();
+							
+							foreach(ManagedCommandBinding binding in OldCommandBindings) {
+								OwnerInstance.CommandBindings.Remove(binding);
+							}
+							
+							OwnerInstance.CommandBindings.AddRange(NewCommandBindings);
+							
+							IsModifyed = false;
+						}
+					};
+				}
+				
+				return defaultCommandBindingHandler;
 			}
 		}
 		
@@ -133,6 +210,35 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		public CanExecuteRoutedEventHandler CanExecutedEventHandler
+		{
+			get; set;
+		}
+		
+		/// <summary>
+		/// Indicates that generated command bindings are modified from last access
+		/// </summary>
+		public bool IsModifyed {
+			get; set;
+		}
+		
+		public void GenerateCommandBindings() 
+		{			
+			OldCommandBindings = NewCommandBindings;
+			
+			var managedCommandBinding = new ManagedCommandBinding(RoutedCommand);
+			managedCommandBinding.CanExecute += GeneratedCanExecuteEventHandler;					
+			managedCommandBinding.Executed += GeneratedExecutedEventHandler;
+			
+			NewCommandBindings = new CommandBindingCollection();
+			NewCommandBindings.Add(managedCommandBinding);
+		}
+		
+		internal CommandBindingCollection OldCommandBindings
+		{
+			get; set;
+		}
+		
+		internal CommandBindingCollection NewCommandBindings
 		{
 			get; set;
 		}

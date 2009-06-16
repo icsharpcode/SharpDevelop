@@ -130,7 +130,9 @@
 			command="SDBuildCommands.BuildSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Build" 
 			gestures="F8" 
-			category="Building" />
+			category="Building"
+			owner-instance="ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad"
+		/>
 		<CommandBinding 
 			command="SDBuildCommands.RebuildSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Rebuild" 

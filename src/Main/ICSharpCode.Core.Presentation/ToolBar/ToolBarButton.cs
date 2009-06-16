@@ -50,13 +50,12 @@ namespace ICSharpCode.Core.Presentation
 			if(!codon.Properties.Contains("command") && (codon.Properties.Contains("link") || codon.Properties.Contains("class"))) {
 				var commandBindingInfo = new CommandBindingInfo();
 				commandBindingInfo.AddIn = codon.AddIn;
-				commandBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
+				commandBindingInfo.OwnerTypeName = CommandsRegistry.DefaultContextName;
 				commandBindingInfo.Class = CommandWrapper.GetCommand(codon, caller, createCommand);
 				commandBindingInfo.RoutedCommandName = routedCommandName;
 				commandBindingInfo.IsLazy = true;
 				
 				CommandsRegistry.RegisterCommandBinding(commandBindingInfo);
-				CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
 			}
 			
 			if (codon.Properties.Contains("icon")) {

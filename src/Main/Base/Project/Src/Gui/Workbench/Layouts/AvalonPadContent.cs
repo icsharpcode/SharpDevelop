@@ -88,24 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					placeholder = null;
 					
 					var contextName = padInstance.GetType().FullName;
-					
-					CommandsRegistry.LoadContext(contextName, (UIElement)Content);
-					
-					CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, null, delegate {
-		            	var newBindings = CommandsRegistry.FindCommandBindings(contextName, null, null, null);
-		            	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
-		            	CommandBindings.AddRange(newBindings);
-					});
-					
-					CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, null, delegate {            	
-		            	var newBindings = CommandsRegistry.FindInputBindings(contextName, null, null);
-		            	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
-		            	InputBindings.AddRange(newBindings);
-					});
-					
-					
-					CommandsRegistry.InvokeCommandBindingUpdateHandlers(contextName, null);
-					CommandsRegistry.InvokeInputBindingUpdateHandlers(contextName, null);
+					CommandsRegistry.RegisterNamedUIElementInstance(contextName, (UIElement)Content);
 				}
 			}
 		}

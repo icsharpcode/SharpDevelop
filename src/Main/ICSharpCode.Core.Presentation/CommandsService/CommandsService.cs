@@ -39,8 +39,6 @@ namespace ICSharpCode.Core.Presentation
 		{
 			var descriptors = AddInTree.BuildItems<CommandBindingDescriptor>(path, caller, false);
 			foreach(var desc in descriptors) {
-				var contextName = !string.IsNullOrEmpty(desc.Context) ? desc.Context : CommandsRegistry.DefaultContextName;
-				
 				// If routed with such name is not registered register routed command with text same as name
 				if(CommandsRegistry.GetRoutedUICommand(desc.Command) == null) {
 					var commandText = string.IsNullOrEmpty(desc.CommandText) ? desc.Command : desc.CommandText;
@@ -48,7 +46,15 @@ namespace ICSharpCode.Core.Presentation
 				}
 				
 				var commandBindingInfo = new CommandBindingInfo();
-				commandBindingInfo.ContextName = contextName;
+				
+				if(!string.IsNullOrEmpty(desc.OwnerInstanceName)) {
+					commandBindingInfo.OwnerInstanceName = desc.OwnerInstanceName;
+				} else if(!string.IsNullOrEmpty(desc.OwnerTypeName)) {
+					commandBindingInfo.OwnerTypeName = desc.OwnerTypeName;
+				} else {
+					commandBindingInfo.OwnerTypeName = CommandsRegistry.DefaultContextName;
+				}
+				
 				commandBindingInfo.RoutedCommandName = desc.Command;
 				commandBindingInfo.ClassName = desc.Class;
 				commandBindingInfo.AddIn = desc.Codon.AddIn;
@@ -60,7 +66,15 @@ namespace ICSharpCode.Core.Presentation
 					var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(desc.Gestures);
 					
 					var inputBindingInfo = new InputBindingInfo();
-					inputBindingInfo.ContextName = contextName;
+					
+					if(!string.IsNullOrEmpty(desc.OwnerInstanceName)) {
+						inputBindingInfo.OwnerInstanceName = desc.OwnerInstanceName;
+					} else if(!string.IsNullOrEmpty(desc.OwnerTypeName)) {
+						inputBindingInfo.OwnerTypeName = desc.OwnerTypeName;
+					} else {
+						inputBindingInfo.OwnerTypeName = CommandsRegistry.DefaultContextName;
+					}
+					
 					inputBindingInfo.AddIn = desc.Codon.AddIn;
 					inputBindingInfo.RoutedCommandName = desc.Command;
 					inputBindingInfo.Gestures = gestures;
@@ -83,10 +97,17 @@ namespace ICSharpCode.Core.Presentation
 			var descriptors = AddInTree.BuildItems<InputBindingDescriptor>(path, caller, false);
 			foreach(var desc in descriptors) {
 				var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(desc.Gestures);
-				var contextName = !string.IsNullOrEmpty(desc.Context) ? desc.Context : CommandsRegistry.DefaultContextName;
 				
 				var inputBindingInfo = new InputBindingInfo();
-				inputBindingInfo.ContextName = contextName;
+								
+				if(!string.IsNullOrEmpty(desc.OwnerInstanceName)) {
+					inputBindingInfo.OwnerInstanceName = desc.OwnerInstanceName;
+				} else if(!string.IsNullOrEmpty(desc.OwnerTypeName)) {
+					inputBindingInfo.OwnerTypeName = desc.OwnerTypeName;
+				} else {
+					inputBindingInfo.OwnerTypeName = CommandsRegistry.DefaultContextName;
+				}	
+				
 				inputBindingInfo.AddIn = desc.Codon.AddIn;
 				inputBindingInfo.RoutedCommandName = desc.Command;
 				inputBindingInfo.Gestures = gestures;

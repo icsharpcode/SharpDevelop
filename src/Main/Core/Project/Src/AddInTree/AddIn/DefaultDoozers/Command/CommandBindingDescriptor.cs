@@ -38,12 +38,11 @@ namespace ICSharpCode.Core
 			get; private set;
 		}
 		
-		/// <summary>
-		/// Full name of context class.
-		/// 
-		/// UI element in which this binding will be valid
-		/// </summary>
-		public string Context {
+		public string OwnerInstanceName {
+			get; private set;
+		}
+		
+		public string OwnerTypeName {
 			get; private set;
 		}
 		
@@ -86,7 +85,8 @@ namespace ICSharpCode.Core
 			Class = Codon.Properties["class"];
 			Command = Codon.Properties["command"];
 			CommandText = Codon.Properties["commandtext"];
-			Context = Codon.Properties["context"];
+			OwnerInstanceName = Codon.Properties["owner-instance"];
+			OwnerTypeName = Codon.Properties["owner-type"];
 			Gestures = Codon.Properties["gestures"];
 			Category = Codon.Properties["category"];
 		}

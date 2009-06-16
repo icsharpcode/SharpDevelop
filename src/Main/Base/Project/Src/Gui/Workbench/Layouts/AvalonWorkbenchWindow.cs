@@ -93,24 +93,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			CommandManager.InvalidateRequerySuggested();
 			
 			if (newActiveViewContent != null) {
-				string contextName = newActiveViewContent.GetType().FullName;
-	
-				CommandsRegistry.LoadContext(contextName, (UIElement)Content);
-				
-				CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, null, delegate {
-	            	var newBindings = CommandsRegistry.FindCommandBindings(contextName, null, null, null);
-	            	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
-	            	CommandBindings.AddRange(newBindings);
-				});
-				
-				CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, null, delegate {            	
-	            	var newBindings = CommandsRegistry.FindInputBindings(contextName, null, null);
-	            	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
-	            	InputBindings.AddRange(newBindings);
-				});
-				
-				CommandsRegistry.InvokeCommandBindingUpdateHandlers(contextName, null);
-				CommandsRegistry.InvokeInputBindingUpdateHandlers(contextName, null);
+				string ownerName = newActiveViewContent.GetType().FullName;
+				CommandsRegistry.RegisterNamedUIElementInstance(ownerName, (UIElement)Content);
 			}
 		}
 		

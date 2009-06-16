@@ -119,30 +119,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			var contextName = this.GetType().FullName;
 			
-			
-			CommandsRegistry.RegisterCommandBindingsUpdateHandler(contextName, this, delegate {
-            	var newBindings = CommandsRegistry.FindCommandBindings(contextName, this, null, null);
-            	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
-            	CommandBindings.AddRange(newBindings);
-			});
-			
-			CommandsRegistry.RegisterInputBindingUpdateHandler(contextName, this, delegate {            	
-            	var newBindings = CommandsRegistry.FindInputBindings(contextName, this, null);
-            	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
-            	InputBindings.AddRange(newBindings);
-			});
-			
 			var commandBindingInfo = new CommandBindingInfo();
-			commandBindingInfo.ContextName = contextName;
-			commandBindingInfo.Context = this;
+			commandBindingInfo.OwnerInstance = this;
 			commandBindingInfo.RoutedCommandName = "SDWindowCommands.SplitView";
 			commandBindingInfo.ExecutedEventHandler = OnSplitView;
-			commandBindingInfo.CanExecutedEventHandler = OnCanSplitView;
-			
+			commandBindingInfo.CanExecutedEventHandler = OnCanSplitView;			
 			CommandsRegistry.RegisterCommandBinding(commandBindingInfo);
 			
-			CommandsRegistry.InvokeCommandBindingUpdateHandlers(contextName, this);
-			CommandsRegistry.InvokeInputBindingUpdateHandlers(contextName, this);
 			
 			textMarkerService = new TextMarkerService(this);
 			iconBarManager = new IconBarManager();

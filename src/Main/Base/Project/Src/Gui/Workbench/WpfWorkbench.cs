@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			CommandsRegistry.DefaultContextName = this.GetType().Name;
+			CommandsRegistry.DefaultContextName = this.GetType().AssemblyQualifiedName;
 			
 			CommandsService.RegisterBuiltInRoutedUICommands();
 			
@@ -92,20 +92,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// Register context and load all commands from addin
 			CommandsRegistry.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
 			
-			CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {
-            	var newBindings = CommandsRegistry.FindCommandBindings(CommandsRegistry.DefaultContextName, null, null, null);
-            	CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
-            	CommandBindings.AddRange(newBindings);
-			 });
+			//CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {
+            	// var newBindings = CommandsRegistry.FindCommandBindings(CommandsRegistry.DefaultContextName, null, null, null);
+            	// CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
+            	// CommandBindings.AddRange(newBindings);
+			 //});
 			
-			CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {            	
-            	var newBindings = CommandsRegistry.FindInputBindings(null, null, null);
-            	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
-            	InputBindings.AddRange(newBindings);
-	        });
-			
-			CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
-			CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
+			//CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {            	
+            //	var newBindings = CommandsRegistry.FindInputBindings(null, null, null);
+            //	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
+            //	InputBindings.AddRange(newBindings);
+	        //});
 			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath);
 			

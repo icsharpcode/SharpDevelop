@@ -140,13 +140,12 @@ namespace ICSharpCode.Core.Presentation
 			if(!codon.Properties.Contains("command") && (codon.Properties.Contains("link") || codon.Properties.Contains("class"))) {
 				var commandBindingInfo = new CommandBindingInfo();
 				commandBindingInfo.AddIn = codon.AddIn;
-				commandBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
+				commandBindingInfo.OwnerTypeName = CommandsRegistry.DefaultContextName;
 				commandBindingInfo.Class = CommandWrapper.GetCommand(codon, caller, createCommand);
 				commandBindingInfo.RoutedCommandName = routedCommandName;
 				commandBindingInfo.IsLazy = true;
 				
 				CommandsRegistry.RegisterCommandBinding(commandBindingInfo);
-				CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
 			}
 			
 			if(codon.Properties.Contains("shortcut")) {
@@ -154,16 +153,19 @@ namespace ICSharpCode.Core.Presentation
 				var inputBindingInfo = new InputBindingInfo();
 				inputBindingInfo.AddIn = codon.AddIn;
 				inputBindingInfo.Categories.AddRange(CommandsRegistry.RegisterInputBindingCategories("Menu Items"));
-				inputBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
+				inputBindingInfo.OwnerTypeName = CommandsRegistry.DefaultContextName;
 				inputBindingInfo.RoutedCommandName = routedCommandName;
 				inputBindingInfo.Gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(codon.Properties["gestures"]);
 			
 				CommandsRegistry.RegisterInputBinding(inputBindingInfo);
-				CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {
-				                                                   		var updatedGestures = CommandsRegistry.FindInputGestures(null, null, routedCommandName);
-				                                                   		this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
-				                                                   });
-				CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
+				
+				BindingsUpdatedHandler gesturesUpdateHandler = delegate {
+					var updatedGestures = CommandsRegistry.FindInputGestures(null, null, null, null, routedCommandName);
+					this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+				};
+				
+				gesturesUpdateHandler.Invoke();
+				CommandsRegistry.RegisterClassInputBindingsUpdateHandler(CommandsRegistry.DefaultContextName, gesturesUpdateHandler);
 			}
 		}
 	}

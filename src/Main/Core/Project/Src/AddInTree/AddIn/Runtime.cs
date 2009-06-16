@@ -84,6 +84,10 @@ namespace ICSharpCode.Core
 					// preload assembly to provoke FileLoadException if dependencies are missing
 					loadedAssembly.GetExportedTypes();
 					#endif
+					
+					if(Loaded != null) {
+						Loaded(this, null);
+					}
 				} catch (FileNotFoundException ex) {
 					MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
 				} catch (FileLoadException ex) {
@@ -91,6 +95,8 @@ namespace ICSharpCode.Core
 				}
 			}
 		}
+		
+		public event EventHandler Loaded;
 		
 		public Assembly LoadedAssembly {
 			get {

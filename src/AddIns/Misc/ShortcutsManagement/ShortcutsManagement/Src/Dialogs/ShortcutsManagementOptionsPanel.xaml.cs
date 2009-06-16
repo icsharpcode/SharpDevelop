@@ -45,7 +45,7 @@ namespace ICSharpCode.ShortcutsManagement
             rootEntries.Add(unspecifiedAddInSection);
 
             // Go through all input bindings
-            var inputBindingInfos = CommandsRegistry.FindInputBindingInfos(null, null, null);
+            var inputBindingInfos = CommandsRegistry.FindInputBindingInfos(null, null, null, null, null);
             foreach(var inputBindingInfo in inputBindingInfos) {
                 // Find appropriate or create new add-in section for input binding
                 ShortcutManagement.AddIn addinSection;
@@ -156,10 +156,17 @@ namespace ICSharpCode.ShortcutsManagement
                 var shortcut = pair.Key;
                 var inputBindingInfo = pair.Value;
 
+                if (inputBindingInfo.Gestures.Count == shortcut.Gestures.Count) {
+                    foreach (var gesture in shortcut.Gestures) {
+                        inputBindingInfo.Gestures.ContainsCopy(gesture);
+                    }
+                } else {
+                    inputBindingInfo.IsModifyed = true;
+                }
                 inputBindingInfo.Gestures = new InputGestureCollection(shortcut.Gestures);
             }
 
-            CommandsRegistry.InvokeInputBindingUpdateHandlers(null, null);
+            CommandsRegistry.InvokeInputBindingUpdateHandlers();
 
             return true;
         }

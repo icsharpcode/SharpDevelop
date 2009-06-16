@@ -483,7 +483,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						
 						var commandBindingInfo = new CommandBindingInfo();
 						commandBindingInfo.ClassName = routedCommandName;
-						commandBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
+						commandBindingInfo.OwnerType = typeof(WpfWorkbench);
 						commandBindingInfo.RoutedCommandName = routedCommandName;
 						commandBindingInfo.AddIn = addIn;
 							
@@ -491,10 +491,15 @@ namespace ICSharpCode.SharpDevelop.Commands
 						
 						// If pad have shortcut specified add input binding
 						if (!string.IsNullOrEmpty(padContent.Shortcut)) {
+							CommandsRegistry.RegisterClassInputBindingsUpdateHandler(CommandsRegistry.DefaultContextName, delegate {
+								var updatedGestures = CommandsRegistry.FindInputGestures(CommandsRegistry.DefaultContextName, null, null, null, routedCommandName);
+								item.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+							});
+							
 							var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);
 							
 							var inputBindingInfo = new InputBindingInfo();
-							inputBindingInfo.ContextName = CommandsRegistry.DefaultContextName;
+							inputBindingInfo.OwnerTypeName = CommandsRegistry.DefaultContextName;
 							inputBindingInfo.RoutedCommandName = routedCommandName;
 							inputBindingInfo.Gestures = gestures;
 							inputBindingInfo.Categories.AddRange(CommandsRegistry.RegisterInputBindingCategories("Menu Items/Views"));
@@ -505,15 +510,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 						
 						bindingsAssigned.Add(routedCommandName);
 					}
-					
-					CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {
-					                                                   		var updatedGestures = CommandsRegistry.FindInputGestures(CommandsRegistry.DefaultContextName, null, routedCommandName);
-					                                                   		item.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
-					                                                   });
-					
-					CommandsRegistry.InvokeCommandBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
-					CommandsRegistry.InvokeInputBindingUpdateHandlers(CommandsRegistry.DefaultContextName, null);
-					
 				
 					item.Command = CommandsRegistry.GetRoutedUICommand(routedCommandName);
 					
