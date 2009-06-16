@@ -39,7 +39,11 @@ namespace ICSharpCode.PythonBinding
 		List<MethodDeclaration> entryPointMethods;
 
 		SpecialNodesInserter specialNodesInserter;
+		INode currentNode;
+		List<Comment> xmlDocComments = new List<Comment>();
 		
+		static readonly string Docstring = "\"\"\"";
+
 		public NRefactoryToPythonConverter(SupportedLanguage language)
 		{
 			this.language = language;
@@ -811,6 +815,7 @@ namespace ICSharpCode.PythonBinding
 			AppendLine();
 			
 			IncreaseIndent();
+			AppendDocstring(xmlDocComments);
 			if (methodDeclaration.Body.Children.Count > 0) {
 				methodDeclaration.Body.AcceptVisitor(this, data);
 			} else {
@@ -1115,6 +1120,7 @@ namespace ICSharpCode.PythonBinding
 			codeBuilder.AppendLineIfPreviousLineIsCode();
 			AppendIndentedLine("class " + typeDeclaration.Name + "(object):");
 			IncreaseIndent();
+			AppendDocstring(xmlDocComments);
 			if (typeDeclaration.Children.Count > 0) {
 				// Look for fields or a constructor for the type.
 				constructorInfo = PythonConstructorInfo.GetConstructorInfo(typeDeclaration);
@@ -1359,6 +1365,8 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		protected override void BeginVisit(INode node)
 		{
+			xmlDocComments.Clear();
+			currentNode = node;
 			specialNodesInserter.AcceptNodeStart(node);
 		}
 		
@@ -1397,6 +1405,8 @@ namespace ICSharpCode.PythonBinding
 				}
 			} else if (comment.CommentType == CommentType.Block) {
 				AppendMultilineComment(comment);
+			} else if (comment.CommentType == CommentType.Documentation) {
+				xmlDocComments.Add(comment);
 			}
 		}
 		
@@ -1621,6 +1631,7 @@ namespace ICSharpCode.PythonBinding
 			
 			// Add fields at start of constructor.
 			IncreaseIndent();
+			AppendDocstring(xmlDocComments);
 			if (constructorInfo.Fields.Count > 0) {
 				foreach (FieldDeclaration field in constructorInfo.Fields) {
 					// Ignore field if it has no initializer.
@@ -1882,5 +1893,26 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 		}
+
+		void AppendDocstring(List<Comment> xmlDocComments)
+		{
+			if (xmlDocComments.Count > 1) {
+				// Multiline docstring.
+				for (int i = 0; i < xmlDocComments.Count; ++i) {
+					string line = xmlDocComments[i].CommentText;
+					if (i == 0) {
+						AppendIndented(Docstring);
+					} else {
+						AppendIndented(String.Empty);
+					}
+					Append(line);
+					AppendLine();
+				}
+				AppendIndentedLine(Docstring);
+			} else if (xmlDocComments.Count == 1) {
+				// Single line docstring.
+				AppendIndentedLine(Docstring + xmlDocComments[0].CommentText + Docstring);
+			}
+		}		
 	}
 }
