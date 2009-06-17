@@ -1402,7 +1402,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.NewLine();
 				outputFormatter.Indent ();
 				TrackVisit(statement, null);
-				outputFormatter.NewLine();
 				--outputFormatter.IndentationLevel;
 			}
 		}
