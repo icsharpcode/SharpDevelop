@@ -433,6 +433,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public override object TrackedVisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
+			CreateConstructor(constructorInfo);
 			return null;
 		}
 		
@@ -1125,7 +1126,12 @@ namespace ICSharpCode.PythonBinding
 				// Look for fields or a constructor for the type.
 				constructorInfo = PythonConstructorInfo.GetConstructorInfo(typeDeclaration);
 				if (constructorInfo != null) {
-					CreateConstructor(constructorInfo);
+					if (constructorInfo.Constructor != null) {
+						// Generate constructor later when VisitConstructorDeclaration method is called.
+						// This allows the constructor comments to be converted in the right place.
+					} else {
+						CreateConstructor(constructorInfo);
+					}
 				}
 				
 				// Visit the rest of the class.
@@ -1398,18 +1404,18 @@ namespace ICSharpCode.PythonBinding
 		void IOutputFormatter.PrintComment(Comment comment, bool forceWriteInPreviousBlock)
 		{
 			if (comment.CommentType == CommentType.SingleLine) {
-				if (comment.CommentStartsLine) {
-					codeBuilder.AppendIndentedLine("#" + comment.CommentText);
-				} else {
-					codeBuilder.AppendToPreviousLine(" #" + comment.CommentText);
-				}
+				AppendSingleLineComment(comment);
 			} else if (comment.CommentType == CommentType.Block) {
 				AppendMultilineComment(comment);
 			} else if (comment.CommentType == CommentType.Documentation) {
-				xmlDocComments.Add(comment);
+				if (SupportsDocstring(currentNode)) {
+					xmlDocComments.Add(comment);
+				} else {
+					AppendSingleLineComment(comment);
+				}
 			}
 		}
-		
+				
 		void IOutputFormatter.PrintPreprocessingDirective(PreprocessingDirective directive, bool forceWriteInPreviousBlock)
 		{
 		}
@@ -1620,7 +1626,6 @@ namespace ICSharpCode.PythonBinding
 		void CreateConstructor(PythonConstructorInfo constructorInfo)
 		{
 			if (constructorInfo.Constructor != null) {
-				BeginVisit(constructorInfo.Constructor);
 				AppendIndented("def __init__");
 				AddParameters(constructorInfo.Constructor);
 				methodParameters = constructorInfo.Constructor.Parameters;
@@ -1894,6 +1899,15 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 
+		void AppendSingleLineComment(Comment comment)
+		{
+			if (comment.CommentStartsLine) {
+				codeBuilder.AppendIndentedLine("#" + comment.CommentText);
+			} else {
+				codeBuilder.AppendToPreviousLine(" #" + comment.CommentText);
+			}			
+		}
+		
 		void AppendDocstring(List<Comment> xmlDocComments)
 		{
 			if (xmlDocComments.Count > 1) {
@@ -1913,6 +1927,15 @@ namespace ICSharpCode.PythonBinding
 				// Single line docstring.
 				AppendIndentedLine(Docstring + xmlDocComments[0].CommentText + Docstring);
 			}
-		}		
+		}
+		
+		/// <summary>
+		/// Returns true if the node is a type declaration or a method since these can have 
+		/// python docstrings.
+		/// </summary>
+		bool SupportsDocstring(INode node)
+		{
+			return (node is TypeDeclaration) || (node is MethodDeclaration) || (node is ConstructorDeclaration);
+		}
 	}
 }

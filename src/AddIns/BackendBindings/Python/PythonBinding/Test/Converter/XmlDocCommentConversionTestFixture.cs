@@ -20,7 +20,6 @@ namespace PythonBinding.Tests.Converter
 						"/// </summary>\r\n" +
 						"public class Foo\r\n" +
 						"{\r\n" +
-//						"    int j;\r\n" +
 						"    /// <summary>\r\n" +
 						"    /// Run\r\n" +
 						"    /// </summary>\r\n" +
@@ -32,15 +31,15 @@ namespace PythonBinding.Tests.Converter
 						"    public void Stop()\r\n" +
 						"    {\r\n" +
 						"    }\r\n" +
-//						"\r\n" +
-//						"    /// <summary> Initialize.</summary>\r\n" +
-//						"    public Foo()\r\n" +
-//						"    {\r\n" +
-//						"        /// Initialize j.\r\n" +
-//						"        j = 0; /// Set to zero\r\n" +
-//						"        /// test\r\n" +
-//						"        if (j == 0) j = 2;\r\n" +
-//						"    }\r\n" +
+						"\r\n" +
+						"    /// <summary> Initialize.</summary>\r\n" +
+						"    public Foo()\r\n" +
+						"    {\r\n" +
+						"        /// Initialize j.\r\n" +
+						"        int j = 0; /// Set to zero\r\n" +
+						"        /// test\r\n" +
+						"        if (j == 0) j = 2;\r\n" +
+						"    }\r\n" +
 						"}";
 		[Test]
 		public void ConvertedPythonCode()
@@ -53,15 +52,6 @@ namespace PythonBinding.Tests.Converter
 									"     Class Foo\r\n" +
 									"     </summary>\r\n" +
 									"    \"\"\"\r\n" +
-//									"    def __init__(self):\r\n" +
-//									"        \"\"\" <summary> Initialize.</summary>\"\"\"\r\n" +
-//									"        # Initialize j.\r\n" +
-//									"        # set to zero\r\n" +
-//									"        j = 0 # Set to zero\r\n" +
-//									"        # test\r\n" +
-//									"        if j == 0:\r\n" +
-//									"            j = 2\r\n" +
-//									"\r\n" +
 									"    def Run(self):\r\n" +
 									"        \"\"\" <summary>\r\n" +
 									"         Run\r\n" +
@@ -71,7 +61,15 @@ namespace PythonBinding.Tests.Converter
 									"\r\n" +
 									"    def Stop(self):\r\n" +
 									"        \"\"\" <summary> Stop </summary>\"\"\"\r\n" +
-									"        pass";
+									"        pass\r\n" +
+									"\r\n" +
+									"    def __init__(self):\r\n" +
+									"        \"\"\" <summary> Initialize.</summary>\"\"\"\r\n" +
+									"        # Initialize j.\r\n" +
+									"        j = 0 # Set to zero\r\n" +
+									"        # test\r\n" +
+									"        if j == 0:\r\n" +
+									"            j = 2";
 			
 			Assert.AreEqual(expectedPython, python, python);
 		}
