@@ -144,7 +144,7 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets generics arguments for a type or an emtpy array for non-generic types. </summary>
+		/// <summary> Gets generics arguments for a type or an empty List for non-generic types. </summary>
 		public List<DebugType> GenericArguments {
 			get {
 				if (this.IsArray || this.IsPointer) {

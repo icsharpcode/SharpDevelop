@@ -74,8 +74,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			this.debuggerService = debuggerService;
 			
-			DebugType helpersType =  DebugType.Create(debuggerService.DebuggedProcess, null, "System.Runtime.CompilerServices.RuntimeHelpers");
-			this.hashCodeMethod = helpersType.GetMember("GetHashCode", BindingFlags.Public | BindingFlags.Static | BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
+			DebugType typeRuntimeHelpers =  DebugType.Create(debuggerService.DebuggedProcess, null, "System.Runtime.CompilerServices.RuntimeHelpers");
+			this.hashCodeMethod = typeRuntimeHelpers.GetMember("GetHashCode", BindingFlags.Public | BindingFlags.Static | BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
 		}
 		
 		/// <summary>
@@ -140,6 +140,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="thisNode"></param>
 		private void loadNodeProperties(ObjectNode thisNode)
 		{
+			// take all properties for this value (type = value's real type)
 			foreach(Expression memberExpr in thisNode.DebuggerValue.Expression.AppendObjectMembers(thisNode.DebuggerValue.Type, _bindingFlags))
 			{
 				checkIsOfSupportedType(memberExpr);
@@ -272,7 +273,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		}
 		
 		/// <summary>
-		/// Checks whether given expression's type is atomic - atomic values will be added to node's property list.
+		/// Checks whether given expression's type is atomic.
 		/// </summary>
 		/// <param name="expr">Expression.</param>
 		/// <returns>True if expression's type is atomic, False otherwise.</returns>

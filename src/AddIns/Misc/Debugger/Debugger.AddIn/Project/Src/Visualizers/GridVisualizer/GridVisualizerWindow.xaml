@@ -20,7 +20,7 @@
 				<StackPanel Orientation="Horizontal">
 					<TextBlock VerticalAlignment="Center">Expression:</TextBlock>
 					<TextBox Name="txtExpression" VerticalAlignment="Center" Width="100"></TextBox>
-					<Button>Inspect</Button>
+					<Button Name="btnInspect" Click="btnInspect_Click">Inspect</Button>
 				</StackPanel>
 			</Border>
 			

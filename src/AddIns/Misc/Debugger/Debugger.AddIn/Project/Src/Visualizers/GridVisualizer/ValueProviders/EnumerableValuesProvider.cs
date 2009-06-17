@@ -9,7 +9,7 @@ using Debugger.Expressions;
 using ICSharpCode.SharpDevelop.Services;
 using System.Collections.Generic;
 
-namespace Debugger.AddIn.Visualizers.GridVisualizer.ValueProviders
+namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
 	/// <summary>
 	/// Provides <see cref="ObjectValue"/>s for debugee objects implementing IEnumerable.

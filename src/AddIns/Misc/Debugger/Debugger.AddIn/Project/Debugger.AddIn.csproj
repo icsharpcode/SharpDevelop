@@ -208,7 +208,9 @@
     <Compile Include="Src\Visualizers\GridVisualizer\ObjectValue.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ShowGridVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\IListValuesProvider.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\VirtualizingCollection.cs" />
     <Compile Include="Src\Visualizers\ObjectProperty.cs" />
     <Compile Include="Src\Visualizers\Utils\DebuggerHelpers.cs" />
     <Compile Include="Src\Visualizers\Utils\DictionaryExtensions.cs" />
