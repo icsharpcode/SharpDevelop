@@ -37,7 +37,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		public PositionedNodeProperty AddProperty(ObjectProperty objectProperty, bool isExpanded)
+		public PositionedNodeProperty AddProperty(ObjectGraphProperty objectProperty, bool isExpanded)
 		{
 			var newProperty = new PositionedNodeProperty(objectProperty, this);
 			newProperty.IsExpanded = isExpanded;

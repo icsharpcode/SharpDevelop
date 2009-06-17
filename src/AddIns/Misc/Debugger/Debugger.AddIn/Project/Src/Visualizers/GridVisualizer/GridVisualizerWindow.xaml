@@ -1,0 +1,40 @@
+<Window x:Class="Debugger.AddIn.Visualizers.GridVisualizer.GridVisualizerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dv="clr-namespace:Debugger.AddIn.Visualizers.Graph"
+        Title="Grid visualizer" Height="350" Width="600">
+	<StackPanel>
+		<StackPanel Orientation="Vertical" Background="AliceBlue">
+			
+			<StackPanel.Resources>
+				<Style TargetType="TextBlock">
+					<Setter Property="Margin" Value="0 0 8 0" />
+				</Style>
+				<Style TargetType="Button">
+					<Setter Property="Margin" Value="8 0 0 0" />
+					<Setter Property="Padding" Value="8 0 8 0" />
+				</Style>
+			</StackPanel.Resources>
+			
+			<Border Margin="3" Padding="3">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock VerticalAlignment="Center">Expression:</TextBlock>
+					<TextBox Name="txtExpression" VerticalAlignment="Center" Width="100"></TextBox>
+					<Button>Inspect</Button>
+				</StackPanel>
+			</Border>
+			
+			<ListView Height="280" Name="listView">
+				<ListView.View>
+					<GridView>
+					</GridView>
+				</ListView.View>
+			</ListView>
+		
+		</StackPanel>
+		
+		<Canvas Name="canvas" Margin="4">
+		</Canvas>
+	
+	</StackPanel>
+</Window>

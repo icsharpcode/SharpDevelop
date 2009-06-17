@@ -5,17 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Debugger.AddIn.Visualizers.Graph
+namespace Debugger.AddIn.Visualizers
 {
-    /// <summary>
-    /// Primitive property  of an object, in string form.
-    /// </summary>
-    public class ObjectProperty
-    {
-        /// <summary>
+	/// <summary>
+	/// Property  of an object, in string form.
+	/// </summary>
+	public class ObjectProperty
+	{
+		/// <summary>
         /// e.g. "Age"
         /// </summary>
         public string Name { get; set; }
@@ -36,13 +34,8 @@ namespace Debugger.AddIn.Visualizers.Graph
         public bool IsAtomic { get; set; }
         
         /// <summary>
-        /// Node that this property points to. Can be null. Always null if <see cref="IsAtomic"/> is true.
-        /// </summary>
-        public ObjectNode TargetNode { get; set; }
-        
-        /// <summary>
         /// Is this property value null? Only meaningful if <see cref="IsAtomic"/> is false.
         /// </summary>
         public bool IsNull { get; set; }
-    }
+	}
 }

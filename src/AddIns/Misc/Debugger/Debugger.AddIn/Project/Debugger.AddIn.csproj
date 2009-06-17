@@ -146,7 +146,6 @@
     <EmbeddedResource Include="Src\Service\EditBreakpointScriptForm.resx">
       <DependentUpon>EditBreakpointScriptForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Visualizers\Graph\WinFormsControl.resx" />
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
@@ -200,8 +199,17 @@
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraph.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphBuilder.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectNode.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectProperty.cs" />
+    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphProperty.cs" />
     <Compile Include="Src\Visualizers\Graph\ShowObjectGraphVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\GridVisualizerWindow.xaml.cs">
+      <DependentUpon>GridVisualizerWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Visualizers\GridVisualizer\ObjectValue.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ShowGridVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
+    <Compile Include="Src\Visualizers\ObjectProperty.cs" />
     <Compile Include="Src\Visualizers\Utils\DebuggerHelpers.cs" />
     <Compile Include="Src\Visualizers\Utils\DictionaryExtensions.cs" />
     <Compile Include="Src\Visualizers\Utils\Lookup.cs" />
@@ -275,6 +283,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Visualizers\GridVisualizer\GridVisualizerWindow.xaml" />
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
@@ -296,6 +305,7 @@
     <Folder Include="Src\Visualizers\Graph\Layout\Tree" />
     <Folder Include="Src\Visualizers\Graph\Graphviz" />
     <Folder Include="Src\Visualizers\Graph\ObjectGraph" />
+    <Folder Include="Src\Visualizers\GridVisualizer\ValueProviders" />
     <Folder Include="Src\Visualizers\Utils" />
     <Folder Include="Src\Visualizers\GridVisualizer" />
     <Folder Include="Src\Visualizers\PresentationBindings" />

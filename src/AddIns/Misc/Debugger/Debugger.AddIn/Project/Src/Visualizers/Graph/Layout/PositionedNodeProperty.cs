@@ -17,7 +17,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// Creates new PositionedNodeProperty.
 		/// </summary>
 		/// <param name="objectProperty">Underlying <see cref="ObjectProperty"/></param>
-		public PositionedNodeProperty(ObjectProperty objectProperty, PositionedNode containingNode)
+		public PositionedNodeProperty(ObjectGraphProperty objectProperty, PositionedNode containingNode)
 		{
 			this.objectProperty = objectProperty;
 			this.containingNode = containingNode;
@@ -25,11 +25,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public bool IsExpanded { get; set; }
 		
-		private ObjectProperty objectProperty;
+		private ObjectGraphProperty objectProperty;
 		/// <summary>
 		/// Underlying <see cref="ObjectProperty"/>.
 		/// </summary>
-		public ObjectProperty ObjectProperty
+		public ObjectGraphProperty ObjectProperty
 		{
 			get { return this.objectProperty; }
 		}

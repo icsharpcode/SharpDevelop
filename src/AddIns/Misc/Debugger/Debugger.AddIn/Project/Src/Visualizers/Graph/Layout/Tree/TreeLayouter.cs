@@ -64,7 +64,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			treeNodeFor[objectGraphNode] = newTreeNode;
 			
 			double subtreeSize = 0;
-			foreach	(ObjectProperty property in objectGraphNode.Properties)
+			foreach	(ObjectGraphProperty property in objectGraphNode.Properties)
 			{
 				if (property.TargetNode != null)
 				{

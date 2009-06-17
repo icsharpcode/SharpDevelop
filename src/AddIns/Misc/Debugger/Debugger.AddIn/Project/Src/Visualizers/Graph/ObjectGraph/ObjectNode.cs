@@ -46,9 +46,9 @@ namespace Debugger.AddIn.Visualizers.Graph
             _edges.Add(new ObjectEdge { Name = edgeName, SourceNode = this, TargetNode = targetNode });
         }*/
 		
-		class PropertyComparer : IComparer<ObjectProperty>
+		class PropertyComparer : IComparer<ObjectGraphProperty>
 		{
-			public int Compare(ObjectProperty prop1, ObjectProperty prop2)
+			public int Compare(ObjectGraphProperty prop1, ObjectGraphProperty prop2)
 			{
 				// order by IsAtomic, Name
 				int atomic = prop2.IsAtomic.CompareTo(prop1.IsAtomic);
@@ -67,11 +67,11 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		private bool sorted = false;
 
-		private List<ObjectProperty> properties = new List<ObjectProperty>();
+		private List<ObjectGraphProperty> properties = new List<ObjectGraphProperty>();
 		/// <summary>
 		/// Properties (either atomic or complex) of the object this node represents.
 		/// </summary>
-		public List<ObjectProperty> Properties
+		public List<ObjectGraphProperty> Properties
 		{
 			get 
 			{ 
@@ -86,7 +86,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Only complex properties filtered out of <see cref="Properties"/>
 		/// </summary>
-		public IEnumerable<ObjectProperty> ComplexProperties
+		public IEnumerable<ObjectGraphProperty> ComplexProperties
 		{
 			get
 			{
@@ -103,7 +103,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		internal void AddAtomicProperty(string name, string value, Expression expression)
 		{
-			properties.Add(new ObjectProperty
+			properties.Add(new ObjectGraphProperty
 			                { Name = name, Value = value, Expression = expression, IsAtomic = true, TargetNode = null });
 		}
 		
@@ -112,7 +112,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		internal void AddComplexProperty(string name, string value, Expression expression, ObjectNode targetNode, bool isNull)
 		{
-			properties.Add(new ObjectProperty
+			properties.Add(new ObjectGraphProperty
 			                { Name = name, Value = value, Expression = expression, IsAtomic = false, TargetNode = targetNode, IsNull = isNull });
 		}
 	}

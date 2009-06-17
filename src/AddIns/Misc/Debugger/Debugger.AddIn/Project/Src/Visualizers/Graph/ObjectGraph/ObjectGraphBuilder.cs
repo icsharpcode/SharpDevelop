@@ -168,7 +168,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="expandedNodes"></param>
 		private void loadChildrenRecursive(ObjectNode thisNode, ExpandedNodes expandedNodes)
 		{
-			foreach(ObjectProperty complexProperty in thisNode.ComplexProperties)
+			foreach(ObjectGraphProperty complexProperty in thisNode.ComplexProperties)
 			{
 				Expression memberExpr = complexProperty.Expression;
 				ObjectNode targetNode = null;
