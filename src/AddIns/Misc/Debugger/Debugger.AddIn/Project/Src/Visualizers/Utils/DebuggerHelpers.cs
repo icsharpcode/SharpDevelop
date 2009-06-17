@@ -7,7 +7,7 @@
 using System;
 using Debugger.Wrappers.CorDebug;
 
-namespace Debugger.AddIn.Visualizers.Graph.Utils
+namespace Debugger.AddIn.Visualizers.Utils
 {
 	public static class DebuggerHelpers
 	{

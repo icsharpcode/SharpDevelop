@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Debugger.AddIn.Visualizers.Graph.Utils
+namespace Debugger.AddIn.Visualizers.Utils
 {
 	/// <summary>
 	/// A collection of values for one key in the Lookup class.

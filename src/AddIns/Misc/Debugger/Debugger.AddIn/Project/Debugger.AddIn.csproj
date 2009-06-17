@@ -202,10 +202,10 @@
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectNode.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectProperty.cs" />
     <Compile Include="Src\Visualizers\Graph\ShowObjectGraphVisualizerCommand.cs" />
-    <Compile Include="Src\Visualizers\Graph\Utils\DebuggerHelpers.cs" />
-    <Compile Include="Src\Visualizers\Graph\Utils\DictionaryExtensions.cs" />
-    <Compile Include="Src\Visualizers\Graph\Utils\Lookup.cs" />
-    <Compile Include="Src\Visualizers\Graph\Utils\LookupValueCollection.cs" />
+    <Compile Include="Src\Visualizers\Utils\DebuggerHelpers.cs" />
+    <Compile Include="Src\Visualizers\Utils\DictionaryExtensions.cs" />
+    <Compile Include="Src\Visualizers\Utils\Lookup.cs" />
+    <Compile Include="Src\Visualizers\Utils\LookupValueCollection.cs" />
     <Compile Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml.cs">
       <DependentUpon>VisualizerWPFWindow.xaml</DependentUpon>
     </Compile>
@@ -296,7 +296,8 @@
     <Folder Include="Src\Visualizers\Graph\Layout\Tree" />
     <Folder Include="Src\Visualizers\Graph\Graphviz" />
     <Folder Include="Src\Visualizers\Graph\ObjectGraph" />
-    <Folder Include="Src\Visualizers\Graph\Utils" />
+    <Folder Include="Src\Visualizers\Utils" />
+    <Folder Include="Src\Visualizers\GridVisualizer" />
     <Folder Include="Src\Visualizers\PresentationBindings" />
     <Page Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml" />
     <Page Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml" />

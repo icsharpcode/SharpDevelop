@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Debugger.AddIn.Visualizers.Graph.Utils;
+using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {

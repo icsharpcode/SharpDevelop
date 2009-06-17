@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Debugger.AddIn.Visualizers.Graph.Utils
+namespace Debugger.AddIn.Visualizers.Utils
 {
 	/// <summary>
 	/// Same like Dictionary, but can store multiple values for one key.

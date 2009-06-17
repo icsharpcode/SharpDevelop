@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Debugger.AddIn.Visualizers.Graph.Utils
+namespace Debugger.AddIn.Visualizers.Utils
 {
 	public static class DictionaryExtensions
 	{
