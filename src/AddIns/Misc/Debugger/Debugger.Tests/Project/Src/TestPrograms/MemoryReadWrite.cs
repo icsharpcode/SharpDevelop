@@ -26,7 +26,6 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		[NUnit.Framework.Ignore("Ignored because it fails too frequently - the expected output seems to be different on each machine (or at least for each .NET/Windows version combination)")]
 		public void MemoryReadWrite()
 		{
 			StartTest("MemoryReadWrite.cs");
@@ -37,13 +36,13 @@ namespace Debugger.Tests {
 			addrHello = DeRef(process.ReadMemory(addrHello, 4));
 			addrWorld = DeRef(process.ReadMemory(addrWorld, 4));
 			
-			byte[] hello = process.ReadMemory(addrHello, 22);
-			byte[] world = process.ReadMemory(addrWorld, 24);
+			byte[] hello = process.ReadMemory(addrHello, 18);
+			byte[] world = process.ReadMemory(addrWorld, 20);
 			
 			ObjectDump("hello", ToHex(hello));
 			ObjectDump("world", ToHex(world));
 			
-			process.WriteMemory(addrWorld + 12, new byte[] {0x77, 0x0, 0x6F, 0x0, 0x72, 0x0, 0x6C, 0x0, 0x64, 0x0});
+			process.WriteMemory(addrWorld + 8, new byte[] {0x77, 0x0, 0x6F, 0x0, 0x72, 0x0, 0x6C, 0x0, 0x64, 0x0});
 			
 			EndTest();
 		}
@@ -75,8 +74,8 @@ namespace Debugger.Tests {
     <ModuleLoaded>MemoryReadWrite.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
     <DebuggingPaused>Break MemoryReadWrite.cs:18,4-18,40</DebuggingPaused>
-    <hello>0 A 4D 3 6 0 0 0 5 0 0 0 48 0 65 0 6C 0 6C 0 6F 0 </hello>
-    <world>0 A 4D 3 7 0 0 0 6 0 0 0 20 0 20 0 20 0 20 0 20 0 21 0 </world>
+    <hello>54 B7 A1 79 5 0 0 0 48 0 65 0 6C 0 6C 0 6F 0 </hello>
+    <world>54 B7 A1 79 6 0 0 0 20 0 20 0 20 0 20 0 20 0 21 0 </world>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>

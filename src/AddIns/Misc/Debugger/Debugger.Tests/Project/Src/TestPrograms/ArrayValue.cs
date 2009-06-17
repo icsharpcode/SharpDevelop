@@ -27,7 +27,6 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		[NUnit.Framework.Ignore("Fails on .NET 4.0")]
 		public void ArrayValue()
 		{
 			ExpandProperties(
@@ -152,7 +151,7 @@ namespace Debugger.Tests {
             ElementType="null"
             FullName="System.Array"
             GenericArguments="{}"
-            Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable}"
+            Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IStructuralComparable, System.Collections.IStructuralEquatable}"
             Kind="Class"
             Module="mscorlib.dll"
             Name="Array">

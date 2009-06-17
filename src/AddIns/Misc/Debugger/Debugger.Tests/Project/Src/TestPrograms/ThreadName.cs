@@ -26,7 +26,6 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		[NUnit.Framework.Ignore("Fails on .NET 4.0")]
 		public void ThreadName()
 		{
 			debugger.ProcessStarted += debugger_ProcessStarted;
@@ -112,6 +111,24 @@ namespace Debugger.Tests {
         SelectedStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
         Suspended="False" />
     </Thread>
+    <ThreadStartedEvent>
+      <Thread
+        CurrentException="null"
+        CurrentExceptionIsUnhandled="False"
+        CurrentExceptionType="0"
+        HasExited="False"
+        IsAtSafePoint="True"
+        IsInValidState="True"
+        IsMostRecentStackFrameNative="False"
+        MostRecentStackFrame="System.Threading.ReaderWriterLock.Finalize"
+        MostRecentStackFrameWithLoadedSymbols="null"
+        Name=""
+        OldestStackFrame="System.Threading.ReaderWriterLock.Finalize"
+        Priority="Normal"
+        RuntimeValue="? = null"
+        SelectedStackFrame="null"
+        Suspended="False" />
+    </ThreadStartedEvent>
     <ProcessExited />
   </Test>
 </DebuggerTests>

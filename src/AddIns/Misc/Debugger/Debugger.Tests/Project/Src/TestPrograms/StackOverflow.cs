@@ -52,7 +52,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>StackOverflow.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break StackOverflow.cs:16,4-16,40</DebuggingPaused>
     <ExceptionThrown>Could not intercept: System.StackOverflowException</ExceptionThrown>
-    <DebuggingPaused>Exception StackOverflow.cs:21,3-21,4</DebuggingPaused>
+    <DebuggingPaused>Exception StackOverflow.cs:22,4-22,22</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>
