@@ -19,7 +19,8 @@ namespace Debugger.Tests.TestPrograms
 			System.Threading.Thread t = new System.Threading.Thread(WaitForALongTime);
 			t.Name = "Worker thread";
 			t.Start();
-			System.Threading.Thread.Sleep(0);
+			// Wait for the thread to start
+			System.Threading.Thread.Sleep(500);
 			System.Diagnostics.Debugger.Break();
 		}
 		
@@ -35,13 +36,13 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		[NUnit.Framework.Ignore("Fails on .NET 4.0")]
 		public void MainThreadExit()
 		{
 			StartTest("MainThreadExit.cs");
 			ObjectDump("ThreadsBeforeExit", process.Threads);
 			process.AsyncContinue();
-			System.Threading.Thread.Sleep(250);
+			// Wait for the main thread to exit
+			System.Threading.Thread.Sleep(500);
 			process.Break();
 			ObjectDump("ThreadsAfterExit", process.Threads);
 			process.Terminate();
@@ -59,7 +60,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>MainThreadExit.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break MainThreadExit.cs:23,4-23,40</DebuggingPaused>
+    <DebuggingPaused>Break MainThreadExit.cs:24,4-24,40</DebuggingPaused>
     <ThreadsBeforeExit
       Count="2">
       <Item>
@@ -89,7 +90,7 @@ namespace Debugger.Tests {
           IsAtSafePoint="True"
           IsInValidState="True"
           IsMostRecentStackFrameNative="False"
-          MostRecentStackFrame="System.Threading.WaitHandle.WaitOne"
+          MostRecentStackFrame="System.Threading.WaitHandle.InternalWaitOne"
           MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime"
           Name="Worker thread"
           OldestStackFrame="System.Threading.ThreadHelper.ThreadStart"
@@ -99,7 +100,7 @@ namespace Debugger.Tests {
           Suspended="False" />
       </Item>
     </ThreadsBeforeExit>
-    <DebuggingPaused>ForcedBreak MainThreadExit.cs:28,4-28,26</DebuggingPaused>
+    <DebuggingPaused>ForcedBreak MainThreadExit.cs:29,4-29,26</DebuggingPaused>
     <ThreadsAfterExit
       Count="2">
       <Item>
@@ -129,7 +130,7 @@ namespace Debugger.Tests {
           IsAtSafePoint="True"
           IsInValidState="True"
           IsMostRecentStackFrameNative="False"
-          MostRecentStackFrame="System.Threading.WaitHandle.WaitOne"
+          MostRecentStackFrame="System.Threading.WaitHandle.InternalWaitOne"
           MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime"
           Name="Worker thread"
           OldestStackFrame="System.Threading.ThreadHelper.ThreadStart"

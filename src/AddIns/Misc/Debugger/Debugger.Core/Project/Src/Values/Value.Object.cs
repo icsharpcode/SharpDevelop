@@ -288,7 +288,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Get all fields and properties of an object. </summary>
-		public Value[] GetMemberValues()
+		public IEnumerable<Value> GetMemberValues()
 		{
 			return GetMemberValues(BindingFlags.All);
 		}
@@ -298,10 +298,10 @@ namespace Debugger
 		/// </summary>
 		/// <param name="type"> Limit to type, null for all types </param>
 		/// <param name="bindingFlags"> Get only members with certain flags </param>
-		public Value[] GetMemberValues(BindingFlags bindingFlags)
+		public IEnumerable<Value> GetMemberValues(BindingFlags bindingFlags)
 		{
 			if (this.Type.IsClass || this.Type.IsValueType) {
-				return new List<Value>(GetObjectMembersEnum(bindingFlags)).ToArray();
+				return this.GetPermanentReference().GetObjectMembersEnum(bindingFlags);
 			} else {
 				return new Value[0];
 			}
@@ -313,6 +313,7 @@ namespace Debugger
 				yield return this.GetFieldValue(field);
 			}
 			foreach(PropertyInfo property in this.Type.GetProperties(bindingFlags)) {
+				if (property.GetMethod.ParameterCount > 0) continue;
 				yield return this.GetPropertyValue(property);
 			}
 		}
