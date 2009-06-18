@@ -318,19 +318,19 @@ namespace ICSharpCode.Core.Presentation
 			
 			// Remove command bindings
 			if(commandBindingInfo.OwnerType != null) {
-				foreach(ManagedCommandBinding binding in commandBindingInfo.OldCommandBindings) {
+				foreach(CommandBinding binding in commandBindingInfo.OldCommandBindings) {
 					RemoveClassCommandBinding(commandBindingInfo.OwnerType, binding);
 				}
 				
-				foreach(ManagedCommandBinding binding in commandBindingInfo.NewCommandBindings) {
+				foreach(CommandBinding binding in commandBindingInfo.NewCommandBindings) {
 					RemoveClassCommandBinding(commandBindingInfo.OwnerType, binding);
 				}
 			} else if (commandBindingInfo.OwnerInstance != null) {
-				foreach(ManagedCommandBinding binding in commandBindingInfo.OldCommandBindings) {
+				foreach(CommandBinding binding in commandBindingInfo.OldCommandBindings) {
 					commandBindingInfo.OwnerInstance.CommandBindings.Remove(binding);
 				}
 			
-				foreach(ManagedCommandBinding binding in commandBindingInfo.NewCommandBindings) {
+				foreach(CommandBinding binding in commandBindingInfo.NewCommandBindings) {
 					commandBindingInfo.OwnerInstance.CommandBindings.Remove(binding);
 				}
 			}

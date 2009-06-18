@@ -77,6 +77,11 @@
     <Compile Include="CommandsService\InputGestureCollectionExtensions.cs" />
     <Compile Include="CommandsService\ManagedCommandBinding.cs" />
     <Compile Include="CommandsService\ManagedInputBinding.cs" />
+    <Compile Include="CommandsService\MultiKeyBinding.cs" />
+    <Compile Include="CommandsService\MultiKeyGesture.cs" />
+    <Compile Include="CommandsService\MultiKeyGestureConverter.cs" />
+    <Compile Include="CommandsService\PartialKeyGesture.cs" />
+    <Compile Include="CommandsService\PartialKeyGestureConverter.cs" />
     <Compile Include="CommandsService\WpfCommandWrapper.cs" />
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="DropDownButton.cs" />

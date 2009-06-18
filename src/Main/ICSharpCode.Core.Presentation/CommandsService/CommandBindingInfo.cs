@@ -161,11 +161,11 @@ namespace ICSharpCode.Core.Presentation
 						if(OwnerType != null && IsModifyed) {
 							GenerateCommandBindings();
 							
-							foreach(ManagedCommandBinding binding in OldCommandBindings) {
+							foreach(CommandBinding binding in OldCommandBindings) {
 								CommandsRegistry.RemoveClassCommandBinding(OwnerType, binding);
 							}
 							
-							foreach(ManagedCommandBinding binding in NewCommandBindings) {
+							foreach(CommandBinding binding in NewCommandBindings) {
 								CommandManager.RegisterClassCommandBinding(OwnerType, binding);
 							}
 							
@@ -177,7 +177,7 @@ namespace ICSharpCode.Core.Presentation
 						if(OwnerInstance != null && IsModifyed) {
 							GenerateCommandBindings();
 							
-							foreach(ManagedCommandBinding binding in OldCommandBindings) {
+							foreach(CommandBinding binding in OldCommandBindings) {
 								OwnerInstance.CommandBindings.Remove(binding);
 							}
 							
@@ -225,12 +225,12 @@ namespace ICSharpCode.Core.Presentation
 		{			
 			OldCommandBindings = NewCommandBindings;
 			
-			var managedCommandBinding = new ManagedCommandBinding(RoutedCommand);
-			managedCommandBinding.CanExecute += GeneratedCanExecuteEventHandler;					
-			managedCommandBinding.Executed += GeneratedExecutedEventHandler;
+			var commandBinding = new ManagedCommandBinding(RoutedCommand);
+			commandBinding.CanExecute += GeneratedCanExecuteEventHandler;					
+			commandBinding.Executed += GeneratedExecutedEventHandler;
 			
 			NewCommandBindings = new CommandBindingCollection();
-			NewCommandBindings.Add(managedCommandBinding);
+			NewCommandBindings.Add(commandBinding);
 		}
 		
 		internal CommandBindingCollection OldCommandBindings

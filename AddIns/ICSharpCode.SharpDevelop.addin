@@ -129,9 +129,8 @@
 		<CommandBinding 
 			command="SDBuildCommands.BuildSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Build" 
-			gestures="F8" 
+			gestures="Ctrl+Alt+R,R|Ctrl+B,B" 
 			category="Building"
-			owner-instance="ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad"
 		/>
 		<CommandBinding 
 			command="SDBuildCommands.RebuildSolution" 

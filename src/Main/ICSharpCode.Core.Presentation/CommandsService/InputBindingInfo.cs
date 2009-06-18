@@ -118,11 +118,11 @@ namespace ICSharpCode.Core.Presentation
 						if(OwnerType != null && IsModifyed) {
 							GenerateInputBindings();
 							
-							foreach(ManagedInputBinding binding in OldInputBindings) {
+							foreach(InputBinding binding in OldInputBindings) {
 								CommandsRegistry.RemoveClassInputBinding(OwnerType, binding);
 							}
 							
-							foreach(ManagedInputBinding binding in NewInputBindings) {
+							foreach(InputBinding binding in NewInputBindings) {
 								CommandManager.RegisterClassInputBinding(OwnerType, binding);
 							}
 							
@@ -134,7 +134,7 @@ namespace ICSharpCode.Core.Presentation
 						if(OwnerInstance != null && IsModifyed) {
 							GenerateInputBindings();
 							
-							foreach(ManagedInputBinding binding in NewInputBindings) {
+							foreach(InputBinding binding in NewInputBindings) {
 								OwnerInstance.InputBindings.Remove(binding);
 							}
 							
@@ -169,8 +169,8 @@ namespace ICSharpCode.Core.Presentation
 			
 			NewInputBindings = new InputBindingCollection();
 			foreach(InputGesture gesture in Gestures) {
-				var managedInputBinding = new ManagedInputBinding(RoutedCommand, gesture);
-				NewInputBindings.Add(managedInputBinding);
+				var inputBinding = new InputBinding(RoutedCommand, gesture);
+				NewInputBindings.Add(inputBinding);
 			}
 		}
 		

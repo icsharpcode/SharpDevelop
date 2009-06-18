@@ -60,7 +60,13 @@ namespace ICSharpCode.Core.Presentation
 				foreach(var serializedGesture in serializedGestures) {
 					if(string.IsNullOrEmpty(serializedGesture)) continue;
 					
-					gestures.Add((InputGesture)new KeyGestureConverter().ConvertFromString(context, culture, serializedGesture));
+					if(serializedGesture.IndexOf(",") < 0) {
+						var keyGesture = (InputGesture)new KeyGestureConverter().ConvertFromString(context, culture, serializedGesture);
+						gestures.Add(keyGesture);
+					} else {
+						var multiKeyGestyre = (InputGesture)new MultiKeyGestureConverter().ConvertFromString(context, culture, serializedGesture);
+						gestures.Add(multiKeyGestyre);
+					}
 				}
 				
 				return gestures;
@@ -83,10 +89,12 @@ namespace ICSharpCode.Core.Presentation
 				var gesturesCollection = (InputGestureCollection)value;
 				foreach(var gesture in gesturesCollection) {
 					string serializedGesture;
-					if (gesture is KeyGesture) {
+					if (gesture is MultiKeyGesture) {
+						serializedGesture = (string)new MultiKeyGestureConverter().ConvertTo(context, culture, gesture, typeof(string));
+					} else if (gesture is KeyGesture) {
 						serializedGesture = (string)new KeyGestureConverter().ConvertTo(context, culture, gesture, typeof(string));
 					} else if (gesture is MouseGesture) {
-						serializedGesture = (string)new KeyGestureConverter().ConvertTo(context, culture, gesture, typeof(string));
+						serializedGesture = (string)new MouseGestureConverter().ConvertTo(context, culture, gesture, typeof(string));
 					} else {
 						continue;
 					}
