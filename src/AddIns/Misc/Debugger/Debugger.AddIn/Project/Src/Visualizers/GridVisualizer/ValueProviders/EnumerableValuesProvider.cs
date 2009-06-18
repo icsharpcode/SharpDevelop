@@ -4,10 +4,11 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.MetaData;
 using System;
+using System.Collections.Generic;
 using Debugger.Expressions;
 using ICSharpCode.SharpDevelop.Services;
-using System.Collections.Generic;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -16,11 +17,18 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// </summary>
 	public class EnumerableValuesProvider
 	{
-		private WindowsDebugger debugger;
+		//private WindowsDebugger debugger;
 		
-		public EnumerableValuesProvider(WindowsDebugger debuggerService, Expression targetObject)
+		private Expression targetObject;
+		private DebugType iListType;
+		private DebugType listItemType;
+		
+		public EnumerableValuesProvider(Expression targetObject, DebugType iListType, DebugType listItemType)
 		{
-			this.debugger = debuggerService;
+			this.targetObject = targetObject;
+			this.iListType = iListType;
+			this.listItemType = listItemType;
+			
 			this.itemsSource = enumerateItems(targetObject);
 		}
 		

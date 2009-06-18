@@ -35,11 +35,13 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			foreach(Expression memberExpr in expr.AppendObjectMembers(type, bindingFlags))
 			{
 				ObjectProperty property = new ObjectProperty();
-				property.IsAtomic = memberExpr.Evaluate(WindowsDebugger.CurrentProcess).Type.IsPrimitive;
+				
+				Value propertyValue = memberExpr.Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference();
 				property.Name = memberExpr.CodeTail;
 				property.Expression = memberExpr;
-				property.IsNull = memberExpr.Evaluate(WindowsDebugger.CurrentProcess).IsNull;
-				property.Value = memberExpr.Evaluate(WindowsDebugger.CurrentProcess).AsString;
+				property.IsAtomic = propertyValue.Type.IsPrimitive;
+				property.IsNull = propertyValue.IsNull;
+				property.Value = /*property.IsNull ? "" :*/ propertyValue.AsString;
 				
 				result.properties.Add(property.Name, property);
 			}

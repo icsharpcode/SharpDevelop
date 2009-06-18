@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
+using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -41,22 +42,25 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			Value val = debuggerService.GetValueFromName(txtExpression.Text).GetPermanentReference();
 			if (val != null && !val.IsNull)
 			{
-				// search val.Type.Interfaces for IList<T>, from it, get T
-				DebugType iListType = val.Type.GetInterface(typeof(IList).FullName);
-				if (iListType != null)
+				DebugType iListType, listItemType;
+				if (val.Type.ResolveIListImplementation(out iListType, out listItemType))
 				{
-					List<DebugType> genericArguments = val.Type.GenericArguments;
-					if (genericArguments.Count == 1)
+					var valuesProvider = new ListValuesProvider(val.Expression, iListType, listItemType);
+					var virtCollection = new VirtualizingCollection<ObjectValue>(valuesProvider);
+					
+					IList<MemberInfo> listItemTypeMembers = valuesProvider.GetItemTypeMembers();
+					createListViewColumns(listItemTypeMembers);
+					
+					this.listView.ItemsSource = virtCollection;
+				}
+				else
+				{
+					DebugType iEnumerableType, itemType;
+					if (val.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
 					{
-						DebugType listItemType = genericArguments[0];
-						
-						var valuesProvider = new ListValuesProvider(val.Expression, iListType, listItemType);
-						var virtCollection = new VirtualizingCollection<ObjectValue>(valuesProvider);
-						
-						IList<MemberInfo> listItemTypeMembers = valuesProvider.GetItemTypeMembers();
-						createListViewColumns(listItemTypeMembers);
-						
-						this.listView.ItemsSource = virtCollection;
+						var lazyListView = new LazyListView<ObjectValue>(this.listView);
+						var iEnumerableValuesProvider = new EnumerableValuesProvider(val.Expression, iEnumerableType, itemType);
+						lazyListView.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(iEnumerableValuesProvider.ItemsSource);
 					}
 				}
 			}

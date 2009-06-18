@@ -122,6 +122,7 @@
     <Compile Include="Src\Service\DebuggerEventForm.Designer.cs">
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Visualizers\Utils\TypeResolver.cs" />
     <EmbeddedResource Include="Src\Service\DebuggeeExceptionForm.resx">
       <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -205,12 +206,14 @@
       <DependentUpon>GridVisualizerWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Visualizers\GridVisualizer\LazyListView.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ObjectValue.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ShowGridVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\IListValuesProvider.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
-    <Compile Include="Src\Visualizers\GridVisualizer\VirtualizingCollection.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\VirtualizingCollection.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\VirtualizingIEnumerable.cs" />
     <Compile Include="Src\Visualizers\ObjectProperty.cs" />
     <Compile Include="Src\Visualizers\Utils\DebuggerHelpers.cs" />
     <Compile Include="Src\Visualizers\Utils\DictionaryExtensions.cs" />
