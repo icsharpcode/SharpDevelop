@@ -47,6 +47,14 @@ namespace Debugger
 			}
 		}
 		
+		internal bool ContainsThread(ICorDebugThread corThread)
+		{
+			foreach(Thread thread in threadCollection) {
+				if (thread.CorThread == corThread) return true;
+			}
+			return false;
+		}
+		
 		internal Thread GetThread(ICorDebugThread corThread)
 		{
 			foreach(Thread thread in threadCollection) {
