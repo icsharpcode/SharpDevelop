@@ -643,11 +643,11 @@ static int static_Test2_j = 0;");
 		[Test]
 		public void ComparisonWithEmptyStringLiteral()
 		{
-			TestStatement("If a = \"\" Then Return", "if (string.IsNullOrEmpty(a)) return; ");
-			TestStatement("If a <> \"\" Then Return", "if (!string.IsNullOrEmpty(a)) return; ");
+			TestStatement("If a = \"\" Then Return", "if (string.IsNullOrEmpty(a))" + Environment.NewLine + " return; ");
+			TestStatement("If a <> \"\" Then Return", "if (!string.IsNullOrEmpty(a))" + Environment.NewLine + " return; ");
 			
-			TestStatement("If \"\" = a Then Return", "if (string.IsNullOrEmpty(a)) return; ");
-			TestStatement("If \"\" <> a Then Return", "if (!string.IsNullOrEmpty(a)) return; ");
+			TestStatement("If \"\" = a Then Return", "if (string.IsNullOrEmpty(a))" + Environment.NewLine + " return; ");
+			TestStatement("If \"\" <> a Then Return", "if (!string.IsNullOrEmpty(a))" + Environment.NewLine + " return; ");
 		}
 		
 		[Test]
