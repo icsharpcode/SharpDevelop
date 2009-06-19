@@ -45,4 +45,12 @@
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/XML">
 		<Class id ="XmlFormatter" class = "ICSharpCode.XmlEditor.XmlFormattingStrategy"/>
 	</Path>
+
+	<!-- Options panel -->
+	<Path path = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+		<OptionPanel id = "XamlCompletionPanel"
+		             insertafter = "Markers"
+		             label = "${res:ICSharpCode.XamlBinding.Options.Title}"
+		             class = "ICSharpCode.XamlBinding.Options.CodeCompletion" />
+	</Path>
 </AddIn>

@@ -36,16 +36,24 @@ namespace ICSharpCode.XamlBinding
 		
 		public static string GetAttributeValue(string text, int line, int col, string name)
 		{
-			try {			
-				XmlTextReader reader = new XmlTextReader(new StringReader(text));
-				reader.XmlResolver = null;
+			try {
+				XmlReader reader = CreateReaderAtTarget(text, line, col);
 				
-				while (reader.Read() && !IsReaderAtTarget(reader, line, col)) { }
-			
-
-				if (!reader.MoveToFirstAttribute())
-					return null;
+				if (!reader.MoveToFirstAttribute()) {
+	/*				int offset = GetOffsetFromFilePos(text, line, col) + 1;
 				
+					if (XmlParser.IsInsideAttributeValue(text, offset))
+						text = text.Substring(0, offset) + "\">";
+					else {
+						if (!string.IsNullOrEmpty(XmlParser.GetAttributeNameAtIndex(text, offset)))
+							text = text.Substring(0, offset) + "=\"\">";
+						else
+							text = text.Substring(0, offset) + ">";
+					}
+					reader = CreateReaderAtTarget(text, line, col);
+					if (!reader.MoveToFirstAttribute()) */
+						return null;
+				}
 				do {
 					LoggingService.Debug("name: " + reader.Name + " value: " + reader.Value);
 					string plainName = reader.Name.ToUpperInvariant();
@@ -207,23 +215,6 @@ namespace ICSharpCode.XamlBinding
 			return r;
 		}
 		
-		
-		public static MarkupExtensionInfo GetInnermostMarkup(MarkupExtensionInfo markup)
-		{
-			var last = markup.PositionalArguments.LastOrDefault();
-			
-			if (markup.NamedArguments.Count > 0)
-				last = markup.NamedArguments.LastOrDefault().Value;
-			
-			if (last != null) {
-				if (!last.IsString) {
-					return GetInnermostMarkup(last.ExtensionValue);
-				}
-			}
-			
-			return markup;
-		}
-		
 		/// <summary>
 		/// Gets the of a markup extension at the given position.
 		/// </summary>
@@ -238,8 +229,6 @@ namespace ICSharpCode.XamlBinding
 		{
 			object previous = info.ExtensionType;
 			
-			Debug.Print("offset: " + offset);
-			
 			foreach (var item in info.PositionalArguments) {
 				if (item.StartOffset > offset)
 					break;
@@ -249,10 +238,29 @@ namespace ICSharpCode.XamlBinding
 			foreach (var pair in info.NamedArguments) {
 				if (pair.Value.StartOffset > offset)
 					break;
-				previous = pair.Value.IsString ? pair.Value : GetMarkupDataAtPosition(pair.Value.ExtensionValue, offset - pair.Value.StartOffset);
+				previous = pair.Value.IsString ? pair : GetMarkupDataAtPosition(pair.Value.ExtensionValue, offset - pair.Value.StartOffset);
 			}
 			
 			return previous;
+		}
+		
+		public static MarkupExtensionInfo GetMarkupExtensionAtPosition(MarkupExtensionInfo info, int offset)
+		{
+			MarkupExtensionInfo tmp = info;
+			
+			foreach (var item in info.PositionalArguments) {
+				if (item.StartOffset > offset)
+					break;
+				tmp = item.IsString ? tmp : GetMarkupExtensionAtPosition(item.ExtensionValue, offset - item.StartOffset);
+			}
+			
+			foreach (var pair in info.NamedArguments) {
+				if (pair.Value.StartOffset > offset)
+					break;
+				tmp = pair.Value.IsString ? tmp : GetMarkupExtensionAtPosition(pair.Value.ExtensionValue, offset - pair.Value.StartOffset);
+			}
+			
+			return tmp;
 		}
 	}
 }

@@ -47,6 +47,20 @@ namespace ICSharpCode.XamlBinding
 	}
 	
 	public class XamlCompletionContext : XamlContext {
+		public XamlCompletionContext() { }
+		
+		public XamlCompletionContext(XamlContext context)
+		{
+			this.AttributeName = context.AttributeName;
+			this.AttributeValue = context.AttributeValue;
+			this.Description = context.Description;
+			this.ParseInformation = context.ParseInformation;
+			this.Path = context.Path;
+			this.RawAttributeValue = context.RawAttributeValue;
+			this.ValueStartOffset = context.ValueStartOffset;
+			this.XmlnsDefinitions = context.XmlnsDefinitions;
+		}
+		
 		public char PressedKey { get; set; }	
 		public bool Forced { get; set; }	
 		public ITextEditor Editor { get; set; }

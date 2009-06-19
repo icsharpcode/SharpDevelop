@@ -32,6 +32,22 @@ namespace ICSharpCode.XamlBinding
 			return base.ProcessInput(key);
 		}
 		
+		public static int CountWhiteSpacesAtEnd(string text)
+		{
+			if (string.IsNullOrEmpty(text))
+			    return 0;
+			
+			int i = text.Length - 1;
+			
+			while (i >= 0) {
+				if (!char.IsWhiteSpace(text[i]))
+					break;
+				i--;
+			}
+			
+			return text.Length - i - 1;
+		}
+		
 		public override void Complete(CompletionContext context, ICompletionItem item)
 		{
 			base.Complete(context, item);
@@ -51,15 +67,17 @@ namespace ICSharpCode.XamlBinding
 								AttributeValue value = MarkupExtensionParser.ParseValue(valuePart);
 								
 								if (value != null && !value.IsString) {
-									var markup = Utils.GetInnermostMarkup(value.ExtensionValue);
+									var markup = Utils.GetMarkupExtensionAtPosition(value.ExtensionValue, context.Editor.Caret.Offset);
 									if (markup.NamedArguments.Count > 0 || markup.PositionalArguments.Count > 0) {
 										int oldOffset = context.Editor.Caret.Offset;
 										context.Editor.Caret.Offset = context.StartOffset;
-										string word = context.Editor.GetWordBeforeCaret().Trim();
+										string word = context.Editor.GetWordBeforeCaret().TrimEnd();
+										int spaces = CountWhiteSpacesAtEnd(context.Editor.GetWordBeforeCaret());
+										int typeNameStart = markup.ExtensionType.IndexOf(':') + 1;
 										
-										if (!word.EndsWith(",") && markup.ExtensionType != word) {
-											context.Editor.Document.Insert(context.Editor.Caret.Offset, ", ");
-											oldOffset += 2;
+										if (!word.EndsWith(",") && markup.ExtensionType.Substring(typeNameStart, markup.ExtensionType.Length - typeNameStart) != word) {
+											context.Editor.Document.Replace(context.Editor.Caret.Offset - spaces, spaces, ", ");
+											oldOffset += (2 - spaces);
 										}
 										
 										context.Editor.Caret.Offset = oldOffset;

@@ -1,0 +1,12 @@
+<gui:OptionPanel x:Class="ICSharpCode.XamlBinding.Options.CodeCompletion"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<StackPanel>
+		<GroupBox Header="{sd:Localize ICSharpCode.XamlBinding.Options.CodeCompletionGroupLabel}">
+			<CheckBox Content="{sd:Localize ICSharpCode.XamlBinding.Options.UseExtensionCompletion}"
+				IsChecked="{sd:OptionBinding ICSharpCode.XamlBinding.Options.XamlBindingOptions.UseExtensionCompletion}" />
+		</GroupBox>
+	</StackPanel>
+</gui:OptionPanel>

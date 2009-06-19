@@ -22,7 +22,7 @@ namespace ICSharpCode.XamlBinding
 		public IDictionary<string, AttributeValue> NamedArguments { get; private set; }
 		
 		public int StartOffset { get; set; }
-				
+		
 		public MarkupExtensionInfo()
 			: this(string.Empty, new List<AttributeValue>(), new Dictionary<string, AttributeValue>(StringComparer.OrdinalIgnoreCase))
 		{

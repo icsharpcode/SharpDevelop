@@ -31,13 +31,13 @@ namespace ICSharpCode.XamlBinding
 						case MarkupExtensionTokenKind.MemberName:
 							// if there is an open member without a value add the member name
 							if (argumentName != null)
-								info.NamedArguments.Add(argumentName, new AttributeValue(string.Empty));
+								info.TryAddNamedArgument(argumentName, new AttributeValue(string.Empty));
 							argumentName = token.Value;
 							namedArgsStart = token.StartOffset;
 							break;
 						case MarkupExtensionTokenKind.String:
 							if (argumentName != null) {
-								info.NamedArguments.Add(argumentName, ParseValue(token.Value, namedArgsStart));
+								info.TryAddNamedArgument(argumentName, ParseValue(token.Value, namedArgsStart));
 								argumentName = null;
 							} else {
 								info.PositionalArguments.Add(ParseValue(token.Value, token.StartOffset));
@@ -51,6 +51,13 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return info;
+		}
+		
+		static void TryAddNamedArgument(this MarkupExtensionInfo info, string name, AttributeValue value)
+		{
+			if (!info.NamedArguments.ContainsKey(name)) {
+				info.NamedArguments.Add(name, value);
+			}
 		}
 		
 		public static AttributeValue ParseValue(string text)

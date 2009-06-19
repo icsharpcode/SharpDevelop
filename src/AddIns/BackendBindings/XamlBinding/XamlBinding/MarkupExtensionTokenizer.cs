@@ -143,7 +143,15 @@ namespace ICSharpCode.XamlBinding
 			}
 			string valueText = b.ToString();
 			if (pos < text.Length && text[pos] == '=') {
-				AddToken(MarkupExtensionTokenKind.MemberName, valueText.Trim());
+				int splitPos = valueText.LastIndexOf(' ');
+				if (splitPos > -1) {
+					string valueString = valueText.Substring(0, splitPos).Trim();
+					string memberString = valueText.Substring(splitPos).Trim();
+					AddToken(MarkupExtensionTokenKind.String, valueString);
+					startPos += splitPos;
+					AddToken(MarkupExtensionTokenKind.MemberName, memberString);
+				} else
+					AddToken(MarkupExtensionTokenKind.MemberName, valueText.Trim());
 			} else {
 				AddToken(MarkupExtensionTokenKind.String, valueText);
 			}

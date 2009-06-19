@@ -5,15 +5,17 @@
 //     <version>$Revision: 3539 $</version>
 // </file>
 
-using ICSharpCode.XmlEditor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -66,30 +68,75 @@ namespace ICSharpCode.XamlBinding
 			if ((data as string) == expression) {
 				return ResolveElementName(expression + "Extension") ?? ResolveElementName(expression);
 			} else {
-				var value = data as AttributeValue;
-				if (value != null && value.IsString) {
-					return ResolveElementName(expression) ?? ResolveAttribute(expression);
-				}
-				
-				if (data is KeyValuePair<string, AttributeValue>) {
-					var pair = (KeyValuePair<string, AttributeValue>)data;
-					var member = ResolveAttribute(pair.Key);
-					if (pair.Value.StartOffset + pair.Key.Length >= context.ValueStartOffset) {
-						return member;
-					} else {
-						if (pair.Value.IsString && member != null)
-							return ResolveAttributeValue(member.ResolvedMember, expression);
+				MarkupExtensionInfo info = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
+				TypeResolveResult extensionType = (ResolveElementName(info.ExtensionType + "Extension") ?? ResolveElementName(info.ExtensionType)) as TypeResolveResult;
+				// TODO : hardcode x:Type and x:Static
+				if (extensionType != null && extensionType.ResolvedType != null) {
+					var value = data as AttributeValue;
+					
+					switch (extensionType.ResolvedType.FullyQualifiedName) {
+						case "System.Windows.Markup.StaticExtension":
+							if (value != null && value.IsString) {
+								return ResolveElementName(expression) ?? ResolveAttribute(expression);
+							}
+							
+							if (data is KeyValuePair<string, AttributeValue>) {
+								var pair = (KeyValuePair<string, AttributeValue>)data;
+								var member = ResolveNamedAttribute(pair.Key);
+								if (pair.Value.StartOffset + pair.Key.Length >= context.ValueStartOffset) {
+									return member;
+								} else {
+									if (pair.Value.IsString && member != null)
+										return ResolveAttributeValue(member.ResolvedMember, expression) ?? ResolveElementName(expression);
+								}
+							}
+							break;
+						case "System.Windows.Markup.TypeExtension":
+							
+							
+							if (value != null && value.IsString) {
+								return ResolveElementName(expression) ?? ResolveAttribute(expression);
+							}
+							
+							if (data is KeyValuePair<string, AttributeValue>) {
+								var pair = (KeyValuePair<string, AttributeValue>)data;
+								var member = ResolveNamedAttribute(pair.Key);
+								if (pair.Value.StartOffset + pair.Key.Length >= context.ValueStartOffset) {
+									return member;
+								} else {
+									if (pair.Value.IsString && member != null)
+										return ResolveAttributeValue(member.ResolvedMember, expression) ?? ResolveElementName(expression);
+								}
+							}
+							break;
 					}
 				}
 				
 				return null;
 			}
 		}
+		
+		MemberResolveResult ResolveNamedAttribute(string expression)
+		{
+			MarkupExtensionInfo info = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
+			TypeResolveResult extensionType = (ResolveElementName(info.ExtensionType + "Extension") ?? ResolveElementName(info.ExtensionType)) as TypeResolveResult;
+			
+			if (extensionType != null && extensionType.ResolvedType != null) {
+				return ResolvePropertyName(extensionType.ResolvedType, expression, false);
+			}
+			
+			return null;
+		}
 
 		ResolveResult ResolveElementName(string exp)
 		{
 			string xmlNamespace;
 			string name;
+			
+			foreach (var s in context.XmlnsDefinitions) {
+				Debug.Print(s.Key + " " + s.Value);
+			}
+			
 			this.resolveExpression = exp;
 			if (resolveExpression.Contains(":")) {
 				string prefix = resolveExpression.Substring(0, resolveExpression.IndexOf(':'));
@@ -125,31 +172,37 @@ namespace ICSharpCode.XamlBinding
 			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
 			IReturnType resolvedType = XamlCompilationUnit.FindType(pc, xmlNamespace, className);
 			if (resolvedType != null && resolvedType.GetUnderlyingClass() != null) {
-				IMember member = resolvedType.GetProperties().Find(delegate(IProperty p) { return p.Name == propertyName; });
-				if (member == null) {
-					member = resolvedType.GetEvents().Find(delegate(IEvent p) { return p.Name == propertyName; });
-				}
-				if (member == null && allowAttached) {
-					IMethod method = resolvedType.GetMethods().Find(
-						delegate(IMethod p) {
-							return p.IsStatic && p.Parameters.Count == 1 && p.Name == "Get" + propertyName;
-						});
-					member = method;
-					if (member != null) {
-						member = new DefaultProperty(resolvedType.GetUnderlyingClass(), propertyName) { ReturnType = method.ReturnType };
-					} else {
-						IMethod m = resolvedType.GetMethods().Find(
-							delegate(IMethod p) {
-								return p.IsPublic && p.IsStatic && p.Parameters.Count == 2 && (p.Name == "Add" + propertyName + "Handler" || p.Name == "Remove" + propertyName + "Handler");
-							});
-						member = m;
-						if (member != null)
-							member = new DefaultEvent(resolvedType.GetUnderlyingClass(), propertyName) { ReturnType = m.Parameters[1].ReturnType };
-					}
-				}
-				if (member != null)
-					return new MemberResolveResult(callingClass, null, member);
+				return ResolvePropertyName(resolvedType, propertyName, allowAttached);
 			}
+			return null;
+		}
+		
+		MemberResolveResult ResolvePropertyName(IReturnType resolvedType, string propertyName, bool allowAttached)
+		{
+			IMember member = resolvedType.GetProperties().Find(delegate(IProperty p) { return p.Name == propertyName; });
+			if (member == null) {
+				member = resolvedType.GetEvents().Find(delegate(IEvent p) { return p.Name == propertyName; });
+			}
+			if (member == null && allowAttached) {
+				IMethod method = resolvedType.GetMethods().Find(
+					delegate(IMethod p) {
+						return p.IsStatic && p.Parameters.Count == 1 && p.Name == "Get" + propertyName;
+					});
+				member = method;
+				if (member != null) {
+					member = new DefaultProperty(resolvedType.GetUnderlyingClass(), propertyName) { ReturnType = method.ReturnType };
+				} else {
+					IMethod m = resolvedType.GetMethods().Find(
+						delegate(IMethod p) {
+							return p.IsPublic && p.IsStatic && p.Parameters.Count == 2 && (p.Name == "Add" + propertyName + "Handler" || p.Name == "Remove" + propertyName + "Handler");
+						});
+					member = m;
+					if (member != null)
+						member = new DefaultEvent(resolvedType.GetUnderlyingClass(), propertyName) { ReturnType = m.Parameters[1].ReturnType };
+				}
+			}
+			if (member != null)
+				return new MemberResolveResult(callingClass, null, member);
 			return null;
 		}
 
