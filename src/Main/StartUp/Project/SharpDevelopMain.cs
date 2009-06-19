@@ -32,28 +32,40 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		static bool UseExceptionBox {
+			get {
+				#if DEBUG
+				if (Debugger.IsAttached) return false;
+				#endif
+				foreach(string arg in commandLineArgs) {
+					if (arg.Contains("noExceptionBox")) return false;
+				}
+				return true;
+			}
+		}
+		
 		/// <summary>
 		/// Starts the core of SharpDevelop.
 		/// </summary>
 		[STAThread()]
 		public static void Main(string[] args)
 		{
-			#if DEBUG
-			if (Debugger.IsAttached) {
-				Run(args);
-				return;
-			}
-			#endif
+			commandLineArgs = args; // Needed by UseExceptionBox
+			
 			// Do not use LoggingService here (see comment in Run(string[]))
-			try {
-				Run(args);
-			} catch (Exception ex) {
+			if (UseExceptionBox) {
 				try {
-					HandleMainException(ex);
-				} catch (Exception loadError) {
-					// HandleMainException can throw error when log4net is not found
-					MessageBox.Show(loadError.ToString(), "Critical error (Logging service defect?)");
+					Run();
+				} catch (Exception ex) {
+					try {
+						HandleMainException(ex);
+					} catch (Exception loadError) {
+						// HandleMainException can throw error when log4net is not found
+						MessageBox.Show(loadError.ToString(), "Critical error (Logging service defect?)");
+					}
 				}
+			} else {
+				Run();
 			}
 		}
 		
@@ -67,7 +79,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		static void Run(string[] args)
+		static void Run()
 		{
 			// DO NOT USE LoggingService HERE!
 			// LoggingService requires ICSharpCode.Core.dll and log4net.dll
@@ -79,11 +91,10 @@ namespace ICSharpCode.SharpDevelop
 			#if DEBUG
 			Control.CheckForIllegalCrossThreadCalls = true;
 			#endif
-			commandLineArgs = args;
 			bool noLogo = false;
 			
 			Application.SetCompatibleTextRenderingDefault(false);
-			SplashScreenForm.SetCommandLineArgs(args);
+			SplashScreenForm.SetCommandLineArgs(commandLineArgs);
 			
 			foreach (string parameter in SplashScreenForm.GetParameterList()) {
 				if ("nologo".Equals(parameter, StringComparison.OrdinalIgnoreCase))
@@ -108,7 +119,7 @@ namespace ICSharpCode.SharpDevelop
 			try {
 				StartupSettings startup = new StartupSettings();
 				#if DEBUG
-				startup.UseSharpDevelopErrorHandler = !Debugger.IsAttached;
+				startup.UseSharpDevelopErrorHandler = UseExceptionBox;
 				#endif
 				
 				Assembly exe = typeof(SharpDevelopMain).Assembly;
