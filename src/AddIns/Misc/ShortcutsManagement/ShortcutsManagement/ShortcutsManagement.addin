@@ -14,6 +14,6 @@
     <Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		    <OptionPanel id = "ShortcutsManagement"
 			             label = "Shortcuts management"
-			             class = "ICSharpCode.ShortcutsManagement.ShortcutsManagementOptionsPanel" />
+			             class = "ICSharpCode.ShortcutsManagement.Dialogs.ShortcutsManagementOptionsPanel" />
 	  </Path>
 </AddIn>

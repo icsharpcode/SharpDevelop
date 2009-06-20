@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace ICSharpCode.ShortcutsManagement.Data
@@ -74,17 +73,6 @@ namespace ICSharpCode.ShortcutsManagement.Data
         }
 
         /// <summary>
-        /// Invoke dependency property changed event
-        /// </summary>
-        /// <param name="propertyName">Name of dependency property from this classs</param>
-        private void InvokePropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null) {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        /// <summary>
         /// Find shortcut by shortcutId in add-in categories 
         /// </summary>
         /// <param name="shortcutId"></param>
@@ -115,6 +103,9 @@ namespace ICSharpCode.ShortcutsManagement.Data
 	        return clonedAddIn;
 	    }
 
+        /// <summary>
+        /// Sort add-in sub categories
+        /// </summary>
         public void SortSubEntries() 
         {
             Categories.Sort((a, b) => a.Name.CompareTo(b.Name));
@@ -129,12 +120,29 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Compare add-in to other instances of <see cref="IShortcutTreeEntry"/>
+        /// </summary>
+        /// <param name="obj">Compared object</param>
+        /// <returns>Comparison result</returns>
 	    public int CompareTo(object obj) {
             if (obj is ShortcutCategory) return 1;
             if (obj is Shortcut) return 1;
 
             var addInObj = (AddIn)obj;
 	        return Name.CompareTo(addInObj.Name);
-	    }
+        }
+
+        /// <summary>
+        /// Invoke dependency property changed event
+        /// </summary>
+        /// <param name="propertyName">Name of dependency property from this classs</param>
+        private void InvokePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
     }
 }

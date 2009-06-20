@@ -62,6 +62,8 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -88,6 +90,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Src\Dialogs\MultiKeyGestureTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Src\Dialogs\Resources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -142,11 +148,14 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Src\Data\GestureFilterMode.cs" />
     <Compile Include="Src\Data\IShortcutTreeEntry.cs" />
-    <Compile Include="Src\Data\KeyGestureTemplate.cs" />
     <Compile Include="Src\Data\Shortcut.cs" />
     <Compile Include="Src\Data\ShortcutCategory.cs" />
     <Compile Include="Src\Data\ShortcutsFinder.cs" />
+    <Compile Include="Src\Dialogs\MultiKeyGestureTextBox.xaml.cs">
+      <DependentUpon>MultiKeyGestureTextBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Dialogs\ShortcutManagementWindow.xaml.cs">
       <DependentUpon>ShortcutManagementWindow.xaml</DependentUpon>
     </Compile>
@@ -157,6 +166,7 @@
     <Compile Include="Src\Dialogs\ShortcutsTreeView.xaml.cs">
       <DependentUpon>ShortcutsTreeView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Src\Extensions\PartialKeyGestureExtensions.cs" />
     <Compile Include="Src\Extensions\TextBlockBehavior.cs" />
     <Compile Include="Src\Extensions\TreeViewExtensions.cs" />
     <Compile Include="Src\Converters\TypeNameConverter.cs" />
@@ -176,6 +186,13 @@
     <Resource Include="Resources\add_correction_16x16.gif" />
     <Resource Include="Resources\key_enter.png" />
     <Resource Include="Resources\key_enter_pressed.png" />
+    <Resource Include="Resources\block_small.png" />
+    <Resource Include="Resources\delete_small.png" />
+    <Resource Include="Resources\info_small.png" />
+    <Resource Include="Resources\plus_small.png" />
+    <Resource Include="Resources\search_small.png" />
+    <Resource Include="Resources\tick_small.png" />
+    <Resource Include="Resources\warning_small.png" />
     <Content Include="ShortcutsManagement.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

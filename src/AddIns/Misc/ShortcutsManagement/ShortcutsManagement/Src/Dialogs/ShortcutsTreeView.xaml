@@ -5,7 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ShortcutsManagement="clr-namespace:ICSharpCode.ShortcutsManagement" 
              xmlns:Converters="clr-namespace:ICSharpCode.ShortcutsManagement.Converters" 
-             xmlns:Data="clr-namespace:ICSharpCode.ShortcutsManagement.Data"
+             xmlns:Data="clr-namespace:ICSharpCode.ShortcutsManagement.Data" 
+             xmlns:Dialogs="clr-namespace:ICSharpCode.ShortcutsManagement.Dialogs" 
+             xmlns:Extensions="clr-namespace:ICSharpCode.ShortcutsManagement.Extensions"
              mc:Ignorable="d" 
              x:Name="_this"
              d:DesignHeight="300" d:DesignWidth="300" >
@@ -31,7 +33,7 @@
             <TreeView.Resources>
                 <!-- Tree view add-in data template -->
                 <HierarchicalDataTemplate DataType="{x:Type Data:AddIn}" ItemsSource="{Binding Path=Categories}" >
-                    <TextBlock Text="{Binding Path=Name}" ShortcutsManagement:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" />
+                    <TextBlock Text="{Binding Path=Name}" Extensions:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" />
                 </HierarchicalDataTemplate>
 
                 <!-- Tree view category data template -->
@@ -43,7 +45,7 @@
                         </MultiBinding>
                     </HierarchicalDataTemplate.ItemsSource>
                     
-                    <TextBlock Text="{Binding Path=Name}" ShortcutsManagement:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" />
+                    <TextBlock Text="{Binding Path=Name}" Extensions:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" />
                 </HierarchicalDataTemplate>
 
                 <!-- Tree view shortcut data template -->
@@ -55,9 +57,9 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         
-                        <TextBlock Text="{Binding Name}" ShortcutsManagement:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" Grid.Column="0" />
+                        <TextBlock Text="{Binding Name}" Extensions:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" Grid.Column="0" />
                         <TextBlock Text="{Binding Gestures, Converter={StaticResource GesturesListConverter}}" Grid.Column="1" TextAlignment="Right" Padding="20,0,0,0" />
-                        <Button x:Name="removeShortcutButton" Style="{StaticResource RemoveButton}" Visibility="Hidden" Grid.Column="2" Tag="{Binding}" Click="removeShortcutButton_Click" />
+                        <Button x:Name="removeShortcutButton" Style="{StaticResource RemoveButton}" Visibility="Hidden" Grid.Column="2" Tag="{Binding}" Click="removeShortcutButton_Click" SnapsToDevicePixels="True" />
                     </Grid>
                     <HierarchicalDataTemplate.Triggers>
                         <DataTrigger Binding="{Binding ElementName=_this, Path=IsRemovableShortcutsEnabled}" Value="True">
@@ -82,8 +84,10 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="20" />
                 </Grid.ColumnDefinitions>
-                
-                <TextBox x:Name="searchTextBox" Grid.Column="0" TextChanged="searchTextBox_TextChanged" PreviewKeyDown="searchTextBox_PreviewKeyDown" BorderThickness="0" />
+
+                <TextBox Grid.Column="0" x:Name="searchTextBox" TextChanged="searchTextBox_TextChanged" BorderThickness="0" PreviewKeyDown="searchTextBox_PreviewKeyDown" />
+                <Dialogs:MultiKeyGestureTextBox Grid.Column="0" x:Name="gestureTextBox" NotificationVisibility="Collapsed" TextBoxBorderThickness="0" Visibility="{Binding ElementName=searchTypeToggleButton, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Hidden}" GestureChanged="gestureTextBox_GestureChanged" PreviewKeyDown="searchTextBox_PreviewKeyDown" />
+
                 <ToggleButton x:Name="searchTypeToggleButton" Grid.Column="1" Style="{StaticResource KeyToggleButton}" ClickMode="Press" Click="searchTypeToggleButton_Click" />
             </Grid>
         </Border>

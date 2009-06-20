@@ -8,8 +8,7 @@
     <Converters:ShortcutCategorySubElementsMergedConverter x:Key="ShortcutsTreeConverter" />
     <Converters:TypeNameConverter x:Key="TypeNameConverter" />
     <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-
-
+    
 
     <LinearGradientBrush x:Key="SelectedItemBackground" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="#3194FF" Offset="0" />
@@ -21,7 +20,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Image Source="..\..\Resources\16-square-red-remove.png" Width="16"/>
+                    <Image Source="..\..\Resources\16-square-red-remove.png" Width="16" SnapsToDevicePixels="True" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

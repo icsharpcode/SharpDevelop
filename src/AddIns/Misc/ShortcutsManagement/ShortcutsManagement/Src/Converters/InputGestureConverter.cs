@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Input;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.ShortcutsManagement.Converters
 {
@@ -20,6 +21,11 @@ namespace ICSharpCode.ShortcutsManagement.Converters
         /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value is MultiKeyGesture && targetType == typeof(string))
+            {
+                return new MultiKeyGestureConverter().ConvertToInvariantString(value).Replace("+", " + ");
+            } 
+            
             if(value is KeyGesture && targetType == typeof(string))
             {
                 return new KeyGestureConverter().ConvertToInvariantString(value).Replace("+", " + ");

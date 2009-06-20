@@ -9,7 +9,7 @@ using ICSharpCode.ShortcutsManagement.Data;
 using AddIn=ICSharpCode.Core.AddIn;
 using ShortcutManagement=ICSharpCode.ShortcutsManagement.Data;
 
-namespace ICSharpCode.ShortcutsManagement
+namespace ICSharpCode.ShortcutsManagement.Dialogs
 {
     /// <summary>
     /// Interaction logic for ShortcutsManagementOptionsPanel.xaml

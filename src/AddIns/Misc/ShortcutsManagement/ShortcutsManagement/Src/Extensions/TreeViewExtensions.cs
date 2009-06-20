@@ -6,10 +6,10 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
-namespace ICSharpCode.ShortcutsManagement
+namespace ICSharpCode.ShortcutsManagement.Extensions
 {
 	/// <summary>
-	/// TreeView extention methods
+	/// <see cref="TreeView"/> extention methods
 	/// </summary>
     public static class TreeViewExtensions
     {

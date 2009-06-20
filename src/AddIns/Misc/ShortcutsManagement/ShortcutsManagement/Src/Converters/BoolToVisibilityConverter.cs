@@ -26,12 +26,12 @@ namespace ICSharpCode.ShortcutsManagement.Converters
                 return (bool)value ? "Visible" : hidden;
             }
 
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

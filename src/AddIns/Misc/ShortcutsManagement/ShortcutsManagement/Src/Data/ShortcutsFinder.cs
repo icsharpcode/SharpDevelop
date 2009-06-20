@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Input;
+using ICSharpCode.Core.Presentation;
+using ICSharpCode.ShortcutsManagement.Extensions;
 
 namespace ICSharpCode.ShortcutsManagement.Data
 {
@@ -94,31 +97,32 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// 
         /// Hides add-ins and sub-categories if there are no sub-elements left
         /// </summary>
-        /// <param name="keyGestureTemplate">Gesture template (Uncompleted gesture)</param>
-        /// <param name="strictMatch">If false filter gestures which with only partial match</param>
-        public void FilterGesture(KeyGestureTemplate keyGestureTemplate, bool strictMatch)
+        /// <param name="inputGestureTemplate">Gesture template which should match shortcut gesture partly to make it visible</param>
+        /// <param name="mode">Filtering mode</param>
+        public void FilterGesture(InputGesture inputGestureTemplate, GestureFilterMode mode)
         {
-            FilterGesture(new List<KeyGestureTemplate> { keyGestureTemplate }, strictMatch);
+            FilterGesture(new InputGestureCollection(new[] { inputGestureTemplate }), mode);
         }
 
         /// <summary>
-        /// Filter gestures matching provided key gesture template
+        /// Filter gestures matching one of provided gesture templates
         /// 
         /// Hides add-ins and sub-categories if there are no sub-elements left
         /// </summary>
-        /// <param name="keyGestureTemplateCollection">Gesture templates collection (Uncompleted gestures)</param>
-        /// <param name="strictMatch">If false filter gestures which with only partial match</param>
-        public void FilterGesture(ICollection<KeyGestureTemplate> keyGestureTemplateCollection, bool strictMatch)
+        /// <param name="inputGestureTemplateCollection">Collection of gesture templates which (atleast one) should match shortcut gesture partly to make it visible</param>
+        /// <param name="mode">Filtering mode</param>
+        public void FilterGesture(InputGestureCollection inputGestureTemplateCollection, GestureFilterMode mode)
         {
+            Debug.WriteLine("Changed to" + new InputGestureCollectionConverter().ConvertToInvariantString(inputGestureTemplateCollection));
             foreach (var entry in RootEntries)
             {
                 var subCategoryIsVisible = false;
                 
+                // Filter root addin and sub-elements
                 var rootAddIn = entry as AddIn;
-                if (rootAddIn != null)
-                {
+                if (rootAddIn != null) {
                     foreach (var category in rootAddIn.Categories) {
-                        if (FilterGesture(category, keyGestureTemplateCollection, strictMatch)) {
+                        if (FilterGesture(category, inputGestureTemplateCollection, mode)) {
                             subCategoryIsVisible = true;
                         }
                     }
@@ -127,16 +131,18 @@ namespace ICSharpCode.ShortcutsManagement.Data
                     rootAddIn.IsVisible = subCategoryIsVisible;
                 }
 
+                // Filter root category and sub-elements
                 var rootCategory = entry as ShortcutCategory;
                 if (rootCategory != null) {
-                    FilterGesture(rootCategory, keyGestureTemplateCollection, strictMatch);
+                    FilterGesture(rootCategory, inputGestureTemplateCollection, mode);
                 }
 
+                // Filter root shortcut
                 var rootShortcut = entry as Shortcut;
                 if (rootShortcut != null) {
                     rootShortcut.IsVisible = false;
-                    foreach (var template in keyGestureTemplateCollection) {
-                        if (template.MatchesCollection(new InputGestureCollection(rootShortcut.Gestures), strictMatch)) {
+                    foreach (InputGesture template in inputGestureTemplateCollection) {
+                        if (template.MatchesCollection(new InputGestureCollection(rootShortcut.Gestures), mode)) {
                             rootShortcut.IsVisible = true;
                             break;
                         }
@@ -146,17 +152,19 @@ namespace ICSharpCode.ShortcutsManagement.Data
         }
 
         /// <summary>
-        /// Filter gestures matching one of provided key gesture templates from templates collection 
+        /// Filter gestures matching one of provided gesture templates from templates collection 
         /// </summary>
         /// <param name="category">Category to filter</param>
-        /// <param name="keyGestureTemplateCollection">Gesture templates collection (Uncompleted gestures)</param>
+        /// <param name="inputGestureTemplateCollection">Collection of gesture templates which (atleast one) should match shortcut gesture partly to make it visible</param>
+        /// <param name="mode">Filtering mode</param>
         /// <returns></returns>
-        private static bool FilterGesture(ShortcutCategory category, IEnumerable<KeyGestureTemplate> keyGestureTemplateCollection, bool strictMatch)
+        private static bool FilterGesture(ShortcutCategory category, InputGestureCollection inputGestureTemplateCollection, GestureFilterMode mode)
         {
             // Apply filter to sub-categories
             var isSubElementVisible = false;
             foreach (var subCategory in category.SubCategories) {
-                if (FilterGesture(subCategory, keyGestureTemplateCollection, strictMatch)) {
+                if (FilterGesture(subCategory, inputGestureTemplateCollection, mode))
+                {
                     isSubElementVisible = true;
                 }
             }
@@ -164,8 +172,15 @@ namespace ICSharpCode.ShortcutsManagement.Data
             // Apply filter to shortcuts
             foreach (var shortcut in category.Shortcuts) {
                 var gestureMatched = false;
-                foreach (var template in keyGestureTemplateCollection) {
-                    if (template.MatchesCollection(new InputGestureCollection(shortcut.Gestures), strictMatch)) {
+                foreach (InputGesture template in inputGestureTemplateCollection)
+                {
+                    if (shortcut.Gestures.Count > 0 && ((KeyGesture)shortcut.Gestures[0]).Key == Key.F5)
+                    {
+                        
+                    }
+
+                    if (template.MatchesCollection(new InputGestureCollection(shortcut.Gestures), mode))
+                    {
                         gestureMatched = true;
                         break;
                     }   
@@ -221,7 +236,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
 
                 var rootShortcut = entry as Shortcut;
                 if (rootShortcut != null) {
-                    rootShortcut.IsVisible = rootShortcut.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0;
+                    rootShortcut.IsVisible = filterString == null || rootShortcut.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0;
                 }
             }
         }
@@ -252,7 +267,8 @@ namespace ICSharpCode.ShortcutsManagement.Data
 
             // Filter shortcuts which text match the filter
             foreach (var shortcut in category.Shortcuts) {
-                if ((forseMatch.HasValue && forseMatch.Value) || shortcut.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0) {
+                if ((forseMatch.HasValue && forseMatch.Value) || filterString == null || shortcut.Name.IndexOf(filterString, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
                     shortcut.IsVisible = true;
                     isSubElementVisible = true;
                 }

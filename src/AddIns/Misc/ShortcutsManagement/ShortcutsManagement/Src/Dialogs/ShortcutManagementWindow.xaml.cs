@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.ShortcutsManagement.Data;
+using ICSharpCode.ShortcutsManagement.Extensions;
 
-namespace ICSharpCode.ShortcutsManagement
+namespace ICSharpCode.ShortcutsManagement.Dialogs
 {
     /// <summary>
     /// This window allows user to modify shortcuts registered in application
@@ -43,11 +46,6 @@ namespace ICSharpCode.ShortcutsManagement
         /// Allways add modified shortcut to this list.
         /// </summary>
         private readonly List<Shortcut> modifiedShortcuts = new List<Shortcut>();
-            
-        /// <summary>
-        /// Last entered input gesture
-        /// </summary>
-        private InputGesture lastEnteredInputGesture;
 
         /// <summary>
         /// Initializes new <see cref="ShortcutManagementWindow" /> class
@@ -86,17 +84,22 @@ namespace ICSharpCode.ShortcutsManagement
         /// </summary>
         private void FilterSimilarShortcuts()
         {
-            var templates = new List<KeyGestureTemplate>();
+            var templates = new InputGestureCollection();
             foreach (var gesture in shortcutCopy.Gestures) {
-                if (gesture is KeyGesture) {
-                    templates.Add(new KeyGestureTemplate((KeyGesture)gesture));
+                var multiKeyGestureTemplate = gesture as MultiKeyGesture;
+                if (multiKeyGestureTemplate != null) {
+                    if (multiKeyGestureTemplate.Gestures != null && multiKeyGestureTemplate.Gestures.Count > 0) {
+                        templates.Add(multiKeyGestureTemplate.Gestures.FirstOrDefault());
+                    }
+                } else {
+                    templates.Add(gesture);
                 }
             }
 
             // Find shortcuts with same gesture and hide them.
             // Also hide modified shortcut from this list
             var finder = new ShortcutsFinder(rootEntriesCopy);
-            finder.FilterGesture(templates, true);
+            finder.FilterGesture(templates,  GestureFilterMode.StartsWith);
             finder.HideShortcut(shortcutCopy);
 
             shortcutsManagementOptionsPanel.ExpandAll();
@@ -111,27 +114,6 @@ namespace ICSharpCode.ShortcutsManagement
         void Gestures_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             FilterSimilarShortcuts();
-        }
-
-        /// <summary>
-        /// Executed when user presses key inside gesture text box.
-        /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">Event arguments</param>
-        private void shortcutTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            e.Handled = true;
-
-            // Get entered key gesture string representation
-            shortcutTextBox.Text = new KeyGestureTemplate(e).ToString();
-            
-            // Accept only valid getures
-            lastEnteredInputGesture = null;
-            try {
-                lastEnteredInputGesture = new KeyGesture(e.Key, Keyboard.Modifiers);
-            } catch (NotSupportedException) {
-                lastEnteredInputGesture = null;
-            }
         }
        
         /// <summary>
@@ -152,11 +134,34 @@ namespace ICSharpCode.ShortcutsManagement
         /// <param name="e">Event arguments</param>
         private void addGestureButton_Click(object sender, RoutedEventArgs e)
         {
-            // Discard duplicate gestures
-            if(lastEnteredInputGesture != null && !shortcutCopy.ContainsGesture(lastEnteredInputGesture))
-            {
-                shortcutCopy.Gestures.Add(lastEnteredInputGesture);
+            // Check if any chords are entered
+            if (gestureTextBox.Gesture == null) {
+                DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.ModificationWindow.AdditionFailedNoChords}"), NotificationType.Failed);
+                return;
             }
+
+            // Check whether first chord is finished
+            var partialKeyGesture = gestureTextBox.Gesture as PartialKeyGesture;
+            if (partialKeyGesture != null && partialKeyGesture.Modifiers == ModifierKeys.None) {
+                DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.ModificationWindow.AdditionFailedFirstChordIsIncomplete}"), NotificationType.Failed);
+                return;
+            }
+
+            // Check whether last chord is finished
+            var multiKeyGesture = gestureTextBox.Gesture as MultiKeyGesture;
+            if (multiKeyGesture != null && multiKeyGesture.Gestures.Last().Key == Key.None) {
+                DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.ModificationWindow.AdditionFailedLastChordIsIncompete}"), NotificationType.Failed);
+                return;
+            }
+
+            if (partialKeyGesture != null) {
+                var keyGesture = new KeyGesture(partialKeyGesture.Key, partialKeyGesture.Modifiers);
+                shortcutCopy.Gestures.Add(keyGesture);
+            } else {
+                shortcutCopy.Gestures.Add(gestureTextBox.Gesture);
+            }
+
+            DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.ModificationWindow.AdditionIsSuccessfull}"), NotificationType.Added);
         }
 
         /// <summary>
@@ -170,22 +175,18 @@ namespace ICSharpCode.ShortcutsManagement
 
             // Remove gestures registered in modified shortcut from deleted shortcut
             var removedShortcutGestures = e.RemovedShortcut.Gestures;
-            for (int i = removedShortcutGestures.Count - 1; i >= 0; i--)
-            {
-                foreach (var modifiedInputGesture in shortcutCopy.Gestures)
-                {
+            for (int i = removedShortcutGestures.Count - 1; i >= 0; i--) {
+                foreach (var modifiedInputGesture in shortcutCopy.Gestures) {
                     var modifiedKeyGesture = modifiedInputGesture as KeyGesture;
                     var removedKeyGesture = removedShortcutGestures[i] as KeyGesture;
                     if (modifiedKeyGesture != null
-                        && removedKeyGesture != null
-                        && modifiedKeyGesture.Key == removedKeyGesture.Key
-                        && modifiedKeyGesture.Modifiers == removedKeyGesture.Modifiers)
-                    {
+                                && removedKeyGesture != null
+                                && modifiedKeyGesture.Key == removedKeyGesture.Key
+                                && modifiedKeyGesture.Modifiers == removedKeyGesture.Modifiers) {
                         removedShortcutGestures.RemoveAt(i);
                         FilterSimilarShortcuts();
 
-                        if (!modifiedShortcuts.Contains(e.RemovedShortcut))
-                        {
+                        if (!modifiedShortcuts.Contains(e.RemovedShortcut)) {
                             modifiedShortcuts.Add(e.RemovedShortcut);
                         }
 
@@ -214,6 +215,17 @@ namespace ICSharpCode.ShortcutsManagement
             }
 
             Close();
+        }
+
+        /// <summary>
+        /// Display message describing shortcut addition result
+        /// </summary>
+        /// <param name="notificationText">Displayed message text</param>
+        /// <param name="type">Message type</param>
+        public void DisplayNotification(string notificationText, NotificationType type)
+        {
+            gestureTextBox.NotificationText = notificationText;
+            gestureTextBox.NotificationType = type;
         }
 
         /// <summary>

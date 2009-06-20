@@ -1,14 +1,21 @@
-﻿<Window x:Class="ICSharpCode.ShortcutsManagement.ShortcutManagementWindow"
+﻿<Window x:Class="ICSharpCode.ShortcutsManagement.Dialogs.ShortcutManagementWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ShortcutsManagement="clr-namespace:ICSharpCode.ShortcutsManagement"
     xmlns:core="http://icsharpcode.net/sharpdevelop/core"
-    Title="{Binding Text}" MinHeight="400" MinWidth="400">
+    xmlns:Dialogs="clr-namespace:ICSharpCode.ShortcutsManagement.Dialogs"
+    Title="{Binding Text}" 
+    MinHeight="400" 
+    MinWidth="400" 
+    x:Name="_this">
 
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources.xaml" />
+                <ResourceDictionary>
+                    <Style x:Key="ValidationTextBox" TargetType="TextBlock"></Style>
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -19,27 +26,27 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
+            <RowDefinition Height="50" />
             <RowDefinition />
             <RowDefinition />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
         <!-- Field for entering a gesture -->
-        <Label x:Name="shortcutLabel" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{core:Localize ShortcutsManagement.EnterGestureLabel}" />
+        <Label x:Name="shortcutLabel" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{core:Localize ShortcutsManagement.EnterGestureLabel}" />
         <Grid Grid.Column="2" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="40" />
             </Grid.ColumnDefinitions>
             
-            <TextBox x:Name="shortcutTextBox" Grid.Column="0" PreviewKeyDown="shortcutTextBox_PreviewKeyDown" Margin="3" AcceptsTab="True" AcceptsReturn="True" />
-            <Button x:Name="addGestureButton" Grid.Column="1" Style="{StaticResource AddButton}" Margin="3" Click="addGestureButton_Click"  />
+            <Dialogs:MultiKeyGestureTextBox x:Name="gestureTextBox" Grid.Column="0" Margin="3" TextBoxBorderThickness="1" />
+            <Button x:Name="addGestureButton" Grid.Column="1" Style="{StaticResource AddButton}" Height="25" VerticalAlignment="Top" Margin="3" Click="addGestureButton_Click"  />
         </Grid>
 
         <!-- List of gestures assigned to modified shortcut -->
         <Label x:Name="otherShortcutsLabel" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{core:Localize ShortcutsManagement.ShortcutGesturesLabel}" />
-        <ListBox x:Name="otherShortcutsListBox" ItemContainerStyle="{StaticResource GesturesListBox}" ItemsSource="{Binding Path=Gestures}" Grid.Column="1" Grid.Row="1" Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <ListBox x:Name="otherShortcutsListBox" Grid.Column="1" Grid.Row="1" ItemContainerStyle="{StaticResource GesturesListBox}" ItemsSource="{Binding Path=Gestures}" Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type InputGesture}">
                     <Grid>
@@ -61,8 +68,8 @@
         </ListBox>
 
         <!-- List of shortcuts which have same gestures assigned to them --> 
-        <Label x:Name="otherCommandsLabel" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{core:Localize ShortcutsManagement.SimilarShortcutsLabel}" />
-        <ShortcutsManagement:ShortcutsTreeView x:Name="shortcutsManagementOptionsPanel" Grid.Column="1" Grid.Row="2" IsSearchable="False" Padding="3" RemoveShortcutClick="shortcutsManagementOptionsPanel_RemoveShortcutClick" IsRemovableShortcutsEnabled="True" />
+        <Label x:Name="otherCommandsLabel" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{core:Localize ShortcutsManagement.SimilarShortcutsLabel}" />
+        <ShortcutsManagement:ShortcutsTreeView Grid.Row="2" Grid.Column="1" x:Name="shortcutsManagementOptionsPanel" IsSearchable="False" Padding="3" RemoveShortcutClick="shortcutsManagementOptionsPanel_RemoveShortcutClick" IsRemovableShortcutsEnabled="True" />
         
         <!-- Ok/Cancel buttons -->
         <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Right" >

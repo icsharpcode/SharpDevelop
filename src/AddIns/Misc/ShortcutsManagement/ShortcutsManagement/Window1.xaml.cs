@@ -18,10 +18,11 @@ namespace ICSharpCode.ShortcutsManagement
 
             // Test data
             var rootEntries = new ObservableCollection<IShortcutTreeEntry>();
-
+            
             var addin1 = new AddInSection("SharpDevelop");
             rootEntries.Add(addin1);
             addin1.Categories.Add(new ShortcutCategory("Editing"));
+            addin1.Categories[0].Shortcuts.Add(new Shortcut("MultiKey", GetGestures("Ctrl+C, Ctrl+K")));
             addin1.Categories[0].Shortcuts.Add(new Shortcut("Copy", GetGestures("Ctrl + C")));
             addin1.Categories[0].Shortcuts.Add(new Shortcut("Paste", GetGestures("Ctrl + V | Ctrl+Insert")));
             addin1.Categories[0].Shortcuts.Add(new Shortcut("Cut", GetGestures("Ctrl + X")));

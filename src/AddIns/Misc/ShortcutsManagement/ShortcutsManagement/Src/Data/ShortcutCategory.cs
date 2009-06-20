@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace ICSharpCode.ShortcutsManagement.Data
@@ -73,6 +72,11 @@ namespace ICSharpCode.ShortcutsManagement.Data
         }
 
         /// <summary>
+        /// Notify observers about property changes
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
         /// Create new instance of category
         /// </summary>
         /// <param name="categoryName">Category name</param>
@@ -103,6 +107,9 @@ namespace ICSharpCode.ShortcutsManagement.Data
 	        return clonedCategory;
 	    }
 
+        /// <summary>
+        /// Sort category shortcuts
+        /// </summary>
         public void SortSubEntries()
         {
             SubCategories.Sort((a, b) => a.Name.CompareTo(b.Name));
@@ -140,21 +147,10 @@ namespace ICSharpCode.ShortcutsManagement.Data
         }
 
         /// <summary>
-        /// Invoke dependency property changed event
+        /// Compare shortcut category to other instances of <see cref="IShortcutTreeEntry"/>
         /// </summary>
-        /// <param name="propertyName">Name of dependency property from this classs</param>
-        private void InvokePropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null) {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        /// <summary>
-        /// Notify observers about property changes
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
+        /// <param name="obj">Compared object</param>
+        /// <returns>Comparison result</returns>
         public int CompareTo(object obj)
         {
             if (obj is AddIn) return -1;
@@ -162,6 +158,18 @@ namespace ICSharpCode.ShortcutsManagement.Data
 
             var categoryObj = (ShortcutCategory)obj;
             return Name.CompareTo(categoryObj.Name);
+        }
+
+        /// <summary>
+        /// Invoke dependency property changed event
+        /// </summary>
+        /// <param name="propertyName">Name of dependency property from this classs</param>
+        private void InvokePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

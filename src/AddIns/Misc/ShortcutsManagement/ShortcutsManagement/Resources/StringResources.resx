@@ -140,4 +140,31 @@
   <data name="ShortcutsManagement.UnspecifiedCategoryName" xml:space="preserve">
     <value>Uncategorized</value>
   </data>
+  <data name="ShortcutsManagement.GestureTextBox.FirstChordIsIncomplete" xml:space="preserve">
+    <value>First chord must have a modifier</value>
+  </data>
+  <data name="ShortcutsManagement.GestureTextBox.GestureIsValid" xml:space="preserve">
+    <value>Valid gesture</value>
+  </data>
+  <data name="ShortcutsManagement.GestureTextBox.LastChordIsIncomplete" xml:space="preserve">
+    <value>Multi key gesture is not finished</value>
+  </data>
+  <data name="ShortcutsManagement.GestureTextBox.SequenceIsNotCoherent" xml:space="preserve">
+    <value>Invalid gesture. Sequence is not coherent.</value>
+  </data>
+  <data name="ShortcutsManagement.GestureTextBox.TimeExpired" xml:space="preserve">
+    <value>Time given for gesture entry expired</value>
+  </data>
+  <data name="ShortcutsManagement.ModificationWindow.AdditionFailedFirstChordIsIncomplete" xml:space="preserve">
+    <value>Failed to add a gesture. First chord should contain a modifier</value>
+  </data>
+  <data name="ShortcutsManagement.ModificationWindow.AdditionFailedLastChordIsIncompete" xml:space="preserve">
+    <value>Failed to add a gesture. Gesture is unfinished. Last chord should have a key</value>
+  </data>
+  <data name="ShortcutsManagement.ModificationWindow.AdditionFailedNoChords" xml:space="preserve">
+    <value>Failed to add a gesture. Gesture must have atleast one chord</value>
+  </data>
+  <data name="ShortcutsManagement.ModificationWindow.AdditionIsSuccessfull" xml:space="preserve">
+    <value>Gesture added</value>
+  </data>
 </root>

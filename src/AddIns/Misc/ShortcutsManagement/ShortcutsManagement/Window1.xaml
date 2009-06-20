@@ -1,14 +1,13 @@
 ﻿<Window x:Class="ICSharpCode.ShortcutsManagement.Window1"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:ICSharpCode.ShortcutsManagement"
-    xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:Dialogs="clr-namespace:ICSharpCode.ShortcutsManagement.Dialogs"
     Title="Window1" Height="300" Width="460" MinWidth="460">
 
 
     <Window.Resources>
     </Window.Resources>
     <Grid>
-	<local:ShortcutsManagementOptionsPanel x:Name="optionsPanel" Margin="5" />
+	    <Dialogs:ShortcutsManagementOptionsPanel x:Name="optionsPanel" Margin="5" />
     </Grid>
 </Window>

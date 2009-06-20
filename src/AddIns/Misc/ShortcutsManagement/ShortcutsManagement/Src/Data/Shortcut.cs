@@ -80,6 +80,11 @@ namespace ICSharpCode.ShortcutsManagement.Data
         }
 
         /// <summary>
+        /// Notify observers about property changes
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
         /// Create new instance of shortcut
         /// </summary>
         /// <param name="shortcutText">Shortcut action name (displayed to user)</param>
@@ -143,23 +148,10 @@ namespace ICSharpCode.ShortcutsManagement.Data
         }
 
         /// <summary>
-        /// Invoke dependency property changed event
+        /// Compare shortcut to other instances of <see cref="IShortcutTreeEntry"/>
         /// </summary>
-        /// <param name="propertyName">Name of dependency property from this classs</param>
-        private void InvokePropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        /// <summary>
-        /// Notify observers about property changes
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-
+        /// <param name="obj">Compared object</param>
+        /// <returns>Comparison result</returns>
         public int CompareTo(object obj)
         {
             if (obj is AddIn) return -1;
@@ -169,8 +161,25 @@ namespace ICSharpCode.ShortcutsManagement.Data
             return Name.CompareTo(shortcutObj.Name);
         }
 
+        /// <summary>
+        /// Returns this <see cref="Shortcut"/> instance if searched id matches
+        /// </summary>
+        /// <param name="shortcutId">Searched shortcut id</param>
+        /// <returns>Found shortcut instance or null</returns>
         public Shortcut FindShortcut(string shortcutId) {
             return Id == shortcutId ? this : null;
+        }
+
+        /// <summary>
+        /// Invoke dependency property changed event
+        /// </summary>
+        /// <param name="propertyName">Name of dependency property from this classs</param>
+        private void InvokePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }
