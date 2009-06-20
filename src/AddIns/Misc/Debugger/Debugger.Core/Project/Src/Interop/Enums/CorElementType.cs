@@ -32,9 +32,9 @@ namespace Debugger.Wrappers.CorDebug
 		// Please use VALUETYPE. VALUECLASS is deprecated.
 		VALUETYPE      = 0x11,     // VALUETYPE <class Token> 
 		CLASS          = 0x12,     // CLASS <class Token>  
-
+		VAR            = 0x13,
 		ARRAY          = 0x14,     // MDARRAY <type> <rank> <bcount> <bound1> ... <lbcount> <lb1> ...  
-
+		GENERICINST    = 0x15,
 		TYPEDBYREF     = 0x16,     // This is a simple type.   
 
 		I              = 0x18,     // native integer size  
