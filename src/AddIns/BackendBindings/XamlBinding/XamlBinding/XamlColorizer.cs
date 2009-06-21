@@ -25,6 +25,8 @@ namespace ICSharpCode.XamlBinding
 		XamlColorizerSettings settings = defaultSettings;
 		string fileContent;
 		string fileName;
+		ParseInformation parseInfo;
+		XamlResolver resolver = new XamlResolver();
 		
 		public IViewContent Content { get; set; }
 		
@@ -40,6 +42,7 @@ namespace ICSharpCode.XamlBinding
 			if (document == null)
 				return;
 			
+			this.parseInfo = ParserService.GetParseInformation(Content.PrimaryFileName);
 			this.fileContent = document.GetDocumentForFile(this.Content.PrimaryFile).CreateSnapshot().Text;
 			this.fileName = this.Content.PrimaryFileName;
 			
@@ -48,65 +51,42 @@ namespace ICSharpCode.XamlBinding
 		
 		protected override void ColorizeLine(DocumentLine line)
 		{
-			Stopwatch watch = new Stopwatch();
-			watch.Start();
-			
-			XamlResolver resolver = new XamlResolver();
-			
 			if (!line.IsDeleted) {
-				foreach (HighlightingInfo info in GetInfoForLine(fileContent, fileName, (string)line.Text.Clone(), line.LineNumber, line.Offset)) {
-					MemberResolveResult rr = resolver.Resolve(info.GetExpressionResult(), info.Context.ParseInformation, fileContent) as MemberResolveResult;
+				HighlightingInfo[] infos = GetInfoForLine(line);
+				
+				foreach (HighlightingInfo info in infos) {
+					MemberResolveResult rr = resolver.Resolve(info.GetExpressionResult(), parseInfo, fileContent) as MemberResolveResult;
 					IMember member = (rr != null) ? rr.ResolvedMember : null;
-					Colorize(member, info, line.Offset);
+					if (member != null) {
+						if (member is IEvent)
+							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
+						else
+							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
+					} else {
+						if (info.Token.StartsWith("xmlns"))
+							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
+					}
 				}
-			}
-			
-			watch.Stop();
-			Core.LoggingService.Debug("ColorizeLine line: " + line.LineNumber + " took: " + watch.ElapsedMilliseconds + "ms");
-		}
-		
-		void Colorize(IMember member, HighlightingInfo info, int offset)
-		{
-			try {
-				if (member != null) {
-					if (member is IEvent)
-						ChangeLinePart(offset + info.StartOffset, offset + info.EndOffset, HighlightEvent);
-					else
-						ChangeLinePart(offset + info.StartOffset, offset + info.EndOffset, HighlightProperty);
-				} else {
-					if (info.Token.StartsWith("xmlns"))
-						ChangeLinePart(offset + info.StartOffset, offset + info.EndOffset, HighlightNamespaceDeclaration);
-				}
-			} catch (Exception e) {
-				Debug.Print(e.ToString());
 			}
 		}
 		
-		static ParallelQuery<HighlightingInfo> GetInfoForLine(string fileContent, string fileName, string lineText, int line, int offset)
+		HighlightingInfo[] GetInfoForLine(DocumentLine line)
 		{
-			Stopwatch watch = new Stopwatch();
-			watch.Start();
-			
-			List<int> indices = new List<int>();
+			int index = -1;
 			List<HighlightingInfo> infos = new List<HighlightingInfo>();
-			
-			int cIndex = lineText.IndexOf('=');
-			
-			while (cIndex > -1) {
-				indices.Add(cIndex);
-				cIndex = lineText.IndexOf('=', cIndex + 1);
-			}
-			
-			return indices.AsParallel()
-				.Select(index => new { Context = CompletionDataHelper.ResolveContext(fileContent, fileName, line, index + 1), Index = index, Offset = offset })
-				.Where(item => !string.IsNullOrEmpty(item.Context.AttributeName))
-				.Select(context => GetInfo(context.Index, lineText, line, context.Context));
-		}
 		
-		static HighlightingInfo GetInfo(int index, string lineText, int line, XamlContext context)
-		{
-			int startIndex = lineText.Substring(0, index).LastIndexOf(context.AttributeName);
-			return new HighlightingInfo(context.AttributeName, startIndex, startIndex + context.AttributeName.Length, line, context);
+			do {
+				index = line.Text.IndexOf('=', index + 1);
+				if (index > -1) {
+					XamlContext context = CompletionDataHelper.ResolveContext(this.fileContent, this.fileName, line.LineNumber, index + 1);
+					if (!string.IsNullOrEmpty(context.AttributeName)) {
+						int startIndex = line.Text.Substring(0, index).LastIndexOf(context.AttributeName);
+						infos.Add(new HighlightingInfo(context.AttributeName, startIndex, startIndex + context.AttributeName.Length, line.Offset, context));
+					}
+				}
+			} while (index > -1);
+			
+			return infos.ToArray();
 		}
 		
 		void HighlightProperty(VisualLineElement element)
