@@ -465,6 +465,8 @@ namespace Mono.Cecil.Metadata {
 				throw new MetadataFormatException ("Non valid CodedIndex");
 			}
 		}
+		
+		/*
 
 		internal static Type GetCorrespondingTable (TokenType t)
 		{
@@ -641,5 +643,7 @@ namespace Mono.Cecil.Metadata {
 			codedIndexCache [ci] = res;
 			return res;
 		}
+		
+		*/
 	}
 }

@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 
+using Mono.Cecil.Signatures;
+
 namespace Debugger.MetaData
 {
 	public enum DebugTypeKind { Array, Class, ValueType, Primitive, Pointer, Void };
@@ -357,83 +359,64 @@ namespace Debugger.MetaData
 				return Create(module.Process, GetCorClass(module, token));
 			} else if (tokenType == CorTokenType.TypeSpec) {
 				Blob typeSpecBlob = module.MetaData.GetTypeSpecFromToken(token);
-				Queue<byte> sig = new Queue<byte>(typeSpecBlob.GetData());
-				return Create(module, sig, signatureContext);
+				return Create(module, typeSpecBlob.GetData(), signatureContext);
 			} else {
 				throw new DebuggerException("Unknown token type");
 			}
 		}
 		
-		public static DebugType Create(Module module, Queue<byte> sig)
+		public static DebugType Create(Module module, byte[] sig)
 		{
 			return Create(module, sig, null);
 		}
 		
 		/// <param name="signatureContext">Type definition to use to resolve numbered generic references</param>
-		public static DebugType Create(Module module, Queue<byte> sig, DebugType signatureContext)
+		public static DebugType Create(Module module, byte[] sig, DebugType signatureContext)
 		{
-			CorElementType corType = (CorElementType)sig.Dequeue();
+			SignatureReader sigReader = new SignatureReader(sig);
+			int start;
+			SigType sigType = sigReader.ReadType(sig, 0, out start);
 			
-			System.Type sysType = CorElementTypeToManagedType(corType);
+			return Create(module, sigType, signatureContext);
+		}
+		
+		static DebugType Create(Module module, SigType sigType, DebugType signatureContext)
+		{
+			System.Type sysType = CorElementTypeToManagedType((CorElementType)(uint)sigType.ElementType);
 			if (sysType != null) {
 				return Create(module.Process, module.AppDomainID, sysType.FullName);
 			}
 			
-			if (corType == CorElementType.CLASS || corType == CorElementType.VALUETYPE) {
-				uint typeDefOrRef = ReadTypeDefOrRefEncoded(sig);
-				ICorDebugClass corClass = GetCorClass(module, typeDefOrRef);
+			if (sigType is CLASS) {
+				ICorDebugClass corClass = GetCorClass(module, ((CLASS)sigType).Type.ToUInt());
+				return Create(module.Process, corClass);
+			}
+			
+			if (sigType is VALUETYPE) {
+				ICorDebugClass corClass = GetCorClass(module, ((VALUETYPE)sigType).Type.ToUInt());
 				return Create(module.Process, corClass);
 			}
 			
 			// Numbered generic reference
-			if (corType == CorElementType.VAR) {
-				uint genArgIndex = ReadCompressedInt(sig);
-				
+			if (sigType is VAR) {			
 				if (signatureContext == null) throw new DebuggerException("Signature context is needed");
-				return signatureContext.GenericArguments[(int)genArgIndex];
+				return signatureContext.GenericArguments[((VAR)sigType).Index];
 			}
 			
-			if (corType == CorElementType.GENERICINST) {
-				CorElementType classOrValueType = (CorElementType)sig.Dequeue();
-				
-				uint typeDefOrRef = ReadTypeDefOrRefEncoded(sig);
-				ICorDebugClass corClass = GetCorClass(module, typeDefOrRef);
-				
-				uint genArgsCount = ReadCompressedInt(sig);
-				
-				ICorDebugType[] genArgs = new ICorDebugType[genArgsCount];
+			if (sigType is GENERICINST) {
+				GENERICINST genInst = (GENERICINST)sigType;
+				CorElementType classOrValueType = genInst.ValueType ? CorElementType.VALUETYPE : CorElementType.CLASS;
+				ICorDebugClass corClass = GetCorClass(module, genInst.Type.ToUInt());
+				ICorDebugType[] genArgs = new ICorDebugType[genInst.Signature.Arity];
 				for(int i = 0; i < genArgs.Length; i++) {
-					genArgs[i] = Create(module, sig, signatureContext).CorType;
+					genArgs[i] = Create(module, genInst.Signature.Types[i].Type, signatureContext).CorType;
 				}
 				
 				ICorDebugType genInstance = corClass.CastTo<ICorDebugClass2>().GetParameterizedType((uint)classOrValueType, genArgs);
 				return Create(module.Process, genInstance);
 			}
 			
-			throw new NotImplementedException();
-		}
-		
-		static uint ReadTypeDefOrRefEncoded(Queue<byte> sig)
-		{
-			uint i = ReadCompressedInt(sig);
-			uint table = i & 0x3;
-			uint index = i >> 2;
-			CorTokenType[] tables = new CorTokenType[] {CorTokenType.TypeDef, CorTokenType.TypeRef, CorTokenType.TypeSpec};
-			uint token = (uint)tables[table] | index;
-			return token;
-		}
-		
-		static uint ReadCompressedInt(Queue<byte> sig)
-		{
-			if ((sig.Peek() & 0x80) == 0x00) {  // 1 bit
-				return (uint)sig.Dequeue();
-			} else if ((sig.Peek() & 0xC0) == 0x80) {  // 2 bit
-				return (((uint)sig.Dequeue() & 0x3F) << 8) + (uint)sig.Dequeue();
-			} else if ((sig.Peek() & 0xE0) == 0xC0) {  // 4 bit
-				return (((uint)sig.Dequeue() & 0x1F) << 24) + ((uint)sig.Dequeue() << 16) + ((uint)sig.Dequeue() << 8) + (uint)sig.Dequeue();
-			} else {
-				throw new DebuggerException("Unexpected value in signature");
-			}
+			throw new NotImplementedException(sigType.ElementType.ToString());
 		}
 		
 		public static DebugType Create(Process process, uint? domainID, string fullTypeName)

@@ -38,6 +38,17 @@ namespace Mono.Cecil.Signatures {
 
 	internal sealed class SignatureReader : BaseSignatureVisitor {
 
+		byte [] m_blobData;
+		IDictionary m_signatures;
+		
+		public SignatureReader (byte [] blobData)
+		{
+			m_blobData = blobData;
+			m_signatures = new Hashtable ();
+		}
+		
+		/*
+		
 		MetadataRoot m_root;
 		ReflectionReader m_reflectReader;
 		byte [] m_blobData;
@@ -57,6 +68,8 @@ namespace Mono.Cecil.Signatures {
 
 			m_signatures = new Hashtable ();
 		}
+		
+		*/
 
 		public FieldSig GetFieldSig (uint index)
 		{
@@ -136,6 +149,8 @@ namespace Mono.Cecil.Signatures {
 			}
 			return lv;
 		}
+		
+		/*
 
 		public CustomAttrib GetCustomAttrib (uint index, MethodReference ctor)
 		{
@@ -157,6 +172,8 @@ namespace Mono.Cecil.Signatures {
 			BinaryReader br = new BinaryReader (new MemoryStream (data));
 			return ReadCustomAttrib (br, data, ctor, resolve);
 		}
+		
+		*/
 
 		public Signature GetMemberRefSig (TokenType tt, uint index)
 		{
@@ -179,6 +196,8 @@ namespace Mono.Cecil.Signatures {
 			}
 			return null;
 		}
+		
+		/*
 
 		public MarshalSig GetMarshalSig (uint index)
 		{
@@ -190,18 +209,19 @@ namespace Mono.Cecil.Signatures {
 			}
 			return ms;
 		}
+		
+		*/
 
 		public MethodSig GetStandAloneMethodSig (uint index)
 		{
-			byte [] data = m_root.Streams.BlobHeap.Read (index);
 			int start;
-			if ((data [0] & 0x5) > 0) {
+			if ((m_blobData [index] & 0x5) > 0) {
 				MethodRefSig mrs = new MethodRefSig (index);
-				ReadMethodRefSig (mrs, data, 0, out start);
+				ReadMethodRefSig (mrs, m_blobData, (int)index, out start);
 				return mrs;
 			} else {
 				MethodDefSig mds = new MethodDefSig (index);
-				ReadMethodDefSig (mds, data, 0, out start);
+				ReadMethodDefSig (mds, m_blobData, (int)index, out start);
 				return mds;
 			}
 		}
@@ -209,13 +229,13 @@ namespace Mono.Cecil.Signatures {
 		public override void VisitMethodDefSig (MethodDefSig methodDef)
 		{
 			int start;
-			ReadMethodDefSig (methodDef, m_root.Streams.BlobHeap.Read (methodDef.BlobIndex), 0, out start);
+			ReadMethodDefSig (methodDef, m_blobData, (int)methodDef.BlobIndex, out start);
 		}
 
 		public override void VisitMethodRefSig (MethodRefSig methodRef)
 		{
 			int start;
-			ReadMethodRefSig (methodRef, m_root.Streams.BlobHeap.Read (methodRef.BlobIndex), 0, out start);
+			ReadMethodRefSig (methodRef, m_blobData, (int)methodRef.BlobIndex, out start);
 		}
 
 		public override void VisitFieldSig (FieldSig field)
@@ -445,7 +465,7 @@ namespace Mono.Cecil.Signatures {
 			return p;
 		}
 
-		SigType ReadType (byte [] data, int pos, out int start)
+		public SigType ReadType (byte [] data, int pos, out int start)
 		{
 			start = pos;
 			ElementType element = (ElementType) Utilities.ReadCompressedInteger (data, start, out start);
@@ -576,6 +596,8 @@ namespace Mono.Cecil.Signatures {
 				(uint) Utilities.ReadCompressedInteger (data, start, out start));
 			return cm;
 		}
+		
+		/*
 
 		CustomAttrib ReadCustomAttrib (int pos, MethodReference ctor, bool resolve)
 		{
@@ -957,5 +979,7 @@ namespace Mono.Cecil.Signatures {
 			// COMPACT FRAMEWORK NOTE: Encoding.GetString (byte[]) is not supported.
 			return Encoding.UTF8.GetString (data, pos, length);
 		}
+		
+		*/
 	}
 }
