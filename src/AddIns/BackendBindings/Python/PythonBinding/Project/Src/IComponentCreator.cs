@@ -8,6 +8,9 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Globalization;
+using System.Resources;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -20,7 +23,7 @@ namespace ICSharpCode.PythonBinding
 	/// Used by the PythonFormVisitor class so it can be wired up to an 
 	/// IDesignerHost and an IDesignerSerializationManager.
 	/// </summary>
-	public interface IComponentCreator
+	public interface IComponentCreator : IResourceService
 	{
 		/// <summary>
 		/// Creates a named component of the specified type.

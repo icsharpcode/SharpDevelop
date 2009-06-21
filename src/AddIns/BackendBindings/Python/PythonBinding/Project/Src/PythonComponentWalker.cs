@@ -10,7 +10,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
+using System.Globalization;
 using System.Reflection;
+using System.Resources;
 using System.Text;
 using System.Windows.Forms;
 
@@ -41,7 +43,7 @@ namespace ICSharpCode.PythonBinding
 		/// Creates a control either a UserControl or Form from the python code.
 		/// </summary>
 		public IComponent CreateComponent(string pythonCode)
-		{
+		{			
 			PythonParser parser = new PythonParser();
 			PythonAst ast = parser.CreateAst(@"Control.py", pythonCode);
 			ast.Walk(this);
@@ -85,6 +87,10 @@ namespace ICSharpCode.PythonBinding
 			if (IsInitializeComponentMethod(node)) {
 				Type type = GetComponentType();
 				component = componentCreator.CreateComponent(type, componentName);
+				IResourceReader reader = componentCreator.GetResourceReader(CultureInfo.InvariantCulture);
+				if (reader != null) {
+					reader.Dispose();
+				}
 				node.Body.Walk(this);
 			}
 			return false;

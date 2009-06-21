@@ -48,46 +48,35 @@ namespace ICSharpCode.PythonBinding
 			// Add root component
 			AppendComponentProperties(codeBuilder, false, true);
 		}
-				
-		public PythonDesignerComponent[] GetNonVisualChildComponents()
+		
+		/// <summary>
+		/// Adds BeginInit method call for any components that implement the 
+		/// System.ComponentModel.ISupportInitialize interface.
+		/// </summary>
+		public void AppendSupportInitializeComponentsBeginInit(PythonCodeBuilder codeBuilder)
 		{
-			List<PythonDesignerComponent> components = new List<PythonDesignerComponent>();
+			AppendSupportInitializeMethodCalls(codeBuilder, new string[] {"BeginInit()"});
+		}
+		
+		/// <summary>
+		/// Adds EndInit method call for any that implement the 
+		/// System.ComponentModel.ISupportInitialize interface.
+		/// </summary>
+		public void AppendSupportInitializeComponentsEndInit(PythonCodeBuilder codeBuilder)
+		{
+			AppendSupportInitializeMethodCalls(codeBuilder, new string[] {"EndInit()"});
+		}
+		
+		public void AppendSupportInitializeMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
+		{
 			foreach (IComponent containerComponent in Component.Site.Container.Components) {
-				PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(this, containerComponent);
-				if (designerComponent.IsNonVisual) {
-					components.Add(designerComponent);
-				}
-			}
-			return components.ToArray();
-		}
-				
-		/// <summary>
-		/// Adds BeginInit method call for any non-visual components that implement the 
-		/// System.ComponentModel.ISupportInitialize interface.
-		/// </summary>
-		public void AppendNonVisualComponentsBeginInit(PythonCodeBuilder codeBuilder)
-		{
-			AppendNonVisualComponentsMethodCalls(codeBuilder, new string[] {"BeginInit()"});
-		}
-		
-		/// <summary>
-		/// Adds EndInit method call for any non-visual components that implement the 
-		/// System.ComponentModel.ISupportInitialize interface.
-		/// </summary>
-		public void AppendNonVisualComponentsEndInit(PythonCodeBuilder codeBuilder)
-		{
-			AppendNonVisualComponentsMethodCalls(codeBuilder, new string[] {"EndInit()"});
-		}		
-		
-		public void AppendNonVisualComponentsMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
-		{
-			foreach (PythonDesignerComponent component in GetNonVisualChildComponents()) {
-				if (typeof(ISupportInitialize).IsAssignableFrom(component.GetComponentType())) {
+				if (typeof(ISupportInitialize).IsAssignableFrom(containerComponent.GetType())) {
+					PythonDesignerComponent component = PythonDesignerComponentFactory.CreateDesignerComponent(this, containerComponent);
 					component.AppendMethodCalls(codeBuilder, methods);
 				}
-			}			
-		}
-		
+			}
+		}	
+				
 		/// <summary>
 		/// Reverses the ordering when adding items to the Controls collection.
 		/// </summary>

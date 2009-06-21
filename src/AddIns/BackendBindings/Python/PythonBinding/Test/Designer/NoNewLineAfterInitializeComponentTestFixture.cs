@@ -49,7 +49,7 @@ namespace PythonBinding.Tests.Designer
 					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 					namePropertyDescriptor.SetValue(userControl, "userControl1");
 					
-					PythonDesignerGenerator.Merge(userControl, document, compilationUnit, new MockTextEditorProperties());
+					PythonDesignerGenerator.Merge(userControl, document, compilationUnit, new MockTextEditorProperties(), null);
 				}
 			}
 		}

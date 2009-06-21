@@ -39,6 +39,7 @@ namespace PythonBinding.Tests.Designer
 		IComponent rootComponent;
 		Form designedForm;
 		MockEventBindingService mockEventBindingService;
+		MockResourceService mockResourceService;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -52,6 +53,9 @@ namespace PythonBinding.Tests.Designer
 	
 			// Begin load.
 			mockDesignerLoaderHost = new MockDesignerLoaderHost();
+			mockResourceService = new MockResourceService();
+			mockDesignerLoaderHost.AddService(typeof(IResourceService), mockResourceService);
+
 			mockTypeResolutionService = mockDesignerLoaderHost.TypeResolutionService;
 
 			mockExtenderProviderService = new MockExtenderProviderService();
@@ -141,6 +145,12 @@ namespace PythonBinding.Tests.Designer
 		public void GetRootComponentFromLoader()
 		{
 			Assert.AreEqual(designedForm, loader.RootComponent);
+		}
+		
+		[Test]
+		public void ResourceServicePassedToMergeRootComponentMethod()
+		{
+			Assert.IsTrue(Object.ReferenceEquals(mockResourceService, generator.MergeChangesResourceService));
 		}
 				
 		/// <summary>

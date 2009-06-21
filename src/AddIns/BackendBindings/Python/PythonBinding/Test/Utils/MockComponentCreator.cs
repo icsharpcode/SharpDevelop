@@ -10,8 +10,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
+using System.Globalization;
 using System.Drawing;
 using System.Reflection;
+using System.Resources;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
 
@@ -26,6 +28,12 @@ namespace PythonBinding.Tests.Utils
 		PropertyDescriptor propertyDescriptor;
 		EventDescriptor eventDescriptor;
 		IComponent rootComponent;
+		bool getResourceReaderCalled;
+		CultureInfo cultureInfoPassedToGetResourceReader;
+		IResourceWriter resourceWriter;
+		bool getResourceWriterCalled;
+		CultureInfo cultureInfoPassedToGetResourceWriter;
+		IResourceReader resourceReader;
 		
 		public MockComponentCreator()
 		{
@@ -173,5 +181,45 @@ namespace PythonBinding.Tests.Utils
 			}
 			return null;
 		}
+
+		public void SetResourceReader(IResourceReader reader)
+		{
+			resourceReader = reader;
+		}
+		
+		public bool GetResourceReaderCalled {
+			get { return getResourceReaderCalled; }
+		}
+
+		public CultureInfo CultureInfoPassedToGetResourceReader {
+			get { return cultureInfoPassedToGetResourceReader; }
+		}
+		
+		public IResourceReader GetResourceReader(CultureInfo info)
+		{
+			getResourceReaderCalled = true;
+			cultureInfoPassedToGetResourceReader = info;
+			return resourceReader;
+		}
+		
+		public void SetResourceWriter(IResourceWriter writer)
+		{
+			resourceWriter = writer;
+		}
+		
+		public IResourceWriter GetResourceWriter(CultureInfo info)
+		{
+			getResourceWriterCalled = true;
+			cultureInfoPassedToGetResourceWriter = info;
+			return resourceWriter;
+		}		
+		
+		public bool GetResourceWriterCalled {
+			get { return getResourceWriterCalled; }
+		}
+
+		public CultureInfo CultureInfoPassedToGetResourceWriter {
+			get { return cultureInfoPassedToGetResourceWriter; }
+		}		
 	}
 }

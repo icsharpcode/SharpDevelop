@@ -141,22 +141,6 @@ namespace ICSharpCode.PythonBinding
 			}
 			return false;
 		}
-		
-		/// <summary>
-		/// A component is non-visual if it is not a control and is not hidden from the designer.
-		/// </summary>
-		public static bool IsNonVisualComponent(IComponent component)
-		{
-			Control control = component as Control;
-			return (control == null) && !IsHiddenFromDesigner(component);
-		}
-		
-		/// <summary>
-		/// Returns true if this component is non-visual.
-		/// </summary>
-		public bool IsNonVisual {
-			get { return IsNonVisualComponent(component); }
-		}
 
 		/// <summary>
 		/// Gets the AddRange method on the object that is not hidden from the designer. 

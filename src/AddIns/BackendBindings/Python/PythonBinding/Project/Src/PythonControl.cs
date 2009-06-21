@@ -11,7 +11,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.Reflection;
+using System.Resources;
 using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -27,6 +29,7 @@ namespace ICSharpCode.PythonBinding
 	{
 		PythonCodeBuilder codeBuilder;
 		string indentString = String.Empty;
+		IResourceService resourceService;
 		
 		public PythonControl() 
 			: this("\t")
@@ -34,8 +37,15 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		public PythonControl(string indentString)
+			: this(indentString, null)
 		{
 			this.indentString = indentString;
+		}
+		
+		public PythonControl(string indentString, IResourceService resourceService)
+		{
+			this.indentString = indentString;
+			this.resourceService = resourceService;
 		}
 
 		/// <summary>
@@ -53,6 +63,7 @@ namespace ICSharpCode.PythonBinding
 			codeBuilder.IncreaseIndent();
 			
 			GenerateInitializeComponentMethodBodyInternal(control);
+			GenerateResources();
 			
 			methodCodeBuilder.Append(codeBuilder.ToString());
 			return methodCodeBuilder.ToString();
@@ -70,6 +81,7 @@ namespace ICSharpCode.PythonBinding
 				codeBuilder.IncreaseIndent();
 			}
 			GenerateInitializeComponentMethodBodyInternal(control);
+			GenerateResources();
 			
 			return codeBuilder.ToString();
 		}				
@@ -78,13 +90,23 @@ namespace ICSharpCode.PythonBinding
 		{
 			PythonDesignerRootComponent rootDesignerComponent = PythonDesignerComponentFactory.CreateDesignerRootComponent(control);
 			rootDesignerComponent.AppendCreateContainerComponents(codeBuilder);
-			rootDesignerComponent.AppendNonVisualComponentsBeginInit(codeBuilder);
+			rootDesignerComponent.AppendSupportInitializeComponentsBeginInit(codeBuilder);
 			rootDesignerComponent.AppendChildComponentsSuspendLayout(codeBuilder);
 			rootDesignerComponent.AppendSuspendLayout(codeBuilder);
 			rootDesignerComponent.AppendComponent(codeBuilder);
 			rootDesignerComponent.AppendChildComponentsResumeLayout(codeBuilder);
-			rootDesignerComponent.AppendNonVisualComponentsEndInit(codeBuilder);
+			rootDesignerComponent.AppendSupportInitializeComponentsEndInit(codeBuilder);
 			rootDesignerComponent.AppendResumeLayout(codeBuilder);
+		}
+		
+		void GenerateResources()
+		{
+			if (resourceService == null) {
+				return;
+			}
+			
+			using (IResourceWriter writer = resourceService.GetResourceWriter(CultureInfo.InvariantCulture)) {
+			}
 		}
 	}
 }

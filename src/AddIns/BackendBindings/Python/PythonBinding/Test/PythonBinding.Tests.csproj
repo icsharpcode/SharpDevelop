@@ -191,6 +191,7 @@
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewItemTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewSubItemsTestFixture.cs" />
+    <Compile Include="Designer\GenerateLocalImageResourceTestFixture.cs" />
     <Compile Include="Designer\GenerateMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\GenerateMenuStripItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
@@ -204,6 +205,7 @@
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
     <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
+    <Compile Include="Designer\GetResourcesFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\GetSerializableContentPropertiesTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
@@ -223,6 +225,7 @@
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
     <Compile Include="Designer\LoadFormWithSysPathAppendStatementTestFixture.cs" />
     <Compile Include="Designer\LoadListViewFormTestFixture.cs" />
+    <Compile Include="Designer\LoadLocalImageResourceTestFixture.cs" />
     <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleUserControlTestFixture.cs" />
@@ -319,6 +322,9 @@
     <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
     <Compile Include="Utils\MockPropertyDescriptor.cs" />
+    <Compile Include="Utils\MockResourceReader.cs" />
+    <Compile Include="Utils\MockResourceService.cs" />
+    <Compile Include="Utils\MockResourceWriter.cs" />
     <Compile Include="Utils\MockTextEditorProperties.cs" />
     <Compile Include="Utils\MockTextEditorViewContent.cs" />
     <Compile Include="Utils\MockTypeResolutionService.cs" />

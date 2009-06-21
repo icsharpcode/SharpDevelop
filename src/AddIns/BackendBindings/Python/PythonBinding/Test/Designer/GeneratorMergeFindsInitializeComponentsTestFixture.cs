@@ -60,7 +60,7 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 				namePropertyDescriptor.SetValue(form, "MainForm");
 				
-				generator.MergeRootComponentChanges(form);
+				generator.MergeRootComponentChanges(form, new MockResourceService());
 				generator.Detach();
 			}
 		}
