@@ -70,7 +70,7 @@
 						   class="ICSharpCode.XamlBinding.PowerToys.Commands.RemoveUnnecessaryAttributesCommand"
 						 label="Remove unnecessary attributes" />
 				<MenuItem type="Separator" />
-				<MenuItem type="Builder" class="" />
+				<!-- <MenuItem type="Builder" class="" /> -->
 			</MenuItem>
 		</ComplexCondition>
 	</Path>
