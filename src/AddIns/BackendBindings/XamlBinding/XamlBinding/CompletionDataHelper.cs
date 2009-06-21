@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,6 +16,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.XmlEditor;
 using LoggingService = ICSharpCode.Core.LoggingService;
 
@@ -45,11 +46,15 @@ namespace ICSharpCode.XamlBinding
 		{
 			int offset = Utils.GetOffsetFromFilePos(text, line, col);
 			
+			if (offset == -1)
+				throw new InvalidOperationException("No valid file position: " + line + " " + col);
 			ParseInformation info = ParserService.GetParseInformation(fileName);
 			XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(text, offset);
 			string attribute = XmlParser.GetAttributeNameAtIndex(text, offset);
-			string attributeValue = XmlParser.GetAttributeValueAtIndex(text, offset);
 			bool inAttributeValue = XmlParser.IsInsideAttributeValue(text, offset);
+			string attributeValue = "";
+			if (inAttributeValue)
+				attributeValue = XmlParser.GetAttributeValueAtIndex(text, offset);
 			int offsetFromValueStart = Utils.GetOffsetFromValueStart(text, offset);
 			int elementStartIndex = XmlParser.GetActiveElementStartIndex(text, offset);
 			AttributeValue value = MarkupExtensionParser.ParseValue(attributeValue);
@@ -64,7 +69,7 @@ namespace ICSharpCode.XamlBinding
 			if (text[offset] == '>')
 				description = XamlContextDescription.None;
 			
-			if (!string.IsNullOrEmpty(attribute) || (elementStartIndex > -1 && offset > 0 && char.IsWhiteSpace(text[offset - 1])))
+			if (elementStartIndex > -1 && (char.IsWhiteSpace(text[offset]) || !string.IsNullOrEmpty(attribute) || Extensions.Is(text[offset], '"', '\'')))
 				description = XamlContextDescription.InTag;
 
             if (inAttributeValue) {
@@ -97,8 +102,6 @@ namespace ICSharpCode.XamlBinding
 				XmlnsDefinitions = xmlnsDefs,
 				ParseInformation = info
 			};
-			
-			LoggingService.Debug(context);
 			
 			return context;
 		}
@@ -157,12 +160,8 @@ namespace ICSharpCode.XamlBinding
 				}
 				
 				foreach (string @namespace in content.NamespaceNames) {
-					if (!string.IsNullOrEmpty(@namespace)) {
-						if (string.IsNullOrEmpty(content.AssemblyName))
-							list.Add(new XmlnsCompletionItem(@namespace, false));
-						else
+					if (!string.IsNullOrEmpty(@namespace))
 						    list.Add(new XmlnsCompletionItem(@namespace, content.AssemblyName));
-					}
 				}
 			}
 			

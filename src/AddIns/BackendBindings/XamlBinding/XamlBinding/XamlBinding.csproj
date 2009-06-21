@@ -74,6 +74,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Options\XamlBindingOptions.cs" />
+    <Compile Include="PowerToys\Commands\RemoveMarginCommand.cs" />
+    <Compile Include="PowerToys\Commands\RemoveUnnecessaryAttributesCommand.cs" />
+    <Compile Include="PowerToys\XamlMenuCommand.cs" />
     <Compile Include="Utils.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -140,7 +143,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="PowerToys" />
     <Folder Include="Options" />
+    <Folder Include="PowerToys\Commands" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Options\CodeCompletion.xaml" />

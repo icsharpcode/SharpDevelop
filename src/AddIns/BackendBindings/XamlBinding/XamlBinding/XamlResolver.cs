@@ -25,7 +25,6 @@ namespace ICSharpCode.XamlBinding
 	public class XamlResolver : IResolver
 	{
 		IClass callingClass;
-		string fileContent;
 		string resolveExpression;
 		int caretLine, caretColumn;
 		XamlContext context;
@@ -35,7 +34,6 @@ namespace ICSharpCode.XamlBinding
 			this.resolveExpression = expressionResult.Expression;
 			this.caretLine = expressionResult.Region.BeginLine;
 			this.caretColumn = expressionResult.Region.BeginColumn;
-			this.fileContent = fileContent;
 			this.callingClass = parseInfo.BestCompilationUnit.GetInnermostClass(caretLine, caretColumn);
 			this.context = expressionResult.Context as XamlContext ?? CompletionDataHelper.ResolveContext(fileContent, parseInfo.MostRecentCompilationUnit.FileName, caretLine, caretColumn);
 			

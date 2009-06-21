@@ -120,7 +120,7 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				default:
-					if (context.Description != XamlContextDescription.None && !char.IsWhiteSpace(context.PressedKey)) {
+					if (context.Description != XamlContextDescription.None && !char.IsWhiteSpace(ch)) {
 						editor.Document.Insert(editor.Caret.Offset, ch.ToString());
 						if (!context.AttributeName.StartsWith("xmlns"))
 							this.CtrlSpace(editor);

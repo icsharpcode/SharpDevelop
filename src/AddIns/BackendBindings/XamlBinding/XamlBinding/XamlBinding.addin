@@ -8,6 +8,8 @@
 	<!--
 		This file is unrelated to the WPF Designer, it is a language binding for .xaml files.
 		It allows using Go to definition, find references, code completion in .xaml files.
+		
+		
 	-->
 	
 	<Manifest>
@@ -47,10 +49,29 @@
 	</Path>
 
 	<!-- Options panel -->
-	<Path path = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<OptionPanel id = "XamlCompletionPanel"
 		             insertafter = "Markers"
 		             label = "${res:ICSharpCode.XamlBinding.Options.Title}"
 		             class = "ICSharpCode.XamlBinding.Options.CodeCompletion" />
+	</Path>
+
+	<Path name="/SharpDevelop/Workbench/MainMenu">
+		<ComplexCondition>
+			<And>
+				<Condition name="ActiveContentExtension" activeextension=".xaml" />
+				<Condition name="WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" />
+			</And>
+			<MenuItem id="XamlRefactoring" insertafter="Refactor" insertbefore="Project" label="Refactor" type="Menu">
+				<MenuItem id="RemoveMargin"
+						   class="ICSharpCode.XamlBinding.PowerToys.Commands.RemoveMarginCommand"
+						 label="Remove Margins" />
+				<MenuItem id="RemoveUnnecessaryAttributes"
+						   class="ICSharpCode.XamlBinding.PowerToys.Commands.RemoveUnnecessaryAttributesCommand"
+						 label="Remove unnecessary attributes" />
+				<MenuItem type="Separator" />
+				<MenuItem type="Builder" class="" />
+			</MenuItem>
+		</ComplexCondition>
 	</Path>
 </AddIn>

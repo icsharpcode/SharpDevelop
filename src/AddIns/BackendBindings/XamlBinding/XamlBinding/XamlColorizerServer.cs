@@ -32,8 +32,8 @@ namespace ICSharpCode.XamlBinding
 			ITextEditorProvider textEditor = e.Content as ITextEditorProvider;
 			if (textEditor != null) {
 				TextView textView = textEditor.TextEditor.GetService(typeof(TextView)) as TextView;
-//				if (textView != null)
-//					textView.LineTransformers.Add(new XamlColorizer(e.Content));
+				//if (textView != null)
+					//textView.LineTransformers.Add(new XamlColorizer(e.Content));
 			}
 		}
 	}

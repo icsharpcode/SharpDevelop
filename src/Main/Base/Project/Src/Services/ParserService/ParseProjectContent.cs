@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public string AssemblyName {
+		public override string AssemblyName {
 			get { return project.AssemblyName; }
 		}
 		

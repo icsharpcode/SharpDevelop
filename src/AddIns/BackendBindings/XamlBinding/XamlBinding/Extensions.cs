@@ -13,6 +13,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
+using System.Xml;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -37,6 +38,36 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return false;
+		}
+		
+		public static bool Is(char value, params char[] chars)
+		{
+			foreach (var c in chars) {
+				if (c == value)
+					return true;
+			}
+			
+			return false;
+		}
+		
+		public static void Remove(this XmlAttributeCollection coll, string name)
+		{
+			for (int i = 0; i < coll.Count; i++) {
+				if (coll[i].Name.Equals(name, StringComparison.Ordinal)) {
+					coll.RemoveAt(i);
+					i--;
+				}
+			}
+		}
+		
+		public static void Remove(this XmlAttributeCollection coll, string name, string namespaceURI)
+		{
+			for (int i = 0; i < coll.Count; i++) {
+				if (coll[i].LocalName.Equals(name, StringComparison.Ordinal) && coll[i].NamespaceURI.Equals(namespaceURI, StringComparison.Ordinal)) {
+					coll.RemoveAt(i);
+					i--;
+				}
+			}
 		}
 		
 		public static IEnumerable<ICompletionItem> RemoveEvents(this IEnumerable<ICompletionItem> list)
