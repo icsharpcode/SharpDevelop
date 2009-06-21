@@ -31,8 +31,8 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		class NamespaceURI
 		{
-			string namespaceURI = string.Empty;
-			string prefix = string.Empty;
+			string namespaceURI = String.Empty;
+			string prefix = String.Empty;
 			
 			public NamespaceURI()
 			{
@@ -54,14 +54,14 @@ namespace ICSharpCode.XmlEditor
 				set {
 					prefix = value;
 					if (prefix == null) {
-						prefix = string.Empty;
+						prefix = String.Empty;
 					}
 				}
 			}
 			
 			public override string ToString()
 			{
-				if (!string.IsNullOrEmpty(prefix)) {
+				if (!String.IsNullOrEmpty(prefix)) {
 					return prefix + ":" + namespaceURI;
 				}
 				return namespaceURI;
@@ -117,7 +117,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static bool IsNamespaceDeclaration(string xml, int index)
 		{
-			if (string.IsNullOrEmpty(xml)) {
+			if (String.IsNullOrEmpty(xml)) {
 				return false;
 			}
 			
@@ -184,8 +184,8 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static string GetAttributeName(string xml, int index)
 		{
-			if (string.IsNullOrEmpty(xml)) {
-				return string.Empty;
+			if (String.IsNullOrEmpty(xml)) {
+				return String.Empty;
 			}
 			
 			index = GetCorrectedIndex(xml.Length, index);
@@ -202,7 +202,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			string name = GetAttributeNameAtIndex(xml, index);
 			QualifiedName qualifiedName = GetQualifiedName(name);
-			if (qualifiedName != null && string.IsNullOrEmpty(qualifiedName.Namespace) && includeNamespace) {
+			if (qualifiedName != null && String.IsNullOrEmpty(qualifiedName.Namespace) && includeNamespace) {
 				QualifiedNameCollection namespaces = new QualifiedNameCollection();
 				XmlElementPath path = GetActiveElementStartPathAtIndex(xml, index, namespaces);
 				qualifiedName.Namespace = GetNamespaceForPrefix(namespaces, path.Elements.LastPrefix);
@@ -225,8 +225,8 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static string GetAttributeNameAtIndex(string xml, int index)
 		{
-			if (string.IsNullOrEmpty(xml)) {
-				return string.Empty;
+			if (String.IsNullOrEmpty(xml)) {
+				return String.Empty;
 			}
 			
 			index = GetCorrectedIndex(xml.Length, index);
@@ -239,7 +239,7 @@ namespace ICSharpCode.XmlEditor
 				// Find attribute name start.
 				int elementStartIndex = GetActiveElementStartIndex(xml, index);
 				if (elementStartIndex == -1) {
-					return string.Empty;
+					return String.Empty;
 				}
 				
 				// Find equals sign.
@@ -262,6 +262,10 @@ namespace ICSharpCode.XmlEditor
 						if (ch == '\'' || ch == '\"') {
 							ignoreQuote = true;
 							ignoreEqualsSign = true;
+						} else if (ch == '=') {
+							// Do nothing.
+						} else {
+							return String.Empty;
 						}
 						break;
 					}
@@ -309,7 +313,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public static bool IsInsideAttributeValue(string xml, int index)
 		{
-			if (string.IsNullOrEmpty(xml)) {
+			if (String.IsNullOrEmpty(xml)) {
 				return false;
 			}
 			
@@ -355,14 +359,14 @@ namespace ICSharpCode.XmlEditor
 		public static string GetAttributeValueAtIndex(string xml, int index)
 		{
 			if (!IsInsideAttributeValue(xml, index)) {
-				return string.Empty;
+				return String.Empty;
 			}
 			
 			index = GetCorrectedIndex(xml.Length, index);
 			
 			int elementStartIndex = GetActiveElementStartIndex(xml, index);
 			if (elementStartIndex == -1) {
-				return string.Empty;
+				return String.Empty;
 			}
 			
 			// Find equals sign.
@@ -379,7 +383,7 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			if (equalsSignIndex == -1) {
-				return string.Empty;
+				return String.Empty;
 			}
 			
 			// Find attribute value.
@@ -401,12 +405,12 @@ namespace ICSharpCode.XmlEditor
 						attributeValue.Append(ch);
 					} else {
 						// Invalid character found.
-						return string.Empty;
+						return String.Empty;
 					}
 				}
 			}
 			
-			return string.Empty;
+			return String.Empty;
 		}
 		
 		/// <summary>
@@ -494,7 +498,7 @@ namespace ICSharpCode.XmlEditor
 		/// element we are interested in.</param>
 		static QualifiedName GetElementName(string xml)
 		{
-			string name = string.Empty;
+			string name = String.Empty;
 			
 			// Find the end of the element name.
 			xml = xml.Replace("\r\n", " ");
@@ -596,7 +600,7 @@ namespace ICSharpCode.XmlEditor
 		
 		static string GetAttributeName(string xml, int index, bool ignoreWhitespace, bool ignoreQuote, bool ignoreEqualsSign)
 		{
-			string name = string.Empty;
+			string name = String.Empty;
 			
 			// From the end of the string work backwards until we have
 			// picked out the attribute name.
@@ -723,7 +727,7 @@ namespace ICSharpCode.XmlEditor
 			// Add namespaces in scope for the last element read.
 			if (namespacesInScope != null) {
 				foreach (KeyValuePair<string, string> ns in namespacesInScope) {
-					namespaces.Add(new QualifiedName(string.Empty, ns.Value, ns.Key));
+					namespaces.Add(new QualifiedName(String.Empty, ns.Value, ns.Key));
 				}
 			}
 			
@@ -740,7 +744,7 @@ namespace ICSharpCode.XmlEditor
 					return name.Namespace;
 				}
 			}
-			return string.Empty;
+			return String.Empty;
 		}
 		
 		/// <summary>
