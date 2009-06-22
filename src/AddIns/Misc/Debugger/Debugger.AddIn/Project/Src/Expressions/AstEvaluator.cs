@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Text;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 
@@ -31,6 +32,29 @@ namespace Debugger.AddIn
 				}
 			}
 			throw new GetValueException("Code must be expression or statement");
+		}
+		
+		public static string FormatValue(Value val)
+		{
+			if (val == null) {
+				return null;
+			} if (val.IsNull) {
+				return "null";
+			} else if (val.Type.IsArray) {
+				StringBuilder sb = new StringBuilder();
+				sb.Append(val.Type.Name);
+				sb.Append(" {");
+				bool first = true;
+				foreach(Value item in val.GetArrayElements()) {
+					if (!first) sb.Append(", ");
+					first = false;
+					sb.Append(FormatValue(item));
+				}
+				sb.Append("}");
+				return sb.ToString();
+			} else {
+				return val.InvokeToString();
+			}
 		}
 	}
 }

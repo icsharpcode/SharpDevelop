@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="4.0"  DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>Debugger.Tests</RootNamespace>
@@ -43,6 +43,7 @@
     <Compile Include="Src\DebuggerTests.cs" />
     <Compile Include="Src\DebuggerTestsBase.cs" />
     <Compile Include="Src\TestPrograms\ArrayValue.cs" />
+    <Compile Include="Src\TestPrograms\AstEval.cs" />
     <Compile Include="Src\TestPrograms\Break.cs" />
     <Compile Include="Src\TestPrograms\Breakpoint.cs" />
     <Compile Include="Src\TestPrograms\Callstack.cs" />
@@ -78,47 +79,20 @@
     <Compile Include="Src\TestPrograms\ThreadName.cs" />
     <Compile Include="Src\TestPrograms\ValueType.cs" />
     <Compile Include="Src\TestPrograms\_Template.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\_Template.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\ArrayValue.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Break.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Breakpoint.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Callstack.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\DebuggeeKilled.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\DebugTypes.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\DefinedTypes.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Exception.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\ExceptionCustom.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Expressions.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\FileRelease.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\FunctionArgumentVariables.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\FunctionLifetime.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\FunctionLocalVariables.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\FunctionVariablesLifetime.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\GenericDictionary.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Generics.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\HelloWorld.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\MainThreadExit.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\MemoryReadWrite.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Metadata.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\MetadataIdentity.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\ObjectValue.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\PrimitiveValue.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\PropertyVariable.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\PropertyVariableForm.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\SetIP.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\SimpleProgram.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\StackOverflow.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Stepping.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Symbols.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\TerminatePausedProcess.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\TerminateRunningProcess.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\ThreadName.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\ValueType.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\*.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />
     <Folder Include="Configuration" />
     <Folder Include="Src\TestPrograms" />
+    <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Debugger.AddIn\Project\Debugger.AddIn.csproj">
+      <Project>{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C}</Project>
+      <Name>Debugger.AddIn</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Debugger.Core\Project\Debugger.Core.csproj">
       <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>
       <Name>Debugger.Core</Name>
