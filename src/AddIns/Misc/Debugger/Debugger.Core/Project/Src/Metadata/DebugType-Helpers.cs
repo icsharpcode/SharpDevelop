@@ -319,20 +319,20 @@ namespace Debugger.MetaData
 		{
 			switch(corElementType) {
 				case CorElementType.BOOLEAN: return typeof(System.Boolean);
-				case CorElementType.CHAR: return typeof(System.Char);
-				case CorElementType.I1: return typeof(System.SByte);
-				case CorElementType.U1: return typeof(System.Byte);
-				case CorElementType.I2: return typeof(System.Int16);
-				case CorElementType.U2: return typeof(System.UInt16);
-				case CorElementType.I4: return typeof(System.Int32);
-				case CorElementType.U4: return typeof(System.UInt32);
-				case CorElementType.I8: return typeof(System.Int64);
-				case CorElementType.U8: return typeof(System.UInt64);
-				case CorElementType.R4: return typeof(System.Single);
-				case CorElementType.R8: return typeof(System.Double);
-				case CorElementType.I:  return typeof(System.IntPtr);
-				case CorElementType.U:  return typeof(System.UIntPtr);
-				case CorElementType.STRING: return typeof(System.String);
+				case CorElementType.CHAR:    return typeof(System.Char);
+				case CorElementType.I1:      return typeof(System.SByte);
+				case CorElementType.U1:      return typeof(System.Byte);
+				case CorElementType.I2:      return typeof(System.Int16);
+				case CorElementType.U2:      return typeof(System.UInt16);
+				case CorElementType.I4:      return typeof(System.Int32);
+				case CorElementType.U4:      return typeof(System.UInt32);
+				case CorElementType.I8:      return typeof(System.Int64);
+				case CorElementType.U8:      return typeof(System.UInt64);
+				case CorElementType.R4:      return typeof(System.Single);
+				case CorElementType.R8:      return typeof(System.Double);
+				case CorElementType.I:       return typeof(System.IntPtr);
+				case CorElementType.U:       return typeof(System.UIntPtr);
+				case CorElementType.STRING:  return typeof(System.String);
 				default: return null;
 			}
 		}

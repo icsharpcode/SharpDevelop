@@ -237,7 +237,7 @@ namespace Debugger.MetaData
 		[Tests.Ignore]
 		public bool IsPrimitive {
 			get {
-				return this.Kind == DebugTypeKind.Primitive;
+				return this.PrimitiveType != null;
 			}
 		}
 		
@@ -245,16 +245,17 @@ namespace Debugger.MetaData
 		[Tests.Ignore]
 		public bool IsInteger {
 			get {
-				return this.corElementType == CorElementType.I1 ||
-				       this.corElementType == CorElementType.U1 ||
-				       this.corElementType == CorElementType.I2 ||
-				       this.corElementType == CorElementType.U2 ||
-				       this.corElementType == CorElementType.I4 ||
-				       this.corElementType == CorElementType.U4 ||
-				       this.corElementType == CorElementType.I8 ||
-				       this.corElementType == CorElementType.U8 ||
-				       this.corElementType == CorElementType.I ||
-				       this.corElementType == CorElementType.U;
+				switch (this.PrimitiveType.FullName) {
+					case "System.SByte":
+					case "System.Byte":
+					case "System.Int16":
+					case "System.UInt16":
+					case "System.Int32":
+					case "System.UInt32":
+					case "System.Int64":
+					case "System.UInt64": return true;
+					default: return false;
+				}
 			}
 		}
 		
@@ -670,7 +671,8 @@ namespace Debugger.MetaData
 				}
 				if (this.IsPrimitive) {
 					return other.IsPrimitive &&
-					       other.corElementType == this.corElementType;
+					       other.PrimitiveType == this.PrimitiveType &&
+							other.IsValueType == this.IsValueType;
 				}
 				if (this.IsClass || this.IsValueType) {
 					return (other.IsClass || other.IsValueType) &&

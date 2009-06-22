@@ -653,7 +653,7 @@ namespace Debugger.Tests {
           Type="System.Int32">
           <Type>
             <DebugType
-              BaseType="System.ValueType"
+              BaseType="System.Object"
               ElementType="null"
               FullName="System.Int32"
               GenericArguments="{}"
@@ -1186,7 +1186,7 @@ namespace Debugger.Tests {
           Type="System.Int32">
           <Type>
             <DebugType
-              BaseType="System.ValueType"
+              BaseType="System.Object"
               ElementType="null"
               FullName="System.Int32"
               GenericArguments="{}"
@@ -1213,7 +1213,7 @@ namespace Debugger.Tests {
           Type="System.Int32">
           <Type>
             <DebugType
-              BaseType="System.ValueType"
+              BaseType="System.Object"
               ElementType="null"
               FullName="System.Int32"
               GenericArguments="{}"

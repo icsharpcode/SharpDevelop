@@ -14,10 +14,12 @@ namespace Debugger.Tests.TestPrograms
 	{
 		public static void Main()
 		{
-			char[] array1 = "Hello".ToCharArray();
+			int index = 4;
+			
+			char[] array = "Hello".ToCharArray();
 			char[] array2 = "world".ToCharArray();
-			char[][] arrays = new char[][] {array1, array2};
-			List<char> list = new List<char>(array1);
+			char[][] arrays = new char[][] {array, array2};
+			List<char> list = new List<char>(array);
 			
 			System.Diagnostics.Debugger.Break();
 		}
@@ -37,16 +39,28 @@ namespace Debugger.Tests {
 		{
 			StartTest("AstEval.cs");
 			
+			Eval("array");
 			Eval("arrays");
+			Eval("array[1]");
+			Eval("array[index]");
+			Eval("array[index - 1]");
+			Eval("list");
+			Eval("list[1]");
+			Eval("list[index]");
 			
 			EndTest();
 		}
 		
 		void Eval(string expr)
 		{
-			Value result = AstEvaluator.Evaluate(expr, SupportedLanguage.CSharp, process.SelectedStackFrame);
-			string restultFmted = AstEvaluator.FormatValue(result);
-			ObjectDump(expr, restultFmted);
+			string restultFmted;
+			try {
+				Value result = AstEvaluator.Evaluate(expr, SupportedLanguage.CSharp, process.SelectedStackFrame);
+				restultFmted = AstEvaluator.FormatValue(result);
+			} catch (GetValueException e) {
+				restultFmted = "Error: " + e.Message;
+			}
+			ObjectDump("Eval", " " + expr + " = " + restultFmted + " ");
 		}
 	}
 }
@@ -60,8 +74,15 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>AstEval.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break AstEval.cs:22,4-22,40</DebuggingPaused>
-    <arrays>Char[][] {Char[] {H, e, l, l, o}, Char[] {w, o, r, l, d}}</arrays>
+    <DebuggingPaused>Break AstEval.cs:24,4-24,40</DebuggingPaused>
+    <Eval> array = Char[] {H, e, l, l, o} </Eval>
+    <Eval> arrays = Char[][] {Char[] {H, e, l, l, o}, Char[] {w, o, r, l, d}} </Eval>
+    <Eval> array[1] = e </Eval>
+    <Eval> array[index] = o </Eval>
+    <Eval> array[index - 1] = Error: BinaryOperator: Subtract </Eval>
+    <Eval> list = System.Collections.Generic.List`1[System.Char] </Eval>
+    <Eval> list[1] = Error: Target is not array </Eval>
+    <Eval> list[index] = Error: Target is not array </Eval>
     <ProcessExited />
   </Test>
 </DebuggerTests>
