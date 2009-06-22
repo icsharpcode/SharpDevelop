@@ -35,11 +35,13 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		
 		private void btnInspect_Click(object sender, RoutedEventArgs e)
 		{
+			listView.ItemsSource = null;
+			
 			this.debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
 			if (debuggerService == null)
 				throw new ApplicationException("Only windows debugger is currently supported");
 			
-			Value val = debuggerService.GetValueFromName(txtExpression.Text).GetPermanentReference();
+			Value val = debuggerService.GetValueFromName(txtExpression.Text);
 			if (val != null && !val.IsNull)
 			{
 				DebugType iListType, listItemType;
@@ -60,6 +62,10 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					{
 						var lazyListView = new LazyListView<ObjectValue>(this.listView);
 						var iEnumerableValuesProvider = new EnumerableValuesProvider(val.Expression, iEnumerableType, itemType);
+						
+						IList<MemberInfo> itemTypeMembers = iEnumerableValuesProvider.GetItemTypeMembers();
+						createListViewColumns(itemTypeMembers);
+						
 						lazyListView.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(iEnumerableValuesProvider.ItemsSource);
 					}
 				}

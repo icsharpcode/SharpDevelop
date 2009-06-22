@@ -24,7 +24,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 			iListType = null;
 			itemType = null;
 			// alternative: search val.Type.Interfaces for IList<T>, from it, get T
-			// works when MyClass : IList<int> - MyClass is not generic, yet can be displayed
+			// works when MyClass : IList<int>? - MyClass is not generic, yet can be displayed
 			iListType = type.GetInterface(typeof(IList).FullName);
 			if (iListType != null)
 			{
@@ -45,16 +45,18 @@ namespace Debugger.AddIn.Visualizers.Utils
 			
 			iEnumerableType = null;
 			itemType = null;
-			// alternative: search val.Type.Interfaces for IList<T>, from it, get T
-			// works when MyClass : IEnumerable<int> - MyClass is not generic, yet can be displayed
-			iEnumerableType = type.GetInterface(typeof(IEnumerable).FullName);
-			if (iEnumerableType != null)
+			// works when MyClass : IEnumerable<int>? - MyClass is not generic, yet can be displayed
+			foreach (DebugType typeInterface in type.Interfaces)
 			{
-				List<DebugType> genericArguments = type.GenericArguments;
-				if (genericArguments.Count == 1)
+				if (typeInterface.FullName.StartsWith("System.Collections.Generic.IEnumerable"))
 				{
-					itemType = genericArguments[0];
-					return true;
+					List<DebugType> genericArguments = typeInterface.GenericArguments;
+					if (genericArguments.Count == 1)
+					{
+						iEnumerableType = typeInterface;
+						itemType = genericArguments[0];
+						return true;
+					}
 				}
 			}
 			return false;

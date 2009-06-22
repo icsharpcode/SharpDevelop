@@ -48,7 +48,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		{
 			PropertyInfo itemProperty = iListType.GetProperty("Item");
 			Expression itemExpr = targetObject.AppendMemberReference(itemProperty, new PrimitiveExpression(index));
-			return ObjectValue.Create(itemExpr, this.listItemType, this.bindingFlags);
+			return ObjectValue.Create(
+				itemExpr.Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference(), 
+				this.listItemType, this.bindingFlags);
 		}
 		
 		public IList<MemberInfo> GetItemTypeMembers()
