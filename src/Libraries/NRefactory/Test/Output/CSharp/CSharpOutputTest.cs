@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("if (a) { m1(); } else { m2(); }");
 			
-			TestStatement("if (a) m1(); else m2(); ");
+			TestStatement("if (a) m1();else m2(); ");
 			
 			TestStatement("if (a) {\n" +
 			              "\tm1();\n" +
