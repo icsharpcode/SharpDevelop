@@ -249,7 +249,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			Point locationTop = textView.PointToScreen(visualLocationTop - textView.ScrollOffset);
 			
 			// Let's use device dependent units for everything
-			Size completionWindowSize = new Size(this.ActualWidth, this.ActualHeight).TransformToDevice(this);
+			Size completionWindowSize = new Size(this.ActualWidth, this.ActualHeight).TransformToDevice(textView);
 			Rect bounds = new Rect(location, completionWindowSize);
 			Rect workingScreen = System.Windows.Forms.Screen.GetWorkingArea(location.ToSystemDrawing()).ToWpf();
 			if (!workingScreen.Contains(bounds)) {
@@ -266,7 +266,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				}
 			}
 			// Convert the window bounds to device independent units
-			bounds = bounds.TransformFromDevice(this);
+			bounds = bounds.TransformFromDevice(textView);
 			this.Left = bounds.X;
 			this.Top = bounds.Y;
 		}
