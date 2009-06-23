@@ -41,7 +41,15 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			if (debuggerService == null)
 				throw new ApplicationException("Only windows debugger is currently supported");
 			
-			Value val = debuggerService.GetValueFromName(txtExpression.Text);
+			Value val = null;
+			try
+			{
+				val = debuggerService.GetValueFromName(txtExpression.Text);
+			}
+			catch(GetValueException)
+			{
+				// display ex.Message
+			}
 			if (val != null && !val.IsNull)
 			{
 				DebugType iListType, listItemType;

@@ -10,6 +10,7 @@ using Debugger.MetaData;
 using ICSharpCode.SharpDevelop.Services;
 using System.Collections;
 using System.Collections.Generic;
+using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -60,7 +61,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		
 		private int evaluateCount()
 		{
-			PropertyInfo countProperty = iListType.GetInterface(typeof(ICollection).FullName).GetProperty("Count");
+			PropertyInfo countProperty = iListType.GetGenericInterface("System.Collections.Generic.ICollection").GetProperty("Count");
 			Expression countExpr = targetObject.AppendPropertyReference(countProperty);
 			int count = 0;
 			try {
