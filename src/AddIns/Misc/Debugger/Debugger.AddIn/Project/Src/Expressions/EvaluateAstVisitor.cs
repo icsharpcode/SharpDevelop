@@ -81,15 +81,26 @@ namespace Debugger.AddIn
 		
 		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
-			List<int> indexes = new List<int>();
+			List<Value> indexes = new List<Value>();
 			foreach(Expression indexExpr in indexerExpression.Indexes) {
-				Value indexValue = (Value)indexExpr.AcceptVisitor(this, null);
-				if (!indexValue.Type.IsInteger) throw new GetValueException("Integer expected");
-				indexes.Add((int)indexValue.PrimitiveValue);
+				Value indexValue = ((Value)indexExpr.AcceptVisitor(this, null)).GetPermanentReference();
+				indexes.Add(indexValue);
 			}
+			
 			Value target = (Value)indexerExpression.TargetObject.AcceptVisitor(this, null);
-			if (!target.Type.IsArray) throw new GetValueException("Target is not array");
-			return target.GetArrayElement(indexes.ToArray());
+			
+			if (target.Type.IsArray) {
+				List<int> intIndexes = new List<int>();
+				foreach(Value index in indexes) {
+					if (!index.Type.IsInteger) throw new GetValueException("Integer expected for indexer");
+					intIndexes.Add((int)index.PrimitiveValue);
+				}
+				return target.GetArrayElement(intIndexes.ToArray());
+			}
+			
+			PropertyInfo pi = target.Type.GetProperty("Item");
+			if (pi == null) throw new GetValueException("The object does not have an indexer property");
+			return target.GetPropertyValue(pi, indexes.ToArray());
 		}
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)

@@ -81,8 +81,8 @@ namespace Debugger.Tests {
     <Eval> array[index] = o </Eval>
     <Eval> array[index - 1] = Error: BinaryOperator: Subtract </Eval>
     <Eval> list = System.Collections.Generic.List`1[System.Char] </Eval>
-    <Eval> list[1] = Error: Target is not array </Eval>
-    <Eval> list[index] = Error: Target is not array </Eval>
+    <Eval> list[1] = e </Eval>
+    <Eval> list[index] = o </Eval>
     <ProcessExited />
   </Test>
 </DebuggerTests>
