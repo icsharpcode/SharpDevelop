@@ -32,9 +32,9 @@ namespace Debugger.MetaData
 			{
 				int hashCode = 0;
 				unchecked {
-					if (MemberType != null) hashCode += 1000000007 * MemberType.GetHashCode(); 
+					if (MemberType != null) hashCode += 1000000007 * MemberType.GetHashCode();
 					hashCode += 1000000009 * BindingFlags.GetHashCode();
-					if (Name != null) hashCode += 1000000021 * Name.GetHashCode(); 
+					if (Name != null) hashCode += 1000000021 * Name.GetHashCode();
 					hashCode += 1000000033 * Token.GetHashCode();
 				}
 				return hashCode;
@@ -43,7 +43,7 @@ namespace Debugger.MetaData
 			public override bool Equals(object obj)
 			{
 				Query other = obj as Query;
-				if (other == null) return false; 
+				if (other == null) return false;
 				return object.Equals(this.MemberType, other.MemberType) && this.BindingFlags == other.BindingFlags && this.Name == other.Name && this.Token == other.Token;
 			}
 		}
@@ -128,7 +128,7 @@ namespace Debugger.MetaData
 					if ((bindingFlags & BindingFlags.GetProperty) != 0 &&
 					    memberInfo is PropertyInfo &&
 					    ((PropertyInfo)memberInfo).GetMethod != null &&
-					    ((PropertyInfo)memberInfo).GetMethod.ParameterCount == 0) 
+					    ((PropertyInfo)memberInfo).GetMethod.ParameterCount == 0)
 					{
 						accept = true;
 					}
@@ -297,65 +297,78 @@ namespace Debugger.MetaData
 		
 		#endregion
 		
+		private bool primitiveTypeCached = false;
+		private System.Type primitiveTypeCache;
+		
 		/// <summary> Returns simple managed type coresponding to the primitive type. </summary>
 		[Tests.Ignore]
 		public System.Type PrimitiveType {
 			get {
-				if (corElementType == CorElementType.VALUETYPE) {
-					CorElementType corType;
-					try {
-						corType = TypeNameToCorElementType(this.FullName);
-					} catch (DebuggerException) {
-						return null;
-					}
-					return CorElementTypeToManagedType(corType);
-				} else {
-					return CorElementTypeToManagedType(corElementType);
+				if (!this.primitiveTypeCached) {
+					this.primitiveTypeCache = getPrimitiveType();
+					this.primitiveTypeCached = true;
 				}
+				return this.primitiveTypeCache;
+			}
+		}
+		
+		/// <summary> Returns simple managed type coresponding to the primitive type. </summary>
+		private System.Type getPrimitiveType()
+		{
+			if (corElementType == CorElementType.VALUETYPE) {
+				CorElementType corType;
+				try {
+					corType = TypeNameToCorElementType(this.FullName);
+				} catch (DebuggerException) {
+					return null;
+				}
+				return CorElementTypeToManagedType(corType);
+			} else {
+				return CorElementTypeToManagedType(corElementType);
 			}
 		}
 		
 		internal static Type CorElementTypeToManagedType(CorElementType corElementType)
 		{
 			switch(corElementType) {
-				case CorElementType.BOOLEAN: return typeof(System.Boolean);
-				case CorElementType.CHAR:    return typeof(System.Char);
-				case CorElementType.I1:      return typeof(System.SByte);
-				case CorElementType.U1:      return typeof(System.Byte);
-				case CorElementType.I2:      return typeof(System.Int16);
-				case CorElementType.U2:      return typeof(System.UInt16);
-				case CorElementType.I4:      return typeof(System.Int32);
-				case CorElementType.U4:      return typeof(System.UInt32);
-				case CorElementType.I8:      return typeof(System.Int64);
-				case CorElementType.U8:      return typeof(System.UInt64);
-				case CorElementType.R4:      return typeof(System.Single);
-				case CorElementType.R8:      return typeof(System.Double);
-				case CorElementType.I:       return typeof(System.IntPtr);
-				case CorElementType.U:       return typeof(System.UIntPtr);
-				case CorElementType.STRING:  return typeof(System.String);
-				default: return null;
+					case CorElementType.BOOLEAN: return typeof(System.Boolean);
+					case CorElementType.CHAR:    return typeof(System.Char);
+					case CorElementType.I1:      return typeof(System.SByte);
+					case CorElementType.U1:      return typeof(System.Byte);
+					case CorElementType.I2:      return typeof(System.Int16);
+					case CorElementType.U2:      return typeof(System.UInt16);
+					case CorElementType.I4:      return typeof(System.Int32);
+					case CorElementType.U4:      return typeof(System.UInt32);
+					case CorElementType.I8:      return typeof(System.Int64);
+					case CorElementType.U8:      return typeof(System.UInt64);
+					case CorElementType.R4:      return typeof(System.Single);
+					case CorElementType.R8:      return typeof(System.Double);
+					case CorElementType.I:       return typeof(System.IntPtr);
+					case CorElementType.U:       return typeof(System.UIntPtr);
+					case CorElementType.STRING:  return typeof(System.String);
+					default: return null;
 			}
 		}
 		
 		internal static CorElementType TypeNameToCorElementType(string fullname)
 		{
 			switch (fullname) {
-				case "System.Boolean": return CorElementType.BOOLEAN;
-				case "System.Char":    return CorElementType.CHAR;
-				case "System.SByte":   return CorElementType.I1;
-				case "System.Byte":    return CorElementType.U1;
-				case "System.Int16":   return CorElementType.I2;
-				case "System.UInt16":  return CorElementType.U2;
-				case "System.Int32":   return CorElementType.I4;
-				case "System.UInt32":  return CorElementType.U4;
-				case "System.Int64":   return CorElementType.I8;
-				case "System.UInt64":  return CorElementType.U8;
-				case "System.Single":  return CorElementType.R4;
-				case "System.Double":  return CorElementType.R8;
-				case "System.IntPtr":  return CorElementType.I;
-				case "System.UIntPtr": return CorElementType.U;
-				case "System.String":  return CorElementType.STRING;
-				default: throw new DebuggerException("Not a primitive type");
+					case "System.Boolean": return CorElementType.BOOLEAN;
+					case "System.Char":    return CorElementType.CHAR;
+					case "System.SByte":   return CorElementType.I1;
+					case "System.Byte":    return CorElementType.U1;
+					case "System.Int16":   return CorElementType.I2;
+					case "System.UInt16":  return CorElementType.U2;
+					case "System.Int32":   return CorElementType.I4;
+					case "System.UInt32":  return CorElementType.U4;
+					case "System.Int64":   return CorElementType.I8;
+					case "System.UInt64":  return CorElementType.U8;
+					case "System.Single":  return CorElementType.R4;
+					case "System.Double":  return CorElementType.R8;
+					case "System.IntPtr":  return CorElementType.I;
+					case "System.UIntPtr": return CorElementType.U;
+					case "System.String":  return CorElementType.STRING;
+					default: throw new DebuggerException("Not a primitive type");
 			}
 		}
 		

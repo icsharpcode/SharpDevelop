@@ -245,6 +245,9 @@ namespace Debugger.MetaData
 		[Tests.Ignore]
 		public bool IsInteger {
 			get {
+				if (this.PrimitiveType == null) {
+					return false;
+				}
 				switch (this.PrimitiveType.FullName) {
 					case "System.SByte":
 					case "System.Byte":
