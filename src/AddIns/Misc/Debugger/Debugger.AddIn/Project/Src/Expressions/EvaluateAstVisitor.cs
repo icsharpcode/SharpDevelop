@@ -149,15 +149,7 @@ namespace Debugger.AddIn
 		
 		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
-			if (primitiveExpression.Value == null) {
-				return Eval.CreateValue(context.Process, null);
-			} else if (primitiveExpression.Value is string) {
-				return Eval.NewString(context.Process, primitiveExpression.Value as string);
-			} else {
-				Value val = Eval.NewObjectNoConstructor(DebugType.Create(context.Process, null, primitiveExpression.Value.GetType().FullName));
-				val.PrimitiveValue = primitiveExpression.Value;
-				return val;
-			}
+			return Eval.CreateValue(context.Process, primitiveExpression.Value);
 		}
 		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
@@ -170,41 +162,167 @@ namespace Debugger.AddIn
 			Value left = ((Value)binaryOperatorExpression.Left.AcceptVisitor(this, null)).GetPermanentReference();
 			Value right = ((Value)binaryOperatorExpression.Right.AcceptVisitor(this, null)).GetPermanentReference();
 			
-			if (!left.IsReference && left.Type.FullName != right.Type.FullName) {
-				throw new GetValueException(string.Format("Type {0} expected, {1} seen", left.Type.FullName, right.Type.FullName));
-			}
+			object result = VisitBinaryOperatorExpressionInternal(left, right, binaryOperatorExpression.Op);
+			// Conver long to int if possible
+			if (result is long && int.MinValue <= (long)result && (long)result <= int.MaxValue) result = (int)(long)result;
+			return Eval.CreateValue(context.Process, result);
+		}
+		
+		public object VisitBinaryOperatorExpressionInternal(Value leftValue, Value rightValue, BinaryOperatorType op)
+		{
+			object left = leftValue.Type.IsPrimitive ? leftValue.PrimitiveValue : null;
+			object right = rightValue.Type.IsPrimitive ? rightValue.PrimitiveValue : null;
 			
-			Value val = Eval.NewObjectNoConstructor(DebugType.Create(context.Process, null, typeof(bool).FullName));
-			
-			try {
-				switch (binaryOperatorExpression.Op)
-				{
-					case BinaryOperatorType.Equality :
-						val.PrimitiveValue = Equals(right.PrimitiveValue, left.PrimitiveValue);
-						break;
-					case BinaryOperatorType.InEquality :
-						val.PrimitiveValue = !Equals(right.PrimitiveValue, left.PrimitiveValue);
-						break;
-//				case BinaryOperatorType.Add :
-//					val.PrimitiveValue = (right.PrimitiveValue.ToString() + left.PrimitiveValue.ToString());
-//					break;
-//				case BinaryOperatorType.GreaterThan :
-//					val.PrimitiveValue = (right.PrimitiveValue > left.PrimitiveValue);
-//					break;
-//				case BinaryOperatorType.LessThanOrEqual :
-//					val.PrimitiveValue = (right.PrimitiveValue <= left.PrimitiveValue);
-//					break;
-//				case BinaryOperatorType.GreaterThanOrEqual :
-//					val.PrimitiveValue = (right.PrimitiveValue >= left.PrimitiveValue);
-//					break;
-					default:
-						throw new NotImplementedException("BinaryOperator: " + binaryOperatorExpression.Op);
+			// Both are classes - do reference comparison
+			if (left == null && right == null) {
+				if (leftValue.IsNull || rightValue.IsNull) {
+					return leftValue.IsNull && rightValue.IsNull;
+				} else {
+					// TODO: Make sure this works for byrefs and arrays
+					return leftValue.Address == rightValue.Address;
 				}
-			} catch (System.Exception e) {
-				throw new GetValueException(e.Message);
 			}
 			
-			return val;
+			if (left == null && right != null) {
+				throw new GetValueException("The left side of binary operation is not primitive value");
+			}
+			
+			if (left != null && right == null) {
+				throw new GetValueException("The right side of binary operation is not primitive value");
+			}
+			
+			// Both are primitive - do value the operation
+			if (left != null && right != null) {
+				try {
+					// Note the order of these tests is significant (eg "5" + 6:  "56" or 11?)
+					
+					// String operation
+					if (left is string || right is string) {
+						string a = Convert.ToString(left);
+						string b = Convert.ToString(right);
+						switch (op) {
+							case BinaryOperatorType.Equality:            return a == b;
+							case BinaryOperatorType.InEquality:          return a != b;
+							case BinaryOperatorType.Add:                 return a + b;
+							case BinaryOperatorType.ReferenceEquality:   return a == b;
+							case BinaryOperatorType.ReferenceInequality: return a != b;
+							case BinaryOperatorType.NullCoalescing:      return a ?? b;
+						}
+					}
+					
+					// Bool operation
+					if (left is bool || right is bool) {
+						bool a = Convert.ToBoolean(left);
+						bool b = Convert.ToBoolean(right);
+						switch (op) {
+							case BinaryOperatorType.BitwiseAnd:  return a & b;
+							case BinaryOperatorType.BitwiseOr:   return a | b;
+							case BinaryOperatorType.LogicalAnd:  return a && b;
+							case BinaryOperatorType.LogicalOr:   return a || b;
+							case BinaryOperatorType.ExclusiveOr: return a ^ b;
+							
+							case BinaryOperatorType.Equality:           return a == b;
+							case BinaryOperatorType.InEquality:         return a != b;
+							
+							case BinaryOperatorType.ReferenceEquality:   return a == b;
+							case BinaryOperatorType.ReferenceInequality: return a != b;
+						}
+					}
+					
+					// Float operation
+					if (left is double || left is float || right is double || right is float) {
+						double a = Convert.ToDouble(left);
+						double b = Convert.ToDouble(right);
+						switch (op) {
+							case BinaryOperatorType.GreaterThan:        return a > b;
+							case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
+							case BinaryOperatorType.Equality:           return a == b;
+							case BinaryOperatorType.InEquality:         return a != b;
+							case BinaryOperatorType.LessThan:           return a < b;
+							case BinaryOperatorType.LessThanOrEqual:    return a <= b;
+							
+							case BinaryOperatorType.Add:           return a + b;
+							case BinaryOperatorType.Subtract:      return a - b;
+							case BinaryOperatorType.Multiply:      return a * b;
+							case BinaryOperatorType.Divide:        return a / b;
+							case BinaryOperatorType.Modulus:       return a % b;
+							case BinaryOperatorType.Concat:        return a + b;
+							
+							case BinaryOperatorType.ReferenceEquality:   return a == b;
+							case BinaryOperatorType.ReferenceInequality: return a != b;
+						}
+					}
+					
+					// Integer operation
+					if (left is byte || left is sbyte || left is int || left is uint || left is long || left is ulong ||
+					    right is byte || right is sbyte || right is int || right is uint || right is long || right is ulong) {
+						long a = Convert.ToInt64(left);
+						long b = Convert.ToInt64(right);
+						switch (op) {
+							case BinaryOperatorType.BitwiseAnd:  return a & b;
+							case BinaryOperatorType.BitwiseOr:   return a | b;
+							case BinaryOperatorType.ExclusiveOr: return a ^ b;
+							
+							case BinaryOperatorType.GreaterThan:        return a > b;
+							case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
+							case BinaryOperatorType.Equality:           return a == b;
+							case BinaryOperatorType.InEquality:         return a != b;
+							case BinaryOperatorType.LessThan:           return a < b;
+							case BinaryOperatorType.LessThanOrEqual:    return a <= b;
+							
+							case BinaryOperatorType.Add:           return a + b;
+							case BinaryOperatorType.Subtract:      return a - b;
+							case BinaryOperatorType.Multiply:      return a * b;
+							case BinaryOperatorType.Divide:        return a / b;
+							case BinaryOperatorType.Modulus:       return a % b;
+							case BinaryOperatorType.Concat:        return a + b;
+							case BinaryOperatorType.ShiftLeft:     return a << Convert.ToInt32(b);
+							case BinaryOperatorType.ShiftRight:    return a >> Convert.ToInt32(b);
+							
+							case BinaryOperatorType.ReferenceEquality:   return a == b;
+							case BinaryOperatorType.ReferenceInequality: return a != b;
+						}
+					}
+					
+					// Char operation
+					if (left is char || right is char) {
+						char a = Convert.ToChar(left);
+						char b = Convert.ToChar(right);
+						switch (op) {
+							case BinaryOperatorType.BitwiseAnd:  return a & b;
+							case BinaryOperatorType.BitwiseOr:   return a | b;
+							case BinaryOperatorType.ExclusiveOr: return a ^ b;
+							
+							case BinaryOperatorType.GreaterThan:        return a > b;
+							case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
+							case BinaryOperatorType.Equality:           return a == b;
+							case BinaryOperatorType.InEquality:         return a != b;
+							case BinaryOperatorType.LessThan:           return a < b;
+							case BinaryOperatorType.LessThanOrEqual:    return a <= b;
+							
+							case BinaryOperatorType.Add:           return a + b;
+							case BinaryOperatorType.Subtract:      return a - b;
+							case BinaryOperatorType.Multiply:      return a * b;
+							case BinaryOperatorType.Divide:        return a / b;
+							case BinaryOperatorType.Modulus:       return a % b;
+							case BinaryOperatorType.Concat:        return a + b;
+							case BinaryOperatorType.ShiftLeft:     return a << b;
+							case BinaryOperatorType.ShiftRight:    return a >> b;
+							
+							case BinaryOperatorType.ReferenceEquality:   return a == b;
+							case BinaryOperatorType.ReferenceInequality: return a != b;
+						}
+					}
+				} catch(FormatException e) {
+					throw new GetValueException("Conversion error: " + e.Message);
+				} catch(InvalidCastException e) {
+					throw new GetValueException("Conversion error: " + e.Message);
+				} catch(OverflowException e) {
+					throw new GetValueException("Conversion error: " + e.Message);
+				}
+			}
+			
+			throw new DebuggerException("Unreachable code");
 		}
 	}
 }

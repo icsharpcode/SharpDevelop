@@ -14,7 +14,10 @@ namespace Debugger.Tests.TestPrograms
 	{
 		public static void Main()
 		{
-			int index = 4;
+			byte b = 1;
+			int i = 4;
+			float pi = 3.14f;
+			string hi = "hi";
 			
 			char[] array = "Hello".ToCharArray();
 			char[] array2 = "world".ToCharArray();
@@ -39,14 +42,32 @@ namespace Debugger.Tests {
 		{
 			StartTest("AstEval.cs");
 			
+			Eval("b");
+			Eval("i");
+			Eval("pi");
+			Eval("pi - 3");
+			Eval("b + i");
+			Eval("i + b");
+			Eval("b + pi");
+			Eval("pi + b");
+			Eval("hi + pi");
+			Eval("pi + hi");
+			Eval("pi + \" \" + hi");
+			
+			Eval("(5 + 6) % (1 + 2)");
+			Eval("b + 3 == i");
+			Eval("b + 4 == i");
+			Eval("true == true");
+			Eval("true == false");
+			
 			Eval("array");
 			Eval("arrays");
 			Eval("array[1]");
-			Eval("array[index]");
-			Eval("array[index - 1]");
+			Eval("array[i]");
+			Eval("array[i - 1]");
 			Eval("list");
 			Eval("list[1]");
-			Eval("list[index]");
+			Eval("list[i]");
 			
 			EndTest();
 		}
@@ -74,15 +95,31 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>AstEval.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break AstEval.cs:24,4-24,40</DebuggingPaused>
+    <DebuggingPaused>Break AstEval.cs:27,4-27,40</DebuggingPaused>
+    <Eval> b = 1 </Eval>
+    <Eval> i = 4 </Eval>
+    <Eval> pi = 3.14 </Eval>
+    <Eval> pi - 3 = 0.140000104904175 </Eval>
+    <Eval> b + i = 5 </Eval>
+    <Eval> i + b = 5 </Eval>
+    <Eval> b + pi = 4.14000010490417 </Eval>
+    <Eval> pi + b = 4.14000010490417 </Eval>
+    <Eval> hi + pi = hi3.14 </Eval>
+    <Eval> pi + hi = 3.14hi </Eval>
+    <Eval> pi + " " + hi = 3.14 hi </Eval>
+    <Eval> (5 + 6) % (1 + 2) = 2 </Eval>
+    <Eval> b + 3 == i = True </Eval>
+    <Eval> b + 4 == i = False </Eval>
+    <Eval> true == true = True </Eval>
+    <Eval> true == false = False </Eval>
     <Eval> array = Char[] {H, e, l, l, o} </Eval>
     <Eval> arrays = Char[][] {Char[] {H, e, l, l, o}, Char[] {w, o, r, l, d}} </Eval>
     <Eval> array[1] = e </Eval>
-    <Eval> array[index] = o </Eval>
-    <Eval> array[index - 1] = Error: BinaryOperator: Subtract </Eval>
+    <Eval> array[i] = o </Eval>
+    <Eval> array[i - 1] = l </Eval>
     <Eval> list = System.Collections.Generic.List`1[System.Char] </Eval>
     <Eval> list[1] = e </Eval>
-    <Eval> list[index] = o </Eval>
+    <Eval> list[i] = o </Eval>
     <ProcessExited />
   </Test>
 </DebuggerTests>

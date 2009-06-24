@@ -52,6 +52,8 @@ namespace Debugger.AddIn
 				}
 				sb.Append("}");
 				return sb.ToString();
+			} else if (val.Type.IsPrimitive) {
+				return val.PrimitiveValue.ToString();
 			} else {
 				return val.InvokeToString();
 			}

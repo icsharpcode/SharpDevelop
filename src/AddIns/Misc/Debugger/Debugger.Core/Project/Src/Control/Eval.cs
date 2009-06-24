@@ -258,7 +258,25 @@ namespace Debugger
 				(uint)corArgs.Count, corArgs.ToArray()
 			);
 		}
+	    
+	    public static Value CreateValue(Process process, object value)
+	    {
+	    	if (value == null) {
+				ICorDebugClass corClass = DebugType.Create(process, null, typeof(object).FullName).CorType.Class;
+				ICorDebugEval corEval = CreateCorEval(process);
+				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
+				return new Value(process, new Expressions.PrimitiveExpression(value), corValue);
+			} else if (value is string) {
+	    		return Eval.NewString(process, (string)value);
+			} else {
+	    		// TODO: Check if it is primitive type
+				Value val = Eval.NewObjectNoConstructor(DebugType.Create(process, null, value.GetType().FullName));
+				val.PrimitiveValue = value;
+				return val;
+			}
+	    }
 		
+	    /*
 		// The following function create values only for the purpuse of evalutaion
 		// They actually do not allocate memory on the managed heap
 		// The advantage is that it does not continue the process
@@ -282,6 +300,7 @@ namespace Debugger
 			}
 			return v;
 		}
+		*/
 		
 		#region Convenience methods
 		
