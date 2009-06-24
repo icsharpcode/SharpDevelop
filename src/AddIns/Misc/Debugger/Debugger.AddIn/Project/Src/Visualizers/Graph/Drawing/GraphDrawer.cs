@@ -38,6 +38,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="diff"></param>
 		public void StartAnimation(PositionedGraph oldGraph, PositionedGraph newGraph, GraphDiff diff)
 		{
+			this.canvas.Width = newGraph.BoundingRect.Width;
+			this.canvas.Height = newGraph.BoundingRect.Height;
+			
 			if (oldGraph == null)
 			{
 				Draw(newGraph);

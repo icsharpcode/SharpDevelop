@@ -122,6 +122,7 @@
     <Compile Include="Src\Service\DebuggerEventForm.Designer.cs">
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Visualizers\Controls\DragScrollViewer.cs" />
     <Compile Include="Src\Visualizers\Utils\TypeResolver.cs" />
     <EmbeddedResource Include="Src\Service\DebuggeeExceptionForm.resx">
       <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
@@ -311,6 +312,7 @@
     <Folder Include="Src\Visualizers\Graph\Graphviz" />
     <Folder Include="Src\Visualizers\Graph\ObjectGraph" />
     <Folder Include="Src\Visualizers\GridVisualizer\ValueProviders" />
+    <Folder Include="Src\Visualizers\Controls" />
     <Folder Include="Src\Visualizers\Utils" />
     <Folder Include="Src\Visualizers\GridVisualizer" />
     <Folder Include="Src\Visualizers\PresentationBindings" />
