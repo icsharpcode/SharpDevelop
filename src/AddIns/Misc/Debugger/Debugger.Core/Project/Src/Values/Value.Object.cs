@@ -56,13 +56,7 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Get the value of given member. </summary>
-		public Value GetMemberValue(MemberInfo memberInfo)
-		{
-			return GetMemberValue(this, memberInfo, null);
-		}
-		
-		/// <summary> Get the value of given member. </summary>
-		public Value GetMemberValue(MemberInfo memberInfo, Value[] arguments)
+		public Value GetMemberValue(MemberInfo memberInfo, params Value[] arguments)
 		{
 			return GetMemberValue(this, memberInfo, arguments);
 		}
@@ -71,9 +65,8 @@ namespace Debugger
 		
 		/// <summary> Get the value of given member. </summary>
 		/// <param name="objectInstance">null if member is static</param>
-		public static Value GetMemberValue(Value objectInstance, MemberInfo memberInfo, Value[] arguments)
+		public static Value GetMemberValue(Value objectInstance, MemberInfo memberInfo, params Value[] arguments)
 		{
-			arguments = arguments ?? new Value[0];
 			if (memberInfo is FieldInfo) {
 				if (arguments.Length > 0) throw new GetValueException("Arguments can not be used for a field");
 				return GetFieldValue(objectInstance, (FieldInfo)memberInfo);
@@ -135,32 +128,19 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Get the value of the property using the get accessor </summary>
-		public Value GetPropertyValue(PropertyInfo propertyInfo)
-		{
-			return GetPropertyValue(this, propertyInfo, null);
-		}
-		
-		/// <summary> Get the value of the property using the get accessor </summary>
-		public Value GetPropertyValue(PropertyInfo propertyInfo, Value[] arguments)
+		public Value GetPropertyValue(PropertyInfo propertyInfo, params Value[] arguments)
 		{
 			return GetPropertyValue(this, propertyInfo, arguments);
-		}
-		
-		/// <summary> Get the value of the property using the get accessor </summary>
-		public static Value GetPropertyValue(Value objectInstance, PropertyInfo propertyInfo)
-		{
-			return GetPropertyValue(objectInstance, propertyInfo, null);
 		}
 		
 		#endregion
 		
 		/// <summary> Get the value of the property using the get accessor </summary>
-		public static Value GetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value[] arguments)
+		public static Value GetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, params Value[] arguments)
 		{
 			CheckObject(objectInstance, propertyInfo);
 			
 			if (propertyInfo.GetMethod == null) throw new GetValueException("Property does not have a get method");
-			arguments = arguments ?? new Value[0];
 			
 			Expression objectInstanceExpression = objectInstance != null ? objectInstance.Expression : new EmptyExpression();
 			

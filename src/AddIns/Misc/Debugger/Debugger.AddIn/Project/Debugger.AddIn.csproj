@@ -79,9 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\IsBreakpointCondition.cs" />
     <Compile Include="Src\Expressions\AstEvaluator.cs" />
-    <Compile Include="Src\Expressions\EvaluateAstVisitor.cs" />
+    <Compile Include="Src\IsBreakpointCondition.cs" />
     <Compile Include="Src\Options\DebuggingOptions.cs" />
     <Compile Include="Src\Options\DebuggingOptionsPanel.cs">
       <SubType>UserControl</SubType>

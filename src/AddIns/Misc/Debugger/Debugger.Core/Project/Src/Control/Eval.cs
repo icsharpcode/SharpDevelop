@@ -55,7 +55,7 @@ namespace Debugger
 					case EvalState.Evaluating:            throw new GetValueException("Evaluating...");
 					case EvalState.EvaluatedSuccessfully: return result;
 					case EvalState.EvaluatedException:    return result;
-					case EvalState.EvaluatedNoResult:     throw new GetValueException("No return value");
+					case EvalState.EvaluatedNoResult:     return null;
 					case EvalState.EvaluatedTimeOut:      throw new GetValueException("Timeout");
 					default: throw new DebuggerException("Unknown state");
 				}

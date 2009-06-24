@@ -69,6 +69,9 @@ namespace Debugger.Tests {
 			Eval("list[1]");
 			Eval("list[i]");
 			
+			Eval("list.Add(42); list.Add(52);");
+			Eval("list");
+			
 			EndTest();
 		}
 		
@@ -117,9 +120,11 @@ namespace Debugger.Tests {
     <Eval> array[1] = e </Eval>
     <Eval> array[i] = o </Eval>
     <Eval> array[i - 1] = l </Eval>
-    <Eval> list = System.Collections.Generic.List`1[System.Char] </Eval>
+    <Eval> list = List&lt;Char&gt; {H, e, l, l, o} </Eval>
     <Eval> list[1] = e </Eval>
     <Eval> list[i] = o </Eval>
+    <Eval> list.Add(42); list.Add(52); =  </Eval>
+    <Eval> list = List&lt;Char&gt; {H, e, l, l, o, *, 4} </Eval>
     <ProcessExited />
   </Test>
 </DebuggerTests>
