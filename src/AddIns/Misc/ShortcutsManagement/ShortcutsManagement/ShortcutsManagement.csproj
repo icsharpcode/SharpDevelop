@@ -148,7 +148,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Src\Data\GestureFilterMode.cs" />
     <Compile Include="Src\Data\IShortcutTreeEntry.cs" />
     <Compile Include="Src\Data\Shortcut.cs" />
     <Compile Include="Src\Data\ShortcutCategory.cs" />
@@ -166,7 +165,6 @@
     <Compile Include="Src\Dialogs\ShortcutsTreeView.xaml.cs">
       <DependentUpon>ShortcutsTreeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\Extensions\PartialKeyGestureExtensions.cs" />
     <Compile Include="Src\Extensions\TextBlockBehavior.cs" />
     <Compile Include="Src\Extensions\TreeViewExtensions.cs" />
     <Compile Include="Src\Converters\TypeNameConverter.cs" />

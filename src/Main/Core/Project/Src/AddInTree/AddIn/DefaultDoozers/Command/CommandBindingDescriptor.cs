@@ -14,6 +14,10 @@ namespace ICSharpCode.Core
 			get; private set;
 		}
 		
+		public string Name {
+			get; private set;
+		}
+		
 		/// <summary>
 		/// Full name of the command class which will be executed when this
 		/// binding is triggered
@@ -89,6 +93,7 @@ namespace ICSharpCode.Core
 			OwnerTypeName = Codon.Properties["owner-type"];
 			Gestures = Codon.Properties["gestures"];
 			Category = Codon.Properties["category"];
+			Name = Codon.Properties["name"];
 		}
 	}
 }

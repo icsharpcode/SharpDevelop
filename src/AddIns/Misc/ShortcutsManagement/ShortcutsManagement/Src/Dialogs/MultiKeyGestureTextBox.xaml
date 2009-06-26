@@ -37,8 +37,8 @@
         </Border>
 
         <!-- Notification panel under the textbox -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Visibility="{Binding ElementName=_this, Path=NotificationVisibility}">
-            <Image Width="16" Margin="5,0,10,0">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Visibility="{Binding ElementName=_this, Path=NotificationVisibility}" Height="16" Margin="0">
+            <Image Height="16" Margin="5,0,10,0">
                 <Image.Style>
                     <Style>
                         <Style.Triggers>

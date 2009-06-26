@@ -78,7 +78,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 }
 
                 if (enteredKeyGestureSequence.Count == 1) {
-                    return enteredKeyGestureSequence.First();
+                    return new PartialKeyGesture(enteredKeyGestureSequence.First());
                 }
 
                 return new MultiKeyGesture(enteredKeyGestureSequence);
@@ -159,7 +159,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         /// <summary>
         /// Last entered chords
         /// </summary>
-        private readonly List<PartialKeyGesture> enteredKeyGestureSequence = new List<PartialKeyGesture>();
+        private List<PartialKeyGesture> enteredKeyGestureSequence = new List<PartialKeyGesture>();
 
         /// <summary>
         /// Time when last successfull chord was entered
@@ -190,7 +190,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         /// </summary>
         public void Clear()
         {
-            enteredKeyGestureSequence.Clear();
+            enteredKeyGestureSequence = new List<PartialKeyGesture>();
             shortcutTextBox.Text = "";
             DisplayNotification("", NotificationType.None);
         }
@@ -240,7 +240,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             }
 
             // Check whether time given for chord entry haven't expired yet
-            if (DateTime.Now - lastEnterTime > MultiKeyGesture.DelayBetweenGestureInputs) {
+            if (DateTime.Now - lastEnterTime > MultiKeyGesture.DelayBetweenChords) {
                 if (enteredKeyGestureSequence.Count > 0) {
                     DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.GestureTextBox.TimeExpired}"), NotificationType.Invalid);
                 }
@@ -252,15 +252,18 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             var partialKeyGesture = new PartialKeyGesture(e);
 
             var lastGesture = enteredKeyGestureSequence.Count > 0 ? enteredKeyGestureSequence.LastOrDefault() : null;
-            var isLastGestureComplete = lastGesture != null && lastGesture.Key != Key.None;
-            var isContinuedGesture = lastGesture != null && partialKeyGesture.Modifiers - (partialKeyGesture.Modifiers ^ lastGesture.Modifiers) >= 0;
+            var isLastGestureSpecialKey = lastGesture != null && (lastGesture.Key >= Key.F1) && (lastGesture.Key <= Key.F24);
 
+            var isLastGestureComplete = lastGesture != null && (lastGesture.Key != Key.None || isLastGestureSpecialKey);
+            var isContinuedGesture = lastGesture != null && partialKeyGesture.Modifiers - (partialKeyGesture.Modifiers ^ lastGesture.Modifiers) >= 0;
+            
             // If continuing previous chord
             if (!isLastGestureComplete && isContinuedGesture)
             {
                 enteredKeyGestureSequence.RemoveAt(enteredKeyGestureSequence.Count - 1);
             }
-            // If previous chord is unfinished and second chor is already entered
+            
+            // If previous chord is unfinished and second chord is already entered
             // start from scratch. 
             else if (!isLastGestureComplete)
             {

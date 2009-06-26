@@ -20,6 +20,7 @@ using System.Windows.Navigation;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -80,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			CommandsRegistry.DefaultContextName = this.GetType().AssemblyQualifiedName;
+			CommandManager.DefaultContextName = this.GetType().AssemblyQualifiedName;
 			
 			CommandsService.RegisterBuiltInRoutedUICommands();
 			
@@ -90,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			CommandsService.RegisterInputBindings(this, "/SharpDevelop/Workbench/InputBindings");
 			
 			// Register context and load all commands from addin
-			CommandsRegistry.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
+			CommandManager.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
 			
 			//CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {
             	// var newBindings = CommandsRegistry.FindCommandBindings(CommandsRegistry.DefaultContextName, null, null, null);
@@ -119,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(OnRequestNavigate));
 			
 			requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
-			CommandManager.RequerySuggested += requerySuggestedEventHandler;
+			System.Windows.Input.CommandManager.RequerySuggested += requerySuggestedEventHandler;
 			
 			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
 		}

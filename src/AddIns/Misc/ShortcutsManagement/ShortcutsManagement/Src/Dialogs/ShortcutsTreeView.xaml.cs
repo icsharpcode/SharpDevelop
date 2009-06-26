@@ -5,12 +5,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.ShortcutsManagement.Data;
-using ICSharpCode.ShortcutsManagement.Dialogs;
 using ICSharpCode.ShortcutsManagement.Extensions;
 
-namespace ICSharpCode.ShortcutsManagement
+namespace ICSharpCode.ShortcutsManagement.Dialogs
 {
     /// <summary>
     /// This panel is used in SharpDevelop options window to manage shortcuts
@@ -269,7 +267,7 @@ namespace ICSharpCode.ShortcutsManagement
             }
 
             if (gestureTextBox.Gesture != null) {
-                new ShortcutsFinder(RootEntries).FilterGesture(gestureTextBox.Gesture, GestureFilterMode.PartlyMatches);
+                new ShortcutsFinder(RootEntries).FilterGesture(gestureTextBox.Gesture, GestureCompareMode.PartlyMatches);
                 SelectFirstVisibleShortcut(false);
             } else {
                 new ShortcutsFinder(RootEntries).Filter("");

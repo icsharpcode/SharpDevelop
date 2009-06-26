@@ -55,7 +55,7 @@ namespace ICSharpCode.Core.Presentation
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
 			if (value is string) {
 				var gestures = new InputGestureCollection();
-				var serializedGestures = Regex.Split((string)value, @"\s*\|\s*");
+				var serializedGestures = Regex.Split((string)value, @"\s*\;\s*");
 				
 				foreach(var serializedGesture in serializedGestures) {
 					if(string.IsNullOrEmpty(serializedGesture)) continue;
@@ -91,7 +91,9 @@ namespace ICSharpCode.Core.Presentation
 					string serializedGesture;
 					if (gesture is MultiKeyGesture) {
 						serializedGesture = (string)new MultiKeyGestureConverter().ConvertTo(context, culture, gesture, typeof(string));
-					} else if (gesture is KeyGesture) {
+                    } else if (gesture is PartialKeyGesture) {
+                        serializedGesture = (string)new PartialKeyGestureConverter().ConvertTo(context, culture, gesture, typeof(string));
+                    } else if (gesture is KeyGesture) {
 						serializedGesture = (string)new KeyGestureConverter().ConvertTo(context, culture, gesture, typeof(string));
 					} else if (gesture is MouseGesture) {
 						serializedGesture = (string)new MouseGestureConverter().ConvertTo(context, culture, gesture, typeof(string));
@@ -99,10 +101,10 @@ namespace ICSharpCode.Core.Presentation
 						continue;
 					}
 					
-					sb.AppendFormat("{0} | ", serializedGesture);
+					sb.AppendFormat("{0};", serializedGesture);
 				}
 				
-				return sb.Length >= 3 ? sb.ToString(0, sb.Length - 3) : sb.ToString();
+				return sb.Length >= 3 ? sb.ToString(0, sb.Length - 1) : sb.ToString();
 			}
 			
 			return base.ConvertTo(context, culture, value, destinationType);

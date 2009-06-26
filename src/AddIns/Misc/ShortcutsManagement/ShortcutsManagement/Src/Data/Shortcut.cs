@@ -12,7 +12,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
 	public class Shortcut : INotifyPropertyChanged, IShortcutTreeEntry
     {
 		/// <summary>
-		/// List of input gestures which will invoke this action
+		/// List of input gestures which invoking this action
 		/// </summary>
         public ObservableCollection<InputGesture> Gestures
         {
@@ -42,6 +42,11 @@ namespace ICSharpCode.ShortcutsManagement.Data
             }
         }
 
+        /// <summary>
+        /// Sort shortcut sub-elements.
+        /// 
+        /// Does nothing.
+        /// </summary>
         public void SortSubEntries() 
         {
             

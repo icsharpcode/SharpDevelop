@@ -129,7 +129,7 @@
 		<CommandBinding 
 			command="SDBuildCommands.BuildSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Build" 
-			gestures="Ctrl+Alt+R,R|Ctrl+B,B" 
+			gestures="Ctrl+Alt+R,R;Ctrl+B,B" 
 			category="Building"
 		/>
 		<CommandBinding 
@@ -214,7 +214,7 @@
 		<CommandBinding 
 			command="SDDebugCommands.ContinueDebugging" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand" 
-			gestures="Ctrl+Alt+B | Ctrl+Alt+D"
+			gestures="Ctrl+Alt+B; Ctrl+Alt+D"
 			category="Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.StepOver" 
@@ -429,7 +429,7 @@
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode">
 		<MenuItem id = "Build"
 		          label = "${res:XML.MainMenu.BuildMenu.BuildSolution}"
-		          shortcut = "F8"
+		          shortcut = "Ctrl+B,B"
 		          icon  = "Icons.16x16.BuildCombine"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Build"
 		          command = "SDBuildCommands.Build" />

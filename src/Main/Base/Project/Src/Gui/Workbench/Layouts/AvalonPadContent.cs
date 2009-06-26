@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using System.Windows.Input;
 using AvalonDock;
 using ICSharpCode.Core;
+using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -88,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					placeholder = null;
 					
 					var contextName = padInstance.GetType().FullName;
-					CommandsRegistry.RegisterNamedUIElementInstance(contextName, (UIElement)Content);
+					CommandManager.RegisterNamedUIElementInstance(contextName, (UIElement)Content);
 				}
 			}
 		}

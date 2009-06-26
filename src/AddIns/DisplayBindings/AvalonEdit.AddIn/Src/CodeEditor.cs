@@ -25,9 +25,11 @@ using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -115,18 +117,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public CodeEditor()
+		static CodeEditor()
 		{
-			var contextName = this.GetType().FullName;
-			
 			var commandBindingInfo = new CommandBindingInfo();
-			commandBindingInfo.OwnerInstance = this;
+			commandBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
 			commandBindingInfo.RoutedCommandName = "SDWindowCommands.SplitView";
 			commandBindingInfo.ExecutedEventHandler = OnSplitView;
-			commandBindingInfo.CanExecutedEventHandler = OnCanSplitView;			
-			CommandsRegistry.RegisterCommandBinding(commandBindingInfo);
+			commandBindingInfo.CanExecuteEventHandler = OnCanSplitView;
 			
+			commandBindingInfo.Name = "CodeEditorCommandBinding";
+			CommandManager.RegisterCommandBinding(commandBindingInfo);
+		}
 			
+		
+		public CodeEditor()
+		{
 			textMarkerService = new TextMarkerService(this);
 			iconBarManager = new IconBarManager();
 			
@@ -206,33 +211,56 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditor.Save(stream);
 		}
 		
-		void OnCanSplitView(object sender, CanExecuteRoutedEventArgs e)
+		static void OnCanSplitView(object sender, CanExecuteRoutedEventArgs e)
 		{
-			e.CanExecute = true;
+			var avalonEditViewContent = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as AvalonEditViewContent;
+			if(avalonEditViewContent == null) {
+				e.CanExecute = false;
+				return;
+			}
+			
+			var codeEditor = avalonEditViewContent.CodeEditor as CodeEditor;
+			if(codeEditor == null) {
+				e.CanExecute = false;
+				return;
+			}
+			
+			e.CanExecute = (codeEditor.ActiveTextEditor == codeEditor.PrimaryTextEditor);
 		}
-		void OnSplitView(object sender, ExecutedRoutedEventArgs e)
+		
+		static void OnSplitView(object sender, ExecutedRoutedEventArgs e)
 		{
-			if (secondaryTextEditor == null) {
+			var avalonEditViewContent = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as AvalonEditViewContent;
+			if(avalonEditViewContent == null) {
+				return;
+			}
+			
+			var codeEditor = avalonEditViewContent.CodeEditor as CodeEditor;
+			if(codeEditor == null) {
+				return;
+			}
+			
+			if (codeEditor.secondaryTextEditor == null) {
 				// create secondary editor
-				this.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-				secondaryTextEditor = CreateTextEditor();
-				secondaryTextEditorAdapter = (CodeEditorAdapter)secondaryTextEditor.TextArea.GetService(typeof(ITextEditor));
-				Debug.Assert(primaryTextEditorAdapter != null);
+				codeEditor.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+				codeEditor.secondaryTextEditor = codeEditor.CreateTextEditor();
+				codeEditor.secondaryTextEditorAdapter = (CodeEditorAdapter)codeEditor.secondaryTextEditor.TextArea.GetService(typeof(ITextEditor));
+				Debug.Assert(codeEditor.primaryTextEditorAdapter != null);
 				
-				secondaryTextEditor.SetBinding(TextEditor.DocumentProperty,
-				                               new Binding(TextEditor.DocumentProperty.Name) { Source = primaryTextEditor });
-				secondaryTextEditor.TextArea.SetBinding(TextArea.IndentationStrategyProperty,
-				                                        new Binding(TextArea.IndentationStrategyProperty.Name) { Source = primaryTextEditor.TextArea });
-				secondaryTextEditor.SyntaxHighlighting = primaryTextEditor.SyntaxHighlighting;
+				codeEditor.secondaryTextEditor.SetBinding(TextEditor.DocumentProperty,
+				                               new Binding(TextEditor.DocumentProperty.Name) { Source = codeEditor.primaryTextEditor });
+				codeEditor.secondaryTextEditor.TextArea.SetBinding(TextArea.IndentationStrategyProperty,
+				                                        new Binding(TextArea.IndentationStrategyProperty.Name) { Source = codeEditor.primaryTextEditor.TextArea });
+				codeEditor.secondaryTextEditor.SyntaxHighlighting = codeEditor.primaryTextEditor.SyntaxHighlighting;
 				
-				SetRow(secondaryTextEditor, 2);
-				this.Children.Add(secondaryTextEditor);
+				SetRow(codeEditor.secondaryTextEditor, 2);
+				codeEditor.Children.Add(codeEditor.secondaryTextEditor);
 			} else {
 				// remove secondary editor
-				this.Children.Remove(secondaryTextEditor);
-				secondaryTextEditor = null;
-				secondaryTextEditorAdapter = null;
-				this.RowDefinitions.RemoveAt(this.RowDefinitions.Count - 1);
+				codeEditor.Children.Remove(codeEditor.secondaryTextEditor);
+				codeEditor.secondaryTextEditor = null;
+				codeEditor.secondaryTextEditorAdapter = null;
+				codeEditor.RowDefinitions.RemoveAt(codeEditor.RowDefinitions.Count - 1);
 			}
 		}
 		

@@ -63,8 +63,8 @@ namespace ICSharpCode.Core.Presentation
             var MultiKeyGesture = value as MultiKeyGesture;
             if (MultiKeyGesture != null && destinationType == typeof(string))
             {
-                var partialKeyGestureStrings =  MultiKeyGesture.Gestures.Select(gesture => (string)partialKeyGestureConverter.ConvertTo(context, culture, gesture, typeof(string))).ToArray();
-                var MultiKeyGestureString = string.Join(", ", partialKeyGestureStrings);
+                var partialKeyGestureStrings =  MultiKeyGesture.Chords.Select(gesture => (string)partialKeyGestureConverter.ConvertTo(context, culture, gesture, typeof(string))).ToArray();
+                var MultiKeyGestureString = string.Join(",", partialKeyGestureStrings);
 
                 return MultiKeyGestureString;
             }

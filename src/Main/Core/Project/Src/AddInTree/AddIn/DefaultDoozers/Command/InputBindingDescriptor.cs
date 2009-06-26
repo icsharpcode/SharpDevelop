@@ -20,6 +20,10 @@ namespace ICSharpCode.Core
 		public string Command {
 			get; private set;
 		}
+
+		public string Name {
+			get; private set;
+		}
 		
 		/// <summary>
 		/// Override routed command text (string visible to user) if specified
@@ -63,6 +67,7 @@ namespace ICSharpCode.Core
 			OwnerTypeName = codon.Properties["owner-type"];
 			Gestures = codon.Properties["gestures"];
 			Category = codon.Properties["category"];
+			Name = codon.Properties["name"];
 		}
 	}
 }

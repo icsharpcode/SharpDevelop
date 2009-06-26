@@ -19,6 +19,7 @@ using System.Windows.Media.Imaging;
 using AvalonDock;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -90,11 +91,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ActiveViewContentChanged(this, EventArgs.Empty);
 			}
 			oldActiveViewContent = newActiveViewContent;
-			CommandManager.InvalidateRequerySuggested();
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 			
 			if (newActiveViewContent != null) {
 				string ownerName = newActiveViewContent.GetType().FullName;
-				CommandsRegistry.RegisterNamedUIElementInstance(ownerName, (UIElement)Content);
+				CommandManager.RegisterNamedUIElementInstance(ownerName, (UIElement)Content);
 			}
 		}
 		
@@ -276,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void OnIsDirtyChanged(object sender, EventArgs e)
 		{
 			UpdateTitle();
-			CommandManager.InvalidateRequerySuggested();
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
 		void UpdateTitle()
@@ -379,7 +380,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnClosed();
 			Dispose();
-			CommandManager.InvalidateRequerySuggested();
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
 		public void RedrawContent()

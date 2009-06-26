@@ -68,20 +68,21 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommandsService\CommandBindingInfo.cs" />
+    <Compile Include="CommandsService\CommandManager.cs" />
     <Compile Include="CommandsService\CommandsService.cs" />
-    <Compile Include="CommandsService\CommandsRegistry.cs" />
     <Compile Include="CommandsService\GesturePlaceHolderRegistry.cs" />
     <Compile Include="CommandsService\InputBindingCategory.cs" />
     <Compile Include="CommandsService\InputBindingInfo.cs" />
     <Compile Include="CommandsService\InputGestureCollectionConverter.cs" />
     <Compile Include="CommandsService\InputGestureCollectionExtensions.cs" />
-    <Compile Include="CommandsService\ManagedCommandBinding.cs" />
-    <Compile Include="CommandsService\ManagedInputBinding.cs" />
+    <Compile Include="CommandsService\InputGestureExtensions.cs">
+    </Compile>
     <Compile Include="CommandsService\MultiKeyBinding.cs" />
     <Compile Include="CommandsService\MultiKeyGesture.cs" />
     <Compile Include="CommandsService\MultiKeyGestureConverter.cs" />
     <Compile Include="CommandsService\PartialKeyGesture.cs" />
     <Compile Include="CommandsService\PartialKeyGestureConverter.cs" />
+    <Compile Include="CommandsService\UserDefinedGesturesManager.cs" />
     <Compile Include="CommandsService\WpfCommandWrapper.cs" />
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="DropDownButton.cs" />

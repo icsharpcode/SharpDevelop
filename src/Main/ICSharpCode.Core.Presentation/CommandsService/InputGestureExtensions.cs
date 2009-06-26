@@ -1,15 +1,44 @@
-﻿using System.Collections.Generic;
+/*
+ * Created by SharpDevelop.
+ * User: Administrator
+ * Date: 6/26/2009
+ * Time: 1:13 AM
+ * 
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */
+using System;
 using System.Windows.Input;
-using ICSharpCode.Core.Presentation;
-using ICSharpCode.ShortcutsManagement.Data;
+using System.Collections.Generic;
 
-namespace ICSharpCode.ShortcutsManagement.Extensions
+namespace ICSharpCode.Core.Presentation
 {
-    /// <summary>
-    /// <see cref="PartialKeyGesture"/> extensions
-    /// </summary>
-    public static class PartialKeyGestureExtensions
-    {
+	public enum GestureCompareMode 
+	{
+        /// <summary>
+        /// Match is successful if template gesture strictly matches compared gesture
+        /// </summary>
+        StrictlyMatches,
+
+        ExactlyMatches,
+
+        /// <summary>
+        /// Match is successfull if template gesture partly matches compared geture.
+        /// Template is found in any place within matched gesture 
+        /// </summary>
+        PartlyMatches,
+        
+        /// <summary>
+        /// match is successfull if matched gesture starts with provided template
+        /// </summary>
+        StartsWith
+	}
+	
+	/// <summary>
+	/// Description of InputGestureExtensions.
+	/// </summary>
+	public static class InputGestureExtensions
+	{
+
         /// <summary>
         /// Returns true whether compared gesture matches input gesture template
         /// </summary>
@@ -17,7 +46,7 @@ namespace ICSharpCode.ShortcutsManagement.Extensions
         /// <param name="inputGesture">Compared input gesture</param>
         /// <param name="mode">Match mode</param>
         /// <returns>Returns true if template matches compared geture</returns>
-        private static bool IsTemplate(this InputGesture inputGestureTemplate, InputGesture inputGesture, GestureFilterMode mode)
+        public static bool IsTemplateFor(this InputGesture inputGestureTemplate, InputGesture inputGesture, GestureCompareMode mode)
         {
             var multiKeyGesture = inputGesture as MultiKeyGesture;
             var multiKeyGestureTemplate = inputGestureTemplate as MultiKeyGesture;
@@ -44,11 +73,16 @@ namespace ICSharpCode.ShortcutsManagement.Extensions
                 }
 
                 // Check for common missmatches
-                if(multiKeyGestureTemplate.Gestures == null 
-                    || multiKeyGesture.Gestures == null
-                    || multiKeyGestureTemplate.Gestures.Count == 0 
-                    || multiKeyGesture.Gestures.Count == 0
-                    || multiKeyGestureTemplate.Gestures.Count > multiKeyGesture.Gestures.Count)
+                if(multiKeyGestureTemplate.Chords == null 
+                    || multiKeyGesture.Chords == null
+                    || multiKeyGestureTemplate.Chords.Count == 0
+                    || multiKeyGesture.Chords.Count == 0
+                    || multiKeyGestureTemplate.Chords.Count > multiKeyGesture.Chords.Count)
+                {
+                    return false;
+                }
+
+                if (mode == GestureCompareMode.ExactlyMatches && multiKeyGestureTemplate.Chords.Count != multiKeyGesture.Chords.Count)
                 {
                     return false;
                 }
@@ -57,30 +91,39 @@ namespace ICSharpCode.ShortcutsManagement.Extensions
                 var previousChords = new LinkedList<PartialKeyGesture>();
                 
                 // Search whether chord sequece matches template sequenc in any place
-                foreach (PartialKeyGesture chord in multiKeyGesture.Gestures)
+                foreach (PartialKeyGesture chord in multiKeyGesture.Chords)
                 {
                     // Accumulates previous chords
                     previousChords.AddLast(chord);
-                    if (previousChords.Count > multiKeyGestureTemplate.Gestures.Count)
+                    if (previousChords.Count > multiKeyGestureTemplate.Chords.Count)
                     {
                         previousChords.RemoveFirst();
                     }
 
                     // Only start comparing with template when needed amount of previous chords where collected
-                    if (previousChords.Count == multiKeyGestureTemplate.Gestures.Count)
+                    if (previousChords.Count == multiKeyGestureTemplate.Chords.Count)
                     {
-                        var multiKeyGestureTemplateEnumerator = multiKeyGestureTemplate.Gestures.GetEnumerator();
+                        var multiKeyGestureTemplateEnumerator = multiKeyGestureTemplate.Chords.GetEnumerator();
                         var previousChordsEnumerator = previousChords.GetEnumerator();
 
                         multiKeyGestureTemplateEnumerator.Reset();
 
                         // Compare two chord sequences in a loop
                         var multiKeyGesturesMatch = true;
+
+                        var i = 0;
                         while (previousChordsEnumerator.MoveNext() && multiKeyGestureTemplateEnumerator.MoveNext())
                         {
-                            if (multiKeyGestureTemplateEnumerator.Current.Modifiers != previousChordsEnumerator.Current.Modifiers
-                                || multiKeyGestureTemplateEnumerator.Current.Key != previousChordsEnumerator.Current.Key)
-                            {
+                            var templateGesture = multiKeyGestureTemplateEnumerator.Current;
+                            var gesture = previousChordsEnumerator.Current;
+
+                            if (((mode == GestureCompareMode.StartsWith || mode == GestureCompareMode.PartlyMatches) && i == previousChords.Count)
+                                    || (mode == GestureCompareMode.PartlyMatches && i == 0)) {
+                                if(!templateGesture.IsTemplateFor(gesture, GestureCompareMode.PartlyMatches)) {
+                                    multiKeyGesturesMatch = false;
+                                    break;
+                                }
+                            } else if (templateGesture.Modifiers != gesture.Modifiers || templateGesture.Key != gesture.Key) {
                                 multiKeyGesturesMatch = false;
                                 break;
                             }
@@ -91,7 +134,7 @@ namespace ICSharpCode.ShortcutsManagement.Extensions
                             return true;
                         }
 
-                        if (mode == GestureFilterMode.StartsWith)
+                        if (mode == GestureCompareMode.StartsWith)
                         {
                             break;
                         }
@@ -106,7 +149,7 @@ namespace ICSharpCode.ShortcutsManagement.Extensions
                 var templateModifiers = partialKeyGestureTemplate != null ? partialKeyGestureTemplate.Modifiers : keyGestureTemplate.Modifiers;
                 var templateKey = partialKeyGestureTemplate != null ? partialKeyGestureTemplate.Key : keyGestureTemplate.Key;
                 
-                if (mode == GestureFilterMode.PartlyMatches)
+                if (mode == GestureCompareMode.PartlyMatches || mode == GestureCompareMode.StartsWith)
                 {
                     return (templateModifiers == ModifierKeys.None || templateModifiers == gestureModifiers)
                         && (templateKey == Key.None || templateKey == gestureKey);
@@ -117,7 +160,8 @@ namespace ICSharpCode.ShortcutsManagement.Extensions
 
             return false;
         }
-
+        
+        
         /// <summary>
         /// Determines whether this instance of <see cref="InputGesture"/> matches any of provided templates
         /// </summary>
@@ -125,10 +169,10 @@ namespace ICSharpCode.ShortcutsManagement.Extensions
         /// <param name="inputGestureTemplateCollection">Collection of input gestures templates which (at least one of them) should match this input gesture to return true</param>
         /// <param name="mode">Matching mode</param>
         /// <returns>True if this gsture matches templates collection, otherwise false</returns>
-        public static bool MatchesCollection(this InputGesture thisGesture, InputGestureCollection inputGestureTemplateCollection, GestureFilterMode mode)
+        public static bool IsTemplateForAny(this InputGesture thisGesture, InputGestureCollection inputGestureTemplateCollection, GestureCompareMode mode)
         {
             foreach (InputGesture gesture in inputGestureTemplateCollection) {
-                if (thisGesture.IsTemplate(gesture, mode))
+                if (thisGesture.IsTemplateFor(gesture, mode))
                 {
                     return true;
                 }
@@ -136,5 +180,5 @@ namespace ICSharpCode.ShortcutsManagement.Extensions
 
             return false;
         }
-    }
+	}
 }

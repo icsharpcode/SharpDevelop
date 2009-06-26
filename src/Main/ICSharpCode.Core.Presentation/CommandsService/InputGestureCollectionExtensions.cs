@@ -8,6 +8,17 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public static class InputGestureCollectionExtensions
 	{
+		public static bool ContainsTemplateForAny(this InputGestureCollection inputGestureTemplateCollection, InputGestureCollection testedInputGestureCollection, GestureCompareMode mode) {
+	        foreach (InputGesture template in inputGestureTemplateCollection) {
+	            if (template.IsTemplateForAny(testedInputGestureCollection, mode)) {
+	                return true;
+	            }   
+	        }
+			
+			return false;
+		}
+
+		
 		public static bool ContainsCopy(this InputGestureCollection gestures, InputGesture searchedGesture) {
 			var searchedMultiKeyGesture = searchedGesture as MultiKeyGesture;
 			var searchedKeyGesture = searchedGesture as KeyGesture;
@@ -16,10 +27,10 @@ namespace ICSharpCode.Core.Presentation
 			foreach(var gesture in gestures) {
 				if(searchedMultiKeyGesture != null) {
 					var multiKeyGesture = gesture as MultiKeyGesture;
-					if(multiKeyGesture != null && multiKeyGesture.Gestures != null && searchedMultiKeyGesture.Gestures != null && multiKeyGesture.Gestures.Count == searchedMultiKeyGesture.Gestures.Count) {
+					if(multiKeyGesture != null && multiKeyGesture.Chords != null && searchedMultiKeyGesture.Chords != null && multiKeyGesture.Chords.Count == searchedMultiKeyGesture.Chords.Count) {
 						var foundMatch = true;
-						foreach(var partialGesture in multiKeyGesture.Gestures) {
-							foreach(var searchedPartialGesture in searchedMultiKeyGesture.Gestures) {
+						foreach(var partialGesture in multiKeyGesture.Chords) {
+							foreach(var searchedPartialGesture in searchedMultiKeyGesture.Chords) {
 								if(partialGesture.Key != searchedPartialGesture.Key || partialGesture.Modifiers != searchedPartialGesture.Modifiers) {
 									foundMatch = false;
 									break;

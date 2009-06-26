@@ -6,7 +6,7 @@ namespace ICSharpCode.Core.Presentation
 	/// Stores input binding category description
 	/// </summary>
 	public class InputBindingCategory
-	{
+	{		
 		/// <summary>
 		/// Creates new instance of <see cref="InputBindingCategory" />
 		/// </summary>

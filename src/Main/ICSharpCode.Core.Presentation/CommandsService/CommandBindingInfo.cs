@@ -1,14 +1,18 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
-
+using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
+	
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// Stores details about command binding
+	/// Stores details about <see cref="CommandBinding" />
 	/// </summary>
 	public class CommandBindingInfo 
 	{	
+		/// <summary>
+		/// Creates new instance of <see cref="CommandBindingInfo" />
+		/// </summary>
 		public CommandBindingInfo()
 		{
 			IsModifyed = true;
@@ -17,141 +21,245 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Routed command name
+		/// Command binding info name
 		/// 
-		/// Described binding is triggered by this routed command
+		/// The name should be unique to register a command binding
 		/// </summary>
-		/// <seealso cref="RoutedCommand"></seealso>
+		public string Name
+		{
+			get; set;
+		}
+		
+		/// <summary>
+		/// Name of the routed command which will be invoked when this binding is triggered
+		/// </summary>
 		public string RoutedCommandName { 
 			get; set;
 		}
 		
 		/// <summary>
-		/// Routed command instance
-		/// 
-		/// Described binding is triggered by this routed command
+		/// Routed command instance which will be invoked when this binding is triggered
 		/// </summary>
-		/// <seealso cref="RoutedCommandName"></seealso>
 		public RoutedUICommand RoutedCommand { 
 			get {
-				return CommandsRegistry.GetRoutedUICommand(RoutedCommandName);
+				return CommandManager.GetRoutedUICommand(RoutedCommandName);
 			}
 		}
 		
 		/// <summary>
-		/// Add-in to which binded command belongs
+		/// Add-in to which binding belongs
 		/// </summary>
 		public AddIn AddIn {
 			get; set;
 		}
 		
+		private string commandTypeName;
+		
 		/// <summary>
-		/// Binded command class full name
+		/// Binded command type full name
 		/// 
 		/// Instance of this class is created as soon as user executes the command. See
 		/// <see cref="IsLazy" /> for details
+		/// 
+		/// If this attribute is provided <see cref="CommandInstance" />, <see cref="ExecutedEventHandler" />
+		/// and <see cref="CanExecuteEventHandler" /> can not be used
 		/// </summary>
-		public string ClassName {
-			get; set;
+		public string CommandTypeName {
+			get {
+				return commandTypeName;
+			}
+			set {
+				if(commandInstance != null || commandTypeName != null || canExecuteEventHandler != null || executedEventHandler != null) {
+					throw new ArgumentException("Executed or CanExecute command handlers are already specified");
+				}
+				
+				commandTypeName = value;
+			}
 		}
 		
-		private System.Windows.Input.ICommand classInstance;
+		private System.Windows.Input.ICommand commandInstance;
 		
 		/// <summary>
 		/// Binded command instance
 		/// 
-		/// Reference to the command which is invoke when the binding is triggered. If this value is equal 
-		/// to null then add-in is not loaded yet, see <see cref="IsLazy" /> attribute
-		/// for details
+		/// If this attribute is provided <see cref="CommandInstanceName" />, <see cref="ExecutedEventHandler" />
+		/// and <see cref="CanExecuteEventHandler" /> can not be used
 		/// </summary>
-		public System.Windows.Input.ICommand Class { 
-			set {
-				classInstance = value;
-			}
+		public System.Windows.Input.ICommand CommandInstance { 
 			get {
-				if(classInstance != null) {
-					return classInstance;
+				if(commandInstance != null) {
+					return commandInstance;
 				}
 				
-				if(ExecutedEventHandler != null || CanExecutedEventHandler != null) {
+				if(ExecutedEventHandler != null || CanExecuteEventHandler != null) {
 					return null;
 				}
 				
 				if(AddIn != null && (AddIn.DependenciesLoaded || IsLazy)) {
-					CommandsRegistry.LoadAddinCommands(AddIn);
+					CommandManager.LoadAddinCommands(AddIn);
 				}
 				
 				System.Windows.Input.ICommand command;
-				CommandsRegistry.commands.TryGetValue(ClassName, out command);
-				classInstance = command;
+				CommandManager.commands.TryGetValue(CommandTypeName, out command);
+				commandInstance = command;
 
 				return command;
 			}
+			set {
+				if(commandInstance != null || commandTypeName != null || canExecuteEventHandler != null || executedEventHandler != null) {
+					throw new ArgumentException("Executed or CanExecute command handlers are already specified");
+				}
+				
+				commandInstance = value;
+			}
 		}
 		
+		
+		private ExecutedRoutedEventHandler executedEventHandler;
+		
 		/// <summary>
-		/// Store name of object owning this binding (can only be used with named objects)
+		/// Occurs when invoking "Executed" event
 		/// 
-		/// Named objects can be registered throgut <see cref="CommandsRegistry.RegisterNamedUIElementInstance" />
+		/// If this attribute is provided <see cref="CommandInstanceName" /> and <see cref="CommandInstance" />
+		/// can not be used
 		/// </summary>
-		public string OwnerInstanceName{
-			get; set;
+		public ExecutedRoutedEventHandler ExecutedEventHandler
+		{
+			get {
+				return executedEventHandler;
+			}
+			set {
+				if(commandInstance != null || commandTypeName != null) {
+					throw new ArgumentException("Command class is already provided");
+				}
+				
+				executedEventHandler = value;
+			}
+		}
+		
+		private CanExecuteRoutedEventHandler canExecuteEventHandler;
+		
+		/// <summary>
+		/// Occurs when determining whether "Executed" event can be invoked
+		/// 
+		/// If this attribute is provided <see cref="CommandInstanceName" /> and <see cref="CommandInstance" />
+		/// can not be used
+		/// </summary>
+		public CanExecuteRoutedEventHandler CanExecuteEventHandler
+		{
+			get {
+				return canExecuteEventHandler;
+			}
+			set {
+				if(commandInstance != null || commandTypeName != null) {
+					throw new ArgumentException("Command class is already provided");
+				}
+				
+				canExecuteEventHandler = value;
+			}
+		}
+
+		public string ownerInstanceName;
+		
+		/// <summary>
+		/// Stores name of named instance to which this binding belongs. When this binding is registered a
+		/// <see cref="CommandBinding" /> is assigned to owner instance
+		/// 
+		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerType" /> and
+		/// <see cref="OwnerTypeName" /> can not be set
+		/// </summary>
+		public string OwnerInstanceName {
+			get {
+				return ownerInstanceName;
+			}
+			set {
+				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
+					throw new ArgumentException("This binding already has an owner");
+				}
+				
+				ownerInstanceName = value;
+			}
 		}
 		
 		private UIElement ownerInstance;
 		
 		/// <summary>
-		/// Stores instance of object which is owning this binding
+		/// Stores owner instance to which this binding belongs. When this binding is registered a
+		/// <see cref="CommandBinding" /> is assigned to owner instance
+		/// 
+		/// If this attribute is used <see cref="OwnerInstanceName" />, <see cref="OwnerType" /> and
+		/// <see cref="OwnerTypeName" /> can not be set
 		/// </summary>
 		public UIElement OwnerInstance{
 			get {
 				if(OwnerInstanceName != null && ownerInstance == null) {
-					ownerInstance = CommandsRegistry.GetNamedUIElementInstance(OwnerInstanceName);
+					ownerInstance = CommandManager.GetNamedUIElementInstance(OwnerInstanceName);
 				}
 				
 				return ownerInstance;
 			}
 			set {
+				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
+					throw new ArgumentException("This binding already has an owner");
+				}
+				
 				ownerInstance = value;
 			}
 		}
-	
+					
+		private string ownerTypeName;
+		
 		/// <summary>
-		/// Assembly qualified name of the class owning this instance
+		/// Stores name of owner type. Full name with assembly should be used. When this binding is 
+		/// registered <see cref="CommandBinding" /> is assigned to all instances of provided class
 		/// 
-		/// Named type can be registered throgut <see cref="CommandsRegistry.RegisterNamedUIType" />
+		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerInstanceName" /> and
+		/// <see cref="OwnerType" /> can not be set
 		/// </summary>
 		public string OwnerTypeName{
-			get; set;
+			get {
+				return ownerTypeName;
+			}
+			set {
+				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
+					throw new ArgumentException("This binding already has an owner");
+				}
+				
+				ownerTypeName = value;
+			}
 		}
 		
 		private Type ownerType;
 					
 		/// <summary>
-		/// Stores type owning this binding
+		/// Stores owner type. When this binding is registered <see cref="CommandBinding" /> 
+		/// is assigned to all instances of provided class
+		/// 
+		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerInstanceName" /> and
+		/// <see cref="OwnerTypeName" /> can not be set
 		/// </summary>
 		public Type OwnerType { 
-			set {
-				ownerType = value;
-			}
 			get {
 				if(ownerType == null && OwnerTypeName != null) {
 					ownerType = Type.GetType(OwnerTypeName);
-					CommandsRegistry.RegisterNamedUIType(OwnerTypeName, ownerType);
+					CommandManager.RegisterNamedUIType(OwnerTypeName, ownerType);
 				}
 				
 				return ownerType;
 			}
+			set {
+				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
+					throw new ArgumentException("This binding already has an owner");
+				}
+				
+				ownerType = value;
+			}
 		}
-	
-		/// <summary>
-		/// Default binding update handler update owner or type bindings (depending on input binding info type)
-		/// so they would always contain latest version
-		/// </summary>	
+			
 		private BindingsUpdatedHandler defaultCommandBindingHandler;
 		
 		/// <summary>
-		/// Default command binding handler. Updates command binding if binding info changes
+		/// Updates owner bindings
 		/// </summary>
 		internal BindingsUpdatedHandler DefaultCommandBindingHandler
 		{
@@ -162,11 +270,11 @@ namespace ICSharpCode.Core.Presentation
 							GenerateCommandBindings();
 							
 							foreach(CommandBinding binding in OldCommandBindings) {
-								CommandsRegistry.RemoveClassCommandBinding(OwnerType, binding);
+								CommandManager.RemoveClassCommandBinding(OwnerType, binding);
 							}
 							
 							foreach(CommandBinding binding in NewCommandBindings) {
-								CommandManager.RegisterClassCommandBinding(OwnerType, binding);
+								System.Windows.Input.CommandManager.RegisterClassCommandBinding(OwnerType, binding);
 							}
 							
 							IsModifyed = false;
@@ -204,74 +312,87 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 		
-		public ExecutedRoutedEventHandler ExecutedEventHandler
-		{
-			get; set;
-		}
-		
-		public CanExecuteRoutedEventHandler CanExecutedEventHandler
-		{
-			get; set;
-		}
-		
 		/// <summary>
-		/// Indicates that generated command bindings are modified from last access
+		/// Indicates whether <see cref="CommandBindingInfo" /> was modified. When modified
+		/// <see cref="CommandBinding" />s are re-generated
 		/// </summary>
 		public bool IsModifyed {
 			get; set;
 		}
 		
-		public void GenerateCommandBindings() 
+		/// <summary>
+		/// Re-generate <see cref="CommandBinding" /> from <see cref="CommandBindingInfo" />
+		/// </summary>
+		internal void GenerateCommandBindings() 
 		{			
 			OldCommandBindings = NewCommandBindings;
 			
-			var commandBinding = new ManagedCommandBinding(RoutedCommand);
-			commandBinding.CanExecute += GeneratedCanExecuteEventHandler;					
-			commandBinding.Executed += GeneratedExecutedEventHandler;
+			var commandBinding = new CommandBinding(RoutedCommand);
+			commandBinding.CanExecute += GenerateCanExecuteEventHandler;					
+			commandBinding.Executed += GenerateExecutedEventHandler;
 			
 			NewCommandBindings = new CommandBindingCollection();
 			NewCommandBindings.Add(commandBinding);
 		}
 		
+		/// <summary>
+		/// Old command bindings which where assigned to owner when before <see cref="CommandBindingInfo" />
+		/// was modified.
+		/// 
+		/// When new <see cref="CommandBinding" />s are generated these bindings are removed from the owner
+		/// </summary>
 		internal CommandBindingCollection OldCommandBindings
 		{
 			get; set;
 		}
 		
+		/// <summary>
+		/// New input bindings are assigned to owner when <see cref="CommandBindingInfo" /> is modified
+		/// </summary>
 		internal CommandBindingCollection NewCommandBindings
 		{
 			get; set;
 		}
 
-		internal void GeneratedExecutedEventHandler(object sender, ExecutedRoutedEventArgs e) {
+		/// <summary>
+		/// Forwards "executed" event to event handler provided to user 
+		/// </summary>
+		/// <param name="sender">Event sender</param>
+		/// <param name="e">Event arguments</param>
+		internal void GenerateExecutedEventHandler(object sender, ExecutedRoutedEventArgs e) {
 			if(ExecutedEventHandler != null) {
 				ExecutedEventHandler.Invoke(sender, e);
 			} else {
-				if(IsLazy && Class == null) {
+				if(IsLazy && CommandInstance == null) {
 					AddIn.LoadRuntimeAssemblies();
 					
-					var command = (ICommand)AddIn.CreateObject(ClassName);
-					CommandsRegistry.LoadCommand(ClassName, command);
+					var command = (ICommand)AddIn.CreateObject(CommandTypeName);
+					CommandManager.LoadCommand(CommandTypeName, command);
 				}
 				
-				if(Class != null) {
-					Class.Execute(e.Parameter);
+				if(CommandInstance != null) {
+					CommandInstance.Execute(e.Parameter);
 				}
 			}
 		}
 		
-		internal void GeneratedCanExecuteEventHandler(object sender, CanExecuteRoutedEventArgs e) {
-			if(CanExecutedEventHandler == null && ExecutedEventHandler != null) {
+		/// <summary>
+		/// Forwards "can execute" event to event handler provided to user 
+		/// </summary>
+		/// <param name="sender">Event sender</param>
+		/// <param name="e">Event arguments</param>
+		internal void GenerateCanExecuteEventHandler(object sender, CanExecuteRoutedEventArgs e) {
+			if(CanExecuteEventHandler == null && ExecutedEventHandler != null) {
 				e.CanExecute = true;
-			} else if(CanExecutedEventHandler != null) {
-				CanExecutedEventHandler.Invoke(sender, e);
+			} else if(CanExecuteEventHandler != null) {
+				CanExecuteEventHandler.Invoke(sender, e);
 			} else {
-				if(IsLazy && Class == null) {
+				if(IsLazy && CommandInstance == null) {
 					e.CanExecute = true;
-				} else if(Class == null) {
+				} else if(CommandInstance == null) {
 					e.CanExecute = false;
 				} else {
-					e.CanExecute = Class.CanExecute(e.Parameter); 						
+					e.CanExecute = CommandInstance.CanExecute(e.Parameter); 						
 				}				
 			}
 		}

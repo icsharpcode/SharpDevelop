@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -8,7 +9,6 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.ShortcutsManagement.Data;
-using ICSharpCode.ShortcutsManagement.Extensions;
 
 namespace ICSharpCode.ShortcutsManagement.Dialogs
 {
@@ -88,8 +88,8 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             foreach (var gesture in shortcutCopy.Gestures) {
                 var multiKeyGestureTemplate = gesture as MultiKeyGesture;
                 if (multiKeyGestureTemplate != null) {
-                    if (multiKeyGestureTemplate.Gestures != null && multiKeyGestureTemplate.Gestures.Count > 0) {
-                        templates.Add(multiKeyGestureTemplate.Gestures.FirstOrDefault());
+                    if (multiKeyGestureTemplate.Chords != null && multiKeyGestureTemplate.Chords.Count > 0) {
+                        templates.Add(multiKeyGestureTemplate.Chords.FirstOrDefault());
                     }
                 } else {
                     templates.Add(gesture);
@@ -99,7 +99,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             // Find shortcuts with same gesture and hide them.
             // Also hide modified shortcut from this list
             var finder = new ShortcutsFinder(rootEntriesCopy);
-            finder.FilterGesture(templates,  GestureFilterMode.StartsWith);
+            finder.FilterGesture(templates, GestureCompareMode.StartsWith);
             finder.HideShortcut(shortcutCopy);
 
             shortcutsManagementOptionsPanel.ExpandAll();
@@ -149,18 +149,31 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 
             // Check whether last chord is finished
             var multiKeyGesture = gestureTextBox.Gesture as MultiKeyGesture;
-            if (multiKeyGesture != null && multiKeyGesture.Gestures.Last().Key == Key.None) {
+            if (multiKeyGesture != null && multiKeyGesture.Chords.Last().Key == Key.None) {
                 DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.ModificationWindow.AdditionFailedLastChordIsIncompete}"), NotificationType.Failed);
                 return;
             }
 
+            // Check whether gesture exist in shortcut gestures collection
+            foreach (var existingGesture in shortcutCopy.Gestures) {
+                if (gestureTextBox.Gesture.IsTemplateFor(existingGesture, GestureCompareMode.ExactlyMatches)) {
+                    DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.ModificationWindow.AddingExistingGesture}"), NotificationType.Failed);
+                    return;
+                }
+            }
+
+            // Add gesture
             if (partialKeyGesture != null) {
-                var keyGesture = new KeyGesture(partialKeyGesture.Key, partialKeyGesture.Modifiers);
-                shortcutCopy.Gestures.Add(keyGesture);
+                try {
+                    var keyGesture = new KeyGesture(partialKeyGesture.Key, partialKeyGesture.Modifiers);
+                    shortcutCopy.Gestures.Add(keyGesture);
+                } catch (NotSupportedException) {
+                    shortcutCopy.Gestures.Add(partialKeyGesture);
+                }
             } else {
                 shortcutCopy.Gestures.Add(gestureTextBox.Gesture);
             }
-
+            
             DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.ModificationWindow.AdditionIsSuccessfull}"), NotificationType.Added);
         }
 
@@ -177,12 +190,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             var removedShortcutGestures = e.RemovedShortcut.Gestures;
             for (int i = removedShortcutGestures.Count - 1; i >= 0; i--) {
                 foreach (var modifiedInputGesture in shortcutCopy.Gestures) {
-                    var modifiedKeyGesture = modifiedInputGesture as KeyGesture;
-                    var removedKeyGesture = removedShortcutGestures[i] as KeyGesture;
-                    if (modifiedKeyGesture != null
-                                && removedKeyGesture != null
-                                && modifiedKeyGesture.Key == removedKeyGesture.Key
-                                && modifiedKeyGesture.Modifiers == removedKeyGesture.Modifiers) {
+                    if (removedShortcutGestures[i].IsTemplateFor(modifiedInputGesture, GestureCompareMode.StartsWith)) {
                         removedShortcutGestures.RemoveAt(i);
                         FilterSimilarShortcuts();
 

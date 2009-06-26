@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Windows.Input;
-using System.Windows;
-using ICSharpCode.Core;
-using System.Threading;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Collections.Specialized;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows;
+using System.Windows.Input;
+using System.Xml.Serialization;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -17,7 +19,7 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// Global registry to store and access commands, command bindings and input bindings
 	/// </summary>
-	public static class CommandsRegistry
+	public static class CommandManager
 	{
 		/// <summary>
 		/// This element is used to represent null key in dictionary
@@ -33,9 +35,19 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 		
+		/// <summary>
+		/// Path to file where current user defined gestures are set
+		/// </summary>
+		public static string UserGesturesFilePath
+		{
+			get {
+				return Path.Combine(PropertyService.ConfigDirectory, "UserDefinedGestures.xml");
+			}
+		}
+		
 		// Binding infos
-		private static List<CommandBindingInfo> commandBindings = new List<CommandBindingInfo>();
-		private static List<InputBindingInfo> inputBidnings = new List<InputBindingInfo>();
+		private static Dictionary<string, CommandBindingInfo> commandBindings = new Dictionary<string, CommandBindingInfo>();
+		private static Dictionary<string, InputBindingInfo> inputBidnings = new Dictionary<string, InputBindingInfo>();
 		
 		// Commands
 		private static Dictionary<string, RoutedUICommand> routedCommands = new Dictionary<string, RoutedUICommand>();
@@ -53,6 +65,11 @@ namespace ICSharpCode.Core.Presentation
 		
 		// Categories
 		private static List<InputBindingCategory> categories = new List<InputBindingCategory>();
+		
+		static CommandManager()
+		{
+			UserDefinedGesturesManager.Load(UserGesturesFilePath);
+		}
 		
 		/// <summary>
 		/// Register UI element instance accessible by unique name
@@ -169,7 +186,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="routedCommandName">Routed command name</param>
 		/// <param name="text">Short text describing command functionality</param>
 		public static RoutedUICommand RegisterRoutedUICommand(string routedCommandName, string text) {
-			var routedCommand = new RoutedUICommand(text, routedCommandName, typeof(CommandsRegistry));
+			var routedCommand = new RoutedUICommand(text, routedCommandName, typeof(CommandManager));
 			
 			if(!routedCommands.ContainsKey(routedCommandName)) {
 				routedCommands.Add(routedCommandName, routedCommand);
@@ -215,7 +232,19 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputBindingInfo">Input binding parameters</param>
 		public static void RegisterInputBinding(InputBindingInfo inputBindingInfo)
 		{
-			inputBidnings.Add(inputBindingInfo);
+			if(string.IsNullOrEmpty(inputBindingInfo.Name)) {
+				throw new ArgumentException("InputBindingInfo instance should have a name assigned");
+			} 
+			
+			if(inputBidnings.ContainsKey(inputBindingInfo.Name)) {
+				throw new ArgumentException("InputBindingInfo instance with provided name is already registered");
+			} 
+			
+			// Replace default gestures with user defined gestures
+			var userGestures = UserDefinedGesturesManager.GetInputBindingGesture(inputBindingInfo.Name);
+			if(userGestures != null) {
+				inputBindingInfo.Gestures = userGestures;
+			}
 			
 			if(inputBindingInfo.OwnerTypeName != null || inputBindingInfo.OwnerType != null) {
 				RegisterClassDefaultInputBindingHandler(inputBindingInfo);
@@ -224,6 +253,7 @@ namespace ICSharpCode.Core.Presentation
 			} else {
 				throw new ArgumentException("Binding owner must be specified");
 			}
+			inputBidnings.Add(inputBindingInfo.Name, inputBindingInfo);
 		}
 		
 		/// <summary>
@@ -232,8 +262,21 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputBindingInfo">Input binding parameters</param>
 		public static void UnregisterInputBinding(InputBindingInfo inputBindingInfo)
 		{
-			inputBidnings.Remove(inputBindingInfo);
+			inputBidnings.Remove(inputBindingInfo.Name);
 		}
+		
+		/// <summary>
+		/// Get instance of <see cref="InputBindingInfo" /> by name
+		/// </summary>
+		/// <param name="inputBindingName">Input binding info name</param>
+		/// <returns>Input binding info matching provided name</returns>
+		public static InputBindingInfo GetInputBindingInfo(string inputBindingName) {
+			InputBindingInfo bindingInfo;
+			inputBidnings.TryGetValue(inputBindingName, out bindingInfo);
+			
+			return bindingInfo;
+		}
+		
 		
 		/// <summary>
 		/// Find input input binding infos which satisfy provided arguments
@@ -247,13 +290,13 @@ namespace ICSharpCode.Core.Presentation
 			var foundBindings = new List<InputBindingInfo>();
 			
 			foreach(var binding in inputBidnings) {
-				if(    (ownerInstanceName == null || binding.OwnerInstanceName == ownerInstanceName)
-				    && (ownerInstance == null || binding.OwnerInstance == ownerInstance)
-				    && (ownerTypeName == null || binding.OwnerTypeName == ownerTypeName)
-				    && (ownerType == null || binding.OwnerType == ownerType)
-					&& (routedCommandName == null || binding.RoutedCommandName == routedCommandName)) {
+				if(    (ownerInstanceName == null || binding.Value.OwnerInstanceName == ownerInstanceName)
+				    && (ownerInstance == null || binding.Value.OwnerInstance == ownerInstance)
+				    && (ownerTypeName == null || binding.Value.OwnerTypeName == ownerTypeName)
+				    && (ownerType == null || binding.Value.OwnerType == ownerType)
+					&& (routedCommandName == null || binding.Value.RoutedCommandName == routedCommandName)) {
 			
-					foundBindings.Add(binding);
+					foundBindings.Add(binding.Value);
 				}
 			}
 			
@@ -267,7 +310,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputBinding">Input binding</param>
 		public static void RemoveClassInputBinding(Type ownerType, InputBinding inputBinding)
 		{
-			var fieldInfo = typeof(CommandManager).GetField("_classInputBindings", BindingFlags.Static | BindingFlags.NonPublic);
+			var fieldInfo = typeof(System.Windows.Input.CommandManager).GetField("_classInputBindings", BindingFlags.Static | BindingFlags.NonPublic);
 			var fieldData = (HybridDictionary)fieldInfo.GetValue(null);
 			var classInputBindings = (InputBindingCollection)fieldData[ownerType];
 
@@ -283,7 +326,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="commandBinding"></param>
 		public static void RemoveClassCommandBinding(Type ownerType, CommandBinding commandBinding) 
 		{
-			var fieldInfo = typeof(CommandManager).GetField("_classCommandBindings", BindingFlags.Static | BindingFlags.NonPublic);
+			var fieldInfo = typeof(System.Windows.Input.CommandManager).GetField("_classCommandBindings", BindingFlags.Static | BindingFlags.NonPublic);
 			var fieldData = (HybridDictionary)fieldInfo.GetValue(null);
 			var classCommandBindings = (CommandBindingCollection)fieldData[ownerType];
 
@@ -297,7 +340,14 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="commandBindingInfo">Command binding parameters</param>
 		public static void RegisterCommandBinding(CommandBindingInfo commandBindingInfo) {
-			commandBindings.Add(commandBindingInfo);
+			if(string.IsNullOrEmpty(commandBindingInfo.Name)) {
+				throw new ArgumentException("cCommandBindingInfo instance should have a name assigned");
+			} 
+			
+			if(commandBindings.ContainsKey(commandBindingInfo.Name)) {
+				throw new ArgumentException("CommandBindingInfo instance with provided name is already registered");
+			} 
+			
 			commandBindingInfo.GenerateCommandBindings();
 			
 			if(commandBindingInfo.OwnerTypeName != null || commandBindingInfo.OwnerType != null) {
@@ -307,6 +357,8 @@ namespace ICSharpCode.Core.Presentation
 			} else {
 				throw new ArgumentException("Binding owner must be specified");
 			}
+			
+			commandBindings.Add(commandBindingInfo.Name, commandBindingInfo);
 		}
 		
 		/// <summary>
@@ -314,7 +366,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="commandBindingInfo">Command binding parameters</param>
 		public static void UnregisterCommandBinding(CommandBindingInfo commandBindingInfo) {
-			commandBindings.Remove(commandBindingInfo);
+			commandBindings.Remove(commandBindingInfo.Name);
 			
 			// Remove command bindings
 			if(commandBindingInfo.OwnerType != null) {
@@ -607,16 +659,16 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="addIn">Add-in</param>
 		public static void LoadAddinCommands(AddIn addIn) {		
 			foreach(var binding in commandBindings) {
-				if(binding.AddIn != addIn) continue;
+				if(binding.Value.AddIn != addIn) continue;
 		
-				if(binding.ClassName != null && !commands.ContainsKey(binding.ClassName)){
-					var command = addIn.CreateObject(binding.ClassName);
+				if(binding.Value.CommandTypeName != null && !commands.ContainsKey(binding.Value.CommandTypeName)){
+					var command = addIn.CreateObject(binding.Value.CommandTypeName);
 					var wpfCommand = command as System.Windows.Input.ICommand;
 					if(wpfCommand == null) {
 						wpfCommand = new WpfCommandWrapper((ICSharpCode.Core.ICommand)command);
 					}
 				
-					commands.Add(binding.ClassName, wpfCommand);
+					commands.Add(binding.Value.CommandTypeName, wpfCommand);
 				}
 			}
 		}
@@ -637,6 +689,18 @@ namespace ICSharpCode.Core.Presentation
 				commands.Add(commandName, wpfCommand);
 			}
 		}
+
+		/// <summary>
+		/// Get registered instance of <see cref="CommandBindingInfo" />
+		/// </summary>
+		/// <param name="commandBindingName">Command binding info name</param>
+		/// <returns>Command binding info matching provided name</returns>
+		public static CommandBindingInfo GetCommandBindingInfo(string commandBindingName) {
+			CommandBindingInfo bindingInfo;
+			commandBindings.TryGetValue(commandBindingName, out bindingInfo);
+			
+			return bindingInfo;
+		}
 		
 		/// <summary>
 		/// Get list of all command bindings which satisfy provided parameters
@@ -652,14 +716,14 @@ namespace ICSharpCode.Core.Presentation
 			var foundBindings = new List<CommandBindingInfo>();
 			
 			foreach(var binding in commandBindings) {
-				if(    (ownerInstanceName == null || binding.OwnerInstanceName == ownerInstanceName)
-				    && (ownerInstance == null || binding.OwnerInstance == ownerInstance)
-				    && (ownerTypeName == null || binding.OwnerTypeName == ownerTypeName)
-				    && (ownerType == null || binding.OwnerType == ownerType)
-					&& (routedCommandName == null || binding.RoutedCommandName == routedCommandName)
-					&& (className == null || binding.ClassName == className)) {
+				if(    (ownerInstanceName == null || binding.Value.OwnerInstanceName == ownerInstanceName)
+				    && (ownerInstance == null || binding.Value.OwnerInstance == ownerInstance)
+				    && (ownerTypeName == null || binding.Value.OwnerTypeName == ownerTypeName)
+				    && (ownerType == null || binding.Value.OwnerType == ownerType)
+					&& (routedCommandName == null || binding.Value.RoutedCommandName == routedCommandName)
+					&& (className == null || binding.Value.CommandTypeName == className)) {
 				   	
-					foundBindings.Add(binding);
+					foundBindings.Add(binding.Value);
 				}
 			}
 			
@@ -727,6 +791,39 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			return registeredCategories;
+		}
+		
+		/// <summary>
+		/// Saves current configuration in specified destination
+		/// </summary>
+		/// <param name="destinationPath">Destination file path</param>
+		public static void SaveGestures(string destinationPath)
+		{
+			foreach(var inputBindingInfo in inputBidnings) {
+				UserDefinedGesturesManager.SetInputBindingGesture(
+					inputBindingInfo.Key, 
+					inputBindingInfo.Value.Gestures);
+			}
+			
+			UserDefinedGesturesManager.Save(destinationPath);
+		}
+		
+		/// <summary>
+		/// Loads current configuration in specified destination
+		/// </summary>
+		/// <param name="sourcePath">Source file path</param>
+		public static void LoadGestures(string sourcePath)
+		{
+			UserDefinedGesturesManager.Load(sourcePath);
+			
+			foreach(var inputBindingInfo in inputBidnings) {
+				var userGestures = UserDefinedGesturesManager.GetInputBindingGesture(inputBindingInfo.Key);
+				
+				if(userGestures != null) {
+					inputBindingInfo.Value.Gestures = userGestures;
+					inputBindingInfo.Value.IsModifyed = true;
+				}
+			}
 		}
 		
 		/// <summary>

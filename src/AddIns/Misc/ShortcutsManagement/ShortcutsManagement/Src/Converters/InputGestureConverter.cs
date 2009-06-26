@@ -21,19 +21,15 @@ namespace ICSharpCode.ShortcutsManagement.Converters
         /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is MultiKeyGesture && targetType == typeof(string))
+            if (value is KeyGesture && targetType == typeof(string))
             {
-                return new MultiKeyGestureConverter().ConvertToInvariantString(value).Replace("+", " + ");
-            } 
-            
-            if(value is KeyGesture && targetType == typeof(string))
-            {
-                return new KeyGestureConverter().ConvertToInvariantString(value).Replace("+", " + ");
+                var gestures = new InputGestureCollection(new[] {value});
+                return new InputGestureCollectionConverter().ConvertToInvariantString(gestures).Replace("+", " + ").Replace(",", ", ");
             } 
             
             if(value is MouseGesture && targetType == typeof(string))
             {
-                return new MouseGestureConverter().ConvertToInvariantString(value).Replace("+", " + ");
+                return new MouseGestureConverter().ConvertToInvariantString(value);
             }
 
             return "";

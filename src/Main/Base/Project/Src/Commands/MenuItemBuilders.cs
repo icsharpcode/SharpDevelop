@@ -22,6 +22,8 @@ using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Util;
 
+using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
+
 namespace ICSharpCode.SharpDevelop.Commands
 {
 	public class NavigationHistoryMenuBuilder : IMenuItemBuilder
@@ -478,40 +480,39 @@ namespace ICSharpCode.SharpDevelop.Commands
 						var addIn = AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop");
 						
 						// Dynamicaly create routed UI command to loaded pad and bindings for it
-						CommandsRegistry.RegisterRoutedUICommand(routedCommandName, routedCommandText);
-						CommandsRegistry.LoadCommand(routedCommandName, new BringPadToFrontCommand(padContent));
+						CommandManager.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+						CommandManager.LoadCommand(routedCommandName, new BringPadToFrontCommand(padContent));
 						
 						var commandBindingInfo = new CommandBindingInfo();
-						commandBindingInfo.ClassName = routedCommandName;
-						commandBindingInfo.OwnerType = typeof(WpfWorkbench);
+						commandBindingInfo.CommandTypeName = routedCommandName;
+						commandBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
 						commandBindingInfo.RoutedCommandName = routedCommandName;
 						commandBindingInfo.AddIn = addIn;
 							
-						CommandsRegistry.RegisterCommandBinding(commandBindingInfo);
+						commandBindingInfo.Name = "ViewMenuCommandBinding_" + routedCommandName + "_" + routedCommandName + "_" + addIn.Name + "_" + CommandManager.DefaultContextName;
+						CommandManager.RegisterCommandBinding(commandBindingInfo);
 						
-						// If pad have shortcut specified add input binding
-						if (!string.IsNullOrEmpty(padContent.Shortcut)) {
-							CommandsRegistry.RegisterClassInputBindingsUpdateHandler(CommandsRegistry.DefaultContextName, delegate {
-								var updatedGestures = CommandsRegistry.FindInputGestures(CommandsRegistry.DefaultContextName, null, null, null, routedCommandName);
-								item.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
-							});
-							
-							var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);
-							
-							var inputBindingInfo = new InputBindingInfo();
-							inputBindingInfo.OwnerTypeName = CommandsRegistry.DefaultContextName;
-							inputBindingInfo.RoutedCommandName = routedCommandName;
-							inputBindingInfo.Gestures = gestures;
-							inputBindingInfo.Categories.AddRange(CommandsRegistry.RegisterInputBindingCategories("Menu Items/Views"));
-							inputBindingInfo.AddIn = addIn;
-							
-							CommandsRegistry.RegisterInputBinding(inputBindingInfo);
-						}
+						
+						var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);
+						
+						var inputBindingInfo = new InputBindingInfo();
+						inputBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
+						inputBindingInfo.RoutedCommandName = routedCommandName;
+						inputBindingInfo.Gestures = gestures;
+						inputBindingInfo.Categories.AddRange(CommandManager.RegisterInputBindingCategories("Menu Items/Views"));
+						inputBindingInfo.AddIn = addIn;
+						
+						inputBindingInfo.Name = "ViewMenuInputBinding_" + routedCommandName + "_" + routedCommandName + "_" + addIn.Name + "_" + CommandManager.DefaultContextName;
+						CommandManager.RegisterInputBinding(inputBindingInfo);
 						
 						bindingsAssigned.Add(routedCommandName);
-					}
-				
-					item.Command = CommandsRegistry.GetRoutedUICommand(routedCommandName);
+					}		
+					
+					item.Command = CommandManager.GetRoutedUICommand(routedCommandName);
+					
+					var updatedGestures = CommandManager.FindInputGestures(CommandManager.DefaultContextName, null, null, null, routedCommandName);
+					var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+					item.InputGestureText = updatedGesturesText;
 					
 //					item.Command = new BringPadToFrontCommand(padContent);
 //					if (!string.IsNullOrEmpty(padContent.Shortcut)) {

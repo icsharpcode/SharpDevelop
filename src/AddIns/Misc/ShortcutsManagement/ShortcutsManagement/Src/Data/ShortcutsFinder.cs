@@ -99,7 +99,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// </summary>
         /// <param name="inputGestureTemplate">Gesture template which should match shortcut gesture partly to make it visible</param>
         /// <param name="mode">Filtering mode</param>
-        public void FilterGesture(InputGesture inputGestureTemplate, GestureFilterMode mode)
+        public void FilterGesture(InputGesture inputGestureTemplate, GestureCompareMode mode)
         {
             FilterGesture(new InputGestureCollection(new[] { inputGestureTemplate }), mode);
         }
@@ -111,7 +111,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// </summary>
         /// <param name="inputGestureTemplateCollection">Collection of gesture templates which (atleast one) should match shortcut gesture partly to make it visible</param>
         /// <param name="mode">Filtering mode</param>
-        public void FilterGesture(InputGestureCollection inputGestureTemplateCollection, GestureFilterMode mode)
+        public void FilterGesture(InputGestureCollection inputGestureTemplateCollection, GestureCompareMode mode)
         {
             Debug.WriteLine("Changed to" + new InputGestureCollectionConverter().ConvertToInvariantString(inputGestureTemplateCollection));
             foreach (var entry in RootEntries)
@@ -142,7 +142,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
                 if (rootShortcut != null) {
                     rootShortcut.IsVisible = false;
                     foreach (InputGesture template in inputGestureTemplateCollection) {
-                        if (template.MatchesCollection(new InputGestureCollection(rootShortcut.Gestures), mode)) {
+                        if (template.IsTemplateForAny(new InputGestureCollection(rootShortcut.Gestures), mode)) {
                             rootShortcut.IsVisible = true;
                             break;
                         }
@@ -158,7 +158,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <param name="inputGestureTemplateCollection">Collection of gesture templates which (atleast one) should match shortcut gesture partly to make it visible</param>
         /// <param name="mode">Filtering mode</param>
         /// <returns></returns>
-        private static bool FilterGesture(ShortcutCategory category, InputGestureCollection inputGestureTemplateCollection, GestureFilterMode mode)
+        private static bool FilterGesture(ShortcutCategory category, InputGestureCollection inputGestureTemplateCollection, GestureCompareMode mode)
         {
             // Apply filter to sub-categories
             var isSubElementVisible = false;
@@ -171,21 +171,8 @@ namespace ICSharpCode.ShortcutsManagement.Data
 
             // Apply filter to shortcuts
             foreach (var shortcut in category.Shortcuts) {
-                var gestureMatched = false;
-                foreach (InputGesture template in inputGestureTemplateCollection)
-                {
-                    if (shortcut.Gestures.Count > 0 && ((KeyGesture)shortcut.Gestures[0]).Key == Key.F5)
-                    {
-                        
-                    }
-
-                    if (template.MatchesCollection(new InputGestureCollection(shortcut.Gestures), mode))
-                    {
-                        gestureMatched = true;
-                        break;
-                    }   
-                }
-
+                var gestureMatched = inputGestureTemplateCollection.ContainsTemplateForAny(new InputGestureCollection(shortcut.Gestures), mode);
+                
                 if (gestureMatched) {
                     shortcut.IsVisible = true;
                     isSubElementVisible = true;

@@ -1,7 +1,10 @@
 ﻿<UserControl x:Class="ICSharpCode.ShortcutsManagement.Dialogs.ShortcutsManagementOptionsPanel"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ShortcutsManagement="clr-namespace:ICSharpCode.ShortcutsManagement">
+    xmlns:Dialogs="clr-namespace:ICSharpCode.ShortcutsManagement.Dialogs">
     
-    <ShortcutsManagement:ShortcutsTreeView x:Name="shortcutsManagementOptionsPanel" IsSearchable="True"/>
+    <Dialogs:ShortcutsTreeView 
+        x:Name="shortcutsManagementOptionsPanel" 
+        IsSearchable="True"  
+        Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Path=ActualHeight}" />
 </UserControl>

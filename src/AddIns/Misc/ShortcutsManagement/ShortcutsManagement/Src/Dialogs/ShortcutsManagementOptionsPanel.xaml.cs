@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,6 +9,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.ShortcutsManagement.Data;
 using AddIn=ICSharpCode.Core.AddIn;
 using ShortcutManagement=ICSharpCode.ShortcutsManagement.Data;
+using CommandManager = ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.ShortcutsManagement.Dialogs
 {
@@ -45,7 +47,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             rootEntries.Add(unspecifiedAddInSection);
 
             // Go through all input bindings
-            var inputBindingInfos = CommandsRegistry.FindInputBindingInfos(null, null, null, null, null);
+            var inputBindingInfos = CommandManager.FindInputBindingInfos(null, null, null, null, null);
             foreach(var inputBindingInfo in inputBindingInfos) {
                 // Find appropriate or create new add-in section for input binding
                 ShortcutManagement.AddIn addinSection;
@@ -163,10 +165,12 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 } else {
                     inputBindingInfo.IsModifyed = true;
                 }
+                
                 inputBindingInfo.Gestures = new InputGestureCollection(shortcut.Gestures);
             }
 
-            CommandsRegistry.InvokeInputBindingUpdateHandlers();
+            CommandManager.SaveGestures(CommandManager.UserGesturesFilePath);
+            CommandManager.InvokeInputBindingUpdateHandlers();
 
             return true;
         }

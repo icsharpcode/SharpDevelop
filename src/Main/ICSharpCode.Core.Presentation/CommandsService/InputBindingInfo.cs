@@ -10,7 +10,11 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public class InputBindingInfo
 	{
-		public InputBindingInfo() {			
+		/// <summary>
+		/// Creates new instance of <see cref="InputBindingInfo"/>
+		/// </summary>
+		public InputBindingInfo() 
+		{
 			IsModifyed = true;
 			OldInputBindings = new InputBindingCollection();
 			NewInputBindings = new InputBindingCollection();
@@ -18,42 +22,109 @@ namespace ICSharpCode.Core.Presentation
 			Categories = new List<InputBindingCategory>();
 		}
 		
-		public string OwnerInstanceName{
+		/// <summary>
+		/// Command binding info name
+		/// 
+		/// The name should be unique to register command binding
+		/// </summary>
+		public string Name {
 			get; set;
+		}
+		
+		public string ownerInstanceName;
+		
+		/// <summary>
+		/// Stores name of named instance to which this binding belongs. When this binding is registered a
+		/// <see cref="InputBinding" /> is assigned to owner instance
+		/// 
+		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerType" /> and
+		/// <see cref="OwnerTypeName" /> can not be set
+		/// </summary>
+		public string OwnerInstanceName {
+			get {
+				return ownerInstanceName;
+			}
+			set {
+				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
+					throw new ArgumentException("This binding already has an owner");
+				}
+				
+				ownerInstanceName = value;
+			}
 		}
 		
 		private UIElement ownerInstance;
 		
+		/// <summary>
+		/// Stores owner instance to which this binding belongs. When this binding is registered a
+		/// <see cref="InputBinding" /> is assigned to owner instance
+		/// 
+		/// If this attribute is used <see cref="OwnerInstanceName" />, <see cref="OwnerType" /> and
+		/// <see cref="OwnerTypeName" /> can not be set
+		/// </summary>
 		public UIElement OwnerInstance{
 			get {
 				if(OwnerInstanceName != null && ownerInstance == null) {
-					ownerInstance = CommandsRegistry.GetNamedUIElementInstance(OwnerInstanceName);
+					ownerInstance = CommandManager.GetNamedUIElementInstance(OwnerInstanceName);
 				}
 				
 				return ownerInstance;
 			}
 			set {
+				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
+					throw new ArgumentException("This binding already has an owner");
+				}
+				
 				ownerInstance = value;
 			}
 		}
 					
+		private string ownerTypeName;
+		
+		/// <summary>
+		/// Stores name of owner type. Full name with assembly should be used. When this binding is 
+		/// registered <see cref="InputBinding" /> is assigned to all instances of provided class
+		/// 
+		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerInstanceName" /> and
+		/// <see cref="OwnerType" /> can not be set
+		/// </summary>
 		public string OwnerTypeName{
-			get; set;
+			get {
+				return ownerTypeName;
+			}
+			set {
+				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
+					throw new ArgumentException("This binding already has an owner");
+				}
+				
+				ownerTypeName = value;
+			}
 		}
 		
 		private Type ownerType;
 					
+		/// <summary>
+		/// Stores owner type. When this binding is registered <see cref="InputBinding" /> 
+		/// is assigned to all instances of provided class
+		/// 
+		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerInstanceName" /> and
+		/// <see cref="OwnerTypeName" /> can not be set
+		/// </summary>
 		public Type OwnerType { 
-			set {
-				ownerType = value;
-			}
 			get {
 				if(ownerType == null && OwnerTypeName != null) {
 					ownerType = Type.GetType(OwnerTypeName);
-					CommandsRegistry.RegisterNamedUIType(OwnerTypeName, ownerType);
+					CommandManager.RegisterNamedUIType(OwnerTypeName, ownerType);
 				}
 				
 				return ownerType;
+			}
+			set {
+				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
+					throw new ArgumentException("This binding already has an owner");
+				}
+				
+				ownerType = value;
 			}
 		}
 		
@@ -83,34 +154,57 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Routed command name
-		/// 
-		/// Described binding triggers this routed command
+		/// Name of the routed command which will be invoked when this binding is triggered
 		/// </summary>
-		/// <seealso cref="RoutedCommand"></seealso>
 		public string RoutedCommandName { 
 			get; set;
 		}
 		
 		/// <summary>
-		/// Routed command instance
-		/// 
-		/// Described binding triggers this routed command
+		/// Routed command instance which will be invoked when this binding is triggered
 		/// </summary>
-		/// <seealso cref="RoutedCommandName"></seealso>
 		public RoutedUICommand RoutedCommand { 
 			get {
-				return CommandsRegistry.GetRoutedUICommand(RoutedCommandName);
+				return CommandManager.GetRoutedUICommand(RoutedCommandName);
 			}
 		}
+		
+		/// <summary>
+		/// List of categories associated with input binding 
+		/// </summary>
+		public List<InputBindingCategory> Categories {
+			get; private set;
+		}
+			
+		/// <summary>
+		/// Indicates whether <see cref="InputBindingInfo" /> was modified. When modified
+		/// <see cref="InputBinding" />s are re-generated
+		/// </summary>
+		public bool IsModifyed {
+			get; set;
+		}
+		
+		/// <summary>
+		/// Re-generate <see cref="InputBinding" /> from <see cref="InputBindingInfo" />
+		/// </summary>
+		public void GenerateInputBindings() 
+		{			
+			OldInputBindings = NewInputBindings;
+			
+			NewInputBindings = new InputBindingCollection();
+			foreach(InputGesture gesture in Gestures) {
+				var inputBinding = new InputBinding(RoutedCommand, gesture);
+				NewInputBindings.Add(inputBinding);
+			}
+		}
+		
 		
 		private BindingsUpdatedHandler defaultInputBindingHandler;
 		
 		/// <summary>
-		/// Default binding update handler update owner or type bindings (depending on input binding info type)
-		/// so they would always contain latest version
+		/// Updates owner bindings
 		/// </summary>
-		public BindingsUpdatedHandler DefaultInputBindingHandler
+		internal BindingsUpdatedHandler DefaultInputBindingHandler
 		{
 			get {
 				if(defaultInputBindingHandler == null && (OwnerTypeName != null || OwnerType != null)) {
@@ -119,11 +213,11 @@ namespace ICSharpCode.Core.Presentation
 							GenerateInputBindings();
 							
 							foreach(InputBinding binding in OldInputBindings) {
-								CommandsRegistry.RemoveClassInputBinding(OwnerType, binding);
+								CommandManager.RemoveClassInputBinding(OwnerType, binding);
 							}
 							
 							foreach(InputBinding binding in NewInputBindings) {
-								CommandManager.RegisterClassInputBinding(OwnerType, binding);
+								System.Windows.Input.CommandManager.RegisterClassInputBinding(OwnerType, binding);
 							}
 							
 							IsModifyed = false;
@@ -150,35 +244,19 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// List of categories associated with input binding 
+		/// Old input bindings which where assigned to owner when before <see cref="InputBindingInfo" />
+		/// was modified.
+		/// 
+		/// When new <see cref="InputBinding" />s are generated these bindings are removed from the owner
 		/// </summary>
-		public List<InputBindingCategory> Categories {
-			get; private set;
-		}
-			
-		/// <summary>
-		/// Indicates whether generated input bindings where modified from last access
-		/// </summary>
-		public bool IsModifyed {
-			get; set;
-		}
-		
-		public void GenerateInputBindings() 
-		{			
-			OldInputBindings = NewInputBindings;
-			
-			NewInputBindings = new InputBindingCollection();
-			foreach(InputGesture gesture in Gestures) {
-				var inputBinding = new InputBinding(RoutedCommand, gesture);
-				NewInputBindings.Add(inputBinding);
-			}
-		}
-		
 		internal InputBindingCollection OldInputBindings
 		{
 			get; set;
 		}
 		
+		/// <summary>
+		/// New input bindings are assigned to owner when <see cref="CommandBindingInfo" /> is modified
+		/// </summary>
 		internal InputBindingCollection NewInputBindings
 		{
 			get; set;

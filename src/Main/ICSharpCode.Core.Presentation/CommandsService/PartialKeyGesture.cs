@@ -49,8 +49,19 @@ namespace ICSharpCode.Core.Presentation
         {
             var keyboardDevice = (KeyboardDevice)keyEventArgs.Device;
             
-            _key = keyEventArgs.Key;
-            _modifiers = keyboardDevice.Modifiers;
+            var enteredKey = keyEventArgs.Key == Key.System ? keyEventArgs.SystemKey : keyEventArgs.Key;
+            var enteredModifiers = keyboardDevice.Modifiers;
+
+            if(Array.IndexOf(new[] {  Key.LeftAlt, Key.RightAlt, 
+                           Key.LeftShift, Key.RightShift,
+                           Key.LeftCtrl, Key.RightCtrl,
+                           Key.LWin, Key.RWin}, enteredKey) >= 0) {
+            	_key = Key.None;
+            	_modifiers = enteredModifiers;
+            } else {
+            	_key = enteredKey;
+            	_modifiers = enteredModifiers;
+            }
         }
 
         /// <summary>
@@ -60,8 +71,17 @@ namespace ICSharpCode.Core.Presentation
         public PartialKeyGesture(KeyGesture gesture)
             : base(Key.None, ModifierKeys.None)
         {
-            _key = gesture.Key;
-            _modifiers = gesture.Modifiers;
+            var partialKeyGesture = gesture as PartialKeyGesture;
+
+            if (partialKeyGesture != null) {
+                _key = partialKeyGesture.Key;
+                _modifiers = partialKeyGesture.Modifiers;
+            } else if (gesture is MultiKeyGesture) {
+                throw new ArgumentException("Can not create partial key gesture from multi-key gesture");
+            } else {
+                _key = gesture.Key;
+                _modifiers = gesture.Modifiers;
+            }
         }
 
         /// <summary>

@@ -22,8 +22,9 @@ namespace ICSharpCode.ShortcutsManagement.Converters
         /// <returns>String representing collection of gestures</returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            string converterValue = "";
             if (value is InputGestureCollection && (targetType == typeof(string) || targetType.IsSubclassOf(typeof(string)))) {
-                return new InputGestureCollectionConverter().ConvertToInvariantString(value);
+                converterValue = new InputGestureCollectionConverter().ConvertToInvariantString(value);
             }
 
             if (value is ObservableCollection<InputGesture> && (targetType == typeof(string) || targetType.IsSubclassOf(typeof(string)))) {
@@ -31,10 +32,10 @@ namespace ICSharpCode.ShortcutsManagement.Converters
                 foreach (var gesture in (ObservableCollection<InputGesture>)value) {
                     inputGestureCollection.Add(gesture);
                 }
-                return new InputGestureCollectionConverter().ConvertToInvariantString(inputGestureCollection);
+                converterValue = new InputGestureCollectionConverter().ConvertToInvariantString(inputGestureCollection);
             }
 
-            return value.ToString();
+            return converterValue.Replace("+", " + ").Replace(",", ", ").Replace(";", "; "); ;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
