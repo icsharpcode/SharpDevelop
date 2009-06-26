@@ -73,20 +73,19 @@
     <Compile Include="CommandsService\GesturePlaceHolderRegistry.cs" />
     <Compile Include="CommandsService\InputBindingCategory.cs" />
     <Compile Include="CommandsService\InputBindingInfo.cs" />
-    <Compile Include="CommandsService\InputGestureCollectionConverter.cs" />
-    <Compile Include="CommandsService\InputGestureCollectionExtensions.cs" />
-    <Compile Include="CommandsService\InputGestureExtensions.cs">
-    </Compile>
-    <Compile Include="CommandsService\MultiKeyBinding.cs" />
-    <Compile Include="CommandsService\MultiKeyGesture.cs" />
-    <Compile Include="CommandsService\MultiKeyGestureConverter.cs" />
-    <Compile Include="CommandsService\PartialKeyGesture.cs" />
-    <Compile Include="CommandsService\PartialKeyGestureConverter.cs" />
     <Compile Include="CommandsService\UserDefinedGesturesManager.cs" />
     <Compile Include="CommandsService\WpfCommandWrapper.cs" />
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="DropDownButton.cs" />
     <Compile Include="GetBitmapExtension.cs" />
+    <Compile Include="Input\InputGestureCollectionConverter.cs" />
+    <Compile Include="Input\InputGestureCollectionExtensions.cs" />
+    <Compile Include="Input\InputGestureExtensions.cs" />
+    <Compile Include="Input\MultiKeyBinding.cs" />
+    <Compile Include="Input\MultiKeyGesture.cs" />
+    <Compile Include="Input\MultiKeyGestureConverter.cs" />
+    <Compile Include="Input\PartialKeyGesture.cs" />
+    <Compile Include="Input\PartialKeyGestureConverter.cs" />
     <Compile Include="IStatusUpdate.cs" />
     <Compile Include="LocalizeExtension.cs" />
     <Compile Include="Menu\IMenuItemBuilder.cs" />
@@ -111,6 +110,7 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Input" />
     <Folder Include="Menu" />
     <Folder Include="CommandsService" />
     <Folder Include="themes" />
