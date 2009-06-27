@@ -237,6 +237,7 @@
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
+    <Compile Include="Designer\ProjectRootNamespacePassedToMergeTestFixture.cs" />
     <Compile Include="Designer\PythonBaseClassTests.cs" />
     <Compile Include="Designer\PythonCodeDeserializerTests.cs" />
     <Compile Include="Designer\PythonCodeBuilderTests.cs" />
@@ -271,6 +272,7 @@
     <Compile Include="Parsing\ParseSingleClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidClassTestFixture.cs" />
     <Compile Include="PythonBindingAddInFile.cs" />
+    <Compile Include="PythonLanguagePropertiesTests.cs" />
     <Compile Include="PythonOptionsPanelTestFixture.cs" />
     <Compile Include="CreateNewPythonProjectTestFixture.cs" />
     <Compile Include="PythonSyntaxModeTestFixture.cs" />

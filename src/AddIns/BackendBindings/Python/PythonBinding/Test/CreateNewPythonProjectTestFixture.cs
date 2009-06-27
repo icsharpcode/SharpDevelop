@@ -65,7 +65,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void ProjectLanguageProperties()
 		{
-			Assert.AreEqual(LanguageProperties.None, project.LanguageProperties);
+			Assert.AreEqual(PythonLanguageProperties.Default, project.LanguageProperties);
 		}
 		
 		[Test]

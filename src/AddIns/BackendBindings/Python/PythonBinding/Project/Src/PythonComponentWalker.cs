@@ -332,6 +332,8 @@ namespace ICSharpCode.PythonBinding
 					object obj = deserializer.Deserialize(node);
 					if (obj != null) {
 						SetPropertyValue(component, fieldExpression.MemberName, obj);
+					} else if (IsResource(memberExpression)) {
+						SetPropertyValue(fieldExpression.MemberName, GetResource(node));
 					} else {
 						throw new PythonComponentWalkerException(String.Format("Could not find type '{0}'.", PythonControlFieldExpression.GetMemberName(memberExpression)));
 					}
@@ -390,6 +392,9 @@ namespace ICSharpCode.PythonBinding
 				string typeName = PythonControlFieldExpression.GetMemberName(memberExpression);
 				Type type = componentCreator.GetType(typeName);
 				if (type != null) {
+					if (type.IsAssignableFrom(typeof(ComponentResourceManager))) {
+						return componentCreator.CreateInstance(type, new object[0], name, false);
+					}
 					List<object> args = deserializer.GetArguments(node);
 					return componentCreator.CreateInstance(type, args, name, false);
 				}
@@ -399,6 +404,30 @@ namespace ICSharpCode.PythonBinding
 		
 		bool FoundInitializeComponentMethod {
 			get { return component != null; }
+		}
+		
+		/// <summary>
+		/// Returns true if the expression is of the form:
+		/// 
+		/// resources.GetObject(...) or
+		/// resources.GetString(...)
+		/// </summary>
+		bool IsResource(MemberExpression memberExpression)
+		{
+			string fullName = PythonControlFieldExpression.GetMemberName(memberExpression);
+			return fullName.StartsWith("resources.", StringComparison.InvariantCultureIgnoreCase);
+		}
+		
+		object GetResource(CallExpression callExpression)
+		{
+			IResourceReader reader = componentCreator.GetResourceReader(CultureInfo.InvariantCulture);
+			if (reader != null) {
+				using (ResourceSet resources = new ResourceSet(reader)) {
+					List<object> args = deserializer.GetArguments(callExpression);
+					return resources.GetObject(args[0] as String);
+				}
+			}
+			return null;
 		}
 	}
 }

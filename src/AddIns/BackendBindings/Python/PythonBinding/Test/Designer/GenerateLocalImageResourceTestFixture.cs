@@ -27,6 +27,9 @@ namespace PythonBinding.Tests.Designer
 		string generatedPythonCode;
 		MockResourceWriter resourceWriter2;
 		MockComponentCreator componentCreator2;
+		Bitmap bitmap;
+		string rootComponentNoNamespaceResourceRootName;
+		string rootComponentResourceRootName;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -52,17 +55,24 @@ namespace PythonBinding.Tests.Designer
 				// Add picture box
 				PictureBox pictureBox = (PictureBox)host.CreateComponent(typeof(PictureBox), "pictureBox1");
 				pictureBox.Location = new Point(0, 0);
-				//pictureBox.Image = new Bitmap(10, 10);
+				bitmap = new Bitmap(10, 10);
+				pictureBox.Image = bitmap;
 				pictureBox.Size = new Size(100, 120);
 				pictureBox.TabIndex = 0;
 				form.Controls.Add(pictureBox);
 				
 				PythonControl pythonControl = new PythonControl("    ", componentCreator);
-				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form);
+				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form, "RootNamespace");
 				
 				// Check that calling the GenerateInitializeComponentMethodBody also generates a resource file.
 				PythonControl pythonControl2 = new PythonControl("    ", componentCreator2);
 				pythonControl2.GenerateInitializeComponentMethodBody(form, 0);
+				
+				PythonDesignerRootComponent rootComponentNoNamespace = new PythonDesignerRootComponent(form);
+				rootComponentNoNamespaceResourceRootName = rootComponentNoNamespace.GetResourceRootName();
+				
+				PythonDesignerRootComponent rootComponent = new PythonDesignerRootComponent(form, "MyNamespace");
+				rootComponentResourceRootName = rootComponent.GetResourceRootName();
 			}
 		}
 		
@@ -70,15 +80,15 @@ namespace PythonBinding.Tests.Designer
 		public void GeneratedCode()
 		{
 			string expectedCode = "def InitializeComponent(self):\r\n" +
-								//"    resources = System.Windows.Forms.ComponentModel(clr.GetType(MainForm))\r\n" +
+								"    resources = System.Resources.ResourceManager(\"RootNamespace.MainForm\", System.Reflection.Assembly.GetEntryAssembly())\r\n" +
 								"    self._pictureBox1 = System.Windows.Forms.PictureBox()\r\n" +
 								"    self._pictureBox1.BeginInit()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # pictureBox1\r\n" +
 								"    # \r\n" +
+								"    self._pictureBox1.Image = resources.GetObject(\"pictureBox1.Image\")\r\n" +
 								"    self._pictureBox1.Location = System.Drawing.Point(0, 0)\r\n" +
-								//"    self._pictureBox1.Image = resources.GetObject(\"pictureBox1.Image\")\r\n" +
 								"    self._pictureBox1.Name = \"pictureBox1\"\r\n" +
 								"    self._pictureBox1.Size = System.Drawing.Size(100, 120)\r\n" +
 								"    self._pictureBox1.TabIndex = 0\r\n" +
@@ -132,5 +142,28 @@ namespace PythonBinding.Tests.Designer
 			Assert.IsTrue(resourceWriter2.IsDisposed);
 		}
 		
+		[Test]
+		public void BitmapAddedToResourceWriter()
+		{
+			Assert.IsTrue(Object.ReferenceEquals(bitmap, resourceWriter.GetResource("pictureBox1.Image")));
+		}
+		
+		[Test]
+		public void ResourceWriterHasNonNullPictureBox1ImageResource()
+		{
+			Assert.IsNotNull(resourceWriter.GetResource("pictureBox1.Image"));
+		}
+
+		[Test]
+		public void GetResourceRootName()
+		{
+			Assert.AreEqual("MyNamespace.MainForm", rootComponentResourceRootName);
+		}
+		
+		[Test]
+		public void GetResourceRootNameWhenNamespaceIsEmptyString()
+		{
+			Assert.AreEqual("MainForm", rootComponentNoNamespaceResourceRootName);
+		}
 	}
 }

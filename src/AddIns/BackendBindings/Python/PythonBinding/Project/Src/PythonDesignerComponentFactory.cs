@@ -40,7 +40,12 @@ namespace ICSharpCode.PythonBinding
 		
 		public static PythonDesignerRootComponent CreateDesignerRootComponent(IComponent component)
 		{
-			return new PythonDesignerRootComponent(component);
+			return CreateDesignerRootComponent(component, String.Empty);
+		}
+		
+		public static PythonDesignerRootComponent CreateDesignerRootComponent(IComponent component, string rootNamespace)
+		{
+			return new PythonDesignerRootComponent(component, rootNamespace);
 		}
 	}
 }

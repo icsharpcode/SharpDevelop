@@ -10,8 +10,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.Drawing;
 using System.Reflection;
+using System.Resources;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ICSharpCode.PythonBinding
@@ -27,6 +30,8 @@ namespace ICSharpCode.PythonBinding
 		static readonly DesignerSerializationVisibility[] contentDesignerVisibility = new DesignerSerializationVisibility[] { DesignerSerializationVisibility.Content };
 		IEventBindingService eventBindingService;
 		PythonDesignerComponent parent;
+		Dictionary<string, object> resources = new Dictionary<string, object>();
+		List<PythonDesignerComponent> designerContainerComponents;
 		
 		protected static readonly string[] suspendLayoutMethods = new string[] {"SuspendLayout()"};
 		protected static readonly string[] resumeLayoutMethods = new string[] {"ResumeLayout(False)", "PerformLayout()"};
@@ -238,12 +243,14 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public PythonDesignerComponent[] GetContainerComponents()
 		{
-			List<PythonDesignerComponent> components = new List<PythonDesignerComponent>();
-			ComponentCollection containerComponents = Component.Site.Container.Components;
-			for (int i = 1; i < containerComponents.Count; ++i) {
-				components.Add(PythonDesignerComponentFactory.CreateDesignerComponent(this, containerComponents[i]));
+			if (designerContainerComponents == null) {
+				designerContainerComponents = new List<PythonDesignerComponent>();
+				ComponentCollection components = Component.Site.Container.Components;
+				for (int i = 1; i < components.Count; ++i) {
+					designerContainerComponents.Add(PythonDesignerComponentFactory.CreateDesignerComponent(this, components[i]));
+				}
 			}
-			return components.ToArray();
+			return designerContainerComponents.ToArray();
 		}		
 		
 		/// <summary>
@@ -488,6 +495,8 @@ namespace ICSharpCode.PythonBinding
 					if (controlRef != null) {
 						codeBuilder.AppendIndentedLine(propertyName + " = " + controlRef);
 					}
+				} else if (IsResourcePropertyValue(propertyValue)) {
+					AppendResourceProperty(codeBuilder, propertyName, propertyValue);
 				} else {
 					codeBuilder.AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
 				}
@@ -512,6 +521,29 @@ namespace ICSharpCode.PythonBinding
 			codeBuilder.Append(")");
 			codeBuilder.AppendLine();
 		}
+		
+		/// <summary>
+		/// Appends a property whose value is a resource.
+		/// </summary>
+		public void AppendResourceProperty(PythonCodeBuilder codeBuilder, string propertyName, object propertyValue)
+		{
+			string resourceName = propertyName.Replace("self._", String.Empty);
+			codeBuilder.AppendIndented(propertyName);
+			codeBuilder.Append(" = resources.GetObject(\"");
+			codeBuilder.Append(resourceName);
+			codeBuilder.Append("\")");
+			codeBuilder.AppendLine();
+			
+			resources.Add(resourceName, propertyValue);
+		}
+		
+		/// <summary>
+		/// Returns true if the property value will be obtained from a resource.
+		/// </summary>
+		public static bool IsResourcePropertyValue(object propertyValue)
+		{
+			return propertyValue is Image;
+		}		
 		
 		/// <summary>
 		/// Appends the properties of the object to the code builder.
@@ -548,6 +580,11 @@ namespace ICSharpCode.PythonBinding
 			if (addComment && propertiesBuilder.Length > 0) {
 				AppendComment(codeBuilder);
 			}
+			
+			if (resources.Count > 0) {
+				InsertCreateResourceManagerLine(codeBuilder);
+			}
+			
 			codeBuilder.Append(propertiesBuilder.ToString());
 		}
 		
@@ -601,6 +638,16 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// Writes resources for this component to the resource writer.
+		/// </summary>
+		public void GenerateResources(IResourceWriter writer)
+		{			
+			foreach (KeyValuePair<string, object> entry in resources) {
+				writer.AddResource(entry.Key, entry.Value);
+			}
 		}
 		
 		protected IComponent Component {
@@ -738,6 +785,28 @@ namespace ICSharpCode.PythonBinding
 			}
 			reversedCollection.Reverse();
 			return reversedCollection;
+		}
+		
+		void InsertCreateResourceManagerLine(PythonCodeBuilder codeBuilder)
+		{
+			StringBuilder line = new StringBuilder();
+			line.Append("resources = System.Resources.ResourceManager(\"");
+			line.Append(GetRootComponentRootResourceName());
+			line.Append("\", System.Reflection.Assembly.GetEntryAssembly())");
+			codeBuilder.InsertIndentedLine(line.ToString());
+		}
+		
+		string GetRootComponentRootResourceName()
+		{
+			PythonDesignerComponent component = parent;
+			while (component != null) {
+				if (component.parent == null) {
+					PythonDesignerRootComponent rootComponent = component as PythonDesignerRootComponent;
+					return rootComponent.GetResourceRootName();
+				}
+				component = component.parent;
+			}
+			return String.Empty;
 		}
 	}
 }

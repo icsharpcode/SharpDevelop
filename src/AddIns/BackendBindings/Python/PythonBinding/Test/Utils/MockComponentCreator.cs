@@ -69,9 +69,16 @@ namespace PythonBinding.Tests.Utils
 		
 		public IComponent GetComponent(string name)
 		{
-			foreach (AddedComponent c in addedComponents) {
-				if (c.Name == name) {
-					return c.Component;
+			foreach (AddedComponent addedComponent in addedComponents) {
+				if (addedComponent.Name == name) {
+					return addedComponent.Component;
+				}
+			}
+			foreach (CreatedComponent createdComponent in createdComponents) {
+				if (!String.IsNullOrEmpty(createdComponent.Name)) {
+					if (createdComponent.Name == name) {
+						return createdComponent.Component;
+					}
 				}
 			}
 			return null;

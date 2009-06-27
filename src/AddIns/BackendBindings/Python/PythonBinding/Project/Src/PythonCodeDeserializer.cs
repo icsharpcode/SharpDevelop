@@ -145,7 +145,8 @@ namespace ICSharpCode.PythonBinding
 		
 		Type GetType(PythonControlFieldExpression field)
 		{
-			return componentCreator.GetType(PythonControlFieldExpression.GetPrefix(field.FullMemberName));
+			string typeName = PythonControlFieldExpression.GetPrefix(field.FullMemberName);
+			return componentCreator.GetType(typeName);
 		}
 		
 		/// <summary>
@@ -185,7 +186,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			PythonControlFieldExpression field = PythonControlFieldExpression.Create(memberExpression);			
 			Type type = GetType(field);
-			if (type != null) {		
+			if (type != null) {
 				foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.Static)) {
 					if (method.Name == field.MemberName) {
 						if (method.GetParameters().Length == callExpression.Args.Length) {

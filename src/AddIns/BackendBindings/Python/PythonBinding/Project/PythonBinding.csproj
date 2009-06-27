@@ -100,6 +100,7 @@
     <Compile Include="Src\PythonComponentWalker.cs" />
     <Compile Include="Src\PythonComponentWalkerException.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
+    <Compile Include="Src\PythonLanguageProperties.cs" />
     <Compile Include="Src\PythonListViewComponent.cs" />
     <Compile Include="Src\PythonOptionsPanel.cs" />
     <Compile Include="Src\PythonOutputStream.cs" />

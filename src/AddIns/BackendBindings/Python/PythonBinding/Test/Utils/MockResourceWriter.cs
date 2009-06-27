@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Resources;
 
 namespace PythonBinding.Tests.Utils
@@ -13,19 +14,28 @@ namespace PythonBinding.Tests.Utils
 	public class MockResourceWriter : IResourceWriter
 	{
 		bool disposed;
+		Dictionary<string, object> resources = new Dictionary<string, object>();
 		
 		public MockResourceWriter()
 		{
 		}
 		
+		public object GetResource(string name)
+		{
+			if (resources.ContainsKey(name)) {
+				return resources[name];
+			}
+			return null;
+		}
+		
 		public void AddResource(string name, string value)
 		{
-			throw new NotImplementedException();
+			resources.Add(name, value);
 		}
 		
 		public void AddResource(string name, object value)
 		{
-			throw new NotImplementedException();
+			resources.Add(name, value);
 		}
 		
 		public void AddResource(string name, byte[] value)
@@ -35,12 +45,10 @@ namespace PythonBinding.Tests.Utils
 		
 		public void Close()
 		{
-			throw new NotImplementedException();
 		}
 		
 		public void Generate()
 		{
-			throw new NotImplementedException();
 		}
 		
 		public void Dispose()

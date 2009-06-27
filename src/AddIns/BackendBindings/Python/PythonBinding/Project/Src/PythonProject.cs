@@ -43,7 +43,7 @@ namespace ICSharpCode.PythonBinding
 		/// Gets the language properties associated with this project.
 		/// </summary>
 		public override LanguageProperties LanguageProperties {
-			get { return LanguageProperties.None; }
+			get { return PythonLanguageProperties.Default; }
 		}
 		
 		/// <summary>

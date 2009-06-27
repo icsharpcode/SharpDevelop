@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Resources;
 
 namespace PythonBinding.Tests.Utils
@@ -14,24 +15,29 @@ namespace PythonBinding.Tests.Utils
 	public class MockResourceReader : IResourceReader
 	{
 		bool disposed;
+		Dictionary<string, object> resources = new Dictionary<string, object>();
 		
 		public MockResourceReader()
 		{
 		}
 		
+		public void AddResource(string name, object value)
+		{
+			resources.Add(name, value);
+		}
+		
 		public void Close()
 		{
-			throw new NotImplementedException();
 		}
 		
 		public IDictionaryEnumerator GetEnumerator()
 		{
-			throw new NotImplementedException();
+			return resources.GetEnumerator();
 		}
 		
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return null;
+			return resources.GetEnumerator();
 		}
 		
 		public void Dispose()

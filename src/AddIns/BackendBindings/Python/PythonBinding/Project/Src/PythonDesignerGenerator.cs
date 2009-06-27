@@ -22,6 +22,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
@@ -99,7 +100,14 @@ namespace ICSharpCode.PythonBinding
 			// Generate the python source code.
 			PythonControl pythonControl = new PythonControl(NRefactoryToPythonConverter.GetIndentString(textEditorProperties), resourceService);
 			int indent = method.Region.BeginColumn;
-			string methodBody = pythonControl.GenerateInitializeComponentMethodBody(component as Control, indent);
+			if (textEditorProperties.ConvertTabsToSpaces) {
+				indent = (indent / textEditorProperties.IndentationSize);
+				if (textEditorProperties.IndentationSize > 1) {
+					indent += 1;
+				}
+			}
+			string rootNamespace = GetProjectRootNamespace(compilationUnit);
+			string methodBody = pythonControl.GenerateInitializeComponentMethodBody(component as Control, rootNamespace, indent);
 			
 			// Merge the code.
 			DomRegion methodRegion = GetBodyRegionInDocument(method);
@@ -291,6 +299,15 @@ namespace ICSharpCode.PythonBinding
 		ParseInformation ParseFile()
 		{
 			return ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent);
+		}
+		
+		static string GetProjectRootNamespace(ICompilationUnit compilationUnit)
+		{
+			IProject project = compilationUnit.ProjectContent.Project as IProject;
+			if (project != null) {
+				return project.RootNamespace;
+			}
+			return String.Empty;
 		}
 	}
 }

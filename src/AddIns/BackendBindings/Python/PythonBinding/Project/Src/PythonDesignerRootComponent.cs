@@ -8,7 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Globalization;
 using System.Reflection;
+using System.Resources;
 using System.Windows.Forms;
 
 namespace ICSharpCode.PythonBinding
@@ -18,9 +21,17 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonDesignerRootComponent : PythonDesignerComponent
 	{
+		string rootNamespace = String.Empty;
+
 		public PythonDesignerRootComponent(IComponent component)
+			: this(component, String.Empty)
+		{
+		}
+		
+		public PythonDesignerRootComponent(IComponent component, string rootNamespace)
 			: base(null, component)
 		{
+			this.rootNamespace = rootNamespace;
 		}
 		
 		public override string GetPropertyOwnerName()
@@ -69,13 +80,12 @@ namespace ICSharpCode.PythonBinding
 		
 		public void AppendSupportInitializeMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
 		{
-			foreach (IComponent containerComponent in Component.Site.Container.Components) {
-				if (typeof(ISupportInitialize).IsAssignableFrom(containerComponent.GetType())) {
-					PythonDesignerComponent component = PythonDesignerComponentFactory.CreateDesignerComponent(this, containerComponent);
+			foreach (PythonDesignerComponent component in GetContainerComponents()) {
+				if (typeof(ISupportInitialize).IsAssignableFrom(component.GetComponentType())) {
 					component.AppendMethodCalls(codeBuilder, methods);
 				}
 			}
-		}	
+		}
 				
 		/// <summary>
 		/// Reverses the ordering when adding items to the Controls collection.
@@ -84,6 +94,31 @@ namespace ICSharpCode.PythonBinding
 		{
 			bool reverse = propertyDescriptor.Name == "Controls";
 			AppendMethodCallWithArrayParameter(codeBuilder, propertyOwnerName, propertyOwner, propertyDescriptor, reverse);
-		}		
+		}
+		
+		/// <summary>
+		/// Writes resources to file.
+		/// </summary>
+		public void GenerateResources(IResourceService resourceService)
+		{
+			if (resourceService == null) {
+				return;
+			}
+			
+			using (IResourceWriter writer = resourceService.GetResourceWriter(CultureInfo.InvariantCulture)) {
+				foreach (PythonDesignerComponent component in GetContainerComponents()) {
+					component.GenerateResources(writer);
+				}
+			}
+		}
+		
+		public string GetResourceRootName()
+		{
+			string componentName = Component.Site.Name;
+			if (!String.IsNullOrEmpty(rootNamespace)) {
+				return rootNamespace + "." + componentName;
+			}
+			return componentName;
+		}
 	}
 }

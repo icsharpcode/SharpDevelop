@@ -36,6 +36,7 @@ namespace PythonBinding.Tests.Utils
 		string classNameForGetClass;
 		bool namespaceExistsReturnValue;
 		bool namespaceExistsCalled;
+		object project;
 		
 		public MockProjectContent()
 		{
@@ -205,9 +206,8 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public object Project {
-			get {
-				return null;
-			}
+			get { return project; }
+			set { project = value; }
 		}
 		
 		public SystemTypes SystemTypes {

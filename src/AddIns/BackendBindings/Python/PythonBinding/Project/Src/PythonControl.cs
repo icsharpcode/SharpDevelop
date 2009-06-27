@@ -53,6 +53,14 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public string GenerateInitializeComponentMethod(Control control)
 		{
+			return GenerateInitializeComponentMethod(control, String.Empty);
+		}
+		
+		/// <summary>
+		/// Generates python code for the InitializeComponent method based on the controls added to the form.
+		/// </summary>
+		public string GenerateInitializeComponentMethod(Control control, string rootNamespace)
+		{
 			PythonCodeBuilder methodCodeBuilder = new PythonCodeBuilder();
 			methodCodeBuilder.IndentString = indentString;
 			
@@ -62,17 +70,25 @@ namespace ICSharpCode.PythonBinding
 			codeBuilder.IndentString = indentString;
 			codeBuilder.IncreaseIndent();
 			
-			GenerateInitializeComponentMethodBodyInternal(control);
-			GenerateResources();
+			PythonDesignerRootComponent rootComponent = GenerateInitializeComponentMethodBodyInternal(control, rootNamespace);
+			rootComponent.GenerateResources(resourceService);
 			
 			methodCodeBuilder.Append(codeBuilder.ToString());
 			return methodCodeBuilder.ToString();
+		}
+
+		/// <summary>
+		/// Generates the InitializeComponent method body.
+		/// </summary>
+		public string GenerateInitializeComponentMethodBody(Control control, int initialIndent)
+		{
+			return GenerateInitializeComponentMethodBody(control, String.Empty, initialIndent);
 		}
 		
 		/// <summary>
 		/// Generates the InitializeComponent method body.
 		/// </summary>
-		public string GenerateInitializeComponentMethodBody(Control control, int initialIndent)
+		public string GenerateInitializeComponentMethodBody(Control control, string rootNamespace, int initialIndent)
 		{
 			codeBuilder = new PythonCodeBuilder();
 			codeBuilder.IndentString = indentString;
@@ -80,15 +96,15 @@ namespace ICSharpCode.PythonBinding
 			for (int i = 0; i < initialIndent; ++i) {
 				codeBuilder.IncreaseIndent();
 			}
-			GenerateInitializeComponentMethodBodyInternal(control);
-			GenerateResources();
+			PythonDesignerRootComponent rootComponent = GenerateInitializeComponentMethodBodyInternal(control, rootNamespace);
+			rootComponent.GenerateResources(resourceService);
 			
 			return codeBuilder.ToString();
-		}				
-						
-		void GenerateInitializeComponentMethodBodyInternal(Control control)
+		}
+
+		PythonDesignerRootComponent GenerateInitializeComponentMethodBodyInternal(Control control, string rootNamespace)
 		{
-			PythonDesignerRootComponent rootDesignerComponent = PythonDesignerComponentFactory.CreateDesignerRootComponent(control);
+			PythonDesignerRootComponent rootDesignerComponent = PythonDesignerComponentFactory.CreateDesignerRootComponent(control, rootNamespace);
 			rootDesignerComponent.AppendCreateContainerComponents(codeBuilder);
 			rootDesignerComponent.AppendSupportInitializeComponentsBeginInit(codeBuilder);
 			rootDesignerComponent.AppendChildComponentsSuspendLayout(codeBuilder);
@@ -97,16 +113,7 @@ namespace ICSharpCode.PythonBinding
 			rootDesignerComponent.AppendChildComponentsResumeLayout(codeBuilder);
 			rootDesignerComponent.AppendSupportInitializeComponentsEndInit(codeBuilder);
 			rootDesignerComponent.AppendResumeLayout(codeBuilder);
-		}
-		
-		void GenerateResources()
-		{
-			if (resourceService == null) {
-				return;
-			}
-			
-			using (IResourceWriter writer = resourceService.GetResourceWriter(CultureInfo.InvariantCulture)) {
-			}
+			return rootDesignerComponent;
 		}
 	}
 }
