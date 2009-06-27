@@ -489,11 +489,11 @@ namespace ICSharpCode.PythonBinding
 				AppendExtenderProperty(codeBuilder, propertyOwnerName, extender, propertyDescriptor, propertyValue);
 			} else if (propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible) {
 				string propertyName = propertyOwnerName + "." + propertyDescriptor.Name;
-				Control control = propertyValue as Control;
-				if (control != null) {
-					string controlRef = GetControlReference(control);
-					if (controlRef != null) {
-						codeBuilder.AppendIndentedLine(propertyName + " = " + controlRef);
+				IComponent component = propertyValue as IComponent;
+				if (component != null) {
+					string componentRef = GetComponentReference(component);
+					if (componentRef != null) {
+						codeBuilder.AppendIndentedLine(propertyName + " = " + componentRef);
 					}
 				} else if (IsResourcePropertyValue(propertyValue)) {
 					AppendResourceProperty(codeBuilder, propertyName, propertyValue);
@@ -756,12 +756,17 @@ namespace ICSharpCode.PythonBinding
 			return parent.IsRootComponent(component);
 		}
 		
-		string GetControlReference(Control control)
-		{
-			if (IsRootComponent(control)) {
+		string GetComponentReference(IComponent component)
+		{			
+			if (IsRootComponent(component)) {
 				return "self";
-			} else if (!String.IsNullOrEmpty(control.Name)) {
-				return "self._" + control.Name;
+			} else {
+				foreach (PythonDesignerComponent designerComponent in GetContainerComponents()) {
+					string name = component.Site.Name;
+					if ((designerComponent.component == component) && (!String.IsNullOrEmpty(name))) {
+						return "self._" + name;
+					}
+				}
 			}
 			return null;
 		}
