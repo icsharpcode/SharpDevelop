@@ -26,7 +26,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		protected NeatoDoubleFormatter neatoDoubleFormatter = new NeatoDoubleFormatter();
 		
 		// state (node and edge names) needed for parsing back
-		protected Dictionary<PositionedNode, string> nodeNames = new Dictionary<PositionedNode, string>();
+		protected Dictionary<PositionedGraphNode, string> nodeNames = new Dictionary<PositionedGraphNode, string>();
 		protected Dictionary<PositionedEdge, string> edgeNames = new Dictionary<PositionedEdge, string>();
 		
 		/// <summary>
@@ -44,7 +44,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.transform = new NeatoPositionTransform(this.posGraph.BoundingRect);
 		}
 		
-		protected abstract void appendPosNode(PositionedNode node, StringBuilder builder);
+		protected abstract void appendPosNode(PositionedGraphNode node, StringBuilder builder);
 		
 		protected abstract void appendPosEdge(PositionedEdge edge, StringBuilder builder);
 		
@@ -65,7 +65,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			StringBuilder dotStringBuilder = new StringBuilder(getGraphHeader());
 			
-			foreach	(PositionedNode posNode in this.posGraph.Nodes)
+			foreach	(PositionedGraphNode posNode in this.posGraph.Nodes)
 			{
 				appendPosNode(posNode, dotStringBuilder);
 			}
@@ -95,7 +95,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			{
 				skipAfterPattern(reader, "node " + nodeNames[posGraph.Nodes.First()] + " ");
 				Point neatoFirstNodePos = readPoint(reader);
-				PositionedNode firstNode = posGraph.Nodes.First();
+				PositionedGraphNode firstNode = posGraph.Nodes.First();
 				Point firstNodePosOur = transform.AsNeato(firstNode.Center);
 				// determine how Neato shifted the nodes
 				transform.NeatoShiftX = neatoFirstNodePos.X - firstNodePosOur.X;

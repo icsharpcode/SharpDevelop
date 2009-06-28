@@ -128,6 +128,12 @@
     <Compile Include="Src\Visualizers\Common\VirtualizingCollection.cs" />
     <Compile Include="Src\Visualizers\Common\VirtualizingObservableCollection.cs" />
     <Compile Include="Src\Visualizers\Controls\DragScrollViewer.cs" />
+    <Compile Include="Src\Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml.cs">
+      <DependentUpon>PositionedGraphNodeControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Visualizers\Graph\Layout\PropertyNodeViewModel.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\NestedNodeViewModel.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\AbstractNode.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\NestedNode.cs" />
@@ -189,7 +195,7 @@
     <Compile Include="Src\Visualizers\Graph\Layout\GraphMatcher.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedGraph.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\PositionedNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\PositionedGraphNode.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedNodeProperty.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedPropertyEventArgs.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\BoxDotFormatter.cs" />
@@ -203,9 +209,9 @@
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\RecordDotFormatter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeLayouter.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNode.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNodeLR.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNodeTB.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeGraphNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeGraphNodeLR.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeGraphNodeTB.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraph.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphBuilder.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphNode.cs" />
@@ -295,6 +301,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />
     <Page Include="Src\Visualizers\GridVisualizer\GridVisualizerWindow.xaml" />
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>

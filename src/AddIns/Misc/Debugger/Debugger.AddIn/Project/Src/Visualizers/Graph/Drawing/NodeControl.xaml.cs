@@ -30,7 +30,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		/// Creates new NodeControl displaying PositionedNode.
 		/// </summary>
 		/// <param name="graphNode">PositionedNode displayed by the control.</param>
-		public NodeControl(PositionedNode graphNode) : this()
+		public NodeControl(PositionedGraphNode graphNode) : this()
 		{
 			//this.initializeWithGraphNode(graphNode);
 			this.GraphNode = graphNode;
@@ -44,11 +44,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		public event EventHandler<PositionedPropertyEventArgs> Expanded;
 		public event EventHandler<PositionedPropertyEventArgs> Collapsed;
 
-		private PositionedNode node;
+		private PositionedGraphNode node;
 		/// <summary>
 		/// ObjectNode that this control displays.
 		/// </summary>
-		public PositionedNode GraphNode
+		public PositionedGraphNode GraphNode
 		{
 			get
 			{

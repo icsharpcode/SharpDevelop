@@ -12,7 +12,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// TreeNode used in LR layout mode.
 	/// </summary>
-	public class TreeNodeLR: TreeNode
+	public class TreeNodeLR: TreeGraphNode
 	{
 		public TreeNodeLR(ObjectGraphNode objectNode) : base(objectNode)
 		{

@@ -16,15 +16,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class GraphDiff
 	{
-		private List<PositionedNode> addedNodes = new List<PositionedNode>();
-		private List<PositionedNode> deletedNodes = new List<PositionedNode>();
-		private List<PositionedNode> changedNodes = new List<PositionedNode>();
-		private Dictionary<PositionedNode, PositionedNode> matching = new Dictionary<PositionedNode, PositionedNode>();
+		private List<PositionedGraphNode> addedNodes = new List<PositionedGraphNode>();
+		private List<PositionedGraphNode> deletedNodes = new List<PositionedGraphNode>();
+		private List<PositionedGraphNode> changedNodes = new List<PositionedGraphNode>();
+		private Dictionary<PositionedGraphNode, PositionedGraphNode> matching = new Dictionary<PositionedGraphNode, PositionedGraphNode>();
 		
 		/// <summary>
 		/// Nodes in the new graph that were added.
 		/// </summary>
-		public IList<PositionedNode> AddedNodes
+		public IList<PositionedGraphNode> AddedNodes
 		{
 			get { return addedNodes.AsReadOnly(); }
 		}
@@ -32,7 +32,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// Nodes in the old graph that were removed.
 		/// </summary>
-		public IList<PositionedNode> RemovedNodes
+		public IList<PositionedGraphNode> RemovedNodes
 		{
 			get { return deletedNodes.AsReadOnly(); }
 		}
@@ -41,27 +41,27 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// Nodes in the old graph that were chaged.
 		/// These have matching new nodes, which can be obtained by <see cref="GetMatchingNewNode"/>.
 		/// </summary>
-		public IList<PositionedNode> ChangedNodes
+		public IList<PositionedGraphNode> ChangedNodes
 		{
 			get { return changedNodes.AsReadOnly(); }
 		}
 		
-		public PositionedNode GetMatchingNewNode(PositionedNode oldNode)
+		public PositionedGraphNode GetMatchingNewNode(PositionedGraphNode oldNode)
 		{
 			return matching.GetValue(oldNode);
 		}
 		
-		internal void SetAdded(PositionedNode addedNode)
+		internal void SetAdded(PositionedGraphNode addedNode)
 		{
 			addedNodes.Add(addedNode);
 		}
 		
-		internal void SetRemoved(PositionedNode removeddNode)
+		internal void SetRemoved(PositionedGraphNode removeddNode)
 		{
 			deletedNodes.Add(removeddNode);
 		}
 		
-		internal void SetMatching(PositionedNode matchFrom, PositionedNode matchTo)
+		internal void SetMatching(PositionedGraphNode matchFrom, PositionedGraphNode matchTo)
 		{
 			matching[matchFrom] = matchTo;
 			changedNodes.Add(matchFrom);

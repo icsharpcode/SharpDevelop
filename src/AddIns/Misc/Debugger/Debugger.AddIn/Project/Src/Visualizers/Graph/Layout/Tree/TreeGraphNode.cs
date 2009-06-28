@@ -17,9 +17,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// Main dimension is the dimension in which the graph depth grows (vertical when TB, horizontal when LR).
 	/// Lateral dimension is the other dimension. Siblings are placed next to each other in Lateral dimension.
 	/// </summary>
-	public abstract class TreeNode : PositionedNode
+	public abstract class TreeGraphNode : PositionedGraphNode
 	{
-		public static TreeNode Create(LayoutDirection direction, ObjectGraphNode objectNode)
+		public static TreeGraphNode Create(LayoutDirection direction, ObjectGraphNode objectNode)
 		{
 			switch (direction) {
 					case LayoutDirection.TopBottom:	return new TreeNodeTB(objectNode);
@@ -31,7 +31,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public double HorizontalMargin { get; set; }
 		public double VerticalMargin { get; set; }
 		
-		protected TreeNode(ObjectGraphNode objectNode) : base(objectNode)
+		protected TreeGraphNode(ObjectGraphNode objectNode) : base(objectNode)
 		{
 		}
 		
@@ -66,12 +66,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		public IEnumerable<TreeNode> Childs
+		public IEnumerable<TreeGraphNode> Childs
 		{
 			get
 			{
 				foreach (PositionedEdge outEdge in this.ChildEdges)
-					yield return (TreeNode)outEdge.Target;
+					yield return (TreeGraphNode)outEdge.Target;
 			}
 		}
 	}

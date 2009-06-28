@@ -61,7 +61,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return new Point(ourPoint.X * neatoOutputScale / ourInputScale, (graphBoundingRect.Bottom - ourPoint.Y) * neatoOutputScale / ourInputScale);
 		}
 		
-		public Rect NodeToNeatoInput(PositionedNode node)
+		public Rect NodeToNeatoInput(PositionedGraphNode node)
 		{
 			// don't transform size
 			return new Rect(ToNeatoInput(node.Center),

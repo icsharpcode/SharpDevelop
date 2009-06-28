@@ -12,7 +12,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// TreeNode used in TB layout mode.
 	/// </summary>
-	public class TreeNodeTB : TreeNode
+	public class TreeNodeTB : TreeGraphNode
 	{
 		public TreeNodeTB(ObjectGraphNode objectNode) : base(objectNode)
 		{

@@ -68,18 +68,18 @@ namespace Debugger.AddIn.Visualizers.Graph
 				addEdgeToCanvas(edge).BeginAnimation(UIElement.OpacityProperty, fadeInAnim);
 			}
 			
-			foreach	(PositionedNode removedNode in diff.RemovedNodes)
+			foreach	(PositionedGraphNode removedNode in diff.RemovedNodes)
 			{
 				removedNode.NodeVisualControl.BeginAnimation(UIElement.OpacityProperty, fadeOutAnim);
 			}
 			
-			foreach	(PositionedNode addedNode in diff.AddedNodes)
+			foreach	(PositionedGraphNode addedNode in diff.AddedNodes)
 			{
 				addNodeToCanvas(addedNode).BeginAnimation(UIElement.OpacityProperty, fadeInAnim);
 			}
 			
 			bool first = true;
-			foreach	(PositionedNode node in diff.ChangedNodes)
+			foreach	(PositionedGraphNode node in diff.ChangedNodes)
 			{
 				var newNode = diff.GetMatchingNewNode(node);
 				
@@ -110,7 +110,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			canvas.Children.Clear();
 			
 			// draw nodes
-			foreach	(PositionedNode node in posGraph.Nodes)
+			foreach	(PositionedGraphNode node in posGraph.Nodes)
 			{
 				addNodeToCanvas(node);
 			}
@@ -122,7 +122,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		private NodeControl addNodeToCanvas(PositionedNode node)
+		private NodeControl addNodeToCanvas(PositionedGraphNode node)
 		{
 			canvas.Children.Add(node.NodeVisualControl);
 			Canvas.SetLeft(node.NodeVisualControl, node.Left);

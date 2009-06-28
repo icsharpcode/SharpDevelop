@@ -14,7 +14,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// ObjectNode with added position information.
 	/// </summary>
-	public class PositionedNode
+	public class PositionedGraphNode
 	{
 		private ObjectGraphNode objectNode;
 		/// <summary>
@@ -51,7 +51,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// Creates new PositionedNode.
 		/// </summary>
 		/// <param name="objectNode">Underlying ObjectNode.</param>
-		public PositionedNode(ObjectGraphNode objectNode)
+		public PositionedGraphNode(ObjectGraphNode objectNode)
 		{
 			this.objectNode = objectNode;
 			

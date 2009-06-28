@@ -28,7 +28,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return "digraph G { rankdir=LR; node [shape = record];";
 		}
 		
-		protected override void appendPosNode(PositionedNode node, StringBuilder builder)
+		protected override void appendPosNode(PositionedGraphNode node, StringBuilder builder)
 		{
 			string nodeName = genId.GetNextId().ToString();
 			nodeNames[node] = nodeName;
