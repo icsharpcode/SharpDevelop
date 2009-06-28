@@ -9,7 +9,10 @@ using System.Windows.Controls;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
-
+	/// <summary>
+	/// ListView that takes VirtualizingIEnumerable as source, 
+	/// and requests additional items from the source as needed when scrolling.
+	/// </summary>
 	public class LazyListView<T>
 	{
 		private ListView listView;

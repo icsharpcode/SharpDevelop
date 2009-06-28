@@ -19,7 +19,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Permanent reference to the value in the the debugee this node represents.
 		/// </summary>
-		internal Debugger.Value DebuggerValue { get; set; }
+		internal Debugger.Value PermanentReference { get; set; } // needed for graph building and matching, since hashCodes are not unique
 		/// <summary>
 		/// Hash code in the debuggee of the DebuggerValue this node represents.
 		/// </summary>
@@ -27,34 +27,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Expression used to obtain this node.
 		/// </summary>
-		public Expressions.Expression Expression { get { return this.DebuggerValue.Expression; } }
-		
-		/*private List<ObjectEdge> _edges = new List<ObjectEdge>();
-        /// <summary>
-        /// Outgoing edges.
-        /// </summary>
-        public IEnumerable<ObjectEdge> Edges
-        {
-            get { return _edges; }
-        }
-
-        /// <summary>
-        /// Adds outgoing edge.
-        /// </summary>
-        internal void AddNamedEdge(ObjectNode targetNode, string edgeName)
-        {
-            _edges.Add(new ObjectEdge { Name = edgeName, SourceNode = this, TargetNode = targetNode });
-        }*/
+		public Expressions.Expression Expression { get { return this.PermanentReference.Expression; } }
 		
 		class PropertyComparer : IComparer<ObjectGraphProperty>
 		{
 			public int Compare(ObjectGraphProperty prop1, ObjectGraphProperty prop2)
 			{
 				// order by IsAtomic, Name
-				int atomic = prop2.IsAtomic.CompareTo(prop1.IsAtomic);
-				if (atomic != 0)
+				int comparedAtomic = prop2.IsAtomic.CompareTo(prop1.IsAtomic);
+				if (comparedAtomic != 0)
 				{
-					return atomic;
+					return comparedAtomic;
 				}
 				else
 				{

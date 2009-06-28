@@ -25,6 +25,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public bool IsExpanded { get; set; }
 		
+		/// <summary>
+		/// Edge outgoing from this property to another <see cref="PositionedNode"/>.
+		/// </summary>
+		public PositionedEdge Edge { get; set; }
+		
+		
 		private ObjectGraphProperty objectProperty;
 		/// <summary>
 		/// Underlying <see cref="ObjectProperty"/>.
@@ -42,11 +48,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			get { return this.containingNode; }
 		}
-		
-		/// <summary>
-		/// Edge outgoing from this property to another <see cref="PositionedNode"/>.
-		/// </summary>
-		public PositionedEdge Edge { get; set; }
 		
 		/// <summary>
 		/// e.g. "Age"

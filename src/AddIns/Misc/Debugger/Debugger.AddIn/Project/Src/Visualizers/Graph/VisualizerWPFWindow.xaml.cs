@@ -151,7 +151,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 			// remember this property is expanded (for later graph rebuilds)
 			expandedNodes.SetExpanded(e.Property.Expression.Code);
 			
-			// add edge (+ possibly node) to underlying object graph (no need to rebuild)
+			// add edge (+ possibly nodes) to underlying object graph (no need to rebuild)
+			// TODO can add more nodes if they are expanded - now this adds always one node
 			e.Property.ObjectProperty.TargetNode = this.objectGraphBuilder.ObtainNodeForExpression(e.Property.Expression);
 			layoutGraph(this.objectGraph);
 		}

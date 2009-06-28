@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
 	/// <summary>
-	/// IList&lt;T&gt; with data vitualization - the indexer is lazy, uses IListValuesProvider to obtain values.
+	/// IList&lt;T&gt; with data vitualization - the indexer is lazy, uses IListValuesProvider to obtain values when needed.
 	/// </summary>
 	public class VirtualizingCollection<T> : IList<T>, IList
 	{

@@ -44,6 +44,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				property.IsAtomic = memberValue.Type.IsPrimitive;
 				property.IsNull = memberValue.IsNull;
 				property.Value = memberValue.AsString;
+				//property.Value = memberValue.InvokeToString();	// TODO commit this in next commit of Grid - use debugee defined ToString()
 				
 				result.properties.Add(property.Name, property);
 			}

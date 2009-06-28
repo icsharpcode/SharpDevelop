@@ -141,7 +141,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		private void loadNodeProperties(ObjectNode thisNode)
 		{
 			// take all properties for this value (type = value's real type)
-			foreach(Expression memberExpr in thisNode.DebuggerValue.Expression.AppendObjectMembers(thisNode.DebuggerValue.Type, _bindingFlags))
+			foreach(Expression memberExpr in thisNode.PermanentReference.Expression.AppendObjectMembers(thisNode.PermanentReference.Type, _bindingFlags))
 			{
 				checkIsOfSupportedType(memberExpr);
 				
@@ -210,7 +210,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			
 			// permanent reference to the object this node represents is useful for graph building,
 			// and matching nodes in animations
-			newNode.DebuggerValue = permanentReference;
+			newNode.PermanentReference = permanentReference;
 			
 			return newNode;
 		}
@@ -235,7 +235,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				// (hash codes are not uniqe - http://stackoverflow.com/questions/750947/-net-unique-object-identifier)
 				ulong objectAddress = value.GetObjectAddress();
 				ObjectNode nodeWithSameAddress = nodesWithSameHashCode.Find(
-					node => { return node.DebuggerValue.GetObjectAddress() == objectAddress; } );
+					node => { return node.PermanentReference.GetObjectAddress() == objectAddress; } );
 				return nodeWithSameAddress;
 			}
 		}
@@ -280,7 +280,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 		private bool isOfAtomicType(Expression expr)
 		{
 			DebugType typeOfValue = expr.Evaluate(debuggerService.DebuggedProcess).Type;
-			return (!typeOfValue.IsClass) || typeOfValue.IsString;
+			return !(typeOfValue.IsClass || typeOfValue.IsValueType);
+			//return (!typeOfValue.IsClass) || typeOfValue.IsString;
 		}
 		
 		#region Expression helpers
