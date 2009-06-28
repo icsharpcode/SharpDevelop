@@ -18,22 +18,22 @@ namespace Debugger.AddIn.Visualizers.Graph
     	/// <summary>
     	/// Root of the graph.
     	/// </summary>
-    	public ObjectNode Root { get; internal set; }
+    	public ObjectGraphNode Root { get; internal set; }
     	
     	/// <summary>
     	/// Adds node to the graph.
     	/// </summary>
     	/// <param name="node">node to be added</param>
-    	internal void AddNode(ObjectNode node)
+    	internal void AddNode(ObjectGraphNode node)
     	{
     		_nodes.Add(node);
     	}
     	
-    	private List<ObjectNode> _nodes = new List<ObjectNode>();
+    	private List<ObjectGraphNode> _nodes = new List<ObjectGraphNode>();
         /// <summary>
         /// All nodes in the graph.
         /// </summary>
-        public IEnumerable<ObjectNode> Nodes 
+        public IEnumerable<ObjectGraphNode> Nodes 
         {
             get { return _nodes; }
         }

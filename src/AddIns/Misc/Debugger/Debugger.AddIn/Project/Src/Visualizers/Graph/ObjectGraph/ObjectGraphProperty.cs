@@ -18,6 +18,6 @@ namespace Debugger.AddIn.Visualizers.Graph
         /// <summary>
         /// Node that this property points to. Can be null. Always null if <see cref="IsAtomic"/> is true.
         /// </summary>
-        public ObjectNode TargetNode { get; set; }
+        public ObjectGraphNode TargetNode { get; set; }
     }
 }

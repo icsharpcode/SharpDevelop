@@ -19,7 +19,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public abstract class TreeNode : PositionedNode
 	{
-		public static TreeNode Create(LayoutDirection direction, ObjectNode objectNode)
+		public static TreeNode Create(LayoutDirection direction, ObjectGraphNode objectNode)
 		{
 			switch (direction) {
 					case LayoutDirection.TopBottom:	return new TreeNodeTB(objectNode);
@@ -31,7 +31,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public double HorizontalMargin { get; set; }
 		public double VerticalMargin { get; set; }
 		
-		protected TreeNode(ObjectNode objectNode) : base(objectNode)
+		protected TreeNode(ObjectGraphNode objectNode) : base(objectNode)
 		{
 		}
 		

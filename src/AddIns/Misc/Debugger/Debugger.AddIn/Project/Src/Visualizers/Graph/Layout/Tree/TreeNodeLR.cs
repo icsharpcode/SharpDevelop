@@ -14,7 +14,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class TreeNodeLR: TreeNode
 	{
-		public TreeNodeLR(ObjectNode objectNode) : base(objectNode)
+		public TreeNodeLR(ObjectGraphNode objectNode) : base(objectNode)
 		{
 		}
 		

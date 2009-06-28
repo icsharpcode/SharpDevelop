@@ -6,7 +6,7 @@
 // </file>
 using System;
 
-namespace Debugger.AddIn.Visualizers.Graph
+namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
 	/// Description of DebuggerVisualizerException.

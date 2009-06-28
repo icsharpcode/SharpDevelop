@@ -51,19 +51,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 		public ObjectGraph ResultGraph { get { return this.resultGraph; } }
 		
 		/// <summary>
-		/// System.Runtime.CompilerServices.GetHashCode method, for obtaining non-overriden hash codes from debuggee.
-		/// </summary>
-		private MethodInfo hashCodeMethod;
-		
-		/// <summary>
 		/// Given hash code, lookup already existing node(s) with this hash code.
 		/// </summary>
-		private Lookup<int, ObjectNode> objectNodesForHashCode = new Lookup<int, ObjectNode>();
+		private Lookup<int, ObjectGraphNode> objectNodesForHashCode = new Lookup<int, ObjectGraphNode>();
 		
 		/// <summary>
 		/// Binding flags for getting member expressions.
 		/// </summary>
-		private readonly Debugger.MetaData.BindingFlags _bindingFlags =
+		private readonly Debugger.MetaData.BindingFlags memberBindingFlags =
 			BindingFlags.Public | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
 		
 		/// <summary>
@@ -73,9 +68,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 		public ObjectGraphBuilder(WindowsDebugger debuggerService)
 		{
 			this.debuggerService = debuggerService;
-			
-			DebugType typeRuntimeHelpers =  DebugType.Create(debuggerService.DebuggedProcess, null, "System.Runtime.CompilerServices.RuntimeHelpers");
-			this.hashCodeMethod = typeRuntimeHelpers.GetMember("GetHashCode", BindingFlags.Public | BindingFlags.Static | BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
 		}
 		
 		/// <summary>
@@ -97,19 +89,19 @@ namespace Debugger.AddIn.Visualizers.Graph
 			{
 				//resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference(), expandedNodes);
 				resultGraph.Root = createNewNode(debuggerService.GetValueFromName(expression).GetPermanentReference());
-				loadNodeProperties(resultGraph.Root);
-				loadChildrenRecursive(resultGraph.Root, expandedNodes);
+				loadContent(resultGraph.Root);
+				loadNeighborsRecursive(resultGraph.Root, expandedNodes);
 			}
 			
 			return resultGraph;
 		}
 		
-		public ObjectNode ObtainNodeForExpression(Expression expr, out bool createdNewNode)
+		public ObjectGraphNode ObtainNodeForExpression(Expression expr, out bool createdNewNode)
 		{
-			return ObtainNodeForValue(getPermanentReference(expr), out createdNewNode);
+			return ObtainNodeForValue(expr.GetPermanentReference(), out createdNewNode);
 		}
 		
-		public ObjectNode ObtainNodeForExpression(Expression expr)
+		public ObjectGraphNode ObtainNodeForExpression(Expression expr)
 		{
 			bool createdNewNode; // ignore (caller is not interested, otherwise he would use the other overload)
 			return ObtainNodeForExpression(expr, out createdNewNode);
@@ -120,62 +112,67 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="value">Value for which to obtain the node/</param>
 		/// <param name="createdNew">True if new node was created, false if existing node was returned.</param>
-		public ObjectNode ObtainNodeForValue(Value value, out bool createdNew)
+		public ObjectGraphNode ObtainNodeForValue(Value value, out bool createdNew)
 		{
 			createdNew = false;
-			ObjectNode nodeForValue = getExistingNodeForValue(value);
+			ObjectGraphNode nodeForValue = getExistingNodeForValue(value);
 			if (nodeForValue == null)
 			{
 				// if no node for memberValue exists, create it
 				nodeForValue = createNewNode(value);
-				loadNodeProperties(nodeForValue);
+				loadContent(nodeForValue);
 				createdNew = true;
 			}
 			return nodeForValue;
 		}
 		
 		/// <summary>
-		/// Fills node contents by adding properties.
+		/// Fills node Content property tree.
 		/// </summary>
 		/// <param name="thisNode"></param>
-		private void loadNodeProperties(ObjectNode thisNode)
+		private void loadContent(ObjectGraphNode thisNode)
 		{
+			NestedNode contentRoot = new NestedNode(NestedNodeType.ThisNode);
+			thisNode.Content = contentRoot;
+			
 			// take all properties for this value (type = value's real type)
-			foreach(Expression memberExpr in thisNode.PermanentReference.Expression.AppendObjectMembers(thisNode.PermanentReference.Type, _bindingFlags))
+			foreach(Expression memberExpr in thisNode.PermanentReference.Expression.AppendObjectMembers(thisNode.PermanentReference.Type, this.memberBindingFlags))
 			{
 				checkIsOfSupportedType(memberExpr);
 				
 				string memberName = memberExpr.CodeTail;
-				if (isOfAtomicType(memberExpr))
+				if (memberExpr.IsOfAtomicType())
 				{
-					// atomic members are added to the list of node's "properties"
-					string memberValueAsString = memberExpr.Evaluate(debuggerService.DebuggedProcess).AsString;
-					thisNode.AddAtomicProperty(memberName, memberValueAsString, memberExpr);
+					// properties are now lazy-evaluated
+					//  string memberValueAsString = memberExpr.Evaluate(debuggerService.DebuggedProcess).InvokeToString();
+					AddAtomicPropertyChild(contentRoot, memberName, memberExpr);
 				}
 				else
 				{
-					// for object members, complex properties are added
-					ObjectNode targetNode = null;
-					bool memberIsNull = isNull(memberExpr);
-					thisNode.AddComplexProperty(memberName, "", memberExpr, targetNode, memberIsNull);
+					ObjectGraphNode targetNode = null;
+					bool memberIsNull = memberExpr.IsNull();
+					AddComplexPropertyChild(contentRoot, memberName, memberExpr, targetNode, memberIsNull);
 				}
 			}
 		}
 		
 		/// <summary>
-		/// Creates child nodes of this node for each complex property and connects them to property.TargetNode.
+		/// For each complex property of this node, create s neighbor graph node if needed and connects the neighbor to ObjectProperty.TargetNode.
 		/// </summary>
 		/// <param name="thisNode"></param>
 		/// <param name="expandedNodes"></param>
-		private void loadChildrenRecursive(ObjectNode thisNode, ExpandedNodes expandedNodes)
+		private void loadNeighborsRecursive(ObjectGraphNode thisNode, ExpandedNodes expandedNodes)
 		{
 			foreach(ObjectGraphProperty complexProperty in thisNode.ComplexProperties)
 			{
 				Expression memberExpr = complexProperty.Expression;
-				ObjectNode targetNode = null;
+				ObjectGraphNode targetNode = null;
+				// we are only evaluating expanded nodes here 
+				// (we have to do this to know the "shape" of the graph)
+				// property laziness makes sense, as we are not evaluating atomic and non-expanded properties out of user's view
 				if (!complexProperty.IsNull && expandedNodes.IsExpanded(memberExpr.Code))
 				{
-					Value memberValue = getPermanentReference(memberExpr);
+					Value memberValue = memberExpr.GetPermanentReference();
 					
 					bool createdNew;
 					// get existing node (loop) or create new
@@ -183,7 +180,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 					if (createdNew)
 					{
 						// if member node is new, recursively build its subtree
-						loadChildrenRecursive(targetNode, expandedNodes);
+						loadNeighborsRecursive(targetNode, expandedNodes);
 					}
 				}
 				else
@@ -199,10 +196,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="permanentReference">Value, has to be valid.</param>
 		/// <returns>New empty object node representing the value.</returns>
-		private ObjectNode createNewNode(Value permanentReference)
+		private ObjectGraphNode createNewNode(Value permanentReference)
 		{
-			ObjectNode newNode = new ObjectNode();
-			newNode.HashCode = invokeGetHashCode(permanentReference);
+			ObjectGraphNode newNode = new ObjectGraphNode();
+			newNode.HashCode = permanentReference.InvokeDefaultGetHashCode();
 			
 			resultGraph.AddNode(newNode);
 			// remember this node's hashcode for quick lookup
@@ -220,11 +217,11 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="value">Valid value representing an instance.</param>
 		/// <returns></returns>
-		private ObjectNode getExistingNodeForValue(Value value)
+		private ObjectGraphNode getExistingNodeForValue(Value value)
 		{
-			int objectHashCode = invokeGetHashCode(value);
+			int objectHashCode = value.InvokeDefaultGetHashCode();
 			// are there any nodes with the same hash code?
-			LookupValueCollection<ObjectNode> nodesWithSameHashCode = objectNodesForHashCode[objectHashCode];
+			LookupValueCollection<ObjectGraphNode> nodesWithSameHashCode = objectNodesForHashCode[objectHashCode];
 			if (nodesWithSameHashCode == null)
 			{
 				return null;
@@ -234,28 +231,30 @@ namespace Debugger.AddIn.Visualizers.Graph
 				// if there is a node with same hash code, check if it has also the same address
 				// (hash codes are not uniqe - http://stackoverflow.com/questions/750947/-net-unique-object-identifier)
 				ulong objectAddress = value.GetObjectAddress();
-				ObjectNode nodeWithSameAddress = nodesWithSameHashCode.Find(
+				ObjectGraphNode nodeWithSameAddress = nodesWithSameHashCode.Find(
 					node => { return node.PermanentReference.GetObjectAddress() == objectAddress; } );
 				return nodeWithSameAddress;
 			}
 		}
 		
 		/// <summary>
-		/// Invokes GetHashCode on given value.
+		/// Adds primitive property.
 		/// </summary>
-		/// <param name="value">Valid value.</param>
-		/// <returns>Hash code of the object in the debugee.</returns>
-		private int invokeGetHashCode(Value value)
+		public void AddAtomicPropertyChild(NestedNode node, string name, Expression expression)
 		{
-			// David: I had hard time finding out how to invoke static method
-			// value.InvokeMethod is nice for instance methods.
-			// what about MethodInfo.Invoke() ?
-			// also, there could be an overload that takes 1 parameter instead of array
-			string defaultHashCode = Eval.InvokeMethod(this.hashCodeMethod, null, new Value[]{value}).AsString;
-			
-			//MethodInfo method = value.Type.GetMember("GetHashCode", BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
-			//string hashCode = value.InvokeMethod(method, null).AsString;
-			return int.Parse(defaultHashCode);
+			// add child with no value (will be lazy-evaluated later)
+			node.AddChild(new PropertyNode(new ObjectGraphProperty
+			                               { Name = name, Value = "", Expression = expression, IsAtomic = true, TargetNode = null }));
+		}
+		
+		/// <summary>
+		/// Adds complex property.
+		/// </summary>
+		public void AddComplexPropertyChild(NestedNode node, string name, Expression expression, ObjectGraphNode targetNode, bool isNull)
+		{
+			// add child with no value (will be lazy-evaluated later)
+			node.AddChild(new PropertyNode(new ObjectGraphProperty
+			                               { Name = name, Value = "", Expression = expression, IsAtomic = false, TargetNode = targetNode, IsNull = isNull }));
 		}
 		
 		/// <summary>
@@ -271,41 +270,5 @@ namespace Debugger.AddIn.Visualizers.Graph
 				throw new DebuggerVisualizerException("Arrays are not supported yet");
 			}
 		}
-		
-		/// <summary>
-		/// Checks whether given expression's type is atomic.
-		/// </summary>
-		/// <param name="expr">Expression.</param>
-		/// <returns>True if expression's type is atomic, False otherwise.</returns>
-		private bool isOfAtomicType(Expression expr)
-		{
-			DebugType typeOfValue = expr.Evaluate(debuggerService.DebuggedProcess).Type;
-			return !(typeOfValue.IsClass || typeOfValue.IsValueType);
-			//return (!typeOfValue.IsClass) || typeOfValue.IsString;
-		}
-		
-		#region Expression helpers
-		
-		private Value getPermanentReference(Expression expr)
-		{
-			return expr.Evaluate(debuggerService.DebuggedProcess).GetPermanentReference();
-		}
-		
-		private bool isNull(Expression expr)
-		{
-			return expr.Evaluate(debuggerService.DebuggedProcess).IsNull;
-		}
-		
-		private DebugType getType(Expression expr)
-		{
-			return expr.Evaluate(debuggerService.DebuggedProcess).Type;
-		}
-		
-		private ulong getObjectAddress(Expression expr)
-		{
-			return expr.Evaluate(debuggerService.DebuggedProcess).GetObjectAddress();
-		}
-		
-		#endregion
 	}
 }

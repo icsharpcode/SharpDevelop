@@ -4,8 +4,11 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.Expressions;
 using System;
+using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers.Utils
 {
@@ -18,6 +21,62 @@ namespace Debugger.AddIn.Visualizers.Utils
 		{
 			ICorDebugReferenceValue refVal = val.CorValue.CastTo<ICorDebugReferenceValue>();
 			return refVal.Value;
+		}
+		
+		/// <summary>
+		/// Evaluates expression and gets underlying address of object in the debuggee.
+		/// </summary>
+		public static ulong GetObjectAddress(this Expression expr)
+		{
+			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetObjectAddress();
+		}
+		
+		/// <summary>
+		/// System.Runtime.CompilerServices.GetHashCode method, for obtaining non-overriden hash codes from debuggee.
+		/// </summary>
+		private static MethodInfo hashCodeMethod;
+		
+		/// <summary>
+		/// Invokes RuntimeHelpers.GetHashCode on given value, that is a default hashCode ignoring user overrides.
+		/// </summary>
+		/// <param name="value">Valid value.</param>
+		/// <returns>Hash code of the object in the debugee.</returns>
+		public static int InvokeDefaultGetHashCode(this Value value)
+		{
+			if (DebuggerHelpers.hashCodeMethod == null)
+			{
+				DebugType typeRuntimeHelpers =  DebugType.Create(WindowsDebugger.CurrentProcess, null, "System.Runtime.CompilerServices.RuntimeHelpers");
+				DebuggerHelpers.hashCodeMethod = typeRuntimeHelpers.GetMember("GetHashCode", BindingFlags.Public | BindingFlags.Static | BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
+				if (DebuggerHelpers.hashCodeMethod == null)
+				{
+					throw new DebuggerException("Cannot obtain method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode");
+				}
+			}
+			
+			// David: I had hard time finding out how to invoke static method.
+			// value.InvokeMethod is nice for instance methods.
+			// what about MethodInfo.Invoke() ?
+			// also, there could be an overload that takes 1 parameter instead of array
+			string defaultHashCode = Eval.InvokeMethod(DebuggerHelpers.hashCodeMethod, null, new Value[]{value}).AsString;
+			
+			//MethodInfo method = value.Type.GetMember("GetHashCode", BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
+			//string hashCode = value.InvokeMethod(method, null).AsString;
+			return int.Parse(defaultHashCode);
+		}
+		
+		public static Value GetPermanentReference(this Expression expr)
+		{
+			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference();
+		}
+		
+		public static bool IsNull(this Expression expr)
+		{
+			return expr.Evaluate(WindowsDebugger.CurrentProcess).IsNull;
+		}
+		
+		public static DebugType GetType(this Expression expr)
+		{
+			return expr.Evaluate(WindowsDebugger.CurrentProcess).Type;
 		}
 	}
 }

@@ -6,7 +6,7 @@
 // </file>
 using System;
 
-namespace Debugger.AddIn.Visualizers.Graph
+namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
 	/// Named edge connecting 2 objects of same type.

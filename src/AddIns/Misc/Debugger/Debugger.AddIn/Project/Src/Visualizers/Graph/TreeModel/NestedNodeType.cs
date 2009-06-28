@@ -5,15 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
-    /// <summary>
-    /// Named edge in the <see cref="ObjectGraph" />.
-    /// </summary>
-    /*public class ObjectEdge : NamedEdge<ObjectNode>
-    {
-    }*/
+	/// <summary>
+	/// Description of NestedNodeType.
+	/// </summary>
+	public enum NestedNodeType
+	{
+		ThisNode,
+		BaseClassNode,
+		NonPublicInstanceMembersNode,
+		StaticMembersNode,
+		NonPublicStaticMembersNode
+	}
 }

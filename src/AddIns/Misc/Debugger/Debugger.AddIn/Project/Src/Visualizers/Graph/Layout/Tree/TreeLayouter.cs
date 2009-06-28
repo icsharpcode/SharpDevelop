@@ -24,8 +24,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		PositionedGraph resultGraph = null;
 		
-		Dictionary<ObjectNode, TreeNode> treeNodeFor = new Dictionary<ObjectNode, TreeNode>();
-		Dictionary<ObjectNode, object> seenNodes = new Dictionary<ObjectNode, object>();
+		Dictionary<ObjectGraphNode, TreeNode> treeNodeFor = new Dictionary<ObjectGraphNode, TreeNode>();
+		Dictionary<ObjectGraphNode, object> seenNodes = new Dictionary<ObjectGraphNode, object>();
 		
 		public TreeLayouter()
 		{
@@ -41,8 +41,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			layoutDirection = direction;
 
 			resultGraph = new PositionedGraph();
-			treeNodeFor = new Dictionary<ObjectNode, TreeNode>();
-			seenNodes = new Dictionary<ObjectNode, object>();
+			treeNodeFor = new Dictionary<ObjectGraphNode, TreeNode>();
+			seenNodes = new Dictionary<ObjectGraphNode, object>();
 
 			TreeNode tree = buildTreeRecursive(objectGraph.Root, expandedNodes);
 			calculateNodePosRecursive(tree, 0, 0);
@@ -53,7 +53,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return resultGraph;
 		}
 		
-		private TreeNode buildTreeRecursive(ObjectNode objectGraphNode, ExpandedNodes expandedNodes)
+		private TreeNode buildTreeRecursive(ObjectGraphNode objectGraphNode, ExpandedNodes expandedNodes)
 		{
 			seenNodes.Add(objectGraphNode, null);
 			
@@ -64,11 +64,13 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			treeNodeFor[objectGraphNode] = newTreeNode;
 			
 			double subtreeSize = 0;
-			foreach	(ObjectGraphProperty property in objectGraphNode.Properties)
+			foreach	(AbstractNode absNode in objectGraphNode.Content.Childs)
 			{
+				ObjectGraphProperty property = ((PropertyNode)absNode).Property;
+				
 				if (property.TargetNode != null)
 				{
-					ObjectNode neighbor = property.TargetNode;
+					ObjectGraphNode neighbor = property.TargetNode;
 					TreeNode targetTreeNode = null;
 					bool newEdgeIsTreeEdge = false;
 					if (seenNodes.ContainsKey(neighbor))

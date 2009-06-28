@@ -121,7 +121,16 @@
     <Compile Include="Src\Service\DebuggerEventForm.Designer.cs">
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Visualizers\Common\DebuggerVisualizerException.cs" />
+    <Compile Include="Src\Visualizers\Common\IEvaluate.cs" />
+    <Compile Include="Src\Visualizers\Common\ObjectPropertyComparer.cs" />
     <Compile Include="Src\Visualizers\Controls\DragScrollViewer.cs" />
+    <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\AbstractNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\NestedNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\NestedNodeType.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\PropertyNode.cs" />
+    <Compile Include="Src\Visualizers\Utils\AtomicType.cs" />
     <Compile Include="Src\Visualizers\Utils\TypeResolver.cs" />
     <EmbeddedResource Include="Src\Service\DebuggeeExceptionForm.resx">
       <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
@@ -167,7 +176,6 @@
     <Compile Include="Src\TreeModel\ChildNodesOfObject.cs" />
     <Compile Include="Src\TreeModel\StackFrameNode.cs" />
     <Compile Include="Src\TreeModel\Utils.cs" />
-    <Compile Include="Src\Visualizers\Graph\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\CanvasLocationAdapter.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\GraphDrawer.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml.cs">
@@ -195,11 +203,9 @@
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNode.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNodeLR.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNodeTB.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraph.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphBuilder.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphNode.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphProperty.cs" />
     <Compile Include="Src\Visualizers\Graph\ShowObjectGraphVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\GridVisualizerWindow.xaml.cs">
@@ -309,9 +315,11 @@
     <Folder Include="Src\Visualizers\Graph\Layout" />
     <Folder Include="Src\Visualizers\Graph\Layout\Tree" />
     <Folder Include="Src\Visualizers\Graph\Graphviz" />
+    <Folder Include="Src\Visualizers\Graph\TreeModel" />
     <Folder Include="Src\Visualizers\Graph\ObjectGraph" />
     <Folder Include="Src\Visualizers\GridVisualizer\ValueProviders" />
     <Folder Include="Src\Visualizers\Controls" />
+    <Folder Include="Src\Visualizers\Common" />
     <Folder Include="Src\Visualizers\Utils" />
     <Folder Include="Src\Visualizers\GridVisualizer" />
     <Folder Include="Src\Visualizers\PresentationBindings" />
