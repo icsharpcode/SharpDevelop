@@ -7,38 +7,52 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
-namespace Debugger.AddIn.Visualizers.GridVisualizer
+namespace Debugger.AddIn.Visualizers.Common
 {
 	/// <summary>
-	/// IList&lt;T&gt; with data vitualization - the indexer is lazy, uses IListValuesProvider to obtain values when needed.
+	/// Wrapper of ObservableCollection&lt;IEvaluate&gt; 
+	/// with lazy indexer, suitable for Controls that use indexer to query for data as needed (eg. ListView).
 	/// </summary>
-	public class VirtualizingCollection<T> : IList<T>, IList
+	public class VirtualizingObservableCollection<T> : ObservableCollection<T>, IList<T>, IList
 	{
-		private IListValuesProvider<T> valueProvider;
-		private Dictionary<int, T> itemCache = new Dictionary<int, T>();
+		ObservableCollection<T> lazifiedCollection;
 
-		public VirtualizingCollection(IListValuesProvider<T> valueProvider)
+		public VirtualizingObservableCollection(ObservableCollection<T> lazifiedCollection)
 		{
-			this.valueProvider = valueProvider;
+			this.lazifiedCollection = lazifiedCollection;
+			this.lazifiedCollection.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(lazifiedCollection_CollectionChanged);
 		}
 
-		public int Count
+		void lazifiedCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
-			get { return this.valueProvider.GetCount(); }
+			OnCollectionChanged(e);
 		}
 
-		public T this[int index]
+		public new int Count
+		{
+			get { return this.lazifiedCollection.Count; }
+		}
+
+		/// <summary>
+		/// Lazy indexer.
+		/// </summary>
+		public new T this[int index]
 		{
 			get
 			{
-				T cachedItem;
-				if (!itemCache.TryGetValue(index, out cachedItem))
+				var underlyingItem = this.lazifiedCollection[index];
+				IEvaluate itemLazy = underlyingItem as IEvaluate;
+				if (itemLazy != null)
 				{
-					cachedItem = this.valueProvider.GetItemAt(index);
-					this.itemCache[index] = cachedItem;
+					if (!itemLazy.IsEvaluated)
+					{
+						itemLazy.Evaluate();
+					}
 				}
-				return cachedItem;
+				// return item, evaluated if it was IEvaluate
+				return underlyingItem;
 			}
 			set
 			{
@@ -48,17 +62,17 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 
 		#region IList<T> Members
 
-		public int IndexOf(T item)
+		public new int IndexOf(T item)
 		{
 			return -1;
 		}
 
-		public void Insert(int index, T item)
+		public new void Insert(int index, T item)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void RemoveAt(int index)
+		public new void RemoveAt(int index)
 		{
 			throw new NotImplementedException();
 		}
@@ -67,22 +81,22 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 
 		#region ICollection<T> Members
 
-		public void Add(T item)
+		public new void Add(T item)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void Clear()
+		public new void Clear()
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool Contains(T item)
+		public new bool Contains(T item)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void CopyTo(T[] array, int arrayIndex)
+		public new void CopyTo(T[] array, int arrayIndex)
 		{
 			throw new NotImplementedException();
 		}
@@ -92,7 +106,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			get { return true; }
 		}
 
-		public bool Remove(T item)
+		public new bool Remove(T item)
 		{
 			throw new NotImplementedException();
 		}
@@ -105,7 +119,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		/// Should be avoided on large collections due to performance.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerator<T> GetEnumerator()
+		public new IEnumerator<T> GetEnumerator()
 		{
 			for (int i = 0; i < this.Count; i++)
 			{

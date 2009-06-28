@@ -123,7 +123,10 @@
     </Compile>
     <Compile Include="Src\Visualizers\Common\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Common\IEvaluate.cs" />
+    <Compile Include="Src\Visualizers\Common\IListValuesProvider.cs" />
     <Compile Include="Src\Visualizers\Common\ObjectPropertyComparer.cs" />
+    <Compile Include="Src\Visualizers\Common\VirtualizingCollection.cs" />
+    <Compile Include="Src\Visualizers\Common\VirtualizingObservableCollection.cs" />
     <Compile Include="Src\Visualizers\Controls\DragScrollViewer.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\AbstractNode.cs" />
@@ -216,9 +219,7 @@
     <Compile Include="Src\Visualizers\GridVisualizer\ObjectValue.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ShowGridVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
-    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\IListValuesProvider.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
-    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\VirtualizingCollection.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\VirtualizingIEnumerable.cs" />
     <Compile Include="Src\Visualizers\ObjectProperty.cs" />
     <Compile Include="Src\Visualizers\Utils\DebuggerHelpers.cs" />

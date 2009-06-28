@@ -6,7 +6,7 @@
 // </file>
 using System;
 
-namespace Debugger.AddIn.Visualizers.GridVisualizer
+namespace Debugger.AddIn.Visualizers.Common
 {
 	/// <summary>
 	/// Can provide individial items for a lazy collection, as well as total count of items.

@@ -18,6 +18,7 @@ using System.Windows.Media;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
 using Debugger.AddIn.Visualizers.Utils;
+using Debugger.AddIn.Visualizers.Common;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
