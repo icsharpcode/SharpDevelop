@@ -11,7 +11,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// <see cref="ObjectProperty"/> with outgoing <see cref="PositionedEdge"/>.
 	/// </summary>
-	public class PositionedNodeProperty
+	public class PositionedNodeProperty : IEvaluate
 	{
 		/// <summary>
 		/// Creates new PositionedNodeProperty.
@@ -19,10 +19,18 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <param name="objectProperty">Underlying <see cref="ObjectProperty"/></param>
 		public PositionedNodeProperty(ObjectGraphProperty objectProperty, PositionedGraphNode containingNode)
 		{
-			this.objectProperty = objectProperty;
+			if (containingNode == null)
+				throw new ArgumentNullException("containingNode");
+			if (objectProperty == null)
+				throw new ArgumentNullException("objectProperty");
+			
+			this.objectGraphProperty = objectProperty;
 			this.containingNode = containingNode;
 		}
 		
+		/// <summary>
+		/// Is this property expanded?
+		/// </summary>
 		public bool IsExpanded { get; set; }
 		
 		/// <summary>
@@ -31,13 +39,13 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public PositionedEdge Edge { get; set; }
 		
 		
-		private ObjectGraphProperty objectProperty;
+		private ObjectGraphProperty objectGraphProperty;
 		/// <summary>
 		/// Underlying <see cref="ObjectProperty"/>.
 		/// </summary>
-		public ObjectGraphProperty ObjectProperty
+		public ObjectGraphProperty ObjectGraphProperty
 		{
-			get { return this.objectProperty; }
+			get { return this.objectGraphProperty; }
 		}
 		
 		private PositionedGraphNode containingNode;
@@ -52,26 +60,36 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// e.g. "Age"
 		/// </summary>
-		public string Name { get { return this.objectProperty.Name; } }
+		public string Name { get { return this.objectGraphProperty.Name; } }
 		
 		/// <summary>
 		/// e.g. "19"
 		/// </summary>
-		public string Value { get { return this.objectProperty.Value; } }
+		public string Value { get { return this.objectGraphProperty.Value; } }
 		
 		/// <summary>
 		/// Full Debugger expression used to obtain value of this property.
 		/// </summary>
-		public Debugger.Expressions.Expression Expression { get { return this.objectProperty.Expression; } }
+		public Debugger.Expressions.Expression Expression { get { return this.objectGraphProperty.Expression; } }
 		
 		/// <summary>
         /// Is this property of atomic type? (int, string, etc.)
         /// </summary>
-		public bool IsAtomic { get { return this.objectProperty.IsAtomic; } }
+		public bool IsAtomic { get { return this.objectGraphProperty.IsAtomic; } }
 		
 		/// <summary>
         /// Is the value of this property null?
         /// </summary>
-		public bool IsNull { get { return this.objectProperty.IsNull; } }
+		public bool IsNull { get { return this.objectGraphProperty.IsNull; } }
+		
+		public bool IsEvaluated
+		{
+			get { return this.objectGraphProperty.IsEvaluated; }
+		}
+		
+		public void Evaluate()
+		{
+			this.objectGraphProperty.Evaluate();
+		}
 	}
 }

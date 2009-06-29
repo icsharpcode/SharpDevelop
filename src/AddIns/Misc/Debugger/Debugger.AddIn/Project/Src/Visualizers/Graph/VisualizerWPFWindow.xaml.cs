@@ -153,7 +153,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			
 			// add edge (+ possibly nodes) to underlying object graph (no need to rebuild)
 			// TODO can add more nodes if they are expanded - now this adds always one node
-			e.Property.ObjectProperty.TargetNode = this.objectGraphBuilder.ObtainNodeForExpression(e.Property.Expression);
+			e.Property.ObjectGraphProperty.TargetNode = this.objectGraphBuilder.ObtainNodeForExpression(e.Property.Expression);
 			layoutGraph(this.objectGraph);
 		}
 		
@@ -163,7 +163,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			expandedNodes.SetCollapsed(e.Property.Expression.Code);
 			
 			// just remove edge from underlying object graph (no need to rebuild)
-			e.Property.ObjectProperty.TargetNode = null;
+			e.Property.ObjectGraphProperty.TargetNode = null;
 			layoutGraph(this.objectGraph);
 		}
 	}

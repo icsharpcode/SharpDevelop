@@ -21,6 +21,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 	/// </summary>
 	public partial class PositionedGraphNodeControl : UserControl
 	{
+		/// <summary>
+		/// Occurs when a <see cref="PositionedNodeProperty"/> is expanded.
+		/// </summary>
+		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
+		/// <summary>
+		/// Occurs when a <see cref="PositionedNodeProperty"/> is collaped.
+		/// </summary>
+		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
+		
 		public PositionedGraphNodeControl()
 		{
 			InitializeComponent();

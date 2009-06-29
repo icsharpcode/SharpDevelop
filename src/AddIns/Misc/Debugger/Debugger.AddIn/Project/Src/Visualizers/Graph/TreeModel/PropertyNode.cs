@@ -10,9 +10,9 @@ using System;
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Node containing ObjectGraphProperty, with lazy evaluation.
+	/// Node containing ObjectGraphProperty.
 	/// </summary>
-	public class PropertyNode : AbstractNode, IEvaluate
+	public class PropertyNode : AbstractNode
 	{
 		public PropertyNode(ObjectGraphProperty objectGraphProperty)
 		{
@@ -27,27 +27,5 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			get { return this.property; }
 		}
-		
-		#region IEvaluate members
-		
-		bool evaluateCalled = false;
-		public bool IsEvaluated
-		{
-			get { return this.evaluateCalled; }
-		}
-		
-		public void Evaluate()
-		{
-			if (this.Property.Expression == null)
-			{
-				throw new DebuggerVisualizerException("Cannot evaluate property with missing Expression");
-			}
-			this.Property.Value = 
-				this.Property.Expression.Evaluate(WindowsDebugger.CurrentProcess).InvokeToString();
-			
-			this.evaluateCalled = true;
-		}
-		
-		#endregion
 	}
 }
