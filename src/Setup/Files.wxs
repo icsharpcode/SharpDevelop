@@ -1312,6 +1312,17 @@
 										<Component Guid="2B8CBE37-D71F-435C-9B26-70FF69451A6E" Id="MicrosoftScriptingExtensionAttributeDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.ExtensionAttribute.dll" Name="Microsoft.Scripting.ExtensionAttribute.dll" Id="Microsoft.Scripting.ExtensionAttribute.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.ExtensionAttribute.dll" />
 										</Component>
+										<Directory Id="PythonLib" Name="Lib">
+											<Component Guid="98D4136A-897A-479A-AD50-E89600C5016D" Id="PythonBindingLibRunpyPy" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Lib\runpy.py" Name="runpy.py" Id="runpy.py" KeyPath="yes" />
+											</Component>
+											<Component Guid="E091A881-9015-47A6-ADBE-EAA87A5171C3" Id="PythonBindingLibSitePy" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Lib\site.py" Name="site.py" Id="site.py" KeyPath="yes" />
+											</Component>
+											<Component Guid="240EC6F6-6377-4840-A1C9-BDC15F653669" Id="PythonBindingLibFuturePy" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Lib\__future__.py" Name="__future__.py" Id="__future__.py" KeyPath="yes" />
+											</Component>
+										</Directory>
 									</Directory>
 									<Directory Id="FSharpBinding" Name="FSharpBinding">
 										<Component Guid="6B4F28AF-133C-4FEB-98DB-67A5405AEB12" Id="FSharpBindingAddin" DiskId="1">

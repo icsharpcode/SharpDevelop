@@ -421,7 +421,10 @@
 				<ComponentRef Id="MicrosoftScriptingExtensionAttributeDll"/>	
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	
-				<ComponentRef Id="PythonBindingDll"/>	
+				<ComponentRef Id="PythonBindingDll"/>
+				<ComponentRef Id="PythonBindingLibRunpyPy"/>
+				<ComponentRef Id="PythonBindingLibSitePy"/>
+				<ComponentRef Id="PythonBindingLibFuturePy"/>
 				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>				
 
 				<ComponentRef Id="FSharpBindingDll"/>

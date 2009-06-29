@@ -115,6 +115,15 @@
     <Compile Include="Src\StandardPythonModules.cs" />
     <Compile Include="Src\PythonVariableResolver.cs" />
     <Compile Include="Src\TextEditor.cs" />
+    <None Include="Lib\runpy.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Lib\site.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Lib\__future__.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="PythonBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -145,6 +154,7 @@
     <EmbeddedResource Include="Resources\Python.xshd" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Lib" />
     <Folder Include="Templates" />
     <Folder Include="Resources" />
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
