@@ -124,12 +124,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			commandBindingInfo.RoutedCommandName = "SDWindowCommands.SplitView";
 			commandBindingInfo.ExecutedEventHandler = OnSplitView;
 			commandBindingInfo.CanExecuteEventHandler = OnCanSplitView;
-			
-			commandBindingInfo.Name = "CodeEditorCommandBinding";
 			CommandManager.RegisterCommandBinding(commandBindingInfo);
 		}
 			
-		
 		public CodeEditor()
 		{
 			textMarkerService = new TextMarkerService(this);

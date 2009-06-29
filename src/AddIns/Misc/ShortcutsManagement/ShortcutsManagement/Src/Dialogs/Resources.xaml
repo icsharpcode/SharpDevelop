@@ -98,7 +98,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TreeViewItem">
-                    <Border Name="OuterBorder" BorderThickness="2" CornerRadius="8" Margin="20,0,0,0">
+                    <Border Name="OuterBorder" BorderThickness="2" CornerRadius="8">
                         <StackPanel>
                             <Border Name="InnerBorder" Background="White" BorderThickness="0.6" CornerRadius="8" Padding="0,6,6,6" >
                                 <Grid>
@@ -110,7 +110,9 @@
                                     <ContentPresenter Name="PART_Header" ContentSource="Header" VerticalAlignment="Center"  Grid.Column="1" />
                                 </Grid>
                             </Border>
-                            <ItemsPresenter x:Name="ItemsHost" />
+                            <Border Name="ItemsBorder" Margin="20,0,0,0" >
+                                <ItemsPresenter x:Name="ItemsHost" />
+                            </Border>
                         </StackPanel>
                     </Border>
                     <ControlTemplate.Triggers>

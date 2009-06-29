@@ -19,41 +19,12 @@ namespace ICSharpCode.Core.Presentation
 		}
 
 		
-		public static bool ContainsCopy(this InputGestureCollection gestures, InputGesture searchedGesture) {
-			var searchedMultiKeyGesture = searchedGesture as MultiKeyGesture;
-			var searchedKeyGesture = searchedGesture as KeyGesture;
-			var searchedMouseGesture = searchedGesture as MouseGesture;
-			
-			foreach(var gesture in gestures) {
-				if(searchedMultiKeyGesture != null) {
-					var multiKeyGesture = gesture as MultiKeyGesture;
-					if(multiKeyGesture != null && multiKeyGesture.Chords != null && searchedMultiKeyGesture.Chords != null && multiKeyGesture.Chords.Count == searchedMultiKeyGesture.Chords.Count) {
-						var foundMatch = true;
-						foreach(var partialGesture in multiKeyGesture.Chords) {
-							foreach(var searchedPartialGesture in searchedMultiKeyGesture.Chords) {
-								if(partialGesture.Key != searchedPartialGesture.Key || partialGesture.Modifiers != searchedPartialGesture.Modifiers) {
-									foundMatch = false;
-									break;
-								}
-							}
-						}
-						
-						if(foundMatch) {
-							return true;
-						}
-					}
-				} else if(searchedKeyGesture != null) {
-					var keyGesture = gesture as KeyGesture;
-					if(keyGesture != null && keyGesture.Key == searchedKeyGesture.Key && keyGesture.Modifiers == searchedKeyGesture.Modifiers) {
-						return true;
-					}
-				} else if(searchedMouseGesture != null) {
-					var mouseGesture = gesture as MouseGesture;
-					if(mouseGesture != null && mouseGesture.MouseAction == searchedMouseGesture.MouseAction && mouseGesture.Modifiers == searchedMouseGesture.Modifiers) {
-						return true;
-					}
-				}
-			}
+		public static bool ContainsTemplateFor(this InputGestureCollection inputGestureTemplateCollection, InputGesture testedGesture, GestureCompareMode mode) {
+			foreach (InputGesture template in inputGestureTemplateCollection) {
+	            if (template.IsTemplateFor(testedGesture, mode)) {
+	                return true;
+	            }   
+	        }
 			
 			return false;
 		}

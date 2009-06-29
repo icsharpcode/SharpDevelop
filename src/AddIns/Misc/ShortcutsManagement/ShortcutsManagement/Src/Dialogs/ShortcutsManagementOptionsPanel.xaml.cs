@@ -32,8 +32,136 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 
         public void LoadOptions()
         {
+            var rootEntries = GetCategoryRootEntries();
+
+            new ShortcutsFinder(rootEntries).Filter("");
+            shortcutsManagementOptionsPanel.DataContext = rootEntries;
+        }
+
+
+        private List<IShortcutTreeEntry> GetCategoryRootEntries()
+        {
             // Root shortcut tree entries
-            var rootEntries = new List<IShortcutTreeEntry>(); 
+            var rootEntries = new List<IShortcutTreeEntry>();
+
+            // Stores SD input binding category to category section convertion map
+            var categoriesMap = new Dictionary<InputBindingCategory, ShortcutCategory>();
+
+            var unspecifiedCategory = new ShortcutCategory("Uncategorized");
+            rootEntries.Add(unspecifiedCategory);
+
+            // Go through all input bindings
+            var inputBindingInfos = CommandManager.FindInputBindingInfos(null, null, null);
+            foreach (var inputBindingInfo in inputBindingInfos)
+            {
+                // Find appropriate or create new category sections within add-in section for input binding
+                var shortcutCategorySections = new List<ShortcutCategory>();
+                if (inputBindingInfo.Categories.Count == 0)
+                {
+                    // If no category specified assign to "Uncotegorized" category
+                    shortcutCategorySections.Add(unspecifiedCategory);
+                }
+                else
+                {
+                    // Go throu all categories and find or create appropriate category sections
+                    foreach (var bindingCategory in inputBindingInfo.Categories)
+                    {
+                        ShortcutCategory categorySection;
+                        if (categoriesMap.ContainsKey(bindingCategory))
+                        {
+                            // If found appropriate category assign shortcut to it
+                            categorySection = categoriesMap[bindingCategory];
+                        }
+                        else
+                        {
+                            // Create appropriate category section and root category sections
+
+                            // Create direct category to which shortcut will be assigned
+                            var categoryName = StringParser.Parse(bindingCategory.Name);
+                            categoryName = Regex.Replace(categoryName, @"&([^\s])", @"$1");
+                            categorySection = new ShortcutCategory(categoryName);
+                            categoriesMap.Add(bindingCategory, categorySection);
+
+                            // Go down to root level and create all parent categories
+                            var currentBindingCategory = bindingCategory;
+                            var currentShortcutCategory = categorySection;
+                            while (currentBindingCategory.ParentCategory != null)
+                            {
+                                ShortcutCategory parentCategorySection;
+
+                                if (!categoriesMap.ContainsKey(currentBindingCategory.ParentCategory))
+                                {
+                                    // Create parent category section if it's not created yet
+                                    var parentCategoryName = StringParser.Parse(currentBindingCategory.ParentCategory.Name);
+                                    parentCategorySection = new ShortcutCategory(parentCategoryName);
+
+                                    categoriesMap.Add(currentBindingCategory.ParentCategory, parentCategorySection);
+                                }
+                                else
+                                {
+                                    // Use existing category section as parent category section
+                                    parentCategorySection = categoriesMap[currentBindingCategory.ParentCategory];
+                                }
+
+                                // Add current category section to root category section children
+                                if (!parentCategorySection.SubCategories.Contains(currentShortcutCategory))
+                                {
+                                    parentCategorySection.SubCategories.Add(currentShortcutCategory);
+                                }
+
+                                currentShortcutCategory = parentCategorySection;
+                                currentBindingCategory = currentBindingCategory.ParentCategory;
+                            }
+
+                            // Add root category section to add-in categories list
+                            if (!rootEntries.Contains(currentShortcutCategory))
+                            {
+                                rootEntries.Add(currentShortcutCategory);
+                            }
+                        }
+
+                        shortcutCategorySections.Add(categorySection);
+                    }
+                }
+
+                // Get shortcut entry text. Normaly shortcut entry text is equalt to routed command text
+                // but this value can be overriden through InputBindingInfo.RoutedCommandText value
+                var shortcutText = inputBindingInfo.RoutedCommand.Text;
+                if (!string.IsNullOrEmpty(inputBindingInfo.RoutedCommandText))
+                {
+                    shortcutText = inputBindingInfo.RoutedCommandText;
+                }
+
+                shortcutText = StringParser.Parse(shortcutText);
+
+                // Some commands have "&" sign to mark alternative key used to call this command from menu
+                // Strip this sign from shortcut entry text
+                shortcutText = Regex.Replace(shortcutText, @"&([^\s])", @"$1");
+
+                var shortcut = new Shortcut(shortcutText, inputBindingInfo.Gestures);
+
+                // Assign shortcut to all categories it is registered in
+                foreach (var categorySection in shortcutCategorySections)
+                {
+                    categorySection.Shortcuts.Add(shortcut);
+                }
+
+                shortcutsMap.Add(shortcut, inputBindingInfo);
+            }
+
+            rootEntries.Sort();
+            foreach (var entry in rootEntries)
+            {
+                entry.SortSubEntries();
+            }
+
+            return rootEntries;
+        }
+
+        private List<IShortcutTreeEntry> GetAddinRootEntries()
+        {
+            // Root shortcut tree entries
+            var rootEntries = new List<IShortcutTreeEntry>();
 
             // Stores SD add-in to add-in section convertion map
             var addInsMap = new Dictionary<AddIn, ShortcutManagement.AddIn>();
@@ -47,15 +175,21 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             rootEntries.Add(unspecifiedAddInSection);
 
             // Go through all input bindings
-            var inputBindingInfos = CommandManager.FindInputBindingInfos(null, null, null, null, null);
-            foreach(var inputBindingInfo in inputBindingInfos) {
+            var inputBindingInfos = CommandManager.FindInputBindingInfos(null, null, null);
+            foreach (var inputBindingInfo in inputBindingInfos)
+            {
                 // Find appropriate or create new add-in section for input binding
                 ShortcutManagement.AddIn addinSection;
-                if (inputBindingInfo.AddIn == null) {
+                if (inputBindingInfo.AddIn == null)
+                {
                     addinSection = unspecifiedAddInSection;
-                } else if (addInsMap.ContainsKey(inputBindingInfo.AddIn)) {
+                }
+                else if (addInsMap.ContainsKey(inputBindingInfo.AddIn))
+                {
                     addinSection = addInsMap[inputBindingInfo.AddIn];
-                } else {
+                }
+                else
+                {
                     addinSection = new ShortcutManagement.AddIn(inputBindingInfo.AddIn.Name);
                     addinSection.Categories.Add(new ShortcutCategory(StringParser.Parse("${res:ShortcutsManagement.UnspecifiedCategoryName}")));
                     addInsMap.Add(inputBindingInfo.AddIn, addinSection);
@@ -65,43 +199,56 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 
                 // Find appropriate or create new category sections within add-in section for input binding
                 var shortcutCategorySections = new List<ShortcutCategory>();
-                if (inputBindingInfo.Categories.Count == 0) {
+                if (inputBindingInfo.Categories.Count == 0)
+                {
                     // If no category specified assign to "Uncotegorized" category
                     shortcutCategorySections.Add(addinSection.Categories[0]);
-                } else {
+                }
+                else
+                {
                     // Go throu all categories and find or create appropriate category sections
-                    foreach (var bindingCategory in inputBindingInfo.Categories) {
+                    foreach (var bindingCategory in inputBindingInfo.Categories)
+                    {
                         ShortcutCategory categorySection;
-                        if (categoriesMap[addinSection].ContainsKey(bindingCategory)) {
+                        if (categoriesMap[addinSection].ContainsKey(bindingCategory))
+                        {
                             // If found appropriate category assign shortcut to it
                             categorySection = categoriesMap[addinSection][bindingCategory];
-                        } else {
+                        }
+                        else
+                        {
                             // Create appropriate category section and root category sections
-                            
+
                             // Create direct category to which shortcut will be assigned
                             var categoryName = StringParser.Parse(bindingCategory.Name);
+                            categoryName = Regex.Replace(categoryName, @"&([^\s])", @"$1");
                             categorySection = new ShortcutCategory(categoryName);
                             categoriesMap[addinSection].Add(bindingCategory, categorySection);
 
                             // Go down to root level and create all parent categories
                             var currentBindingCategory = bindingCategory;
                             var currentShortcutCategory = categorySection;
-                            while (currentBindingCategory.ParentCategory != null) {
+                            while (currentBindingCategory.ParentCategory != null)
+                            {
                                 ShortcutCategory parentCategorySection;
 
-                                if (!categoriesMap[addinSection].ContainsKey(currentBindingCategory.ParentCategory)) {
+                                if (!categoriesMap[addinSection].ContainsKey(currentBindingCategory.ParentCategory))
+                                {
                                     // Create parent category section if it's not created yet
                                     var parentCategoryName = StringParser.Parse(currentBindingCategory.ParentCategory.Name);
                                     parentCategorySection = new ShortcutCategory(parentCategoryName);
 
                                     categoriesMap[addinSection].Add(currentBindingCategory.ParentCategory, parentCategorySection);
-                                } else {
+                                }
+                                else
+                                {
                                     // Use existing category section as parent category section
                                     parentCategorySection = categoriesMap[addinSection][currentBindingCategory.ParentCategory];
                                 }
 
                                 // Add current category section to root category section children
-                                if (!parentCategorySection.SubCategories.Contains(currentShortcutCategory)) {
+                                if (!parentCategorySection.SubCategories.Contains(currentShortcutCategory))
+                                {
                                     parentCategorySection.SubCategories.Add(currentShortcutCategory);
                                 }
 
@@ -110,7 +257,8 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                             }
 
                             // Add root category section to add-in categories list
-                            if (!addinSection.Categories.Contains(currentShortcutCategory)) {
+                            if (!addinSection.Categories.Contains(currentShortcutCategory))
+                            {
                                 addinSection.Categories.Add(currentShortcutCategory);
                             }
                         }
@@ -122,7 +270,8 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 // Get shortcut entry text. Normaly shortcut entry text is equalt to routed command text
                 // but this value can be overriden through InputBindingInfo.RoutedCommandText value
                 var shortcutText = inputBindingInfo.RoutedCommand.Text;
-                if (!string.IsNullOrEmpty(inputBindingInfo.RoutedCommandText)) {
+                if (!string.IsNullOrEmpty(inputBindingInfo.RoutedCommandText))
+                {
                     shortcutText = inputBindingInfo.RoutedCommandText;
                 }
 
@@ -133,13 +282,14 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 shortcutText = Regex.Replace(shortcutText, @"&([^\s])", @"$1");
 
                 var shortcut = new Shortcut(shortcutText, inputBindingInfo.Gestures);
-                
+
                 // Assign shortcut to all categories it is registered in
-                foreach (var categorySection in shortcutCategorySections) {
+                foreach (var categorySection in shortcutCategorySections)
+                {
                     categorySection.Shortcuts.Add(shortcut);
                 }
 
-                shortcutsMap.Add(shortcut, inputBindingInfo);                
+                shortcutsMap.Add(shortcut, inputBindingInfo);
             }
 
             rootEntries.Sort();
@@ -148,8 +298,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 entry.SortSubEntries();
             }
 
-            new ShortcutsFinder(rootEntries).Filter("");
-            shortcutsManagementOptionsPanel.DataContext = rootEntries;
+            return rootEntries;
         }
 
         public bool SaveOptions() 
@@ -160,7 +309,11 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 
                 if (inputBindingInfo.Gestures.Count == shortcut.Gestures.Count) {
                     foreach (var gesture in shortcut.Gestures) {
-                        inputBindingInfo.Gestures.ContainsCopy(gesture);
+                        if(!inputBindingInfo.Gestures.ContainsTemplateFor(gesture, GestureCompareMode.ExactlyMatches))
+                        {
+                            inputBindingInfo.IsModifyed = true;
+                            break;
+                        }
                     }
                 } else {
                     inputBindingInfo.IsModifyed = true;

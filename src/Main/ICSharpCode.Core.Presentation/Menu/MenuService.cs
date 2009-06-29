@@ -94,7 +94,10 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static IList CreateMenuItems(UIElement inputBindingOwner, object owner, string addInTreePath)
 		{
-			return ExpandMenuBuilders(CreateUnexpandedMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false)));
+			var menuItemDescriptors = AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false);
+			var menuItems = CreateUnexpandedMenuItems(inputBindingOwner, menuItemDescriptors);
+			
+			return ExpandMenuBuilders(menuItems);
 		}
 		
 		sealed class MenuItemBuilderPlaceholder
@@ -198,13 +201,5 @@ namespace ICSharpCode.Core.Presentation
 		
 		// HACK: find a better way to allow the host app to process link commands
 		public static Converter<string, ICommand> LinkCommandCreator { get; set; }
-		
-		/// <summary>
-		/// Creates an KeyGesture for a shortcut.
-		/// </summary>
-		public static KeyGesture ParseShortcut(string text)
-		{
-			return (KeyGesture)new KeyGestureConverter().ConvertFromInvariantString(text.Replace(',', '+').Replace('|', '+'));
-		}
 	}
 }

@@ -22,15 +22,6 @@ namespace ICSharpCode.Core.Presentation
 			Categories = new List<InputBindingCategory>();
 		}
 		
-		/// <summary>
-		/// Command binding info name
-		/// 
-		/// The name should be unique to register command binding
-		/// </summary>
-		public string Name {
-			get; set;
-		}
-		
 		public string ownerInstanceName;
 		
 		/// <summary>
@@ -69,13 +60,6 @@ namespace ICSharpCode.Core.Presentation
 				}
 				
 				return ownerInstance;
-			}
-			set {
-				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
-					throw new ArgumentException("This binding already has an owner");
-				}
-				
-				ownerInstance = value;
 			}
 		}
 					
@@ -146,11 +130,22 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 	
+		private InputGestureCollection _gestures;
+		
 		/// <summary>
 		/// Gestures which triggers this binding
 		/// </summary>
 		public InputGestureCollection Gestures { 
-			get; set; 
+			get {
+				if(_gestures == null) {
+					return new InputGestureCollection();
+				}
+				
+				return _gestures;
+			}
+			set {
+				_gestures = value;
+			}
 		}
 		
 		/// <summary>
@@ -192,9 +187,11 @@ namespace ICSharpCode.Core.Presentation
 			OldInputBindings = NewInputBindings;
 			
 			NewInputBindings = new InputBindingCollection();
-			foreach(InputGesture gesture in Gestures) {
-				var inputBinding = new InputBinding(RoutedCommand, gesture);
-				NewInputBindings.Add(inputBinding);
+			if(Gestures != null) {
+				foreach(InputGesture gesture in Gestures) {
+					var inputBinding = new InputBinding(RoutedCommand, gesture);
+					NewInputBindings.Add(inputBinding);
+				}
 			}
 		}
 		

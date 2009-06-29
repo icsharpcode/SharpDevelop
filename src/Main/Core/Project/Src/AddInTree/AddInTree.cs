@@ -31,6 +31,7 @@ namespace ICSharpCode.Core
 			doozers.Add("String", new StringDoozer());
 			doozers.Add("Icon", new IconDoozer());
 			doozers.Add("MenuItem", new MenuItemDoozer());
+			doozers.Add("MenuRoot", new MenuRootDoozer());
 			doozers.Add("ToolbarItem", new ToolbarItemDoozer());
 			doozers.Add("Include", new IncludeDoozer());
 			doozers.Add("InputBinding", new InputBindingDoozer());

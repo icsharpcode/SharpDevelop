@@ -76,15 +76,15 @@ namespace ICSharpCode.Core.WinForms
 			
 			UpdateText();
 			
-			GesturePlaceHolderRegistry.RegisterPlaceHolder(codon.Properties["class"], StringParser.Parse(codon.Properties["label"]));
-			GesturePlaceHolderRegistry.RegisterUpdateHandler(codon.Properties["class"], delegate {
-			                                                          	ShortcutKeys = GesturePlaceHolderRegistry.GetGestures(codon.Properties["class"])[0];
-			                                           });
-			GesturePlaceHolderRegistry.InvokeUpdateHandlers(codon.Properties["class"]);
+			// GesturePlaceHolderRegistry.RegisterPlaceHolder(codon.Properties["class"], StringParser.Parse(codon.Properties["label"]));
+			// GesturePlaceHolderRegistry.RegisterUpdateHandler(codon.Properties["class"], delegate {
+			//                                                           	ShortcutKeys = GesturePlaceHolderRegistry.GetGestures(codon.Properties["class"])[0];
+			//                                            });
+			// GesturePlaceHolderRegistry.InvokeUpdateHandlers(codon.Properties["class"]);
 			
-			if (codon.Properties.Contains("shortcut")) {
-				GesturePlaceHolderRegistry.InvokeUpdateHandlers(codon.Properties["class"]);
-			}
+			// if (codon.Properties.Contains("shortcut")) {
+			// 	GesturePlaceHolderRegistry.InvokeUpdateHandlers(codon.Properties["class"]);
+			// }
 		}
 		
 		public MenuCommand(string label, EventHandler handler) : this(label)

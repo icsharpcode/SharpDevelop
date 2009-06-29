@@ -202,16 +202,47 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class ToolMenuBuilder : IMenuItemBuilder
 	{
+		private bool bindingsAssigned = false;
+		
 		public ICollection BuildItems(Codon codon, object owner)
 		{
 			var items = new System.Windows.Controls.MenuItem[ToolLoader.Tool.Count];
 			for (int i = 0; i < ToolLoader.Tool.Count; ++i) {
 				ExternalTool tool = ToolLoader.Tool[i];
-				items[i] = new System.Windows.Controls.MenuItem {
-					Header = tool.ToString()
-				};
-				items[i].Click += delegate { RunTool(tool); };
+				items[i] = new System.Windows.Controls.MenuItem();
+				
+				var routedCommandName = "SDToolsCommands.RunExternalTool_" + tool.ToString();
+				var routedCommandText = MenuService.ConvertLabel(StringParser.Parse(tool.ToString()));
+				
+				if(!bindingsAssigned) {
+					var addIn = AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop");
+					
+					// Dynamicaly create routed UI command to loaded pad and bindings for it
+					CommandManager.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+					
+					var commandBindingInfo = new CommandBindingInfo();
+					commandBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
+					commandBindingInfo.RoutedCommandName = routedCommandName;
+					commandBindingInfo.CanExecuteEventHandler = delegate(object sender, CanExecuteRoutedEventArgs e) { e.CanExecute = true; };
+					commandBindingInfo.ExecutedEventHandler = delegate { RunTool(tool); };
+					CommandManager.RegisterCommandBinding(commandBindingInfo);
+					
+					var inputBindingInfo = new InputBindingInfo();
+					inputBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
+					inputBindingInfo.RoutedCommandName = routedCommandName;
+					inputBindingInfo.Categories.AddRange(CommandManager.RegisterInputBindingCategories("Main Menu/${res:XML.MainMenu.ToolMenu}/External tools"));
+					CommandManager.RegisterInputBinding(inputBindingInfo);
+				}		
+				
+				var updatedGestures = CommandManager.FindInputGestures(CommandManager.DefaultContextName, null, routedCommandName);
+				var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+				items[i].InputGestureText = updatedGesturesText;					
+				items[i].Command = CommandManager.GetRoutedUICommand(routedCommandName);
+				items[i].Header = StringParser.Parse(tool.ToString());
 			}
+								
+			bindingsAssigned = true;
+			
 			return items;
 		}
 		
@@ -488,10 +519,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						commandBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
 						commandBindingInfo.RoutedCommandName = routedCommandName;
 						commandBindingInfo.AddIn = addIn;
-							
-						commandBindingInfo.Name = "ViewMenuCommandBinding_" + routedCommandName + "_" + routedCommandName + "_" + addIn.Name + "_" + CommandManager.DefaultContextName;
 						CommandManager.RegisterCommandBinding(commandBindingInfo);
-						
 						
 						var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(padContent.Shortcut);
 						
@@ -499,10 +527,10 @@ namespace ICSharpCode.SharpDevelop.Commands
 						inputBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
 						inputBindingInfo.RoutedCommandName = routedCommandName;
 						inputBindingInfo.Gestures = gestures;
-						inputBindingInfo.Categories.AddRange(CommandManager.RegisterInputBindingCategories("Menu Items/Views"));
-						inputBindingInfo.AddIn = addIn;
 						
-						inputBindingInfo.Name = "ViewMenuInputBinding_" + routedCommandName + "_" + routedCommandName + "_" + addIn.Name + "_" + CommandManager.DefaultContextName;
+						var menuPath = "Main Menu/${res:XML.MainMenu.ViewMenu}" + (padContent.Category == "Main" ? "" : "/" + padContent.Title);
+						inputBindingInfo.Categories.AddRange(CommandManager.RegisterInputBindingCategories(menuPath));
+						inputBindingInfo.AddIn = addIn;
 						CommandManager.RegisterInputBinding(inputBindingInfo);
 						
 						bindingsAssigned.Add(routedCommandName);
@@ -510,18 +538,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 					
 					item.Command = CommandManager.GetRoutedUICommand(routedCommandName);
 					
-					var updatedGestures = CommandManager.FindInputGestures(CommandManager.DefaultContextName, null, null, null, routedCommandName);
+					var updatedGestures = CommandManager.FindInputGestures(CommandManager.DefaultContextName, null, routedCommandName);
 					var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 					item.InputGestureText = updatedGesturesText;
-					
-//					item.Command = new BringPadToFrontCommand(padContent);
-//					if (!string.IsNullOrEmpty(padContent.Shortcut)) {
-//						var kg = Core.Presentation.MenuService.ParseShortcut(padContent.Shortcut);
-//						WorkbenchSingleton.MainWindow.InputBindings.Add(
-//							new System.Windows.Input.InputBinding(item.Command, kg)
-//						);
-//						item.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
-//					}
 					
 					list.Add(item);
 				}

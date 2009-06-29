@@ -67,6 +67,22 @@
 		</Categoru>
 	</Path>
 		
+	<Path name="/SharpDevelop/MenuLocations">
+		<MenuRoot path="/SharpDevelop/Workbench/MainMenu" 													name="Main Menu" />
+		
+		<MenuRoot path="/SharpDevelop/Workbench/OpenFileTab/ContextMenu" 									name="Context menus/Tabs" />
+	
+		<MenuRoot path="/SharpDevelop/ViewContent/AvalonEdit/ContextMenu" 									name="Context menus/Text Editor" />
+		<MenuRoot path="/SharpDevelop/ViewContent/TextEditor/ContextMenu" 									name="Context menus/Text Editor" />
+		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu" 				name="Context menus/Text Editor" />
+		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu" 				name="Context menus/Text Editor" />
+		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common" 					name="Context menus/Text Editor/Refactoring" />
+		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Parameter" 					name="Context menus/Text Editor/Refactoring" />
+		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariable" 				name="Context menus/Text Editor/Refactoring" />
+		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition" 		name="Context menus/Text Editor/Refactoring" />
+		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariableDefinition" 	name="Context menus/Text Editor/Refactoring" />
+	</Path>
+	
 	
 	<Path name="/SharpDevelop/Workbench/RoutedUICommands">
 		<RoutedUICommand name="SDTestCommands.Test" text="Create new file" />
@@ -270,6 +286,7 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/InputBindings">
+	
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -495,6 +512,7 @@
 		<Include id="CutPasteRemoveRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutPasteRemoveRename"/>
 	</Path>
 	
+	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionItemNode">
 		<MenuItem id = "OpenFile"
 		          label = "${res:ProjectComponent.ContextMenu.Open}"
@@ -507,6 +525,7 @@
 		<MenuItem id = "OpenSeparator" type = "Separator" />
 		<Include id="CutCopyRemoveRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyRemoveRename"/>
 	</Path>
+	
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
 		<MenuItem id = "Build project"
@@ -729,6 +748,7 @@
 		          shortcut = "F2"
 		          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
 	</Path>
+	
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyPasteDeleteRename">
 		<MenuItem id = "Cut"
@@ -1786,7 +1806,7 @@
 					<MenuItem id       = "Step out"
 					          label    = "${res:XML.MainMenu.DebugMenu.StepOut}"
 					          icon     = "Icons.16x16.Debug.StepOut"
-					          shortcut = "Shift|F11"
+					          shortcut = "Shift+F11"
 					          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"
 					          command  = "SDDebugCommands.StepOut" />
 				</Condition>
@@ -1810,22 +1830,22 @@
 		<MenuItem id = "Search" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
 			<MenuItem id = "SearchIncremental"
 			          label = "${res:XML.MainMenu.SearchMenu.IncrementalSearch}"
-			          shortcut = "Control|E"
+			          shortcut = "Ctrl+E"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunIncrementalSearch"/>
 			<MenuItem id = "SearchReverseIncremental"
 			          label = "${res:XML.MainMenu.SearchMenu.ReverseIncrementalSearch}"
-			          shortcut = "Control|Shift|E"
+			          shortcut = "Ctrl+Shift+E"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunReverseIncrementalSearch"/>
 			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
 			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
 			<MenuItem id = "ToggleBookmark"
 			          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
-			          shortcut = "Control|F2"
+			          shortcut = "Ctrl+F2"
 			          icon = "Bookmarks.ToggleMark"
 			          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
 			<MenuItem id = "PrevBookmark"
 			          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
-			          shortcut = "Alt|F2"
+			          shortcut = "Alt+F2"
 			          icon = "Bookmarks.GotoPrevInFile"
 			          class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
 			<MenuItem id = "NextBookmark"
@@ -1840,12 +1860,12 @@
 			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "GotoLineNr"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"
-			          shortcut = "Control|G"
+			          shortcut = "Ctrl+G"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"/>
 			<MenuItem id = "Separator3" type = "Separator" />
 			<MenuItem id = "GotoBrace"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
-			          shortcut = "Control|B"
+			          shortcut = "Ctrl+B"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace"/>
 			<!--			</Condition> -->
 		</MenuItem>
@@ -1895,7 +1915,8 @@
 			<MenuItem id = "Options"
 			          label = "${res:XML.MainMenu.ToolMenu.Options}"
 			          icon = "Icons.16x16.Options"
-			          class = "ICSharpCode.SharpDevelop.Commands.OptionsCommand"/>
+			          class = "ICSharpCode.SharpDevelop.Commands.OptionsCommand"
+			          shortcut = "Ctrl+OemComma" />
 		</MenuItem> <!-- end TOOLS menu -->
 		
 		<MenuItem id = "Window" label = "${res:XML.MainMenu.WindowMenu}" type="Menu">
@@ -1908,7 +1929,7 @@
 				<MenuItem id = "PrevWindow"
 				          label = "${res:XML.MainMenu.WindowMenu.PrvWindow}"
 				          icon = "Icons.16x16.PrevWindowIcon"
-				          shortcut = "Shift|Control|Tab"
+				          shortcut = "Ctrl+Shift+Tab"
 				          class = "ICSharpCode.SharpDevelop.Commands.SelectPrevWindow" />
 				<MenuItem id ="NxtPrvSeparator" type = "Separator" />
 				<MenuItem id = "SplitView"
@@ -2181,15 +2202,15 @@
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
 				<MenuItem id          = "ToggleFolding"
 				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
-				          shortcut    = "Shift|Control|M"
+				          shortcut    = "Ctrl+Shift+M"
 				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToggleFolding"/>
 				<MenuItem id          = "ToggleAllFoldings"
 				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings}"
-				          shortcut    = "Shift|Control|L"
+				          shortcut    = "Ctrl+Shift+L"
 				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToggleAllFoldings"/>
 				<MenuItem id          = "ShowDefinitionsOnly"
 				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ShowDefinitions}"
-				          shortcut    = "Shift|Control|P"
+				          shortcut    = "Ctrl+Shift+P"
 				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowDefinitionsOnly"/>
 			</Condition>
 		</MenuItem>
@@ -2279,9 +2300,9 @@
 	            they're used for the standalone version too, only put keys in the
 	            tree that are sharpdevelop specific, general keys put into TextAreaControl.GenerateDefaultActions --> 
 	<Path name = "/AddIns/DefaultTextEditor/EditActions">
-		<EditAction id = "TemplateCompletion"  class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.TemplateCompletion"  keys = "Control|J"/>
-		<EditAction id = "CodeCompletionPopup" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.CodeCompletionPopup"  keys = "Control|Space"/>
-		<EditAction id = "GoToDefinition"      class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.GoToDefinition"  keys = "Control|Enter"/>
+		<EditAction id = "TemplateCompletion"  class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.TemplateCompletion"  keys = "Ctrl+J"/>
+		<EditAction id = "CodeCompletionPopup" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.CodeCompletionPopup"  keys = "Ctrl+Space"/>
+		<EditAction id = "GoToDefinition"      class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.GoToDefinition"  keys = "Ctrl+Enter"/>
 		<EditAction id = "ExpandTemplateAction" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.ExpandTemplateAction"  keys = "Tab"/>
 	</Path>
 	

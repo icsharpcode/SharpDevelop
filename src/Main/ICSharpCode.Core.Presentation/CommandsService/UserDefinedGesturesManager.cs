@@ -25,9 +25,9 @@ namespace ICSharpCode.Core.Presentation
 			foreach(var definedGestures in userDefinedGestures) {
 				var bindingInfoNode = xmlDocument.CreateElement("InputBindingInfo");
 				
-				var nameAttribute = xmlDocument.CreateAttribute("name");
-				nameAttribute.Value = definedGestures.Key;
-				bindingInfoNode.Attributes.Append(nameAttribute);
+				var idAttribute = xmlDocument.CreateAttribute("id");
+				idAttribute.Value = definedGestures.Key;
+				bindingInfoNode.Attributes.Append(idAttribute);
 				
 				var gesturesAttribute = xmlDocument.CreateAttribute("gestures");
 				gesturesAttribute.Value = new InputGestureCollectionConverter().ConvertToInvariantString(definedGestures.Value);
@@ -53,10 +53,10 @@ namespace ICSharpCode.Core.Presentation
 				xmlDocument.Load(sourcePath);
 				
 				foreach(XmlElement bindingInfoNode in xmlDocument.SelectNodes("//InputBindingInfo")) {
-					var name = bindingInfoNode.Attributes["name"].Value;
+					var identifier = bindingInfoNode.Attributes["id"].Value;
 					var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(bindingInfoNode.Attributes["gestures"].Value);
 					
-					userDefinedGestures[name] = gestures;
+					userDefinedGestures[identifier] = gestures;
 				}
 			}
 		}
@@ -64,14 +64,19 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Get user defined input binding gestures
 		/// </summary>
-		/// <param name="inputBindingInfoName">Input binding name</param>
+		/// <param name="inputBindingInfoName">Input binding</param>
 		/// <returns>Gestures assigned to this input binding</returns>
-		public static InputGestureCollection GetInputBindingGesture(string inputBindingInfoName) 
+		public static InputGestureCollection GetInputBindingGesture(InputBindingInfo inputBindingInfo) 
 		{
-			InputGestureCollection gestures;
-			userDefinedGestures.TryGetValue(inputBindingInfoName, out gestures);
+			var identifier = GetInputBindingInfoIdentifier(inputBindingInfo);
+			if(identifier != null) {
+				InputGestureCollection gestures;
+				userDefinedGestures.TryGetValue(identifier, out gestures);
+				
+				return gestures;
+			} 
 			
-			return gestures;
+			return null;
 		}
 		
 		/// <summary>
@@ -79,9 +84,22 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="inputBindingInfoName">Input binding name</param>
 		/// <param name="inputGestureCollection">Gesture assigned to this input binding</param>
-		public static void SetInputBindingGesture(string inputBindingInfoName, InputGestureCollection inputGestureCollection) 
+		public static void SetInputBindingGestures(InputBindingInfo inputBindingInfo, InputGestureCollection inputGestureCollection) 
 		{
-			userDefinedGestures[inputBindingInfoName] = inputGestureCollection;
+			var identifier = GetInputBindingInfoIdentifier(inputBindingInfo);
+			
+			userDefinedGestures[identifier] = inputGestureCollection;
 		}
+		
+		private static string GetInputBindingInfoIdentifier(InputBindingInfo inputBindingInfo) {
+			if(inputBindingInfo.OwnerTypeName != null) {
+				return string.Format("OwnerType={0};RoutedCommandName={1}", inputBindingInfo.OwnerTypeName, inputBindingInfo.RoutedCommandName);
+			} else if(inputBindingInfo.OwnerInstanceName != null) {
+				return string.Format("OwnerInstance={0};RoutedCommandName={1}", inputBindingInfo.OwnerInstanceName, inputBindingInfo.RoutedCommandName);
+			} else {
+				return null;
+			}
+		}
+		
 	}
 }

@@ -48,20 +48,13 @@ namespace ICSharpCode.Core.Presentation
 			this.Command = routedCommand;
 			
 			if(!codon.Properties.Contains("command") && (codon.Properties.Contains("link") || codon.Properties.Contains("class"))) {
-				var commandBindingInfoName = "MenuCommandBinding_" + routedCommandName + "_" + codon.AddIn.Name + "_" + CommandManager.DefaultContextName;
-				var commandBindingInfo = CommandManager.GetCommandBindingInfo(commandBindingInfoName);
-				
-				if(commandBindingInfo == null) {
-					commandBindingInfo = new CommandBindingInfo();
-					commandBindingInfo.AddIn = codon.AddIn;
-					commandBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
-					commandBindingInfo.CommandInstance = CommandWrapper.GetCommand(codon, caller, createCommand);
-					commandBindingInfo.RoutedCommandName = routedCommandName;
-					commandBindingInfo.IsLazy = true;
-					
-					commandBindingInfo.Name = commandBindingInfoName;
-					CommandManager.RegisterCommandBinding(commandBindingInfo);
-				}
+				var commandBindingInfo = new CommandBindingInfo();
+				commandBindingInfo.AddIn = codon.AddIn;
+				commandBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
+				commandBindingInfo.CommandInstance = CommandWrapper.GetCommand(codon, caller, createCommand);
+				commandBindingInfo.RoutedCommandName = routedCommandName;
+				commandBindingInfo.IsLazy = true;
+				CommandManager.RegisterCommandBinding(commandBindingInfo);
 			}
 			
 			if (codon.Properties.Contains("icon")) {

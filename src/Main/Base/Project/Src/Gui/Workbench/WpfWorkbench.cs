@@ -75,35 +75,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Initialize()
 		{
-			foreach (PadDescriptor content in AddInTree.BuildItems<PadDescriptor>(viewContentPath, this, false)) {
-				if (content != null) {
-					ShowPad(content);
-				}
-			}
-			
-			CommandManager.DefaultContextName = this.GetType().AssemblyQualifiedName;
-			
-			CommandsService.RegisterBuiltInRoutedUICommands();
+			// Use shortened assembly qualified name to not lose user defined gestures
+			// when sharp develop is updated
+            CommandManager.DefaultContextName = 
+            	string.Format("{0}, {1}", GetType().FullName, GetType().Assembly.GetName().Name);
+
+            CommandsService.RegisterBuiltInRoutedUICommands();
 			
 			// Load all commands and and key bindings from addin tree
 			CommandsService.RegisterRoutedUICommands(this, "/SharpDevelop/Workbench/RoutedUICommands");
 			CommandsService.RegisterCommandBindings(this, "/SharpDevelop/Workbench/CommandBindings");
 			CommandsService.RegisterInputBindings(this, "/SharpDevelop/Workbench/InputBindings");
-			
+			CommandsService.RegisterMenuBindings("/SharpDevelop/MenuLocations", this);
+				
 			// Register context and load all commands from addin
 			CommandManager.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
-			
-			//CommandsRegistry.RegisterCommandBindingsUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {
-            	// var newBindings = CommandsRegistry.FindCommandBindings(CommandsRegistry.DefaultContextName, null, null, null);
-            	// CommandsRegistry.RemoveManagedCommandBindings(CommandBindings);
-            	// CommandBindings.AddRange(newBindings);
-			 //});
-			
-			//CommandsRegistry.RegisterInputBindingUpdateHandler(CommandsRegistry.DefaultContextName, null, delegate {            	
-            //	var newBindings = CommandsRegistry.FindInputBindings(null, null, null);
-            //	CommandsRegistry.RemoveManagedInputBindings(InputBindings);
-            //	InputBindings.AddRange(newBindings);
-	        //});
+
+			foreach (PadDescriptor content in AddInTree.BuildItems<PadDescriptor>(viewContentPath, this, false)) {
+				if (content != null) {
+					ShowPad(content);
+				}
+			}
 			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath);
 			

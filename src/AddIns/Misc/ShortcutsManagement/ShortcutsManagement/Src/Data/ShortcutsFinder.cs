@@ -34,7 +34,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// Also this function hides parent categories and Add-in if it has no sub
         /// elements left
         /// </summary>
-        /// <param name="shortcut">Shortcut to be heden</param>
+        /// <param name="shortcut">Shortcut to be hidden</param>
         public void HideShortcut(Shortcut shortcut)
         {
             foreach (var entry in RootEntries) {
@@ -77,7 +77,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
             // Determine whether provided shortcut is in provided category and 
             // hide it if so
             foreach (var shortcut in category.Shortcuts) {
-                if (shortcut == filteredShortcut) {
+                if (shortcut.Id == filteredShortcut.Id) {
                     shortcut.IsVisible = false;
                 }
 

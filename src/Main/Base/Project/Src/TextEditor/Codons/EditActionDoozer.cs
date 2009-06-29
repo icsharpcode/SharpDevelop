@@ -20,8 +20,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 	/// Creates IEditAction objects for the text editor.
 	/// </summary>
 	/// <attribute name="keys" use="required">
-	/// Comma-separated list of keyboard shortcuts that activate the edit action.
-	/// E.g. "Control|C,Control|Insert"
+	/// semicolon-separated list of keyboard shortcuts that activate the edit action.
+	/// E.g. "Ctrl+C;Ctrl+Insert"
 	/// </attribute>
 	/// <attribute name="class" use="required">
 	/// Name of the IEditAction class.

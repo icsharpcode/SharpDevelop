@@ -68,6 +68,7 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\InputBindingDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\RoutedUICommandDescriptor.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\RoutedUICommandDoozer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuRootDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\ExtensionPath.cs" />
     <Compile Include="Src\AddInTree\AddIn\IConditionEvaluator.cs" />
     <Compile Include="Src\AddInTree\AddIn\ICondition.cs" />

@@ -60,12 +60,12 @@
 					          icon="Icons.16x16.RunProgramIcon"
 					          class="ICSharpCode.PythonBinding.RunDebugPythonCommand"
 					          label="${res:XML.MainMenu.RunMenu.Run}"
-					          shortcut="Control|Shift|R"/>
+					          shortcut="Ctrl+Shift+R"/>
 					<MenuItem id="RunWithoutDebugger"
 					          icon="Icons.16x16.Debug.StartWithoutDebugging"
 					          class="ICSharpCode.PythonBinding.RunPythonCommand"
 					          label="${res:XML.MainMenu.DebugMenu.RunWithoutDebug}"
-					          shortcut="Control|Shift|W"/>
+					          shortcut="Ctrl+Shift+W"/>
 				</Condition>
 				<Condition name="IsProcessRunning" isdebugging="True" action="Disable">
 					<MenuItem id="Stop"

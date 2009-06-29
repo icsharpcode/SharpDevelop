@@ -56,6 +56,7 @@ namespace ICSharpCode.UnitTesting
 					}
 				}
 			}
+
 			return false;
 		}
 		

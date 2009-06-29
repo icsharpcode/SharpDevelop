@@ -21,16 +21,6 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Command binding info name
-		/// 
-		/// The name should be unique to register a command binding
-		/// </summary>
-		public string Name
-		{
-			get; set;
-		}
-		
-		/// <summary>
 		/// Name of the routed command which will be invoked when this binding is triggered
 		/// </summary>
 		public string RoutedCommandName { 
