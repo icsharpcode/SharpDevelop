@@ -346,6 +346,7 @@
     <None Include="app.config" />
     <Compile Include="Parsing\AddInvalidSourceSpanToErrorSinkTestFixture.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
+    <EmbeddedResource Include="Designer\App.ico" />
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -26,6 +26,7 @@ namespace PythonBinding.Tests.Designer
 		MockComponentCreator componentCreator;
 		string generatedPythonCode;
 		Bitmap bitmap;
+		Icon icon;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -48,9 +49,19 @@ namespace PythonBinding.Tests.Designer
 				bitmap = new Bitmap(10, 10);
 				form.BackgroundImage = bitmap;
 				
+				icon = new Icon(typeof(GenerateFormResourceTestFixture), "App.ico");
+				form.Icon = icon;
+				
 				PythonControl pythonControl = new PythonControl("    ", componentCreator);
 				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form, "RootNamespace");
 			}
+		}
+		
+		[Test]
+		public void TearDownFixture()
+		{
+			bitmap.Dispose();
+			icon.Dispose();
 		}
 		
 		[Test]
@@ -64,6 +75,7 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    self.BackgroundImage = resources.GetObject(\"$this.BackgroundImage\")\r\n" +
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
+								"    self.Icon = resources.GetObject(\"$this.Icon\")\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
 								"    self.ResumeLayout(False)\r\n" +
 								"    self.PerformLayout()\r\n";
@@ -75,6 +87,12 @@ namespace PythonBinding.Tests.Designer
 		public void BitmapAddedToResourceWriter()
 		{
 			Assert.IsTrue(Object.ReferenceEquals(bitmap, resourceWriter.GetResource("$this.BackgroundImage")));
+		}
+		
+		[Test]
+		public void IconAddedToResourceWriter()
+		{
+			Assert.IsTrue(Object.ReferenceEquals(icon, resourceWriter.GetResource("$this.Icon")));
 		}
 	}
 }

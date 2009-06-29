@@ -543,7 +543,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public static bool IsResourcePropertyValue(object propertyValue)
 		{
-			return propertyValue is Image;
+			return (propertyValue is Image) || (propertyValue is Icon);
 		}		
 		
 		/// <summary>
@@ -580,12 +580,7 @@ namespace ICSharpCode.PythonBinding
 			// Add comment if we have added some properties or event handlers.
 			if (addComment && propertiesBuilder.Length > 0) {
 				AppendComment(codeBuilder);
-			}
-			
-			if (resources.Count > 0) {
-				InsertCreateResourceManagerLine(codeBuilder);
-			}
-			
+			}			
 			codeBuilder.Append(propertiesBuilder.ToString());
 		}
 		
@@ -649,6 +644,20 @@ namespace ICSharpCode.PythonBinding
 			foreach (KeyValuePair<string, object> entry in resources) {
 				writer.AddResource(entry.Key, entry.Value);
 			}
+		}
+		
+		/// <summary>
+		/// Returns true if this component has any properties that are resources.
+		/// </summary>
+		public bool HasResources {
+			get { return resources.Count > 0; }
+		}
+		
+		/// <summary>
+		/// Gets the parent of this component.
+		/// </summary>
+		public PythonDesignerComponent Parent {
+			get { return parent; }
 		}
 		
 		protected IComponent Component {
@@ -791,28 +800,6 @@ namespace ICSharpCode.PythonBinding
 			}
 			reversedCollection.Reverse();
 			return reversedCollection;
-		}
-		
-		void InsertCreateResourceManagerLine(PythonCodeBuilder codeBuilder)
-		{
-			StringBuilder line = new StringBuilder();
-			line.Append("resources = System.Resources.ResourceManager(\"");
-			line.Append(GetRootComponentRootResourceName());
-			line.Append("\", System.Reflection.Assembly.GetEntryAssembly())");
-			codeBuilder.InsertIndentedLine(line.ToString());
-		}
-		
-		string GetRootComponentRootResourceName()
-		{
-			PythonDesignerComponent component = this;
-			while (component != null) {
-				if (component.parent == null) {
-					PythonDesignerRootComponent rootComponent = component as PythonDesignerRootComponent;
-					return rootComponent.GetResourceRootName();
-				}
-				component = component.parent;
-			}
-			return String.Empty;
-		}
+		}		
 	}
 }

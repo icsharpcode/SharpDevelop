@@ -61,6 +61,9 @@ namespace PythonBinding.Tests.Designer
 				pictureBox.TabIndex = 0;
 				form.Controls.Add(pictureBox);
 				
+				// Add bitmap to form.
+				form.BackgroundImage = new Bitmap(10, 10);
+				
 				PythonControl pythonControl = new PythonControl("    ", componentCreator);
 				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form, "RootNamespace");
 				
@@ -96,6 +99,7 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    # MainForm\r\n" +
 								"    # \r\n" +
+								"    self.BackgroundImage = resources.GetObject(\"$this.BackgroundImage\")\r\n" +
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
 								"    self.Controls.Add(self._pictureBox1)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +

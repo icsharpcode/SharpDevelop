@@ -12,6 +12,7 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ICSharpCode.PythonBinding
@@ -58,6 +59,9 @@ namespace ICSharpCode.PythonBinding
 			
 			// Add root component
 			AppendComponentProperties(codeBuilder, false, true);
+			if (HasAddedResources()) {
+				InsertCreateResourceManagerLine(codeBuilder);
+			}
 		}
 		
 		/// <summary>
@@ -120,6 +124,46 @@ namespace ICSharpCode.PythonBinding
 				return rootNamespace + "." + componentName;
 			}
 			return componentName;
+		}
+		
+		void InsertCreateResourceManagerLine(PythonCodeBuilder codeBuilder)
+		{
+			StringBuilder line = new StringBuilder();
+			line.Append("resources = System.Resources.ResourceManager(\"");
+			line.Append(GetRootComponentRootResourceName());
+			line.Append("\", System.Reflection.Assembly.GetEntryAssembly())");
+			codeBuilder.InsertIndentedLine(line.ToString());
+		}
+		
+		string GetRootComponentRootResourceName()
+		{
+			PythonDesignerComponent component = this;
+			while (component != null) {
+				if (component.Parent == null) {
+					PythonDesignerRootComponent rootComponent = component as PythonDesignerRootComponent;
+					return rootComponent.GetResourceRootName();
+				}
+				component = component.Parent;
+			}
+			return String.Empty;
+		}
+		
+		/// <summary>
+		/// Returns true if a resource has been added to any of the form components.
+		/// </summary>
+		bool HasAddedResources()
+		{
+			if (HasResources) {
+				return true;
+			}
+			
+			foreach (PythonDesignerComponent component in GetContainerComponents()) {
+				if (component.HasResources) {
+					return true;
+				}
+			}
+				
+			return false;
 		}
 	}
 }
