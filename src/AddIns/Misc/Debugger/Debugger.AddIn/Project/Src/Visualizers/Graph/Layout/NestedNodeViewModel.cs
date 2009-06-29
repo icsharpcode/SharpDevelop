@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Collections.Generic;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -30,7 +31,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public bool IsExpanded { get; set; }	
 
 		private List<NestedNodeViewModel> children = new List<NestedNodeViewModel>();		
-		public List<NestedNodeViewModel> Children { get { return _children; } }
+		public List<NestedNodeViewModel> Children { get { return this.children; } }
 		
 		public NestedNodeViewModel()
 		{

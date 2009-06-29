@@ -48,7 +48,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				if (this.Content == null)
 					throw new InvalidOperationException("Cannot enumerate properties, Content is null");
 				
-				foreach	(var child in this.Content.Childs)
+				foreach	(var child in this.Content.Children)
 				{
 					if (child is PropertyNode && !(((PropertyNode)child).Property.IsAtomic))
 						yield return ((PropertyNode)child).Property;

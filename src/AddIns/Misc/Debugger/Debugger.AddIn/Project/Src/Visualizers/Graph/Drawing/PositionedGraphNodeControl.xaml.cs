@@ -4,6 +4,7 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.AddIn.Visualizers.Graph.Layout;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,6 +22,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 	/// </summary>
 	public partial class PositionedGraphNodeControl : UserControl
 	{
+		/*
 		/// <summary>
 		/// Occurs when a <see cref="PositionedNodeProperty"/> is expanded.
 		/// </summary>
@@ -29,6 +31,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		/// Occurs when a <see cref="PositionedNodeProperty"/> is collaped.
 		/// </summary>
 		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
+		*/
 		
 		public PositionedGraphNodeControl()
 		{
