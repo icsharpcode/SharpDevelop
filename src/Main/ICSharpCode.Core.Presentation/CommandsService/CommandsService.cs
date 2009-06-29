@@ -65,8 +65,18 @@ namespace ICSharpCode.Core.Presentation
 					inputBindingInfo.AddIn = codon.AddIn;
 					inputBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
 					inputBindingInfo.RoutedCommandName = routedCommandName;
-					inputBindingInfo.Gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(codon.Properties["shortcut"]);			
-					inputBindingInfo.Categories.AddRange(CommandManager.RegisterInputBindingCategories(categoryPath));
+					
+					var defaultGesture = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(codon.Properties["shortcut"]);
+					inputBindingInfo.Gestures.AddRange(defaultGesture);
+					
+					var menuCategories = CommandManager.RegisterInputBindingCategories(categoryPath);
+					inputBindingInfo.Categories.AddRange(menuCategories);
+					
+					if(codon.Properties.Contains("category")) {
+						var userDefinedCategories = CommandManager.RegisterInputBindingCategories(codon.Properties["category"]);
+						inputBindingInfo.Categories.AddRange(userDefinedCategories);
+					}
+					
 					CommandManager.RegisterInputBinding(inputBindingInfo);
 				}
 				

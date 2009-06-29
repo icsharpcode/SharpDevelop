@@ -528,7 +528,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						inputBindingInfo.RoutedCommandName = routedCommandName;
 						inputBindingInfo.Gestures = gestures;
 						
-						var menuPath = "Main Menu/${res:XML.MainMenu.ViewMenu}" + (padContent.Category == "Main" ? "" : "/" + padContent.Title);
+						var menuPath = "Main Menu/${res:XML.MainMenu.ViewMenu}" + (Category == padContent.Category && padContent.Category == "Main" ? "" : "/" + padContent.Category);
 						inputBindingInfo.Categories.AddRange(CommandManager.RegisterInputBindingCategories(menuPath));
 						inputBindingInfo.AddIn = addIn;
 						CommandManager.RegisterInputBinding(inputBindingInfo);
