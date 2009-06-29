@@ -109,6 +109,7 @@ namespace ICSharpCode.PythonBinding
 				foreach (PythonDesignerComponent component in GetContainerComponents()) {
 					component.GenerateResources(writer);
 				}
+				GenerateResources(writer);
 			}
 		}
 		

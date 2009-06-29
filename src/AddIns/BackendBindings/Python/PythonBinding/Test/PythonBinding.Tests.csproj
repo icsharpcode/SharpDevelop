@@ -190,6 +190,7 @@
     <Compile Include="Designer\GenerateFormColorTestFixture.cs" />
     <Compile Include="Designer\GenerateFormLocationTestFixture.cs" />
     <Compile Include="Designer\GenerateFormPaddingTestFixture.cs" />
+    <Compile Include="Designer\GenerateFormResourcesTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewItemTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewSubItemsTestFixture.cs" />

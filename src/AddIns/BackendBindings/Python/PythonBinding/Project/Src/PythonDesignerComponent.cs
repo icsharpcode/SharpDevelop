@@ -528,6 +528,7 @@ namespace ICSharpCode.PythonBinding
 		public void AppendResourceProperty(PythonCodeBuilder codeBuilder, string propertyName, object propertyValue)
 		{
 			string resourceName = propertyName.Replace("self._", String.Empty);
+			resourceName = resourceName.Replace("self.", "$this.");
 			codeBuilder.AppendIndented(propertyName);
 			codeBuilder.Append(" = resources.GetObject(\"");
 			codeBuilder.Append(resourceName);
@@ -803,7 +804,7 @@ namespace ICSharpCode.PythonBinding
 		
 		string GetRootComponentRootResourceName()
 		{
-			PythonDesignerComponent component = parent;
+			PythonDesignerComponent component = this;
 			while (component != null) {
 				if (component.parent == null) {
 					PythonDesignerRootComponent rootComponent = component as PythonDesignerRootComponent;
