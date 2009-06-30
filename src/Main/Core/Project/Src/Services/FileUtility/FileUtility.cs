@@ -372,6 +372,14 @@ namespace ICSharpCode.Core
 				return false;
 			}
 			
+			if(fileName[fileName.Length-1] == ' ') {
+				return false;
+			}
+			
+			if(fileName[fileName.Length-1] == '.') {
+				return false;
+			}
+			
 			// platform dependend : Check for invalid file names (DOS)
 			// this routine checks for follwing bad file names :
 			// CON, PRN, AUX, NUL, COM1-9 and LPT1-9

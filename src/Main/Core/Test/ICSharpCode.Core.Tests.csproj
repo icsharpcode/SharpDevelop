@@ -49,6 +49,7 @@
     <Compile Include="AddInTreeTests\AddInTreeLoadingTests.cs" />
     <Compile Include="AddInTreeTests\ExtPathTests.cs" />
     <Compile Include="InvalidDirectoryNameTests.cs" />
+    <Compile Include="ValidDirectoryNameTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.Core.csproj">
