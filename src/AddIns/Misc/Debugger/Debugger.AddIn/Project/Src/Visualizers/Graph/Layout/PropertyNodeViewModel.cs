@@ -17,7 +17,18 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public PropertyNodeViewModel(PositionedNodeProperty positionedNodeProperty)
 		{
+			if (positionedNodeProperty == null)
+				throw new ArgumentNullException("positionedNodeProperty");
+			
 			this.positionedProperty = positionedNodeProperty;	
+		}
+		
+		/// <summary>
+		/// The PositionedNodeProperty this node contains.
+		/// </summary>
+		public PositionedNodeProperty Property
+		{
+			get { return this.positionedProperty; }
 		}
 		
 		public bool IsEvaluated

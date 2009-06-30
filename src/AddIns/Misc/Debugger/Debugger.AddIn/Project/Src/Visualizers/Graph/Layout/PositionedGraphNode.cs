@@ -25,8 +25,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			get { return objectNode; }
 		}
 		
-		public event EventHandler<PositionedPropertyEventArgs> Expanded;
-		public event EventHandler<PositionedPropertyEventArgs> Collapsed;
+		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
+		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
 		
 		private List<PositionedNodeProperty> properties = new List<PositionedNodeProperty>();
 		public List<PositionedNodeProperty> Properties
@@ -127,17 +127,17 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		#region event helpers
 		protected virtual void OnPropertyExpanded(object sender, PositionedPropertyEventArgs propertyArgs)
 		{
-			if (this.Expanded != null)
+			if (this.PropertyExpanded != null)
 			{
-				this.Expanded(sender, propertyArgs);
+				this.PropertyExpanded(sender, propertyArgs);
 			}
 		}
 
 		protected virtual void OnPropertyCollapsed(object sender, PositionedPropertyEventArgs propertyArgs)
 		{
-			if (this.Collapsed != null)
+			if (this.PropertyCollapsed != null)
 			{
-				this.Collapsed(sender, propertyArgs);
+				this.PropertyCollapsed(sender, propertyArgs);
 			}
 		}
 		#endregion

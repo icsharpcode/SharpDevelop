@@ -141,8 +141,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			foreach (var node in posGraph.Nodes)
 			{
-				node.Expanded += new EventHandler<PositionedPropertyEventArgs>(node_Expanded);
-				node.Collapsed += new EventHandler<PositionedPropertyEventArgs>(node_Collapsed);
+				node.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(node_Expanded);
+				node.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(node_Collapsed);
 			}
 		}
 

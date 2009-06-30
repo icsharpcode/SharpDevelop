@@ -16,6 +16,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }
+		
+		private List<NestedNodeViewModel> children = new List<NestedNodeViewModel>();		
+		public List<NestedNodeViewModel> Children { get { return this.children; } }
 	
 		/// <summary>
 		/// Is this expandable node?
@@ -24,14 +27,33 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// Does this node have any children?
 		/// </summary>
-		public bool HasChildren { get; set; }
+		public bool HasChildren { get { return this.Children.Count > 0; } }
+		
+		/// <summary>
+		/// Show a button to expand property associated with this node?
+		/// </summary>
+		public bool ShowExpandPropertyButton
+		{
+			get 
+			{
+				var thisAsPropertyNode = this as PropertyNodeViewModel;
+				if (thisAsPropertyNode == null) 
+				{
+					// this is NestedNodeViewModel -> no property, don't show expand button
+					return false;
+				}
+				else
+				{
+					// this is PositionedNodeViewModel -> show expand button when appropriate
+					PositionedNodeProperty property = thisAsPropertyNode.Property;
+					return (!property.IsAtomic && !property.IsNull);
+				}
+			}
+		}
 		
 		// if we bound this ViewModel to a TreeView, this would not be needed,
 		// it is added "artificially", to support PositionedGraphNodeControl
 		public bool IsExpanded { get; set; }	
-
-		private List<NestedNodeViewModel> children = new List<NestedNodeViewModel>();		
-		public List<NestedNodeViewModel> Children { get { return this.children; } }
 		
 		public NestedNodeViewModel()
 		{

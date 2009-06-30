@@ -10,6 +10,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
 	/// <summary>
 	/// <see cref="ObjectProperty"/> with outgoing <see cref="PositionedEdge"/>.
+	/// Implements evaluation of value on demand using IEvaluate.
 	/// </summary>
 	public class PositionedNodeProperty : IEvaluate
 	{

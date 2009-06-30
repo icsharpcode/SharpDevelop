@@ -1,7 +1,95 @@
 <UserControl x:Class="Debugger.AddIn.Visualizers.Graph.Drawing.PositionedGraphNodeControl"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-	<Grid>
-		
-	</Grid>
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:aero="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+    >
+    <aero:SystemDropShadowChrome>
+    <Grid>
+        <ListView Name="listView" AlternationCount="2" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#ddeeff"  Offset="0.0" />
+                    <GradientStop Color="White" Offset="0.4" />
+                    <GradientStop Color="White" Offset="0.8" />
+                </LinearGradientBrush>
+            </ListView.Background>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Margin" Value="0"></Setter>
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="Focusable" Value="false" />
+                    <Style.Triggers>
+
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter Property="Background" Value="Transparent"></Setter>
+                        </Trigger>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                            <Setter Property="Background" Value="Transparent"></Setter>
+                        </Trigger>
+
+                        <DataTrigger Binding="{Binding IsNested}" Value="True">
+                            <Setter Property="Background" Value="Transparent"></Setter>
+                            <Setter Property="Foreground" Value="#666666"></Setter>
+                            <Setter Property="FontStyle" Value="Italic"></Setter>
+                        </DataTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="Azure" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                        <GridView.ColumnHeaderContainerStyle>
+                            <Style>
+                                <Setter Property="FrameworkElement.Visibility" Value="Collapsed"/>
+                            </Style>
+                        </GridView.ColumnHeaderContainerStyle>
+                        <GridView.Columns>
+                        	   <!-- Expand button (either property or nested) -->
+                            <GridViewColumn Header="Plus" Width="Auto">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <ToggleButton x:Name="Expander" Width="20" IsChecked="{Binding IsExpanded}" Click="NestedExpandButton_Click" Padding="0" Margin="0 0 6 0">+</ToggleButton>
+                                            <ToggleButton x:Name="PropertyExpander" Click="PropertyExpandButton_Click" Padding="0" Margin="0 0 6 0">+p</ToggleButton>
+                                        </StackPanel>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding Path=HasChildren}" Value="False">
+                                                <Setter TargetName="Expander"
+                                                    Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=ShowExpandPropertyButton}" Value="False">
+                                                <Setter TargetName="PropertyExpander"
+                                                    Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        	   <!-- Name -->
+                            <GridViewColumn Header="Name" Width="Auto">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Name}" MinWidth="100"></TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        	   <!-- Text -->
+                            <GridViewColumn Header="Value" Width="Auto">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Text}" MinWidth="100"></TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView.Columns>
+                    </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+    </aero:SystemDropShadowChrome>
 </UserControl>
