@@ -21,14 +21,20 @@ namespace ICSharpCode.Core.Presentation
 	{
 		protected string text;
 		
+		public bool UsesAccessors { get; set; }
+		
 		public StringParseExtension(string text)
 		{
 			this.text = text;
+			this.UsesAccessors = true;
 		}
 		
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
-			return StringParser.Parse(text);
+			string result = StringParser.Parse(text);
+			if (UsesAccessors)
+				result = MenuService.ConvertLabel(result);
+			return result;
 		}
 	}
 }
