@@ -126,7 +126,6 @@
       <DependentUpon>Window1.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Content Include="ShortcutsManagement.cd" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Converters\BoolToVisibilityConverter.cs" />

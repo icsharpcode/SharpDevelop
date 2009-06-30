@@ -51,22 +51,6 @@
 		<Import assembly=":ICSharpCode.TextEditor"/>
 	</Runtime>
 	
-	<Path name="/SharpDevelop/Categories">
-		<Category id="Debug" text="Debug" />
-		<Categoru id="MainMenu" text="Main menu">
-			<Category id="File" text="File" />
-			<Category id="Edit" text="Edit" />
-			<Category id="Project" text="Project" />
-			<Category id="Build" text="Build" />
-			<Category id="Debug" text="Debug" />
-			<Category id="Search" text="Search" />
-			<Category id="QualityTools" text="Quality Tools" />
-			<Category id="XML" text="XML" />
-			<Category id="Tools" text="Tools" />
-			<Category id="Window" text="Window" />
-		</Categoru>
-	</Path>
-		
 	<Path name="/SharpDevelop/MenuLocations">
 		<MenuRoot path="/SharpDevelop/Workbench/MainMenu" 													name="Main Menu" />
 		
@@ -1647,10 +1631,9 @@
 				</Or>
 				<MenuItem id       = "Build"
 				          label    = "${res:XML.MainMenu.BuildMenu.BuildSolution}"
-				          shortcut = "F8"
 				          icon     = "Icons.16x16.BuildCombine"
-				          class    = "ICSharpCode.SharpDevelop.Project.Commands.Build"
 				          command  = "SDBuildCommands.BuildSolution"
+				          category = "Test/Test"
 				/>
 				<MenuItem id       = "Rebuild"
 				          label    = "${res:XML.MainMenu.BuildMenu.RebuildSolution}"

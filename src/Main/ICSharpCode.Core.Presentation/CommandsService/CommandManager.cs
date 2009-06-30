@@ -340,6 +340,25 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		internal static void OrderClassInputBindingsByChords(Type ownerType) 
+		{
+			var fieldInfo = typeof(System.Windows.Input.CommandManager).GetField("_classInputBindings", BindingFlags.Static | BindingFlags.NonPublic);
+			var fieldData = (HybridDictionary)fieldInfo.GetValue(null);
+			var classInputBindings = (InputBindingCollection)fieldData[ownerType];
+
+			if(classInputBindings != null) {
+				classInputBindings.SortByChords();
+			}
+		}
+		
+		
+		internal static void OrderInstanceInputBindingsByChords(UIElement ownerType) 
+		{
+			if(ownerType.InputBindings != null) {
+				ownerType.InputBindings.SortByChords();
+			}
+		}
+		
 		/// <summary>
 		/// Remove command binding associated with type
 		/// </summary>

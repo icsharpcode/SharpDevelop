@@ -22,9 +22,9 @@ namespace ICSharpCode.ShortcutsManagement
             var addin1 = new AddInSection("SharpDevelop");
             rootEntries.Add(addin1);
             addin1.Categories.Add(new ShortcutCategory("Editing"));
-            addin1.Categories[0].Shortcuts.Add(new Shortcut("MultiKey", GetGestures("Ctrl+C, Ctrl+K")));
-            addin1.Categories[0].Shortcuts.Add(new Shortcut("Copy", GetGestures("Ctrl + C")));
-            addin1.Categories[0].Shortcuts.Add(new Shortcut("Paste", GetGestures("Ctrl + C ; Ctrl+Insert")));
+            addin1.Categories[0].Shortcuts.Add(new Shortcut("MultiKey", GetGestures("Ctrl+N, Ctrl+F")));
+            addin1.Categories[0].Shortcuts.Add(new Shortcut("Copy", GetGestures("")));
+            addin1.Categories[0].Shortcuts.Add(new Shortcut("Paste", GetGestures("Ctrl + N, Ctrl+S")));
             
             //addin1.Categories[0].Shortcuts.Add(new Shortcut("Cut", GetGestures("Ctrl + X")));
             //addin1.Categories[0].Shortcuts.Add(new Shortcut("Undo", GetGestures("Ctrl + Z")));

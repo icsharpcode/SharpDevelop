@@ -18,6 +18,7 @@ namespace ICSharpCode.Core.Presentation
 			IsModifyed = true;
 			OldInputBindings = new InputBindingCollection();
 			NewInputBindings = new InputBindingCollection();
+			Gestures = new InputGestureCollection();
 		
 			Categories = new List<InputBindingCategory>();
 		}
@@ -137,10 +138,6 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public InputGestureCollection Gestures { 
 			get {
-				if(_gestures == null) {
-					return new InputGestureCollection();
-				}
-				
 				return _gestures;
 			}
 			set {
@@ -217,6 +214,8 @@ namespace ICSharpCode.Core.Presentation
 								System.Windows.Input.CommandManager.RegisterClassInputBinding(OwnerType, binding);
 							}
 							
+							CommandManager.OrderClassInputBindingsByChords(OwnerType);
+							
 							IsModifyed = false;
 						}
 					};
@@ -230,6 +229,8 @@ namespace ICSharpCode.Core.Presentation
 							}
 							
 							OwnerInstance.InputBindings.AddRange(NewInputBindings);
+							
+							CommandManager.OrderInstanceInputBindingsByChords(OwnerInstance);
 							
 							IsModifyed = false;
 						}

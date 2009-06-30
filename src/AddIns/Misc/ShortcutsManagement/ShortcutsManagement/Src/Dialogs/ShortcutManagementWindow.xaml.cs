@@ -84,22 +84,12 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         /// </summary>
         private void FilterSimilarShortcuts()
         {
-            var templates = new InputGestureCollection();
-            foreach (var gesture in shortcutCopy.Gestures) {
-                var multiKeyGestureTemplate = gesture as MultiKeyGesture;
-                if (multiKeyGestureTemplate != null) {
-                    if (multiKeyGestureTemplate.Chords != null && multiKeyGestureTemplate.Chords.Count > 0) {
-                        templates.Add(multiKeyGestureTemplate.Chords.FirstOrDefault());
-                    }
-                } else {
-                    templates.Add(gesture);
-                }
-            }
+            var templates = new InputGestureCollection(shortcutCopy.Gestures);
 
             // Find shortcuts with same gesture and hide them.
             // Also hide modified shortcut from this list
             var finder = new ShortcutsFinder(rootEntriesCopy);
-            finder.FilterGesture(templates, GestureCompareMode.StartsWith);
+            finder.FilterGesture(templates, GestureCompareMode.Conflicting);
             finder.HideShortcut(shortcutCopy);
 
             shortcutsManagementOptionsPanel.ExpandAll();

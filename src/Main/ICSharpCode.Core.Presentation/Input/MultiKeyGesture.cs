@@ -97,12 +97,13 @@ namespace ICSharpCode.Core.Presentation
             {
                 currentGestureIndex++;
                 lastGestureInput = DateTime.Now;
+                
+                inputEventArgs.Handled = true;
 
                 // Check whether this is last gesture in sequence
                 if(currentGestureIndex == chords.Count)
                 {
                     ResetAllGestures();
-                	inputEventArgs.Handled = true;
                     return true;
                 }
 

@@ -93,6 +93,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                                 {
                                     // Create parent category section if it's not created yet
                                     var parentCategoryName = StringParser.Parse(currentBindingCategory.ParentCategory.Name);
+                                    parentCategoryName = Regex.Replace(parentCategoryName, @"&([^\s])", @"$1");
                                     parentCategorySection = new ShortcutCategory(parentCategoryName);
 
                                     categoriesMap.Add(currentBindingCategory.ParentCategory, parentCategorySection);
@@ -236,6 +237,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                                 {
                                     // Create parent category section if it's not created yet
                                     var parentCategoryName = StringParser.Parse(currentBindingCategory.ParentCategory.Name);
+                                    parentCategoryName = Regex.Replace(parentCategoryName, @"&([^\s])", @"$1");
                                     parentCategorySection = new ShortcutCategory(parentCategoryName);
 
                                     categoriesMap[addinSection].Add(currentBindingCategory.ParentCategory, parentCategorySection);
@@ -279,7 +281,6 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 
                 // Some commands have "&" sign to mark alternative key used to call this command from menu
                 // Strip this sign from shortcut entry text
-                shortcutText = Regex.Replace(shortcutText, @"&([^\s])", @"$1");
 
                 var shortcut = new Shortcut(shortcutText, inputBindingInfo.Gestures);
 
