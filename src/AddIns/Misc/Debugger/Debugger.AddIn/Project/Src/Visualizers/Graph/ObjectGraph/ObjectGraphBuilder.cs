@@ -187,6 +187,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				{
 					targetNode = null;
 				}
+				// connect property to target ObjectGraphNode
 				complexProperty.TargetNode = targetNode;
 			}
 		}

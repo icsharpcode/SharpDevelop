@@ -127,9 +127,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 			this.currentPosGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expandedNodes);
 			registerExpandCollapseEvents(this.currentPosGraph);
 			
-			var graphDiff = new GraphMatcher().MatchGraphs(oldPosGraph, currentPosGraph);
-			this.graphDrawer.StartAnimation(oldPosGraph, currentPosGraph, graphDiff);
-			//this.graphDrawer.Draw(currentGraph);
+			//var graphDiff = new GraphMatcher().MatchGraphs(oldPosGraph, currentPosGraph);
+			//this.graphDrawer.StartAnimation(oldPosGraph, currentPosGraph, graphDiff);
+			this.graphDrawer.Draw(this.currentPosGraph);
 		}
 		
 		void guiHandleException(System.Exception ex)

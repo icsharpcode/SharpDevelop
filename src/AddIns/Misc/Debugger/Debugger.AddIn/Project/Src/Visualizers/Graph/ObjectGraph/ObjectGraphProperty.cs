@@ -34,7 +34,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 			{
 				throw new DebuggerVisualizerException("Cannot evaluate property with missing Expression");
 			}
-			this.Value = this.Expression.Evaluate(WindowsDebugger.CurrentProcess).InvokeToString();
+			Value debuggerVal = this.Expression.Evaluate(WindowsDebugger.CurrentProcess);
+			this.Value = debuggerVal.IsNull ? string.Empty : debuggerVal.InvokeToString();
 			this.evaluateCalled = true;
 		}
     }

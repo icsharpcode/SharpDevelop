@@ -15,12 +15,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	{
 		PositionedNodeProperty positionedProperty;
 		
-		public PropertyNodeViewModel(PositionedNodeProperty positionedNodeProperty)
+		public PropertyNodeViewModel(PositionedGraphNode containingNode) : base(containingNode)
 		{
-			if (positionedNodeProperty == null)
-				throw new ArgumentNullException("positionedNodeProperty");
-			
-			this.positionedProperty = positionedNodeProperty;	
 		}
 		
 		/// <summary>
@@ -39,6 +35,22 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public void Evaluate()
 		{
 			this.positionedProperty.Evaluate();
+			this.Text = this.positionedProperty.Value;
+		}
+		
+		public override void InitFrom(AbstractNode source)
+		{
+			if (!(source is PropertyNode))
+				throw new InvalidOperationException("PropertyNodeViewModel must initialize from PropertyNode");
+			
+			PropertyNode sourcePropertyNode = source as PropertyNode;
+			
+			this.Name = sourcePropertyNode.Property.Name;
+			this.Text = "";		// lazy evaluated
+			this.IsNested = false;
+			this.IsExpanded = false;
+			this.Name = sourcePropertyNode.Property.Name;
+			this.positionedProperty = new PositionedNodeProperty(sourcePropertyNode.Property, this.ContainingNode);
 		}
 	}
 }

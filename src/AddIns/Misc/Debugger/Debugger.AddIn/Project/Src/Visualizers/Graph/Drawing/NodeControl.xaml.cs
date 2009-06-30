@@ -29,20 +29,21 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		/// <summary>
 		/// Creates new NodeControl displaying PositionedNode.
 		/// </summary>
-		/// <param name="graphNode">PositionedNode displayed by the control.</param>
-		public NodeControl(PositionedGraphNode graphNode) : this()
+		/*public NodeControl() : this()
 		{
-			//this.initializeWithGraphNode(graphNode);
-			this.GraphNode = graphNode;
-		}
+			//this.GraphNode = graphNode;
+		}*/
 		
+		/// <summary>
+		/// Creates new NodeControl displaying PositionedNode.
+		/// </summary>
 		public NodeControl()
 		{
 			InitializeComponent();
 		}
 		
-		public event EventHandler<PositionedPropertyEventArgs> Expanded;
-		public event EventHandler<PositionedPropertyEventArgs> Collapsed;
+		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
+		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
 
 		private PositionedGraphNode node;
 		/// <summary>
@@ -135,17 +136,17 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		#region event helpers
 		protected virtual void OnPropertyExpanded(PositionedNodeProperty property)
 		{
-			if (this.Expanded != null)
+			if (this.PropertyExpanded != null)
 			{
-				this.Expanded(this, new PositionedPropertyEventArgs(property));
+				this.PropertyExpanded(this, new PositionedPropertyEventArgs(property));
 			}
 		}
 
 		protected virtual void OnPropertyCollapsed(PositionedNodeProperty property)
 		{
-			if (this.Collapsed != null)
+			if (this.PropertyCollapsed != null)
 			{
-				this.Collapsed(this, new PositionedPropertyEventArgs(property));
+				this.PropertyCollapsed(this, new PositionedPropertyEventArgs(property));
 			}
 		}
 		#endregion

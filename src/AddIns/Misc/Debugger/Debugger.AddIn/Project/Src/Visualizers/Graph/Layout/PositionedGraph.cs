@@ -18,6 +18,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	{
 		private List<PositionedGraphNode> nodes = new List<PositionedGraphNode>();
 		
+		public PositionedGraphNode Root { get; set; }
+		
 		public System.Windows.Rect BoundingRect
 		{
 			get

@@ -124,8 +124,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			colName.Width = double.NaN;
 			colValue.Width = 300;
 			colValue.Width = double.NaN;
-			this.view.Insert(0, new NestedNodeViewModel());
-			this.view.RemoveAt(0);
+			//this.view.Insert(0, new NestedNodeViewModel());
+			//this.view.RemoveAt(0);
 			this.listView.UpdateLayout();
 			this.listView.Width = colName.ActualWidth + colValue.ActualWidth + 30;
 			this.listView.Width = double.NaN;

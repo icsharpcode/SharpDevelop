@@ -8,6 +8,9 @@ using System;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
+	// TODO this class is almost not necessary, is used only for TreeLayouter purposes.
+	// TreeLayouter could remember the additional information in a Dictionary PositionedEdge -> bool
+	
 	/// <summary>
 	/// Edge in the tree-layouted <see cref="PositionedGraph"/>.
 	/// </summary>

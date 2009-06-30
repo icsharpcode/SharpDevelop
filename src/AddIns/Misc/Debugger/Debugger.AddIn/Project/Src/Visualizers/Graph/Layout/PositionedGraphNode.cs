@@ -16,6 +16,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class PositionedGraphNode
 	{
+		/// <summary>
+		/// Creates new PositionedNode.
+		/// </summary>
+		/// <param name="objectNode">Underlying ObjectNode.</param>
+		public PositionedGraphNode(ObjectGraphNode objectNode)
+		{
+			this.objectNode = objectNode;
+		}
+		
 		private ObjectGraphNode objectNode;
 		/// <summary>
 		/// Underlying ObjectNode.
@@ -28,16 +37,77 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
 		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
 		
-		private List<PositionedNodeProperty> properties = new List<PositionedNodeProperty>();
-		public List<PositionedNodeProperty> Properties
+		// TODO posNodeForObjectGraphNode will be a service, that will return existing posNodes or create empty new
+		public void InitContentFromObjectNode()
 		{
-			get
+			this.Content = new NestedNodeViewModel(this);
+			this.Content.InitFrom(this.ObjectNode.Content);
+		}
+		
+		public void InitView()
+		{
+			this.nodeVisualControl = new NodeControl();
+			
+			this.nodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Expanded);
+			this.nodeVisualControl.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Collapsed);
+		}
+		
+		public void FillView()
+		{
+			//this.nodeVisualControl.Root = this.Content;
+			foreach (var property in this.Properties)
 			{
-				return this.properties;
+				property.Evaluate();
+				this.nodeVisualControl.AddProperty(property);
 			}
 		}
 		
-		public PositionedNodeProperty AddProperty(ObjectGraphProperty objectProperty, bool isExpanded)
+		/// <summary>
+		/// Tree-of-properties content of this node.
+		/// </summary>
+		public NestedNodeViewModel Content 
+		{ 
+			get; set;
+		}
+		
+		// TODO do proper tree iteration
+		public IEnumerable<PositionedNodeProperty> Properties
+		{
+			get
+			{
+				foreach (var child in this.Content.Children)
+				{
+					var property = ((PropertyNodeViewModel)child).Property;
+					yield return property;
+				}
+			}
+		}
+		
+		private NodeControl nodeVisualControl;
+		/// <summary>
+		/// Visual control to be shown for this node.
+		/// </summary>
+		public NodeControl NodeVisualControl
+		{
+			get
+			{
+				return this.nodeVisualControl;
+			}
+		}
+		
+		public virtual IEnumerable<PositionedEdge> Edges
+		{
+			get
+			{
+				foreach	(PositionedNodeProperty property in this.Properties)
+				{
+					if (property.Edge != null)
+						yield return property.Edge;
+				}
+			}
+		}
+		
+		/*public PositionedNodeProperty AddProperty(ObjectGraphProperty objectProperty, bool isExpanded)
 		{
 			var newProperty = new PositionedNodeProperty(objectProperty, this);
 			newProperty.IsExpanded = isExpanded;
@@ -45,33 +115,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.nodeVisualControl.AddProperty(newProperty);
 			
 			return newProperty;
-		}
-		
-		/// <summary>
-		/// Creates new PositionedNode.
-		/// </summary>
-		/// <param name="objectNode">Underlying ObjectNode.</param>
-		public PositionedGraphNode(ObjectGraphNode objectNode)
-		{
-			this.objectNode = objectNode;
-			
-			this.nodeVisualControl = new NodeControl(this);	// display
-			this.nodeVisualControl.Expanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Expanded);
-			this.nodeVisualControl.Collapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Collapsed);
-		}
+		}*/
 
-		private void NodeVisualControl_Expanded(object sender, PositionedPropertyEventArgs e)
-		{
-			// propagage event
-			OnPropertyExpanded(this, e);
-		}
-		
-		private void NodeVisualControl_Collapsed(object sender, PositionedPropertyEventArgs e)
-		{
-			// propagate event
-			OnPropertyCollapsed(this, e);
-		}
-		
 		public void Measure()
 		{
 			this.nodeVisualControl.Measure(new Size(500, 500));
@@ -100,31 +145,19 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public Rect Rect { get {  return new Rect(Left, Top, Width, Height); } }
 		
-		private NodeControl nodeVisualControl;
-		/// <summary>
-		/// Visual control to be shown for this node.
-		/// </summary>
-		public NodeControl NodeVisualControl
-		{
-			get
-			{
-				return this.nodeVisualControl;
-			}
-		}
-		
-		public virtual IEnumerable<PositionedEdge> Edges
-		{
-			get
-			{
-				foreach	(PositionedNodeProperty property in this.Properties)
-				{
-					if (property.Edge != null)
-						yield return property.Edge;
-				}
-			}
-		}
-		
 		#region event helpers
+		private void NodeVisualControl_Expanded(object sender, PositionedPropertyEventArgs e)
+		{
+			// propagage event
+			OnPropertyExpanded(this, e);
+		}
+		
+		private void NodeVisualControl_Collapsed(object sender, PositionedPropertyEventArgs e)
+		{
+			// propagate event
+			OnPropertyCollapsed(this, e);
+		}
+		
 		protected virtual void OnPropertyExpanded(object sender, PositionedPropertyEventArgs propertyArgs)
 		{
 			if (this.PropertyExpanded != null)

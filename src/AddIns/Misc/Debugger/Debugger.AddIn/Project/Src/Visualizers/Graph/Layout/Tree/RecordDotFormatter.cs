@@ -36,15 +36,17 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			Rect neatoInput = transform.NodeToNeatoInput(node);
 			
 			StringBuilder recordLabel = new StringBuilder();
-			for (int i = 0; i < node.Properties.Count; i++)
+			bool first = true;
+			foreach (var prop in node.Properties)
 			{
 				string propertyId = "f" + genId.GetNextId().ToString();
-				propertyIds[node.Properties[i]] = propertyId;
-				recordLabel.Append(string.Format("<{0}> l", propertyId));
-				if (i < node.Properties.Count - 1)
+				propertyIds[prop] = propertyId;
+				if (!first)
 				{
 					recordLabel.Append("|");
 				}
+				recordLabel.Append(string.Format("<{0}> l", propertyId));
+				first = false;
 			}
 			
 			string dotFormatNode =
