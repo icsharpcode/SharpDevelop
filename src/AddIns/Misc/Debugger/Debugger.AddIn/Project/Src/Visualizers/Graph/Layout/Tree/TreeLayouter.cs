@@ -22,8 +22,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		private LayoutDirection layoutDirection = LayoutDirection.TopBottom;
 		
-		PositionedGraph resultGraph = null;
-		
 		HashSet<PositionedGraphNode> seenNodes = new HashSet<PositionedGraphNode>();
 		Dictionary<ObjectGraphNode, PositionedGraphNode> treeNodeFor = new Dictionary<ObjectGraphNode, PositionedGraphNode>();
 		
@@ -46,11 +44,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			//TreeGraphNode tree = buildTreeRecursive(objectGraph.Root, expandedNodes);
 			
 			// convert ObjectGraph to PositionedGraph with TreeEdges
-			PositionedGraph tree = buildTreeGraph(objectGraph, expandedNodes);
-			// first pass
-			calculateSubtreeSizes((TreeGraphNode)tree.Root);
-			// second pass
-			calculateNodePosRecursive((TreeGraphNode)tree.Root, 0, 0);
+			var resultGraph = buildTreeGraph(objectGraph, expandedNodes);
+			// first layout pass
+			calculateSubtreeSizes((TreeGraphNode)resultGraph.Root);
+			// second layout pass
+			calculateNodePosRecursive((TreeGraphNode)resultGraph.Root, 0, 0);
 			
 			var neatoRouter = new NeatoEdgeRouter();
 			resultGraph = neatoRouter.CalculateEdges(resultGraph);
@@ -60,10 +58,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		private PositionedGraph buildTreeGraph(ObjectGraph objectGraph, ExpandedNodes expandedNodes)
 		{
-			resultGraph = new PositionedGraph();
+			var resultGraph = new PositionedGraph();
 			
 			// create empty PosNodes
-			foreach (ObjectGraphNode objectGraphNode in objectGraph.Nodes)
+			foreach (ObjectGraphNode objectGraphNode in objectGraph.ReachableNodes)
 			{
 				TreeGraphNode posNode = createNewTreeGraphNode(objectGraphNode); 
 				resultGraph.AddNode(posNode);
@@ -84,7 +82,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				// create edges outgoing from this posNode
 				foreach (PositionedNodeProperty property in posNode.Properties)
 				{
-					property.IsExpanded = expandedNodes.IsExpanded(property.Expression.Code);
+					property.IsPropertyExpanded = expandedNodes.IsExpanded(property.Expression.Code);
 					
 					if (property.ObjectGraphProperty.TargetNode != null)
 					{
@@ -136,54 +134,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			newGraphNode.VerticalMargin = vertNodeMargin;
 			return newGraphNode;
 		}
-		
-		/*private TreeGraphNode buildTreeRecursive(ObjectGraphNode objectGraphNode, ExpandedNodes expandedNodes)
-		{
-			seenNodes.Add(objectGraphNode, null);
-			
-			TreeGraphNode newTreeNode = createNewTreeGraphNode(); 
-			resultGraph.AddNode(newTreeNode);
-			treeNodeFor[objectGraphNode] = newTreeNode;
-			
-			double subtreeSize = 0;
-			foreach	(AbstractNode absNode in objectGraphNode.Content.Children)
-			{
-				var newTreeNodeContent = new NestedNodeViewModel();
-				
-				
-				ObjectGraphProperty property = ((PropertyNode)absNode).Property;
-				
-				if (property.TargetNode != null)
-				{
-					ObjectGraphNode neighbor = property.TargetNode;
-					TreeGraphNode targetTreeNode = null;
-					bool newEdgeIsTreeEdge = false;
-					if (seenNodes.ContainsKey(neighbor))
-					{
-						targetTreeNode = treeNodeFor[neighbor];
-						newEdgeIsTreeEdge = false;
-					}
-					else
-					{
-						targetTreeNode = buildTreeRecursive(neighbor, expandedNodes);
-						newEdgeIsTreeEdge = true;
-						subtreeSize += targetTreeNode.SubtreeSize;
-					}
-					var posNodeProperty = newTreeNode.AddProperty(property, expandedNodes.IsExpanded(property.Expression.Code));
-					posNodeProperty.Edge = new TreeGraphEdge { IsTreeEdge = newEdgeIsTreeEdge, Name = property.Name, Source = posNodeProperty, Target = targetTreeNode };
-				}
-				else
-				{
-					// property.Edge stays null
-					newTreeNode.AddProperty(property, expandedNodes.IsExpanded(property.Expression.Code));
-				}
-			}
-			
-			newTreeNode.Measure();
-			newTreeNode.SubtreeSize = Math.Max(newTreeNode.LateralSizeWithMargin, subtreeSize);
-			
-			return newTreeNode;
-		}*/
 		
 		/// <summary>
 		/// Given SubtreeSize for each node, positions the nodes, in a left-to-right or top-to-bottom fashion.

@@ -25,6 +25,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.objectNode = objectNode;
 		}
 		
+		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
+		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
+		
 		private ObjectGraphNode objectNode;
 		/// <summary>
 		/// Underlying ObjectNode.
@@ -34,8 +37,25 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			get { return objectNode; }
 		}
 		
-		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
-		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
+		/// <summary>
+		/// Tree-of-properties content of this node.
+		/// </summary>
+		public NestedNodeViewModel Content 
+		{ 
+			get; set;
+		}
+		
+		private PositionedGraphNodeControl nodeVisualControl;
+		/// <summary>
+		/// Visual control to be shown for this node.
+		/// </summary>
+		public PositionedGraphNodeControl NodeVisualControl
+		{
+			get
+			{
+				return this.nodeVisualControl;
+			}
+		}
 		
 		// TODO posNodeForObjectGraphNode will be a service, that will return existing posNodes or create empty new
 		public void InitContentFromObjectNode()
@@ -46,7 +66,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public void InitView()
 		{
-			this.nodeVisualControl = new NodeControl();
+			this.nodeVisualControl = new PositionedGraphNodeControl();
+			this.nodeVisualControl.MaxHeight = 200;
 			
 			this.nodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Expanded);
 			this.nodeVisualControl.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Collapsed);
@@ -54,20 +75,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public void FillView()
 		{
-			//this.nodeVisualControl.Root = this.Content;
-			foreach (var property in this.Properties)
+			this.nodeVisualControl.Root = this.Content;
+			/*foreach (var property in this.Properties)
 			{
 				property.Evaluate();
 				this.nodeVisualControl.AddProperty(property);
-			}
-		}
-		
-		/// <summary>
-		/// Tree-of-properties content of this node.
-		/// </summary>
-		public NestedNodeViewModel Content 
-		{ 
-			get; set;
+			}*/
 		}
 		
 		// TODO do proper tree iteration
@@ -83,17 +96,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		private NodeControl nodeVisualControl;
-		/// <summary>
-		/// Visual control to be shown for this node.
-		/// </summary>
-		public NodeControl NodeVisualControl
-		{
-			get
-			{
-				return this.nodeVisualControl;
-			}
-		}
+		
 		
 		public virtual IEnumerable<PositionedEdge> Edges
 		{

@@ -38,22 +38,28 @@ namespace Debugger.AddIn.Visualizers.Graph
             get { return _nodes; }
         }
        
-        /*
-        /// <summary>
-        /// All edges in the graph.
-        /// </summary>
-        public IEnumerable<ObjectEdge> Edges
+        // HACK to support expanding/collapsing, because expanding is done by modifying ObjectGraph and rebuiling PosGraph
+        public IEnumerable<ObjectGraphNode> ReachableNodes 
         {
-            get 
-            {
-            	foreach	(ObjectNode node in this.Nodes)
-            	{
-            		foreach (ObjectEdge edge in node.Edges)
-            		{
-            			yield return edge;
-            		}
-            	}
+        	get 
+        	{
+        		var seenNodes = new HashSet<ObjectGraphNode>();
+        		determineReachableNodes(this.Root, seenNodes);
+        		foreach	(var node in seenNodes)
+        		{
+        			yield return node;
+        		}
         	}
-        }*/
+        }
+        private void determineReachableNodes(ObjectGraphNode root, HashSet<ObjectGraphNode> seenNodes)
+        {
+        	seenNodes.Add(root);
+        	
+        	foreach(var prop in root.ComplexProperties)
+        	{
+        		if (prop.TargetNode != null && !seenNodes.Contains(prop.TargetNode))
+        			determineReachableNodes(prop.TargetNode, seenNodes);
+        	}
+        }
     }
 }

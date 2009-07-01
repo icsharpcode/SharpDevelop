@@ -32,7 +32,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// Is this property expanded?
 		/// </summary>
-		public bool IsExpanded { get; set; }
+		public bool IsPropertyExpanded { get; set; }
 		
 		/// <summary>
 		/// Edge outgoing from this property to another <see cref="PositionedNode"/>.

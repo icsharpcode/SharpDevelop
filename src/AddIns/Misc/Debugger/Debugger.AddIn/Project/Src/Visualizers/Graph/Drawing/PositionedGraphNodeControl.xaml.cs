@@ -52,7 +52,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 				this.view = initializeView(this.root);
 				// data virtualization, PropertyNodeViewModel implements IEvaluate
 				this.listView.ItemsSource = new VirtualizingObservableCollection<NestedNodeViewModel>(this.view);
-				//listView.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(listView_ScrollChanged));
 			}
 		}
 		
@@ -75,9 +74,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			}
 			
 			PositionedNodeProperty property = clickedNode.Property;
-			property.IsExpanded = !property.IsExpanded;
-			clickedButton.Content = property.IsExpanded ? "-p" : "+p";
-			if (property.IsExpanded)
+			//property.IsPropertyExpanded = !property.IsPropertyExpanded;  // done by databinding
+			clickedButton.Content = property.IsPropertyExpanded ? "-" : "+";
+			if (property.IsPropertyExpanded)
 			{
 				OnPropertyExpanded(property);
 			}
@@ -114,8 +113,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 					this.view.RemoveAt(clickedIndex + 1);
 				}
 			}
-
-			var a = new ListViewItem();
 
 			// set to Auto again to resize columns
 			var colName = (this.listView.View as GridView).Columns[0];

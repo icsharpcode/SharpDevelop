@@ -21,20 +21,19 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			
 			this.containingNode = containingNode;
 		}
-
 		
 		/// <summary>
 		/// Name displayed in GUI.
 		/// </summary>
-		public string Name { get; protected set; }
+		public string Name { get; set; }
 		/// <summary>
 		/// Text displayed in GUI.
 		/// </summary>
-		public string Text { get; protected set; }
+		public string Text { get; set; }
 		/// <summary>
 		/// Is this expandable node?
 		/// </summary>
-		public bool IsNested { get; protected set; }
+		public bool IsNested { get; set; }
 		/// <summary>
 		/// Does this node have any children?
 		/// </summary>

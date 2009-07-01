@@ -11,6 +11,7 @@ using Debugger;
 using Debugger.MetaData;
 using Debugger.Expressions;
 using Debugger.AddIn.Visualizers.Utils;
+using Debugger.AddIn.Visualizers.Common;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
@@ -79,13 +80,18 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			if (string.IsNullOrEmpty(expression))
 			{
-				throw new DebuggerVisualizerException("Expression cannot be empty.");
+				throw new DebuggerVisualizerException("Expression is empty.");
 			}
 			
 			resultGraph = new ObjectGraph();
+			Value rootValue = debuggerService.GetValueFromName(expression);
+			if (rootValue == null)
+			{
+				throw new DebuggerVisualizerException("Please use the visualizer when debugging.");
+			}
 			
 			// empty graph for null expression
-			if (!debuggerService.GetValueFromName(expression).IsNull)
+			if (!rootValue.IsNull)
 			{
 				//resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference(), expandedNodes);
 				resultGraph.Root = createNewNode(debuggerService.GetValueFromName(expression).GetPermanentReference());
@@ -135,8 +141,20 @@ namespace Debugger.AddIn.Visualizers.Graph
 			NestedNode contentRoot = new NestedNode(NestedNodeType.ThisNode);
 			thisNode.Content = contentRoot;
 			
+			var propertyList = getProperties(thisNode.PermanentReference);
+			propertyList.Sort(ObjectPropertyComparer.Instance);
+			foreach (var property in propertyList)
+			{
+				contentRoot.AddChild(new PropertyNode(property));
+			}
+		}
+		
+		private List<ObjectGraphProperty> getProperties(Value value)
+		{
+			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
+			
 			// take all properties for this value (type = value's real type)
-			foreach(Expression memberExpr in thisNode.PermanentReference.Expression.AppendObjectMembers(thisNode.PermanentReference.Type, this.memberBindingFlags))
+			foreach(Expression memberExpr in value.Expression.AppendObjectMembers(value.Type, this.memberBindingFlags))
 			{
 				checkIsOfSupportedType(memberExpr);
 				
@@ -145,15 +163,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 				{
 					// properties are now lazy-evaluated
 					//  string memberValueAsString = memberExpr.Evaluate(debuggerService.DebuggedProcess).InvokeToString();
-					AddAtomicPropertyChild(contentRoot, memberName, memberExpr);
+					propertyList.Add(createAtomicProperty(memberName, memberExpr));
 				}
 				else
 				{
 					ObjectGraphNode targetNode = null;
 					bool memberIsNull = memberExpr.IsNull();
-					AddComplexPropertyChild(contentRoot, memberName, memberExpr, targetNode, memberIsNull);
+					propertyList.Add(createComplesProperty(memberName, memberExpr, targetNode, memberIsNull));
 				}
 			}
+			
+			return propertyList;
 		}
 		
 		/// <summary>
@@ -238,24 +258,18 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		/// <summary>
-		/// Adds primitive property.
-		/// </summary>
-		public void AddAtomicPropertyChild(NestedNode node, string name, Expression expression)
+		public ObjectGraphProperty createAtomicProperty(string name, Expression expression)
 		{
-			// add child with no value (will be lazy-evaluated later)
-			node.AddChild(new PropertyNode(new ObjectGraphProperty
-			                               { Name = name, Value = "", Expression = expression, IsAtomic = true, TargetNode = null }));
+			// value is empty (will be lazy-evaluated later)
+			return new ObjectGraphProperty
+			         { Name = name, Value = "", Expression = expression, IsAtomic = true, TargetNode = null };
 		}
 		
-		/// <summary>
-		/// Adds complex property.
-		/// </summary>
-		public void AddComplexPropertyChild(NestedNode node, string name, Expression expression, ObjectGraphNode targetNode, bool isNull)
+		public ObjectGraphProperty createComplesProperty(string name, Expression expression, ObjectGraphNode targetNode, bool isNull)
 		{
-			// add child with no value (will be lazy-evaluated later)
-			node.AddChild(new PropertyNode(new ObjectGraphProperty
-			                               { Name = name, Value = "", Expression = expression, IsAtomic = false, TargetNode = targetNode, IsNull = isNull }));
+			// value is empty (will be lazy-evaluated later)
+			return new ObjectGraphProperty
+			         { Name = name, Value = "", Expression = expression, IsAtomic = false, TargetNode = targetNode, IsNull = isNull };
 		}
 		
 		/// <summary>

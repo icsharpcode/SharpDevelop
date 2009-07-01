@@ -89,7 +89,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 					anim.Completed += new EventHandler((o, e) => { Draw(newGraph); });
 					first = false;
 				}
-				//anim.From = new Point(Canvas.GetLeft(node.NodeVisualControl), Canvas.GetTop(node.NodeVisualControl));
 				anim.From = node.LeftTop;
 				
 				anim.To = newNode.LeftTop;
@@ -122,7 +121,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		private NodeControl addNodeToCanvas(PositionedGraphNode node)
+		private PositionedGraphNodeControl addNodeToCanvas(PositionedGraphNode node)
 		{
 			canvas.Children.Add(node.NodeVisualControl);
 			Canvas.SetLeft(node.NodeVisualControl, node.Left);

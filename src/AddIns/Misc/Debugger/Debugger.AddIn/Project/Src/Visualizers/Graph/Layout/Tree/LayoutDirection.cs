@@ -13,9 +13,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public enum LayoutDirection
 	{
-		[Display("Top to bottom")]
-		TopBottom,
 		[Display("Left to right")]
-		LeftRight
+		LeftRight,
+		[Display("Top to bottom")]
+		TopBottom
 	}
 }

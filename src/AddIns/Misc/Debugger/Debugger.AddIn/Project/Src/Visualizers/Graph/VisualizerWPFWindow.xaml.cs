@@ -92,49 +92,62 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		void refreshGraph()
 		{
-			this.objectGraph = rebuildGraph();
-			layoutGraph(this.objectGraph);
-			//GraphDrawer drawer = new GraphDrawer(graph);
-			//drawer.Draw(canvas);
+			bool graphBuiltOk = true;
+			guiClearException();
+			try
+			{
+				this.objectGraph = rebuildGraph();
+			}
+			catch(DebuggerVisualizerException ex)
+			{
+				graphBuiltOk = false;
+				guiHandleException(ex);
+			}
+			catch(Debugger.GetValueException ex)
+			{
+				graphBuiltOk = false;
+				guiHandleException(ex);
+			}
+			if (graphBuiltOk)
+			{
+				layoutGraph(this.objectGraph);
+			}
 		}
 		
 		ObjectGraph rebuildGraph()
 		{
 			this.objectGraphBuilder = new ObjectGraphBuilder(debuggerService);
-			try
-			{
-				ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Building graph for expression: " + txtExpression.Text);
-				return this.objectGraphBuilder.BuildGraphForExpression(txtExpression.Text, this.expandedNodes);
-			}
-			catch(DebuggerVisualizerException ex)
-			{
-				guiHandleException(ex);
-				return null;
-			}
-			catch(Debugger.GetValueException ex)
-			{
-				guiHandleException(ex);
-				return null;
-			}
+			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Building graph for expression: " + txtExpression.Text);
+			return this.objectGraphBuilder.BuildGraphForExpression(txtExpression.Text, this.expandedNodes);
 		}
 		
 		void layoutGraph(ObjectGraph graph)
 		{
-			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Calculating graph layout");
 			Layout.TreeLayouter layouter = new Layout.TreeLayouter();
-			
+
 			this.oldPosGraph = this.currentPosGraph;
+			
+			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Calculating graph layout");
 			this.currentPosGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expandedNodes);
+			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Graph layout completed");
+			
 			registerExpandCollapseEvents(this.currentPosGraph);
 			
-			//var graphDiff = new GraphMatcher().MatchGraphs(oldPosGraph, currentPosGraph);
-			//this.graphDrawer.StartAnimation(oldPosGraph, currentPosGraph, graphDiff);
-			this.graphDrawer.Draw(this.currentPosGraph);
+			var graphDiff = new GraphMatcher().MatchGraphs(oldPosGraph, currentPosGraph);
+			this.graphDrawer.StartAnimation(oldPosGraph, currentPosGraph, graphDiff);
+			//this.graphDrawer.Draw(this.currentPosGraph);
+		}
+		
+		void guiClearException()
+		{
+			this.pnlError.Visibility = Visibility.Collapsed;
 		}
 		
 		void guiHandleException(System.Exception ex)
 		{
-			MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+			this.txtError.Text = ex.Message;
+			this.pnlError.Visibility = Visibility.Visible;
+			//MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 		
 		void registerExpandCollapseEvents(PositionedGraph posGraph)

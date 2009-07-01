@@ -32,6 +32,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			get { return this.positionedProperty.IsEvaluated; }
 		}
 		
+		public bool IsPropertyExpanded
+		{
+			get { return this.positionedProperty.IsPropertyExpanded; }
+			set { this.positionedProperty.IsPropertyExpanded = value; }
+		}
+		
 		public void Evaluate()
 		{
 			this.positionedProperty.Evaluate();
@@ -46,10 +52,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			PropertyNode sourcePropertyNode = source as PropertyNode;
 			
 			this.Name = sourcePropertyNode.Property.Name;
-			this.Text = "";		// lazy evaluated
+			this.Text = sourcePropertyNode.Property.Value;		// lazy evaluated
 			this.IsNested = false;
 			this.IsExpanded = false;
-			this.Name = sourcePropertyNode.Property.Name;
 			this.positionedProperty = new PositionedNodeProperty(sourcePropertyNode.Property, this.ContainingNode);
 		}
 	}

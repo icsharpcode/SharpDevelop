@@ -14,6 +14,12 @@ namespace Debugger.AddIn.Visualizers.Common
 	/// </summary>
 	class ObjectPropertyComparer : IComparer<ObjectProperty>
 	{
+		private static readonly ObjectPropertyComparer instance = new ObjectPropertyComparer();
+		public static ObjectPropertyComparer Instance
+		{
+			get { return instance; }
+		}
+		
 		public int Compare(ObjectProperty prop1, ObjectProperty prop2)
 		{
 			// order by IsAtomic, Name

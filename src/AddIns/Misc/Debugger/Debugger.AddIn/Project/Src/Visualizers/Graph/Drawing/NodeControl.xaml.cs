@@ -72,7 +72,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			{
 				Button btnExpandCollapse = new Button();
 				btnExpandCollapse.Tag = property;
-				btnExpandCollapse.Content = property.IsExpanded ? "-" : "+";
+				btnExpandCollapse.Content = property.IsPropertyExpanded ? "-" : "+";
 				btnExpandCollapse.Width = 20;
 				propertyGrid.Children.Add(btnExpandCollapse);
 				Grid.SetRow(btnExpandCollapse, nRow);
@@ -110,9 +110,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			Button buttonClicked = ((Button)sender);
 			var property = (PositionedNodeProperty)buttonClicked.Tag;
 			
-			property.IsExpanded = !property.IsExpanded;
-			buttonClicked.Content = property.IsExpanded ? "-" : "+";
-			if (property.IsExpanded)
+			property.IsPropertyExpanded = !property.IsPropertyExpanded;
+			buttonClicked.Content = property.IsPropertyExpanded ? "-" : "+";
+			if (property.IsPropertyExpanded)
 			{
 				OnPropertyExpanded(property);
 			}
