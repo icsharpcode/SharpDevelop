@@ -34,6 +34,8 @@ namespace ICSharpCode.PythonBinding
 				return new PythonListViewComponent(parent, component);
 			} else if (component is ContextMenuStrip) {
 				return new PythonContextMenuComponent(parent, component);
+			} else if (component is ImageList) {
+				return new PythonImageListComponent(parent, component);
 			}
 			return new PythonDesignerComponent(parent, component);
 		}

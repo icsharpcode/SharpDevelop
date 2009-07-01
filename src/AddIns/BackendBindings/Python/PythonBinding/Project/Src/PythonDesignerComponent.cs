@@ -543,7 +543,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public static bool IsResourcePropertyValue(object propertyValue)
 		{
-			return (propertyValue is Image) || (propertyValue is Icon);
+			return (propertyValue is Image) || (propertyValue is Icon) || (propertyValue is ImageListStreamer);
 		}		
 		
 		/// <summary>

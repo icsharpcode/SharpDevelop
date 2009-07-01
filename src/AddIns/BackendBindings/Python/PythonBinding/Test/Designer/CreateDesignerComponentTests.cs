@@ -41,5 +41,13 @@ namespace PythonBinding.Tests.Designer
 				Assert.IsInstanceOf(typeof(PythonDesignerRootComponent), PythonDesignerComponentFactory.CreateDesignerRootComponent(textBox));
 			}
 		}
+		
+		[Test]
+		public void ImageListComponent()
+		{
+			using (ImageList imageList = new ImageList()) {
+				Assert.IsInstanceOf(typeof(PythonImageListComponent), PythonDesignerComponentFactory.CreateDesignerComponent(imageList));
+			}
+		}
 	}
 }
