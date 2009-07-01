@@ -33,8 +33,6 @@ namespace ICSharpCode.XamlBinding
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
-			ParseInformation info = ParserService.GetParseInformation(editor.FileName);
-			
 			XamlCompletionContext context = CompletionDataHelper.ResolveCompletionContext(editor, ch);
 			ICompletionItemList list;
 			
@@ -122,7 +120,8 @@ namespace ICSharpCode.XamlBinding
 				default:
 					if (context.Description != XamlContextDescription.None && !char.IsWhiteSpace(ch)) {
 						editor.Document.Insert(editor.Caret.Offset, ch.ToString());
-						if (!context.AttributeName.StartsWith("xmlns"))
+						string word = editor.Document.Text.GetWordBeforeOffset(editor.Caret.Offset);
+						if (!(context.AttributeName.StartsWith("xmlns") || word.StartsWith("xmlns")))
 							this.CtrlSpace(editor);
 						return CodeCompletionKeyPressResult.EatKey;
 					}
@@ -243,6 +242,8 @@ namespace ICSharpCode.XamlBinding
 		static bool DoMarkupExtensionCompletion(XamlCompletionContext context)
 		{
 			if (context.Description == XamlContextDescription.InMarkupExtension && context.AttributeValue != null && !context.AttributeValue.IsString) {
+				if (!XamlBindingOptions.UseExtensionCompletion)
+					return false;
 				var completionList = CompletionDataHelper.CreateMarkupExtensionCompletion(context);
 				context.Editor.ShowCompletionWindow(completionList);
 				var insightList = CompletionDataHelper.CreateMarkupExtensionInsight(context);

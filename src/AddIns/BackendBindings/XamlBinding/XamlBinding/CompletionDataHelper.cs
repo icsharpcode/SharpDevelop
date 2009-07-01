@@ -69,7 +69,9 @@ namespace ICSharpCode.XamlBinding
 			if (text[offset] == '>')
 				description = XamlContextDescription.None;
 			
-			if (elementStartIndex > -1 && (char.IsWhiteSpace(text[offset]) || !string.IsNullOrEmpty(attribute) || Extensions.Is(text[offset], '"', '\'')))
+			string wordBeforeIndex = text.GetWordBeforeOffset(offset);
+			
+			if (elementStartIndex > -1 && (char.IsWhiteSpace(text[offset]) || !string.IsNullOrEmpty(attribute) || Extensions.Is(text[offset], '"', '\'') || !wordBeforeIndex.StartsWith("<")))
 				description = XamlContextDescription.InTag;
 
             if (inAttributeValue) {
@@ -78,7 +80,7 @@ namespace ICSharpCode.XamlBinding
                 if (value != null && !value.IsString)
                     description = XamlContextDescription.InMarkupExtension;
 
-                if (attributeValue.StartsWith("{}") && attributeValue.Length > 2)
+                if (attributeValue.StartsWith("{}", StringComparison.Ordinal) && attributeValue.Length > 2)
                     description = XamlContextDescription.InAttributeValue;
             }
 			
@@ -192,26 +194,16 @@ namespace ICSharpCode.XamlBinding
 			public int Compare(XmlnsCompletionItem x, XmlnsCompletionItem y)
 			{
 				if (x.IsUrl && y.IsUrl)
-					return x.Namespace.CompareTo(y.Namespace);
+					return string.CompareOrdinal(x.Namespace, y.Namespace);
 				if (x.IsUrl)
 					return -1;
 				if (y.IsUrl)
 					return 1;
 				if (x.Assembly == y.Assembly)
-					return x.Namespace.CompareTo(y.Namespace);
+					return string.CompareOrdinal(x.Namespace, y.Namespace);
 				else
-					return x.Assembly.CompareTo(y.Assembly);
+					return string.CompareOrdinal(x.Assembly, y.Assembly);
 			}
-		}
-		
-		static bool IsReaderAtTarget(XmlTextReader r, int caretLine, int caretColumn)
-		{
-			if (r.LineNumber > caretLine)
-				return true;
-			else if (r.LineNumber == caretLine)
-				return r.LinePosition >= caretColumn;
-			else
-				return false;
 		}
 		
 		public static IList<ICompletionItem> CreateListForElement(ParseInformation parseInfo, string fileContent, int caretLine, int caretColumn, bool addOpeningBrace)
@@ -266,7 +258,7 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				case XamlContextDescription.AtTag:
-					if (editor.Document.GetCharAt(editor.Caret.Offset - 1) == '.' || context.PressedKey == '.') {
+					if ((editor.Caret.Offset > 0 && editor.Document.GetCharAt(editor.Caret.Offset - 1) == '.') || context.PressedKey == '.') {
 						var loc = editor.Document.OffsetToPosition(Utils.GetParentElementStart(editor));
 						var existing = Utils.GetListOfExistingAttributeNames(editor.Document.Text, loc.Line, loc.Column);
 						list.Items.AddRange(CreateListForAttributeName(context, existing).RemoveEvents());
@@ -302,20 +294,6 @@ namespace ICSharpCode.XamlBinding
 			return list;
 		}
 		
-		static bool FilterCollectionAttributes(ICompletionItem item)
-		{
-			if (item is XamlCodeCompletionItem) {
-				var comItem = item as XamlCodeCompletionItem;
-				if (comItem.Entity is IProperty) {
-					var prop = comItem.Entity as IProperty;
-					var c = prop.ReturnType.GetUnderlyingClass();
-					return c != null && c.ClassInheritanceTree.Any(b => b.FullyQualifiedName == "System.Collections.IEnumerable");
-				}
-			}
-			
-			return false;
-		}
-		
 		public static IEnumerable<IInsightItem> CreateMarkupExtensionInsight(XamlCompletionContext context)
 		{
 			var markup = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.Editor.Caret.Offset);
@@ -337,7 +315,6 @@ namespace ICSharpCode.XamlBinding
 		public static ICompletionItemList CreateMarkupExtensionCompletion(XamlCompletionContext context)
 		{
 			var list = new XamlCompletionItemList();
-			var path = XmlParser.GetActiveElementStartPathAtIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
 			var markup = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.Editor.Caret.Offset);
 			var trr = ResolveMarkupExtensionType(markup, context);
 			
@@ -383,7 +360,8 @@ namespace ICSharpCode.XamlBinding
 					if (context.AttributeValue.ExtensionValue.PositionalArguments.Count <= 1) {
 						list.Items.AddRange(CreateListForElement(info, editor.Document.Text, editor.Caret.Line, editor.Caret.Column, false));
 						AttributeValue selItem = context.AttributeValue.ExtensionValue.PositionalArguments.LastOrDefault();
-						if (selItem != null && selItem.IsString) {
+						string word = editor.GetWordBeforeCaret().TrimEnd();
+						if (selItem != null && selItem.IsString && word == selItem.StringValue) {
 							list.PreselectionLength = selItem.StringValue.Length;
 						}
 					}
@@ -549,11 +527,6 @@ namespace ICSharpCode.XamlBinding
 			var rr = resolver.Resolve(new ExpressionResult(value, context), context.ParseInformation, context.Editor.Document.Text);
 			return rr;
 		}
-		
-		static IMethod FindCompletableCtor(IList<IMethod> ctors, int index)
-		{
-			return null;
-		}
 
 		public static TypeResolveResult ResolveMarkupExtensionType(MarkupExtensionInfo markup, XamlCompletionContext context)
 		{
@@ -566,7 +539,7 @@ namespace ICSharpCode.XamlBinding
 			return trr;
 		}
 		
-		public static IReturnType ResolveType(string name, XamlCompletionContext context)
+		public static IReturnType ResolveType(string name, XamlContext context)
 		{
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
 			if (cu == null)
@@ -627,19 +600,6 @@ namespace ICSharpCode.XamlBinding
 			result &= (p1.IsRef == p2.IsRef);
 			
 			return result;
-		}
-		
-		static string GetPrefixForNamespace(string @namespace, string fileContent, int caretLine, int caretColumn)
-		{
-			using (XmlTextReader r = Utils.CreateReaderAtTarget(fileContent, caretLine, caretColumn)) {
-				foreach (var item in r.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml)) {
-						if (item.Value == @namespace) {
-							return item.Key;
-						}
-				}
-				
-				return string.Empty;
-			}
 		}
 		
 		static IDictionary<string, IEnumerable<IClass>> GetClassesFromContext(ParseInformation parseInfo, string fileContent, int caretLine, int caretColumn)

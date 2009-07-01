@@ -57,6 +57,7 @@ namespace ICSharpCode.XamlBinding
 				foreach (HighlightingInfo info in infos) {
 					MemberResolveResult rr = resolver.Resolve(info.GetExpressionResult(), parseInfo, fileContent) as MemberResolveResult;
 					IMember member = (rr != null) ? rr.ResolvedMember : null;
+					
 					if (member != null) {
 						if (member is IEvent)
 							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
@@ -73,12 +74,14 @@ namespace ICSharpCode.XamlBinding
 		HighlightingInfo[] GetInfoForLine(DocumentLine line)
 		{
 			int index = -1;
+			int ltCharIndex = -1;
+			XamlContext context = null;
 			List<HighlightingInfo> infos = new List<HighlightingInfo>();
-		
+			
 			do {
 				index = line.Text.IndexOf('=', index + 1);
 				if (index > -1) {
-					XamlContext context = CompletionDataHelper.ResolveContext(this.fileContent, this.fileName, line.LineNumber, index + 1);
+					context = CompletionDataHelper.ResolveContext(this.fileContent, this.fileName, line.LineNumber, index + 1);
 					if (!string.IsNullOrEmpty(context.AttributeName)) {
 						int startIndex = line.Text.Substring(0, index).LastIndexOf(context.AttributeName);
 						infos.Add(new HighlightingInfo(context.AttributeName, startIndex, startIndex + context.AttributeName.Length, line.Offset, context));

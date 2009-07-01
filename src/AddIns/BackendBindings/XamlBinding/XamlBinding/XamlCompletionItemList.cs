@@ -135,6 +135,17 @@ namespace ICSharpCode.XamlBinding
 				context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 				context.Editor.Caret.Offset--;
 			}
+			
+			switch (item.Text) {
+				case "![CDATA[":
+					context.Editor.Document.Insert(context.Editor.Caret.Offset, "]]>");
+					context.Editor.Caret.Offset -= 3;
+					break;
+				case "?":
+					context.Editor.Document.Insert(context.Editor.Caret.Offset, "?>");
+					context.Editor.Caret.Offset -= 2;
+					break;
+			}
 		}
 		
 		static void CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem)
@@ -167,8 +178,8 @@ namespace ICSharpCode.XamlBinding
 					node.Name = completionItem.HandlerName;
 					
 					node.Modifier = Modifiers.None;
-					
-					IViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName);
+
+					IViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName, XamlBindingOptions.SwitchToCodeViewAfterInsertion);
 					IFileDocumentProvider document = viewContent as IFileDocumentProvider;
 					
 					if (viewContent != null || document != null) {

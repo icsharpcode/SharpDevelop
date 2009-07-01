@@ -5,10 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
+using ICSharpCode.XmlEditor;
 using System;
 using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.XamlBinding;
 
@@ -16,31 +18,24 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 {
 	public class RemoveMarginCommand : XamlMenuCommand
 	{
-		protected override void Refactor(ITextEditor editor, XmlDocument document)
+		protected override void Refactor(ITextEditor editor, XDocument document)
 		{
-			RemoveRecursive(document, "Margin");
+			RemoveRecursive(document.Root, "Margin");
 		}
 		
-		protected void RemoveRecursive(XmlNode pNode, string name)
+		protected void RemoveRecursive(XElement element, string name)
 		{
-			foreach (XmlNode node in pNode.ChildNodes) {
-				node.Attributes.Remove(name);
-				RemoveRecursive(node, name);
-			}
-		}
-		
-		protected void RemoveRecursive(XmlNode pNode, string name, string namespaceURI)
-		{
-			foreach (XmlNode node in pNode.ChildNodes) {
-				node.Attributes.Remove(name, namespaceURI);
-				RemoveRecursive(node, name, namespaceURI);
-			}
+			foreach (XAttribute a in element.Attributes(name))
+				a.Remove();
+			
+			foreach (XElement e in element.Elements())
+				RemoveRecursive(e, name);
 		}
 	}
 	
 	public class GroupIntoMenuItem : XamlMenuCommand
 	{
-		protected sealed override void Refactor(ITextEditor editor, XmlDocument document)
+		protected sealed override void Refactor(ITextEditor editor, XDocument document)
 		{
 			if (editor.SelectionLength == 0) {
 				MessageService.ShowError("The selected XAML is invalid!");
@@ -50,11 +45,9 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	
 	public class ExtractPropertiesAsStyleCommand : XamlMenuCommand
 	{
-		protected override void Refactor(ITextEditor editor, XmlDocument document)
+		protected override void Refactor(ITextEditor editor, XDocument document)
 		{
-			string[] attributes = Utils.GetListOfExistingAttributeNames(editor.Document.Text, editor.Caret.Line, editor.Caret.Column);
-			
-			
+			XmlElementPath path = XmlParser.GetParentElementPath(editor.Document.Text.Substring(0, editor.SelectionStart));
 		}
 	}
 }

@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -32,8 +33,7 @@ namespace ICSharpCode.XamlBinding.PowerToys
 				
 				if (provider != null) {
 					TextReader reader = provider.TextEditor.Document.CreateReader();
-					XmlDocument document = new XmlDocument();
-					document.Load(reader);
+					XDocument document = XDocument.Load(reader, LoadOptions.PreserveWhitespace | LoadOptions.SetLineInfo);
 					Refactor(provider.TextEditor, document);
 					StringWriter sWriter = new StringWriter();
 				    XmlTextWriter writer = new XmlTextWriter(sWriter);
@@ -47,6 +47,6 @@ namespace ICSharpCode.XamlBinding.PowerToys
 			}
 		}
 		
-		protected abstract void Refactor(ITextEditor editor, XmlDocument document);
+		protected abstract void Refactor(ITextEditor editor, XDocument document);
 	}
 }

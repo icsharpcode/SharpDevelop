@@ -5,12 +5,14 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.Core;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -143,12 +145,11 @@ namespace ICSharpCode.XamlBinding
 		public string HandlerName { get; private set; }
 		
 		public NewEventCompletionItem(IEvent eventType, string targetName)
-			: base("<new event handler>") // TODO : replace by resource string
+			: base(StringParser.Parse("${res:AddIns.XamlBinding.NewEventHandlerItem}"))
 		{
 			this.eventType = eventType;
 			this.targetName = targetName;
-			// TODO : Add formatting options
-			this.HandlerName = this.TargetName + "_" + this.EventType.Name;
+			this.HandlerName = ParseNamePattern(this.TargetName, this.EventType.Name);
 		}
 		
 		public override void Complete(CompletionContext context)
@@ -156,6 +157,37 @@ namespace ICSharpCode.XamlBinding
 			context.Editor.Document.Replace(context.StartOffset, context.Length, this.HandlerName);
 			
 			context.EndOffset = context.StartOffset + this.HandlerName.Length;
+		}
+		
+		public static string ParseNamePattern(string objectName, string eventName)
+		{
+			string name = XamlBindingOptions.EventHandlerNamePattern;
+			
+			foreach (Match match in Regex.Matches(name, "%[A-z0-9]*%")) {
+				switch (match.Value.ToLowerInvariant()) {
+					case "%object%":
+						if (char.IsUpper(match.Value[1]))
+							objectName = objectName.ToUpper()[0] + objectName.Substring(1, objectName.Length - 1);
+						else
+							objectName = objectName.ToLower()[0] + objectName.Substring(1, objectName.Length - 1);
+						name = name.Replace(match.Index, match.Length, objectName);
+						break;
+					case "%event%":
+						if (char.IsUpper(match.Value[1]))
+							eventName = eventName.ToUpper()[0] + eventName.Substring(1, eventName.Length - 1);
+						else
+							eventName = eventName.ToLower()[0] + eventName.Substring(1, eventName.Length - 1);
+						name = name.Replace(match.Index, match.Length, eventName);
+						break;
+					case "%%":
+						name = name.Replace(match.Index, match.Length, "%");
+						break;
+					default:
+						throw new ArgumentException("Pattern identifier invalid", match.Value);
+				}
+			}
+			
+			return name;
 		}
 	}
 	

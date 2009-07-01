@@ -52,7 +52,7 @@
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<OptionPanel id = "XamlCompletionPanel"
 		             insertafter = "Markers"
-		             label = "${res:ICSharpCode.XamlBinding.Options.Title}"
+		             label = "${res:AddIns.XamlBinding.Options.Title}"
 		             class = "ICSharpCode.XamlBinding.Options.CodeCompletion" />
 	</Path>
 
@@ -62,13 +62,13 @@
 				<Condition name="ActiveContentExtension" activeextension=".xaml" />
 				<Condition name="WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" />
 			</And>
-			<MenuItem id="XamlRefactoring" insertafter="Refactor" insertbefore="Project" label="Refactor" type="Menu">
+			<MenuItem id="XamlRefactoring" insertafter="Refactor" insertbefore="Project" label="${res:XML.MainMenu.RefactorMenu}" type="Menu">
 				<MenuItem id="RemoveMargin"
 						   class="ICSharpCode.XamlBinding.PowerToys.Commands.RemoveMarginCommand"
-						 label="Remove Margins" />
+						 label="${res:AddIns.XamlBinding.Menu.RemoveMargin}" />
 				<MenuItem id="RemoveUnnecessaryAttributes"
 						   class="ICSharpCode.XamlBinding.PowerToys.Commands.RemoveUnnecessaryAttributesCommand"
-						 label="Remove unnecessary attributes" />
+						 label="${res:AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes}" />
 				<MenuItem type="Separator" />
 				<!-- <MenuItem type="Builder" class="" /> -->
 			</MenuItem>

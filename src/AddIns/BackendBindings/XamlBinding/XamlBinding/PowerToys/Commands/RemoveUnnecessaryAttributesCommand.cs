@@ -18,13 +18,13 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	/// </summary>
 	public class RemoveUnnecessaryAttributesCommand : RemoveMarginCommand
 	{
-		protected override void Refactor(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, System.Xml.XmlDocument document)
+		protected override void Refactor(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, System.Xml.Linq.XDocument document)
 		{
-			RemoveRecursive(document, "Margin");
-			RemoveRecursive(document, "Name");
-			RemoveRecursive(document, "Name", CompletionDataHelper.XamlNamespace);
-			RemoveRecursive(document, "MinWidth");
-			RemoveRecursive(document, "MinHeight");
+			RemoveRecursive(document.Root, "Margin");
+//			RemoveRecursive(document, "Name");
+//			RemoveRecursive(document, "Name", CompletionDataHelper.XamlNamespace);
+			RemoveRecursive(document.Root, "MinWidth");
+			RemoveRecursive(document.Root, "MinHeight");
 			// set all row and column definitions to Auto
 		}
 	}
