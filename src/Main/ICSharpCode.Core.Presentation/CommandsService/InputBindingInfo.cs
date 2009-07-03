@@ -18,7 +18,7 @@ namespace ICSharpCode.Core.Presentation
 			IsModifyed = true;
 			OldInputBindings = new InputBindingCollection();
 			NewInputBindings = new InputBindingCollection();
-			Gestures = new InputGestureCollection();
+			DefaultGestures = new InputGestureCollection();
 		
 			Categories = new List<InputBindingCategory>();
 		}
@@ -131,19 +131,34 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 	
-		private InputGestureCollection _gestures;
+		private InputGestureCollection _defaultGestures;
 		
 		/// <summary>
 		/// Gestures which triggers this binding
 		/// </summary>
-		public InputGestureCollection Gestures { 
+		public InputGestureCollection DefaultGestures { 
 			get {
-				return _gestures;
+				return _defaultGestures;
 			}
 			set {
-				_gestures = value;
+				_defaultGestures = value;
 			}
 		}
+		
+		/// <summary>
+		/// Gestures which triggers this binding
+		/// </summary>
+		public InputGestureCollection ActiveGestures { 
+			get {
+				if(UserDefinedGesturesManager.CurrentProfile == null 
+				   || UserDefinedGesturesManager.CurrentProfile[Identifier] == null) {
+					return DefaultGestures;
+				} 
+				
+				return UserDefinedGesturesManager.CurrentProfile[Identifier];
+			}
+		}
+		
 		
 		/// <summary>
 		/// Name of the routed command which will be invoked when this binding is triggered
@@ -184,8 +199,8 @@ namespace ICSharpCode.Core.Presentation
 			OldInputBindings = NewInputBindings;
 			
 			NewInputBindings = new InputBindingCollection();
-			if(Gestures != null) {
-				foreach(InputGesture gesture in Gestures) {
+			if(ActiveGestures != null) {
+				foreach(InputGesture gesture in ActiveGestures) {
 					var inputBinding = new InputBinding(RoutedCommand, gesture);
 					NewInputBindings.Add(inputBinding);
 				}
@@ -257,6 +272,33 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		internal InputBindingCollection NewInputBindings
 		{
+			get; set;
+		}
+		
+		public InputBindingIdentifier Identifier {
+			get {
+				var identifier = new InputBindingIdentifier();
+				identifier.OwnerInstanceName = OwnerInstanceName;
+				identifier.OwnerTypeName = OwnerTypeName;
+				identifier.RoutedCommandName = RoutedCommandName;
+				
+				return identifier;
+			}
+		}
+	}
+	
+
+	public struct InputBindingIdentifier 
+	{
+		public string OwnerInstanceName {
+			get; set;
+		}
+		
+		public string OwnerTypeName {
+			get; set;
+		}
+		
+		public string RoutedCommandName {
 			get; set;
 		}
 	}

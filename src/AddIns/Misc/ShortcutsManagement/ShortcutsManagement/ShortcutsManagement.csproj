@@ -63,7 +63,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -90,6 +89,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Src\Dialogs\CreateNewProfilePrompt.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Src\Dialogs\MultiKeyGestureTextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -129,10 +132,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Src\Converters\AdditionConverter.cs" />
     <Compile Include="Src\Converters\GesturesCollectionConverter.cs" />
     <Compile Include="Src\Converters\InputGestureConverter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Converters\NotNullOrEmptyConverter.cs" />
+    <Compile Include="Src\Converters\ProfilesComboBoxItemStyleSelector.cs" />
+    <Compile Include="Src\Converters\ProfileToStringConverter.cs" />
     <Compile Include="Src\Converters\ShortcutCategorySubElementsMergedConverter.cs" />
     <Compile Include="Src\Data\AddIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -149,9 +156,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Src\Data\IShortcutTreeEntry.cs" />
+    <Compile Include="Src\Data\SeparatorData.cs" />
     <Compile Include="Src\Data\Shortcut.cs" />
     <Compile Include="Src\Data\ShortcutCategory.cs" />
     <Compile Include="Src\Data\ShortcutsFinder.cs" />
+    <Compile Include="Src\Data\UserGestureProfileAction.cs" />
+    <Compile Include="Src\Dialogs\CreateNewProfilePrompt.xaml.cs">
+      <DependentUpon>CreateNewProfilePrompt.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Dialogs\MultiKeyGestureTextBox.xaml.cs">
       <DependentUpon>MultiKeyGestureTextBox.xaml</DependentUpon>
     </Compile>
@@ -186,11 +198,12 @@
     <Resource Include="Resources\key_enter_pressed.png" />
     <Resource Include="Resources\block_small.png" />
     <Resource Include="Resources\delete_small.png" />
-    <Resource Include="Resources\info_small.png" />
     <Resource Include="Resources\plus_small.png" />
     <Resource Include="Resources\search_small.png" />
     <Resource Include="Resources\tick_small.png" />
     <Resource Include="Resources\warning_small.png" />
+    <Resource Include="Resources\info_big.png" />
+    <Resource Include="Resources\info_mid.png" />
     <Content Include="ShortcutsManagement.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

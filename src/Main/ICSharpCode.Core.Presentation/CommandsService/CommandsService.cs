@@ -67,7 +67,7 @@ namespace ICSharpCode.Core.Presentation
 					inputBindingInfo.RoutedCommandName = routedCommandName;
 					
 					var defaultGesture = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(codon.Properties["shortcut"]);
-					inputBindingInfo.Gestures.AddRange(defaultGesture);
+					inputBindingInfo.DefaultGestures.AddRange(defaultGesture);
 					
 					var menuCategories = CommandManager.RegisterInputBindingCategories(categoryPath);
 					inputBindingInfo.Categories.AddRange(menuCategories);
@@ -154,7 +154,7 @@ namespace ICSharpCode.Core.Presentation
 					
 					inputBindingInfo.AddIn = desc.Codon.AddIn;
 					inputBindingInfo.RoutedCommandName = desc.Command;
-					inputBindingInfo.Gestures = gestures;
+					inputBindingInfo.DefaultGestures = gestures;
 					
 					if(!string.IsNullOrEmpty(desc.CommandText)) {
 						inputBindingInfo.RoutedCommandText = desc.CommandText;
@@ -187,7 +187,7 @@ namespace ICSharpCode.Core.Presentation
 				
 				inputBindingInfo.AddIn = desc.Codon.AddIn;
 				inputBindingInfo.RoutedCommandName = desc.Command;
-				inputBindingInfo.Gestures = gestures;
+				inputBindingInfo.DefaultGestures = gestures;
 				
 				if(!string.IsNullOrEmpty(desc.CommandText)) {
 					inputBindingInfo.RoutedCommandText = desc.CommandText;

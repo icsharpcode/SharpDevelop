@@ -2,13 +2,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Converters="clr-namespace:ICSharpCode.ShortcutsManagement.Converters">
 
-
-
     <Converters:GesturesListConverter x:Key="GesturesListConverter" />
     <Converters:ShortcutCategorySubElementsMergedConverter x:Key="ShortcutsTreeConverter" />
     <Converters:TypeNameConverter x:Key="TypeNameConverter" />
     <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-    
+    <Converters:NotNullOrEmptyConverter x:Key="NotNullOrEmptyConverter" />
+    <Converters:ProfileToStringConverter x:Key="ProfileToStringConverter" />
+    <Converters:InputGestureConverter x:Key="InputGestureConverter" />
+    <Converters:AddidionConverter x:Key="AddidionConverter" />
 
     <LinearGradientBrush x:Key="SelectedItemBackground" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="#3194FF" Offset="0" />
@@ -146,5 +147,35 @@
     </Style>
 
 
-    <Converters:InputGestureConverter x:Key="InputGestureConverter" />
+    <Style TargetType="{x:Type ListBoxItem}" x:Key="SeparatorStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Separator HorizontalAlignment="Stretch" IsEnabled="false" Margin="5"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ListBoxItem}" x:Key="ProfileActionStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <TextBlock x:Name="textBlock" TextDecorations="Underline" Foreground="Blue" Margin="5" HorizontalAlignment="Left" TextAlignment="Left" >
+                                        <TextBlock.Style>
+                                            <Style>
+                                                <Style.Triggers>
+                                                    <Trigger Property="TextBlock.IsMouseOver" Value="True">
+                                                        <Setter Property="TextBlock.Background" Value="{StaticResource SelectedItemBackground}" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                        <ContentPresenter />
+                    </TextBlock>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

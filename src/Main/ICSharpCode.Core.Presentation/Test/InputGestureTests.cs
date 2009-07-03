@@ -122,7 +122,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 		[Test]
 		public void MultiKeyGesturesMatchStartsWithTest()
 		{
-			var template1 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+D");
+			var template1 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+");
 			var original1 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+D");
 			Assert.IsTrue(template1.IsTemplateFor(original1, GestureCompareMode.StartsWith));
 			Assert.IsTrue(original1.IsTemplateFor(template1, GestureCompareMode.StartsWith));

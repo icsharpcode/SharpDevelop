@@ -87,16 +87,6 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         }
 
         /// <summary>
-        /// Display shorcut management window
-        /// </summary>
-        /// <param name="shortcut">Shortcut to modify</param>
-        private void ShowShortcutManagementWindow(Shortcut shortcut)
-        {
-            var shortcutManagementWindow = new ShortcutManagementWindow(shortcut, RootEntries);
-            shortcutManagementWindow.ShowDialog();
-        }
-
-        /// <summary>
         /// Select first enabled shortcut in shortcut tree
         /// </summary>
         /// <param name="setFocus">Set focus to this shortcut entry</param>
@@ -230,6 +220,8 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             }
         }
 
+        public event EventHandler ShortcutModified;
+
 
         /// <summary>
         /// Raised when user presses a key inside search box
@@ -249,7 +241,10 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             // If enter is pressed open shortcut configuration
             if (keyboardDevice.Modifiers == ModifierKeys.None && e.Key == Key.Enter && shortcutsTreeView.SelectedItem is Shortcut) {
                 e.Handled = true;
-                ShowShortcutManagementWindow((Shortcut)shortcutsTreeView.SelectedItem);
+                if(ShortcutModified != null)
+                {
+                    ShortcutModified.Invoke(sender, null);
+                }
                 return;
             }
         }
@@ -283,7 +278,10 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         {
             if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2) {
                 if (shortcutsTreeView.SelectedItem is Shortcut) {
-                    ShowShortcutManagementWindow((Shortcut)shortcutsTreeView.SelectedItem);
+                    if(ShortcutModified != null)
+                    {
+                        ShortcutModified.Invoke(sender, null);
+                    }
                 }
             }
         }

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.ShortcutsManagement.Data;
 
 namespace ICSharpCode.ShortcutsManagement.Dialogs
@@ -20,24 +18,18 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         /// <summary>
         /// Modified shortcut copy
         /// </summary>
-        private readonly Shortcut shortcutCopy;
-
-        /// <summary>
-        /// Modified shortcut. 
-        /// 
-        /// Original shortcut is modified only when "Save" button is pressed
-        /// </summary>
-        private readonly Shortcut shortcutOriginal;
+        public Shortcut Shortcut
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Deep copy of addins list (including copies of categories and shortcuts)
         /// </summary>
-        private readonly ICollection<IShortcutTreeEntry> rootEntriesCopy = new ObservableCollection<IShortcutTreeEntry>();
-
-        /// <summary>
-        /// List of all addins
-        /// </summary>
-        private readonly ICollection<IShortcutTreeEntry> rootEntriesOriginal;
+        public ICollection<IShortcutTreeEntry> RootEntries
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// List of modified shortcuts. 
@@ -45,7 +37,10 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         /// This list is used to optimize performance. Shortcuts not in this list are not saved.
         /// Allways add modified shortcut to this list.
         /// </summary>
-        private readonly List<Shortcut> modifiedShortcuts = new List<Shortcut>();
+        public List<Shortcut> ModifiedShortcuts
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Initializes new <see cref="ShortcutManagementWindow" /> class
@@ -54,28 +49,19 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         /// <param name="rootEntries">List of all other add-ins containing shortcuts and categories. This list is used to find dupliate shortcuts</param>
         public ShortcutManagementWindow(Shortcut shortcut, ICollection<IShortcutTreeEntry> rootEntries)
         {
-            shortcutOriginal = shortcut;
-            rootEntriesOriginal = rootEntries;
+            ModifiedShortcuts = new List<Shortcut>();
+            
+            Shortcut = shortcut;
+            RootEntries = rootEntries;
 
-            // Make a deep copy of all add-ins, categories and shortcuts
-            var shortcutCopyFound = false;
-            foreach (var entry in rootEntriesOriginal) {
-                var clonedAddIn = (IShortcutTreeEntry)entry.Clone();
-                rootEntriesCopy.Add(clonedAddIn);
-
-                // Find copy of modified shortcut in copied add-ins collection
-                if (shortcutCopyFound == false && (shortcutCopy = clonedAddIn.FindShortcut(shortcutOriginal.Id)) != null) {
-                    shortcutCopy.Gestures.CollectionChanged += Gestures_CollectionChanged;
-                    modifiedShortcuts.Add(shortcutCopy);
-                    DataContext = shortcutCopy;
-                    shortcutCopyFound = true;
-                } 
-            }
+            shortcut.Gestures.CollectionChanged += Gestures_CollectionChanged;
+            ModifiedShortcuts.Add(shortcut);
+            DataContext = shortcut;
             
             InitializeComponent();
 
             // Display similar shortcuts (Shortcuts with the same input gestures assigned to them)
-            shortcutsManagementOptionsPanel.DataContext = rootEntriesCopy;
+            shortcutsManagementOptionsPanel.DataContext = rootEntries;
             shortcutsManagementOptionsPanel.Loaded += delegate { FilterSimilarShortcuts(); };
         }
 
@@ -84,13 +70,13 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         /// </summary>
         private void FilterSimilarShortcuts()
         {
-            var templates = new InputGestureCollection(shortcutCopy.Gestures);
+            var templates = new InputGestureCollection(Shortcut.Gestures);
 
             // Find shortcuts with same gesture and hide them.
             // Also hide modified shortcut from this list
-            var finder = new ShortcutsFinder(rootEntriesCopy);
+            var finder = new ShortcutsFinder(RootEntries);
             finder.FilterGesture(templates, GestureCompareMode.Conflicting);
-            finder.HideShortcut(shortcutCopy);
+            finder.HideShortcut(Shortcut);
 
             shortcutsManagementOptionsPanel.ExpandAll();
             shortcutsManagementOptionsPanel.SelectFirstVisibleShortcut(false);
@@ -114,7 +100,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         private void removeGestureButton_Click(object sender, RoutedEventArgs e)
         {
             var tag = ((Button) sender).Tag as InputGesture;
-            shortcutCopy.Gestures.Remove(tag);
+            Shortcut.Gestures.Remove(tag);
         }
 
         /// <summary>
@@ -145,7 +131,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             }
 
             // Check whether gesture exist in shortcut gestures collection
-            foreach (var existingGesture in shortcutCopy.Gestures) {
+            foreach (var existingGesture in Shortcut.Gestures) {
                 if (gestureTextBox.Gesture.IsTemplateFor(existingGesture, GestureCompareMode.ExactlyMatches)) {
                     DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.ModificationWindow.AddingExistingGesture}"), NotificationType.Failed);
                     return;
@@ -156,12 +142,12 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             if (partialKeyGesture != null) {
                 try {
                     var keyGesture = new KeyGesture(partialKeyGesture.Key, partialKeyGesture.Modifiers);
-                    shortcutCopy.Gestures.Add(keyGesture);
+                    Shortcut.Gestures.Add(keyGesture);
                 } catch (NotSupportedException) {
-                    shortcutCopy.Gestures.Add(partialKeyGesture);
+                    Shortcut.Gestures.Add(partialKeyGesture);
                 }
             } else {
-                shortcutCopy.Gestures.Add(gestureTextBox.Gesture);
+                Shortcut.Gestures.Add(gestureTextBox.Gesture);
             }
             
             DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.ModificationWindow.AdditionIsSuccessfull}"), NotificationType.Added);
@@ -179,13 +165,14 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             // Remove gestures registered in modified shortcut from deleted shortcut
             var removedShortcutGestures = e.RemovedShortcut.Gestures;
             for (int i = removedShortcutGestures.Count - 1; i >= 0; i--) {
-                foreach (var modifiedInputGesture in shortcutCopy.Gestures) {
+                foreach (var modifiedInputGesture in Shortcut.Gestures) {
                     if (removedShortcutGestures[i].IsTemplateFor(modifiedInputGesture, GestureCompareMode.StartsWith)) {
                         removedShortcutGestures.RemoveAt(i);
                         FilterSimilarShortcuts();
 
-                        if (!modifiedShortcuts.Contains(e.RemovedShortcut)) {
-                            modifiedShortcuts.Add(e.RemovedShortcut);
+                        if (!ModifiedShortcuts.Contains(e.RemovedShortcut))
+                        {
+                            ModifiedShortcuts.Add(e.RemovedShortcut);
                         }
 
                         break;
@@ -201,16 +188,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         /// <param name="e">Event arguments</param>
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            // Move modifications from shortcut copies to original shortcut objects
-            foreach (var relatedShortcutCopy in modifiedShortcuts) {
-                foreach (var rootEntry in rootEntriesOriginal) {
-                    var originalRelatedShortcut = rootEntry.FindShortcut(relatedShortcutCopy.Id);
-                    if(originalRelatedShortcut != null) {
-                        originalRelatedShortcut.Gestures.Clear();
-                        originalRelatedShortcut.Gestures.AddRange(relatedShortcutCopy.Gestures);
-                    }
-                }
-            }
+            DialogResult = true;
 
             Close();
         }

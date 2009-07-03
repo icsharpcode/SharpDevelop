@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public void Initialize()
-		{
+		{	
 			// Use shortened assembly qualified name to not lose user defined gestures
 			// when sharp develop is updated
             CommandManager.DefaultContextName = 

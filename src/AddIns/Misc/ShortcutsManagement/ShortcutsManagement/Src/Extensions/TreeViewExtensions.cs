@@ -22,6 +22,11 @@ namespace ICSharpCode.ShortcutsManagement.Extensions
         /// <param name="setFocus"></param>
         public static void SelectItem(this ItemsControl parentContainer, List<object> path, bool setFocus)
         {
+            if(path == null || path.Count == 0)
+            {
+                return;
+            }
+
             var head = path.First();
             var tail = path.GetRange(1, path.Count - 1);
 

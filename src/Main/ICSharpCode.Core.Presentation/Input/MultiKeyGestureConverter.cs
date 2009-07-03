@@ -82,13 +82,11 @@ namespace ICSharpCode.Core.Presentation
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 		    var gestureString = value as string;
-            if (gestureString != null)
-            {
+            if (gestureString != null) {
                 var keyGestures = new List<PartialKeyGesture>();
 
                 var keyGestureStrings = gestureString.Split(',');
-                foreach (var keyGestureString in keyGestureStrings)
-                {
+                foreach (var keyGestureString in keyGestureStrings) {
                     var partialKeyGesture = (PartialKeyGesture)new PartialKeyGestureConverter().ConvertFrom(context, culture, keyGestureString);
                     keyGestures.Add(partialKeyGesture);
                 }

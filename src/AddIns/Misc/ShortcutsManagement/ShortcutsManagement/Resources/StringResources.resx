@@ -170,4 +170,43 @@
   <data name="ShortcutsManagement.ModificationWindow.AddingExistingGesture" xml:space="preserve">
     <value>Failed to add a gesture. Such gesture already exists in shortcut gestures collections</value>
   </data>
+  <data name="ShortcutsManagement.CreateNewProfilePrompt.BasedOnLabel" xml:space="preserve">
+    <value>Based on:</value>
+  </data>
+  <data name="ShortcutsManagement.CreateNewProfilePrompt.SpecifyProfileNameLabel" xml:space="preserve">
+    <value>Please specify profile name</value>
+  </data>
+  <data name="ShortcutsManagement.ReadOnly" xml:space="preserve">
+    <value>Read-Only</value>
+  </data>
+  <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.ConfirmDeleteProfileMessage" xml:space="preserve">
+    <value>Are you sure you want to reset modifications to current profile?</value>
+  </data>
+  <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.ConfirmDeleteProfileMessageWindowName" xml:space="preserve">
+    <value>Reset modifications to profile</value>
+  </data>
+  <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.NoProfileSelectedMessage" xml:space="preserve">
+    <value>Please select a profile which you wan't to modify.</value>
+  </data>
+  <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.ProfileCreateAction" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.ProfileDeleteAction" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.ProfileLoadAction" xml:space="preserve">
+    <value>Load</value>
+  </data>
+  <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.ProfileRenameAction" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.ProfileResetAction" xml:space="preserve">
+    <value>Reset to defaults</value>
+  </data>
+  <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.ProfilesLabel" xml:space="preserve">
+    <value>Profiles:</value>
+  </data>
+  <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.SelectedProfileIsReadOnlyMessage" xml:space="preserve">
+    <value>Selected profile is read-only.</value>
+  </data>
 </root>

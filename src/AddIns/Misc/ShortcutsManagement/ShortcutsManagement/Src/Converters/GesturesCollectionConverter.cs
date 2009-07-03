@@ -35,12 +35,12 @@ namespace ICSharpCode.ShortcutsManagement.Converters
                 converterValue = new InputGestureCollectionConverter().ConvertToInvariantString(inputGestureCollection);
             }
 
-            return converterValue.Replace("+", " + ").Replace(",", ", ").Replace(";", "; "); ;
+            return converterValue.Replace("+", " + ").Replace(",", ", ").Replace(";", "; ");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException("Reverse convertion is not implemented:");
+            throw new NotSupportedException();
         }
     }
 }

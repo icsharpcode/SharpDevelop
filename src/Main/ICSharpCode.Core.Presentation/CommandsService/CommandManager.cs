@@ -30,16 +30,6 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 		
-		/// <summary>
-		/// Path to file where current user defined gestures are set
-		/// </summary>
-		public static string UserGesturesFilePath
-		{
-			get {
-				return Path.Combine(PropertyService.ConfigDirectory, "UserDefinedGestures.xml");
-			}
-		}
-		
 		// Binding infos
 		private static List<CommandBindingInfo> commandBindings = new List<CommandBindingInfo>();
 		private static List<InputBindingInfo> inputBidnings = new List<InputBindingInfo>();
@@ -61,11 +51,6 @@ namespace ICSharpCode.Core.Presentation
 		// Categories
 		private static List<InputBindingCategory> categories = new List<InputBindingCategory>();
 		
-		static CommandManager()
-		{
-			UserDefinedGesturesManager.Load(UserGesturesFilePath);
-		}
-		
 		/// <summary>
 		/// Register UI element instance accessible by unique name
 		/// </summary>
@@ -84,13 +69,13 @@ namespace ICSharpCode.Core.Presentation
 						RegisterInstanceCommandBindingsUpdateHandler(element, handler);
 					}
 					instanceCommandBindingUpdateHandlers.Remove(instanceName);
-					InvokeInstanceCommandBindingUpdateHandlers(element);
+					InvokeCommandBindingUpdateHandlers(null, null, element, null);
 					
 					foreach(var handler in instanceInputBindingUpdateHandlers[instanceName]) {
 						RegisterInstanceInputBindingsUpdateHandler(element, handler);
 					}
 					instanceInputBindingUpdateHandlers.Remove(instanceName);
-					InvokeInstanceInputBindingUpdateHandlers(element);
+					InvokeInputBindingUpdateHandlers(null, null, element, null);
 				}
 			}
 		}
@@ -106,6 +91,17 @@ namespace ICSharpCode.Core.Presentation
 			namedUIInstances.TryGetValue(instanceName, out instance);
 			
 			return instance;
+		}
+		
+		public static string GetNamedUIElementName(UIElement instance)
+		{
+			foreach(var currentInstance in namedUIInstances) {
+				if(currentInstance.Value == instance) {
+					return currentInstance.Key;
+				}
+			}
+			
+			return null;
 		}
 		
 		/// <summary>
@@ -126,13 +122,13 @@ namespace ICSharpCode.Core.Presentation
 						RegisterClassCommandBindingsUpdateHandler(type, handler);
 					}
 					classCommandBindingUpdateHandlers.Remove(typeName);
-					InvokeClassCommandBindingUpdateHandlers(type);
+					InvokeCommandBindingUpdateHandlers(type, null, null, null);
 					
 					foreach(var handler in classInputBindingUpdateHandlers[typeName]) {
 						RegisterClassInputBindingsUpdateHandler(type, handler);
 					}
 					classInputBindingUpdateHandlers.Remove(typeName);
-					InvokeClassInputBindingUpdateHandlers(type);
+					InvokeInputBindingUpdateHandlers(type, null, null, null);
 				}
 			}
 		}
@@ -227,21 +223,15 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputBindingInfo">Input binding parameters</param>
 		public static void RegisterInputBinding(InputBindingInfo inputBindingInfo)
 		{
-			// Replace default gestures with user defined gestures
-			var userGestures = UserDefinedGesturesManager.GetInputBindingGesture(inputBindingInfo);
-			if(userGestures != null) {
-				inputBindingInfo.Gestures = userGestures;
-			}
-			
 			var similarInputBinding = FindInputBindingInfos(
 				inputBindingInfo.OwnerTypeName,
 				inputBindingInfo.OwnerInstanceName, 
 				inputBindingInfo.RoutedCommandName).FirstOrDefault();
 			
 			if(similarInputBinding != null) {
-				foreach(InputGesture gesture in inputBindingInfo.Gestures) {
-					if(!similarInputBinding.Gestures.ContainsTemplateFor(gesture, GestureCompareMode.ExactlyMatches)) {
-						similarInputBinding.Gestures.Add(gesture);
+				foreach(InputGesture gesture in inputBindingInfo.ActiveGestures) {
+					if(!similarInputBinding.DefaultGestures.ContainsTemplateFor(gesture, GestureCompareMode.ExactlyMatches)) {
+						similarInputBinding.DefaultGestures.Add(gesture);
 					}
 				}
 				
@@ -559,139 +549,107 @@ namespace ICSharpCode.Core.Presentation
 		#endregion
 		
 		#region Invoke binding update handlers
+
+		private static void InvokeBindingUpdateHandlers(Dictionary<string, List<BindingsUpdatedHandler>> typeUpdateHandlers, Dictionary<object, List<BindingsUpdatedHandler>> instanceUpdateHandlers, Type ownertType, string ownertTypeName, UIElement ownerInstance, string ownerInstanceName)
+		{
+			if(ownerInstanceName != null || ownerInstance != null) {
+				if(ownerInstanceName != null) {
+					ownerInstanceName = GetNamedUIElementName(ownerInstance);
+				}
+				
+				foreach(var instanceHandlers in instanceUpdateHandlers) {
+					var currentInstanceName = instanceHandlers.Key as string;
+					var currentInstance = instanceHandlers.Key as UIElement;
+					
+					if(currentInstanceName == ownerInstanceName || currentInstance == ownerInstance) {
+						if(instanceHandlers.Value != null) {
+							foreach(var handler in instanceHandlers.Value) {
+								if(handler != null) {
+									handler.Invoke();
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			
+			if(ownertTypeName != null || ownertType != null) {
+				foreach(var classHandlers in typeUpdateHandlers) {
+					var currentTypeName = classHandlers.Key;
+					
+					if(currentTypeName == ownertTypeName || (ownertType != null && ownertType.AssemblyQualifiedName.Contains(currentTypeName))) {
+						if(classHandlers.Value != null) {
+							foreach(var handler in classHandlers.Value) {
+								if(handler != null) {
+									handler.Invoke();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		
+		private static void InvokeAllBindingUpdateHandlers(System.Collections.IDictionary updateHandlers)
+		{
+			foreach(var updateHandlerPair in updateHandlers) {
+				// TODO: This can be fixed with .NET 4.0
+				List<BindingsUpdatedHandler> handlers = null;
+				if(updateHandlerPair is KeyValuePair<string, List<BindingsUpdatedHandler>>) {
+					handlers = ((KeyValuePair<string, List<BindingsUpdatedHandler>>)updateHandlerPair).Value;
+				} else if(updateHandlerPair is KeyValuePair<object, List<BindingsUpdatedHandler>>) {
+					handlers = ((KeyValuePair<object, List<BindingsUpdatedHandler>>)updateHandlerPair).Value;
+				}
+				
+				if(handlers != null) {
+					foreach(var handler in handlers) {
+						if(handler != null) {
+							handler.Invoke();
+						}
+					}
+				}
+			}
+		}
+		
+		public static void InvokeCommandBindingUpdateHandlers() {
+			InvokeAllBindingUpdateHandlers(classCommandBindingUpdateHandlers);
+			InvokeAllBindingUpdateHandlers(instanceCommandBindingUpdateHandlers);
+		}
+		
+		public static void InvokeInputBindingUpdateHandlers() {
+			InvokeAllBindingUpdateHandlers(classInputBindingUpdateHandlers);
+			InvokeAllBindingUpdateHandlers(instanceInputBindingUpdateHandlers);
+		}
 		
 		/// <summary>
 		/// Invoke all inbut binding update handlers
 		/// </summary>
-		public static void InvokeInputBindingUpdateHandlers() 
+		public static void InvokeInputBindingUpdateHandlers(Type ownertType, string ownertTypeName, UIElement ownertInstance, string ownerInstanceName) 
 		{
-			foreach(var instanceHandlers in instanceInputBindingUpdateHandlers) {
-				foreach(var handler in instanceHandlers.Value) {
-					handler.Invoke();
-				}
-			}
-			
-			foreach(var classHandlers in classInputBindingUpdateHandlers) {
-				foreach(var handler in classHandlers.Value) {
-					handler.Invoke();
-				}
-			}
+			InvokeBindingUpdateHandlers(
+				classInputBindingUpdateHandlers, 
+				instanceInputBindingUpdateHandlers,
+				ownertType, 
+				ownertTypeName, 
+				ownertInstance, 
+				ownerInstanceName);
 		}
 		
 		/// <summary>
 		/// Invoke all command binding update handlers
 		/// </summary>
-		public static void InvokeCommandBindingUpdateHandlers() 
+		public static void InvokeCommandBindingUpdateHandlers(Type ownertType, string ownertTypeName, UIElement ownertInstance, string ownerInstanceName) 
 		{
-			foreach(var instanceHandlers in instanceCommandBindingUpdateHandlers) {
-				foreach(var handler in instanceHandlers.Value) {
-					handler.Invoke();
-				}
-			}
-			
-			foreach(var classHandlers in classCommandBindingUpdateHandlers) {
-				foreach(var handler in classHandlers.Value) {
-					handler.Invoke();
-				}
-			}
+			InvokeBindingUpdateHandlers(
+				classCommandBindingUpdateHandlers, 
+				instanceCommandBindingUpdateHandlers,
+				ownertType, 
+				ownertTypeName, 
+				ownertInstance, 
+				ownerInstanceName);
 		}
 		
-		/// <summary>
-		/// Invoke command binding update handlers associated with UI element instance
-		/// </summary>
-		/// <param name="owner">Owner instance</param>
-		public static void InvokeInstanceCommandBindingUpdateHandlers(UIElement owner) 
-		{	
-			if(instanceCommandBindingUpdateHandlers.ContainsKey(owner)) {
-				foreach(var handler in instanceCommandBindingUpdateHandlers[owner]) {
-					handler.Invoke();
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Invoke command binding update handlers associated with UI element instance
-		/// </summary>
-		/// <param name="owner">Owner instance name</param>
-		public static void InvokeInstanceCommandBindingUpdateHandlers(string ownerName) 
-		{	
-			if(instanceCommandBindingUpdateHandlers.ContainsKey(ownerName)) {
-				foreach(var handler in instanceCommandBindingUpdateHandlers[ownerName]) {
-					handler.Invoke();
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Invoke command binding update handlers associated with UI element type
-		/// </summary>
-		/// <param name="owner">Owner type</param>
-		public static void InvokeClassCommandBindingUpdateHandlers(Type ownerType) 
-		{	
-			InvokeClassCommandBindingUpdateHandlers(ownerType.AssemblyQualifiedName);
-		}
-		
-		/// <summary>
-		/// Invoke command binding update handlers associated with UI element type
-		/// </summary>
-		/// <param name="owner">Owner type name</param>
-		public static void InvokeClassCommandBindingUpdateHandlers(string ownerTypeName) 
-		{	
-			if(instanceCommandBindingUpdateHandlers.ContainsKey(ownerTypeName)) {
-				foreach(var handler in classCommandBindingUpdateHandlers[ownerTypeName]) {
-					handler.Invoke();
-				}
-			}
-		}
-					
-		/// <summary>
-		/// Invoke input binding update handlers associated with UI element instance
-		/// </summary>
-		/// <param name="owner">Owner instance</param>
-		public static void InvokeInstanceInputBindingUpdateHandlers(UIElement owner) 
-		{	
-			if(instanceInputBindingUpdateHandlers.ContainsKey(owner)) {
-				foreach(var handler in instanceInputBindingUpdateHandlers[owner]) {
-					handler.Invoke();
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Invoke input binding update handlers associated with UI element instance
-		/// </summary>
-		/// <param name="ownerName">Owner instance name</param>
-		public static void InvokeInstanceInputBindingUpdateHandlers(string ownerName) 
-		{	
-			if(instanceInputBindingUpdateHandlers.ContainsKey(ownerName)) {
-				foreach(var handler in instanceInputBindingUpdateHandlers[ownerName]) {
-					handler.Invoke();
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Invoke input binding update handlers associated with UI element type
-		/// </summary>
-		/// <param name="owner">Owner type</param>
-		public static void InvokeClassInputBindingUpdateHandlers(Type ownerType) 
-		{	
-			InvokeClassInputBindingUpdateHandlers(ownerType.AssemblyQualifiedName);
-		}
-		
-		/// <summary>
-		/// Invoke input binding update handlers associated with UI element type
-		/// </summary>
-		/// <param name="owner">Owner type name</param>
-		public static void InvokeClassInputBindingUpdateHandlers(string ownerTypeName) 
-		{	
-			if(instanceInputBindingUpdateHandlers.ContainsKey(ownerTypeName)) {
-				foreach(var handler in instanceInputBindingUpdateHandlers[ownerTypeName]) {
-					handler.Invoke();
-				}
-			}
-		}
 		#endregion
 		
 		/// <summary>
@@ -773,8 +731,8 @@ namespace ICSharpCode.Core.Presentation
 			var gestures = new InputGestureCollection();
 			
 			foreach(InputBindingInfo bindingInfo in bindings) {
-				if(bindingInfo.Gestures != null) {
-					gestures.AddRange(bindingInfo.Gestures);
+				if(bindingInfo.ActiveGestures != null) {
+					gestures.AddRange(bindingInfo.ActiveGestures);
 				}
 			}
 			
@@ -824,37 +782,6 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			return registeredCategories;
-		}
-		
-		/// <summary>
-		/// Saves current configuration in specified destination
-		/// </summary>
-		/// <param name="destinationPath">Destination file path</param>
-		public static void SaveGestures(string destinationPath)
-		{
-			foreach(var binding in inputBidnings) {
-				UserDefinedGesturesManager.SetInputBindingGestures(binding, binding.Gestures);
-			}
-			
-			UserDefinedGesturesManager.Save(destinationPath);
-		}
-		
-		/// <summary>
-		/// Loads current configuration in specified destination
-		/// </summary>
-		/// <param name="sourcePath">Source file path</param>
-		public static void LoadGestures(string sourcePath)
-		{
-			UserDefinedGesturesManager.Load(sourcePath);
-			
-			foreach(var inputBindingInfo in inputBidnings) {
-				var userGestures = UserDefinedGesturesManager.GetInputBindingGesture(inputBindingInfo);
-				
-				if(userGestures != null) {
-					inputBindingInfo.Gestures = userGestures;
-					inputBindingInfo.IsModifyed = true;
-				}
-			}
 		}
 		
 		/// <summary>

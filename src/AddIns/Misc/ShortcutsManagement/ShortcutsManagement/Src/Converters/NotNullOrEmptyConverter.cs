@@ -5,21 +5,26 @@ using System.Windows.Data;
 namespace ICSharpCode.ShortcutsManagement.Converters
 {
     /// <summary>
-    /// Convert object to its type name
+    /// Converts null and empty string to true and all other values to false
     /// </summary>
-    class TypeNameConverter : IValueConverter
+    class NotNullOrEmptyConverter : IValueConverter
     {
         /// <summary>
-        /// Convert object to type name
+        /// Converts null and empty string to true and all other values to false
         /// </summary>
-        /// <param name="value">Any object</param>
-        /// <param name="targetType">Convertion target type (Only string is supported)</param>
+        /// <param name="value">String or any other object</param>
+        /// <param name="targetType">Convertion target type</param>
         /// <param name="parameter">Not used</param>
         /// <param name="culture">Not used</param>
-        /// <returns>Passed object type name</returns>
+        /// <returns>Bool value</returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value.GetType().Name;
+            if ((value is string && !string.IsNullOrEmpty((string)value)) || (!(value is string) && value != null))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

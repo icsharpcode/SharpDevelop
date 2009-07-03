@@ -1,10 +1,58 @@
 ﻿<UserControl x:Class="ICSharpCode.ShortcutsManagement.Dialogs.ShortcutsManagementOptionsPanel"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Dialogs="clr-namespace:ICSharpCode.ShortcutsManagement.Dialogs">
+    xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+    xmlns:Dialogs="clr-namespace:ICSharpCode.ShortcutsManagement.Dialogs"
+    xmlns:Converters="clr-namespace:ICSharpCode.ShortcutsManagement.Converters"
+    xmlns:Presentation="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+    xmlns:Data="clr-namespace:ICSharpCode.ShortcutsManagement.Data"
+    x:Name="_this">
     
-    <Dialogs:ShortcutsTreeView 
-        x:Name="shortcutsManagementOptionsPanel" 
-        IsSearchable="True"  
-        Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Path=ActualHeight}" />
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources.xaml" />
+                <ResourceDictionary>
+                    <Converters:ProfilesComboBoxItemStyleSelector x:Key="ProfilesComboBoxItemStyleSelector" />
+
+                    <DataTemplate DataType="{x:Type Presentation:UserGesturesProfile}">
+                        <TextBlock Text="{Binding Converter={StaticResource ProfileToStringConverter}}" Margin="5" />
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type Data:UserGestureProfileAction}">
+                        <TextBlock Text="{Binding Path=Text}" />
+                    </DataTemplate>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+        
+
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+    
+        <WrapPanel HorizontalAlignment="Right" Grid.Row="0" Margin="0,3">
+            <Label>
+                <TextBlock Text="{core:Localize ShortcutsManagement.ShortcutsManagementOptionsPanel.ProfilesLabel}" />
+            </Label>
+            <ComboBox 
+                ItemContainerStyleSelector="{StaticResource ProfilesComboBoxItemStyleSelector}"      
+                x:Name="profilesTextBox" 
+                Width="150" 
+                Height="30" 
+                ItemsSource="{Binding}" 
+                SelectionChanged="profilesTextBox_SelectionChanged" 
+            />
+        </WrapPanel>
+
+        <Dialogs:ShortcutsTreeView Grid.Row="1"
+            x:Name="shortcutsManagementOptionsPanel" 
+            IsSearchable="True" 
+            ShortcutModified="shortcutsManagementOptionsPanel_ShortcutModified" 
+            Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentPresenter}}, Path=ActualHeight, Converter={StaticResource AddidionConverter}, ConverterParameter=-40}" />
+    </Grid>
 </UserControl>
