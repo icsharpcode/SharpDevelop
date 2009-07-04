@@ -42,6 +42,18 @@ namespace ICSharpCode.XamlBinding
 			this.Text = text;
 		}
 		
+		public XamlCodeCompletionItem(IEntity entity, string prefix, string className, bool addOpeningBrace)
+			: base(entity)
+		{
+			if (string.IsNullOrEmpty(prefix))
+				this.Text = className + "." + entity.Name;
+			else
+				this.Text = prefix + ":" + className + "." + entity.Name;
+			
+			if (addOpeningBrace)
+				this.Text = "<" + this.Text;
+		}
+		
 		public override string ToString()
 		{
 			return "[" + this.Text + "]";
@@ -159,11 +171,14 @@ namespace ICSharpCode.XamlBinding
 			context.EndOffset = context.StartOffset + this.HandlerName.Length;
 		}
 		
+		static readonly Regex namePatternRegex = new Regex("%[A-z0-9]*%", RegexOptions.Compiled);
+		
 		public static string ParseNamePattern(string objectName, string eventName)
 		{
 			string name = XamlBindingOptions.EventHandlerNamePattern;
 			
-			foreach (Match match in Regex.Matches(name, "%[A-z0-9]*%")) {
+			while (namePatternRegex.IsMatch(name)) {
+				Match match = namePatternRegex.Match(name);
 				switch (match.Value.ToLowerInvariant()) {
 					case "%object%":
 						if (char.IsUpper(match.Value[1]))

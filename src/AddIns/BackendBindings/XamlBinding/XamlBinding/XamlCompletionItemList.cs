@@ -35,7 +35,7 @@ namespace ICSharpCode.XamlBinding
 		public static int CountWhiteSpacesAtEnd(string text)
 		{
 			if (string.IsNullOrEmpty(text))
-			    return 0;
+				return 0;
 			
 			int i = text.Length - 1;
 			
@@ -56,7 +56,8 @@ namespace ICSharpCode.XamlBinding
 				XamlCodeCompletionItem cItem = item as XamlCodeCompletionItem;
 				
 				if (cItem.Entity is IProperty || cItem.Entity is IEvent) {
-					if (context.Editor.Document.GetCharAt(context.StartOffset - 1) != '.') {
+					if (context.Editor.Document.GetCharAt(context.StartOffset - 1) != '.' &&
+					    context.Editor.Document.GetCharAt(context.StartOffset - 1) != '<') {
 						if (!item.Text.EndsWith("=", StringComparison.OrdinalIgnoreCase)) {
 							context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 							context.Editor.Caret.Offset--;
@@ -85,36 +86,6 @@ namespace ICSharpCode.XamlBinding
 								}
 							}
 						}
-						
-						XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
-					}
-				}
-				
-				if (cItem.Entity is IClass) {
-					IClass c = cItem.Entity as IClass;
-					if (c.FullyQualifiedName == "System.Windows.Style") {
-						string insertionString = "";
-						if (!char.IsWhiteSpace(context.Editor.Document.GetCharAt(context.StartOffset - 1))) {
-							insertionString = " ";
-						}
-						
-						string prefix = Utils.GetXamlNamespacePrefix(CompletionDataHelper.ResolveCompletionContext(context.Editor, context.CompletionChar));
-						if (!string.IsNullOrEmpty(prefix))
-							prefix += ":";
-						
-						insertionString += "TargetType=\"{" + prefix + "Type }\"";
-						context.Editor.Document.Insert(context.EndOffset, insertionString);
-						context.Editor.Caret.Offset = context.EndOffset + insertionString.Length - 2;
-						
-						XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
-					} else if (c.FullyQualifiedName == "System.Windows.Setter") {
-						string insertionString = "";
-						if (!char.IsWhiteSpace(context.Editor.Document.GetCharAt(context.StartOffset - 1))) {
-							insertionString = " ";
-						}
-						insertionString += "Property=\"\"";
-						context.Editor.Document.Insert(context.EndOffset, insertionString);
-						context.Editor.Caret.Offset = context.EndOffset + insertionString.Length - 1;
 						
 						XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 					}

@@ -34,13 +34,35 @@ namespace ICSharpCode.XamlBinding
 				return false;
 		}
 		
+		public static MarkupExtensionInfo GetInnermostMarkupExtensionInfo(MarkupExtensionInfo info)
+		{
+			var lastNamed = info.NamedArguments.LastOrDefault();
+			var lastPositional = info.PositionalArguments.LastOrDefault();
+			
+			if (lastNamed.Value != null) {
+				if (lastNamed.Value.IsString)
+					return info;
+				
+				return GetInnermostMarkupExtensionInfo(lastNamed.Value.ExtensionValue);
+			} else {
+				if (lastPositional != null) {
+					if (lastPositional.IsString)
+						return info;
+					
+					return GetInnermostMarkupExtensionInfo(lastPositional.ExtensionValue);
+				}
+			}
+			
+			return info;
+		}
+		
 		public static string GetAttributeValue(string text, int line, int col, string name)
 		{
 			try {
 				XmlReader reader = CreateReaderAtTarget(text, line, col);
 				
 				if (!reader.MoveToFirstAttribute()) {
-	/*				int offset = GetOffsetFromFilePos(text, line, col) + 1;
+					/*				int offset = GetOffsetFromFilePos(text, line, col) + 1;
 				
 					if (XmlParser.IsInsideAttributeValue(text, offset))
 						text = text.Substring(0, offset) + "\">";
@@ -52,7 +74,7 @@ namespace ICSharpCode.XamlBinding
 					}
 					reader = CreateReaderAtTarget(text, line, col);
 					if (!reader.MoveToFirstAttribute()) */
-						return null;
+					return null;
 				}
 				do {
 					LoggingService.Debug("name: " + reader.Name + " value: " + reader.Value);
@@ -132,8 +154,8 @@ namespace ICSharpCode.XamlBinding
 		{
 			var item = context.XmlnsDefinitions.FirstOrDefault(i => i.Value == CompletionDataHelper.XamlNamespace);
 
-            if (item.Key != null)
-                return item.Key;
+			if (item.Key != null)
+				return item.Key;
 			return string.Empty;
 		}
 		
@@ -173,7 +195,7 @@ namespace ICSharpCode.XamlBinding
 					return content.Length;
 				}
 			}
-			       
+			
 			return offset + col - 1;
 		}
 		

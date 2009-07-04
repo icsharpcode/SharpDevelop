@@ -114,7 +114,6 @@ namespace ICSharpCode.XamlBinding
 			IEnumerable<HighlightingInfo> GetInfo()
 			{
 				int index = -1;
-				int ltCharIndex = -1;
 				XamlContext context = null;
 				List<HighlightingInfo> infos = new List<HighlightingInfo>();
 				

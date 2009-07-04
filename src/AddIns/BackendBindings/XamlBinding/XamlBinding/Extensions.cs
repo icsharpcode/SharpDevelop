@@ -83,6 +83,24 @@ namespace ICSharpCode.XamlBinding
 			return text.Substring(offset, startIndex - offset + 1).Trim();
 		}
 		
+		public static string GetWordAfterOffset(this string text, int startIndex)
+		{
+			if (string.IsNullOrEmpty(text))
+				return string.Empty;
+			
+			int offset = startIndex = Math.Max(startIndex, 0);
+			
+			while (offset < text.Length && char.IsWhiteSpace(text[offset]))
+				offset++;
+			
+			while (offset < text.Length && !char.IsWhiteSpace(text[offset]))
+				offset++;
+			
+			offset = Math.Min(offset, text.Length - 1);
+			
+			return text.Substring(startIndex, offset - startIndex + 1).Trim();
+		}
+		
 		public static int GetLineNumber(this XObject item)
 		{
 			return (item as IXmlLineInfo).LineNumber;
@@ -91,26 +109,6 @@ namespace ICSharpCode.XamlBinding
 		public static int GetLinePosition(this XObject item)
 		{
 			return (item as IXmlLineInfo).LinePosition;
-		}
-		
-		public static void Remove(this XmlAttributeCollection coll, string name)
-		{
-			for (int i = 0; i < coll.Count; i++) {
-				if (coll[i].Name.Equals(name, StringComparison.Ordinal)) {
-					coll.RemoveAt(i);
-					i--;
-				}
-			}
-		}
-		
-		public static void Remove(this XmlAttributeCollection coll, string name, string namespaceURI)
-		{
-			for (int i = 0; i < coll.Count; i++) {
-				if (coll[i].LocalName.Equals(name, StringComparison.Ordinal) && coll[i].NamespaceURI.Equals(namespaceURI, StringComparison.Ordinal)) {
-					coll.RemoveAt(i);
-					i--;
-				}
-			}
 		}
 		
 		public static IEnumerable<ICompletionItem> RemoveEvents(this IEnumerable<ICompletionItem> list)
@@ -124,15 +122,44 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		public static IEnumerable<ICompletionItem> RemoveProperties(this IEnumerable<ICompletionItem> list)
+		public static bool IsCollectionType(this IClass c)
 		{
-			foreach (var item in list) {
-				if (item is XamlCodeCompletionItem) {
-					var comItem = item as XamlCodeCompletionItem;
-					if (!(comItem.Entity is IProperty))
-						yield return item;
-				} else yield return item;
-			}
+			if (c == null)
+				throw new ArgumentNullException("c");
+			return c.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.ICollection");
+		}
+		
+		public static bool IsCollectionReturnType(this IReturnType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (type.GetUnderlyingClass() != null)
+				return type.GetUnderlyingClass().IsCollectionType();
+			
+			return false;
+		}
+		
+		public static bool IsListType(this IClass c)
+		{
+			if (c == null)
+				throw new ArgumentNullException("c");
+			return c.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.IList"); 
+		}
+		
+		public static bool IsListReturnType(this IReturnType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (type.GetUnderlyingClass() != null)
+				return type.GetUnderlyingClass().IsListType();
+			
+			return false;
+		}
+		
+		/// <remarks>Works only if fullyQualyfiedClassName is the name of a class!</remarks>
+		public static bool DerivesFrom(this IClass myClass, string fullyQualyfiedClassName)
+		{
+			return myClass.ClassInheritanceTreeClassesOnly.Any(c => c.FullyQualifiedName == fullyQualyfiedClassName);
 		}
 	}
 }
