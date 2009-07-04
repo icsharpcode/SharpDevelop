@@ -6,8 +6,11 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
@@ -15,24 +18,135 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
-using System.Diagnostics;
+using System.Windows.Threading;
 
 namespace ICSharpCode.XamlBinding
 {
+	using Tasks = System.Threading.Tasks;
+	
 	public class XamlColorizer : DocumentColorizingTransformer
 	{
 		static readonly XamlColorizerSettings defaultSettings = new XamlColorizerSettings();
+		
+		public struct Highlight {
+			public IMember Member { get; set; }
+			public HighlightingInfo Info { get; set; }
+		}
+		
+		public sealed class HighlightTask {
+			// input
+			public string FileContent { get; private set; }
+			public string FileName { get; private set; }
+			public string LineText { get; private set; }
+			public int LineNumber { get; private set; }
+			public int Offset { get; private set; }
+			
+			TextView textView;
+			
+			public HighlightTask(string fileContent, string fileName, DocumentLine line, TextView textView)
+			{
+				this.FileContent = fileContent;
+				this.FileName = fileName;
+				this.LineText = line.Text;
+				this.LineNumber = line.LineNumber;
+				this.Offset = line.Offset;
+				this.task = new System.Threading.Tasks.Task(Process);
+				this.textView = textView;
+			}
+			
+			IList<Highlight> results;
+			
+			// output
+			public IList<Highlight> GetResults()
+			{
+				return results;
+			}
+			
+			public bool IsStillValid(DocumentLine line)
+			{
+				return this.Offset == line.Offset && this.LineText == line.Text;
+			}
+			
+			Tasks.Task task;
+			
+			public void Start()
+			{
+				task.Start();
+			}
+			
+			public void Cancel()
+			{
+				if (task != null)
+					task.Cancel();
+			}
+			
+			public bool IsCompleted {
+				get {
+					return task.IsCompleted;
+				}
+			}
+			
+			void Process()
+			{
+				List<Highlight> results = new List<Highlight>();
+				
+				foreach (HighlightingInfo info in GetInfo()) {
+					IMember member = null;
+					
+					if (!info.Token.StartsWith("xmlns")) {
+						MemberResolveResult rr = new XamlResolver().Resolve(info.GetExpressionResult(), info.Context.ParseInformation, FileContent) as MemberResolveResult;
+						member = (rr != null) ? rr.ResolvedMember : null;
+					}
+					
+					results.Add(new Highlight() { Member = member, Info = info });
+				}
+				
+				this.results = results;
+				
+				WorkbenchSingleton.SafeThreadAsyncCall(InvokeRedraw);
+			}
+			
+			void InvokeRedraw()
+			{
+				textView.Redraw(this.Offset, this.LineText.Length, DispatcherPriority.Background);
+			}
+			
+			IEnumerable<HighlightingInfo> GetInfo()
+			{
+				int index = -1;
+				int ltCharIndex = -1;
+				XamlContext context = null;
+				List<HighlightingInfo> infos = new List<HighlightingInfo>();
+				
+				do {
+					index = LineText.IndexOf('=', index + 1);
+					if (index > -1) {
+						context = CompletionDataHelper.ResolveContext(FileContent, FileName, LineNumber, index + 1);
+						if (!string.IsNullOrEmpty(context.AttributeName)) {
+							int startIndex = LineText.Substring(0, index).LastIndexOf(context.AttributeName);
+							infos.Add(new HighlightingInfo(context.AttributeName, startIndex, startIndex + context.AttributeName.Length, Offset, context));
+						}
+					}
+				} while (index > -1);
+				
+				return infos;
+			}
+		}
+		
 		XamlColorizerSettings settings = defaultSettings;
 		string fileContent;
 		string fileName;
-		ParseInformation parseInfo;
-		XamlResolver resolver = new XamlResolver();
+		
+		Dictionary<int, HighlightTask> highlightCache = new Dictionary<int, HighlightTask>();
 		
 		public IViewContent Content { get; set; }
 		
-		public XamlColorizer(IViewContent content)
+		public AvalonEdit.Rendering.TextView TextView { get; set;	}
+		
+		public XamlColorizer(IViewContent content, TextView textView)
 		{
 			this.Content = content;
+			this.TextView = textView;
 		}
 		
 		protected override void Colorize(ITextRunConstructionContext context)
@@ -42,7 +156,6 @@ namespace ICSharpCode.XamlBinding
 			if (document == null)
 				return;
 			
-			this.parseInfo = ParserService.GetParseInformation(Content.PrimaryFileName);
 			this.fileContent = document.GetDocumentForFile(this.Content.PrimaryFile).CreateSnapshot().Text;
 			this.fileName = this.Content.PrimaryFileName;
 			
@@ -51,45 +164,37 @@ namespace ICSharpCode.XamlBinding
 		
 		protected override void ColorizeLine(DocumentLine line)
 		{
-			if (!line.IsDeleted) {
-				HighlightingInfo[] infos = GetInfoForLine(line);
-				
-				foreach (HighlightingInfo info in infos) {
-					MemberResolveResult rr = resolver.Resolve(info.GetExpressionResult(), parseInfo, fileContent) as MemberResolveResult;
-					IMember member = (rr != null) ? rr.ResolvedMember : null;
-					
-					if (member != null) {
-						if (member is IEvent)
-							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
-						else
-							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
-					} else {
-						if (info.Token.StartsWith("xmlns"))
-							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
-					}
+			if (line.IsDeleted)
+				return;
+			
+			if (!highlightCache.ContainsKey(line.LineNumber)) {
+				HighlightTask task = new HighlightTask(this.fileContent, this.fileName, line, this.TextView);
+				task.Start();
+				highlightCache.Add(line.LineNumber, task);
+			} else {
+				HighlightTask task = highlightCache[line.LineNumber];
+				if (task.IsCompleted && task.IsStillValid(line)) {
+					task.GetResults().ForEach(result => ColorizeMember(result.Info, line, result.Member));
+				} else {
+					task.Cancel();
+					task = new HighlightTask(this.fileContent, this.fileName, line, this.TextView);
+					task.Start();
+					highlightCache[line.LineNumber] = task;
 				}
 			}
 		}
 		
-		HighlightingInfo[] GetInfoForLine(DocumentLine line)
+		void ColorizeMember(HighlightingInfo info, DocumentLine line, IMember member)
 		{
-			int index = -1;
-			int ltCharIndex = -1;
-			XamlContext context = null;
-			List<HighlightingInfo> infos = new List<HighlightingInfo>();
-			
-			do {
-				index = line.Text.IndexOf('=', index + 1);
-				if (index > -1) {
-					context = CompletionDataHelper.ResolveContext(this.fileContent, this.fileName, line.LineNumber, index + 1);
-					if (!string.IsNullOrEmpty(context.AttributeName)) {
-						int startIndex = line.Text.Substring(0, index).LastIndexOf(context.AttributeName);
-						infos.Add(new HighlightingInfo(context.AttributeName, startIndex, startIndex + context.AttributeName.Length, line.Offset, context));
-					}
-				}
-			} while (index > -1);
-			
-			return infos.ToArray();
+			if (member != null) {
+				if (member is IEvent)
+					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
+				else
+					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
+			} else {
+				if (info.Token.StartsWith("xmlns"))
+					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
+			}
 		}
 		
 		void HighlightProperty(VisualLineElement element)
@@ -110,7 +215,7 @@ namespace ICSharpCode.XamlBinding
 			element.TextRunProperties.SetBackgroundBrush(settings.NamespaceDeclarationBackgroundBrush);
 		}
 		
-		struct HighlightingInfo
+		public struct HighlightingInfo
 		{
 			public static readonly HighlightingInfo Empty = new HighlightingInfo(string.Empty, 0, 0, 0, new XamlContext());
 			

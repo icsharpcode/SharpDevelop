@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.XmlEditor;
 using System;
 using System.IO;
 using ICSharpCode.AvalonEdit.Rendering;
@@ -32,8 +33,9 @@ namespace ICSharpCode.XamlBinding
 			ITextEditorProvider textEditor = e.Content as ITextEditorProvider;
 			if (textEditor != null) {
 				TextView textView = textEditor.TextEditor.GetService(typeof(TextView)) as TextView;
+				
 				if (textView != null)
-					textView.LineTransformers.Add(new XamlColorizer(e.Content));
+					textView.LineTransformers.Add(new XamlColorizer(e.Content, textView));
 			}
 		}
 	}

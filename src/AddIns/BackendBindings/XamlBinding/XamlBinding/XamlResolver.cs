@@ -235,7 +235,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (propertyOrEvent == null)
 				return null;
-			if (propertyOrEvent is IEvent) {
+			if (propertyOrEvent is IEvent && callingClass != null) {
 				return new MethodGroupResolveResult(callingClass, null, callingClass.DefaultReturnType, expression);
 			}
 
