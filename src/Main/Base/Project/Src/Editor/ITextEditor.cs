@@ -141,5 +141,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets/sets the caret position.
 		/// </summary>
 		Location Position { get; set; }
+		
+		/// <summary>
+		/// Is raised whenever the position of the caret has changed.
+		///	</summary>
+		event EventHandler PositionChanged;
 	}
 }

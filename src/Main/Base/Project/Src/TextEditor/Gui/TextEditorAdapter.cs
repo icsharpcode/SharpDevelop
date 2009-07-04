@@ -72,6 +72,11 @@ namespace ICSharpCode.SharpDevelop
 					caret.Position = ToPosition(value);
 				}
 			}
+			
+			public event EventHandler PositionChanged {
+				add    { caret.PositionChanged += value; }
+				remove { caret.PositionChanged -= value; }
+			}
 		}
 		
 		sealed class OptionsAdapter : ITextEditorOptions

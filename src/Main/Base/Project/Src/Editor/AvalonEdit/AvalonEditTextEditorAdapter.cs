@@ -103,6 +103,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 				get { return AvalonEditDocumentAdapter.ToLocation(caret.Location); }
 				set { caret.Location = AvalonEditDocumentAdapter.ToPosition(value); }
 			}
+			
+			public event EventHandler PositionChanged {
+				add    { caret.PositionChanged += value; }
+				remove { caret.PositionChanged -= value; }
+			}
 		}
 		
 		sealed class OptionsAdapter : ITextEditorOptions

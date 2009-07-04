@@ -179,6 +179,12 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
+		public IEnumerable<IClass> ClassInheritanceTreeClassesOnly {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public IReturnType BaseType {
 			get {
 				throw new NotImplementedException();

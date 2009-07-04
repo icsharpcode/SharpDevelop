@@ -31,10 +31,14 @@ namespace ICSharpCode.Core.Presentation
 		
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
-			string result = ResourceService.GetString(key);
-			if (UsesAccessors)
-				result = MenuService.ConvertLabel(result);
-			return result;
+			try {
+				string result = ResourceService.GetString(key);
+				if (UsesAccessors)
+					result = MenuService.ConvertLabel(result);
+				return result;
+			} catch (ResourceNotFoundException) {
+				return "{Localize:" + key + "}";
+			}
 		}
 	}
 }

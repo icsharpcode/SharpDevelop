@@ -203,5 +203,9 @@
     <Folder Include="Src\CSharp" />
     <Folder Include="Src\VBNet" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="ProfilingSessions\Session20090702_124951.sdps" />
+    <Content Include="ProfilingSessions\Session20090702_131909.sdps" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
