@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{D294A12D-4B38-4F25-9AA6-3D4A6CE26E7B}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Profiler.AddIn</RootNamespace>
     <AssemblyName>ICSharpCode.Profiler.AddIn</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\HP\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -101,7 +101,6 @@
       <DependentUpon>ProfileExecutableForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\OptionsPanels\General.cs">
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\OptionsPanels\GeneralOptionsPanel.xaml.cs">
       <DependentUpon>GeneralOptionsPanel.xaml</DependentUpon>
