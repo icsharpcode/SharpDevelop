@@ -19,7 +19,7 @@ using ICSharpCode.XmlEditor;
 namespace ICSharpCode.XamlBinding
 {
 	public class XamlContext : ExpressionContext {
-		public XmlElementPath Path { get; set; }
+		public QualifiedName ActiveElement { get; set; }
 		public string AttributeName { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public string RawAttributeValue { get; set; }
@@ -34,16 +34,6 @@ namespace ICSharpCode.XamlBinding
 		{
 			return true;
 		}
-		
-		public override string ToString()
-		{
-			return "[XamlContext" + 
-				" Description: " + Description +
-				" Path: " + Path +
-				" AttributeName: " + AttributeName +
-				" ValueStartOffset: " + ValueStartOffset +
-				" ]";
-		}
 	}
 	
 	public class XamlCompletionContext : XamlContext {
@@ -51,11 +41,11 @@ namespace ICSharpCode.XamlBinding
 		
 		public XamlCompletionContext(XamlContext context)
 		{
+			this.ActiveElement = context.ActiveElement;
 			this.AttributeName = context.AttributeName;
 			this.AttributeValue = context.AttributeValue;
 			this.Description = context.Description;
 			this.ParseInformation = context.ParseInformation;
-			this.Path = context.Path;
 			this.RawAttributeValue = context.RawAttributeValue;
 			this.ValueStartOffset = context.ValueStartOffset;
 			this.XmlnsDefinitions = context.XmlnsDefinitions;

@@ -45,7 +45,8 @@ namespace ICSharpCode.XamlBinding
 				case XamlContextDescription.InAttributeValue:
 					MemberResolveResult mrr = ResolveAttribute(context.AttributeName);
 					if (mrr != null) {
-						return ResolveAttributeValue(mrr.ResolvedMember, resolveExpression) ?? mrr;
+						var rr = ResolveAttributeValue(mrr.ResolvedMember, resolveExpression) ?? mrr;
+						return rr;
 					}
 					break;
 				case XamlContextDescription.InMarkupExtension:
@@ -206,7 +207,7 @@ namespace ICSharpCode.XamlBinding
 
 		MemberResolveResult ResolveAttribute(string attributeName)
 		{
-			if (context.Path == null) {
+			if (context.ActiveElement == null) {
 				return null;
 			}
 			string attributeXmlNamespace;
@@ -226,7 +227,7 @@ namespace ICSharpCode.XamlBinding
 				return ResolveProperty(attributeXmlNamespace, className, attributeName, true);
 			}
 			else {
-				ICSharpCode.XmlEditor.QualifiedName lastElement = context.Path.Elements.LastOrDefault();
+				QualifiedName lastElement = context.ActiveElement;
 				return ResolveProperty(lastElement.Namespace, lastElement.Name, attributeName, false);
 			}
 		}

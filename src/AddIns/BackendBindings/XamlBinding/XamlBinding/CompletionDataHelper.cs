@@ -44,68 +44,93 @@ namespace ICSharpCode.XamlBinding
 		
 		public static XamlContext ResolveContext(string text, string fileName, int line, int col)
 		{
+			DebugTimer.Start();
+			
 			int offset = Utils.GetOffsetFromFilePos(text, line, col);
 			
 			if (offset == -1)
 				throw new InvalidOperationException("No valid file position: " + line + " " + col);
 			ParseInformation info = ParserService.GetParseInformation(fileName);
-			XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(text, offset);
 			string attribute = XmlParser.GetAttributeNameAtIndex(text, offset);
 			bool inAttributeValue = XmlParser.IsInsideAttributeValue(text, offset);
-			string attributeValue = "";
-			if (inAttributeValue)
-				attributeValue = XmlParser.GetAttributeValueAtIndex(text, offset);
+			string attributeValue = XmlParser.GetAttributeValueAtIndex(text, offset);
 			int offsetFromValueStart = Utils.GetOffsetFromValueStart(text, offset);
 			int elementStartIndex = XmlParser.GetActiveElementStartIndex(text, offset);
 			AttributeValue value = MarkupExtensionParser.ParseValue(attributeValue);
 			XamlContextDescription description = XamlContextDescription.None;
 			
-			if (path == null || path.Elements.Count == 0) {
-				path = XmlParser.GetParentElementPath(text.Substring(0, offset));
-			} else {
-				description = XamlContextDescription.AtTag;
+			Dictionary<string, string> xmlnsDefs = new Dictionary<string, string>();
+			
+			// TODO : does not work when trying to resolve </Element>, if xmlns declarartion is in <Element>
+			using (XmlTextReader reader = Utils.CreateReaderAtTarget(text, line, col)) {
+				xmlnsDefs.AddRange(reader.GetNamespacesInScope(XmlNamespaceScope.All));
 			}
+
+			QualifiedName active = ResolveCurrentElement(text, elementStartIndex, xmlnsDefs);
 			
 			if (text[offset] == '>')
 				description = XamlContextDescription.None;
 			
 			string wordBeforeIndex = text.GetWordBeforeOffset(offset);
 			
+			if (active != null)
+				description = XamlContextDescription.AtTag;
+			
 			if (elementStartIndex > -1 && (char.IsWhiteSpace(text[offset]) || !string.IsNullOrEmpty(attribute) || Extensions.Is(text[offset], '"', '\'') || !wordBeforeIndex.StartsWith("<")))
 				description = XamlContextDescription.InTag;
 
-            if (inAttributeValue) {
-                description = XamlContextDescription.InAttributeValue;
+			if (inAttributeValue) {
+				description = XamlContextDescription.InAttributeValue;
 
-                if (value != null && !value.IsString)
-                    description = XamlContextDescription.InMarkupExtension;
+				if (value != null && !value.IsString)
+					description = XamlContextDescription.InMarkupExtension;
 
-                if (attributeValue.StartsWith("{}", StringComparison.Ordinal) && attributeValue.Length > 2)
-                    description = XamlContextDescription.InAttributeValue;
-            }
+				if (attributeValue.StartsWith("{}", StringComparison.Ordinal) && attributeValue.Length > 2)
+					description = XamlContextDescription.InAttributeValue;
+			}
 			
 			if (Utils.IsInsideXmlComment(text, offset))
 				description = XamlContextDescription.InComment;
 			
-			Dictionary<string, string> xmlnsDefs = new Dictionary<string, string>();
-			
-			// TODO : does not work when trying to resolve </Element>, if xmlns declarartion is in <Element>
-			using (XmlTextReader reader = Utils.CreateReaderAtTarget(text, line, col)) {
-                xmlnsDefs.AddRange(reader.GetNamespacesInScope(XmlNamespaceScope.All));
-			}
+
 			
 			var context = new XamlContext() {
 				Description = description,
+				ActiveElement = active,
 				AttributeName = attribute,
 				AttributeValue = value,
 				RawAttributeValue = attributeValue,
 				ValueStartOffset = offsetFromValueStart,
-				Path = (path == null || path.Elements.Count == 0) ? null : path,
 				XmlnsDefinitions = xmlnsDefs,
 				ParseInformation = info
 			};
 			
+			DebugTimer.Stop("ResolveContext");
+			
 			return context;
+		}
+		
+		static QualifiedName ResolveCurrentElement(string text, int offset, Dictionary<string, string> xmlnsDefinitions)
+		{
+			if (offset < 0)
+				return null;
+			
+			string elementName = text.GetWordAfterOffset(offset + 1);
+			
+			string prefix = "";
+			string element = "";
+			
+			if (elementName.IndexOf(':') > -1) {
+				string[] data = elementName.Split(':');
+				prefix = data[0];
+				element = data[1];
+			} else {
+				element = elementName;
+			}
+			
+			string xmlns = xmlnsDefinitions.ContainsKey(prefix) ? xmlnsDefinitions[prefix] : string.Empty;
+			
+			return new QualifiedName(element, xmlns, prefix);
 		}
 		
 		public static XamlCompletionContext ResolveCompletionContext(ITextEditor editor, char typedValue)
@@ -120,7 +145,7 @@ namespace ICSharpCode.XamlBinding
 		
 		static List<ICompletionItem> CreateListForAttributeName(XamlCompletionContext context, string[] existingItems)
 		{
-			QualifiedName lastElement = context.Path.Elements.LastOrDefault();
+			QualifiedName lastElement = context.ActiveElement;
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
 			if (cu == null)
 				return null;
@@ -163,7 +188,7 @@ namespace ICSharpCode.XamlBinding
 				
 				foreach (string @namespace in content.NamespaceNames) {
 					if (!string.IsNullOrEmpty(@namespace))
-						    list.Add(new XmlnsCompletionItem(@namespace, content.AssemblyName));
+						list.Add(new XmlnsCompletionItem(@namespace, content.AssemblyName));
 				}
 			}
 			
@@ -271,7 +296,7 @@ namespace ICSharpCode.XamlBinding
 					var existingAttribs = Utils.GetListOfExistingAttributeNames(editor.Document.Text, editor.Caret.Line, editor.Caret.Column);
 					list.Items.AddRange(CreateListForAttributeName(context, existingAttribs));
 					
-					QualifiedName last = context.Path.Elements[context.Path.Elements.Count - 1];
+					QualifiedName last = context.ActiveElement;
 					
 					TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(last.Name, context), info, editor.Document.Text) as TypeResolveResult;
 					
@@ -429,30 +454,28 @@ namespace ICSharpCode.XamlBinding
 					break;
 				case ClassType.Delegate:
 					IMethod invoker = c.Methods.Where(method => method.Name == "Invoke").FirstOrDefault();
-					if (invoker != null) {
-						if (context.Path != null) {
-							var item = context.Path.Elements.LastOrDefault();
-							var evt = ResolveAttribute(context.AttributeName, context) as IEvent;
-							if (evt == null)
-								break;
-							
-							int offset = XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
-							
-							if (offset == -1)
-								break;
-							
-							var loc = context.Editor.Document.OffsetToPosition(offset);
-							
-							string prefix = Utils.GetXamlNamespacePrefix(context);
-							string name = Utils.GetAttributeValue(context.Editor.Document.Text, loc.Line, loc.Column + 1, "name");
-							if (string.IsNullOrEmpty(name))
-								name = Utils.GetAttributeValue(context.Editor.Document.Text, loc.Line, loc.Column + 1, (string.IsNullOrEmpty(prefix) ? "" : prefix + ":") + "name");
-							
-							yield return new NewEventCompletionItem(evt, (string.IsNullOrEmpty(name)) ? item.Name : name);
-							
-							foreach (var eventItem in CompletionDataHelper.AddMatchingEventHandlers(context.Editor, invoker))
-								yield return eventItem;
-						}
+					if (invoker != null && context.ActiveElement != null) {
+						var item = context.ActiveElement;
+						var evt = ResolveAttribute(context.AttributeName, context) as IEvent;
+						if (evt == null)
+							break;
+						
+						int offset = XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
+						
+						if (offset == -1)
+							break;
+						
+						var loc = context.Editor.Document.OffsetToPosition(offset);
+						
+						string prefix = Utils.GetXamlNamespacePrefix(context);
+						string name = Utils.GetAttributeValue(context.Editor.Document.Text, loc.Line, loc.Column + 1, "name");
+						if (string.IsNullOrEmpty(name))
+							name = Utils.GetAttributeValue(context.Editor.Document.Text, loc.Line, loc.Column + 1, (string.IsNullOrEmpty(prefix) ? "" : prefix + ":") + "name");
+						
+						yield return new NewEventCompletionItem(evt, (string.IsNullOrEmpty(name)) ? item.Name : name);
+						
+						foreach (var eventItem in CompletionDataHelper.AddMatchingEventHandlers(context.Editor, invoker))
+							yield return eventItem;
 					}
 					break;
 			}
@@ -711,9 +734,9 @@ namespace ICSharpCode.XamlBinding
 					result.AddRange(attachedEvents
 					                .Select(
 					                	item => new XamlCodeCompletionItem(
-						              		new DefaultEvent(c, GetEventNameFromField(item)) {
-										       ReturnType = GetAttachedEventDelegateType(item, c)
-										    },
+					                		new DefaultEvent(c, GetEventNameFromField(item)) {
+					                			ReturnType = GetAttachedEventDelegateType(item, c)
+					                		},
 					                		(string.IsNullOrEmpty(ns.Key) ? "" : ns.Key + ":") + c.Name + "." + item.Name.Remove(item.Name.Length - "Event".Length)
 					                	)
 					                )

@@ -74,7 +74,7 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				case '.':
-					if (context.Path != null && !XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
+					if (context.ActiveElement != null && !XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
 						context.Description = XamlContextDescription.AtTag;
 						list = CompletionDataHelper.CreateListForContext(editor, context);
 						editor.ShowCompletionWindow(list);
@@ -85,7 +85,7 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				case ':':
-					if (context.Path != null && XmlParser.GetQualifiedAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset) == null) {
+					if (context.ActiveElement != null && XmlParser.GetQualifiedAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset) == null) {
 						if (!context.AttributeName.StartsWith("xmlns")) {
 							list = CompletionDataHelper.CreateListForContext(editor, context);
 							editor.ShowCompletionWindow(list);
@@ -136,7 +136,7 @@ namespace ICSharpCode.XamlBinding
 			XamlCompletionContext context = CompletionDataHelper.ResolveCompletionContext(editor, ' ');
 			context.Forced = true;
 			Core.LoggingService.Debug(context);
-			if (context.Path != null) {
+			if (context.ActiveElement != null) {
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && context.Description != XamlContextDescription.InAttributeValue) {
 					var list = CompletionDataHelper.CreateListForContext(editor, context) as XamlCompletionItemList;
 					string starter = editor.GetWordBeforeCaret().Trim('<', '>');
@@ -160,7 +160,7 @@ namespace ICSharpCode.XamlBinding
 								editor.ShowInsightWindow(CompletionDataHelper.MemberInsight(mrr));
 							}
 							
-							if (context.Path.Elements.LastOrDefault().Name == "Setter")
+							if (context.ActiveElement.Name == "Setter")
 								DoSetterCompletion(context, completionList);
 							
 							completionList.SortItems();
