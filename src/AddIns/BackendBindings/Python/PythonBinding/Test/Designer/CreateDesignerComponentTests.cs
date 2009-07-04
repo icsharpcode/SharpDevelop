@@ -49,5 +49,13 @@ namespace PythonBinding.Tests.Designer
 				Assert.IsInstanceOf(typeof(PythonImageListComponent), PythonDesignerComponentFactory.CreateDesignerComponent(imageList));
 			}
 		}
+		
+		[Test]
+		public void TreeViewComponent()
+		{
+			using (TreeView treeView = new TreeView()) {
+				Assert.IsInstanceOf(typeof(PythonTreeViewComponent), PythonDesignerComponentFactory.CreateDesignerComponent(treeView));
+			}
+		}		
 	}
 }

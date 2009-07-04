@@ -659,7 +659,48 @@ namespace ICSharpCode.PythonBinding
 		public PythonDesignerComponent Parent {
 			get { return parent; }
 		}
+
+		public static void AppendSystemArray(PythonCodeBuilder codeBuilder, string componentName, string methodName, string typeName, ICollection components)
+		{
+			if (components.Count > 0) {
+				codeBuilder.AppendIndented("self._" + componentName + "." + methodName + "(");
+				AppendSystemArray(codeBuilder, typeName, components);
+				codeBuilder.Append(")");
+				codeBuilder.AppendLine();
+			}
+		}
 		
+		public static void AppendSystemArray(PythonCodeBuilder codeBuilder, string typeName, ICollection components)
+		{
+			if (components.Count > 0) {
+				codeBuilder.Append("System.Array[" + typeName + "](");
+				codeBuilder.AppendLine();
+				codeBuilder.IncreaseIndent();
+				int i = 0;
+				foreach (object component in components) {
+					if (i == 0) {
+						codeBuilder.AppendIndented("[");
+					} else {
+						codeBuilder.Append(",");
+						codeBuilder.AppendLine();
+						codeBuilder.AppendIndented(String.Empty);
+					}
+					if (component is IComponent) {
+						codeBuilder.Append("self._" + ((IComponent)component).Site.Name);
+					} else if (component is String) {
+						codeBuilder.Append(PythonPropertyValueAssignment.ToString(component));
+					} else if (component is IArrayItem) {
+						codeBuilder.Append(((IArrayItem)component).Name);
+					} else {
+						codeBuilder.Append(GetVariableName(component, i + 1));
+					}
+					++i;
+				}
+				codeBuilder.Append("])");
+			}
+			codeBuilder.DecreaseIndent();
+		}
+			
 		protected IComponent Component {
 			get { return component; }
 		}
@@ -707,45 +748,6 @@ namespace ICSharpCode.PythonBinding
 			return sitedComponents.ToArray();
 		}
 		
-		static void AppendSystemArray(PythonCodeBuilder codeBuilder, string componentName, string methodName, string typeName, ICollection components)
-		{
-			if (components.Count > 0) {
-				codeBuilder.AppendIndented("self._" + componentName + "." + methodName + "(");
-				AppendSystemArray(codeBuilder, typeName, components);
-				codeBuilder.Append(")");
-				codeBuilder.AppendLine();
-				codeBuilder.DecreaseIndent();
-			}
-		}
-		
-		static void AppendSystemArray(PythonCodeBuilder codeBuilder, string typeName, ICollection components)
-		{
-			if (components.Count > 0) {
-				codeBuilder.Append("System.Array[" + typeName + "](");
-				codeBuilder.AppendLine();
-				codeBuilder.IncreaseIndent();
-				int i = 0;
-				foreach (object component in components) {
-					if (i == 0) {
-						codeBuilder.AppendIndented("[");
-					} else {
-						codeBuilder.Append(",");
-						codeBuilder.AppendLine();
-						codeBuilder.AppendIndented(String.Empty);
-					}
-					if (component is IComponent) {
-						codeBuilder.Append("self._" + ((IComponent)component).Site.Name);
-					} else if (component is String) {
-						codeBuilder.Append(PythonPropertyValueAssignment.ToString(component));
-					} else {
-						codeBuilder.Append(GetVariableName(component, i + 1));
-					}
-					++i;
-				}
-				codeBuilder.Append("])");
-			}
-		}
-	
 		void AppendChildComponentsMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
 		{
 			foreach (PythonDesignerComponent designerComponent in GetChildComponents()) {
