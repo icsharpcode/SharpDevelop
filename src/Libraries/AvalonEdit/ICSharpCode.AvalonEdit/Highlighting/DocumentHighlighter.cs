@@ -23,10 +23,16 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// </summary>
 	public class DocumentHighlighter : ILineTracker
 	{
+		/// <summary>
+		/// Stores the span state at the end of each line.
+		/// storedSpanStacks[0] = state at beginning of document
+		/// storedSpanStacks[i] = state after line i
+		/// </summary>
 		readonly CompressingTreeList<SpanStack> storedSpanStacks = new CompressingTreeList<SpanStack>(object.ReferenceEquals);
 		readonly CompressingTreeList<bool> isValid = new CompressingTreeList<bool>((a, b) => a == b);
 		readonly TextDocument document;
 		readonly HighlightingRuleSet baseRuleSet;
+		bool isHighlighting;
 		
 		/// <summary>
 		/// Gets the document that this DocumentHighlighter is highlighting.
@@ -52,6 +58,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		void ILineTracker.BeforeRemoveLine(DocumentLine line)
 		{
+			CheckIsHighlighting();
 			int number = line.LineNumber;
 			InvalidateHighlighting();
 			storedSpanStacks.RemoveAt(number);
@@ -65,6 +72,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		void ILineTracker.SetLineLength(DocumentLine line, int newTotalLength)
 		{
+			CheckIsHighlighting();
 			int number = line.LineNumber;
 			isValid[number] = false;
 			if (number < firstInvalidLine)
@@ -73,6 +81,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		void ILineTracker.LineInserted(DocumentLine insertionPos, DocumentLine newLine)
 		{
+			CheckIsHighlighting();
 			Debug.Assert(insertionPos.LineNumber + 1 == newLine.LineNumber);
 			int lineNumber = newLine.LineNumber;
 			storedSpanStacks.Insert(lineNumber, null);
@@ -93,6 +102,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public void InvalidateHighlighting()
 		{
+			CheckIsHighlighting();
 			storedSpanStacks.Clear();
 			storedSpanStacks.Add(SpanStack.Empty);
 			storedSpanStacks.InsertRange(1, document.LineCount, null);
@@ -113,14 +123,54 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			if (!document.Lines.Contains(line))
 				throw new ArgumentException("The specified line does not belong to the document.");
-			highlightedLine = null;
-			int targetLineNumber = line.LineNumber;
+			CheckIsHighlighting();
+			isHighlighting = true;
+			try {
+				int targetLineNumber = line.LineNumber;
+				HighlightUpTo(targetLineNumber);
+				highlightedLine = new HighlightedLine(line);
+				HighlightLineAndUpdateTreeList(line, targetLineNumber);
+				return highlightedLine;
+			} finally {
+				highlightedLine = null;
+				isHighlighting = false;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the span stack at the end of the specified line.
+		/// -> GetSpanStack(1) returns the spans at the start of the second line.
+		/// </summary>
+		/// <remarks>GetSpanStack(0) is valid and will always return the empty stack.</remarks>
+		public SpanStack GetSpanStack(int lineNumber)
+		{
+			if (lineNumber < 0 || lineNumber > document.LineCount)
+				throw new ArgumentOutOfRangeException("lineNumber", lineNumber, "Value must be between 0 and " + document.LineCount);
+			if (firstInvalidLine <= lineNumber) {
+				CheckIsHighlighting();
+				isHighlighting = true;
+				try {
+					HighlightUpTo(lineNumber + 1);
+				} finally {
+					isHighlighting = false;
+				}
+			}
+			return storedSpanStacks[lineNumber];
+		}
+		
+		void CheckIsHighlighting()
+		{
+			if (isHighlighting) {
+				throw new InvalidOperationException("Invalid call - a highlighting operation is currently running.");
+			}
+		}
+		
+		void HighlightUpTo(int targetLineNumber)
+		{
+			Debug.Assert(highlightedLine == null); // ensure this method is only used for
 			while (firstInvalidLine < targetLineNumber) {
 				HighlightLineAndUpdateTreeList(document.GetLineByNumber(firstInvalidLine), firstInvalidLine);
 			}
-			highlightedLine = new HighlightedLine(line);
-			HighlightLineAndUpdateTreeList(line, targetLineNumber);
-			return highlightedLine;
 		}
 		
 		void HighlightLineAndUpdateTreeList(DocumentLine line, int lineNumber)
@@ -148,8 +198,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		}
 		
 		/// <summary>
-		/// Is called from the highlighting state at the end of the specified line has changed.
+		/// Is called when the highlighting state at the end of the specified line has changed.
 		/// </summary>
+		/// <remarks>This callback must not call HighlightLine or InvalidateHighlighting.
+		/// It may call GetSpanStack, but only for the changed line and lines above.
+		/// This method must not modify the document.</remarks>
 		protected virtual void OnHighlightStateChanged(DocumentLine line, int lineNumber)
 		{
 		}
@@ -161,6 +214,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		string lineText;
 		int lineStartOffset;
 		int position;
+		
+		/// <summary>
+		/// the HighlightedLine where highlighting output is being written to.
+		/// if this variable is null, nothing is highlighted and only the span state is updated
+		/// </summary>
 		HighlightedLine highlightedLine;
 		
 		void HighlightLineInternal(DocumentLine line)
