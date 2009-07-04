@@ -50,6 +50,7 @@ namespace ICSharpCode.XamlBinding
 			
 			if (offset == -1)
 				throw new InvalidOperationException("No valid file position: " + line + " " + col);
+			
 			ParseInformation info = ParserService.GetParseInformation(fileName);
 			string attribute = XmlParser.GetAttributeNameAtIndex(text, offset);
 			bool inAttributeValue = XmlParser.IsInsideAttributeValue(text, offset);
@@ -91,8 +92,6 @@ namespace ICSharpCode.XamlBinding
 			
 			if (Utils.IsInsideXmlComment(text, offset))
 				description = XamlContextDescription.InComment;
-			
-
 			
 			var context = new XamlContext() {
 				Description = description,
@@ -384,7 +383,8 @@ namespace ICSharpCode.XamlBinding
 				case "System.Windows.Markup.TypeExtension":
 					if (context.AttributeValue.ExtensionValue.PositionalArguments.Count <= 1) {
 						list.Items.AddRange(CreateListForElement(info, editor.Document.Text, editor.Caret.Line, editor.Caret.Column, false));
-						AttributeValue selItem = context.AttributeValue.ExtensionValue.PositionalArguments.LastOrDefault();
+						AttributeValue selItem = Utils.GetInnermostMarkupExtensionInfo(context.AttributeValue.ExtensionValue)
+							.PositionalArguments.LastOrDefault();
 						string word = editor.GetWordBeforeCaret().TrimEnd();
 						if (selItem != null && selItem.IsString && word == selItem.StringValue) {
 							list.PreselectionLength = selItem.StringValue.Length;
@@ -502,7 +502,8 @@ namespace ICSharpCode.XamlBinding
 
 		static bool DoStaticExtensionCompletion(XamlCompletionItemList list, XamlCompletionContext context)
 		{
-			AttributeValue selItem = context.AttributeValue.ExtensionValue.PositionalArguments.LastOrDefault();
+			AttributeValue selItem = Utils.GetInnermostMarkupExtensionInfo(context.AttributeValue.ExtensionValue)
+				.PositionalArguments.LastOrDefault();
 			if (context.PressedKey == '.') {
 				if (selItem != null && selItem.IsString) {
 					var rr = ResolveStringValue(selItem.StringValue, context) as TypeResolveResult;
