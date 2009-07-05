@@ -20,6 +20,7 @@ namespace ICSharpCode.XamlBinding
 {
 	public class XamlContext : ExpressionContext {
 		public QualifiedName ActiveElement { get; set; }
+		public QualifiedName ParentElement { get; set; }
 		public string AttributeName { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public string RawAttributeValue { get; set; }
@@ -45,6 +46,7 @@ namespace ICSharpCode.XamlBinding
 			this.AttributeName = context.AttributeName;
 			this.AttributeValue = context.AttributeValue;
 			this.Description = context.Description;
+			this.ParentElement = context.ParentElement;
 			this.ParseInformation = context.ParseInformation;
 			this.RawAttributeValue = context.RawAttributeValue;
 			this.ValueStartOffset = context.ValueStartOffset;

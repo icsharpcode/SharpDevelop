@@ -138,9 +138,11 @@ namespace ICSharpCode.XamlBinding
 			if (context.ActiveElement != null) {
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && context.Description != XamlContextDescription.InAttributeValue) {
 					var list = CompletionDataHelper.CreateListForContext(context) as XamlCompletionItemList;
-					string starter = editor.GetWordBeforeCaret().Trim('<', '>');
-					if (!string.IsNullOrEmpty(starter) && !starter.EndsWith(StringComparison.Ordinal, ' ', '\t', '\n', '\r'))
+					string starter = editor.Document.Text.GetWordBeforeOffset(editor.Caret.Offset).Trim('<', '>');
+					if (!string.IsNullOrEmpty(starter) && !starter.EndsWith(StringComparison.Ordinal, ' ', '\t', '\n', '\r')) {
+						list.SuggestedItem = list.Items.FirstOrDefault(item => item.Text.StartsWith(starter, StringComparison.OrdinalIgnoreCase));
 						list.PreselectionLength = starter.Length;
+					}
 					editor.ShowCompletionWindow(list);
 					return true;
 				} else {

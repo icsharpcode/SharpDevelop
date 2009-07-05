@@ -61,15 +61,14 @@ namespace ICSharpCode.XamlBinding
 			XamlContextDescription description = XamlContextDescription.None;
 			
 			Dictionary<string, string> xmlnsDefs;
-			QualifiedName active;
-			bool isParent;
+			QualifiedName active, parent;
 			int elementStartIndex;
 			
-			Utils.LookUpInfoAtTarget(text, line, col, offset, out xmlnsDefs, out active, out isParent, out elementStartIndex);
+			Utils.LookUpInfoAtTarget(text, line, col, offset, out xmlnsDefs, out active, out parent, out elementStartIndex);
 			
 			string wordBeforeIndex = text.GetWordBeforeOffset(offset);
 			
-			if (active != null && !isParent)
+			if (active != null && parent != null)
 				description = XamlContextDescription.AtTag;
 			
 			if (elementStartIndex > -1 &&
@@ -93,6 +92,7 @@ namespace ICSharpCode.XamlBinding
 			var context = new XamlContext() {
 				Description = description,
 				ActiveElement = active,
+				ParentElement = parent,
 				AttributeName = attribute,
 				AttributeValue = value,
 				RawAttributeValue = attributeValue,
@@ -111,7 +111,7 @@ namespace ICSharpCode.XamlBinding
 			if (offset < 0)
 				return null;
 			
-			string elementName = text.GetWordAfterOffset(offset + 1);
+			string elementName = text.GetWordAfterOffset(offset + 1).Trim('>', '<');
 			
 			string prefix = "";
 			string element = "";
@@ -266,7 +266,7 @@ namespace ICSharpCode.XamlBinding
 			var items = GetClassesFromContext(context);
 			var result = new List<ICompletionItem>();
 
-			var last = context.ActiveElement;
+			var last = context.ParentElement;
 
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
 			

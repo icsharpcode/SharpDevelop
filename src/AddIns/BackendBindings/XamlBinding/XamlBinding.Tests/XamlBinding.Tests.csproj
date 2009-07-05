@@ -85,7 +85,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="ProfilingSessions\Session20090705_103024.sdps" />
-  </ItemGroup>
 </Project>
