@@ -37,11 +37,6 @@ namespace ICSharpCode.Core
 		{
 			get; private set;
 		}
-		
-		public string Name
-		{
-			get; private set;
-		}
 	
 		public string Path
 		{
@@ -56,10 +51,6 @@ namespace ICSharpCode.Core
 			
 			if(codon.Properties.Contains("category")){
 				Category = codon.Properties["category"];
-			}
-			
-			if(codon.Properties.Contains("name")){
-				Name = codon.Properties["name"];
 			}
 		}
 	}

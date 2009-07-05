@@ -19,8 +19,7 @@ namespace ICSharpCode.Core.Presentation
 			OldInputBindings = new InputBindingCollection();
 			NewInputBindings = new InputBindingCollection();
 			DefaultGestures = new InputGestureCollection();
-		
-			Categories = new List<InputBindingCategory>();
+			Categories = new InputBindingCategoryCollection();
 		}
 		
 		public string ownerInstanceName;
@@ -179,7 +178,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// List of categories associated with input binding 
 		/// </summary>
-		public List<InputBindingCategory> Categories {
+		public InputBindingCategoryCollection Categories {
 			get; private set;
 		}
 			

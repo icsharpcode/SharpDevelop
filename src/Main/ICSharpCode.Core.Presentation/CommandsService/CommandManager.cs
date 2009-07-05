@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -49,7 +50,7 @@ namespace ICSharpCode.Core.Presentation
 		private static Dictionary<string, Type> namedUITypes = new Dictionary<string, Type>();
 		
 		// Categories
-		private static List<InputBindingCategory> categories = new List<InputBindingCategory>();
+		public static List<InputBindingCategory> InputBindingCategories = new List<InputBindingCategory>();
 		
 		/// <summary>
 		/// Register UI element instance accessible by unique name
@@ -492,7 +493,11 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="handler">Update handler</param>
 		public static void RegisterClassInputBindingsUpdateHandler(Type ownerType, BindingsUpdatedHandler handler) 
 		{
-			RegisterClassInputBindingsUpdateHandler(ownerType.AssemblyQualifiedName, handler);
+			// Use shortened assembly qualified name to not lose user defined gestures
+			// when sharp develop is updated
+            var ownerTypeName = string.Format("{0}, {1}", ownerType.FullName, ownerType.Assembly.GetName().Name);
+            
+			RegisterClassInputBindingsUpdateHandler(ownerTypeName, handler);
 		}
 		
 		/// <summary>
@@ -593,14 +598,9 @@ namespace ICSharpCode.Core.Presentation
 		
 		private static void InvokeAllBindingUpdateHandlers(System.Collections.IDictionary updateHandlers)
 		{
-			foreach(var updateHandlerPair in updateHandlers) {
+			foreach(DictionaryEntry updateHandlerPair in updateHandlers) {
 				// TODO: This can be fixed with .NET 4.0
-				List<BindingsUpdatedHandler> handlers = null;
-				if(updateHandlerPair is KeyValuePair<string, List<BindingsUpdatedHandler>>) {
-					handlers = ((KeyValuePair<string, List<BindingsUpdatedHandler>>)updateHandlerPair).Value;
-				} else if(updateHandlerPair is KeyValuePair<object, List<BindingsUpdatedHandler>>) {
-					handlers = ((KeyValuePair<object, List<BindingsUpdatedHandler>>)updateHandlerPair).Value;
-				}
+				var handlers = (List<BindingsUpdatedHandler>)updateHandlerPair.Value;
 				
 				if(handlers != null) {
 					foreach(var handler in handlers) {
@@ -739,49 +739,62 @@ namespace ICSharpCode.Core.Presentation
 			return gestures;
 		}
 		
-		/// <summary>
-		/// Register input binding category
-		/// 
-		/// Format:
-		/// , - Separates categories
-		/// / - Describes hierarchy meaning category to the left is child of the category to the right
-		/// 
-		/// <code>parent/child</code>
-		/// </summary>
-		/// <param name="categoriesString">String representing list of categories.</param>
-		/// <returns>Returns list of categories which can be assigned to input binding</returns>
-		public static List<InputBindingCategory> RegisterInputBindingCategories(string categoriesString) {			
-			var registeredCategories = new List<InputBindingCategory>();
-
-			if(string.IsNullOrEmpty(categoriesString)) {
-				return registeredCategories;
-			}
-			
-			// Split categories
-			var categoryPaths = Regex.Split(categoriesString, @"\s*\,\s*");
-			foreach(var categoryPath in categoryPaths) {
-				// Split category path
-				var pathEntries = Regex.Split(categoryPath, @"\s*\/\s*").ToList();
-				
-				var accumulatedPath = "";
-				InputBindingCategory parentCategory = null;
-				
-				// In a loop create category hierarchy specified in a path
-				foreach(var categoryPathEntry in pathEntries) {
-					accumulatedPath += "/" + categoryPathEntry;
-					var matchingCategory = categories.FirstOrDefault(c => c.Path == accumulatedPath);
-					if(matchingCategory == null) {
-						matchingCategory = new InputBindingCategory(categoryPathEntry, parentCategory);
-						matchingCategory.Path = accumulatedPath;
-						categories.Add(matchingCategory);
-					}
-					parentCategory = matchingCategory;
+		public static InputBindingCategory GetInputBindingCategory(string categoryPath, bool throwWhenNotFound)
+		{
+			foreach(var category in InputBindingCategories) {
+				if(category.Path == categoryPath) {
+					return category;
 				}
-				
-				registeredCategories.Add(parentCategory);
 			}
 			
-			return registeredCategories;
+			if(throwWhenNotFound) {
+				throw new ApplicationException(string.Format("InputBindingCategory with path {0} was not found", categoryPath));
+			}
+			
+			return null;
+		}
+		
+		public static ICollection<InputBindingCategory> GetInputBindingCategoryCollection(string categoryPathCollectionString, bool throwWhenNotFound)
+		{
+			var categoryPathCollection = categoryPathCollectionString.Split(',');
+			var categories = new List<InputBindingCategory>();
+			foreach(var categoryPath in categoryPathCollection) {
+				var category = CommandManager.GetInputBindingCategory(categoryPath, throwWhenNotFound);
+				
+				if(category != null) {
+					categories.Add(category);
+				}
+			}
+			
+			return categories;
+		}
+		
+		public static IEnumerable<InputBindingCategory> GetInputBindingCategoryChildren(string categoryPath) 
+		{
+			var categoryDepth = categoryPath.Count(c => c == '/');
+			foreach(var currentCategory in InputBindingCategories) {
+				if(currentCategory.Path.StartsWith(categoryPath)) {
+					var currentCategoryDepth = currentCategory.Path.Count(c => c == '/');
+					
+					if(currentCategoryDepth == categoryDepth + 1)
+					{
+		 				yield return currentCategory;
+					}
+				}
+			}
+		}
+		
+		public static void RegisterInputBindingCategory(InputBindingCategory category) 
+		{
+			if(string.IsNullOrEmpty(category.Path)) {
+				throw new ArgumentException("InputBindingCategory path can not be empty");
+			}
+			
+			if(string.IsNullOrEmpty(category.Text)) {
+				throw new ArgumentException("InputBindingCategory text can not be empty");
+			}
+			
+			InputBindingCategories.Add(category);
 		}
 		
 		/// <summary>

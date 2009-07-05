@@ -153,8 +153,8 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <returns>Comparison result</returns>
         public int CompareTo(object obj)
         {
-            if (obj is AddIn) return -1;
-            if (obj is Shortcut) return 1;
+            if (obj is AddIn) return 1;
+            if (obj is Shortcut) return -1;
 
             var categoryObj = (ShortcutCategory)obj;
             return Name.CompareTo(categoryObj.Name);

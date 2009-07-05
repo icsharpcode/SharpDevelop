@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Windows.Input;
 using System.Windows.Documents;
 using System.Text;
+using System.Collections.Generic;
 using System.Collections;
 using ICSharpCode.Core;
 
@@ -17,7 +18,7 @@ namespace ICSharpCode.Core.Presentation
 		{
 			var menuRoots = AddInTree.BuildItems<MenuRootDescriptor>(menuRootsLocationPath, caller);
 			foreach(var menuRoot in menuRoots) {
-				CommandsService.RegisterSingleMenuBindings(menuRoot.Path, caller, menuRoot.Name);
+				CommandsService.RegisterSingleMenuBindings(menuRoot.Path, caller, menuRoot.Category);
 			}
 		}
 		
@@ -69,19 +70,24 @@ namespace ICSharpCode.Core.Presentation
 					var defaultGesture = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(codon.Properties["shortcut"]);
 					inputBindingInfo.DefaultGestures.AddRange(defaultGesture);
 					
-					var menuCategories = CommandManager.RegisterInputBindingCategories(categoryPath);
-					inputBindingInfo.Categories.AddRange(menuCategories);
+					// Menu category
+					var menuCategory = CommandManager.GetInputBindingCategory(categoryPath, true);
+					inputBindingInfo.Categories.Add(menuCategory);
 					
+					// User defined categories
 					if(codon.Properties.Contains("category")) {
-						var userDefinedCategories = CommandManager.RegisterInputBindingCategories(codon.Properties["category"]);
-						inputBindingInfo.Categories.AddRange(userDefinedCategories);
+						var additionalCategories = CommandManager.GetInputBindingCategoryCollection(codon.Properties["category"], true);
+						inputBindingInfo.Categories.AddRange(additionalCategories);
 					}
 					
 					CommandManager.RegisterInputBinding(inputBindingInfo);
 				}
 				
 				if(item.SubItems != null) {
-					RegisterSingleMenuBindings(item.SubItems, caller, categoryPath + "/" + item.Codon.Properties["label"]);
+					var subMenuCategory = new InputBindingCategory(categoryPath + "/" + item.Codon.Id, codon.Properties["label"]);
+					CommandManager.RegisterInputBindingCategory(subMenuCategory);
+					
+					RegisterSingleMenuBindings(item.SubItems, caller, categoryPath + "/" + item.Codon.Id);
 				}
 			}
 		}
@@ -100,6 +106,27 @@ namespace ICSharpCode.Core.Presentation
 			RegisterRoutedCommands(typeof(MediaCommands));
 			RegisterRoutedCommands(typeof(NavigationCommands));
 			RegisterRoutedCommands(typeof(EditingCommands));
+		}
+		
+		public static void RegisterInputBindingCategories(object caller, string path) {
+			var descriptors = AddInTree.BuildItems<InputBindingCategoryDescriptor>(path, caller, false);
+			
+			foreach(var desc in descriptors) 
+			{
+				RegisterInputBindingCategories(desc, "");
+			}
+		}
+		
+		private static void RegisterInputBindingCategories(InputBindingCategoryDescriptor descriptor, string categoryPath)
+		{
+			categoryPath = categoryPath + "/" + descriptor.Id;
+			var category = new InputBindingCategory(categoryPath, descriptor.Text);
+			CommandManager.RegisterInputBindingCategory(category);
+			
+			foreach(var desc in descriptor.Children)
+			{
+				RegisterInputBindingCategories(desc, categoryPath);
+			}
 		}
 		
 		public static void RegisterRoutedUICommands(object caller, string path) 
@@ -161,7 +188,8 @@ namespace ICSharpCode.Core.Presentation
 					}
 					
 					if(!string.IsNullOrEmpty(desc.Category)) {
-						inputBindingInfo.Categories.AddRange(CommandManager.RegisterInputBindingCategories(desc.Category));
+						var categories = CommandManager.GetInputBindingCategoryCollection(desc.Category, true);
+						inputBindingInfo.Categories.AddRange(categories);
 					}
 					
 					CommandManager.RegisterInputBinding(inputBindingInfo);
@@ -194,7 +222,8 @@ namespace ICSharpCode.Core.Presentation
 				}
 				
 				if(!string.IsNullOrEmpty(desc.Category)) {
-					inputBindingInfo.Categories.AddRange(CommandManager.RegisterInputBindingCategories(desc.Category));
+					var categories = CommandManager.GetInputBindingCategoryCollection(desc.Category, true);
+					inputBindingInfo.Categories.AddRange(categories);
 				}
 				
 				CommandManager.RegisterInputBinding(inputBindingInfo);

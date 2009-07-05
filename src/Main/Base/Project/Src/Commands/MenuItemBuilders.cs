@@ -202,6 +202,15 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class ToolMenuBuilder : IMenuItemBuilder
 	{
+		private static InputBindingCategory externalToolsCategory;
+		
+		static ToolMenuBuilder()
+		{
+			var categoryName = StringParser.Parse("External tools");
+			externalToolsCategory = new InputBindingCategory("/MainMenu/Tools/ExternalTools", categoryName);
+			ICSharpCode.Core.Presentation.CommandManager.RegisterInputBindingCategory(externalToolsCategory);
+		}
+		
 		private bool bindingsAssigned = false;
 		
 		public ICollection BuildItems(Codon codon, object owner)
@@ -230,7 +239,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					var inputBindingInfo = new InputBindingInfo();
 					inputBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
 					inputBindingInfo.RoutedCommandName = routedCommandName;
-					inputBindingInfo.Categories.AddRange(CommandManager.RegisterInputBindingCategories("Main Menu/${res:XML.MainMenu.ToolMenu}/External tools"));
+					inputBindingInfo.Categories.Add(externalToolsCategory);
 					CommandManager.RegisterInputBinding(inputBindingInfo);
 				}		
 				
@@ -528,8 +537,15 @@ namespace ICSharpCode.SharpDevelop.Commands
 						inputBindingInfo.RoutedCommandName = routedCommandName;
 						inputBindingInfo.DefaultGestures = gestures;
 						
-						var menuPath = "Main Menu/${res:XML.MainMenu.ViewMenu}" + (Category == padContent.Category && padContent.Category == "Main" ? "" : "/" + padContent.Category);
-						inputBindingInfo.Categories.AddRange(CommandManager.RegisterInputBindingCategories(menuPath));
+						
+						var categoryPath = "/MainMenu/View" + (Category == padContent.Category && padContent.Category != "Main" ? "/" + padContent.Class : "");
+						var category = ICSharpCode.Core.Presentation.CommandManager.GetInputBindingCategory(categoryPath, false);
+						if(category == null) {
+							category = new InputBindingCategory(categoryPath, padContent.Category);
+							ICSharpCode.Core.Presentation.CommandManager.RegisterInputBindingCategory(category);
+						}
+						
+						inputBindingInfo.Categories.Add(category);
 						inputBindingInfo.AddIn = addIn;
 						CommandManager.RegisterInputBinding(inputBindingInfo);
 						

@@ -156,6 +156,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Src\Data\IShortcutTreeEntry.cs" />
+    <Compile Include="Src\Data\MapTable.cs" />
     <Compile Include="Src\Data\SeparatorData.cs" />
     <Compile Include="Src\Data\Shortcut.cs" />
     <Compile Include="Src\Data\ShortcutCategory.cs" />

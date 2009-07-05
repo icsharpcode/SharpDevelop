@@ -72,6 +72,7 @@
     <Compile Include="CommandsService\CommandsService.cs" />
     <Compile Include="CommandsService\GesturePlaceHolderRegistry.cs" />
     <Compile Include="CommandsService\InputBindingCategory.cs" />
+    <Compile Include="CommandsService\InputBindingCategoryCollection.cs" />
     <Compile Include="CommandsService\InputBindingInfo.cs" />
     <Compile Include="CommandsService\UserDefinedGesturesManager.cs" />
     <Compile Include="CommandsService\UserGesturesProfile.cs" />

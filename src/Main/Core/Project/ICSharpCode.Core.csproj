@@ -66,6 +66,7 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\GesturesPlaceHolderDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\InputBindingDescriptor.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\InputBindingDoozer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\InputBindingCategoryDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\RoutedUICommandDescriptor.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\RoutedUICommandDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuRootDoozer.cs" />

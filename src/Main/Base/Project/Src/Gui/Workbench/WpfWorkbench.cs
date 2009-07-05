@@ -75,6 +75,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Initialize()
 		{	
+			CommandsService.RegisterInputBindingCategories(this, "/SharpDevelop/Workbench/InputBindingCategories");
+			
 			// Use shortened assembly qualified name to not lose user defined gestures
 			// when sharp develop is updated
             CommandManager.DefaultContextName = 

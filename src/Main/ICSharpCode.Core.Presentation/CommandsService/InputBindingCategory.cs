@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -12,16 +14,20 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="name">Category name</param>
 		/// <param name="parentCategory">Parent category (null - root level category)</param>
-		public InputBindingCategory(string name, InputBindingCategory parentCategory)
+		public InputBindingCategory(string path, string text)
 		{
-			Name = name;
-			ParentCategory = parentCategory;
+			if(path == "/ContextMenus/Tabs")
+			{
+				
+			}
+			Path = path;
+			Text = text;
 		}
 		
 		/// <summary>
 		/// Category name
 		/// </summary>
-		public string Name
+		public string Text
 		{
 			get; set;
 		}
@@ -29,9 +35,12 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Reference to parent category
 		/// </summary>
-		public InputBindingCategory ParentCategory
+		public List<InputBindingCategory> Children
 		{
-			get; set;
+			get
+			{
+				return CommandManager.GetInputBindingCategoryChildren(Path).ToList();
+			}
 		}
 		
 		/// <summary>
@@ -40,8 +49,12 @@ namespace ICSharpCode.Core.Presentation
 		/// Format:
 		/// /category/subcategory 
 		/// </summary>
-		internal string Path {
+		public string Path {
 			get; set;
+		}
+		
+		public override string ToString() {
+			return Path;
 		}
 	}
 }
