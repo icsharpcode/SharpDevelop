@@ -146,6 +146,24 @@ namespace PythonBinding.Tests.Designer
 				Assert.IsNull(field.GetMember(creator));
 			}
 		}
+
+		[Test]
+		public void GetInstanceObjectInMethodCall()
+		{
+			string pythonCode = "treeNode1.Nodes.AddRange(System.Array[System.Windows.Forms.TreeNode](\r\n" +
+						"    [treeNode2]))";
+			
+			CallExpression callExpression = PythonParserHelper.GetCallExpression(pythonCode);
+			PythonControlFieldExpression field = PythonControlFieldExpression.Create(callExpression);
+			
+			TreeNode treeNode1 = new TreeNode();
+			TreeNode treeNode2 = new TreeNode();
+			MockComponentCreator creator = new MockComponentCreator();
+			creator.AddInstance(treeNode1, "treeNode1");
+			creator.AddInstance(treeNode2, "treeNode2");
+			object member = field.GetMember(creator);
+			Assert.AreSame(treeNode1.Nodes, member);
+		}
 		
 		[Test]
 		public void GetObjectInMethodCallFromSpecifiedObject()

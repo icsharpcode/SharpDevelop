@@ -83,6 +83,13 @@ namespace PythonBinding.Tests.Utils
 			}
 			return null;
 		}
+
+		public void AddInstance(object obj, string name)
+		{
+			CreatedInstance createdInstance = new CreatedInstance(obj.GetType(), new object[0], name, false);
+			createdInstance.Object = obj;
+			createdInstances.Add(createdInstance);
+		}
 		
 		public object CreateInstance(Type type, ICollection arguments, string name, bool addToContainer)
 		{
