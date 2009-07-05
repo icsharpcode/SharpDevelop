@@ -42,7 +42,7 @@ namespace ICSharpCode.XamlBinding
 			switch (ch) {
 				case '<':
 					context.Description = (context.Description == XamlContextDescription.None) ? XamlContextDescription.AtTag : context.Description;
-					list = CompletionDataHelper.CreateListForContext(editor, context);
+					list = CompletionDataHelper.CreateListForContext(context);
 					editor.ShowCompletionWindow(list);
 					return CodeCompletionKeyPressResult.Completed;
 				case '>':
@@ -75,7 +75,7 @@ namespace ICSharpCode.XamlBinding
 				case '.':
 					if (context.ActiveElement != null && !XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
 						context.Description = XamlContextDescription.AtTag;
-						list = CompletionDataHelper.CreateListForContext(editor, context);
+						list = CompletionDataHelper.CreateListForContext(context);
 						editor.ShowCompletionWindow(list);
 						return CodeCompletionKeyPressResult.Completed;
 					} else if (context.Description == XamlContextDescription.InMarkupExtension) {
@@ -86,7 +86,7 @@ namespace ICSharpCode.XamlBinding
 				case ':':
 					if (context.ActiveElement != null && XmlParser.GetQualifiedAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset) == null) {
 						if (!context.AttributeName.StartsWith("xmlns")) {
-							list = CompletionDataHelper.CreateListForContext(editor, context);
+							list = CompletionDataHelper.CreateListForContext(context);
 							editor.ShowCompletionWindow(list);
 							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 						}
@@ -137,7 +137,7 @@ namespace ICSharpCode.XamlBinding
 			Core.LoggingService.Debug(context);
 			if (context.ActiveElement != null) {
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && context.Description != XamlContextDescription.InAttributeValue) {
-					var list = CompletionDataHelper.CreateListForContext(editor, context) as XamlCompletionItemList;
+					var list = CompletionDataHelper.CreateListForContext(context) as XamlCompletionItemList;
 					string starter = editor.GetWordBeforeCaret().Trim('<', '>');
 					if (!string.IsNullOrEmpty(starter) && !starter.EndsWith(StringComparison.Ordinal, ' ', '\t', '\n', '\r'))
 						list.PreselectionLength = starter.Length;

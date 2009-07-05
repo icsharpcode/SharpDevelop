@@ -39,6 +39,7 @@ namespace ICSharpCode.XamlBinding
 			
 			switch (this.context.Description) {
 				case XamlContextDescription.AtTag:
+				case XamlContextDescription.None:
 					return ResolveElementName(resolveExpression);
 				case XamlContextDescription.InTag:
 					return ResolveAttribute(resolveExpression);

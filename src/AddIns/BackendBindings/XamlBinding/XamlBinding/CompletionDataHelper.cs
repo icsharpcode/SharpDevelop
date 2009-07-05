@@ -237,8 +237,7 @@ namespace ICSharpCode.XamlBinding
 			var items = GetClassesFromContext(context);
 			var result = new List<ICompletionItem>();
 
-			var last = XmlParser.GetParentElementPath(context.Editor.Document.Text.Substring(0, context.Editor.Caret.Offset))
-				.Elements.LastOrDefault();
+			var last = context.ActiveElement;
 
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
 			
@@ -334,12 +333,14 @@ namespace ICSharpCode.XamlBinding
 			return neededItems.ToList();
 		}
 
-		public static ICompletionItemList CreateListForContext(ITextEditor editor, XamlCompletionContext context)
+		public static ICompletionItemList CreateListForContext(XamlCompletionContext context)
 		{
 			DebugTimer.Start();
 			
 			XamlCompletionItemList list = new XamlCompletionItemList();
-			ParseInformation info = ParserService.GetParseInformation(editor.FileName);
+			
+			ParseInformation info = context.ParseInformation;
+			ITextEditor editor = context.Editor;
 			
 			switch (context.Description) {
 				case XamlContextDescription.None:
