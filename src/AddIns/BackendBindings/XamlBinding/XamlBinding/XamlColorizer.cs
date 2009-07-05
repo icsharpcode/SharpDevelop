@@ -93,6 +93,9 @@ namespace ICSharpCode.XamlBinding
 				foreach (HighlightingInfo info in GetInfo()) {
 					IMember member = null;
 					
+					if (task.IsCancellationRequested)
+						return;
+					
 					if (!info.Token.StartsWith("xmlns")) {
 						MemberResolveResult rr = new XamlResolver().Resolve(info.GetExpressionResult(), info.Context.ParseInformation, FileContent) as MemberResolveResult;
 						member = (rr != null) ? rr.ResolvedMember : null;

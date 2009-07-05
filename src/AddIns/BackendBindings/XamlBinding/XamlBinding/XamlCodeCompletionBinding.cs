@@ -64,8 +64,7 @@ namespace ICSharpCode.XamlBinding
 				case '{': // starting point for Markup Extension Completion
 					if (!string.IsNullOrEmpty(context.AttributeName)
 					    && XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)
-					    && !(context.RawAttributeValue.StartsWith("{}") && context.RawAttributeValue.Length != 2)
-					   ) {
+					    && !(context.RawAttributeValue.StartsWith("{}") && context.RawAttributeValue.Length != 2)) {
 						editor.Document.Insert(editor.Caret.Offset, "{}");
 						editor.Caret.Offset--;
 						
