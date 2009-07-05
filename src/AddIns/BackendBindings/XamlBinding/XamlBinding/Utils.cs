@@ -226,7 +226,8 @@ namespace ICSharpCode.XamlBinding
 		public 	static void LookUpInfoAtTarget(string fileContent, int caretLine, int caretColumn, int offset,
 		                                       out Dictionary<string, string> xmlns, out QualifiedName activeOrParent, out bool isParent, out int activeElementStartIndex)
 		{
-			var watch = Stopwatch.StartNew();
+			var watch = new Stopwatch();
+			watch.Start();
 			
 			Stack<QualifiedName> stack = new Stack<QualifiedName>();
 			isParent = false;
@@ -261,8 +262,6 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			watch.Stop();
-			
-			Core.LoggingService.Debug(activeOrParent);
 			
 			Core.LoggingService.Debug("LookUpInfoAtTarget took " + watch.ElapsedMilliseconds + "ms");
 		}

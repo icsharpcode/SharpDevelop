@@ -262,6 +262,11 @@ namespace ICSharpCode.XamlBinding
 			return null;
 		}
 		
+		public static ResolveResult Resolve(string expression, XamlCompletionContext context)
+		{
+			return new XamlResolver().Resolve(new ExpressionResult(expression, context), context.ParseInformation, context.Editor.Document.Text);
+		}
+		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
 			return new ArrayList();

@@ -111,17 +111,6 @@ namespace ICSharpCode.XamlBinding
 			return (item as IXmlLineInfo).LinePosition;
 		}
 		
-		public static IEnumerable<ICompletionItem> RemoveEvents(this IEnumerable<ICompletionItem> list)
-		{
-			foreach (var item in list) {
-				if (item is XamlCodeCompletionItem) {
-					var comItem = item as XamlCodeCompletionItem;
-					if (!(comItem.Entity is IEvent))
-						yield return item;
-				} else yield return item;
-			}
-		}
-		
 		public static bool IsCollectionType(this IClass c)
 		{
 			if (c == null)
