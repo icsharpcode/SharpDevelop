@@ -56,34 +56,25 @@ namespace ICSharpCode.XamlBinding
 			bool inAttributeValue = XmlParser.IsInsideAttributeValue(text, offset);
 			string attributeValue = XmlParser.GetAttributeValueAtIndex(text, offset);
 			int offsetFromValueStart = Utils.GetOffsetFromValueStart(text, offset);
-			int elementStartIndex = XmlParser.GetActiveElementStartIndex(text, offset);
 			
 			AttributeValue value = MarkupExtensionParser.ParseValue(attributeValue);
 			XamlContextDescription description = XamlContextDescription.None;
 			
-			Dictionary<string, string> xmlnsDefs = new Dictionary<string, string>();
+			Dictionary<string, string> xmlnsDefs;
+			QualifiedName active;
+			bool isParent;
+			int elementStartIndex;
 			
-			// TODO : does not work when trying to resolve </Element>, if xmlns declarartion is in <Element>
-			using (XmlTextReader reader = Utils.CreateReaderAtTarget(text, line, col)) {
-				xmlnsDefs.AddRange(reader.GetNamespacesInScope(XmlNamespaceScope.All));
-			}
-
-			QualifiedName active = ResolveCurrentElement(text, elementStartIndex, xmlnsDefs);
-			
-			if (text[offset] == '>')
-				description = XamlContextDescription.None;
+			Utils.LookUpInfoAtTarget(text, line, col, offset, out xmlnsDefs, out active, out isParent, out elementStartIndex);
 			
 			string wordBeforeIndex = text.GetWordBeforeOffset(offset);
 			
-			if (active != null)
+			if (active != null && !isParent)
 				description = XamlContextDescription.AtTag;
-			else {
-				if (text[offset] == '<')
-					description = XamlContextDescription.AtTag;
-				active = XmlParser.GetParentElementPath(text.Substring(0, offset)).Elements.LastOrDefault();
-			}
 			
-			if (elementStartIndex > -1 && (char.IsWhiteSpace(text[offset]) || !string.IsNullOrEmpty(attribute) || Extensions.Is(text[offset], '"', '\'') || !wordBeforeIndex.StartsWith("<")))
+			if (elementStartIndex > -1 &&
+			    (char.IsWhiteSpace(text[offset]) || !string.IsNullOrEmpty(attribute) ||
+			     Extensions.Is(text[offset], '"', '\'') || !wordBeforeIndex.StartsWith("<")))
 				description = XamlContextDescription.InTag;
 
 			if (inAttributeValue) {
@@ -115,15 +106,12 @@ namespace ICSharpCode.XamlBinding
 			return context;
 		}
 		
-		static QualifiedName ResolveCurrentElement(string text, int offset, Dictionary<string, string> xmlnsDefinitions)
+		public static QualifiedName ResolveCurrentElement(string text, int offset, Dictionary<string, string> xmlnsDefinitions)
 		{
 			if (offset < 0)
 				return null;
 			
 			string elementName = text.GetWordAfterOffset(offset + 1);
-			
-			if (elementName.EndsWith(">"))
-				return null;
 			
 			string prefix = "";
 			string element = "";
@@ -261,20 +249,22 @@ namespace ICSharpCode.XamlBinding
 			if (last != null && cu != null) {
 				if (!last.Name.Contains(".") || last.Name.EndsWith(".")) {
 					rt = cu.CreateType(last.Namespace, last.Name.Trim('.'));
-					IAttribute contentProperty = rt.GetUnderlyingClass()
-						.Attributes.FirstOrDefault(attribute => attribute.AttributeType.FullyQualifiedName == "System.Windows.Markup.ContentPropertyAttribute");
-					if (contentProperty != null) {
-						string value = contentProperty.PositionalArguments.FirstOrDefault() as string
-							?? (contentProperty.NamedArguments.ContainsKey("Name") ? contentProperty.NamedArguments["Name"] as string : null);
-						if (!string.IsNullOrEmpty(value)) {
-							string fullName = string.IsNullOrEmpty(last.Prefix) ? last.Name + "." + value : last.Prefix + ":" + last.Name + "." + value;
-							MemberResolveResult mrr = new XamlResolver()
-								.Resolve(new ExpressionResult(fullName, context), context.ParseInformation, context.Editor.Document.Text)
-								as MemberResolveResult;
-							
-							if (mrr != null) {
-								rt = mrr.ResolvedType;
-								isMember = true;
+					IClass rtClass = rt.GetUnderlyingClass();
+					if (rtClass != null) {
+						IAttribute contentProperty = rtClass	.Attributes.FirstOrDefault(attribute => attribute.AttributeType.FullyQualifiedName == "System.Windows.Markup.ContentPropertyAttribute");
+						if (contentProperty != null) {
+							string value = contentProperty.PositionalArguments.FirstOrDefault() as string
+								?? (contentProperty.NamedArguments.ContainsKey("Name") ? contentProperty.NamedArguments["Name"] as string : null);
+							if (!string.IsNullOrEmpty(value)) {
+								string fullName = string.IsNullOrEmpty(last.Prefix) ? last.Name + "." + value : last.Prefix + ":" + last.Name + "." + value;
+								MemberResolveResult mrr = new XamlResolver()
+									.Resolve(new ExpressionResult(fullName, context), context.ParseInformation, context.Editor.Document.Text)
+									as MemberResolveResult;
+								
+								if (mrr != null) {
+									rt = mrr.ResolvedType;
+									isMember = true;
+								}
 							}
 						}
 					}
@@ -582,7 +572,7 @@ namespace ICSharpCode.XamlBinding
 		static bool DoStaticExtensionCompletion(XamlCompletionItemList list, XamlCompletionContext context)
 		{
 			AttributeValue selItem = Utils.GetInnermostMarkupExtensionInfo(context.AttributeValue.ExtensionValue)
-				.PositionalArguments.LastOrDefault();	
+				.PositionalArguments.LastOrDefault();
 			if (context.PressedKey == '.') {
 				if (selItem != null && selItem.IsString) {
 					var rr = ResolveStringValue(selItem.StringValue, context) as TypeResolveResult;
@@ -707,73 +697,69 @@ namespace ICSharpCode.XamlBinding
 		
 		static IDictionary<string, IEnumerable<IClass>> GetClassesFromContext(XamlCompletionContext context)
 		{
-			using (XmlTextReader r = Utils.CreateReaderAtTarget(context.Editor.Document.Text, context.Editor.Caret.Line, context.Editor.Caret.Column)) {
-				IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
-				
-				var result = new Dictionary<string, IEnumerable<IClass>>();
-				
-				foreach (var ns in r.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml)) {
-					result.Add(ns.Key, XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value));
-				}
-				
-				return result;
+			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
+			
+			var result = new Dictionary<string, IEnumerable<IClass>>();
+			
+			foreach (var ns in context.XmlnsDefinitions) {
+				result.Add(ns.Key, XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value));
 			}
+			
+			return result;
 		}
 		
 		static List<ICompletionItem> GetListOfAttachedProperties(XamlCompletionContext context, string[] existingItems)
 		{
-			using (XmlTextReader r = Utils.CreateReaderAtTarget(context.Editor.Document.Text, context.Editor.Caret.Line, context.Editor.Caret.Column)) {
-				List<ICompletionItem> result = new List<ICompletionItem>();
-				IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
-				
-				foreach (var ns in r.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml)) {
-					var list = XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value);
-					if (list != null) {
-						foreach (IClass c in list.OfType<IClass>()) {
-							if (c.ClassType != ClassType.Class)
-								continue;
-							if (c.IsAbstract && c.IsStatic)
-								continue;
-							if (c.ClassInheritanceTree.Any(b => b.FullyQualifiedName == "System.Attribute"))
-								continue;
-							if (!c.Methods.Any(m => m.IsConstructor && m.IsPublic))
-								continue;
-							
-							var attachedProperties = c.Fields
-								.Where(f =>
-								       f.IsPublic &&
-								       f.IsStatic &&
-								       f.IsReadonly &&
-								       f.ReturnType != null &&
-								       f.ReturnType.FullyQualifiedName == "System.Windows.DependencyProperty" &&
-								       f.Name.Length > "Property".Length &&
-								       f.Name.EndsWith("Property", StringComparison.Ordinal) &&
-								       c.Methods.Any(m =>
-								                     m.IsPublic &&
-								                     m.IsStatic &&
-								                     m.Name.Length > 3 &&
-								                     (m.Name.StartsWith("Get", StringComparison.Ordinal) || m.Name.StartsWith("Set", StringComparison.Ordinal)) &&
-								                     m.Name.Remove(0, 3) == f.Name.Remove(f.Name.Length - "Property".Length)
-								                    )
-								      );
-							
-							result.AddRange(attachedProperties
-							                .Select(item => {
-							                        	string name = (!string.IsNullOrEmpty(ns.Key)) ? ns.Key + ":" : "";
-							                        	string property = item.Name.Remove(item.Name.Length - "Property".Length);
-							                        	name += c.Name + "." + item.Name.Remove(item.Name.Length - "Property".Length);
-							                        	return new XamlCodeCompletionItem(new DefaultProperty(c, property) { ReturnType = GetAttachedPropertyType(item, c) }, name);
-							                        }
-							                       )
-							                .Where(item => !existingItems.Any(str => str == item.Text))
-							                .Cast<ICompletionItem>()
-							               );
-						}
+			List<ICompletionItem> result = new List<ICompletionItem>();
+			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
+			
+			foreach (var ns in context.XmlnsDefinitions) {
+				var list = XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value);
+				if (list != null) {
+					foreach (IClass c in list.OfType<IClass>()) {
+						if (c.ClassType != ClassType.Class)
+							continue;
+						if (c.IsAbstract && c.IsStatic)
+							continue;
+						if (c.ClassInheritanceTree.Any(b => b.FullyQualifiedName == "System.Attribute"))
+							continue;
+						if (!c.Methods.Any(m => m.IsConstructor && m.IsPublic))
+							continue;
+						
+						var attachedProperties = c.Fields
+							.Where(f =>
+							       f.IsPublic &&
+							       f.IsStatic &&
+							       f.IsReadonly &&
+							       f.ReturnType != null &&
+							       f.ReturnType.FullyQualifiedName == "System.Windows.DependencyProperty" &&
+							       f.Name.Length > "Property".Length &&
+							       f.Name.EndsWith("Property", StringComparison.Ordinal) &&
+							       c.Methods.Any(m =>
+							                     m.IsPublic &&
+							                     m.IsStatic &&
+							                     m.Name.Length > 3 &&
+							                     (m.Name.StartsWith("Get", StringComparison.Ordinal) || m.Name.StartsWith("Set", StringComparison.Ordinal)) &&
+							                     m.Name.Remove(0, 3) == f.Name.Remove(f.Name.Length - "Property".Length)
+							                    )
+							      );
+						
+						result.AddRange(attachedProperties
+						                .Select(item => {
+						                        	string name = (!string.IsNullOrEmpty(ns.Key)) ? ns.Key + ":" : "";
+						                        	string property = item.Name.Remove(item.Name.Length - "Property".Length);
+						                        	name += c.Name + "." + item.Name.Remove(item.Name.Length - "Property".Length);
+						                        	return new XamlCodeCompletionItem(new DefaultProperty(c, property) { ReturnType = GetAttachedPropertyType(item, c) }, name);
+						                        }
+						                       )
+						                .Where(item => !existingItems.Any(str => str == item.Text))
+						                .Cast<ICompletionItem>()
+						               );
 					}
 				}
-				
-				return result;
 			}
+			
+			return result;
 		}
 		
 		static List<ICompletionItem> GetListOfAttachedEvents(XamlCompletionContext context, string[] existingItems)

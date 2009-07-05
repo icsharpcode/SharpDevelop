@@ -223,8 +223,53 @@ namespace ICSharpCode.XamlBinding
 			return (offsetStack.Count > 0) ? offsetStack.Pop() : -1;
 		}
 		
+		public 	static void LookUpInfoAtTarget(string fileContent, int caretLine, int caretColumn, int offset,
+		                                       out Dictionary<string, string> xmlns, out QualifiedName activeOrParent, out bool isParent, out int activeElementStartIndex)
+		{
+			var watch = Stopwatch.StartNew();
+			
+			Stack<QualifiedName> stack = new Stack<QualifiedName>();
+			isParent = false;
+
+			XmlTextReader r = new XmlTextReader(new StringReader(fileContent));
+			r.XmlResolver = null;
+			try {
+				r.WhitespaceHandling = WhitespaceHandling.Significant;
+				// move reader to correct position
+				while (r.Read() && !IsReaderAtTarget(r, caretLine, caretColumn)) {
+					switch (r.NodeType) {
+						case XmlNodeType.EndElement:
+							stack.PopOrDefault();
+							break;
+						case XmlNodeType.Element:
+							if (!r.IsEmptyElement)
+								stack.Push(new QualifiedName(r.LocalName, r.NamespaceURI, r.Prefix));
+							break;
+					}
+				}
+			} catch (XmlException) {
+			} finally {
+				xmlns = new Dictionary<string, string>(r.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml));
+			}
+			
+			activeElementStartIndex = XmlParser.GetActiveElementStartIndex(fileContent, offset + 1);
+			activeOrParent = CompletionDataHelper.ResolveCurrentElement(fileContent, activeElementStartIndex, xmlns);
+
+			if (activeOrParent == null) {
+				activeOrParent = stack.PopOrDefault();
+				isParent = true;
+			}
+			
+			watch.Stop();
+			
+			Core.LoggingService.Debug(activeOrParent);
+			
+			Core.LoggingService.Debug("LookUpInfoAtTarget took " + watch.ElapsedMilliseconds + "ms");
+		}
+		
 		public 	static XmlTextReader CreateReaderAtTarget(string fileContent, int caretLine, int caretColumn)
 		{
+			var watch = Stopwatch.StartNew();
 			XmlTextReader r = new XmlTextReader(new StringReader(fileContent));
 			r.XmlResolver = null;
 			
@@ -233,6 +278,10 @@ namespace ICSharpCode.XamlBinding
 				// move reader to correct position
 				while (r.Read() && !IsReaderAtTarget(r, caretLine, caretColumn)) { }
 			} catch (XmlException) {}
+			
+			watch.Stop();
+			
+			Core.LoggingService.Debug("CreateReaderAtTarget took " + watch.ElapsedMilliseconds + "ms");
 			
 			return r;
 		}

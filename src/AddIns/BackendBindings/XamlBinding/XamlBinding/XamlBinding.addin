@@ -44,10 +44,6 @@
 		<CodeCompletionBinding id = "Xaml" extensions = ".xaml" class = "ICSharpCode.XamlBinding.XamlCodeCompletionBinding"/>
 	</Path>
 
-<!--	<Path name = "/AddIns/DefaultTextEditor/Formatter/XML">
-		<Class id ="XmlFormatter" class = "ICSharpCode.XmlEditor.XmlFormattingStrategy"/>
-	</Path> -->
-
 	<!-- Options panel -->
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<OptionPanel id = "XamlCompletionPanel"

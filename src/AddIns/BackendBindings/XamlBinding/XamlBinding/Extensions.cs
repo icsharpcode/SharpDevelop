@@ -161,5 +161,13 @@ namespace ICSharpCode.XamlBinding
 		{
 			return myClass.ClassInheritanceTreeClassesOnly.Any(c => c.FullyQualifiedName == fullyQualyfiedClassName);
 		}
+		
+		public static T PopOrDefault<T>(this Stack<T> stack)
+		{
+			if (stack.Count > 0)
+				return stack.Pop();
+			
+			return default(T);
+		}
 	}
 }

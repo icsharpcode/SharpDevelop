@@ -19,6 +19,8 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public static class XamlColorizerServer
 	{
+		const bool enableHighlighting = false;
+		
 		public static void InitializeServer()
 		{
 			WorkbenchSingleton.Workbench.ViewOpened += new ViewContentEventHandler(WorkbenchSingleton_Workbench_ViewOpened);
@@ -34,7 +36,7 @@ namespace ICSharpCode.XamlBinding
 			if (textEditor != null) {
 				TextView textView = textEditor.TextEditor.GetService(typeof(TextView)) as TextView;
 				
-				if (textView != null)
+				if (textView != null && enableHighlighting)
 					textView.LineTransformers.Add(new XamlColorizer(e.Content, textView));
 			}
 		}
