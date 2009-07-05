@@ -139,10 +139,8 @@ namespace ICSharpCode.XamlBinding
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && context.Description != XamlContextDescription.InAttributeValue) {
 					var list = CompletionDataHelper.CreateListForContext(context) as XamlCompletionItemList;
 					string starter = editor.Document.Text.GetWordBeforeOffset(editor.Caret.Offset).Trim('<', '>');
-					if (!string.IsNullOrEmpty(starter) && !starter.EndsWith(StringComparison.Ordinal, ' ', '\t', '\n', '\r')) {
-						list.SuggestedItem = list.Items.FirstOrDefault(item => item.Text.StartsWith(starter, StringComparison.OrdinalIgnoreCase));
+					if (!string.IsNullOrEmpty(starter) && !starter.EndsWith(StringComparison.Ordinal, ' ', '\t', '\n', '\r'))
 						list.PreselectionLength = starter.Length;
-					}
 					editor.ShowCompletionWindow(list);
 					return true;
 				} else {

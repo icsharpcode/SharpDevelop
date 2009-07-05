@@ -68,7 +68,7 @@ namespace ICSharpCode.XamlBinding
 			
 			string wordBeforeIndex = text.GetWordBeforeOffset(offset);
 			
-			if (active != null && parent != null)
+			if (active != null && parent != active)
 				description = XamlContextDescription.AtTag;
 			
 			if (elementStartIndex > -1 &&
@@ -532,9 +532,15 @@ namespace ICSharpCode.XamlBinding
 						yield return new XamlCodeCompletionItem(p, textPrefix + p.Name);
 					break;
 				case ClassType.Struct:
-					if (c.FullyQualifiedName == "System.Boolean") {
-						yield return new DefaultCompletionItem("True");
-						yield return new DefaultCompletionItem("False");
+					switch (c.FullyQualifiedName) {
+						case "System.Boolean":
+							yield return new DefaultCompletionItem("True");
+							yield return new DefaultCompletionItem("False");
+							break;
+						case "System.Windows.GridLength":
+							yield return new DefaultCompletionItem("Auto");
+							yield return new DefaultCompletionItem("*");
+							break;
 					}
 					break;
 				case ClassType.Delegate:

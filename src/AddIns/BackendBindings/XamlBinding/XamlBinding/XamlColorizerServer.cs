@@ -19,7 +19,7 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public static class XamlColorizerServer
 	{
-		const bool enableHighlighting = false;
+		const bool enableHighlighting = true;
 		
 		public static void InitializeServer()
 		{
