@@ -72,7 +72,9 @@
             <xs:attribute name="Database" use="required" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>
-                        The name of the database.  If the name does not follow the SQL server "Rules for Regular Identifiers" (see <html:a href="http://msdn.microsoft.com/en-us/library/ms175874.aspx">MSDN</html:a>) it must be surrounded by quotes or square brackets.  Since this value can be formatted text, this means that if you choose to use square brackets you must use the MSI method for escaping square brackets, for example: [\[]blah[\]].
+                        The name of the database. The value can be a literal value or derived from a
+                        Property element using the <html:a href='http://msdn.microsoft.com/library/aa368609.aspx' target='_blank'>Formatted</html:a>
+                        syntax.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>

@@ -308,9 +308,6 @@
 										<Component Guid="96DD82B8-5183-4C6C-BF15-455895F78A89" Id="UtilXsd" DiskId="1">
 											<File Source="..\..\bin\Tools\Wix\doc\util.xsd" Name="util.xsd" Id="util.xsd" KeyPath="yes" />
 										</Component>
-										<Component Guid="F76E3D02-BE6C-4D89-8FA7-E648D77FB186" Id="ComPlusXsd" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\complus.xsd" Name="complus.xsd" Id="complus.xsd" KeyPath="yes" />
-										</Component>
 										<Component Guid="3E8291C1-F920-40C9-BFF2-3E0DD361EBB6" Id="MSMQXsd" DiskId="1">
 											<File Source="..\..\bin\Tools\Wix\doc\msmq.xsd" Name="msmq.xsd" Id="msmq.xsd" KeyPath="yes" />
 										</Component>
