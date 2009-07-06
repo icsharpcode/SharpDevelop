@@ -18,16 +18,13 @@ namespace ICSharpCode.XamlBinding
 {
 	class XamlCodeCompletionItem : CodeCompletionItem
 	{
-		public XamlCodeCompletionItem(IEntity entity, string prefix, bool addOpeningBrace)
+		public XamlCodeCompletionItem(IEntity entity, string prefix)
 			: base(entity)
 		{
 			if (string.IsNullOrEmpty(prefix))
 				this.Text = entity.Name;
 			else
 				this.Text = prefix + ":" + entity.Name;
-			
-			if (addOpeningBrace)
-				this.Text = "<" + this.Text;
 		}
 		
 		public XamlCodeCompletionItem(IEntity entity)
@@ -36,22 +33,19 @@ namespace ICSharpCode.XamlBinding
 			this.Text = entity.Name;
 		}
 		
-		public XamlCodeCompletionItem(IEntity entity, string text)
+		public XamlCodeCompletionItem(string text, IEntity entity)
 			: base(entity)
 		{
 			this.Text = text;
 		}
 		
-		public XamlCodeCompletionItem(IEntity entity, string prefix, string className, bool addOpeningBrace)
+		public XamlCodeCompletionItem(IEntity entity, string prefix, string className)
 			: base(entity)
 		{
 			if (string.IsNullOrEmpty(prefix))
 				this.Text = className + "." + entity.Name;
 			else
 				this.Text = prefix + ":" + className + "." + entity.Name;
-			
-			if (addOpeningBrace)
-				this.Text = "<" + this.Text;
 		}
 		
 		public override string ToString()
@@ -70,6 +64,7 @@ namespace ICSharpCode.XamlBinding
 			this.prefix = prefix;
 			this.@namespace = @namespace;
 			this.name = name;
+			this.Image = ClassBrowserIconService.Namespace;
 		}
 		
 		public XamlCompletionItem(string @namespace, string name)
@@ -78,6 +73,7 @@ namespace ICSharpCode.XamlBinding
 			this.prefix = "";
 			this.@namespace = @namespace;
 			this.name = name;
+			this.Image = ClassBrowserIconService.Namespace;
 		}
 		
 		public string Prefix {
@@ -90,6 +86,24 @@ namespace ICSharpCode.XamlBinding
 		
 		public string Name {
 			get { return name; }
+		}
+	}
+	
+	class SpecialCompletionItem : DefaultCompletionItem
+	{
+		public SpecialCompletionItem(string name)
+			: base(name)
+		{
+			this.Image = ClassBrowserIconService.Namespace;
+		}
+	}
+	
+	class SpecialValueCompletionItem : DefaultCompletionItem
+	{
+		public SpecialValueCompletionItem(string name)
+			: base(name)
+		{
+			this.Image = ClassBrowserIconService.Const;
 		}
 	}
 	
@@ -107,6 +121,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			this.@namespace = @namespace;
 			this.assembly = assembly;
+			this.Image = ClassBrowserIconService.Namespace;
 		}
 		
 		public XmlnsCompletionItem(string @namespace, bool isUrl)
@@ -115,6 +130,7 @@ namespace ICSharpCode.XamlBinding
 			this.@namespace = @namespace;
 			this.isUrl = isUrl;
 			this.assembly = string.Empty;
+			this.Image = ClassBrowserIconService.Namespace;
 		}
 		
 		public string Namespace {
@@ -162,6 +178,7 @@ namespace ICSharpCode.XamlBinding
 			this.eventType = eventType;
 			this.targetName = targetName;
 			this.HandlerName = ParseNamePattern(this.TargetName, this.EventType.Name);
+			this.Image = ClassBrowserIconService.Event;
 		}
 		
 		public override void Complete(CompletionContext context)

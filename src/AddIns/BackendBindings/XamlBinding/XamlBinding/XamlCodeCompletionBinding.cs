@@ -101,7 +101,7 @@ namespace ICSharpCode.XamlBinding
 						while (searchOffset < editor.Document.TextLength - 1) {
 							searchOffset++;
 							if (!char.IsWhiteSpace(editor.Document.GetCharAt(searchOffset)))
-							    break;
+								break;
 						}
 						
 						if (searchOffset >= editor.Document.TextLength || editor.Document.GetCharAt(searchOffset) != '"') {
@@ -144,7 +144,7 @@ namespace ICSharpCode.XamlBinding
 					editor.ShowCompletionWindow(list);
 					return true;
 				} else {
-                    // DO NOT USE CompletionDataHelper.CreateListForContext here!!! results in endless recursion!!!!
+					// DO NOT USE CompletionDataHelper.CreateListForContext here!!! results in endless recursion!!!!
 					if (!string.IsNullOrEmpty(context.AttributeName)) {
 						if (!DoMarkupExtensionCompletion(context)) {
 							XamlResolver resolver = new XamlResolver();
@@ -194,7 +194,7 @@ namespace ICSharpCode.XamlBinding
 						case "Value":
 							var loc2 = context.Editor.Document.OffsetToPosition(XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset));
 							AttributeValue propType = MarkupExtensionParser.ParseValue(
-								Utils.GetAttributeValue(context.Editor.Document.Text, loc2.Line, 
+								Utils.GetAttributeValue(context.Editor.Document.Text, loc2.Line,
 								                        loc2.Column, "Property"));
 							if (!propType.IsString)
 								break;
@@ -212,16 +212,22 @@ namespace ICSharpCode.XamlBinding
 							completionList.Items.AddRange(
 								typeName.GetProperties()
 								.Where(p => p.IsPublic && p.CanSet)
-								.Select(prop => new DefaultCompletionItem(prop.Name))
+								.Select(prop => new XamlCodeCompletionItem(prop))
 								.Cast<ICompletionItem>()
 							);
 							break;
 						case "Event":
+							completionList.Items.AddRange(
+								typeName.GetEvents()
+								.Where(e => e.IsPublic)
+								.Select(evt => new XamlCodeCompletionItem(evt))
+								.Cast<ICompletionItem>()
+							);
 							break;
 						case "Handler":
 							var loc3 = context.Editor.Document.OffsetToPosition(XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset));
 							AttributeValue evtType = MarkupExtensionParser.ParseValue(
-								Utils.GetAttributeValue(context.Editor.Document.Text, loc3.Line, 
+								Utils.GetAttributeValue(context.Editor.Document.Text, loc3.Line,
 								                        loc3.Column, "Event"));
 							if (!evtType.IsString)
 								break;
@@ -233,7 +239,7 @@ namespace ICSharpCode.XamlBinding
 							
 							IMethod invoker = evtMember.ResolvedMember as IMethod;
 							
-			
+							
 							break;
 					}
 				}
