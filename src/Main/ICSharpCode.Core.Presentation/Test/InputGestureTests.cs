@@ -125,7 +125,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			var template1 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+");
 			var original1 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+D");
 			Assert.IsTrue(template1.IsTemplateFor(original1, GestureCompareMode.StartsWith));
-			Assert.IsTrue(original1.IsTemplateFor(template1, GestureCompareMode.StartsWith));
 			
 			var template2 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+C");
 			var original2 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+C,Ctrl+D");
