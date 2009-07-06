@@ -31,14 +31,16 @@ namespace ICSharpCode.Core
 			doozers.Add("String", new StringDoozer());
 			doozers.Add("Icon", new IconDoozer());
 			doozers.Add("MenuItem", new MenuItemDoozer());
-			doozers.Add("MenuRoot", new MenuRootDoozer());
 			doozers.Add("ToolbarItem", new ToolbarItemDoozer());
 			doozers.Add("Include", new IncludeDoozer());
+			
+			// Command manager doozers
 			doozers.Add("InputBinding", new InputBindingDoozer());
 			doozers.Add("InputBindingCategory", new InputBindingCategoryDoozer());
 			doozers.Add("CommandBinding", new CommandBindingDoozer());
 			doozers.Add("RoutedUICommand", new RoutedUICommandDoozer());
 			doozers.Add("GesturesPlaceHolder", new GesturesPlaceHolderDoozer());
+			doozers.Add("MenuLocation", new MenuLocationDoozer());
 			
 			conditionEvaluators.Add("Compare", new CompareConditionEvaluator());
 			conditionEvaluators.Add("Ownerstate", new OwnerStateConditionEvaluator());

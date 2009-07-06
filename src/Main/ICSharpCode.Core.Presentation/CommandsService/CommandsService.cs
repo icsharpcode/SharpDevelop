@@ -14,9 +14,9 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public static class CommandsService
 	{
-		public static void RegisterMenuBindings(string menuRootsLocationPath, object caller)
+		public static void RegisterMenuBindings(object caller, string menuRootsLocationPath)
 		{
-			var menuRoots = AddInTree.BuildItems<MenuRootDescriptor>(menuRootsLocationPath, caller);
+			var menuRoots = AddInTree.BuildItems<MenuLocationDescriptor>(menuRootsLocationPath, caller);
 			foreach(var menuRoot in menuRoots) {
 				CommandsService.RegisterSingleMenuBindings(menuRoot.Path, caller, menuRoot.Category);
 			}
@@ -75,8 +75,8 @@ namespace ICSharpCode.Core.Presentation
 					inputBindingInfo.Categories.Add(menuCategory);
 					
 					// User defined categories
-					if(codon.Properties.Contains("category")) {
-						var additionalCategories = CommandManager.GetInputBindingCategoryCollection(codon.Properties["category"], true);
+					if(codon.Properties.Contains("inputbindingcategories")) {
+						var additionalCategories = CommandManager.GetInputBindingCategoryCollection(codon.Properties["inputbindingcategories"], true);
 						inputBindingInfo.Categories.AddRange(additionalCategories);
 					}
 					
@@ -187,8 +187,8 @@ namespace ICSharpCode.Core.Presentation
 						inputBindingInfo.RoutedCommandText = desc.CommandText;
 					}
 					
-					if(!string.IsNullOrEmpty(desc.Category)) {
-						var categories = CommandManager.GetInputBindingCategoryCollection(desc.Category, true);
+					if(!string.IsNullOrEmpty(desc.Categories)) {
+						var categories = CommandManager.GetInputBindingCategoryCollection(desc.Categories, true);
 						inputBindingInfo.Categories.AddRange(categories);
 					}
 					
@@ -221,8 +221,8 @@ namespace ICSharpCode.Core.Presentation
 					inputBindingInfo.RoutedCommandText = desc.CommandText;
 				}
 				
-				if(!string.IsNullOrEmpty(desc.Category)) {
-					var categories = CommandManager.GetInputBindingCategoryCollection(desc.Category, true);
+				if(!string.IsNullOrEmpty(desc.Categories)) {
+					var categories = CommandManager.GetInputBindingCategoryCollection(desc.Categories, true);
 					inputBindingInfo.Categories.AddRange(categories);
 				}
 				

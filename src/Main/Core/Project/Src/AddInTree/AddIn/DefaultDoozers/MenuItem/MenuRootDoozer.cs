@@ -14,7 +14,7 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Description of MenuDescriptionDoozer.
 	/// </summary>
-	public class MenuRootDoozer : IDoozer
+	public class MenuLocationDoozer : IDoozer
 	{
 		public bool HandleConditions {
 			get {
@@ -24,15 +24,13 @@ namespace ICSharpCode.Core
 		
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
-			return new MenuRootDescriptor(caller, codon);
+			return new MenuLocationDescriptor(caller, codon);
 		}
 	}
 	
 
-	public class MenuRootDescriptor 
+	public class MenuLocationDescriptor 
 	{
-		private Codon codon;
-		
 		public string Category
 		{
 			get; private set;
@@ -43,15 +41,14 @@ namespace ICSharpCode.Core
 			get; private set;
 		}
 	
-		public MenuRootDescriptor(object caller, Codon codon)
+		public MenuLocationDescriptor(object caller, Codon codon)
 		{
-			this.codon = codon;
+			if(!codon.Properties.Contains("path") || !codon.Properties.Contains("category")){
+				throw new ArgumentException("Menu location should have path and category");
+			}
 			
 			Path = codon.Properties["path"];
-			
-			if(codon.Properties.Contains("category")){
-				Category = codon.Properties["category"];
-			}
+			Category = codon.Properties["category"];
 		}
 	}
 }

@@ -51,24 +51,48 @@
 		<Import assembly=":ICSharpCode.TextEditor"/>
 	</Runtime>
 	
-	<Path name="/SharpDevelop/MenuLocations">
-		<MenuRoot path="/SharpDevelop/Workbench/MainMenu" 													name="Main Menu" />
+	<Path name="/SharpDevelop/CommandManager/InputBindingCategories">
+		<InputBindingCategory id="Test" text="Test">
+			<InputBindingCategory id="Test" text="Test" />
+		</InputBindingCategory>
 		
-		<MenuRoot path="/SharpDevelop/Workbench/OpenFileTab/ContextMenu" 									name="Context menus/Tabs" />
+		<InputBindingCategory id="ProjectViewer" text="Project viewer" />
+		<InputBindingCategory id="Project" text="Project" />
+		<InputBindingCategory id="Debugger" text="Debugger" />
+		<InputBindingCategory id="Search" text="Search" />
+		
+		<InputBindingCategory id="MainMenu" text="Main menu" />
+		<InputBindingCategory id="ContextMenus" text="Context Menus">
+			<InputBindingCategory id="TextEditor" text="Text Editor">
+				<InputBindingCategory id="Tabs" text="Tabs" />
+				<InputBindingCategory id="Refactoring" text="Refactoring" />
+			</InputBindingCategory>
+		</InputBindingCategory>
+		
+		<InputBindingCategory id="Building" text="Building">
+			<InputBindingCategory id="Building" text="Building" />
+		</InputBindingCategory>
+	</Path>
 	
-		<MenuRoot path="/SharpDevelop/ViewContent/AvalonEdit/ContextMenu" 									name="Context menus/Text Editor" />
-		<MenuRoot path="/SharpDevelop/ViewContent/TextEditor/ContextMenu" 									name="Context menus/Text Editor" />
-		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu" 				name="Context menus/Text Editor" />
-		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu" 				name="Context menus/Text Editor" />
-		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common" 					name="Context menus/Text Editor/Refactoring" />
-		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Parameter" 					name="Context menus/Text Editor/Refactoring" />
-		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariable" 				name="Context menus/Text Editor/Refactoring" />
-		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition" 		name="Context menus/Text Editor/Refactoring" />
-		<MenuRoot path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariableDefinition" 	name="Context menus/Text Editor/Refactoring" />
+	<Path name="/SharpDevelop/CommandManager/MenuLocations">
+		<MenuLocation path="/SharpDevelop/Workbench/MainMenu" category="/MainMenu" />
+	
+		<MenuLocation path="/SharpDevelop/ViewContent/AvalonEdit/ContextMenu" category="/ContextMenus/TextEditor" />
+		<MenuLocation path="/SharpDevelop/ViewContent/TextEditor/ContextMenu" category="/ContextMenus/TextEditor" />
+		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu" category="/ContextMenus/TextEditor" />
+		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu" category="/ContextMenus/TextEditor" />
+		
+		<MenuLocation path="/SharpDevelop/Workbench/OpenFileTab/ContextMenu" category="/ContextMenus/TextEditor/Tabs" />
+		
+		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common" category="/ContextMenus/TextEditor/Refactoring" />
+		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Parameter" category="/ContextMenus/TextEditor/Refactoring" />
+		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariable" category="/ContextMenus/TextEditor/Refactoring" />
+		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition" category="/ContextMenus/TextEditor/Refactoring" />
+		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariableDefinition" category="/ContextMenus/TextEditor/Refactoring" />
 	</Path>
 	
 	
-	<Path name="/SharpDevelop/Workbench/RoutedUICommands">
+	<Path name="/SharpDevelop/CommandManager/RoutedUICommands">
 		<RoutedUICommand name="SDTestCommands.Test" text="Create new file" />
 		
 		<RoutedUICommand name="SDBuildCommands.BuildSolution" text="${res:XML.MainMenu.BuildMenu.BuildSolution}" />
@@ -113,164 +137,160 @@
 	</Path>
 	
 	
-	<Path name="/SharpDevelop/Workbench/CommandBindings">
+	<Path name="/SharpDevelop/CommandManager/CommandBindings">
 		<CommandBinding 
 			command="SDTestCommands.Test" 
 			class="ICSharpCode.SharpDevelop.Commands.TestCommand" 
 			gestures="Ctrl+M" 
-			category="Test" />
+			categories="/Test" />
 		
 		
 		<CommandBinding 
 			command = "SDProjectCommands.ShowSelectedProjectBrowserNodeProperties"
 			class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"
-			category="Project viewer" />
+			categories="/ProjectViewer" />
 		
 		<CommandBinding 
 			command="SDBuildCommands.BuildSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Build" 
 			gestures="Ctrl+Alt+R,R;Ctrl+B,B" 
-			category="Building"
+			categories="/Building"
 		/>
 		<CommandBinding 
 			command="SDBuildCommands.RebuildSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Rebuild" 
 			gestures="Alt+F8" 
-			category="Building"
+			categories="/Building"
 		/>
 		<CommandBinding 
 			command="SDBuildCommands.CleanSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Clean" 
-			category="Building" />
+			categories="/Building" />
 		<CommandBinding 
 			command="SDBuildCommands.BuildProject" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.BuildProject" 
 			gestures="F9" 
-			category="Building" />
+			categories="/Building" />
 		<CommandBinding 
 			command="SDBuildCommands.RebuildProject" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.RebuildProject" 
 			gestures="Alt+F9" 
-			category="Building" />
+			categories="/Building" />
 		<CommandBinding 
 			command="SDBuildCommands.CleanProject" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.CleanProject" 
-			category="Buildin" />
+			categories="/Buildin" />
 		<CommandBinding 
 			command="SDBuildCommands.AbortBuild" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.AbortBuild" 
-			category="Buildin" />
+			categories="/Buildin" />
 		<CommandBinding 
 			command="SDBuildCommands.EditConfigurationsCommand" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.EditConfigurationsCommand" 
-			category="Buildin" />
+			categories="/Buildin" />
 		
 		
 		<CommandBinding 
 			command="SDProjectCommands.AddNewProjectToSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution" 
-			category="Project" />
+			categories="/Project" />
 		<CommandBinding 
 			command="SDProjectCommands.AddExitingProjectToSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution" 
-			category="Project" />
+			categories="/Project" />
 		<CommandBinding 
 			command="SDProjectCommands.AddExistingItemToSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution" 
-			category="Project" />
+			categories="/Project" />
 		<CommandBinding 
 			command="SDProjectCommands.AddNewSolutionFolderToSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution" 
-			category="Project" />
+			categories="/Project" />
 		
 		
 		<CommandBinding 
 			command="SDDebugCommands.Execute" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Execute" 
 			gestures="F5" 
-			category="Debugger" />
+			categories="/Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.ExecuteWithoutDebugger" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger" 
 			gestures="Ctrl+F5" 
-			category="Debugger" />
+			categories="/Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.StopDebugging" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand" 
-			category="Debugger" />
+			categories="/Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.AttachToProcess" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.AttachToProcessCommand" 
-			category="Project" />
+			categories="/Project" />
 		<CommandBinding 
 			command="SDDebugCommands.DetachFromProcess" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.DetachFromProcessCommand" 
-			category="Debugger" />
+			categories="/Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.BreakDebugging" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand" 
 			gestures="Ctrl+Alt+B" 
-			category="Debugger" />
+			categories="/Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.ContinueDebugging" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand" 
 			gestures="Ctrl+Alt+B; Ctrl+Alt+D"
-			category="Debugger" />
+			categories="/Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.StepOver" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand" 
 			gestures="F10" 
-			category="Debugger" />
+			categories="/Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.StepInto" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand" 
 			gestures="F11" 
-			category="Debugger" />
+			categories="/Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.StepOut" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand" 
 			gestures="Shift+F11" 
-			category="Debugger" />
+			categories="/Debugger" />
 		<CommandBinding 
 			command="SDDebugCommands.ToggleBreakpoint" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.ToggleBreakpointCommand" 
 			gestures="F7" 
-			category="Debugger" />
+			categories="/Debugger" />
 		
 		
 		<CommandBinding 
 			command="SDSearchCommands.ToggleBookmark" 
 			class="ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark" 
 			gestures="Ctrl+F2" 
-			category="Search" />
+			categories="/Search" />
 		<CommandBinding 
 			command="SDSearchCommands.PrevBookmark" 
 			class="ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark" 
 			gestures="Alt+F2" 
-			category="Search" />
+			categories="/Search" />
 		<CommandBinding 
 			command="SDSearchCommands.NextBookmark" 
 			class="ICSharpCode.SharpDevelop.Bookmarks.NextBookmark" 
 			gestures="F2" 
-			category="Search" />
+			categories="/Search" />
 		<CommandBinding 
 			command="SDSearchCommands.ClearBookmarks" 
 			class="ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks" 
-			category="Search" />
+			categories="/Search" />
 		<CommandBinding 
 			command="SDSearchCommands.GotoLineNumber" 
 			class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber" 
 			gestures="Ctrl+G" 
-			category="Search" />
+			categories="/Search" />
 		<CommandBinding 
 			command="SDSearchCommands.GotoBrace" 
 			class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace" 
 			gestures="Ctrl+B" 
-			category="Search" />
-	</Path>
-	
-	<Path name="/SharpDevelop/Workbench/InputBindings">
-	
+			categories="/Search" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -1633,7 +1653,7 @@
 				          label    = "${res:XML.MainMenu.BuildMenu.BuildSolution}"
 				          icon     = "Icons.16x16.BuildCombine"
 				          command  = "SDBuildCommands.BuildSolution"
-				          category = "Test/Test"
+				          inputbindingcategories = "/Test/Test"
 				/>
 				<MenuItem id       = "Rebuild"
 				          label    = "${res:XML.MainMenu.BuildMenu.RebuildSolution}"

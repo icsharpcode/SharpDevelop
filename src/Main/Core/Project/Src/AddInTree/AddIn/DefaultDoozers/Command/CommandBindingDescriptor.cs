@@ -63,7 +63,7 @@ namespace ICSharpCode.Core
 		/// If input binding is created in the same context (this is done by setting <see cref="Gestures" /> property)
 		/// assign this input binding to provided category
 		/// </summary>
-		public string Category {
+		public string Categories {
 			get; private set;
 		}
 		
@@ -92,7 +92,7 @@ namespace ICSharpCode.Core
 			OwnerInstanceName = Codon.Properties["owner-instance"];
 			OwnerTypeName = Codon.Properties["owner-type"];
 			Gestures = Codon.Properties["gestures"];
-			Category = Codon.Properties["category"];
+			Categories = Codon.Properties["categories"];
 			Name = Codon.Properties["name"];
 		}
 	}

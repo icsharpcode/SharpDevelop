@@ -50,7 +50,7 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Category to which this binding belongs
 		/// </summary>
-		public string Category {
+		public string Categories {
 			get; private set;
 		}
 		
@@ -66,7 +66,7 @@ namespace ICSharpCode.Core
 			OwnerInstanceName = codon.Properties["owner-instance"];
 			OwnerTypeName = codon.Properties["owner-type"];
 			Gestures = codon.Properties["gestures"];
-			Category = codon.Properties["category"];
+			Categories = codon.Properties["categories"];
 			Name = codon.Properties["name"];
 		}
 	}

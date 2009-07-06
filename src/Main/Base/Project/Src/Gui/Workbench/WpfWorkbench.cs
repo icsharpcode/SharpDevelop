@@ -75,7 +75,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Initialize()
 		{	
-			CommandsService.RegisterInputBindingCategories(this, "/SharpDevelop/Workbench/InputBindingCategories");
 			
 			// Use shortened assembly qualified name to not lose user defined gestures
 			// when sharp develop is updated
@@ -85,10 +84,11 @@ namespace ICSharpCode.SharpDevelop.Gui
             CommandsService.RegisterBuiltInRoutedUICommands();
 			
 			// Load all commands and and key bindings from addin tree
-			CommandsService.RegisterRoutedUICommands(this, "/SharpDevelop/Workbench/RoutedUICommands");
-			CommandsService.RegisterCommandBindings(this, "/SharpDevelop/Workbench/CommandBindings");
-			CommandsService.RegisterInputBindings(this, "/SharpDevelop/Workbench/InputBindings");
-			CommandsService.RegisterMenuBindings("/SharpDevelop/MenuLocations", this);
+			CommandsService.RegisterInputBindingCategories(this, "/SharpDevelop/CommandManager/InputBindingCategories");
+			CommandsService.RegisterRoutedUICommands(this, "/SharpDevelop/CommandManager/RoutedUICommands");
+			CommandsService.RegisterCommandBindings(this, "/SharpDevelop/CommandManager/CommandBindings");
+			CommandsService.RegisterInputBindings(this, "/SharpDevelop/CommandManager/InputBindings");
+			CommandsService.RegisterMenuBindings(this, "/SharpDevelop/CommandManager/MenuLocations");
 				
 			// Register context and load all commands from addin
 			CommandManager.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
