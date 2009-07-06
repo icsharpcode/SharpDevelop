@@ -70,7 +70,6 @@ namespace ICSharpCode.XamlBinding
 			} else {
 				MarkupExtensionInfo info = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
 				TypeResolveResult extensionType = (ResolveElementName(info.ExtensionType + "Extension") ?? ResolveElementName(info.ExtensionType)) as TypeResolveResult;
-				// TODO : hardcode x:Type and x:Static
 				if (extensionType != null && extensionType.ResolvedType != null) {
 					var value = data as AttributeValue;
 					
@@ -92,8 +91,6 @@ namespace ICSharpCode.XamlBinding
 							}
 							break;
 						case "System.Windows.Markup.TypeExtension":
-							
-							
 							if (value != null && value.IsString) {
 								return ResolveElementName(expression) ?? ResolveAttribute(expression);
 							}

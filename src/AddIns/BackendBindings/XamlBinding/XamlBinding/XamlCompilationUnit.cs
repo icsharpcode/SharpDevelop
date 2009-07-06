@@ -31,6 +31,9 @@ namespace ICSharpCode.XamlBinding
 		/// <returns>A new IReturnType that will search the referenced type on demand.</returns>
 		public IReturnType CreateType(string xmlNamespace, string className)
 		{
+			if (string.IsNullOrEmpty(className) || className.Contains("."))
+				return null;
+			
 			if (xmlNamespace.StartsWith("clr-namespace:")) {
 				return CreateClrNamespaceType(this.ProjectContent, xmlNamespace, className);
 			} else {

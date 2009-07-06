@@ -138,8 +138,8 @@ namespace ICSharpCode.XamlBinding
 			if (context.ActiveElement != null) {
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && context.Description != XamlContextDescription.InAttributeValue) {
 					var list = CompletionDataHelper.CreateListForContext(context) as XamlCompletionItemList;
-					string starter = editor.Document.Text.GetWordBeforeOffset(editor.Caret.Offset).Trim('<', '>');
-					if (!string.IsNullOrEmpty(starter) && !starter.EndsWith(StringComparison.Ordinal, ' ', '\t', '\n', '\r'))
+					string starter = editor.GetWordBeforeCaret().Trim('<', '>');
+					if (context.Description != XamlContextDescription.None && !string.IsNullOrEmpty(starter) && !starter.EndsWith(StringComparison.Ordinal, ' ', '\t', '\n', '\r', '"', '=', '\''))
 						list.PreselectionLength = starter.Length;
 					editor.ShowCompletionWindow(list);
 					return true;
@@ -159,8 +159,8 @@ namespace ICSharpCode.XamlBinding
 								editor.ShowInsightWindow(CompletionDataHelper.MemberInsight(mrr));
 							}
 							
-							if (context.ActiveElement.Name == "Setter")
-								DoSetterCompletion(context, completionList);
+							if (context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter")
+								DoSetterAndEventSetterCompletion(context, completionList);
 							
 							completionList.SortItems();
 							
@@ -179,7 +179,7 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		static void DoSetterCompletion(XamlCompletionContext context, XamlCompletionItemList completionList) {
+		static void DoSetterAndEventSetterCompletion(XamlCompletionContext context, XamlCompletionItemList completionList) {
 			int offset = Utils.GetParentElementStart(context.Editor);
 			var loc = context.Editor.Document.OffsetToPosition(offset);
 			
@@ -199,9 +199,7 @@ namespace ICSharpCode.XamlBinding
 							if (!propType.IsString)
 								break;
 							
-							XamlResolver resolver = new XamlResolver();
-							var member = resolver.Resolve(new ExpressionResult(GetTypeNameFromTypeExtension(value.ExtensionValue) + "." + propType.StringValue, context),
-							                              context.ParseInformation, context.Editor.Document.Text) as MemberResolveResult;
+							var member = XamlResolver.Resolve(GetTypeNameFromTypeExtension(value.ExtensionValue) + "." + propType.StringValue, context) as MemberResolveResult;
 							
 							if (member == null || member.ResolvedMember == null)
 								break;
@@ -217,6 +215,25 @@ namespace ICSharpCode.XamlBinding
 								.Select(prop => new DefaultCompletionItem(prop.Name))
 								.Cast<ICompletionItem>()
 							);
+							break;
+						case "Event":
+							break;
+						case "Handler":
+							var loc3 = context.Editor.Document.OffsetToPosition(XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset));
+							AttributeValue evtType = MarkupExtensionParser.ParseValue(
+								Utils.GetAttributeValue(context.Editor.Document.Text, loc3.Line, 
+								                        loc3.Column, "Event"));
+							if (!evtType.IsString)
+								break;
+							
+							var evtMember = XamlResolver.Resolve(GetTypeNameFromTypeExtension(value.ExtensionValue) + "." + evtType.StringValue, context) as MemberResolveResult;
+							
+							if (evtMember == null || evtMember.ResolvedMember == null || !(evtMember.ResolvedMember is IMethod))
+								break;
+							
+							IMethod invoker = evtMember.ResolvedMember as IMethod;
+							
+			
 							break;
 					}
 				}
@@ -246,7 +263,7 @@ namespace ICSharpCode.XamlBinding
 				var completionList = CompletionDataHelper.CreateMarkupExtensionCompletion(context);
 				context.Editor.ShowCompletionWindow(completionList);
 				var insightList = CompletionDataHelper.CreateMarkupExtensionInsight(context);
-				//editor.ShowInsightWindow(insightList);
+				context.Editor.ShowInsightWindow(insightList);
 				return true;
 			}
 			

@@ -38,6 +38,12 @@ namespace ICSharpCode.XamlBinding
 		static readonly List<string> xamlNamespaceAttributes = new List<string> {
 			"Class", "ClassModifier", "FieldModifier", "Name", "Subclass", "TypeArguments", "Uid", "Key"
 		};
+		
+		static readonly List<string> rootOnlyElements = new List<string> {
+			"Class", "ClassModifier", "Subclass"
+		};
+		
+		static readonly List<ICompletionItem> emptyList = new List<ICompletionItem>();
 		#endregion
 		
 		public const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
@@ -63,8 +69,9 @@ namespace ICSharpCode.XamlBinding
 			Dictionary<string, string> xmlnsDefs;
 			QualifiedName active, parent;
 			int elementStartIndex;
+			bool isRoot;
 			
-			Utils.LookUpInfoAtTarget(text, line, col, offset, out xmlnsDefs, out active, out parent, out elementStartIndex);
+			Utils.LookUpInfoAtTarget(text, line, col, offset, out xmlnsDefs, out active, out parent, out elementStartIndex, out isRoot);
 			
 			string wordBeforeIndex = text.GetWordBeforeOffset(offset);
 			
@@ -94,6 +101,7 @@ namespace ICSharpCode.XamlBinding
 				ActiveElement = active,
 				ParentElement = parent,
 				AttributeName = attribute,
+				InRoot = isRoot,
 				AttributeValue = value,
 				RawAttributeValue = attributeValue,
 				ValueStartOffset = offsetFromValueStart,
@@ -139,16 +147,28 @@ namespace ICSharpCode.XamlBinding
 			return context;
 		}
 		
-		static List<ICompletionItem> CreateListForAttributeName(XamlCompletionContext context, string[] existingItems, bool includeEvents)
+		static List<ICompletionItem> CreateAttributeList(XamlCompletionContext context, string[] existingItems, bool includeEvents)
 		{
 			QualifiedName lastElement = context.ActiveElement;
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
 			if (cu == null)
-				return null;
+				return emptyList;
 			IReturnType rt = cu.CreateType(lastElement.Namespace, lastElement.Name.Trim('.'));
-			if (rt == null)
-				return null;
+			
 			var list = new List<ICompletionItem>();
+			
+			string xamlPrefix = Utils.GetXamlNamespacePrefix(context);
+			
+			if (rt == null) {
+				list.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, "Uid"));
+				return list;
+			} else {
+				foreach (string item in xamlNamespaceAttributes.Where(item => AllowedInElement(context.InRoot, item))) {
+					if (!existingItems.Contains(xamlPrefix + ":" + item)) {
+						list.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, item));
+					}
+				}
+			}
 			
 			foreach (IProperty p in rt.GetProperties()) {
 				if (p.IsPublic && (p.CanSet || p.ReturnType.IsCollectionReturnType()) && !existingItems.Contains(p.Name)) {
@@ -170,16 +190,14 @@ namespace ICSharpCode.XamlBinding
 				if (includeEvents) {
 					list.AddRange(GetListOfAttachedEvents(context, existingItems));
 				}
-				
-				string xamlPrefix = Utils.GetXamlNamespacePrefix(context);
-				
-				foreach (string item in xamlNamespaceAttributes) {
-					if (!existingItems.Contains(xamlPrefix + ":" + item))
-						list.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, item));
-				}
 			}
 			
 			return list;
+		}
+		
+		static bool AllowedInElement(bool inRoot, string item)
+		{
+			return inRoot || !rootOnlyElements.Contains(item);
 		}
 		
 		public static IEnumerable<ICompletionItem> CreateListForXmlnsCompletion(IProjectContent projectContent)
@@ -259,7 +277,7 @@ namespace ICSharpCode.XamlBinding
 			return string.Empty;
 		}
 		
-		public static IList<ICompletionItem> CreateListForElement(XamlCompletionContext context, bool addOpeningBrace, bool classesOnly)
+		public static IList<ICompletionItem> CreateElementList(XamlCompletionContext context, bool addOpeningBrace, bool classesOnly)
 		{
 			DebugTimer.Start();
 			
@@ -334,7 +352,7 @@ namespace ICSharpCode.XamlBinding
 
 		public static IList<ICompletionItem> CreateListOfMarkupExtensions(XamlCompletionContext context)
 		{
-			var list = CreateListForElement(context, false, true);
+			var list = CreateElementList(context, false, true);
 			
 			var neededItems = list
 				.Where(i => ((i as XamlCodeCompletionItem).Entity as IClass).DerivesFrom("System.Windows.Markup.MarkupExtension"))
@@ -363,22 +381,22 @@ namespace ICSharpCode.XamlBinding
 				case XamlContextDescription.None:
 					if (context.Forced) {
 						list.Items.AddRange(standardElements.Select(item => new DefaultCompletionItem("<" + item.Text)).Cast<ICompletionItem>());
-						list.Items.AddRange(CreateListForElement(context, true, false));
+						list.Items.AddRange(CreateElementList(context, true, false));
 					}
 					break;
 				case XamlContextDescription.AtTag:
 					if ((editor.Caret.Offset > 0 && editor.Document.GetCharAt(editor.Caret.Offset - 1) == '.') || context.PressedKey == '.') {
 						var loc = editor.Document.OffsetToPosition(Utils.GetParentElementStart(editor));
 						var existing = Utils.GetListOfExistingAttributeNames(editor.Document.Text, loc.Line, loc.Column);
-						list.Items.AddRange(CreateListForAttributeName(context, existing, false));
+						list.Items.AddRange(CreateAttributeList(context, existing, false));
 					} else {
 						list.Items.AddRange(standardElements);
-						list.Items.AddRange(CreateListForElement(context, false, false));
+						list.Items.AddRange(CreateElementList(context, false, false));
 					}
 					break;
 				case XamlContextDescription.InTag:
 					var existingAttribs = Utils.GetListOfExistingAttributeNames(editor.Document.Text, editor.Caret.Line, editor.Caret.Column);
-					list.Items.AddRange(CreateListForAttributeName(context, existingAttribs, true));
+					list.Items.AddRange(CreateAttributeList(context, existingAttribs, true));
 					
 					QualifiedName last = context.ActiveElement;
 					
@@ -467,7 +485,7 @@ namespace ICSharpCode.XamlBinding
 					break;
 				case "System.Windows.Markup.TypeExtension":
 					if (context.AttributeValue.ExtensionValue.PositionalArguments.Count <= 1) {
-						list.Items.AddRange(CreateListForElement(context, false, true));
+						list.Items.AddRange(CreateElementList(context, false, true));
 						AttributeValue selItem = Utils.GetInnermostMarkupExtensionInfo(context.AttributeValue.ExtensionValue)
 							.PositionalArguments.LastOrDefault();
 						string word = context.Editor.GetWordBeforeCaret().TrimEnd();
@@ -544,30 +562,8 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				case ClassType.Delegate:
-					IMethod invoker = c.Methods.Where(method => method.Name == "Invoke").FirstOrDefault();
-					if (invoker != null && context.ActiveElement != null) {
-						var item = context.ActiveElement;
-						var evt = ResolveAttribute(context.AttributeName, context) as IEvent;
-						if (evt == null)
-							break;
-						
-						int offset = XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
-						
-						if (offset == -1)
-							break;
-						
-						var loc = context.Editor.Document.OffsetToPosition(offset);
-						
-						string prefix = Utils.GetXamlNamespacePrefix(context);
-						string name = Utils.GetAttributeValue(context.Editor.Document.Text, loc.Line, loc.Column + 1, "name");
-						if (string.IsNullOrEmpty(name))
-							name = Utils.GetAttributeValue(context.Editor.Document.Text, loc.Line, loc.Column + 1, (string.IsNullOrEmpty(prefix) ? "" : prefix + ":") + "name");
-						
-						yield return new NewEventCompletionItem(evt, (string.IsNullOrEmpty(name)) ? item.Name : name);
-						
-						foreach (var eventItem in CompletionDataHelper.AddMatchingEventHandlers(context.Editor, invoker))
-							yield return eventItem;
-					}
+					foreach (var item in CreateEventCompletion(context, c))
+						yield return item;
 					break;
 			}
 			
@@ -580,6 +576,37 @@ namespace ICSharpCode.XamlBinding
 				foreach (var item in coll.Fields.Where(f => f.IsPublic && f.IsStatic && f.ReturnType.FullyQualifiedName == c.FullyQualifiedName))
 					yield return new DefaultCompletionItem(item.Name);
 			}
+		}
+		
+		static IEnumerable<ICompletionItem> CreateEventCompletion(XamlCompletionContext context, IClass c)
+		{
+			IMethod invoker = c.Methods.Where(method => method.Name == "Invoke").FirstOrDefault();
+			if (invoker != null && context.ActiveElement != null) {
+				var item = context.ActiveElement;
+				var evt = ResolveAttribute(context.AttributeName, context) as IEvent;
+				if (evt == null)
+					return Enumerable.Empty<ICompletionItem>();
+				
+				int offset = XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
+				
+				if (offset == -1)
+					return Enumerable.Empty<ICompletionItem>();
+				
+				var loc = context.Editor.Document.OffsetToPosition(offset);
+				
+				string prefix = Utils.GetXamlNamespacePrefix(context);
+				string name = Utils.GetAttributeValue(context.Editor.Document.Text, loc.Line, loc.Column + 1, "name");
+				if (string.IsNullOrEmpty(name))
+					name = Utils.GetAttributeValue(context.Editor.Document.Text, loc.Line, loc.Column + 1, (string.IsNullOrEmpty(prefix) ? "" : prefix + ":") + "name");
+				
+				IList<ICompletionItem> list = new List<ICompletionItem>();
+				list.Add(new NewEventCompletionItem(evt, (string.IsNullOrEmpty(name) ? item.Name : name)));
+				
+				
+				return CompletionDataHelper.AddMatchingEventHandlers(context, invoker).Concat(list);
+			}
+			
+			return Enumerable.Empty<ICompletionItem>();
 		}
 
 		static IEntity ResolveAttribute(string attribute, XamlCompletionContext context)
@@ -674,11 +701,10 @@ namespace ICSharpCode.XamlBinding
 			return null;
 		}
 
-		public static IEnumerable<ICompletionItem> AddMatchingEventHandlers(ITextEditor editor, IMethod delegateInvoker)
+		public static IEnumerable<ICompletionItem> AddMatchingEventHandlers(XamlCompletionContext context, IMethod delegateInvoker)
 		{
-			ParseInformation p = ParserService.GetParseInformation(editor.FileName);
-			var unit = p.MostRecentCompilationUnit;
-			var loc = editor.Document.OffsetToPosition(editor.Caret.Offset);
+			var unit = context.ParseInformation.MostRecentCompilationUnit;
+			var loc = context.Editor.Caret.Position;
 			IClass c = unit.GetInnermostClass(loc.Line, loc.Column);
 			if (c == null)
 				yield break;

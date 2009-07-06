@@ -28,6 +28,7 @@ namespace ICSharpCode.XamlBinding
 		public XamlContextDescription Description { get; set; }
 		public Dictionary<string, string> XmlnsDefinitions { get; set; }
 		public ParseInformation ParseInformation { get; set; }
+		public bool InRoot { get; set; }
 		
 		public XamlContext() {}
 		
@@ -51,6 +52,7 @@ namespace ICSharpCode.XamlBinding
 			this.RawAttributeValue = context.RawAttributeValue;
 			this.ValueStartOffset = context.ValueStartOffset;
 			this.XmlnsDefinitions = context.XmlnsDefinitions;
+			this.InRoot = context.InRoot;
 		}
 		
 		public char PressedKey { get; set; }	

@@ -224,12 +224,15 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		public 	static void LookUpInfoAtTarget(string fileContent, int caretLine, int caretColumn, int offset,
-		                                       out Dictionary<string, string> xmlns, out QualifiedName active, out QualifiedName parent, out int activeElementStartIndex)
+		                                       out Dictionary<string, string> xmlns, out QualifiedName active,
+		                                       out QualifiedName parent, out int activeElementStartIndex, out bool isRoot)
 		{
 			var watch = new Stopwatch();
 			watch.Start();
 			
 			Stack<QualifiedName> stack = new Stack<QualifiedName>();
+			
+			isRoot = false;
 
 			XmlTextReader r = new XmlTextReader(new StringReader(fileContent));
 			r.XmlResolver = null;
@@ -256,8 +259,11 @@ namespace ICSharpCode.XamlBinding
 			active = CompletionDataHelper.ResolveCurrentElement(fileContent, activeElementStartIndex, xmlns);
 			parent = stack.PopOrDefault();
 			
-			if (active == parent)
+			if (active == parent) {
+				if (stack.Count == 0)
+					isRoot = true;
 				parent = stack.PopOrDefault();
+			}
 			
 			if (active == null)
 				active = parent;
