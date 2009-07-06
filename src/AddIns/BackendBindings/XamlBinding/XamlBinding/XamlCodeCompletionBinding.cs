@@ -234,12 +234,26 @@ namespace ICSharpCode.XamlBinding
 							
 							var evtMember = XamlResolver.Resolve(GetTypeNameFromTypeExtension(value.ExtensionValue) + "." + evtType.StringValue, context) as MemberResolveResult;
 							
-							if (evtMember == null || evtMember.ResolvedMember == null || !(evtMember.ResolvedMember is IMethod))
+							if (evtMember == null || evtMember.ResolvedMember == null || !(evtMember.ResolvedMember is IEvent) || evtMember.ResolvedMember.ReturnType == null)
 								break;
 							
-							IMethod invoker = evtMember.ResolvedMember as IMethod;
+							IClass c = (evtMember.ResolvedMember as IEvent).ReturnType.GetUnderlyingClass();
 							
+							if (c == null)
+								break;
 							
+							IMethod invoker = c.Methods.FirstOrDefault(m => m.Name == "Invoke");
+							
+							if (invoker == null)
+								break;
+							
+							var list = new List<ICompletionItem>() {
+								new NewEventCompletionItem(evtMember.ResolvedMember as IEvent, typeName.Name)
+							};
+							
+							completionList.Items.AddRange(
+								CompletionDataHelper.AddMatchingEventHandlers(context, invoker).Concat(list)
+							);
 							break;
 					}
 				}
