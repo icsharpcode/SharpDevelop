@@ -178,6 +178,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.projectCollection = information.Solution.MSBuildProjectCollection;
 			this.projectFile = ProjectRootElement.Create(projectCollection);
 			this.userProjectFile = ProjectRootElement.Create(projectCollection);
+			this.ActivePlatform = information.Platform;
 			
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
@@ -190,10 +191,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			base.IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
 			projectFile.AddProperty(ProjectGuidPropertyName, IdGuid);
 			AddGuardedProperty("Configuration", "Debug");
-			AddGuardedProperty("Platform", "AnyCPU");
+			AddGuardedProperty("Platform", information.Platform);
 			
 			this.ActiveConfiguration = "Debug";
-			this.ActivePlatform = "AnyCPU";
+			this.ActivePlatform = information.Platform;
 		}
 		
 		/// <summary>
@@ -394,7 +395,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				Dictionary<string, string> globalProps = new Dictionary<string, string>();
 				InitializeMSBuildProjectProperties(globalProps);
 				globalProps["Configuration"] = configuration;
-				globalProps["Platform"] = platform;
+				
+				//HACK: the ActivePlatform property should be set properly before entering here, but sometimes it does not
+				if (platform != null)	
+					globalProps["Platform"] = platform;
 				MSBuild.Project project = MSBuildInternals.LoadProject(projectCollection, projectFile, globalProps);
 				if (openCurrentConfiguration)
 					currentlyOpenProject = project;
@@ -1101,6 +1105,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.projectCollection = loadInformation.ParentSolution.MSBuildProjectCollection;
 			this.FileName = loadInformation.FileName;
+			this.ActivePlatform = loadInformation.Platform;
 			
 			//try {
 			projectFile = ProjectRootElement.Open(loadInformation.FileName, projectCollection);

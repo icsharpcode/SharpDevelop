@@ -24,11 +24,16 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	{
 		internal List<IProject> createdProjects = new List<IProject>();
 		
+		public ProjectCreateInformation() {
+			Platform = "AnyCPU";
+		}
+		
 		public ReadOnlyCollection<IProject> CreatedProjects {
 			get { return createdProjects.AsReadOnly(); }
 		}
 		
 		public string OutputProjectFileName { get; set; }
+		public string Platform { get; set; }
 		public string ProjectName { get; set; }
 		public string SolutionName { get; set; }
 		public string RootNamespace { get; set; }

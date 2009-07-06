@@ -42,6 +42,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static readonly ItemType BootstrapperFile = new ItemType("BootstrapperFile");
 		public static readonly ItemType Header = new ItemType("Header");
 		
+		// vcxproj-only (c++ project) items
+		public static readonly ItemType ClCompile = new ItemType("ClCompile");
+		public static readonly ItemType ClInclude = new ItemType("ClInclude");
+		
 		/// <summary>
 		/// Gets a collection of item types that are used for files.
 		/// </summary>

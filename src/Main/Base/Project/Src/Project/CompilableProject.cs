@@ -185,7 +185,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public OutputType OutputType {
 			get {
 				try {
-					return (OutputType)Enum.Parse(typeof(OutputType), GetEvaluatedProperty("OutputType") ?? "Exe");
+					return (OutputType)Enum.Parse(typeof(OutputType), GetEvaluatedProperty("OutputType") ?? "Exe", true);
 				} catch (ArgumentException) {
 					return OutputType.Exe;
 				}

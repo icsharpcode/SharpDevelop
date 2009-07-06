@@ -17,8 +17,10 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		public Solution ParentSolution { get; private set; }
 		public string FileName { get; private set; }
+		public string Platform { get; internal set; }
 		public string ProjectName { get; private set; }
 		public string TypeGuid { get; set; }
+		internal string Guid { get; set; }
 		public Gui.IProgressMonitor ProgressMonitor { get; set; }
 		
 		public ProjectLoadInformation(Solution parentSolution, string fileName, string projectName)
