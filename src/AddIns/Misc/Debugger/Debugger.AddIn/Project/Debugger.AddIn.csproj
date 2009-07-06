@@ -140,6 +140,9 @@
     <Compile Include="Src\Visualizers\Graph\TreeModel\NestedNodeType.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\PropertyNode.cs" />
     <Compile Include="Src\Visualizers\Utils\AtomicType.cs" />
+    <Compile Include="Src\Visualizers\Utils\ITreeNode.cs" />
+    <Compile Include="Src\Visualizers\Utils\ListHelper.cs" />
+    <Compile Include="Src\Visualizers\Utils\TreeFlattener.cs" />
     <Compile Include="Src\Visualizers\Utils\TypeResolver.cs" />
     <EmbeddedResource Include="Src\Service\DebuggeeExceptionForm.resx">
       <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>

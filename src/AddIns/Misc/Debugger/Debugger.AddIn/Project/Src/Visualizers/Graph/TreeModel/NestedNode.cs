@@ -14,26 +14,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 	/// </summary>
 	public class NestedNode : AbstractNode
 	{
-		private List<AbstractNode> children = new List<AbstractNode>();
-		
 		private NestedNodeType nodeType;
 		public NestedNodeType NodeType
 		{
 			get { return nodeType; }
-		}
-		
-		public IEnumerable<AbstractNode> Children
-		{
-			get 
-			{
-				foreach (var child in this.children) 
-					yield return child;
-			}
-		}
-		
-		public void AddChild(AbstractNode child)
-		{
-			this.children.Add(child);
 		}
 		
 		public NestedNode(NestedNodeType nodeType)

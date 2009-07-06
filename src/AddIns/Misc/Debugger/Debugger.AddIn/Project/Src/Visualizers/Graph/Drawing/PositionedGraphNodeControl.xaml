@@ -70,7 +70,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                         	   <!-- Name -->
-                            <GridViewColumn Header="Name" Width="80">
+                            <GridViewColumn Header="Name" Width="60">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         		<!--

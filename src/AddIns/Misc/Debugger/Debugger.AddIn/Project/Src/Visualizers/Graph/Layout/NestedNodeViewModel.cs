@@ -4,7 +4,9 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.AddIn.Visualizers.Utils;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
@@ -12,7 +14,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// ViewModel base for node in tree of properties, to be bound to View (ie. PositionedGraphNodeControl).
 	/// </summary>
-	public class NestedNodeViewModel
+	public class NestedNodeViewModel : Utils.ITreeNode<NestedNodeViewModel>
 	{
 		public NestedNodeViewModel(PositionedGraphNode containingNode)
 		{
@@ -77,16 +79,48 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
+		/// <summary>
+		/// Returns flattened subtree.
+		/// </summary>
+		public IEnumerable<NestedNodeViewModel> FlattenAll()
+		{
+			return Utils.TreeFlattener.Flatten(this);
+		}
+		
+		/// <summary>
+		/// Returns flattened subtree, skipping children of collapsed nodes.
+		/// </summary>
+		public IEnumerable<NestedNodeViewModel> FlattenExpanded()
+		{
+			return Utils.TreeFlattener.FlattenSelectChildrenIf(this, (node) => { return node.IsExpanded; });
+		}
+		
+		/// <summary>
+		/// Returns properties nodes from this tree.
+		/// </summary>
+		public IEnumerable<PositionedNodeProperty> FlattenProperties()
+		{
+			return Utils.TreeFlattener.Flatten(this).Where((node) => { return  node is PropertyNodeViewModel; }).
+				Select(	(propertyNode) => { return ((PropertyNodeViewModel)propertyNode).Property; });
+		}
+		
+		#region Utils.ITreeNode implementation
+		IEnumerable<NestedNodeViewModel> ITreeNode<NestedNodeViewModel>.Children
+		{
+			get { return this.Children; }
+		}
+		#endregion
+		
 		public virtual void InitFrom(AbstractNode source)
 		{
 			if (!(source is NestedNode))
 				throw new InvalidOperationException("NestedNodeViewModel must initialize from NestedNode");
 
 			NestedNode nestedSource = (NestedNode)source;
-			this.Name = "base";	// TODO
+			this.Name = nestedSource.NodeType == NestedNodeType.ThisNode ? "this" : "base";	  // TODO
 			this.Text = "";
 			this.IsNested = true;
-			this.IsExpanded = false; // TODO remember expanded nodes
+			this.IsExpanded = (nestedSource.NodeType == NestedNodeType.ThisNode); // TODO remember expanded nodes
 				
 			foreach (AbstractNode child in nestedSource.Children)
 			{

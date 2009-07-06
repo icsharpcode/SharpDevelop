@@ -129,7 +129,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 			
 			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Calculating graph layout");
 			this.currentPosGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expandedNodes);
-			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Graph layout completed");
 			
 			registerExpandCollapseEvents(this.currentPosGraph);
 			
@@ -164,7 +163,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			// remember this property is expanded (for later graph rebuilds)
 			expandedNodes.SetExpanded(e.Property.Expression.Code);
 			
-			// add edge (+ possibly nodes) to underlying object graph (no need to rebuild)
+			// add edge (+ possibly nodes) to underlying object graph (no need to fully rebuild)
 			// TODO can add more nodes if they are expanded - now this adds always one node
 			e.Property.ObjectGraphProperty.TargetNode = this.objectGraphBuilder.ObtainNodeForExpression(e.Property.Expression);
 			layoutGraph(this.objectGraph);
@@ -175,7 +174,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			// remember this property is collapsed (for later graph rebuilds)
 			expandedNodes.SetCollapsed(e.Property.Expression.Code);
 			
-			// just remove edge from underlying object graph (no need to rebuild)
+			// just remove edge from underlying object graph (no need to fully rebuild)
 			e.Property.ObjectGraphProperty.TargetNode = null;
 			layoutGraph(this.objectGraph);
 		}

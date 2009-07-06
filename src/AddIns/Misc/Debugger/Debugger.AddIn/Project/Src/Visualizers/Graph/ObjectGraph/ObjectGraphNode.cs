@@ -4,10 +4,12 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.AddIn.Visualizers.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Debugger.Expressions;
+using System.Linq;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
@@ -45,14 +47,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			get
 			{
-				if (this.Content == null)
-					throw new InvalidOperationException("Cannot enumerate properties, Content is null");
-				
-				foreach	(var child in this.Content.Children)
-				{
-					if (child is PropertyNode && !(((PropertyNode)child).Property.IsAtomic))
-						yield return ((PropertyNode)child).Property;
-				}
+				return this.Content.FlattenPropertyNodes().Select(node => {return node.Property; });
 			}
 		}
 	}

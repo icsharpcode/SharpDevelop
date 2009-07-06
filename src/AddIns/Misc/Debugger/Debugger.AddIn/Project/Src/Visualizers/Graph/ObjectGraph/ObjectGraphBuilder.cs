@@ -109,7 +109,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public ObjectGraphNode ObtainNodeForExpression(Expression expr)
 		{
-			bool createdNewNode; // ignore (caller is not interested, otherwise he would use the other overload)
+			bool createdNewNode; // ignored (caller is not interested, otherwise he would use the other overload)
 			return ObtainNodeForExpression(expr, out createdNewNode);
 		}
 		
@@ -138,23 +138,33 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="thisNode"></param>
 		private void loadContent(ObjectGraphNode thisNode)
 		{
-			NestedNode contentRoot = new NestedNode(NestedNodeType.ThisNode);
-			thisNode.Content = contentRoot;
+			thisNode.Content = new NestedNode(NestedNodeType.ThisNode);
+			NestedNode contentRoot = thisNode.Content;
 			
-			var propertyList = getProperties(thisNode.PermanentReference);
-			propertyList.Sort(ObjectPropertyComparer.Instance);
-			foreach (var property in propertyList)
+			DebugType thisType = thisNode.PermanentReference.Type;
+			
+			// recursive, remove NestedNodeType enum
+			if (thisType.BaseType != null && thisType.BaseType.FullName != "System.Object")
+			{
+				var baseClassNode = contentRoot.AddChild(new NestedNode(NestedNodeType.BaseClassNode));
+				foreach (var baseProperty in getPublicProperties(thisNode.PermanentReference, thisType.BaseType))
+				{
+					baseClassNode.AddChild(new PropertyNode(baseProperty));
+				}
+			}
+			
+			foreach (var property in getPublicProperties(thisNode.PermanentReference, thisType))
 			{
 				contentRoot.AddChild(new PropertyNode(property));
 			}
 		}
 		
-		private List<ObjectGraphProperty> getProperties(Value value)
+		private List<ObjectGraphProperty> getPublicProperties(Value value, DebugType shownType)
 		{
 			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
 			
 			// take all properties for this value (type = value's real type)
-			foreach(Expression memberExpr in value.Expression.AppendObjectMembers(value.Type, this.memberBindingFlags))
+			foreach(Expression memberExpr in value.Expression.AppendObjectMembers(shownType, this.memberBindingFlags))
 			{
 				checkIsOfSupportedType(memberExpr);
 				
@@ -169,11 +179,11 @@ namespace Debugger.AddIn.Visualizers.Graph
 				{
 					ObjectGraphNode targetNode = null;
 					bool memberIsNull = memberExpr.IsNull();
-					propertyList.Add(createComplesProperty(memberName, memberExpr, targetNode, memberIsNull));
+					propertyList.Add(createComplexProperty(memberName, memberExpr, targetNode, memberIsNull));
 				}
 			}
 			
-			return propertyList;
+			return propertyList.Sorted(ObjectPropertyComparer.Instance);
 		}
 		
 		/// <summary>
@@ -265,7 +275,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			         { Name = name, Value = "", Expression = expression, IsAtomic = true, TargetNode = null };
 		}
 		
-		public ObjectGraphProperty createComplesProperty(string name, Expression expression, ObjectGraphNode targetNode, bool isNull)
+		public ObjectGraphProperty createComplexProperty(string name, Expression expression, ObjectGraphNode targetNode, bool isNull)
 		{
 			// value is empty (will be lazy-evaluated later)
 			return new ObjectGraphProperty

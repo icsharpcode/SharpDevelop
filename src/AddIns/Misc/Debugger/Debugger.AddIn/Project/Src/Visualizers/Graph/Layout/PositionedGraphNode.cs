@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using Debugger.AddIn.Visualizers.Graph.Drawing;
 using System.Windows;
+using System.Linq;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -76,27 +77,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public void FillView()
 		{
 			this.nodeVisualControl.Root = this.Content;
-			/*foreach (var property in this.Properties)
-			{
-				property.Evaluate();
-				this.nodeVisualControl.AddProperty(property);
-			}*/
 		}
 		
-		// TODO do proper tree iteration
 		public IEnumerable<PositionedNodeProperty> Properties
 		{
 			get
 			{
-				foreach (var child in this.Content.Children)
-				{
-					var property = ((PropertyNodeViewModel)child).Property;
-					yield return property;
-				}
+				return this.Content.FlattenProperties();
 			}
 		}
-		
-		
 		
 		public virtual IEnumerable<PositionedEdge> Edges
 		{
@@ -110,16 +99,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		/*public PositionedNodeProperty AddProperty(ObjectGraphProperty objectProperty, bool isExpanded)
-		{
-			var newProperty = new PositionedNodeProperty(objectProperty, this);
-			newProperty.IsExpanded = isExpanded;
-			this.Properties.Add(newProperty);
-			this.nodeVisualControl.AddProperty(newProperty);
-			
-			return newProperty;
-		}*/
-
 		public void Measure()
 		{
 			this.nodeVisualControl.Measure(new Size(500, 500));
