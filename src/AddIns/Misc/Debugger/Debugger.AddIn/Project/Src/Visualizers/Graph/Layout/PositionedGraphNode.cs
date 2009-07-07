@@ -24,6 +24,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		public PositionedGraphNode(ObjectGraphNode objectNode)
 		{
 			this.objectNode = objectNode;
+			createVisualControl();
 		}
 		
 		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
@@ -63,20 +64,16 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			this.Content = new NestedNodeViewModel(this);
 			this.Content.InitFrom(this.ObjectNode.Content);
+			this.nodeVisualControl.Root = this.Content;
 		}
 		
-		public void InitView()
+		private void createVisualControl()
 		{
 			this.nodeVisualControl = new PositionedGraphNodeControl();
 			this.nodeVisualControl.MaxHeight = 200;
 			
 			this.nodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Expanded);
 			this.nodeVisualControl.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_Collapsed);
-		}
-		
-		public void FillView()
-		{
-			this.nodeVisualControl.Root = this.Content;
 		}
 		
 		public IEnumerable<PositionedNodeProperty> Properties

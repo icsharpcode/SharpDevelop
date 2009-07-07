@@ -66,14 +66,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				TreeGraphNode posNode = createNewTreeGraphNode(objectGraphNode); 
 				resultGraph.AddNode(posNode);
 				treeNodeFor[objectGraphNode] = posNode;
-				posNode.InitView();
-			}
-			
-			// copy Content for each node
-			foreach (PositionedGraphNode posNode in resultGraph.Nodes)
-			{
 				posNode.InitContentFromObjectNode();
-				posNode.FillView();
 			}
 			
 			// create edges
@@ -98,6 +91,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return resultGraph;
 		}
 		
+		// determines which edges are tree edges, and calculates subtree size for each node
 		private void calculateSubtreeSizes(TreeGraphNode root)
 		{
 			seenNodes.Add(root);
