@@ -62,10 +62,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		// TODO posNodeForObjectGraphNode will be a service, that will return existing posNodes or create empty new
+		// TODO for speedup of re-layout only, posNodeForObjectGraphNode will be a service, that will return existing posNodes or create empty new
 		public void InitContentFromObjectNode()
 		{
-			this.Content = new NestedNodeViewModel(this);
+			this.Content = new NestedNodeViewModel(this, null);
 			this.Content.InitFrom(this.ObjectNode.Content);
 			this.nodeVisualControl.Root = this.Content;
 		}
@@ -128,7 +128,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			get { return new Point(Left + Width / 2, Top + Height / 2); }
 		}
 		
-		public Rect Rect { get {  return new Rect(Left, Top, Width, Height); } }
+		public Rect Rect { get { return new Rect(Left, Top, Width, Height); } }
 		
 		#region event helpers
 		private void NodeVisualControl_PropertyExpanded(object sender, PositionedPropertyEventArgs e)

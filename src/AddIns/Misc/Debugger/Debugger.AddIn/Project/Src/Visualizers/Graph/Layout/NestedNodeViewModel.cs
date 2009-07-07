@@ -17,12 +17,39 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class NestedNodeViewModel : Utils.ITreeNode<NestedNodeViewModel>
 	{
-		public NestedNodeViewModel(PositionedGraphNode containingNode)
+		public NestedNodeViewModel(PositionedGraphNode containingNode, NestedNodeViewModel parent)
 		{
 			if (containingNode == null)
 				throw new ArgumentNullException("containingNode");
 			
 			this.containingNode = containingNode;
+			this.parent = parent;
+		}
+		
+		/// <summary>
+		/// Path to this content node in the whole <see cref="PositionedGraph"></see>.
+		/// </summary>
+		public string FullPath
+		{
+			get { return this.containingNode.ObjectNode.Expression.Code + "/" + this.Path; }
+		}
+		
+		private NestedNodeViewModel parent;
+		/// <summary>
+		/// Parent node in the content tree. Null if this node is root.
+		/// </summary>
+		public NestedNodeViewModel Parent
+		{
+			get { return this.parent; }
+		}
+		
+		private string path;
+		/// <summary>
+		/// Path to this content node in the content tree of containing <see cref="PositinedGraphNode"></see>.
+		/// </summary>
+		public string Path
+		{
+			get { return this.path; }
 		}
 		
 		/// <summary>
@@ -117,19 +144,20 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.Name = getNestedNodeName(source);
 			this.Text = "";			// lazy evaluated later
 			this.IsNested = true;
+			this.path = this.Parent == null ? this.Name : this.Parent.Path + "." + this.Name;
 			this.IsExpanded = (source is ThisNode); // TODO remember expanded nodes
 				
 			foreach (AbstractNode child in source.Children)
 			{
 				if (child is PropertyNode)
 				{
-					var newChild = new PropertyNodeViewModel(this.ContainingNode);
+					var newChild = new PropertyNodeViewModel(this.ContainingNode, this);
 					newChild.InitFrom(child);
 					this.Children.Add(newChild);
 				}
 				else
 				{
-					var newChild = new NestedNodeViewModel(this.ContainingNode);
+					var newChild = new NestedNodeViewModel(this.ContainingNode, this);
 					newChild.InitFrom(child);
 					this.Children.Add(newChild);					
 				}

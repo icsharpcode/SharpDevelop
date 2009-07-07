@@ -15,7 +15,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	{
 		PositionedNodeProperty positionedProperty;
 		
-		public PropertyNodeViewModel(PositionedGraphNode containingNode) : base(containingNode)
+		public PropertyNodeViewModel(PositionedGraphNode containingNode, NestedNodeViewModel parent) 
+			: base(containingNode, parent)
 		{
 		}
 		
@@ -54,7 +55,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.Name = sourcePropertyNode.Property.Name;
 			this.Text = sourcePropertyNode.Property.Value;		// lazy evaluated
 			this.IsNested = false;
-			this.IsExpanded = false;
+			this.IsExpanded = false;			// always false, property content nodes are never expanded
 			this.positionedProperty = new PositionedNodeProperty(sourcePropertyNode.Property, this.ContainingNode);
 		}
 	}
