@@ -860,7 +860,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Creates an MSBuild condition string.
 		/// At most one of configuration and platform can be null.
 		/// </summary>
-		static string CreateCondition(string configuration, string platform)
+		internal static string CreateCondition(string configuration, string platform)
 		{
 			if (configuration == null)
 				return CreateCondition(configuration, platform, PropertyStorageLocations.PlatformSpecific);
@@ -875,7 +875,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// configuration and platform may be only <c>null</c> if they are not required (as specified by the
 		/// storage location), otherwise an ArgumentNullException is thrown.
 		/// </summary>
-		static string CreateCondition(string configuration, string platform, PropertyStorageLocations location)
+		internal static string CreateCondition(string configuration, string platform, PropertyStorageLocations location)
 		{
 			switch (location & PropertyStorageLocations.ConfigurationAndPlatformSpecific) {
 				case PropertyStorageLocations.ConfigurationSpecific:

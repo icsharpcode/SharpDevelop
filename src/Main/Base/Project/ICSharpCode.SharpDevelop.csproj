@@ -754,6 +754,7 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.cs" />
     <Compile Include="Src\Project\MSBuildBasedProject.cs" />
+    <Compile Include="Src\Project\MSBuildItemDefinitionGroup.cs" />
     <Compile Include="Src\Project\AbstractProject.cs" />
     <Compile Include="Src\Project\BuildOptions.cs" />
     <Compile Include="Src\Project\IParser.cs" />

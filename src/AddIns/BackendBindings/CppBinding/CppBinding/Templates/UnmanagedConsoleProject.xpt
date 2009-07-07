@@ -1,0 +1,33 @@
+﻿<?xml version="1.0"?>
+<Template originator = "Tomasz Tretkowski">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.ConsoleProject.Unmanaged.Name}</Name>
+		<Category>C++</Category>
+		<Icon>C++.Project.DOSProject</Icon>
+		<Description>${res:Templates.Project.ConsoleProject.Unmanaged.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "main.cpp"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language = "C++">
+		
+		<PropertyGroup platform="Win32">
+			<OutputType>Exe</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+		</PropertyGroup>
+		<Files>
+			<File name="main.cpp"><![CDATA[${StandardHeader.C++.NET}
+int main(int argc, char* argv[])
+{
+	return 0;
+}
+]]></File>
+		</Files>
+	</Project>
+</Template>

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0"?>
+<Template originator = "Tomasz Tretkowski">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
+		<Category>C++</Category>
+		<Icon>C++.Project.DOSProject</Icon>
+		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
+		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "main.cpp"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language = "C++">
+		<CreateActions>
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35" />
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/SpecifyCppCliRuntimeLibrary" />
+		</CreateActions>
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
+		
+		<PropertyGroup platform="Win32">
+			<ConfigurationType>Application</ConfigurationType>
+			<CLRSupport>true</CLRSupport>
+			<CharacterSet>Unicode</CharacterSet>
+		</PropertyGroup>
+		<Files>
+			<File name="main.cpp"><![CDATA[${StandardHeader.C++.NET}
+using namespace System;
+
+int main(array<System::String ^> ^args)
+{
+	Console::WriteLine(L"Hello World");
+	return 0;
+}
+]]></File>
+			<File name="AssemblyInfo.cpp" src="DefaultAssemblyInfo.cpp"/>
+		</Files>
+	</Project>
+</Template>
