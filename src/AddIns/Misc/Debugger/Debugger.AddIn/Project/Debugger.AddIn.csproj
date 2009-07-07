@@ -137,8 +137,10 @@
     <Compile Include="Src\Visualizers\Graph\Layout\NestedNodeViewModel.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\AbstractNode.cs" />
-    <Compile Include="Src\Visualizers\Graph\TreeModel\NestedNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\BaseClassNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\ThisNode.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\NestedNodeType.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\NonPublicMembersNode.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\PropertyNode.cs" />
     <Compile Include="Src\Visualizers\Utils\AtomicType.cs" />
     <Compile Include="Src\Visualizers\Utils\ITreeNode.cs" />

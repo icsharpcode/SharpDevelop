@@ -162,14 +162,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		void node_ContentNodeExpanded(object sender, NestedNodeViewModelEventArgs e)
 		{
-			layoutGraph(this.objectGraph);
+			//layoutGraph(this.objectGraph);
 		}
 
 		void node_ContentNodeCollapsed(object sender, NestedNodeViewModelEventArgs e)
 		{
-			layoutGraph(this.objectGraph);
+			//layoutGraph(this.objectGraph);
 		}
-		
 
 		void node_PropertyExpanded(object sender, PositionedPropertyEventArgs e)
 		{

@@ -4,10 +4,11 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.Core;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -113,30 +114,48 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public virtual void InitFrom(AbstractNode source)
 		{
-			if (!(source is NestedNode))
-				throw new InvalidOperationException("NestedNodeViewModel must initialize from NestedNode");
-
-			NestedNode nestedSource = (NestedNode)source;
-			this.Name = nestedSource.NodeType == NestedNodeType.ThisNode ? "this" : "base";	  // TODO
-			this.Text = "";
+			this.Name = getNestedNodeName(source);
+			this.Text = "";			// lazy evaluated later
 			this.IsNested = true;
-			this.IsExpanded = (nestedSource.NodeType == NestedNodeType.ThisNode); // TODO remember expanded nodes
+			this.IsExpanded = (source is ThisNode); // TODO remember expanded nodes
 				
-			foreach (AbstractNode child in nestedSource.Children)
+			foreach (AbstractNode child in source.Children)
 			{
-				if (child is NestedNode)
-				{
-					var newChild = new NestedNodeViewModel(this.ContainingNode);
-					newChild.InitFrom(child);
-					this.Children.Add(newChild);
-				} 
-				else if (child is PropertyNode)
+				if (child is PropertyNode)
 				{
 					var newChild = new PropertyNodeViewModel(this.ContainingNode);
 					newChild.InitFrom(child);
 					this.Children.Add(newChild);
 				}
+				else
+				{
+					var newChild = new NestedNodeViewModel(this.ContainingNode);
+					newChild.InitFrom(child);
+					this.Children.Add(newChild);					
+				}
 			}
+		}
+		
+		private string getNestedNodeName(AbstractNode source)
+		{
+			if (source is ThisNode)
+			{
+				return "this";
+			}
+			
+			if (source is NonPublicMembersNode)
+			{
+				return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}");
+			}
+			
+			var sourceBaseClassNode = source as BaseClassNode;
+			if (sourceBaseClassNode != null)
+			{
+				//return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}") + " " + sourceBaseClassNode.TypeName;
+				return sourceBaseClassNode.TypeName;
+			}
+
+			throw new ApplicationException("Unknown AbstractNode.");
 		}
 	}
 }

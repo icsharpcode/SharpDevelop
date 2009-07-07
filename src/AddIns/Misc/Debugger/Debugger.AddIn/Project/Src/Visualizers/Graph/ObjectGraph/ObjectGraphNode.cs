@@ -34,7 +34,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Property tree of this node.
 		/// </summary>
-		public NestedNode Content
+		public ThisNode Content
 		{
 			get; set;
 		}

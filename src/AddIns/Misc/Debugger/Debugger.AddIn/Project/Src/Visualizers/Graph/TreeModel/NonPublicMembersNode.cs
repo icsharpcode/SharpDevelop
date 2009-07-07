@@ -4,19 +4,19 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using System.Collections.Generic;
+using System.Linq;
 using System;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Description of NestedNodeType.
+	/// Description of NonPublicMembersNode.
 	/// </summary>
-	/*public enum NestedNodeType
+	public class NonPublicMembersNode : AbstractNode
 	{
-		ThisNode,
-		BaseClassNode,
-		NonPublicInstanceMembersNode,
-		StaticMembersNode,
-		NonPublicStaticMembersNode
-	}*/
+		public NonPublicMembersNode()
+		{
+		}
+	}
 }

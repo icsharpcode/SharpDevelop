@@ -33,18 +33,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 			return child;
 		}
 		
-		public NestedNode AddChild(NestedNode child)
-		{
-			this.children.Add(child);
-			return child;
-		}
-		
 		public AbstractNode()
 		{
 		}
 		
 		/// <summary>
-		/// Returns properties nodes from this tree.
+		/// Returns property nodes from this tree.
 		/// </summary>
 		public IEnumerable<PropertyNode> FlattenPropertyNodes()
 		{

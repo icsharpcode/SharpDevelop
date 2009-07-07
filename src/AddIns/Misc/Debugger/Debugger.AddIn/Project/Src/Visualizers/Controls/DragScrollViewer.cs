@@ -75,7 +75,7 @@ namespace Debugger.AddIn.Visualizers.Controls
 		{
 			double dx = startPos.X - currentPos.X;
 			double dy = startPos.Y - currentPos.Y;
-			//return new Vector(Math.Sign(dx)*dx*dx*0.01, Math.Sign(dy)*dy*dy*0.01);
+			//return new Vector(Math.Sign(dx)*dx*dx*0.01, Math.Sign(dy)*dy*dy*0.01);	// quadratic speedup
 			return new Vector(dx, dy);
 		}
 		

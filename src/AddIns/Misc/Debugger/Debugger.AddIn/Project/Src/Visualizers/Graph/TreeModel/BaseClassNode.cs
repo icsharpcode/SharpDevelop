@@ -4,25 +4,24 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using System;
 using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Description of NestedNode.
+	/// Description of BaseClassNode.
 	/// </summary>
-	public class NestedNode : AbstractNode
+	public class BaseClassNode : AbstractNode
 	{
-		private NestedNodeType nodeType;
-		public NestedNodeType NodeType
-		{
-			get { return nodeType; }
-		}
+		public string TypeName { get; set; }
+		public string FullTypeName { get; set; }
 		
-		public NestedNode(NestedNodeType nodeType)
+		public BaseClassNode(string fullTypeName, string typeName)
 		{
-			this.nodeType = nodeType;
+			this.TypeName = typeName;
+			this.FullTypeName = fullTypeName;
 		}
 	}
 }

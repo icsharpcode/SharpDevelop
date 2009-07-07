@@ -31,9 +31,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 	// 'different object with the same hashCode' are possible - my question on stackoverflow:
 	// http://stackoverflow.com/questions/750947/-net-unique-object-identifier
 	//
-	// this way, the whole graph building is O(n) in the size of the resulting graph
-	// It tries to call as few Expression.Evaluate as possible, since Expression.Evaluate is expensive (5ms) -
-	// this is a prototype and the speed can be I believe greatly improved for future versions.
+	// This way, the whole graph building is O(n) in the size of the resulting graph.
+	// However, evals are still very expensive -> lazy evaluation of only values that are actually seen by user.
 	
 	/// <summary>
 	/// Builds <see cref="ObjectGraph" /> for given string expression.
@@ -61,6 +60,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		private readonly Debugger.MetaData.BindingFlags memberBindingFlags =
 			BindingFlags.Public | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
+		
+		private readonly Debugger.MetaData.BindingFlags nonPublicInstanceMemberFlags =
+			BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
 		
 		/// <summary>
 		/// Creates ObjectGraphBuilder.
@@ -102,19 +104,19 @@ namespace Debugger.AddIn.Visualizers.Graph
 			return resultGraph;
 		}
 		
-		public ObjectGraphNode ObtainNodeForExpression(Expression expr, out bool createdNewNode)
-		{
-			return ObtainNodeForValue(expr.GetPermanentReference(), out createdNewNode);
-		}
-		
 		public ObjectGraphNode ObtainNodeForExpression(Expression expr)
 		{
 			bool createdNewNode; // ignored (caller is not interested, otherwise he would use the other overload)
 			return ObtainNodeForExpression(expr, out createdNewNode);
 		}
 		
+		public ObjectGraphNode ObtainNodeForExpression(Expression expr, out bool createdNewNode)
+		{
+			return ObtainNodeForValue(expr.GetPermanentReference(), out createdNewNode);
+		}
+		
 		/// <summary>
-		/// Returns node in the graph that represents given value, or returns new node if no node found.
+		/// Returns node in the graph that represents given value, or returns new node if not found.
 		/// </summary>
 		/// <param name="value">Value for which to obtain the node/</param>
 		/// <param name="createdNew">True if new node was created, false if existing node was returned.</param>
@@ -138,34 +140,56 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="thisNode"></param>
 		private void loadContent(ObjectGraphNode thisNode)
 		{
-			thisNode.Content = new NestedNode(NestedNodeType.ThisNode);
-			NestedNode contentRoot = thisNode.Content;
+			thisNode.Content = new ThisNode();
+			ThisNode contentRoot = thisNode.Content;
 			
-			DebugType thisType = thisNode.PermanentReference.Type;
-			
-			// recursive, remove NestedNodeType enum
-			if (thisType.BaseType != null && thisType.BaseType.FullName != "System.Object")
+			loadNodeContent(contentRoot, thisNode.PermanentReference, thisNode.PermanentReference.Type);
+		}
+		
+		private void loadNodeContent(AbstractNode node, Value value, DebugType type)
+		{
+			// base
+			if (type.BaseType != null && type.BaseType.FullName != "System.Object")
 			{
-				var baseClassNode = contentRoot.AddChild(new NestedNode(NestedNodeType.BaseClassNode));
-				foreach (var baseProperty in getPublicProperties(thisNode.PermanentReference, thisType.BaseType))
+				var baseClassNode = new BaseClassNode(type.BaseType.FullName, type.BaseType.Name);
+				node.AddChild(baseClassNode);
+				loadNodeContent(baseClassNode, value, type.BaseType);
+			}
+			
+			// non-public members
+			if (type.HasMembers(nonPublicInstanceMemberFlags))
+			{
+				var nonPublicMembersNode = new NonPublicMembersNode();
+				node.AddChild(nonPublicMembersNode);
+				foreach (var nonPublicProperty in getProperties(value, type, this.nonPublicInstanceMemberFlags))
 				{
-					baseClassNode.AddChild(new PropertyNode(baseProperty));
+					nonPublicMembersNode.AddChild(new PropertyNode(nonPublicProperty));
 				}
 			}
 			
-			foreach (var property in getPublicProperties(thisNode.PermanentReference, thisType))
+			// public members
+			foreach (var property in getPublicProperties(value, type))
 			{
-				contentRoot.AddChild(new PropertyNode(property));
+				node.AddChild(new PropertyNode(property));
 			}
 		}
 		
 		private List<ObjectGraphProperty> getPublicProperties(Value value, DebugType shownType)
 		{
+			return getProperties(value, shownType, this.memberBindingFlags);
+		}
+		
+		private List<ObjectGraphProperty> getProperties(Value value, DebugType shownType, BindingFlags flags)
+		{
 			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
 			
 			// take all properties for this value (type = value's real type)
-			foreach(Expression memberExpr in value.Expression.AppendObjectMembers(shownType, this.memberBindingFlags))
+			foreach(Expression memberExpr in value.Expression.AppendObjectMembers(shownType, flags))
 			{
+				// skip private backing fields
+				if (memberExpr.CodeTail.Contains("<"))
+					continue;
+				
 				checkIsOfSupportedType(memberExpr);
 				
 				string memberName = memberExpr.CodeTail;
@@ -197,7 +221,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			{
 				Expression memberExpr = complexProperty.Expression;
 				ObjectGraphNode targetNode = null;
-				// we are only evaluating expanded nodes here 
+				// we are only evaluating expanded nodes here
 				// (we have to do this to know the "shape" of the graph)
 				// property laziness makes sense, as we are not evaluating atomic and non-expanded properties out of user's view
 				if (!complexProperty.IsNull && expandedNodes.IsExpanded(memberExpr.Code))
@@ -272,14 +296,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			// value is empty (will be lazy-evaluated later)
 			return new ObjectGraphProperty
-			         { Name = name, Value = "", Expression = expression, IsAtomic = true, TargetNode = null };
+			{ Name = name, Value = "", Expression = expression, IsAtomic = true, TargetNode = null };
 		}
 		
 		public ObjectGraphProperty createComplexProperty(string name, Expression expression, ObjectGraphNode targetNode, bool isNull)
 		{
 			// value is empty (will be lazy-evaluated later)
 			return new ObjectGraphProperty
-			         { Name = name, Value = "", Expression = expression, IsAtomic = false, TargetNode = targetNode, IsNull = isNull };
+			{ Name = name, Value = "", Expression = expression, IsAtomic = false, TargetNode = targetNode, IsNull = isNull };
 		}
 		
 		/// <summary>

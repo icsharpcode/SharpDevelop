@@ -5,18 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Collections.Generic;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Description of NestedNodeType.
+	/// Description of NestedNode.
 	/// </summary>
-	/*public enum NestedNodeType
+	public class ThisNode : AbstractNode
 	{
-		ThisNode,
-		BaseClassNode,
-		NonPublicInstanceMembersNode,
-		StaticMembersNode,
-		NonPublicStaticMembersNode
-	}*/
+	}
 }
