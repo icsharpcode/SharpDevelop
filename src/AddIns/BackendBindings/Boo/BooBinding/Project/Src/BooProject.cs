@@ -71,7 +71,6 @@ namespace Grunwald.BooBinding
 			            PropertyStorageLocations.ConfigurationSpecific, false);
 			SetProperty("Release", null, "DefineConstants", "TRACE",
 			            PropertyStorageLocations.ConfigurationSpecific, false);
-			SetProperty("Strict", "True");
 		}
 		
 		void AddReference(string assembly)
