@@ -34,7 +34,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		/// <param name="objectGraph"></param>
 		/// <returns></returns>
-		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction, ExpandedNodes expandedNodes)
+		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction, ExpandedExpressions expandedNodes)
 		{
 			layoutDirection = direction;
 
@@ -56,7 +56,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return resultGraph;
 		}
 		
-		private PositionedGraph buildTreeGraph(ObjectGraph objectGraph, ExpandedNodes expandedNodes)
+		private PositionedGraph buildTreeGraph(ObjectGraph objectGraph, ExpandedExpressions expandedNodes)
 		{
 			var resultGraph = new PositionedGraph();
 			
@@ -75,7 +75,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				// create edges outgoing from this posNode
 				foreach (PositionedNodeProperty property in posNode.Properties)
 				{
-					property.IsPropertyExpanded = expandedNodes.IsExpanded(property.Expression.Code);
+					property.IsPropertyExpanded = expandedNodes.IsExpanded(property.Expression);
 					
 					if (property.ObjectGraphProperty.TargetNode != null)
 					{

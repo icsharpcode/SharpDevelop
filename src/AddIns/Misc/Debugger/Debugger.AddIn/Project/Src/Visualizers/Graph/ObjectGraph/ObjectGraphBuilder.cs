@@ -78,7 +78,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="expression">Expression valid in the program being debugged (eg. variable name)</param>
 		/// <returns>Object graph</returns>
-		public ObjectGraph BuildGraphForExpression(string expression, ExpandedNodes expandedNodes)
+		public ObjectGraph BuildGraphForExpression(string expression, ExpandedExpressions expandedNodes)
 		{
 			if (string.IsNullOrEmpty(expression))
 			{
@@ -215,18 +215,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="thisNode"></param>
 		/// <param name="expandedNodes"></param>
-		private void loadNeighborsRecursive(ObjectGraphNode thisNode, ExpandedNodes expandedNodes)
+		private void loadNeighborsRecursive(ObjectGraphNode thisNode, ExpandedExpressions expandedNodes)
 		{
 			foreach(ObjectGraphProperty complexProperty in thisNode.ComplexProperties)
 			{
-				Expression memberExpr = complexProperty.Expression;
 				ObjectGraphNode targetNode = null;
 				// we are only evaluating expanded nodes here
 				// (we have to do this to know the "shape" of the graph)
 				// property laziness makes sense, as we are not evaluating atomic and non-expanded properties out of user's view
-				if (!complexProperty.IsNull && expandedNodes.IsExpanded(memberExpr.Code))
+				if (!complexProperty.IsNull && expandedNodes.IsExpanded(complexProperty.Expression))
 				{
-					Value memberValue = memberExpr.GetPermanentReference();
+					Value memberValue = complexProperty.Expression.GetPermanentReference();
 					
 					bool createdNew;
 					// get existing node (loop) or create new

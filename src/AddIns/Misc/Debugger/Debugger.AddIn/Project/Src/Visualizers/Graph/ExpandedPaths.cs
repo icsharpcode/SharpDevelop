@@ -10,29 +10,29 @@ using System.Collections.Generic;
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Remembers which expressions the user has expanded.
+	/// Remembers which paths the user has expanded.
 	/// </summary>
-	public class ExpandedNodes
+	public class ExpandedPaths
 	{
 		private Dictionary<string, bool> expandedNodes = new Dictionary<string, bool>();
 		
-		public ExpandedNodes()
+		public ExpandedPaths()
 		{
 		}
 		
-		public bool IsExpanded(string expression)
+		public bool IsExpanded(string path)
 		{
-			return expandedNodes.ContainsKey(expression) && (expandedNodes[expression] == true);
+			return expandedNodes.ContainsKey(path) && (expandedNodes[path] == true);
 		}
 		
-		public void SetExpanded(string expression)
+		public void SetExpanded(string path)
 		{
-			expandedNodes[expression] = true;
+			expandedNodes[path] = true;
 		}
 		
-		public void SetCollapsed(string expression)
+		public void SetCollapsed(string path)
 		{
-			expandedNodes[expression] = false;
+			expandedNodes[path] = false;
 		}
 	}
 }

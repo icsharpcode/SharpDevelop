@@ -38,9 +38,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 		private GraphDrawer graphDrawer;
 		
 		/// <summary>
-		/// Long-lived map telling which nodes the user expanded.
+		/// Long-lived map telling which graph nodes the user expanded.
 		/// </summary>
-		private ExpandedNodes expandedNodes;
+		private ExpandedExpressions expandedGraphNodes;
+		/// <summary>
+		/// Long-lived map telling which content nodes inside graph nodes the user has expanded.
+		/// </summary>
+		private ExpandedContentNodes expandedContentNodes;
 
 		public VisualizerWPFWindow()
 		{
@@ -59,7 +63,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			
 			this.graphDrawer = new GraphDrawer(this.canvas);
 			
-			this.expandedNodes = new ExpandedNodes();
+			this.expandedGraphNodes = new ExpandedExpressions();
 		}
 		
 		public void debuggerService_IsProcessRunningChanged(object sender, EventArgs e)
@@ -118,7 +122,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			this.objectGraphBuilder = new ObjectGraphBuilder(debuggerService);
 			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Building graph for expression: " + txtExpression.Text);
-			return this.objectGraphBuilder.BuildGraphForExpression(txtExpression.Text, this.expandedNodes);
+			return this.objectGraphBuilder.BuildGraphForExpression(txtExpression.Text, this.expandedGraphNodes);
 		}
 		
 		void layoutGraph(ObjectGraph graph)
@@ -128,7 +132,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			this.oldPosGraph = this.currentPosGraph;
 			
 			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Calculating graph layout");
-			this.currentPosGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expandedNodes);
+			this.currentPosGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expandedGraphNodes);
 			
 			registerExpandCollapseEvents(this.currentPosGraph);
 			
@@ -162,18 +166,20 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		void node_ContentNodeExpanded(object sender, NestedNodeViewModelEventArgs e)
 		{
-			//layoutGraph(this.objectGraph);
+			expandedContentNodes.SetExpanded(e.Node);
+			layoutGraph(this.objectGraph);
 		}
 
 		void node_ContentNodeCollapsed(object sender, NestedNodeViewModelEventArgs e)
 		{
-			//layoutGraph(this.objectGraph);
+			expandedContentNodes.SetCollapsed(e.Node);
+			layoutGraph(this.objectGraph);
 		}
 
 		void node_PropertyExpanded(object sender, PositionedPropertyEventArgs e)
 		{
 			// remember this property is expanded (for later graph rebuilds)
-			expandedNodes.SetExpanded(e.Property.Expression.Code);
+			expandedGraphNodes.SetExpanded(e.Property.Expression);
 			
 			// add edge (+ possibly nodes) to underlying object graph (no need to fully rebuild)
 			// TODO can add more nodes if they are expanded - now this adds always one node
@@ -184,7 +190,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		void node_PropertyCollapsed(object sender, PositionedPropertyEventArgs e)
 		{
 			// remember this property is collapsed (for later graph rebuilds)
-			expandedNodes.SetCollapsed(e.Property.Expression.Code);
+			expandedGraphNodes.SetCollapsed(e.Property.Expression);
 			
 			// just remove edge from underlying object graph (no need to fully rebuild)
 			e.Property.ObjectGraphProperty.TargetNode = null;
