@@ -132,6 +132,7 @@
       <DependentUpon>PositionedGraphNodeControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Visualizers\Graph\Layout\NestedNodeViewModelEventArgs.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PropertyNodeViewModel.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\NestedNodeViewModel.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />

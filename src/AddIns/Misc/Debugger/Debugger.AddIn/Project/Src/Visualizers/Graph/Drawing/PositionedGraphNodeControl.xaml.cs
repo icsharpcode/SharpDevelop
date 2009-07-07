@@ -27,13 +27,22 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 	public partial class PositionedGraphNodeControl : UserControl
 	{
 		/// <summary>
-		/// Occurs when a <see cref="PositionedNodeProperty"/> is expanded.
+		/// Occurs when <see cref="PositionedNodeProperty"/> is expanded.
 		/// </summary>
 		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
 		/// <summary>
-		/// Occurs when a <see cref="PositionedNodeProperty"/> is collaped.
+		/// Occurs when <see cref="PositionedNodeProperty"/> is collaped.
 		/// </summary>
 		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
+		
+		/// <summary>
+		/// Occurs when <see cref="NesteNodeViewModel"/> is expanded.
+		/// </summary>
+		public event EventHandler<NestedNodeViewModelEventArgs> ContentNodeExpanded;
+		/// <summary>
+		/// Occurs when <see cref="NesteNodeViewModel"/> is collaped.
+		/// </summary>
+		public event EventHandler<NestedNodeViewModelEventArgs> ContentNodeCollapsed;
 		
 		
 		// shown in the ListView
@@ -103,6 +112,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 					this.view.Insert(clickedIndex + i, childNode);
 					i++;
 				}
+				OnContentNodeExpanded(clickedNode);
 			}
 			else
 			{
@@ -112,6 +122,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 				{
 					this.view.RemoveAt(clickedIndex + 1);
 				}
+				OnContentNodeCollapsed(clickedNode);
 			}
 
 			// set to Auto again to resize columns
@@ -147,17 +158,25 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		protected virtual void OnPropertyExpanded(PositionedNodeProperty property)
 		{
 			if (this.PropertyExpanded != null)
-			{
 				this.PropertyExpanded(this, new PositionedPropertyEventArgs(property));
-			}
 		}
 
 		protected virtual void OnPropertyCollapsed(PositionedNodeProperty property)
 		{
 			if (this.PropertyCollapsed != null)
-			{
 				this.PropertyCollapsed(this, new PositionedPropertyEventArgs(property));
-			}
+		}
+		
+		protected virtual void OnContentNodeExpanded(NestedNodeViewModel node)
+		{
+			if (this.ContentNodeExpanded != null)
+				this.ContentNodeExpanded(this, new NestedNodeViewModelEventArgs(node));
+		}
+
+		protected virtual void OnContentNodeCollapsed(NestedNodeViewModel node)
+		{
+			if (this.ContentNodeCollapsed != null)
+				this.ContentNodeCollapsed(this, new NestedNodeViewModelEventArgs(node));
 		}
 		#endregion
 	}

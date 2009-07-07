@@ -153,12 +153,25 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			foreach (var node in posGraph.Nodes)
 			{
-				node.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(node_Expanded);
-				node.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(node_Collapsed);
+				node.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(node_PropertyExpanded);
+				node.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(node_PropertyCollapsed);
+				node.ContentNodeExpanded += new EventHandler<NestedNodeViewModelEventArgs>(node_ContentNodeExpanded);
+				node.ContentNodeCollapsed += new EventHandler<NestedNodeViewModelEventArgs>(node_ContentNodeCollapsed);
 			}
 		}
+		
+		void node_ContentNodeExpanded(object sender, NestedNodeViewModelEventArgs e)
+		{
+			layoutGraph(this.objectGraph);
+		}
 
-		void node_Expanded(object sender, PositionedPropertyEventArgs e)
+		void node_ContentNodeCollapsed(object sender, NestedNodeViewModelEventArgs e)
+		{
+			layoutGraph(this.objectGraph);
+		}
+		
+
+		void node_PropertyExpanded(object sender, PositionedPropertyEventArgs e)
 		{
 			// remember this property is expanded (for later graph rebuilds)
 			expandedNodes.SetExpanded(e.Property.Expression.Code);
@@ -169,7 +182,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			layoutGraph(this.objectGraph);
 		}
 		
-		void node_Collapsed(object sender, PositionedPropertyEventArgs e)
+		void node_PropertyCollapsed(object sender, PositionedPropertyEventArgs e)
 		{
 			// remember this property is collapsed (for later graph rebuilds)
 			expandedNodes.SetCollapsed(e.Property.Expression.Code);
