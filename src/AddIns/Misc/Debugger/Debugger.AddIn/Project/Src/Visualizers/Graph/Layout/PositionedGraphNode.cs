@@ -30,8 +30,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
 		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
-		public event EventHandler<NestedNodeViewModelEventArgs> ContentNodeExpanded;
-		public event EventHandler<NestedNodeViewModelEventArgs> ContentNodeCollapsed;
+		public event EventHandler<ContentNodeEventArgs> ContentNodeExpanded;
+		public event EventHandler<ContentNodeEventArgs> ContentNodeCollapsed;
 		
 		private ObjectGraphNode objectNode;
 		/// <summary>
@@ -45,7 +45,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// Tree-of-properties content of this node.
 		/// </summary>
-		public NestedNodeViewModel Content
+		public ContentNode Content
 		{
 			get; set;
 		}
@@ -63,10 +63,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		}
 		
 		// TODO for speedup of re-layout only, posNodeForObjectGraphNode will be a service, that will return existing posNodes or create empty new
-		public void InitContentFromObjectNode()
+		public void InitContentFromObjectNode(Expanded expanded)
 		{
-			this.Content = new NestedNodeViewModel(this, null);
-			this.Content.InitFrom(this.ObjectNode.Content);
+			this.Content = new ContentNode(this, null);
+			this.Content.InitFrom(this.ObjectNode.Content, expanded);
 			this.nodeVisualControl.Root = this.Content;
 		}
 		
@@ -78,8 +78,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			// propagate events from nodeVisualControl
 			this.nodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyExpanded);
 			this.nodeVisualControl.PropertyCollapsed += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyCollapsed);
-			this.nodeVisualControl.ContentNodeExpanded += new EventHandler<NestedNodeViewModelEventArgs>(NodeVisualControl_ContentNodeExpanded);
-			this.nodeVisualControl.ContentNodeCollapsed += new EventHandler<NestedNodeViewModelEventArgs>(NodeVisualControl_ContentNodeCollapsed);
+			this.nodeVisualControl.ContentNodeExpanded += new EventHandler<ContentNodeEventArgs>(NodeVisualControl_ContentNodeExpanded);
+			this.nodeVisualControl.ContentNodeCollapsed += new EventHandler<ContentNodeEventArgs>(NodeVisualControl_ContentNodeCollapsed);
 		}
 		
 		public IEnumerable<PositionedNodeProperty> Properties
@@ -143,13 +143,13 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				this.PropertyCollapsed(sender, e);
 		}
 		
-		private void NodeVisualControl_ContentNodeExpanded(object sender, NestedNodeViewModelEventArgs e)
+		private void NodeVisualControl_ContentNodeExpanded(object sender, ContentNodeEventArgs e)
 		{
 			if (this.ContentNodeExpanded != null)
 				this.ContentNodeExpanded(sender, e);
 		}
 		
-		private void NodeVisualControl_ContentNodeCollapsed(object sender, NestedNodeViewModelEventArgs e)
+		private void NodeVisualControl_ContentNodeCollapsed(object sender, ContentNodeEventArgs e)
 		{
 			if (this.ContentNodeCollapsed != null)
 				this.ContentNodeCollapsed(sender, e);

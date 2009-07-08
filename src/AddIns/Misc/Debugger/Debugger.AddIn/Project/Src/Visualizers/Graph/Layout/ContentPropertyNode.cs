@@ -11,11 +11,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// ViewModel for property node in tree of properties, to be bound to View (PositionedGraphNodeControl).
 	/// </summary>
-	public class PropertyNodeViewModel : NestedNodeViewModel, IEvaluate
+	public class ContentPropertyNode : ContentNode, IEvaluate
 	{
 		PositionedNodeProperty positionedProperty;
 		
-		public PropertyNodeViewModel(PositionedGraphNode containingNode, NestedNodeViewModel parent) 
+		public ContentPropertyNode(PositionedGraphNode containingNode, ContentNode parent) 
 			: base(containingNode, parent)
 		{
 		}
@@ -45,7 +45,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.Text = this.positionedProperty.Value;
 		}
 		
-		public override void InitFrom(AbstractNode source)
+		public override void InitFrom(AbstractNode source, Expanded expanded)
 		{
 			if (!(source is PropertyNode))
 				throw new InvalidOperationException("PropertyNodeViewModel must initialize from PropertyNode");
@@ -56,7 +56,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.Text = sourcePropertyNode.Property.Value;		// lazy evaluated
 			this.IsNested = false;
 			this.IsExpanded = false;			// always false, property content nodes are never expanded
-			this.positionedProperty = new PositionedNodeProperty(sourcePropertyNode.Property, this.ContainingNode);
+			this.positionedProperty = new PositionedNodeProperty(
+				sourcePropertyNode.Property, this.ContainingNode, 
+				expanded.Expressions.IsExpanded(sourcePropertyNode.Property.Expression));
 		}
 	}
 }

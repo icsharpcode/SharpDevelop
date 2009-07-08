@@ -22,17 +22,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 		}
 		
-		public bool IsExpanded(NestedNodeViewModel contentNode)
+		public bool IsExpanded(ContentNode contentNode)
 		{
 			return expanded.IsExpanded(contentNode.FullPath);
 		}
 		
-		public void SetExpanded(NestedNodeViewModel contentNode)
+		public void SetExpanded(ContentNode contentNode)
 		{
 			expanded.SetExpanded(contentNode.FullPath);
 		}
 		
-		public void SetCollapsed(NestedNodeViewModel contentNode)
+		public void SetCollapsed(ContentNode contentNode)
 		{
 			expanded.SetCollapsed(contentNode.FullPath);
 		}

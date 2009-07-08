@@ -15,9 +15,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// ViewModel base for node in tree of properties, to be bound to View (ie. PositionedGraphNodeControl).
 	/// </summary>
-	public class NestedNodeViewModel : Utils.ITreeNode<NestedNodeViewModel>
+	public class ContentNode : Utils.ITreeNode<ContentNode>
 	{
-		public NestedNodeViewModel(PositionedGraphNode containingNode, NestedNodeViewModel parent)
+		public ContentNode(PositionedGraphNode containingNode, ContentNode parent)
 		{
 			if (containingNode == null)
 				throw new ArgumentNullException("containingNode");
@@ -34,11 +34,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			get { return this.containingNode.ObjectNode.Expression.Code + "/" + this.Path; }
 		}
 		
-		private NestedNodeViewModel parent;
+		private ContentNode parent;
 		/// <summary>
 		/// Parent node in the content tree. Null if this node is root.
 		/// </summary>
-		public NestedNodeViewModel Parent
+		public ContentNode Parent
 		{
 			get { return this.parent; }
 		}
@@ -73,8 +73,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		// it is added "artificially" to support PositionedGraphNodeControl
 		public bool IsExpanded { get; set; }	
 		
-		private List<NestedNodeViewModel> children = new List<NestedNodeViewModel>();		
-		public List<NestedNodeViewModel> Children { get { return this.children; } }
+		private List<ContentNode> children = new List<ContentNode>();		
+		public List<ContentNode> Children { get { return this.children; } }
 	
 		PositionedGraphNode containingNode;
 		/// <summary>
@@ -92,7 +92,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			get 
 			{
-				var thisAsPropertyNode = this as PropertyNodeViewModel;
+				var thisAsPropertyNode = this as ContentPropertyNode;
 				if (thisAsPropertyNode == null) 
 				{
 					// this is NestedNodeViewModel -> no property, don't show expand button
@@ -110,17 +110,26 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// Returns flattened subtree.
 		/// </summary>
-		public IEnumerable<NestedNodeViewModel> FlattenAll()
+		public IEnumerable<ContentNode> FlattenAll()
 		{
 			return Utils.TreeFlattener.Flatten(this);
 		}
 		
 		/// <summary>
-		/// Returns flattened subtree, skipping children of collapsed nodes.
+		/// Returns flattened subtree (including root), skipping children of collapsed nodes.
 		/// </summary>
-		public IEnumerable<NestedNodeViewModel> FlattenExpanded()
+		public IEnumerable<ContentNode> FlattenExpanded()
 		{
 			return Utils.TreeFlattener.FlattenSelectChildrenIf(this, (node) => { return node.IsExpanded; });
+		}
+		
+		/// <summary>
+		/// Returns flattened subtree (excluding root), skipping children of collapsed nodes.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<ContentNode> FlattenChildrenExpanded()
+		{
+			return Utils.TreeFlattener.FlattenSelectChildrenIf(this.Children, (node) => { return node.IsExpanded; });
 		}
 		
 		/// <summary>
@@ -128,37 +137,37 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public IEnumerable<PositionedNodeProperty> FlattenProperties()
 		{
-			return Utils.TreeFlattener.Flatten(this).Where((node) => { return  node is PropertyNodeViewModel; }).
-				Select(	(propertyNode) => { return ((PropertyNodeViewModel)propertyNode).Property; });
+			return Utils.TreeFlattener.Flatten(this).Where((node) => { return  node is ContentPropertyNode; }).
+				Select(	(propertyNode) => { return ((ContentPropertyNode)propertyNode).Property; });
 		}
 		
 		#region Utils.ITreeNode implementation
-		IEnumerable<NestedNodeViewModel> ITreeNode<NestedNodeViewModel>.Children
+		IEnumerable<ContentNode> ITreeNode<ContentNode>.Children
 		{
 			get { return this.Children; }
 		}
 		#endregion
 		
-		public virtual void InitFrom(AbstractNode source)
+		public virtual void InitFrom(AbstractNode source, Expanded expanded)
 		{
 			this.Name = getNestedNodeName(source);
 			this.Text = "";			// lazy evaluated later
 			this.IsNested = true;
 			this.path = this.Parent == null ? this.Name : this.Parent.Path + "." + this.Name;
-			this.IsExpanded = (source is ThisNode); // TODO remember expanded nodes
+			this.IsExpanded = (source is ThisNode) || expanded.ContentNodes.IsExpanded(this);
 				
 			foreach (AbstractNode child in source.Children)
 			{
 				if (child is PropertyNode)
 				{
-					var newChild = new PropertyNodeViewModel(this.ContainingNode, this);
-					newChild.InitFrom(child);
+					var newChild = new ContentPropertyNode(this.ContainingNode, this);
+					newChild.InitFrom(child, expanded);
 					this.Children.Add(newChild);
 				}
 				else
 				{
-					var newChild = new NestedNodeViewModel(this.ContainingNode, this);
-					newChild.InitFrom(child);
+					var newChild = new ContentNode(this.ContainingNode, this);
+					newChild.InitFrom(child, expanded);
 					this.Children.Add(newChild);					
 				}
 			}

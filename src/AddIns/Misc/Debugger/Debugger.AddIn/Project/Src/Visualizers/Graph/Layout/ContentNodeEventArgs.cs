@@ -13,15 +13,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// EventArgs carrying <see cref="NestedNodeViewModel"/>.
 	/// </summary>
-	public class NestedNodeViewModelEventArgs : EventArgs
+	public class ContentNodeEventArgs : EventArgs
 	{
-		private NestedNodeViewModel node;
+		private ContentNode node;
 		
-		public NestedNodeViewModelEventArgs(NestedNodeViewModel node)
+		public ContentNodeEventArgs(ContentNode node)
 		{
 			this.node = node;
 		}
 		
-		public NestedNodeViewModel Node	{ get { return this.node; } }
+		public ContentNode Node	{ get { return this.node; } }
 	}
 }

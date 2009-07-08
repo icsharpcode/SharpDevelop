@@ -132,11 +132,12 @@
       <DependentUpon>PositionedGraphNodeControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Visualizers\Graph\Expanded.cs" />
     <Compile Include="Src\Visualizers\Graph\ExpandedContentNodes.cs" />
     <Compile Include="Src\Visualizers\Graph\ExpandedExpressions.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\NestedNodeViewModelEventArgs.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\PropertyNodeViewModel.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\NestedNodeViewModel.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\ContentNodeEventArgs.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\ContentPropertyNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\ContentNode.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\AbstractNode.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\BaseClassNode.cs" />

@@ -38,29 +38,29 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		/// <summary>
 		/// Occurs when <see cref="NesteNodeViewModel"/> is expanded.
 		/// </summary>
-		public event EventHandler<NestedNodeViewModelEventArgs> ContentNodeExpanded;
+		public event EventHandler<ContentNodeEventArgs> ContentNodeExpanded;
 		/// <summary>
 		/// Occurs when <see cref="NesteNodeViewModel"/> is collaped.
 		/// </summary>
-		public event EventHandler<NestedNodeViewModelEventArgs> ContentNodeCollapsed;
+		public event EventHandler<ContentNodeEventArgs> ContentNodeCollapsed;
 		
 		
 		// shown in the ListView
-		private ObservableCollection<NestedNodeViewModel> view = new ObservableCollection<NestedNodeViewModel>();
+		private ObservableCollection<ContentNode> view = new ObservableCollection<ContentNode>();
 		
-		private NestedNodeViewModel root;
+		private ContentNode root;
 		/// <summary>
 		/// The tree to be displayed in this Control.
 		/// </summary>
-		public NestedNodeViewModel Root
+		public ContentNode Root
 		{
 			get { return this.root; }
 			set
 			{
 				this.root = value;
-				this.view = initializeView(this.root);
+				this.view = getInitialView(this.root);
 				// data virtualization, PropertyNodeViewModel implements IEvaluate
-				this.listView.ItemsSource = new VirtualizingObservableCollection<NestedNodeViewModel>(this.view);
+				this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.view);
 			}
 		}
 		
@@ -72,10 +72,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		private void PropertyExpandButton_Click(object sender, RoutedEventArgs e)
 		{
 			var clickedButton = (ToggleButton)e.Source;
-			PropertyNodeViewModel clickedNode = null;
+			ContentPropertyNode clickedNode = null;
 			try
 			{
-				clickedNode = (PropertyNodeViewModel)(clickedButton).DataContext;
+				clickedNode = (ContentPropertyNode)(clickedButton).DataContext;
 			}
 			catch(InvalidCastException)
 			{
@@ -98,7 +98,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		private void NestedExpandButton_Click(object sender, RoutedEventArgs e)
 		{
 			var clickedButton = (ToggleButton)e.Source;
-			var clickedNode = (NestedNodeViewModel)(clickedButton).DataContext;
+			var clickedNode = (ContentNode)(clickedButton).DataContext;
 			int clickedIndex = this.view.IndexOf(clickedNode);
 			//clickedNode.IsExpanded = !clickedNode.IsExpanded;		// done by data binding
 			clickedButton.Content = clickedNode.IsExpanded ? "-" : "+";	// could be done by a converter
@@ -139,17 +139,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			this.listView.Width = double.NaN;
 		}
 		
-		private ObservableCollection<NestedNodeViewModel> initializeView(NestedNodeViewModel root)
+		private ObservableCollection<ContentNode> getInitialView(ContentNode root)
 		{
-			var view = new ObservableCollection<NestedNodeViewModel>();
-			foreach (var topLevelNode in root.Children)
-			{
-				view.Add(topLevelNode);
-			}
-			return view;
+			return new ObservableCollection<ContentNode>(root.FlattenChildrenExpanded());
 		}
 		
-		private int subtreeSize(NestedNodeViewModel node)
+		private int subtreeSize(ContentNode node)
 		{
 			return 1 + node.Children.Sum(child => (child.IsExpanded ? subtreeSize(child) : 1));
 		}
@@ -167,16 +162,16 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 				this.PropertyCollapsed(this, new PositionedPropertyEventArgs(property));
 		}
 		
-		protected virtual void OnContentNodeExpanded(NestedNodeViewModel node)
+		protected virtual void OnContentNodeExpanded(ContentNode node)
 		{
 			if (this.ContentNodeExpanded != null)
-				this.ContentNodeExpanded(this, new NestedNodeViewModelEventArgs(node));
+				this.ContentNodeExpanded(this, new ContentNodeEventArgs(node));
 		}
 
-		protected virtual void OnContentNodeCollapsed(NestedNodeViewModel node)
+		protected virtual void OnContentNodeCollapsed(ContentNode node)
 		{
 			if (this.ContentNodeCollapsed != null)
-				this.ContentNodeCollapsed(this, new NestedNodeViewModelEventArgs(node));
+				this.ContentNodeCollapsed(this, new ContentNodeEventArgs(node));
 		}
 		#endregion
 	}

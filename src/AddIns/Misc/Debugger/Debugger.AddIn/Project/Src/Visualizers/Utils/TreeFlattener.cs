@@ -58,6 +58,21 @@ namespace Debugger.AddIn.Visualizers.Utils
 			return flattened;
 		}
 		
+		public static List<T> FlattenSelectChildrenIf<T>(IEnumerable<T> roots, Func<T, bool> selectChildren) where T : ITreeNode<T>
+		{
+			if (roots == null)
+				throw new ArgumentNullException("root");
+			if (selectChildren == null)
+				throw new ArgumentNullException("selectChildren");
+			
+			List<T> flattened = new List<T>();
+			foreach (T root in roots)
+			{
+				flattenSelectChildrenRecursive(root, selectChildren, flattened);
+			}
+			return flattened;
+		}
+		
 		private static void flattenRecursive<T>(T root, Func<T, bool> selectNode, IList<T> flattened) where T : ITreeNode<T>
 		{
 			if (selectNode(root))
@@ -77,7 +92,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 			{
 				foreach (T child in root.Children)
 				{
-					flattenRecursive(child, selectChildren, flattened);
+					flattenSelectChildrenRecursive(child, selectChildren, flattened);
 				}
 			}
 		}

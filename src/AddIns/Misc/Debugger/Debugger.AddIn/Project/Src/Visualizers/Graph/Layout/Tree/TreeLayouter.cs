@@ -34,7 +34,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		/// <param name="objectGraph"></param>
 		/// <returns></returns>
-		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction, ExpandedExpressions expandedNodes)
+		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction, Expanded expanded)
 		{
 			layoutDirection = direction;
 
@@ -44,7 +44,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			//TreeGraphNode tree = buildTreeRecursive(objectGraph.Root, expandedNodes);
 			
 			// convert ObjectGraph to PositionedGraph with TreeEdges
-			var resultGraph = buildTreeGraph(objectGraph, expandedNodes);
+			var resultGraph = buildTreeGraph(objectGraph, expanded);
 			// first layout pass
 			calculateSubtreeSizes((TreeGraphNode)resultGraph.Root);
 			// second layout pass
@@ -56,7 +56,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return resultGraph;
 		}
 		
-		private PositionedGraph buildTreeGraph(ObjectGraph objectGraph, ExpandedExpressions expandedNodes)
+		private PositionedGraph buildTreeGraph(ObjectGraph objectGraph, Expanded expanded)
 		{
 			var resultGraph = new PositionedGraph();
 			
@@ -66,7 +66,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				TreeGraphNode posNode = createNewTreeGraphNode(objectGraphNode); 
 				resultGraph.AddNode(posNode);
 				treeNodeFor[objectGraphNode] = posNode;
-				posNode.InitContentFromObjectNode();
+				posNode.InitContentFromObjectNode(expanded);
 			}
 			
 			// create edges
@@ -75,7 +75,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				// create edges outgoing from this posNode
 				foreach (PositionedNodeProperty property in posNode.Properties)
 				{
-					property.IsPropertyExpanded = expandedNodes.IsExpanded(property.Expression);
+					//property.IsPropertyExpanded = expanded.Expressions.IsExpanded(property.Expression);
 					
 					if (property.ObjectGraphProperty.TargetNode != null)
 					{
