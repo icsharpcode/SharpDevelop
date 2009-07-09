@@ -112,7 +112,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public ObjectGraphNode ObtainNodeForExpression(Expression expr, out bool createdNewNode)
 		{
-			return ObtainNodeForValue(expr.GetPermanentReference(), out createdNewNode);
+			return ObtainNodeForValue(expr.EvalPermanentReference(), out createdNewNode);
 		}
 		
 		/// <summary>
@@ -157,11 +157,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 			
 			// non-public members
-			if (type.HasMembers(nonPublicInstanceMemberFlags))
+			var nonPublicProperties = getProperties(value, type, this.nonPublicInstanceMemberFlags);
+			if (nonPublicProperties.Count > 0)
 			{
 				var nonPublicMembersNode = new NonPublicMembersNode();
 				node.AddChild(nonPublicMembersNode);
-				foreach (var nonPublicProperty in getProperties(value, type, this.nonPublicInstanceMemberFlags))
+				foreach (var nonPublicProperty in nonPublicProperties)
 				{
 					nonPublicMembersNode.AddChild(new PropertyNode(nonPublicProperty));
 				}
@@ -183,7 +184,26 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
 			
-			// take all properties for this value (type = value's real type)
+			foreach (PropertyInfo memberProp in shownType.GetProperties(flags))
+			{
+				if (memberProp.Name.Contains("<"))
+					continue;
+
+				// TODO just temporary - ObjectGraphProperty needs an expression
+				// to use expanded / nonexpanded (and to evaluate?)
+				Expression propExpression = value.Expression.AppendMemberReference(memberProp);
+				// Value, IsAtomic are lazy evaluated
+				//var t = memberProp.DeclaringType;
+				propertyList.Add(new ObjectGraphProperty
+				                 { Name = memberProp.Name,
+				                 	Expression = propExpression, Value = "",
+				                 	/*PropInfo = memberProp,*/ IsAtomic = true, TargetNode = null });
+				
+			}
+			
+			return propertyList.Sorted(ObjectPropertyComparer.Instance);
+			
+			/*// take all properties for this value (type = value's real type)
 			foreach(Expression memberExpr in value.Expression.AppendObjectMembers(shownType, flags))
 			{
 				// skip private backing fields
@@ -201,13 +221,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 				}
 				else
 				{
-					ObjectGraphNode targetNode = null;
 					bool memberIsNull = memberExpr.IsNull();
-					propertyList.Add(createComplexProperty(memberName, memberExpr, targetNode, memberIsNull));
+					propertyList.Add(createComplexProperty(memberName, memberExpr, null, memberIsNull));
 				}
 			}
 			
-			return propertyList.Sorted(ObjectPropertyComparer.Instance);
+			return propertyList.Sorted(ObjectPropertyComparer.Instance);*/
 		}
 		
 		/// <summary>
@@ -217,23 +236,34 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="expandedNodes"></param>
 		private void loadNeighborsRecursive(ObjectGraphNode thisNode, ExpandedExpressions expandedNodes)
 		{
-			foreach(ObjectGraphProperty complexProperty in thisNode.ComplexProperties)
+			//foreach(ObjectGraphProperty complexProperty in thisNode.ComplexProperties)
+			foreach(ObjectGraphProperty complexProperty in thisNode.Properties)
 			{
 				ObjectGraphNode targetNode = null;
 				// we are only evaluating expanded nodes here
 				// (we have to do this to know the "shape" of the graph)
 				// property laziness makes sense, as we are not evaluating atomic and non-expanded properties out of user's view
-				if (!complexProperty.IsNull && expandedNodes.IsExpanded(complexProperty.Expression))
+				if (/*!complexProperty.IsNull && we dont know yet if it's null */expandedNodes.IsExpanded(complexProperty.Expression))
 				{
-					Value memberValue = complexProperty.Expression.GetPermanentReference();
-					
-					bool createdNew;
-					// get existing node (loop) or create new
-					targetNode = ObtainNodeForValue(memberValue, out createdNew);
-					if (createdNew)
+					// if expanded, evaluate this property
+					Value memberValue = complexProperty.Expression.Evaluate(this.debuggerService.DebuggedProcess);
+					if (memberValue.IsNull)
 					{
-						// if member node is new, recursively build its subtree
-						loadNeighborsRecursive(targetNode, expandedNodes);
+						continue;
+					}
+					else
+					{
+						// if property value is not null, create neighbor
+						memberValue = memberValue.GetPermanentReference();
+						
+						bool createdNew;
+						// get existing node (loop) or create new
+						targetNode = ObtainNodeForValue(memberValue, out createdNew);
+						if (createdNew)
+						{
+							// if member node is new, recursively build its subtree
+							loadNeighborsRecursive(targetNode, expandedNodes);
+						}
 					}
 				}
 				else

@@ -39,16 +39,24 @@ namespace Debugger.AddIn.Visualizers.Graph
 			get; set;
 		}
 		
-		// TODO just for ObjectGraphBuilder, remove
-		/// <summary>
-		/// Only complex properties filtered out of <see cref="Properties"/>
-		/// </summary>
-		public IEnumerable<ObjectGraphProperty> ComplexProperties
+		public IEnumerable<ObjectGraphProperty> Properties
 		{
 			get
 			{
 				return this.Content.FlattenPropertyNodes().Select(node => {return node.Property; });
 			}
 		}
+		
+		// TODO just for ObjectGraphBuilder, remove
+		/// <summary>
+		/// Only complex properties filtered out of <see cref="Properties"/>
+		/// </summary>
+		/*public IEnumerable<ObjectGraphProperty> ComplexProperties
+		{
+			get
+			{
+				return this.Content.FlattenPropertyNodes().Select(node => {return node.Property; });
+			}
+		}*/
 	}
 }

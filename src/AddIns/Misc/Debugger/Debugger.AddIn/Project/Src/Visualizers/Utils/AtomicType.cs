@@ -21,10 +21,20 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// </summary>
 		/// <param name="expr">Expression.</param>
 		/// <returns>True if expression's type is atomic, False otherwise.</returns>
+		public static bool IsAtomic(this DebugType type)
+		{
+			return !(type.IsClass || type.IsValueType /* = struct in C# */);
+		}
+		
+		/// <summary>
+		/// Checks whether given expression's type is atomic.
+		/// </summary>
+		/// <param name="expr">Expression.</param>
+		/// <returns>True if expression's type is atomic, False otherwise.</returns>
 		public static bool IsOfAtomicType(this Expression expr)
 		{
 			DebugType typeOfValue = expr.Evaluate(WindowsDebugger.CurrentProcess).Type;
-			return !(typeOfValue.IsClass || typeOfValue.IsValueType /* = struct in C# */);
+			return AtomicType.IsAtomic(typeOfValue);
 		}
 	}
 }

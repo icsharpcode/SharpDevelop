@@ -64,7 +64,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 			return int.Parse(defaultHashCode);
 		}
 		
-		public static Value GetPermanentReference(this Expression expr)
+		public static Value EvalPermanentReference(this Expression expr)
 		{
 			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference();
 		}

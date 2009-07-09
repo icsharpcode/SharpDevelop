@@ -43,17 +43,19 @@
                 <GridView>
                         <GridView.ColumnHeaderContainerStyle>
                             <Style>
-                                <Setter Property="FrameworkElement.Visibility" Value="Collapsed"/>
+                            		<!-- 
+                                <Setter Property="FrameworkElement.Visibility" Value="Collapsed"/>	-->
+                        	 		<Setter Property="FrameworkElement.Height" Value="1"/>
                             </Style>
                         </GridView.ColumnHeaderContainerStyle>
                         <GridView.Columns>
                         	   <!-- Expand button (either property or nested) -->
-                            <GridViewColumn Header="Plus" Width="35">
+                            <GridViewColumn Header="Plus" Width="Auto">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel>
-                                            <ToggleButton x:Name="Expander" Width="20" Margin="0" IsChecked="{Binding IsExpanded}" Click="NestedExpandButton_Click" Padding="0">+</ToggleButton>
-                                            <ToggleButton x:Name="PropertyExpander" Width="20" Margin="0" IsChecked="{Binding IsPropertyExpanded}" Click="PropertyExpandButton_Click" Padding="0">+</ToggleButton>
+                                            <ToggleButton x:Name="Expander" Width="20" Margin="-4 -1 -4 -1" IsChecked="{Binding IsExpanded}" Click="NestedExpandButton_Click" Padding="0">+</ToggleButton>
+                                            <ToggleButton x:Name="PropertyExpander" Width="20" Margin="-4 -1 -4 -1" IsChecked="{Binding IsPropertyExpanded}" Click="PropertyExpandButton_Click" Padding="0">+</ToggleButton>
                                         </StackPanel>
                                         <DataTemplate.Triggers>
                                             <DataTrigger Binding="{Binding Path=HasChildren}" Value="False">
@@ -70,24 +72,26 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                         	   <!-- Name -->
-                            <GridViewColumn Header="Name" Width="60">
+                            <GridViewColumn Header="Name" Width="Auto">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         		<!--
                                         		<TextBlock Text="hello" MinWidth="100"></TextBlock>
 												-->
-                                            <TextBlock Text="{Binding Name}" MinWidth="80"></TextBlock>
+                                    	<StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Name}"></TextBlock></StackPanel>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                         	   <!-- Text -->
-                            <GridViewColumn Header="Value" Width="80">
+                            <GridViewColumn Header="Value      " Width="Auto">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                     		<!--
                                     		<TextBlock Text="val" MinWidth="100"></TextBlock>
 											-->
-                                        <TextBlock Text="{Binding Text}" MinWidth="80"></TextBlock>
+                                    	<StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Text}"></TextBlock></StackPanel>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

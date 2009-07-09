@@ -88,22 +88,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// Show a button to expand property associated with this node?
 		/// </summary>
-		public bool ShowExpandPropertyButton
+		public virtual bool ShowExpandPropertyButton
 		{
 			get 
 			{
-				var thisAsPropertyNode = this as ContentPropertyNode;
-				if (thisAsPropertyNode == null) 
-				{
-					// this is NestedNodeViewModel -> no property, don't show expand button
-					return false;
-				}
-				else
-				{
-					// this is PositionedNodeViewModel -> show expand button when appropriate
-					PositionedNodeProperty property = thisAsPropertyNode.Property;
-					return (!property.IsAtomic && !property.IsNull);
-				}
+				// this is NestedNodeViewModel -> no property, don't show expand button
+				return false;
 			}
 		}
 		
@@ -150,7 +140,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public virtual void InitFrom(AbstractNode source, Expanded expanded)
 		{
-			this.Name = getNestedNodeName(source);
+			this.Name = getContentNodeName(source);
 			this.Text = "";			// lazy evaluated later
 			this.IsNested = true;
 			this.path = this.Parent == null ? this.Name : this.Parent.Path + "." + this.Name;
@@ -173,7 +163,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		private string getNestedNodeName(AbstractNode source)
+		private string getContentNodeName(AbstractNode source)
 		{
 			if (source is ThisNode)
 			{
