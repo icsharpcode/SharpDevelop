@@ -226,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						}
 						string entityDoc = entity.Documentation;
 						if (!string.IsNullOrEmpty(entityDoc)) {
-							string documentation = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(entityDoc);
+							string documentation = ConvertDocumentation(entityDoc);
 							if (!string.IsNullOrEmpty(documentation)) {
 								description += Environment.NewLine + documentation;
 							}
@@ -235,6 +235,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					return description;
 				}
 			}
+		}
+		
+		public static string ConvertDocumentation(string xmlDocumentation)
+		{
+			return ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(xmlDocumentation);
 		}
 		#endregion
 	}

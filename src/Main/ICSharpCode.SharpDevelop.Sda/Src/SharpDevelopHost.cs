@@ -240,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// <summary>
 		/// Creates an instance of the specified type argument in the target AppDomain.
 		/// </summary>
-		/// <param name="arguments">Arguments to pass to the constructor of <paramref name="type"/>.</param>
+		/// <param name="arguments">Arguments to pass to the constructor of "T".</param>
 		/// <returns>The constructed object.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		public T CreateInstanceInTargetDomain<T>(params object[] arguments) where T : MarshalByRefObject

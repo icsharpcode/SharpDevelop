@@ -59,6 +59,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		#endregion
 		
+		public override string ToString()
+		{
+			if (ServiceObject != null)
+				return "[SDWindowsFormsHost " + Child + " for " + ServiceObject + "]";
+			else
+				return "[SDWindowsFormsHost " + Child + "]";
+		}
+		
 		#region Service Object
 		/// <summary>
 		/// Gets/Sets the object that implements the IClipboardHandler, IUndoHandler etc. interfaces...

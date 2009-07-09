@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
-    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <OutputType>Library</OutputType>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Resources\ICSharpCode.TextEditor.snk</AssemblyOriginatorKeyFile>
@@ -20,7 +20,7 @@
     <BaseAddress>98041856</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>False</Optimize>
@@ -213,7 +213,4 @@
     <EmbeddedResource Include="Resources\Patch-Mode.xshd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
-  </PropertyGroup>
 </Project>

@@ -11,12 +11,12 @@ using System.Net;
 using System.Xml;
 
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
-	/// The class that is responsible for controlling the editing of the 
+	/// The class that is responsible for controlling the editing of the
 	/// Xml tree view.
 	/// </summary>
 	public class XmlTreeEditor
@@ -72,14 +72,14 @@ namespace ICSharpCode.XmlEditor
 				view.ClearAttributes();
 				view.ShowTextContent(selectedTextNode.InnerText);
 			} else if (selectedElement != null) {
-				view.TextContent = String.Empty;
+				view.TextContent = string.Empty;
 				view.ShowAttributes(selectedElement.Attributes);
 			} else if (selectedComment != null) {
 				view.ClearAttributes();
 				view.ShowTextContent(selectedComment.InnerText);
 			} else {
 				view.ClearAttributes();
-				view.TextContent = String.Empty;
+				view.TextContent = string.Empty;
 			}
 		}
 		
@@ -102,7 +102,7 @@ namespace ICSharpCode.XmlEditor
 				string[] selectedAttributeNames = view.SelectNewAttributes(attributesNames);
 				if (selectedAttributeNames.Length > 0) {
 					foreach (string attributeName in selectedAttributeNames) {
-						selectedElement.SetAttribute(attributeName, String.Empty);
+						selectedElement.SetAttribute(attributeName, string.Empty);
 					}
 					view.IsDirty = true;
 					view.ShowAttributes(selectedElement.Attributes);
@@ -224,7 +224,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void AppendChildTextNode()
 		{
-			AppendChildTextNode(document.CreateTextNode(String.Empty));
+			AppendChildTextNode(document.CreateTextNode(string.Empty));
 		}
 		
 		/// <summary>
@@ -239,7 +239,7 @@ namespace ICSharpCode.XmlEditor
 			if (selectedNode != null) {
 				XmlElement parentElement = selectedNode.ParentNode as XmlElement;
 				if (parentElement != null) {
-					XmlText textNode = document.CreateTextNode(String.Empty);
+					XmlText textNode = document.CreateTextNode(string.Empty);
 					parentElement.InsertBefore(textNode, selectedNode);
 					view.IsDirty = true;
 					view.InsertTextNodeBefore(textNode);
@@ -259,7 +259,7 @@ namespace ICSharpCode.XmlEditor
 			if (selectedNode != null) {
 				XmlElement parentElement = selectedNode.ParentNode as XmlElement;
 				if (parentElement != null) {
-					XmlText textNode = document.CreateTextNode(String.Empty);
+					XmlText textNode = document.CreateTextNode(string.Empty);
 					parentElement.InsertAfter(textNode, selectedNode);
 					view.IsDirty = true;
 					view.InsertTextNodeAfter(textNode);
@@ -272,7 +272,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void AppendChildComment()
 		{
-			XmlComment comment = document.CreateComment(String.Empty);
+			XmlComment comment = document.CreateComment(string.Empty);
 			AppendChildComment(comment);
 		}
 		
@@ -284,7 +284,7 @@ namespace ICSharpCode.XmlEditor
 			XmlNode node = GetSelectedCommentOrElementOrTextNode();
 			if (node != null) {
 				XmlNode parentNode = node.ParentNode;
-				XmlComment comment = document.CreateComment(String.Empty);
+				XmlComment comment = document.CreateComment(string.Empty);
 				parentNode.InsertBefore(comment, node);
 				view.IsDirty = true;
 				view.InsertCommentBefore(comment);
@@ -299,7 +299,7 @@ namespace ICSharpCode.XmlEditor
 			XmlNode node = GetSelectedCommentOrElementOrTextNode();
 			if (node != null) {
 				XmlNode parentNode = node.ParentNode;
-				XmlComment comment = document.CreateComment(String.Empty);
+				XmlComment comment = document.CreateComment(string.Empty);
 				parentNode.InsertAfter(comment, node);
 				view.IsDirty = true;
 				view.InsertCommentAfter(comment);
@@ -348,7 +348,7 @@ namespace ICSharpCode.XmlEditor
 				}
 			}
 		}
-				
+		
 		/// <summary>
 		/// Cuts the selected node.
 		/// </summary>
@@ -406,23 +406,20 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Gets the missing attributes for the specified element based 
+		/// Gets the missing attributes for the specified element based
 		/// on its associated schema.
 		/// </summary>
 		string[] GetMissingAttributes(XmlElement element)
 		{
 			XmlElementPath elementPath = GetElementPath(element);
-
 			List<string> attributes = new List<string>();
 			XmlSchemaCompletionData schemaCompletionData = completionDataProvider.FindSchema(elementPath);
 			if (schemaCompletionData != null) {
-				ICompletionData[] completionData = schemaCompletionData.GetAttributeCompletionData(elementPath);
-				foreach (ICompletionData attributeCompletionData in completionData) {					
+				ICompletionItem[] completionData = schemaCompletionData.GetAttributeCompletionData(elementPath);
+				foreach (ICompletionItem item in completionData) {
 					// Ignore existing attributes.
-					string attributeName = attributeCompletionData.Text;
-					if (!element.HasAttribute(attributeName)) {
-						attributes.Add(attributeName);
-					}
+					if (!element.HasAttribute(item.Text))
+						attributes.Add(item.Text);
 				}
 			}
 			return attributes.ToArray();
@@ -432,7 +429,7 @@ namespace ICSharpCode.XmlEditor
 		/// Returns the path to the specified element starting from the
 		/// root element.
 		/// </summary>
-		XmlElementPath GetElementPath(XmlElement element)
+		static XmlElementPath GetElementPath(XmlElement element)
 		{
 			XmlElementPath path = new XmlElementPath();
 			XmlElement parentElement = element;
@@ -447,7 +444,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Returns a list of elements that can be children of the 
+		/// Returns a list of elements that can be children of the
 		/// specified element.
 		/// </summary>
 		string[] GetChildElements(XmlElement element)
@@ -457,12 +454,12 @@ namespace ICSharpCode.XmlEditor
 			List<string> elements = new List<string>();
 			XmlSchemaCompletionData schemaCompletionData = completionDataProvider.FindSchema(elementPath);
 			if (schemaCompletionData != null) {
-				ICompletionData[] completionData = schemaCompletionData.GetChildElementCompletionData(elementPath);
-				foreach (ICompletionData elementCompletionData in completionData) {					
+				ICompletionItem[] completionData = schemaCompletionData.GetChildElementCompletionData(elementPath);
+				foreach (ICompletionItem elementCompletionData in completionData) {
 					elements.Add(elementCompletionData.Text);
 				}
 			}
-			return elements.ToArray();	
+			return elements.ToArray();
 		}
 		
 		/// <summary>
@@ -612,7 +609,7 @@ namespace ICSharpCode.XmlEditor
 				view.RemoveElement(element);
 				AppendChildElement(element);
 			} else {
-				// Pasting to the same cut element so just 
+				// Pasting to the same cut element so just
 				// change the tree icon back to the uncut state.
 				view.HideCut(element);
 			}

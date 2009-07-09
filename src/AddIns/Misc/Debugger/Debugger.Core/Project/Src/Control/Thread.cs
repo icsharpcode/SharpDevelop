@@ -61,6 +61,7 @@ namespace Debugger
 			get {
 				try {
 					CorThread.UserState.ToString();
+					CorThread.EnumerateChains();
 					return true;
 				} catch (COMException e) {
 					// The state of the thread is invalid.

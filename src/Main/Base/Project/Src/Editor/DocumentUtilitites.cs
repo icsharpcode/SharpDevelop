@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Windows.Documents;
+
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
@@ -80,19 +82,45 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Finds the first word start in the document before offset.
 		/// </summary>
 		/// <returns>The offset of the word start, or -1 if there is no word start before the specified offset.</returns>
-		public static int FindPrevWordStart(this IDocument document, int offset)
+		public static int FindPrevWordStart(this ITextBuffer textBuffer, int offset)
 		{
-			return TextUtilities.GetNextCaretPosition(GetTextSource(document), offset, LogicalDirection.Backward, CaretPositioningMode.WordStart);
+			return TextUtilities.GetNextCaretPosition(GetTextSource(textBuffer), offset, LogicalDirection.Backward, CaretPositioningMode.WordStart);
+		}
+		
+		/// <summary>
+		/// Finds the first word start in the document before offset.
+		/// </summary>
+		/// <returns>The offset of the word start, or -1 if there is no word start before the specified offset.</returns>
+		public static int FindNextWordStart(this ITextBuffer textBuffer, int offset)
+		{
+			return TextUtilities.GetNextCaretPosition(GetTextSource(textBuffer), offset, LogicalDirection.Forward, CaretPositioningMode.WordStart);
 		}
 		
 		/// <summary>
 		/// Gets the word at the specified position.
 		/// </summary>
-		public static string GetWordAt(this IDocument document, int offset)
+		public static string GetWordAt(this ITextBuffer document, int offset)
 		{
-			if (document == null)
-				throw new ArgumentNullException("document");
-			throw new NotImplementedException();
+			if (offset < 0 || offset > document.TextLength || !IsWordPart(document.GetCharAt(offset))) {
+				return String.Empty;
+			}
+			int startOffset = offset;
+			int endOffset   = offset;
+			while (startOffset > 0 && IsWordPart(document.GetCharAt(startOffset - 1))) {
+				--startOffset;
+			}
+			
+			while (endOffset < document.TextLength - 1 && IsWordPart(document.GetCharAt(endOffset + 1))) {
+				++endOffset;
+			}
+			
+			Debug.Assert(endOffset >= startOffset);
+			return document.GetText(startOffset, endOffset - startOffset + 1);
+		}
+		
+		static bool IsWordPart(char ch)
+		{
+			return char.IsLetterOrDigit(ch) || ch == '_';
 		}
 		
 		/// <summary>
@@ -101,10 +129,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <param name="document">The document.</param>
 		/// <param name="offset">The offset where the indentation starts.</param>
 		/// <returns>The indentation text.</returns>
-		public static string GetIndentation(IDocument document, int offset)
+		public static string GetIndentation(ITextBuffer textBuffer, int offset)
 		{
-			ISegment segment = TextUtilities.GetIndentation(GetTextSource(document), offset);
-			return document.GetText(segment.Offset, segment.Length);
+			ISegment segment = TextUtilities.GetWhitespaceAfter(GetTextSource(textBuffer), offset);
+			return textBuffer.GetText(segment.Offset, segment.Length);
 		}
 		
 		/// <summary>
@@ -124,43 +152,56 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 		
 		#region ITextSource implementation
-		public static ICSharpCode.AvalonEdit.Document.ITextSource GetTextSource(IDocument document)
+		public static ICSharpCode.AvalonEdit.Document.ITextSource GetTextSource(ITextBuffer textBuffer)
 		{
-			if (document == null)
-				throw new ArgumentNullException("document");
-			return new DocumentTextSource(document);
+			if (textBuffer == null)
+				throw new ArgumentNullException("textBuffer");
+			return new TextBufferTextSource(textBuffer);
 		}
 		
-		sealed class DocumentTextSource : ICSharpCode.AvalonEdit.Document.ITextSource
+		sealed class TextBufferTextSource : ICSharpCode.AvalonEdit.Document.ITextSource
 		{
-			readonly IDocument document;
+			readonly ITextBuffer textBuffer;
 			
-			public DocumentTextSource(IDocument document)
+			public TextBufferTextSource(ITextBuffer textBuffer)
 			{
-				this.document = document;
+				this.textBuffer = textBuffer;
 			}
 			
 			public event EventHandler TextChanged {
-				add    { document.TextChanged += value; }
-				remove { document.TextChanged -= value; }
+				add    { textBuffer.TextChanged += value; }
+				remove { textBuffer.TextChanged -= value; }
 			}
 			
 			public string Text {
-				get { return document.Text; }
+				get { return textBuffer.Text; }
 			}
 			
 			public int TextLength {
-				get { return document.TextLength; }
+				get { return textBuffer.TextLength; }
 			}
 			
 			public char GetCharAt(int offset)
 			{
-				return document.GetCharAt(offset);
+				return textBuffer.GetCharAt(offset);
 			}
 			
 			public string GetText(int offset, int length)
 			{
-				return document.GetText(offset, length);
+				return textBuffer.GetText(offset, length);
+			}
+			
+			public System.IO.TextReader CreateReader(int offset, int length)
+			{
+				if (offset == 0 && length == textBuffer.TextLength)
+					return textBuffer.CreateReader();
+				else
+					return new System.IO.StringReader(textBuffer.GetText(offset, length));
+			}
+			
+			public ITextSource CreateSnapshot()
+			{
+				return GetTextSource(textBuffer.CreateSnapshot());
 			}
 		}
 		#endregion

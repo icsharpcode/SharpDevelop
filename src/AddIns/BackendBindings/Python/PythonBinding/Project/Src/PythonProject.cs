@@ -20,16 +20,15 @@ namespace ICSharpCode.PythonBinding
 	{
 		public const string DefaultTargetsFile = @"$(PythonBinPath)\SharpDevelop.Build.Python.targets";
 		
-		public PythonProject(IMSBuildEngineProvider provider, string fileName, string projectName)
-			: base(provider)
+		public PythonProject(ProjectLoadInformation info)
+			: base(info)
 		{
-			Name = projectName;
-			LoadProject(fileName);
 		}
 		
-		public PythonProject(ProjectCreateInformation info) : base(info.Solution)
+		public PythonProject(ProjectCreateInformation info)
+			: base(info)
 		{
-			Create(info);
+			AddImport(DefaultTargetsFile, null);
 		}
 		
 		/// <summary>
@@ -47,7 +46,7 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Returns ItemType.Compile if the filename has a 
+		/// Returns ItemType.Compile if the filename has a
 		/// python extension (.py).
 		/// </summary>
 		public override ItemType GetDefaultItemType(string fileName)
@@ -71,12 +70,6 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public bool HasMainFile {
 			get { return GetProperty(null, null, "MainFile") != null; }
-		}
-		
-		protected override void Create(ProjectCreateInformation information)
-		{
-			base.Create(information);
-			AddImport(DefaultTargetsFile, null);
 		}
 	}
 }

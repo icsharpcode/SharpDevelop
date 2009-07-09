@@ -131,8 +131,7 @@ namespace XmlEditor.Tests.Parser
 		public void GetAttributeNameWithNullString()
 		{
 			Assert.AreEqual(String.Empty, XmlParser.GetAttributeName(null, 0));
-		}		
-		
+		}
 		
 		[Test]
 		public void GetQualifiedAttributeNameWithSingleXmlCharacter()

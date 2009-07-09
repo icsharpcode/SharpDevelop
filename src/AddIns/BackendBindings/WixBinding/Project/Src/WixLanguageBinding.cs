@@ -22,9 +22,9 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
-		public IProject LoadProject(IMSBuildEngineProvider provider, string fileName, string projectName)
+		public IProject LoadProject(ProjectLoadInformation loadInformation)
 		{
-			return new WixProject(provider, fileName, projectName);
+			return new WixProject(loadInformation);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)

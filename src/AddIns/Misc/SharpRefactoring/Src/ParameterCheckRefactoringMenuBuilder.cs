@@ -5,16 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace SharpRefactoring
@@ -23,8 +24,13 @@ namespace SharpRefactoring
 	/// Provides "Add check for null" and "Add range check" commands in
 	/// context menu of parameter declarations.
 	/// </summary>
-	public class ParameterCheckRefactoringMenuBuilder : ISubmenuBuilder
+	public class ParameterCheckRefactoringMenuBuilder : ISubmenuBuilder, IMenuItemBuilder
 	{
+		public ICollection BuildItems(Codon codon, object owner)
+		{
+			return BuildSubmenu(codon, owner).TranslateToWpf();
+		}
+		
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
 			List<ToolStripItem> resultItems = new List<ToolStripItem>();
@@ -66,11 +72,13 @@ namespace SharpRefactoring
 				return;
 			textArea.Select(methodStart, 0);
 			using (textArea.Document.OpenUndoGroup()) {
+				int startLine = textArea.Caret.Line;
 				foreach (string newCodeLine in newCode.Split('\n')) {
-					// TODO: AVALONEDIT
-//					new Return().Execute(textArea);
-//					textArea.InsertString(newCodeLine);
+					textArea.Document.Insert(textArea.Caret.Offset,
+					                         DocumentUtilitites.GetLineTerminator(textArea.Document, textArea.Caret.Line) + newCodeLine);
 				}
+				int endLine = textArea.Caret.Line;
+				textArea.FormattingStrategy.IndentLines(textArea, startLine, endLine);
 			}
 		}
 		

@@ -27,6 +27,8 @@ namespace ICSharpCode.XamlBinding
 		
 		string text;
 		int pos;
+		int startPos;
+		
 		Queue<MarkupExtensionToken> tokens = new Queue<MarkupExtensionToken>();
 		
 		/// <summary>
@@ -51,7 +53,7 @@ namespace ICSharpCode.XamlBinding
 		
 		void AddToken(MarkupExtensionTokenKind kind, string val)
 		{
-			tokens.Enqueue(new MarkupExtensionToken(kind, val));
+			tokens.Enqueue(new MarkupExtensionToken(kind, val) { StartOffset = startPos });
 		}
 		
 		void ParseBeginning()
@@ -75,16 +77,20 @@ namespace ICSharpCode.XamlBinding
 					case '}':
 						AddToken(MarkupExtensionTokenKind.CloseBrace, "}");
 						pos++;
+						startPos = pos;
 						break;
 					case '=':
 						AddToken(MarkupExtensionTokenKind.Equals, "=");
 						pos++;
+						startPos = pos;
 						break;
 					case ',':
 						AddToken(MarkupExtensionTokenKind.Comma, ",");
 						pos++;
+						startPos = pos;
 						break;
 					default:
+						startPos = pos;
 						MembernameOrString();
 						break;
 				}
@@ -137,7 +143,15 @@ namespace ICSharpCode.XamlBinding
 			}
 			string valueText = b.ToString();
 			if (pos < text.Length && text[pos] == '=') {
-				AddToken(MarkupExtensionTokenKind.MemberName, valueText.Trim());
+				int splitPos = valueText.LastIndexOf(' ');
+				if (splitPos > -1) {
+					string valueString = valueText.Substring(0, splitPos).Trim();
+					string memberString = valueText.Substring(splitPos).Trim();
+					AddToken(MarkupExtensionTokenKind.String, valueString);
+					startPos += splitPos;
+					AddToken(MarkupExtensionTokenKind.MemberName, memberString);
+				} else
+					AddToken(MarkupExtensionTokenKind.MemberName, valueText.Trim());
 			} else {
 				AddToken(MarkupExtensionTokenKind.String, valueText);
 			}

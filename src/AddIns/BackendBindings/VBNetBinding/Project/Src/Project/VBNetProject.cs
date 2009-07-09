@@ -46,27 +46,21 @@ namespace VBNetBinding
 			return new VBNetAmbience();
 		}
 		
-		public VBNetProject(IMSBuildEngineProvider provider, string fileName, string projectName)
-			: base(provider)
+		public VBNetProject(ProjectLoadInformation info)
+			: base(info)
 		{
-			this.Name = projectName;
 			InitVB();
-			LoadProject(fileName);
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.VisualBasic.Targets";
 		public const string ExtendedTargetsFile = @"$(SharpDevelopBinPath)\SharpDevelop.Build.VisualBasic.targets";
 		
 		public VBNetProject(ProjectCreateInformation info)
-			: base(info.Solution)
+			: base(info)
 		{
 			InitVB();
 			
 			this.AddImport(DefaultTargetsFile, null);
-			
-			// Add import before Create call - base.Create will call AddOrRemoveExtensions, which
-			// needs to change the import when the compact framework is targeted.
-			Create(info);
 			
 			SetProperty("Debug", null, "DefineConstants", "DEBUG=1,TRACE=1",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
@@ -107,19 +101,21 @@ namespace VBNetBinding
 				return base.GetDefaultItemType(fileName);
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			if (this.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
 				MSBuildEngine.StartBuild(this,
+				                         buildServices,
 				                         options,
 				                         feedbackSink,
 				                         MSBuildEngine.AdditionalTargetFiles.Concat(
 				                         	new [] { "$(SharpDevelopBinPath)/SharpDevelop.CheckMSBuild35Features.targets" }));
 			} else {
-				base.StartBuild(options, feedbackSink);
+				base.StartBuild(buildServices, options, feedbackSink);
 			}
 		}
 		
+		/*
 		protected override void AddOrRemoveExtensions()
 		{
 			// Test if SharpDevelop-Build extensions are required
@@ -154,6 +150,6 @@ namespace VBNetBinding
 					}
 				}
 			}
-		}
+		}*/
 	}
 }

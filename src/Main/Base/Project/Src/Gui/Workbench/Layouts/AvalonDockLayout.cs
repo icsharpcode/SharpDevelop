@@ -45,6 +45,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			dockingManager.Loaded += dockingManager_Loaded;
 		}
 		
+		#if DEBUG
+		internal void WriteState(TextWriter output)
+		{
+			
+		}
+		#endif
+		
 		void dockingManager_Loaded(object sender, RoutedEventArgs e)
 		{
 			// LoadConfiguration doesn't do anything until the docking manager is loaded,
@@ -225,6 +232,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// We'll re-add those lost pads.
 			foreach (DockableContent lostContent in oldContents.Except(newContents)) {
 				AvalonPadContent padContent = lostContent as AvalonPadContent;
+				LoggingService.Debug("Re-add lost pad: " + padContent);
 				if (padContent != null && !hideAllLostPads) {
 					padContent.ShowInDefaultPosition();
 				} else {
@@ -238,9 +246,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				LayoutConfiguration current = LayoutConfiguration.CurrentLayout;
 				if (current != null && !current.ReadOnly) {
-					string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
+					string configPath = LayoutConfiguration.ConfigLayoutPath;
 					Directory.CreateDirectory(configPath);
-					dockingManager.SaveLayout(Path.Combine(configPath, current.FileName));
+					string fileName = Path.Combine(configPath, current.FileName);
+					LoggingService.Info("Saving layout file: " + fileName);
+					dockingManager.SaveLayout(fileName);
 				}
 			} catch (Exception e) {
 				MessageService.ShowError(e);

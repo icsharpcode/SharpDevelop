@@ -30,7 +30,7 @@ namespace ICSharpCode.WixBinding
 		{
 		}
 		
-		public WixExtensionProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem item)
+		public WixExtensionProjectItem(IProject project, IProjectItemBackendStore item)
 			: base(project, item)
 		{
 		}

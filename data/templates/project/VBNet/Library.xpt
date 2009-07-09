@@ -9,6 +9,7 @@
 		<Category>VBNet</Category>
 		<Icon>VBNet.Project.Library</Icon>
 		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
+		<SupportedTargetFrameworks>v2.0;CF 2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -17,9 +18,14 @@
 	</Actions>
 
 	<Project language="VBNet">
+		<CreateActions>
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
+		</CreateActions>
+		
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<OptionInfer>On</OptionInfer>
 		</PropertyGroup>
 		
 		<ProjectItems>

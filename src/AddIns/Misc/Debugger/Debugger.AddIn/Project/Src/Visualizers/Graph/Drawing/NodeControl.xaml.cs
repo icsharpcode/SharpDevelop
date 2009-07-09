@@ -4,6 +4,7 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.AddIn.Visualizers.Graph.Layout;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,59 +21,134 @@ using Debugger.AddIn.Visualizers.Graph;
 
 namespace Debugger.AddIn.Visualizers.Graph.Drawing
 {
-    /// <summary>
-    /// UserControl used to display ObjectNode.
-    /// </summary>
-    public partial class NodeControl : UserControl
-    {
-        public NodeControl()
-        {
-            InitializeComponent();
-        }
+	/// <summary>
+	/// UserControl used to display Positione.
+	/// </summary>
+	public partial class NodeControl : UserControl
+	{
+		/// <summary>
+		/// Creates new NodeControl displaying PositionedNode.
+		/// </summary>
+		/*public NodeControl() : this()
+		{
+			//this.GraphNode = graphNode;
+		}*/
+		
+		/// <summary>
+		/// Creates new NodeControl displaying PositionedNode.
+		/// </summary>
+		public NodeControl()
+		{
+			InitializeComponent();
+		}
+		
+		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
+		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
 
-        private ObjectNode node;
-        /// <summary>
-        /// ObjectNode that this control displays.
-        /// </summary>
-        public ObjectNode GraphNode 
-        {
-            get
-            {
-                return node;
-            }
-            set
-            {
-                node = value;
-                int row = 0;
-                // dynamically create TextBlocks and insert them to the 2-column propertyGrid
-                foreach (var property in node.Properties)
-                {
-                    propertyGrid.RowDefinitions.Add(new RowDefinition());
+		private PositionedGraphNode node;
+		/// <summary>
+		/// ObjectNode that this control displays.
+		/// </summary>
+		public PositionedGraphNode GraphNode
+		{
+			get
+			{
+				return node;
+			}
+			private set
+			{
+				this.node = value;
+			}
+		}
+		
+		public void AddProperty(PositionedNodeProperty property)
+		{
+			int nRow = propertyGrid.RowDefinitions.Count;
+			
+			var row = new RowDefinition();
+			propertyGrid.RowDefinitions.Add(row);
+			
+			if (!property.IsAtomic && !property.IsNull)
+			{
+				Button btnExpandCollapse = new Button();
+				btnExpandCollapse.Tag = property;
+				btnExpandCollapse.Content = property.IsPropertyExpanded ? "-" : "+";
+				btnExpandCollapse.Width = 20;
+				propertyGrid.Children.Add(btnExpandCollapse);
+				Grid.SetRow(btnExpandCollapse, nRow);
+				Grid.SetColumn(btnExpandCollapse, 0);
+				btnExpandCollapse.Click += new RoutedEventHandler(btnExpandCollapse_Click);
+			}
 
-                    TextBlock txtName = createTextBlock(property.Name);
-                    propertyGrid.Children.Add(txtName);
-                    Grid.SetRow(txtName, row);
-                    Grid.SetColumn(txtName, 0);
+			TextBlock txtName = createTextBlock(property.Name);
+			propertyGrid.Children.Add(txtName);
+			Grid.SetRow(txtName, nRow);
+			Grid.SetColumn(txtName, 1);
 
-                    TextBlock txtValue = createTextBlock(property.Value);
-                    propertyGrid.Children.Add(txtValue);
-                    Grid.SetRow(txtValue, row);
-                    Grid.SetColumn(txtValue, 1);
+			TextBlock txtValue = createTextBlock(property.Value);
+			propertyGrid.Children.Add(txtValue);
+			Grid.SetRow(txtValue, nRow);
+			Grid.SetColumn(txtValue, 2);
+		}
+		
+		/*public void Measure()
+		{
+			this.Measure();
+			
+			int nRow = 0;
+			// dynamically create TextBlocks and insert them to the 2-column propertyGrid
+			foreach (var property in node.Properties)
+			{
+				
 
-                    row++;
-                }
-            }
-        }
-        
-        /// <summary>
-        /// Creates TextBlock with given text.
-        /// </summary>
-        private TextBlock createTextBlock(string text)
-        {
-        	TextBlock newTextblock = new TextBlock();
-        	newTextblock.Text = text;
-        	newTextblock.Padding = new Thickness(4);
-        	return newTextblock; 
-        }
-    }
+				nRow++;
+			}
+		}*/
+
+		void btnExpandCollapse_Click(object sender, RoutedEventArgs e)
+		{
+			Button buttonClicked = ((Button)sender);
+			var property = (PositionedNodeProperty)buttonClicked.Tag;
+			
+			property.IsPropertyExpanded = !property.IsPropertyExpanded;
+			buttonClicked.Content = property.IsPropertyExpanded ? "-" : "+";
+			if (property.IsPropertyExpanded)
+			{
+				OnPropertyExpanded(property);
+			}
+			else
+			{
+				OnPropertyCollapsed(property);
+			}
+		}
+		
+		/// <summary>
+		/// Creates TextBlock with given text.
+		/// </summary>
+		private TextBlock createTextBlock(string text)
+		{
+			TextBlock newTextblock = new TextBlock();
+			newTextblock.Text = text;
+			newTextblock.Padding = new Thickness(4);
+			return newTextblock;
+		}
+		
+		#region event helpers
+		protected virtual void OnPropertyExpanded(PositionedNodeProperty property)
+		{
+			if (this.PropertyExpanded != null)
+			{
+				this.PropertyExpanded(this, new PositionedPropertyEventArgs(property));
+			}
+		}
+
+		protected virtual void OnPropertyCollapsed(PositionedNodeProperty property)
+		{
+			if (this.PropertyCollapsed != null)
+			{
+				this.PropertyCollapsed(this, new PositionedPropertyEventArgs(property));
+			}
+		}
+		#endregion
+	}
 }

@@ -49,12 +49,6 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		[Test]
-		public void CheckBuildWorker32Bit()
-		{
-			Assert.IsTrue(Get32BitFlags("ICSharpCode.SharpDevelop.BuildWorker.exe"));
-		}
-		
-		[Test]
 		public void CheckBooCompiler32Bit()
 		{
 			Assert.IsTrue(Get32BitFlags(@"..\src\AddIns\BackendBindings\Boo\RequiredLibraries\booc.exe"));

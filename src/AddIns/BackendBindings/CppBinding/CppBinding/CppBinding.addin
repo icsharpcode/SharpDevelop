@@ -1,0 +1,74 @@
+﻿<AddIn name        = "Cpp Binding"
+       author      = "Tomasz Tretkowski"
+       url         = ""
+       description = "Backing binding for C++">
+	
+	<Runtime>
+		<Import assembly =":ICSharpCode.SharpDevelop" />
+		<Import assembly = "CppBinding.dll"/>
+	</Runtime>
+	
+	<Manifest>
+		<Identity name="CppBinding" />
+	</Manifest>
+	
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C++">
+		<OptionPanel id    = "Application"
+		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
+		             class = "CppBinding.Project.ApplicationOptions"/>
+		<!--<OptionPanel id    = "ReferencePaths"
+		             label = "${res:Dialog.ProjectOptions.ReferencePaths}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>
+		<OptionPanel id    = "Signing"
+		             label = "${res:Dialog.ProjectOptions.Signing}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>
+		<OptionPanel id    = "BuildEvents"
+		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
+		<OptionPanel id    = "DebugOptions"
+		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>/-->
+		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
+	</Path>	
+	
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "C++" path = "./Templates" />
+	</Path>
+
+	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">
+		<Class id="SpecifyCppCliRuntimeLibrary"
+		       class="CppBinding.Project.SpecifyCliRuntimeLibraryCommand"/>
+	</Path>
+
+	<Path name="/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id="C++Project"
+					insertbefore="AllFiles"
+					name="C++ project files (*.vcxproj)"
+					class="ICSharpCode.SharpDevelop.Project.LoadProject"
+					extensions="*.vcxproj" />
+	</Path>
+
+	<Path name="/SharpDevelop/Workbench/FileFilter"> 
+		<FileFilter id="C++"
+		            insertafter="C#"
+		            insertbefore="Resources"
+		            name="C++ files (*.cpp, *.h)"
+		            extensions="*.cpp;*.c;*.hpp;*.h"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id="C++"
+		                 guid="{0E96FCFA-9DAC-4534-AC18-01A90C368873}"
+		                 supportedextensions=".cpp;*.c;*.hpp;*.c"
+		                 projectfileextension=".vcxproj"
+		                 class="CppBinding.CppLanguageBinding" />
+	</Path>
+
+	<Path name="/Workspace/Parser">
+		<Parser id="C++"
+				supportedextensions="*.cpp;*.c;*.hpp;*.h"
+				projectfileextension="vcxproj"
+				class="CppBinding.CppParser" />
+	</Path>
+	
+</AddIn>

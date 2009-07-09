@@ -242,7 +242,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Creates a new ProjectItem for the passed MSBuild item.
 		/// </summary>
-		ProjectItem CreateProjectItem(Microsoft.Build.BuildEngine.BuildItem item);
+		ProjectItem CreateProjectItem(IProjectItemBackendStore item);
 		
 		/// <summary>
 		/// Gets the minimum version the solution must have to support this project type.
@@ -272,7 +272,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Starts building the project using the specified options.
 		/// This member must be implemented thread-safe.
 		/// </summary>
-		void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink);
+		void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink);
 		
 		/// <summary>
 		/// Gets the name of the buildable item.

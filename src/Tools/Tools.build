@@ -13,7 +13,7 @@
 		<WixDocFiles Include="wix\doc\*"/>
 		<WixLibFiles Include="wix\lib\*"/>
 		<NUnitFiles Include="NUnit\*.dll;NUnit\*.exe"/>
-		<NUnitConfigFiles Include="NUnit\nunit-console.exe.config;NUnit\nunit-console-x86.exe.config"/>
+		<NUnitConfigFiles Include="NUnit\*.config"/>
 		<NUnitLibFiles Include="NUnit\lib\*.dll"/>
 		<HelpToolFiles Include="Help\*"/>
 		<PartCoverFiles Include="PartCover\*"/>
@@ -59,19 +59,13 @@
 	
 	<Target Name="Rebuild" DependsOnTargets="Build"/>
 	
-	<ItemGroup>
-		<PrepareReleaseProject Include="SVNChangeLogToXml\SVNChangeLogToXml.csproj" />
-	</ItemGroup>
-	
 	<Target Name="PrepareRelease">
-		<MSBuild Projects="@(PrepareReleaseProject)" Targets="Build"/>
-		<Exec Command="SVNChangelogToXml.exe --REVISION --START 3800" WorkingDirectory = "SVNChangeLogToXml\bin\Release" Timeout = "60000" IgnoreExitCode = "false"/>
-		<RemoveDir Directories="SVNChangeLogToXml\bin" />
-		<RemoveDir Directories="SVNChangeLogToXml\obj" />
+		<Exec WorkingDirectory="UpdateAssemblyInfo\bin\Debug" Command="UpdateAssemblyInfo.exe --REVISION"  Timeout = "60000" IgnoreExitCode = "false"/>
 	</Target>
 	
 	<ItemGroup>
 		<CleanupFiles Include="..\..\bin\*"/>
+		<CleanupFiles Include="..\Main\GlobalAssemblyInfo.cs"/>
 		<CleanupDirectories Include="..\..\bin\UnitTests"/>
 		<CleanupDirectories Include="..\..\bin\Tools"/>
 		<CleanupDirectories Include="..\..\bin\setup\help"/>

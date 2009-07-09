@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -24,7 +24,7 @@
     <NoWarn>0809 1591</NoWarn>
     <WarningLevel>4</WarningLevel>
     <OutputPath>..\..\..\..\bin\</OutputPath>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Administrator\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -55,10 +55,8 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.Build.Framework">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -68,6 +66,7 @@
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditDocumentAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextEditorAdapter.cs" />
+    <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextSourceAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionBinding.cs" />
@@ -79,9 +78,11 @@
     <Compile Include="Src\Editor\CodeCompletion\CtrlSpaceCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItem.cs" />
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemList.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\ICompletionListWindow.cs" />
     <Compile Include="Src\Editor\CodeCompletion\IInsightItem.cs" />
     <Compile Include="Src\Editor\CodeCompletion\IInsightWindow.cs" />
     <Compile Include="Src\Editor\CodeCompletion\IndexerInsightProvider.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\ICompletionWindow.cs" />
     <Compile Include="Src\Editor\CodeCompletion\MethodInsightItem.cs" />
     <Compile Include="Src\Editor\CodeCompletion\MethodInsightProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCodeCompletionBinding.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Src\Editor\ITextAreaToolTipProvider.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Editor\ITextBuffer.cs" />
     <Compile Include="Src\Editor\ITextEditor.cs" />
     <Compile Include="Src\Editor\ITextMarker.cs" />
     <Compile Include="Src\Editor\RefactoringDocumentAdapter.cs" />
@@ -195,7 +197,14 @@
     <Compile Include="Src\Project\BuildEngine.cs" />
     <Compile Include="Src\Project\ContextSpecificProperties.cs" />
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
+    <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
+    <Compile Include="Src\Project\MSBuildEngine\BuildLogFileLogger.cs" />
+    <Compile Include="Src\Project\MSBuildEngine\EventSource.cs" />
+    <Compile Include="Src\Project\MSBuildEngine\MSBuildEngine.cs" />
+    <Compile Include="Src\Project\MSBuildEngine\ParallelMSBuildManager.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
+    <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
+    <Compile Include="Src\Project\ProjectLoadInformation.cs" />
     <Compile Include="Src\Project\ProjectStartException.cs" />
     <Compile Include="Src\Project\ProjectLoadException.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
@@ -597,7 +606,6 @@
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\TextEditor\Commands\NavigationCommands.cs" />
-    <Compile Include="Src\Project\MSBuildEngine.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.cs">
@@ -747,6 +755,7 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.cs" />
     <Compile Include="Src\Project\MSBuildBasedProject.cs" />
+    <Compile Include="Src\Project\MSBuildItemDefinitionGroup.cs" />
     <Compile Include="Src\Project\AbstractProject.cs" />
     <Compile Include="Src\Project\BuildOptions.cs" />
     <Compile Include="Src\Project\IParser.cs" />
@@ -760,6 +769,7 @@
     <Compile Include="Src\Project\BuildTarget.cs" />
     <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
+    <Compile Include="Src\Util\ThreadSafeServiceProvider.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
     <Compile Include="Src\Util\WpfSynchronizeInvoke.cs" />
     <Compile Include="Src\Util\WorkerThread.cs" />
@@ -813,6 +823,7 @@
       <Link>ICSharpCode.SharpDevelop.addin</Link>
     </Content>
     <Folder Include="Src\Editor" />
+    <Folder Include="Src\Project\MSBuildEngine" />
     <Folder Include="Src\Services\Profiler" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
@@ -825,11 +836,6 @@
     <ProjectReference Include="..\..\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ICSharpCode.SharpDevelop.BuildWorker.csproj">
-      <Project>{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F}</Project>
-      <Name>ICSharpCode.SharpDevelop.BuildWorker</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">

@@ -50,6 +50,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Close();
 		}
 		
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			foreach (IDisposable op in optionPanels.OfType<IDisposable>()) {
+				op.Dispose();
+			}
+		}
+		
 		List<IOptionPanel> optionPanels = new List<IOptionPanel>();
 		OptionPanelNode activeNode;
 		

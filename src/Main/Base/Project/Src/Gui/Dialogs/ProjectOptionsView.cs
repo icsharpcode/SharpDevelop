@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 
 using ICSharpCode.Core;
@@ -66,6 +67,14 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				return;
 			}
 			project.Save();
+		}
+		
+		public override void Dispose()
+		{
+			foreach (IDisposable op in tabControl.OptionPanels.OfType<IDisposable>()) {
+				op.Dispose();
+			}
+			base.Dispose();
 		}
 	}
 }

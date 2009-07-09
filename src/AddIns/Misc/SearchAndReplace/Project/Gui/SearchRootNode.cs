@@ -35,13 +35,14 @@ namespace SearchAndReplace
 			}
 		}
 		
-		string pattern;
 		IList<SearchResultNode> results;
 		int fileCount;
 		
-		public SearchRootNode(string pattern, IList<SearchResultMatch> results)
+		public string Title { get; private set; }
+		
+		public SearchRootNode(string title, IList<SearchResultMatch> results)
 		{
-			this.pattern = pattern;
+			this.Title = title;
 			this.results = results.Select(r => new SearchResultNode(r)).ToArray();
 			
 			fileCount = results.GroupBy(r => r.FileName, new FileNameComparer()).Count();
@@ -57,18 +58,12 @@ namespace SearchAndReplace
 		{
 			return new TextBlock {
 				Inlines = {
-					new Bold(new Run(GetPatternString())),
+					new Bold(new Run(this.Title)),
 					new Run(" (" + GetOccurrencesString(results.Count)
 					        + StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ")
 					        + GetFileCountString(fileCount) + ")")
 				}
 			};
-		}
-		
-		public string GetPatternString()
-		{
-			return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",
-			                          new string[,] {{ "Pattern", pattern }});
 		}
 		
 		public static string GetOccurrencesString(int count)

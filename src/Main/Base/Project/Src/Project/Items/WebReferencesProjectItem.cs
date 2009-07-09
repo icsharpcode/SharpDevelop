@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
-		internal WebReferencesProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
+		internal WebReferencesProjectItem(IProject project, IProjectItemBackendStore buildItem)
 			: base(project, buildItem)
 		{
 		}

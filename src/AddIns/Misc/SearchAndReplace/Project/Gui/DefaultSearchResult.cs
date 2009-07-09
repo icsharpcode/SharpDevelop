@@ -24,19 +24,19 @@ namespace SearchAndReplace
 		IList<SearchResultMatch> matches;
 		SearchRootNode rootNode;
 		
-		public DefaultSearchResult(string pattern, IEnumerable<SearchResultMatch> matches)
+		public DefaultSearchResult(string title, IEnumerable<SearchResultMatch> matches)
 		{
-			if (pattern == null)
-				throw new ArgumentNullException("pattern");
+			if (title == null)
+				throw new ArgumentNullException("title");
 			if (matches == null)
 				throw new ArgumentNullException("matches");
 			this.matches = matches.ToArray();
-			rootNode = new SearchRootNode(pattern, this.matches);
+			rootNode = new SearchRootNode(title, this.matches);
 		}
 		
 		public string Text {
 			get {
-				return rootNode.GetPatternString() + " (" + SearchRootNode.GetOccurrencesString(rootNode.Occurrences) + ")";
+				return rootNode.Title + " (" + SearchRootNode.GetOccurrencesString(rootNode.Occurrences) + ")";
 			}
 		}
 		
@@ -59,9 +59,9 @@ namespace SearchAndReplace
 	
 	public class DefaultSearchResultFactory : ISearchResultFactory
 	{
-		public ISearchResult CreateSearchResult(string pattern, IEnumerable<SearchResultMatch> matches)
+		public ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches)
 		{
-			return new DefaultSearchResult(pattern, matches);
+			return new DefaultSearchResult(title, matches);
 		}
 	}
 }

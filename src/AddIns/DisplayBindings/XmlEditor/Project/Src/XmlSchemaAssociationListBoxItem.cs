@@ -15,10 +15,10 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class XmlSchemaAssociationListBoxItem
 	{
-		bool isDirty = false;
-		string namespaceUri = String.Empty;
-		string extension = String.Empty;
-		string namespacePrefix = String.Empty;
+		bool isDirty;
+		string namespaceUri;
+		string extension;
+		string namespacePrefix;
 		
 		public XmlSchemaAssociationListBoxItem(string extension, string namespaceUri, string namespacePrefix)
 		{
@@ -31,36 +31,21 @@ namespace ICSharpCode.XmlEditor
 		/// Gets or sets whether this association has been changed by the user.
 		/// </summary>
 		public bool IsDirty {
-			get {
-				return isDirty;
-			}
-			
-			set {
-				isDirty = value;
-			}
+			get { return isDirty; }
+			set { isDirty = value; }
 		}
 		
 		public string NamespaceUri {
-			get {
-				return namespaceUri;
-			}
-			
-			set {
-				namespaceUri = value;
-			}
+			get { return namespaceUri; }
+			set { namespaceUri = value; }
 		}
 		
 		/// <summary>
 		/// Gets or sets the file extension (e.g. '.xml').
 		/// </summary>
 		public string Extension {
-			get {
-				return extension;
-			}
-			
-			set {
-				extension = value;
-			}
+			get { return extension; }
+			set { extension = value; }
 		}
 		
 		/// <summary>
@@ -68,13 +53,8 @@ namespace ICSharpCode.XmlEditor
 		/// to the xml elements.
 		/// </summary>
 		public string NamespacePrefix {
-			get {
-				return namespacePrefix;
-			}
-			
-			set {
-				namespacePrefix = value;
-			}
+			get { return namespacePrefix; }
+			set { namespacePrefix = value; }
 		}		
 		
 		/// <summary>

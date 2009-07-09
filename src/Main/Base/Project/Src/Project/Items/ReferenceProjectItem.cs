@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
-		internal ReferenceProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
+		internal ReferenceProjectItem(IProject project, IProjectItemBackendStore buildItem)
 			: base(project, buildItem)
 		{
 		}

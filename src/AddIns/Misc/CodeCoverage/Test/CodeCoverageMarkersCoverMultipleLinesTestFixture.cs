@@ -5,20 +5,23 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.CodeCoverage;
-using ICSharpCode.TextEditor.Document;
-using NUnit.Framework;
+using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ICSharpCode.CodeCoverage;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Tests.Utils;
+using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests
 {
 	[TestFixture]
 	public class CodeCoverageMarkersCoverMultipleLinesTestFixture
 	{
-		List<CodeCoverageTextMarker> markers;
+		List<ITextMarker> markers;
+		IDocument document;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -28,7 +31,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
 			} catch (Exception) {}
 			
-			IDocument document = MockDocument.Create();
+			document = MockTextMarkerService.CreateDocumentWithMockService();
 			string code = "\t\t{\r\n" +
 				"\t\t\treturn \"<?xml version=\\\"1.0\\\"?>\\r\\n\" +\r\n" +
 				"\t\t\t\t\"<xs:schema xmlns:xs=\\\"http://www.w3.org/2001/XMLSchema\\\"\\r\\n\" +\r\n" +
@@ -39,8 +42,8 @@ namespace ICSharpCode.CodeCoverage.Tests
 				"\t\t\t\t\"</xs:element>\\r\\n\" +\r\n" +
 				"\t\t\t\t\"</xs:schema>\";\r\n" +
 				"\t\t}\r\n";
-			document.TextContent = code;
-			MarkerStrategy markerStrategy = new MarkerStrategy(document);
+			document.Text = code;
+			ITextMarkerService markerStrategy = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			
 			string xml = "<PartCoverReport>\r\n" +
 				"\t<file id=\"1\" url=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
@@ -58,10 +61,10 @@ namespace ICSharpCode.CodeCoverage.Tests
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));
 			CodeCoverageMethod method = results.Modules[0].Methods[0];
 			CodeCoverageHighlighter highlighter = new CodeCoverageHighlighter();
-			highlighter.AddMarkers(markerStrategy, method.SequencePoints);
+			highlighter.AddMarkers(document, method.SequencePoints);
 
-			markers = new List<CodeCoverageTextMarker>();
-			foreach (CodeCoverageTextMarker marker in markerStrategy.TextMarker) {
+			markers = new List<ITextMarker>();
+			foreach (ITextMarker marker in markerStrategy.TextMarkers) {
 				markers.Add(marker);
 			}
 		}
@@ -69,25 +72,28 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[Test]
 		public void MarkerCount()
 		{
-			Assert.AreEqual(10, markers.Count);
+			Assert.AreEqual(3, markers.Count);
 		}
 		
 		[Test]
-		public void MarkerThreeOffset()
+		public void FirstMarkerPosition()
 		{
-			Assert.AreEqual(48, markers[2].Offset);
+			Assert.AreEqual(new Location(3, 1), document.OffsetToPosition(markers[0].StartOffset));
+			Assert.AreEqual(new Location(4, 1), document.OffsetToPosition(markers[0].EndOffset));
 		}
 		
 		[Test]
-		public void MarkerFourOffset()
+		public void SecondMarkerPosition()
 		{
-			Assert.AreEqual(118, markers[3].Offset);
+			Assert.AreEqual(new Location(4, 2), document.OffsetToPosition(markers[1].StartOffset));
+			Assert.AreEqual(new Location(20, 9), document.OffsetToPosition(markers[1].EndOffset));
 		}
 		
 		[Test]
-		public void MarkerNineOffset()
+		public void ThirdMarkerPosition()
 		{
-			Assert.AreEqual(338, markers[8].Offset);
+			Assert.AreEqual(new Location(3, 10), document.OffsetToPosition(markers[2].StartOffset));
+			Assert.AreEqual(new Location(4, 10), document.OffsetToPosition(markers[2].EndOffset));
 		}
 	}
 }

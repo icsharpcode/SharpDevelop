@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics;
 using ICSharpCode.Core;
+using System.Globalization;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -73,8 +74,8 @@ namespace ICSharpCode.XmlEditor
 		/// </remarks>
 		public static XmlSchemaAssociation GetSchemaAssociation(string extension)
 		{			
-			extension = extension.ToLower();
-			string property = Properties.Get("ext" + extension, String.Empty);
+			extension = extension.ToLower(CultureInfo.InvariantCulture);
+			string property = Properties.Get("ext" + extension, string.Empty);
 			XmlSchemaAssociation association = null;
 			
 			if (property.Length > 0) {

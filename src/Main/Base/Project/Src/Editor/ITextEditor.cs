@@ -5,10 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
+using System.Windows.Input;
+
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -27,6 +29,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		IDocument Document { get; }
 		ITextEditorCaret Caret { get; }
 		ITextEditorOptions Options { get; }
+		
+		IFormattingStrategy FormattingStrategy { get; }
 		
 		/// <summary>
 		/// Gets the start offset of the selection.
@@ -47,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Sets the selection.
 		/// </summary>
 		/// <param name="selectionStart">Start offset of the selection</param>
-		/// <param name="selectionLength">End offset of the selection</param>
+		/// <param name="selectionLength">Length of the selection</param>
 		void Select(int selectionStart, int selectionLength);
 		
 		/// <summary>
@@ -56,16 +60,26 @@ namespace ICSharpCode.SharpDevelop.Editor
 		event EventHandler SelectionChanged;
 		
 		/// <summary>
+		/// Is raised before a key is pressed.
+		/// </summary>
+		event KeyEventHandler KeyPress;
+		
+		/// <summary>
 		/// Sets the caret to the specified line/column and brings the caret into view.
 		/// </summary>
 		void JumpTo(int line, int column);
 		
 		string FileName { get; }
 		
-		void ShowCompletionWindow(ICompletionItemList data);
+		ICompletionListWindow ShowCompletionWindow(ICompletionItemList data);
 		
 		/// <summary>
-		/// Open a new insight window showing the specific insight items.
+		/// Gets the completion window that is currently open.
+		/// </summary>
+		ICompletionListWindow ActiveCompletionWindow { get; }
+		
+		/// <summary>
+		/// Open a new insight window showing the specified insight items.
 		/// </summary>
 		/// <param name="items">The insight items to show in the window.
 		/// If this property is null or an empty list, the insight window will not be shown.</param>
@@ -92,6 +106,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets whether a '}' should automatically be inserted when a block is opened.
 		/// </summary>
 		bool AutoInsertBlockEnd { get; }
+		
+		/// <summary>
+		/// Gets if tabs should be converted to spaces.
+		/// </summary>
+		bool ConvertTabsToSpaces { get; }
+		
+		/// <summary>
+		/// Gets the size of an indentation level.
+		/// </summary>
+		int IndendationSize { get; }
 	}
 	
 	public interface ITextEditorCaret
@@ -117,5 +141,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets/sets the caret position.
 		/// </summary>
 		Location Position { get; set; }
+		
+		/// <summary>
+		/// Is raised whenever the position of the caret has changed.
+		///	</summary>
+		event EventHandler PositionChanged;
 	}
 }

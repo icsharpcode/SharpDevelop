@@ -50,7 +50,9 @@ namespace SearchAndReplace
 		
 		public static void ShowSearchResults(string pattern, List<SearchResultMatch> results)
 		{
-			SearchResultsPad.Instance.ShowSearchResults(pattern, results);
+			string title = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",
+			                                  new string[,] {{ "Pattern", pattern }});
+			SearchResultsPad.Instance.ShowSearchResults(title, results);
 			SearchResultsPad.Instance.BringToFront();
 		}
 		

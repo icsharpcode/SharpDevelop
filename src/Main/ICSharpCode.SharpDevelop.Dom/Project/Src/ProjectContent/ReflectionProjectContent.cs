@@ -17,6 +17,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class ReflectionProjectContent : DefaultProjectContent
 	{
 		string assemblyFullName;
+		string assemblyName;
 		DomAssemblyName[] referencedAssemblyNames;
 		ICompilationUnit assemblyCompilationUnit;
 		string assemblyLocation;
@@ -32,6 +33,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return assemblyFullName;
 			}
+		}
+		
+		public override string AssemblyName {
+			get { return assemblyName; }
 		}
 		
 		/// <summary>
@@ -110,6 +115,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			this.registry = registry;
 			this.assemblyFullName = assemblyFullName;
+			this.assemblyName = (assemblyFullName.IndexOf(',') > -1) ? assemblyFullName.Substring(0, assemblyFullName.IndexOf(',')) : assemblyFullName;
 			this.referencedAssemblyNames = referencedAssemblies;
 			this.assemblyLocation = assemblyLocation;
 			this.assemblyCompilationUnit = new DefaultCompilationUnit(this);

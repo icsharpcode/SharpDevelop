@@ -22,9 +22,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
-			MSBuildEngine.StartBuild(this, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
+			MSBuildEngine.StartBuild(this, buildServices, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
 		}
 	}
 }

@@ -14,6 +14,8 @@ namespace ICSharpCode.XamlBinding
 		public MarkupExtensionTokenKind Kind { get; private set; }
 		public string Value { get; private set; }
 		
+		public int StartOffset { get; set; }
+		
 		public MarkupExtensionToken(MarkupExtensionTokenKind kind, string value)
 		{
 			this.Kind = kind;

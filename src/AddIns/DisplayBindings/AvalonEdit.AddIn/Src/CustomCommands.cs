@@ -11,7 +11,7 @@ using System.Windows.Input;
 namespace ICSharpCode.AvalonEdit.AddIn
 {
 	/// <summary>
-	/// Custom commands for AvalonEdit.
+	/// Custom commands for CodeEditor.
 	/// </summary>
 	public static class CustomCommands
 	{
@@ -19,12 +19,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			"CtrlSpaceCompletion", typeof(CodeEditor),
 			new InputGestureCollection {
 				new KeyGesture(Key.Space, ModifierKeys.Control)
-			});
-		
-		public static readonly RoutedCommand DeleteLine = new RoutedCommand(
-			"DeleteLine", typeof(CodeEditor),
-			new InputGestureCollection {
-				new KeyGesture(Key.D, ModifierKeys.Control)
 			});
 	}
 }

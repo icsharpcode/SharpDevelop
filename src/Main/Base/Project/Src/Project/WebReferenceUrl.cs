@@ -11,7 +11,6 @@ using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -125,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			UrlBehavior = "Static";
 		}
 		
-		public WebReferenceUrl(IProject project, BuildItem buildItem) : base(project, buildItem)
+		public WebReferenceUrl(IProject project, IProjectItemBackendStore buildItem) : base(project, buildItem)
 		{
 			UrlBehavior = "Static";
 		}

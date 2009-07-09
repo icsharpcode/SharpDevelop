@@ -354,7 +354,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		public static void ShowAsSearchResults(string pattern, List<Reference> list)
+		public static void ShowAsSearchResults(string title, List<Reference> list)
 		{
 			if (list == null) return;
 			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
@@ -362,7 +362,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				SearchResultMatch res = new SearchResultMatch(GetDocumentInformation(r.FileName), r.Offset, r.Length);
 				results.Add(res);
 			}
-			SearchResultsPad.Instance.ShowSearchResults(pattern, results);
+			SearchResultsPad.Instance.ShowSearchResults(title, results);
 			SearchResultsPad.Instance.BringToFront();
 		}
 		

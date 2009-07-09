@@ -5,17 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Microsoft.Build.Evaluation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
-using MSBuild = Microsoft.Build.BuildEngine;
+using Microsoft.Build.Construction;
+using MSBuild = Microsoft.Build.Evaluation;
 using StringPair = ICSharpCode.SharpDevelop.Pair<string, string>;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -27,17 +29,26 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// require locking on the SyncRoot. Methods that return underlying MSBuild objects require that
 	/// the caller locks on the SyncRoot.
 	/// </summary>
-	public class MSBuildBasedProject : AbstractProject, IProjectItemListProvider, IProjectAllowChangeConfigurations
+	public class MSBuildBasedProject : AbstractProject, IProjectItemListProvider
 	{
+		/// <summary>
+		/// The project collection that contains this project.
+		/// </summary>
+		ProjectCollection projectCollection;
+		
+		internal ProjectCollection MSBuildProjectCollection {
+			get { return projectCollection; }
+		}
+		
 		/// <summary>
 		/// The underlying MSBuild project.
 		/// </summary>
-		MSBuild.Project project;
+		ProjectRootElement projectFile;
 		
 		/// <summary>
 		/// The '.user' part of the project.
 		/// </summary>
-		MSBuild.Project userProject;
+		ProjectRootElement userProjectFile;
 		
 		/// <summary>
 		/// A list of project properties that are saved after the normal properties.
@@ -49,50 +60,59 @@ namespace ICSharpCode.SharpDevelop.Project
 			"PreBuildEvent"
 		);
 		
-		public MSBuildBasedProject(MSBuild.Engine engine)
-		{
-			if (engine == null)
-				throw new ArgumentNullException("engine");
-			this.project = engine.CreateNewProject();
-			this.userProject = engine.CreateNewProject();
-		}
-		
-		/// <summary>
-		/// Gets the underlying MSBuild project.
-		/// </summary>
-		[Browsable(false)]
-		public MSBuild.Project MSBuildProject {
-			get { return project; }
-		}
-		
 		public override void Dispose()
 		{
 			base.Dispose();
-			// unload evaluatingTempProject if necessary:
-			MSBuildInternals.EnsureCorrectTempProject(project, null, null, ref evaluatingTempProject);
+			UnloadCurrentlyOpenProject();
 			// unload project + userProject:
-			project.ParentEngine.UnloadProject(project);
-			userProject.ParentEngine.UnloadProject(userProject);
+			projectFile = null;
+			userProjectFile = null;
+		}
+		
+		/// <summary>
+		/// Gets the MSBuild.Construction project file.
+		/// You must lock on the project's SyncRoot before accessing the MSBuild project file!
+		/// </summary>
+		public ProjectRootElement MSBuildProjectFile {
+			get {
+				if (projectFile ==  null)
+					throw new ObjectDisposedException("MSBuildBasedProject");
+				return projectFile;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the MSBuild.Construction project file.
+		/// You must lock on the project's SyncRoot before accessing the MSBuild project file!
+		/// </summary>
+		public ProjectRootElement MSBuildUserProjectFile {
+			get {
+				if (projectFile ==  null)
+					throw new ObjectDisposedException("MSBuildBasedProject");
+				return userProjectFile;
+			}
 		}
 		
 		public override int MinimumSolutionVersion {
 			get {
 				lock (SyncRoot) {
-					if (string.IsNullOrEmpty(project.DefaultToolsVersion)
-					    || project.DefaultToolsVersion == "2.0")
+					if (string.IsNullOrEmpty(projectFile.ToolsVersion) || projectFile.ToolsVersion == "2.0")
 					{
 						return Solution.SolutionVersionVS2005;
-					} else {
+					} else if (projectFile.ToolsVersion == "3.0" || projectFile.ToolsVersion == "3.5") {
 						return Solution.SolutionVersionVS2008;
+					} else {
+						return Solution.SolutionVersionVS2010;
 					}
 				}
 			}
 		}
 		
-		public virtual void ConvertToMSBuild35(bool changeTargetFrameworkToNet35)
+		public virtual void ConvertToMSBuild40(bool changeTargetFrameworkToNet40)
 		{
 			lock (SyncRoot) {
-				project.DefaultToolsVersion = "3.5";
+				projectFile.ToolsVersion = "4.0";
+				userProjectFile.ToolsVersion = "4.0";
 			}
 		}
 		
@@ -105,9 +125,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Creates a new projectItem for the passed itemType
 		/// </summary>
-		public override ProjectItem CreateProjectItem(MSBuild.BuildItem item)
+		public override ProjectItem CreateProjectItem(IProjectItemBackendStore item)
 		{
-			switch (item.Name) {
+			switch (item.ItemType.ItemName) {
 				case "Reference":
 					return new ReferenceProjectItem(this, item);
 				case "ProjectReference":
@@ -132,8 +152,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					return new WebReferencesProjectItem(this, item);
 					
 				default:
-					if (this.AvailableFileItemTypes.Contains(new ItemType(item.Name))
-					    || SafeFileExists(this.Directory, item.FinalItemSpec))
+					if (this.AvailableFileItemTypes.Contains(item.ItemType)
+					    || SafeFileExists(this.Directory, item.EvaluatedInclude))
 					{
 						return new FileProjectItem(this, item);
 					} else {
@@ -153,24 +173,28 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Create new project
-		protected virtual void Create(ProjectCreateInformation information)
+		public MSBuildBasedProject(ProjectCreateInformation information)
 		{
-			InitializeMSBuildProject(project);
+			this.projectCollection = information.Solution.MSBuildProjectCollection;
+			this.projectFile = ProjectRootElement.Create(projectCollection);
+			this.userProjectFile = ProjectRootElement.Create(projectCollection);
+			this.ActivePlatform = information.Platform;
 			
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
 			
-			project.FullFileName = information.OutputProjectFileName;
-			project.DefaultToolsVersion = "3.5";
+			projectFile.FullPath = information.OutputProjectFileName;
+			projectFile.ToolsVersion = "4.0";
+			projectFile.DefaultTargets = "Build";
+			userProjectFile.FullPath = information.OutputProjectFileName + ".user";
 			
 			base.IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
-			MSBuild.BuildPropertyGroup group = project.AddNewPropertyGroup(false);
-			group.AddNewProperty(ProjectGuidPropertyName, IdGuid, true);
-			group.AddNewProperty("Configuration", "Debug", true).Condition = " '$(Configuration)' == '' ";
-			group.AddNewProperty("Platform", "AnyCPU", true).Condition = " '$(Platform)' == '' ";
+			projectFile.AddProperty(ProjectGuidPropertyName, IdGuid);
+			AddGuardedProperty("Configuration", "Debug");
+			AddGuardedProperty("Platform", information.Platform);
 			
 			this.ActiveConfiguration = "Debug";
-			this.ActivePlatform = "AnyCPU";
+			this.ActivePlatform = information.Platform;
 		}
 		
 		/// <summary>
@@ -188,29 +212,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Adds a guarded property:
 		/// &lt;<paramref name="name"/> Condition=" '$(<paramref name="name"/>)' == '' "
 		/// </summary>
-		protected void AddGuardedProperty(string name, string value, bool treatValueAsLiteral)
+		protected void AddGuardedProperty(string name, string value)
 		{
-			foreach (MSBuild.BuildPropertyGroup pg in project.PropertyGroups) {
-				if (pg.IsImported)
-					continue;
-				if (string.IsNullOrEmpty(pg.Condition)) {
-					pg.AddNewProperty(name, value, treatValueAsLiteral).Condition = " '$(" + name + ")' == '' ";
-					return;
-				}
+			lock (SyncRoot) {
+				projectFile.AddProperty(name, value).Condition = " '$(" + name + ")' == '' ";
 			}
-			MSBuild.BuildPropertyGroup newGroup = project.AddNewPropertyGroup(false);
-			newGroup.AddNewProperty(name, value, treatValueAsLiteral).Condition = " '$(" + name + ")' == '' ";
 		}
 		
 		/// <summary>
 		/// Adds an MSBuild import to the project, refreshes the list of available item names
 		/// and recreates the project items.
 		/// </summary>
-		protected void AddImport(string projectFile, string condition)
+		protected void AddImport(string importedProjectFile, string condition)
 		{
 			lock (SyncRoot) {
-				project.AddNewImport(projectFile, condition);
-				CreateItemsListFromMSBuild();
+				projectFile.AddImport(importedProjectFile).Condition = condition;
 			}
 		}
 		#endregion
@@ -225,12 +241,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <returns>The evaluated value of the property, or null if the property doesn't exist</returns>
 		public string GetEvaluatedProperty(string propertyName)
 		{
-			lock (SyncRoot) {
-				return project.GetEvaluatedProperty(propertyName);
+			using (var c = OpenCurrentConfiguration()) {
+				return c.Project.GetPropertyValue(propertyName);
 			}
 		}
-		
-		MSBuild.Project evaluatingTempProject;
 		
 		/// <summary>
 		/// Retrieves the evaluated property '<paramref name="propertyName"/>' from the
@@ -258,14 +272,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string GetProperty(string configuration, string platform, string propertyName,
 		                          out PropertyStorageLocations location)
 		{
-			lock (SyncRoot) {
-				MSBuild.BuildPropertyGroup group;
-				MSBuild.BuildProperty prop = FindPropertyObject(configuration, platform, propertyName,
-				                                                out group, out location);
-				if (prop == null)
+			using (var c = OpenConfiguration(configuration, platform)) {
+				var prop = c.GetNonImportedProperty(propertyName);
+				if (prop != null) {
+					location = c.GetLocation(prop);
+					return prop.EvaluatedValue;
+				} else {
+					location = PropertyStorageLocations.Unknown;
 					return null;
-				else
-					return prop.FinalValue;
+				}
 			}
 		}
 		
@@ -308,33 +323,136 @@ namespace ICSharpCode.SharpDevelop.Project
 		                                    string propertyName,
 		                                    out PropertyStorageLocations location)
 		{
-			lock (SyncRoot) {
-				MSBuild.BuildPropertyGroup group;
-				MSBuild.BuildProperty prop = FindPropertyObject(configuration, platform, propertyName,
-				                                                out group, out location);
-				if (prop == null)
+			using (var c = OpenConfiguration(configuration, platform)) {
+				var prop = c.GetNonImportedProperty(propertyName);
+				if (prop != null) {
+					location = c.GetLocation(prop);
+					return prop.UnevaluatedValue;
+				} else {
+					location = PropertyStorageLocations.Unknown;
 					return null;
-				else
-					return prop.Value;
+				}
+			}
+		}
+		
+		MSBuild.Project currentlyOpenProject;
+		
+		void UnloadCurrentlyOpenProject()
+		{
+			if (currentlyOpenProject != null) {
+				MSBuildInternals.UnloadProject(projectCollection, currentlyOpenProject);
+				currentlyOpenProject = null;
 			}
 		}
 		
 		/// <summary>
-		/// Evaluates a MSBuild condition in this project.
-		/// 
-		/// WARNING: EvaluateMSBuildCondition might add a temporary property group to the project
-		/// and remove it again, which invalidates enumerators over the list of property groups!
+		/// Creates an MSBuild project instance.
+		/// This method is thread-safe.
 		/// </summary>
-		/// <param name="configuration">The configuration to use for evaluating the condition</param>
-		/// <param name="platform">The platform to use for evaluating the condition</param>
-		/// <param name="condition">The MSBuild condition string to evaluate</param>
-		/// <returns>The result of the condition</returns>
-		protected bool EvaluateMSBuildCondition(string configuration, string platform,
-		                                        string condition)
+		public Microsoft.Build.Execution.ProjectInstance CreateProjectInstance()
 		{
-			lock (SyncRoot) {
-				return MSBuildInternals.EvaluateCondition(project, configuration, platform, condition,
-				                                          ref evaluatingTempProject);
+			using (var c = OpenCurrentConfiguration()) {
+				return c.Project.CreateProjectInstance();
+			}
+		}
+		
+		/// <summary>
+		/// calls OpenConfiguration for the current configuration
+		/// </summary>
+		ConfiguredProject OpenCurrentConfiguration()
+		{
+			return OpenConfiguration(null, null);
+		}
+		
+		/// <summary>
+		/// Provides access to the underlying MSBuild.Evaluation project.
+		/// Usage:
+		/// using (ConfiguredProject c = OpenCurrentConfiguration()) {
+		///    // access c.Project only in this block
+		/// }
+		/// This method is thread-safe: calling it locks the SyncRoot. You have to dispose
+		/// the ConfiguredProject instance to unlock the SyncRoot.
+		/// </summary>
+		ConfiguredProject OpenConfiguration(string configuration, string platform)
+		{
+			bool lockTaken = false;
+			try {
+				System.Threading.Monitor.Enter(this.SyncRoot, ref lockTaken);
+				
+				if (configuration == null)
+					configuration = this.ActiveConfiguration;
+				if (platform == null)
+					platform = this.ActivePlatform;
+				
+				bool openCurrentConfiguration = configuration == this.ActiveConfiguration && platform == this.ActivePlatform;
+				
+				if (currentlyOpenProject != null && openCurrentConfiguration) {
+					// use currently open project
+					currentlyOpenProject.ReevaluateIfNecessary();
+					return new ConfiguredProject(this, currentlyOpenProject, false);
+				}
+				
+				Dictionary<string, string> globalProps = new Dictionary<string, string>();
+				InitializeMSBuildProjectProperties(globalProps);
+				globalProps["Configuration"] = configuration;
+				
+				//HACK: the ActivePlatform property should be set properly before entering here, but sometimes it does not
+				if (platform != null)	
+					globalProps["Platform"] = platform;
+				MSBuild.Project project = MSBuildInternals.LoadProject(projectCollection, projectFile, globalProps);
+				if (openCurrentConfiguration)
+					currentlyOpenProject = project;
+				return new ConfiguredProject(this, project, !openCurrentConfiguration);
+			} catch {
+				// Leave lock only on exceptions.
+				// If there's no exception, the lock will be left when the ConfiguredProject
+				// is disposed.
+				if (lockTaken)
+					System.Threading.Monitor.Exit(this.SyncRoot);
+				throw;
+			}
+		}
+		
+		sealed class ConfiguredProject : IDisposable
+		{
+			readonly MSBuildBasedProject p;
+			readonly bool unloadProjectOnDispose;
+			public readonly MSBuild.Project Project;
+			
+			internal ConfiguredProject(MSBuildBasedProject parent, MSBuild.Project project, bool unloadProjectOnDispose)
+			{
+				this.p = parent;
+				this.Project = project;
+				this.unloadProjectOnDispose = unloadProjectOnDispose;
+			}
+			
+			public MSBuild.ProjectProperty GetNonImportedProperty(string name)
+			{
+				var prop = Project.GetProperty(name);
+				if (prop != null && prop.Xml != null) {
+					if (prop.Xml.ContainingProject == p.projectFile || prop.Xml.ContainingProject == p.userProjectFile)
+						return prop;
+				}
+				return null;
+			}
+			
+			public PropertyStorageLocations GetLocation(MSBuild.ProjectProperty prop)
+			{
+				var location = MSBuildInternals.GetLocationFromCondition(prop.Xml);
+				if (prop.Xml.ContainingProject == p.userProjectFile)
+					location |= PropertyStorageLocations.UserFile;
+				return location;
+			}
+			
+			public void Dispose()
+			{
+				try {
+					if (unloadProjectOnDispose) {
+						MSBuildInternals.UnloadProject(p.projectCollection, this.Project);
+					}
+				} finally {
+					System.Threading.Monitor.Exit(p.SyncRoot);
+				}
 			}
 		}
 		
@@ -351,57 +469,23 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <param name="group">[Out], the property group in which the property was found</param>
 		/// <param name="location">[Out], the storage location the condition of the property
 		/// group was referring to</param>
-		protected MSBuild.BuildProperty FindPropertyObject(string configuration, string platform,
-		                                                   string propertyName,
-		                                                   out MSBuild.BuildPropertyGroup group,
-		                                                   out PropertyStorageLocations location)
+		protected ProjectPropertyElement FindPropertyObject(string configuration, string platform,
+		                                                    string propertyName,
+		                                                    out ProjectPropertyGroupElement group,
+		                                                    out PropertyStorageLocations location)
 		{
-			if (string.IsNullOrEmpty(configuration)) configuration = ActiveConfiguration;
-			if (string.IsNullOrEmpty(platform))      platform = ActivePlatform;
-			
-			// First try main project file
-			MSBuild.BuildProperty p = FindPropertyObjectInternal(project, configuration, platform, propertyName, out group);
-			if (p != null) {
-				location = MSBuildInternals.GetLocationFromCondition(group.Condition);
-				return p;
-			} else {
-				// try user project file
-				p = FindPropertyObjectInternal(userProject, configuration, platform, propertyName, out group);
-				if (p != null) {
-					location = PropertyStorageLocations.UserFile
-						| MSBuildInternals.GetLocationFromCondition(group.Condition);
-					return p;
+			using (var c = OpenConfiguration(configuration, platform)) {
+				var prop = c.GetNonImportedProperty(propertyName);
+				if (prop != null) {
+					group = (ProjectPropertyGroupElement)prop.Xml.Parent;
+					location = c.GetLocation(prop);
+					return prop.Xml;
 				} else {
-					location = PropertyStorageLocations.Unknown;
 					group = null;
+					location = PropertyStorageLocations.Unknown;
 					return null;
 				}
 			}
-		}
-		
-		MSBuild.BuildProperty FindPropertyObjectInternal(MSBuild.Project project,
-		                                                 string configuration, string platform,
-		                                                 string propertyName,
-		                                                 out MSBuild.BuildPropertyGroup group)
-		{
-			// We need to use ToList because EvaluateMSBuildCondition invalidates the list
-			// of property groups.
-			foreach (MSBuild.BuildPropertyGroup g
-			         in project.PropertyGroups.Cast<MSBuild.BuildPropertyGroup>().ToList())
-			{
-				if (g.IsImported) {
-					continue;
-				}
-				MSBuild.BuildProperty property = MSBuildInternals.GetProperty(g, propertyName);
-				if (property == null)
-					continue;
-				if (EvaluateMSBuildCondition(configuration, platform, g.Condition)) {
-					group = g;
-					return property;
-				}
-			}
-			group = null;
-			return null;
 		}
 		
 		/// <summary>
@@ -415,19 +499,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		string GetAnyUnevaluatedPropertyValue(string configuration, string platform, string propertyName)
 		{
 			// first try main project file, then try user project file
-			MSBuild.BuildProperty p = GetAnyUnevaluatedProperty(project, configuration, platform, propertyName);
+			ProjectPropertyElement p = GetAnyUnevaluatedProperty(projectFile, configuration, platform, propertyName);
 			if (p == null)
-				p = GetAnyUnevaluatedProperty(userProject, configuration, platform, propertyName);
+				p = GetAnyUnevaluatedProperty(userProjectFile, configuration, platform, propertyName);
 			return p != null ? p.Value : null;
 		}
 		
-		static MSBuild.BuildProperty GetAnyUnevaluatedProperty(MSBuild.Project project, string configuration, string platform, string propertyName)
+		static ProjectPropertyElement GetAnyUnevaluatedProperty(ProjectRootElement project, string configuration, string platform, string propertyName)
 		{
-			foreach (MSBuild.BuildPropertyGroup g in project.PropertyGroups) {
-				if (g.IsImported) {
-					continue;
-				}
-				MSBuild.BuildProperty property = MSBuildInternals.GetProperty(g, propertyName);
+			foreach (var g in project.PropertyGroups) {
+				var property = g.Properties.FirstOrDefault(p => p.Name == propertyName);
 				if (property == null)
 					continue;
 				string gConfiguration, gPlatform;
@@ -443,6 +524,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return null;
 		}
 		
+		/*
 		/// <summary>
 		/// Get all instances of the specified property.
 		/// 
@@ -468,6 +550,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return l;
 		}
+		 */
 		#endregion
 		
 		#region SetProperty
@@ -486,17 +569,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		PropertyStorageLocations FindExistingPropertyInAllConfigurations(string propertyName)
 		{
-			foreach (MSBuild.BuildPropertyGroup g in project.PropertyGroups) {
-				if (g.IsImported) continue;
-				if (MSBuildInternals.GetProperty(g, propertyName) != null) {
+			foreach (var g in projectFile.PropertyGroups) {
+				if (g.Properties.Any(p => p.Name == propertyName)) {
 					return MSBuildInternals.GetLocationFromCondition(g.Condition);
 				}
 			}
-			foreach (MSBuild.BuildPropertyGroup g in userProject.PropertyGroups) {
-				if (g.IsImported) continue;
-				if (MSBuildInternals.GetProperty(g, propertyName) != null) {
-					return PropertyStorageLocations.UserFile |
-						MSBuildInternals.GetLocationFromCondition(g.Condition);
+			foreach (var g in userProjectFile.PropertyGroups) {
+				if (g.Properties.Any(p => p.Name == propertyName)) {
+					return MSBuildInternals.GetLocationFromCondition(g.Condition)
+						| PropertyStorageLocations.UserFile;
 				}
 			}
 			return PropertyStorageLocations.Unknown;
@@ -564,11 +645,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		                                                    bool treatPropertyValueAsLiteral)
 		{
 			PropertyStorageLocations oldLocation;
-			MSBuild.BuildPropertyGroup existingPropertyGroup;
-			MSBuild.BuildProperty existingProperty = FindPropertyObject(configuration, platform,
-			                                                            propertyName,
-			                                                            out existingPropertyGroup,
-			                                                            out oldLocation);
+			ProjectPropertyGroupElement existingPropertyGroup;
+			ProjectPropertyElement existingProperty = FindPropertyObject(configuration, platform,
+			                                                             propertyName,
+			                                                             out existingPropertyGroup,
+			                                                             out oldLocation);
 			// Try to get accurate oldLocation
 			if (oldLocation == PropertyStorageLocations.Unknown) {
 				oldLocation = FindExistingPropertyInAllConfigurations(propertyName);
@@ -581,18 +662,18 @@ namespace ICSharpCode.SharpDevelop.Project
 				location = oldLocation;
 			}
 			// determine the insertion position for the property
-			MSBuild.PropertyPosition propertyInsertionPosition;
+			PropertyPosition propertyInsertionPosition;
 			if (saveAfterImportsProperties.Contains(propertyName)) {
-				propertyInsertionPosition = MSBuild.PropertyPosition.UseExistingOrCreateAfterLastImport;
+				propertyInsertionPosition = PropertyPosition.UseExistingOrCreateAfterLastImport;
 			} else {
-				propertyInsertionPosition = MSBuild.PropertyPosition.UseExistingOrCreateAfterLastPropertyGroup;
+				propertyInsertionPosition = PropertyPosition.UseExistingOrCreateAfterLastPropertyGroup;
 			}
 			// get the project file where the property should be stored
-			MSBuild.Project targetProject;
+			ProjectRootElement targetProject;
 			if ((location & PropertyStorageLocations.UserFile) == PropertyStorageLocations.UserFile)
-				targetProject = userProject;
+				targetProject = userProjectFile;
 			else
-				targetProject = project;
+				targetProject = projectFile;
 			
 			if (oldLocation != location) {
 				// move existing properties to new location, then use the normal property
@@ -696,10 +777,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				                   treatPropertyValueAsLiteral);
 				if (newValue == null) {
 					// delete existing property
-					existingPropertyGroup.RemoveProperty(existingProperty);
+					existingPropertyGroup.RemoveChild(existingProperty);
 					
 					if (existingPropertyGroup.Count == 0) {
-						targetProject.RemovePropertyGroup(existingPropertyGroup);
+						targetProject.RemoveChild(existingPropertyGroup);
 					}
 				}
 			} else if (newValue != null) {
@@ -712,17 +793,43 @@ namespace ICSharpCode.SharpDevelop.Project
 			return args;
 		}
 		
-		void MSBuildSetProperty(MSBuild.Project targetProject, string propertyName, string newValue,
-		                        string groupCondition, MSBuild.PropertyPosition position,
+		enum PropertyPosition
+		{
+			UseExistingOrCreateAfterLastPropertyGroup,
+			UseExistingOrCreateAfterLastImport
+		}
+		
+		void MSBuildSetProperty(ProjectRootElement targetProject, string propertyName, string newValue,
+		                        string groupCondition, PropertyPosition position,
 		                        bool treatPropertyValueAsLiteral)
 		{
-			if (targetProject == project) {
-				project.SetProperty(propertyName, newValue, groupCondition, position, treatPropertyValueAsLiteral);
-			} else if (targetProject == userProject) {
-				project.SetImportedProperty(propertyName, newValue, groupCondition, userProject, position, treatPropertyValueAsLiteral);
-			} else {
-				throw new ArgumentException();
+			if (treatPropertyValueAsLiteral)
+				newValue = MSBuildInternals.Escape(newValue);
+			if (groupCondition == null) {
+				// MSBuild uses an empty string when there's no condition, so we need to do the same
+				// for the comparison to succeed.
+				groupCondition = string.Empty;
 			}
+			foreach (var propertyGroup in targetProject.PropertyGroups) {
+				if (propertyGroup.Condition == groupCondition) {
+					foreach (var property in propertyGroup.Properties.ToList()) {
+						if (property.Name == propertyName) {
+							property.Value = newValue;
+							return;
+						}
+					}
+				}
+			}
+			foreach (var propertyGroup in targetProject.PropertyGroups) {
+				if (propertyGroup.Condition == groupCondition) {
+					propertyGroup.AddProperty(propertyName, newValue);
+					return;
+				}
+			}
+			
+			var newGroup = targetProject.AddPropertyGroup();
+			newGroup.Condition = groupCondition;
+			newGroup.AddProperty(propertyName, newValue);
 		}
 		
 		/// <summary>
@@ -730,28 +837,30 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		void RemovePropertyCompletely(string propertyName)
 		{
-			RemovePropertyCompletely(project, propertyName);
-			RemovePropertyCompletely(userProject, propertyName);
+			RemovePropertyCompletely(projectFile, propertyName);
+			RemovePropertyCompletely(userProjectFile, propertyName);
 		}
 		
-		static void RemovePropertyCompletely(MSBuild.Project project, string propertyName)
+		static void RemovePropertyCompletely(ProjectRootElement project, string propertyName)
 		{
-			List<MSBuild.BuildPropertyGroup> emptiedGroups = new List<MSBuild.BuildPropertyGroup>();
-			foreach (MSBuild.BuildPropertyGroup g in project.PropertyGroups) {
-				if (g.IsImported) continue;
-				g.RemoveProperty(propertyName);
-				if (g.Count == 0) {
-					emptiedGroups.Add(g);
+			foreach (var propertyGroup in project.PropertyGroups.ToList()) {
+				bool propertyRemoved = false;
+				foreach (var property in propertyGroup.Properties.ToList()) {
+					if (property.Name == propertyName) {
+						propertyGroup.RemoveChild(property);
+						propertyRemoved = true;
+					}
 				}
+				if (propertyRemoved && propertyGroup.Children.Count() == 0)
+					project.RemoveChild(propertyGroup);
 			}
-			emptiedGroups.ForEach(project.RemovePropertyGroup);
 		}
 		
 		/// <summary>
 		/// Creates an MSBuild condition string.
 		/// At most one of configuration and platform can be null.
 		/// </summary>
-		static string CreateCondition(string configuration, string platform)
+		internal static string CreateCondition(string configuration, string platform)
 		{
 			if (configuration == null)
 				return CreateCondition(configuration, platform, PropertyStorageLocations.PlatformSpecific);
@@ -766,7 +875,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// configuration and platform may be only <c>null</c> if they are not required (as specified by the
 		/// storage location), otherwise an ArgumentNullException is thrown.
 		/// </summary>
-		static string CreateCondition(string configuration, string platform, PropertyStorageLocations location)
+		internal static string CreateCondition(string configuration, string platform, PropertyStorageLocations location)
 		{
 			switch (location & PropertyStorageLocations.ConfigurationAndPlatformSpecific) {
 				case PropertyStorageLocations.ConfigurationSpecific:
@@ -828,7 +937,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			WorkbenchSingleton.AssertMainThread();
 			
-			lock (SyncRoot) {
+			using (var c = OpenCurrentConfiguration()) {
 				foreach (ProjectItem item in items) {
 					item.Dispose();
 				}
@@ -837,15 +946,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				Set<ItemType> availableFileItemTypes = new Set<ItemType>();
 				availableFileItemTypes.AddRange(ItemType.DefaultFileItems);
-				foreach (MSBuild.BuildItem item in project.GetEvaluatedItemsByName("AvailableItemName")) {
-					availableFileItemTypes.Add(new ItemType(item.Include));
+				foreach (var item in c.Project.GetItems("AvailableItemName")) {
+					availableFileItemTypes.Add(new ItemType(item.EvaluatedInclude));
 				}
 				this.availableFileItemTypes = availableFileItemTypes.AsReadOnly();
 				
-				foreach (MSBuild.BuildItem item in project.EvaluatedItems) {
+				foreach (var item in c.Project.AllEvaluatedItems) {
 					if (item.IsImported) continue;
 					
-					items.Add(CreateProjectItem(item));
+					items.Add(CreateProjectItem(new MSBuildItemWrapper(this, item)));
 				}
 				
 				ClearFindFileCache();
@@ -862,20 +971,20 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentException("item is already added to project", "item");
 			
 			WorkbenchSingleton.AssertMainThread();
-			
-			lock (SyncRoot) {
+			using (var c = OpenCurrentConfiguration()) {
 				items.Add(item);
 				itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
-				foreach (MSBuild.BuildItemGroup g in project.ItemGroups) {
-					if (g.IsImported || !string.IsNullOrEmpty(g.Condition) || g.Count == 0)
+				/*foreach (var g in projectFile.ItemGroups) {
+					if (!string.IsNullOrEmpty(g.Condition) || g.Count == 0)
 						continue;
-					if (g[0].Name == item.ItemType.ItemName) {
+					var firstItemInGroup = g.Items.First();
+					if (firstItemInGroup.Name == item.ItemType.ItemName) {
 						MSBuildInternals.AddItemToGroup(g, item);
 						return;
 					}
-					if (g[0].Name == "Reference")
+					if (firstItemInGroup.ItemType == ItemType.Reference.ItemName)
 						continue;
-					if (ItemType.DefaultFileItems.Contains(new ItemType(g[0].Name))) {
+					if (ItemType.DefaultFileItems.Contains(new ItemType(firstItemInGroup.ItemType))) {
 						if (ItemType.DefaultFileItems.Contains(item.ItemType)) {
 							MSBuildInternals.AddItemToGroup(g, item);
 							return;
@@ -887,8 +996,20 @@ namespace ICSharpCode.SharpDevelop.Project
 					MSBuildInternals.AddItemToGroup(g, item);
 					return;
 				}
-				MSBuild.BuildItemGroup newGroup = project.AddNewItemGroup();
-				MSBuildInternals.AddItemToGroup(newGroup, item);
+				var newGroup = projectFile.AddItemGroup();
+				MSBuildInternals.AddItemToGroup(newGroup, item);*/
+				
+				
+				string newInclude = item.TreatIncludeAsLiteral ? MSBuildInternals.Escape(item.Include) : item.Include;
+				var newMetadata = new Dictionary<string, string>();
+				foreach (string name in item.MetadataNames) {
+					newMetadata[name] = item.GetMetadata(name);
+				}
+				var newItems = c.Project.AddItem(item.ItemType.ItemName, newInclude, newMetadata);
+				if (newItems.Count != 1)
+					throw new InvalidOperationException("expected one new item, but got " + newItems.Count);
+				item.BuildItem = new MSBuildItemWrapper((MSBuildBasedProject)item.Project, newItems[0]);
+				Debug.Assert(item.IsAddedToProject);
 			}
 		}
 		
@@ -900,13 +1021,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentException("item does not belong to this project", "item");
 			if (!item.IsAddedToProject)
 				return false;
+			MSBuildItemWrapper backend = (MSBuildItemWrapper)item.BuildItem;
 			
-			WorkbenchSingleton.AssertMainThread();
-			
-			lock (SyncRoot) {
+			using (var c = OpenCurrentConfiguration()) {
 				if (items.Remove(item)) {
 					itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
-					project.RemoveItem(item.BuildItem);
+					c.Project.RemoveItem(backend.MSBuildItem);
 					item.BuildItem = null; // make the item free again
 					return true;
 				} else {
@@ -935,40 +1055,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			return result;
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
-			MSBuildEngine.StartBuild(this, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
+			MSBuildEngine.StartBuild(this, buildServices, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
 		}
-		
-		/*
-		internal static void RunMSBuild(Solution solution, IProject project,
-		                                string configuration, string platform, BuildOptions options)
-		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
-			oldMSBuildEngine engine = new oldMSBuildEngine();
-			engine.Configuration = configuration;
-			engine.Platform = platform;
-			engine.MessageView = TaskService.BuildMessageViewCategory;
-			engine.Run(solution, project, options);
-		}
-		 */
 		#endregion
 		
 		#region Loading
 		protected bool isLoading;
 		
-		internal static void InitializeMSBuildProject(MSBuild.Project project)
-		{
-			InitializeMSBuildProjectProperties(project.GlobalProperties);
-		}
-		
 		/// <summary>
 		/// Set compilation properties (MSBuildProperties and AddInTree/AdditionalPropertiesPath).
 		/// </summary>
-		internal static void InitializeMSBuildProjectProperties(MSBuild.BuildPropertyGroup propertyGroup)
+		internal static void InitializeMSBuildProjectProperties(IDictionary<string, string> globalProperties)
 		{
 			foreach (KeyValuePair<string, string> entry in MSBuildEngine.MSBuildProperties) {
-				propertyGroup.SetProperty(entry.Key, entry.Value);
+				globalProperties[entry.Key] = entry.Value;
 			}
 			// re-load these properties from AddInTree every time because "text" might contain
 			// SharpDevelop properties resolved by the StringParser (e.g. ${property:FxCopPath})
@@ -977,34 +1079,37 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (Codon codon in node.Codons) {
 					object item = codon.BuildItem(null, new System.Collections.ArrayList());
 					if (item != null) {
-						bool escapeValue = !codon.Properties.Get("text", "").Contains("$(");
-						propertyGroup.SetProperty(codon.Id, item.ToString(), escapeValue);
+						string text = item.ToString();
+						if (!codon.Properties.Get("text", "").Contains("$("))
+							text = MSBuildInternals.Escape(text);
+						globalProperties[codon.Id] = text;
 					}
 				}
 			}
 		}
 		
-		protected virtual void LoadProject(string fileName)
+		public MSBuildBasedProject(ProjectLoadInformation loadInformation)
 		{
-			lock (SyncRoot) {
-				isLoading = true;
-				try {
-					LoadProjectInternal(fileName);
-				} finally {
-					isLoading = false;
-				}
+			if (loadInformation == null)
+				throw new ArgumentNullException("loadInformation");
+			this.Name = loadInformation.ProjectName;
+			isLoading = true;
+			try {
+				LoadProjectInternal(loadInformation);
+			} finally {
+				isLoading = false;
 			}
 		}
 		
-		void LoadProjectInternal(string fileName)
+		void LoadProjectInternal(ProjectLoadInformation loadInformation)
 		{
-			this.FileName = fileName;
+			this.projectCollection = loadInformation.ParentSolution.MSBuildProjectCollection;
+			this.FileName = loadInformation.FileName;
+			this.ActivePlatform = loadInformation.Platform;
 			
-			InitializeMSBuildProject(project);
-			
-			try {
-				project.Load(fileName);
-			} catch (MSBuild.InvalidProjectFileException ex) {
+			//try {
+			projectFile = ProjectRootElement.Open(loadInformation.FileName, projectCollection);
+			/*} catch (MSBuild.InvalidProjectFileException ex) {
 				LoggingService.Warn(ex);
 				LoggingService.Warn("ErrorCode = " + ex.ErrorCode);
 				bool isVS2003ProjectWithInvalidEncoding = false;
@@ -1024,7 +1129,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					// before it can be build by MSBuild."
 					try {
 						Converter.PrjxToSolutionProject.ConvertVSNetProject(fileName);
-						project.Load(fileName);
+						projectFile.Load(fileName);
 					} catch (System.Xml.XmlException ex2) {
 						throw new ProjectLoadException(ex2.Message, ex2);
 					} catch (MSBuild.InvalidProjectFileException ex2) {
@@ -1033,24 +1138,21 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else {
 					throw new ProjectLoadException(ex.Message, ex);
 				}
-			}
+			}*/
 			
-			string userFileName = fileName + ".user";
+			string userFileName = loadInformation.FileName + ".user";
 			if (File.Exists(userFileName)) {
-				try {
-					userProject.Load(userFileName);
-				} catch (MSBuild.InvalidProjectFileException ex) {
+				//try {
+				userProjectFile = ProjectRootElement.Open(userFileName, projectCollection);
+				/*} catch (MSBuild.InvalidProjectFileException ex) {
 					throw new ProjectLoadException("Error loading user part " + userFileName + ":\n" + ex.Message);
-				}
+				}*/
+			} else {
+				userProjectFile = ProjectRootElement.Create(userFileName, projectCollection);
 			}
 			
 			this.ActiveConfiguration = GetEvaluatedProperty("Configuration") ?? this.ActiveConfiguration;
 			this.ActivePlatform = GetEvaluatedProperty("Platform") ?? this.ActivePlatform;
-			
-			// Some projects do not specify default configuration/platform, so we have to set
-			// Configuration and Platform in the global properties to be sure these properties exist
-			project.GlobalProperties.SetProperty("Configuration", this.ActiveConfiguration, true);
-			project.GlobalProperties.SetProperty("Platform", this.ActivePlatform, true);
 			
 			CreateItemsListFromMSBuild();
 			LoadConfigurationPlatformNamesFromMSBuild();
@@ -1075,11 +1177,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Save(string fileName)
 		{
 			lock (SyncRoot) {
-				project.Save(fileName);
-				bool userProjectDirty = userProject.IsDirty;
-				string userFile = fileName + ".user";
-				if (File.Exists(userFile) || userProject.PropertyGroups.Count > 0) {
-					userProject.Save(userFile);
+				// we need the global lock - if the file is being renamed,
+				// MSBuild will update the global project collection
+				lock (MSBuildInternals.SolutionProjectCollectionLock) {
+					projectFile.Save(fileName);
+					//bool userProjectDirty = userProjectFile.HasUnsavedChanges;
+					string userFile = fileName + ".user";
+					if (File.Exists(userFile) || userProjectFile.Count > 0) {
+						userProjectFile.Save(userFile);
+					}
 				}
 			}
 			FileUtility.RaiseFileSaved(new FileNameEventArgs(fileName));
@@ -1091,7 +1197,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (!isLoading) {
 				lock (SyncRoot) {
-					project.GlobalProperties.SetProperty("Configuration", this.ActiveConfiguration, true);
+					UnloadCurrentlyOpenProject();
 					CreateItemsListFromMSBuild();
 				}
 			}
@@ -1102,7 +1208,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (!isLoading) {
 				lock (SyncRoot) {
-					project.GlobalProperties.SetProperty("Platform", this.ActivePlatform, true);
+					UnloadCurrentlyOpenProject();
 					CreateItemsListFromMSBuild();
 				}
 			}
@@ -1144,8 +1250,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			Set<string> configurationNames = new Set<string>();
 			Set<string> platformNames = new Set<string>();
 			
-			LoadConfigurationPlatformNamesFromMSBuildInternal(project, configurationNames, platformNames);
-			LoadConfigurationPlatformNamesFromMSBuildInternal(userProject, configurationNames, platformNames);
+			LoadConfigurationPlatformNamesFromMSBuildInternal(projectFile, configurationNames, platformNames);
+			LoadConfigurationPlatformNamesFromMSBuildInternal(userProjectFile, configurationNames, platformNames);
 			
 			if (configurationNames.Count == 0) {
 				configurationNames.Add("Debug");
@@ -1160,35 +1266,35 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 
 		static void LoadConfigurationPlatformNamesFromMSBuildInternal(
-			MSBuild.Project project,
+			ProjectRootElement project,
 			Set<string> configurationNames, Set<string> platformNames)
 		{
-			foreach (MSBuild.BuildPropertyGroup g in project.PropertyGroups) {
-				if (g.IsImported) {
-					continue;
-				}
-				MSBuild.BuildProperty prop = MSBuildInternals.GetProperty(g, "Configuration");
-				if (prop != null && !string.IsNullOrEmpty(prop.FinalValue)) {
-					configurationNames.Add(prop.FinalValue);
-				}
-				prop = MSBuildInternals.GetProperty(g, "Platform");
-				if (prop != null && !string.IsNullOrEmpty(prop.FinalValue)) {
-					platformNames.Add(prop.FinalValue);
-				}
-
-				string gConfiguration, gPlatform;
-				MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition, out gConfiguration, out gPlatform);
-				if (gConfiguration != null) {
-					configurationNames.Add(gConfiguration);
-				}
-				if (gPlatform != null) {
-					platformNames.Add(gPlatform);
+			foreach (var g in project.PropertyGroups) {
+				if (string.IsNullOrEmpty(g.Condition)) {
+					var prop = g.Properties.FirstOrDefault(p => p.Name == "Configuration");
+					if (prop != null && !string.IsNullOrEmpty(prop.Value)) {
+						configurationNames.Add(prop.Value);
+					}
+					prop = g.Properties.FirstOrDefault(p => p.Name == "Platform");
+					if (prop != null && !string.IsNullOrEmpty(prop.Value)) {
+						platformNames.Add(prop.Value);
+					}
+				} else {
+					string gConfiguration, gPlatform;
+					MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition, out gConfiguration, out gPlatform);
+					if (gConfiguration != null) {
+						configurationNames.Add(gConfiguration);
+					}
+					if (gPlatform != null) {
+						platformNames.Add(gPlatform);
+					}
 				}
 			}
 		}
 		#endregion
 		
 		#region IProjectAllowChangeConfigurations interface implementation
+		/*
 		bool IProjectAllowChangeConfigurations.RenameProjectConfiguration(string oldName, string newName)
 		{
 			lock (SyncRoot) {
@@ -1386,6 +1492,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return true;
 			}
 		}
+		 */
 		#endregion
 	}
 }

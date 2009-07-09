@@ -33,13 +33,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return codeEditor.FileName; }
 		}
 		
-		public override void ShowCompletionWindow(ICompletionItemList data)
+		public override IFormattingStrategy FormattingStrategy {
+			get { return codeEditor.FormattingStrategy; }
+		}
+		
+		public override ICompletionListWindow ActiveCompletionWindow {
+			get { return codeEditor.ActiveCompletionWindow; }
+		}
+		
+		public override ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)
 		{
 			if (data == null || !data.Items.Any())
-				return;
-			CompletionWindow window = new SharpDevelopCompletionWindow(this, this.TextEditor.TextArea, data);
-			codeEditor.NotifyCompletionWindowOpened(window);
-			window.Show();
+				return null;
+			SharpDevelopCompletionWindow window = new SharpDevelopCompletionWindow(this, this.TextEditor.TextArea, data);
+			codeEditor.ShowCompletionWindow(window);
+			return window;
 		}
 		
 		public override IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
@@ -54,9 +62,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				// don't open insight window when there are no items
 				return null;
 			}
-			codeEditor.NotifyInsightWindowOpened(insightWindow);
-			insightWindow.Show();
-			
+			codeEditor.ShowInsightWindow(insightWindow);
 			return insightWindow;
 		}
 		

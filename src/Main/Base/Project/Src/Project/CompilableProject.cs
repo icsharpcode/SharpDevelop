@@ -14,7 +14,6 @@ using System.IO;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
-using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -64,17 +63,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		protected readonly Set<string> reparseCodeSensitiveProperties = new Set<string>();
 		
-		protected CompilableProject(IMSBuildEngineProvider engineProvider)
-			: base(engineProvider.BuildEngine)
+		protected CompilableProject(ICSharpCode.SharpDevelop.Internal.Templates.ProjectCreateInformation information)
+			: base(information)
 		{
-		}
-		
-		protected override void Create(ICSharpCode.SharpDevelop.Internal.Templates.ProjectCreateInformation information)
-		{
-			base.Create(information);
-			
-			this.MSBuildProject.DefaultTargets = "Build";
-			
 			this.OutputType = OutputType.Exe;
 			this.RootNamespace = information.RootNamespace;
 			this.AssemblyName = information.ProjectName;
@@ -103,6 +94,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			            PropertyStorageLocations.ConfigurationSpecific, true);
 			SetProperty("Release", null, "Optimize", "True",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
+		}
+		
+		protected CompilableProject(ProjectLoadInformation information)
+			: base(information)
+		{
 		}
 		
 		/// <summary>
@@ -169,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override string OutputAssemblyFullPath {
 			get {
 				string outputPath = GetEvaluatedProperty("OutputPath") ?? "";
-				return Path.Combine(Path.Combine(Directory, outputPath), AssemblyName + GetExtension(OutputType));
+				return FileUtility.NormalizePath(Path.Combine(Path.Combine(Directory, outputPath), AssemblyName + GetExtension(OutputType)));
 			}
 		}
 		
@@ -179,9 +175,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string OutputFullPath {
 			get {
 				string outputPath = GetEvaluatedProperty("OutputPath");
-				// Path.GetFullPath() cleans up any back references.
+				// FileUtility.NormalizePath() cleans up any back references.
 				// e.g. C:\windows\system32\..\system becomes C:\windows\system
-				return Path.GetFullPath(Path.Combine(Directory, outputPath));
+				return FileUtility.NormalizePath(Path.Combine(Directory, outputPath));
 			}
 		}
 		
@@ -189,7 +185,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public OutputType OutputType {
 			get {
 				try {
-					return (OutputType)Enum.Parse(typeof(OutputType), GetEvaluatedProperty("OutputType") ?? "Exe");
+					return (OutputType)Enum.Parse(typeof(OutputType), GetEvaluatedProperty("OutputType") ?? "Exe", true);
 				} catch (ArgumentException) {
 					return OutputType.Exe;
 				}
@@ -346,7 +342,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
 				return guids.Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
 			}
-		}		
+		}
 		
 		public string TestPageFileName {
 			get {
@@ -411,23 +407,25 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override void ConvertToMSBuild35(bool changeTargetFrameworkToNet35)
+		public override void ConvertToMSBuild40(bool changeTargetFrameworkToNet40)
 		{
 			lock (SyncRoot) {
-				base.ConvertToMSBuild35(changeTargetFrameworkToNet35);
+				base.ConvertToMSBuild40(changeTargetFrameworkToNet40);
 				
+				throw new NotImplementedException();
+				/*
 				var winFxImport = MSBuildProject.Imports.Cast<Microsoft.Build.BuildEngine.Import>()
 					.Where(import => !import.IsImported)
 					.FirstOrDefault(import => string.Equals(import.ProjectPath, "$(MSBuildBinPath)\\Microsoft.WinFX.targets", StringComparison.OrdinalIgnoreCase));
 				if (winFxImport != null) {
 					MSBuildProject.Imports.RemoveImport(winFxImport);
 				}
-				if (changeTargetFrameworkToNet35) {
-					bool isDotNet35 = TargetFrameworkVersion == "v3.5";
-					SetProperty(null, null, "TargetFrameworkVersion", "v3.5", PropertyStorageLocations.Base, true);
+				if (changeTargetFrameworkToNet40) {
+					bool isDotNet40 = TargetFrameworkVersion == "v4.0";
+					SetProperty(null, null, "TargetFrameworkVersion", "v4.0", PropertyStorageLocations.Base, true);
 					
-					if (!isDotNet35) {
-						AddDotnet35References();
+					if (!isDotNet40) {
+						AddDotnet40References();
 					}
 				} else {
 					foreach (string config in ConfigurationNames) {
@@ -451,11 +449,12 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 				}
+				 */
 			}
 			AddOrRemoveExtensions();
 		}
 		
-		protected internal virtual void AddDotnet35References()
+		protected internal virtual void AddDotnet40References()
 		{
 			ReferenceProjectItem rpi = new ReferenceProjectItem(this, "System.Core");
 			rpi.SetMetadata("RequiredTargetFramework", "3.5");
@@ -486,7 +485,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				CompilableProject project = (CompilableProject)Owner;
 				if (project.TargetFrameworkVersion == "v3.5") {
-					project.AddDotnet35References();
+					project.AddDotnet40References();
 				}
 			}
 		}

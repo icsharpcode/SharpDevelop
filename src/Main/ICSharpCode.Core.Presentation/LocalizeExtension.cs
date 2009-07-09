@@ -6,6 +6,10 @@
 // </file>
 
 using System;
+using System.ComponentModel;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Data;
 using System.Windows.Markup;
 
 namespace ICSharpCode.Core.Presentation
@@ -18,13 +22,23 @@ namespace ICSharpCode.Core.Presentation
 		public LocalizeExtension(string key)
 		{
 			this.key = key;
+			this.UsesAccessors = true;
 		}
 		
 		protected string key;
 		
+		public bool UsesAccessors { get; set; }
+		
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
-			return ResourceService.GetString(key);
+			try {
+				string result = ResourceService.GetString(key);
+				if (UsesAccessors)
+					result = MenuService.ConvertLabel(result);
+				return result;
+			} catch (ResourceNotFoundException) {
+				return "{Localize:" + key + "}";
+			}
 		}
 	}
 }

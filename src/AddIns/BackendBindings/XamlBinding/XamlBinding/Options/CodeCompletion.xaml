@@ -1,0 +1,21 @@
+<gui:OptionPanel x:Class="ICSharpCode.XamlBinding.Options.CodeCompletion"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:addin="clr-namespace:ICSharpCode.XamlBinding"
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<StackPanel>
+		<GroupBox Header="{sd:Localize AddIns.XamlBinding.Options.CodeCompletionGroupLabel}">
+			<StackPanel>			
+				<CheckBox Content="{sd:Localize AddIns.XamlBinding.Options.UseExtensionCompletion}"
+						IsChecked="{sd:OptionBinding addin:XamlBindingOptions.UseExtensionCompletion}" />
+				<CheckBox Content="{sd:Localize AddIns.XamlBinding.Options.SwitchToCodeViewAfterInsertion}"
+						IsChecked="{sd:OptionBinding addin:XamlBindingOptions.SwitchToCodeViewAfterInsertion}" />
+				<DockPanel>
+					<Label Content="{sd:Localize AddIns.XamlBinding.Options.EventHandlerNamePattern}" />
+					<TextBox Text="{sd:OptionBinding addin:XamlBindingOptions.EventHandlerNamePattern}" />
+				</DockPanel>
+			</StackPanel>		
+		</GroupBox>
+	</StackPanel>
+</gui:OptionPanel>

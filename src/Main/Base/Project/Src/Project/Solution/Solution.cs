@@ -15,38 +15,27 @@ using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using MSBuild = Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public interface IMSBuildEngineProvider
-	{
-		MSBuild.Engine BuildEngine {
-			get;
-		}
-	}
-	
-	public class Solution : SolutionFolder, IDisposable, IMSBuildEngineProvider, IBuildable
+	public class Solution : SolutionFolder, IDisposable, IBuildable
 	{
 		public const int SolutionVersionVS2005 = 9;
 		public const int SolutionVersionVS2008 = 10;
+		public const int SolutionVersionVS2010 = 11;
 		
 		/// <summary>contains &lt;GUID, (IProject/ISolutionFolder)&gt; pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		
 		string fileName = String.Empty;
 		
-		MSBuild.Engine buildEngine = MSBuildInternals.CreateEngine();
-		
 		public Solution()
 		{
 			preferences = new SolutionPreferences(this);
+			this.MSBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
 		}
 		
-		[Browsable(false)]
-		public MSBuild.Engine BuildEngine {
-			get { return buildEngine; }
-		}
+		public Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection { get; private set; }
 		
 		#region Enumerate projects/folders
 		public IProject FindProjectContainingFile(string fileName)
@@ -368,6 +357,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					sw.WriteLine("# Visual Studio 2005");
 				} else if (versionNumber == SolutionVersionVS2008) {
 					sw.WriteLine("# Visual Studio 2008");
+				} else if (versionNumber == SolutionVersionVS2010) {
+					sw.WriteLine("# Visual Studio 10");
 				}
 				sw.WriteLine("# SharpDevelop " + RevisionClass.FullVersion);
 				sw.Write(projectSection.ToString());
@@ -480,6 +471,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						break;
 					case "9.00":
 					case "10.00":
+					case "11.00":
 						break;
 					default:
 						MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.UnknownSolutionVersion}", match.Result("${Version}"));
@@ -516,6 +508,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			string solutionDirectory = Path.GetDirectoryName(newSolution.FileName);
 			
 			ProjectSection nestedProjectsSection = null;
+			IList<ProjectLoadInformation> projectsToLoad = new List<ProjectLoadInformation>();
+			IList<IList<ProjectSection>> readProjectSections = new List<IList<ProjectSection>>();
+			
+			// process the solution file contents
 			while (true) {
 				string line = sr.ReadLine();
 				
@@ -537,10 +533,18 @@ namespace ICSharpCode.SharpDevelop.Project
 						SolutionFolder newFolder = SolutionFolder.ReadFolder(sr, title, location, guid);
 						newSolution.AddFolder(newFolder);
 					} else {
-						IProject newProject = LanguageBindingService.LoadProject(newSolution, location, title, projectGuid, progressMonitor);
-						ReadProjectSections(sr, newProject.ProjectSections);
-						newProject.IdGuid = guid;
-						newSolution.AddFolder(newProject);
+						ProjectLoadInformation loadInfo = new ProjectLoadInformation(newSolution, location, title);
+						loadInfo.TypeGuid = projectGuid;
+						loadInfo.Guid = guid;
+//						loadInfo.ProgressMonitor = progressMonitor;
+//						IProject newProject = LanguageBindingService.LoadProject(loadInfo);
+//						newProject.IdGuid = guid;
+						projectsToLoad.Add(loadInfo);
+						IList<ProjectSection> currentProjectSections = new List<ProjectSection>();
+						ReadProjectSections(sr, currentProjectSections);
+						readProjectSections.Add(currentProjectSections);
+//						newSolution.AddFolder(newProject);
+
 					}
 					match = match.NextMatch();
 				} else {
@@ -557,6 +561,21 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 				}
+			}
+			// load projects
+			for(int i=0; i<projectsToLoad.Count; i++) {
+				ProjectLoadInformation loadInfo = projectsToLoad[i];
+				IList<ProjectSection> projectSections = readProjectSections[i];
+				
+				// set the target platform
+				SolutionItem projectConfig = newSolution.GetProjectConfiguration(loadInfo.Guid);
+				loadInfo.Platform = AbstractProject.GetPlatformNameFromKey(projectConfig.Location);
+				
+				loadInfo.ProgressMonitor = progressMonitor;
+				IProject newProject = LanguageBindingService.LoadProject(loadInfo);
+				newProject.IdGuid = loadInfo.Guid;
+				newProject.ProjectSections.AddRange(projectSections);
+				newSolution.AddFolder(newProject);
 			}
 			return nestedProjectsSection;
 		}
@@ -641,39 +660,50 @@ namespace ICSharpCode.SharpDevelop.Project
 			return newSec;
 		}
 		
+		public SolutionItem GetProjectConfiguration(string guid) {
+			ProjectSection projectConfigSection = GetProjectConfigurationsSection();
+			SolutionItem foundItem = projectConfigSection.Items.Find(item => item.Name.StartsWith(guid));
+			if (foundItem != null)
+				return foundItem;
+			LoggingService.Warn("No configuration for project "+guid + "using default.");
+			return new SolutionItem("Debug|Any CPU", "Debug|Any CPU");
+		}
+		
 		public bool FixSolutionConfiguration(IEnumerable<IProject> projects)
 		{
 			ProjectSection solSec = GetSolutionConfigurationsSection();
 			ProjectSection prjSec = GetProjectConfigurationsSection();
 			bool changed = false;
-			if (solSec.Items.Count == 0) {
-				solSec.Items.Add(new SolutionItem("Debug|Any CPU", "Debug|Any CPU"));
-				solSec.Items.Add(new SolutionItem("Release|Any CPU", "Release|Any CPU"));
-				LoggingService.Warn("!! Inserted default SolutionConfigurationPlatforms !!");
-				changed = true;
-			}
+			Set<string> configurations = new Set<string>();
+
 			foreach (IProject project in projects) {
 				string guid = project.IdGuid.ToUpperInvariant();
-				foreach (SolutionItem configuration in solSec.Items) {
-					string searchKey = guid + "." + configuration.Name + ".Build.0";
-					if (!prjSec.Items.Exists(delegate (SolutionItem item) {
-					                         	return item.Name == searchKey;
-					                         }))
-					{
-						prjSec.Items.Add(new SolutionItem(searchKey, configuration.Location));
+				string platform = FixPlatformNameForSolution(project.ActivePlatform);
+				foreach (string configuration in new string[]{"Debug", "Release"}) {
+					string key = configuration + "|" + platform;
+					configurations.Add(key);
+					
+					string searchKey = guid + "." + key + ".Build.0";
+					if (!prjSec.Items.Exists(item => item.Name == searchKey)) {
+						prjSec.Items.Add(new SolutionItem(searchKey, key));
 						changed = true;
 					}
-					searchKey = guid + "." + configuration.Name + ".ActiveCfg";
-					if (!prjSec.Items.Exists(delegate (SolutionItem item) {
-					                         	return item.Name == searchKey;
-					                         }))
-					{
-						prjSec.Items.Add(new SolutionItem(searchKey, configuration.Location));
+					
+					searchKey = guid + "." + key + ".ActiveCfg";
+					if (!prjSec.Items.Exists(item => item.Name == searchKey)) {
+						prjSec.Items.Add(new SolutionItem(searchKey, key));
 						changed = true;
 					}
 				}
 			}
 			
+			foreach (string key in configurations) {
+				if (!solSec.Items.Exists(item => item.Location == key && item.Name == key)) {
+					solSec.Items.Add(new SolutionItem(key, key));
+					changed = true;
+				}
+			}
+					
 			// remove all configuration entries belonging to removed projects
 			prjSec.Items.RemoveAll(
 				item => {
@@ -1171,10 +1201,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (IProject project in Projects) {
 				project.Dispose();
 			}
-			if (buildEngine != null) {
-				buildEngine.UnloadAllProjects();
-				buildEngine = null;
-			}
 		}
 		#endregion
 		
@@ -1187,7 +1213,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return result;
 		}
 		
-		void IBuildable.StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+		void IBuildable.StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
 		{
 			// building a solution finishes immediately: we only care for the dependencies
 			feedbackSink.Done(true);

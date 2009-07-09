@@ -56,7 +56,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				return idGuid;
 			}
 			set {
-				idGuid = value;
+				lock (syncRoot) {
+					idGuid = value;
+				}
 			}
 		}
 		
@@ -66,7 +68,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				return location;
 			}
 			set {
-				location = value;
+				lock (syncRoot) {
+					location = value;
+				}
 			}
 		}
 		
@@ -76,7 +80,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				return name;
 			}
 			set {
-				name = value;
+				lock (syncRoot) {
+					name = value;
+				}
 			}
 		}
 		
@@ -98,7 +104,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				return typeGuid;
 			}
 			set {
-				typeGuid = value;
+				lock (syncRoot) {
+					typeGuid = value;
+				}
 			}
 		}
 	}

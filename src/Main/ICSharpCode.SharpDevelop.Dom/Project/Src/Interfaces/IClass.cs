@@ -74,6 +74,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		IEnumerable<IClass> ClassInheritanceTreeClassesOnly {
+			get;
+		}
+		
 		IClass BaseClass {
 			get;
 		}

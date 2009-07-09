@@ -1,160 +1,75 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
+    <ProjectGuid>{745869FF-80E9-4589-A366-E775D2103843}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CF2FF1D1-A5FE-4848-936A-E2DFBE154562}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.ShortcutsManagement</RootNamespace>
     <AssemblyName>ICSharpCode.ShortcutsManagement</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>ShortcutsManagement.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug in SharpDevelop|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\ShortcutsManagement\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.Core, Version=4.0.0.4172, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.Core.Presentation, Version=4.0.0.4172, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\bin\ICSharpCode.Core.Presentation.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop, Version=4.0.0.4172, Culture=neutral, PublicKeyToken=f829da5c02be14ee, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationFramework.Luna">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationProvider">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Page Include="Src\Dialogs\CreateNewProfilePrompt.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Src\Dialogs\MultiKeyGestureTextBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Src\Dialogs\Resources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Src\Dialogs\ShortcutManagementWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Src\Dialogs\ShortcutsManagementOptionsPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Src\Dialogs\ShortcutsTreeView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Window1.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Window1.xaml.cs">
-      <DependentUpon>Window1.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Src\Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Src\Converters\AdditionConverter.cs" />
+    <Compile Include="Src\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Src\Converters\GesturesCollectionConverter.cs" />
-    <Compile Include="Src\Converters\InputGestureConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Src\Converters\InputGestureConverter.cs" />
     <Compile Include="Src\Converters\NotNullOrEmptyConverter.cs" />
     <Compile Include="Src\Converters\ProfilesComboBoxItemStyleSelector.cs" />
     <Compile Include="Src\Converters\ProfileToStringConverter.cs" />
     <Compile Include="Src\Converters\ShortcutCategorySubElementsMergedConverter.cs" />
+    <Compile Include="Src\Converters\TypeNameConverter.cs" />
     <Compile Include="Src\Data\AddIn.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <Compile Include="Src\Data\IShortcutTreeEntry.cs" />
     <Compile Include="Src\Data\MapTable.cs" />
     <Compile Include="Src\Data\SeparatorData.cs" />
@@ -173,48 +88,70 @@
     </Compile>
     <Compile Include="Src\Dialogs\ShortcutsManagementOptionsPanel.xaml.cs">
       <DependentUpon>ShortcutsManagementOptionsPanel.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Dialogs\ShortcutsTreeView.xaml.cs">
       <DependentUpon>ShortcutsTreeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\Extensions\TextBlockBehavior.cs" />
     <Compile Include="Src\Extensions\TreeViewExtensions.cs" />
-    <Compile Include="Src\Converters\TypeNameConverter.cs" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\StringResources.resx" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <AppDesigner Include="Properties\" />
+    <Compile Include="Window1.xaml.cs">
+      <DependentUpon>Window1.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
+    <Folder Include="Src" />
+    <Folder Include="Src\Converters" />
+    <Folder Include="Src\Data" />
+    <Folder Include="Src\Dialogs" />
+    <Folder Include="Src\Extensions" />
+    <Folder Include="Themes" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\16-square-red-remove.png" />
     <Resource Include="Resources\add_correction_16x16.gif" />
-    <Resource Include="Resources\key_enter.png" />
-    <Resource Include="Resources\key_enter_pressed.png" />
     <Resource Include="Resources\block_small.png" />
     <Resource Include="Resources\delete_small.png" />
+    <Resource Include="Resources\info_big.png" />
+    <Resource Include="Resources\info_mid.png" />
+    <Resource Include="Resources\info_small.png" />
+    <Resource Include="Resources\key_enter.png" />
+    <Resource Include="Resources\key_enter_pressed.png" />
     <Resource Include="Resources\plus_small.png" />
     <Resource Include="Resources\search_small.png" />
     <Resource Include="Resources\tick_small.png" />
     <Resource Include="Resources\warning_small.png" />
-    <Resource Include="Resources\info_big.png" />
-    <Resource Include="Resources\info_mid.png" />
-    <Content Include="ShortcutsManagement.addin">
+    <None Include="ShortcutsManagement.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\StringResources.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="App.xaml" />
+    <Page Include="Src\Dialogs\CreateNewProfilePrompt.xaml" />
+    <Page Include="Src\Dialogs\MultiKeyGestureTextBox.xaml" />
+    <Page Include="Src\Dialogs\Resources.xaml" />
+    <Page Include="Src\Dialogs\ShortcutManagementWindow.xaml" />
+    <Page Include="Src\Dialogs\ShortcutsManagementOptionsPanel.xaml" />
+    <Page Include="Src\Dialogs\ShortcutsTreeView.xaml" />
+    <Page Include="Themes\Generic.xaml" />
+    <Page Include="Window1.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -32,6 +32,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 	
 	public class DefaultFormattingStrategy : IFormattingStrategy
 	{
+		internal static readonly DefaultFormattingStrategy DefaultInstance = new DefaultFormattingStrategy();
+		
 		public virtual void FormatLine(ITextEditor editor, char charTyped)
 		{
 		}

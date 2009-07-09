@@ -4,11 +4,11 @@
        description = "Addin allows managing application shortcuts">
     	
 	<Manifest>
-		<Identity name="ShortcutsManagement" version = "@SharpDevelopCoreVersion"/>
+		<Identity name="ICSharpCode.ShortcutsManagement" version = "@SharpDevelopCoreVersion"/>
 	</Manifest>
     
     <Runtime>
-        <Import assembly = "ICSharpCode.ShortcutsManagement.exe"/>
+        <Import assembly = "ICSharpCode.ShortcutsManagement.dll"/>
     </Runtime>
     
     <Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">

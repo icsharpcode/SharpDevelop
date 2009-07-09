@@ -5,10 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 {
@@ -28,7 +29,11 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			bool readOnly = false;
 			
 			public TestProject(string languageName)
-				: base(new Solution())
+				: base(new ProjectCreateInformation {
+				       	Solution = new Solution(),
+				       	ProjectName = "TestProject",
+				       	OutputProjectFileName = "c:\\temp\\TestProject.csproj"
+				       })
 			{
 				this.languageName = languageName;
 			}

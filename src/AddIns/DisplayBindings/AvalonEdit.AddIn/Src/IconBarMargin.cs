@@ -37,16 +37,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		protected override void OnTextViewChanged(TextView oldTextView, TextView newTextView)
 		{
 			if (oldTextView != null) {
-				oldTextView.VisualLinesChanged -= TextViewVisualLinesChanged;
+				oldTextView.VisualLinesChanged -= OnRedrawRequested;
+				manager.RedrawRequested -= OnRedrawRequested;
 			}
 			base.OnTextViewChanged(oldTextView, newTextView);
 			if (newTextView != null) {
-				newTextView.VisualLinesChanged += TextViewVisualLinesChanged;
+				newTextView.VisualLinesChanged += OnRedrawRequested;
+				manager.RedrawRequested += OnRedrawRequested;
 			}
 			InvalidateVisual();
 		}
 		
-		void TextViewVisualLinesChanged(object sender, EventArgs e)
+		void OnRedrawRequested(object sender, EventArgs e)
 		{
 			InvalidateVisual();
 		}

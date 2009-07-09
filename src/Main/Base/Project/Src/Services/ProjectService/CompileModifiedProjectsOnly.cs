@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return new IBuildable[0];
 			}
 			
-			public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+			public void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
 			{
 			}
 		}
@@ -214,7 +214,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			Dictionary<ProjectBuildOptions, ICollection<IBuildable>> cachedBuildDependencies = new Dictionary<ProjectBuildOptions, ICollection<IBuildable>>();
-			
+			ICollection<IBuildable> cachedBuildDependenciesForNullOptions;
+				
 			public ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
 			{
 				List<IBuildable> result = new List<IBuildable>();
@@ -222,7 +223,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					result.Add(factory.GetWrapper(b));
 				}
 				lock (cachedBuildDependencies) {
-					cachedBuildDependencies[buildOptions] = result;
+					if (buildOptions != null)
+						cachedBuildDependencies[buildOptions] = result;
+					else
+						cachedBuildDependenciesForNullOptions = result;
 				}
 				return result;
 			}
@@ -241,11 +245,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				return lastCompilationPass.Index > comparisonPass.Index;
 			}
 			
-			public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+			public void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
 			{
 				IProject p = wrapped as IProject;
 				if (p == null) {
-					wrapped.StartBuild(buildOptions, feedbackSink);
+					wrapped.StartBuild(buildServices, buildOptions, feedbackSink);
 				} else {
 					lock (unmodifiedProjects) {
 						if (!unmodifiedProjects.TryGetValue(p, out lastCompilationPass)) {
@@ -254,7 +258,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					if (lastCompilationPass != null && Setting == BuildOnExecuteSetting.BuildModifiedAndDependent) {
 						lock (cachedBuildDependencies) {
-							if (cachedBuildDependencies[buildOptions].OfType<Wrapper>().Any(w=>w.WasRecompiledAfter(lastCompilationPass))) {
+							var dependencies = buildOptions != null ? cachedBuildDependencies[buildOptions] : cachedBuildDependenciesForNullOptions;
+							if (dependencies.OfType<Wrapper>().Any(w=>w.WasRecompiledAfter(lastCompilationPass))) {
 								lastCompilationPass = null;
 							}
 						}
@@ -267,7 +272,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						feedbackSink.Done(true);
 					} else {
 						lastCompilationPass = factory.CurrentPass;
-						wrapped.StartBuild(buildOptions, new BuildFeedbackSink(p, feedbackSink, factory.CurrentPass));
+						wrapped.StartBuild(buildServices, buildOptions, new BuildFeedbackSink(p, feedbackSink, factory.CurrentPass));
 					}
 				}
 			}

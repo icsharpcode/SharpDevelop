@@ -5,24 +5,24 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.CodeCoverage;
-using ICSharpCode.TextEditor.Document;
-using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.IO;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Tests.Utils;
+using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests
 {
 	[TestFixture]
 	public class AddCodeCoverageMarkersTestFixture
 	{
-		MarkerStrategy markerStrategy;
-		CodeCoverageTextMarker markerOne;
-		CodeCoverageTextMarker markerTwo;
-		CodeCoverageTextMarker markerThree;
+		ITextMarker markerOne;
+		ITextMarker markerTwo;
+		ITextMarker markerThree;
 		IDocument document;
+		ITextMarkerService markerStrategy;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -32,12 +32,12 @@ namespace ICSharpCode.CodeCoverage.Tests
 				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
 			} catch (Exception) {}
 			
-			document = MockDocument.Create();
+			document = MockTextMarkerService.CreateDocumentWithMockService();
 			string code = "\t\t{\r\n" +
 				"\t\t\tint count = 0;\r\n" +
 				"\t\t}\r\n";
-			document.TextContent = code;
-			markerStrategy = new MarkerStrategy(document);
+			document.Text = code;
+			markerStrategy = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			
 			string xml = "<PartCoverReport>\r\n" +
 				"<file id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
@@ -54,9 +54,9 @@ namespace ICSharpCode.CodeCoverage.Tests
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));
 			CodeCoverageMethod method = results.Modules[0].Methods[0];
 			CodeCoverageHighlighter highlighter = new CodeCoverageHighlighter();
-			highlighter.AddMarkers(markerStrategy, method.SequencePoints);
+			highlighter.AddMarkers(document, method.SequencePoints);
 			
-			foreach (CodeCoverageTextMarker marker in markerStrategy.TextMarker) {
+			foreach (ITextMarker marker in markerStrategy.TextMarkers) {
 				if (markerOne == null) {
 					markerOne = marker;
 				} else if (markerTwo == null) {
@@ -71,7 +71,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		public void MarkerCount()
 		{
 			int count = 0;
-			foreach (CodeCoverageTextMarker marker in markerStrategy.TextMarker) {
+			foreach (ITextMarker marker in markerStrategy.TextMarkers) {
 				count++;
 			}
 			
@@ -81,7 +81,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[Test]
 		public void MarkerOneOffset()
 		{
-			Assert.AreEqual(2, markerOne.Offset);
+			Assert.AreEqual(2, markerOne.StartOffset);
 		}
 		
 		[Test]
@@ -91,27 +91,21 @@ namespace ICSharpCode.CodeCoverage.Tests
 		}
 		
 		[Test]
-		public void MarkerOneType()
-		{
-			Assert.AreEqual(TextMarkerType.SolidBlock, markerOne.TextMarkerType);
-		}
-		
-		[Test]
 		public void MarkerOneForeColor()
 		{
-			Assert.AreEqual(CodeCoverageOptions.VisitedForeColor, markerOne.ForeColor);
+			Assert.AreEqual(CodeCoverageOptions.VisitedForeColor.ToWpf(), markerOne.ForegroundColor);
 		}
 		
 		[Test]
 		public void MarkerOneColor()
 		{
-			Assert.AreEqual(CodeCoverageOptions.VisitedColor, markerOne.Color);
+			Assert.AreEqual(CodeCoverageOptions.VisitedColor.ToWpf(), markerOne.BackgroundColor);
 		}
 		
 		[Test]
 		public void MarkerTwoOffset()
 		{
-			Assert.AreEqual(8, markerTwo.Offset);
+			Assert.AreEqual(8, markerTwo.StartOffset);
 		}
 		
 		[Test]
@@ -123,19 +117,19 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[Test]
 		public void MarkerThreeForeColor()
 		{
-			Assert.AreEqual(CodeCoverageOptions.NotVisitedForeColor, markerThree.ForeColor);
+			Assert.AreEqual(CodeCoverageOptions.NotVisitedForeColor.ToWpf(), markerThree.ForegroundColor);
 		}
 		
 		[Test]
 		public void MarkerThreeColor()
 		{
-			Assert.AreEqual(CodeCoverageOptions.NotVisitedColor, markerThree.Color);
+			Assert.AreEqual(CodeCoverageOptions.NotVisitedColor.ToWpf(), markerThree.BackgroundColor);
 		}
 		
 		[Test]
 		public void MarkerThreeOffset()
 		{
-			Assert.AreEqual(26, markerThree.Offset);
+			Assert.AreEqual(26, markerThree.StartOffset);
 		}
 		
 		[Test]

@@ -12,7 +12,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <summary>
 	/// A TextAnchorNode is placed in the TextAnchorTree.
 	/// It describes a section of text with a text anchor at the end of the section.
-	/// A weak reference is used to refer to the TextAnchor.
+	/// A weak reference is used to refer to the TextAnchor. (to save memory, we derive from WeakReference instead of referencing it)
 	/// </summary>
 	sealed class TextAnchorNode : WeakReference
 	{

@@ -18,3 +18,5 @@ using System.Reflection;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("XmlEditor.Tests")]

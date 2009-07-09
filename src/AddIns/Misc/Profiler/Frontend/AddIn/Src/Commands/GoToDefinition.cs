@@ -5,11 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Project;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Forms;
 using System.Linq;
+using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Profiler.Controls;
 using ICSharpCode.SharpDevelop;
@@ -35,11 +36,11 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 
 			if (selectedItem != null) {
 				IClass c = GetClassFromName(selectedItem.FullyQualifiedClassName);
-				if (c != null)
-				{
-					IMember member = GetMemberFromName(c, selectedItem.MethodName, selectedItem.Parameters);
-					if (member != null) {
-						IViewContent view = FileService.JumpToFilePosition(c.CompilationUnit.FileName, member.BodyRegion.BeginLine - 1, member.BodyRegion.BeginColumn - 1);
+				if (c != null) {
+					IEntity member = GetMemberFromName(c, selectedItem.MethodName, selectedItem.Parameters);
+					FilePosition position = c.ProjectContent.GetPosition(member ?? c);
+					if (!position.IsEmpty && !string.IsNullOrEmpty(position.FileName)) {
+						FileService.JumpToFilePosition(position.FileName, position.Line - 1, position.Column - 1);
 					}
 				}
 			}
@@ -53,59 +54,56 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			if (name == ".ctor" || name == ".cctor") // Constructor
 				name = name.Replace('.', '#');
 			
-			if (name.StartsWith("get_") || name.StartsWith("set_")) // Property Getter or Setter
+			if (name.StartsWith("get_") || name.StartsWith("set_")) {
+				// Property Getter or Setter
 				name = name.Substring(4);
+				IProperty prop = c.Properties.FirstOrDefault(p => p.Name == name);
+				if (prop != null)
+					return prop;
+			} else if (name.StartsWith("add_") || name.StartsWith("remove_")) {
+				name = name.Substring(4);
+				IEvent ev = c.Events.FirstOrDefault(e => e.Name == name);
+				if (ev != null)
+					return ev;
+			}
 			
-			foreach (IMethodOrProperty member in c.Methods)
-			{
-				if (member.Name != name)
+			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames | ConversionFlags.ShowParameterNames | ConversionFlags.StandardConversionFlags;
+			IMethod matchWithSameName = null;
+			IMethod matchWithSameParameterCount = null;
+			foreach (IMethod method in c.Methods) {
+				if (method.Name != name)
 					continue;
-				if (member.Parameters.Count != ((parameters == null) ? 0 : parameters.Count))
+				matchWithSameName = method;
+				if (method.Parameters.Count != ((parameters == null) ? 0 : parameters.Count))
 					continue;
+				matchWithSameParameterCount = method;
 				bool isCorrect = true;
-				for (int i = 0; i < member.Parameters.Count; i++) {
-					if (parameters[i] != ambience.Convert(member.Parameters[i])) {
+				for (int i = 0; i < method.Parameters.Count; i++) {
+					if (parameters[i] != ambience.Convert(method.Parameters[i])) {
 						isCorrect = false;
 						break;
 					}
 				}
 				
 				if (isCorrect)
-					return member;
+					return method;
 			}
 			
-			foreach (IMethodOrProperty member in c.Properties)
-			{
-				if (member.Name != name)
-					continue;
-				if (member.Parameters.Count != ((parameters == null) ? 0 : parameters.Count))
-					continue;
-				
-				bool isCorrect = true;
-				for (int i = 0; i < member.Parameters.Count; i++) {
-					if (parameters[i] != ambience.Convert(member.Parameters[i])) {
-						isCorrect = false;
-						break;
-					}
-				}
-				
-				if (isCorrect)
-					return member;
-			}
-			
-			return null;
+			return matchWithSameParameterCount ?? matchWithSameName;
 		}
 
 		IClass GetClassFromName(string name)
 		{
 			if (name == null)
 				return null;
+			if (ProjectService.OpenSolution == null)
+				return null;
 			
-			foreach (IProjectContent content in ParserService.AllProjectContents)
-			{
-				foreach (IClass c in content.Classes)
-				{
-					if (name == c.FullyQualifiedName)
+			foreach (IProject project in ProjectService.OpenSolution.Projects) {
+				IProjectContent content = ParserService.GetProjectContent(project);
+				if (content != null) {
+					IClass c = content.GetClassByReflectionName(name, false);
+					if (c != null)
 						return c;
 				}
 			}

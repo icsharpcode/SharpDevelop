@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -24,7 +23,7 @@ namespace ICSharpCode.XmlEditor
 	/// since we are interested in the complete path or tree to the
 	/// currently active element.
 	/// </remarks>
-	public class XmlParser
+	public sealed class XmlParser
 	{
 		/// <summary>
 		/// Helper class.  Holds the namespace URI and the prefix currently
@@ -100,7 +99,7 @@ namespace ICSharpCode.XmlEditor
 			QualifiedNameCollection namespaces = new QualifiedNameCollection();
 			return GetActiveElementStartPathAtIndex(xml, index, namespaces);
 		}
-
+		
 		/// <summary>
 		/// Gets the parent element path based on the index position.
 		/// </summary>
@@ -244,12 +243,15 @@ namespace ICSharpCode.XmlEditor
 				}
 				
 				// Find equals sign.
+				bool foundQuoteChar = false;
 				for (int i = index; i > elementStartIndex; --i) {
 					char ch = xml[i];
-					if (ch == '=') {
+					if (ch == '=' && foundQuoteChar) {
 						index = i;
 						ignoreEqualsSign = true;
 						break;
+					} else if (IsQuoteChar(ch)) {
+						foundQuoteChar = true;
 					}
 				}
 			} else {
@@ -260,6 +262,10 @@ namespace ICSharpCode.XmlEditor
 						if (ch == '\'' || ch == '\"') {
 							ignoreQuote = true;
 							ignoreEqualsSign = true;
+						} else if (ch == '=') {
+							// Do nothing.
+						} else {
+							return String.Empty;
 						}
 						break;
 					}
@@ -365,11 +371,14 @@ namespace ICSharpCode.XmlEditor
 			
 			// Find equals sign.
 			int equalsSignIndex = -1;
+			bool foundQuoteChar = false;
 			for (int i = index; i > elementStartIndex; --i) {
 				char ch = xml[i];
-				if (ch == '=') {
+				if (ch == '=' && foundQuoteChar) {
 					equalsSignIndex = i;
 					break;
+				} else if (IsQuoteChar(ch)) {
+					foundQuoteChar = true;
 				}
 			}
 			
@@ -379,12 +388,12 @@ namespace ICSharpCode.XmlEditor
 			
 			// Find attribute value.
 			char quoteChar = ' ';
-			bool foundQuoteChar = false;
+			foundQuoteChar = false;
 			StringBuilder attributeValue = new StringBuilder();
 			for (int i = equalsSignIndex; i < xml.Length; ++i) {
 				char ch = xml[i];
 				if (!foundQuoteChar) {
-					if (ch == '\"' || ch == '\'') {
+					if (IsQuoteChar(ch)) {
 						quoteChar = ch;
 						foundQuoteChar = true;
 					}
@@ -392,7 +401,7 @@ namespace ICSharpCode.XmlEditor
 					if (ch == quoteChar) {
 						// End of attribute value.
 						return attributeValue.ToString();
-					} else if (IsAttributeValueChar(ch) || (ch == '\"' || ch == '\'')) {
+					} else if (IsAttributeValueChar(ch) || IsQuoteChar(ch)) {
 						attributeValue.Append(ch);
 					} else {
 						// Invalid character found.
@@ -784,6 +793,10 @@ namespace ICSharpCode.XmlEditor
 			}
 			return new XmlElementPath();
 		}
+		
+		static bool IsQuoteChar(char ch)
+		{
+			return (ch == '\"') || (ch == '\'');
+		}
 	}
 }
-

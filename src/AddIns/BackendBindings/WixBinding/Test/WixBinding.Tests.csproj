@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>WixBinding.Tests</RootNamespace>
@@ -15,7 +15,7 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
@@ -34,6 +34,7 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -44,7 +45,6 @@
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
   </ItemGroup>
   <ItemGroup>
@@ -243,6 +243,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
+      <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>
+      <Name>XmlEditor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Project\WixBinding.csproj">
       <Project>{e1b288a2-08ee-4318-8bbb-8ab72c69e33e}</Project>
       <Name>WixBinding</Name>
@@ -285,18 +289,6 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
     <Folder Include="PackageFiles" />
-    <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
-      <Project>{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}</Project>
-      <Name>XmlEditor</Name>
-    </ProjectReference>
-    <Content Include="..\..\..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll">
-      <Link>ICSharpCode.SharpDevelop.Dom.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\..\..\..\AddIns\AddIns\DisplayBindings\XmlEditor\XmlEditor.dll">
-      <Link>XmlEditor.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Folder Include="PropertyGrid" />
     <Folder Include="DirectoryImport" />
     <Folder Include="Diff" />
@@ -304,10 +296,6 @@
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
     </ProjectReference>
-    <Content Include="..\..\..\..\..\bin\ICSharpCode.SharpDevelop.Widgets.dll">
-      <Link>ICSharpCode.SharpDevelop.Widgets.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

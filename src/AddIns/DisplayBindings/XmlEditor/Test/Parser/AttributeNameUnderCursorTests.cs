@@ -103,6 +103,7 @@ namespace XmlEditor.Tests.Parser
 			QualifiedName name = XmlParser.GetQualifiedAttributeNameAtIndex(text, text.Length);
 			Assert.AreEqual(expectedName, name);
 		}
+		
 		[Test]
 		public void AttributeNameWithPrefix2()
 		{
@@ -110,6 +111,16 @@ namespace XmlEditor.Tests.Parser
 			QualifiedName expectedName = new QualifiedName("test", String.Empty, "xab");
 			QualifiedName name = XmlParser.GetQualifiedAttributeNameAtIndex(text, text.IndexOf("xa"));
 			Assert.AreEqual(expectedName, name);
+		}
+		
+
+		[Test]
+		public void GetAttributeNameInsideXmlElementText()
+		{
+			string xml = "<Test val1=\"\">as df</Test>";
+			int offset = "<Test val1=\"\">as d".Length - 1;
+			string result = XmlParser.GetAttributeNameAtIndex(xml, offset);
+			Assert.AreEqual(String.Empty, result);
 		}
 	}
 }

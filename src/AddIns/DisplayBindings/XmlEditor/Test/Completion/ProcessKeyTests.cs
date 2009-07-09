@@ -7,10 +7,10 @@
 
 using System;
 using System.Windows.Forms;
-
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Completion
 {
@@ -20,13 +20,15 @@ namespace XmlEditor.Tests.Completion
 	[TestFixture]
 	public class ProcessKeyTests
 	{
-		XmlCompletionDataProvider provider;		
+		ICompletionItemList list;
 		
 		[SetUp]
 		public void Init()
 		{
+			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(ResourceManager.GetXhtmlStrictSchema());
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			provider = new XmlCompletionDataProvider(schemas, null, null);
+			schemas.Add(schema);
+			list = new XmlCompletionDataProvider(schemas, schema, "").GenerateCompletionData("", '<');
 		}
 		
 		/// <summary>
@@ -35,19 +37,19 @@ namespace XmlEditor.Tests.Completion
 		[Test]
 		public void SpaceChar()
 		{
-			Assert.AreEqual(CompletionDataProviderKeyResult.NormalKey, provider.ProcessKey(' '));
+			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, list.ProcessInput(' '));
 		}
 		
 		[Test]
 		public void TabChar()
 		{
-			Assert.AreEqual(CompletionDataProviderKeyResult.InsertionKey, provider.ProcessKey('\t'));
+			Assert.AreEqual(CompletionItemListKeyResult.InsertionKey, list.ProcessInput('\t'));
 		}		
 
 		[Test]
 		public void ReturnChar()
 		{
-			Assert.AreEqual(CompletionDataProviderKeyResult.InsertionKey, provider.ProcessKey((char)Keys.Return));
+			Assert.AreEqual(CompletionItemListKeyResult.InsertionKey, list.ProcessInput((char)Keys.Return));
 		}		
 	}
 }

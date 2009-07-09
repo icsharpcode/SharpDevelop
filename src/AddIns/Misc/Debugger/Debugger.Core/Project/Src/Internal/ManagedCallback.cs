@@ -409,10 +409,17 @@ namespace Debugger
 		
 		public void ExitThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
-			// It seems that ICorDebugThread is still not dead and can be used
-			EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, pThread);
-			
-			process.GetThread(pThread).NotifyExited();
+			// ICorDebugThread is still not dead and can be used for some operations
+			if (process.ContainsThread(pThread)) {
+				EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, pThread);
+				
+				process.GetThread(pThread).NotifyExited();
+			} else {
+			    EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, process.CorProcess);
+			    
+			    // TODO: Investigate
+				process.TraceMessage("ERROR: Thread does not exist " + pThread.ID);
+			}
 			
 			try {
 				ExitCallback();

@@ -789,7 +789,7 @@ namespace AvalonDock
 #if DEBUG
             Debug.Assert(_splitterList.Count == Children.Count / 2);
             i = 0;
-            while (true)
+            while (Children.Count > 0)
             {
                 Debug.Assert(Children[i] != null);
                 Debug.Assert(!(Children[i] is ResizingPanelSplitter));
@@ -799,7 +799,7 @@ namespace AvalonDock
 
                 Debug.Assert((Children[i] is ResizingPanelSplitter));
                 i++;
-                
+
             }
 #endif
             splitterListIsDirty = false;

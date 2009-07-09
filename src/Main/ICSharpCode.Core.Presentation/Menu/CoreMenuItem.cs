@@ -21,6 +21,12 @@ namespace ICSharpCode.Core.Presentation
 		protected readonly Codon codon;
 		protected readonly object caller;
 		
+		/// <summary>
+		/// If true, UpdateStatus() sets the enabled flag.
+		/// Used for type=Menu, but not for type=MenuItem - for menu items, Enabled is controlled by the WPF ICommand.
+		/// </summary>
+		internal bool SetEnabled;
+		
 		public CoreMenuItem(Codon codon, object caller)
 		{
 			this.codon = codon;
@@ -45,10 +51,13 @@ namespace ICSharpCode.Core.Presentation
 		
 		public virtual void UpdateStatus()
 		{
-			if (codon.GetFailedAction(caller) == ConditionFailedAction.Exclude)
+			ConditionFailedAction result = codon.GetFailedAction(caller);
+			if (result == ConditionFailedAction.Exclude)
 				this.Visibility = Visibility.Collapsed;
 			else
 				this.Visibility = Visibility.Visible;
+			if (SetEnabled)
+				this.IsEnabled = result == ConditionFailedAction.Nothing;
 		}
 	}
 }

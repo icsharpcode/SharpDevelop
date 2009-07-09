@@ -969,7 +969,7 @@ namespace Debugger.Wrappers.MetaData
 			this.size = size;
 		}
 		
-		byte[] GetData()
+		public byte[] GetData()
 		{
 			byte[] data = new byte[size];
 			Marshal.Copy(adress, data, 0, (int)size);

@@ -7,6 +7,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
@@ -65,11 +66,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 			BeginAnimation(OpacityProperty, null);
 		}
 		
+		internal Brush CaretBrush;
+		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			base.OnRender(drawingContext);
 			if (isVisible) {
-				drawingContext.DrawRectangle(Brushes.Black, null,
+				Brush caretBrush = this.CaretBrush;
+				if (caretBrush == null)
+					caretBrush = (Brush)textView.GetValue(TextBlock.ForegroundProperty);
+				drawingContext.DrawRectangle(caretBrush, null,
 				                             new Rect(caretRectangle.X - textView.HorizontalOffset,
 				                                      caretRectangle.Y - textView.VerticalOffset,
 				                                      caretRectangle.Width,

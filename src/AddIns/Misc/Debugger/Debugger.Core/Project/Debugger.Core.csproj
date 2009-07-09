@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -20,11 +20,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>2.0</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
     <PublishUrl>http://localhost/Debugger.Core/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -40,6 +35,7 @@
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -236,6 +232,46 @@
     <Compile Include="Src\Metadata\MemberInfo.cs" />
     <Compile Include="Src\Metadata\MethodInfo.cs" />
     <Compile Include="Src\Metadata\PropertyInfo.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Binary\ImageFormatException.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Metadata\CodedIndex.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Metadata\ElementType.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Metadata\MetadataFormatException.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Metadata\MetadataToken.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Metadata\TokenType.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Metadata\Utilities.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\Array.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\ArrayShape.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\BaseSignatureVisitor.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\Class.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\Constraint.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\CustomMod.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\FieldSig.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\FnPtr.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\GenericArg.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\GenericInst.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\GenericInstSignature.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\InputOutputItem.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\ISignatureVisitable.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\ISignatureVisitor.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\LocalVarSig.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\MethodDefSig.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\MethodRefSig.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\MethodSig.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\MethodSpec.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\MVar.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\Param.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\PropertySig.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\Ptr.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\RetType.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\Signature.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\SignatureReader.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\SigType.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\SzArray.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\TypeSpec.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\ValueType.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\Var.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil\MethodCallingConvention.cs" />
+    <Compile Include="Src\Mono.Cecil\Mono.Cecil\ReflectionException.cs" />
     <Compile Include="Src\Util\HighPrecisionTimer.cs" />
     <Compile Include="Src\Values\ArrayDimension.cs" />
     <Compile Include="Src\Values\ArrayDimensions.cs" />
@@ -420,6 +456,13 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\Mono.Cecil" />
+    <Folder Include="Src\Mono.Cecil\Mono.Cecil" />
+    <Folder Include="Src\Mono.Cecil\Mono.Cecil.Binary" />
+    <Folder Include="Src\Mono.Cecil\Mono.Cecil.Metadata" />
+    <Folder Include="Src\Mono.Cecil\Mono.Cecil.Signatures" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

@@ -151,7 +151,7 @@ namespace Debugger.Tests {
             ElementType="null"
             FullName="System.Array"
             GenericArguments="{}"
-            Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable}"
+            Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IStructuralComparable, System.Collections.IStructuralEquatable}"
             Kind="Class"
             Module="mscorlib.dll"
             Name="Array">

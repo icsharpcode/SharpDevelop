@@ -158,7 +158,6 @@
 				<ComponentRef Id="SharpDevelopDocFiles"/>
 				<ComponentRef Id="ICSharpCodeBuildTasksDll"/>
 				<ComponentRef Id="BuildTasksTargetFiles"/>
-				<ComponentRef Id="BuildWorkerFiles"/>
 				<ComponentRef Id="ICSharpCodeCoreDll"/>
 				<ComponentRef Id="ICSharpCodeCoreWinFormsDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
@@ -178,7 +177,6 @@
 				<ComponentRef Id="ComponentInspectorExe"/>
 				<ComponentRef Id="ComponentInspectorCoreDll"/>
 				<ComponentRef Id="ComponentInspectorICSharpCodeCoreDll"/>
-				<ComponentRef Id="ComponentInspectorLog4NetDll"/>
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
 				
@@ -266,7 +264,9 @@
 				<ComponentRef Id="NUnitUtilDll"/>
 				<ComponentRef Id="NUnitConsoleFiles"/>
 				<ComponentRef Id="NUnitConsoleX86Files"/>
-				<ComponentRef Id="NUnitCoreDll"/>
+				<ComponentRef Id="NUnitConsoleDotnet2Files"/>
+				<ComponentRef Id="NUnitConsoleDotnet2X86Files"/>
+			 	<ComponentRef Id="NUnitCoreDll"/>
 				<ComponentRef Id="NUnitFrameworkDll"/>
 				<ComponentRef Id="NUnitConsoleRunnerDll"/>
 				<ComponentRef Id="NUnitCoreInterfacesDll"/>
@@ -341,9 +341,8 @@
 				<ComponentRef Id="ClassCanvasDll"/>
 				<ComponentRef Id="DiagramsDll"/>
 				
-				<!--
-				<ComponentRef Id="XamlBindingFiles"/>
-				-->
+				<ComponentRef Id="ICSharpCodeXamlBindingDll"/>
+				<ComponentRef Id="XamlBindingAddin"/>
 				
 				<ComponentRef Id="WorkflowDesignerAddin"/>
 				<ComponentRef Id="WorkflowDesignerDll"/>
@@ -419,10 +418,10 @@
 				<ComponentRef Id="PythonBindingDll"/>	
 				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>				
 
-				<ComponentRef Id="FSharpBindingDll"/>
+				<!--<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	
 				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
-				<ComponentRef Id="FSharpEmptyClassTemplate"/>	
+				<ComponentRef Id="FSharpEmptyClassTemplate"/>-->
 				
 				<ComponentRef Id="ReflectorAddInDll"/>
 				<ComponentRef Id="ReflectorAddInIpcServerDll"/>
@@ -440,13 +439,13 @@
 				<ComponentRef Id="AvalonEditAddInAddin"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditAddInDll"/>
 				
-				<ComponentRef Id="Hook32Dll"/>
+				<!--<ComponentRef Id="Hook32Dll"/>
 				<ComponentRef Id="Hook64Dll"/>
 				<ComponentRef Id="ICSharpCodeProfilerAddInAddin"/>
 				<ComponentRef Id="ICSharpCodeProfilerAddInDll"/>
 				<ComponentRef Id="ICSharpCodeProfilerControllerDll"/>
 				<ComponentRef Id="ICSharpCodeProfilerControlsDll"/>
-				<ComponentRef Id="SystemDataSQLiteDll"/>
+				<ComponentRef Id="SystemDataSQLiteDll"/>-->
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

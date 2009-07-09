@@ -1,0 +1,178 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
+//     <version>$Revision$</version>
+// </file>
+using System.Collections.ObjectModel;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using Debugger.AddIn.Visualizers.Graph.Layout;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Debugger.AddIn.Visualizers.Common;
+
+namespace Debugger.AddIn.Visualizers.Graph.Drawing
+{
+	/// <summary>
+	/// Interaction logic for PositionedGraphNodeControl.xaml
+	/// </summary>
+	public partial class PositionedGraphNodeControl : UserControl
+	{
+		/// <summary>
+		/// Occurs when <see cref="PositionedNodeProperty"/> is expanded.
+		/// </summary>
+		public event EventHandler<PositionedPropertyEventArgs> PropertyExpanded;
+		/// <summary>
+		/// Occurs when <see cref="PositionedNodeProperty"/> is collaped.
+		/// </summary>
+		public event EventHandler<PositionedPropertyEventArgs> PropertyCollapsed;
+		
+		/// <summary>
+		/// Occurs when <see cref="NesteNodeViewModel"/> is expanded.
+		/// </summary>
+		public event EventHandler<ContentNodeEventArgs> ContentNodeExpanded;
+		/// <summary>
+		/// Occurs when <see cref="NesteNodeViewModel"/> is collaped.
+		/// </summary>
+		public event EventHandler<ContentNodeEventArgs> ContentNodeCollapsed;
+		
+		
+		// shown in the ListView
+		private ObservableCollection<ContentNode> view = new ObservableCollection<ContentNode>();
+		
+		private ContentNode root;
+		/// <summary>
+		/// The tree to be displayed in this Control.
+		/// </summary>
+		public ContentNode Root
+		{
+			get { return this.root; }
+			set
+			{
+				this.root = value;
+				this.view = getInitialView(this.root);
+				// data virtualization, PropertyNodeViewModel implements IEvaluate
+				this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.view);
+			}
+		}
+		
+		public PositionedGraphNodeControl()
+		{
+			InitializeComponent();
+		}
+		
+		private void PropertyExpandButton_Click(object sender, RoutedEventArgs e)
+		{
+			var clickedButton = (ToggleButton)e.Source;
+			ContentPropertyNode clickedNode = null;
+			try
+			{
+				clickedNode = (ContentPropertyNode)(clickedButton).DataContext;
+			}
+			catch(InvalidCastException)
+			{
+				throw new InvalidOperationException("Clicked property expand button, button shouln't be there - DataContext is not PropertyNodeViewModel.");
+			}
+			
+			PositionedNodeProperty property = clickedNode.Property;
+			//property.IsPropertyExpanded = !property.IsPropertyExpanded;  // done by databinding
+			clickedButton.Content = property.IsPropertyExpanded ? "-" : "+";
+			if (property.IsPropertyExpanded)
+			{
+				OnPropertyExpanded(property);
+			}
+			else
+			{
+				OnPropertyCollapsed(property);
+			}
+		}
+		
+		private void NestedExpandButton_Click(object sender, RoutedEventArgs e)
+		{
+			var clickedButton = (ToggleButton)e.Source;
+			var clickedNode = (ContentNode)(clickedButton).DataContext;
+			int clickedIndex = this.view.IndexOf(clickedNode);
+			//clickedNode.IsExpanded = !clickedNode.IsExpanded;		// done by data binding
+			clickedButton.Content = clickedNode.IsExpanded ? "-" : "+";	// could be done by a converter
+
+			if (clickedNode.IsExpanded)
+			{
+				// insert children
+				int i = 1;
+				foreach (var childNode in clickedNode.Children)
+				{
+					this.view.Insert(clickedIndex + i, childNode);
+					i++;
+				}
+				OnContentNodeExpanded(clickedNode);
+			}
+			else
+			{
+				// remove whole subtree
+				int size = subtreeSize(clickedNode) - 1;
+				for (int i = 0; i < size; i++)
+				{
+					this.view.RemoveAt(clickedIndex + 1);
+				}
+				OnContentNodeCollapsed(clickedNode);
+			}
+
+			// set to Auto again to resize columns
+			var colName = (this.listView.View as GridView).Columns[0];
+			var colValue = (this.listView.View as GridView).Columns[1];
+			colName.Width = 300;
+			colName.Width = double.NaN;
+			colValue.Width = 300;
+			colValue.Width = double.NaN;
+			//this.view.Insert(0, new NestedNodeViewModel());
+			//this.view.RemoveAt(0);
+			this.listView.UpdateLayout();
+			this.listView.Width = colName.ActualWidth + colValue.ActualWidth + 30;
+			this.listView.Width = double.NaN;
+		}
+		
+		private ObservableCollection<ContentNode> getInitialView(ContentNode root)
+		{
+			return new ObservableCollection<ContentNode>(root.FlattenChildrenExpanded());
+		}
+		
+		private int subtreeSize(ContentNode node)
+		{
+			return 1 + node.Children.Sum(child => (child.IsExpanded ? subtreeSize(child) : 1));
+		}
+		
+		#region event helpers
+		protected virtual void OnPropertyExpanded(PositionedNodeProperty property)
+		{
+			if (this.PropertyExpanded != null)
+				this.PropertyExpanded(this, new PositionedPropertyEventArgs(property));
+		}
+
+		protected virtual void OnPropertyCollapsed(PositionedNodeProperty property)
+		{
+			if (this.PropertyCollapsed != null)
+				this.PropertyCollapsed(this, new PositionedPropertyEventArgs(property));
+		}
+		
+		protected virtual void OnContentNodeExpanded(ContentNode node)
+		{
+			if (this.ContentNodeExpanded != null)
+				this.ContentNodeExpanded(this, new ContentNodeEventArgs(node));
+		}
+
+		protected virtual void OnContentNodeCollapsed(ContentNode node)
+		{
+			if (this.ContentNodeCollapsed != null)
+				this.ContentNodeCollapsed(this, new ContentNodeEventArgs(node));
+		}
+		#endregion
+	}
+}

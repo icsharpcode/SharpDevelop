@@ -17,7 +17,7 @@ namespace ICSharpCode.WixBinding
 		{
 		}
 		
-		public WixLibraryProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem item)
+		public WixLibraryProjectItem(IProject project, IProjectItemBackendStore item)
 			: base(project, item)
 		{
 		}

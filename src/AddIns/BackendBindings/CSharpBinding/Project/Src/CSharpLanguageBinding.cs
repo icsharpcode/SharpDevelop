@@ -22,9 +22,9 @@ namespace CSharpBinding
 			}
 		}
 		
-		public IProject LoadProject(IMSBuildEngineProvider engineProvider, string fileName, string projectName)
+		public IProject LoadProject(ProjectLoadInformation loadInformation)
 		{
-			return new CSharpProject(engineProvider, fileName, projectName);
+			return new CSharpProject(loadInformation);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)

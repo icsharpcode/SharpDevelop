@@ -5,12 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
+
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -68,6 +70,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public ITextEditorCaret Caret { get; private set; }
 		public ITextEditorOptions Options { get; private set; }
 		
+		public virtual IFormattingStrategy FormattingStrategy {
+			get { return DefaultFormattingStrategy.DefaultInstance; }
+		}
+		
 		sealed class CaretAdapter : ITextEditorCaret
 		{
 			Caret caret;
@@ -97,6 +103,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 				get { return AvalonEditDocumentAdapter.ToLocation(caret.Location); }
 				set { caret.Location = AvalonEditDocumentAdapter.ToPosition(value); }
 			}
+			
+			public event EventHandler PositionChanged {
+				add    { caret.PositionChanged += value; }
+				remove { caret.PositionChanged -= value; }
+			}
 		}
 		
 		sealed class OptionsAdapter : ITextEditorOptions
@@ -119,18 +130,22 @@ namespace ICSharpCode.SharpDevelop.Editor
 					return true;
 				}
 			}
+			
+			public bool ConvertTabsToSpaces {
+				get {
+					return avalonEditOptions.ConvertTabsToSpaces;
+				}
+			}
+			
+			public int IndendationSize {
+				get {
+					return avalonEditOptions.IndentationSize;
+				}
+			}
 		}
 		
 		public virtual string FileName {
 			get { return null; }
-		}
-		
-		void ITextEditor.ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
-		{
-		}
-		
-		public virtual void ShowCompletionWindow(ICompletionItemList data)
-		{
 		}
 		
 		public object GetService(Type serviceType)
@@ -159,6 +174,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 		}
 		
+		public event KeyEventHandler KeyPress {
+			add    { textEditor.TextArea.PreviewKeyDown += value; }
+			remove { textEditor.TextArea.PreviewKeyDown -= value; }
+		}
+		
 		public event EventHandler SelectionChanged {
 			add    { textEditor.TextArea.SelectionChanged += value; }
 			remove { textEditor.TextArea.SelectionChanged -= value; }
@@ -167,6 +187,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public void Select(int selectionStart, int selectionLength)
 		{
 			textEditor.Select(selectionStart, selectionLength);
+			textEditor.TextArea.Caret.BringCaretToView();
 		}
 		
 		public void JumpTo(int line, int column)
@@ -183,6 +204,22 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 		
 		public virtual IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
+		{
+			return null;
+		}
+		
+		
+		void ITextEditor.ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
+		{
+		}
+		
+		public virtual ICompletionListWindow ActiveCompletionWindow {
+			get {
+				return null;
+			}
+		}
+		
+		public virtual ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)
 		{
 			return null;
 		}

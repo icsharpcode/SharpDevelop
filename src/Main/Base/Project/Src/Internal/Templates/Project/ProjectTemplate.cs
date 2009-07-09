@@ -27,16 +27,17 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public readonly static TargetFramework Net20 = new TargetFramework("v2.0", ".NET Framework 2.0");
 		public readonly static TargetFramework Net30 = new TargetFramework("v3.0", ".NET Framework 3.0") { BasedOn = Net20 };
 		public readonly static TargetFramework Net35 = new TargetFramework("v3.5", ".NET Framework 3.5") { BasedOn = Net30 };
+		public readonly static TargetFramework Net40 = new TargetFramework("v4.0", ".NET Framework 4.0") { BasedOn = Net35 };
 		public readonly static TargetFramework CF = new TargetFramework("CF", null);
 		public readonly static TargetFramework CF20 = new TargetFramework("CF 2.0", "Compact Framework 2.0") { BasedOn = CF };
 		public readonly static TargetFramework CF35 = new TargetFramework("CF 3.5", "Compact Framework 3.5") { BasedOn = CF20 };
 		
 		public readonly static TargetFramework[] TargetFrameworks = {
-			Net35, Net30, Net20,
+			Net40, Net35, Net30, Net20,
 			CF, CF35, CF20
 		};
 		
-		public const string DefaultTargetFrameworkName = "v3.5";
+		public const string DefaultTargetFrameworkName = "v4.0";
 		
 		public static TargetFramework GetByName(string name)
 		{
@@ -375,9 +376,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					string solutionLocation = projectCreateInformation.Solution.FileName;
 					if (createNewSolution) {
 						projectCreateInformation.Solution.AddFolder(project);
+						projectCreateInformation.Solution.FixSolutionConfiguration(new IProject[] {project});
 						projectCreateInformation.Solution.Save();
 						ProjectService.OnSolutionCreated(new SolutionEventArgs(projectCreateInformation.Solution));
 						projectCreateInformation.Solution.Dispose();
+					} else {
+						project.Dispose();
 					}
 					return solutionLocation;
 				} else {

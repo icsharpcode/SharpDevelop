@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
-		IProject LoadProject(IMSBuildEngineProvider engineProvider, string fileName, string projectName);
+		IProject LoadProject(ProjectLoadInformation info);
 		
 		/// <summary>
 		/// Creates a IProject out of the given ProjetCreateInformation object.

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.XmlEditor;
 using System;
 using System.IO;
 using ICSharpCode.AvalonEdit.Rendering;
@@ -18,6 +19,8 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public static class XamlColorizerServer
 	{
+		const bool enableHighlighting = true;
+		
 		public static void InitializeServer()
 		{
 			WorkbenchSingleton.Workbench.ViewOpened += new ViewContentEventHandler(WorkbenchSingleton_Workbench_ViewOpened);
@@ -32,8 +35,9 @@ namespace ICSharpCode.XamlBinding
 			ITextEditorProvider textEditor = e.Content as ITextEditorProvider;
 			if (textEditor != null) {
 				TextView textView = textEditor.TextEditor.GetService(typeof(TextView)) as TextView;
-//				if (textView != null)
-//					textView.LineTransformers.Add(new XamlColorizer(e.Content));
+				
+				if (textView != null && enableHighlighting)
+					textView.LineTransformers.Add(new XamlColorizer(e.Content, textView));
 			}
 		}
 	}

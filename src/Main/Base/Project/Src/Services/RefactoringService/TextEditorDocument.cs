@@ -181,6 +181,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return null;
 		}
 		
+		public System.IO.TextReader CreateReader()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public ITextBuffer CreateSnapshot()
+		{
+			throw new NotImplementedException();
+		}
+		
 		sealed class AnchorAdapter : ITextAnchor
 		{
 			readonly TextAnchor anchor;

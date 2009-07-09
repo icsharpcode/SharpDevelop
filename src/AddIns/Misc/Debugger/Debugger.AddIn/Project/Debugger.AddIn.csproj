@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -19,7 +19,7 @@
     <FileAlignment>4096</FileAlignment>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
     <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\HP\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <PublishUrl>http://localhost/Debugger.AddIn/</PublishUrl>
@@ -79,9 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\IsBreakpointCondition.cs" />
     <Compile Include="Src\Expressions\AstEvaluator.cs" />
-    <Compile Include="Src\Expressions\EvaluateAstVisitor.cs" />
+    <Compile Include="Src\IsBreakpointCondition.cs" />
     <Compile Include="Src\Options\DebuggingOptions.cs" />
     <Compile Include="Src\Options\DebuggingOptionsPanel.cs">
       <SubType>UserControl</SubType>
@@ -122,6 +121,35 @@
     <Compile Include="Src\Service\DebuggerEventForm.Designer.cs">
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Visualizers\Common\DebuggerVisualizerException.cs" />
+    <Compile Include="Src\Visualizers\Common\IEvaluate.cs" />
+    <Compile Include="Src\Visualizers\Common\IListValuesProvider.cs" />
+    <Compile Include="Src\Visualizers\Common\ObjectPropertyComparer.cs" />
+    <Compile Include="Src\Visualizers\Common\VirtualizingCollection.cs" />
+    <Compile Include="Src\Visualizers\Common\VirtualizingObservableCollection.cs" />
+    <Compile Include="Src\Visualizers\Controls\DragScrollViewer.cs" />
+    <Compile Include="Src\Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml.cs">
+      <DependentUpon>PositionedGraphNodeControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Visualizers\Graph\Expanded.cs" />
+    <Compile Include="Src\Visualizers\Graph\ExpandedContentNodes.cs" />
+    <Compile Include="Src\Visualizers\Graph\ExpandedExpressions.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\ContentNodeEventArgs.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\ContentPropertyNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\ContentNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\AbstractNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\BaseClassNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\ThisNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\NestedNodeType.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\NonPublicMembersNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\TreeModel\PropertyNode.cs" />
+    <Compile Include="Src\Visualizers\Utils\AtomicType.cs" />
+    <Compile Include="Src\Visualizers\Utils\ITreeNode.cs" />
+    <Compile Include="Src\Visualizers\Utils\ListHelper.cs" />
+    <Compile Include="Src\Visualizers\Utils\TreeFlattener.cs" />
+    <Compile Include="Src\Visualizers\Utils\TypeResolver.cs" />
     <EmbeddedResource Include="Src\Service\DebuggeeExceptionForm.resx">
       <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -146,7 +174,6 @@
     <EmbeddedResource Include="Src\Service\EditBreakpointScriptForm.resx">
       <DependentUpon>EditBreakpointScriptForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Visualizers\Graph\WinFormsControl.resx" />
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
@@ -167,43 +194,53 @@
     <Compile Include="Src\TreeModel\ChildNodesOfObject.cs" />
     <Compile Include="Src\TreeModel\StackFrameNode.cs" />
     <Compile Include="Src\TreeModel\Utils.cs" />
-    <Compile Include="Src\Visualizers\Graph\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\CanvasLocationAdapter.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\GraphDrawer.cs" />
-    <Compile Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml.cs" />
+    <Compile Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml.cs">
+      <DependentUpon>NodeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Visualizers\Graph\ExpandedPaths.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\GraphDiff.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\GraphMatcher.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\PositionedGraph.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\PositionedNode.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\Tree\DotGraph.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\PositionedGraphNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\PositionedNodeProperty.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\PositionedPropertyEventArgs.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\BoxDotFormatter.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\DotFormatter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\IdGenerator.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\LayoutDirection.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoDoubleFormatter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoEdgeRouter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoPositionTransform.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\NeatoProcess.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\RecordDotFormatter.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeLayouter.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNode.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNodeLR.cs" />
-    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeNodeTB.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraphVisualizerViewContent.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectEdge.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeGraphNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeGraphNodeLR.cs" />
+    <Compile Include="Src\Visualizers\Graph\Layout\Tree\TreeGraphNodeTB.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraph.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphBuilder.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectNode.cs" />
-    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectProperty.cs" />
+    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphProperty.cs" />
     <Compile Include="Src\Visualizers\Graph\ShowObjectGraphVisualizerCommand.cs" />
-    <Compile Include="Src\Visualizers\Graph\Utils\DebuggerHelpers.cs" />
-    <Compile Include="Src\Visualizers\Graph\Utils\DictionaryExtensions.cs" />
-    <Compile Include="Src\Visualizers\Graph\Utils\Lookup.cs" />
-    <Compile Include="Src\Visualizers\Graph\Utils\LookupValueCollection.cs" />
-    <Compile Include="Src\Visualizers\Graph\VisualizerWinFormsControl.cs" />
-    <Compile Include="Src\Visualizers\Graph\VisualizerWinFormsControl.Designer.cs" />
-    <Compile Include="Src\Visualizers\Graph\VisualizerWPFControl.xaml.cs">
-      <DependentUpon>VisualizerWPFControl.xaml</DependentUpon>
+    <Compile Include="Src\Visualizers\GridVisualizer\GridVisualizerWindow.xaml.cs">
+      <DependentUpon>GridVisualizerWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Visualizers\GridVisualizer\LazyListView.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ObjectValue.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ShowGridVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\VirtualizingIEnumerable.cs" />
+    <Compile Include="Src\Visualizers\ObjectProperty.cs" />
+    <Compile Include="Src\Visualizers\Utils\DebuggerHelpers.cs" />
+    <Compile Include="Src\Visualizers\Utils\DictionaryExtensions.cs" />
+    <Compile Include="Src\Visualizers\Utils\Lookup.cs" />
+    <Compile Include="Src\Visualizers\Utils\LookupValueCollection.cs" />
     <Compile Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml.cs">
       <DependentUpon>VisualizerWPFWindow.xaml</DependentUpon>
     </Compile>
@@ -273,6 +310,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />
+    <Page Include="Src\Visualizers\GridVisualizer\GridVisualizerWindow.xaml" />
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
@@ -293,11 +332,15 @@
     <Folder Include="Src\Visualizers\Graph\Layout" />
     <Folder Include="Src\Visualizers\Graph\Layout\Tree" />
     <Folder Include="Src\Visualizers\Graph\Graphviz" />
+    <Folder Include="Src\Visualizers\Graph\TreeModel" />
     <Folder Include="Src\Visualizers\Graph\ObjectGraph" />
-    <Folder Include="Src\Visualizers\Graph\Utils" />
+    <Folder Include="Src\Visualizers\GridVisualizer\ValueProviders" />
+    <Folder Include="Src\Visualizers\Controls" />
+    <Folder Include="Src\Visualizers\Common" />
+    <Folder Include="Src\Visualizers\Utils" />
+    <Folder Include="Src\Visualizers\GridVisualizer" />
     <Folder Include="Src\Visualizers\PresentationBindings" />
     <Page Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml" />
-    <Page Include="Src\Visualizers\Graph\VisualizerWPFControl.xaml" />
     <Page Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml" />
   </ItemGroup>
   <ItemGroup>

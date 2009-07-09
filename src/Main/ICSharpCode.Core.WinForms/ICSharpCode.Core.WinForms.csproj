@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Core.WinForms</RootNamespace>
     <AssemblyName>ICSharpCode.Core.WinForms</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <OutputPath>..\..\..\bin\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>

@@ -276,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ListViewItem item = new ListViewItem(new string[] {
 			                                     	String.Empty,
-			                                     	(task.Line + 1).ToString(),
+			                                     	task.Line.ToString(),
 			                                     	FormatDescription(task.Description),
 			                                     	fileName,
 			                                     	path

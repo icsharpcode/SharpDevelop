@@ -6,12 +6,13 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Invokes a callback when this class is dispsed.
+	/// Invokes a callback when this class is disposed.
 	/// </summary>
 	public sealed class CallbackOnDispose : IDisposable
 	{
@@ -27,8 +28,19 @@ namespace ICSharpCode.Core
 		public void Dispose()
 		{
 			Action action = Interlocked.Exchange(ref callback, null);
-			if (action != null)
+			if (action != null) {
 				action();
+				#if DEBUG
+				GC.SuppressFinalize(this);
+				#endif
+			}
 		}
+		
+		#if DEBUG
+		~CallbackOnDispose()
+		{
+			Debug.Fail("CallbackOnDispose was finalized without being disposed.");
+		}
+		#endif
 	}
 }

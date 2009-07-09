@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>ComponentInspector.Core</RootNamespace>
@@ -16,6 +16,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <NoWarn>0618,0626,0108</NoWarn>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
@@ -48,6 +49,9 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Debug\Debugger.cs" />
     <Compile Include="Src\ObjectBrowser\ActionMenuHelper.cs" />

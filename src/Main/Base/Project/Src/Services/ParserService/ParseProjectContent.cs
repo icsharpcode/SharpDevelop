@@ -9,8 +9,9 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
+using System.IO;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -35,6 +36,10 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		public override string AssemblyName {
+			get { return project.AssemblyName; }
+		}
+		
 		bool initializing;
 		
 		public override string ToString()
@@ -53,10 +58,7 @@ namespace ICSharpCode.SharpDevelop
 			project.ResolveAssemblyReferences();
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
-				if (item.ItemType == ItemType.Reference
-				    || item.ItemType == ItemType.ProjectReference
-				    || item.ItemType == ItemType.COMReference)
-				{
+				if (ItemType.ReferenceItemTypes.Contains(item.ItemType)) {
 					ReferenceProjectItem reference = item as ReferenceProjectItem;
 					if (reference != null) {
 						// TODO: Translate me

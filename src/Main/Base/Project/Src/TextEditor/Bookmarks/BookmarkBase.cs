@@ -60,6 +60,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		void AnchorDeleted(object sender, EventArgs e)
 		{
+			// the anchor just became invalid, so don't try to use it again
+			location = Location.Empty;
+			anchor = null;
 			RemoveMark();
 		}
 		

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
@@ -57,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			}
 			
-			foreach (IProject project in ProjectService.OpenSolution.Projects) {
+			foreach (IProject project in ProjectService.OpenSolution.Projects.OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)) {
 				ListViewItem newItem = new ListViewItem(new string[] { project.Name, project.Directory });
 				newItem.Tag = project;
 				Items.Add(newItem);

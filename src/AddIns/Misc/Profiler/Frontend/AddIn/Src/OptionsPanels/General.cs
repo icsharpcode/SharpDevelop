@@ -20,7 +20,7 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 	/// <summary>
 	/// Description of General
 	/// </summary>
-	public class General : AbstractOptionPanel
+	public class General : OptionPanel
 	{
 		GeneralOptionsPanel panel;
 		

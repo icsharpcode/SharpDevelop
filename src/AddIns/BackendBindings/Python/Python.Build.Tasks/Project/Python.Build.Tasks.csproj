@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectGuid>{D332F2D1-2CF1-43B7-903C-844BD5211A7E}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -73,7 +73,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <PropertyGroup>
-    <PreBuildEvent>..\..\..\..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
-  </PropertyGroup>
 </Project>

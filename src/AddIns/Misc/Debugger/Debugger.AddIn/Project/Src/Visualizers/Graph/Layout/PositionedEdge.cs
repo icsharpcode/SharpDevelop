@@ -4,6 +4,7 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.AddIn.Visualizers.Utils;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -13,7 +14,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// Edge with position information.
 	/// </summary>
-	public class PositionedEdge : NamedEdge<PositionedNode>
+	public class PositionedEdge : NamedEdge<PositionedNodeProperty, PositionedGraphNode>
 	{
 		private IList<Point> splinePoints = new List<Point>();
 		

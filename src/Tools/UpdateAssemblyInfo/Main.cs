@@ -22,12 +22,12 @@ namespace UpdateAssemblyInfo
 	// Updates the version numbers in the assembly information.
 	class MainClass
 	{
-		const string templateFile       = "Main/GlobalAssemblyInfo.template";
-		const string globalAssemblyInfo = "Main/GlobalAssemblyInfo.cs";
-		const string configTemplateFile = "Main/StartUp/Project/app.template.config";
-		const string configFile         = "Main/StartUp/Project/SharpDevelop.exe.config";
-		const string configFile2        = "Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config";
-		const string subversionLibraryDir = "Libraries/SharpSvn";
+		const string templateFile       = "src/Main/GlobalAssemblyInfo.template";
+		const string globalAssemblyInfo = "src/Main/GlobalAssemblyInfo.cs";
+		const string configTemplateFile = "src/Main/StartUp/Project/app.template.config";
+		const string configFile         = "src/Main/StartUp/Project/SharpDevelop.exe.config";
+		const string configFile2        = "src/Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config";
+		const string subversionLibraryDir = "src/Libraries/SharpSvn";
 		
 		public static int Main(string[] args)
 		{
@@ -45,13 +45,13 @@ namespace UpdateAssemblyInfo
 						return 0;
 					}
 					if (!File.Exists("SharpDevelop.sln")) {
-						string mainDir = Path.GetFullPath(Path.Combine(exeDir, "../../../.."));
+						string mainDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../.."));
 						if (File.Exists(mainDir + "\\SharpDevelop.sln")) {
 							Directory.SetCurrentDirectory(mainDir);
 						}
 					}
 					if (!File.Exists("SharpDevelop.sln")) {
-						Console.WriteLine("Working directory must be SharpDevelop\\src!");
+						Console.WriteLine("Working directory must be SharpDevelop!");
 						return 2;
 					}
 					FileCopy(Path.Combine(subversionLibraryDir, "SharpSvn.dll"),
@@ -60,6 +60,13 @@ namespace UpdateAssemblyInfo
 					string versionNumber = GetMajorVersion() + "." + revisionNumber;
 					UpdateStartup();
 					UpdateRedirectionConfig(versionNumber);
+					foreach (string arg in args) {
+						if (arg == "--REVISION") {
+							using (StreamWriter writer = new StreamWriter("REVISION")) {
+								writer.Write(revisionNumber);
+							}
+						}
+					}
 					return 0;
 				}
 			} catch (Exception ex) {
@@ -172,7 +179,7 @@ namespace UpdateAssemblyInfo
 		static string ReadRevisionFromFile()
 		{
 			try {
-				using (StreamReader reader = new StreamReader(@"..\REVISION")) {
+				using (StreamReader reader = new StreamReader(@"REVISION")) {
 					return reader.ReadLine();
 				}
 			} catch (Exception e) {

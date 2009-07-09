@@ -156,6 +156,8 @@ namespace AvalonDock
         public readonly double Width;
         public readonly double Height;
 
+        public readonly AnchorStyle Anchor = AnchorStyle.None;
+
         public DockableContentStateAndPosition(
             DockableContent cntToSave)
         {
@@ -163,6 +165,12 @@ namespace AvalonDock
             ChildIndex = ContainerPane.Items.IndexOf(cntToSave);
             Width = ContainerPane.ActualWidth;
             Height = ContainerPane.ActualHeight;
+
+            DockablePane dockablePane = ContainerPane as DockablePane;
+            if (dockablePane != null)
+            {
+                Anchor = dockablePane.Anchor;
+            }
         }
     }
 

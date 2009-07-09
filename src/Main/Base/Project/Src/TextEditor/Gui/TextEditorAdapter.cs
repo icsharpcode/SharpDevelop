@@ -72,6 +72,11 @@ namespace ICSharpCode.SharpDevelop
 					caret.Position = ToPosition(value);
 				}
 			}
+			
+			public event EventHandler PositionChanged {
+				add    { caret.PositionChanged += value; }
+				remove { caret.PositionChanged -= value; }
+			}
 		}
 		
 		sealed class OptionsAdapter : ITextEditorOptions
@@ -96,6 +101,18 @@ namespace ICSharpCode.SharpDevelop
 					return true;
 				}
 			}
+			
+			public bool ConvertTabsToSpaces {
+				get {
+					return properties.ConvertTabsToSpaces;
+				}
+			}
+			
+			public int IndendationSize {
+				get {
+					return properties.IndentationSize;
+				}
+			}
 		}
 		
 		static ICSharpCode.NRefactory.Location ToLocation(TextLocation position)
@@ -118,6 +135,10 @@ namespace ICSharpCode.SharpDevelop
 		public ITextEditorCaret Caret { get; private set; }
 		public ITextEditorOptions Options { get; private set; }
 		
+		public virtual Editor.IFormattingStrategy FormattingStrategy { 
+			get { return Editor.DefaultFormattingStrategy.DefaultInstance; }
+		}
+		
 		public string FileName {
 			get { return editor.FileName; }
 		}
@@ -135,11 +156,18 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public void ShowCompletionWindow(ICompletionItemList items)
+		public ICompletionListWindow ActiveCompletionWindow {
+			get {
+				return null;
+			}
+		}
+		
+		public ICompletionListWindow ShowCompletionWindow(ICompletionItemList items)
 		{
 			if (sdtac != null) {
 				sdtac.ShowCompletionWindow(new CompletionItemListAdapter(items), '.');
 			}
+			return null;
 		}
 		
 		public string GetWordBeforeCaret()
@@ -186,6 +214,11 @@ namespace ICSharpCode.SharpDevelop
 			set {
 				throw new NotImplementedException();
 			}
+		}
+		
+		public event System.Windows.Input.KeyEventHandler KeyPress {
+			add    { throw new NotImplementedException(); }
+			remove { throw new NotImplementedException(); }
 		}
 		
 		public event EventHandler SelectionChanged {

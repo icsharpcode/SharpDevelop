@@ -117,13 +117,13 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object CreateInstance(string instance)
+		public Type FindType(string className)
 		{
 			if (IsActive) {
 				Assembly asm = LoadedAssembly;
 				if (asm == null)
 					return null;
-				return asm.CreateInstance(instance);
+				return asm.GetType(className);
 			} else {
 				return null;
 			}

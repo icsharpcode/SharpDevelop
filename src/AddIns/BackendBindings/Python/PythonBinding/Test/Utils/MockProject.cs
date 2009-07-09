@@ -12,7 +12,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Build.BuildEngine;
 
 namespace PythonBinding.Tests.Utils
 {
@@ -257,12 +256,7 @@ namespace PythonBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public void StartBuild(BuildOptions options)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public ProjectItem CreateProjectItem(BuildItem item)
+		public ProjectItem CreateProjectItem(IProjectItemBackendStore item)
 		{
 			throw new NotImplementedException();
 		}
@@ -298,7 +292,7 @@ namespace PythonBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+		public void StartBuild(ThreadSafeServiceContainer serviceContainer, ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
 		{
 			throw new NotImplementedException();
 		}

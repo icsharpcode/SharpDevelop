@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -42,7 +42,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Design" />
-    <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Commands\AddFilesToDirectoryCommand.cs" />
@@ -230,7 +229,7 @@
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
-      <Project>{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}</Project>
+      <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>
       <Name>XmlEditor</Name>
       <Private>False</Private>
     </ProjectReference>

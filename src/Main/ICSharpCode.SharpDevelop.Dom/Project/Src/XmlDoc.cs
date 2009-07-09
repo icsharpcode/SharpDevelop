@@ -146,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool LoadFromBinary(string fileName, DateTime fileDate)
 		{
 			keyCacheQueue   = new Queue<string>(cacheLength);
-			fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+			fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete);
 			int len = (int)fs.Length;
 			loader = new BinaryReader(fs);
 			try {
@@ -164,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				int count = loader.ReadInt32();
 				int indexStartPosition = loader.ReadInt32(); // go to start of index
-				if (indexStartPosition >= len) {
+				if (indexStartPosition <= 0 || indexStartPosition >= len) {
 					LoggingService.Error("XmlDoc: Cannot find index, cache invalid!");
 					return false;
 				}

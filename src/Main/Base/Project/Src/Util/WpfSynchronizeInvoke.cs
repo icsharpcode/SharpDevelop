@@ -13,7 +13,8 @@ using System.Windows.Threading;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// Description of WpfSynchronizeInvoke.
+	/// Implements the ISynchronizeInvoke interface by using a WPF dispatcher
+	/// to perform the cross-thread call.
 	/// </summary>
 	sealed class WpfSynchronizeInvoke : ISynchronizeInvoke
 	{
@@ -35,7 +36,7 @@ namespace ICSharpCode.SharpDevelop
 		public IAsyncResult BeginInvoke(Delegate method, object[] args)
 		{
 			DispatcherOperation op;
-			if (args.Length == 0)
+			if (args == null || args.Length == 0)
 				op = dispatcher.BeginInvoke(DispatcherPriority.Normal, method);
 			else if (args.Length == 1)
 				op = dispatcher.BeginInvoke(DispatcherPriority.Normal, method, args[0]);

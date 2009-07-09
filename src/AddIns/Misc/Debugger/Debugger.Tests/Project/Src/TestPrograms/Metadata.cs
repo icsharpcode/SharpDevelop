@@ -79,7 +79,7 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break Metadata.cs:39,4-39,40</DebuggingPaused>
     <Members
       Capacity="64"
-      Count="36">
+      Count="34">
       <Item>
         <FieldInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
@@ -428,20 +428,6 @@ namespace Debugger.Tests {
       <Item>
         <MethodInfo
           DeclaringType="System.Object"
-          FullName="System.Object.InternalEquals"
-          IsInternal="True"
-          IsPrivate="False"
-          IsProtected="False"
-          IsPublic="False"
-          IsSpecialName="False"
-          IsStatic="True"
-          Module="mscorlib.dll"
-          Name="InternalEquals"
-          StepOver="True" />
-      </Item>
-      <Item>
-        <MethodInfo
-          DeclaringType="System.Object"
           FullName="System.Object.Equals"
           IsInternal="False"
           IsPrivate="False"
@@ -479,20 +465,6 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name="GetHashCode"
-          StepOver="True" />
-      </Item>
-      <Item>
-        <MethodInfo
-          DeclaringType="System.Object"
-          FullName="System.Object.InternalGetHashCode"
-          IsInternal="True"
-          IsPrivate="False"
-          IsProtected="False"
-          IsPublic="False"
-          IsSpecialName="False"
-          IsStatic="True"
-          Module="mscorlib.dll"
-          Name="InternalGetHashCode"
           StepOver="True" />
       </Item>
       <Item>

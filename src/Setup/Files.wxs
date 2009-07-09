@@ -219,9 +219,6 @@
 									<Component Guid="F2643529-834A-4EDE-B0C2-36E0A031E997" Id="ComponentInspectorICSharpCodeCoreDll" DiskId="1">
 										<File Source="..\..\bin\Tools\ComponentInspector\ICSharpCode.Core.dll" Id="ComponentInspector.ICSharpCode.Core.dll" Name="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ComponentInspector.ICSharpCode.Core.dll" AssemblyManifest="ComponentInspector.ICSharpCode.Core.dll" KeyPath="yes" />
 									</Component>
-									<Component Id="ComponentInspectorLog4NetDll" Guid="56394DB5-3D3A-47ED-B99A-24AB2D0C5E88" DiskId="1">
-										<File Source="..\..\bin\Tools\ComponentInspector\log4net.dll" Name="log4net.dll" Id="ComponentInspector.log4net.dll" Assembly=".net" AssemblyApplication="ComponentInspector.log4net.dll" AssemblyManifest="ComponentInspector.log4net.dll" KeyPath="yes" />
-									</Component>
 								</Directory>
 								<Directory Id="WixFolder" Name="Wix">
 									<Component Guid="78F8DB04-62B1-4A2F-A0D5-D8D890FE5D02" Id="WixVSExtension" DiskId="1">
@@ -280,7 +277,7 @@
 									</Directory>
 									<Directory Id="WixDocFolder" Name="doc">
 										<Component Guid="2F5AC556-CE36-47EA-AB6C-F8623AA4A6BE" Id="WixDocFiles" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\WiX.chm" Name="Wix.chm" Id="Wix.chm" />
+											<File Source="..\..\bin\Tools\Wix\doc\WiX.chm" Name="WiX.chm" Id="WiX.chm" />
 											<File Source="..\..\bin\Tools\Wix\doc\wix.xsd" Name="wix.xsd" Id="wix.xsd" KeyPath="yes" />
 											<File Source="..\..\bin\Tools\Wix\doc\wixloc.xsd" Name="wixloc.xsd" Id="wixloc.xsd" />
 										</Component>
@@ -434,6 +431,14 @@
 											<File Source="..\..\bin\Tools\NUnit\lib\nunit.util.dll" Name="nunit.util.dll" Id="lib.nunit.util.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
+									<Component Guid="FAEE921D-6A1D-48AD-A1AF-7AB39548D1F9" Id="NUnitConsoleDotnet2Files" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-dotnet2.exe" Name="nunit-console-dotnet2.exe" Id="nunit_console_dotnet2.exe" KeyPath="yes" />
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-dotnet2.exe.config" Name="nunit-console-dotnet2.exe.config" Id="nunit_console_dotnet2.exe.config" />
+									</Component>
+									<Component Guid="6ACE3D5E-9042-4898-BD43-BD39E8DCB879" Id="NUnitConsoleDotnet2X86Files" DiskId="1">
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-dotnet2-x86.exe" Name="nunit-console-dotnet2-x86.exe" Id="nunit_console_dotnet2_x86.exe" KeyPath="yes" />
+										<File Source="..\..\bin\Tools\NUnit\nunit-console-dotnet2-x86.exe.config" Name="nunit-console-dotnet2-x86.exe.config" Id="nunit_console_dotnet2_x86.exe.config" />
+									</Component>
 								</Directory>
 								<Directory Id="PartCover" Name="PartCover">
 									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">
@@ -698,10 +703,6 @@
 							<Component Guid="3730EF42-5257-4EB2-9DA1-57151E5EB5A3" Id="AgaControlsDll" DiskId="1">
 								<File Source="..\..\bin\Aga.Controls.dll" Id="Aga.Controls.dll" Name="Aga.Controls.dll" Assembly=".net" AssemblyApplication="Aga.Controls.dll" AssemblyManifest="Aga.Controls.dll" KeyPath="yes" />
 							</Component>
-							<Component Guid="28E09E1C-B1E4-4ABC-9EA8-D37255CDD9E3" Id="BuildWorkerFiles" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker.exe" Id="ICSharpCode.SharpDevelop.BuildWorker.exe" Name="ICSharpCode.SharpDevelop.BuildWorker.exe" />
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker.exe.config" Id="ICSharpCode.SharpDevelop.BuildWorker.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker.exe.config" />
-							</Component>
 							<Component Guid="2EC34D8A-CF14-4E1F-A512-9A596A1C256D" Id="ICSharpCodeCoreWinFormsDll" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Core.WinForms.dll" Name="ICSharpCode.Core.WinForms.dll" Id="ICSharpCode.Core.WinForms.dll" KeyPath="yes" />
 							</Component>
@@ -721,7 +722,6 @@
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
 								<File Source="..\..\doc\BuiltWithSharpDevelop.png" Id="BuiltWithSharpDevelop.png" Name="BuiltWithSharpDevelop.png" />
-								<File Source="..\..\doc\ChangeLog.xml" Id="ChangeLog.xml" Name="ChangeLog.xml" />
 								<File Source="..\..\doc\copyright.txt" Id="copyright.txt" Name="copyright.txt" />
 								<File Source="..\..\doc\license.txt" Name="license.txt" Id="DocFolderLicense.txt" />
 								<File Source="..\..\doc\readme.rtf" Name="readme.rtf" Id="readme.rtf" />
@@ -741,7 +741,7 @@
 									<File Source="..\..\doc\technotes\TheFineArtOfCommenting.rtf" Id="TheFineArtOfCommenting.rtf" Name="TheFineArtOfCommenting.rtf" />
 								</Component>
 								<Component Guid="B5E6404F-E602-42AA-9C3A-996425AC3B40" Id="AddInWritingHelpWebsiteShortcut" DiskId="1">
-									<File Id="AddInWritingHelp.url" Name="Addin Writing Help.url" Source="..\..\doc\technotes\AddIn Writing Help.url" KeyPath="yes" />
+									<File Id="AddInWritingHelp.url" Name="AddIn Writing Help.url" Source="..\..\doc\technotes\AddIn Writing Help.url" KeyPath="yes" />
 								</Component>
 							</Directory>
 						</Directory>
@@ -1270,7 +1270,7 @@
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.ExtensionAttribute.dll" Name="Microsoft.Scripting.ExtensionAttribute.dll" Id="Microsoft.Scripting.ExtensionAttribute.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.ExtensionAttribute.dll" />
 										</Component>
 									</Directory>
-									<Directory Id="FSharpBinding" Name="FSharpBinding">
+									<!--<Directory Id="FSharpBinding" Name="FSharpBinding">
 										<Component Guid="6B4F28AF-133C-4FEB-98DB-67A5405AEB12" Id="FSharpBindingAddin" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\FSharpBinding.addin" Name="FSharpBinding.addin" Id="FSharpBinding.addin" KeyPath="yes" />
 										</Component>
@@ -1285,6 +1285,14 @@
 												<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="Templates.EmptyClass1.xft" KeyPath="yes" />
 											</Component>
 										</Directory>
+									</Directory>-->
+									<Directory Id="XamlBinding" Name="XamlBinding">
+										<Component Guid="34D119F8-F7C8-40DD-B354-FA50A3349033" Id="ICSharpCodeXamlBindingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.XamlBinding.dll" Name="ICSharpCode.XamlBinding.dll" Id="ICSharpCode.XamlBinding.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="4113C6DC-D11B-45FA-9D38-D3DD0A92C280" Id="XamlBindingAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.addin" Name="XamlBinding.addin" Id="XamlBinding.addin" KeyPath="yes" />
+										</Component>
 									</Directory>
 								</Directory>
 								<Directory Id="DisplayBindingsFolder" Name="DisplayBindings">
@@ -1394,6 +1402,14 @@
 										</Component>
 										<Component Guid="28171341-2A36-49DD-ACBC-815EE648A1DA" Id="ICSharpCodeAvalonEditAddInDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\AvalonEdit\ICSharpCode.AvalonEdit.AddIn.dll" Name="ICSharpCode.AvalonEdit.AddIn.dll" Id="ICSharpCode.AvalonEdit.AddIn.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Directory Id="HexEditor" Name="HexEditor">
+										<Component Guid="9C299282-1F4C-485B-BEB1-9D84AC4CAA8A" Id="HexEditorAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.addin" Name="HexEditor.addin" Id="HexEditor.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="1606B107-445F-4233-B72A-D4546A8393BC" Id="HexEditorDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.dll" Name="HexEditor.dll" Id="HexEditor.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 								</Directory>
@@ -1550,15 +1566,7 @@
 											<File Source="..\..\AddIns\AddIns\Misc\SharpRefactoring\SharpRefactoring.dll" Name="SharpRefactoring.dll" Id="SharpRefactoring.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
-									<Directory Id="HexEditor" Name="HexEditor">
-										<Component Guid="3D3049CE-B0A4-48F1-8572-EF21574BDFC7" Id="HexEditorAddin" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.addin" Name="HexEditor.addin" Id="HexEditor.addin" KeyPath="yes" />
-										</Component>
-										<Component Guid="24FC7133-5D3F-43DB-964B-62C99BBE3F93" Id="HexEditorDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.dll" Name="HexEditor.dll" Id="HexEditor.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="HexEditor.dll" AssemblyManifest="HexEditor.dll" />
-										</Component>
-									</Directory>
-									<Directory Id="Profiler" Name="Profiler">
+									<!--<Directory Id="Profiler" Name="Profiler">
 										<Component Guid="C46A4B2C-D5DE-4548-B4A9-4B0AB8C105F3" Id="Hook32Dll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\Profiler\Hook32.dll" Name="Hook32.dll" Id="Hook32.dll" KeyPath="yes" />
 										</Component>
@@ -1580,7 +1588,7 @@
 										<Component Guid="30373CF2-3D49-41E1-987F-5C870531FB75" Id="SystemDataSQLiteDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\Profiler\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="System.Data.SQLite.dll" KeyPath="yes" />
 										</Component>
-									</Directory>
+									</Directory>-->
 								</Directory>
 							</Directory>
 						</Directory>

@@ -1,0 +1,58 @@
+﻿<?xml version="1.0"?>
+<Template originator = "Tomasz Tretkowski">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.ClassLibrary.Name}</Name>
+		<Category>C++</Category>
+		<Icon>C++.Project.Library</Icon>
+		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
+		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MyClass.h" />
+		<Open filename = "MyClass.cpp" />		
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language = "C++">
+		<CreateActions>
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35" />
+			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/SpecifyCppCliRuntimeLibrary" />
+		</CreateActions>
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
+		
+		<PropertyGroup platform="Win32">
+			<ConfigurationType>DynamicLibrary</ConfigurationType>
+			<CLRSupport>true</CLRSupport>
+			<CharacterSet>Unicode</CharacterSet>
+		</PropertyGroup>
+		<Files>
+			<File name="MyClass.cpp"><![CDATA[${StandardHeader.C++.NET}
+// MyClass.cpp
+#include "MyClass.h"
+]]></File>
+			<File name="MyClass.h"><![CDATA[${StandardHeader.C++.NET}
+// MyClass.h
+#pragma once
+using namespace System;
+
+namespace ${StandardNamespace} {
+	/// <summary>
+	///
+	/// </summary>
+	public ref class MyClass {
+		// TODO: Add class methods here
+	};
+}
+]]></File>
+			<File name="AssemblyInfo.cpp" src="DefaultAssemblyInfo.cpp"/>
+		</Files>
+	</Project>
+</Template>

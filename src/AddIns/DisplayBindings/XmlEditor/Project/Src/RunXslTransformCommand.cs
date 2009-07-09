@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.IO;
 using ICSharpCode.Core;
@@ -27,18 +28,15 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			XmlView xmlView = XmlView.ActiveXmlView;
+			
 			if (xmlView != null) {
-				
-				if (xmlView is XslOutputView) {
-					return;
-				}
-				
 				// Check to see if this view is actually a referenced stylesheet.
-				if (!string.IsNullOrEmpty(xmlView.PrimaryFileName)) {
-					XmlView associatedXmlView = GetAssociatedXmlView(xmlView.PrimaryFileName);
-					if (associatedXmlView != null) {
-						LoggingService.Debug("Using associated xml view.");
-						xmlView = associatedXmlView;
+				if (!string.IsNullOrEmpty(xmlView.File.FileName)) {
+					
+					XmlView assocFile = GetAssociatedXmlView(xmlView.File.FileName);
+					if (assocFile != null) {
+						LoggingService.Debug("Using associated xml file.");
+						xmlView = assocFile;
 					}
 				}
 				
@@ -61,11 +59,11 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the xml view that is currently referencing the
 		/// specified stylesheet view.
 		/// </summary>
-		XmlView GetAssociatedXmlView(string stylesheetFileName)
+		static XmlView GetAssociatedXmlView(string stylesheetFileName)
 		{
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				XmlView view = content as XmlView;
-				if (view != null && view.StylesheetFileName != null) {
+				XmlView view = XmlView.ForViewContent(content);
+				if (view != null && !string.IsNullOrEmpty(view.StylesheetFileName)) {
 					if (FileUtility.IsEqualFileName(view.StylesheetFileName, stylesheetFileName)) {
 						return view;
 					}
@@ -74,12 +72,12 @@ namespace ICSharpCode.XmlEditor
 			return null;
 		}
 		
-		string GetStylesheetContent(string fileName)
+		static string GetStylesheetContent(string fileName)
 		{
 			// File already open?
-			XmlView view = FileService.GetOpenFile(fileName) as XmlView;
+			ITextEditorProvider view = FileService.GetOpenFile(fileName) as ITextEditorProvider;
 			if (view != null) {
-				return view.Text;
+				return view.TextEditor.Document.Text;
 			}
 			
 			// Read in file contents.

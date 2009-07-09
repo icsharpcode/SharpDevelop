@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectGuid>{23B517C9-1ECC-4419-A13F-0B7136D085CB}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,7 +10,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
@@ -43,10 +43,8 @@
     <Reference Include="IronPython.Modules">
       <HintPath>..\..\RequiredLibraries\IronPython.Modules.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Tasks" />
-    <Reference Include="Microsoft.Build.Utilities" />
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
     </Reference>
@@ -64,6 +62,9 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />

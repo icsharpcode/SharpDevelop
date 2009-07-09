@@ -19,22 +19,28 @@ namespace ICSharpCode.XamlBinding
 				var tokenizer = new MarkupExtensionTokenizer(text);
 				
 				string argumentName = null;
+				int namedArgsStart = 0;
 				
 				var token = tokenizer.NextToken();
 				while (token.Kind != MarkupExtensionTokenKind.EndOfFile) {
 					switch (token.Kind) {
 						case MarkupExtensionTokenKind.TypeName:
 							info.ExtensionType = token.Value;
+							info.StartOffset = token.StartOffset;
 							break;
 						case MarkupExtensionTokenKind.MemberName:
+							// if there is an open member without a value add the member name
+							if (argumentName != null)
+								info.TryAddNamedArgument(argumentName, new AttributeValue(string.Empty));
 							argumentName = token.Value;
+							namedArgsStart = token.StartOffset;
 							break;
 						case MarkupExtensionTokenKind.String:
 							if (argumentName != null) {
-								info.NamedArguments.Add(argumentName, ParseValue(token.Value));
+								info.TryAddNamedArgument(argumentName, ParseValue(token.Value, namedArgsStart));
 								argumentName = null;
 							} else {
-								info.PositionalArguments.Add(ParseValue(token.Value));
+								info.PositionalArguments.Add(ParseValue(token.Value, token.StartOffset));
 							}
 							break;
 					}
@@ -47,15 +53,27 @@ namespace ICSharpCode.XamlBinding
 			return info;
 		}
 		
+		static void TryAddNamedArgument(this MarkupExtensionInfo info, string name, AttributeValue value)
+		{
+			if (!info.NamedArguments.ContainsKey(name)) {
+				info.NamedArguments.Add(name, value);
+			}
+		}
+		
 		public static AttributeValue ParseValue(string text)
 		{
+			return ParseValue(text, 0);
+		}
+		
+		public static AttributeValue ParseValue(string text, int offset)
+		{
 			if (string.IsNullOrEmpty(text))
-				return new AttributeValue(string.Empty);
+				return new AttributeValue(string.Empty) { StartOffset = offset };
 			
 			if (text.StartsWith("{", StringComparison.OrdinalIgnoreCase))
-				return new AttributeValue(Parse(text));
+				return new AttributeValue(Parse(text)) { StartOffset = offset };
 			else
-				return new AttributeValue(text);
+				return new AttributeValue(text) { StartOffset = offset };
 		}
 	}
 }

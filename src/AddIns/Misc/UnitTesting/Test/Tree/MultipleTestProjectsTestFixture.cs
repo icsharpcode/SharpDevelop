@@ -38,15 +38,13 @@ namespace UnitTesting.Tests.Tree
 			solution = new Solution();
 			
 			// Create the first test project.
-			firstProject = new MockCSharpProject(solution);
-			firstProject.Name = "FirstTestProject";
+			firstProject = new MockCSharpProject(solution, "FirstTestProject");
 			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(firstProject);
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(firstProject, nunitFrameworkReferenceItem);
 
 			// Create the second test project.
-			secondProject = new MockCSharpProject(solution);
-			secondProject.Name = "SecondTestProject";
+			secondProject = new MockCSharpProject(solution, "SecondTestProject");
 			nunitFrameworkReferenceItem = new ReferenceProjectItem(secondProject);
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(secondProject, nunitFrameworkReferenceItem);
@@ -133,8 +131,7 @@ namespace UnitTesting.Tests.Tree
 		{
 			// Add an extra project so when we remove one the All Tests node
 			// is not removed.
-			MockCSharpProject project = new MockCSharpProject(solution);
-			project.Name = "ThirdTestProject";
+			MockCSharpProject project = new MockCSharpProject(solution, "ThirdTestProject");
 			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);

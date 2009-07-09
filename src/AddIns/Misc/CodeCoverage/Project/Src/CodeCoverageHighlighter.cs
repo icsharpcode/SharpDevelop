@@ -7,7 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.TextEditor.Document;
+using System.Windows.Media;
+
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -23,55 +26,41 @@ namespace ICSharpCode.CodeCoverage
 		/// <summary>
 		/// Adds text markers for the code coverage sequence points.
 		/// </summary>
-		/// <remarks>The sequence points are added to the marker strategy even 
+		/// <remarks>The sequence points are added to the marker strategy even
 		/// if they are not all for the same document.</remarks>
-		public void AddMarkers(MarkerStrategy markerStrategy, List<CodeCoverageSequencePoint> sequencePoints)
+		public void AddMarkers(IDocument document, List<CodeCoverageSequencePoint> sequencePoints)
 		{
 			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-				AddMarker(markerStrategy, sequencePoint);
+				AddMarker(document, sequencePoint);
 			}
 		}
 		
-		public void AddMarker(MarkerStrategy markerStrategy, CodeCoverageSequencePoint sequencePoint)
+		public void AddMarker(IDocument document, CodeCoverageSequencePoint sequencePoint)
 		{
-			if (!IsValidSequencePoint(markerStrategy.Document, sequencePoint)) {
+			if (!IsValidSequencePoint(document, sequencePoint)) {
 				return;
 			}
 			
-			if (sequencePoint.EndLine == sequencePoint.Line) {
-				LineSegment lineSegment = markerStrategy.Document.GetLineSegment(sequencePoint.Line - 1);
-				markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset + sequencePoint.Column - 1, sequencePoint));
-			} else {
-				// Sequence point spread across lines.
-				for (int line = sequencePoint.Line; line <= sequencePoint.EndLine; ++line) {
-					LineSegment lineSegment = markerStrategy.Document.GetLineSegment(line - 1);
-					if (line == sequencePoint.Line) {
-						// First line.
-						markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset + sequencePoint.Column - 1, lineSegment.Length - (sequencePoint.Column - 1), sequencePoint));
-					} else if (line == sequencePoint.EndLine) {
-						// Last line.
-						markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset, sequencePoint.EndColumn - 1, sequencePoint));
-					} else {
-						markerStrategy.AddMarker(new CodeCoverageTextMarker(lineSegment.Offset, lineSegment.Length, sequencePoint));						
-					}
-				}
+			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			if (markerService != null) {
+				int startOffset = document.PositionToOffset(sequencePoint.Line, sequencePoint.Column);
+				int endOffset = document.PositionToOffset(sequencePoint.EndLine, sequencePoint.EndColumn);
+				ITextMarker marker = markerService.Create(startOffset, endOffset - startOffset);
+				marker.Tag = typeof(CodeCoverageHighlighter);
+				marker.BackgroundColor = GetSequencePointColor(sequencePoint);
+				marker.ForegroundColor = GetSequencePointForeColor(sequencePoint);
 			}
 		}
 		
 		/// <summary>
 		/// Removes all CodeCoverageMarkers from the marker strategy.
 		/// </summary>
-		public void RemoveMarkers(MarkerStrategy markerStrategy)
+		public void RemoveMarkers(IDocument document)
 		{
-			markerStrategy.RemoveAll(IsCodeCoverageTextMarkerMatch);
-		}
-		
-		bool IsCodeCoverageTextMarkerMatch(TextMarker marker)
-		{
-			if (marker is CodeCoverageTextMarker) {
-				return true;
+			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			if (markerService != null) {
+				markerService.RemoveAll(marker => (Type)marker.Tag == typeof(CodeCoverageHighlighter));
 			}
-			return false;
 		}
 		
 		/// <summary>
@@ -92,16 +81,32 @@ namespace ICSharpCode.CodeCoverage
 				return false;
 			} else {
 				// Check the columns exist on the line.
-				LineSegment lineSegment = document.GetLineSegment(sequencePoint.Line - 1);
+				IDocumentLine lineSegment = document.GetLine(sequencePoint.Line);
 				if (sequencePoint.Column > lineSegment.Length) {
 					return false;
-				} 
-				LineSegment endLineSegment = document.GetLineSegment(sequencePoint.EndLine - 1);
+				}
+				IDocumentLine endLineSegment = document.GetLine(sequencePoint.EndLine);
 				if (sequencePoint.EndColumn > endLineSegment.Length + 1) {
 					return false;
-				} 
+				}
 			}
 			return true;
+		}
+		
+		public static Color GetSequencePointColor(CodeCoverageSequencePoint sequencePoint)
+		{
+			if (sequencePoint.VisitCount > 0) {
+				return CodeCoverageOptions.VisitedColor.ToWpf();
+			}
+			return CodeCoverageOptions.NotVisitedColor.ToWpf();
+		}
+		
+		public static Color GetSequencePointForeColor(CodeCoverageSequencePoint sequencePoint)
+		{
+			if (sequencePoint.VisitCount > 0) {
+				return CodeCoverageOptions.VisitedForeColor.ToWpf();
+			}
+			return CodeCoverageOptions.NotVisitedForeColor.ToWpf();
 		}
 	}
 }

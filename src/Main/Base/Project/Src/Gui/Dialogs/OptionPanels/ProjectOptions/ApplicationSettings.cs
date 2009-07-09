@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			// re-evaluate if the project has the minimum version whenever this options page gets visible
 			// because the "convert project" button on the compiling tab page might have updated the MSBuild version.
 			applicationManifestComboBox.VisibleChanged += delegate {
-				applicationManifestComboBox.Enabled = project.MinimumSolutionVersion >= 10;
+				applicationManifestComboBox.Enabled = project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
 			};
 			
 			Get<TextBox>("projectFolder").Text = project.Directory;

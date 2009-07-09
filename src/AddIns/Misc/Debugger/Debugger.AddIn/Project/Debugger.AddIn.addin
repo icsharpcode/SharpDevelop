@@ -153,9 +153,17 @@
 
 	<Path name = "/Workspace/Tools">
 		<Condition name="SolutionOpen" action="disable">
-			<MenuItem id = "DebuggerVisualizerCommandShow"
-			          label = "Show object graph visualizer"
+			<MenuItem id = "DebuggerObjectGraphVisualizerShowCommand"
+			          label = "Object graph visualizer"
 			          class = "Debugger.AddIn.Visualizers.Graph.ShowObjectGraphVisualizerCommand"/>
+		</Condition>
+	</Path>
+
+    <Path name = "/Workspace/Tools">
+		<Condition name="SolutionOpen" action="disable">
+			<MenuItem id = "DebuggerGridVisualizerShowCommand"
+			          label = "Grid visualizer"
+			          class = "Debugger.AddIn.Visualizers.GridVisualizer.ShowGridVisualizerCommand"/>
 		</Condition>
 	</Path>
 

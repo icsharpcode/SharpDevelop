@@ -31,17 +31,21 @@ namespace ICSharpCode.UnitTesting
 				return Path.Combine(FileUtility.ApplicationRootPath, @"bin\Tools\NUnit");
 			}
 		}
-				
+		
 		/// <summary>
-		/// returns full/path/to/Tools/NUnit/nunit-console.exe or nunit-console-x86.exe if the
-		/// project platform target is x86.
+		/// returns full/path/to/Tools/NUnit/nunit-console.exe (or whichever nunit-console exe is right
+		/// for the project - there are different .exes for .NET 4.0 and for x86-only projects.
 		/// </summary>
 		public string UnitTestApplication {
 			get {
-				string exe = "nunit-console.exe";
-				if (IsPlatformTarget32Bit(project)) {
-					exe = "nunit-console-x86.exe";
+				string exe = "nunit-console";
+				if (ProjectUsesDotnet20Runtime(project)) {
+					exe += "-dotnet2";
 				}
+				if (IsPlatformTarget32Bit(project)) {
+					exe += "-x86";
+				}
+				exe += ".exe";
 				return Path.Combine(UnitTestApplicationDirectory, exe);
 			}
 		}
@@ -66,12 +70,12 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Use /labels directive.
 		/// </summary>
-		public bool Labels = false;		
+		public bool Labels = false;
 		
 		/// <summary>
 		/// Use /nodots directive.
 		/// </summary>
-		public bool NoDots = false;		
+		public bool NoDots = false;
 
 		/// <summary>
 		/// File to write xml output to. Default = null.
@@ -94,7 +98,7 @@ namespace ICSharpCode.UnitTesting
 		public string Results;
 		
 		/// <summary>
-		/// The namespace that tests need to be a part of if they are to 
+		/// The namespace that tests need to be a part of if they are to
 		/// be run.
 		/// </summary>
 		public string NamespaceFilter;
@@ -131,7 +135,7 @@ namespace ICSharpCode.UnitTesting
 				return project;
 			}
 		}
-						
+		
 		/// <summary>
 		/// Gets the full command line to run the unit test application.
 		/// This is the combination of the UnitTestApplication and
@@ -161,9 +165,9 @@ namespace ICSharpCode.UnitTesting
 				b.Append(" /nothread");
 			if (NoLogo)
 				b.Append(" /nologo");
-			if (Labels) 
+			if (Labels)
 				b.Append(" /labels");
-			if (NoDots) 
+			if (NoDots)
 				b.Append(" /nodots");
 			if (XmlOutputFile != null) {
 				b.Append(" /xml=\"");
@@ -203,7 +207,17 @@ namespace ICSharpCode.UnitTesting
 			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
 			if (msbuildProject != null) {
 				string platformTarget = msbuildProject.GetEvaluatedProperty("PlatformTarget");
-				return String.Compare(platformTarget, "x86", true) == 0;
+				return String.Equals(platformTarget, "x86", StringComparison.OrdinalIgnoreCase);
+			}
+			return false;
+		}
+		
+		bool ProjectUsesDotnet20Runtime(IProject project)
+		{
+			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
+			if (msbuildProject != null) {
+				string targetFrameworkVersion = msbuildProject.GetEvaluatedProperty("TargetFrameworkVersion");
+				return !String.Equals(targetFrameworkVersion, "v4.0", StringComparison.OrdinalIgnoreCase);
 			}
 			return false;
 		}

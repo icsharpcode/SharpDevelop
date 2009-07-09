@@ -24,7 +24,7 @@ namespace ICSharpCode.Core.Presentation
 		{
 			string commandName = codon.Properties["command"];
 			if (!string.IsNullOrEmpty(commandName)) {
-				var wpfCommand = MenuService.GetRegisteredCommand(commandName);
+				var wpfCommand = MenuService.GetRegisteredCommand(codon.AddIn, commandName);
 				if (wpfCommand != null) {
 					return wpfCommand;
 				} else {

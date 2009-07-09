@@ -38,13 +38,16 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="diff"></param>
 		public void StartAnimation(PositionedGraph oldGraph, PositionedGraph newGraph, GraphDiff diff)
 		{
+			this.canvas.Width = newGraph.BoundingRect.Width;
+			this.canvas.Height = newGraph.BoundingRect.Height;
+			
 			if (oldGraph == null)
 			{
 				Draw(newGraph);
 				return;
 			}
 			
-			double seconds = 1;
+			double seconds = 0.5;
 			var durationMove = new Duration(TimeSpan.FromSeconds(seconds));
 			var durationFade = durationMove;
 			
@@ -65,18 +68,18 @@ namespace Debugger.AddIn.Visualizers.Graph
 				addEdgeToCanvas(edge).BeginAnimation(UIElement.OpacityProperty, fadeInAnim);
 			}
 			
-			foreach	(PositionedNode removedNode in diff.RemovedNodes)
+			foreach	(PositionedGraphNode removedNode in diff.RemovedNodes)
 			{
 				removedNode.NodeVisualControl.BeginAnimation(UIElement.OpacityProperty, fadeOutAnim);
 			}
 			
-			foreach	(PositionedNode addedNode in diff.AddedNodes)
+			foreach	(PositionedGraphNode addedNode in diff.AddedNodes)
 			{
 				addNodeToCanvas(addedNode).BeginAnimation(UIElement.OpacityProperty, fadeInAnim);
 			}
 			
 			bool first = true;
-			foreach	(PositionedNode node in diff.ChangedNodes)
+			foreach	(PositionedGraphNode node in diff.ChangedNodes)
 			{
 				var newNode = diff.GetMatchingNewNode(node);
 				
@@ -86,7 +89,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 					anim.Completed += new EventHandler((o, e) => { Draw(newGraph); });
 					first = false;
 				}
-				//anim.From = new Point(Canvas.GetLeft(node.NodeVisualControl), Canvas.GetTop(node.NodeVisualControl));
 				anim.From = node.LeftTop;
 				
 				anim.To = newNode.LeftTop;
@@ -107,7 +109,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			canvas.Children.Clear();
 			
 			// draw nodes
-			foreach	(PositionedNode node in posGraph.Nodes)
+			foreach	(PositionedGraphNode node in posGraph.Nodes)
 			{
 				addNodeToCanvas(node);
 			}
@@ -119,7 +121,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		private NodeControl addNodeToCanvas(PositionedNode node)
+		private PositionedGraphNodeControl addNodeToCanvas(PositionedGraphNode node)
 		{
 			canvas.Children.Add(node.NodeVisualControl);
 			Canvas.SetLeft(node.NodeVisualControl, node.Left);

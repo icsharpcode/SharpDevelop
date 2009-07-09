@@ -58,6 +58,8 @@ namespace WixBinding.Tests.Utils
 			public override void UnregisterView(IViewContent view)
 			{
 			}
+			
+			public override event EventHandler FileClosed { add {} remove {} }
 		}
 		
 		#pragma warning disable 67

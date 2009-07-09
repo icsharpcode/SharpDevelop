@@ -19,8 +19,8 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// Base class for the AddElementDialog and AddAttributeDialog. This
 	/// dialog presents a list of names and an extra text box for entering
-	/// a custom name. It is used to add a new node to the XML tree. It 
-	/// contains all the core logic for the AddElementDialog and 
+	/// a custom name. It is used to add a new node to the XML tree. It
+	/// contains all the core logic for the AddElementDialog and
 	/// AddAttributeDialog classes.
 	/// </summary>
 	public class AddXmlNodeDialog : System.Windows.Forms.Form, IAddXmlNodeDialog
@@ -68,9 +68,8 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the text from the error provider.
 		/// </summary>
-		public string GetError()
-		{
-			return errorProvider.GetError(customNameTextBox);
+		public string ErrorText {
+			get { return errorProvider.GetError(customNameTextBox); }
 		}
 		
 		/// <summary>
@@ -127,9 +126,9 @@ namespace ICSharpCode.XmlEditor
 			// 
 			// namesListBox
 			// 
-			this.namesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.namesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			                                                                  | System.Windows.Forms.AnchorStyles.Left)
+			                                                                 | System.Windows.Forms.AnchorStyles.Right)));
 			this.namesListBox.FormattingEnabled = true;
 			this.namesListBox.Location = new System.Drawing.Point(0, 0);
 			this.namesListBox.Name = "namesListBox";
@@ -145,8 +144,8 @@ namespace ICSharpCode.XmlEditor
 			// 
 			// bottomPanel
 			// 
-			this.bottomPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.bottomPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+			                                                                | System.Windows.Forms.AnchorStyles.Right)));
 			this.bottomPanel.Controls.Add(this.customNameTextBoxLabel);
 			this.bottomPanel.Controls.Add(this.customNameTextBox);
 			this.bottomPanel.Controls.Add(this.cancelButton);
@@ -166,8 +165,8 @@ namespace ICSharpCode.XmlEditor
 			// 
 			// customNameTextBox
 			// 
-			this.customNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.customNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			                                                                      | System.Windows.Forms.AnchorStyles.Right)));
 			this.customNameTextBox.Location = new System.Drawing.Point(107, 10);
 			this.customNameTextBox.Name = "customNameTextBox";
 			this.customNameTextBox.Size = new System.Drawing.Size(167, 20);
@@ -226,7 +225,7 @@ namespace ICSharpCode.XmlEditor
 		private System.Windows.Forms.ListBox namesListBox;
 		
 		#endregion
-	
+		
 		/// <summary>
 		/// Adds the names to the list box.
 		/// </summary>
@@ -238,7 +237,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Enables or disables the ok button depending on whether any list 
+		/// Enables or disables the ok button depending on whether any list
 		/// item is selected or a custom name has been entered.
 		/// </summary>
 		void UpdateOkButtonState()
@@ -262,8 +261,8 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Returns whether there is a valid string in the custom 
-		/// name text box. The string must be a name that can be used to 
+		/// Returns whether there is a valid string in the custom
+		/// name text box. The string must be a name that can be used to
 		/// create an xml element or attribute.
 		/// </summary>
 		bool ValidateCustomName()
@@ -282,12 +281,12 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Checks that the name would make a valid element name or 
+		/// Checks that the name would make a valid element name or
 		/// attribute name. Trying to use XmlConvert and its Verify methods
-		/// so the validation is not done ourselves. XmlDocument has a 
+		/// so the validation is not done ourselves. XmlDocument has a
 		/// CheckName method but this is not public.
 		/// </summary>
-		void VerifyName(string name)
+		static void VerifyName(string name)
 		{
 			// Check the qualification is valid.
 			string[] parts = name.Split(new char[] {':'}, 2);

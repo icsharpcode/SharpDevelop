@@ -15,17 +15,14 @@ namespace ICSharpCode.ILAsmBinding
 {
 	public class ILAsmProject : CompilableProject
 	{
-		public ILAsmProject(IMSBuildEngineProvider provider, string fileName, string projectName)
-			: base(provider)
+		public ILAsmProject(ProjectLoadInformation info)
+			: base(info)
 		{
-			this.Name = projectName;
-			LoadProject(fileName);
 		}
 		
 		public ILAsmProject(ProjectCreateInformation info)
-			: base(info.Solution)
+			: base(info)
 		{
-			Create(info);
 			this.AddImport(@"$(SharpDevelopBinPath)\SharpDevelop.Build.MSIL.Targets", null);
 		}
 		

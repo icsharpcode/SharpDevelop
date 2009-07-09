@@ -5,23 +5,60 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
 	/// <summary>
 	/// The code completion window.
 	/// </summary>
-	public class SharpDevelopCompletionWindow : CompletionWindow
+	public class SharpDevelopCompletionWindow : CompletionWindow, ICompletionListWindow
 	{
+		public ICompletionItem SelectedItem {
+			get {
+				return ((CodeCompletionDataAdapter)this.CompletionList.SelectedItem).Item;
+			}
+			set {
+				var itemAdapters = this.CompletionList.CompletionData.Cast<CodeCompletionDataAdapter>();
+				this.CompletionList.SelectedItem = itemAdapters.FirstOrDefault(a => a.Item == value);
+			}
+		}
+		
+		double ICompletionWindow.Width {
+			get { return this.Width; }
+			set {
+				// Disable virtualization if we use automatic width - this prevents the window from resizing
+				// when the user scrolls.
+				VirtualizingStackPanel.SetIsVirtualizing(this.CompletionList.ListBox, !double.IsNaN(value));
+				this.Width = value;
+				if (double.IsNaN(value)) {
+					// enable size-to-width:
+					if (this.SizeToContent == SizeToContent.Manual)
+						this.SizeToContent = SizeToContent.Width;
+					else if (this.SizeToContent == SizeToContent.Height)
+						this.SizeToContent = SizeToContent.WidthAndHeight;
+				} else {
+					// disable size-to-width:
+					if (this.SizeToContent == SizeToContent.Width)
+						this.SizeToContent = SizeToContent.Manual;
+					else if (this.SizeToContent == SizeToContent.WidthAndHeight)
+						this.SizeToContent = SizeToContent.Height;
+				}
+			}
+		}
+		
 		readonly ICompletionItemList itemList;
 		
 		public ICompletionItemList ItemList {
@@ -92,6 +129,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.item = item;
 		}
 		
+		public ICompletionItem Item {
+			get { return item; }
+		}
+		
 		public string Text {
 			get { return item.Text; }
 		}
@@ -107,7 +148,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public ImageSource Image {
-			get { 
+			get {
 				IImage image = item.Image;
 				return image != null ? image.ImageSource : null;
 			}

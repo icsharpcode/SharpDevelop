@@ -88,21 +88,14 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
-		public static IProject LoadProject(IMSBuildEngineProvider provider, string location, string title)
+		public static IProject LoadProject(ProjectLoadInformation loadInformation)
 		{
-			return LoadProject(provider, location, title, "{" + Guid.Empty.ToString() + "}", null);
-		}
-		
-		public static IProject LoadProject(IMSBuildEngineProvider provider, string location, string title, string projectTypeGuid, IProgressMonitor progressMonitor)
-		{
-			if (provider == null)
-				throw new ArgumentNullException("provider");
-			if (location == null)
-				throw new ArgumentNullException("location");
-			if (title == null)
-				throw new ArgumentNullException("title");
-			if (projectTypeGuid == null)
-				throw new ArgumentNullException("projectTypeGuid");
+			if (loadInformation == null)
+				throw new ArgumentNullException("loadInformation");
+			
+			string location = FileUtility.NormalizePath(loadInformation.FileName);
+			string title = loadInformation.ProjectName;
+			IProgressMonitor progressMonitor = loadInformation.ProgressMonitor;
 			
 			if (progressMonitor != null) {
 				progressMonitor.BeginTask("Loading " + title, 0, false);
@@ -111,24 +104,23 @@ namespace ICSharpCode.SharpDevelop
 			IProject newProject;
 			if (!File.Exists(location)) {
 				newProject = new MissingProject(location, title);
-				newProject.TypeGuid = projectTypeGuid;
+				newProject.TypeGuid = loadInformation.TypeGuid;
 			} else {
 				ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(location);
 				if (binding != null) {
-					location = FileUtility.NormalizePath(location);
 					try {
-						newProject = binding.LoadProject(provider, location, title);
+						newProject = binding.LoadProject(loadInformation);
 					} catch (ProjectLoadException ex) {
 						LoggingService.Warn("Project load error", ex);
 						if (progressMonitor != null) progressMonitor.ShowingDialog = true;
 						newProject = new UnknownProject(location, title, ex.Message, true);
-						newProject.TypeGuid = projectTypeGuid;
+						newProject.TypeGuid = loadInformation.TypeGuid;
 						if (progressMonitor != null) progressMonitor.ShowingDialog = false;
 					} catch (UnauthorizedAccessException ex) {
 						LoggingService.Warn("Project load error", ex);
 						if (progressMonitor != null) progressMonitor.ShowingDialog = true;
 						newProject = new UnknownProject(location, title, ex.Message, true);
-						newProject.TypeGuid = projectTypeGuid;
+						newProject.TypeGuid = loadInformation.TypeGuid;
 						if (progressMonitor != null) progressMonitor.ShowingDialog = false;
 					}
 				} else {
@@ -137,10 +129,10 @@ namespace ICSharpCode.SharpDevelop
 					    || ".build".Equals(ext, StringComparison.OrdinalIgnoreCase))
 					{
 						newProject = new MSBuildFileProject(location, title);
-						newProject.TypeGuid = projectTypeGuid;
+						newProject.TypeGuid = loadInformation.TypeGuid;
 					} else {
 						newProject = new UnknownProject(location, title);
-						newProject.TypeGuid = projectTypeGuid;
+						newProject.TypeGuid = loadInformation.TypeGuid;
 					}
 				}
 			}

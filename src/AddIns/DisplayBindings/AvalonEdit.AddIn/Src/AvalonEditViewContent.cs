@@ -26,9 +26,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public AvalonEditViewContent(OpenedFile file)
 		{
+			this.TabPageText = "${res:FormsDesigner.DesignTabPages.SourceTabPage}";
+			
 			this.Files.Add(file);
 			file.ForceInitializeView(this);
 			codeEditor.Document.Changed += textEditor_Document_Changed;
+			codeEditor.CaretPositionChanged += CaretChanged;
 		}
 		
 		void textEditor_Document_Changed(object sender, DocumentChangeEventArgs e)
@@ -93,6 +96,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				codeEditor.FileName = file.FileName;
 				BookmarksNotifyNameChange(file.FileName);
 			}
+		}
+		
+		public override INavigationPoint BuildNavPoint()
+		{
+			int lineNumber = this.Line;
+			string txt = codeEditor.Document.GetLineByNumber(lineNumber).Text;
+			return new TextNavigationPoint(this.PrimaryFileName, lineNumber, this.Column, txt);
+		}
+		
+		void CaretChanged(object sender, EventArgs e)
+		{
+			NavigationService.Log(this.BuildNavPoint());
 		}
 		
 		#region Bookmark Handling

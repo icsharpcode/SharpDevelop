@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,18 +37,18 @@ namespace PythonBinding.Tests.Converter
 		string startupObject = "RootNamespace.Main";
 		
 		string mainSource = "class Foo\r\n" +
-							"{\r\n" +
-							"    static void Main()\r\n" +
-							"    {\r\n" +
-							"    }\r\n" +
-							"}";
+			"{\r\n" +
+			"    static void Main()\r\n" +
+			"    {\r\n" +
+			"    }\r\n" +
+			"}";
 		
 		string main2Source = "class Bar\r\n" +
-							"{\r\n" +
-							"    static void Main()\r\n" +
-							"    {\r\n" +
-							"    }\r\n" +
-							"}";
+			"{\r\n" +
+			"    static void Main()\r\n" +
+			"    {\r\n" +
+			"    }\r\n" +
+			"}";
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -75,9 +76,13 @@ namespace PythonBinding.Tests.Converter
 			mockTextEditorProperties.Encoding = Encoding.Unicode;
 			
 			Solution solution = new Solution();
-			sourceProject = new MSBuildBasedProject(solution.BuildEngine);
+			sourceProject = new MSBuildBasedProject(
+				new ProjectCreateInformation() {
+					Solution = solution,
+					OutputProjectFileName = @"d:\projects\test\source.csproj",
+					ProjectName = "source"
+				});
 			sourceProject.Parent = solution;
-			sourceProject.FileName = @"d:\projects\test\source.csproj";
 			sourceProject.SetProperty(null, null, "StartupObject", startupObject, PropertyStorageLocations.Base, true);
 			mainFile = new FileProjectItem(sourceProject, ItemType.Compile, @"src\Main.cs");
 			targetProject = (PythonProject)convertProjectCommand.CallCreateProject(@"d:\projects\test\converted", sourceProject);
@@ -88,7 +93,7 @@ namespace PythonBinding.Tests.Converter
 			main2File = new FileProjectItem(sourceProject, ItemType.Compile, @"src\Main2.cs");
 			targetMain2File = new FileProjectItem(targetProject, main2File.ItemType, main2File.Include);
 			main2File.CopyMetadataTo(targetMain2File);
-						
+			
 			convertProjectCommand.AddParseableFileContent(mainFile.FileName, mainSource);
 			convertProjectCommand.AddParseableFileContent(main2File.FileName, main2Source);
 			

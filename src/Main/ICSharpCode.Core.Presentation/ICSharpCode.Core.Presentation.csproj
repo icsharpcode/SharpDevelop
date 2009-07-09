@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Core.Presentation</RootNamespace>
     <AssemblyName>ICSharpCode.Core.Presentation</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
     <OutputPath>..\..\..\bin\</OutputPath>
@@ -81,6 +81,7 @@
     <Compile Include="DropDownButton.cs" />
     <Compile Include="GetBitmapExtension.cs" />
     <Compile Include="Input\InputGestureCollectionConverter.cs" />
+    <Compile Include="IOptionBindingContainer.cs" />
     <Compile Include="Input\InputGestureCollectionExtensions.cs" />
     <Compile Include="Input\InputGestureExtensions.cs" />
     <Compile Include="Input\MultiKeyBinding.cs" />
@@ -95,10 +96,12 @@
     <Compile Include="Menu\MenuService.cs" />
     <Compile Include="Menu\CoreMenuItem.cs" />
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="OptionBinding.cs" />
     <Compile Include="PixelSnapper.cs" />
     <Compile Include="PresentationResourceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SplitButton.cs" />
+    <Compile Include="StringParseExtension.cs" />
     <Compile Include="ToolBar\ToolBarButton.cs" />
     <Compile Include="ToolBar\ToolBarComboBox.cs" />
     <Compile Include="ToolBar\ToolBarDropDownButton.cs" />

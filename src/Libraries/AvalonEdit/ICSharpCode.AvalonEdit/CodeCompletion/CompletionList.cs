@@ -59,7 +59,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// Gets the list box.
 		/// </summary>
 		public CompletionListBox ListBox {
-			get { return listBox; }
+			get {
+				if (listBox == null)
+					ApplyTemplate();
+				return listBox;
+			}
 		}
 		
 		/// <summary>

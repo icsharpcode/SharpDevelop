@@ -18,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	/// A <see cref="VisualLineElementTextRunProperties"/> instance usually is assigned to a single
 	/// <see cref="VisualLineElement"/>.
 	/// </summary>
-	public class VisualLineElementTextRunProperties : TextRunProperties
+	public class VisualLineElementTextRunProperties : TextRunProperties, ICloneable
 	{
 		Brush backgroundBrush;
 		BaselineAlignment baselineAlignment;
@@ -55,6 +55,19 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (textEffects != null && !textEffects.IsFrozen) {
 				textEffects = textEffects.Clone();
 			}
+		}
+		
+		/// <summary>
+		/// Creates a copy of this instance.
+		/// </summary>
+		public virtual VisualLineElementTextRunProperties Clone()
+		{
+			return new VisualLineElementTextRunProperties(this);
+		}
+		
+		object ICloneable.Clone()
+		{
+			return Clone();
 		}
 		
 		/// <inheritdoc/>

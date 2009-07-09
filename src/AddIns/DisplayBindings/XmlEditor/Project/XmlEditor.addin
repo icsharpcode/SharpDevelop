@@ -1,12 +1,8 @@
-<AddIn name        = "Xml Editor"
+﻿<AddIn name        = "Xml Editor"
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Xml Editor"
+       description = "Adds XML completion and formatting support"
        addInManagerHidden = "preinstalled">
-	
-	<Manifest>
-		<Identity name = "ICSharpCode.XmlEditor"/>
-	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "XmlEditor.dll">
@@ -15,25 +11,33 @@
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
-	<!-- Xml Editor View -->
-	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id = "XmlEditor"
-		                insertbefore = "Text"
-		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.XmlEditor}"
-		                class = "ICSharpCode.XmlEditor.XmlDisplayBinding"/>
+	<Manifest>
+		<Identity name = "ICSharpCode.XmlEditor"/>
+	</Manifest>
+	
+	<Path name = "/AddIns/DefaultTextEditor/Formatter/XML">
+		<Class id ="XmlFormatter" class = "ICSharpCode.XmlEditor.XmlFormattingStrategy"/>
 	</Path>
 	
-	<!-- Xml parser used to initiate the folding update -->
-	<Path name = "/Workspace/Parser">
-		<Parser id = "XmlFoldingParser"
-		        supportedextensions  = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco"
-		        class = "ICSharpCode.XmlEditor.Parser"/>
+	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+		<CodeCompletionBinding
+			id = "Xml"
+			extensions  = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco"
+			class = "ICSharpCode.XmlEditor.XmlCodeCompletionBinding"
+		/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id               = "XmlTreeView"
+		                type             = "Secondary"
+		                insertbefore     = "Text"
+		                class            = "ICSharpCode.XmlEditor.XmlDisplayBinding"/>
 	</Path>
 	
 	<!-- Extra project browser icons -->
 	<Path name = "/Workspace/Icons">
 		<Icon id         = "ExtraXmlFileIcon"
-		      extensions = ".manifest;.config;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco"
+		      extensions = ".manifest;.config;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.xaml"
 		      resource   = "FileIcons.XmlIcon" />
 	</Path>
 	
@@ -51,7 +55,11 @@
 	
 	<!-- XML menu -->
 	<Path name = "/SharpDevelop/Workbench/MainMenu">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlView">
+		<ComplexCondition>
+			<Or>
+				<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlTreeView" />
+				<Condition name = "TextContent" textcontent="XML" />
+			</Or>
 			<MenuItem id = "Xml" insertafter="View" insertbefore="Tools" label="&amp;XML" type = "Menu">
 				<MenuItem id = "CreateSchema"
 				          label = "${res:ICSharpCode.XmlEditor.CreateSchemaMenuLabel}"
@@ -88,7 +96,7 @@
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu}"
 				          class = "ICSharpCode.XmlEditor.FormatXmlCommand" />
 			</MenuItem>
-		</Condition>
+		</ComplexCondition>
 	</Path>
 	
 	<!-- Right click menu -->
@@ -130,11 +138,11 @@
 		          shortcut = "Ctrl+I"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
 		<MenuItem id = "HideXPathResults"
-			      label = "${res:ICSharpCode.XmlEditor.HideXPathResults}"
-			      class = "ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
+		          label = "${res:ICSharpCode.XmlEditor.HideXPathResults}"
+		          class = "ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
 		<MenuItem id = "GoToDefinition"
-			      label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
-			      class = "ICSharpCode.XmlEditor.GoToSchemaDefinitionCommand"/>
+		          label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
+		          class = "ICSharpCode.XmlEditor.GoToSchemaDefinitionCommand"/>
 		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}" type="Menu">
 			<MenuItem id = "HighlightBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder" />
 		</MenuItem>
@@ -162,10 +170,10 @@
 		<EditAction id = "XmlCompletionPopup" class = "ICSharpCode.XmlEditor.CodeCompletionPopupCommand"  keys = "Ctrl+Space"/>
 		<EditAction id = "GoToDefinition" class = "ICSharpCode.XmlEditor.GoToSchemaDefinitionEditAction" keys = "Ctrl+Enter"/>
 	</Path>
-
+	
 	<!-- XPath Query pad -->
 	<Path name = "/SharpDevelop/Workbench/Pads">
-		<Pad id = "XPathQueryPad" 
+		<Pad id = "XPathQueryPad"
 		     category = "Tools"
 		     icon = "PadIcons.XPathQuery"
 		     title = "${res:ICSharpCode.XmlEditor.XPathQueryPad.Title}"
@@ -173,32 +181,32 @@
 		     class = "ICSharpCode.XmlEditor.XPathQueryPad"
 		     defaultPosition = "Bottom, Hidden" />
 	</Path>
-
+	
 	<!-- Menu options to turn off XPath Query result highlighting -->
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
 		<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlView">
 			<MenuItem id = "RemoveXPathHighlighting"
-			          insertafter = "ShowCodeCoverage" 
+			          insertafter = "ShowCodeCoverage"
 			          label = "${res:ICSharpCode.XmlEditor.HideXPathResults}"
 			          class = "ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
 		</Condition>
 	</Path>
-
+	
 	<!-- XML Tree context menu options -->
 	<Path name = "/AddIns/XmlEditor/XmlTree/AttributesGrid/ContextMenu">
 		<Condition name = "Ownerstate" ownerstate="ElementSelected" action="Disable">
 			<MenuItem id = "AddAttribute"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddAttributeMenuLabel}"
-				class = "ICSharpCode.XmlEditor.AddAttributeCommand"/>
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddAttributeMenuLabel}"
+			          class = "ICSharpCode.XmlEditor.AddAttributeCommand"/>
 		</Condition>
 		<Condition name = "Ownerstate" ownerstate="AttributeSelected" action="Disable">
 			<MenuItem id = "RemoveAttribute"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.RemoveAttributeMenuLabel}"
-				icon = "Icons.16x16.DeleteIcon"
-				class = "ICSharpCode.XmlEditor.RemoveAttributeCommand"/>
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.RemoveAttributeMenuLabel}"
+			          icon = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.XmlEditor.RemoveAttributeCommand"/>
 		</Condition>
 	</Path>
-
+	
 	<Path name = "/AddIns/XmlEditor/XmlTree/ContextMenu">
 		<MenuItem id = "Cut"
 		          label = "${res:XML.TextAreaContextMenu.Cut}"
@@ -231,16 +239,16 @@
 				</And>
 			</Or>
 			<MenuItem id = "InsertElementBefore"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertElementBeforeMenuLabel}"
-				class = "ICSharpCode.XmlEditor.InsertElementBeforeCommand"/>
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertElementBeforeMenuLabel}"
+			          class = "ICSharpCode.XmlEditor.InsertElementBeforeCommand"/>
 			<MenuItem id = "InsertElementAfter"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertElementAfterMenuLabel}"
-				class = "ICSharpCode.XmlEditor.InsertElementAfterCommand"/>
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertElementAfterMenuLabel}"
+			          class = "ICSharpCode.XmlEditor.InsertElementAfterCommand"/>
 		</ComplexCondition>
 		<Condition name = "Ownerstate" ownerstate = "ElementSelected" action = "Disable">
 			<MenuItem id = "AddChildElement"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildElementMenuLabel}"
-				class = "ICSharpCode.XmlEditor.AddChildElementCommand"/>
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildElementMenuLabel}"
+			          class = "ICSharpCode.XmlEditor.AddChildElementCommand"/>
 		</Condition>
 		<ComplexCondition action = "Disable">
 			<Or>
@@ -255,16 +263,16 @@
 			</Or>
 			<MenuItem id = "TextNodeCommandsSeparator" type = "Separator"/>
 			<MenuItem id = "InsertTextNodeBefore"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertTextNodeBeforeMenuLabel}"
-				class = "ICSharpCode.XmlEditor.InsertTextNodeBeforeCommand"/>
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertTextNodeBeforeMenuLabel}"
+			          class = "ICSharpCode.XmlEditor.InsertTextNodeBeforeCommand"/>
 			<MenuItem id = "InsertTextNodeAfter"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertTextNodeAfterMenuLabel}"
-				class = "ICSharpCode.XmlEditor.InsertTextNodeAfterCommand"/>
-		</ComplexCondition>		
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertTextNodeAfterMenuLabel}"
+			          class = "ICSharpCode.XmlEditor.InsertTextNodeAfterCommand"/>
+		</ComplexCondition>
 		<Condition name = "Ownerstate" ownerstate = "ElementSelected" action = "Disable">
 			<MenuItem id = "AddChildTextNode"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildTextNodeAfterMenuLabel}"
-				class = "ICSharpCode.XmlEditor.AddChildTextNodeCommand"/>			
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildTextNodeAfterMenuLabel}"
+			          class = "ICSharpCode.XmlEditor.AddChildTextNodeCommand"/>
 		</Condition>
 		<ComplexCondition action = "Disable">
 			<Or>
@@ -274,16 +282,16 @@
 			</Or>
 			<MenuItem id = "CommentNodeCommandsSeparator" type = "Separator"/>
 			<MenuItem id = "InsertCommentBefore"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertCommentBeforeMenuLabel}"
-				class = "ICSharpCode.XmlEditor.InsertCommentBeforeCommand"/>
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertCommentBeforeMenuLabel}"
+			          class = "ICSharpCode.XmlEditor.InsertCommentBeforeCommand"/>
 			<MenuItem id = "InsertCommentAfter"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertCommentAfterMenuLabel}"
-				class = "ICSharpCode.XmlEditor.InsertCommentAfterCommand"/>
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.InsertCommentAfterMenuLabel}"
+			          class = "ICSharpCode.XmlEditor.InsertCommentAfterCommand"/>
 		</ComplexCondition>
 		<Condition name = "Ownerstate" ownerstate = "ElementSelected" action = "Disable">
 			<MenuItem id = "AddChildCommentNode"
-				label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildCommentMenuLabel}"
-				class = "ICSharpCode.XmlEditor.AddChildCommentCommand"/>			
+			          label = "${res:ICSharpCode.XmlEditor.XmlTreeView.AddChildCommentMenuLabel}"
+			          class = "ICSharpCode.XmlEditor.AddChildCommentCommand"/>
 		</Condition>
 	</Path>
 </AddIn>

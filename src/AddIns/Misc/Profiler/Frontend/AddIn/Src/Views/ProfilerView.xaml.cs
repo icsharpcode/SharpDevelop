@@ -29,7 +29,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			
 			this.timeLine.IsEnabled = true;
 			this.timeLine.ValuesList.Clear();
-			this.timeLine.ValuesList.AddRange(this.provider.DataSets.Select(i => i.CpuUsage));
+			this.timeLine.ValuesList.AddRange(this.provider.DataSets.Select(i => i.CpuUsage / 100));
 			this.timeLine.SelectedStartIndex = 0;
 			this.timeLine.SelectedEndIndex = this.timeLine.ValuesList.Count;
 			
@@ -131,7 +131,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			string tabs = provider.GetProperty("tabs");
 			if (tabs != null) {
 				foreach (string query in tabs.SplitSeparatedString()) {
-					CreateTab(query, query);
+					CreateTab(query, query, false);
 				}
 			}
 		}
@@ -153,6 +153,11 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		}
 
 		public TabItem CreateTab(string title, string query)
+		{
+			return CreateTab(title, query, true);
+		}
+		
+		TabItem CreateTab(string title, string query, bool switchToNewTab)
 		{
 			TabItem newTab = new TabItem();
 			Button closeButton = new Button { Style = this.Resources["CloseButton"] as Style };
@@ -183,7 +188,8 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			header.TextTrimming = TextTrimming.CharacterEllipsis;
 			header.TextWrapping = TextWrapping.NoWrap;
 			tabView.Items.Insert(tabView.Items.Count - 1, newTab);
-			tabView.SelectedItem = newTab;
+			if (switchToNewTab)
+				tabView.SelectedItem = newTab;
 			
 			return newTab;
 		}

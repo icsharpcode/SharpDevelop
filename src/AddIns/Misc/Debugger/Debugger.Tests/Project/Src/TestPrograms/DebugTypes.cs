@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 
 namespace Debugger.Tests.TestPrograms
 {
@@ -16,14 +17,15 @@ namespace Debugger.Tests.TestPrograms
 			
 		}
 		
-		public interface MyInterface
+		public interface MyInterface<K, V, T>
 		{
-			
+			K ItemKey { get; }
 		}
 		
-		public class MyInterfaceImpl: MyInterface
+		public class MyInterfaceImpl<T> : MyInterface<string, IEnumerable<int>, MyClass>
 		{
-			
+			public T Item { get { return default(T); } }
+			public string ItemKey { get { return null; } }
 		}
 		
 		public struct Point {
@@ -51,8 +53,8 @@ namespace Debugger.Tests.TestPrograms
 			Point locStruct;
 			Point* locStructPtr = &locStruct;
 			object box = 40;
-			MyInterfaceImpl myInterfaceImpl = new MyInterfaceImpl();
-			MyInterface myInterface = myInterfaceImpl;
+			MyInterfaceImpl<int> myInterfaceImpl = new MyInterfaceImpl<int>();
+			MyInterface<string, IEnumerable<int>, MyClass> myInterface = myInterfaceImpl;
 			
 			System.Diagnostics.Debugger.Break();
 			
@@ -105,7 +107,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugTypes.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugTypes.cs:57,4-57,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugTypes.cs:59,4-59,40</DebuggingPaused>
     <LocalVariables
       Capacity="32"
       Count="19">
@@ -651,11 +653,11 @@ namespace Debugger.Tests {
           Type="System.Int32">
           <Type>
             <DebugType
-              BaseType="System.ValueType"
+              BaseType="System.Object"
               ElementType="null"
               FullName="System.Int32"
               GenericArguments="{}"
-              Interfaces="{System.IComparable, System.IFormattable, System.IConvertible}"
+              Interfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable&lt;System.Int32&gt;, System.IEquatable&lt;System.Int32&gt;}"
               Kind="ValueType"
               Module="mscorlib.dll"
               Name="Int32">
@@ -669,23 +671,23 @@ namespace Debugger.Tests {
           ArrayDimensions="{Exception: Value is not an array}"
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
-          AsString="{MyInterfaceImpl}"
+          AsString="{MyInterfaceImpl&lt;System.Int32&gt;}"
           Expression="myInterfaceImpl"
           IsInvalid="False"
           IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
-          Type="MyInterfaceImpl">
+          Type="MyInterfaceImpl&lt;System.Int32&gt;">
           <Type>
             <DebugType
               BaseType="System.Object"
               ElementType="null"
-              FullName="MyInterfaceImpl"
-              GenericArguments="{}"
-              Interfaces="{MyInterface}"
+              FullName="MyInterfaceImpl&lt;System.Int32&gt;"
+              GenericArguments="{System.Int32}"
+              Interfaces="{MyInterface&lt;System.String,System.Collections.Generic.IEnumerable&lt;System.Int32&gt;,MyClass&gt;}"
               Kind="Class"
               Module="DebugTypes.exe"
-              Name="MyInterfaceImpl">
+              Name="MyInterfaceImpl&lt;Int32&gt;">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -696,30 +698,30 @@ namespace Debugger.Tests {
           ArrayDimensions="{Exception: Value is not an array}"
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
-          AsString="{MyInterfaceImpl}"
+          AsString="{MyInterfaceImpl&lt;System.Int32&gt;}"
           Expression="myInterface"
           IsInvalid="False"
           IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
-          Type="MyInterfaceImpl">
+          Type="MyInterfaceImpl&lt;System.Int32&gt;">
           <Type>
             <DebugType
               BaseType="System.Object"
               ElementType="null"
-              FullName="MyInterfaceImpl"
-              GenericArguments="{}"
-              Interfaces="{MyInterface}"
+              FullName="MyInterfaceImpl&lt;System.Int32&gt;"
+              GenericArguments="{System.Int32}"
+              Interfaces="{MyInterface&lt;System.String,System.Collections.Generic.IEnumerable&lt;System.Int32&gt;,MyClass&gt;}"
               Kind="Class"
               Module="DebugTypes.exe"
-              Name="MyInterfaceImpl">
+              Name="MyInterfaceImpl&lt;Int32&gt;">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
         </Value>
       </Item>
     </LocalVariables>
-    <DebuggingPaused>Break DebugTypes.cs:74,4-74,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugTypes.cs:76,4-76,40</DebuggingPaused>
     <Arguments
       Capacity="16"
       Count="15">
@@ -1184,11 +1186,11 @@ namespace Debugger.Tests {
           Type="System.Int32">
           <Type>
             <DebugType
-              BaseType="System.ValueType"
+              BaseType="System.Object"
               ElementType="null"
               FullName="System.Int32"
               GenericArguments="{}"
-              Interfaces="{System.IComparable, System.IFormattable, System.IConvertible}"
+              Interfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable&lt;System.Int32&gt;, System.IEquatable&lt;System.Int32&gt;}"
               Kind="ValueType"
               Module="mscorlib.dll"
               Name="Int32">
@@ -1211,11 +1213,11 @@ namespace Debugger.Tests {
           Type="System.Int32">
           <Type>
             <DebugType
-              BaseType="System.ValueType"
+              BaseType="System.Object"
               ElementType="null"
               FullName="System.Int32"
               GenericArguments="{}"
-              Interfaces="{System.IComparable, System.IFormattable, System.IConvertible}"
+              Interfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable&lt;System.Int32&gt;, System.IEquatable&lt;System.Int32&gt;}"
               Kind="ValueType"
               Module="mscorlib.dll"
               Name="Int32">

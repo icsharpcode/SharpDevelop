@@ -20,9 +20,11 @@ namespace ICSharpCode.XamlBinding
 		public string ExtensionType { get; set; }
 		public IList<AttributeValue> PositionalArguments { get; private set; }
 		public IDictionary<string, AttributeValue> NamedArguments { get; private set; }
-				
+		
+		public int StartOffset { get; set; }
+		
 		public MarkupExtensionInfo()
-			: this(string.Empty, new List<AttributeValue>(), new Dictionary<string, AttributeValue>())
+			: this(string.Empty, new List<AttributeValue>(), new Dictionary<string, AttributeValue>(StringComparer.OrdinalIgnoreCase))
 		{
 		}
 		
@@ -38,6 +40,8 @@ namespace ICSharpCode.XamlBinding
 	{
 		string stringValue;
 		MarkupExtensionInfo extensionValue;
+		
+		public int StartOffset { get; set; }
 		
 		public bool IsString {
 			get { return stringValue != null; }

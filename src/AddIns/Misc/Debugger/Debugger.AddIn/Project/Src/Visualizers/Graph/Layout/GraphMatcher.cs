@@ -6,7 +6,7 @@
 // </file>
 using System;
 using System.Collections.Generic;
-using Debugger.AddIn.Visualizers.Graph.Utils;
+using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -31,7 +31,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				else
 				{
 					GraphDiff addAllDiff = new GraphDiff();
-					foreach	(PositionedNode newNode in newGraph.Nodes)
+					foreach	(PositionedGraphNode newNode in newGraph.Nodes)
 					{
 						addAllDiff.SetAdded(newNode);
 					}
@@ -42,12 +42,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			// both graph are not null
 			GraphDiff diff = new GraphDiff();
 			
-			Dictionary<int, PositionedNode> newNodeForHashCode = buildHashToNodeMap(newGraph);
-			Dictionary<PositionedNode, bool> newNodeMatched = new Dictionary<PositionedNode, bool>();
+			Dictionary<int, PositionedGraphNode> newNodeForHashCode = buildHashToNodeMap(newGraph);
+			Dictionary<PositionedGraphNode, bool> newNodeMatched = new Dictionary<PositionedGraphNode, bool>();
 			
-			foreach	(PositionedNode oldNode in oldGraph.Nodes)
+			foreach	(PositionedGraphNode oldNode in oldGraph.Nodes)
 			{
-				PositionedNode matchingNode = matchNode(oldNode, newNodeForHashCode);
+				PositionedGraphNode matchingNode = matchNode(oldNode, newNodeForHashCode);
 				if (matchingNode != null)
 				{
 					diff.SetMatching(oldNode, matchingNode);
@@ -58,7 +58,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 					diff.SetRemoved(oldNode);
 				}
 			}
-			foreach	(PositionedNode newNode in newGraph.Nodes)
+			foreach	(PositionedGraphNode newNode in newGraph.Nodes)
 			{
 				if (!newNodeMatched.ContainsKey(newNode))
 				{
@@ -69,19 +69,19 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return diff;
 		}
 		
-		private Dictionary<int, PositionedNode> buildHashToNodeMap(PositionedGraph graph)
+		private Dictionary<int, PositionedGraphNode> buildHashToNodeMap(PositionedGraph graph)
 		{
-			var hashToNodeMap = new Dictionary<int, PositionedNode>();
-			foreach (PositionedNode node in graph.Nodes)
+			var hashToNodeMap = new Dictionary<int, PositionedGraphNode>();
+			foreach (PositionedGraphNode node in graph.Nodes)
 			{
 				hashToNodeMap[node.ObjectNode.HashCode] = node;
 			}
 			return hashToNodeMap;
 		}
 		
-		private PositionedNode matchNode(PositionedNode oldNode, Dictionary<int, PositionedNode> newNodeMap)
+		private PositionedGraphNode matchNode(PositionedGraphNode oldNode, Dictionary<int, PositionedGraphNode> newNodeMap)
 		{
-			PositionedNode newNodeFound = newNodeMap.GetValue(oldNode.ObjectNode.HashCode);
+			PositionedGraphNode newNodeFound = newNodeMap.GetValue(oldNode.ObjectNode.HashCode);
 			if ((newNodeFound != null) && isSameAddress(oldNode, newNodeFound))
 			{
 				return newNodeFound;
@@ -92,7 +92,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			}
 		}
 		
-		private bool isSameAddress(PositionedNode node1, PositionedNode node2)
+		private bool isSameAddress(PositionedGraphNode node1, PositionedGraphNode node2)
 		{
 			return node1.ObjectNode.PermanentReference.GetObjectAddress() == node2.ObjectNode.PermanentReference.GetObjectAddress();
 		}

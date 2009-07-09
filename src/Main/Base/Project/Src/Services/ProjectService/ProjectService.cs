@@ -370,7 +370,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(fileName);
 			IProject project;
 			if (binding != null) {
-				project = LanguageBindingService.LoadProject(solution, fileName, solution.Name);
+				project = LanguageBindingService.LoadProject(new ProjectLoadInformation(solution, fileName, solution.Name));
 				if (project is UnknownProject) {
 					if (((UnknownProject)project).WarningDisplayedToUser == false) {
 						((UnknownProject)project).ShowWarningMessageBox();

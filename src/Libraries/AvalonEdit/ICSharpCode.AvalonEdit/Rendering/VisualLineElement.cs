@@ -135,9 +135,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			firstPart.DocumentLength = relativeSplitRelativeTextOffset;
 			secondPart.DocumentLength = oldDocumentLength - relativeSplitRelativeTextOffset;
 			if (firstPart.TextRunProperties == null)
-				firstPart.TextRunProperties = new VisualLineElementTextRunProperties(TextRunProperties);
+				firstPart.TextRunProperties = TextRunProperties.Clone();
 			if (secondPart.TextRunProperties == null)
-				secondPart.TextRunProperties = new VisualLineElementTextRunProperties(TextRunProperties);
+				secondPart.TextRunProperties = TextRunProperties.Clone();
 		}
 		
 		/// <summary>

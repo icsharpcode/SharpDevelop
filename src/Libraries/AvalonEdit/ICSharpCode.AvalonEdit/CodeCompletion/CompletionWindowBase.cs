@@ -53,13 +53,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.AddHandler(MouseUpEvent, new MouseButtonEventHandler(OnMouseUp), true);
 			
 			startOffset = endOffset = this.TextArea.Caret.Offset;
+			
+			AttachEvents();
 		}
 		
 		#region Event Handlers
-		/// <summary>
-		/// Attaches events to the text area.
-		/// </summary>
-		protected virtual void AttachEvents()
+		void AttachEvents()
 		{
 			document = this.TextArea.Document;
 			if (document != null) {
@@ -203,7 +202,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		protected override void OnSourceInitialized(EventArgs e)
 		{
 			base.OnSourceInitialized(e);
-			AttachEvents();
 			
 			if (document != null && this.StartOffset != this.TextArea.Caret.Offset) {
 				SetPosition(new TextViewPosition(document.GetLocation(this.StartOffset)));
@@ -246,10 +244,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		void UpdatePosition()
 		{
 			TextView textView = this.TextArea.TextView;
+			// PointToScreen returns device dependent units (physical pixels)
 			Point location = textView.PointToScreen(visualLocation - textView.ScrollOffset);
 			Point locationTop = textView.PointToScreen(visualLocationTop - textView.ScrollOffset);
 			
-			Size completionWindowSize = new Size(this.ActualWidth, this.ActualHeight);
+			// Let's use device dependent units for everything
+			Size completionWindowSize = new Size(this.ActualWidth, this.ActualHeight).TransformToDevice(textView);
 			Rect bounds = new Rect(location, completionWindowSize);
 			Rect workingScreen = System.Windows.Forms.Screen.GetWorkingArea(location.ToSystemDrawing()).ToWpf();
 			if (!workingScreen.Contains(bounds)) {
@@ -265,6 +265,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					bounds.Y = workingScreen.Top;
 				}
 			}
+			// Convert the window bounds to device independent units
+			bounds = bounds.TransformFromDevice(textView);
 			this.Left = bounds.X;
 			this.Top = bounds.Y;
 		}

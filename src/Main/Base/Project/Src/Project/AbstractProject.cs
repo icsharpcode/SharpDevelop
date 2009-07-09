@@ -114,6 +114,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				return fileName ?? "";
 			}
 			set {
+				if (value == null)
+					throw new ArgumentNullException();
 				WorkbenchSingleton.AssertMainThread();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
 				
@@ -442,7 +444,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Creates a new projectItem for the passed itemType
 		/// </summary>
-		public virtual ProjectItem CreateProjectItem(Microsoft.Build.BuildEngine.BuildItem item)
+		public virtual ProjectItem CreateProjectItem(IProjectItemBackendStore item)
 		{
 			return new UnknownProjectItem(this, item);
 		}
@@ -488,7 +490,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
-		public virtual void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public virtual void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			feedbackSink.ReportError(new BuildError { ErrorText = "Building project " + Name + " is not supported.", IsWarning = true });
 			// we don't know how to build anything, report that we're done.

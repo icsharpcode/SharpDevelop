@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 
+using Mono.Cecil.Signatures;
+
 namespace Debugger.MetaData
 {
 	public enum DebugTypeKind { Array, Class, ValueType, Primitive, Pointer, Void };
@@ -144,7 +146,7 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets generics arguments for a type or an emtpy array for non-generic types. </summary>
+		/// <summary> Gets generics arguments for a type or an empty List for non-generic types. </summary>
 		public List<DebugType> GenericArguments {
 			get {
 				if (this.IsArray || this.IsPointer) {
@@ -235,7 +237,7 @@ namespace Debugger.MetaData
 		[Tests.Ignore]
 		public bool IsPrimitive {
 			get {
-				return this.Kind == DebugTypeKind.Primitive;
+				return this.PrimitiveType != null;
 			}
 		}
 		
@@ -243,16 +245,20 @@ namespace Debugger.MetaData
 		[Tests.Ignore]
 		public bool IsInteger {
 			get {
-				return this.corElementType == CorElementType.I1 ||
-				       this.corElementType == CorElementType.U1 ||
-				       this.corElementType == CorElementType.I2 ||
-				       this.corElementType == CorElementType.U2 ||
-				       this.corElementType == CorElementType.I4 ||
-				       this.corElementType == CorElementType.U4 ||
-				       this.corElementType == CorElementType.I8 ||
-				       this.corElementType == CorElementType.U8 ||
-				       this.corElementType == CorElementType.I ||
-				       this.corElementType == CorElementType.U;
+				if (this.PrimitiveType == null) {
+					return false;
+				}
+				switch (this.PrimitiveType.FullName) {
+					case "System.SByte":
+					case "System.Byte":
+					case "System.Int16":
+					case "System.UInt16":
+					case "System.Int32":
+					case "System.UInt32":
+					case "System.Int64":
+					case "System.UInt64": return true;
+					default: return false;
+				}
 			}
 		}
 		
@@ -347,24 +353,100 @@ namespace Debugger.MetaData
 		
 		public static DebugType Create(Module module, uint token)
 		{
-			if ((token & 0xFF000000) == (uint)CorTokenType.TypeDef) {
-				return Create(module.Process, module.CorModule.GetClassFromToken(token));
-			} else if ((token & 0xFF000000) == (uint)CorTokenType.TypeRef) {
-				string fullName = module.MetaData.GetTypeRefProps(token).Name;
-				return Create(module.Process, module.AppDomainID, fullName);
+			return Create(module, token, null);
+		}
+		
+		public static DebugType Create(Module module, uint token, DebugType signatureContext)
+		{
+			CorTokenType tokenType = (CorTokenType)(token & 0xFF000000);
+			if (tokenType == CorTokenType.TypeDef || tokenType == CorTokenType.TypeRef) {
+				return Create(module.Process, GetCorClass(module, token));
+			} else if (tokenType == CorTokenType.TypeSpec) {
+				Blob typeSpecBlob = module.MetaData.GetTypeSpecFromToken(token);
+				return Create(module, typeSpecBlob.GetData(), signatureContext);
 			} else {
 				throw new DebuggerException("Unknown token type");
 			}
+		}
+		
+		public static DebugType Create(Module module, byte[] sig)
+		{
+			return Create(module, sig, null);
+		}
+		
+		/// <param name="signatureContext">Type definition to use to resolve numbered generic references</param>
+		public static DebugType Create(Module module, byte[] sig, DebugType signatureContext)
+		{
+			SignatureReader sigReader = new SignatureReader(sig);
+			int start;
+			SigType sigType = sigReader.ReadType(sig, 0, out start);
 			
+			return Create(module, sigType, signatureContext);
+		}
+		
+		static DebugType Create(Module module, SigType sigType, DebugType signatureContext)
+		{
+			System.Type sysType = CorElementTypeToManagedType((CorElementType)(uint)sigType.ElementType);
+			if (sysType != null) {
+				return Create(module.Process, module.AppDomainID, sysType.FullName);
+			}
+			
+			if (sigType is CLASS) {
+				ICorDebugClass corClass = GetCorClass(module, ((CLASS)sigType).Type.ToUInt());
+				return Create(module.Process, corClass);
+			}
+			
+			if (sigType is VALUETYPE) {
+				ICorDebugClass corClass = GetCorClass(module, ((VALUETYPE)sigType).Type.ToUInt());
+				return Create(module.Process, corClass);
+			}
+			
+			// Numbered generic reference
+			if (sigType is VAR) {			
+				if (signatureContext == null) throw new DebuggerException("Signature context is needed");
+				return signatureContext.GenericArguments[((VAR)sigType).Index];
+			}
+			
+			if (sigType is GENERICINST) {
+				GENERICINST genInst = (GENERICINST)sigType;
+				CorElementType classOrValueType = genInst.ValueType ? CorElementType.VALUETYPE : CorElementType.CLASS;
+				ICorDebugClass corClass = GetCorClass(module, genInst.Type.ToUInt());
+				ICorDebugType[] genArgs = new ICorDebugType[genInst.Signature.Arity];
+				for(int i = 0; i < genArgs.Length; i++) {
+					genArgs[i] = Create(module, genInst.Signature.Types[i].Type, signatureContext).CorType;
+				}
+				
+				ICorDebugType genInstance = corClass.CastTo<ICorDebugClass2>().GetParameterizedType((uint)classOrValueType, genArgs);
+				return Create(module.Process, genInstance);
+			}
+			
+			throw new NotImplementedException(sigType.ElementType.ToString());
 		}
 		
 		public static DebugType Create(Process process, uint? domainID, string fullTypeName)
+		{
+			return Create(process, GetCorClass(process, domainID, fullTypeName));
+		}
+		
+		static ICorDebugClass GetCorClass(Module module, uint token)
+		{
+			if ((token & 0xFF000000) == (uint)CorTokenType.TypeDef) {
+				return module.CorModule.GetClassFromToken(token);
+			} else if ((token & 0xFF000000) == (uint)CorTokenType.TypeRef) {
+				string fullName = module.MetaData.GetTypeRefProps(token).Name;
+				return GetCorClass(module.Process, module.AppDomainID, fullName);
+			} else {
+				throw new DebuggerException("TypeDef or TypeRef expected");
+			}
+		}
+		
+		static ICorDebugClass GetCorClass(Process process, uint? domainID, string fullTypeName)
 		{
 			foreach(Module module in process.Modules) {
 				if (!domainID.HasValue || domainID == module.CorModule.Assembly.AppDomain.ID) {
 					try {
 						uint token = module.MetaData.FindTypeDefPropsByName(fullTypeName, 0 /* enclosing class for nested */).Token;
-						return Create(process, module.CorModule.GetClassFromToken(token));
+						return module.CorModule.GetClassFromToken(token);
 					} catch {
 						continue;
 					}
@@ -427,11 +509,13 @@ namespace Debugger.MetaData
 				}
 			}
 			
+			// This has to be done before LoadMemberInfo since it might use it
+			typesWithMatchingName.Add(type);
+			
 			// The type is not in the cache, finish loading it and add it to the cache
 			if (type.IsClass || type.IsValueType) {
 				type.LoadMemberInfo();
 			}
-			typesWithMatchingName.Add(type);
 			type.Process.Exited += delegate { typesWithMatchingName.Remove(type); };
 			
 			TimeSpan totalTime2 = Util.HighPrecisionTimer.Now - startTime;
@@ -508,11 +592,7 @@ namespace Debugger.MetaData
 		{
 			// Load interfaces
 			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps(this.Token)) {
-				if ((implProps.Interface & 0xFF000000) == (uint)CorTokenType.TypeDef ||
-					(implProps.Interface & 0xFF000000) == (uint)CorTokenType.TypeRef)
-				{
-					this.interfaces.Add(DebugType.Create(module, implProps.Interface));
-				}
+				this.interfaces.Add(DebugType.Create(module, implProps.Interface, this));
 			}
 			
 			// Load fields
@@ -594,7 +674,8 @@ namespace Debugger.MetaData
 				}
 				if (this.IsPrimitive) {
 					return other.IsPrimitive &&
-					       other.corElementType == this.corElementType;
+					       other.PrimitiveType == this.PrimitiveType &&
+							other.IsValueType == this.IsValueType;
 				}
 				if (this.IsClass || this.IsValueType) {
 					return (other.IsClass || other.IsValueType) &&

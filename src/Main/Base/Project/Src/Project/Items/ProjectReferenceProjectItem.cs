@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return false; }
 		}
 		
-		internal ProjectReferenceProjectItem(IProject project, Microsoft.Build.BuildEngine.BuildItem buildItem)
+		internal ProjectReferenceProjectItem(IProject project, IProjectItemBackendStore buildItem)
 			: base(project, buildItem)
 		{
 			this.DefaultCopyLocalValue = true;

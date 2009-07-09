@@ -127,6 +127,12 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			}
 		}
 		
+		public IEnumerable<IClass> ClassInheritanceTreeClassesOnly {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public IClass BaseClass {
 			get {
 				return BaseType.GetUnderlyingClass();

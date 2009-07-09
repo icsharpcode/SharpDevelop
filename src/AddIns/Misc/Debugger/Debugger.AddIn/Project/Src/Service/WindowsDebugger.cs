@@ -335,7 +335,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		/// <summary>
 		/// Gets variable of given name.
-		/// Returns null if unsuccessful.
+		/// Returns null if unsuccessful. Can throw GetValueException.
+		/// <exception cref="GetValueException">Thrown when evaluation fails. Exception message explains reason.</exception>
 		/// </summary>
 		public Value GetValueFromName(string variableName)
 		{

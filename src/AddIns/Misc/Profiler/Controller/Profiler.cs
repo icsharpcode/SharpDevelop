@@ -242,6 +242,7 @@ namespace ICSharpCode.Profiler.Controller
 			this.psi.EnvironmentVariables["AccessEventName"] = AccessEventId; // name for access event of controller
 			this.psi.EnvironmentVariables["COR_ENABLE_PROFILING"] = "1"; // enable profiling; 0 = disable
 			this.psi.EnvironmentVariables["COR_PROFILER"] = ProfilerGuid; // GUID for the profiler
+			this.psi.EnvironmentVariables["COMPLUS_ProfAPI_ProfilerCompatibilitySetting"] = "EnableV2Profiler"; // enable CLR 2.0 for CLR 4.0
 			
 			file = MemoryMappedFile.CreateSharedMemory(SharedMemoryId, profilerOptions.SharedMemorySize);
 

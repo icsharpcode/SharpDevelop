@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<!-- syntaxdefinition for C/C++ 2001 by Andrea Paatz and Mike Krueger -->
+<!-- syntaxdefinition for C/C++ 2001 by Andrea Paatz and Mike Krueger 
+	this should be rewritten to xshd v2.0 syntax to handle c++/cli keywords with whitespaces properly -->
 
 <SyntaxDefinition name = "C++.NET" extensions = ".c;.h;.cc;.cpp;.hpp">
 	
@@ -85,6 +86,35 @@
 				<Key word = "__unhook" />
 				
 				<Key word = "__interface" />
+			
+				<!-- c++/cli new syntax managed keywords //-->
+				<Key word = "ref class" />
+				<Key word = "ref struct" />
+				<Key word = "value class" />
+				<Key word = "value struct" />
+				<Key word = "interface class" />
+				<Key word = "interface struct" />
+				<Key word = "enum class" />
+				<Key word = "enum struct" />
+				
+				<Key word = "delegate" />
+				<Key word = "event" />
+				<Key word = "property" />
+				
+				<Key word = "abstract" />
+				<Key word = "override" />
+				<Key word = "sealed" />
+				
+				<Key word = "generic" />
+				<Key word = "where" />
+				
+				<Key word = "finally" />
+				<Key word = "for each" />
+				<Key word = "gcnew" />
+				<Key word = "in" />
+				<Key word = "initonly" />
+				<Key word = "literal" />
+				<Key word = "nullptr" />
 			</KeyWords>
 			
 			<KeyWords name = "AccessKeywords" bold="true" italic="false" color="Black">

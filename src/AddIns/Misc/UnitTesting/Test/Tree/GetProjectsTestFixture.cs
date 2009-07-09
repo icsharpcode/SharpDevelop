@@ -31,15 +31,13 @@ namespace UnitTesting.Tests.Tree
 		public void Init()
 		{
 			solution = new Solution();
-			project1 = new MockCSharpProject(solution);
-			project1.Name = "A";
+			project1 = new MockCSharpProject(solution, "A");
 			ReferenceProjectItem refProjectItem = new ReferenceProjectItem(project1);
 			refProjectItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project1, refProjectItem);
 			solution.Folders.Add(project1);
 			
-			project2 = new MockCSharpProject(solution);
-			project2.Name = "Z";
+			project2 = new MockCSharpProject(solution, "Z");
 			refProjectItem = new ReferenceProjectItem(project2);
 			refProjectItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project2, refProjectItem);

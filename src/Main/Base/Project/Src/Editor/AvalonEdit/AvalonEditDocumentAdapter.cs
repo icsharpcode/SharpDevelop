@@ -33,6 +33,23 @@ namespace ICSharpCode.SharpDevelop.Editor
 			this.parentServiceProvider = parentServiceProvider;
 		}
 		
+		/// <summary>
+		/// Used in Unit Tests
+		/// </summary>
+		public AvalonEditDocumentAdapter()
+		{
+			this.document = new TextDocument();
+		}
+		
+		/// <summary>
+		/// Used in Unit Tests
+		/// </summary>
+		public AvalonEditDocumentAdapter(IServiceProvider parentServiceProvider)
+		{
+			this.document = new TextDocument();
+			this.parentServiceProvider = parentServiceProvider;
+		}
+		
 		sealed class LineAdapter : IDocumentLine
 		{
 			readonly DocumentLine line;
@@ -139,6 +156,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public string GetText(int offset, int length)
 		{
 			return document.GetText(offset, length);
+		}
+		
+		public System.IO.TextReader CreateReader()
+		{
+			return CreateSnapshot().CreateReader();
+		}
+		
+		public ITextBuffer CreateSnapshot()
+		{
+			return new AvalonEditTextSourceAdapter(document.CreateSnapshot());
 		}
 		
 		public void StartUndoableAction()

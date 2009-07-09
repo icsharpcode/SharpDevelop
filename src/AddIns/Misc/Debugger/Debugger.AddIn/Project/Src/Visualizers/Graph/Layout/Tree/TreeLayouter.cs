@@ -22,10 +22,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		private LayoutDirection layoutDirection = LayoutDirection.TopBottom;
 		
-		PositionedGraph resultGraph = null;
-		
-		Dictionary<ObjectNode, TreeNode> treeNodeFor = new Dictionary<ObjectNode, TreeNode>();
-		Dictionary<ObjectNode, object> seenNodes = new Dictionary<ObjectNode, object>();
+		HashSet<PositionedGraphNode> seenNodes = new HashSet<PositionedGraphNode>();
+		Dictionary<ObjectGraphNode, PositionedGraphNode> treeNodeFor = new Dictionary<ObjectGraphNode, PositionedGraphNode>();
 		
 		public TreeLayouter()
 		{
@@ -36,16 +34,21 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		/// <param name="objectGraph"></param>
 		/// <returns></returns>
-		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction)
+		public PositionedGraph CalculateLayout(ObjectGraph objectGraph, LayoutDirection direction, Expanded expanded)
 		{
 			layoutDirection = direction;
 
-			resultGraph = new PositionedGraph();
-			treeNodeFor = new Dictionary<ObjectNode, TreeNode>();
-			seenNodes = new Dictionary<ObjectNode, object>();
+			treeNodeFor = new Dictionary<ObjectGraphNode, PositionedGraphNode>();
+			seenNodes = new HashSet<PositionedGraphNode>();
 
-			TreeNode tree = buildTreeRecursive(objectGraph.Root);
-			calculateNodePosRecursive(tree, 0, 0);
+			//TreeGraphNode tree = buildTreeRecursive(objectGraph.Root, expandedNodes);
+			
+			// convert ObjectGraph to PositionedGraph with TreeEdges
+			var resultGraph = buildTreeGraph(objectGraph, expanded);
+			// first layout pass
+			calculateSubtreeSizes((TreeGraphNode)resultGraph.Root);
+			// second layout pass
+			calculateNodePosRecursive((TreeGraphNode)resultGraph.Root, 0, 0);
 			
 			var neatoRouter = new NeatoEdgeRouter();
 			resultGraph = neatoRouter.CalculateEdges(resultGraph);
@@ -53,40 +56,77 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return resultGraph;
 		}
 		
-		private TreeNode buildTreeRecursive(ObjectNode objectGraphNode)
+		private PositionedGraph buildTreeGraph(ObjectGraph objectGraph, Expanded expanded)
 		{
-			seenNodes.Add(objectGraphNode, null);
+			var resultGraph = new PositionedGraph();
 			
-			NodeControl nodeVisualControl = new NodeControl();
-			nodeVisualControl.GraphNode = objectGraphNode;
-			nodeVisualControl.Measure(new Size(500, 500));
-			
-			TreeNode newTreeNode = TreeNode.Create(this.layoutDirection, nodeVisualControl, objectGraphNode);
-			newTreeNode.HorizontalMargin = horizNodeMargin;
-			newTreeNode.VerticalMargin = vertNodeMargin;
-			resultGraph.nodes.Add(newTreeNode);
-			treeNodeFor[objectGraphNode] = newTreeNode;
-			
-			double subtreeSize = 0;
-			foreach	(ObjectEdge edge in objectGraphNode.Edges)
+			// create empty PosNodes
+			foreach (ObjectGraphNode objectGraphNode in objectGraph.ReachableNodes)
 			{
-				ObjectNode neighbor = edge.TargetNode;
-				if (seenNodes.ContainsKey(neighbor))
+				TreeGraphNode posNode = createNewTreeGraphNode(objectGraphNode); 
+				resultGraph.AddNode(posNode);
+				treeNodeFor[objectGraphNode] = posNode;
+				posNode.InitContentFromObjectNode(expanded);
+			}
+			
+			// create edges
+			foreach (PositionedGraphNode posNode in resultGraph.Nodes)
+			{
+				// create edges outgoing from this posNode
+				foreach (PositionedNodeProperty property in posNode.Properties)
 				{
-					newTreeNode.AdditionalNeighbors.Add(new TreeEdge { Name = edge.Name, SourceNode = newTreeNode, TargetNode = treeNodeFor[neighbor]});
-				}
-				else
-				{
-					TreeNode newChild = buildTreeRecursive(neighbor);
-					newTreeNode.ChildEdges.Add(new TreeEdge { Name = edge.Name, SourceNode = newTreeNode, TargetNode = newChild});
+					//property.IsPropertyExpanded = expanded.Expressions.IsExpanded(property.Expression);
 					
-					subtreeSize += newChild.SubtreeSize;
+					if (property.ObjectGraphProperty.TargetNode != null)
+					{
+						ObjectGraphNode targetObjectNode = property.ObjectGraphProperty.TargetNode;
+						PositionedGraphNode edgeTarget = treeNodeFor[targetObjectNode];
+						property.Edge = new TreeGraphEdge 
+							{ IsTreeEdge = false, Name = property.Name, Source = property, Target = edgeTarget };
+					}
 				}
 			}
-			subtreeSize = Math.Max(newTreeNode.LateralSizeWithMargin, subtreeSize);
-			newTreeNode.SubtreeSize = subtreeSize;
 			
-			return newTreeNode;
+			resultGraph.Root = treeNodeFor[objectGraph.Root];
+			return resultGraph;
+		}
+		
+		// determines which edges are tree edges, and calculates subtree size for each node
+		private void calculateSubtreeSizes(TreeGraphNode root)
+		{
+			seenNodes.Add(root);
+			double subtreeSize = 0;
+			
+			foreach (PositionedNodeProperty property in root.Properties)
+			{
+				var edge = property.Edge as TreeGraphEdge;	// we know that these egdes are TreeEdges
+				if (edge != null)
+				{
+					var neigborNode = (TreeGraphNode)edge.Target;
+					if (seenNodes.Contains(neigborNode))
+					{
+						edge.IsTreeEdge = false;
+					}
+					else
+					{
+						edge.IsTreeEdge = true;
+						calculateSubtreeSizes(neigborNode);
+						subtreeSize += neigborNode.SubtreeSize;
+					}
+				}
+			}
+			
+			root.Measure();
+			root.SubtreeSize = Math.Max(root.LateralSizeWithMargin, subtreeSize);
+		}
+		
+		
+		private TreeGraphNode createNewTreeGraphNode(ObjectGraphNode objectGraphNode)
+		{
+			var newGraphNode = TreeGraphNode.Create(this.layoutDirection, objectGraphNode);
+			newGraphNode.HorizontalMargin = horizNodeMargin;
+			newGraphNode.VerticalMargin = vertNodeMargin;
+			return newGraphNode;
 		}
 		
 		/// <summary>
@@ -95,7 +135,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <param name="node"></param>
 		/// <param name="lateralStart"></param>
 		/// <param name="mainStart"></param>
-		private void calculateNodePosRecursive(TreeNode node, double lateralStart, double mainStart)
+		private void calculateNodePosRecursive(TreeGraphNode node, double lateralStart, double mainStart)
 		{
 			double childsSubtreeSize = node.Childs.Sum(child => child.SubtreeSize);
 			// center this node
@@ -117,7 +157,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			
 			double childLateral = lateralStart;
 			double childsMainFixed = node.MainCoord + node.MainSizeWithMargin;
-			foreach (TreeNode child in node.Childs)
+			foreach (TreeGraphNode child in node.Childs)
 			{
 				calculateNodePosRecursive(child, childLateral, childsMainFixed);
 				childLateral += child.SubtreeSize;

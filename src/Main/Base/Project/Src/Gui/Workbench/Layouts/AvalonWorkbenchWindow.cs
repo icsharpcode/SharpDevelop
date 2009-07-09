@@ -27,6 +27,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		readonly static string contextMenuPath = "/SharpDevelop/Workbench/OpenFileTab/ContextMenu";
 		
+		AvalonDockLayout dockLayout;
+		
+		public AvalonWorkbenchWindow(AvalonDockLayout dockLayout)
+		{
+			if (dockLayout == null)
+				throw new ArgumentNullException("dockLayout");
+			
+			this.IsFloatingAllowed = true;
+			this.dockLayout = dockLayout;
+			viewContents = new ViewContentCollection(this);
+			
+			OnTitleNameChanged(this, EventArgs.Empty);
+		}
+		
 		public bool IsDisposed { get { return false; } }
 		
 		#region IOwnerState
@@ -208,21 +222,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SelectWindow()
 		{
-			dockLayout.DockingManager.Show(this);
-		}
-		
-		AvalonDockLayout dockLayout;
-		
-		public AvalonWorkbenchWindow(AvalonDockLayout dockLayout)
-		{
-			if (dockLayout == null)
-				throw new ArgumentNullException("dockLayout");
-			
-			this.IsFloatingAllowed = true;
-			this.dockLayout = dockLayout;
-			viewContents = new ViewContentCollection(this);
-			
-			OnTitleNameChanged(this, EventArgs.Empty);
+			this.SetAsActive();
 		}
 		
 		public override void OnApplyTemplate()
@@ -243,10 +243,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			viewContents.ForEach(vc => vc.Dispose());
 		}
 		
+		class TabControlWithoutShortcuts : TabControl
+		{
+			protected override void OnKeyDown(KeyEventArgs e)
+			{
+				// We don't call base.KeyDown to prevent the TabControl from handling Ctrl+Tab.
+				// Instead, we let the key press bubble up to the DocumentPane.
+			}
+		}
+		
 		private void CreateViewTabControl()
 		{
 			if (viewTabControl == null) {
-				viewTabControl = new TabControl();
+				viewTabControl = new TabControlWithoutShortcuts();
 				viewTabControl.TabStripPlacement = Dock.Bottom;
 				this.SetContent(viewTabControl);
 				
@@ -418,16 +427,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 		}
-		// Forward focus to the content.
-		/// <inheritdoc/>
-		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+		
+		public override string ToString()
 		{
-			base.OnGotKeyboardFocus(e);
-			UIElement content = this.Content as UIElement;
-			if (content != null && !content.IsKeyboardFocusWithin) {
-				Keyboard.Focus(content);
-				e.Handled = true;
-			}
+			return "[AvalonWorkbenchWindow: " + this.Title + "]";
 		}
 	}
 }

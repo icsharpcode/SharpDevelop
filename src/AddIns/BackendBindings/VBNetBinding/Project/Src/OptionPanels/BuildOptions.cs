@@ -45,6 +45,10 @@ namespace VBNetBinding.OptionPanels
 			                          new StringPair("Binary", "Compare Binary"),
 			                          new StringPair("Text", "Compare Text"));
 			b.RegisterLocationButton(locationButton);
+			b = helper.BindStringEnum("optionInferComboBox", "OptionInfer", "Off",
+			                          new StringPair("Off", "Infer Off"),
+			                          new StringPair("On", "Infer On"));
+			b.RegisterLocationButton(locationButton);
 			
 			InitBaseIntermediateOutputPath();
 			InitIntermediateOutputPath();

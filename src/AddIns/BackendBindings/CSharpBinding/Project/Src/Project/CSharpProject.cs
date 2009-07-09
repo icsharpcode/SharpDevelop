@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using System.ComponentModel;
-using System.Linq;
 using System.IO;
-
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -41,31 +41,21 @@ namespace CSharpBinding
 			reparseCodeSensitiveProperties.Add("DefineConstants");
 		}
 		
-		public CSharpProject(IMSBuildEngineProvider engineProvider, string fileName, string projectName)
-			: base(engineProvider)
-		{
-			this.Name = projectName;
-			Init();
-			LoadProject(fileName);
-		}
-		
-		public CSharpProject(ProjectCreateInformation info)
-			: base(info.Solution)
+		public CSharpProject(ProjectLoadInformation loadInformation)
+			: base(loadInformation)
 		{
 			Init();
-			Create(info);
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.CSharp.Targets";
 		public const string ExtendedTargetsFile = @"$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets";
 		
-		protected override void Create(ProjectCreateInformation information)
+		public CSharpProject(ProjectCreateInformation info)
+			: base(info)
 		{
-			this.AddImport(DefaultTargetsFile, null);
+			Init();
 			
-			// Add import before base.Create call - base.Create will call AddOrRemoveExtensions, which
-			// needs to change the import when the compact framework is targeted.
-			base.Create(information);
+			this.AddImport(DefaultTargetsFile, null);
 			
 			SetProperty("Debug", null, "CheckForOverflowUnderflow", "True",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
@@ -86,19 +76,21 @@ namespace CSharpBinding
 				return base.GetDefaultItemType(fileName);
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			if (this.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
 				MSBuildEngine.StartBuild(this,
+				                         buildServices,
 				                         options,
 				                         feedbackSink,
 				                         MSBuildEngine.AdditionalTargetFiles.Concat(
 				                         	new [] { "$(SharpDevelopBinPath)/SharpDevelop.CheckMSBuild35Features.targets" }));
 			} else {
-				base.StartBuild(options, feedbackSink);
+				base.StartBuild(buildServices, options, feedbackSink);
 			}
 		}
 		
+		/*
 		protected override void AddOrRemoveExtensions()
 		{
 			// Test if SharpDevelop-Build extensions are required
@@ -134,5 +126,6 @@ namespace CSharpBinding
 				}
 			}
 		}
+		*/
 	}
 }

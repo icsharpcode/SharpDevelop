@@ -33,7 +33,7 @@ namespace ICSharpCode.WixBinding
 		const int lineHeight = 2;
 		WixNamespaceManager namespaceManager;
 		List<PictureBox> pictureBoxesAdded = new List<PictureBox>();
-			
+		
 		/// <summary>
 		/// Default component creator class. This is defined so the 
 		/// </summary>
