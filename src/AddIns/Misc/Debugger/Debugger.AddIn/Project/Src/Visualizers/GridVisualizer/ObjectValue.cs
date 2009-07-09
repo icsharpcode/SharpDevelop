@@ -40,11 +40,11 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				property.Name = memberValue.Expression.CodeTail;
 				// property.Expression = ?.Age 
 				// - cannot use expression, 
-				// the value is returned from an enumerator, so it has no meaningful expression
+				// if the value is returned from an enumerator, it has no meaningful expression
 				property.IsAtomic = memberValue.Type.IsPrimitive;
 				property.IsNull = memberValue.IsNull;
-				property.Value = memberValue.AsString;
-				//property.Value = memberValue.InvokeToString();	// TODO commit this in next commit of Grid - use debugee defined ToString()
+				//property.Value = memberValue.AsString;
+				property.Value = memberValue.InvokeToString();
 				
 				result.properties.Add(property.Name, property);
 			}
