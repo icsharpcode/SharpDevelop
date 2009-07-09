@@ -11,7 +11,7 @@ using System.IO;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace CppBinding.Parser
+namespace ICSharpCode.CppBinding.Parser
 {
 	/// <summary>
 	/// Description of Parser.

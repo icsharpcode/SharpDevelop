@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// init enabled states:
 			ListBoxSelectedIndexChanged(null, null);
 			EditTextBoxTextChanged(null, null);
+			addButton.Text = StringParser.Parse(addButton.Text);
 			updateButton.Text = StringParser.Parse(updateButton.Text);
 			removeButton.Text = StringParser.Parse(removeButton.Text);
 			moveUpButton.Image   = WinFormsResourceService.GetBitmap("Icons.16x16.ArrowUp");
@@ -132,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			addButton.Name = "addButton";
 			addButton.Size = new System.Drawing.Size(75, 23);
 			addButton.TabIndex = 3;
-			addButton.Text = "Add Item";
+			addButton.Text = "${res:Global.AddButtonText}";
 			addButton.Click += new System.EventHandler(this.AddButtonClick);
 			editTextBox = new System.Windows.Forms.TextBox();
 			// 

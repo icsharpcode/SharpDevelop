@@ -1,10 +1,10 @@
 ﻿#if false
 using System;
 using System.Collections.Generic;
-using CppBinding.Interop;
+using ICSharpCode.CppBinding.Interop;
 using ICSharpCode.SharpDevelop.Dom;
 
-namespace CppBinding.Parser
+namespace ICSharpCode.CppBinding.Parser
 {
     /// <summary>
     /// Builds the compilation unit based on events reported by c++ parser.

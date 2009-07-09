@@ -7,7 +7,7 @@
  */
 using ICSharpCode.SharpDevelop.Project;
 
-namespace CppBinding.Project
+namespace ICSharpCode.CppBinding.Project
 {
 	/// <summary>
 	/// ProjectConfiguration item that occur in the vcxproj files (c++ projects)
