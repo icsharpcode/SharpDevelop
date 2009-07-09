@@ -82,17 +82,17 @@ namespace NUnit.ConsoleRunner
 
 		public void TestFinished(TestResult testResult)
 		{
-			if(testResult.Executed)
+			switch( testResult.ResultState )
 			{
-				testRunCount++;
-
-				if(testResult.IsFailure)
-				{	
+				case ResultState.Error:
+				case ResultState.Failure:
+				case ResultState.Cancelled:
+					testRunCount++;
 					failureCount++;
-						
+					
 					if ( progress )
 						Console.Write("F");
-						
+					
 					messages.Add( string.Format( "{0}) {1} :", failureCount, testResult.Test.TestName.FullName ) );
 					messages.Add( testResult.Message.Trim( Environment.NewLine.ToCharArray() ) );
 
@@ -109,21 +109,28 @@ namespace NUnit.ConsoleRunner
 							}
 						}
 					}
-				}
-			}
-			else
-			{
-				testIgnoreCount++;
+					break;
+
+				case ResultState.Inconclusive:
+				case ResultState.Success:
+					testRunCount++;
+					break;
+
+				case ResultState.Ignored:
+				case ResultState.Skipped:
+				case ResultState.NotRunnable:
+					testIgnoreCount++;
 					
-				if ( progress )
-					Console.Write("N");
+					if ( progress )
+						Console.Write("N");
+					break;
 			}
+
+			currentTestName = string.Empty;
 			
 			if (writeResults) {
 				WriteTestResult(testResult);
 			}
-			
-			currentTestName = string.Empty;
 		}
 
 		public void TestStarted(TestName testName)
