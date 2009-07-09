@@ -213,6 +213,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 		}
+		void PrintFormattedCommaAndNewLine()
+		{
+			if (this.prettyPrintOptions.SpacesBeforeComma) {
+				outputFormatter.Space();
+			}
+			outputFormatter.PrintToken(Tokens.Comma);
+			outputFormatter.NewLine();
+			outputFormatter.Indent();
+		}
 		
 		public override object TrackedVisitAttributeSection(AttributeSection attributeSection, object data)
 		{
@@ -1280,12 +1289,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		void PrintIfSection(List<Statement> statements)
 		{
 			if (statements.Count == 1 && (statements[0] is BlockStatement)) {
-				OutputBlock((BlockStatement)statements[0], 
-				            prettyPrintOptions.StatementBraceStyle, 
+				OutputBlock((BlockStatement)statements[0],
+				            prettyPrintOptions.StatementBraceStyle,
 				            prettyPrintOptions.PlaceElseOnNewLine);
 				return;
 			}
-/*			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
+			/*			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
 				outputFormatter.Space();
 			}*/
 			if (statements.Count != 1) {
@@ -1305,7 +1314,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			} else {
 				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
 			}
-/*			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
+			/*			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
 				outputFormatter.Space();
 			}*/
 		}
@@ -1476,7 +1485,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				if (i == switchSection.Children.Count - 1) {
 					if (prettyPrintOptions.IndentBreakStatements)
 						outputFormatter.IndentationLevel = standardIndentLevel + 1;
-					else 
+					else
 						outputFormatter.IndentationLevel = standardIndentLevel;
 				}
 				outputFormatter.Indent();
@@ -1737,8 +1746,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			if (!tryCatchStatement.FinallyBlock.IsNull) {
 				if (prettyPrintOptions.PlaceFinallyOnNewLine) {
-	//				if (!prettyPrintOptions.PlaceCatchOnNewLine) 
-	//					outputFormatter.NewLine ();
+					//				if (!prettyPrintOptions.PlaceCatchOnNewLine)
+					//					outputFormatter.NewLine ();
 					outputFormatter.Indent();
 				} else {
 					outputFormatter.Space();
@@ -2939,10 +2948,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				foreach (T node in list) {
 					node.AcceptVisitor(this, null);
 					if (i + 1 < list.Count) {
-						PrintFormattedComma();
 						if (alwaysBreakLine || (i + 1) % 10 == 0) {
-							outputFormatter.NewLine();
-							outputFormatter.Indent();
+							PrintFormattedCommaAndNewLine();
+						} else {
+							PrintFormattedComma();
 						}
 					}
 					i++;
