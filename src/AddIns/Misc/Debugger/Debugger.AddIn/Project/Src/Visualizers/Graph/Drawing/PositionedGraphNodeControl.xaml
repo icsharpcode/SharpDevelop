@@ -79,7 +79,7 @@
                                         		<TextBlock Text="hello" MinWidth="100"></TextBlock>
 												-->
                                     	<StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Name}"></TextBlock></StackPanel>
+                                            <TextBlock MouseDown="TextBlock_MouseDown" Text="{Binding Name}"></TextBlock></StackPanel>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

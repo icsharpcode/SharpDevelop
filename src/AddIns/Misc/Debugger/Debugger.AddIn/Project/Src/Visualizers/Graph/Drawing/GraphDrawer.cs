@@ -1,18 +1,21 @@
-﻿using System;
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Debugger.AddIn.Visualizers.Graph;
-using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows;
-using System.Windows.Shapes;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
+
+using Debugger.AddIn.Visualizers.Graph;
 using Debugger.AddIn.Visualizers.Graph.Drawing;
 using Debugger.AddIn.Visualizers.Graph.Layout;
 
@@ -24,6 +27,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 	public class GraphDrawer
 	{
 		Canvas canvas;
+		TextBlock edgeTooltip = new TextBlock();
 		
 		public GraphDrawer(Canvas canvas)
 		{
@@ -119,6 +123,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 			{
 				addEdgeToCanvas(edge);
 			}
+			
+			edgeTooltip.Visibility = Visibility.Hidden;
+			edgeTooltip.Background = Brushes.White;
+			canvas.Children.Add(edgeTooltip);
 		}
 		
 		private PositionedGraphNodeControl addNodeToCanvas(PositionedGraphNode node)
@@ -131,25 +139,55 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		private Path addEdgeToCanvas(PositionedEdge edge)
 		{
-			Path edgePath = createEdgeWithArrow(edge);
-			canvas.Children.Add(edgePath);
-			return edgePath;
-		}
-		
-		private Path createEdgeWithArrow(PositionedEdge edge)
-		{
-			Path path = new Path();
-			path.Stroke = Brushes.Black;
-			path.Fill = Brushes.Black;
-			path.StrokeThickness = 1;
+			PathFigure edgeSplineFigure = createEdgeSpline(edge);
 
-			PathGeometry geometry = new PathGeometry();
-
-			geometry.Figures.Add(createEdgeSpline(edge));
-			geometry.Figures.Add(createEdgeArrow(edge));
+			PathGeometry geometryVisible = new PathGeometry();
+			geometryVisible.Figures.Add(edgeSplineFigure);
+			geometryVisible.Figures.Add(createEdgeArrow(edge));
 			
-			path.Data = geometry;
-			return path;
+			Path pathVisible = new Path();
+			pathVisible.Stroke = Brushes.Black;
+			pathVisible.Fill = Brushes.Black;
+			pathVisible.StrokeThickness = 1;
+			pathVisible.Data = geometryVisible;
+			
+			PathGeometry geometryInVisible = new PathGeometry();
+			geometryInVisible.Figures.Add(edgeSplineFigure);
+			
+			Path pathInVisible = new Path();
+			pathInVisible.Stroke = Brushes.Transparent;
+			pathInVisible.Fill = Brushes.Transparent;
+			pathInVisible.StrokeThickness = 16;
+			pathInVisible.Data = geometryInVisible;
+			
+			pathInVisible.MouseEnter += delegate(object sender, MouseEventArgs e) 
+			{ 
+				pathVisible.StrokeThickness = 2; 
+				this.edgeTooltip.Text = ((PositionedEdge)pathVisible.Tag).Name;
+				Point mousePos = e.GetPosition(this.canvas);
+				Canvas.SetLeft(this.edgeTooltip, mousePos.X - 5);
+				Canvas.SetTop(this.edgeTooltip, mousePos.Y - 20);
+				this.edgeTooltip.Visibility = Visibility.Visible;
+			};
+			pathInVisible.MouseLeave += delegate(object sender, MouseEventArgs e) 
+			{ 
+				pathVisible.StrokeThickness = 1; 
+				this.edgeTooltip.Visibility = Visibility.Hidden;
+			};
+			pathInVisible.MouseMove += delegate(object sender, MouseEventArgs e) 
+			{
+				Point mousePos = e.GetPosition(this.canvas);
+				Canvas.SetLeft(this.edgeTooltip, mousePos.X - 5);
+				Canvas.SetTop(this.edgeTooltip, mousePos.Y - 20);
+			};
+			
+			// remember this spline Path at PositionedEdge to be able to highlight edge from PositionedNodeProperty
+			edge.Spline = pathVisible;
+			
+			canvas.Children.Add(pathVisible);
+			canvas.Children.Add(pathInVisible);
+			pathVisible.Tag = edge;
+			return pathVisible;
 		}
 		
 		private PathFigure createEdgeSpline(PositionedEdge edge)

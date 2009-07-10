@@ -119,6 +119,17 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			InitializeComponent();
 		}
 		
+		void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			/*var clickedText = (TextBlock)e.Source;
+			var clickedNode = (ContentNode)(clickedText).DataContext;
+			var propNode = clickedNode as ContentPropertyNode;
+			if (propNode != null && propNode.Property != null && propNode.Property.Edge != null && propNode.Property.Edge.Spline != null)
+			{
+				propNode.Property.Edge.Spline.StrokeThickness = propNode.Property.Edge.Spline.StrokeThickness + 1;
+			}*/
+		}
+		
 		private void PropertyExpandButton_Click(object sender, RoutedEventArgs e)
 		{
 			var clickedButton = (ToggleButton)e.Source;

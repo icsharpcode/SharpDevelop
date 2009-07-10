@@ -33,5 +33,10 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				splinePoints = value;
 			}
 		}
+		
+		/// <summary>
+		/// Drawn spline representation of this edge.
+		/// </summary>
+		public System.Windows.Shapes.Path Spline { get; set; }
 	}
 }
