@@ -1,8 +1,8 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision: 3539 $</version>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
@@ -129,10 +129,6 @@ namespace ICSharpCode.XamlBinding
 		{
 			string xmlNamespace;
 			string name;
-			
-			foreach (var s in context.XmlnsDefinitions) {
-				Debug.Print(s.Key + " " + s.Value);
-			}
 			
 			this.resolveExpression = exp;
 			if (resolveExpression.Contains(":")) {
@@ -262,6 +258,11 @@ namespace ICSharpCode.XamlBinding
 		public static ResolveResult Resolve(string expression, XamlCompletionContext context)
 		{
 			return new XamlResolver().Resolve(new ExpressionResult(expression, context), context.ParseInformation, context.Editor.Document.Text);
+		}
+		
+		public static ResolveResult Resolve(string expression, string fileContent, XamlContext context)
+		{
+			return new XamlResolver().Resolve(new ExpressionResult(expression, context), context.ParseInformation, fileContent);
 		}
 		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)

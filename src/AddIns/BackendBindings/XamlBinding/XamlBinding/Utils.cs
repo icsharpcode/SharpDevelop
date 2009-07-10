@@ -226,10 +226,7 @@ namespace ICSharpCode.XamlBinding
 		public 	static void LookUpInfoAtTarget(string fileContent, int caretLine, int caretColumn, int offset,
 		                                       out Dictionary<string, string> xmlns, out QualifiedName active,
 		                                       out QualifiedName parent, out int activeElementStartIndex, out bool isRoot)
-		{
-			var watch = new Stopwatch();
-			watch.Start();
-			
+		{			
 			Stack<QualifiedName> stack = new Stack<QualifiedName>();
 			
 			isRoot = false;
@@ -267,10 +264,6 @@ namespace ICSharpCode.XamlBinding
 			
 			if (active == null)
 				active = parent;
-			
-			watch.Stop();
-			
-			Core.LoggingService.Debug("LookUpInfoAtTarget took " + watch.ElapsedMilliseconds + "ms");
 		}
 		
 		public 	static XmlTextReader CreateReaderAtTarget(string fileContent, int caretLine, int caretColumn)

@@ -47,11 +47,10 @@ namespace ICSharpCode.XamlBinding
 		#endregion
 		
 		public const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
+		public const string WpfXamlNamespace = "http://schemas.microsoft.com/netfx/2007/xaml/presentation";
 		
 		public static XamlContext ResolveContext(string text, string fileName, int line, int col)
 		{
-			DebugTimer.Start();
-
 			int offset = Utils.GetOffsetFromFilePos(text, line, col);
 			
 			if (offset == -1)
@@ -109,8 +108,6 @@ namespace ICSharpCode.XamlBinding
 				ParseInformation = info
 			};
 
-			DebugTimer.Stop("ResolveContext");
-			
 			return context;
 		}
 		
@@ -279,8 +276,6 @@ namespace ICSharpCode.XamlBinding
 		
 		public static IList<ICompletionItem> CreateElementList(XamlCompletionContext context, bool classesOnly)
 		{
-			DebugTimer.Start();
-			
 			var items = GetClassesFromContext(context);
 			var result = new List<ICompletionItem>();
 
@@ -289,12 +284,14 @@ namespace ICSharpCode.XamlBinding
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
 			
 			IReturnType rt = null;
+			IReturnType elementReturnType = null;
 			
 			bool isMember = false;
+			bool inContentRoot = false;
 			
 			if (last != null && cu != null) {
 				if (!last.Name.Contains(".") || last.Name.EndsWith(".")) {
-					rt = cu.CreateType(last.Namespace, last.Name.Trim('.'));
+					elementReturnType = rt = cu.CreateType(last.Namespace, last.Name.Trim('.'));
 					string contentPropertyName = GetContentPropertyName(rt);
 					if (!string.IsNullOrEmpty(contentPropertyName)) {
 						string fullName = string.IsNullOrEmpty(last.Prefix) ? last.Name + "." + contentPropertyName : last.Prefix + ":" + last.Name + "." + contentPropertyName;
@@ -304,6 +301,8 @@ namespace ICSharpCode.XamlBinding
 							rt = mrr.ResolvedType;
 							isMember = true;
 						}
+						
+						inContentRoot = true;
 					}
 				} else {
 					string fullName = string.IsNullOrEmpty(last.Prefix) ? last.Name : last.Prefix + ":" + last.Name;
@@ -343,9 +342,12 @@ namespace ICSharpCode.XamlBinding
 					if (p.IsPublic && (p.CanSet || p.ReturnType.IsCollectionReturnType()))
 						result.Add(new XamlCodeCompletionItem(p, last.Prefix, last.Name));
 				}
+			} else if (elementReturnType != null && inContentRoot) {
+				foreach (IProperty p in elementReturnType.GetProperties()) {
+					if (p.IsPublic && (p.CanSet || p.ReturnType.IsCollectionReturnType()))
+						result.Add(new XamlCodeCompletionItem(p, last.Prefix, last.Name));
+				}
 			}
-			
-			DebugTimer.Stop("CreateListForElement");
 			
 			return result;
 		}

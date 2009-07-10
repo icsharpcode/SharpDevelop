@@ -5,16 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-
+using System.Xml.Linq;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
-using System.Xml.Linq;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -101,6 +101,16 @@ namespace ICSharpCode.XamlBinding
 			return text.Substring(startIndex, offset - startIndex + 1).Trim();
 		}
 		
+		public static TKey GetKeyByValue<TKey, TValue>(this Dictionary<TKey, TValue> dict, TValue value)
+		{
+			foreach (var pair in dict) {
+				if (pair.Value.Equals(value))
+					return pair.Key;
+			}
+			
+			return default(TKey);
+		}
+		
 		public static int GetLineNumber(this XObject item)
 		{
 			return (item as IXmlLineInfo).LineNumber;
@@ -109,6 +119,26 @@ namespace ICSharpCode.XamlBinding
 		public static int GetLinePosition(this XObject item)
 		{
 			return (item as IXmlLineInfo).LinePosition;
+		}
+		
+		public static bool IsInRange(this XObject item, Location begin, Location end)
+		{
+			return IsInRange(item, begin.Line, begin.Column, end.Line, end.Column);
+		}
+		
+		public static bool IsInRange(this XObject item, int beginLine, int beginColumn, int endLine, int endColumn)
+		{
+			if (item.GetLineNumber() >= beginLine && item.GetLineNumber() <= endLine) {
+				if (item.GetLineNumber() == beginLine) {
+					return item.GetLinePosition() >= beginColumn;
+				}
+				if (item.GetLineNumber() == endLine) {
+					return item.GetLinePosition() <= endColumn;
+				}
+				return true;
+			}
+			
+			return false;
 		}
 		
 		public static bool IsCollectionType(this IClass c)

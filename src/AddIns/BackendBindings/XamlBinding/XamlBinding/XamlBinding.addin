@@ -1,5 +1,5 @@
 <AddIn name        = "XAML binding"
-       author      = "Daniel Grunwald"
+       author      = "Siegfried Pammer"
        copyright   = "prj:///doc/copyright.txt"
        url         = "http://icsharpcode.net"
        description = "Enables code-completion for xaml files."
@@ -61,12 +61,24 @@
 			<MenuItem id="XamlRefactoring" insertafter="Refactor" insertbefore="Project" label="${res:XML.MainMenu.RefactorMenu}" type="Menu">
 				<MenuItem id="RemoveMargin"
 						   class="ICSharpCode.XamlBinding.PowerToys.Commands.RemoveMarginCommand"
-						 label="${res:AddIns.XamlBinding.Menu.RemoveMargin}" />
+						   label="${res:AddIns.XamlBinding.Menu.RemoveMargin}" />
 				<MenuItem id="RemoveUnnecessaryAttributes"
 						   class="ICSharpCode.XamlBinding.PowerToys.Commands.RemoveUnnecessaryAttributesCommand"
-						 label="${res:AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes}" />
+						   label="${res:AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes}" />
 				<MenuItem type="Separator" />
-				<!-- <MenuItem type="Builder" class="" /> -->
+				<MenuItem id="ExtractPropertiesAsStyle"
+						   class="ICSharpCode.XamlBinding.PowerToys.Commands.ExtractPropertiesAsStyleCommand"
+						   label="${res:AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle}" />
+				<MenuItem id="GroupInto" label="${res:AddIns.XamlBinding.Menu.GroupInto}" type="Menu">
+					<MenuItem id="GroupIntoBorder" label="Border" type="Menu">
+						<MenuItem id="GroupIntoBuilderBuilder"
+						          type="Builder"
+								   class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoBorderBuilder" />
+					</MenuItem>
+					<MenuItem id="GroupIntoBuilder"
+					          type="Builder"
+							   class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoBuilder" />
+				</MenuItem>
 			</MenuItem>
 		</ComplexCondition>
 	</Path>
