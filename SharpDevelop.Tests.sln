@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 10
-# SharpDevelop 4.0.0.4289
+# SharpDevelop 4.0.0.4395
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{256F5C28-532C-44C0-8AB8-D8EC5E492E01}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -57,6 +57,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartUp", "src\Main\StartUp
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core.Presentation.Tests", "src\Main\ICSharpCode.Core.Presentation\Test\ICSharpCode.Core.Presentation.Tests.csproj", "{FFA7988E-7348-4669-9E9D-27E629C873A2}"
 EndProject
 Project("{00000000-0000-0000-0000-000000000000}") = "Tools", "src\Tools\Tools.build", "{3DF4060F-5EE0-41CF-8096-F27355FD5511}"
 EndProject
@@ -751,11 +753,16 @@ Global
 		{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFA7988E-7348-4669-9E9D-27E629C873A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFA7988E-7348-4669-9E9D-27E629C873A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFA7988E-7348-4669-9E9D-27E629C873A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFA7988E-7348-4669-9E9D-27E629C873A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{FFA7988E-7348-4669-9E9D-27E629C873A2} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
 		{1152B71B-3C05-4598-B20D-823B5D40559E} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
 		{8035765F-D51F-4A0C-A746-2FD100E19419} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}
 		{2748AD25-9C63-4E12-877B-4DCE96FBED54} = {256F5C28-532C-44C0-8AB8-D8EC5E492E01}

@@ -107,7 +107,6 @@ namespace ICSharpCode.Core.Presentation
             _modifiers = ModifierKeys.None;
         }
 
-
         /// <summary>
         /// Create new instance of<see cref="PartialKeyGesture"/> having only key and no modifiers
         /// </summary>
@@ -191,6 +190,36 @@ namespace ICSharpCode.Core.Presentation
             }
 
             return modifierMatches && keyMatches;
+        }
+        
+        public bool IsFull
+        {
+        	get {
+        		if(Key == Key.None) {
+        			return false;
+        		}
+        		
+        		// and function keys are valid without modifier
+        		if (Key >= Key.F1 && Key <= Key.F24) {
+        			return true;
+        		}
+        		
+        		// Modifiers alone are not valid
+        		if (Array.IndexOf(new[] { Key.LeftAlt, Key.RightAlt, 
+                                       Key.LeftShift, Key.RightShift,
+                                       Key.LeftCtrl, Key.RightCtrl,
+                                       Key.LWin, Key.RWin,
+                                       Key.System}, Key) > -1) {
+        			return false;
+        		}
+        		
+        		// All other gestures must have modifier (except shift alone because it would mean uppercase)
+        		if((Modifiers & (ModifierKeys.Windows | ModifierKeys.Control | ModifierKeys.Alt)) != ModifierKeys.None) {
+        			return true;   	
+        		}
+        		
+        		return false;
+        	}
         }
 
         /// <summary>

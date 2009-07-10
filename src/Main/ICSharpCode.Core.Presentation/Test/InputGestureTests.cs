@@ -125,7 +125,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			var template1 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+");
 			var original1 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+D");
 			Assert.IsTrue(template1.IsTemplateFor(original1, GestureCompareMode.StartsWith));
-			Assert.IsTrue(original1.IsTemplateFor(template1, GestureCompareMode.StartsWith));
 			
 			var template2 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+C");
 			var original2 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+C,Ctrl+D");
@@ -362,6 +361,28 @@ namespace ICSharpCode.Core.Presentation.Tests
 			var original5 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+Shift+D,Ctrl+D");
 			Assert.IsFalse(template5.IsTemplateFor(original5, GestureCompareMode.Conflicting));
 			Assert.IsFalse(original5.IsTemplateFor(template5, GestureCompareMode.Conflicting));
+		}
+		
+		[Test]
+		public void PartialGestureIsFullTest()
+		{
+			Assert.IsTrue(((PartialKeyGesture)new PartialKeyGestureConverter().ConvertFromInvariantString("Ctrl+A")).IsFull);
+			Assert.IsTrue(((PartialKeyGesture)new PartialKeyGestureConverter().ConvertFromInvariantString("Ctrl+Shift+A")).IsFull);
+			Assert.IsTrue(((PartialKeyGesture)new PartialKeyGestureConverter().ConvertFromInvariantString("F8")).IsFull);
+			Assert.IsFalse(((PartialKeyGesture)new PartialKeyGestureConverter().ConvertFromInvariantString("A")).IsFull);
+			Assert.IsFalse(((PartialKeyGesture)new PartialKeyGestureConverter().ConvertFromInvariantString("Ctrl+")).IsFull);
+			Assert.IsFalse(((PartialKeyGesture)new PartialKeyGestureConverter().ConvertFromInvariantString("Shift+A")).IsFull);
+		}
+		
+		[Test]
+		public void IdentifierTest()
+		{
+			var sameBinding1 = new InputBindingInfo { OwnerTypeName="Binding", RoutedCommandName="Binding" };
+			var sameBinding2 = new InputBindingInfo { OwnerTypeName="Binding", RoutedCommandName="Binding" };
+			var sameBinding3 = new InputBindingInfo { OwnerTypeName="Binding3", RoutedCommandName="Binding" };
+			
+			Assert.AreEqual(sameBinding1.Identifier, sameBinding2.Identifier);
+			Assert.AreNotEqual(sameBinding1.Identifier, sameBinding3.Identifier);
 		}
 	}
 }

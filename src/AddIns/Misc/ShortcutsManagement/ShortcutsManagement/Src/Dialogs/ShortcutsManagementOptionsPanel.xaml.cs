@@ -85,12 +85,13 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 
                     if (UserDefinedGesturesManager.CurrentProfile != null && profile.Name == UserDefinedGesturesManager.CurrentProfile.Name)
                     {
-                        profilesTextBox.SelectedItem = profile;
+                        SelectedProfile = profile;
                     }
                 }
             }
             
             BindProfiles();
+            BindShortcuts();
         }
 
         private void BindProfiles()
@@ -125,6 +126,20 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             profilesTextBoxItemsSource.Add(resetItem);
 
             profilesTextBox.DataContext = profilesTextBoxItemsSource;
+            
+            if (SelectedProfile != null)
+            {
+            	if(profilesTextBox.SelectedItem != SelectedProfile) {
+                profilesTextBox.Text = SelectedProfile.Text;
+                profilesTextBox.SelectedItem = SelectedProfile;
+            	}
+            }
+            else
+            {
+                profilesTextBox.SelectedIndex = -1;
+                profilesTextBox.Text = "";
+            }
+
         }
 
         private void BindShortcuts()
@@ -195,7 +210,12 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 // Strip this sign from shortcut entry text
                 shortcutText = Regex.Replace(shortcutText, @"&([^\s])", @"$1");
 
-                var shortcut = new Shortcut(shortcutText, new InputGestureCollection(inputBindingInfo.ActiveGestures));
+                var shortcutGestures = new InputGestureCollection(inputBindingInfo.DefaultGestures);
+                if(SelectedProfile != null && SelectedProfile[inputBindingInfo.Identifier] != null) {
+                	shortcutGestures = new InputGestureCollection(SelectedProfile[inputBindingInfo.Identifier]);
+                }
+                
+                var shortcut = new Shortcut(shortcutText, shortcutGestures);
                 shortcutsMap.Add(shortcut, inputBindingInfo);
 
                 // Assign shortcut to all categories it is registered in
@@ -266,23 +286,10 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 return;
             }
 
-            if (!(e.AddedItems[0] is UserGesturesProfile))
-            {
-                if (e.RemovedItems != null && e.RemovedItems.Count > 0)
-                {
-                    profilesTextBox.SelectedItem = e.RemovedItems[0];
-                }
-                else if (profilesTextBox.SelectedIndex >= 0)
-                {
-                    profilesTextBox.SelectedIndex = -1;
-                    profilesTextBox.Text = "";
-                }
-            }
-
             var userGestureProfileAction = e.AddedItems[0] as UserGestureProfileAction;
             if (userGestureProfileAction != null)
             {
-                if (userGestureProfileAction.Name == "Delete" && e.RemovedItems != null && e.RemovedItems.Count > 0)
+                if (userGestureProfileAction.Name == "Delete" && SelectedProfile != null)
                 {
                     var result = MessageBox.Show(
                         StringParser.Parse("${res:ShortcutsManagement.ShortcutsManagementOptionsPanel.ConfirmDeleteProfileMessage}"),
@@ -291,26 +298,20 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 
                     if(MessageBoxResult.Yes == result)
                     {
-                        var removedProfile = (UserGesturesProfile)e.RemovedItems[0];
-                        profiles.Remove(removedProfile);
-                        removedProfiles.Add(removedProfile);
+                        profiles.Remove(SelectedProfile);
+                        removedProfiles.Add(SelectedProfile);
                         SelectedProfile = null;
                     }
                 }
 
-                if (userGestureProfileAction.Name == "Rename" && e.RemovedItems != null && e.RemovedItems.Count > 0)
+                if (userGestureProfileAction.Name == "Rename" && SelectedProfile != null)
                 {
-                    var renamedProfile = e.RemovedItems[0] as UserGesturesProfile;
+                    var promptWindow = new CreateNewProfilePrompt();
+                    promptWindow.BaseProfilesVisibility = Visibility.Collapsed;
+                    promptWindow.Text = SelectedProfile.Text;
+                    promptWindow.ShowDialog();
 
-                    if (renamedProfile != null)
-                    {
-                        var promptWindow = new CreateNewProfilePrompt();
-                        promptWindow.BaseProfilesVisibility = Visibility.Collapsed;
-                        promptWindow.Text = renamedProfile.Text;
-                        promptWindow.ShowDialog();
-
-                        renamedProfile.Text = promptWindow.Text;
-                    }
+                    SelectedProfile.Text = promptWindow.Text;
                 } 
 
                 if(userGestureProfileAction.Name == "Load")
@@ -370,24 +371,13 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
             }
 
             var userGestureProfile = e.AddedItems[0] as UserGesturesProfile;
-            if (userGestureProfile != null)
+            if (userGestureProfile != null && userGestureProfile != SelectedProfile)
             {
                 SelectedProfile = userGestureProfile;
             }
 
-            if (SelectedProfile != null)
-            {
-                profilesTextBox.Text = SelectedProfile.Text;
-                profilesTextBox.SelectedItem = SelectedProfile;
-            }
-            else
-            {
-                profilesTextBox.SelectedIndex = -1;
-                profilesTextBox.Text = "";
-            }
-
-            BindShortcuts();
             BindProfiles(); 
+            BindShortcuts();
         }
 
         private void shortcutsManagementOptionsPanel_ShortcutModified(object sender, EventArgs e)

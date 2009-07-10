@@ -116,9 +116,9 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 return;
             }
 
-            // Check whether first chord is finished
+            // Check whether first chord is unfinished
             var partialKeyGesture = gestureTextBox.Gesture as PartialKeyGesture;
-            if (partialKeyGesture != null && partialKeyGesture.Modifiers == ModifierKeys.None) {
+            if (partialKeyGesture != null && !partialKeyGesture.IsFull) {
                 DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.ModificationWindow.AdditionFailedFirstChordIsIncomplete}"), NotificationType.Failed);
                 return;
             }

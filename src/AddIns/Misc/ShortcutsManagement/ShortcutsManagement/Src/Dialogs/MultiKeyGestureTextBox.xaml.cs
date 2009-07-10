@@ -291,7 +291,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 Clear();
             }
 
-            if (enteredKeyGestureSequence[0].Modifiers == ModifierKeys.None)
+            if (!enteredKeyGestureSequence[0].IsFull)
             {
                 DisplayNotification(StringParser.Parse("${res:ShortcutsManagement.GestureTextBox.FirstChordIsIncomplete}"), NotificationType.Invalid);
             }

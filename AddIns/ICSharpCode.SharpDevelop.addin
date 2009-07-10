@@ -152,7 +152,7 @@
 		<CommandBinding 
 			command="SDBuildCommands.BuildSolution" 
 			class="ICSharpCode.SharpDevelop.Project.Commands.Build" 
-			gestures="Ctrl+Alt+R,R;Ctrl+B,B" 
+			gestures="F8" 
 			categories="/Building"
 		/>
 		<CommandBinding 

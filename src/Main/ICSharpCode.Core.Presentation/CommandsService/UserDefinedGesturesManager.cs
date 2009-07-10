@@ -15,9 +15,11 @@ namespace ICSharpCode.Core.Presentation
 		
 		static UserDefinedGesturesManager()
 		{
-			_userGestureProfilesDirectory = Path.Combine(PropertyService.ConfigDirectory, "UserGestureProfiles");
-			if(!Directory.Exists(_userGestureProfilesDirectory)) {
-				Directory.CreateDirectory(_userGestureProfilesDirectory);
+			if(PropertyService.ConfigDirectory != null) {
+				_userGestureProfilesDirectory = Path.Combine(PropertyService.ConfigDirectory, "UserGestureProfiles");
+				if(!Directory.Exists(_userGestureProfilesDirectory)) {
+					Directory.CreateDirectory(_userGestureProfilesDirectory);
+				}
 			}
 		}
 		
@@ -56,6 +58,7 @@ namespace ICSharpCode.Core.Presentation
 			set {
 				_currentProfile = value;
 				PropertyService.Set("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory", CurrentProfile != null ? CurrentProfile.Path : null);
+				_isCurrentProfileLoaded = true;
 			}
 		}
 	}
