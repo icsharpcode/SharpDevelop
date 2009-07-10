@@ -143,17 +143,58 @@ namespace Debugger.AddIn.Visualizers.Graph
 			thisNode.Content = new ThisNode();
 			ThisNode contentRoot = thisNode.Content;
 			
-			loadNodeContent(contentRoot, thisNode.PermanentReference, thisNode.PermanentReference.Type);
+			DebugType iListType;
+			DebugType listItemType;
+			if (thisNode.PermanentReference.Type.ResolveIListImplementation(out iListType, out listItemType))
+			{
+				// it is a collection
+				loadNodeCollectionContent(contentRoot, thisNode.PermanentReference.Expression, iListType);
+			}
+			else
+			{
+				// it is an object
+				loadNodeObjectContent(contentRoot, thisNode.PermanentReference, thisNode.PermanentReference.Type);
+			}
 		}
 		
-		private void loadNodeContent(AbstractNode node, Value value, DebugType type)
+		private void loadNodeCollectionContent(AbstractNode node, Expression thisObject, DebugType iListType)
+		{
+			PropertyInfo itemPropertyInfo = iListType.GetProperty("Item");
+			int listCount = getIListCount(thisObject, iListType);
+			
+			for (int i = 0; i < listCount; i++)
+			{
+				Expression itemExpr = thisObject.AppendMemberReference(itemPropertyInfo, new PrimitiveExpression(i));
+				
+				PropertyNode itemNode = new PropertyNode(
+					new ObjectGraphProperty {	Name = "[" + i + "]", Expression = itemExpr, Value = "", IsAtomic = true, TargetNode = null });
+				node.AddChild(itemNode);
+			}
+		}
+		
+		private int getIListCount(Expression targetObject, DebugType iListType)
+		{
+			PropertyInfo countProperty = iListType.GetGenericInterface("System.Collections.Generic.ICollection").GetProperty("Count");
+			Expression countExpr = targetObject.AppendPropertyReference(countProperty);
+			int count = 0;
+			try {
+				// Do not get string representation since it can be printed in hex later
+				Value countValue = countExpr.Evaluate(WindowsDebugger.CurrentProcess);
+				count = (int)countValue.PrimitiveValue;
+			} catch (GetValueException) {
+				count = -1;
+			}
+			return count;
+		}
+		
+		private void loadNodeObjectContent(AbstractNode node, Value value, DebugType type)
 		{
 			// base
 			if (type.BaseType != null && type.BaseType.FullName != "System.Object")
 			{
 				var baseClassNode = new BaseClassNode(type.BaseType.FullName, type.BaseType.Name);
 				node.AddChild(baseClassNode);
-				loadNodeContent(baseClassNode, value, type.BaseType);
+				loadNodeObjectContent(baseClassNode, value, type.BaseType);
 			}
 			
 			// non-public members
@@ -189,11 +230,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 				if (memberProp.Name.Contains("<"))
 					continue;
 
-				// TODO just temporary - ObjectGraphProperty needs an expression
+				// ObjectGraphProperty needs an expression
 				// to use expanded / nonexpanded (and to evaluate?)
 				Expression propExpression = value.Expression.AppendMemberReference(memberProp);
 				// Value, IsAtomic are lazy evaluated
-				//var t = memberProp.DeclaringType;
 				propertyList.Add(new ObjectGraphProperty
 				                 { Name = memberProp.Name,
 				                 	Expression = propExpression, Value = "",

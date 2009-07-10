@@ -60,6 +60,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			return listItemType.GetMembers(this.bindingFlags);
 		}
 		
+		// TODO move to Utils iListType.EvaluateCount(Expression targetObject)
+		// or targetObject.EvaluateCount(iListType)
+		// or targetObject.EvaluateIListCount()	<- calls ResolveIListImplementation
 		private int evaluateCount()
 		{
 			PropertyInfo countProperty = iListType.GetGenericInterface("System.Collections.Generic.ICollection").GetProperty("Count");

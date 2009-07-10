@@ -4,6 +4,7 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.AddIn.Visualizers.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,10 +18,9 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using System.Windows.Threading;
 using Debugger.AddIn.Visualizers.Common;
 using Debugger.AddIn.Visualizers.Graph.Layout;
-using System.Windows.Threading;
 
 namespace Debugger.AddIn.Visualizers.Graph.Drawing
 {
@@ -65,14 +65,12 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 				// data virtualization, PropertyNodeViewModel implements IEvaluate
 				this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.view);
 				
-				int maxLen = this.view.Max(contentNode => { return contentNode.Name.Length; } );
+				int maxLen = this.view.MaxOrDefault(contentNode => { return contentNode.Name.Length; }, 0);
 				int spaces = Math.Max((int)(maxLen * 1.5), 0);
-				string sp = "";
-				for (int i = 0; i < spaces; i++)
-					sp += " ";
-					
+				string addedSpaces = StringHelper.Repeat(' ', spaces);
+				
 				GridView gv = listView.View as GridView;
-				gv.Columns[1].Header = "Name" + sp;
+				gv.Columns[1].Header = "Name" + addedSpaces;
 				
 				
 				//AutoSizeColumns();
