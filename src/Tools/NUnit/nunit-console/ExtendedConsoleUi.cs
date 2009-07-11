@@ -270,7 +270,7 @@ namespace NUnit.ConsoleRunner
 		private static void WriteSummaryReport( ResultSummarizer summary )
 		{
             Console.WriteLine(
-                "Tests run: {0}, Errors: {1}, Failures: {2}, Inconclusive: {3} Time: {4} seconds",
+                "Tests run: {0}, Errors: {1}, Failures: {2}, Inconclusive: {3}, Time: {4} seconds",
                 summary.TestsRun, summary.Errors, summary.Failures, summary.Inconclusive, summary.Time);
             Console.WriteLine(
                 "  Not run: {0}, Invalid: {1}, Ignored: {2}, Skipped: {3}",

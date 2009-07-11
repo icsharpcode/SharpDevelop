@@ -15,7 +15,7 @@ namespace PythonBinding.Tests.Converter
 	[TestFixture]
 	public class ForeachConversionWithMethodCallTestFixture
 	{
-		string csharp = "class Foo\r\n" +
+		string environmentSpecialFolderCode = "class Foo\r\n" +
 					"{\r\n" +
 					"  public void PrintEnvironmentVariables()\r\n" +
 					"  {\r\n" +
@@ -25,20 +25,22 @@ namespace PythonBinding.Tests.Converter
 					"    }\r\n" +
 					"  }\r\n" +
 					"}";
-	
+			
 		[Test]
-		public void ConvertedPythonCode()
+		public void ConvertedEnvironmentSpecialFolderCode()
 		{
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			converter.IndentString = "  ";
-			string code = converter.Convert(csharp);
-			string expectedCode = "class Foo(object):\r\n" +
+			string code = converter.Convert(environmentSpecialFolderCode);
+			string expectedCode = "import clr\r\n" +
+									"\r\n" +
+									"class Foo(object):\r\n" +
 									"  def PrintEnvironmentVariables(self):\r\n" +
 									"    enumerator = Environment.SpecialFolder.GetValues(clr.GetClrType(Environment.SpecialFolder)).GetEnumerator()\r\n" +
 									"    while enumerator.MoveNext():\r\n" +
 									"      folder = enumerator.Current\r\n" +
 									"      Console.WriteLine(\"{0}={1}\\n\", folder, Environment.GetFolderPath(folder))";		
 			Assert.AreEqual(expectedCode, code);
-		}
+		}		
 	}
 }

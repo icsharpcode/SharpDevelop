@@ -34,13 +34,22 @@ namespace ICSharpCode.PythonBinding
 				return new PythonListViewComponent(parent, component);
 			} else if (component is ContextMenuStrip) {
 				return new PythonContextMenuComponent(parent, component);
+			} else if (component is ImageList) {
+				return new PythonImageListComponent(parent, component);
+			} else if (component is TreeView) {
+				return new PythonTreeViewComponent(parent, component);
 			}
 			return new PythonDesignerComponent(parent, component);
 		}
 		
 		public static PythonDesignerRootComponent CreateDesignerRootComponent(IComponent component)
 		{
-			return new PythonDesignerRootComponent(component);
+			return CreateDesignerRootComponent(component, String.Empty);
+		}
+		
+		public static PythonDesignerRootComponent CreateDesignerRootComponent(IComponent component, string rootNamespace)
+		{
+			return new PythonDesignerRootComponent(component, rootNamespace);
 		}
 	}
 }

@@ -65,6 +65,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -116,6 +117,7 @@
     <Compile Include="Converter\ConvertToPythonProjectCommandTestFixture.cs" />
     <Compile Include="Converter\EventHandlerWithObjectCreationTestFixture.cs" />
     <Compile Include="Converter\ForeachConversionWithMethodCallTestFixture.cs" />
+    <Compile Include="Converter\GenerateMainMethodCallTestFixture.cs" />
     <Compile Include="Converter\GenericListConversionTestFixture.cs" />
     <Compile Include="Converter\IntegerMethodParameterTestFixture.cs" />
     <Compile Include="Converter\BaseClassReferenceTestFixture.cs" />
@@ -139,6 +141,7 @@
     <Compile Include="Converter\MethodWithBodyConversionTestFixture.cs" />
     <Compile Include="Converter\IfStatementConversionTestFixture.cs" />
     <Compile Include="Converter\ModulusOperatorConversionTestFixture.cs" />
+    <Compile Include="Converter\MultiLineCommentTestFixture.cs" />
     <Compile Include="Converter\NestedClassConversionTestFixture.cs" />
     <Compile Include="Converter\NestedIfStatementConversionTestFixture.cs" />
     <Compile Include="Converter\NullConversionTestFixture.cs" />
@@ -152,17 +155,20 @@
     <Compile Include="Converter\ConvertCSharpToPythonMenuCommandTestFixture.cs" />
     <Compile Include="Converter\CSharpClassWithNamespaceConversionTestFixture.cs" />
     <Compile Include="Converter\EmptyCSharpClassConversionTestFixture.cs" />
+    <Compile Include="Converter\SingleLineCommentConversionTestFixture.cs" />
     <Compile Include="Converter\StaticClassReferenceTestFixture.cs" />
     <Compile Include="Converter\StaticMethodConversionTestFixture.cs" />
     <Compile Include="Converter\SwitchStatementConversionTestFixture.cs" />
     <Compile Include="Converter\TernaryOperatorConversionTestFixture.cs" />
     <Compile Include="Converter\ThrowExceptionConversionTestFixture.cs" />
     <Compile Include="Converter\TryCatchFinallyConversionTestFixture.cs" />
+    <Compile Include="Converter\TypeofConversionTestFixture.cs" />
     <Compile Include="Converter\UnaryOperatorConversionTests.cs" />
     <Compile Include="Converter\UsingStatementConversionTestFixture.cs" />
     <Compile Include="Converter\VBClassConversionTestFixture.cs" />
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
+    <Compile Include="Converter\XmlDocCommentConversionTestFixture.cs" />
     <Compile Include="DebugPythonCommandTestFixture.cs" />
     <Compile Include="Designer\CreateDesignerComponentTests.cs" />
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
@@ -186,6 +192,7 @@
     <Compile Include="Designer\GenerateComboBoxItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateContextMenuStripTestFixture.cs" />
     <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateDataSetTestFixture.cs" />
     <Compile Include="Designer\GeneratedControlOrderingTestFixture.cs" />
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
     <Compile Include="Designer\GenerateEventHandlerFormTestFixture.cs" />
@@ -193,9 +200,13 @@
     <Compile Include="Designer\GenerateFormColorTestFixture.cs" />
     <Compile Include="Designer\GenerateFormLocationTestFixture.cs" />
     <Compile Include="Designer\GenerateFormPaddingTestFixture.cs" />
+    <Compile Include="Designer\GenerateFormResourcesTestFixture.cs" />
+    <Compile Include="Designer\GenerateImageListResourcesTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewItemTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewSubItemsTestFixture.cs" />
+    <Compile Include="Designer\GenerateListViewWithImageListTestFixture.cs" />
+    <Compile Include="Designer\GenerateLocalImageResourceTestFixture.cs" />
     <Compile Include="Designer\GenerateMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\GenerateMenuStripItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
@@ -206,9 +217,11 @@
     <Compile Include="Designer\GenerateTextBoxFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTimerTestFixture.cs" />
     <Compile Include="Designer\GenerateToolTipFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateTreeViewTestFixture.cs" />
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
     <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
+    <Compile Include="Designer\GetResourcesFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\GetSerializableContentPropertiesTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
@@ -226,7 +239,9 @@
     <Compile Include="Designer\LoadFontTestFixture.cs" />
     <Compile Include="Designer\LoadFormTestFixtureBase.cs" />
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
+    <Compile Include="Designer\LoadFormWithSysPathAppendStatementTestFixture.cs" />
     <Compile Include="Designer\LoadListViewFormTestFixture.cs" />
+    <Compile Include="Designer\LoadLocalImageResourceTestFixture.cs" />
     <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleUserControlTestFixture.cs" />
@@ -234,10 +249,12 @@
     <Compile Include="Designer\LoadTextBoxTestFixture.cs" />
     <Compile Include="Designer\LoadTimerTestFixture.cs" />
     <Compile Include="Designer\LoadToolTipTestFixture.cs" />
+    <Compile Include="Designer\LoadTreeViewTestFixture.cs" />
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
+    <Compile Include="Designer\ProjectRootNamespacePassedToMergeTestFixture.cs" />
     <Compile Include="Designer\PythonBaseClassTests.cs" />
     <Compile Include="Designer\PythonCodeDeserializerTests.cs" />
     <Compile Include="Designer\PythonCodeBuilderTests.cs" />
@@ -272,6 +289,7 @@
     <Compile Include="Parsing\ParseSingleClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidClassTestFixture.cs" />
     <Compile Include="PythonBindingAddInFile.cs" />
+    <Compile Include="PythonLanguagePropertiesTests.cs" />
     <Compile Include="PythonOptionsPanelTestFixture.cs" />
     <Compile Include="CreateNewPythonProjectTestFixture.cs" />
     <Compile Include="PythonSyntaxModeTestFixture.cs" />
@@ -323,6 +341,9 @@
     <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
     <Compile Include="Utils\MockPropertyDescriptor.cs" />
+    <Compile Include="Utils\MockResourceReader.cs" />
+    <Compile Include="Utils\MockResourceService.cs" />
+    <Compile Include="Utils\MockResourceWriter.cs" />
     <Compile Include="Utils\MockTextEditorProperties.cs" />
     <Compile Include="Utils\MockTextEditorViewContent.cs" />
     <Compile Include="Utils\MockTypeResolutionService.cs" />
@@ -339,6 +360,7 @@
     <None Include="app.config" />
     <Compile Include="Parsing\AddInvalidSourceSpanToErrorSinkTestFixture.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
+    <EmbeddedResource Include="Designer\App.ico" />
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>

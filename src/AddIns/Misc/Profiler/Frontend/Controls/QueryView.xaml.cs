@@ -74,44 +74,79 @@ namespace ICSharpCode.Profiler.Controls
 		void txtSearchKeyDown(object sender, KeyEventArgs e)
 		{
 			if (!string.IsNullOrEmpty(txtSearch.Text) && list.Count > 0) {
-//				searchTask.Cancel();
-//				string text = txtSearch.Text;
-//				int start = this.RangeStart;
-//				int end = this.RangeEnd;
-//				var provider = this.Provider;
-//				
-//				AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
-//				OverlayAdorner ad = new OverlayAdorner(this);
-//				WaitBar bar = new WaitBar("Refreshing view, please wait ...");
-//				ad.Child = bar;
-//				layer.Add(ad);
-//				
-//				searchTask.Execute(
-//					() => DoSearchInBackground(provider, start, end, text, true),
-//					result => SearchCompleted(result, layer, ad),
-//					delegate { layer.Remove(ad); });
+				searchTask.Cancel();
+				string text = txtSearch.Text;
+				int start = this.RangeStart;
+				int end = this.RangeEnd;
+				var provider = this.Provider;
+				
+				AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
+				OverlayAdorner ad = new OverlayAdorner(this);
+				WaitBar bar = new WaitBar("Refreshing view, please wait ...");
+				ad.Child = bar;
+				layer.Add(ad);
+				
+				CallTreeNode resultRoot;
+				
+				searchTask.Execute(
+					() => DoSearchInBackground(list.Roots.Select(i => i.Node).ToList(), start, end, text, true),
+					result => SearchCompleted(result, layer, ad),
+					delegate { layer.Remove(ad); });
 			}
 		}
 		
-		static CallTreeNode DoSearchInBackground(ProfilingDataProvider provider, int startIndex, int endIndex, string text, bool recursive)
+		struct SearchInfo {
+			public CallTreeNode Result;
+			public CallTreeNode ResultRoot;
+		}
+		
+		static SearchInfo? DoSearchInBackground(IList<CallTreeNode> nodes, int startIndex, int endIndex, string text, bool recursive)
 		{
-			CallTreeNode result;
-			foreach (var item in provider.GetRoot(startIndex, endIndex).Children) {
-				if (item.Search(text, true, out result)) {
-					return result;
+			foreach (var item in nodes) {
+				CallTreeNode result = item.Descendants.FirstOrDefault(desc => desc.Name.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0);
+				if (result != null) {
+					return new SearchInfo() { Result = result, ResultRoot = item };
 				}
 			}
 			return null;
 		}
 		
-		void SearchCompleted(CallTreeNode result, AdornerLayer layer, OverlayAdorner ad)
+		void SearchCompleted(SearchInfo? result, AdornerLayer layer, OverlayAdorner ad)
 		{
-//			var root = Provider.GetRoot(RangeStart, RangeEnd);
-//			result.IsSelected = true;
-//			if (oldSearchResult != null)
-//				oldSearchResult.IsSelected = false;
-//			oldSearchResult = result;
-//			layer.Remove(ad);
+			if (!result.HasValue)
+				return;
+			
+			CallTreeNodeViewModel item = GetViewModelFromPath(result.Value.Result.GetPathRelativeTo(result.Value.ResultRoot), result.Value);
+			if (item != null) {
+				item.IsSelected = true;
+				if (oldSearchResult != null)
+					oldSearchResult.IsSelected = false;
+				oldSearchResult = item;
+			}
+			layer.Remove(ad);
+		}
+		
+		CallTreeNodeViewModel GetViewModelFromPath(IEnumerable<NodePath> paths, SearchInfo info)
+		{
+			CallTreeNodeViewModel result = null;
+			var parent = list.Roots.Where(i => i.Node.Equals(info.ResultRoot)).FirstOrDefault();
+
+			foreach (var path in paths) {
+				var items = parent.Children;
+				foreach (var pathId in path.Skip(1)) {
+					foreach (var item in items) {
+						if (item.Node.NameMapping.Id == pathId) {
+							items = item.Children;
+							result = item;
+							break;
+						}
+					}
+					if (result == null)
+						break;
+				}
+			}
+			
+			return result;
 		}
 
 		public QueryView()

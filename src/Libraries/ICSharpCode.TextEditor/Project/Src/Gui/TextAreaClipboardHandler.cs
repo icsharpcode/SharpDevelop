@@ -198,7 +198,8 @@ namespace ICSharpCode.TextEditor
 					bool fullLine = data.GetDataPresent(LineSelectedType);
 					if (data.GetDataPresent(DataFormats.UnicodeText)) {
 						string text = (string)data.GetData(DataFormats.UnicodeText);
-						if (text.Length > 0) {
+						// we got NullReferenceExceptions here, apparently the clipboard can contain null strings
+						if (!string.IsNullOrEmpty(text)) {
 							textArea.Document.UndoStack.StartUndoGroup();
 							try {
 								if (textArea.SelectionManager.HasSomethingSelected) {

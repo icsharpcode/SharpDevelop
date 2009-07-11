@@ -229,7 +229,6 @@
 				<ComponentRef Id="WixVSExtension"/>
 				<ComponentRef Id="Difxapp_x64Wixlib"/>
 				<ComponentRef Id="Difxapp_x86Wixlib"/>
-				<ComponentRef Id="ComPlusXsd"/>
 				<ComponentRef Id="MSMQXsd"/>
 				<ComponentRef Id="WixFirewallXsd"/>
 				<ComponentRef Id="WixGamingXsd"/>
@@ -415,7 +414,10 @@
 				<ComponentRef Id="MicrosoftScriptingExtensionAttributeDll"/>	
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	
-				<ComponentRef Id="PythonBindingDll"/>	
+				<ComponentRef Id="PythonBindingDll"/>
+				<ComponentRef Id="PythonBindingLibRunpyPy"/>
+				<ComponentRef Id="PythonBindingLibSitePy"/>
+				<ComponentRef Id="PythonBindingLibFuturePy"/>
 				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>				
 
 				<!--<ComponentRef Id="FSharpBindingDll"/>
@@ -424,8 +426,6 @@
 				<ComponentRef Id="FSharpEmptyClassTemplate"/>-->
 				
 				<ComponentRef Id="ReflectorAddInDll"/>
-				<ComponentRef Id="ReflectorAddInIpcServerDll"/>
-				<ComponentRef Id="ReflectorAddInIpcServerAddInDll"/>
 			
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
 				<ComponentRef Id="SourceAnalysisAddin"/>

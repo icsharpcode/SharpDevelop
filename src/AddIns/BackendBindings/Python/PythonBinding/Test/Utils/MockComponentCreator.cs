@@ -10,8 +10,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
+using System.Globalization;
 using System.Drawing;
 using System.Reflection;
+using System.Resources;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
 
@@ -26,6 +28,12 @@ namespace PythonBinding.Tests.Utils
 		PropertyDescriptor propertyDescriptor;
 		EventDescriptor eventDescriptor;
 		IComponent rootComponent;
+		bool getResourceReaderCalled;
+		CultureInfo cultureInfoPassedToGetResourceReader;
+		IResourceWriter resourceWriter;
+		bool getResourceWriterCalled;
+		CultureInfo cultureInfoPassedToGetResourceWriter;
+		IResourceReader resourceReader;
 		
 		public MockComponentCreator()
 		{
@@ -61,12 +69,26 @@ namespace PythonBinding.Tests.Utils
 		
 		public IComponent GetComponent(string name)
 		{
-			foreach (AddedComponent c in addedComponents) {
-				if (c.Name == name) {
-					return c.Component;
+			foreach (AddedComponent addedComponent in addedComponents) {
+				if (addedComponent.Name == name) {
+					return addedComponent.Component;
+				}
+			}
+			foreach (CreatedComponent createdComponent in createdComponents) {
+				if (!String.IsNullOrEmpty(createdComponent.Name)) {
+					if (createdComponent.Name == name) {
+						return createdComponent.Component;
+					}
 				}
 			}
 			return null;
+		}
+
+		public void AddInstance(object obj, string name)
+		{
+			CreatedInstance createdInstance = new CreatedInstance(obj.GetType(), new object[0], name, false);
+			createdInstance.Object = obj;
+			createdInstances.Add(createdInstance);
 		}
 		
 		public object CreateInstance(Type type, ICollection arguments, string name, bool addToContainer)
@@ -173,5 +195,45 @@ namespace PythonBinding.Tests.Utils
 			}
 			return null;
 		}
+
+		public void SetResourceReader(IResourceReader reader)
+		{
+			resourceReader = reader;
+		}
+		
+		public bool GetResourceReaderCalled {
+			get { return getResourceReaderCalled; }
+		}
+
+		public CultureInfo CultureInfoPassedToGetResourceReader {
+			get { return cultureInfoPassedToGetResourceReader; }
+		}
+		
+		public IResourceReader GetResourceReader(CultureInfo info)
+		{
+			getResourceReaderCalled = true;
+			cultureInfoPassedToGetResourceReader = info;
+			return resourceReader;
+		}
+		
+		public void SetResourceWriter(IResourceWriter writer)
+		{
+			resourceWriter = writer;
+		}
+		
+		public IResourceWriter GetResourceWriter(CultureInfo info)
+		{
+			getResourceWriterCalled = true;
+			cultureInfoPassedToGetResourceWriter = info;
+			return resourceWriter;
+		}		
+		
+		public bool GetResourceWriterCalled {
+			get { return getResourceWriterCalled; }
+		}
+
+		public CultureInfo CultureInfoPassedToGetResourceWriter {
+			get { return cultureInfoPassedToGetResourceWriter; }
+		}		
 	}
 }

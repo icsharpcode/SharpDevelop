@@ -70,6 +70,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CompilingOptionsPanel.cs" />
+    <Compile Include="Src\IArrayItem.cs" />
     <Compile Include="Src\IComponentCreator.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IPadDescriptor.cs" />
@@ -94,12 +95,15 @@
     <Compile Include="Src\PythonDesignerLoader.cs" />
     <Compile Include="Src\PythonDesignerLoaderProvider.cs" />
     <Compile Include="Src\PythonDesignerRootComponent.cs" />
+    <Compile Include="Src\PythonDesignerTreeNode.cs" />
     <Compile Include="Src\PythonExpressionFinder.cs" />
     <Compile Include="Src\PythonControl.cs" />
     <Compile Include="Src\PythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Src\PythonComponentWalker.cs" />
     <Compile Include="Src\PythonComponentWalkerException.cs" />
+    <Compile Include="Src\PythonImageListComponent.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
+    <Compile Include="Src\PythonLanguageProperties.cs" />
     <Compile Include="Src\PythonListViewComponent.cs" />
     <Compile Include="Src\PythonOptionsPanel.cs" />
     <Compile Include="Src\PythonOutputStream.cs" />
@@ -109,11 +113,21 @@
     <Compile Include="Src\PythonProject.cs" />
     <Compile Include="Src\PythonPropertyValueAssignment.cs" />
     <Compile Include="Src\PythonResolver.cs" />
+    <Compile Include="Src\PythonTreeViewComponent.cs" />
     <Compile Include="Src\RunDebugPythonCommand.cs" />
     <Compile Include="Src\RunPythonCommand.cs" />
     <Compile Include="Src\StandardPythonModules.cs" />
     <Compile Include="Src\PythonVariableResolver.cs" />
     <Compile Include="Src\TextEditor.cs" />
+    <None Include="Lib\runpy.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Lib\site.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Lib\__future__.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="PythonBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -144,6 +158,7 @@
     <EmbeddedResource Include="Resources\Python.xshd" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Lib" />
     <Folder Include="Templates" />
     <Folder Include="Resources" />
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

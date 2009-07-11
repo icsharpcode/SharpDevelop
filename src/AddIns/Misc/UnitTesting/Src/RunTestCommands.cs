@@ -525,6 +525,7 @@ namespace ICSharpCode.UnitTesting
 			
 			startInfo.Arguments = helper.GetArguments();
 			startInfo.WorkingDirectory = UnitTestApplicationStartHelper.UnitTestApplicationDirectory;
+			LoggingService.Info("starting profiler...");
 			ProfilerService.CurrentProfiler.Start(startInfo, path, delegate { AfterFinish(helper, path); });
 		}
 		
@@ -532,6 +533,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			ProfilerService.AddSessionToProject(helper.Project, path);
 			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
+			LoggingService.Info("shutting profiler down...");
 		}
 		
 		public override void Run()
@@ -547,6 +549,7 @@ namespace ICSharpCode.UnitTesting
 		protected override void OnStop()
 		{
 			if (ProfilerService.CurrentProfiler.IsRunning) {
+				LoggingService.Info("stopping profiler...");
 				ProfilerService.CurrentProfiler.Stop();
 			}
 		}

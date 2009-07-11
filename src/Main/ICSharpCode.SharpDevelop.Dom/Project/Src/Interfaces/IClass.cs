@@ -69,7 +69,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IList<ITypeParameter> TypeParameters {
 			get;
 		}
-
+		
+		/// <summary>
+		/// Returns the list of all classes that this class inherits from (directly or indirectly).
+		/// If this property is used on part of a partial class, it will also return classes inherited in other parts.
+		/// </summary>
 		IEnumerable<IClass> ClassInheritanceTree {
 			get;
 		}

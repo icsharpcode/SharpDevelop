@@ -22,6 +22,7 @@ namespace PythonBinding.Tests.Utils
 	{
 		readonly object syncRoot = new object();
 		string directory = String.Empty;
+		string rootNamespace = String.Empty;
 		
 		public MockProject()
 		{
@@ -94,9 +95,8 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public string RootNamespace {
-			get { return String.Empty; }
-			set {
-			}
+			get { return rootNamespace; }
+			set { rootNamespace = value; }
 		}
 		
 		public string OutputAssemblyFullPath {

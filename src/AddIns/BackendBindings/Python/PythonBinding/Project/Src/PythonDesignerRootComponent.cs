@@ -8,7 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Globalization;
 using System.Reflection;
+using System.Resources;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ICSharpCode.PythonBinding
@@ -18,9 +22,17 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonDesignerRootComponent : PythonDesignerComponent
 	{
+		string rootNamespace = String.Empty;
+
 		public PythonDesignerRootComponent(IComponent component)
+			: this(component, String.Empty)
+		{
+		}
+		
+		public PythonDesignerRootComponent(IComponent component, string rootNamespace)
 			: base(null, component)
 		{
+			this.rootNamespace = rootNamespace;
 		}
 		
 		public override string GetPropertyOwnerName()
@@ -47,47 +59,38 @@ namespace ICSharpCode.PythonBinding
 			
 			// Add root component
 			AppendComponentProperties(codeBuilder, false, true);
-		}
-				
-		public PythonDesignerComponent[] GetNonVisualChildComponents()
-		{
-			List<PythonDesignerComponent> components = new List<PythonDesignerComponent>();
-			foreach (IComponent containerComponent in Component.Site.Container.Components) {
-				PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(this, containerComponent);
-				if (designerComponent.IsNonVisual) {
-					components.Add(designerComponent);
-				}
+			if (HasAddedResources()) {
+				InsertCreateResourceManagerLine(codeBuilder);
 			}
-			return components.ToArray();
-		}
-				
-		/// <summary>
-		/// Adds BeginInit method call for any non-visual components that implement the 
-		/// System.ComponentModel.ISupportInitialize interface.
-		/// </summary>
-		public void AppendNonVisualComponentsBeginInit(PythonCodeBuilder codeBuilder)
-		{
-			AppendNonVisualComponentsMethodCalls(codeBuilder, new string[] {"BeginInit()"});
 		}
 		
 		/// <summary>
-		/// Adds EndInit method call for any non-visual components that implement the 
+		/// Adds BeginInit method call for any components that implement the 
 		/// System.ComponentModel.ISupportInitialize interface.
 		/// </summary>
-		public void AppendNonVisualComponentsEndInit(PythonCodeBuilder codeBuilder)
+		public void AppendSupportInitializeComponentsBeginInit(PythonCodeBuilder codeBuilder)
 		{
-			AppendNonVisualComponentsMethodCalls(codeBuilder, new string[] {"EndInit()"});
-		}		
+			AppendSupportInitializeMethodCalls(codeBuilder, new string[] {"BeginInit()"});
+		}
 		
-		public void AppendNonVisualComponentsMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
+		/// <summary>
+		/// Adds EndInit method call for any that implement the 
+		/// System.ComponentModel.ISupportInitialize interface.
+		/// </summary>
+		public void AppendSupportInitializeComponentsEndInit(PythonCodeBuilder codeBuilder)
 		{
-			foreach (PythonDesignerComponent component in GetNonVisualChildComponents()) {
+			AppendSupportInitializeMethodCalls(codeBuilder, new string[] {"EndInit()"});
+		}
+		
+		public void AppendSupportInitializeMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
+		{
+			foreach (PythonDesignerComponent component in GetContainerComponents()) {
 				if (typeof(ISupportInitialize).IsAssignableFrom(component.GetComponentType())) {
 					component.AppendMethodCalls(codeBuilder, methods);
 				}
-			}			
+			}
 		}
-		
+				
 		/// <summary>
 		/// Reverses the ordering when adding items to the Controls collection.
 		/// </summary>
@@ -95,6 +98,72 @@ namespace ICSharpCode.PythonBinding
 		{
 			bool reverse = propertyDescriptor.Name == "Controls";
 			AppendMethodCallWithArrayParameter(codeBuilder, propertyOwnerName, propertyOwner, propertyDescriptor, reverse);
-		}		
+		}
+		
+		/// <summary>
+		/// Writes resources to file.
+		/// </summary>
+		public void GenerateResources(IResourceService resourceService)
+		{
+			if (resourceService == null) {
+				return;
+			}
+			
+			using (IResourceWriter writer = resourceService.GetResourceWriter(CultureInfo.InvariantCulture)) {
+				foreach (PythonDesignerComponent component in GetContainerComponents()) {
+					component.GenerateResources(writer);
+				}
+				GenerateResources(writer);
+			}
+		}
+		
+		public string GetResourceRootName()
+		{
+			string componentName = Component.Site.Name;
+			if (!String.IsNullOrEmpty(rootNamespace)) {
+				return rootNamespace + "." + componentName;
+			}
+			return componentName;
+		}
+		
+		void InsertCreateResourceManagerLine(PythonCodeBuilder codeBuilder)
+		{
+			StringBuilder line = new StringBuilder();
+			line.Append("resources = System.Resources.ResourceManager(\"");
+			line.Append(GetRootComponentRootResourceName());
+			line.Append("\", System.Reflection.Assembly.GetEntryAssembly())");
+			codeBuilder.InsertIndentedLine(line.ToString());
+		}
+		
+		string GetRootComponentRootResourceName()
+		{
+			PythonDesignerComponent component = this;
+			while (component != null) {
+				if (component.Parent == null) {
+					PythonDesignerRootComponent rootComponent = component as PythonDesignerRootComponent;
+					return rootComponent.GetResourceRootName();
+				}
+				component = component.Parent;
+			}
+			return String.Empty;
+		}
+		
+		/// <summary>
+		/// Returns true if a resource has been added to any of the form components.
+		/// </summary>
+		bool HasAddedResources()
+		{
+			if (HasResources) {
+				return true;
+			}
+			
+			foreach (PythonDesignerComponent component in GetContainerComponents()) {
+				if (component.HasResources) {
+					return true;
+				}
+			}
+				
+			return false;
+		}
 	}
 }

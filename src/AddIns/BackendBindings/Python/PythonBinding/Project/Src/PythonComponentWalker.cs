@@ -10,7 +10,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
+using System.Globalization;
 using System.Reflection;
+using System.Resources;
 using System.Text;
 using System.Windows.Forms;
 
@@ -41,13 +43,13 @@ namespace ICSharpCode.PythonBinding
 		/// Creates a control either a UserControl or Form from the python code.
 		/// </summary>
 		public IComponent CreateComponent(string pythonCode)
-		{
+		{			
 			PythonParser parser = new PythonParser();
 			PythonAst ast = parser.CreateAst(@"Control.py", pythonCode);
 			ast.Walk(this);
 			
 			// Did we find the InitializeComponent method?
-			if (component == null) {
+			if (!FoundInitializeComponentMethod) {
 				throw new PythonComponentWalkerException("Unable to find InitializeComponents method.");
 			}
 			return component;
@@ -85,6 +87,10 @@ namespace ICSharpCode.PythonBinding
 			if (IsInitializeComponentMethod(node)) {
 				Type type = GetComponentType();
 				component = componentCreator.CreateComponent(type, componentName);
+				IResourceReader reader = componentCreator.GetResourceReader(CultureInfo.InvariantCulture);
+				if (reader != null) {
+					reader.Dispose();
+				}
 				node.Body.Walk(this);
 			}
 			return false;
@@ -92,6 +98,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(AssignmentStatement node)
 		{			
+			if (!FoundInitializeComponentMethod) {
+				return false;
+			}
+			
 			if (node.Left.Count > 0) {
 				MemberExpression lhsMemberExpression = node.Left[0] as MemberExpression;
 				NameExpression lhsNameExpression = node.Left[0] as NameExpression;
@@ -123,6 +133,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(ConstantExpression node)
 		{
+			if (!FoundInitializeComponentMethod) {
+				return false;
+			}
+
 			if (fieldExpression.IsSelfReference) {
 				SetPropertyValue(fieldExpression.MemberName, node.Value);
 			} else {
@@ -133,6 +147,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(CallExpression node)
 		{			
+			if (!FoundInitializeComponentMethod) {
+				return false;
+			}
+				
 			if (walkingAssignment) {
 				WalkAssignmentRhs(node);
 			} else {
@@ -143,6 +161,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override bool Walk(NameExpression node)
 		{
+			if (!FoundInitializeComponentMethod) {
+				return false;
+			}
+			
 			SetPropertyValue(fieldExpression.MemberName, node.Name.ToString());
 			return false;
 		}
@@ -154,6 +176,10 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public override bool Walk(AugmentedAssignStatement node)
 		{
+			if (!FoundInitializeComponentMethod) {
+				return false;
+			}
+			
 			MemberExpression eventExpression = node.Left as MemberExpression;
 			string eventName = eventExpression.Name.ToString();
 			PythonControlFieldExpression field = PythonControlFieldExpression.Create(eventExpression);
@@ -306,6 +332,8 @@ namespace ICSharpCode.PythonBinding
 					object obj = deserializer.Deserialize(node);
 					if (obj != null) {
 						SetPropertyValue(component, fieldExpression.MemberName, obj);
+					} else if (IsResource(memberExpression)) {
+						SetPropertyValue(fieldExpression.MemberName, GetResource(node));
 					} else {
 						throw new PythonComponentWalkerException(String.Format("Could not find type '{0}'.", PythonControlFieldExpression.GetMemberName(memberExpression)));
 					}
@@ -364,8 +392,39 @@ namespace ICSharpCode.PythonBinding
 				string typeName = PythonControlFieldExpression.GetMemberName(memberExpression);
 				Type type = componentCreator.GetType(typeName);
 				if (type != null) {
+					if (type.IsAssignableFrom(typeof(ComponentResourceManager))) {
+						return componentCreator.CreateInstance(type, new object[0], name, false);
+					}
 					List<object> args = deserializer.GetArguments(node);
 					return componentCreator.CreateInstance(type, args, name, false);
+				}
+			}
+			return null;
+		}
+		
+		bool FoundInitializeComponentMethod {
+			get { return component != null; }
+		}
+		
+		/// <summary>
+		/// Returns true if the expression is of the form:
+		/// 
+		/// resources.GetObject(...) or
+		/// resources.GetString(...)
+		/// </summary>
+		bool IsResource(MemberExpression memberExpression)
+		{
+			string fullName = PythonControlFieldExpression.GetMemberName(memberExpression);
+			return fullName.StartsWith("resources.", StringComparison.InvariantCultureIgnoreCase);
+		}
+		
+		object GetResource(CallExpression callExpression)
+		{
+			IResourceReader reader = componentCreator.GetResourceReader(CultureInfo.InvariantCulture);
+			if (reader != null) {
+				using (ResourceSet resources = new ResourceSet(reader)) {
+					List<object> args = deserializer.GetArguments(callExpression);
+					return resources.GetObject(args[0] as String);
 				}
 			}
 			return null;

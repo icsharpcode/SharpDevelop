@@ -643,11 +643,11 @@ static int static_Test2_j = 0;");
 		[Test]
 		public void ComparisonWithEmptyStringLiteral()
 		{
-			TestStatement("If a = \"\" Then Return", "if (string.IsNullOrEmpty(a)) return; ");
-			TestStatement("If a <> \"\" Then Return", "if (!string.IsNullOrEmpty(a)) return; ");
+			TestStatement("If a = \"\" Then Return", "if (string.IsNullOrEmpty(a))" + Environment.NewLine + "  return;");
+			TestStatement("If a <> \"\" Then Return", "if (!string.IsNullOrEmpty(a))" + Environment.NewLine + "  return;");
 			
-			TestStatement("If \"\" = a Then Return", "if (string.IsNullOrEmpty(a)) return; ");
-			TestStatement("If \"\" <> a Then Return", "if (!string.IsNullOrEmpty(a)) return; ");
+			TestStatement("If \"\" = a Then Return", "if (string.IsNullOrEmpty(a))" + Environment.NewLine + "  return;");
+			TestStatement("If \"\" <> a Then Return", "if (!string.IsNullOrEmpty(a))" + Environment.NewLine + "  return;");
 		}
 		
 		[Test]
@@ -670,7 +670,10 @@ static int static_Test2_j = 0;");
 			TestStatement("Dim i(1) As String",
 			              "string[] i = new string[2];");
 			TestStatement("Dim i As String() = New String(1) {\"0\", \"1\"}",
-			              "string[] i = new string[2] { \"0\", \"1\" };");
+			              "string[] i = new string[2] {" + Environment.NewLine +
+			              "  \"0\"," + Environment.NewLine +
+			              "  \"1\"" + Environment.NewLine +
+			              "};");
 			TestStatement("Dim i As String(,) = New String(5, 5) {}",
 			              "string[,] i = new string[6, 6];");
 		}

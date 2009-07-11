@@ -10,8 +10,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.Drawing;
 using System.Reflection;
+using System.Resources;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ICSharpCode.PythonBinding
@@ -27,6 +30,8 @@ namespace ICSharpCode.PythonBinding
 		static readonly DesignerSerializationVisibility[] contentDesignerVisibility = new DesignerSerializationVisibility[] { DesignerSerializationVisibility.Content };
 		IEventBindingService eventBindingService;
 		PythonDesignerComponent parent;
+		Dictionary<string, object> resources = new Dictionary<string, object>();
+		List<PythonDesignerComponent> designerContainerComponents;
 		
 		protected static readonly string[] suspendLayoutMethods = new string[] {"SuspendLayout()"};
 		protected static readonly string[] resumeLayoutMethods = new string[] {"ResumeLayout(False)", "PerformLayout()"};
@@ -141,22 +146,6 @@ namespace ICSharpCode.PythonBinding
 			}
 			return false;
 		}
-		
-		/// <summary>
-		/// A component is non-visual if it is not a control and is not hidden from the designer.
-		/// </summary>
-		public static bool IsNonVisualComponent(IComponent component)
-		{
-			Control control = component as Control;
-			return (control == null) && !IsHiddenFromDesigner(component);
-		}
-		
-		/// <summary>
-		/// Returns true if this component is non-visual.
-		/// </summary>
-		public bool IsNonVisual {
-			get { return IsNonVisualComponent(component); }
-		}
 
 		/// <summary>
 		/// Gets the AddRange method on the object that is not hidden from the designer. 
@@ -254,12 +243,14 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public PythonDesignerComponent[] GetContainerComponents()
 		{
-			List<PythonDesignerComponent> components = new List<PythonDesignerComponent>();
-			ComponentCollection containerComponents = Component.Site.Container.Components;
-			for (int i = 1; i < containerComponents.Count; ++i) {
-				components.Add(PythonDesignerComponentFactory.CreateDesignerComponent(this, containerComponents[i]));
+			if (designerContainerComponents == null) {
+				designerContainerComponents = new List<PythonDesignerComponent>();
+				ComponentCollection components = Component.Site.Container.Components;
+				for (int i = 1; i < components.Count; ++i) {
+					designerContainerComponents.Add(PythonDesignerComponentFactory.CreateDesignerComponent(this, components[i]));
+				}
 			}
-			return components.ToArray();
+			return designerContainerComponents.ToArray();
 		}		
 		
 		/// <summary>
@@ -498,12 +489,14 @@ namespace ICSharpCode.PythonBinding
 				AppendExtenderProperty(codeBuilder, propertyOwnerName, extender, propertyDescriptor, propertyValue);
 			} else if (propertyDescriptor.SerializationVisibility == DesignerSerializationVisibility.Visible) {
 				string propertyName = propertyOwnerName + "." + propertyDescriptor.Name;
-				Control control = propertyValue as Control;
-				if (control != null) {
-					string controlRef = GetControlReference(control);
-					if (controlRef != null) {
-						codeBuilder.AppendIndentedLine(propertyName + " = " + controlRef);
+				IComponent component = propertyValue as IComponent;
+				if (component != null) {
+					string componentRef = GetComponentReference(component);
+					if (componentRef != null) {
+						codeBuilder.AppendIndentedLine(propertyName + " = " + componentRef);
 					}
+				} else if (IsResourcePropertyValue(propertyValue)) {
+					AppendResourceProperty(codeBuilder, propertyName, propertyValue);
 				} else {
 					codeBuilder.AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
 				}
@@ -528,6 +521,30 @@ namespace ICSharpCode.PythonBinding
 			codeBuilder.Append(")");
 			codeBuilder.AppendLine();
 		}
+		
+		/// <summary>
+		/// Appends a property whose value is a resource.
+		/// </summary>
+		public void AppendResourceProperty(PythonCodeBuilder codeBuilder, string propertyName, object propertyValue)
+		{
+			string resourceName = propertyName.Replace("self._", String.Empty);
+			resourceName = resourceName.Replace("self.", "$this.");
+			codeBuilder.AppendIndented(propertyName);
+			codeBuilder.Append(" = resources.GetObject(\"");
+			codeBuilder.Append(resourceName);
+			codeBuilder.Append("\")");
+			codeBuilder.AppendLine();
+			
+			resources.Add(resourceName, propertyValue);
+		}
+		
+		/// <summary>
+		/// Returns true if the property value will be obtained from a resource.
+		/// </summary>
+		public static bool IsResourcePropertyValue(object propertyValue)
+		{
+			return (propertyValue is Image) || (propertyValue is Icon) || (propertyValue is ImageListStreamer);
+		}		
 		
 		/// <summary>
 		/// Appends the properties of the object to the code builder.
@@ -563,7 +580,7 @@ namespace ICSharpCode.PythonBinding
 			// Add comment if we have added some properties or event handlers.
 			if (addComment && propertiesBuilder.Length > 0) {
 				AppendComment(codeBuilder);
-			}
+			}			
 			codeBuilder.Append(propertiesBuilder.ToString());
 		}
 		
@@ -618,7 +635,72 @@ namespace ICSharpCode.PythonBinding
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// Writes resources for this component to the resource writer.
+		/// </summary>
+		public void GenerateResources(IResourceWriter writer)
+		{			
+			foreach (KeyValuePair<string, object> entry in resources) {
+				writer.AddResource(entry.Key, entry.Value);
+			}
+		}
 		
+		/// <summary>
+		/// Returns true if this component has any properties that are resources.
+		/// </summary>
+		public bool HasResources {
+			get { return resources.Count > 0; }
+		}
+		
+		/// <summary>
+		/// Gets the parent of this component.
+		/// </summary>
+		public PythonDesignerComponent Parent {
+			get { return parent; }
+		}
+
+		public static void AppendSystemArray(PythonCodeBuilder codeBuilder, string componentName, string methodName, string typeName, ICollection components)
+		{
+			if (components.Count > 0) {
+				codeBuilder.AppendIndented("self._" + componentName + "." + methodName + "(");
+				AppendSystemArray(codeBuilder, typeName, components);
+				codeBuilder.Append(")");
+				codeBuilder.AppendLine();
+			}
+		}
+		
+		public static void AppendSystemArray(PythonCodeBuilder codeBuilder, string typeName, ICollection components)
+		{
+			if (components.Count > 0) {
+				codeBuilder.Append("System.Array[" + typeName + "](");
+				codeBuilder.AppendLine();
+				codeBuilder.IncreaseIndent();
+				int i = 0;
+				foreach (object component in components) {
+					if (i == 0) {
+						codeBuilder.AppendIndented("[");
+					} else {
+						codeBuilder.Append(",");
+						codeBuilder.AppendLine();
+						codeBuilder.AppendIndented(String.Empty);
+					}
+					if (component is IComponent) {
+						codeBuilder.Append("self._" + ((IComponent)component).Site.Name);
+					} else if (component is String) {
+						codeBuilder.Append(PythonPropertyValueAssignment.ToString(component));
+					} else if (component is IArrayItem) {
+						codeBuilder.Append(((IArrayItem)component).Name);
+					} else {
+						codeBuilder.Append(GetVariableName(component, i + 1));
+					}
+					++i;
+				}
+				codeBuilder.Append("])");
+			}
+			codeBuilder.DecreaseIndent();
+		}
+			
 		protected IComponent Component {
 			get { return component; }
 		}
@@ -666,45 +748,6 @@ namespace ICSharpCode.PythonBinding
 			return sitedComponents.ToArray();
 		}
 		
-		static void AppendSystemArray(PythonCodeBuilder codeBuilder, string componentName, string methodName, string typeName, ICollection components)
-		{
-			if (components.Count > 0) {
-				codeBuilder.AppendIndented("self._" + componentName + "." + methodName + "(");
-				AppendSystemArray(codeBuilder, typeName, components);
-				codeBuilder.Append(")");
-				codeBuilder.AppendLine();
-				codeBuilder.DecreaseIndent();
-			}
-		}
-		
-		static void AppendSystemArray(PythonCodeBuilder codeBuilder, string typeName, ICollection components)
-		{
-			if (components.Count > 0) {
-				codeBuilder.Append("System.Array[" + typeName + "](");
-				codeBuilder.AppendLine();
-				codeBuilder.IncreaseIndent();
-				int i = 0;
-				foreach (object component in components) {
-					if (i == 0) {
-						codeBuilder.AppendIndented("[");
-					} else {
-						codeBuilder.Append(",");
-						codeBuilder.AppendLine();
-						codeBuilder.AppendIndented(String.Empty);
-					}
-					if (component is IComponent) {
-						codeBuilder.Append("self._" + ((IComponent)component).Site.Name);
-					} else if (component is String) {
-						codeBuilder.Append(PythonPropertyValueAssignment.ToString(component));
-					} else {
-						codeBuilder.Append(GetVariableName(component, i + 1));
-					}
-					++i;
-				}
-				codeBuilder.Append("])");
-			}
-		}
-	
 		void AppendChildComponentsMethodCalls(PythonCodeBuilder codeBuilder, string[] methods)
 		{
 			foreach (PythonDesignerComponent designerComponent in GetChildComponents()) {
@@ -725,12 +768,17 @@ namespace ICSharpCode.PythonBinding
 			return parent.IsRootComponent(component);
 		}
 		
-		string GetControlReference(Control control)
-		{
-			if (IsRootComponent(control)) {
+		string GetComponentReference(IComponent component)
+		{			
+			if (IsRootComponent(component)) {
 				return "self";
-			} else if (!String.IsNullOrEmpty(control.Name)) {
-				return "self._" + control.Name;
+			} else {
+				foreach (PythonDesignerComponent designerComponent in GetContainerComponents()) {
+					string name = component.Site.Name;
+					if ((designerComponent.component == component) && (!String.IsNullOrEmpty(name))) {
+						return "self._" + name;
+					}
+				}
 			}
 			return null;
 		}
@@ -754,6 +802,6 @@ namespace ICSharpCode.PythonBinding
 			}
 			reversedCollection.Reverse();
 			return reversedCollection;
-		}
+		}		
 	}
 }

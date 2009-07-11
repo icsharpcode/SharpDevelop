@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			runner.ProcessExited += new EventHandler(OnProcessExited);
 			
 			runner.Start(GetConsoleAppFileName(), String.Concat("-echo:", echoText));
-			bool exited = exitEvent.WaitOne(500, true);
+			bool exited = exitEvent.WaitOne(2500, true);
 			
 			Assert.IsTrue(exited, "Timed out waiting for exit event.");
 			Assert.AreEqual(0, exitCode, "Exit code should be zero.");

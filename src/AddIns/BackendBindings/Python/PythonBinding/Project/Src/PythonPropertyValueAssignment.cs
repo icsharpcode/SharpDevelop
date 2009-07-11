@@ -36,7 +36,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			Type propertyType = propertyValue.GetType();
 			if (propertyType == typeof(String)) {
-				return "\"" + propertyValue + "\"";
+				return GetQuotedString((string)propertyValue);
 			} else if (propertyType == typeof(Size)) {
 				Size size = (Size)propertyValue;
 				return size.GetType().FullName + "(" + size.Width + ", " + size.Height + ")";
@@ -61,7 +61,7 @@ namespace ICSharpCode.PythonBinding
 				AnchorStyles anchor = (AnchorStyles)propertyValue;
 				return GetAnchorStyleAsString(anchor);
 			} else if (propertyType.IsEnum) {
-				return propertyType.FullName + "." + propertyValue.ToString();
+				return propertyType.FullName.Replace('+', '.') + "." + propertyValue.ToString();
 			}
 			return propertyValue.ToString();
 		}
@@ -128,6 +128,15 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return text.ToString();
+		}
+		
+		/// <summary>
+		/// Returns the string enclosed by double quotes.
+		/// Escapes any double quotes or backslashes in the string itself.
+		/// </summary>
+		static string GetQuotedString(string text)
+		{
+			return "\"" + text.Replace(@"\", @"\\").Replace("\"", "\\\"") + "\"";
 		}
 	}
 }

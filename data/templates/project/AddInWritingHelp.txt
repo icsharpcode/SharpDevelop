@@ -3,7 +3,7 @@ You have created a new SharpDevelop AddIn project.
 We would like to point out that there are three locations where you can get information on how
 to write SharpDevelop AddIns:
 - http://wiki.sharpdevelop.net/ (section Developer Zone)
-- The folder "doc/techtones" in the SharpDevelop source code download
+- The folder "doc/technotes" in the SharpDevelop source code download
 - You can ask questions about AddIn development in the SharpDevelop forum:
    http://community.sharpdevelop.net/forums/
 

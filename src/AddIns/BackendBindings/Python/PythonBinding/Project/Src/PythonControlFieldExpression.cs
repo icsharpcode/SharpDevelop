@@ -192,11 +192,19 @@ namespace ICSharpCode.PythonBinding
 		{
 			object obj = componentCreator.GetComponent(variableName);
 			if (obj == null) {
-				return null;
+				obj = componentCreator.GetInstance(variableName);
 			}
 			
-			string[] memberNames = fullMemberName.Split('.');
-			return GetMember(obj, memberNames, 2, memberNames.Length - 1);
+			if (obj != null) {
+				string[] memberNames = fullMemberName.Split('.');
+				int startIndex = 2;
+				if (!ContainsSelfReference(memberNames)) {
+					// No self to skip over when searching for member.
+					startIndex = 1;
+				}
+				return GetMember(obj, memberNames, startIndex, memberNames.Length - 1);
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -280,6 +288,14 @@ namespace ICSharpCode.PythonBinding
 		static bool ContainsSelfReference(string name)
 		{
 			return name.StartsWith("self.", StringComparison.InvariantCultureIgnoreCase);
+		}
+		
+		static bool ContainsSelfReference(string[] members)
+		{
+			if (members.Length > 0) {
+				return "self".Equals(members[0], StringComparison.InvariantCultureIgnoreCase);
+			}
+			return false;
 		}
 	}
 }

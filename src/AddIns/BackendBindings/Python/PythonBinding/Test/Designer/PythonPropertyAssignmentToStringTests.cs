@@ -64,6 +64,40 @@ namespace PythonBinding.Tests.Designer
 			string expectedText = "System.Windows.Forms.AnchorStyles.None";
 			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(anchorStyle));
 		}
+
+		/// <summary>
+		/// Nested type will have a full name including a "+", for example, SpecialFolder type has a full name of:
+		/// 
+		/// System.Environment+SpecialFolder
+		/// 
+		/// So the PythonPropertyValueAssignment needs to replace the "+" with a ".".
+		/// </summary>
+		[Test]
+		public void SystemEnvironmentSpecialFolderNestedTypeToString()
+		{
+			Environment.SpecialFolder folder = Environment.SpecialFolder.ProgramFiles;
+			string expectedText = "System.Environment.SpecialFolder.ProgramFiles";
+			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(folder));
+		}
 		
+		/// <summary>
+		/// Ensures that when the user types in "\t" the code for a string property in the forms designer
+		/// the actual string is generated is "\\t".
+		/// </summary>
+		[Test]
+		public void BackslashCharactersEncodedInStrings()
+		{
+			string text = @"c:\temp";
+			string expectedText = "\"c:\\\\temp\"";
+			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(text));
+		}
+		
+		[Test]
+		public void DoubleQuoteCharactersEncodedInStrings()
+		{
+			string text = "c:\\te\"mp";
+			string expectedText = "\"c:\\\\te\\\"mp\"";
+			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(text));
+		}
 	}
 }

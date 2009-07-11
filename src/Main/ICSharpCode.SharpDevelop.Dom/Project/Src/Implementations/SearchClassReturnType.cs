@@ -57,7 +57,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		volatile IReturnType cachedBaseType;
-		int isSearching; // 0=false, 1=true
+		
+		//int isSearching; // 0=false, 1=true
+		
+		// Required to prevent stack overflow on inferrence cycles
+		// replaces old 'isSearching' flag which wasn't thread-safe
+		[ThreadStatic] static BusyManager _busyManager;
+		
+		static BusyManager busyManager {
+			get { return _busyManager ?? (_busyManager = new BusyManager()); }
+		}
 		
 		void ClearCachedBaseType()
 		{
@@ -69,9 +78,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				IReturnType type = cachedBaseType;
 				if (type != null)
 					return type;
-				if (Interlocked.CompareExchange(ref isSearching, 1, 0) != 0)
-					return null;
-				try {
+				using (var l = busyManager.Enter(this)) {
+					// abort if called recursively on the same thread
+					if (!l.Success)
+						return null;
 					SearchTypeRequest request = new SearchTypeRequest(name, typeParameterCount, declaringClass, caretLine, caretColumn);
 					if (!lookForInnerClassesInDeclaringClass) {
 						// skip looking for inner classes by adjusting the CurrentType for the lookup
@@ -82,8 +92,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (type != null)
 						DomCache.RegisterForClear(ClearCachedBaseType);
 					return type;
-				} finally {
-					isSearching = 0;
 				}
 			}
 		}

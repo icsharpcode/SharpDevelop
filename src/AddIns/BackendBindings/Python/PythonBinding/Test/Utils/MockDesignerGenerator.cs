@@ -9,12 +9,15 @@ using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Reflection;
 using System.Windows.Forms;
 
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.SharpDevelop;
 
 namespace PythonBinding.Tests.Utils
 {
@@ -25,6 +28,7 @@ namespace PythonBinding.Tests.Utils
 	{
 		FormsDesignerViewContent viewContent;
 		IComponent mergeChangesRootComponent;
+		IResourceService mergeChangesResourceService;
 		
 		public MockDesignerGenerator()
 		{
@@ -48,7 +52,7 @@ namespace PythonBinding.Tests.Utils
 			this.viewContent = null;
 		}
 		
-		public System.Collections.Generic.IEnumerable<ICSharpCode.SharpDevelop.OpenedFile> GetSourceFiles(out ICSharpCode.SharpDevelop.OpenedFile designerCodeFile)
+		public IEnumerable<OpenedFile> GetSourceFiles(out OpenedFile designerCodeFile)
 		{
 			designerCodeFile = this.viewContent.DesignerCodeFile;
 			return new [] {designerCodeFile};
@@ -58,13 +62,18 @@ namespace PythonBinding.Tests.Utils
 		{
 		}
 		
-		public void MergeRootComponentChanges(IComponent component)
+		public void MergeRootComponentChanges(IComponent component, IResourceService resourceService)
 		{
 			mergeChangesRootComponent = component;
+			mergeChangesResourceService = resourceService;
 		}
 		
 		public IComponent MergeChangesRootComponent { 
 			get { return mergeChangesRootComponent; } 
+		}
+		
+		public IResourceService MergeChangesResourceService {
+			get { return mergeChangesResourceService; }
 		}
 		
 		public bool InsertComponentEvent(IComponent component, System.ComponentModel.EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
