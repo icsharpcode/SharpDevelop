@@ -79,6 +79,9 @@
 					          type="Builder"
 							   class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoBuilder" />
 				</MenuItem>
+				<MenuItem id="EditGridColumnsAndRows"
+						   class="ICSharpCode.XamlBinding.PowerToys.Commands.EditGridColumnsAndRowsCommand"
+						   label="${res:AddIns.XamlBinding.Menu.EditGridColumnsAndRows}" />
 			</MenuItem>
 		</ComplexCondition>
 	</Path>

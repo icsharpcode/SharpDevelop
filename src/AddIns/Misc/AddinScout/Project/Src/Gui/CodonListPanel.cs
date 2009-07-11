@@ -16,7 +16,7 @@ namespace AddInScout
 	public class CodonListPanel : Panel
 	{
 		ListView CodonLV   = new ListView();    // show codin details
-		Label ExtLabel     = new Label();	    // show extension name
+		TextBox ExtTextBox     = new TextBox();	    // show extension name
 		AddIn currentAddIn = null;
 		
 		public AddIn CurrentAddIn {
@@ -43,15 +43,16 @@ namespace AddInScout
 			CodonLV.Columns.Add("Codon Class", 400,HorizontalAlignment.Left);
 			CodonLV.Columns.Add("Codon Condition -> Action on Fail", 600,HorizontalAlignment.Left);
 			
-			
-			ExtLabel.Text = "Extension : ";
-			ExtLabel.Dock = DockStyle.Top;
-			ExtLabel.FlatStyle = FlatStyle.Flat;
-			ExtLabel.TextAlign = ContentAlignment.MiddleLeft;
-			ExtLabel.BorderStyle = BorderStyle.FixedSingle;
+			ExtTextBox.Text = "Extension : ";
+			ExtTextBox.ReadOnly = true;
+			ExtTextBox.BackColor = SystemColors.Control;
+			ExtTextBox.Dock = DockStyle.Top;
+			//ExtLabel.FlatStyle = FlatStyle.Flat;
+			//ExtLabel.TextAlign = ContentAlignment.MiddleLeft;
+			ExtTextBox.BorderStyle = BorderStyle.FixedSingle;
 			
 			Controls.Add(CodonLV);
-			Controls.Add(ExtLabel);
+			Controls.Add(ExtTextBox);
 		}
 		
 		
@@ -70,7 +71,7 @@ namespace AddInScout
 		
 		public void ClearList()
 		{
-			ExtLabel.Text = "Extension : ";
+			ExtTextBox.Text = "Extension : ";
 			CodonLV.Items.Clear();
 		}
 		
@@ -78,11 +79,11 @@ namespace AddInScout
 		{
 			CodonLV.Items.Clear();
 			if (path == null) {
-				ExtLabel.Text = "Extension : ";
+				ExtTextBox.Text = "Extension : ";
 				return;
 			}
 			
-			ExtLabel.Text = "Extension : " + path;
+			ExtTextBox.Text = "Extension : " + path;
 			
 			AddInTreeNode node = AddInTree.GetTreeNode(path, false);
 			if (node == null) return;
@@ -104,7 +105,7 @@ namespace AddInScout
 		{
 			CodonLV.Items.Clear();
 			if (ext == null) {
-				ExtLabel.Text = "Extension : ";
+				ExtTextBox.Text = "Extension : ";
 				return;
 			}
 			ListCodons(ext.Name);

@@ -43,15 +43,15 @@ namespace ICSharpCode.XamlBinding
 			
 			TextView textView;
 			
-			public HighlightTask(string fileContent, string fileName, DocumentLine line, TextView textView)
+			public HighlightTask(string fileContent, string fileName, DocumentLine currentLine, TextView textView)
 			{
 				this.FileContent = fileContent;
 				this.FileName = fileName;
-				this.LineText = line.Text;
-				this.LineNumber = line.LineNumber;
-				this.Offset = line.Offset;
 				this.task = new System.Threading.Tasks.Task(Process);
 				this.textView = textView;
+				this.LineNumber = currentLine.LineNumber;
+				this.LineText = currentLine.Text;
+				this.Offset = currentLine.Offset;
 			}
 			
 			IList<Highlight> results;
@@ -69,12 +69,6 @@ namespace ICSharpCode.XamlBinding
 				task.Start();
 			}
 			
-			public void Cancel()
-			{
-				if (task != null)
-					task.Cancel();
-			}
-			
 			public bool CompletedSuccessfully {
 				get {
 					return task.IsCompleted && task.Status == Tasks.TaskStatus.RanToCompletion;
@@ -87,11 +81,6 @@ namespace ICSharpCode.XamlBinding
 				
 				foreach (HighlightingInfo info in GetInfo()) {
 					IMember member = null;
-					
-					if (task.IsCancellationRequested) {
-						task.AcknowledgeCancellation();
-						return;
-					}
 					
 					if (!info.Token.StartsWith("xmlns")) {
 						MemberResolveResult rr = new XamlResolver().Resolve(info.GetExpressionResult(), info.Context.ParseInformation, FileContent) as MemberResolveResult;
@@ -135,6 +124,7 @@ namespace ICSharpCode.XamlBinding
 		XamlColorizerSettings settings = defaultSettings;
 		string fileContent;
 		string fileName;
+		IDocument document;
 		
 		Dictionary<DocumentLine, HighlightTask> highlightCache = new Dictionary<DocumentLine, HighlightTask>();
 		
@@ -146,16 +136,20 @@ namespace ICSharpCode.XamlBinding
 		{
 			this.Content = content;
 			this.TextView = textView;
+			
+			IFileDocumentProvider documentProvider = this.Content as IFileDocumentProvider;
+			
+			if (documentProvider == null)
+				throw new InvalidOperationException("XamlColorizer only works with ITextEditor view contents");
+			
+			this.document = documentProvider.GetDocumentForFile(this.Content.PrimaryFile);
+			
+			WeakLineTracker.Register(this.document.GetService(typeof(TextDocument)) as TextDocument, this);
 		}
 		
 		protected override void Colorize(ITextRunConstructionContext context)
 		{
-			IFileDocumentProvider document = this.Content as IFileDocumentProvider;
-			
-			if (document == null)
-				return;
-			
-			this.fileContent = document.GetDocumentForFile(this.Content.PrimaryFile).CreateSnapshot().Text;
+			this.fileContent = this.document.CreateSnapshot().Text;
 			this.fileName = this.Content.PrimaryFileName;
 			
 			base.Colorize(context);
@@ -173,11 +167,6 @@ namespace ICSharpCode.XamlBinding
 					foreach (var result in task.GetResults()) {
 						ColorizeMember(result.Info, line, result.Member);
 					}
-				} else {
-					task.Cancel();
-					task = new HighlightTask(this.fileContent, this.fileName, line, this.TextView);
-					task.Start();
-					highlightCache[line] = task;
 				}
 			}
 		}
@@ -222,13 +211,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public void SetLineLength(DocumentLine line, int newTotalLength)
 		{
-/*			if (highlightCache.ContainsKey(line)) {
-				HighlightTask task = highlightCache[line];
-				task.Cancel();
-				task = new HighlightTask(this.fileContent, this.fileName, line, this.TextView);
-				task.Start();
-				highlightCache[line] = task;
-			}*/
+			highlightCache.Remove(line);
 		}
 		
 		public void LineInserted(DocumentLine insertionPos, DocumentLine newLine)
@@ -237,6 +220,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public void RebuildDocument()
 		{
+			highlightCache.Clear();
 		}
 		
 		public struct HighlightingInfo

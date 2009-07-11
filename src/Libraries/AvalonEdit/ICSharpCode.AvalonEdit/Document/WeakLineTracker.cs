@@ -9,7 +9,7 @@ using System;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
-	sealed class WeakLineTracker : ILineTracker
+	public sealed class WeakLineTracker : ILineTracker
 	{
 		TextDocument textDocument;
 		WeakReference targetObject;

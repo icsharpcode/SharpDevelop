@@ -5,14 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory;
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
 
@@ -48,7 +50,7 @@ namespace ICSharpCode.XamlBinding
 			if (index < 0 || index > str.Length)
 				throw new ArgumentOutOfRangeException("index", index, "Value must be between 0 and " + str.Length);
 			if (length < 0 || length > str.Length)
-				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + str.Length);			
+				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + str.Length);
 			if ((index + length) > str.Length)
 				throw new ArgumentOutOfRangeException("index + length", index + length, "Value must be between 0 and " + str.Length);
 			
@@ -63,6 +65,34 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return false;
+		}
+		
+		public static string GetWordBeforeCaretExtended(this ITextEditor editor)
+		{
+			IDocumentLine line = editor.Document.GetLine(editor.Caret.Line);
+			int index = Math.Min(editor.Caret.Column, line.Text.Length);
+			string text = line.Text.Substring(0, index);
+			int startIndex = text.LastIndexOfAny(' ', '\t', '"', '<', '\'', '>');
+			if (startIndex > -1)
+				return text.Substring(startIndex + 1);
+			
+			return string.Empty;
+		}
+		
+		public static string GetWordBeforeIndex(this string thisValue, int index)
+		{
+			string text = thisValue.Substring(0, index);
+			
+			int startIndex = text.LastIndexOfAny(' ', '\t', '"', '<', '\'', '>');
+			if (startIndex > -1)
+				return text.Substring(startIndex + 1);
+			
+			return string.Empty;
+		}
+		
+		public static int LastIndexOfAny(this string thisValue, params char[] anyOf)
+		{
+			return thisValue.LastIndexOfAny(anyOf);
 		}
 		
 		public static string GetWordBeforeOffset(this string text, int startIndex)
@@ -162,7 +192,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (c == null)
 				throw new ArgumentNullException("c");
-			return c.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.IList"); 
+			return c.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.IList");
 		}
 		
 		public static bool IsListReturnType(this IReturnType type)

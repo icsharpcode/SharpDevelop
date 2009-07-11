@@ -293,6 +293,10 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Debugger.Core\Project\Debugger.Core.csproj">
       <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>
       <Name>Debugger.Core</Name>

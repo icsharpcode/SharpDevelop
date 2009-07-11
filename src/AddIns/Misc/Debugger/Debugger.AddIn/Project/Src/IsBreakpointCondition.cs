@@ -5,13 +5,17 @@
 //     <version>$Revision: 2039 $</version>
 // </file>
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
+
 using Debugger.AddIn.Service;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace Debugger.AddIn
@@ -26,15 +30,15 @@ namespace Debugger.AddIn
 		{
 			if (WorkbenchSingleton.Workbench == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null)
 				return false;
-			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorProvider;
 			if (provider == null)
 				return false;
-			if (string.IsNullOrEmpty(provider.TextEditorControl.FileName))
+			if (string.IsNullOrEmpty(provider.TextEditor.FileName))
 				return false;
 			
 			foreach (BreakpointBookmark mark in DebuggerService.Breakpoints) {
-				if ((mark.FileName == provider.TextEditorControl.FileName) &&
-				    (mark.LineNumber == provider.TextEditorControl.ActiveTextAreaControl.Caret.Line))
+				if ((mark.FileName == provider.TextEditor.FileName) &&
+				    (mark.LineNumber == provider.TextEditor.Caret.Line))
 					return true;
 			}
 			
@@ -52,17 +56,17 @@ namespace Debugger.AddIn
 		{
 			if (WorkbenchSingleton.Workbench == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null)
 				return false;
-			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorProvider;
 			if (provider == null)
 				return false;
-			if (string.IsNullOrEmpty(provider.TextEditorControl.FileName))
+			if (string.IsNullOrEmpty(provider.TextEditor.FileName))
 				return false;
 			
 			BreakpointBookmark point = null;
 			
 			foreach (BreakpointBookmark breakpoint in DebuggerService.Breakpoints) {
-				if ((breakpoint.FileName == provider.TextEditorControl.FileName) &&
-				    (breakpoint.LineNumber == provider.TextEditorControl.ActiveTextAreaControl.Caret.Line)) {
+				if ((breakpoint.FileName == provider.TextEditor.FileName) &&
+				    (breakpoint.LineNumber == provider.TextEditor.Caret.Line)) {
 					point = breakpoint;
 					break;
 				}
@@ -80,13 +84,13 @@ namespace Debugger.AddIn
 	{
 		public override void Run()
 		{
-			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorProvider;
 			
 			BreakpointBookmark point = null;
 			
 			foreach (BreakpointBookmark breakpoint in DebuggerService.Breakpoints) {
-				if ((breakpoint.FileName == provider.TextEditorControl.FileName) &&
-				    (breakpoint.LineNumber == provider.TextEditorControl.ActiveTextAreaControl.Caret.Line)) {
+				if ((breakpoint.FileName == provider.TextEditor.FileName) &&
+				    (breakpoint.LineNumber == provider.TextEditor.Caret.Line)) {
 					point = breakpoint;
 					break;
 				}
@@ -102,13 +106,13 @@ namespace Debugger.AddIn
 	{
 		public override void Run()
 		{
-			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorProvider;
 			
 			BreakpointBookmark point = null;
 			
 			foreach (BreakpointBookmark breakpoint in DebuggerService.Breakpoints) {
-				if ((breakpoint.FileName == provider.TextEditorControl.FileName) &&
-				    (breakpoint.LineNumber == provider.TextEditorControl.ActiveTextAreaControl.Caret.Line)) {
+				if ((breakpoint.FileName == provider.TextEditor.FileName) &&
+				    (breakpoint.LineNumber == provider.TextEditor.Caret.Line)) {
 					point = breakpoint;
 					break;
 				}
@@ -120,19 +124,19 @@ namespace Debugger.AddIn
 		}
 	}
 	
-	public class BreakpointChangeMenuBuilder : ISubmenuBuilder
+	public class BreakpointChangeMenuBuilder : ISubmenuBuilder, IMenuItemBuilder
 	{
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
 			List<ToolStripItem> items = new List<ToolStripItem>();
 			
-			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorProvider;
 			
 			BreakpointBookmark point = null;
 			
 			foreach (BreakpointBookmark breakpoint in DebuggerService.Breakpoints) {
-				if ((breakpoint.FileName == provider.TextEditorControl.FileName) &&
-				    (breakpoint.LineNumber == provider.TextEditorControl.ActiveTextAreaControl.Caret.Line)) {
+				if ((breakpoint.FileName == provider.TextEditor.FileName) &&
+				    (breakpoint.LineNumber == provider.TextEditor.Caret.Line)) {
 					point = breakpoint;
 					break;
 				}
@@ -145,6 +149,11 @@ namespace Debugger.AddIn
 			}
 			
 			return items.ToArray();
+		}
+		
+		public ICollection BuildItems(Codon codon, object owner)
+		{
+			return BuildSubmenu(codon, owner).TranslateToWpf();
 		}
 		
 		void HandleItem(object sender)

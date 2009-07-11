@@ -8,7 +8,8 @@
 using Debugger;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
@@ -16,11 +17,15 @@ namespace ICSharpCode.SharpDevelop.Services
 	{
 		public override void Run()
 		{
-			SharpDevelopTextAreaControl textEditor = this.Owner as SharpDevelopTextAreaControl;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 			WindowsDebugger winDebugger = DebuggerService.CurrentDebugger as WindowsDebugger;
-			if (textEditor == null || winDebugger == null) return;
 			
-			Breakpoint breakpoint = winDebugger.DebuggerCore.AddBreakpoint(textEditor.FileName, null, textEditor.ActiveTextAreaControl.Caret.Line + 1, textEditor.ActiveTextAreaControl.Caret.Column, true);
+			if (provider == null || winDebugger == null)
+				return;
+			
+			ITextEditor textEditor = provider.TextEditor;
+			
+			Breakpoint breakpoint = winDebugger.DebuggerCore.AddBreakpoint(textEditor.FileName, null, textEditor.Caret.Line, textEditor.Caret.Column, true);
 			breakpoint.Hit += delegate { breakpoint.Remove(); };
 			winDebugger.DebuggedProcess.Paused += delegate { breakpoint.Remove(); };
 			if (!winDebugger.IsProcessRunning) {

@@ -80,11 +80,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Options\XamlBindingOptions.cs" />
+    <Compile Include="PowerToys\Commands\EditGridColumnsAndRowsCommand.cs" />
     <Compile Include="PowerToys\Commands\ExtractPropertiesAsStyleCommand.cs" />
     <Compile Include="PowerToys\Commands\GroupIntoRefactorings.cs" />
     <Compile Include="PowerToys\Commands\PropertyEntry.cs" />
     <Compile Include="PowerToys\Commands\RemoveMarginCommand.cs" />
     <Compile Include="PowerToys\Commands\RemoveUnnecessaryAttributesCommand.cs" />
+    <Compile Include="PowerToys\Dialogs\EditGridColumnsAndRowsDialog.xaml.cs">
+      <DependentUpon>EditGridColumnsAndRowsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml.cs">
       <DependentUpon>ExtractPropertiesAsStyleDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -163,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Options\CodeCompletion.xaml" />
+    <Page Include="PowerToys\Dialogs\EditGridColumnsAndRowsDialog.xaml" />
     <Page Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml" />
   </ItemGroup>
 </Project>
