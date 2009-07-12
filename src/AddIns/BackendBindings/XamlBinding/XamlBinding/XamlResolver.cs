@@ -165,7 +165,10 @@ namespace ICSharpCode.XamlBinding
 			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
 			IReturnType resolvedType = XamlCompilationUnit.FindType(pc, xmlNamespace, className);
 			if (resolvedType != null && resolvedType.GetUnderlyingClass() != null) {
-				return ResolvePropertyName(resolvedType, propertyName, allowAttached);
+				var result = ResolvePropertyName(resolvedType, propertyName, allowAttached);
+				if (result == null && CompletionDataHelper.XamlNamespaceAttributes.Contains(propertyName))
+					return new MemberResolveResult(null, null, new DefaultProperty(null, propertyName));
+				return result;
 			}
 			return null;
 		}
@@ -176,6 +179,8 @@ namespace ICSharpCode.XamlBinding
 			if (member == null) {
 				member = resolvedType.GetEvents().Find(delegate(IEvent p) { return p.Name == propertyName; });
 			}
+//			if (!allowAttached)
+//				Debug.Assert(member != null);
 			if (member == null && allowAttached) {
 				IMethod method = resolvedType.GetMethods().Find(
 					delegate(IMethod p) {

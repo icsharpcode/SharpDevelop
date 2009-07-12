@@ -35,11 +35,11 @@ namespace ICSharpCode.XamlBinding
 			new SpecialCompletionItem("xmlns:")
 		};
 		
-		static readonly List<string> xamlNamespaceAttributes = new List<string> {
+		public static readonly List<string> XamlNamespaceAttributes = new List<string> {
 			"Class", "ClassModifier", "FieldModifier", "Name", "Subclass", "TypeArguments", "Uid", "Key"
 		};
 		
-		static readonly List<string> rootOnlyElements = new List<string> {
+		public static readonly List<string> RootOnlyElements = new List<string> {
 			"Class", "ClassModifier", "Subclass"
 		};
 		
@@ -160,7 +160,7 @@ namespace ICSharpCode.XamlBinding
 				list.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, "Uid"));
 				return list;
 			} else {
-				foreach (string item in xamlNamespaceAttributes.Where(item => AllowedInElement(context.InRoot, item))) {
+				foreach (string item in XamlNamespaceAttributes.Where(item => AllowedInElement(context.InRoot, item))) {
 					if (!existingItems.Contains(xamlPrefix + ":" + item)) {
 						list.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, item));
 					}
@@ -194,7 +194,7 @@ namespace ICSharpCode.XamlBinding
 		
 		static bool AllowedInElement(bool inRoot, string item)
 		{
-			return inRoot || !rootOnlyElements.Contains(item);
+			return inRoot || !RootOnlyElements.Contains(item);
 		}
 		
 		public static IEnumerable<ICompletionItem> CreateListForXmlnsCompletion(IProjectContent projectContent)

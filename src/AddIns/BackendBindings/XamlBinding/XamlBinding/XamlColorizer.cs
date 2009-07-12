@@ -107,12 +107,25 @@ namespace ICSharpCode.XamlBinding
 				List<HighlightingInfo> infos = new List<HighlightingInfo>();
 				
 				do {
-					index = LineText.IndexOf('=', index + 1);
+					if (index + 1 >= LineText.Length)
+						break;
+
+					index = LineText.IndexOfAny(index + 1, '=', '.');
 					if (index > -1) {
-						context = CompletionDataHelper.ResolveContext(FileContent, FileName, LineNumber, index + 1);
-						if (!string.IsNullOrEmpty(context.AttributeName)) {
-							int startIndex = LineText.Substring(0, index).LastIndexOf(context.AttributeName);
-							infos.Add(new HighlightingInfo(context.AttributeName, startIndex, startIndex + context.AttributeName.Length, Offset, context));
+						context = CompletionDataHelper.ResolveContext(FileContent, FileName, LineNumber, index - 1);
+						string elementName = context.ActiveElement.Name;
+						int propertyNameIndex = elementName.IndexOf('.');
+						string attribute = context.AttributeName;
+						if (string.IsNullOrEmpty(attribute) && elementName.Contains(".")) {
+							attribute = elementName;
+							index += attribute.Substring(propertyNameIndex).Length;
+						}
+						if (context.Description != XamlContextDescription.InComment && !string.IsNullOrEmpty(attribute)) {
+							int startIndex = LineText.Substring(0, index).LastIndexOf(attribute);
+							if (propertyNameIndex > -1)
+								infos.Add(new HighlightingInfo(attribute.TrimStart('/'), startIndex + propertyNameIndex + 1, startIndex + attribute.Length, Offset, context));
+							else
+								infos.Add(new HighlightingInfo(attribute, startIndex, startIndex + attribute.Length, Offset, context));
 						}
 					}
 				} while (index > -1);

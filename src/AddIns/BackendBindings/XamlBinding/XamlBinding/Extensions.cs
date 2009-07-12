@@ -95,6 +95,11 @@ namespace ICSharpCode.XamlBinding
 			return thisValue.LastIndexOfAny(anyOf);
 		}
 		
+		public static int IndexOfAny(this string thisValue, int startIndex, params char[] anyOf)
+		{
+			return thisValue.IndexOfAny(anyOf, startIndex);
+		}
+		
 		public static string GetWordBeforeOffset(this string text, int startIndex)
 		{
 			if (string.IsNullOrEmpty(text))
@@ -120,10 +125,10 @@ namespace ICSharpCode.XamlBinding
 			
 			int offset = startIndex = Math.Max(startIndex, 0);
 			
-			while (offset < text.Length && char.IsWhiteSpace(text[offset]))
+			while (offset < text.Length && (char.IsWhiteSpace(text[offset]) || Extensions.Is(text[offset], '>', '<')))
 				offset++;
 			
-			while (offset < text.Length && !char.IsWhiteSpace(text[offset]))
+			while (offset < text.Length && !(char.IsWhiteSpace(text[offset]) || Extensions.Is(text[offset], '>', '<')))
 				offset++;
 			
 			offset = Math.Min(offset, text.Length - 1);
