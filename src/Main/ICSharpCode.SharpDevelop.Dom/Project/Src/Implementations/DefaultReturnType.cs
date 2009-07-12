@@ -67,26 +67,33 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return c;
 		}
 		
-		bool getMembersBusy;
+		// Required to prevent stack overflow when calling GetMethods() on a class with cyclic inheritance
+		// replaces old 'getMembersBusy' flag which wasn't thread-safe
+		[ThreadStatic] static BusyManager _busyManager;
+		
+		static BusyManager busyManager {
+			get { return _busyManager ?? (_busyManager = new BusyManager()); }
+		}
 		
 		public override List<IMethod> GetMethods()
 		{
-			if (getMembersBusy) return new List<IMethod>();
-			getMembersBusy = true;
 			List<IMethod> l = new List<IMethod>();
-			l.AddRange(c.Methods);
-			if (c.ClassType == ClassType.Interface) {
-				if (c.BaseTypes.Count == 0) {
-					AddMethodsFromBaseType(l, c.ProjectContent.SystemTypes.Object);
-				} else {
-					foreach (IReturnType baseType in c.BaseTypes) {
-						AddMethodsFromBaseType(l, baseType);
+			using (var busyLock = busyManager.Enter(this)) {
+				if (busyLock.Success) {
+					l.AddRange(c.Methods);
+					if (c.ClassType == ClassType.Interface) {
+						if (c.BaseTypes.Count == 0) {
+							AddMethodsFromBaseType(l, c.ProjectContent.SystemTypes.Object);
+						} else {
+							foreach (IReturnType baseType in c.BaseTypes) {
+								AddMethodsFromBaseType(l, baseType);
+							}
+						}
+					} else {
+						AddMethodsFromBaseType(l, c.BaseType);
 					}
 				}
-			} else {
-				AddMethodsFromBaseType(l, c.BaseType);
 			}
-			getMembersBusy = false;
 			return l;
 		}
 		
@@ -120,18 +127,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IProperty> GetProperties()
 		{
-			if (getMembersBusy) return new List<IProperty>();
-			getMembersBusy = true;
 			List<IProperty> l = new List<IProperty>();
-			l.AddRange(c.Properties);
-			if (c.ClassType == ClassType.Interface) {
-				foreach (IReturnType baseType in c.BaseTypes) {
-					AddPropertiesFromBaseType(l, baseType);
+			using (var busyLock = busyManager.Enter(this)) {
+				if (busyLock.Success) {
+					l.AddRange(c.Properties);
+					if (c.ClassType == ClassType.Interface) {
+						foreach (IReturnType baseType in c.BaseTypes) {
+							AddPropertiesFromBaseType(l, baseType);
+						}
+					} else {
+						AddPropertiesFromBaseType(l, c.BaseType);
+					}
 				}
-			} else {
-				AddPropertiesFromBaseType(l, c.BaseType);
 			}
-			getMembersBusy = false;
 			return l;
 		}
 		
@@ -162,41 +170,43 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IField> GetFields()
 		{
-			if (getMembersBusy) return new List<IField>();
-			getMembersBusy = true;
 			List<IField> l = new List<IField>();
-			l.AddRange(c.Fields);
-			if (c.ClassType == ClassType.Interface) {
-				foreach (IReturnType baseType in c.BaseTypes) {
-					l.AddRange(baseType.GetFields());
-				}
-			} else {
-				IReturnType baseType = c.BaseType;
-				if (baseType != null) {
-					l.AddRange(baseType.GetFields());
+			using (var busyLock = busyManager.Enter(this)) {
+				if (busyLock.Success) {
+					l.AddRange(c.Fields);
+					if (c.ClassType == ClassType.Interface) {
+						foreach (IReturnType baseType in c.BaseTypes) {
+							l.AddRange(baseType.GetFields());
+						}
+					} else {
+						IReturnType baseType = c.BaseType;
+						if (baseType != null) {
+							l.AddRange(baseType.GetFields());
+						}
+					}
 				}
 			}
-			getMembersBusy = false;
 			return l;
 		}
 		
 		public override List<IEvent> GetEvents()
 		{
-			if (getMembersBusy) return new List<IEvent>();
-			getMembersBusy = true;
 			List<IEvent> l = new List<IEvent>();
-			l.AddRange(c.Events);
-			if (c.ClassType == ClassType.Interface) {
-				foreach (IReturnType baseType in c.BaseTypes) {
-					l.AddRange(baseType.GetEvents());
-				}
-			} else {
-				IReturnType baseType = c.BaseType;
-				if (baseType != null) {
-					l.AddRange(baseType.GetEvents());
+			using (var busyLock = busyManager.Enter(this)) {
+				if (busyLock.Success) {
+					l.AddRange(c.Events);
+					if (c.ClassType == ClassType.Interface) {
+						foreach (IReturnType baseType in c.BaseTypes) {
+							l.AddRange(baseType.GetEvents());
+						}
+					} else {
+						IReturnType baseType = c.BaseType;
+						if (baseType != null) {
+							l.AddRange(baseType.GetEvents());
+						}
+					}
 				}
 			}
-			getMembersBusy = false;
 			return l;
 		}
 		
