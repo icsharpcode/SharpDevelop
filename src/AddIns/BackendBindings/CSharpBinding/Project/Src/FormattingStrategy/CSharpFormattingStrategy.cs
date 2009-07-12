@@ -5,15 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Text;
+
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.FormattingStrategy
 {
@@ -542,6 +545,11 @@ namespace CSharpBinding.FormattingStrategy
 			return (inString || inChar) ? 2 : 0;
 		}
 		#endregion
+		
+		public override void SurroundSelectionWithComment(ITextEditor editor)
+		{
+			SurroundSelectionWithSingleLineComment(editor, "//");
+		}
 		
 		/*
 		#region SearchBracketBackward

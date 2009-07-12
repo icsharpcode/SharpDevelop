@@ -90,6 +90,8 @@
     <Compile Include="Src\Editor\CodeCompletion\OverrideCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\TemplateCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\TextCompletionItemProvider.cs" />
+    <Compile Include="Src\Editor\Commands\CommentRegion.cs" />
+    <Compile Include="Src\Editor\Commands\IndentSelection.cs" />
     <Compile Include="Src\Editor\DocumentUtilitites.cs" />
     <Compile Include="Src\Editor\IDocument.cs" />
     <Compile Include="Src\Editor\IDocumentLine.cs" />
@@ -816,6 +818,7 @@
     </ProjectReference>
     <Folder Include="Src\Editor\AvalonEdit" />
     <Folder Include="Src\Editor\CodeCompletion" />
+    <Folder Include="Src\Editor\Commands" />
     <Folder Include="Src\Editor\Search" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">

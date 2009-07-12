@@ -25,52 +25,54 @@
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
 		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
 			<MenuItem id = "RemoveLeadingWs"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.RemoveLeadingWhitespace"/>
 			<MenuItem id = "RemoveTrailingWs"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.RemoveTrailingWhitespace"/>
-			<MenuItem id = "Seperator1" type = "Separator" />
+			<MenuItem id = "Seperator1" type = "Separator" insertbefore = "Separator4" />
 			<MenuItem id = "UpperCase"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}"
 			          icon = "Icons.16x16.LowerToUpperCase"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertToUppercase"/>
 			<MenuItem id = "LowerCase"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}"
 			          icon = "Icons.16x16.UpperToLowerCase"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertToLowercase"/>
 			<MenuItem id = "Capitalize"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertToTitleCase"/>
 			<MenuItem id = "InvertCase"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.InvertCase"/>
 			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "SortSelection"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}"
 			          class ="ICSharpCode.SharpDevelop.Editor.Commands.SortSelection"/>
-			<MenuItem id = "Separator3" type = "Separator" />
+			<MenuItem id = "Separator3" type = "Separator" insertbefore = "Separator4" />
 			<MenuItem id = "Tabs2Spaces"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertTabsToSpaces"/>
 			<MenuItem id = "Spaces2Tabs"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertSpacesToTabs"/>
 			<MenuItem id = "LeadingTabs2Spaces"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertLeadingTabsToSpaces"/>
 			<MenuItem id = "LeadingSpaces2Tabs"
+			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertLeadingSpacesToTabs"/>
-			<MenuItem id = "Separator4" type = "Separator" />
-			<MenuItem id = "Comment"
-			          icon = "Icons.16x16.CommentRegion"
-			          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
-			          class = "ICSharpCode.SharpDevelop.Editor.Commands.CommentRegion"/>
-			<MenuItem id = "Indent"
-			          label = "${res:XML.TextAreaContextMenu.Indent}"
-			          shortcut = "Control|I"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.IndentSelection"/>
 		</Condition>
 	</Path>
 </AddIn>

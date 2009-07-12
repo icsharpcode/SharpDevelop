@@ -1236,7 +1236,7 @@
 				          class = "ICSharpCode.SharpDevelop.Commands.ClearRecentProjects" />
 			</MenuItem>
 			
-			<MenuItem id = "ExitSC:eparator" type = "Separator"  />
+			<MenuItem id = "ExitSeparator" type = "Separator"  />
 			<MenuItem id = "Exit"
 			          label = "${res:XML.MainMenu.FileMenu.Exit}"
 			          icon = "Icons.16x16.CancelIcon"
@@ -1777,21 +1777,20 @@
 		          label = "${res:XML.MainMenu.FileMenu.Close}"
 		          icon  = "Icons.16x16.CloseFileIcon"
 		          class ="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
+		<MenuItem id = "Separator2" type = "Separator" />
+		<MenuItem id = "Comment"
+		          icon  = "Icons.16x16.CommentRegion"
+		          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
+		          class = "ICSharpCode.SharpDevelop.Editor.Commands.CommentRegion"/>
+		<MenuItem id = "Indent"
+		          label = "${res:XML.TextAreaContextMenu.Indent}"
+		          shortcut = "Control|I"
+		          class = "ICSharpCode.SharpDevelop.Editor.Commands.IndentSelection" />
 	</Path>
 	
 	<!-- DefaultTextEditor=old editor. TODO: remove this -->
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
 		<Include id="DefaultEditor" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu"/>
-		<MenuItem id = "Separator2" type = "Separator" />
-		<MenuItem id = "Comment"
-		          icon  = "Icons.16x16.CommentRegion"
-		          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
-		          class= "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
-		<MenuItem id = "Indent"
-		          label = "${res:XML.TextAreaContextMenu.Indent}"
-		          shortcut = "Control|I"
-		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
-		
 		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}"  type="Menu">
 			<MenuItem id = "HighlightBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder" />
 		</MenuItem>
@@ -1809,11 +1808,11 @@
 	
 	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
 		<ToolbarItem id = "SearchSeparator" type = "Separator"/>
-		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.ITextEditorProvider" action="Disable">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
 			<ToolbarItem id = "Comment"
 			             icon = "Icons.16x16.CommentRegion"
 			             tooltip = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
-			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
+			             class = "ICSharpCode.SharpDevelop.Editor.Commands.CommentRegion"/>
 			<!--				<ToolbarItem id = "Uncomment"
 				             icon = "Icons.16x16.UnCommentRegion"
 				             tooltip = "${res:XML.TextAreaContextMenu.UncommentSelection}"
@@ -1842,6 +1841,9 @@
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit">
 		<MenuItem insertafter = "Delete" id = "Separator2" type = "Separator" />
 		<MenuItem id = "Format" label = "${res:XML.MainMenu.EditMenu.FormatMenu}" type="Menu">
+			<MenuItem id = "Separator4" type = "Separator" />
+			<Include id = "Comment" item = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/Comment" />
+			<Include id = "Indent" item = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/Indent" />
 		</MenuItem>
 		<MenuItem id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu">
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
