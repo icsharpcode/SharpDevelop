@@ -683,7 +683,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					string key = configuration + "|" + platform;
 					configurations.Add(key);
 					
-					string searchKey = guid + "." + key + ".Build.0";
+					string searchKey = guid + "." + key + ".ActiveCfg";
 					if (!prjSec.Items.Exists(item => item.Name == searchKey)) {
 						prjSec.Items.Add(new SolutionItem(searchKey, key));
 						changed = true;
@@ -869,7 +869,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (SolutionItem item in prjSec.Items) {
 				dict[item.Name] = item;
 			}
-			string searchKeyPostFix = "." + solutionConfiguration + "|" + solutionPlatform + ".Build.0";
+			string searchKeyPostFix = "." + solutionConfiguration + "|" + solutionPlatform + ".ActiveCfg";
 			foreach (IProject p in Projects) {
 				string searchKey = p.IdGuid + searchKeyPostFix;
 				SolutionItem solutionItem;

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using Microsoft.Build.Construction;
+using System.Collections.Generic;
+using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -13,6 +15,7 @@ namespace ICSharpCode.CppBinding.Project
 			AddImport(DefaultPropsFile, null);
 			AddImport(PropsFile, null);
 			AddImport(DefaultTargetsFile, null);
+			AddProjectConfigurationsItemGroup();
 		}
 		
 		public CppProject(ProjectLoadInformation info) : base(info)
@@ -76,5 +79,19 @@ namespace ICSharpCode.CppBinding.Project
 		public const string DefaultTargetsFile = @"$(VCTargetsPath)\Microsoft.Cpp.Targets";
 		public const string DefaultPropsFile = @"$(VCTargetsPath)\Microsoft.Cpp.Default.props";
 		public const string PropsFile = @"$(VCTargetsPath)\Microsoft.Cpp.props";
+		
+		/// <summary>
+		/// Adds the item group containting the ProjectConfiguration items to a new project.
+		/// </summary>
+		private void AddProjectConfigurationsItemGroup() {
+			ProjectRootElement file = MSBuildProjectFile;
+			ProjectItemGroupElement configItemGroup = file.AddItemGroup();
+			configItemGroup.Label = "ProjectConfigurations";	
+			foreach (string target in new string[] {"Debug|Win32", "Release|Win32"}) {
+				ProjectItemElement prjConfiguration = configItemGroup.AddItem("ProjectConfiguration", target);
+				prjConfiguration.AddMetadata("Configuration", GetConfigurationNameFromKey(target));
+				prjConfiguration.AddMetadata("Platform", GetPlatformNameFromKey(target));
+			}
+		}
 	}
 }
