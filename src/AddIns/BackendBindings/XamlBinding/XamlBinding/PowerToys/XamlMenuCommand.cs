@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.XmlEditor;
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Xaml;
 using System.Xml;
 using System.Xml.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -34,19 +35,29 @@ namespace ICSharpCode.XamlBinding.PowerToys
 				if (provider != null) {
 					TextReader reader = provider.TextEditor.Document.CreateReader();
 					XDocument document = XDocument.Load(reader, LoadOptions.PreserveWhitespace | LoadOptions.SetLineInfo);
-					Refactor(provider.TextEditor, document);
-					StringWriter sWriter = new StringWriter();
-				    XmlTextWriter writer = new XmlTextWriter(sWriter);
-				    writer.Formatting = Formatting.Indented;
-				    document.WriteTo(writer);
-				    writer.Flush();
-					provider.TextEditor.Document.Text = sWriter.ToString();
+					document.Declaration = null;
+					if (Refactor(provider.TextEditor, document)) {
+						StringWriter sWriter = new StringWriter();
+						XmlWriter writer = XmlWriter.Create(sWriter, CreateSettings());
+						document.WriteTo(writer);
+						writer.Flush();
+						provider.TextEditor.Document.Text = sWriter.ToString();
+						XmlView.FormatXml(provider.TextEditor);
+					}
 				}
 			} catch (XmlException e) {
-				MessageService.ShowError(e.Message);
+				MessageService.ShowError(e);
 			}
 		}
 		
-		protected abstract void Refactor(ITextEditor editor, XDocument document);
+		XmlWriterSettings CreateSettings()
+		{
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.Indent = true;
+			settings.OmitXmlDeclaration = true;
+			return settings;
+		}
+		
+		protected abstract bool Refactor(ITextEditor editor, XDocument document);
 	}
 }

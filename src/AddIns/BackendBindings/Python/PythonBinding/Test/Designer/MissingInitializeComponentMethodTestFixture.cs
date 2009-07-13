@@ -10,7 +10,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
+using System.Resources;
 using System.Windows.Forms;
 
 using ICSharpCode.PythonBinding;
@@ -107,5 +109,15 @@ namespace PythonBinding.Tests.Designer
 		{
 			return null;
 		}
+	
+		public IResourceReader GetResourceReader(CultureInfo info)
+		{
+			return null;
+		}
+		
+		public IResourceWriter GetResourceWriter(CultureInfo info)
+		{
+			return null;
+		}		
 	}
 }

@@ -248,7 +248,7 @@
             </xs:attribute>
             <xs:attribute name="Guid" type="Guid">
                 <xs:annotation>
-                    <xs:documentation>This attribute is deprecated.  Use the Package/@Id instead.</xs:documentation>
+                    <xs:documentation>This attribute is deprecated. Use the Package/@Id attribute instead.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Language" type="LocalizableInteger" use="required">
@@ -1144,6 +1144,9 @@
             </xs:attribute>
             <xs:attribute name="Target" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the TargetImage attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="TargetImage" />
                     </xs:appinfo>
@@ -1211,6 +1214,9 @@
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the SourceFile attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="SourceFile" />
                     </xs:appinfo>
@@ -1221,6 +1227,9 @@
             </xs:attribute>
             <xs:attribute name="srcPatch" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the SourcePatch attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="SourcePatch" />
                     </xs:appinfo>
@@ -1245,6 +1254,9 @@
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the SourceFile attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="SourceFile" />
                     </xs:appinfo>
@@ -1335,6 +1347,9 @@
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the Source attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Source" />
                     </xs:appinfo>
@@ -1477,7 +1492,7 @@
                     <xs:documentation>
                         The minimum version of the Windows Installer required to install this package. Take the major version of the required Windows Installer
                         and multiply by a 100 then add the minor version of the Windows Installer. For example, "200" would represent Windows Installer 2.0 and
-                        "405" would represent Windows Installer 4.5.
+                        "405" would represent Windows Installer 4.5. For 64-bit Windows Installer packages, this property must be set to 200 or greater.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -1498,6 +1513,10 @@
             </xs:attribute>
             <xs:attribute name="Platforms" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        The list of platforms supported by the package. This attribute has been deprecated.
+                        Use the Platform attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Platform" />
                     </xs:appinfo>
@@ -1520,6 +1539,7 @@
                             <xs:annotation>
                                 <xs:documentation>
                                     Set this value to declare that the package is an ia64 package.
+                                    This value requires that the InstallerVersion property be set to 200 or greater.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
@@ -1527,20 +1547,21 @@
                             <xs:annotation>
                                 <xs:documentation>
                                     Set this value to declare that the package is an x64 package.
+                                    This value requires that the InstallerVersion property be set to 200 or greater.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
                         <xs:enumeration value="intel">
                             <xs:annotation>
                                 <xs:documentation>
-                                    Deprecated. Use &quot;x86&quot; instead.
+                                    This value has been deprecated. Use &quot;x86&quot; instead.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
                         <xs:enumeration value="intel64">
                             <xs:annotation>
                                 <xs:documentation>
-                                    Deprecated. Use &quot;ia64&quot; instead.
+                                    This value has been deprecated. Use &quot;ia64&quot; instead.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
@@ -1749,6 +1770,9 @@
             </xs:attribute>
             <xs:attribute name="LongName" type="LongFileNameType">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the Name attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Name" />
                     </xs:appinfo>
@@ -1936,6 +1960,9 @@
             </xs:attribute>
             <xs:attribute name="LongName" type="LongFileNameType">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the Name attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Name" />
                     </xs:appinfo>
@@ -2146,6 +2173,9 @@
             </xs:attribute>
             <xs:attribute name="LongName" type="LongFileNameType">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the Name attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Name" />
                     </xs:appinfo>
@@ -2504,6 +2534,9 @@
             </xs:attribute>
             <xs:attribute name="LongName" type="LongFileNameType">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the Name attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Name" />
                     </xs:appinfo>
@@ -2869,6 +2902,9 @@
             </xs:attribute>
             <xs:attribute name="DestinationLongName" type="LongFileNameType">
               <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the DestinationName attribute instead.
+                    </xs:documentation>
                 <xs:appinfo>
                   <xse:deprecated ref="DestinationName" />
                 </xs:appinfo>
@@ -2967,6 +3003,9 @@
             </xs:attribute>
             <xs:attribute name="LongName" type="LongFileNameType">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the Name attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Name" />
                     </xs:appinfo>
@@ -3090,7 +3129,7 @@
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ProcessorArchitecture">
-                <xs:annotation><xs:documentation>Specifies the architecture for this assembly. This attribute should only be used on .NET Framework 2.0 assemblies.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Specifies the architecture for this assembly. This attribute should only be used on .NET Framework 2.0 or higher assemblies.</xs:documentation></xs:annotation>
                 <xs:simpleType>
                     <xs:restriction base="xs:NMTOKEN">
                         <xs:enumeration value="msil">
@@ -3141,6 +3180,9 @@
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the Source attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Source" />
                     </xs:appinfo>
@@ -3552,6 +3594,9 @@
     <xs:element name="Registry">
         <xs:annotation>
             <xs:appinfo>
+                <xs:documentation>
+                    This element has been deprecated. Use the RegistryValue element instead.
+                </xs:documentation>
                 <xse:msiRef table="Registry" href="http://msdn.microsoft.com/library/aa371168.aspx"/>
                 <xse:deprecated ref="RegistryValue" />
             </xs:appinfo>
@@ -3779,6 +3824,9 @@
             </xs:attribute>
             <xs:attribute name="LongName" type="WildCardLongFileNameType">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the Name attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Name" />
                     </xs:appinfo>
@@ -4017,6 +4065,9 @@
             </xs:attribute>
             <xs:attribute name="Target" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the TargetFile attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="TargetFile" />
                     </xs:appinfo>
@@ -5723,6 +5774,11 @@
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Location">
+                <xs:annotation>
+                    <xs:documentation>
+                        Optional value that specifies the location that the component can be run from.
+                    </xs:documentation>
+                </xs:annotation>
                 <xs:simpleType>
                     <xs:restriction base="xs:NMTOKEN">
                         <xs:enumeration value="local">
@@ -5997,6 +6053,9 @@
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the SourceFile attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="SourceFile" />
                     </xs:appinfo>
@@ -6094,6 +6153,9 @@
             </xs:attribute>
             <xs:attribute name="LongName" type="LongFileNameType">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the Name attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Name" />
                     </xs:appinfo>
@@ -6101,6 +6163,9 @@
             </xs:attribute>
             <xs:attribute name="LongSource" type="LongFileNameType">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the SourceName attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="SourceName" />
                     </xs:appinfo>
@@ -6164,6 +6229,9 @@
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the FileSource attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="FileSource" />
                     </xs:appinfo>
@@ -6211,6 +6279,9 @@
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the FileSource attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="FileSource" />
                     </xs:appinfo>
@@ -6713,6 +6784,9 @@
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the Layout attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="Layout" />
                     </xs:appinfo>
@@ -8463,6 +8537,9 @@
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the SourceFile attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="SourceFile" />
                     </xs:appinfo>
@@ -8504,6 +8581,9 @@
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
+                    <xs:documentation>
+                        This attribute has been deprecated. Use the SourceFile attribute instead.
+                    </xs:documentation>
                     <xs:appinfo>
                         <xse:deprecated ref="SourceFile" />
                     </xs:appinfo>
@@ -8888,6 +8968,9 @@
                     </xs:attribute>
                     <xs:attribute name="src" type="xs:string">
                         <xs:annotation>
+                            <xs:documentation>
+                                This attribute has been deprecated. Use the SourceFile attribute instead.
+                            </xs:documentation>
                             <xs:appinfo>
                                 <xse:deprecated ref="SourceFile" />
                             </xs:appinfo>

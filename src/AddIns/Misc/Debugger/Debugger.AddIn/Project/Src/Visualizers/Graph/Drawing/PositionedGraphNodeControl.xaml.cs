@@ -4,7 +4,12 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.AddIn.Visualizers.Utils;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,11 +18,9 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Debugger.AddIn.Visualizers.Graph.Layout;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Windows.Threading;
 using Debugger.AddIn.Visualizers.Common;
+using Debugger.AddIn.Visualizers.Graph.Layout;
 
 namespace Debugger.AddIn.Visualizers.Graph.Drawing
 {
@@ -61,12 +64,68 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 				this.view = getInitialView(this.root);
 				// data virtualization, PropertyNodeViewModel implements IEvaluate
 				this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.view);
+				
+				int maxLen = this.view.MaxOrDefault(contentNode => { return contentNode.Name.Length; }, 0);
+				int spaces = Math.Max((int)(maxLen * 1.5), 0);
+				string addedSpaces = StringHelper.Repeat(' ', spaces);
+				
+				GridView gv = listView.View as GridView;
+				gv.Columns[1].Header = "Name" + addedSpaces;
+				
+				
+				//AutoSizeColumns();
+				
+				/*DispatcherTimer t = new DispatcherTimer();
+				t.Interval = TimeSpan.FromMilliseconds(1000);
+				t.Start();
+				t.Tick += (s, ee) => { AutoSizeColumns(); t.Stop(); };*/
+			}
+		}
+		
+		public void AutoSizeColumns()
+		{
+			//listView.UpdateLayout();
+			//listView.Measure(new Size(800, 800));
+			//double sum = 0;
+			GridView gv = listView.View as GridView;
+			if (gv != null)
+			{
+				foreach (var c in gv.Columns)
+				{
+					//var header = c.Header as GridViewColumnHeader;
+					// Code below was found in GridViewColumnHeader.OnGripperDoubleClicked() event handler (using Reflector)
+					// i.e. it is the same code that is executed when the gripper is double clicked
+					//var uw = c.GetType().GetMethod("UpdateActualWidth", BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic);
+					//uw.Invoke(c, new object[] { });
+					//if (double.IsNaN(c.Width))
+					{
+						c.Width = c.ActualWidth;
+					}
+					c.Width = double.NaN;
+
+					/*var dw = c.GetType().GetProperty("DesiredWidth", BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic);
+					double desired = (double)dw.GetValue(c, null);
+					c.Width = c.ActualWidth;	// ActualWidth is not correct until GridViewRowPresenter gets measured
+					c.Width = double.NaN;
+					sum += c.Width;*/
+				}
 			}
 		}
 		
 		public PositionedGraphNodeControl()
 		{
 			InitializeComponent();
+		}
+		
+		void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			/*var clickedText = (TextBlock)e.Source;
+			var clickedNode = (ContentNode)(clickedText).DataContext;
+			var propNode = clickedNode as ContentPropertyNode;
+			if (propNode != null && propNode.Property != null && propNode.Property.Edge != null && propNode.Property.Edge.Spline != null)
+			{
+				propNode.Property.Edge.Spline.StrokeThickness = propNode.Property.Edge.Spline.StrokeThickness + 1;
+			}*/
 		}
 		
 		private void PropertyExpandButton_Click(object sender, RoutedEventArgs e)
@@ -85,6 +144,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			PositionedNodeProperty property = clickedNode.Property;
 			//property.IsPropertyExpanded = !property.IsPropertyExpanded;  // done by databinding
 			clickedButton.Content = property.IsPropertyExpanded ? "-" : "+";
+			
 			if (property.IsPropertyExpanded)
 			{
 				OnPropertyExpanded(property);
@@ -112,6 +172,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 					this.view.Insert(clickedIndex + i, childNode);
 					i++;
 				}
+				// insertChildren(clickedNode, this.view, clickedIndex); // TODO
 				OnContentNodeExpanded(clickedNode);
 			}
 			else
@@ -124,19 +185,21 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 				}
 				OnContentNodeCollapsed(clickedNode);
 			}
+			
+			//AutoSizeColumns();
 
 			// set to Auto again to resize columns
-			var colName = (this.listView.View as GridView).Columns[0];
+			/*var colName = (this.listView.View as GridView).Columns[0];
 			var colValue = (this.listView.View as GridView).Columns[1];
 			colName.Width = 300;
 			colName.Width = double.NaN;
 			colValue.Width = 300;
 			colValue.Width = double.NaN;
-			//this.view.Insert(0, new NestedNodeViewModel());
+			//this.view.Insert(0, new ContentNode());
 			//this.view.RemoveAt(0);
 			this.listView.UpdateLayout();
 			this.listView.Width = colName.ActualWidth + colValue.ActualWidth + 30;
-			this.listView.Width = double.NaN;
+			this.listView.Width = double.NaN;*/
 		}
 		
 		private ObservableCollection<ContentNode> getInitialView(ContentNode root)

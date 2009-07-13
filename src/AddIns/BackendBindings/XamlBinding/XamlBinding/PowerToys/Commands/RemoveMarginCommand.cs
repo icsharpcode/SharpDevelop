@@ -5,12 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.XmlEditor;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
+using System.Windows;
+using System.Windows.Controls;
 using System.Xml.Linq;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.XamlBinding;
 
@@ -18,9 +23,11 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 {
 	public class RemoveMarginCommand : XamlMenuCommand
 	{
-		protected override void Refactor(ITextEditor editor, XDocument document)
+		protected override bool Refactor(ITextEditor editor, XDocument document)
 		{
+			// TODO : use selection
 			RemoveRecursive(document.Root, "Margin");
+			return true;
 		}
 		
 		protected void RemoveRecursive(XElement element, string name)
@@ -30,24 +37,6 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			
 			foreach (XElement e in element.Elements())
 				RemoveRecursive(e, name);
-		}
-	}
-	
-	public class GroupIntoMenuItem : XamlMenuCommand
-	{
-		protected sealed override void Refactor(ITextEditor editor, XDocument document)
-		{
-			if (editor.SelectionLength == 0) {
-				MessageService.ShowError("The selected XAML is invalid!");
-			}
-		}
-	}
-	
-	public class ExtractPropertiesAsStyleCommand : XamlMenuCommand
-	{
-		protected override void Refactor(ITextEditor editor, XDocument document)
-		{
-			XmlElementPath path = XmlParser.GetParentElementPath(editor.Document.Text.Substring(0, editor.SelectionStart));
 		}
 	}
 }

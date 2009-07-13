@@ -25,8 +25,8 @@
 		          class="ICSharpCode.SharpDevelop.Services.WindowsDebugger"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
-		<Condition name = "IsProcessRunning" isdebugging="True">
+ 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
+		 <Condition name = "IsProcessRunning" isdebugging="True">
 			<Condition name = "IsProcessRunning" isdebugging="True" isprocessrunning="False">
 				<MenuItem id = "DebuggerSetCurrentStatement"
 				          insertbefore = "Refactoring"
@@ -45,7 +45,6 @@
 		</Condition>
 		<MenuItem id="BreakpointSeparator" type = "Separator" />
 		
-		
 		<MenuItem id="ChangeBreakPoint" label="${res:MainWindow.Windows.Debug.Conditional.Breakpoints.Breakpoint}" type="Menu">
 			<Include id="SetBreakpoint" item="/SharpDevelop/Workbench/MainMenu/Debug/Toggle Breakpoint" />
 			<Condition name="IsBreakpointSet">
@@ -53,7 +52,7 @@
 					<MenuItem id="DisableBreakpoint"
 					          class="Debugger.AddIn.DisableBreakpointMenuCommand"
 					          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.DisableBreakpoint}" />
-				</Condition>
+					</Condition>
 				<ComplexCondition>
 					<Not>
 						<Condition name="IsBreakpointActive" />

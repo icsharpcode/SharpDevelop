@@ -4,7 +4,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace CppBinding.Project
+namespace ICSharpCode.CppBinding.Project
 {
 	public class CppProject : CompilableProject
 	{

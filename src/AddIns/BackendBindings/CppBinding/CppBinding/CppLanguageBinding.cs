@@ -1,4 +1,3 @@
-using CppBinding.Project;
 /*
  * Created by SharpDevelop.
  * User: trecio
@@ -7,10 +6,11 @@ using CppBinding.Project;
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
+using ICSharpCode.CppBinding.Project;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace CppBinding
+namespace ICSharpCode.CppBinding
 {
 	/// <summary>
 	/// Description of CppLanguageBinding.

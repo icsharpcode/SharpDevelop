@@ -2,7 +2,7 @@
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace CppBinding.Project
+namespace ICSharpCode.CppBinding.Project
 {
 	public class SpecifyCliRuntimeLibraryCommand : AbstractCommand
 	{

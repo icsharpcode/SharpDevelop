@@ -57,8 +57,10 @@ namespace ICSharpCode.PythonBinding
 		/// <remarks>
 		/// The constructors that are used:
 		/// ListViewItem()
-		/// ListViewItem(String text)
+		/// ListViewItem(string text)
 		/// ListViewItem(string[] subItems)
+		/// ListViewItem(string text, int imageIndex)
+		/// ListViewItem(string text, string imageKey)
 		/// </remarks>
 		object[] GetConstructorParameters(ListViewItem item)
 		{
@@ -69,10 +71,32 @@ namespace ICSharpCode.PythonBinding
 				}
 				return new object[] {subItems};
 			}
+			
+			if (item.ImageIndex != -1) {
+				return GetConstructorParameters(item.Text, item.ImageIndex);
+			}
+			
+			if (!String.IsNullOrEmpty(item.ImageKey)) {
+				return GetConstructorParameters(item.Text, item.ImageKey);
+			}
+			
 			if (String.IsNullOrEmpty(item.Text)) {
 				return new object[0];
 			}
 			return new object[] {item.Text};
+		}
+		
+		/// <summary>
+		/// Creates an object array:
+		/// [0] = text.
+		/// [1] = obj.
+		/// </summary>
+		object[] GetConstructorParameters(string text, object obj)
+		{
+			if (String.IsNullOrEmpty(text)) {
+				text = String.Empty;
+			}
+			return new object[] {text, obj};
 		}
 		
 		static ListView.ListViewItemCollection GetListViewItems(IComponent component)

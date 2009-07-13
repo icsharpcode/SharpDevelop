@@ -24,7 +24,7 @@ namespace ICSharpCode.XamlBinding
 		public XamlColorizerSettings()
 		{
 			this.PropertyBackgroundBrush = Brushes.Transparent;
-			this.PropertyForegroundBrush = Brushes.Red;
+			this.PropertyForegroundBrush = Brushes.CadetBlue;
 			
 			this.EventBackgroundBrush = Brushes.Transparent;
 			this.EventForegroundBrush = Brushes.Green;

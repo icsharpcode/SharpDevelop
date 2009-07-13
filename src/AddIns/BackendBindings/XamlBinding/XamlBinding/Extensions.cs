@@ -5,16 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-
+using System.Xml.Linq;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
-using System.Xml.Linq;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -48,7 +50,7 @@ namespace ICSharpCode.XamlBinding
 			if (index < 0 || index > str.Length)
 				throw new ArgumentOutOfRangeException("index", index, "Value must be between 0 and " + str.Length);
 			if (length < 0 || length > str.Length)
-				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + str.Length);			
+				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + str.Length);
 			if ((index + length) > str.Length)
 				throw new ArgumentOutOfRangeException("index + length", index + length, "Value must be between 0 and " + str.Length);
 			
@@ -63,6 +65,39 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return false;
+		}
+		
+		public static string GetWordBeforeCaretExtended(this ITextEditor editor)
+		{
+			IDocumentLine line = editor.Document.GetLine(editor.Caret.Line);
+			int index = Math.Min(editor.Caret.Column, line.Text.Length);
+			string text = line.Text.Substring(0, index);
+			int startIndex = text.LastIndexOfAny(' ', '\t', '"', '<', '\'', '>');
+			if (startIndex > -1)
+				return text.Substring(startIndex + 1);
+			
+			return string.Empty;
+		}
+		
+		public static string GetWordBeforeIndex(this string thisValue, int index)
+		{
+			string text = thisValue.Substring(0, index);
+			
+			int startIndex = text.LastIndexOfAny(' ', '\t', '"', '<', '\'', '>');
+			if (startIndex > -1)
+				return text.Substring(startIndex + 1);
+			
+			return string.Empty;
+		}
+		
+		public static int LastIndexOfAny(this string thisValue, params char[] anyOf)
+		{
+			return thisValue.LastIndexOfAny(anyOf);
+		}
+		
+		public static int IndexOfAny(this string thisValue, int startIndex, params char[] anyOf)
+		{
+			return thisValue.IndexOfAny(anyOf, startIndex);
 		}
 		
 		public static string GetWordBeforeOffset(this string text, int startIndex)
@@ -90,15 +125,25 @@ namespace ICSharpCode.XamlBinding
 			
 			int offset = startIndex = Math.Max(startIndex, 0);
 			
-			while (offset < text.Length && char.IsWhiteSpace(text[offset]))
+			while (offset < text.Length && (char.IsWhiteSpace(text[offset]) || Extensions.Is(text[offset], '>', '<')))
 				offset++;
 			
-			while (offset < text.Length && !char.IsWhiteSpace(text[offset]))
+			while (offset < text.Length && !(char.IsWhiteSpace(text[offset]) || Extensions.Is(text[offset], '>', '<')))
 				offset++;
 			
 			offset = Math.Min(offset, text.Length - 1);
 			
 			return text.Substring(startIndex, offset - startIndex + 1).Trim();
+		}
+		
+		public static TKey GetKeyByValue<TKey, TValue>(this Dictionary<TKey, TValue> dict, TValue value)
+		{
+			foreach (var pair in dict) {
+				if (pair.Value.Equals(value))
+					return pair.Key;
+			}
+			
+			return default(TKey);
 		}
 		
 		public static int GetLineNumber(this XObject item)
@@ -109,6 +154,26 @@ namespace ICSharpCode.XamlBinding
 		public static int GetLinePosition(this XObject item)
 		{
 			return (item as IXmlLineInfo).LinePosition;
+		}
+		
+		public static bool IsInRange(this XObject item, Location begin, Location end)
+		{
+			return IsInRange(item, begin.Line, begin.Column, end.Line, end.Column);
+		}
+		
+		public static bool IsInRange(this XObject item, int beginLine, int beginColumn, int endLine, int endColumn)
+		{
+			if (item.GetLineNumber() >= beginLine && item.GetLineNumber() <= endLine) {
+				if (item.GetLineNumber() == beginLine) {
+					return item.GetLinePosition() >= beginColumn;
+				}
+				if (item.GetLineNumber() == endLine) {
+					return item.GetLinePosition() <= endColumn;
+				}
+				return true;
+			}
+			
+			return false;
 		}
 		
 		public static bool IsCollectionType(this IClass c)
@@ -132,7 +197,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (c == null)
 				throw new ArgumentNullException("c");
-			return c.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.IList"); 
+			return c.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.IList");
 		}
 		
 		public static bool IsListReturnType(this IReturnType type)

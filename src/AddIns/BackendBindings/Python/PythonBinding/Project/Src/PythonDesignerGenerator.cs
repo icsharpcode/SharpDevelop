@@ -11,6 +11,7 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Text;
 using System.Windows.Forms;
 
@@ -18,6 +19,7 @@ using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -27,7 +29,7 @@ namespace ICSharpCode.PythonBinding
 		/// Updates the python form or user control's InitializeComponent method with any 
 		/// changes to the designed form or user control.
 		/// </summary>
-		void MergeRootComponentChanges(IComponent component);
+		void MergeRootComponentChanges(IComponent component, IResourceService resourceService);
 	}
 	
 	/// <summary>
@@ -73,10 +75,10 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Updates the InitializeComponent method's body with the generated code.
 		/// </summary>
-		public void MergeRootComponentChanges(IComponent component)
+		public void MergeRootComponentChanges(IComponent component, IResourceService resourceService)
 		{
 			ParseInformation parseInfo = ParseFile();
-			Merge(component, ViewContent.DesignerCodeFileDocument, parseInfo.BestCompilationUnit, textEditorProperties);
+			Merge(component, ViewContent.DesignerCodeFileDocument, parseInfo.BestCompilationUnit, textEditorProperties, resourceService);
 		}
 		
 		/// <summary>
@@ -85,15 +87,22 @@ namespace ICSharpCode.PythonBinding
 		/// <param name="component">The root component in the designer host.</param>
 		/// <param name="document">The document that the generated code will be merged into.</param>
 		/// <param name="parseInfo">The current compilation unit for the <paramref name="document"/>.</param>
-		public static void Merge(IComponent component, IDocument document, ICompilationUnit compilationUnit, ICSharpCode.TextEditor.Document.ITextEditorProperties textEditorProperties)
+		public static void Merge(IComponent component, IDocument document, ICompilationUnit compilationUnit, ICSharpCode.TextEditor.Document.ITextEditorProperties textEditorProperties, IResourceService resourceService)
 		{
 			// Get the document's initialize components method.
 			IMethod method = GetInitializeComponents(compilationUnit);
 			
 			// Generate the python source code.
-			PythonControl pythonForm = new PythonControl(NRefactoryToPythonConverter.GetIndentString(textEditorProperties));
+			PythonControl pythonControl = new PythonControl(NRefactoryToPythonConverter.GetIndentString(textEditorProperties), resourceService);
 			int indent = method.Region.BeginColumn;
-			string methodBody = pythonForm.GenerateInitializeComponentMethodBody(component as Control, indent);
+			if (textEditorProperties.ConvertTabsToSpaces) {
+				indent = (indent / textEditorProperties.IndentationSize);
+				if (textEditorProperties.IndentationSize > 1) {
+					indent += 1;
+				}
+			}
+			string rootNamespace = GetProjectRootNamespace(compilationUnit);
+			string methodBody = pythonControl.GenerateInitializeComponentMethodBody(component as Control, rootNamespace, indent);
 			
 			// Merge the code.
 			DomRegion methodRegion = GetBodyRegionInDocument(method);
@@ -284,6 +293,15 @@ namespace ICSharpCode.PythonBinding
 		ParseInformation ParseFile()
 		{
 			return ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent);
+		}
+		
+		static string GetProjectRootNamespace(ICompilationUnit compilationUnit)
+		{
+			IProject project = compilationUnit.ProjectContent.Project as IProject;
+			if (project != null) {
+				return project.RootNamespace;
+			}
+			return String.Empty;
 		}
 	}
 }

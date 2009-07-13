@@ -110,7 +110,10 @@ namespace PythonBinding.Tests.Converter
 		public void ExpectedCodeWrittenToFile()
 		{
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter();
-			string expectedCode = converter.Convert(sourceCode, SupportedLanguage.CSharp);
+			string expectedCode = converter.Convert(sourceCode, SupportedLanguage.CSharp) + 
+				"\r\n" +
+				"\r\n" + 
+				converter.GenerateMainMethodCall(converter.EntryPointMethods[0]);
 			
 			List<ConvertedFile> expectedSavedFiles = new List<ConvertedFile>();
 			expectedSavedFiles.Add(new ConvertedFile(target.FileName, expectedCode, mockTextEditorProperties.Encoding));

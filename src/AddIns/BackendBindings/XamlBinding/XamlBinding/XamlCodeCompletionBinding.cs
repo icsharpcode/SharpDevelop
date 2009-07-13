@@ -134,12 +134,12 @@ namespace ICSharpCode.XamlBinding
 		{
 			XamlCompletionContext context = CompletionDataHelper.ResolveCompletionContext(editor, ' ');
 			context.Forced = true;
-			Core.LoggingService.Debug(context);
 			if (context.ActiveElement != null) {
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && context.Description != XamlContextDescription.InAttributeValue) {
 					var list = CompletionDataHelper.CreateListForContext(context) as XamlCompletionItemList;
-					string starter = editor.GetWordBeforeCaret().Trim('<', '>');
-					if (context.Description != XamlContextDescription.None && !string.IsNullOrEmpty(starter) && !starter.EndsWith(StringComparison.Ordinal, ' ', '\t', '\n', '\r', '"', '=', '\''))
+					string starter = editor.GetWordBeforeCaretExtended();
+					Core.LoggingService.Debug("starter: " + starter);
+					if (context.Description != XamlContextDescription.None && !string.IsNullOrEmpty(starter))
 						list.PreselectionLength = starter.Length;
 					editor.ShowCompletionWindow(list);
 					return true;
@@ -184,84 +184,95 @@ namespace ICSharpCode.XamlBinding
 			var loc = context.Editor.Document.OffsetToPosition(offset);
 			
 			AttributeValue value = MarkupExtensionParser.ParseValue(Utils.GetAttributeValue(context.Editor.Document.Text, loc.Line, loc.Column, "TargetType") ?? string.Empty);
+			
+			IReturnType typeName = null;
+			string typeNameString = null;
+			
 			if (!value.IsString) {
-				TypeResolveResult trr = CompletionDataHelper.ResolveMarkupExtensionType(value.ExtensionValue, context);
-				var typeName = CompletionDataHelper.ResolveType(GetTypeNameFromTypeExtension(value.ExtensionValue), context);
-				
-				if (trr != null && trr.ResolvedClass != null && trr.ResolvedClass.FullyQualifiedName == "System.Windows.Markup.TypeExtension"
-				    && typeName != null) {
-					switch (context.AttributeName) {
-						case "Value":
-							var loc2 = context.Editor.Document.OffsetToPosition(XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset));
-							AttributeValue propType = MarkupExtensionParser.ParseValue(
-								Utils.GetAttributeValue(context.Editor.Document.Text, loc2.Line,
-								                        loc2.Column, "Property"));
-							if (!propType.IsString)
-								break;
-							
-							var member = XamlResolver.Resolve(GetTypeNameFromTypeExtension(value.ExtensionValue) + "." + propType.StringValue, context) as MemberResolveResult;
-							
-							if (member == null || member.ResolvedMember == null)
-								break;
-							
-							completionList.Items.AddRange(
-								CompletionDataHelper.MemberCompletion(context, member.ResolvedMember.ReturnType, string.Empty)
-							);
+				typeNameString = GetTypeNameFromTypeExtension(value.ExtensionValue, context);
+				typeName = CompletionDataHelper.ResolveType(typeNameString, context);
+			} else {
+				typeNameString = value.StringValue;
+				typeName = CompletionDataHelper.ResolveType(value.StringValue, context);
+			}
+			
+			if (typeName != null) {
+				switch (context.AttributeName) {
+					case "Value":
+						var loc2 = context.Editor.Document.OffsetToPosition(XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset));
+						AttributeValue propType = MarkupExtensionParser.ParseValue(
+							Utils.GetAttributeValue(context.Editor.Document.Text, loc2.Line,
+							                        loc2.Column, "Property"));
+						if (!propType.IsString)
 							break;
-						case "Property":
-							completionList.Items.AddRange(
-								typeName.GetProperties()
-								.Where(p => p.IsPublic && p.CanSet)
-								.Select(prop => new XamlCodeCompletionItem(prop))
-								.Cast<ICompletionItem>()
-							);
+						
+						var member = XamlResolver.Resolve(typeNameString + "." + propType.StringValue, context) as MemberResolveResult;
+						
+						if (member == null || member.ResolvedMember == null)
 							break;
-						case "Event":
-							completionList.Items.AddRange(
-								typeName.GetEvents()
-								.Where(e => e.IsPublic)
-								.Select(evt => new XamlCodeCompletionItem(evt))
-								.Cast<ICompletionItem>()
-							);
+						
+						completionList.Items.AddRange(
+							CompletionDataHelper.MemberCompletion(context, member.ResolvedMember.ReturnType, string.Empty)
+						);
+						break;
+					case "Property":
+						completionList.Items.AddRange(
+							typeName.GetProperties()
+							.Where(p => p.IsPublic && p.CanSet)
+							.Select(prop => new XamlCodeCompletionItem(prop))
+							.Cast<ICompletionItem>()
+						);
+						break;
+					case "Event":
+						completionList.Items.AddRange(
+							typeName.GetEvents()
+							.Where(e => e.IsPublic)
+							.Select(evt => new XamlCodeCompletionItem(evt))
+							.Cast<ICompletionItem>()
+						);
+						break;
+					case "Handler":
+						var loc3 = context.Editor.Document.OffsetToPosition(XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset));
+						AttributeValue evtType = MarkupExtensionParser.ParseValue(
+							Utils.GetAttributeValue(context.Editor.Document.Text, loc3.Line,
+							                        loc3.Column, "Event"));
+						if (!evtType.IsString)
 							break;
-						case "Handler":
-							var loc3 = context.Editor.Document.OffsetToPosition(XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset));
-							AttributeValue evtType = MarkupExtensionParser.ParseValue(
-								Utils.GetAttributeValue(context.Editor.Document.Text, loc3.Line,
-								                        loc3.Column, "Event"));
-							if (!evtType.IsString)
-								break;
-							
-							var evtMember = XamlResolver.Resolve(GetTypeNameFromTypeExtension(value.ExtensionValue) + "." + evtType.StringValue, context) as MemberResolveResult;
-							
-							if (evtMember == null || evtMember.ResolvedMember == null || !(evtMember.ResolvedMember is IEvent) || evtMember.ResolvedMember.ReturnType == null)
-								break;
-							
-							IClass c = (evtMember.ResolvedMember as IEvent).ReturnType.GetUnderlyingClass();
-							
-							if (c == null)
-								break;
-							
-							IMethod invoker = c.Methods.FirstOrDefault(m => m.Name == "Invoke");
-							
-							if (invoker == null)
-								break;
-							
-							var list = new List<ICompletionItem>() {
-								new NewEventCompletionItem(evtMember.ResolvedMember as IEvent, typeName.Name)
-							};
-							
-							completionList.Items.AddRange(
-								CompletionDataHelper.AddMatchingEventHandlers(context, invoker).Concat(list)
-							);
+						
+						var evtMember = XamlResolver.Resolve(typeNameString + "." + evtType.StringValue, context) as MemberResolveResult;
+						
+						if (evtMember == null || evtMember.ResolvedMember == null || !(evtMember.ResolvedMember is IEvent) || evtMember.ResolvedMember.ReturnType == null)
 							break;
-					}
+						
+						IClass c = (evtMember.ResolvedMember as IEvent).ReturnType.GetUnderlyingClass();
+						
+						if (c == null)
+							break;
+						
+						IMethod invoker = c.Methods.FirstOrDefault(m => m.Name == "Invoke");
+						
+						if (invoker == null)
+							break;
+						
+						var list = new List<ICompletionItem>() {
+							new NewEventCompletionItem(evtMember.ResolvedMember as IEvent, typeName.Name)
+						};
+						
+						completionList.Items.AddRange(
+							CompletionDataHelper.AddMatchingEventHandlers(context, invoker).Concat(list)
+						);
+						break;
 				}
 			}
 		}
 		
-		static string GetTypeNameFromTypeExtension(MarkupExtensionInfo info)
+		static string GetTypeNameFromTypeExtension(MarkupExtensionInfo info, XamlCompletionContext context)
 		{
+			TypeResolveResult trr = CompletionDataHelper.ResolveMarkupExtensionType(info, context);
+			
+			if (trr == null || trr.ResolvedType == null || trr.ResolvedType.FullyQualifiedName != "System.Windows.Markup.TypeExtension")
+				return string.Empty;
+			
 			var item = info.PositionalArguments.FirstOrDefault();
 			if (item != null && item.IsString) {
 				return item.StringValue;

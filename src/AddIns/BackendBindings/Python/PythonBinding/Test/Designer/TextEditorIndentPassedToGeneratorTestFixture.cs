@@ -62,7 +62,7 @@ namespace PythonBinding.Tests.Designer
 					DerivedPythonDesignerGenerator generator = new DerivedPythonDesignerGenerator(textEditorProperties);
 					generator.ParseInfoToReturnFromParseFileMethod = parseInfo;
 					generator.Attach(viewContent);
-					generator.MergeRootComponentChanges(form);
+					generator.MergeRootComponentChanges(form, new MockResourceService());
 				}
 			}
 		}

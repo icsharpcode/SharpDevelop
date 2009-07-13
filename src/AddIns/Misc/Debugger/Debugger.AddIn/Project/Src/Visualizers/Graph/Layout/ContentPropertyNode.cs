@@ -15,7 +15,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	{
 		PositionedNodeProperty positionedProperty;
 		
-		public ContentPropertyNode(PositionedGraphNode containingNode, ContentNode parent) 
+		public ContentPropertyNode(PositionedGraphNode containingNode, ContentNode parent)
 			: base(containingNode, parent)
 		{
 		}
@@ -45,6 +45,15 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.Text = this.positionedProperty.Value;
 		}
 		
+		public override bool ShowExpandPropertyButton
+		{
+			get
+			{
+				// show expand button when appropriate
+				return (!this.positionedProperty.IsAtomic && !this.positionedProperty.IsNull);
+			}
+		}
+		
 		public override void InitFrom(AbstractNode source, Expanded expanded)
 		{
 			if (!(source is PropertyNode))
@@ -57,7 +66,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.IsNested = false;
 			this.IsExpanded = false;			// always false, property content nodes are never expanded
 			this.positionedProperty = new PositionedNodeProperty(
-				sourcePropertyNode.Property, this.ContainingNode, 
+				sourcePropertyNode.Property, this.ContainingNode,
 				expanded.Expressions.IsExpanded(sourcePropertyNode.Property.Expression));
 		}
 	}

@@ -50,7 +50,6 @@ namespace Grunwald.BooBinding
 			            PropertyStorageLocations.ConfigurationSpecific, false);
 			SetProperty("Release", null, "DefineConstants", "TRACE",
 			            PropertyStorageLocations.ConfigurationSpecific, false);
-			SetProperty("Strict", "True");
 			
 			string rspFile = Path.Combine(BooBinPath, "booc.rsp");
 			if (File.Exists(rspFile)) {

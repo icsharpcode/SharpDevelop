@@ -102,6 +102,11 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		public override void SurroundSelectionWithComment(ITextEditor editor)
+		{
+			SurroundSelectionWithBlockComment(editor, "<!--", "-->");
+		}
+		
 		static void TryIndent(ITextEditor editor, int begin, int end)
 		{
 			string currentIndentation = "";

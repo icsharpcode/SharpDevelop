@@ -43,6 +43,9 @@
             <xs:attribute name="Name" use="required" type="xs:string">
                 <xs:annotation><xs:documentation>Internal Microsoft Help ID for this Namespace.</xs:documentation></xs:annotation>
             </xs:attribute>
+            <xs:attribute name="SuppressCustomActions" type="YesNoType">
+                <xs:annotation><xs:documentation>Suppress linking Help registration custom actions.  Help redistributable merge modules will be required.  Use this when building a merge module.</xs:documentation></xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 
@@ -53,6 +56,7 @@
             </xs:documentation>
             <xs:appinfo>
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Module" />
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Product" />
             </xs:appinfo>
         </xs:annotation>
@@ -65,6 +69,9 @@
             </xs:attribute>
             <xs:attribute name="Name" use="required" type="xs:string">
                 <xs:annotation><xs:documentation>Friendly name for Filter.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="SuppressCustomActions" type="YesNoType">
+                <xs:annotation><xs:documentation>Suppress linking Help registration custom actions.  Help redistributable merge modules will be required.  Use this when building a merge module.</xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -100,6 +107,9 @@
             <xs:attribute name="Search" type="xs:string">
                 <xs:annotation><xs:documentation>Key for HxQ (Query) file.</xs:documentation></xs:annotation>
             </xs:attribute>
+            <xs:attribute name="SuppressCustomActions" type="YesNoType">
+                <xs:annotation><xs:documentation>Suppress linking Help registration custom actions.  Help redistributable merge modules will be required.  Use this when building a merge module.</xs:documentation></xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 
@@ -125,6 +135,9 @@
             </xs:attribute>
             <xs:attribute name="TargetFeature" type="xs:string">
                 <xs:annotation><xs:documentation>Key for the feature parent of this help collection.  Required only when plugging into external namespaces.</xs:documentation></xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="SuppressExternalNamespaces" type="YesNoType">
+                <xs:annotation><xs:documentation>Suppress linking Visual Studio Help namespaces.  Help redistributable merge modules will be required.  Use this when building a merge module.</xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -164,6 +177,7 @@
             <xs:documentation>Create a reference to a HelpCollection element in another Fragment.</xs:documentation>
             <xs:appinfo>
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Module" />
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Product" />
             </xs:appinfo>
         </xs:annotation>
@@ -183,4 +197,13 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:simpleType name="YesNoType">
+        <xs:annotation>
+            <xs:documentation>Values of this type will either be "yes" or "no".</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base='xs:NMTOKEN'>
+            <xs:enumeration value="no"/>
+            <xs:enumeration value="yes"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

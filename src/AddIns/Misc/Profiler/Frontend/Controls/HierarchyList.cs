@@ -30,9 +30,13 @@ namespace ICSharpCode.Profiler.Controls
 	/// </summary>
 	public class HierarchyList<T> : ObservableCollection<T> where T : class, IViewModel<T>
 	{
+		ReadOnlyCollection<T> roots;
+		
 		public HierarchyList(IList<T> roots)
 			: base(roots)
 		{
+			this.roots = new ReadOnlyCollection<T>(roots);
+			
 			foreach (T item in roots) {
 				item.VisibleChildExpandedChanged += (sender, e) => this.NotifyNodeExpandedChanged(e.Node);
 			}
@@ -82,6 +86,11 @@ namespace ICSharpCode.Profiler.Controls
 				while (stack.Count > 0)
 					stack.Pop().Dispose();
 			}
+		}
+		
+		public ReadOnlyCollection<T> Roots
+		{
+			get { return roots; }
 		}
 	}
 }

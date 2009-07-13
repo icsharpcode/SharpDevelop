@@ -69,7 +69,7 @@ module TheControl =
                                 Some fileInfo
                             else
                                 None)
-                possibleFiles |> Array.sort (fun x y -> DateTime.Compare(x.CreationTime, y.CreationTime))
+                let possibleFiles = possibleFiles |> Array.sortBy (fun x -> x.CreationTime)
                 if possibleFiles.Length > 0 then
                     fsiProcess.StartInfo.FileName <- possibleFiles.[0].FullName
                     true

@@ -24,6 +24,7 @@ namespace PythonBinding.Tests.Converter
 						"{\r\n" +
 						"    static void Main(string[] args)\r\n" +
 						"    {\r\n" +
+						"        Stop();\r\n" +
 						"    }\r\n" +
 						"\r\n" +
 						"    static void Stop()\r\n" +
@@ -51,7 +52,7 @@ namespace PythonBinding.Tests.Converter
 		{
 			string expectedPython = "class Foo(object):\r\n" +
 									"    def Main(args):\r\n" +
-									"        pass\r\n" +
+									"        Foo.Stop()\r\n" +
 									"\r\n" +
 									"    Main = staticmethod(Main)\r\n" +
 									"\r\n" +
@@ -62,7 +63,7 @@ namespace PythonBinding.Tests.Converter
 									"\r\n" +
 									"    def Run(self):\r\n" +
 									"        pass";
-			Assert.AreEqual(expectedPython, python);
+			Assert.AreEqual(expectedPython, python, python);
 		}
 		
 		[Test]
@@ -75,6 +76,12 @@ namespace PythonBinding.Tests.Converter
 		public void MainEntryPointMethodNameIsMain()
 		{
 			Assert.AreEqual("Main", converter.EntryPointMethods[0].Name);
+		}
+		
+		[Test]
+		public void GenerateCodeToCallMainMethod()
+		{
+			Assert.AreEqual("Foo.Main(None)", converter.GenerateMainMethodCall(converter.EntryPointMethods[0]));
 		}
 	}
 }

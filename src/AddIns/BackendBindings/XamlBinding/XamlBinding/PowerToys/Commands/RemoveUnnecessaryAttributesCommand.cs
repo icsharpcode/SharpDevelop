@@ -18,14 +18,18 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	/// </summary>
 	public class RemoveUnnecessaryAttributesCommand : RemoveMarginCommand
 	{
-		protected override void Refactor(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, System.Xml.Linq.XDocument document)
+		protected override bool Refactor(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, System.Xml.Linq.XDocument document)
 		{
+			// TODO : use selection
 			RemoveRecursive(document.Root, "Margin");
+			// TODO : do a usage check first
 //			RemoveRecursive(document, "Name");
 //			RemoveRecursive(document, "Name", CompletionDataHelper.XamlNamespace);
 			RemoveRecursive(document.Root, "MinWidth");
 			RemoveRecursive(document.Root, "MinHeight");
 			// set all row and column definitions to Auto
+			
+			return true;
 		}
 	}
 }

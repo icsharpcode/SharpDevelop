@@ -1,8 +1,8 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision: 3539 $</version>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
@@ -130,10 +130,6 @@ namespace ICSharpCode.XamlBinding
 			string xmlNamespace;
 			string name;
 			
-			foreach (var s in context.XmlnsDefinitions) {
-				Debug.Print(s.Key + " " + s.Value);
-			}
-			
 			this.resolveExpression = exp;
 			if (resolveExpression.Contains(":")) {
 				string prefix = resolveExpression.Substring(0, resolveExpression.IndexOf(':'));
@@ -169,7 +165,10 @@ namespace ICSharpCode.XamlBinding
 			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
 			IReturnType resolvedType = XamlCompilationUnit.FindType(pc, xmlNamespace, className);
 			if (resolvedType != null && resolvedType.GetUnderlyingClass() != null) {
-				return ResolvePropertyName(resolvedType, propertyName, allowAttached);
+				var result = ResolvePropertyName(resolvedType, propertyName, allowAttached);
+				if (result == null && CompletionDataHelper.XamlNamespaceAttributes.Contains(propertyName))
+					return new MemberResolveResult(null, null, new DefaultProperty(null, propertyName));
+				return result;
 			}
 			return null;
 		}
@@ -180,6 +179,8 @@ namespace ICSharpCode.XamlBinding
 			if (member == null) {
 				member = resolvedType.GetEvents().Find(delegate(IEvent p) { return p.Name == propertyName; });
 			}
+//			if (!allowAttached)
+//				Debug.Assert(member != null);
 			if (member == null && allowAttached) {
 				IMethod method = resolvedType.GetMethods().Find(
 					delegate(IMethod p) {
@@ -262,6 +263,11 @@ namespace ICSharpCode.XamlBinding
 		public static ResolveResult Resolve(string expression, XamlCompletionContext context)
 		{
 			return new XamlResolver().Resolve(new ExpressionResult(expression, context), context.ParseInformation, context.Editor.Document.Text);
+		}
+		
+		public static ResolveResult Resolve(string expression, string fileContent, XamlContext context)
+		{
+			return new XamlResolver().Resolve(new ExpressionResult(expression, context), context.ParseInformation, fileContent);
 		}
 		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)

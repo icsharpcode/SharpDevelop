@@ -128,7 +128,7 @@ namespace SharpRefactoring
 
 				code = code.TrimEnd('\r', '\n', ' ', '\t');
 
-				Dom.IMember p = GetParentMember(this.textEditor, this.currentSelection.StartPosition.Line, this.currentSelection.StartPosition.Column);
+				Dom.IMember p = GetParentMember(this.textEditor, this.currentSelection.StartPosition.Line + 1, this.currentSelection.StartPosition.Column + 1);
 				
 				TextLocation loc = new ICSharpCode.TextEditor.TextLocation(
 					p.BodyRegion.EndColumn - 1, p.BodyRegion.EndLine - 1);

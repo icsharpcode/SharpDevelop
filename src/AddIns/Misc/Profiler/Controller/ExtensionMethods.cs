@@ -133,42 +133,5 @@ namespace ICSharpCode.Profiler.Controller
 			}
 			return result;
 		}
-		
-		public static bool Search(this CallTreeNode item, string search, bool recursive, out CallTreeNode result)
-		{
-			if (recursive)
-				return SearchRecursive(search, item, out result);
-			else
-				return SearchInternal(item, search, out result);
-		}
-
-		static bool SearchInternal(CallTreeNode item, string search, out CallTreeNode result)
-		{
-			foreach (var child in item.Children) {
-				if (child.Name.IndexOf(search, StringComparison.Ordinal) > -1) {
-					result = item;
-					return true;
-				}
-			}
-
-			result = null;
-			return false;
-		}
-
-		static bool SearchRecursive(string search, CallTreeNode current, out CallTreeNode result)
-		{
-			foreach (var item in current.Children) {
-				if (item.Name.IndexOf(search, StringComparison.Ordinal) > -1) {
-					result = item;
-					return true;
-				}
-
-				if (SearchRecursive(search, item, out result))
-					return true;
-			}
-
-			result = null;
-			return false;
-		}
 	}
 }

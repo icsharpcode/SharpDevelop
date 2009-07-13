@@ -30,10 +30,16 @@ namespace PythonBinding.Tests.Designer
 	public class MergeFormTestFixture
 	{
 		IDocument document;
+		MockResourceService resourceService;
+		MockResourceWriter resourceWriter;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			resourceWriter = new MockResourceWriter();
+			resourceService = new MockResourceService();
+			resourceService.SetResourceWriter(resourceWriter);
+			
 			using (TextEditorControl textEditor = new TextEditorControl()) {
 				document = textEditor.Document;
 				textEditor.Text = GetTextEditorCode();
@@ -50,7 +56,7 @@ namespace PythonBinding.Tests.Designer
 					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 					namePropertyDescriptor.SetValue(form, "MainForm");
 					
-					PythonDesignerGenerator.Merge(form, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties());
+					PythonDesignerGenerator.Merge(form, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties(), resourceService);
 				}
 			}
 		}
@@ -60,6 +66,12 @@ namespace PythonBinding.Tests.Designer
 		{
 			string expectedText = GetTextEditorCode().Replace(GetTextEditorInitializeComponentMethod(), GetGeneratedInitializeComponentMethod());
 			Assert.AreEqual(expectedText, document.TextContent);
+		}
+		
+		[Test]
+		public void ResourceWriterDisposed()
+		{
+			Assert.IsTrue(resourceWriter.IsDisposed);
 		}
 
 		string GetGeneratedCode()

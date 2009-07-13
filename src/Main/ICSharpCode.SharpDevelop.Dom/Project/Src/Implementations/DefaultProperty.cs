@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ICSharpCode.SharpDevelop.Dom {
 
@@ -63,7 +64,22 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		
 		public override string DocumentationTag {
 			get {
-				return "P:" + this.DotNetName;
+				string dotnetName = this.DotNetName;
+				StringBuilder b = new StringBuilder("P:", dotnetName.Length + 2);
+				b.Append(dotnetName);
+				IList<IParameter> paras = this.Parameters;
+				if (paras.Count > 0) {
+					b.Append('(');
+					for (int i = 0; i < paras.Count; ++i) {
+						if (i > 0) b.Append(',');
+						IReturnType rt = paras[i].ReturnType;
+						if (rt != null) {
+							b.Append(rt.DotNetName);
+						}
+					}
+					b.Append(')');
+				}
+				return b.ToString();
 			}
 		}
 		

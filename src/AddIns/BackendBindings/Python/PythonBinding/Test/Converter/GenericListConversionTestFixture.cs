@@ -41,13 +41,13 @@ namespace PythonBinding.Tests.Converter
 			converter.IndentString = "    ";
 			string python = converter.Convert(csharp);
 			string expectedPython = "from System.Collections.Generic import *\r\n" +
+									"\r\n" +
 									"class Foo(object):\r\n" +
 									"    def __init__(self):\r\n" +
-									"        list = List[System.String]()\r\n" +
-									"        dictionary = Dictionary[System.String, System.Int32]()"; 
+									"        list = List[str]()\r\n" +
+									"        dictionary = Dictionary[str, int]()"; 
 			
 			Assert.AreEqual(expectedPython, python);
 		}	
-
 	}
 }

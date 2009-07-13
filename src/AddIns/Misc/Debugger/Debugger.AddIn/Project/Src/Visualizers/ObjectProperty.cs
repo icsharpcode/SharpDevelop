@@ -24,7 +24,7 @@ namespace Debugger.AddIn.Visualizers
         public string Value { get; set; }
         
         /// <summary>
-        /// Expression used for obtaining this property
+        /// Expression used for obtaining value of this property
         /// </summary>
         public Debugger.Expressions.Expression Expression { get; set; }
         

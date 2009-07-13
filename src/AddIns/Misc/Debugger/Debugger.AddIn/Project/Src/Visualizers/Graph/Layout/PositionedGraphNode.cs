@@ -73,7 +73,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		private void initVisualControl()
 		{
 			this.nodeVisualControl = new PositionedGraphNodeControl();
-			this.nodeVisualControl.MaxHeight = 200;
+			this.nodeVisualControl.MaxHeight = 300;
 			
 			// propagate events from nodeVisualControl
 			this.nodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyExpanded);
@@ -104,7 +104,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public void Measure()
 		{
-			this.nodeVisualControl.Measure(new Size(500, 500));
+			this.nodeVisualControl.Measure(new Size(800, 800));
 		}
 		
 		public double Left { get; set; }

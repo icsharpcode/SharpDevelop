@@ -93,19 +93,20 @@ Copyright (c) Microsoft Corporation. All rights reserved.
   <UsingTask TaskName="HeatProject" AssemblyFile="$(WixTasksPath)" />
 
   <!-- These tasks are specific to the build process defined in this file, and are not considered general-purpose build tasks. -->
-  <UsingTask TaskName="AssignProjectConfiguration" AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(Framework35Dir)' == '' " />
-  <UsingTask TaskName="AssignTargetPath" AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(Framework35Dir)' == '' " />
-  <UsingTask TaskName="ResolveNonMSBuildProjectOutput" AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(Framework35Dir)' == '' " />
-  <UsingTask TaskName="ResolveVCProjectOutput" AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(Framework35Dir)' == '' " />
+  <UsingTask TaskName="AssignProjectConfiguration" AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(MSBuildToolsVersion)' == '' or '$(MSBuildToolsVersion)' == '2.0' " />
+  <UsingTask TaskName="AssignTargetPath" AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(MSBuildToolsVersion)' == '' or '$(MSBuildToolsVersion)' == '2.0' " />
+  <UsingTask TaskName="ResolveNonMSBuildProjectOutput" AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(MSBuildToolsVersion)' == '' or '$(MSBuildToolsVersion)' == '2.0' " />
+  <UsingTask TaskName="ResolveVCProjectOutput" AssemblyName="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(MSBuildToolsVersion)' == '' or '$(MSBuildToolsVersion)' == '2.0' " />
 
-  <UsingTask TaskName="AssignProjectConfiguration" AssemblyName="Microsoft.Build.Tasks.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(Framework35Dir)' != '' " />
-  <UsingTask TaskName="AssignTargetPath" AssemblyName="Microsoft.Build.Tasks.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(Framework35Dir)' != '' " />
-  <UsingTask TaskName="ResolveNonMSBuildProjectOutput" AssemblyName="Microsoft.Build.Tasks.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(Framework35Dir)' != '' " />
-  <UsingTask TaskName="ResolveVCProjectOutput" AssemblyName="Microsoft.Build.Tasks.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(Framework35Dir)' != '' " />
+  <UsingTask TaskName="AssignProjectConfiguration" AssemblyName="Microsoft.Build.Tasks.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(MSBuildToolsVersion)' == '3.5' " />
+  <UsingTask TaskName="AssignTargetPath" AssemblyName="Microsoft.Build.Tasks.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(MSBuildToolsVersion)' == '3.5' " />
+  <UsingTask TaskName="ResolveNonMSBuildProjectOutput" AssemblyName="Microsoft.Build.Tasks.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(MSBuildToolsVersion)' == '3.5' " />
+  <UsingTask TaskName="ResolveVCProjectOutput" AssemblyName="Microsoft.Build.Tasks.v3.5, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" Condition=" '$(MSBuildToolsVersion)' == '3.5' " />
 
   <UsingTask TaskName="CreateProjectReferenceDefineConstants" AssemblyFile="$(WixTasksPath)" />
   <UsingTask TaskName="WixAssignCulture" AssemblyFile="$(WixTasksPath)" />
-  <UsingTask TaskName="ResolveWixExtensionReference" AssemblyFile="$(WixTasksPath)"/>
+  <UsingTask TaskName="ResolveWixReferences" AssemblyFile="$(WixTasksPath)"/>
+  <UsingTask TaskName="ReplaceString" AssemblyFile="$(WixTasksPath)"/>
 
   <!--
   Several properties must be set in the main project file, before using this .targets file.
@@ -557,8 +558,11 @@ Copyright (c) Microsoft Corporation. All rights reserved.
     Prepare the prerequisites for building.
   ==================================================================================================
   -->
+  <PropertyGroup>
+    <PrepareForBuildDependsOn></PrepareForBuildDependsOn>
+  </PropertyGroup>
   <Target
-    Name="PrepareForBuild">
+    Name="PrepareForBuild" DependsOnTargets="$(PrepareForBuildDependsOn)">
 
     <!--
     These CreateProperty calls are required because TargetDir and TargetPath are defined
@@ -583,7 +587,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
 
   <!--
   ==================================================================================================
-  ResolveWixExtensionPaths
+  ResolveWixExtensionReferences
 
     Resolves WiX extension references to full paths. Any properties you use
     to resolve paths to extensions must be defined before importing this
@@ -596,30 +600,42 @@ Copyright (c) Microsoft Corporation. All rights reserved.
     @(_ResolvedWixExtensionPaths) - Item group with full paths to extensions
   ==================================================================================================
   -->
+  <PropertyGroup>
+    <ResolveWixExtensionReferencesDependsOn>
+      PrepareForBuild
+    </ResolveWixExtensionReferencesDependsOn>
+  </PropertyGroup>
   <Target
-    Name="ResolveWixExtensionPaths">
-    <PropertyGroup>
-      <WixExtensionSearchPaths>
-        $(ReferencePaths);
-        {HintPathFromItem};
-        {RawFileName};
-        $(WixExtDir)
-      </WixExtensionSearchPaths>
-    </PropertyGroup>
-    
-    <ResolveWixExtensionReference
-      WixExtensions="@(WixExtension)"
-      SearchPaths="$(WixExtensionSearchPaths)">
-      <Output TaskParameter="ResolvedWixExtensions" ItemName="_AllResolvedWixExtensionPaths" />
-    </ResolveWixExtensionReference>
+    Name="ResolveWixExtensionReferences"
+    DependsOnTargets="$(ResolveWixExtensionReferencesDependsOn)"
+    Condition=" '@(WixExtension)' != ''">
 
-    <!-- Normalize the paths to ensure remove duplicates catches everything -->
-    <ConvertToAbsolutePath Paths="@(_AllResolvedWixExtensionPaths)">
-      <Output TaskParameter="AbsolutePaths" ItemName="_AllResolvedWixExtensionFullPaths" />
-    </ConvertToAbsolutePath>
+    <!--
+    The WixExtensionSearchPaths property is set to find assemblies in the following order:
+
+        (1) $(ReferencePaths) - the reference paths property, which comes from the .USER file.
+        (2) The hintpath from the referenced item itself, indicated by {HintPathFromItem}.
+        (3) Treat the reference's Include as if it were a real file name.
+        (4) Path specified by the WixExtDir property.
+    -->
+    <CreateProperty Condition=" '$(WixExtensionSearchPaths)' == '' " Value="
+      $(ReferencePaths);
+      {HintPathFromItem};
+      {RawFileName};
+      $(WixExtDir)
+      ">
+      <Output TaskParameter="Value" PropertyName="WixExtensionSearchPaths" />
+    </CreateProperty>
+
+    <ResolveWixReferences
+      WixReferences="@(WixExtension)"
+      SearchPaths="$(WixExtensionSearchPaths)"
+      SearchFilenameExtensions=".dll">
+      <Output TaskParameter="ResolvedWixReferences" ItemName="_AllResolvedWixExtensionPaths" />
+    </ResolveWixReferences>
 
     <!-- Remove duplicate extension items that would cause build errors -->
-    <RemoveDuplicates Inputs="@(_AllResolvedWixExtensionFullPaths)">
+    <RemoveDuplicates Inputs="@(_AllResolvedWixExtensionPaths)">
       <Output TaskParameter="Filtered" ItemName="_ResolvedWixExtensionPaths" />
     </RemoveDuplicates>
   </Target>
@@ -632,14 +648,30 @@ Copyright (c) Microsoft Corporation. All rights reserved.
   ==================================================================================================
   -->
   <PropertyGroup>
-    <PreBuildEventDependsOn></PreBuildEventDependsOn>
+    <PreBuildEventDependsOn>GetTargetPath</PreBuildEventDependsOn>
   </PropertyGroup>
   <Target
     Name="PreBuildEvent"
     DependsOnTargets="$(PreBuildEventDependsOn)"
     Condition=" '$(PreBuildEvent)' != '' ">
 
-    <Exec WorkingDirectory="$(OutDir)" Command="$(PreBuildEvent)" />
+    <ReplaceString
+      Text="$(PreBuildEvent)"
+      OldValue="!(TargetPath)"
+      NewValue="$(TargetPath)">
+      
+      <Output TaskParameter="Text" PropertyName="ExpandedPreBuildEvent" />
+    </ReplaceString>
+    
+    <ReplaceString
+      Text="$(ExpandedPreBuildEvent)"
+      OldValue="!(TargetPdbPath)"
+      NewValue="$(TargetPdbPath)">
+      
+      <Output TaskParameter="Text" PropertyName="ExpandedPreBuildEvent" />
+    </ReplaceString>
+
+    <Exec WorkingDirectory="$(OutDir)" Command="$(ExpandedPreBuildEvent)" />
   </Target>
 
   <!--
@@ -662,6 +694,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
       ResolveProjectReferences;
       ResolveVCProjectReferences;
       ResolveWixLibraryReferences;
+      ResolveWixExtensionReferences;
       AfterResolveReferences
     </ResolveReferencesDependsOn>
   </PropertyGroup>
@@ -872,9 +905,15 @@ Copyright (c) Microsoft Corporation. All rights reserved.
     produced if we built this project.
   ================================================================================================
   -->
+  <PropertyGroup>
+    <GetTargetPathDependsOn>
+      PrepareForBuild;
+      AssignCultures
+    </GetTargetPathDependsOn>
+  </PropertyGroup>
   <Target
     Name="GetTargetPath"
-    DependsOnTargets="PrepareForBuild"
+    DependsOnTargets="$(GetTargetPathDependsOn)"
     Outputs="$(TargetPath)" />
 
   <!--
@@ -923,6 +962,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
     </ResolveVCProjectOutput>
 
     <Error
+      Code="WIXTARGETS104"
       Text="MSBuild cannot resolve the reference to the Visual C++ project '%(VCProjectReference.Identity)' when building a stand-alone MSBuild project. To correctly resolve this reference, please build the solution file containing these projects."
       Condition=" '$(BuildingSolutionFile)' != 'true' and '$(BuildingInsideVisualStudio)' != 'true' " />
 
@@ -936,33 +976,54 @@ Copyright (c) Microsoft Corporation. All rights reserved.
   ================================================================================================
   ResolveWixLibraryReferences
 
-    Resolve the library references by copying them to the local build directory. Used in Votive
-    when CopyLocal = true on a wixlib or wix extension reference node.
+    Resolve the library references to full paths.
 
     [IN]
     @(WixLibrary) - The list of .wixlib files.
-    @(WixExtension) - The list of wix dll extension files.
+    
+    [OUT]
+    @(_ResolvedWixLibraryPaths) - Item group with full paths to libraries
   ================================================================================================
   -->
-  <!-- Resolve the library references by copying them to the local build directory. Used in Votive when CopyLocal = true on a wixlib reference node. -->
   <PropertyGroup>
     <ResolveWixLibraryReferencesDependsOn>
       PrepareForBuild;
-      ResolveWixExtensionPaths
     </ResolveWixLibraryReferencesDependsOn>
   </PropertyGroup>
   <Target
     Name="ResolveWixLibraryReferences"
-    Inputs="@(WixLibrary);
-            @(_ResolvedWixExtensionPaths);
-            $(MSBuildAllProjects)"
-    Outputs="@(WixLibrary->'$(OutDir)%(Filename)%(Extension)');
-             @(_ResolvedWixExtensionPaths->'$(OutDir)%(Filename)%(Extension)')"
     DependsOnTargets="$(ResolveWixLibraryReferencesDependsOn)"
-    Condition=" '@(WixLibrary)@(_ResolvedWixExtensionPaths)' != ''">
+    Condition=" '@(WixLibrary)' != ''">
 
-    <!-- TODO: Recurse any project references that build wixlibs or wixext and add their outputs to WixLibrary or WixExtension -->
-    <!-- TODO: Copy the references marked with CopyLocal=true to the output directory -->
+    <!--
+    The WixLibrarySearchPaths property is set to find assemblies in the following order:
+
+        (1) $(ReferencePaths) - the reference paths property, which comes from the .USER file.
+        (2) The hintpath from the referenced item itself, indicated by {HintPathFromItem}.
+        (3) Treat the reference's Include as if it were a real file name.
+        (4) Path specified by the WixExtDir property.
+    -->
+    <CreateProperty Condition=" '$(WixLibrarySearchPaths)' == '' " Value="
+      $(ReferencePaths);
+      {HintPathFromItem};
+      {RawFileName};
+      $(WixExtDir)
+      ">
+      <Output TaskParameter="Value" PropertyName="WixLibrarySearchPaths" />
+    </CreateProperty>
+
+    <ResolveWixReferences
+      WixReferences="@(WixLibrary)"
+      SearchPaths="$(WixLibrarySearchPaths)"
+      SearchFilenameExtensions=".wixlib">
+      <Output TaskParameter="ResolvedWixReferences" ItemName="_AllResolvedWixLibraryPaths" />
+    </ResolveWixReferences>
+    
+    <!-- Remove duplicate library items that would cause build errors -->
+    <RemoveDuplicates Inputs="@(_AllResolvedWixLibraryPaths)">
+      <Output TaskParameter="Filtered" ItemName="_ResolvedWixLibraryPaths" />
+    </RemoveDuplicates>
+
   </Target>
 
   <!--
@@ -1222,7 +1283,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
   <PropertyGroup>
     <CompileDependsOn>
       PrepareForBuild;
-      ResolveWixExtensionPaths
+      ResolveWixExtensionReferences
     </CompileDependsOn>
   </PropertyGroup>
   <Target
@@ -1287,7 +1348,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
   <PropertyGroup>
     <LibDependsOn>
       PrepareForBuild;
-      ResolveWixExtensionPaths
+      ResolveWixExtensionReferences
     </LibDependsOn>
   </PropertyGroup>
   <Target
@@ -1360,7 +1421,10 @@ Copyright (c) Microsoft Corporation. All rights reserved.
     
   ================================================================================================
   -->
-  <Target Name="AssignCultures">
+  <Target 
+    Name="AssignCultures"
+    Condition=" ('$(OutputType)' == 'Package' or '$(OutputType)' == 'PatchCreation' or '$(OutputType)' == 'Module')">
+    
     <WixAssignCulture
       Cultures="$(Cultures)"
       Files="@(EmbeddedResource)"
@@ -1421,7 +1485,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
   <PropertyGroup>
     <LinkDependsOn>
       PrepareForBuild;
-      ResolveWixExtensionPaths;
+      ResolveReferences;
       AssignCultures;
     </LinkDependsOn>
   </PropertyGroup>
@@ -1431,8 +1495,8 @@ Copyright (c) Microsoft Corporation. All rights reserved.
     Inputs="@(CompileObjOutput);
             @(EmbeddedResource);
             @(WixObject);
-            @(WixLibrary);
             @(_ResolvedProjectReferencePaths);
+            @(_ResolvedWixLibraryPaths);
             @(_ResolvedWixExtensionPaths);
             $(MSBuildAllProjects)"
     Outputs="$(TargetPath)"
@@ -1441,7 +1505,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
 
     <!-- Call light using the culture subdirectory for output -->
     <Light
-      ObjectFiles="@(CompileObjOutput);@(WixObject);@(WixLibProjects);@(WixLibrary)"
+      ObjectFiles="@(CompileObjOutput);@(WixObject);@(WixLibProjects);@(_ResolvedWixLibraryPaths)"
       AdditionalOptions="$(LinkerAdditionalOptions)" 
       AllowIdenticalRows="$(AllowIdenticalRows)"
       AllowUnresolvedReferences="$(AllowUnresolvedReferences)"
@@ -1802,7 +1866,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
   ==================================================================================================
   -->
   <PropertyGroup>
-    <PostBuildEventDependsOn></PostBuildEventDependsOn>
+    <PostBuildEventDependsOn>GetTargetPath</PostBuildEventDependsOn>
   </PropertyGroup>
   <Target
     Name="PostBuildEvent"
@@ -1810,7 +1874,23 @@ Copyright (c) Microsoft Corporation. All rights reserved.
       ( '$(RunPostBuildEvent)' != 'OnOutputUpdated' or '$(_TargetOutputTimestampBeforeCompileAndLink)' != '$(_TargetOutputTimestampAfterCompileAndLink)' )"
     DependsOnTargets="$(PostBuildEventDependsOn)">
 
-    <Exec WorkingDirectory="$(OutDir)" Command="$(PostBuildEvent)" />
+    <ReplaceString
+      Text="$(PostBuildEvent)"
+      OldValue="!(TargetPath)"
+      NewValue="$(TargetPath)">
+      
+      <Output TaskParameter="Text" PropertyName="ExpandedPostBuildEvent" />
+    </ReplaceString>
+
+    <ReplaceString
+      Text="$(ExpandedPostBuildEvent)"
+      OldValue="!(TargetPdbPath)"
+      NewValue="$(TargetPdbPath)">
+      
+      <Output TaskParameter="Text" PropertyName="ExpandedPostBuildEvent" />
+    </ReplaceString>
+
+    <Exec WorkingDirectory="$(OutDir)" Command="$(ExpandedPostBuildEvent)" />
   </Target>
 
   <!--

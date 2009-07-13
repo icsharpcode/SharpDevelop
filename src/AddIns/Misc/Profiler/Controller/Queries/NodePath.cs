@@ -97,5 +97,10 @@ namespace ICSharpCode.Profiler.Controller.Queries
 		{
 			return GetEnumerator();
 		}
+		
+		public override string ToString()
+		{
+			return ((previous != null) ? previous.ToString() + "->" : "") + lastId;
+		}
 	}
 }

@@ -700,7 +700,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DomRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
-			DefaultProperty i = new DefaultProperty("Indexer", CreateReturnType(indexerDeclaration.TypeReference), ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			DefaultProperty i = new DefaultProperty("Item", CreateReturnType(indexerDeclaration.TypeReference), ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			i.IsIndexer = true;
 			if (indexerDeclaration.HasGetRegion) {
 				i.GetterRegion = GetRegion(indexerDeclaration.GetRegion.StartLocation, indexerDeclaration.GetRegion.EndLocation);

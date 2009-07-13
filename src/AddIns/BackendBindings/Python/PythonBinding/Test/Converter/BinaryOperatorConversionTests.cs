@@ -115,6 +115,12 @@ namespace PythonBinding.Tests.Converter
 		{
 			Assert.AreEqual("or", NRefactoryToPythonConverter.GetBinaryOperator(BinaryOperatorType.LogicalOr));
 		}
+		
+		[Test]
+		public void BooleanXor()
+		{
+			Assert.AreEqual("^", NRefactoryToPythonConverter.GetBinaryOperator(BinaryOperatorType.ExclusiveOr));
+		}		
 
 		[Test]
 		public void Modulus()
@@ -151,7 +157,7 @@ namespace PythonBinding.Tests.Converter
 		{
 			Assert.AreEqual("<<", NRefactoryToPythonConverter.GetBinaryOperator(BinaryOperatorType.ShiftLeft));
 		}
-		
+	
 		/// <summary>
 		/// Gets the C# code with the binary operator replaced with the
 		/// specified string.

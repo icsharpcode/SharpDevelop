@@ -1,38 +1,30 @@
-/*
- * Created by SharpDevelop.
- * User: Administrator
- * Date: 7/10/2009
- * Time: 11:19 AM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
 using System;
 using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using NUnit.Framework;
+using System.IO;
 
 namespace ICSharpCode.Core.Presentation.Tests
 {
 	[TestFixture]
-    public class UserDefinedGestureProfileTests
+	public class UserDefinedGestureProfileTests
     {
     	UserGesturesProfile profile = null;
     	InputBindingInfo binding = null;
     	KeyGesture gesture = null;
     	
-    	
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			PropertyService.InitializeServiceForUnitTests();
-		}
+    	[TestFixtureSetUp]
+    	public void TestFixtureSetUp()
+    	{
+    		PropertyService.InitializeServiceForUnitTests();
+    	}
     	
     	[SetUp]
     	public void SetuUp()
     	{
     		UserDefinedGesturesManager.CurrentProfile = null;
-        	profile = new UserGesturesProfile();
+    		profile = new UserGesturesProfile { Name = "TestProfile1" };
         	gesture = (KeyGesture)new KeyGestureConverter().ConvertFromInvariantString("Ctrl+A");
         	binding = new InputBindingInfo { OwnerTypeName="Binding", RoutedCommandName="Binding" };
     	}

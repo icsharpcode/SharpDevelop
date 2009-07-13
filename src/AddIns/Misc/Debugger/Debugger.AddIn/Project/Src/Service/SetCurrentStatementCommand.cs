@@ -39,7 +39,8 @@
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
@@ -47,10 +48,14 @@ namespace ICSharpCode.SharpDevelop.Services
 	{
 		public override void Run()
 		{
-			SharpDevelopTextAreaControl textEditor = this.Owner as SharpDevelopTextAreaControl;
-			if (textEditor == null || DebuggerService.CurrentDebugger == null) return;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+				
+			if (provider == null || DebuggerService.CurrentDebugger == null)
+				return;
 			
-			DebuggerService.CurrentDebugger.SetInstructionPointer(textEditor.FileName, textEditor.ActiveTextAreaControl.Caret.Line + 1, textEditor.ActiveTextAreaControl.Caret.Column);
+			ITextEditor textEditor = provider.TextEditor;
+			
+			DebuggerService.CurrentDebugger.SetInstructionPointer(textEditor.FileName, textEditor.Caret.Line, textEditor.Caret.Column);
 		}
 	}
 }

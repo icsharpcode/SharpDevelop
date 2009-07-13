@@ -105,7 +105,7 @@ namespace NUnit.ConsoleRunner
 			string versionText = executingAssembly.GetName().Version.ToString();
 
 			string productName = "NUnit";
-			string copyrightText = "Copyright (C) 2002-2008 Charlie Poole.\r\nCopyright (C) 2002-2004 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov.\r\nCopyright (C) 2000-2002 Philip Craig.\r\nAll Rights Reserved.";
+			string copyrightText = "Copyright (C) 2002-2009 Charlie Poole.\r\nCopyright (C) 2002-2004 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov.\r\nCopyright (C) 2000-2002 Philip Craig.\r\nAll Rights Reserved.";
 
 			object[] objectAttrs = executingAssembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
 			if ( objectAttrs.Length > 0 )
@@ -116,8 +116,12 @@ namespace NUnit.ConsoleRunner
 				copyrightText = ((AssemblyCopyrightAttribute)objectAttrs[0]).Copyright;
 
 			objectAttrs = executingAssembly.GetCustomAttributes(typeof(AssemblyConfigurationAttribute), false);
-			if ( objectAttrs.Length > 0 )
-				versionText += string.Format(" ({0})", ((AssemblyConfigurationAttribute)objectAttrs[0]).Configuration);
+      if (objectAttrs.Length > 0)
+      {
+        string configText = ((AssemblyConfigurationAttribute)objectAttrs[0]).Configuration;
+        if (configText != "")
+          versionText += string.Format(" ({0})", configText);
+      }
 
 			Console.WriteLine(String.Format("{0} version {1}", productName, versionText));
 			Console.WriteLine(copyrightText);

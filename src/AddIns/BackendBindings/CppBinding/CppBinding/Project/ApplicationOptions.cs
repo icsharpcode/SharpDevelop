@@ -11,7 +11,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
 using System.Windows.Forms;
 
-namespace CppBinding.Project
+namespace ICSharpCode.CppBinding.Project
 {
 	/// <summary>
 	/// Application settings panel for c++ project.
@@ -56,17 +56,17 @@ namespace CppBinding.Project
 		{
 			switch (outputType)
 			{
-			    case OutputType.Exe:
-			        return "Application";
-			    case OutputType.Library:
-			        return "DynamicLibrary";
-			    case OutputType.Module:
-			        //TODO: get an apropriate way to handle netmodule creation
-			        //see: http://msdn.microsoft.com/en-us/library/k669k83h(VS.80).aspx
-			        LoggingService.Info(".netmodule output not supported, will produce a class library");
-			        return "DynamicLibrary";
-			    case OutputType.WinExe:
-			        return "Application";
+				case OutputType.Exe:
+					return "Application";
+				case OutputType.Library:
+					return "DynamicLibrary";
+				case OutputType.Module:
+					//TODO: get an apropriate way to handle netmodule creation
+					//see: http://msdn.microsoft.com/en-us/library/k669k83h(VS.80).aspx
+					LoggingService.Info(".netmodule output not supported, will produce a class library");
+					return "DynamicLibrary";
+				case OutputType.WinExe:
+					return "Application";
 			}
 			throw new ArgumentException("Unknown OutputType value " + outputType);
 		}
@@ -74,20 +74,20 @@ namespace CppBinding.Project
 		static string OutputTypeToSubsystem(OutputType outputType)
 		{
 			if (OutputType.WinExe == outputType)
-			    return "Windows";
+				return "Windows";
 			return "Console";
 		}
 		
 		static OutputType ConfigurationTypeToOutputType(string configurationType, string subsystem)
 		{
 			if ("Application" == configurationType && "Windows" != subsystem)
-			    return OutputType.Exe;
+				return OutputType.Exe;
 			else if ("Application" == configurationType && "Windows" == subsystem)
-			    return OutputType.WinExe;
+				return OutputType.WinExe;
 			else if ("DynamicLibrary" == configurationType)
-			    return OutputType.Library;
+				return OutputType.Library;
 			LoggingService.Info("ConfigurationType " +configurationType + " are not supported, will use Library output type");
-			return OutputType.Library;
+				return OutputType.Library;
 		}
 		#endregion
     }

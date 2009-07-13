@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Globalization;
+using System.Resources;
 using System.Security.Permissions;
 
 using ICSharpCode.FormsDesigner;
@@ -116,6 +118,30 @@ namespace ICSharpCode.PythonBinding
 			IEventBindingService eventBindingService = GetService(typeof(IEventBindingService)) as IEventBindingService;
 			return eventBindingService.GetEventProperty(e);
 		}
+
+		/// <summary>
+		/// Gets the resource reader for the specified culture.
+		/// </summary>
+		public IResourceReader GetResourceReader(CultureInfo info)
+		{
+			IResourceService resourceService = (IResourceService)LoaderHost.GetService(typeof(IResourceService));
+			if (resourceService != null) {
+				return resourceService.GetResourceReader(info);
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Gets the resource writer for the specified culture.
+		/// </summary>
+		public IResourceWriter GetResourceWriter(CultureInfo info)
+		{
+			IResourceService resourceService = (IResourceService)LoaderHost.GetService(typeof(IResourceService));
+			if (resourceService != null) {
+				return resourceService.GetResourceWriter(info);
+			}
+			return null;
+		}
 		
 		/// <summary>
 		/// Passes the designer host's root component to the generator so it can update the
@@ -123,7 +149,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		protected override void PerformFlush(IDesignerSerializationManager serializationManager)
 		{
-			generator.MergeRootComponentChanges(base.LoaderHost.RootComponent);
+			generator.MergeRootComponentChanges(LoaderHost.RootComponent, LoaderHost.GetService(typeof(IResourceService)) as IResourceService);
 		}
 		
 		protected override void PerformLoad(IDesignerSerializationManager serializationManager)

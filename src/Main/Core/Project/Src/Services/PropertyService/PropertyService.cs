@@ -72,6 +72,11 @@ namespace ICSharpCode.Core
 			properties.Set(property, value);
 		}
 		
+		public static void Remove(string property)
+		{
+			properties.Remove(property);
+		}
+		
 		public static void Load()
 		{
 			if (properties == null)

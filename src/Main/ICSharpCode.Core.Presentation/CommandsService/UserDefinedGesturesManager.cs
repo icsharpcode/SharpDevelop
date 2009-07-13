@@ -57,7 +57,15 @@ namespace ICSharpCode.Core.Presentation
 			}
 			set {
 				_currentProfile = value;
-				PropertyService.Set("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory", CurrentProfile != null ? CurrentProfile.Path : null);
+				
+				var currentProfilePath = value != null ? value.Path : null;
+				
+				if(currentProfilePath != null) {
+					PropertyService.Set("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory", currentProfilePath);
+				} else {
+					PropertyService.Remove("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory");
+				}
+				
 				_isCurrentProfileLoaded = true;
 			}
 		}

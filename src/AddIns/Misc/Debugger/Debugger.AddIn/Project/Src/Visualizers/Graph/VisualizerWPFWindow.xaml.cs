@@ -77,7 +77,15 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		private void Inspect_Button_Click(object sender, RoutedEventArgs e)
 		{
-			refreshGraph();
+			clearErrorMessage();
+			if (debuggerService.IsProcessRunning)		// TODO will this solve the "Process not paused" exception?
+			{
+				showErrorMessage("Cannot inspect when the process is running.");
+			}
+			else
+			{
+				refreshGraph();
+			}
 		}
 		
 		void layoutViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -91,7 +99,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		void refreshGraph()
 		{
 			bool graphBuiltOk = true;
-			guiClearException();
+			clearErrorMessage();
 			try
 			{
 				this.objectGraph = rebuildGraph();
@@ -99,12 +107,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 			catch(DebuggerVisualizerException ex)
 			{
 				graphBuiltOk = false;
-				guiHandleException(ex);
+				showErrorMessage(ex.Message);
 			}
 			catch(Debugger.GetValueException ex)
 			{
 				graphBuiltOk = false;
-				guiHandleException(ex);
+				showErrorMessage(ex.Message);
 			}
 			if (graphBuiltOk)
 			{
@@ -133,14 +141,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 			//this.graphDrawer.Draw(this.currentPosGraph);
 		}
 		
-		void guiClearException()
+		void clearErrorMessage()
 		{
 			this.pnlError.Visibility = Visibility.Collapsed;
 		}
 		
-		void guiHandleException(System.Exception ex)
+		void showErrorMessage(string message)
 		{
-			this.txtError.Text = ex.Message;
+			this.txtError.Text = message;
 			this.pnlError.Visibility = Visibility.Visible;
 			//MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
 		}

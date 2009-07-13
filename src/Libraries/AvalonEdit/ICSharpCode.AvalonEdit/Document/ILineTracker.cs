@@ -32,6 +32,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Is called immediately before a document line changes length.
+		/// This method will be called whenever the line is changed, even when the length stays as it is.
+		/// The method might be called multiple times for a single line because
+		/// a replacement is internally handled as removal followed by insertion.
 		/// </summary>
 		void SetLineLength(DocumentLine line, int newTotalLength);
 		

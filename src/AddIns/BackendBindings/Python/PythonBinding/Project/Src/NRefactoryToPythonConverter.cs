@@ -13,6 +13,7 @@ using System.Text;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.TextEditor.Document;
 
@@ -21,11 +22,10 @@ namespace ICSharpCode.PythonBinding
 	/// <summary>
 	/// Used to convert VB.NET and C# to Python.
 	/// </summary>
-	public class NRefactoryToPythonConverter : IAstVisitor
+	public class NRefactoryToPythonConverter : NodeTrackingAstVisitor, IOutputFormatter
 	{
-		int indent;
 		string indentString = "\t";
-		StringBuilder codeBuilder;
+		PythonCodeBuilder codeBuilder;
 		
 		// Holds the constructor for the class being converted. This is used to identify class fields.
 		PythonConstructorInfo constructorInfo;
@@ -33,9 +33,17 @@ namespace ICSharpCode.PythonBinding
 		// Holds the parameters of the current method. This is used to identify
 		// references to fields or parameters.
 		List<ParameterDeclarationExpression> methodParameters = new List<ParameterDeclarationExpression>();
+		MethodDeclaration currentMethod;
+		
 		SupportedLanguage language;
 		List<MethodDeclaration> entryPointMethods;
+
+		SpecialNodesInserter specialNodesInserter;
+		INode currentNode;
+		List<Comment> xmlDocComments = new List<Comment>();
 		
+		static readonly string Docstring = "\"\"\"";
+
 		public NRefactoryToPythonConverter(SupportedLanguage language)
 		{
 			this.language = language;
@@ -76,7 +84,7 @@ namespace ICSharpCode.PythonBinding
 			}
 			return false;
 		}
-				
+		
 		/// <summary>
 		/// Gets the indentation string to use in the text editor based on the text editor properties.
 		/// </summary>
@@ -94,11 +102,14 @@ namespace ICSharpCode.PythonBinding
 		public string IndentString {
 			get { return indentString; }
 			set { indentString = value; }
-		}		
+		}
 
 		/// <summary>
 		/// Generates compilation unit from the code.
 		/// </summary>
+		/// <remarks>
+		/// Uses ISpecials so comments can be converted.
+		/// </remarks>
 		/// <param name="source">
 		/// The code to convert to a compilation unit.
 		/// </param>
@@ -106,6 +117,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			using (IParser parser = ParserFactory.CreateParser(language, new StringReader(source))) {
 				parser.Parse();
+				parser.CompilationUnit.UserData = parser.Lexer.SpecialTracker.RetrieveSpecials();
 				return parser.CompilationUnit;
 			}
 		}
@@ -126,12 +138,16 @@ namespace ICSharpCode.PythonBinding
 			// Convert to NRefactory code DOM.
 			CompilationUnit unit = GenerateCompilationUnit(source, language);
 			
-			// Convert to Python code.3
+			SpecialOutputVisitor specialOutputVisitor = new SpecialOutputVisitor(this);
+			specialNodesInserter = new SpecialNodesInserter(unit.UserData as List<ISpecial>, specialOutputVisitor);
+			
+			// Convert to Python code.
 			entryPointMethods = new List<MethodDeclaration>();
-			codeBuilder = new StringBuilder();
+			codeBuilder = new PythonCodeBuilder();
+			codeBuilder.IndentString = indentString;
 			unit.AcceptVisitor(this, null);
 			
-			return codeBuilder.ToString().TrimEnd();
+			return codeBuilder.ToString().Trim();
 		}
 		
 		/// <summary>
@@ -140,6 +156,24 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public ReadOnlyCollection<MethodDeclaration> EntryPointMethods {
 			get { return entryPointMethods.AsReadOnly(); }
+		}
+		
+		/// <summary>
+		/// Generates code to call the main entry point.
+		/// </summary>
+		public string GenerateMainMethodCall(MethodDeclaration methodDeclaration)
+		{
+			StringBuilder code = new StringBuilder();
+			code.Append(GetTypeName(methodDeclaration));
+			code.Append('.');
+			code.Append(methodDeclaration.Name);
+			code.Append('(');
+			if (methodDeclaration.Parameters.Count > 0) {
+				code.Append("None");
+			}
+			code.Append(')');
+			
+			return code.ToString();
 		}
 
 		/// <summary>
@@ -175,6 +209,8 @@ namespace ICSharpCode.PythonBinding
 					return "and";
 				case BinaryOperatorType.LogicalOr:
 					return "or";
+				case BinaryOperatorType.ExclusiveOr:
+					return "^";
 				case BinaryOperatorType.Modulus:
 					return "%";
 				case BinaryOperatorType.Multiply:
@@ -189,30 +225,30 @@ namespace ICSharpCode.PythonBinding
 					return "==";
 			}
 		}
-	
-		public object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data)
+		
+		public override object TrackedVisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data)
 		{
-			Console.WriteLine("VisitAddHandlerStatement");			
+			Console.WriteLine("VisitAddHandlerStatement");
 			return null;
 		}
 		
-		public object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data)
+		public override object TrackedVisitAddressOfExpression(AddressOfExpression addressOfExpression, object data)
 		{
-			Console.WriteLine("VisitAddressOfExpression");			
+			Console.WriteLine("VisitAddressOfExpression");
 			return null;
 		}
 		
-		public object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
+		public override object TrackedVisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			Console.WriteLine("VisitAnonymousMethodExpression");			
+			Console.WriteLine("VisitAnonymousMethodExpression");
 			return null;
 		}
-	
-		public object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
+		
+		public override object TrackedVisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			string arrayType = arrayCreateExpression.CreateType.Type;
+			string arrayType = GetTypeName(arrayCreateExpression.CreateType);
 			if (arrayCreateExpression.ArrayInitializer.CreateExpressions.Count == 0) {
-				Append("System.Array.CreateInstance(" + arrayType);
+				Append("Array.CreateInstance(" + arrayType);
 				if (arrayCreateExpression.Arguments.Count > 0) {
 					foreach (Expression expression in arrayCreateExpression.Arguments) {
 						Append(", ");
@@ -223,8 +259,8 @@ namespace ICSharpCode.PythonBinding
 					Append(", 0)");
 				}
 			} else {
-				Append("System.Array[" + arrayType + "]");
-	
+				Append("Array[" + arrayType + "]");
+				
 				// Add initializers.
 				Append("((");
 				bool firstItem = true;
@@ -240,8 +276,8 @@ namespace ICSharpCode.PythonBinding
 			}
 			return null;
 		}
-				
-		public object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
+		
+		public override object TrackedVisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			switch (assignmentExpression.Op) {
 				case AssignmentOperatorType.Assign:
@@ -249,12 +285,12 @@ namespace ICSharpCode.PythonBinding
 				case AssignmentOperatorType.Add:
 					if (IsAddEventHandler(assignmentExpression)) {
 						return CreateHandlerStatement(assignmentExpression.Left, "+=", assignmentExpression.Right);
-					} 
+					}
 					return CreateSimpleAssignment(assignmentExpression, "+=", data);
 				case AssignmentOperatorType.Subtract:
 					if (IsRemoveEventHandler(assignmentExpression)) {
 						return CreateHandlerStatement(assignmentExpression.Left, "-=", assignmentExpression.Right);
-					} 
+					}
 					return CreateSimpleAssignment(assignmentExpression, "-=", data);
 				case AssignmentOperatorType.Modulus:
 					return CreateSimpleAssignment(assignmentExpression, "%=", data);
@@ -278,16 +314,16 @@ namespace ICSharpCode.PythonBinding
 				case AssignmentOperatorType.Power:
 					return CreateSimpleAssignment(assignmentExpression, "**=", data);
 			}
-					
+			
 			return null;
 		}
 		
-		public object VisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
+		public override object TrackedVisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
 		{
 			return null;
 		}
 		
-		public object VisitAttributeSection(AttributeSection attributeSection, object data)
+		public override object TrackedVisitAttributeSection(AttributeSection attributeSection, object data)
 		{
 			return null;
 		}
@@ -297,13 +333,13 @@ namespace ICSharpCode.PythonBinding
 		/// Python has no concept of a direct base class reference so
 		/// "base" is converted to "self".
 		/// </summary>
-		public object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
+		public override object TrackedVisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			Append("self");
 			return null;
 		}
 		
-		public object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
+		public override object TrackedVisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			binaryOperatorExpression.Left.AcceptVisitor(this, data);
 			Append(" ");
@@ -316,18 +352,18 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Visits the statement's children.
 		/// </summary>
-		public object VisitBlockStatement(BlockStatement blockStatement, object data)
+		public override object TrackedVisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			return blockStatement.AcceptChildren(this, data);
 		}
 		
-		public object VisitBreakStatement(BreakStatement breakStatement, object data)
+		public override object TrackedVisitBreakStatement(BreakStatement breakStatement, object data)
 		{
 			AppendIndentedLine("break");
 			return null;
 		}
 		
-		public object VisitCaseLabel(CaseLabel caseLabel, object data)
+		public override object TrackedVisitCaseLabel(CaseLabel caseLabel, object data)
 		{
 			return null;
 		}
@@ -335,36 +371,36 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Ignore the cast and just visit the expression inside the cast.
 		/// </summary>
-		public object VisitCastExpression(CastExpression castExpression, object data)
+		public override object TrackedVisitCastExpression(CastExpression castExpression, object data)
 		{
 			return castExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public object VisitCatchClause(CatchClause catchClause, object data)
+		public override object TrackedVisitCatchClause(CatchClause catchClause, object data)
 		{
 			Console.WriteLine("VisitCatchClause");
 			return null;
 		}
 		
-		public object VisitCheckedExpression(CheckedExpression checkedExpression, object data)
+		public override object TrackedVisitCheckedExpression(CheckedExpression checkedExpression, object data)
 		{
 			Console.WriteLine("VisitCheckedExpression");
 			return null;
 		}
 		
-		public object VisitCheckedStatement(CheckedStatement checkedStatement, object data)
+		public override object TrackedVisitCheckedStatement(CheckedStatement checkedStatement, object data)
 		{
 			Console.WriteLine("VisitCheckedStatement");
 			return null;
 		}
 		
-		public object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)
+		public override object TrackedVisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data)
 		{
 			Console.WriteLine("VisitClassReferenceExpression");
 			return null;
 		}
 		
-		public object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
+		public override object TrackedVisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			// Visit the child items of the compilation unit.
 			compilationUnit.AcceptChildren(this, data);
@@ -380,7 +416,7 @@ namespace ICSharpCode.PythonBinding
 		/// 
 		/// a = "Ape" if test else "Monkey"
 		/// </summary>
-		public object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
+		public override object TrackedVisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
 		{
 			// Add true part.
 			conditionalExpression.TrueExpression.AcceptVisitor(this, data);
@@ -395,42 +431,43 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
+		public override object TrackedVisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
 		{
+			CreateConstructor(constructorInfo);
 			return null;
 		}
 		
-		public object VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
+		public override object TrackedVisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
 		{
 			Console.WriteLine("VisitConstructorInitializer");
 			return null;
 		}
 		
-		public object VisitContinueStatement(ContinueStatement continueStatement, object data)
+		public override object TrackedVisitContinueStatement(ContinueStatement continueStatement, object data)
 		{
 			AppendIndentedLine("continue");
 			return null;
 		}
 		
-		public object VisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data)
+		public override object TrackedVisitDeclareDeclaration(DeclareDeclaration declareDeclaration, object data)
 		{
 			Console.WriteLine("VisitDeclareDeclaration");
 			return null;
 		}
 		
-		public object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
+		public override object TrackedVisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
 			Console.WriteLine("VisitDefaultValueExpression");
 			return null;
 		}
 		
-		public object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
+		public override object TrackedVisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
 		{
-			Console.WriteLine("VisitDelegateDeclaration");			
+			Console.WriteLine("VisitDelegateDeclaration");
 			return null;
 		}
 		
-		public object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
+		public override object TrackedVisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
 		{
 			AppendIndentedLine("def __del__(self):");
 			IncreaseIndent();
@@ -439,18 +476,18 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitDirectionExpression(DirectionExpression directionExpression, object data)
+		public override object TrackedVisitDirectionExpression(DirectionExpression directionExpression, object data)
 		{
 			Console.WriteLine("VisitDirectionExpression");
 			return null;
 		}
 		
-		public object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data)
+		public override object TrackedVisitDoLoopStatement(DoLoopStatement doLoopStatement, object data)
 		{
 			AppendIndented("while ");
 			doLoopStatement.Condition.AcceptVisitor(this, data);
 			Append(":");
-			AppendNewLine();
+			AppendLine();
 			
 			IncreaseIndent();
 			doLoopStatement.EmbeddedStatement.AcceptVisitor(this, data);
@@ -459,13 +496,13 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 
-		public object VisitElseIfSection(ElseIfSection elseIfSection, object data)
+		public override object TrackedVisitElseIfSection(ElseIfSection elseIfSection, object data)
 		{
 			// Convert condition.
 			AppendIndented("elif ");
 			elseIfSection.Condition.AcceptVisitor(this, data);
 			Append(":");
-			AppendNewLine();
+			AppendLine();
 			
 			// Convert else if body statements.
 			IncreaseIndent();
@@ -475,86 +512,86 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitEmptyStatement(EmptyStatement emptyStatement, object data)
+		public override object TrackedVisitEmptyStatement(EmptyStatement emptyStatement, object data)
 		{
 			Console.WriteLine("VisitEmptyStatement");
 			return null;
 		}
 		
-		public object VisitEndStatement(EndStatement endStatement, object data)
+		public override object TrackedVisitEndStatement(EndStatement endStatement, object data)
 		{
 			Console.WriteLine("VistEndStatement");
 			return null;
 		}
 		
-		public object VisitEraseStatement(EraseStatement eraseStatement, object data)
+		public override object TrackedVisitEraseStatement(EraseStatement eraseStatement, object data)
 		{
 			Console.WriteLine("VisitEraseStatement");
 			return null;
 		}
 		
-		public object VisitErrorStatement(ErrorStatement errorStatement, object data)
+		public override object TrackedVisitErrorStatement(ErrorStatement errorStatement, object data)
 		{
 			Console.WriteLine("VisitErrorStatement");
 			return null;
 		}
 		
-		public object VisitEventAddRegion(EventAddRegion eventAddRegion, object data)
+		public override object TrackedVisitEventAddRegion(EventAddRegion eventAddRegion, object data)
 		{
 			Console.WriteLine("VisitEventAddRegion");
 			return null;
 		}
 		
-		public object VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
+		public override object TrackedVisitEventDeclaration(EventDeclaration eventDeclaration, object data)
 		{
 			Console.WriteLine("VisitEventDeclaration");
 			return null;
 		}
 		
-		public object VisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data)
+		public override object TrackedVisitEventRaiseRegion(EventRaiseRegion eventRaiseRegion, object data)
 		{
 			Console.WriteLine("VisitEventRaiseRegion");
 			return null;
 		}
 		
-		public object VisitEventRemoveRegion(EventRemoveRegion eventRemoveRegion, object data)
+		public override object TrackedVisitEventRemoveRegion(EventRemoveRegion eventRemoveRegion, object data)
 		{
 			Console.WriteLine("VisitEventRemoveRegion");
 			return null;
 		}
 		
-		public object VisitExitStatement(ExitStatement exitStatement, object data)
+		public override object TrackedVisitExitStatement(ExitStatement exitStatement, object data)
 		{
 			Console.WriteLine("VisitExitStatement");
 			return null;
 		}
 		
-		public object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
+		public override object TrackedVisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
 			// Convert the expression.
 			AppendIndented(String.Empty);
 			expressionStatement.Expression.AcceptVisitor(this, data);
-			AppendNewLine();
+			AppendLine();
 			return null;
 		}
 		
-		public object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
-		{					
+		public override object TrackedVisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
+		{
 			return null;
-		}	
-				
-		public object VisitFixedStatement(FixedStatement fixedStatement, object data)
+		}
+		
+		public override object TrackedVisitFixedStatement(FixedStatement fixedStatement, object data)
 		{
 			Console.WriteLine("VisitFixedStatement");
 			return null;
 		}
 		
-		public object VisitForeachStatement(ForeachStatement foreachStatement, object data)
+		public override object TrackedVisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			// Convert the for loop's initializers.
 			AppendIndented(String.Empty);
 			CreateInitStatement(foreachStatement);
-			AppendNewLine();
+			AppendLine();
 
 			// Convert the for loop's test expression.
 			AppendIndentedLine("while enumerator.MoveNext():");
@@ -571,7 +608,7 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitForNextStatement(ForNextStatement forNextStatement, object data)
+		public override object TrackedVisitForNextStatement(ForNextStatement forNextStatement, object data)
 		{
 			Console.WriteLine("VisitForNextStatement");
 			return null;
@@ -587,8 +624,8 @@ namespace ICSharpCode.PythonBinding
 		/// i = 0
 		/// while i &lt; 5:
 		/// </summary>
-		public object VisitForStatement(ForStatement forStatement, object data)
-		{		
+		public override object TrackedVisitForStatement(ForStatement forStatement, object data)
+		{
 			// Convert the for loop's initializers.
 			foreach (Statement statement in forStatement.Initializers) {
 				statement.AcceptVisitor(this, data);
@@ -598,12 +635,12 @@ namespace ICSharpCode.PythonBinding
 			AppendIndented("while ");
 			forStatement.Condition.AcceptVisitor(this, data);
 			Append(":");
-			AppendNewLine();
-					
+			AppendLine();
+			
 			// Visit the for loop's body.
 			IncreaseIndent();
 			forStatement.EmbeddedStatement.AcceptVisitor(this, data);
-		
+			
 			// Convert the for loop's increment statement.
 			foreach (Statement statement in forStatement.Iterator) {
 				statement.AcceptVisitor(this, data);
@@ -613,21 +650,21 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
+		public override object TrackedVisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
 		{
 			Console.WriteLine("VisitGotoCaseStatement");
 			return null;
 		}
 		
-		public object VisitGotoStatement(GotoStatement gotoStatement, object data)
+		public override object TrackedVisitGotoStatement(GotoStatement gotoStatement, object data)
 		{
 			Console.WriteLine("VisitGotoStatement");
 			return null;
 		}
 		
-		public object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
+		public override object TrackedVisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
-			if (IsField(identifierExpression.Identifier)) {	
+			if (IsField(identifierExpression.Identifier)) {
 				Append("self._" + identifierExpression.Identifier);
 			} else {
 				Append(identifierExpression.Identifier);
@@ -635,13 +672,13 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
+		public override object TrackedVisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
 			// Convert condition.
 			AppendIndented("if ");
 			ifElseStatement.Condition.AcceptVisitor(this, data);
 			Append(":");
-			AppendNewLine();
+			AppendLine();
 			
 			// Convert true statements.
 			IncreaseIndent();
@@ -670,14 +707,14 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
+		public override object TrackedVisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
 		{
 			Console.WriteLine("VisitIndexerDeclaration");
 			return null;
 		}
 		
-		public object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
-		{				
+		public override object TrackedVisitIndexerExpression(IndexerExpression indexerExpression, object data)
+		{
 			indexerExpression.TargetObject.AcceptVisitor(this, data);
 
 			// Add indices.
@@ -690,29 +727,34 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data)
+		public override object TrackedVisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data)
 		{
 			Console.WriteLine("VisitInnerClassTypeReference");
 			return null;
 		}
 		
-		public object VisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data)
+		public override object TrackedVisitInterfaceImplementation(InterfaceImplementation interfaceImplementation, object data)
 		{
 			Console.WriteLine("VisitInterfaceImplementation");
 			return null;
 		}
 
-		public object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
-		{					
+		public override object TrackedVisitInvocationExpression(InvocationExpression invocationExpression, object data)
+		{
 			MemberReferenceExpression memberRefExpression = invocationExpression.TargetObject as MemberReferenceExpression;
 			IdentifierExpression identifierExpression = invocationExpression.TargetObject as IdentifierExpression;
 			if (memberRefExpression != null) {
 				memberRefExpression.TargetObject.AcceptVisitor(this, data);
 				Append("." +  memberRefExpression.MemberName);
 			} else if (identifierExpression != null) {
-				Append("self." + identifierExpression.Identifier);
+				if (IsStatic(currentMethod)) {
+					Append(GetTypeName(currentMethod) + ".");
+				} else {
+					Append("self.");
+				}
+				Append(identifierExpression.Identifier);
 			}
-				
+			
 			// Create method parameters
 			Append("(");
 			bool firstParam = true;
@@ -728,7 +770,7 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitLabelStatement(LabelStatement labelStatement, object data)
+		public override object TrackedVisitLabelStatement(LabelStatement labelStatement, object data)
 		{
 			Console.WriteLine("VisitLabelStatement");
 			return null;
@@ -737,22 +779,22 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// The variable declaration is not created if the variable has no initializer.
 		/// </summary>
-		public object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
-		{			
+		public override object TrackedVisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
+		{
 			VariableDeclaration variableDeclaration = localVariableDeclaration.Variables[0];
 			if (!variableDeclaration.Initializer.IsNull) {
 
 				// Create variable declaration.
 				AppendIndented(variableDeclaration.Name + " = ");
-			
+				
 				// Generate the variable initializer.
 				variableDeclaration.Initializer.AcceptVisitor(this, data);
-				AppendNewLine();
+				AppendLine();
 			}
 			return null;
 		}
 		
-		public object VisitLockStatement(LockStatement lockStatement, object data)
+		public override object TrackedVisitLockStatement(LockStatement lockStatement, object data)
 		{
 			Console.WriteLine("VisitLockStatement");
 			return null;
@@ -761,18 +803,20 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Adds a CodeMemberMethod to the current class being visited.
 		/// </summary>
-		public object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+		public override object TrackedVisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
 			// Add method name.
+			currentMethod = methodDeclaration;
 			string methodName = methodDeclaration.Name;
 			AppendIndented("def " + methodName);
-					
+			
 			// Add the parameters.
 			AddParameters(methodDeclaration);
 			methodParameters = methodDeclaration.Parameters;
-			AppendNewLine();
+			AppendLine();
 			
 			IncreaseIndent();
+			AppendDocstring(xmlDocComments);
 			if (methodDeclaration.Body.Children.Count > 0) {
 				methodDeclaration.Body.AcceptVisitor(this, data);
 			} else {
@@ -780,20 +824,22 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			DecreaseIndent();
-			AppendNewLine();
+			AppendLine();
 			
 			if (IsStatic(methodDeclaration)) {
 				AppendIndentedLine(methodDeclaration.Name + " = staticmethod(" + methodDeclaration.Name + ")");
-				AppendNewLine();
+				AppendLine();
 				
 				// Save Main entry point method.
 				SaveMethodIfMainEntryPoint(methodDeclaration);
 			}
 			
+			currentMethod = null;
+			
 			return null;
 		}
 		
-		public object VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
+		public override object TrackedVisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
 			Append(namedArgumentExpression.Name);
 			Append(" = ");
@@ -804,7 +850,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Visits the namespace declaration and all child nodes.
 		/// </summary>
-		public object VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
+		public override object TrackedVisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			return namespaceDeclaration.AcceptChildren(this, data);
 		}
@@ -813,7 +859,7 @@ namespace ICSharpCode.PythonBinding
 		/// Converts an NRefactory's ObjectCreateExpression to a code dom's
 		/// CodeObjectCreateExpression.
 		/// </summary>
-		public object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
+		public override object TrackedVisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			Append(objectCreateExpression.CreateType.Type);
 			if (IsGenericType(objectCreateExpression)) {
@@ -845,36 +891,36 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitOnErrorStatement(OnErrorStatement onErrorStatement, object data)
+		public override object TrackedVisitOnErrorStatement(OnErrorStatement onErrorStatement, object data)
 		{
 			return null;
 		}
 		
-		public object VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
+		public override object TrackedVisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
 		{
 			Console.WriteLine("VisitOperatorDeclaration");
 			return null;
 		}
 		
-		public object VisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
+		public override object TrackedVisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
 		{
 			Console.WriteLine("VisitOptionDeclaration");
 			return null;
 		}
 		
-		public object VisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data)
+		public override object TrackedVisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data)
 		{
 			Console.WriteLine("ExternAliasDirective");
 			return null;
 		}
 		
-		public object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+		public override object TrackedVisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			Console.WriteLine("VisitParameterDeclarationExpression");
 			return null;
 		}
 		
-		public object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
+		public override object TrackedVisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			Append("(" );
 			parenthesizedExpression.Expression.AcceptVisitor(this, data);
@@ -882,13 +928,13 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
+		public override object TrackedVisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
 			Console.WriteLine("VisitPointerReferenceExpression");
 			return null;
 		}
 		
-		public object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
+		public override object TrackedVisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			if (primitiveExpression.Value == null) {
 				Append("None");
@@ -900,7 +946,7 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
+		public override object TrackedVisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			string propertyName = propertyDeclaration.Name;
 
@@ -909,53 +955,53 @@ namespace ICSharpCode.PythonBinding
 			IncreaseIndent();
 			propertyDeclaration.GetRegion.Block.AcceptVisitor(this, data);
 			DecreaseIndent();
-			AppendNewLine();
-		
+			AppendLine();
+			
 			// Add set statements.
 			AppendIndentedLine("def set_" + propertyName + "(self, value):");
 			IncreaseIndent();
 			propertyDeclaration.SetRegion.Block.AcceptVisitor(this, data);
 			DecreaseIndent();
-			AppendNewLine();
+			AppendLine();
 			
 			// Add property definition.
 			AppendIndentedLine(String.Concat(propertyName, " = property(fget=get_", propertyName, ", fset=set_", propertyName, ")"));
-			AppendNewLine();
+			AppendLine();
 			
 			return null;
 		}
 		
-		public object VisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data)
+		public override object TrackedVisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data)
 		{
 			Console.WriteLine("VisitPropertyGetRegion");
 			return null;
 		}
 		
-		public object VisitPropertySetRegion(PropertySetRegion propertySetRegion, object data)
+		public override object TrackedVisitPropertySetRegion(PropertySetRegion propertySetRegion, object data)
 		{
 			Console.WriteLine("VisitPropertySetRegion");
 			return null;
 		}
 		
-		public object VisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data)
+		public override object TrackedVisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data)
 		{
 			Console.WriteLine("VisitRaiseEventStatement");
 			return null;
 		}
 		
-		public object VisitReDimStatement(ReDimStatement reDimStatement, object data)
+		public override object TrackedVisitReDimStatement(ReDimStatement reDimStatement, object data)
 		{
 			Console.WriteLine("VisitReDimStatement");
 			return null;
 		}
 		
-		public object VisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data)
+		public override object TrackedVisitRemoveHandlerStatement(RemoveHandlerStatement removeHandlerStatement, object data)
 		{
 			Console.WriteLine("VisitRemoveHandlerStatement");
 			return null;
 		}
 		
-		public object VisitResumeStatement(ResumeStatement resumeStatement, object data)
+		public override object TrackedVisitResumeStatement(ResumeStatement resumeStatement, object data)
 		{
 			Console.WriteLine("VisitResumeStatement");
 			return null;
@@ -965,36 +1011,36 @@ namespace ICSharpCode.PythonBinding
 		/// Converts a NRefactory ReturnStatement to a code dom's
 		/// CodeMethodReturnStatement.
 		/// </summary>
-		public object VisitReturnStatement(ReturnStatement returnStatement, object data)
+		public override object TrackedVisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
 			AppendIndented("return ");
 			returnStatement.Expression.AcceptVisitor(this, data);
-			AppendNewLine();
+			AppendLine();
 			return null;
 		}
 		
-		public object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
+		public override object TrackedVisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
 		{
 			Console.WriteLine("VisitSizeOfExpression");
 			return null;
 		}
 		
-		public object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
+		public override object TrackedVisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
 		{
 			return null;
 		}
 		
-		public object VisitStopStatement(StopStatement stopStatement, object data)
+		public override object TrackedVisitStopStatement(StopStatement stopStatement, object data)
 		{
 			return null;
 		}
 		
-		public object VisitSwitchSection(SwitchSection switchSection, object data)
+		public override object TrackedVisitSwitchSection(SwitchSection switchSection, object data)
 		{
 			return null;
 		}
 		
-		public object VisitSwitchStatement(SwitchStatement switchStatement, object data)
+		public override object TrackedVisitSwitchStatement(SwitchStatement switchStatement, object data)
 		{
 			bool firstSection = true;
 			foreach (SwitchSection section in switchStatement.SwitchSections) {
@@ -1005,18 +1051,18 @@ namespace ICSharpCode.PythonBinding
 				IncreaseIndent();
 				CreateSwitchCaseBody(section);
 				DecreaseIndent();
-						
+				
 				firstSection = false;
 			}
 			return null;
 		}
 		
-		public object VisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
+		public override object TrackedVisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
 		{
 			return null;
 		}
 		
-		public object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
+		public override object TrackedVisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			Append("self");
 			return null;
@@ -1025,11 +1071,11 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Converts an NRefactory throw statement to a code dom's throw exception statement.
 		/// </summary>
-		public object VisitThrowStatement(ThrowStatement throwStatement, object data)
+		public override object TrackedVisitThrowStatement(ThrowStatement throwStatement, object data)
 		{
 			AppendIndented("raise ");
-		 	throwStatement.Expression.AcceptVisitor(this, data);
-		 	AppendNewLine();
+			throwStatement.Expression.AcceptVisitor(this, data);
+			AppendLine();
 			return null;
 		}
 		
@@ -1037,8 +1083,8 @@ namespace ICSharpCode.PythonBinding
 		/// Converts an NRefactory try-catch statement to a code dom
 		/// try-catch statement.
 		/// </summary>
-		public object VisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
-		{			
+		public override object TrackedVisitTryCatchStatement(TryCatchStatement tryCatchStatement, object data)
+		{
 			// Convert try-catch body.
 			AppendIndentedLine("try:");
 			IncreaseIndent();
@@ -1050,8 +1096,8 @@ namespace ICSharpCode.PythonBinding
 				AppendIndented("except ");
 				Append(catchClause.TypeReference.Type);
 				Append(", " + catchClause.VariableName + ":");
-				AppendNewLine();
-			
+				AppendLine();
+				
 				// Convert catch child statements.
 				IncreaseIndent();
 				catchClause.StatementBlock.AcceptVisitor(this, data);
@@ -1070,15 +1116,22 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Visits a class.
 		/// </summary>
-		public object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+		public override object TrackedVisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
+			codeBuilder.AppendLineIfPreviousLineIsCode();
 			AppendIndentedLine("class " + typeDeclaration.Name + "(object):");
 			IncreaseIndent();
+			AppendDocstring(xmlDocComments);
 			if (typeDeclaration.Children.Count > 0) {
 				// Look for fields or a constructor for the type.
 				constructorInfo = PythonConstructorInfo.GetConstructorInfo(typeDeclaration);
 				if (constructorInfo != null) {
-					CreateConstructor(constructorInfo);
+					if (constructorInfo.Constructor != null) {
+						// Generate constructor later when VisitConstructorDeclaration method is called.
+						// This allows the constructor comments to be converted in the right place.
+					} else {
+						CreateConstructor(constructorInfo);
+					}
 				}
 				
 				// Visit the rest of the class.
@@ -1091,36 +1144,34 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
+		public override object TrackedVisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
+			codeBuilder.InsertIndentedLine("import clr\r\n");
 			Append("clr.GetClrType(");
-			Append(typeOfExpression.TypeReference.Type);
+			Append(GetTypeName(typeOfExpression.TypeReference));
 			Append(")");
 			return null;
 		}
 		
-		public object VisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data)
+		public override object TrackedVisitTypeOfIsExpression(TypeOfIsExpression typeOfIsExpression, object data)
 		{
 			Console.WriteLine("VisitTypeOfIsExpression");
 			return null;
 		}
 		
-		public object VisitTypeReference(TypeReference typeReference, object data)
+		public override object TrackedVisitTypeReference(TypeReference typeReference, object data)
 		{
 			Console.WriteLine("VisitTypeReference");
 			return null;
 		}
 		
-		public object VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
+		public override object TrackedVisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
 			Console.WriteLine("VisitTypeReferenceExpression");
 			return null;
 		}
 		
-		/// <summary>
-		/// Converts a unary operator expression to a code dom expression.
-		/// </summary>
-		public object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
+		public override object TrackedVisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			switch (unaryOperatorExpression.Op) {
 				case UnaryOperatorType.PostIncrement:
@@ -1143,22 +1194,22 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
+		public override object TrackedVisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
 		{
 			return null;
 		}
 		
-		public object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data)
+		public override object TrackedVisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data)
 		{
 			return null;
 		}
 		
-		public object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
+		public override object TrackedVisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
 		{
 			return null;
 		}
 		
-		public object VisitUsing(Using @using, object data)
+		public override object TrackedVisitUsing(Using @using, object data)
 		{
 			return null;
 		}
@@ -1166,57 +1217,53 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Converts using declarations into Python import statements.
 		/// </summary>
-		public object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
+		public override object TrackedVisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
 			// Add import statements for each using.
-			foreach (Using @using in usingDeclaration.Usings) {		
+			foreach (Using @using in usingDeclaration.Usings) {
 				AppendIndentedLine("from " + @using.Name + " import *");
 			}
 			return null;
 		}
 		
-		public object VisitUsingStatement(UsingStatement usingStatement, object data)
+		public override object TrackedVisitUsingStatement(UsingStatement usingStatement, object data)
 		{
 			return null;
 		}
 		
-		public object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
+		public override object TrackedVisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
 		{
 			AppendIndented(variableDeclaration.Name + " = ");
 			variableDeclaration.Initializer.AcceptVisitor(this, data);
-			AppendNewLine();
+			AppendLine();
 			return null;
 		}
 		
-		public object VisitWithStatement(WithStatement withStatement, object data)
+		public override object TrackedVisitWithStatement(WithStatement withStatement, object data)
 		{
 			return null;
 		}
 		
-		public object VisitYieldStatement(YieldStatement yieldStatement, object data)
+		public override object TrackedVisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
 			return null;
 		}
 		
-		public object VisitCollectionInitializerExpression(CollectionInitializerExpression collectionInitializerExpression, object data)
+		public override object TrackedVisitCollectionInitializerExpression(CollectionInitializerExpression collectionInitializerExpression, object data)
 		{
 			return null;
 		}
 		
-		public object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
+		public override object TrackedVisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
 			return null;
 		}
 
-		/// <summary>
-		/// Converts an NRefactory MemberReferenceExpression to a
-		/// code dom's CodeFieldReferenceExpression.
-		/// </summary>
-		public object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+		public override object TrackedVisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			if (memberReferenceExpression.TargetObject is ThisReferenceExpression) {
-				Append("._"); 
+				Append("._");
 			} else {
 				Append(".");
 			}
@@ -1224,101 +1271,161 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public object VisitQueryExpression(QueryExpression queryExpression, object data)
+		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data)
+		public override object TrackedVisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data)
+		public override object TrackedVisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data)
+		public override object TrackedVisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data)
+		public override object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause queryExpressionLetClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data)
+		public override object TrackedVisitQueryExpressionOrderClause(QueryExpressionOrderClause queryExpressionOrderClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data)
+		public override object TrackedVisitQueryExpressionOrdering(QueryExpressionOrdering queryExpressionOrdering, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionSelectClause(QueryExpressionSelectClause queryExpressionSelectClause, object data)
+		public override object TrackedVisitQueryExpressionSelectClause(QueryExpressionSelectClause queryExpressionSelectClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data)
+		public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitExpressionRangeVariable(ExpressionRangeVariable expressionRangeVariable, object data)
+		public override object TrackedVisitExpressionRangeVariable(ExpressionRangeVariable expressionRangeVariable, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionAggregateClause(QueryExpressionAggregateClause queryExpressionAggregateClause, object data)
+		public override object TrackedVisitQueryExpressionAggregateClause(QueryExpressionAggregateClause queryExpressionAggregateClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionDistinctClause(QueryExpressionDistinctClause queryExpressionDistinctClause, object data)
+		public override object TrackedVisitQueryExpressionDistinctClause(QueryExpressionDistinctClause queryExpressionDistinctClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionGroupJoinVBClause(QueryExpressionGroupJoinVBClause queryExpressionGroupJoinVBClause, object data)
+		public override object TrackedVisitQueryExpressionGroupJoinVBClause(QueryExpressionGroupJoinVBClause queryExpressionGroupJoinVBClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data)
+		public override object TrackedVisitQueryExpressionGroupVBClause(QueryExpressionGroupVBClause queryExpressionGroupVBClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionJoinConditionVB(QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data)
+		public override object TrackedVisitQueryExpressionJoinConditionVB(QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionJoinVBClause(QueryExpressionJoinVBClause queryExpressionJoinVBClause, object data)
+		public override object TrackedVisitQueryExpressionJoinVBClause(QueryExpressionJoinVBClause queryExpressionJoinVBClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data)
+		public override object TrackedVisitQueryExpressionLetVBClause(QueryExpressionLetVBClause queryExpressionLetVBClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionPartitionVBClause(QueryExpressionPartitionVBClause queryExpressionPartitionVBClause, object data)
+		public override object TrackedVisitQueryExpressionPartitionVBClause(QueryExpressionPartitionVBClause queryExpressionPartitionVBClause, object data)
 		{
 			return null;
 		}
 		
-		public object VisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data)
+		public override object TrackedVisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data)
 		{
 			return null;
 		}
+		
+		/// <summary>
+		/// Appends any comments that appear before this node.
+		/// </summary>
+		protected override void BeginVisit(INode node)
+		{
+			xmlDocComments.Clear();
+			currentNode = node;
+			specialNodesInserter.AcceptNodeStart(node);
+		}
+		
+		#region IOutputFormatter
+		
+		int IOutputFormatter.IndentationLevel {
+			get { return codeBuilder.Indent; }
+			set { ; }
+		}
+		
+		string IOutputFormatter.Text {
+			get { return String.Empty; }
+		}
+		
+		bool IOutputFormatter.IsInMemberBody {
+			get { return false; }
+			set { ; }
+		}
+		
+		void IOutputFormatter.NewLine()
+		{
+		}
+		
+		void IOutputFormatter.Indent()
+		{
 			
+		}
+		
+		void IOutputFormatter.PrintComment(Comment comment, bool forceWriteInPreviousBlock)
+		{
+			if (comment.CommentType == CommentType.SingleLine) {
+				AppendSingleLineComment(comment);
+			} else if (comment.CommentType == CommentType.Block) {
+				AppendMultilineComment(comment);
+			} else if (comment.CommentType == CommentType.Documentation) {
+				if (SupportsDocstring(currentNode)) {
+					xmlDocComments.Add(comment);
+				} else {
+					AppendSingleLineComment(comment);
+				}
+			}
+		}
+				
+		void IOutputFormatter.PrintPreprocessingDirective(PreprocessingDirective directive, bool forceWriteInPreviousBlock)
+		{
+		}
+		
+		void IOutputFormatter.PrintBlankLine(bool forceWriteInPreviousBlock)
+		{
+		}
+		
+		#endregion
+		
 		/// <summary>
 		/// Checks that the field declaration has an initializer that
 		/// sets an initial value.
@@ -1342,7 +1449,7 @@ namespace ICSharpCode.PythonBinding
 
 		/// <summary>
 		/// Converts a post or pre decrement expression to an assign statement.
-		/// This converts "i--" and "--i" to "i -= 1" since python 
+		/// This converts "i--" and "--i" to "i -= 1" since python
 		/// does not support post increment expressions.
 		/// </summary>
 		object CreateDecrementStatement(UnaryOperatorExpression unaryOperatorExpression)
@@ -1352,7 +1459,7 @@ namespace ICSharpCode.PythonBinding
 		
 		/// <summary>
 		/// Converts a post or pre increment expression to an assign statement.
-		/// This converts "i++" and "++i" to "i += 1" since python 
+		/// This converts "i++" and "++i" to "i += 1" since python
 		/// does not support post increment expressions.
 		/// </summary>
 		object CreateIncrementStatement(UnaryOperatorExpression unaryOperatorExpression, int increment, string binaryOperator)
@@ -1386,13 +1493,16 @@ namespace ICSharpCode.PythonBinding
 		{
 			IdentifierExpression identifierExpression = foreachStatement.Expression as IdentifierExpression;
 			InvocationExpression invocationExpression = foreachStatement.Expression as InvocationExpression;
+			MemberReferenceExpression memberRefExpression = foreachStatement.Expression as MemberReferenceExpression;
 			if (identifierExpression != null) {
 				Append(identifierExpression.Identifier);
 			} else if (invocationExpression != null) {
 				invocationExpression.AcceptVisitor(this, null);
+			} else if (memberRefExpression != null) {
+				memberRefExpression.AcceptVisitor(this, null);
 			}
 		}
-				
+		
 		/// <summary>
 		/// Determines whether the identifier refers to a field in the
 		/// current class.
@@ -1415,7 +1525,7 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return false;
-		}		
+		}
 		
 		/// <summary>
 		/// Creates an attach statement (i.e. button.Click += ButtonClick)
@@ -1477,7 +1587,7 @@ namespace ICSharpCode.PythonBinding
 			return (assignmentExpression.Op == AssignmentOperatorType.Subtract) &&
 				(assignmentExpression.Left is MemberReferenceExpression);
 		}
-				
+		
 		void Append(string code)
 		{
 			codeBuilder.Append(code);
@@ -1485,10 +1595,7 @@ namespace ICSharpCode.PythonBinding
 		
 		void AppendIndented(string code)
 		{
-			for (int i = 0; i < indent; ++i) {
-				codeBuilder.Append(indentString);
-			}
-			codeBuilder.Append(code);
+			codeBuilder.AppendIndented(code);
 		}
 		
 		void AppendIndentedPassStatement()
@@ -1498,22 +1605,22 @@ namespace ICSharpCode.PythonBinding
 		
 		void AppendIndentedLine(string code)
 		{
-			AppendIndented(code + "\r\n");
+			codeBuilder.AppendIndentedLine(code);
 		}
 		
-		void AppendNewLine()
+		void AppendLine()
 		{
-			Append("\r\n");
+			codeBuilder.AppendLine();
 		}
 		
 		void IncreaseIndent()
 		{
-			++indent;
+			codeBuilder.IncreaseIndent();
 		}
 		
 		void DecreaseIndent()
 		{
-			--indent;
+			codeBuilder.DecreaseIndent();
 		}
 		
 		void CreateConstructor(PythonConstructorInfo constructorInfo)
@@ -1525,10 +1632,11 @@ namespace ICSharpCode.PythonBinding
 			} else {
 				AppendIndented("def __init__(self):");
 			}
-			AppendNewLine();
+			AppendLine();
 			
 			// Add fields at start of constructor.
 			IncreaseIndent();
+			AppendDocstring(xmlDocComments);
 			if (constructorInfo.Fields.Count > 0) {
 				foreach (FieldDeclaration field in constructorInfo.Fields) {
 					// Ignore field if it has no initializer.
@@ -1536,15 +1644,15 @@ namespace ICSharpCode.PythonBinding
 						CreateFieldInitialization(field);
 					}
 				}
-			}  
+			}
 			
 			if (!IsEmptyConstructor(constructorInfo.Constructor)) {
 				constructorInfo.Constructor.Body.AcceptVisitor(this, null);
-				AppendNewLine();
+				AppendLine();
 			} else if (constructorInfo.Fields.Count == 0) {
 				AppendIndentedPassStatement();
 			} else {
-				AppendNewLine();
+				AppendLine();
 			}
 			
 			DecreaseIndent();
@@ -1577,7 +1685,7 @@ namespace ICSharpCode.PythonBinding
 		/// Adds the method or constructor parameters.
 		/// </summary>
 		void AddParameters(ParametrizedNode method)
-		{			
+		{
 			Append("(");
 			List<ParameterDeclarationExpression> parameters = method.Parameters;
 			if (parameters.Count > 0) {
@@ -1593,16 +1701,16 @@ namespace ICSharpCode.PythonBinding
 			} else {
 				if (!IsStatic(method)) {
 					Append("self");
-				}				
+				}
 			}
 			Append("):");
 		}
-				
+		
 		bool IsStatic(ParametrizedNode method)
 		{
 			return (method.Modifier & Modifiers.Static) == Modifiers.Static;
 		}
-			
+		
 		/// <summary>
 		/// Creates assignments of the form:
 		/// i = 1
@@ -1653,12 +1761,12 @@ namespace ICSharpCode.PythonBinding
 					}
 				} else {
 					CreateSwitchCaseCondition(" or ", switchExpression, label);
-				}	
+				}
 				firstLabel = false;
-			}	
+			}
 			
 			Append(":");
-			AppendNewLine();
+			AppendLine();
 		}
 		
 		/// <summary>
@@ -1737,12 +1845,97 @@ namespace ICSharpCode.PythonBinding
 				}
 				TypeReference typeRef = typeRefs[i];
 				if (typeRef.IsArrayType) {
-					Append("System.Array[" + typeRef.Type + "]");
+					Append("Array[" + GetTypeName(typeRef) + "]");
 				} else {
-					Append(typeRef.Type);
+					Append(GetTypeName(typeRef));
 				}
 			}
 			Append("]");
+		}
+		
+		/// <summary>
+		/// If the type is String or Int32 then it returns "str" and "int".
+		/// </summary>
+		/// <remarks>If the type is a keyword (e.g. uint) then the TypeRef.Type returns
+		/// the full type name. It returns the short type name if the type is not a keyword. So
+		/// this method will strip the namespace from the name.
+		/// </remarks>
+		string GetTypeName(TypeReference typeRef)
+		{
+			string name = typeRef.Type;
+			if (name == typeof(String).FullName) {
+				return "str";
+			} else if ((name == typeof(int).FullName) || ((name == typeof(int).Name))) {
+				return "int";
+			} else if (typeRef.IsKeyword) {
+				// Remove namespace from type name.
+				int index = name.LastIndexOf('.');
+				if (index > 0) {
+					return name.Substring(index + 1);
+				}
+			}
+			return name;
+		}
+		
+		/// <summary>
+		/// Gets the type name that defines the method.
+		/// </summary>
+		static string GetTypeName(MethodDeclaration methodDeclaration)
+		{
+			TypeDeclaration type = methodDeclaration.Parent as TypeDeclaration;
+			return type.Name;
+		}
+		
+		void AppendMultilineComment(Comment comment)
+		{
+			string[] lines = comment.CommentText.Split(new char[] {'\n'});
+			for (int i = 0; i < lines.Length; ++i) {
+				string line = "# " + lines[i].Trim();
+				if ((i == 0) && !comment.CommentStartsLine) {
+					codeBuilder.AppendToPreviousLine(" " + line);
+				} else {
+					AppendIndentedLine(line);
+				}
+			}
+		}
+
+		void AppendSingleLineComment(Comment comment)
+		{
+			if (comment.CommentStartsLine) {
+				codeBuilder.AppendIndentedLine("#" + comment.CommentText);
+			} else {
+				codeBuilder.AppendToPreviousLine(" #" + comment.CommentText);
+			}			
+		}
+		
+		void AppendDocstring(List<Comment> xmlDocComments)
+		{
+			if (xmlDocComments.Count > 1) {
+				// Multiline docstring.
+				for (int i = 0; i < xmlDocComments.Count; ++i) {
+					string line = xmlDocComments[i].CommentText;
+					if (i == 0) {
+						AppendIndented(Docstring);
+					} else {
+						AppendIndented(String.Empty);
+					}
+					Append(line);
+					AppendLine();
+				}
+				AppendIndentedLine(Docstring);
+			} else if (xmlDocComments.Count == 1) {
+				// Single line docstring.
+				AppendIndentedLine(Docstring + xmlDocComments[0].CommentText + Docstring);
+			}
+		}
+		
+		/// <summary>
+		/// Returns true if the node is a type declaration or a method since these can have 
+		/// python docstrings.
+		/// </summary>
+		bool SupportsDocstring(INode node)
+		{
+			return (node is TypeDeclaration) || (node is MethodDeclaration) || (node is ConstructorDeclaration);
 		}
 	}
 }

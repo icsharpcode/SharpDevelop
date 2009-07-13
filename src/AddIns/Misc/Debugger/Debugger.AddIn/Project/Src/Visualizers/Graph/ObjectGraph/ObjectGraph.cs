@@ -55,7 +55,7 @@ namespace Debugger.AddIn.Visualizers.Graph
         {
         	seenNodes.Add(root);
         	
-        	foreach(var prop in root.ComplexProperties)
+        	foreach(var prop in root.Properties)
         	{
         		if (prop.TargetNode != null && !seenNodes.Contains(prop.TargetNode))
         			determineReachableNodes(prop.TargetNode, seenNodes);

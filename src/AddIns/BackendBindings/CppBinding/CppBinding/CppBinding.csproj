@@ -4,7 +4,6 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>CppBinding</RootNamespace>
     <AssemblyName>CppBinding</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>C:\Users\trecio\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
@@ -27,6 +26,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunCodeAnalysis>False</RunCodeAnalysis>
+    <RootNamespace>ICSharpCode.CppBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\AddIns\AddIns\BackendBindings\CppBinding\</OutputPath>
@@ -66,10 +66,24 @@
     <Compile Include="Project\ApplicationOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Project\LinkerOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ItemDefinitionGroupBinding.cs" />
     <Compile Include="Project\ObservedBinding.cs" />
+    <Compile Include="Project\OpenStringListEditorEvent.cs" />
+    <Compile Include="Project\PreprocessorOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Project\ProjectConfigurationProjectItem.cs" />
     <Compile Include="Project\SpecifyCliRuntimeLibraryCommand.cs" />
     <Compile Include="Project\CppProject.cs" />
+    <Compile Include="Project\StringListEditorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Project\StringListEditorDialog.Designer.cs">
+      <DependentUpon>StringListEditorDialog.cs</DependentUpon>
+    </Compile>
     <None Include="CppBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -77,6 +91,8 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="CppLanguageBinding.cs" />
     <Compile Include="Parser\CppParser.cs" />
+    <EmbeddedResource Include="Resources\PreprocessorOptions.xfrm" />
+    <EmbeddedResource Include="Resources\LinkerOptions.xfrm" />
     <None Include="Templates\ConsoleProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -115,4 +131,5 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
 </Project>
