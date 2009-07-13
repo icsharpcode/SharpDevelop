@@ -113,7 +113,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
         /// <param name="mode">Filtering mode</param>
         public void FilterGesture(InputGestureCollection inputGestureTemplateCollection, GestureCompareMode mode)
         {
-            Debug.WriteLine("Changed to" + new InputGestureCollectionConverter().ConvertToInvariantString(inputGestureTemplateCollection));
+        	Console.WriteLine("FilterGesture: {0}, mode={1}", new InputGestureCollectionConverter().ConvertToInvariantString(inputGestureTemplateCollection), mode);
             foreach (var entry in RootEntries)
             {
                 var subCategoryIsVisible = false;

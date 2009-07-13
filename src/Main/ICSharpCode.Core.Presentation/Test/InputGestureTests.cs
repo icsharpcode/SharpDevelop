@@ -243,6 +243,10 @@ namespace ICSharpCode.Core.Presentation.Tests
 			var template7 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Alt+D,D");
 			var original7 = (MultiKeyGesture)multiKeyGestureConverter.ConvertFromInvariantString("Ctrl+Shift+D,D");
 			Assert.IsFalse(template7.IsTemplateFor(original7, GestureCompareMode.PartlyMatches));
+			
+			var template8 = new PartialKeyGesture(Key.None, ModifierKeys.Control | ModifierKeys.Alt | ModifierKeys.Shift);
+			var original8 = new KeyGesture(Key.F11, ModifierKeys.Shift);
+			Assert.IsFalse(template8.IsTemplateFor(original8, GestureCompareMode.PartlyMatches));
 		}
 		
 		

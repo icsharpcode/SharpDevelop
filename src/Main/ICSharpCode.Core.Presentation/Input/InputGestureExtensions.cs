@@ -123,9 +123,8 @@ namespace ICSharpCode.Core.Presentation
 
                         if (((mode == GestureCompareMode.StartsWith || mode == GestureCompareMode.PartlyMatches) && i == previousChords.Count - 1)
                                 || (mode == GestureCompareMode.PartlyMatches && i == 0)) {
-
-			                if(!((template.Modifiers == ModifierKeys.None || gesture.Modifiers - (gesture.Modifiers ^ template.Modifiers) >= 0)
-                        	     && (template.Key == Key.None || template.Key == gesture.Key))) {
+                        	
+			                if(!(template.Modifiers == (gesture.Modifiers & template.Modifiers) && (template.Key == Key.None || template.Key == gesture.Key))) {
                                 multiKeyGesturesMatch = false;
                                 break;                        		
                         	}
