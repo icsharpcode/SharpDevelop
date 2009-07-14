@@ -7,9 +7,13 @@
  * Do zmiany tego szablonu użyj Narzędzia | Opcje | Kodowanie | Edycja Nagłówków Standardowych.
  */
 using System;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.Core;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CppBinding.Project
 {
@@ -29,6 +33,13 @@ namespace ICSharpCode.CppBinding.Project
 			string configurationType = project.GetEvaluatedProperty("ConfigurationType");
 			OutputType validOutputType = ConfigurationTypeToOutputType(configurationType, subsystem);
 			cbOutputType.SelectedIndex = Array.IndexOf((OutputType[])Enum.GetValues(typeof(OutputType)), validOutputType);
+			
+			TextBox tbApplicationIcon = Get<TextBox>("applicationIcon");
+			helper.AddBinding(null, new ObservedBinding<object, TextBox>(tbApplicationIcon, SetApplicationIcon));
+			tbApplicationIcon.Text = GetApplicationIconPathFromResourceScripts();			
+			
+			DisableWin32ResourceOptions();
+			
 			IsDirty = false;
 		}
 		
@@ -86,8 +97,81 @@ namespace ICSharpCode.CppBinding.Project
 				return OutputType.WinExe;
 			else if ("DynamicLibrary" == configurationType)
 				return OutputType.Library;
-			LoggingService.Info("ConfigurationType " +configurationType + " are not supported, will use Library output type");
-				return OutputType.Library;
+			LoggingService.Info("ConfigurationType " +configurationType + " is not supported, will use Library output type");
+			return OutputType.Library;
+		}
+		#endregion
+		
+		#region Application icon property mapping
+		const string DEFAULT_ICON_ID = "ICON0";
+		const string DEFAULT_RC_NAME = "app.rc";
+		ResourceEntry foundIconEntry;
+		string iconResourceScriptPath;	//path to the resource script where application icon is defined
+		
+		static string AddResourceScriptToProject(IProject project, string rcFileName) {
+			string fileName = Path.Combine(project.Directory, rcFileName);
+			FileProjectItem rcFileItem = new FileProjectItem(project, project.GetDefaultItemType(fileName));
+			rcFileItem.Include = FileUtility.GetRelativePath(project.Directory, fileName);
+			((IProjectItemListProvider)project).AddProjectItem(rcFileItem);
+			return fileName;
+		}
+		
+		/// <summary>
+		/// Gets the icon file location from the rc files added to project. 
+		/// Searches all project items of type "ResourceCompile" and returns the resource of type ICON with the lowest ID.
+		/// </summary>
+		/// <returns>path to the icon file or null if the icon wasn't specified</returns>
+		string GetApplicationIconPathFromResourceScripts() {
+			foundIconEntry = null;
+			iconResourceScriptPath = null;
+			IEnumerable <ProjectItem> resourceScripts = project.Items.Where(
+						item => item is FileProjectItem && ((FileProjectItem)item).BuildAction == "ResourceCompile");			
+			foreach (ProjectItem item in resourceScripts) {
+				ResourceScript rc = new ResourceScript(item.FileName);
+				if (rc.Icons.Count == 0) continue;
+				if (foundIconEntry == null || rc.Icons.First().ResourceID.CompareTo(foundIconEntry.ResourceID)<0) {
+					foundIconEntry = rc.Icons.First();
+					iconResourceScriptPath = item.FileName;
+				}
+			}
+			
+			//when no icon was found, then select the resource script where icon definition may be created
+			if (iconResourceScriptPath == null && resourceScripts.Any())
+				iconResourceScriptPath = resourceScripts.First().FileName;
+				
+			return foundIconEntry != null ? foundIconEntry.Data : null;
+		}
+		
+		object SetApplicationIcon(TextBox tb) {            
+			string iconPath = tb.Text;
+			string newIconId;
+			ResourceScript rc;
+			if (iconPath.Trim() == "") return null;
+			if (iconResourceScriptPath != null)
+			{
+				rc = new ResourceScript(iconResourceScriptPath);
+				newIconId = foundIconEntry != null ? foundIconEntry.ResourceID : DEFAULT_ICON_ID;
+				rc.Save(iconResourceScriptPath);
+			}
+			else
+			{
+				iconResourceScriptPath = AddResourceScriptToProject(project, DEFAULT_RC_NAME);
+				rc = new ResourceScript();
+				newIconId = DEFAULT_ICON_ID;
+			}
+			
+			rc.SetIcon(newIconId, iconPath);
+			rc.Save(iconResourceScriptPath);
+			return null;
+		}		
+		#endregion
+		
+		#region Resource file property mapping
+		void DisableWin32ResourceOptions()  {
+			Button win32ResourceFileBrowseButton = Get<Button>("win32ResourceFileBrowse");
+			win32ResourceFileBrowseButton.Enabled = false;
+			TextBox win32ResourceFileTextBox = Get<TextBox>("win32ResourceFile");
+			win32ResourceFileTextBox.Enabled = false;
 		}
 		#endregion
     }

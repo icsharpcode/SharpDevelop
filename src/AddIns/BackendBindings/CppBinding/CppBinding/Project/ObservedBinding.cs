@@ -29,9 +29,12 @@ namespace ICSharpCode.CppBinding.Project
 		}
 		
 		public override bool Save()
-		{
+		{            
 			if (onSave != null)
-				base.Set<Output>(onSave(control));
+				if (Property != null)
+					base.Set<Output>(onSave(control));			
+				else
+					onSave(control);
 			return true;
 		}
 		

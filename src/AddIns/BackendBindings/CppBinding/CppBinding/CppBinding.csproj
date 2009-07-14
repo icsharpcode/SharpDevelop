@@ -67,6 +67,7 @@
     <Compile Include="Project\ApplicationOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Project\BuildEventOptions.cs" />
     <Compile Include="Project\LinkerOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -77,6 +78,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Project\ProjectConfigurationProjectItem.cs" />
+    <Compile Include="Project\ResourceScript.cs" />
     <Compile Include="Project\SpecifyCliRuntimeLibraryCommand.cs" />
     <Compile Include="Project\CppProject.cs" />
     <Compile Include="Project\StringListEditorDialog.cs">

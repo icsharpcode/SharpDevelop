@@ -683,7 +683,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					string key = configuration + "|" + platform;
 					configurations.Add(key);
 					
-					string searchKey = guid + "." + key + ".ActiveCfg";
+					string searchKey = guid + "." + key + ".Build.0";
 					if (!prjSec.Items.Exists(item => item.Name == searchKey)) {
 						prjSec.Items.Add(new SolutionItem(searchKey, key));
 						changed = true;

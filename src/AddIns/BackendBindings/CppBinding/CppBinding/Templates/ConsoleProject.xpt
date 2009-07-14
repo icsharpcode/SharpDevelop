@@ -43,6 +43,11 @@ int main(array<System::String ^> ^args)
 }
 ]]></File>
 			<File name="AssemblyInfo.cpp" src="DefaultAssemblyInfo.cpp"/>
+			<File name="app.rc"><![CDATA[
+// Standard resource script. Created with SharpDevelop.
+//
+
+]]></File>
 		</Files>
 	</Project>
 </Template>

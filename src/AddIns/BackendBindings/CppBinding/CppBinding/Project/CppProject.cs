@@ -66,12 +66,15 @@ namespace ICSharpCode.CppBinding.Project
 		
 		public override ItemType GetDefaultItemType(string fileName)
 		{
+			const string RESOURCE_COMPILE = "ResourceCompile";
+			
 			string extension = Path.GetExtension(fileName).ToLower();
 			switch (extension) {
 				case ".cpp": return ItemType.ClCompile;
 				case ".c": return ItemType.ClCompile;
 				case ".hpp": return ItemType.ClInclude;
 				case ".h": return ItemType.ClInclude;
+				case ".rc": return new ItemType(RESOURCE_COMPILE);
 			}
 			return base.GetDefaultItemType(fileName);
 		}
