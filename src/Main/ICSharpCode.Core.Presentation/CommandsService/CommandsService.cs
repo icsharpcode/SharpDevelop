@@ -39,6 +39,11 @@ namespace ICSharpCode.Core.Presentation
 					string routedCommandText = null;
 					
 					if(codon.Properties.Contains("command")) {
+						if(codon.Properties["command"] == "AvalonEditCommands.RemoveLeadingWhitespace")
+						{
+							
+						}
+						
 						routedCommandName = codon.Properties["command"];				
 						routedCommandText = codon.Properties["command"];
 					} else if(codon.Properties.Contains("link") || codon.Properties.Contains("class")) {
@@ -93,10 +98,28 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		public static void RegisterRoutedCommands(Type type) {
-			var typeProperties = type.GetProperties(BindingFlags.Static | BindingFlags.Public);
-			foreach(var property in typeProperties) {
-				var command = (RoutedUICommand)property.GetValue(null, null);				
-				CommandManager.RegisterRoutedUICommand(command);
+			var typeMembers = type.GetMembers(BindingFlags.Static | BindingFlags.Public | BindingFlags.GetField | BindingFlags.GetProperty);
+			foreach(var member in typeMembers) {
+				RoutedUICommand command = null;
+				
+				var property = member as PropertyInfo;
+				var field = member as FieldInfo;
+				if(property != null) {
+					command = property.GetValue(null, null) as RoutedUICommand;
+				} else if(field != null) {
+					command = field.GetValue(null) as RoutedUICommand;
+				}
+				
+				if(command != null) {
+					CommandManager.RegisterRoutedUICommand(command);
+					
+					if(command.Name == "RemoveLeadingWhitespace")
+					{
+						var cmd = CommandManager.GetRoutedUICommand("AvalonEditCommands.RemoveLeadingWhitespace");
+						Console.WriteLine(cmd);
+					}
+					
+				}
 			}
 		}
 		

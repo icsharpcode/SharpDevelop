@@ -117,6 +117,7 @@
     <Compile Include="Src\Util\AbstractCommand.cs" />
     <Compile Include="Src\Util\CallbackOnDispose.cs" />
     <Compile Include="Src\Util\DebugTextWriter.cs" />
+    <Compile Include="Src\Util\ExtensionMethods.cs" />
     <Compile Include="Src\Util\ICommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\IBuildItemsModifier.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeDoozer.cs" />

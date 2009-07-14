@@ -20,6 +20,9 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
 
+using ICSharpCode.Core.Presentation;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
+
 namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
@@ -60,6 +63,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 			AddBinding(EditingCommands.EnterLineBreak, ModifierKeys.Shift, Key.Enter, OnEnter);
 			AddBinding(EditingCommands.TabForward, ModifierKeys.None, Key.Tab, OnTab);
 			AddBinding(EditingCommands.TabBackward, ModifierKeys.Shift, Key.Tab, OnShiftTab);
+			
+			//var copyCommand = new CommandBindingInfo();
+			//copyCommand.OwnerInstance = typeof();
+			//copyCommand.CanExecuteEventHandler = CanCutOrCopy;
+			//copyCommand.ExecutedEventHandler = OnCopy;
+			//copyCommand.IsLazy = false;
+			//copyCommand.RoutedCommandName = "ApplicationCommands.Copy";
+			//SDCommandManager.RegisterCommandBinding(copyCommand);
 			
 			CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, OnCopy, CanCutOrCopy));
 			CommandBindings.Add(new CommandBinding(ApplicationCommands.Cut, OnCut, CanCutOrCopy));

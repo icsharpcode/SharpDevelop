@@ -137,7 +137,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			// Register input bindings update handler
 			BindingsUpdatedHandler gesturesUpdateHandler = delegate {
-				var updatedGestures = CommandManager.FindInputGestures(null, null, routedCommandName);
+				var updatedGestures = CommandManager.FindInputGestures(null, null, routedCommandName, null);
 				
 				this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 			};

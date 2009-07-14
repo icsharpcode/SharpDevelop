@@ -79,10 +79,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			// Use shortened assembly qualified name to not lose user defined gestures
 			// when sharp develop is updated
-            CommandManager.DefaultContextName = 
-            	string.Format("{0}, {1}", GetType().FullName, GetType().Assembly.GetName().Name);
-
-            CommandsService.RegisterBuiltInRoutedUICommands();
+			CommandManager.DefaultContextName = GetType().GetShortAssemblyQualifiedName();
+			CommandManager.RegisterNamedUIType(CommandManager.DefaultContextName, GetType());
+			
+			CommandsService.RegisterBuiltInRoutedUICommands();
+			CommandsService.RegisterRoutedCommands(typeof(ICSharpCode.AvalonEdit.AvalonEditCommands));
 			
 			// Load all commands and and key bindings from addin tree
 			CommandsService.RegisterInputBindingCategories(this, "/SharpDevelop/CommandManager/InputBindingCategories");

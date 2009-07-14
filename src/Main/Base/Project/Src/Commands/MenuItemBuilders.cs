@@ -243,7 +243,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					CommandManager.RegisterInputBinding(inputBindingInfo);
 				}		
 				
-				var updatedGestures = CommandManager.FindInputGestures(CommandManager.DefaultContextName, null, routedCommandName);
+				var updatedGestures = CommandManager.FindInputGestures(CommandManager.DefaultContextName, null, routedCommandName, null);
 				var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 				items[i].InputGestureText = updatedGesturesText;					
 				items[i].Command = CommandManager.GetRoutedUICommand(routedCommandName);
@@ -554,7 +554,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					
 					item.Command = CommandManager.GetRoutedUICommand(routedCommandName);
 					
-					var updatedGestures = CommandManager.FindInputGestures(CommandManager.DefaultContextName, null, routedCommandName);
+					var updatedGestures = CommandManager.FindInputGestures(CommandManager.DefaultContextName, null, routedCommandName, null);
 					var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 					item.InputGestureText = updatedGesturesText;
 					

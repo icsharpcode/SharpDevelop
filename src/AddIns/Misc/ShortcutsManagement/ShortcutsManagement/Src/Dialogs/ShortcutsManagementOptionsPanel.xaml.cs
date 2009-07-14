@@ -254,19 +254,12 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 }
             }
 
-            shortcutsMap.ForEach(p => p.Value.IsModifyed = true);
-            foreach (var pair in shortcutsMap)
-            {
-                pair.Value.IsModifyed = true;
-            }
+            shortcutsMap.ForEach(b => b.Value.IsModifyed = true);
 
             UserDefinedGesturesManager.CurrentProfile = SelectedProfile;
             CommandManager.InvokeInputBindingUpdateHandlers();
 
-            foreach (var profile in profiles)
-            {
-                profile.Save();
-            }
+            profiles.ForEach(p => p.Save());
 
             return true;
         }

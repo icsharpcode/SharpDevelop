@@ -124,7 +124,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.InputBindings.Add(new KeyBinding(command, key, modifiers));
 		}
 		#endregion
-		
+
 		#region NestedInputHandlers
 		/// <summary>
 		/// Gets the collection of nested input handlers. NestedInputHandlers are activated and deactivated
@@ -133,7 +133,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public ICollection<ITextAreaInputHandler> NestedInputHandlers {
 			get { return nestedInputHandlers; }
 		}
-		
+
 		void NestedInputHandler_Added(ITextAreaInputHandler handler)
 		{
 			if (handler == null)

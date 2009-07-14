@@ -1,4 +1,6 @@
 using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Input;
 using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
@@ -18,6 +20,33 @@ namespace ICSharpCode.Core.Presentation
 			IsModifyed = true;
 			OldCommandBindings = new CommandBindingCollection();
 			NewCommandBindings = new CommandBindingCollection();
+			
+			Groups = new BindingGroupCollection();
+			Groups.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e) {  
+				foreach(BindingGroup oldGroup in e.OldItems) {
+					oldGroup.CommandBindings.Remove(this);
+				}
+				
+				foreach(BindingGroup oldGroup in e.NewItems) {
+					oldGroup.CommandBindings.Add(this);
+				}
+			};
+		}
+		
+		public BindingGroupCollection Groups
+		{
+			get; private set;
+		}
+		
+		public bool IsActive
+		{
+			get {
+				if(OwnerInstanceName != null && Groups != null && Groups.Count > 0) {
+					return Groups.IsAttachedTo(OwnerInstanceName);
+				}
+				
+				return true;
+			}
 		}
 		
 		/// <summary>
@@ -149,7 +178,7 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 
-		public string ownerInstanceName;
+		public string _ownerInstanceName;
 		
 		/// <summary>
 		/// Stores name of named instance to which this binding belongs. When this binding is registered a
@@ -160,18 +189,18 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public string OwnerInstanceName {
 			get {
-				return ownerInstanceName;
+				return _ownerInstanceName;
 			}
 			set {
-				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
+				if(_ownerInstanceName != null || _ownerTypeName != null) {
 					throw new ArgumentException("This binding already has an owner");
 				}
 				
-				ownerInstanceName = value;
+				_ownerInstanceName = value;
 			}
 		}
 		
-		private UIElement ownerInstance;
+		private UIElement _ownerInstance;
 		
 		/// <summary>
 		/// Stores owner instance to which this binding belongs. When this binding is registered a
@@ -182,22 +211,15 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public UIElement OwnerInstance{
 			get {
-				if(OwnerInstanceName != null && ownerInstance == null) {
-					ownerInstance = CommandManager.GetNamedUIElementInstance(OwnerInstanceName);
-				}
+				if(_ownerInstance == null && _ownerInstanceName != null) {
+					_ownerInstance = CommandManager.GetNamedUIElementInstance(_ownerInstanceName);
 				
-				return ownerInstance;
-			}
-			set {
-				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
-					throw new ArgumentException("This binding already has an owner");
 				}
-				
-				ownerInstance = value;
+				return _ownerInstance;
 			}
 		}
 					
-		private string ownerTypeName;
+		private string _ownerTypeName;
 		
 		/// <summary>
 		/// Stores name of owner type. Full name with assembly should be used. When this binding is 
@@ -208,18 +230,18 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public string OwnerTypeName{
 			get {
-				return ownerTypeName;
+				return _ownerTypeName;
 			}
 			set {
-				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
+				if(_ownerInstanceName != null || _ownerTypeName != null) {
 					throw new ArgumentException("This binding already has an owner");
 				}
 				
-				ownerTypeName = value;
+				_ownerTypeName = value;
 			}
 		}
 		
-		private Type ownerType;
+		private Type _ownerType;
 					
 		/// <summary>
 		/// Stores owner type. When this binding is registered <see cref="CommandBinding" /> 
@@ -230,19 +252,11 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public Type OwnerType { 
 			get {
-				if(ownerType == null && OwnerTypeName != null) {
-					ownerType = Type.GetType(OwnerTypeName);
-					CommandManager.RegisterNamedUIType(OwnerTypeName, ownerType);
+				if(_ownerType == null && _ownerTypeName != null) {
+					_ownerType = CommandManager.GetNamedUIType(_ownerTypeName);
 				}
 				
-				return ownerType;
-			}
-			set {
-				if(ownerInstanceName != null || ownerInstance != null || ownerType != null || ownerTypeName != null) {
-					throw new ArgumentException("This binding already has an owner");
-				}
-				
-				ownerType = value;
+				return _ownerType;
 			}
 		}
 			
@@ -254,7 +268,7 @@ namespace ICSharpCode.Core.Presentation
 		internal BindingsUpdatedHandler DefaultCommandBindingHandler
 		{
 			get {
-				if(defaultCommandBindingHandler == null && (OwnerTypeName != null || OwnerType != null)) {
+				if(defaultCommandBindingHandler == null && OwnerTypeName != null) {
 	 				defaultCommandBindingHandler = delegate {
 						if(OwnerType != null && IsModifyed) {
 							GenerateCommandBindings();
@@ -270,7 +284,7 @@ namespace ICSharpCode.Core.Presentation
 							IsModifyed = false;
 						}
 					};
-				} else if(defaultCommandBindingHandler == null && (OwnerInstanceName != null || OwnerInstance != null)) {
+				} else if(defaultCommandBindingHandler == null && OwnerInstanceName != null) {
 		 			defaultCommandBindingHandler = delegate {
 						if(OwnerInstance != null && IsModifyed) {
 							GenerateCommandBindings();
@@ -317,12 +331,14 @@ namespace ICSharpCode.Core.Presentation
 		{			
 			OldCommandBindings = NewCommandBindings;
 			
-			var commandBinding = new CommandBinding(RoutedCommand);
-			commandBinding.CanExecute += GenerateCanExecuteEventHandler;					
-			commandBinding.Executed += GenerateExecutedEventHandler;
-			
 			NewCommandBindings = new CommandBindingCollection();
-			NewCommandBindings.Add(commandBinding);
+			
+			if(IsActive) {
+				var commandBinding = new CommandBinding(RoutedCommand);
+				commandBinding.CanExecute += GenerateCanExecuteEventHandler;					
+				commandBinding.Executed += GenerateExecutedEventHandler;
+				NewCommandBindings.Add(commandBinding);
+			}
 		}
 		
 		/// <summary>

@@ -27,30 +27,30 @@
 			<MenuItem id = "RemoveLeadingWs"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.RemoveLeadingWhitespace"/>
+			          command = "AvalonEditCommands.RemoveLeadingWhitespace"/>
 			<MenuItem id = "RemoveTrailingWs"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.RemoveTrailingWhitespace"/>
+			          command = "AvalonEditCommands.RemoveTrailingWhitespace"/>
 			<MenuItem id = "Seperator1" type = "Separator" insertbefore = "Separator4" />
 			<MenuItem id = "UpperCase"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}"
 			          icon = "Icons.16x16.LowerToUpperCase"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertToUppercase"/>
+			          command = "AvalonEditCommands.ConvertToUppercase"/>
 			<MenuItem id = "LowerCase"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}"
 			          icon = "Icons.16x16.UpperToLowerCase"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertToLowercase"/>
+			          command = "AvalonEditCommands.ConvertToLowercase"/>
 			<MenuItem id = "Capitalize"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertToTitleCase"/>
+			          command = "AvalonEditCommands.ConvertToTitleCase"/>
 			<MenuItem id = "InvertCase"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.InvertCase"/>
+			          command = "AvalonEditCommands.InvertCase"/>
 			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "SortSelection"
 			          insertbefore = "Separator4"
@@ -60,19 +60,19 @@
 			<MenuItem id = "Tabs2Spaces"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertTabsToSpaces"/>
+			          command = "AvalonEditCommands.ConvertTabsToSpaces"/>
 			<MenuItem id = "Spaces2Tabs"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertSpacesToTabs"/>
+			          command = "AvalonEditCommands.ConvertSpacesToTabs"/>
 			<MenuItem id = "LeadingTabs2Spaces"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertLeadingTabsToSpaces"/>
+			          command = "AvalonEditCommands.ConvertLeadingTabsToSpaces"/>
 			<MenuItem id = "LeadingSpaces2Tabs"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
-			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertLeadingSpacesToTabs"/>
+			          command = "AvalonEditCommands.ConvertLeadingSpacesToTabs"/>
 		</Condition>
 	</Path>
 </AddIn>

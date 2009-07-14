@@ -14,9 +14,7 @@ using System.Xml.Serialization;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.Core.Presentation
-{
-	public delegate void BindingsUpdatedHandler();
-	
+{	
 	/// <summary>
 	/// Global registry to store and access commands, command bindings and input bindings
 	/// </summary>
@@ -39,11 +37,13 @@ namespace ICSharpCode.Core.Presentation
 		private static Dictionary<string, RoutedUICommand> routedCommands = new Dictionary<string, RoutedUICommand>();
 		internal static Dictionary<string, System.Windows.Input.ICommand> commands = new Dictionary<string, System.Windows.Input.ICommand>();
 		
-		// Update hanlers
+		// Command binding update hanlers
 		private static Dictionary<string, List<BindingsUpdatedHandler>> classCommandBindingUpdateHandlers = new Dictionary<string, List<BindingsUpdatedHandler>>();
-		private static Dictionary<object, List<BindingsUpdatedHandler>> instanceCommandBindingUpdateHandlers = new Dictionary<object, List<BindingsUpdatedHandler>>();
+		private static Dictionary<string, List<BindingsUpdatedHandler>> instanceCommandBindingUpdateHandlers = new Dictionary<string, List<BindingsUpdatedHandler>>();
+		
+		// Input binding update handlers
 		private static Dictionary<string, List<BindingsUpdatedHandler>> classInputBindingUpdateHandlers = new Dictionary<string, List<BindingsUpdatedHandler>>();
-		private static Dictionary<object, List<BindingsUpdatedHandler>> instanceInputBindingUpdateHandlers = new Dictionary<object, List<BindingsUpdatedHandler>>();
+		private static Dictionary<string, List<BindingsUpdatedHandler>> instanceInputBindingUpdateHandlers = new Dictionary<string, List<BindingsUpdatedHandler>>();
 				
 		// Named instances and types
 		private static Dictionary<string, UIElement> namedUIInstances = new Dictionary<string, UIElement>();
@@ -63,20 +63,13 @@ namespace ICSharpCode.Core.Presentation
 				namedUIInstances.Add(instanceName, element);
 				
 				// If there are some bindings and update handlers already registered, 
-				// but owner is not loaded then move these to arrays which holds bindings 
-				// and update handlers of loaded instances
+				// but owner is not loaded then invoke those bindings
 				if(instanceCommandBindingUpdateHandlers.ContainsKey(instanceName)) {
-					foreach(var handler in instanceCommandBindingUpdateHandlers[instanceName]) {
-						RegisterInstanceCommandBindingsUpdateHandler(element, handler);
-					}
-					instanceCommandBindingUpdateHandlers.Remove(instanceName);
-					InvokeCommandBindingUpdateHandlers(null, null, element, null);
-					
-					foreach(var handler in instanceInputBindingUpdateHandlers[instanceName]) {
-						RegisterInstanceInputBindingsUpdateHandler(element, handler);
-					}
-					instanceInputBindingUpdateHandlers.Remove(instanceName);
-					InvokeInputBindingUpdateHandlers(null, null, element, null);
+					InvokeCommandBindingUpdateHandlers(null, instanceName);
+				}
+				
+				if(instanceInputBindingUpdateHandlers.ContainsKey(instanceName)) {
+					InvokeInputBindingUpdateHandlers(null, instanceName);
 				}
 			}
 		}
@@ -115,21 +108,14 @@ namespace ICSharpCode.Core.Presentation
 			if(!namedUITypes.ContainsKey(typeName)){
 				namedUITypes.Add(typeName, type);
 				
-				// If any bindings or update handlers where assigned to the type
-				// before it was loaded using unique name move these to array 
-				// holding type bindings and update handlers
+				// If any update handlers where assigned to the type and type was not 
+				// loaded yet then invoke update handlers
 				if(classCommandBindingUpdateHandlers.ContainsKey(typeName)) {
-					foreach(var handler in classCommandBindingUpdateHandlers[typeName]) {
-						RegisterClassCommandBindingsUpdateHandler(type, handler);
-					}
-					classCommandBindingUpdateHandlers.Remove(typeName);
-					InvokeCommandBindingUpdateHandlers(type, null, null, null);
-					
-					foreach(var handler in classInputBindingUpdateHandlers[typeName]) {
-						RegisterClassInputBindingsUpdateHandler(type, handler);
-					}
-					classInputBindingUpdateHandlers.Remove(typeName);
-					InvokeInputBindingUpdateHandlers(type, null, null, null);
+					InvokeCommandBindingUpdateHandlers(typeName, null);
+				}
+				
+				if(classInputBindingUpdateHandlers.ContainsKey(typeName)) {
+					InvokeInputBindingUpdateHandlers(typeName, null);
 				}
 			}
 		}
@@ -202,7 +188,7 @@ namespace ICSharpCode.Core.Presentation
 			string routedCommandName = existingRoutedUICommand.OwnerType.Name + "." + existingRoutedUICommand.Name;
 			
 			if(!routedCommands.ContainsKey(routedCommandName)) {
-				routedCommands.Add(existingRoutedUICommand.OwnerType.Name + "." + existingRoutedUICommand.Name, existingRoutedUICommand);
+				routedCommands.Add(routedCommandName, existingRoutedUICommand);
 			} else {
 				throw new IndexOutOfRangeException("Routed UI command with name " + routedCommandName + " is already registered");
 			}
@@ -224,31 +210,23 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputBindingInfo">Input binding parameters</param>
 		public static void RegisterInputBinding(InputBindingInfo inputBindingInfo)
 		{
-			var similarInputBinding = FindInputBindingInfos(
-				inputBindingInfo.OwnerTypeName,
-				inputBindingInfo.OwnerInstanceName, 
-				inputBindingInfo.RoutedCommandName).FirstOrDefault();
+			var similarInputBinding = FindInputBindingInfos(inputBindingInfo.OwnerTypeName, inputBindingInfo.OwnerInstanceName, inputBindingInfo.RoutedCommandName).FirstOrDefault();
 			
 			if(similarInputBinding != null) {
-				foreach(InputGesture gesture in inputBindingInfo.ActiveGestures) {
+				foreach(InputGesture gesture in inputBindingInfo.DefaultGestures) {
 					if(!similarInputBinding.DefaultGestures.ContainsTemplateFor(gesture, GestureCompareMode.ExactlyMatches)) {
 						similarInputBinding.DefaultGestures.Add(gesture);
 					}
 				}
 				
-				foreach(var category in inputBindingInfo.Categories) {
-					if(!similarInputBinding.Categories.Contains(category)) {
-						similarInputBinding.Categories.Add(category);
-					}
-				}
+				similarInputBinding.Categories.AddRange(inputBindingInfo.Categories);
+				similarInputBinding.Groups.AddRange(inputBindingInfo.Groups);
 				
 				similarInputBinding.IsModifyed = true;
 				similarInputBinding.DefaultInputBindingHandler.Invoke();
 			} else {
-				if(inputBindingInfo.OwnerTypeName != null || inputBindingInfo.OwnerType != null) {
-					RegisterClassDefaultInputBindingHandler(inputBindingInfo);
-				} else if (inputBindingInfo.OwnerInstanceName != null || inputBindingInfo.OwnerInstance != null) {
-					RegisterInstaceDefaultInputBindingHandler(inputBindingInfo);
+				if(inputBindingInfo.OwnerInstanceName != null || inputBindingInfo.OwnerTypeName != null) {
+					RegisterDefaultInputBindingHandler(inputBindingInfo);
 				} else {
 					throw new ArgumentException("Binding owner must be specified");
 				}
@@ -263,10 +241,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputBindingInfo">Input binding parameters</param>
 		public static void UnregisterInputBinding(InputBindingInfo inputBindingInfo)
 		{
-			var similarInputBindingInfos = FindInputBindingInfos(
-				inputBindingInfo.OwnerTypeName,
-				inputBindingInfo.OwnerInstanceName, 
-				inputBindingInfo.RoutedCommandName);
+			var similarInputBindingInfos = FindInputBindingInfos(inputBindingInfo.OwnerTypeName, inputBindingInfo.OwnerInstanceName, inputBindingInfo.RoutedCommandName);
 			
 			foreach(var similarInputBindingInfo in similarInputBindingInfos) {
 				inputBidnings.Remove(similarInputBindingInfo);
@@ -306,8 +281,8 @@ namespace ICSharpCode.Core.Presentation
 			foreach(var binding in inputBidnings) {
 				if(    (ownerInstanceName == null || binding.OwnerInstanceName == ownerInstanceName)
 				    && (ownerTypeName == null || binding.OwnerTypeName == ownerTypeName)
-				    && (routedCommandName == null || binding.RoutedCommandName == routedCommandName)) {
-			
+				    && (routedCommandName == null || binding.RoutedCommandName == routedCommandName)
+				   ) {
 					foundBindings.Add(binding);
 				}
 			}
@@ -373,10 +348,8 @@ namespace ICSharpCode.Core.Presentation
 		public static void RegisterCommandBinding(CommandBindingInfo commandBindingInfo) {
 			commandBindingInfo.GenerateCommandBindings();
 			
-			if(commandBindingInfo.OwnerTypeName != null || commandBindingInfo.OwnerType != null) {
-				RegisterClassDefaultCommandBindingHandler(commandBindingInfo);
-			} else if (commandBindingInfo.OwnerInstanceName != null || commandBindingInfo.OwnerInstance != null) {
-				RegisterInstaceDefaultCommandBindingHandler(commandBindingInfo);
+			if(commandBindingInfo.OwnerInstanceName != null || commandBindingInfo.OwnerTypeName != null) {
+				RegisterDefaultCommandBindingHandler(commandBindingInfo);
 			} else {
 				throw new ArgumentException("Binding owner must be specified");
 			}
@@ -389,12 +362,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="commandBindingInfo">Command binding parameters</param>
 		public static void UnregisterCommandBinding(CommandBindingInfo commandBindingInfo) {
-			var similarCommandBindingInfos = FindCommandBindingInfos(
-				commandBindingInfo.OwnerTypeName,
-				commandBindingInfo.OwnerInstanceName, 
-				commandBindingInfo.RoutedCommandName,
-				null
-			);
+			var similarCommandBindingInfos = FindCommandBindingInfos(commandBindingInfo.OwnerTypeName, commandBindingInfo.OwnerInstanceName, commandBindingInfo.RoutedCommandName);
 			
 			foreach(var similarCommandBindingInfo in similarCommandBindingInfos) {
 				commandBindings.Remove(similarCommandBindingInfo);
@@ -426,17 +394,6 @@ namespace ICSharpCode.Core.Presentation
 		/// Register command binding update handler which is triggered when input bindings associated 
 		/// with specified type change
 		/// </summary>
-		/// <param name="ownerType">Owner type</param>
-		/// <param name="handler">Update handler</param>
-		public static void RegisterClassCommandBindingsUpdateHandler(Type ownerType, BindingsUpdatedHandler handler) 
-		{
-			RegisterClassCommandBindingsUpdateHandler(ownerType.AssemblyQualifiedName, handler);
-		}
-		
-		/// <summary>
-		/// Register command binding update handler which is triggered when input bindings associated 
-		/// with specified type change
-		/// </summary>
 		/// <param name="ownerTypeName">Owner type name</param>
 		/// <param name="handler">Update handler</param>
 		public static void RegisterClassCommandBindingsUpdateHandler(string ownerTypeName, BindingsUpdatedHandler handler) 
@@ -458,46 +415,11 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="handler">Update handler</param>
 		public static void RegisterInstanceCommandBindingsUpdateHandler(string instanceName, BindingsUpdatedHandler handler) 
 		{
-			var instance = GetNamedUIElementInstance(instanceName);
-			if(instance != null) {
-				RegisterInstanceCommandBindingsUpdateHandler(instance, handler);
-			} else {
-				if(!instanceCommandBindingUpdateHandlers.ContainsKey(instanceName)) {
-					instanceCommandBindingUpdateHandlers.Add(instanceName, new List<BindingsUpdatedHandler>());
-				}
-				
-				instanceCommandBindingUpdateHandlers[instanceName].Add(handler);
-			}
-		}
-		
-		/// <summary>
-		/// Register command binding update handler which is triggered when input bindings associated 
-		/// with specified instance change
-		/// </summary>
-		/// <param name="instance">Owner instance</param>
-		/// <param name="handler">Update handler</param>
-		public static void RegisterInstanceCommandBindingsUpdateHandler(UIElement instance, BindingsUpdatedHandler handler) 
-		{
-			if(!instanceCommandBindingUpdateHandlers.ContainsKey(instance)) {
-				instanceCommandBindingUpdateHandlers.Add(instance, new List<BindingsUpdatedHandler>());
+			if(!instanceCommandBindingUpdateHandlers.ContainsKey(instanceName)) {
+				instanceCommandBindingUpdateHandlers.Add(instanceName, new List<BindingsUpdatedHandler>());
 			}
 			
-			instanceCommandBindingUpdateHandlers[instance].Add(handler);
-		}
-	
-		/// <summary>
-		/// Register input binding update handler which is triggered when input bindings associated 
-		/// with specified type change
-		/// </summary>
-		/// <param name="ownerType">Owner type</param>
-		/// <param name="handler">Update handler</param>
-		public static void RegisterClassInputBindingsUpdateHandler(Type ownerType, BindingsUpdatedHandler handler) 
-		{
-			// Use shortened assembly qualified name to not lose user defined gestures
-			// when sharp develop is updated
-            var ownerTypeName = string.Format("{0}, {1}", ownerType.FullName, ownerType.Assembly.GetName().Name);
-            
-			RegisterClassInputBindingsUpdateHandler(ownerTypeName, handler);
+			instanceCommandBindingUpdateHandlers[instanceName].Add(handler);
 		}
 		
 		/// <summary>
@@ -525,72 +447,23 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="handler">Update handler</param>
 		public static void RegisterInstanceInputBindingsUpdateHandler(string instanceName, BindingsUpdatedHandler handler) 
 		{
-			var instance = GetNamedUIElementInstance(instanceName);
-			if(instance != null) {
-				RegisterInstanceInputBindingsUpdateHandler(instance, handler);
-			} else {
-				if(!instanceInputBindingUpdateHandlers.ContainsKey(instanceName)) {
-					instanceInputBindingUpdateHandlers.Add(instanceName, new List<BindingsUpdatedHandler>());
-				}
-				
-				instanceInputBindingUpdateHandlers[instanceName].Add(handler);
-			}
-		}
-		
-		/// <summary>
-		/// Register input binding update handler which is triggered when input bindings associated 
-		/// with specified instance change
-		/// </summary>
-		/// <param name="instance">Owner instance</param>
-		/// <param name="handler">Update handler</param>
-		public static void RegisterInstanceInputBindingsUpdateHandler(UIElement instance, BindingsUpdatedHandler handler) 
-		{
-			if(!instanceInputBindingUpdateHandlers.ContainsKey(instance)) {
-				instanceInputBindingUpdateHandlers.Add(instance, new List<BindingsUpdatedHandler>());
+			if(!instanceInputBindingUpdateHandlers.ContainsKey(instanceName)) {
+				instanceInputBindingUpdateHandlers.Add(instanceName, new List<BindingsUpdatedHandler>());
 			}
 			
-			instanceInputBindingUpdateHandlers[instance].Add(handler);
+			instanceInputBindingUpdateHandlers[instanceName].Add(handler);
 		}
+		
 		#endregion
 		
 		#region Invoke binding update handlers
 
-		private static void InvokeBindingUpdateHandlers(Dictionary<string, List<BindingsUpdatedHandler>> typeUpdateHandlers, Dictionary<object, List<BindingsUpdatedHandler>> instanceUpdateHandlers, Type ownertType, string ownertTypeName, UIElement ownerInstance, string ownerInstanceName)
+		private static void InvokeBindingUpdateHandlers(Dictionary<string, List<BindingsUpdatedHandler>> updateHandlerDictionary, string ownertName)
 		{
-			if(ownerInstanceName != null || ownerInstance != null) {
-				if(ownerInstanceName != null) {
-					ownerInstanceName = GetNamedUIElementName(ownerInstance);
-				}
-				
-				foreach(var instanceHandlers in instanceUpdateHandlers) {
-					var currentInstanceName = instanceHandlers.Key as string;
-					var currentInstance = instanceHandlers.Key as UIElement;
-					
-					if(currentInstanceName == ownerInstanceName || currentInstance == ownerInstance) {
-						if(instanceHandlers.Value != null) {
-							foreach(var handler in instanceHandlers.Value) {
-								if(handler != null) {
-									handler.Invoke();
-								}
-							}
-						}
-					}
-				}
-			}
-			
-			
-			if(ownertTypeName != null || ownertType != null) {
-				foreach(var classHandlers in typeUpdateHandlers) {
-					var currentTypeName = classHandlers.Key;
-					
-					if(currentTypeName == ownertTypeName || (ownertType != null && ownertType.AssemblyQualifiedName.Contains(currentTypeName))) {
-						if(classHandlers.Value != null) {
-							foreach(var handler in classHandlers.Value) {
-								if(handler != null) {
-									handler.Invoke();
-								}
-							}
-						}
+			if(ownertName != null && updateHandlerDictionary[ownertName] != null) {
+				foreach(var handler in updateHandlerDictionary[ownertName]) {
+					if(handler != null) {
+						handler.Invoke();
 					}
 				}
 			}
@@ -599,7 +472,6 @@ namespace ICSharpCode.Core.Presentation
 		private static void InvokeAllBindingUpdateHandlers(System.Collections.IDictionary updateHandlers)
 		{
 			foreach(DictionaryEntry updateHandlerPair in updateHandlers) {
-				// TODO: This can be fixed with .NET 4.0
 				var handlers = (List<BindingsUpdatedHandler>)updateHandlerPair.Value;
 				
 				if(handlers != null) {
@@ -625,29 +497,19 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Invoke all inbut binding update handlers
 		/// </summary>
-		public static void InvokeInputBindingUpdateHandlers(Type ownertType, string ownertTypeName, UIElement ownertInstance, string ownerInstanceName) 
+		public static void InvokeInputBindingUpdateHandlers(string ownertTypeName, string ownerInstanceName) 
 		{
-			InvokeBindingUpdateHandlers(
-				classInputBindingUpdateHandlers, 
-				instanceInputBindingUpdateHandlers,
-				ownertType, 
-				ownertTypeName, 
-				ownertInstance, 
-				ownerInstanceName);
+			InvokeBindingUpdateHandlers(classInputBindingUpdateHandlers, ownertTypeName);
+			InvokeBindingUpdateHandlers(instanceInputBindingUpdateHandlers, ownerInstanceName);
 		}
 		
 		/// <summary>
 		/// Invoke all command binding update handlers
 		/// </summary>
-		public static void InvokeCommandBindingUpdateHandlers(Type ownertType, string ownertTypeName, UIElement ownertInstance, string ownerInstanceName) 
+		public static void InvokeCommandBindingUpdateHandlers(string ownertTypeName, string ownerInstanceName) 
 		{
-			InvokeBindingUpdateHandlers(
-				classCommandBindingUpdateHandlers, 
-				instanceCommandBindingUpdateHandlers,
-				ownertType, 
-				ownertTypeName, 
-				ownertInstance, 
-				ownerInstanceName);
+			InvokeBindingUpdateHandlers(classCommandBindingUpdateHandlers, ownertTypeName);
+			InvokeBindingUpdateHandlers(instanceCommandBindingUpdateHandlers, ownerInstanceName);
 		}
 		
 		#endregion
@@ -699,15 +561,14 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="routedCommandName">Context class full name</param>
 		/// <param name="className">Context class full name</param>
 		/// <returns>Collection of managed command bindings</returns>
-		public static ICollection<CommandBindingInfo> FindCommandBindingInfos(string ownerTypeName, string ownerInstanceName, string routedCommandName, string className) {
+		public static ICollection<CommandBindingInfo> FindCommandBindingInfos(string ownerTypeName, string ownerInstanceName, string routedCommandName) {
 			var foundBindings = new List<CommandBindingInfo>();
 			
 			foreach(var binding in commandBindings) {
 				if(    (ownerInstanceName == null || binding.OwnerInstanceName == ownerInstanceName)
 				    && (ownerTypeName == null || binding.OwnerTypeName == ownerTypeName)
 				    && (routedCommandName == null || binding.RoutedCommandName == routedCommandName)
-					&& (className == null || binding.CommandTypeName == className)) {
-				   	
+				) {	   	
 					foundBindings.Add(binding);
 				}
 			}
@@ -726,13 +587,17 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="contextInstance">Get gestures assigned only to specific context</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="gesture">Gesture</param>
-		public static InputGestureCollection FindInputGestures(string ownerTypeName, string ownerInstanceName, string routedCommandName) {
+		public static InputGestureCollection FindInputGestures(string ownerTypeName, string ownerInstanceName, string routedCommandName, BindingGroupCollection bindingGroups) {
 			var bindings = FindInputBindingInfos(ownerTypeName, ownerInstanceName, routedCommandName);
 			var gestures = new InputGestureCollection();
 			
 			foreach(InputBindingInfo bindingInfo in bindings) {
-				if(bindingInfo.ActiveGestures != null) {
-					gestures.AddRange(bindingInfo.ActiveGestures);
+				if(bindingInfo.ActiveGestures != null && bindingInfo.IsActive) {
+					foreach(InputGesture gesture in bindingInfo.ActiveGestures) {
+						if(!gestures.ContainsTemplateFor(gesture, GestureCompareMode.ExactlyMatches)) {
+							gestures.Add(gesture);
+						}
+					}
 				}
 			}
 			
@@ -798,75 +663,48 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Register default command binding update hander which will keep instance command 
+		/// Register default command binding update hander which will keep instance or type command 
 		/// bindings upated
 		/// </summary>
 		/// <param name="commandBindingInfo">Command binding info</param>
-		private static void RegisterInstaceDefaultCommandBindingHandler(CommandBindingInfo commandBindingInfo) 
+		private static void RegisterDefaultCommandBindingHandler(CommandBindingInfo commandBindingInfo) 
 		{
 			if(commandBindingInfo.DefaultCommandBindingHandler != null) {
 				commandBindingInfo.DefaultCommandBindingHandler.Invoke();
 			}
 			
-			if(commandBindingInfo.OwnerInstanceName != null && commandBindingInfo.OwnerInstance == null) {
+			if(commandBindingInfo.OwnerInstanceName != null) {
 				RegisterInstanceCommandBindingsUpdateHandler(commandBindingInfo.OwnerInstanceName, commandBindingInfo.DefaultCommandBindingHandler);
-			} else if(commandBindingInfo.OwnerInstance != null) {
-				RegisterInstanceCommandBindingsUpdateHandler(commandBindingInfo.OwnerInstance, commandBindingInfo.DefaultCommandBindingHandler);
-			}
-		}
-		
-		/// <summary>
-		/// Register default command binding update hander which will keep type command 
-		/// bindings upated
-		/// </summary>
-		/// <param name="commandBindingInfo">Command binding info</param>
-		private static void RegisterClassDefaultCommandBindingHandler(CommandBindingInfo commandBindingInfo) 
-		{
-			if(commandBindingInfo.DefaultCommandBindingHandler != null) {
-				commandBindingInfo.DefaultCommandBindingHandler.Invoke();
-			}
-			
-			if(commandBindingInfo.OwnerTypeName != null && commandBindingInfo.OwnerType == null) {
+			} else if(commandBindingInfo.OwnerTypeName != null) {
 				RegisterClassCommandBindingsUpdateHandler(commandBindingInfo.OwnerTypeName, commandBindingInfo.DefaultCommandBindingHandler);
-			} else if(commandBindingInfo.OwnerType != null) {
-				RegisterClassCommandBindingsUpdateHandler(commandBindingInfo.OwnerType, commandBindingInfo.DefaultCommandBindingHandler);
 			}
 		}
 		
+		
 		/// <summary>
-		/// Register default input binding update hander which will keep instance command 
+		/// Register default input binding update hander which will keep instance or type command 
 		/// bindings upated
 		/// </summary>
 		/// <param name="inputBindingInfo">Input binding info</param>
-		private static void RegisterInstaceDefaultInputBindingHandler(InputBindingInfo inputBindingInfo) 
+		private static void RegisterDefaultInputBindingHandler(InputBindingInfo inputBindingInfo) 
 		{
 			if(inputBindingInfo.DefaultInputBindingHandler != null) {
 	 			inputBindingInfo.DefaultInputBindingHandler.Invoke();
 			}
 			
-			if(inputBindingInfo.OwnerInstanceName != null && inputBindingInfo.OwnerInstance == null) {
+			if(inputBindingInfo.OwnerInstanceName != null) {
 				RegisterInstanceInputBindingsUpdateHandler(inputBindingInfo.OwnerInstanceName, inputBindingInfo.DefaultInputBindingHandler);
-			} else if(inputBindingInfo.OwnerInstance != null) {
-				RegisterInstanceInputBindingsUpdateHandler(inputBindingInfo.OwnerInstance, inputBindingInfo.DefaultInputBindingHandler);
-			}
-		}
-		
-		/// <summary>
-		/// Register default input binding update hander which will keep type command 
-		/// bindings upated
-		/// </summary>
-		/// <param name="inputBindingInfo">Input binding info</param>
-		private static void RegisterClassDefaultInputBindingHandler(InputBindingInfo inputBindingInfo) 
-		{
-			if(inputBindingInfo.DefaultInputBindingHandler != null) {
-	 			inputBindingInfo.DefaultInputBindingHandler.Invoke();
-			}
-
-			if(inputBindingInfo.OwnerTypeName != null && inputBindingInfo.OwnerType == null) {
+			} else if(inputBindingInfo.OwnerTypeName != null) {
 				RegisterClassInputBindingsUpdateHandler(inputBindingInfo.OwnerTypeName, inputBindingInfo.DefaultInputBindingHandler);
-			} else if(inputBindingInfo.OwnerType != null) {
-				RegisterClassInputBindingsUpdateHandler(inputBindingInfo.OwnerType, inputBindingInfo.DefaultInputBindingHandler);
 			}
 		}
 	}	
+		
+	public static class TypeExtensions
+	{
+		public static string GetShortAssemblyQualifiedName(this Type type)
+		{
+			return string.Format("{0}, {1}", type.FullName, type.Assembly.GetName().Name);
+		}
+	}
 }
