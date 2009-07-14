@@ -37,12 +37,14 @@ namespace ICSharpCode.XamlBinding.PowerToys
 					XDocument document = XDocument.Load(reader, LoadOptions.PreserveWhitespace | LoadOptions.SetLineInfo);
 					document.Declaration = null;
 					if (Refactor(provider.TextEditor, document)) {
-						StringWriter sWriter = new StringWriter();
-						XmlWriter writer = XmlWriter.Create(sWriter, CreateSettings());
-						document.WriteTo(writer);
-						writer.Flush();
-						provider.TextEditor.Document.Text = sWriter.ToString();
-						XmlView.FormatXml(provider.TextEditor);
+						using (provider.TextEditor.Document.OpenUndoGroup()) {
+							StringWriter sWriter = new StringWriter();
+							XmlWriter writer = XmlWriter.Create(sWriter, CreateSettings());
+							document.WriteTo(writer);
+							writer.Flush();
+							provider.TextEditor.Document.Text = sWriter.ToString();
+							XmlView.FormatXml(provider.TextEditor);
+						}
 					}
 				}
 			} catch (XmlException e) {

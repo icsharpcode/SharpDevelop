@@ -42,7 +42,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			EditGridColumnsAndRowsDialog dialog = new EditGridColumnsAndRowsDialog(selectedItem);
 			
 			if (dialog.ShowDialog() ?? false) {
-				
+				selectedItem.ReplaceWith(dialog.GetConstructedTree());
+				return true;
 			}
 			
 			return false;

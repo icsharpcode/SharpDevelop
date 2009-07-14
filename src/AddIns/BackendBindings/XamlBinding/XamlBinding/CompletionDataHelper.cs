@@ -431,11 +431,9 @@ namespace ICSharpCode.XamlBinding
 			if (trr != null) {
 				var ctors = trr.ResolvedType
 					.GetMethods()
-					.Where(m => m.IsPublic && m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count + 1)
+					.Where(m => m.IsPublic && m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count)
 					.OrderBy(m => m.Parameters.Count);
-				
-				yield return new MarkupExtensionInsightItem(new DefaultMethod(trr.ResolvedClass, trr.ResolvedClass.Name));
-				
+								
 				foreach (var ctor in ctors)
 					yield return new MarkupExtensionInsightItem(ctor);
 			}
@@ -444,7 +442,8 @@ namespace ICSharpCode.XamlBinding
 		public static ICompletionItemList CreateMarkupExtensionCompletion(XamlCompletionContext context)
 		{
 			var list = new XamlCompletionItemList();
-			var markup = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.Editor.Caret.Offset);
+			string visibleValue = context.RawAttributeValue.Substring(0, context.ValueStartOffset);
+			var markup = Utils.GetInnermostMarkupExtensionInfo(MarkupExtensionParser.Parse(visibleValue));
 			var trr = ResolveMarkupExtensionType(markup, context);
 			
 			if (trr == null) {
@@ -513,7 +512,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			switch (result.ResolvedType.FullyQualifiedName) {
 				case "System.Windows.Thickness":
-					yield return new MemberInsightItem(result.ResolvedMember, "left");
+					yield return new MemberInsightItem(result.ResolvedMember, "uniformLength");
 					yield return new MemberInsightItem(result.ResolvedMember, "left, top");
 					yield return new MemberInsightItem(result.ResolvedMember, "left, top, right, bottom");
 					break;

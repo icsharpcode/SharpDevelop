@@ -2,18 +2,21 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
-	Title="ICSharpCode.XamlBinding.PowerToys.Dialogs" Height="300" Width="300"
+	Title="Edit grid columns and rows" Height="500" Width="500"
 	WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
 	<Window.Resources>
-		<Style TargetType="{x:Type Button}">
+		<Style x:Key="normal" TargetType="{x:Type Button}">
 			<Setter Property="Margin" Value="3" />
 			<Setter Property="Padding" Value="3" />
 		</Style>
 	</Window.Resources>
 	<DockPanel>
-		<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
-			<Button x:Name="btnOK" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" />
-			<Button x:Name="btnCancel" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" />
+		<StackPanel Orientation="Vertical" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+			<TextBlock x:Name="lblInstruction" Visibility="Collapsed" />
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+				<Button x:Name="btnOK" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" Style="{StaticResource normal}" />
+				<Button x:Name="btnCancel" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" Style="{StaticResource normal}" />
+			</StackPanel>
 		</StackPanel>
 		<Grid x:Name="gridDisplay" />
 	</DockPanel>

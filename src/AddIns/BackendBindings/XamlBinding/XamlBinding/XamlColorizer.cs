@@ -112,16 +112,19 @@ namespace ICSharpCode.XamlBinding
 
 					index = LineText.IndexOfAny(index + 1, '=', '.');
 					if (index > -1) {
-						context = CompletionDataHelper.ResolveContext(FileContent, FileName, LineNumber, index - 1);
+						context = CompletionDataHelper.ResolveContext(FileContent, FileName, LineNumber, index);
 						string elementName = context.ActiveElement.Name;
 						int propertyNameIndex = elementName.IndexOf('.');
 						string attribute = context.AttributeName;
-						if (string.IsNullOrEmpty(attribute) && elementName.Contains(".")) {
+						if (attribute.Contains(".")) {
+							int tmp = attribute.IndexOf('.');
+							index += attribute.Substring(tmp).Length;
+						} else if (string.IsNullOrEmpty(attribute) && elementName.Contains(".")) {
 							attribute = elementName;
 							index += attribute.Substring(propertyNameIndex).Length;
 						}
 						if (context.Description != XamlContextDescription.InComment && !string.IsNullOrEmpty(attribute)) {
-							int startIndex = LineText.Substring(0, index).LastIndexOf(attribute);
+							int startIndex = LineText.Substring(0, Math.Min(index, LineText.Length)).LastIndexOf(attribute);
 							if (propertyNameIndex > -1)
 								infos.Add(new HighlightingInfo(attribute.TrimStart('/'), startIndex + propertyNameIndex + 1, startIndex + attribute.Length, Offset, context));
 							else
@@ -248,6 +251,17 @@ namespace ICSharpCode.XamlBinding
 			
 			public HighlightingInfo(string token, int startOffset, int endOffset, int lineOffset, XamlContext context)
 			{
+				if (token == null)
+					throw new ArgumentNullException("token");
+				if (startOffset < 0)
+					throw new ArgumentOutOfRangeException("startOffset", startOffset, "Value must be greater 0");
+				if (endOffset < 0)
+					throw new ArgumentOutOfRangeException("endOffset", endOffset, "Value must be greater 0");
+				if (lineOffset < 0)
+					throw new ArgumentOutOfRangeException("lineOffset", lineOffset, "Value must be greater 0");
+				if (context == null)
+					throw new ArgumentNullException("context");
+				
 				this.token = token;
 				this.startOffset = startOffset;
 				this.endOffset = endOffset;

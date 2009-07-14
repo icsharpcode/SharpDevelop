@@ -118,11 +118,10 @@ namespace ICSharpCode.XamlBinding
 					break;
 				default:
 					if (context.Description != XamlContextDescription.None && !char.IsWhiteSpace(ch)) {
-						editor.Document.Insert(editor.Caret.Offset, ch.ToString());
 						string word = editor.Document.Text.GetWordBeforeOffset(editor.Caret.Offset);
 						if (!(context.AttributeName.StartsWith("xmlns") || word.StartsWith("xmlns")))
 							this.CtrlSpace(editor);
-						return CodeCompletionKeyPressResult.EatKey;
+						return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 					}
 					break;
 			}
