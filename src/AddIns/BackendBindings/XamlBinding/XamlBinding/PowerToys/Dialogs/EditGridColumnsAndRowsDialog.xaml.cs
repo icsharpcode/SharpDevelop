@@ -40,6 +40,38 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		int selectedCellX = -1, selectedCellY = -1;
 		bool? swap = null;
 		
+		class UndoStep
+		{
+			public XElement Tree { get; set; }
+			public XElement RowDefinitions { get; set; }
+			public XElement ColumnDefinitions { get; set; }
+			public IList<XElement> AdditionalProperties { get; set; }
+			
+			public static UndoStep CreateStep(XElement tree, XElement rows, XElement cols, IEnumerable<XElement> properties)
+			{
+				XElement rowCopy = new XElement(rows);
+				XElement colCopy = new XElement(cols);
+				XElement treeCopy = new XElement(tree);
+				
+				IList<XElement> propertiesCopy = properties.Select(item => new XElement(item)).ToList();
+				
+				return new UndoStep() {
+					Tree = treeCopy,
+					RowDefinitions = rowCopy,
+					ColumnDefinitions = colCopy,
+					AdditionalProperties = propertiesCopy
+				};
+			}
+			
+			public static UndoStep Copy(UndoStep original)
+			{
+				return CreateStep(original.Tree, original.RowDefinitions, original.ColumnDefinitions, original.AdditionalProperties);
+			}
+		}
+		
+		Stack<UndoStep> undoStack;
+		Stack<UndoStep> redoStack;
+		
 		public EditGridColumnsAndRowsDialog(XElement gridTree)
 		{
 			InitializeComponent();
@@ -54,7 +86,10 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				this.colDefitions.Remove();
 			
 			this.additionalProperties = gridTree.Elements().Where(e => e.Name.LocalName.Contains(".")).ToList();
-			this.additionalProperties.ForEach(item => { if (item.Parent != null) item.Remove(); Core.LoggingService.Debug(item); });
+			this.additionalProperties.ForEach(item => { if (item.Parent != null) item.Remove(); });
+			
+			this.redoStack = new Stack<UndoStep>();
+			this.undoStack = new Stack<UndoStep>();
 			
 			RebuildGrid();
 		}
@@ -71,6 +106,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void InsertAbove(TextBlock block)
 		{
+			UpdateUndoRedoState();
+			
 			int row = (int)block.GetValue(Grid.RowProperty);
 			
 			var newRow = new XElement(rowDefName);
@@ -107,6 +144,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void InsertBelow(TextBlock block)
 		{
+			UpdateUndoRedoState();
+			
 			int row = (int)block.GetValue(Grid.RowProperty);
 			
 			var newRow = new XElement(rowDefName);
@@ -145,6 +184,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		{
 			int row = (int)block.GetValue(Grid.RowProperty);
 			if (row > 0) {
+				UpdateUndoRedoState();
+				
 				var items = rowDefitions.Elements().Skip(row);
 				var selItem = items.FirstOrDefault();
 				if (selItem == null)
@@ -204,6 +245,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		{
 			int row = (int)block.GetValue(Grid.RowProperty);
 			if (row < rowDefitions.Elements().Count() - 1) {
+				UpdateUndoRedoState();
+
 				var items = rowDefitions.Elements().Skip(row);
 				var selItem = items.FirstOrDefault();
 				if (selItem == null)
@@ -262,7 +305,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		void DeleteRow(TextBlock block)
 		{
 			int row = (int)block.GetValue(Grid.RowProperty);
-			
+			UpdateUndoRedoState();
+
 			var items = rowDefitions.Elements().Skip(row);
 			var selItem = items.FirstOrDefault();
 			if (selItem != null)
@@ -294,7 +338,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		void InsertBefore(TextBlock block)
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
-			
+			UpdateUndoRedoState();
+
 			var newColumn = new XElement(colDefName);
 			newColumn.SetAttributeValue(XName.Get("Width"), "Auto");
 			var items = colDefitions.Elements().Skip(column);
@@ -330,7 +375,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		void InsertAfter(TextBlock block)
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
-			
+			UpdateUndoRedoState();
+
 			var newColumn = new XElement(colDefName);
 			newColumn.SetAttributeValue(XName.Get("Width"), "Auto");
 			var items = colDefitions.Elements().Skip(column);
@@ -366,7 +412,10 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		void MoveLeft(TextBlock block)
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
+			
 			if (column > 0) {
+				UpdateUndoRedoState();
+				
 				var items = colDefitions.Elements().Skip(column);
 				var selItem = items.FirstOrDefault();
 				if (selItem == null)
@@ -425,7 +474,10 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		void MoveRight(TextBlock block)
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
+			
 			if (column < colDefitions.Elements().Count() - 1) {
+				UpdateUndoRedoState();
+				
 				var items = colDefitions.Elements().Skip(column);
 				var selItem = items.FirstOrDefault();
 				if (selItem == null)
@@ -484,7 +536,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		void DeleteColumn(TextBlock block)
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
-			
+			UpdateUndoRedoState();
+
 			var items = colDefitions.Elements().Skip(column);
 			var selItem = items.FirstOrDefault();
 			if (selItem != null)
@@ -539,7 +592,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
 			int row = (int)block.GetValue(Grid.RowProperty);
-			
+			UpdateUndoRedoState();
+
 			gridTree.Elements()
 				.Where(
 					element => {
@@ -628,10 +682,18 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			this.InvalidateVisual();
 		}
+		
+		void UpdateUndoRedoState()
+		{
+			this.undoStack.Push(UndoStep.CreateStep(gridTree, rowDefitions, colDefitions, additionalProperties));
+			this.redoStack.Clear();
+		}
 
 		void DisplayRectMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			if (selectedCellX > -1 && selectedCellY > -1 && swap.HasValue) {
+				UpdateUndoRedoState();
+				
 				TextBlock block = sender as TextBlock;
 				int targetX = (int)block.GetValue(Grid.ColumnProperty);
 				int targetY = (int)block.GetValue(Grid.RowProperty);
@@ -697,8 +759,21 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 
 		void DisplayRectContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
+			MenuItem undoItem = new MenuItem();
+			undoItem.Header = "Undo";
+			undoItem.IsEnabled = undoStack.Count > 0;
+			undoItem.Click += new RoutedEventHandler(UndoItemClick);
+			
+			MenuItem redoItem = new MenuItem();
+			redoItem.Header = "Redo";
+			redoItem.IsEnabled = redoStack.Count > 0;
+			redoItem.Click += new RoutedEventHandler(RedoItemClick);
+			
 			ContextMenu menu = new ContextMenu() {
 				Items = {
+					undoItem,
+					redoItem,
+					new Separator(),
 					new MenuItem() {
 						Header = "Row",
 						Items = {
@@ -735,6 +810,30 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			};
 			
 			menu.IsOpen = true;
+		}
+
+		void RedoItemClick(object sender, RoutedEventArgs e)
+		{
+			HandleSteps(redoStack, undoStack);
+		}
+
+		void UndoItemClick(object sender, RoutedEventArgs e)
+		{
+			HandleSteps(undoStack, redoStack);
+		}
+		
+		void HandleSteps(Stack<UndoStep> stack1, Stack<UndoStep> stack2)
+		{
+			UndoStep step = stack1.Pop();
+			
+			stack2.Push(UndoStep.CreateStep(gridTree, rowDefitions, colDefitions, additionalProperties));
+			
+			this.additionalProperties = step.AdditionalProperties;
+			this.rowDefitions = step.RowDefinitions;
+			this.colDefitions = step.ColumnDefinitions;
+			this.gridTree = step.Tree;
+			
+			RebuildGrid();
 		}
 	}
 }
