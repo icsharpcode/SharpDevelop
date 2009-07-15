@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Template author="Daniel Grunwald" version="1.0">
+	
+	<Config
+		  name        = "Sequential Workflow"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "Workflow"
+		  defaultname = "Sequence${Number}.xaml"
+		  language    = "XML"/>
+	 
+	<Description></Description>
+
+	<Files>
+		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>
+<p:Activity x:Class="${StandardNamespace}.${ClassName}"
+            xmlns:p="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+            xmlns:s="clr-namespace:System;assembly=mscorlib"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<p:Sequence>
+		
+	</p:Sequence>
+</p:Activity>]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

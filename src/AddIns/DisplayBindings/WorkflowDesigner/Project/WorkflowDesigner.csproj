@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>WorkflowDesigner</RootNamespace>
+    <RootNamespace>ICSharpCode.WorkflowDesigner</RootNamespace>
     <AssemblyName>WorkflowDesigner</AssemblyName>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -39,8 +39,21 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Activities.Core.Design" />
+    <Reference Include="System.Activities.Design" />
+    <Reference Include="System.Activities.Design.Base" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data">
       <Private>False</Private>
@@ -49,40 +62,20 @@
     <Reference Include="System.Drawing">
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Windows.Forms">
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Workflow.Activities">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Workflow.ComponentModel">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Workflow.Runtime" />
     <Reference Include="System.Xml">
       <Private>False</Private>
     </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\Files\CSharp\Activity.xft">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Files\CSharp\CodeSeparationSequentialWorkflow.xft">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Files\CSharp\CodeSequentialWorkflow.xft">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\CSharp\ActivityLibrary.xpt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\CSharp\ConsoleProject.xpt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\CSharp\EmptyProject.xpt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Compile Include="WorkflowDesignerViewContent.cs" />
+    <Compile Include="WorkflowDisplayBinding.cs" />
+    <None Include="Templates\Files\Sequence.xft" />
     <None Include="WorkflowDesigner.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -90,39 +83,8 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Gui\ViewContentControl.cs" />
-    <Compile Include="Src\Gui\ViewContentControl.Designer.cs">
-      <DependentUpon>ViewContentControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\Loaders\BasicWorkflowDesignerLoader.cs" />
-    <Compile Include="Src\Loaders\CodeDesignerLoader.cs" />
-    <Compile Include="Src\Loaders\WorkflowDesignerLoadException.cs" />
-    <Compile Include="Src\Loaders\XomlDesignerLoader.cs" />
-    <Compile Include="Src\PrimaryView\PrimaryDisplayBinding.cs" />
-    <Compile Include="Src\PrimaryView\PrimaryViewContent.cs" />
-    <Compile Include="Src\SecondaryView\SecondaryDisplayBinding.cs" />
-    <Compile Include="Src\SecondaryView\SecondaryViewContent.cs" />
-    <Compile Include="Src\Services\EventBindingService\CSharpWorkflowDesignerEventBindingService.cs" />
-    <Compile Include="Src\Services\EventBindingService\EventPropertyDescriptor.cs" />
-    <Compile Include="Src\Services\EventBindingService\IWorkflowDesignerEventBindingService.cs" />
-    <Compile Include="Src\Services\EventBindingService\WorkflowDesignerEventBindingService.cs" />
-    <Compile Include="Src\Services\MemberCreationService.cs" />
-    <Compile Include="Src\Services\PropertyValueUIService.cs" />
-    <Compile Include="Src\Services\TypeProviderService.cs" />
-    <Compile Include="Src\Services\TypeResolutionService.cs" />
-    <Compile Include="Src\Services\WorkflowSideTabService.cs" />
-    <Compile Include="Src\Services\WorkflowMenuCommandService.cs" />
-    <Compile Include="Src\Services\WorkflowToolboxService.cs" />
-    <None Include="Templates\Files\NoCodeSequentialWorkflow.xft">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
@@ -143,27 +105,8 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Sda\ICSharpCode.SharpDevelop.Sda.csproj">
-      <Project>{80318B5F-A25D-45AB-8A95-EF31D2370A4C}</Project>
-      <Name>ICSharpCode.SharpDevelop.Sda</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
-      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
-      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <Folder Include="Src\Gui" />
-    <Folder Include="Src\Loaders" />
-    <Folder Include="Src\Commands" />
-    <Folder Include="Src\PrimaryView" />
-    <Folder Include="Src\Services" />
-    <Folder Include="Src\Services\EventBindingService" />
     <Folder Include="Templates" />
-    <Folder Include="Src\SecondaryView" />
     <Folder Include="Templates\Files" />
-    <Folder Include="Templates\Files\CSharp" />
-    <Folder Include="Templates\Files\VB" />
     <Folder Include="Templates\Projects" />
     <Folder Include="Templates\Projects\CSharp" />
     <Folder Include="Templates\Projects\VB" />

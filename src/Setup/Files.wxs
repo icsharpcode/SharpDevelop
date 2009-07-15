@@ -1361,7 +1361,7 @@
 										<Component Guid="69BD4F05-0ADD-48C9-AD46-72D9B0C4A569" Id="WorkflowDesignerDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\WorkflowDesigner.dll" Id="WorkflowDesigner.dll" Name="WorkflowDesigner.dll" />
 										</Component>
-										<Directory Id="WorkflowDesignerTemplatesFolder" Name="Templates">
+										<!-- <Directory Id="WorkflowDesignerTemplatesFolder" Name="Templates">
 											<Directory Id="WorkflowDesignerFilesFolder" Name="Files">
 												<Component Guid="DA3146B7-E769-4240-9C6E-74956A395782" Id="NoCodeSequentialWorkflowXft" DiskId="1">
 													<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\Templates\Files\NoCodeSequentialWorkflow.xft" Id="NoCodeSequentialWorkflow.xft" Name="NoCodeSequentialWorkflow.xft" />
@@ -1383,7 +1383,7 @@
 													</Component>
 												</Directory>
 											</Directory>
-										</Directory>
+										</Directory> -->
 									</Directory>
 									<!--
 									<Directory Id="WpfDesign" Name="WpfDesign">
