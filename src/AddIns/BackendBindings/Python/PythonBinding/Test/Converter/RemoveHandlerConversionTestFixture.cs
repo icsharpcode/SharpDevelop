@@ -38,7 +38,7 @@ namespace PythonBinding.Tests.Converter
 			string expectedCode = "class Foo(object):\r\n" +
 									"\tdef __init__(self):\r\n" +
 									"\t\tbutton = Button()\r\n" +
-									"\t\tbutton.Click -= ButtonClick\r\n" +
+									"\t\tbutton.Click -= self.ButtonClick\r\n" +
 									"\r\n" +
 									"\tdef ButtonClick(self, sender, e):\r\n" +
 									"\t\tpass";

@@ -1560,8 +1560,11 @@ namespace ICSharpCode.PythonBinding
 			// Create event handler expression.
 			IdentifierExpression identifierExpression = eventHandlerExpression as IdentifierExpression;
 			ObjectCreateExpression objectCreateExpression = eventHandlerExpression as ObjectCreateExpression;
+			MemberReferenceExpression memberRefExpression = eventHandlerExpression as MemberReferenceExpression;
 			if (identifierExpression != null) {
-				Append(identifierExpression.Identifier);
+				Append("self." + identifierExpression.Identifier);
+			} else if (memberRefExpression != null) {
+				memberRefExpression.AcceptVisitor(this, null);
 			} else if (objectCreateExpression != null) {
 				CreateDelegateCreateExpression(objectCreateExpression.Parameters[0]);
 			}
