@@ -747,7 +747,7 @@ namespace ICSharpCode.PythonBinding
 				memberRefExpression.TargetObject.AcceptVisitor(this, data);
 				Append("." +  memberRefExpression.MemberName);
 			} else if (identifierExpression != null) {
-				if (IsStatic(currentMethod)) {
+				if ((currentMethod != null) && IsStatic(currentMethod)) {
 					Append(GetTypeName(currentMethod) + ".");
 				} else {
 					Append("self.");
