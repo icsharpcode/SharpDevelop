@@ -24,6 +24,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 		}
 		
+		public void BringToFront()
+		{
+			PadDescriptor d = this.PadDescriptor;
+			if (d != null)
+				d.BringPadToFront();
+		}
+		
+		protected virtual PadDescriptor PadDescriptor {
+			get {
+				if (WorkbenchSingleton.Workbench == null || WorkbenchSingleton.Workbench.WorkbenchLayout == null)
+					return null;
+				return WorkbenchSingleton.Workbench.GetPad(GetType());
+			}
+		}
+		
 		public bool IsVisible {
 			get {
 				Control ctl = this.Control;

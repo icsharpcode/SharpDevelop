@@ -162,16 +162,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public override void Run()
 		{
+			ProjectBrowserPad.Instance.BringToFront();
 			this.AddExistingItems();
 		}
 		
 		protected IEnumerable<FileProjectItem> AddExistingItems()
 		{
-			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
-			DirectoryNode node = selectedNode as DirectoryNode;
-			if (node == null && selectedNode != null) {
-				node = selectedNode.Parent as DirectoryNode;
-			}
+			DirectoryNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedDirectoryNode;
 			if (node == null) {
 				return null;
 			}
@@ -277,11 +274,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
-			DirectoryNode node = selectedNode as DirectoryNode;
-			if (node == null && selectedNode != null) {
-				node = selectedNode.Parent as DirectoryNode;
-			}
+			ProjectBrowserPad.Instance.BringToFront();
+			DirectoryNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedDirectoryNode;
 			if (node == null) {
 				return;
 			}
@@ -344,6 +338,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
+			ProjectBrowserPad.Instance.BringToFront();
 			this.AddNewItems();
 		}
 		
@@ -411,11 +406,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public override void Run()
 		{
-			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
-			DirectoryNode node = selectedNode as DirectoryNode;
-			if (node == null) {
-				node = selectedNode.Parent as DirectoryNode;
-			}
+			ProjectBrowserPad.Instance.BringToFront();
+			
+			DirectoryNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedDirectoryNode;
 			if (node == null) {
 				return;
 			}
@@ -432,8 +425,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
 			DirectoryNode node = selectedNode as DirectoryNode;
-			Directory.CreateDirectory(node.Directory);
-			IncludeFileInProject.IncludeDirectoryNode(node, false);
+			if (node != null) {
+				Directory.CreateDirectory(node.Directory);
+				IncludeFileInProject.IncludeDirectoryNode(node, false);
+			}
 		}
 	}
 }
