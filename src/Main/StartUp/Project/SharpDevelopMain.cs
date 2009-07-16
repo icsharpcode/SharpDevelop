@@ -104,6 +104,12 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void RunApplication()
 		{
+			// The output encoding differs based on whether SharpDevelop is a console app (debug mode)
+			// or Windows app (release mode). Because this flag also affects the default encoding
+			// when reading from other processes' standard output, we explicitly set the encoding to get
+			// consistent behaviour in debug and release builds of SharpDevelop.
+			Console.OutputEncoding = System.Text.Encoding.Default;
+			
 			LoggingService.Info("Starting SharpDevelop...");
 			try {
 				StartupSettings startup = new StartupSettings();

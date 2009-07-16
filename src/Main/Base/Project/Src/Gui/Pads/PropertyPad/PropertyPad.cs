@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (instance == null) return;
 			if (instance.activeContainer != container)
 				return;
-			LoggingService.Debug("UpdateSelectedObjectIfActive");
+			//LoggingService.Debug("UpdateSelectedObjectIfActive");
 			if (container.SelectedObjects != null)
 				instance.SetDesignableObjects(container.SelectedObjects);
 			else
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (instance == null) return;
 			if (instance.activeContainer != container)
 				return;
-			LoggingService.Debug("UpdateHostIfActive");
+			//LoggingService.Debug("UpdateHostIfActive");
 			if (instance.host == container.Host)
 				return;
 			if (instance.host != null)
@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (instance == null) return;
 			if (instance.activeContainer != container)
 				return;
-			LoggingService.Debug("UpdateSelectableIfActive");
+			//LoggingService.Debug("UpdateSelectableIfActive");
 			instance.SetSelectableObjects(container.SelectableObjects);
 		}
 		
@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (instance == null) return;
 			if (instance.activeContainer != container)
 				return;
-			LoggingService.Debug("UpdatePropertyGridReplacementControl");
+			//LoggingService.Debug("UpdatePropertyGridReplacementControl");
 			if (container.PropertyGridReplacementControl != null) {
 				if (!instance.panel.Controls.Contains(container.PropertyGridReplacementControl)) {
 					instance.panel.Controls.Clear();

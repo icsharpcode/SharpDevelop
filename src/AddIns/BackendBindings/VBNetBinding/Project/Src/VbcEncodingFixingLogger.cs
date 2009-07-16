@@ -84,9 +84,9 @@ namespace VBNetBinding
 				engineWorker.CurrentErrorOrWarning.FileName = FixEncoding(engineWorker.CurrentErrorOrWarning.FileName);
 			}
 			
-			static string FixEncoding(string encoding)
+			static string FixEncoding(string text)
 			{
-				return Encoding.Default.GetString(Encoding.GetEncoding(850).GetBytes(encoding));
+				return Encoding.Default.GetString(ICSharpCode.SharpDevelop.Util.ProcessRunner.OemEncoding.GetBytes(text));
 			}
 		}
 	}

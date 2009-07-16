@@ -389,9 +389,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 					IPadContent content = padDescriptor.PadContent;
 					if (content == null)
 						return;
-					Control control = content.Control;
-					control.Dock = DockStyle.Fill;
-					Controls.Add(control);
+					try {
+						Control control = content.Control;
+						control.Dock = DockStyle.Fill;
+						Controls.Add(control);
+					} catch (Exception ex) {
+						MessageService.ShowError(ex, "Error in IPadContent.Control");
+					}
 				}
 			}
 			
