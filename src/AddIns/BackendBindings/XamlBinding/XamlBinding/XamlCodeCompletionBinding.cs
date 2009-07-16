@@ -21,6 +21,7 @@ namespace ICSharpCode.XamlBinding
 	public class XamlCodeCompletionBinding : ICodeCompletionBinding
 	{
 		static XamlCodeCompletionBinding instance;
+		bool trackForced = true;
 		
 		public static XamlCodeCompletionBinding Instance {
 			get {
@@ -117,8 +118,13 @@ namespace ICSharpCode.XamlBinding
 					break;
 				default:
 					if (context.Description != XamlContextDescription.None && !char.IsWhiteSpace(ch)) {
+						string starter = editor.GetWordBeforeCaretExtended();
+						if (!string.IsNullOrEmpty(starter))
+							return CodeCompletionKeyPressResult.None;
+						trackForced = false;
 						if (!context.AttributeName.StartsWith("xmlns"))
 							this.CtrlSpace(editor);
+						trackForced = true;
 						return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 					}
 					break;
@@ -130,12 +136,11 @@ namespace ICSharpCode.XamlBinding
 		public bool CtrlSpace(ITextEditor editor)
 		{
 			XamlCompletionContext context = CompletionDataHelper.ResolveCompletionContext(editor, ' ');
-			context.Forced = true;
+			context.Forced = trackForced;
 			if (context.ActiveElement != null) {
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && context.Description != XamlContextDescription.InAttributeValue) {
 					var list = CompletionDataHelper.CreateListForContext(context) as XamlCompletionItemList;
 					string starter = editor.GetWordBeforeCaretExtended();
-					Core.LoggingService.Debug("starter: " + starter);
 					if (context.Description != XamlContextDescription.None && !string.IsNullOrEmpty(starter))
 						list.PreselectionLength = starter.Length;
 					editor.ShowCompletionWindow(list);

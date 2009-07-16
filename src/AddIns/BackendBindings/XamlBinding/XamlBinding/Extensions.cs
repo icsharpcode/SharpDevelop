@@ -78,19 +78,8 @@ namespace ICSharpCode.XamlBinding
 		public static string GetWordBeforeCaretExtended(this ITextEditor editor)
 		{
 			IDocumentLine line = editor.Document.GetLine(editor.Caret.Line);
-			int index = Math.Min(editor.Caret.Column, line.Text.Length);
+			int index = Math.Min(editor.Caret.Column - 1, line.Text.Length);
 			string text = line.Text.Substring(0, index);
-			int startIndex = text.LastIndexOfAny(' ', '\t', '"', '<', '\'', '>');
-			if (startIndex > -1)
-				return text.Substring(startIndex + 1);
-			
-			return string.Empty;
-		}
-		
-		public static string GetWordBeforeIndex(this string thisValue, int index)
-		{
-			string text = thisValue.Substring(0, index);
-			
 			int startIndex = text.LastIndexOfAny(' ', '\t', '"', '<', '\'', '>');
 			if (startIndex > -1)
 				return text.Substring(startIndex + 1);

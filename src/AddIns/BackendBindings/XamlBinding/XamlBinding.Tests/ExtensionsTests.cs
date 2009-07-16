@@ -6,6 +6,7 @@
 // </file>
 
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using NUnit.Framework;
 
@@ -68,6 +69,83 @@ namespace ICSharpCode.XamlBinding.Tests
 			string expected = "Hello World?";
 			
 			Assert.AreEqual(expected, result);
+		}
+		
+		[Test]
+		[STAThread]
+		public void GetWordBeforeCaretExtendedTest1()
+		{
+			ITextEditor editor = new AvalonEditTextEditorAdapter(new AvalonEdit.TextEditor());
+			editor.Document.Text = "<Test />";
+			editor.Caret.Offset = 6;
+			string text = editor.GetWordBeforeCaretExtended();
+			Assert.AreEqual(string.Empty, text);
+		}
+		
+		[Test]
+		[STAThread]
+		public void GetWordBeforeCaretExtendedTest2()
+		{
+			ITextEditor editor = new AvalonEditTextEditorAdapter(new AvalonEdit.TextEditor());
+			editor.Document.Text = "<Test value=\"\" />";
+			editor.Caret.Offset = 6;
+			string text = editor.GetWordBeforeCaretExtended();
+			Assert.AreEqual(string.Empty, text);
+		}
+		
+		[Test]
+		[STAThread]
+		public void GetWordBeforeCaretExtendedTest3()
+		{
+			ITextEditor editor = new AvalonEditTextEditorAdapter(new AvalonEdit.TextEditor());
+			editor.Document.Text = "<Test value=\"\" />";
+			editor.Caret.Offset = 14;
+			string text = editor.GetWordBeforeCaretExtended();
+			Assert.AreEqual(string.Empty, text);
+		}
+		
+		[Test]
+		[STAThread]
+		public void GetWordBeforeCaretExtendedTest4()
+		{
+			ITextEditor editor = new AvalonEditTextEditorAdapter(new AvalonEdit.TextEditor());
+			editor.Document.Text = "<Test value=\"\" />";
+			editor.Caret.Offset = 11;
+			string text = editor.GetWordBeforeCaretExtended();
+			Assert.AreEqual("value", text);
+		}
+		
+		[Test]
+		[STAThread]
+		public void GetWordBeforeCaretExtendedTest5()
+		{
+			ITextEditor editor = new AvalonEditTextEditorAdapter(new AvalonEdit.TextEditor());
+			editor.Document.Text = "<Test member.value=\"\" />";
+			editor.Caret.Offset = 12;
+			string text = editor.GetWordBeforeCaretExtended();
+			Assert.AreEqual("member", text);
+		}
+		
+		[Test]
+		[STAThread]
+		public void GetWordBeforeCaretExtendedTest6()
+		{
+			ITextEditor editor = new AvalonEditTextEditorAdapter(new AvalonEdit.TextEditor());
+			editor.Document.Text = "<Test member.value=\"\" />";
+			editor.Caret.Offset = 13;
+			string text = editor.GetWordBeforeCaretExtended();
+			Assert.AreEqual("member.", text);
+		}
+		
+		[Test]
+		[STAThread]
+		public void GetWordBeforeCaretExtendedTest7()
+		{
+			ITextEditor editor = new AvalonEditTextEditorAdapter(new AvalonEdit.TextEditor());
+			editor.Document.Text = "<Test member.value=\"\" />";
+			editor.Caret.Offset = 14;
+			string text = editor.GetWordBeforeCaretExtended();
+			Assert.AreEqual("member.v", text);
 		}
 	}
 }

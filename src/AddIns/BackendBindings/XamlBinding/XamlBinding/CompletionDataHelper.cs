@@ -460,7 +460,7 @@ namespace ICSharpCode.XamlBinding
 			} else {
 				if (trr.ResolvedType != null) {
 					if (markup.NamedArguments.Count == 0) {
-						if (DoPositionalArgsCompletion(list, context, trr))
+						if (DoPositionalArgsCompletion(list, context, markup, trr))
 							DoNamedArgsCompletion(list, trr, markup);
 					} else
 						DoNamedArgsCompletion(list, trr, markup);
@@ -481,7 +481,7 @@ namespace ICSharpCode.XamlBinding
 		}
 
 		/// <remarks>returns true if elements from named args completion should be added afterwards.</remarks>
-		static bool DoPositionalArgsCompletion(XamlCompletionItemList list, XamlCompletionContext context, TypeResolveResult trr)
+		static bool DoPositionalArgsCompletion(XamlCompletionItemList list, XamlCompletionContext context, MarkupExtensionInfo markup, TypeResolveResult trr)
 		{
 			switch (trr.ResolvedType.FullyQualifiedName) {
 				case "System.Windows.Markup.ArrayExtension":
@@ -504,12 +504,13 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				default:
-//							var ctors = trr.ResolvedType
-//								.GetMethods()
-//								.Where(m => m.IsPublic && m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count + 1)
-//								.OrderBy(m => m.Parameters.Count);
-//
-//							//var ctor = FindCompletableCtor(ctors, markup.PositionalArguments.Count)
+					var ctors = trr.ResolvedType
+						.GetMethods()
+						.Where(m => m.IsPublic && m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count + 1);
+					if (context.Forced)
+						return true;
+					if (ctors.Count() != 0 || markup.PositionalArguments.Count == 0)
+						return false;
 					break;
 			}
 			
