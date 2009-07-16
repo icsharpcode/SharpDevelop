@@ -74,7 +74,6 @@ namespace ICSharpCode.XamlBinding
 					break;
 				case '.':
 					if (context.ActiveElement != null && !XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
-						context.Description = XamlContextDescription.AtTag;
 						list = CompletionDataHelper.CreateListForContext(context);
 						editor.ShowCompletionWindow(list);
 						return CodeCompletionKeyPressResult.Completed;
@@ -118,8 +117,7 @@ namespace ICSharpCode.XamlBinding
 					break;
 				default:
 					if (context.Description != XamlContextDescription.None && !char.IsWhiteSpace(ch)) {
-						string word = editor.Document.Text.GetWordBeforeOffset(editor.Caret.Offset);
-						if (!(context.AttributeName.StartsWith("xmlns") || word.StartsWith("xmlns")))
+						if (!context.AttributeName.StartsWith("xmlns"))
 							this.CtrlSpace(editor);
 						return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 					}

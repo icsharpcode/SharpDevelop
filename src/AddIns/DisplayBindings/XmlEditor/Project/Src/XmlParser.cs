@@ -448,8 +448,7 @@ namespace ICSharpCode.XmlEditor
 			
 			int currentIndex = index - 1;
 
-			for (int i = 0; i < index; ++i) {
-				
+			while (currentIndex > -1) {
 				char currentChar = xml[currentIndex];
 				if (currentChar == '<') {
 					elementStartIndex = currentIndex;

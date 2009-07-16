@@ -51,10 +51,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public static XamlContext ResolveContext(string text, string fileName, int line, int col)
 		{
-			int offset = Utils.GetOffsetFromFilePos(text, line, col);
-			
-			if (offset == -1)
-				throw new InvalidOperationException("No valid file position: " + line + " " + col);
+			int offset = Math.Max(0, Math.Min(Utils.GetOffsetFromFilePos(text, line, col), text.Length - 1));
 			
 			ParseInformation info = ParserService.GetParseInformation(fileName);
 			string attribute = XmlParser.GetAttributeNameAtIndex(text, offset);
@@ -181,13 +178,8 @@ namespace ICSharpCode.XamlBinding
 				}
 			}
 			
-			if (!lastElement.Name.EndsWith(".", StringComparison.OrdinalIgnoreCase) && context.PressedKey != '.') {
-				list.AddRange(GetListOfAttachedProperties(context, existingItems));
-				
-				if (includeEvents) {
-					list.AddRange(GetListOfAttachedEvents(context, existingItems));
-				}
-			}
+			if (!lastElement.Name.EndsWith(".", StringComparison.OrdinalIgnoreCase) && context.PressedKey != '.')
+				list.AddRange(GetListOfAttached(context, string.Empty, string.Empty, includeEvents, true));
 			
 			return list;
 		}
@@ -398,20 +390,31 @@ namespace ICSharpCode.XamlBinding
 					break;
 				case XamlContextDescription.InTag:
 					var existingAttribs = Utils.GetListOfExistingAttributeNames(editor.Document.Text, editor.Caret.Line, editor.Caret.Column);
-					list.Items.AddRange(CreateAttributeList(context, existingAttribs, true));
+					string word = context.Editor.GetWordBeforeCaretExtended();
 					
-					QualifiedName last = context.ActiveElement;
-					
-					TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(last.Name, context), info, editor.Document.Text) as TypeResolveResult;
-					
-					IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
-					
-					if (typeClass != null && typeClass.DerivesFrom("System.Windows.DependencyObject")) {
-						list.Items.AddRange(GetListOfAttachedProperties(context, existingAttribs));
-						list.Items.AddRange(GetListOfAttachedEvents(context, existingAttribs));
+					if (context.PressedKey == '.' || word.EndsWith(".")) {
+						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(word.TrimEnd('.'), context), info, editor.Document.Text) as TypeResolveResult;
+						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
+						
+						string ns = "";
+						int pos = word.IndexOf(':');
+						if (pos > -1)
+							ns = word.Substring(0, pos);
+						
+						if (typeClass != null && typeClass.DerivesFrom("System.Windows.DependencyObject"))
+							list.Items.AddRange(GetListOfAttached(context, word.Substring(pos + 1, word.Length - pos - 1).TrimEnd('.'), ns, true, true));
+					} else {
+						QualifiedName last = context.ActiveElement;
+						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(last.Name, context), info, editor.Document.Text) as TypeResolveResult;
+						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
+						
+						list.Items.AddRange(CreateAttributeList(context, existingAttribs, true));
+						
+						if (typeClass != null && typeClass.DerivesFrom("System.Windows.DependencyObject"))
+							list.Items.AddRange(GetListOfAttached(context, string.Empty, string.Empty, true, true));
+						
+						list.Items.AddRange(standardAttributes);
 					}
-					
-					list.Items.AddRange(standardAttributes);
 					break;
 				case XamlContextDescription.InAttributeValue:
 					XamlCodeCompletionBinding.Instance.CtrlSpace(editor);
@@ -433,7 +436,7 @@ namespace ICSharpCode.XamlBinding
 					.GetMethods()
 					.Where(m => m.IsPublic && m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count)
 					.OrderBy(m => m.Parameters.Count);
-								
+				
 				foreach (var ctor in ctors)
 					yield return new MarkupExtensionInsightItem(ctor);
 			}
@@ -757,15 +760,30 @@ namespace ICSharpCode.XamlBinding
 			return result;
 		}
 
-		static List<ICompletionItem> GetListOfAttachedProperties(XamlCompletionContext context, string[] existingItems)
+		static List<ICompletionItem> GetListOfAttached(XamlCompletionContext context, string prefixClassName, string prefixNamespace, bool events, bool properties)
 		{
 			List<ICompletionItem> result = new List<ICompletionItem>();
 			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
 			
-			foreach (var ns in context.XmlnsDefinitions) {
-				var list = XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value);
-				if (list != null) {
-					foreach (IClass c in list.OfType<IClass>()) {
+			if (!string.IsNullOrEmpty(prefixClassName)) {
+				var ns = context.XmlnsDefinitions[prefixNamespace];
+				IClass c = XamlCompilationUnit.GetNamespaceMembers(pc, ns).FirstOrDefault(item => item.Name == prefixClassName);
+				if (c != null) {
+					if (!(c.IsAbstract && c.IsStatic
+					      && !c.ClassInheritanceTree.Any(b => b.FullyQualifiedName == "System.Attribute")
+					      && c.Methods.Any(m => m.IsConstructor && m.IsPublic))) {
+						prefixNamespace = string.IsNullOrEmpty(prefixNamespace) ? prefixNamespace : prefixNamespace + ":";
+						if (properties)
+							AddAttachedProperties(c, result, prefixNamespace, prefixNamespace + prefixClassName);
+						if (events)
+							AddAttachedEvents(c, result, prefixNamespace, prefixNamespace + prefixClassName);
+					}
+				}
+			} else {
+				foreach (var ns in context.XmlnsDefinitions) {
+					string key = string.IsNullOrEmpty(ns.Key) ? "" : ns.Key + ":";
+					
+					foreach (IClass c in XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value)) {
 						if (c.ClassType != ClassType.Class)
 							continue;
 						if (c.IsAbstract && c.IsStatic)
@@ -774,94 +792,84 @@ namespace ICSharpCode.XamlBinding
 							continue;
 						if (!c.Methods.Any(m => m.IsConstructor && m.IsPublic))
 							continue;
-						
-						var attachedProperties = c.Fields
-							.Where(f =>
-							       f.IsPublic &&
-							       f.IsStatic &&
-							       f.IsReadonly &&
-							       f.ReturnType != null &&
-							       f.ReturnType.FullyQualifiedName == "System.Windows.DependencyProperty" &&
-							       f.Name.Length > "Property".Length &&
-							       f.Name.EndsWith("Property", StringComparison.Ordinal) &&
-							       c.Methods.Any(m =>
-							                     m.IsPublic &&
-							                     m.IsStatic &&
-							                     m.Name.Length > 3 &&
-							                     (m.Name.StartsWith("Get", StringComparison.Ordinal) || m.Name.StartsWith("Set", StringComparison.Ordinal)) &&
-							                     m.Name.Remove(0, 3) == f.Name.Remove(f.Name.Length - "Property".Length)
-							                    )
-							      );
-						
-						result.AddRange(attachedProperties
-						                .Select(item => {
-						                        	string name = (!string.IsNullOrEmpty(ns.Key)) ? ns.Key + ":" : "";
-						                        	string property = item.Name.Remove(item.Name.Length - "Property".Length);
-						                        	name += c.Name + "." + item.Name.Remove(item.Name.Length - "Property".Length);
-						                        	return new XamlCodeCompletionItem(name, new DefaultProperty(c, property) { ReturnType = GetAttachedPropertyType(item, c) });
-						                        }
-						                       )
-						                .Where(item => !existingItems.Any(str => str == item.Text))
-						                .Cast<ICompletionItem>()
-						               );
+						if (properties)
+							AddAttachedProperties(c, result, key, string.Empty);
+						if (events)
+							AddAttachedEvents(c, result, prefixNamespace, prefixNamespace + prefixClassName);
 					}
 				}
 			}
 			
 			return result;
 		}
-
-		static List<ICompletionItem> GetListOfAttachedEvents(XamlCompletionContext context, string[] existingItems)
+		
+		static void AddAttachedProperties(IClass c, List<ICompletionItem> result, string key, string prefix)
 		{
-			var items = GetClassesFromContext(context);
-			var result = new List<ICompletionItem>();
+			var attachedProperties = c.Fields
+				.Where(f =>
+				       f.IsPublic &&
+				       f.IsStatic &&
+				       f.IsReadonly &&
+				       f.ReturnType != null &&
+				       f.ReturnType.FullyQualifiedName == "System.Windows.DependencyProperty" &&
+				       f.Name.Length > "Property".Length &&
+				       f.Name.EndsWith("Property", StringComparison.Ordinal) &&
+				       c.Methods.Any(m =>
+				                     m.IsPublic &&
+				                     m.IsStatic &&
+				                     m.Name.Length > 3 &&
+				                     (m.Name.StartsWith("Get", StringComparison.Ordinal) || m.Name.StartsWith("Set", StringComparison.Ordinal)) &&
+				                     m.Name.Remove(0, 3) == f.Name.Remove(f.Name.Length - "Property".Length)
+				                    )
+				      );
 			
-			foreach (var ns in items) {
-				foreach (IClass c in ns.Value) {
-					if (c.ClassType != ClassType.Class)
-						continue;
-					if (c.IsAbstract && c.IsStatic)
-						continue;
-					if (c.ClassInheritanceTree.Any(b => b.FullyQualifiedName == "System.Attribute"))
-						continue;
-					if (!c.Methods.Any(m => m.IsConstructor && m.IsPublic))
-						continue;
-					
-					var attachedEvents = c.Fields
-						.Where(f =>
-						       f.IsPublic &&
-						       f.IsStatic &&
-						       f.IsReadonly &&
-						       f.ReturnType != null &&
-						       f.ReturnType.FullyQualifiedName == "System.Windows.RoutedEvent" &&
-						       f.Name.Length > "Event".Length &&
-						       f.Name.EndsWith("Event", StringComparison.Ordinal) &&
-						       c.Methods.Any(m =>
-						                     m.IsPublic &&
-						                     m.IsStatic &&
-						                     m.Name.Length > 3 &&
-						                     (m.Name.StartsWith("Add", StringComparison.Ordinal) || m.Name.StartsWith("Remove", StringComparison.Ordinal)) &&
-						                     m.Name.EndsWith("Handler", StringComparison.Ordinal) &&
-						                     IsMethodFromEvent(f, m)
-						                    )
-						      );
-					
-					result.AddRange(attachedEvents
-					                .Select(
-					                	item => new XamlCodeCompletionItem(
-					                		(string.IsNullOrEmpty(ns.Key) ? "" : ns.Key + ":") + c.Name + "." + item.Name.Remove(item.Name.Length - "Event".Length),
-					                		new DefaultEvent(c, GetEventNameFromField(item)) {
-					                			ReturnType = GetAttachedEventDelegateType(item, c)
-					                		}
-					                	)
-					                )
-					                .Where(item => !existingItems.Any(str => str == item.Text))
-					                .Cast<ICompletionItem>()
-					               );
-				}
-			}
+			int prefixLength = (prefix.Length > 0) ? prefix.Length + 1 : 0;
 			
-			return result;
+			result.AddRange(
+				attachedProperties.Select(
+					item => {
+						string property = item.Name.Remove(item.Name.Length - "Property".Length);
+						string name = key + c.Name + "." + item.Name.Remove(item.Name.Length - "Property".Length);
+						return new XamlCodeCompletionItem(name.Remove(0, prefixLength), new DefaultProperty(c, property) { ReturnType = GetAttachedPropertyType(item, c) });
+					}
+				)
+				.Cast<ICompletionItem>()
+			);
+		}
+		
+		static void AddAttachedEvents(IClass c, List<ICompletionItem> result, string key, string prefix)
+		{
+			var attachedEvents = c.Fields
+				.Where(f =>
+				       f.IsPublic &&
+				       f.IsStatic &&
+				       f.IsReadonly &&
+				       f.ReturnType != null &&
+				       f.ReturnType.FullyQualifiedName == "System.Windows.RoutedEvent" &&
+				       f.Name.Length > "Event".Length &&
+				       f.Name.EndsWith("Event", StringComparison.Ordinal) &&
+				       c.Methods.Any(m =>
+				                     m.IsPublic &&
+				                     m.IsStatic &&
+				                     m.Name.Length > 3 &&
+				                     (m.Name.StartsWith("Add", StringComparison.Ordinal) || m.Name.StartsWith("Remove", StringComparison.Ordinal)) &&
+				                     m.Name.EndsWith("Handler", StringComparison.Ordinal) &&
+				                     IsMethodFromEvent(f, m)
+				                    )
+				      );
+			
+			int prefixLength = (prefix.Length > 0) ? prefix.Length + 1 : 0;
+			
+			result.AddRange(
+				attachedEvents.Select(
+					item => {
+						string @event = item.Name.Remove(item.Name.Length - "Event".Length);
+						string name = key + c.Name + "." + item.Name.Remove(item.Name.Length - "Event".Length);
+						return new XamlCodeCompletionItem(name.Remove(0, prefixLength), 	new DefaultEvent(c, @event) { ReturnType = GetAttachedEventDelegateType(item, c) });
+					}
+				)
+				.Cast<ICompletionItem>()
+			);
 		}
 
 		static IReturnType GetAttachedEventDelegateType(IField field, IClass c)

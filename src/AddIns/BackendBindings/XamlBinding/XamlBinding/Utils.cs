@@ -252,7 +252,7 @@ namespace ICSharpCode.XamlBinding
 				xmlns = new Dictionary<string, string>(r.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml));
 			}
 			
-			activeElementStartIndex = XmlParser.GetActiveElementStartIndex(fileContent, offset + 1);
+			activeElementStartIndex = XmlParser.GetActiveElementStartIndex(fileContent, Math.Min(offset + 1, fileContent.Length - 1));
 			active = CompletionDataHelper.ResolveCurrentElement(fileContent, activeElementStartIndex, xmlns);
 			parent = stack.PopOrDefault();
 			
@@ -261,6 +261,9 @@ namespace ICSharpCode.XamlBinding
 					isRoot = true;
 				parent = stack.PopOrDefault();
 			}
+			
+			if (parent == null)
+				isRoot = true;
 			
 			if (active == null)
 				active = parent;
