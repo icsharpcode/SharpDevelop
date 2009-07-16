@@ -70,7 +70,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(2, md.StartLocation.Line, "StartLocation.Y");
 			Assert.AreEqual(2, md.EndLocation.Line, "EndLocation.Y");
 			Assert.AreEqual(3, md.StartLocation.Column, "StartLocation.X");
-			
 			// endLocation.X is currently 20. It should be 18, but that error is not critical
 			//Assert.AreEqual(18, md.EndLocation.X, "EndLocation.X");
 		}

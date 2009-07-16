@@ -387,7 +387,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	"{"
 	ClassBody
 	"}"
-	[ ";" ]                         (. newType.EndLocation = t.Location; 
+	[ ";" ]                         (. newType.EndLocation = t.EndLocation; 
 	                                   compilationUnit.BlockEnd();
 	                                .)
 | /*--- struct declaration: */  (. m.Check(Modifiers.StructsInterfacesEnumsDelegates); .)
@@ -411,7 +411,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	
 	(. newType.BodyStartLocation = t.EndLocation; .)
 	StructBody
-	[ ";" ]                          (. newType.EndLocation = t.Location; 
+	[ ";" ]                          (. newType.EndLocation = t.EndLocation; 
 	                                    compilationUnit.BlockEnd();
 	                                 .)
 | /*--- interface declaration: */ 
@@ -434,7 +434,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	
 	(. newType.BodyStartLocation = t.EndLocation; .)
 	InterfaceBody
-	[ ";" ]                          (. newType.EndLocation = t.Location; 
+	[ ";" ]                          (. newType.EndLocation = t.EndLocation; 
 	                                    compilationUnit.BlockEnd();
 	                                 .)
 | /*--- enumeration declaration: */
@@ -449,7 +449,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	]
 	(. newType.BodyStartLocation = t.EndLocation; .)
 	EnumBody 
-	[ ";" ]                          (. newType.EndLocation = t.Location; 
+	[ ";" ]                          (. newType.EndLocation = t.EndLocation; 
 	                                    compilationUnit.BlockEnd();
 	                                 .)
 | /*--- delegate declaration: */
@@ -471,7 +471,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	/* .NET 2.0 */
 	{ TypeParameterConstraintsClause<templates> }
 	
-	";"                              (. delegateDeclr.EndLocation = t.Location;
+	";"                              (. delegateDeclr.EndLocation = t.EndLocation;
 	                                    compilationUnit.AddChild(delegateDeclr);
 	                                 .)
 	)

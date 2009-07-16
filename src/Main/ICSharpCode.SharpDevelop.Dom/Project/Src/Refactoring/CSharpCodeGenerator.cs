@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			string endLineText = endLine.Text;
 			int originalPos = region.EndColumn - 2; // -1 for column coordinate => offset, -1 because EndColumn is after the '}'
 			int pos = originalPos;
-			if (pos >= endLineText.Length || endLineText[pos] != '}') {
+			if (pos < 0 || pos >= endLineText.Length || endLineText[pos] != '}') {
 				LoggingService.Warn("CSharpCodeGenerator.InsertCodeAtEnd: position is invalid (not pointing to '}')"
 				                    + " endLineText=" + endLineText + ", pos=" + pos);
 			} else {
