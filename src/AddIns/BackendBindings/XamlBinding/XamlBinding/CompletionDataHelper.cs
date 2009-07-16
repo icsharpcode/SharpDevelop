@@ -144,6 +144,8 @@ namespace ICSharpCode.XamlBinding
 		static List<ICompletionItem> CreateAttributeList(XamlCompletionContext context, string[] existingItems, bool includeEvents)
 		{
 			QualifiedName lastElement = context.ActiveElement;
+			if (context.ParseInformation == null)
+				return emptyList;
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
 			if (cu == null)
 				return emptyList;
@@ -272,6 +274,9 @@ namespace ICSharpCode.XamlBinding
 			var result = new List<ICompletionItem>();
 
 			var last = context.ParentElement;
+			
+			if (context.ParseInformation == null)
+				return emptyList;
 
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
 			
@@ -615,9 +620,10 @@ namespace ICSharpCode.XamlBinding
 
 		static IEntity ResolveAttribute(string attribute, XamlCompletionContext context)
 		{
-			XamlResolver resolver = new XamlResolver();
-			var exp = new ExpressionResult(attribute, context);
-			var mrr = resolver.Resolve(exp, context.ParseInformation, context.Editor.Document.Text) as MemberResolveResult;
+			MemberResolveResult mrr = XamlResolver.Resolve(attribute, context) as MemberResolveResult;
+			
+			if (mrr == null)
+				return null;
 			
 			return mrr.ResolvedMember;
 		}
@@ -628,7 +634,7 @@ namespace ICSharpCode.XamlBinding
 				.PositionalArguments.LastOrDefault();
 			if (context.PressedKey == '.') {
 				if (selItem != null && selItem.IsString) {
-					var rr = ResolveStringValue(selItem.StringValue, context) as TypeResolveResult;
+					var rr = XamlResolver.Resolve(selItem.StringValue, context) as TypeResolveResult;
 					if (rr != null)
 						list.Items.AddRange(MemberCompletion(context, rr.ResolvedType, string.Empty));
 					return false;
@@ -637,7 +643,7 @@ namespace ICSharpCode.XamlBinding
 				if (selItem != null && selItem.IsString) {
 					int index = selItem.StringValue.IndexOf('.');
 					string s = (index > -1) ? selItem.StringValue.Substring(0, index) : selItem.StringValue;
-					var rr = ResolveStringValue(s, context) as TypeResolveResult;
+					var rr = XamlResolver.Resolve(s, context) as TypeResolveResult;
 					if (rr != null) {
 						list.Items.AddRange(MemberCompletion(context, rr.ResolvedType, (index == -1) ? "." : string.Empty));
 						
@@ -667,26 +673,21 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 
-		static ResolveResult ResolveStringValue(string value, XamlCompletionContext context)
-		{
-			var resolver = new XamlResolver();
-			var rr = resolver.Resolve(new ExpressionResult(value, context), context.ParseInformation, context.Editor.Document.Text);
-			return rr;
-		}
-
 		public static TypeResolveResult ResolveMarkupExtensionType(MarkupExtensionInfo markup, XamlCompletionContext context)
 		{
-			XamlResolver resolver = new XamlResolver();
 			XamlContextDescription desc = context.Description;
 			context.Description = XamlContextDescription.AtTag;
-			TypeResolveResult trr = resolver.Resolve(new ExpressionResult(markup.ExtensionType, context), context.ParseInformation, context.Editor.Document.Text) as TypeResolveResult;
-			if (trr == null) trr = resolver.Resolve(new ExpressionResult(markup.ExtensionType + "Extension", context), context.ParseInformation, context.Editor.Document.Text) as TypeResolveResult;
+			TypeResolveResult trr = XamlResolver.Resolve(markup.ExtensionType, context) as TypeResolveResult;
+			if (trr == null) trr = XamlResolver.Resolve(markup.ExtensionType + "Extension", context) as TypeResolveResult;
 			context.Description = desc;
 			return trr;
 		}
 
 		public static IReturnType ResolveType(string name, XamlContext context)
 		{
+			if (context.ParseInformation == null)
+				return null;
+			
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
 			if (cu == null)
 				return null;
@@ -707,6 +708,9 @@ namespace ICSharpCode.XamlBinding
 
 		public static IEnumerable<ICompletionItem> AddMatchingEventHandlers(XamlCompletionContext context, IMethod delegateInvoker)
 		{
+			if (context.ParseInformation == null)
+				yield break;
+			
 			var unit = context.ParseInformation.MostRecentCompilationUnit;
 			var loc = context.Editor.Caret.Position;
 			IClass c = unit.GetInnermostClass(loc.Line, loc.Column);
@@ -749,9 +753,13 @@ namespace ICSharpCode.XamlBinding
 
 		static IDictionary<string, IEnumerable<IClass>> GetClassesFromContext(XamlCompletionContext context)
 		{
+			var result = new Dictionary<string, IEnumerable<IClass>>();
+			
+			if (context.ParseInformation == null)
+				return result;
+			
 			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
 			
-			var result = new Dictionary<string, IEnumerable<IClass>>();
 			
 			foreach (var ns in context.XmlnsDefinitions) {
 				result.Add(ns.Key, XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value));
@@ -763,6 +771,10 @@ namespace ICSharpCode.XamlBinding
 		static List<ICompletionItem> GetListOfAttached(XamlCompletionContext context, string prefixClassName, string prefixNamespace, bool events, bool properties)
 		{
 			List<ICompletionItem> result = new List<ICompletionItem>();
+			
+			if (context.ParseInformation == null)
+				return result;
+			
 			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
 			
 			if (!string.IsNullOrEmpty(prefixClassName)) {

@@ -1,0 +1,41 @@
+<Window x:Class="ICSharpCode.XamlBinding.PowerToys.Dialogs.SelectSourceClassDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+    Title="Select Source Class" Height="500" Width="700"
+	WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
+	<Window.Resources>
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="Margin" Value="3" />
+		<Setter Property="Padding" Value="3" />
+	</Style>
+	</Window.Resources>
+	<DockPanel>
+		<TextBlock Margin="3" TextWrapping="Wrap" DockPanel.Dock="Top" Text="Select the source class for the new business form. If the desired class does not appear in the list, please ensure that all required references are added and rebuild your project. Abstract and static classes are excluded from the list." />
+		<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+			<Button x:Name="btnOK" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" />
+			<Button x:Name="btnCancel" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" />
+		</StackPanel>
+		<TextBox Margin="3" DockPanel.Dock="Top" x:Name="txtFilter" />
+		<ListView Margin="3">
+			<ListView.View>
+				<GridView>
+					<GridViewColumn Header="Class">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Name}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="Namespace">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Namespace}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+				</GridView>
+			</ListView.View>
+		</ListView>
+	</DockPanel>
+</Window>

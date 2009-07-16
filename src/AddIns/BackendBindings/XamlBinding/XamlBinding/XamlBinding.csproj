@@ -80,6 +80,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Options\XamlBindingOptions.cs" />
+    <Compile Include="PowerToys\Commands\CreateBusinessFormFromClassCommand.cs" />
     <Compile Include="PowerToys\Commands\EditGridColumnsAndRowsCommand.cs" />
     <Compile Include="PowerToys\Commands\ExtractPropertiesAsStyleCommand.cs" />
     <Compile Include="PowerToys\Commands\GroupIntoRefactorings.cs" />
@@ -92,6 +93,10 @@
     </Compile>
     <Compile Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml.cs">
       <DependentUpon>ExtractPropertiesAsStyleDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PowerToys\Dialogs\SelectSourceClassDialog.xaml.cs">
+      <DependentUpon>SelectSourceClassDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PowerToys\XamlMenuCommand.cs" />
@@ -170,5 +175,6 @@
     <Page Include="Options\CodeCompletion.xaml" />
     <Page Include="PowerToys\Dialogs\EditGridColumnsAndRowsDialog.xaml" />
     <Page Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml" />
+    <Page Include="PowerToys\Dialogs\SelectSourceClassDialog.xaml" />
   </ItemGroup>
 </Project>

@@ -31,6 +31,9 @@ namespace ICSharpCode.XamlBinding
 
 		public ResolveResult Resolve(ExpressionResult expressionResult, ParseInformation parseInfo, string fileContent)
 		{
+			if (parseInfo == null || string.IsNullOrEmpty(fileContent))
+				return null;
+			
 			this.resolveExpression = expressionResult.Expression;
 			this.caretLine = expressionResult.Region.BeginLine;
 			this.caretColumn = expressionResult.Region.BeginColumn;

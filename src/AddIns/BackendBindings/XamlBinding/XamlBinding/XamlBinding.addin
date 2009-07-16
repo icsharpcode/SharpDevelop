@@ -71,7 +71,7 @@
 						   label="${res:AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle}" />
 				<MenuItem id="GroupInto" label="${res:AddIns.XamlBinding.Menu.GroupInto}" type="Menu">
 					<MenuItem id="GroupIntoBorder" label="Border" type="Menu">
-						<MenuItem id="GroupIntoBuilderBuilder"
+						<MenuItem id="GroupIntoBorderBuilder"
 						          type="Builder"
 								   class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoBorderBuilder" />
 					</MenuItem>
@@ -82,6 +82,9 @@
 				<MenuItem id="EditGridColumnsAndRows"
 						   class="ICSharpCode.XamlBinding.PowerToys.Commands.EditGridColumnsAndRowsCommand"
 						   label="${res:AddIns.XamlBinding.Menu.EditGridColumnsAndRows}" />
+				<MenuItem id="CreateBusinessForm"
+						   class="ICSharpCode.XamlBinding.PowerToys.Commands.CreateBusinessFormFromClassCommand"
+						   label="${res:AddIns.XamlBinding.Menu.CreateBusinessFormFromClass}" />
 			</MenuItem>
 		</ComplexCondition>
 	</Path>
