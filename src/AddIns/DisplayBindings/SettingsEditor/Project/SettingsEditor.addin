@@ -24,5 +24,8 @@
 		<CustomTool id    = "SettingsSingleFileGenerator"
 		            class = "ICSharpCode.SettingsEditor.SettingsCodeGeneratorTool"
 		            fileNamePattern = "\.settings$"/>
+		<CustomTool id    = "PublicSettingsSingleFileGenerator"
+		            class = "ICSharpCode.SettingsEditor.PublicSettingsCodeGeneratorTool"
+		            fileNamePattern = "\.settings$"/>
 	</Path>
 </AddIn>

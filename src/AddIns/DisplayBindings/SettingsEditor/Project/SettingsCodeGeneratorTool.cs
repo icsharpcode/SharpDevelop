@@ -34,7 +34,7 @@ namespace ICSharpCode.SettingsEditor
 			context.WriteCodeDomToFile(item, context.GetOutputFileName(item, ".Designer"), ccu);
 		}
 		
-		public static CodeTypeDeclaration CreateClass(SettingsDocument setDoc)
+		public virtual CodeTypeDeclaration CreateClass(SettingsDocument setDoc)
 		{
 			CodeTypeDeclaration c = new CodeTypeDeclaration(setDoc.GeneratedClassName);
 			c.AddAttribute(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute));
@@ -102,6 +102,17 @@ namespace ICSharpCode.SettingsEditor
 			}
 			
 			return c;
+		}
+	}
+	
+	public class PublicSettingsCodeGeneratorTool : SettingsCodeGeneratorTool
+	{
+		public override CodeTypeDeclaration CreateClass(SettingsDocument setDoc)
+		{
+			CodeTypeDeclaration ctd = base.CreateClass(setDoc);
+			ctd.TypeAttributes &= ~TypeAttributes.NotPublic;
+			ctd.TypeAttributes |= TypeAttributes.Public;
+			return ctd;
 		}
 	}
 }
