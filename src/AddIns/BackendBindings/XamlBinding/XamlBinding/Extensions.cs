@@ -22,6 +22,14 @@ namespace ICSharpCode.XamlBinding
 {
 	public static class Extensions
 	{
+		public static XElement AddAttribute(this XElement element, XName name, object value)
+		{
+			if (element == null)
+				throw new ArgumentNullException("element");
+			element.SetAttributeValue(name, value);
+			return element;
+		}
+		
 		public static string[] Split(this string thisValue, StringSplitOptions options, params char[] delimiters)
 		{
 			if (thisValue == null)

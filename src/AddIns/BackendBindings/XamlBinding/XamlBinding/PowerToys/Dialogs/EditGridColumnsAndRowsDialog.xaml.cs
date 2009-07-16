@@ -655,6 +655,15 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			int rows = rowDefitions.Elements().Count();
 			int cols = colDefitions.Elements().Count();
 			
+			if (rows == 0) {
+				rowDefitions.Add(new XElement(rowDefName).AddAttribute("Height", "Auto"));
+				rows = 1;
+			}
+			if (cols == 0) {
+				colDefitions.Add(new XElement(colDefName).AddAttribute("Width", "Auto"));
+				cols = 1;
+			}
+			
 			for (int i = 0; i < cols; i++)
 				this.gridDisplay.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
 			

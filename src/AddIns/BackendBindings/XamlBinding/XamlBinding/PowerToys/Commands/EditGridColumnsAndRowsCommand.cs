@@ -24,7 +24,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		protected override bool Refactor(ITextEditor editor, XDocument document)
 		{
 			if (editor.SelectionLength == 0) {
-				MessageService.ShowError("Nothing selected!");
+				MessageService.ShowError("Please select a Grid!");
 				return false;
 			}
 			
