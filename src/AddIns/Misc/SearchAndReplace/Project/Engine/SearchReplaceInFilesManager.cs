@@ -24,15 +24,15 @@ namespace SearchAndReplace
 			find.TextIteratorBuilder = new ForwardTextIteratorBuilder();
 		}
 		
-		static void SetSearchOptions()
+		static void SetSearchOptions(IProgressMonitor monitor)
 		{
 			find.SearchStrategy   = SearchReplaceUtilities.CreateSearchStrategy(SearchOptions.SearchStrategyType);
-			find.DocumentIterator = SearchReplaceUtilities.CreateDocumentIterator(SearchOptions.DocumentIteratorType);
+			find.DocumentIterator = SearchReplaceUtilities.CreateDocumentIterator(SearchOptions.DocumentIteratorType, monitor);
 		}
 		
 		static bool InitializeSearchInFiles(IProgressMonitor monitor)
 		{
-			SetSearchOptions();
+			SetSearchOptions(monitor);
 			
 			find.Reset();
 			if (!find.SearchStrategy.CompilePattern(monitor))
