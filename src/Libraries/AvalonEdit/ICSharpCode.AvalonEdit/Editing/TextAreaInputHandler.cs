@@ -6,10 +6,14 @@
 // </file>
 
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.Core.Presentation;
+using SDCommandManager = ICSharpCode.Core.Presentation.CommandManager;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -47,6 +51,17 @@ namespace ICSharpCode.AvalonEdit.Editing
 		readonly TextArea textArea;
 		bool isAttached;
 		
+		private BindingGroup m_bindingGroup;
+		public BindingGroup BindingGroup
+		{
+			get {
+				return m_bindingGroup;
+			}
+			set {
+				m_bindingGroup = value;
+			}
+		}
+		
 		/// <summary>
 		/// Creates a new TextAreaInputHandler.
 		/// </summary>
@@ -55,6 +70,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
 			this.textArea = textArea;
+			
 			commandBindings = new ObserveAddRemoveCollection<CommandBinding>(CommandBinding_Added, CommandBinding_Removed);
 			inputBindings = new ObserveAddRemoveCollection<InputBinding>(InputBinding_Added, InputBinding_Removed);
 			nestedInputHandlers = new ObserveAddRemoveCollection<ITextAreaInputHandler>(NestedInputHandler_Added, NestedInputHandler_Removed);
@@ -159,10 +175,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 				throw new InvalidOperationException("Input handler is already attached");
 			isAttached = true;
 			
-			textArea.CommandBindings.AddRange(commandBindings);
-			textArea.InputBindings.AddRange(inputBindings);
-			foreach (ITextAreaInputHandler handler in nestedInputHandlers)
-				handler.Attach();
+			if(BindingGroup != null) {
+				BindingGroup.AttachTo(textArea);
+			}
+			
+			// TODO: REMOVE
+			
+			// textArea.CommandBindings.AddRange(commandBindings);
+			// textArea.InputBindings.AddRange(inputBindings);
+			//foreach (ITextAreaInputHandler handler in nestedInputHandlers)
+			//	handler.Attach();
 		}
 		
 		/// <inheritdoc/>
@@ -172,12 +194,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 				throw new InvalidOperationException("Input handler is not attached");
 			isAttached = false;
 			
-			foreach (CommandBinding b in commandBindings)
-				textArea.CommandBindings.Remove(b);
-			foreach (InputBinding b in inputBindings)
-				textArea.InputBindings.Remove(b);
-			foreach (ITextAreaInputHandler handler in nestedInputHandlers)
-				handler.Detach();
+			BindingGroup.DetachFrom(textArea);
+			
+			// TODO: REMOVE
+			
+			// foreach (CommandBinding b in commandBindings)
+			// 	textArea.CommandBindings.Remove(b);
+			// foreach (InputBinding b in inputBindings)
+			// 	textArea.InputBindings.Remove(b);
+			// foreach (ITextAreaInputHandler handler in nestedInputHandlers)
+			// 	handler.Detach();
 		}
 		#endregion
 	}

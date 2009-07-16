@@ -25,7 +25,8 @@ namespace ICSharpCode.Core.Presentation
         private ObservableCollection<InputBindingInfo> _inputBindings;
         private ObservableCollection<CommandBindingInfo> _commandBindings;
 
-        private List<string> _attachedInstances = new List<string>();
+        private List<string> _attachedNamedInstances = new List<string>();
+        private List<UIElement> _attachedInstances = new List<UIElement>();
         
         private List<BindingGroup> _nestedGroups = new List<BindingGroup>();
         
@@ -43,15 +44,45 @@ namespace ICSharpCode.Core.Presentation
         	get; set;
         }
         
+        public bool IsAttachedTo(UIElement instance) 
+        {
+        	return _attachedInstances.Contains(instance);
+        }
+        
         public bool IsAttachedTo(string instanceName) 
         {
-        	return _attachedInstances.Contains(instanceName);
+        	return _attachedNamedInstances.Contains(instanceName);
+        }
+        
+        public void AttachTo(UIElement instance)
+        {
+        	if(!_attachedInstances.Contains(instance)) {
+        		AttachToWithoutInvoke(instance);
+        	}
+        }
+        
+        public void AttachTo(string instanceName)
+        {
+        	if(!_attachedNamedInstances.Contains(instanceName)) {
+        		AttachToWithoutInvoke(instanceName);
+        	}
+        }
+        
+        private void AttachToWithoutInvoke(UIElement instance)
+        {
+        	if(!_attachedInstances.Contains(instance)) {
+        		_attachedInstances.Add(instance);
+        		
+        		foreach(var nestedGroup in _nestedGroups) {
+        			nestedGroup.AttachToWithoutInvoke(instance);
+        		}
+        	}
         }
         
         private void AttachToWithoutInvoke(string instanceName)
         {
-        	if(!_attachedInstances.Contains(instanceName)) {
-        		_attachedInstances.Add(instanceName);
+        	if(!_attachedNamedInstances.Contains(instanceName)) {
+        		_attachedNamedInstances.Add(instanceName);
         		
         		foreach(var nestedGroup in _nestedGroups) {
         			nestedGroup.AttachToWithoutInvoke(instanceName);
@@ -59,20 +90,21 @@ namespace ICSharpCode.Core.Presentation
         	}
         }
         
-        public void AttachTo(string instanceName)
+        public void DetachFromWithoutInvoke(UIElement instance)
         {
-        	if(!_attachedInstances.Contains(instanceName)) {
-        		AttachToWithoutInvoke(instanceName);
+        	if(_attachedInstances.Contains(instance)) {
+        		_attachedInstances.Remove(instance);
         		
-        		CommandManager.InvokeCommandBindingUpdateHandlers(null, instanceName);
-        		CommandManager.InvokeInputBindingUpdateHandlers(null, instanceName);
+        		foreach(var nestedGroup in _nestedGroups) {
+        			nestedGroup.DetachFrom(instance);
+        		}
         	}
         }
         
         public void DetachFromWithoutInvoke(string instanceName)
         {
-        	if(_attachedInstances.Contains(instanceName)) {
-        		_attachedInstances.Remove(instanceName);
+        	if(_attachedNamedInstances.Contains(instanceName)) {
+        		_attachedNamedInstances.Remove(instanceName);
         		
         		foreach(var nestedGroup in _nestedGroups) {
         			nestedGroup.DetachFrom(instanceName);
@@ -80,9 +112,16 @@ namespace ICSharpCode.Core.Presentation
         	}
         }
         
+        public void DetachFrom(UIElement instance)
+        {
+        	if(_attachedInstances.Contains(instance)) {
+        		DetachFromWithoutInvoke(instance);
+        	}
+        }
+        
         public void DetachFrom(string instanceName)
         {
-        	if(_attachedInstances.Contains(instanceName)) {
+        	if(_attachedNamedInstances.Contains(instanceName)) {
         		DetachFromWithoutInvoke(instanceName);
         		
         		CommandManager.InvokeCommandBindingUpdateHandlers(null, instanceName);

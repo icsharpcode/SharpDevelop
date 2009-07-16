@@ -193,10 +193,10 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                     }
             }
             
-            var inputBindingInfos = CommandManager.FindInputBindingInfos(null, null, null);
+            var inputBindingInfos = CommandManager.FindInputBindingInfos(null, null, null, null);
             foreach (var inputBindingInfo in inputBindingInfos)
             {
-                // Get shortcut entry text. Normaly shortcut entry text is equalt to routed command text
+                // Get shortcut entry text. Normaly shortcut entry text is equal to routed command text
                 // but this value can be overriden through InputBindingInfo.RoutedCommandText value
                 var shortcutText = inputBindingInfo.RoutedCommand.Text;
                 if (!string.IsNullOrEmpty(inputBindingInfo.RoutedCommandText))

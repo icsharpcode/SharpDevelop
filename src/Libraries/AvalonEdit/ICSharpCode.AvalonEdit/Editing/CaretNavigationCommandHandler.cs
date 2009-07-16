@@ -16,67 +16,96 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
+using ICSharpCode.Core.Presentation;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
+
 namespace ICSharpCode.AvalonEdit.Editing
 {
 	static class CaretNavigationCommandHandler
 	{
+		static BindingGroup bindingGroup;
+		
 		/// <summary>
 		/// Creates a new <see cref="TextAreaInputHandler"/> for the text area.
 		/// </summary>
 		public static TextAreaInputHandler Create(TextArea textArea)
 		{
 			TextAreaInputHandler handler = new TextAreaInputHandler(textArea);
-			handler.CommandBindings.AddRange(CommandBindings);
-			handler.InputBindings.AddRange(InputBindings);
+			handler.BindingGroup = bindingGroup;
+			
+			// TODO: DELETE
+			// handler.CommandBindings.AddRange(CommandBindings);
+			// handler.InputBindings.AddRange(InputBindings);
+			
 			return handler;
 		}
 		
 		static readonly List<CommandBinding> CommandBindings = new List<CommandBinding>();
 		static readonly List<InputBinding> InputBindings = new List<InputBinding>();
 		
-		static void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
+		static void AddBinding(string routedCommandName, string gesturesString, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)
 		{
-			CommandBindings.Add(new CommandBinding(command, handler));
-			InputBindings.Add(new KeyBinding(command, key, modifiers));
+			AddCommandBinding(routedCommandName, canExecuteHandler, executedHandler);
+			AddInputBinding(routedCommandName, gesturesString);
+		}
+		
+		static void AddInputBinding(string routedCommandName, string gesturesString)
+		{
+			var inputBinding = new InputBindingInfo();
+			inputBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
+			inputBinding.DefaultGestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFrom(gesturesString);
+			inputBinding.Groups.Add(bindingGroup);
+			inputBinding.RoutedCommandName = routedCommandName;
+			SDCommandManager.RegisterInputBinding(inputBinding);
+		}
+		
+		static void AddCommandBinding(string routedCommandName, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)
+		{
+			var commandBinding = new CommandBindingInfo();
+			commandBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
+			commandBinding.ExecutedEventHandler = executedHandler;
+			commandBinding.CanExecuteEventHandler = canExecuteHandler;
+			commandBinding.IsLazy = false;
+			commandBinding.Groups.Add(bindingGroup);
+			commandBinding.RoutedCommandName = routedCommandName;
+			SDCommandManager.RegisterCommandBinding(commandBinding);
 		}
 		
 		static CaretNavigationCommandHandler()
 		{
-			const ModifierKeys None = ModifierKeys.None;
-			const ModifierKeys Ctrl = ModifierKeys.Control;
-			const ModifierKeys Shift = ModifierKeys.Shift;
+			bindingGroup = new BindingGroup();
 			
-			AddBinding(EditingCommands.MoveLeftByCharacter, None, Key.Left, OnMoveCaret(CaretMovementType.CharLeft));
-			AddBinding(EditingCommands.SelectLeftByCharacter, Shift, Key.Left, OnMoveCaretExtendSelection(CaretMovementType.CharLeft));
-			AddBinding(EditingCommands.MoveRightByCharacter, None, Key.Right, OnMoveCaret(CaretMovementType.CharRight));
-			AddBinding(EditingCommands.SelectRightByCharacter, Shift, Key.Right, OnMoveCaretExtendSelection(CaretMovementType.CharRight));
+			AddBinding("EditingCommands.MoveLeftByCharacter", "Left", null, OnMoveCaret(CaretMovementType.CharLeft));
+			AddBinding("EditingCommands.SelectLeftByCharacter", "Shift+Left", null, OnMoveCaretExtendSelection(CaretMovementType.CharLeft));
+			AddBinding("EditingCommands.MoveRightByCharacter", "Right", null, OnMoveCaret(CaretMovementType.CharRight));
+			AddBinding("EditingCommands.SelectRightByCharacter", "Shift+Right", null, OnMoveCaretExtendSelection(CaretMovementType.CharRight));
 			
-			AddBinding(EditingCommands.MoveLeftByWord, Ctrl, Key.Left, OnMoveCaret(CaretMovementType.WordLeft));
-			AddBinding(EditingCommands.SelectLeftByWord, Ctrl | Shift, Key.Left, OnMoveCaretExtendSelection(CaretMovementType.WordLeft));
-			AddBinding(EditingCommands.MoveRightByWord, Ctrl, Key.Right, OnMoveCaret(CaretMovementType.WordRight));
-			AddBinding(EditingCommands.SelectRightByWord, Ctrl | Shift, Key.Right, OnMoveCaretExtendSelection(CaretMovementType.WordRight));
+			AddBinding("EditingCommands.MoveLeftByWord", "Ctrl+Left", null, OnMoveCaret(CaretMovementType.WordLeft));
+			AddBinding("EditingCommands.SelectLeftByWord", "Ctrl+Shift+Left", null, OnMoveCaretExtendSelection(CaretMovementType.WordLeft));
+			AddBinding("EditingCommands.MoveRightByWord", "Ctrl+Right", null, OnMoveCaret(CaretMovementType.WordRight));
+			AddBinding("EditingCommands.SelectRightByWord", "Ctrl+Shift+Right", null, OnMoveCaretExtendSelection(CaretMovementType.WordRight));
 			
-			AddBinding(EditingCommands.MoveUpByLine, None, Key.Up, OnMoveCaret(CaretMovementType.LineUp));
-			AddBinding(EditingCommands.SelectUpByLine, Shift, Key.Up, OnMoveCaretExtendSelection(CaretMovementType.LineUp));
-			AddBinding(EditingCommands.MoveDownByLine, None, Key.Down, OnMoveCaret(CaretMovementType.LineDown));
-			AddBinding(EditingCommands.SelectDownByLine, Shift, Key.Down, OnMoveCaretExtendSelection(CaretMovementType.LineDown));
+			AddBinding("EditingCommands.MoveUpByLine", "Up", null, OnMoveCaret(CaretMovementType.LineUp));
+			AddBinding("EditingCommands.SelectUpByLine", "Shift+Up", null, OnMoveCaretExtendSelection(CaretMovementType.LineUp));
+			AddBinding("EditingCommands.MoveDownByLine", "Down", null, OnMoveCaret(CaretMovementType.LineDown));
+			AddBinding("EditingCommands.SelectDownByLine", "Shift+Down", null, OnMoveCaretExtendSelection(CaretMovementType.LineDown));
 			
-			AddBinding(EditingCommands.MoveDownByPage, None, Key.PageDown, OnMoveCaret(CaretMovementType.PageDown));
-			AddBinding(EditingCommands.SelectDownByPage, Shift, Key.PageDown, OnMoveCaretExtendSelection(CaretMovementType.PageDown));
-			AddBinding(EditingCommands.MoveUpByPage, None, Key.PageUp, OnMoveCaret(CaretMovementType.PageUp));
-			AddBinding(EditingCommands.SelectUpByPage, Shift, Key.PageUp, OnMoveCaretExtendSelection(CaretMovementType.PageUp));
+			AddBinding("EditingCommands.MoveDownByPage", "PageDown", null, OnMoveCaret(CaretMovementType.PageDown));
+			AddBinding("EditingCommands.SelectDownByPage", "Shift+PageDown", null, OnMoveCaretExtendSelection(CaretMovementType.PageDown));
+			AddBinding("EditingCommands.MoveUpByPage", "PageUp", null, OnMoveCaret(CaretMovementType.PageUp));
+			AddBinding("EditingCommands.SelectUpByPage", "Shift+PageUp", null, OnMoveCaretExtendSelection(CaretMovementType.PageUp));
 			
-			AddBinding(EditingCommands.MoveToLineStart, None, Key.Home, OnMoveCaret(CaretMovementType.LineStart));
-			AddBinding(EditingCommands.SelectToLineStart, Shift, Key.Home, OnMoveCaretExtendSelection(CaretMovementType.LineStart));
-			AddBinding(EditingCommands.MoveToLineEnd, None, Key.End, OnMoveCaret(CaretMovementType.LineEnd));
-			AddBinding(EditingCommands.SelectToLineEnd, Shift, Key.End, OnMoveCaretExtendSelection(CaretMovementType.LineEnd));
+			AddBinding("EditingCommands.MoveToLineStart", "Home", null, OnMoveCaret(CaretMovementType.LineStart));
+			AddBinding("EditingCommands.SelectToLineStart", "Shift+Home", null, OnMoveCaretExtendSelection(CaretMovementType.LineStart));
+			AddBinding("EditingCommands.MoveToLineEnd", "End", null, OnMoveCaret(CaretMovementType.LineEnd));
+			AddBinding("EditingCommands.SelectToLineEnd", "Shift+End", null, OnMoveCaretExtendSelection(CaretMovementType.LineEnd));
 			
-			AddBinding(EditingCommands.MoveToDocumentStart, Ctrl, Key.Home, OnMoveCaret(CaretMovementType.DocumentStart));
-			AddBinding(EditingCommands.SelectToDocumentStart, Ctrl | Shift, Key.Home, OnMoveCaretExtendSelection(CaretMovementType.DocumentStart));
-			AddBinding(EditingCommands.MoveToDocumentEnd, Ctrl, Key.End, OnMoveCaret(CaretMovementType.DocumentEnd));
-			AddBinding(EditingCommands.SelectToDocumentEnd, Ctrl | Shift, Key.End, OnMoveCaretExtendSelection(CaretMovementType.DocumentEnd));
+			AddBinding("EditingCommands.MoveToDocumentStart", "Ctrl+Home", null, OnMoveCaret(CaretMovementType.DocumentStart));
+			AddBinding("EditingCommands.SelectToDocumentStart", "Ctrl+Shift+Home", null, OnMoveCaretExtendSelection(CaretMovementType.DocumentStart));
+			AddBinding("EditingCommands.MoveToDocumentEnd", "Ctrl+End", null, OnMoveCaret(CaretMovementType.DocumentEnd));
+			AddBinding("EditingCommands.SelectToDocumentEnd", "Ctrl+Shift+End", null, OnMoveCaretExtendSelection(CaretMovementType.DocumentEnd));
 			
-			CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, OnSelectAll));
+			AddCommandBinding("ApplicationCommands.SelectAll", null, OnSelectAll);              
 		}
 		
 		static void OnSelectAll(object target, ExecutedRoutedEventArgs args)

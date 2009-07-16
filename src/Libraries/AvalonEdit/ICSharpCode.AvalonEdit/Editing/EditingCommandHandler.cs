@@ -31,64 +31,94 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// </summary>
 	static class EditingCommandHandler
 	{
+		static BindingGroup bindingGroup;
+		
 		/// <summary>
 		/// Creates a new <see cref="TextAreaInputHandler"/> for the text area.
 		/// </summary>
 		public static TextAreaInputHandler Create(TextArea textArea)
 		{
 			TextAreaInputHandler handler = new TextAreaInputHandler(textArea);
-			handler.CommandBindings.AddRange(CommandBindings);
-			handler.InputBindings.AddRange(InputBindings);
+			handler.BindingGroup = bindingGroup;
+			
+			// TODO: REMOVE
+			
+			// var groups = new BindingGroupCollection { bindingGroup };
+			
+			// var commandBindings = SDCommandManager.FindCommandBindings(null, null, null, groups);
+			// handler.CommandBindings.AddRange(commandBindings.Cast<CommandBinding>()); // Todo: fix later
+			
+			// var inputBindings = SDCommandManager.FindInputBindings(null, null, null, groups);
+			// handler.InputBindings.AddRange(inputBindings.Cast<InputBinding>()); // Todo: fix later
+			
+			
+			
 			return handler;
 		}
 		
 		static readonly List<CommandBinding> CommandBindings = new List<CommandBinding>();
 		static readonly List<InputBinding> InputBindings = new List<InputBinding>();
 		
-		static void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
+		static void AddBinding(string routedCommandName, string gesturesString, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)
 		{
-			CommandBindings.Add(new CommandBinding(command, handler));
-			InputBindings.Add(new KeyBinding(command, key, modifiers));
+			AddCommandBinding(routedCommandName, canExecuteHandler, executedHandler);
+			AddInputBinding(routedCommandName, gesturesString);
+		}
+		
+		static void AddInputBinding(string routedCommandName, string gesturesString)
+		{
+			var inputBinding = new InputBindingInfo();
+			inputBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
+			inputBinding.DefaultGestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFrom(gesturesString);
+			inputBinding.Groups.Add(bindingGroup);
+			inputBinding.Categories.AddRange(SDCommandManager.GetInputBindingCategoryCollection("/MainMenu/Edit", true));
+			inputBinding.RoutedCommandName = routedCommandName;
+			SDCommandManager.RegisterInputBinding(inputBinding);
+		}
+		
+		static void AddCommandBinding(string routedCommandName, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)
+		{
+			var commandBinding = new CommandBindingInfo();
+			commandBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
+			commandBinding.ExecutedEventHandler = executedHandler;
+			commandBinding.CanExecuteEventHandler = canExecuteHandler;
+			commandBinding.IsLazy = false;
+			commandBinding.Groups.Add(bindingGroup);
+			commandBinding.RoutedCommandName = routedCommandName;
+			SDCommandManager.RegisterCommandBinding(commandBinding);
 		}
 		
 		static EditingCommandHandler()
 		{
-			CommandBindings.Add(new CommandBinding(ApplicationCommands.Delete, OnDelete(ApplicationCommands.NotACommand), CanDelete));
-			AddBinding(EditingCommands.Delete, ModifierKeys.None, Key.Delete, OnDelete(EditingCommands.SelectRightByCharacter));
-			AddBinding(EditingCommands.DeleteNextWord, ModifierKeys.Control, Key.Delete, OnDelete(EditingCommands.SelectRightByWord));
-			AddBinding(EditingCommands.Backspace, ModifierKeys.None, Key.Back, OnDelete(EditingCommands.SelectLeftByCharacter));
-			InputBindings.Add(new KeyBinding(EditingCommands.Backspace, Key.Back, ModifierKeys.Shift)); // make Shift-Backspace do the same as plain backspace
-			AddBinding(EditingCommands.DeletePreviousWord, ModifierKeys.Control, Key.Back, OnDelete(EditingCommands.SelectLeftByWord));
-			AddBinding(EditingCommands.EnterParagraphBreak, ModifierKeys.None, Key.Enter, OnEnter);
-			AddBinding(EditingCommands.EnterLineBreak, ModifierKeys.Shift, Key.Enter, OnEnter);
-			AddBinding(EditingCommands.TabForward, ModifierKeys.None, Key.Tab, OnTab);
-			AddBinding(EditingCommands.TabBackward, ModifierKeys.Shift, Key.Tab, OnShiftTab);
+			bindingGroup = new BindingGroup();
 			
-			//var copyCommand = new CommandBindingInfo();
-			//copyCommand.OwnerInstance = typeof();
-			//copyCommand.CanExecuteEventHandler = CanCutOrCopy;
-			//copyCommand.ExecutedEventHandler = OnCopy;
-			//copyCommand.IsLazy = false;
-			//copyCommand.RoutedCommandName = "ApplicationCommands.Copy";
-			//SDCommandManager.RegisterCommandBinding(copyCommand);
+			AddCommandBinding("ApplicationCommands.Delete", CanDelete, OnDelete(ApplicationCommands.NotACommand));
+			AddBinding("EditingCommands.Delete", "Delete", null, OnDelete(EditingCommands.SelectRightByCharacter));
+			AddBinding("EditingCommands.DeleteNextWord", "Ctrl+Delete", null, OnDelete(EditingCommands.SelectRightByWord));
+			AddBinding("EditingCommands.Backspace", "Back", null, OnDelete(EditingCommands.SelectLeftByCharacter));
+			AddInputBinding("EditingCommands.Backspace", "Shift+Back"); // make Shift-Backspace do the same as plain backspace
+			AddBinding("EditingCommands.DeletePreviousWord", "Ctrl+Back", null, OnDelete(EditingCommands.SelectLeftByWord));
+			AddBinding("EditingCommands.EnterParagraphBreak", "Return", null, OnEnter);
+			AddBinding("EditingCommands.EnterLineBreak", "Shift+Return", null, OnEnter);
+			AddBinding("EditingCommands.TabForward", "Tab", null, OnTab);
+			AddBinding("EditingCommands.TabBackward", "Shift+Tab", null, OnShiftTab);
+			AddBinding("ApplicationCommands.Copy", "Ctrl+C", CanCutOrCopy, OnCopy);
+			AddBinding("ApplicationCommands.Cut", "Ctrl+X", CanCutOrCopy, OnCut);
+			AddBinding("ApplicationCommands.Paste", "Ctrl+V", CanPaste, OnPaste);
 			
-			CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, OnCopy, CanCutOrCopy));
-			CommandBindings.Add(new CommandBinding(ApplicationCommands.Cut, OnCut, CanCutOrCopy));
-			CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, OnPaste, CanPaste));
+			AddBinding("AvalonEditCommands.DeleteLine", "Ctrl+D", null, OnDeleteLine);
 			
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.DeleteLine, OnDeleteLine));
-			
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.RemoveLeadingWhitespace, OnRemoveLeadingWhitespace));
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.RemoveTrailingWhitespace, OnRemoveTrailingWhitespace));
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.ConvertToUppercase, OnConvertToUpperCase));
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.ConvertToLowercase, OnConvertToLowerCase));
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.ConvertToTitleCase, OnConvertToTitleCase));
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.InvertCase, OnInvertCase));
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.ConvertTabsToSpaces, OnConvertTabsToSpaces));
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.ConvertSpacesToTabs, OnConvertSpacesToTabs));
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.ConvertLeadingTabsToSpaces, OnConvertLeadingTabsToSpaces));
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.ConvertLeadingSpacesToTabs, OnConvertLeadingSpacesToTabs));
-			CommandBindings.Add(new CommandBinding(AvalonEditCommands.IndentSelection, OnIndentSelection));
+			AddBinding("AvalonEditCommands.RemoveLeadingWhitespace", "", null, OnRemoveLeadingWhitespace);
+			AddBinding("AvalonEditCommands.RemoveTrailingWhitespace", "", null, OnRemoveTrailingWhitespace);
+			AddBinding("AvalonEditCommands.ConvertToUppercase", "", null, OnConvertToUpperCase);
+			AddBinding("AvalonEditCommands.ConvertToLowercase", "", null, OnConvertToLowerCase);
+			AddBinding("AvalonEditCommands.ConvertToTitleCase", "", null, OnConvertToTitleCase);
+			AddBinding("AvalonEditCommands.InvertCase", "", null, OnInvertCase);
+			AddBinding("AvalonEditCommands.ConvertTabsToSpaces", "", null, OnConvertTabsToSpaces);
+			AddBinding("AvalonEditCommands.ConvertSpacesToTabs", "", null, OnConvertSpacesToTabs);
+			AddBinding("AvalonEditCommands.ConvertLeadingTabsToSpaces", "", null, OnConvertLeadingTabsToSpaces);
+			AddBinding("AvalonEditCommands.ConvertLeadingSpacesToTabs", "", null, OnConvertLeadingSpacesToTabs);
+			AddBinding("AvalonEditCommands.IndentSelection", "", null, OnIndentSelection);
 		}
 		
 		static TextArea GetTextArea(object target)

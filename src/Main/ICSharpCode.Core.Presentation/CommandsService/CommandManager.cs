@@ -46,8 +46,8 @@ namespace ICSharpCode.Core.Presentation
 		private static Dictionary<string, List<BindingsUpdatedHandler>> instanceInputBindingUpdateHandlers = new Dictionary<string, List<BindingsUpdatedHandler>>();
 				
 		// Named instances and types
-		private static Dictionary<string, UIElement> namedUIInstances = new Dictionary<string, UIElement>();
-		private static Dictionary<string, Type> namedUITypes = new Dictionary<string, Type>();
+		private static Dictionary<string, List<UIElement>> namedUIInstances = new Dictionary<string, List<UIElement>>();
+		private static Dictionary<string, List<Type>> namedUITypes = new Dictionary<string, List<Type>>();
 		
 		// Categories
 		public static List<InputBindingCategory> InputBindingCategories = new List<InputBindingCategory>();
@@ -57,10 +57,16 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="instanceName">Instance name</param>
 		/// <param name="element">Instance</param>
-		public static void RegisterNamedUIElementInstance(string instanceName, UIElement element)
+		public static void RegisterNamedUIElement(string instanceName, UIElement element)
 		{
 			if(!namedUIInstances.ContainsKey(instanceName)){
-				namedUIInstances.Add(instanceName, element);
+				namedUIInstances.Add(instanceName, new List<UIElement>());
+			}
+			
+			var namedUIInstanceCollection = namedUIInstances[instanceName];
+			
+			if(!namedUIInstanceCollection.Contains(element)) {
+				namedUIInstanceCollection.Add(element);
 				
 				// If there are some bindings and update handlers already registered, 
 				// but owner is not loaded then invoke those bindings
@@ -79,23 +85,12 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="instanceName">Instance name</param>
 		/// <returns></returns>
-		public static UIElement GetNamedUIElementInstance(string instanceName)
+		public static ICollection<UIElement> GetNamedUIElement(string instanceName)
 		{
-			UIElement instance;
+			List<UIElement> instance;
 			namedUIInstances.TryGetValue(instanceName, out instance);
 			
 			return instance;
-		}
-		
-		public static string GetNamedUIElementName(UIElement instance)
-		{
-			foreach(var currentInstance in namedUIInstances) {
-				if(currentInstance.Value == instance) {
-					return currentInstance.Key;
-				}
-			}
-			
-			return null;
 		}
 		
 		/// <summary>
@@ -106,7 +101,12 @@ namespace ICSharpCode.Core.Presentation
 		public static void RegisterNamedUIType(string typeName, Type type)
 		{
 			if(!namedUITypes.ContainsKey(typeName)){
-				namedUITypes.Add(typeName, type);
+				namedUITypes.Add(typeName, new List<Type>());
+			}
+			
+			var namedUITypeCollection = namedUITypes[typeName];
+			if(!namedUITypeCollection.Contains(type)) {
+				namedUITypeCollection.Add(type);
 				
 				// If any update handlers where assigned to the type and type was not 
 				// loaded yet then invoke update handlers
@@ -125,9 +125,9 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="typeName">Type name</param>
 		/// <returns>Type</returns>
-		public static Type GetNamedUIType(string typeName)
+		public static List<Type> GetNamedUIType(string typeName)
 		{
-			Type instance;
+			List<Type> instance;
 			namedUITypes.TryGetValue(typeName, out instance);
 			
 			return instance;
@@ -210,7 +210,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputBindingInfo">Input binding parameters</param>
 		public static void RegisterInputBinding(InputBindingInfo inputBindingInfo)
 		{
-			var similarInputBinding = FindInputBindingInfos(inputBindingInfo.OwnerTypeName, inputBindingInfo.OwnerInstanceName, inputBindingInfo.RoutedCommandName).FirstOrDefault();
+			var similarInputBinding = FindInputBindingInfos(inputBindingInfo.OwnerTypeName, inputBindingInfo.OwnerInstanceName, inputBindingInfo.RoutedCommandName, null).FirstOrDefault();
 			
 			if(similarInputBinding != null) {
 				foreach(InputGesture gesture in inputBindingInfo.DefaultGestures) {
@@ -221,7 +221,7 @@ namespace ICSharpCode.Core.Presentation
 				
 				similarInputBinding.Categories.AddRange(inputBindingInfo.Categories);
 				similarInputBinding.Groups.AddRange(inputBindingInfo.Groups);
-				
+								
 				similarInputBinding.IsModifyed = true;
 				similarInputBinding.DefaultInputBindingHandler.Invoke();
 			} else {
@@ -241,27 +241,31 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputBindingInfo">Input binding parameters</param>
 		public static void UnregisterInputBinding(InputBindingInfo inputBindingInfo)
 		{
-			var similarInputBindingInfos = FindInputBindingInfos(inputBindingInfo.OwnerTypeName, inputBindingInfo.OwnerInstanceName, inputBindingInfo.RoutedCommandName);
+			var similarInputBindingInfos = FindInputBindingInfos(inputBindingInfo.OwnerTypeName, inputBindingInfo.OwnerInstanceName, inputBindingInfo.RoutedCommandName, null);
 			
 			foreach(var similarInputBindingInfo in similarInputBindingInfos) {
 				inputBidnings.Remove(similarInputBindingInfo);
 				
 				// Remove command bindings
-				if(similarInputBindingInfo.OwnerType != null) {
-					foreach(InputBinding binding in similarInputBindingInfo.OldInputBindings) {
-						RemoveClassInputBinding(similarInputBindingInfo.OwnerType, binding);
+				if(similarInputBindingInfo.OwnerTypes != null) {
+					foreach(var ownerType in similarInputBindingInfo.OwnerTypes) {
+						foreach(InputBinding binding in similarInputBindingInfo.OldInputBindings) {
+							RemoveClassInputBinding(ownerType, binding);
+						}
+						
+						foreach(InputBinding binding in similarInputBindingInfo.ActiveInputBindings) {
+							RemoveClassInputBinding(ownerType, binding);
+						}
 					}
+				} else if (similarInputBindingInfo.OwnerInstances != null) {
+					foreach(var ownerInstance in similarInputBindingInfo.OwnerInstances) {
+						foreach(InputBinding binding in similarInputBindingInfo.OldInputBindings) {
+							ownerInstance.InputBindings.Remove(binding);
+						}
 					
-					foreach(InputBinding binding in similarInputBindingInfo.NewInputBindings) {
-						RemoveClassInputBinding(similarInputBindingInfo.OwnerType, binding);
-					}
-				} else if (similarInputBindingInfo.OwnerInstance != null) {
-					foreach(InputBinding binding in similarInputBindingInfo.OldInputBindings) {
-						similarInputBindingInfo.OwnerInstance.InputBindings.Remove(binding);
-					}
-				
-					foreach(InputBinding binding in similarInputBindingInfo.NewInputBindings) {
-						similarInputBindingInfo.OwnerInstance.InputBindings.Remove(binding);
+						foreach(InputBinding binding in similarInputBindingInfo.ActiveInputBindings) {
+							ownerInstance.InputBindings.Remove(binding);
+						}
 					}
 				}
 			}
@@ -275,19 +279,38 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="contextName">Context class full name</param>
 		/// <param name="contextInstance">Unregister binding assigned to specific context instance</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
-		public static ICollection<InputBindingInfo> FindInputBindingInfos(string ownerTypeName, string ownerInstanceName, string routedCommandName) {
+		public static ICollection<InputBindingInfo> FindInputBindingInfos(string ownerTypeName, string ownerInstanceName, string routedCommandName, BindingGroupCollection bindingGroups) 
+		{
 			var foundBindings = new List<InputBindingInfo>();
 			
 			foreach(var binding in inputBidnings) {
+				if(binding.RoutedCommandName == "AvalonEditCommands.ConvertToUppercase")
+				{
+					
+				}
+				
 				if(    (ownerInstanceName == null || binding.OwnerInstanceName == ownerInstanceName)
 				    && (ownerTypeName == null || binding.OwnerTypeName == ownerTypeName)
 				    && (routedCommandName == null || binding.RoutedCommandName == routedCommandName)
+				    && (bindingGroups == null || bindingGroups.ContainsAnyFromCollection(binding.Groups))
 				   ) {
 					foundBindings.Add(binding);
 				}
 			}
 			
 			return foundBindings;
+		}
+		
+		public static InputBindingCollection FindInputBindings(string ownerTypeName, string ownerInstanceName, string routedCommandName, BindingGroupCollection bindingGroups) 
+		{
+			var inputBindingInfoCollection = FindInputBindingInfos(ownerTypeName, ownerInstanceName, routedCommandName, bindingGroups);
+			
+			var inputBindingCollection = new InputBindingCollection();
+			foreach(var bindingInfo in inputBindingInfoCollection) {
+				inputBindingCollection.AddRange(bindingInfo.ActiveInputBindings);
+			}
+			
+			return inputBindingCollection;
 		}
 		
 		/// <summary>
@@ -362,27 +385,31 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="commandBindingInfo">Command binding parameters</param>
 		public static void UnregisterCommandBinding(CommandBindingInfo commandBindingInfo) {
-			var similarCommandBindingInfos = FindCommandBindingInfos(commandBindingInfo.OwnerTypeName, commandBindingInfo.OwnerInstanceName, commandBindingInfo.RoutedCommandName);
+			var similarCommandBindingInfos = FindCommandBindingInfos(commandBindingInfo.OwnerTypeName, commandBindingInfo.OwnerInstanceName, commandBindingInfo.RoutedCommandName, null);
 			
 			foreach(var similarCommandBindingInfo in similarCommandBindingInfos) {
 				commandBindings.Remove(similarCommandBindingInfo);
 				
 				// Remove command bindings
-				if(similarCommandBindingInfo.OwnerType != null) {
-					foreach(CommandBinding binding in similarCommandBindingInfo.OldCommandBindings) {
-						RemoveClassCommandBinding(similarCommandBindingInfo.OwnerType, binding);
+				if(similarCommandBindingInfo.OwnerTypes != null) {
+					foreach(var ownerType in similarCommandBindingInfo.OwnerTypes) {
+						foreach(CommandBinding binding in similarCommandBindingInfo.OldCommandBindings) {
+							RemoveClassCommandBinding(ownerType, binding);
+						}
+						
+						foreach(CommandBinding binding in similarCommandBindingInfo.ActiveCommandBindings) {
+							RemoveClassCommandBinding(ownerType, binding);
+						}
 					}
+				} else if (similarCommandBindingInfo.OwnerInstances != null) {
+					foreach(var ownerInstance in similarCommandBindingInfo.OwnerInstances) {
+						foreach(CommandBinding binding in similarCommandBindingInfo.OldCommandBindings) {
+							ownerInstance.CommandBindings.Remove(binding);
+						}
 					
-					foreach(CommandBinding binding in similarCommandBindingInfo.NewCommandBindings) {
-						RemoveClassCommandBinding(similarCommandBindingInfo.OwnerType, binding);
-					}
-				} else if (similarCommandBindingInfo.OwnerInstance != null) {
-					foreach(CommandBinding binding in similarCommandBindingInfo.OldCommandBindings) {
-						similarCommandBindingInfo.OwnerInstance.CommandBindings.Remove(binding);
-					}
-				
-					foreach(CommandBinding binding in similarCommandBindingInfo.NewCommandBindings) {
-						similarCommandBindingInfo.OwnerInstance.CommandBindings.Remove(binding);
+						foreach(CommandBinding binding in similarCommandBindingInfo.ActiveCommandBindings) {
+							ownerInstance.CommandBindings.Remove(binding);
+						}
 					}
 				}
 			}
@@ -561,13 +588,15 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="routedCommandName">Context class full name</param>
 		/// <param name="className">Context class full name</param>
 		/// <returns>Collection of managed command bindings</returns>
-		public static ICollection<CommandBindingInfo> FindCommandBindingInfos(string ownerTypeName, string ownerInstanceName, string routedCommandName) {
+		public static ICollection<CommandBindingInfo> FindCommandBindingInfos(string ownerTypeName, string ownerInstanceName, string routedCommandName, BindingGroupCollection bindingGroups) 
+		{
 			var foundBindings = new List<CommandBindingInfo>();
 			
 			foreach(var binding in commandBindings) {
 				if(    (ownerInstanceName == null || binding.OwnerInstanceName == ownerInstanceName)
 				    && (ownerTypeName == null || binding.OwnerTypeName == ownerTypeName)
 				    && (routedCommandName == null || binding.RoutedCommandName == routedCommandName)
+				    && (bindingGroups == null || bindingGroups.ContainsAnyFromCollection(binding.Groups))
 				) {	   	
 					foundBindings.Add(binding);
 				}
@@ -576,7 +605,16 @@ namespace ICSharpCode.Core.Presentation
 			return foundBindings;
 		}
 
-		
+		public static CommandBindingCollection FindCommandBindings(string ownerTypeName, string ownerInstanceName, string routedCommandName, BindingGroupCollection bindingGroups) 
+		{
+			var commandBindingInfoCollection = FindCommandBindingInfos(ownerTypeName, ownerInstanceName, routedCommandName, bindingGroups);
+			var commandBindingCollection = new CommandBindingCollection();
+			foreach(var bindingInfo in commandBindingInfoCollection) {
+				commandBindingCollection.AddRange(bindingInfo.ActiveCommandBindings);
+			}
+			
+			return commandBindingCollection;
+		}
 		
 		/// <summary>
 		/// Get list of input gestures from all input bindings which satisfy provided parameters
@@ -588,7 +626,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="gesture">Gesture</param>
 		public static InputGestureCollection FindInputGestures(string ownerTypeName, string ownerInstanceName, string routedCommandName, BindingGroupCollection bindingGroups) {
-			var bindings = FindInputBindingInfos(ownerTypeName, ownerInstanceName, routedCommandName);
+			var bindings = FindInputBindingInfos(ownerTypeName, ownerInstanceName, routedCommandName, bindingGroups);
 			var gestures = new InputGestureCollection();
 			
 			foreach(InputBindingInfo bindingInfo in bindings) {

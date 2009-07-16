@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					placeholder = null;
 					
 					var contextName = padInstance.GetType().FullName;
-					CommandManager.RegisterNamedUIElementInstance(contextName, (UIElement)Content);
+					CommandManager.RegisterNamedUIElement(contextName, (UIElement)Content);
 				}
 			}
 		}

@@ -67,6 +67,10 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void Add(BindingGroup bindingGroup)
 		{
+			if(bindingGroup == null) {
+				throw new ArgumentNullException("bindingGroup");
+			}
+			
 			if(!_bindingGroups.Contains(bindingGroup)) {
 				_bindingGroups.Add(bindingGroup);
 			}
@@ -99,7 +103,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void AddRange(IEnumerable<BindingGroup> bindingGroups)
 		{
-			foreach(var bindingGroup in _bindingGroups) {
+			foreach(var bindingGroup in bindingGroups) {
 				Add(bindingGroup);
 			}
 		}

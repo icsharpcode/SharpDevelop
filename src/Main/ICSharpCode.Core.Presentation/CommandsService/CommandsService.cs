@@ -38,12 +38,7 @@ namespace ICSharpCode.Core.Presentation
 					string routedCommandName = null;
 					string routedCommandText = null;
 					
-					if(codon.Properties.Contains("command")) {
-						if(codon.Properties["command"] == "AvalonEditCommands.RemoveLeadingWhitespace")
-						{
-							
-						}
-						
+					if(codon.Properties.Contains("command")) {			
 						routedCommandName = codon.Properties["command"];				
 						routedCommandText = codon.Properties["command"];
 					} else if(codon.Properties.Contains("link") || codon.Properties.Contains("class")) {
@@ -59,7 +54,11 @@ namespace ICSharpCode.Core.Presentation
 					if(!codon.Properties.Contains("command") && (codon.Properties.Contains("link") || codon.Properties.Contains("class"))) {
 						var commandBindingInfo = new CommandBindingInfo();
 						commandBindingInfo.AddIn = codon.AddIn;
-						commandBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
+						if(codon.Properties.Contains("ownerinstance")) {
+							commandBindingInfo.OwnerInstanceName = codon.Properties["ownerinstance"];
+						} else {
+							commandBindingInfo.OwnerTypeName = codon.Properties.Contains("ownertype") ? codon.Properties["ownertype"] : CommandManager.DefaultContextName;
+						}
 						commandBindingInfo.CommandInstance = CommandWrapper.GetCommand(codon, null, codon.Properties["loadclasslazy"] == "true");
 						commandBindingInfo.RoutedCommandName = routedCommandName;
 						commandBindingInfo.IsLazy = true;
@@ -69,7 +68,11 @@ namespace ICSharpCode.Core.Presentation
 					// Register input bindings
 					var inputBindingInfo = new InputBindingInfo();
 					inputBindingInfo.AddIn = codon.AddIn;
-					inputBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
+					if(codon.Properties.Contains("ownerinstance")) {
+						inputBindingInfo.OwnerInstanceName = codon.Properties["ownerinstance"];
+					} else {
+						inputBindingInfo.OwnerTypeName = codon.Properties.Contains("ownertype") ? codon.Properties["ownertype"] : CommandManager.DefaultContextName;
+					}
 					inputBindingInfo.RoutedCommandName = routedCommandName;
 					
 					var defaultGesture = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(codon.Properties["shortcut"]);
@@ -112,13 +115,6 @@ namespace ICSharpCode.Core.Presentation
 				
 				if(command != null) {
 					CommandManager.RegisterRoutedUICommand(command);
-					
-					if(command.Name == "RemoveLeadingWhitespace")
-					{
-						var cmd = CommandManager.GetRoutedUICommand("AvalonEditCommands.RemoveLeadingWhitespace");
-						Console.WriteLine(cmd);
-					}
-					
 				}
 			}
 		}

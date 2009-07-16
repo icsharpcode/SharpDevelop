@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (newActiveViewContent != null) {
 				string ownerName = newActiveViewContent.GetType().FullName;
-				CommandManager.RegisterNamedUIElementInstance(ownerName, (UIElement)Content);
+				CommandManager.RegisterNamedUIElement(ownerName, (UIElement)Content);
 			}
 		}
 		

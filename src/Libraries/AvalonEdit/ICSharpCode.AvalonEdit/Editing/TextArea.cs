@@ -24,6 +24,10 @@ using ICSharpCode.AvalonEdit.Indentation;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
+using ICSharpCode.Core.Presentation;
+using SDCommandManager = ICSharpCode.Core.Presentation.CommandManager;
+using CommandManager = System.Windows.Input.CommandManager;
+
 namespace ICSharpCode.AvalonEdit.Editing
 {
 	/// <summary>
@@ -34,6 +38,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		#region Constructor
 		static TextArea()
 		{
+			SDCommandManager.RegisterNamedUIType(typeof(TextArea).GetShortAssemblyQualifiedName(), typeof(TextArea));
+			
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(TextArea),
 			                                         new FrameworkPropertyMetadata(typeof(TextArea)));
 			KeyboardNavigation.IsTabStopProperty.OverrideMetadata(

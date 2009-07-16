@@ -18,19 +18,25 @@ namespace ICSharpCode.Core.Presentation
 		{
 			IsModifyed = true;
 			OldInputBindings = new InputBindingCollection();
-			NewInputBindings = new InputBindingCollection();
+			ActiveInputBindings = new InputBindingCollection();
 			DefaultGestures = new InputGestureCollection();
 			Categories = new InputBindingCategoryCollection();
 			Groups = new BindingGroupCollection();
-			Groups.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e) {  
+			Groups.CollectionChanged += Groups_CollectionChanged;
+		}
+		
+		private void Groups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {  
+			if(e.OldItems != null) {
 				foreach(BindingGroup oldGroup in e.OldItems) {
 					oldGroup.InputBindings.Remove(this);
 				}
-				
-				foreach(BindingGroup newGroup in e.NewItems) {
-					newGroup.InputBindings.Add(this);
+			}
+			
+			if(e.NewItems != null) {
+				foreach(BindingGroup oldGroup in e.NewItems) {
+					oldGroup.InputBindings.Add(this);
 				}
-			};
+			}
 		}
 		
 		public BindingGroupCollection Groups
@@ -71,8 +77,6 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		private UIElement _ownerInstance;
-		
 		/// <summary>
 		/// Stores owner instance to which this binding belongs. When this binding is registered a
 		/// <see cref="InputBinding" /> is assigned to owner instance
@@ -80,13 +84,13 @@ namespace ICSharpCode.Core.Presentation
 		/// If this attribute is used <see cref="OwnerInstanceName" />, <see cref="OwnerType" /> and
 		/// <see cref="OwnerTypeName" /> can not be set
 		/// </summary>
-		public UIElement OwnerInstance{
+		public ICollection<UIElement> OwnerInstances {
 			get {
-				if(_ownerInstanceName != null && _ownerInstance == null) {
-					_ownerInstance = CommandManager.GetNamedUIElementInstance(_ownerInstanceName);
+				if(_ownerInstanceName != null) {
+					return CommandManager.GetNamedUIElement(_ownerInstanceName);
 				}
 				
-				return _ownerInstance;
+				return null;
 			}
 		}
 					
@@ -112,8 +116,6 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		private Type _ownerType;
-					
 		/// <summary>
 		/// Stores owner type. When this binding is registered <see cref="InputBinding" /> 
 		/// is assigned to all instances of provided class
@@ -121,13 +123,13 @@ namespace ICSharpCode.Core.Presentation
 		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerInstanceName" /> and
 		/// <see cref="OwnerTypeName" /> can not be set
 		/// </summary>
-		public Type OwnerType { 
+		public ICollection<Type> OwnerTypes { 
 			get {
-				if(_ownerType == null && _ownerTypeName != null) {
-					_ownerType = CommandManager.GetNamedUIType(_ownerTypeName);
+				if(_ownerTypeName != null) {
+					return CommandManager.GetNamedUIType(_ownerTypeName);
 				}
 				
-				return _ownerType;
+				return null;
 			}
 		}
 		
@@ -212,13 +214,13 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public void GenerateInputBindings() 
 		{			
-			OldInputBindings = NewInputBindings;
+			OldInputBindings = ActiveInputBindings;
 			
-			NewInputBindings = new InputBindingCollection();
+			ActiveInputBindings = new InputBindingCollection();
 			if(ActiveGestures != null && IsActive) {
 				foreach(InputGesture gesture in ActiveGestures) {
 					var inputBinding = new InputBinding(RoutedCommand, gesture);
-					NewInputBindings.Add(inputBinding);
+					ActiveInputBindings.Add(inputBinding);
 				}
 			}
 		}
@@ -234,34 +236,38 @@ namespace ICSharpCode.Core.Presentation
 			get {
 				if(defaultInputBindingHandler == null && OwnerTypeName != null) {
 					defaultInputBindingHandler  = delegate {
-						if(OwnerType != null && IsModifyed) {
+						if(OwnerTypes != null && IsModifyed) {
 							GenerateInputBindings();
 							
-							foreach(InputBinding binding in OldInputBindings) {
-								CommandManager.RemoveClassInputBinding(OwnerType, binding);
+							foreach(var ownerType in OwnerTypes) {
+								foreach(InputBinding binding in OldInputBindings) {
+									CommandManager.RemoveClassInputBinding(ownerType, binding);
+								}
+								
+								foreach(InputBinding binding in ActiveInputBindings) {
+									System.Windows.Input.CommandManager.RegisterClassInputBinding(ownerType, binding);
+								}
+								
+								CommandManager.OrderClassInputBindingsByChords(ownerType);
 							}
-							
-							foreach(InputBinding binding in NewInputBindings) {
-								System.Windows.Input.CommandManager.RegisterClassInputBinding(OwnerType, binding);
-							}
-							
-							CommandManager.OrderClassInputBindingsByChords(OwnerType);
 							
 							IsModifyed = false;
 						}
 					};
 				} else if(defaultInputBindingHandler == null && OwnerInstanceName != null){
 					defaultInputBindingHandler = delegate {
-						if(OwnerInstance != null && IsModifyed) {
+						if(OwnerInstances != null && IsModifyed) {
 							GenerateInputBindings();
 							
-							foreach(InputBinding binding in NewInputBindings) {
-								OwnerInstance.InputBindings.Remove(binding);
+							foreach(var ownerInstance in OwnerInstances) {
+								foreach(InputBinding binding in OldInputBindings) {
+									ownerInstance.InputBindings.Remove(binding);
+								}
+								
+								ownerInstance.InputBindings.AddRange(ActiveInputBindings);
+								
+								CommandManager.OrderInstanceInputBindingsByChords(ownerInstance);
 							}
-							
-							OwnerInstance.InputBindings.AddRange(NewInputBindings);
-							
-							CommandManager.OrderInstanceInputBindingsByChords(OwnerInstance);
 							
 							IsModifyed = false;
 						}
@@ -286,7 +292,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// New input bindings are assigned to owner when <see cref="CommandBindingInfo" /> is modified
 		/// </summary>
-		internal InputBindingCollection NewInputBindings
+		public InputBindingCollection ActiveInputBindings
 		{
 			get; set;
 		}

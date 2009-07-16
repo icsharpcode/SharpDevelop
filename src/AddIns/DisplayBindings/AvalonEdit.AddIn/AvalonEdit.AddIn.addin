@@ -27,44 +27,53 @@
 			<MenuItem id = "RemoveLeadingWs"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
-			          command = "AvalonEditCommands.RemoveLeadingWhitespace"/>
+			          command = "AvalonEditCommands.RemoveLeadingWhitespace"
+			          ownertype="ICSharpCode.AvalonEdit.Editing.TextArea, ICSharpCode.AvalonEdit" />
 			<MenuItem id = "RemoveTrailingWs"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}"
-			          command = "AvalonEditCommands.RemoveTrailingWhitespace"/>
+			          command = "AvalonEditCommands.RemoveTrailingWhitespace"
+			          ownertype="ICSharpCode.AvalonEdit.Editing.TextArea, ICSharpCode.AvalonEdit" />
 			<MenuItem id = "Seperator1" type = "Separator" insertbefore = "Separator4" />
 			<MenuItem id = "UpperCase"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}"
 			          icon = "Icons.16x16.LowerToUpperCase"
-			          command = "AvalonEditCommands.ConvertToUppercase"/>
+			          command = "AvalonEditCommands.ConvertToUppercase"
+			          ownertype="ICSharpCode.AvalonEdit.Editing.TextArea, ICSharpCode.AvalonEdit" />
 			<MenuItem id = "LowerCase"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}"
 			          icon = "Icons.16x16.UpperToLowerCase"
-			          command = "AvalonEditCommands.ConvertToLowercase"/>
+			          command = "AvalonEditCommands.ConvertToLowercase"
+			          ownertype="ICSharpCode.AvalonEdit.Editing.TextArea, ICSharpCode.AvalonEdit" />
 			<MenuItem id = "Capitalize"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}"
-			          command = "AvalonEditCommands.ConvertToTitleCase"/>
+			          command = "AvalonEditCommands.ConvertToTitleCase"
+			          ownertype="ICSharpCode.AvalonEdit.Editing.TextArea, ICSharpCode.AvalonEdit" />
 			<MenuItem id = "InvertCase"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}"
-			          command = "AvalonEditCommands.InvertCase"/>
+			          command = "AvalonEditCommands.InvertCase"
+			          ownertype="ICSharpCode.AvalonEdit.Editing.TextArea, ICSharpCode.AvalonEdit" />
 			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "SortSelection"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}"
-			          class ="ICSharpCode.SharpDevelop.Editor.Commands.SortSelection"/>
+			          class ="ICSharpCode.SharpDevelop.Editor.Commands.SortSelection"
+			          ownertype="ICSharpCode.AvalonEdit.Editing.TextArea, ICSharpCode.AvalonEdit" />
 			<MenuItem id = "Separator3" type = "Separator" insertbefore = "Separator4" />
 			<MenuItem id = "Tabs2Spaces"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}"
-			          command = "AvalonEditCommands.ConvertTabsToSpaces"/>
+			          command = "AvalonEditCommands.ConvertTabsToSpaces"
+			          ownertype="ICSharpCode.AvalonEdit.Editing.TextArea, ICSharpCode.AvalonEdit" />
 			<MenuItem id = "Spaces2Tabs"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
-			          command = "AvalonEditCommands.ConvertSpacesToTabs"/>
+			          command = "AvalonEditCommands.ConvertSpacesToTabs"
+			          ownertype="ICSharpCode.AvalonEdit.Editing.TextArea, ICSharpCode.AvalonEdit" />
 			<MenuItem id = "LeadingTabs2Spaces"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
@@ -72,7 +81,8 @@
 			<MenuItem id = "LeadingSpaces2Tabs"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
-			          command = "AvalonEditCommands.ConvertLeadingSpacesToTabs"/>
+			          command = "AvalonEditCommands.ConvertLeadingSpacesToTabs"
+			          ownertype="ICSharpCode.AvalonEdit.Editing.TextArea, ICSharpCode.AvalonEdit" />
 		</Condition>
 	</Path>
 </AddIn>
