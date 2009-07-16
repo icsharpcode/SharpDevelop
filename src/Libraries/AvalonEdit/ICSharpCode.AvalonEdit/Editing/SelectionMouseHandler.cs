@@ -325,7 +325,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			mode = SelectionMode.None;
 			if (!e.Handled && e.ChangedButton == MouseButton.Left) {
-				bool shift = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
+				ModifierKeys modifiers = Keyboard.Modifiers;
+				bool shift = (modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
 				if (AllowTextDragDrop && e.ClickCount == 1 && !shift) {
 					int visualColumn;
 					int offset = GetOffsetFromMousePosition(e, out visualColumn);
@@ -347,7 +348,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 					textArea.Selection = Selection.Empty;
 				}
 				if (textArea.CaptureMouse()) {
-					if (e.ClickCount == 1) {
+					if (e.ClickCount == 1 && ((modifiers & ModifierKeys.Control) == 0)) {
 						mode = SelectionMode.Normal;
 						if (shift) {
 							textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldOffset, textArea.Caret.Offset);

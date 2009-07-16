@@ -9,6 +9,9 @@ using System;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
+	/// <summary>
+	/// Allows registering a line tracker on a TextDocument using a weak reference from the document to the line tracker.
+	/// </summary>
 	public sealed class WeakLineTracker : ILineTracker
 	{
 		TextDocument textDocument;
@@ -47,8 +50,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
-		/// <inheritdoc/>
-		public void BeforeRemoveLine(DocumentLine line)
+		void ILineTracker.BeforeRemoveLine(DocumentLine line)
 		{
 			ILineTracker targetTracker = targetObject.Target as ILineTracker;
 			if (targetTracker != null)
@@ -57,8 +59,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				Deregister();
 		}
 		
-		/// <inheritdoc/>
-		public void SetLineLength(DocumentLine line, int newTotalLength)
+		void ILineTracker.SetLineLength(DocumentLine line, int newTotalLength)
 		{
 			ILineTracker targetTracker = targetObject.Target as ILineTracker;
 			if (targetTracker != null)
@@ -67,8 +68,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				Deregister();
 		}
 		
-		/// <inheritdoc/>
-		public void LineInserted(DocumentLine insertionPos, DocumentLine newLine)
+		void ILineTracker.LineInserted(DocumentLine insertionPos, DocumentLine newLine)
 		{
 			ILineTracker targetTracker = targetObject.Target as ILineTracker;
 			if (targetTracker != null)
@@ -77,8 +77,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				Deregister();
 		}
 		
-		/// <inheritdoc/>
-		public void RebuildDocument()
+		void ILineTracker.RebuildDocument()
 		{
 			ILineTracker targetTracker = targetObject.Target as ILineTracker;
 			if (targetTracker != null)
