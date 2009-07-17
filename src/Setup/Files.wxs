@@ -1303,7 +1303,7 @@
 										<Component Guid="FF5C354F-51A3-405A-BB6F-0BA1128E2DC6" Id="MicrosoftScriptingCoreDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Core.dll" Name="Microsoft.Scripting.Core.dll" Id="Microsoft.Scripting.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Core.dll" AssemblyManifest="Microsoft.Scripting.Core.dll" />
 										</Component>
-										<Component Guid="DFE90264-F338-41C1-A7BA-7466B33CB044" Id="MicrosoftScriptingDll" DiskId="1">
+										<Component Guid="5849E9E1-39E4-45B5-B2F0-B07F8A21085D" Id="MicrosoftScriptingDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.dll" AssemblyManifest="Microsoft.Scripting.dll" />
 										</Component>
 										<Component Guid="2B8CBE37-D71F-435C-9B26-70FF69451A6E" Id="MicrosoftScriptingExtensionAttributeDll" DiskId="1">
