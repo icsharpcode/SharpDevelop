@@ -47,7 +47,7 @@ namespace ICSharpCode.XamlBinding
 		#endregion
 		
 		public const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
-		public const string WpfXamlNamespace = "http://schemas.microsoft.com/netfx/2007/xaml/presentation";
+		public const string WpfXamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
 		
 		public static XamlContext ResolveContext(string text, string fileName, int line, int col)
 		{
