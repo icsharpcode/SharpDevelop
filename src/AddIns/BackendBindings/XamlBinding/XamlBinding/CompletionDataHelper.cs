@@ -467,12 +467,17 @@ namespace ICSharpCode.XamlBinding
 
 		static void DoNamedArgsCompletion(XamlCompletionItemList list, XamlCompletionContext context, IReturnType type, MarkupExtensionInfo markup)
 		{
-			if (markup.NamedArguments.Count > 0) {
+			if (markup.NamedArguments.Count > 0 && !context.Editor.GetWordBeforeCaret().StartsWith(",")) {
 				int lastStart = markup.NamedArguments.Max(i => i.Value.StartOffset);
 				var item = markup.NamedArguments.First(p => p.Value.StartOffset == lastStart);
+				
 				if (context.Editor.Document.GetCharAt(context.Editor.Caret.Offset - 1) == '=' ||
 				    (item.Value.IsString && item.Value.StringValue.EndsWith(context.Editor.GetWordBeforeCaretExtended()))) {
-					MemberResolveResult mrr = XamlResolver.Resolve(item.Key, context) as MemberResolveResult;
+					MemberResolveResult mrr = XamlResolver.ResolveMember(item.Key, context) as MemberResolveResult;
+					if (mrr != null && mrr.ResolvedMember != null && mrr.ResolvedMember.ReturnType != null) {
+						IReturnType memberType = mrr.ResolvedMember.ReturnType;
+						list.Items.AddRange(MemberCompletion(context, memberType, string.Empty));
+					}
 					return;
 				}
 			}
@@ -545,11 +550,18 @@ namespace ICSharpCode.XamlBinding
 			
 			switch (c.ClassType) {
 				case ClassType.Class:
-					if (context.Description == XamlContextDescription.InMarkupExtension) {
-						foreach (IField f in c.Fields)
-							yield return new XamlCodeCompletionItem(textPrefix + f.Name, f);
-						foreach (IProperty p in c.Properties.Where(pr => pr.IsPublic && pr.IsStatic && pr.CanGet))
-							yield return new XamlCodeCompletionItem(textPrefix + p.Name, p);
+					if (c.FullyQualifiedName == "System.String") {
+						// return nothing
+					} else if (c.FullyQualifiedName == "System.Type") {
+						foreach (var item in CreateElementList(context, true))
+							yield return item;
+					} else {
+						if (context.Description == XamlContextDescription.InMarkupExtension) {
+							foreach (IField f in c.Fields)
+								yield return new XamlCodeCompletionItem(textPrefix + f.Name, f);
+							foreach (IProperty p in c.Properties.Where(pr => pr.IsPublic && pr.IsStatic && pr.CanGet))
+								yield return new XamlCodeCompletionItem(textPrefix + p.Name, p);
+						}
 					}
 					break;
 				case ClassType.Enum:

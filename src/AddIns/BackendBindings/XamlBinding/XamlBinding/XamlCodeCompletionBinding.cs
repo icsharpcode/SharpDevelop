@@ -114,6 +114,12 @@ namespace ICSharpCode.XamlBinding
 						
 						this.CtrlSpace(editor);
 						return CodeCompletionKeyPressResult.EatKey;
+					} else {
+						editor.Document.Insert(editor.Caret.Offset, "=");
+						context = CompletionDataHelper.ResolveCompletionContext(editor, '=');
+
+						DoMarkupExtensionCompletion(context);
+						return CodeCompletionKeyPressResult.EatKey;
 					}
 					break;
 				default:

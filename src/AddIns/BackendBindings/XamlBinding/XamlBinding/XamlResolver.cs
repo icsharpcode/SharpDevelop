@@ -257,6 +257,23 @@ namespace ICSharpCode.XamlBinding
 			return new XamlResolver().Resolve(new ExpressionResult(expression, context), context.ParseInformation, fileContent);
 		}
 		
+		public static MemberResolveResult ResolveMember(string expression, XamlCompletionContext context)
+		{
+			if (context.ParseInformation == null || string.IsNullOrEmpty(context.Editor.Document.Text))
+				return null;
+			
+			var expressionResult = new ExpressionResult(expression, context);
+			
+			XamlResolver resolver = new XamlResolver();
+			resolver.resolveExpression = expression;
+			resolver.caretLine = expressionResult.Region.BeginLine;
+			resolver.caretColumn = expressionResult.Region.BeginColumn;
+			resolver.callingClass = context.ParseInformation.BestCompilationUnit.GetInnermostClass(resolver.caretLine, resolver.caretColumn);
+			resolver.context = context;
+			
+			return resolver.ResolveNamedAttribute(expression);
+		}
+		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
 			return new ArrayList();
