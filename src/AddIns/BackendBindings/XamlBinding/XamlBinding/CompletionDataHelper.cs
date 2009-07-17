@@ -397,7 +397,7 @@ namespace ICSharpCode.XamlBinding
 					var existingAttribs = Utils.GetListOfExistingAttributeNames(editor.Document.Text, editor.Caret.Line, editor.Caret.Column);
 					string word = context.Editor.GetWordBeforeCaretExtended();
 					
-					if (context.PressedKey == '.' || word.EndsWith(".")) {
+					if (context.PressedKey == '.') {
 						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(word.TrimEnd('.'), context), info, editor.Document.Text) as TypeResolveResult;
 						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
 						
@@ -414,10 +414,6 @@ namespace ICSharpCode.XamlBinding
 						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
 						
 						list.Items.AddRange(CreateAttributeList(context, existingAttribs, true));
-						
-						if (typeClass != null && typeClass.DerivesFrom("System.Windows.DependencyObject"))
-							list.Items.AddRange(GetListOfAttached(context, string.Empty, string.Empty, true, true));
-						
 						list.Items.AddRange(standardAttributes);
 					}
 					break;
@@ -808,7 +804,7 @@ namespace ICSharpCode.XamlBinding
 						if (properties)
 							AddAttachedProperties(c, result, key, string.Empty);
 						if (events)
-							AddAttachedEvents(c, result, prefixNamespace, prefixNamespace + prefixClassName);
+							AddAttachedEvents(c, result, key, string.Empty);
 					}
 				}
 			}

@@ -126,7 +126,7 @@ namespace ICSharpCode.XamlBinding
 						if (context.Description != XamlContextDescription.InComment && !string.IsNullOrEmpty(attribute)) {
 							int startIndex = LineText.Substring(0, Math.Min(index, LineText.Length)).LastIndexOf(attribute);
 							if (propertyNameIndex > -1)
-								infos.Add(new HighlightingInfo(attribute.TrimStart('/'), startIndex + propertyNameIndex + 1, startIndex + attribute.Length, Offset, context));
+								infos.Add(new HighlightingInfo(attribute.Trim('/'), startIndex + propertyNameIndex + 1, startIndex + attribute.TrimEnd('/').Length, Offset, context));
 							else
 								infos.Add(new HighlightingInfo(attribute, startIndex, startIndex + attribute.Length, Offset, context));
 						}
