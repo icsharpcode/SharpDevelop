@@ -430,11 +430,10 @@ namespace ICSharpCode.XamlBinding
 		public static IEnumerable<IInsightItem> CreateMarkupExtensionInsight(XamlCompletionContext context)
 		{
 			var markup = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.Editor.Caret.Offset);
-			var trr = ResolveMarkupExtensionType(markup, context);
+			var type = ResolveType(markup.ExtensionType, context) ?? ResolveType(markup.ExtensionType + "Extension", context);
 			
-			if (trr != null) {
-				var ctors = trr.ResolvedType
-					.GetMethods()
+			if (type != null) {
+				var ctors = type.GetMethods()
 					.Where(m => m.IsPublic && m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count)
 					.OrderBy(m => m.Parameters.Count);
 				
@@ -446,21 +445,19 @@ namespace ICSharpCode.XamlBinding
 		public static ICompletionItemList CreateMarkupExtensionCompletion(XamlCompletionContext context)
 		{
 			var list = new XamlCompletionItemList();
-			string visibleValue = context.RawAttributeValue.Substring(0, context.ValueStartOffset);
+			string visibleValue = context.RawAttributeValue.Substring(0, context.ValueStartOffset + 1);
 			var markup = Utils.GetInnermostMarkupExtensionInfo(MarkupExtensionParser.Parse(visibleValue));
-			var trr = ResolveMarkupExtensionType(markup, context);
+			var type = ResolveType(markup.ExtensionType, context) ?? ResolveType(markup.ExtensionType + "Extension", context);
 			
-			if (trr == null) {
+			if (type == null) {
 				list.Items.AddRange(CreateListOfMarkupExtensions(context));
 				list.PreselectionLength = markup.ExtensionType.Length;
 			} else {
-				if (trr.ResolvedType != null) {
-					if (markup.NamedArguments.Count == 0) {
-						if (DoPositionalArgsCompletion(list, context, markup, trr))
-							DoNamedArgsCompletion(list, trr, markup);
-					} else
-						DoNamedArgsCompletion(list, trr, markup);
-				}
+				if (markup.NamedArguments.Count == 0) {
+					if (DoPositionalArgsCompletion(list, context, markup, type))
+						DoNamedArgsCompletion(list, context, type, markup);
+				} else
+					DoNamedArgsCompletion(list, context, type, markup);
 			}
 			
 			list.SortItems();
@@ -468,18 +465,25 @@ namespace ICSharpCode.XamlBinding
 			return list;
 		}
 
-		static void DoNamedArgsCompletion(XamlCompletionItemList list, TypeResolveResult trr, MarkupExtensionInfo markup)
+		static void DoNamedArgsCompletion(XamlCompletionItemList list, XamlCompletionContext context, IReturnType type, MarkupExtensionInfo markup)
 		{
-			var ctors = trr.ResolvedType.GetMethods().Where(m => m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count);
-			if (ctors.Any(ctor => ctor.Parameters.Count >= markup.PositionalArguments.Count)) {
-				list.Items.AddRange(trr.ResolvedType.GetProperties().Where(p => p.CanSet && p.IsPublic).Select(p => new XamlCodeCompletionItem(p.Name + "=", p)).Cast<ICompletionItem>());
+			if (markup.NamedArguments.Count > 0) {
+				int lastStart = markup.NamedArguments.Max(i => i.Value.StartOffset);
+				var item = markup.NamedArguments.First(p => p.Value.StartOffset == lastStart);
+				if (context.Editor.Document.GetCharAt(context.Editor.Caret.Offset - 1) == '=' ||
+				    (item.Value.IsString && item.Value.StringValue.EndsWith(context.Editor.GetWordBeforeCaretExtended()))) {
+					MemberResolveResult mrr = XamlResolver.Resolve(item.Key, context) as MemberResolveResult;
+					return;
+				}
 			}
+			
+			list.Items.AddRange(type.GetProperties().Where(p => p.CanSet && p.IsPublic).Select(p => new XamlCodeCompletionItem(p.Name + "=", p)).Cast<ICompletionItem>());
 		}
 
 		/// <remarks>returns true if elements from named args completion should be added afterwards.</remarks>
-		static bool DoPositionalArgsCompletion(XamlCompletionItemList list, XamlCompletionContext context, MarkupExtensionInfo markup, TypeResolveResult trr)
+		static bool DoPositionalArgsCompletion(XamlCompletionItemList list, XamlCompletionContext context, MarkupExtensionInfo markup, IReturnType type)
 		{
-			switch (trr.ResolvedType.FullyQualifiedName) {
+			switch (type.FullyQualifiedName) {
 				case "System.Windows.Markup.ArrayExtension":
 				case "System.Windows.Markup.NullExtension":
 					// x:Null/x:Array does not need completion, ignore it
@@ -500,12 +504,11 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				default:
-					var ctors = trr.ResolvedType
-						.GetMethods()
+					var ctors = type.GetMethods()
 						.Where(m => m.IsPublic && m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count + 1);
 					if (context.Forced)
 						return true;
-					if (ctors.Count() != 0 || markup.PositionalArguments.Count == 0)
+					if (ctors.Any() || markup.PositionalArguments.Count == 0)
 						return false;
 					break;
 			}
@@ -615,7 +618,7 @@ namespace ICSharpCode.XamlBinding
 			return Enumerable.Empty<ICompletionItem>();
 		}
 
-		static IEntity ResolveAttribute(string attribute, XamlCompletionContext context)
+		static IMember ResolveAttribute(string attribute, XamlCompletionContext context)
 		{
 			MemberResolveResult mrr = XamlResolver.Resolve(attribute, context) as MemberResolveResult;
 			
@@ -669,18 +672,8 @@ namespace ICSharpCode.XamlBinding
 				list.PreselectionLength = selItem.StringValue.Length;
 			}
 		}
-
-		public static TypeResolveResult ResolveMarkupExtensionType(MarkupExtensionInfo markup, XamlCompletionContext context)
-		{
-			XamlContextDescription desc = context.Description;
-			context.Description = XamlContextDescription.AtTag;
-			TypeResolveResult trr = XamlResolver.Resolve(markup.ExtensionType, context) as TypeResolveResult;
-			if (trr == null) trr = XamlResolver.Resolve(markup.ExtensionType + "Extension", context) as TypeResolveResult;
-			context.Description = desc;
-			return trr;
-		}
-
-		public static IReturnType ResolveType(string name, XamlContext context)
+		
+		public static IReturnType ResolveType(string typeName, XamlContext context)
 		{
 			if (context.ParseInformation == null)
 				return null;
@@ -689,15 +682,16 @@ namespace ICSharpCode.XamlBinding
 			if (cu == null)
 				return null;
 			string prefix = "";
-			int len = name.IndexOf(':');
+			int len = typeName.IndexOf(':');
+			string name = typeName;
 			if (len > 0) {
-				prefix = name.Substring(0, len);
-				name = name.Substring(len + 1, name.Length - len - 1);
+				prefix = typeName.Substring(0, len);
+				name = typeName.Substring(len + 1, name.Length - len - 1);
 			}
 			string namespaceName = "";
 			if (context.XmlnsDefinitions.TryGetValue(prefix, out namespaceName)) {
 				IReturnType rt = cu.CreateType(namespaceName, name);
-				if (rt != null)
+				if (rt != null && rt.GetUnderlyingClass() != null)
 					return rt;
 			}
 			return null;
@@ -756,7 +750,6 @@ namespace ICSharpCode.XamlBinding
 				return result;
 			
 			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
-			
 			
 			foreach (var ns in context.XmlnsDefinitions) {
 				result.Add(ns.Key, XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value));

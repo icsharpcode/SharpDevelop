@@ -270,9 +270,10 @@ namespace ICSharpCode.XamlBinding
 		
 		static string GetTypeNameFromTypeExtension(MarkupExtensionInfo info, XamlCompletionContext context)
 		{
-			TypeResolveResult trr = CompletionDataHelper.ResolveMarkupExtensionType(info, context);
+			IReturnType type = CompletionDataHelper.ResolveType(info.ExtensionType, context)
+				?? CompletionDataHelper.ResolveType(info.ExtensionType + "Extension", context);
 			
-			if (trr == null || trr.ResolvedType == null || trr.ResolvedType.FullyQualifiedName != "System.Windows.Markup.TypeExtension")
+			if (type == null || type.FullyQualifiedName != "System.Windows.Markup.TypeExtension")
 				return string.Empty;
 			
 			var item = info.PositionalArguments.FirstOrDefault();

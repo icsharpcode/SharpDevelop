@@ -78,26 +78,12 @@ namespace ICSharpCode.XamlBinding
 					
 					switch (extensionType.ResolvedType.FullyQualifiedName) {
 						case "System.Windows.Markup.StaticExtension":
-							if (value != null && value.IsString) {
-								return ResolveElementName(expression) ?? ResolveAttribute(expression);
-							}
-							
-							if (data is KeyValuePair<string, AttributeValue>) {
-								var pair = (KeyValuePair<string, AttributeValue>)data;
-								var member = ResolveNamedAttribute(pair.Key);
-								if (pair.Value.StartOffset + pair.Key.Length >= context.ValueStartOffset) {
-									return member;
-								} else {
-									if (pair.Value.IsString && member != null)
-										return ResolveAttributeValue(member.ResolvedMember, expression) ?? ResolveElementName(expression);
-								}
-							}
-							break;
 						case "System.Windows.Markup.TypeExtension":
 							if (value != null && value.IsString) {
 								return ResolveElementName(expression) ?? ResolveAttribute(expression);
 							}
-							
+							goto default; // "fall through"
+						default:
 							if (data is KeyValuePair<string, AttributeValue>) {
 								var pair = (KeyValuePair<string, AttributeValue>)data;
 								var member = ResolveNamedAttribute(pair.Key);
@@ -138,11 +124,11 @@ namespace ICSharpCode.XamlBinding
 				string prefix = resolveExpression.Substring(0, resolveExpression.IndexOf(':'));
 				name = resolveExpression.Substring(resolveExpression.IndexOf(':') + 1);
 				if (!context.XmlnsDefinitions.TryGetValue(prefix, out xmlNamespace))
-				    xmlNamespace = null;
+					xmlNamespace = null;
 			}
 			else {
 				if (!context.XmlnsDefinitions.TryGetValue("", out xmlNamespace))
-				    xmlNamespace = null;
+					xmlNamespace = null;
 				name = resolveExpression;
 			}
 			if (name.Contains(".")) {
@@ -182,8 +168,6 @@ namespace ICSharpCode.XamlBinding
 			if (member == null) {
 				member = resolvedType.GetEvents().Find(delegate(IEvent p) { return p.Name == propertyName; });
 			}
-//			if (!allowAttached)
-//				Debug.Assert(member != null);
 			if (member == null && allowAttached) {
 				IMethod method = resolvedType.GetMethods().Find(
 					delegate(IMethod p) {
@@ -216,12 +200,12 @@ namespace ICSharpCode.XamlBinding
 			if (attributeName.Contains(":")) {
 				string prefix = attributeName.Substring(0, attributeName.IndexOf(':'));
 				if (!context.XmlnsDefinitions.TryGetValue(prefix, out attributeXmlNamespace))
-				    attributeXmlNamespace = null;
+					attributeXmlNamespace = null;
 				attributeName = attributeName.Substring(attributeName.IndexOf(':') + 1);
 			}
 			else {
 				if (!context.XmlnsDefinitions.TryGetValue("", out attributeXmlNamespace))
-				    attributeXmlNamespace = null;
+					attributeXmlNamespace = null;
 			}
 			if (attributeName.Contains(".")) {
 				string className = attributeName.Substring(0, attributeName.IndexOf('.'));

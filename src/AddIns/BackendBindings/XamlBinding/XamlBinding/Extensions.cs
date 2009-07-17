@@ -80,7 +80,7 @@ namespace ICSharpCode.XamlBinding
 			IDocumentLine line = editor.Document.GetLine(editor.Caret.Line);
 			int index = Math.Min(editor.Caret.Column - 1, line.Text.Length);
 			string text = line.Text.Substring(0, index);
-			int startIndex = text.LastIndexOfAny(' ', '\t', '"', '<', '\'', '>', '{', '}');
+			int startIndex = text.LastIndexOfAny(' ', '\t', '"', '=', '<', '\'', '>', '{', '}');
 			if (startIndex > -1)
 				return text.Substring(startIndex + 1);
 			

@@ -125,7 +125,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			var selectedItems = (from item in document.Root.Descendants()
 			                     where item.IsInRange(startLoc, endLoc) select item).ToList();
 			
-			if (selectedItems.Count() > 0) {
+			if (selectedItems.Any()) {
 				var parent = selectedItems.First().Parent;
 				var items = selectedItems.Where(i => i.Parent == parent);
 				

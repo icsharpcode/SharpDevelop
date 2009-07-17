@@ -57,7 +57,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 					selectedAttributes.Where(p => p.Attribute != null).Select(prop => prop.Attribute).Remove();
 					selectedAttributes.Where(p => p.Element != null).Select(prop => prop.Element).Remove();
 					
-					if (!string.IsNullOrEmpty(dialog.StyleName) && selectedItem.Attributes(XName.Get("Style")).Count() > 0) {
+					if (!string.IsNullOrEmpty(dialog.StyleName) && selectedItem.Attributes(XName.Get("Style")).Any()) {
 						if (MessageService.AskQuestion("The selected control has a style assigned already. " +
 						                               "Do you want to replace the style with the newly created style?"))
 							selectedItem.SetAttributeValue("Style", "{StaticResource " + dialog.StyleName + "}");

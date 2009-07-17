@@ -14,14 +14,15 @@ namespace ICSharpCode.XamlBinding
 		public static MarkupExtensionInfo Parse(string text)
 		{
 			var info = new MarkupExtensionInfo();
+			string argumentName = null;
+			int namedArgsStart = 0;
+			MarkupExtensionTokenizer tokenizer = new MarkupExtensionTokenizer(text);
+			
+			MarkupExtensionToken token = null;
 			
 			try {
-				var tokenizer = new MarkupExtensionTokenizer(text);
+				token = tokenizer.NextToken();
 				
-				string argumentName = null;
-				int namedArgsStart = 0;
-				
-				var token = tokenizer.NextToken();
 				while (token.Kind != MarkupExtensionTokenKind.EndOfFile) {
 					switch (token.Kind) {
 						case MarkupExtensionTokenKind.TypeName:
@@ -48,6 +49,9 @@ namespace ICSharpCode.XamlBinding
 				}
 			} catch (MarkupExtensionParseException) {
 				// ignore parser errors
+			} finally {
+				if (token != null && argumentName != null)
+					info.TryAddNamedArgument(argumentName, ParseValue(token.Value, namedArgsStart));
 			}
 			
 			return info;
