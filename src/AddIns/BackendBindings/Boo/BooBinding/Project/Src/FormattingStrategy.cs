@@ -5,40 +5,44 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.TextEditor.Document;
 using System.Collections.Generic;
 
 namespace Grunwald.BooBinding
 {
 	public class BooFormattingStrategy : DefaultFormattingStrategy
 	{
-		protected override int SmartIndentLine(TextArea area, int line)
+		public override void IndentLine(ITextEditor editor, IDocumentLine line)
 		{
-			IDocument document = area.Document;
-			LineSegment previousLine = document.GetLineSegment(line-1);
-			
-			if (document.GetText(previousLine).EndsWith(":")) {
-				LineSegment currentLine = document.GetLineSegment(line);
-				string indentation = GetIndentation(area, line-1);
-				indentation += Tab.GetIndentationString(document);
-				document.Replace(currentLine.Offset,
-				                 currentLine.Length,
-				                 indentation + document.GetText(currentLine));
-				return indentation.Length;
+			IDocument document = editor.Document;
+			int lineNumber = line.LineNumber;
+			if (lineNumber > 1) {
+				IDocumentLine previousLine = document.GetLine(line.LineNumber - 1);
+				
+				if (previousLine.Text.EndsWith(":", StringComparison.Ordinal)) {
+					string indentation = DocumentUtilitites.GetIndentation(document, previousLine.Offset);
+					indentation += editor.Options.IndentationString;
+					string newIndentation = DocumentUtilitites.GetIndentation(document, line.Offset);
+					document.Replace(line.Offset, newIndentation.Length, indentation);
+					return;
+				}
 			}
-			
-			return base.SmartIndentLine(area, line);
+			base.IndentLine(editor, line);
 		}
 		
 		// Deactivate indenting multiple lines with Ctrl-I
-		public override void IndentLines(TextArea textArea, int begin, int end)
+		public override void IndentLines(ITextEditor editor, int begin, int end)
 		{
 		}
 		
+		public override void SurroundSelectionWithComment(ITextEditor editor)
+		{
+			SurroundSelectionWithSingleLineComment(editor, "//");
+		}
+		
 		#region Matching bracket search
+		/*
 		int DoQuickFindBackward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			int brackets = -1;
@@ -274,6 +278,7 @@ namespace Grunwald.BooBinding
 			
 			return -1;
 		}
+		*/
 		#endregion
 	}
 }

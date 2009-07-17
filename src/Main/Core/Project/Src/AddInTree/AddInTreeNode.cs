@@ -158,7 +158,7 @@ namespace ICSharpCode.Core
 					items.Add((T)result);
 				} else {
 					throw new InvalidCastException("The AddInTreeNode <" + codon.Name + " id='" + codon.Id
-					                               + "' returned an instance of " + result.GetType().FullName
+					                               + "'> returned an instance of " + result.GetType().FullName
 					                               + " but the type " + typeof(T).FullName + " is expected.");
 				}
 			}

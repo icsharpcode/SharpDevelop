@@ -50,11 +50,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 			IDocument document = editor.Document;
 			int lineNumber = line.LineNumber;
 			if (lineNumber > 1) {
-				IDocumentLine previousLine = editor.Document.GetLine(lineNumber - 1);
+				IDocumentLine previousLine = document.GetLine(lineNumber - 1);
 				string indentation = DocumentUtilitites.GetIndentation(document, previousLine.Offset);
 				// copy indentation to line
 				string newIndentation = DocumentUtilitites.GetIndentation(document, line.Offset);
-				editor.Document.Replace(line.Offset, newIndentation.Length, indentation);
+				document.Replace(line.Offset, newIndentation.Length, indentation);
 			}
 		}
 		
