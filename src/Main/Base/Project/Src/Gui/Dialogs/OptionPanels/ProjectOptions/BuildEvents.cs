@@ -20,15 +20,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			InitializeHelper();
 			baseDirectory = Path.GetDirectoryName(project.OutputAssemblyFullPath);
 			
-			ConnectBrowseButton("preBuildEventBrowseButton",
-			                    "preBuildEventTextBox",
-			                    "${res:SharpDevelop.FileFilter.AllFiles}|*.*",
-			                    TextBoxEditMode.EditRawProperty);
-			ConnectBrowseButton("postBuildEventBrowseButton",
-			                    "postBuildEventTextBox",
-			                    "${res:SharpDevelop.FileFilter.AllFiles}|*.*",
-			                    TextBoxEditMode.EditRawProperty);
-			
 			ConfigurationGuiBinding b;
 			
 			b = helper.BindString("preBuildEventTextBox", "PreBuildEvent", TextBoxEditMode.EditRawProperty);

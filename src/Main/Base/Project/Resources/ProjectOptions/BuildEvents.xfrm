@@ -1,82 +1,70 @@
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="XmlUserControl1" />
-    <ClientSize value="{Width=384, Height=256}" />
+    <ClientSize value="{Width=384, Height=355}" />
     <Controls>
       <System.Windows.Forms.GroupBox>
         <Name value="groupBox1" />
-        <Location value="{X=8,Y=8}" />
+        <Location value="8, 8" />
         <Text value="${res:Dialog.ProjectOptions.BuildEvents}" />
-        <Size value="{Width=364, Height=180}" />
-        <TabIndex value="0" />
+        <Size value="364, 285" />
         <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
         <Controls>
           <System.Windows.Forms.ComboBox>
             <Name value="runPostBuildEventComboBox" />
             <TabIndex value="8" />
+            <Location value="6, 255" />
             <Anchor value="Top, Left, Right" />
-            <Size value="{Width=184, Height=21}" />
+            <Size value="184, 21" />
             <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
-            <Location value="{X=8,Y=153}" />
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.Label>
             <Name value="label3" />
-            <Location value="{X=8,Y=127}" />
+            <Location value="6, 229" />
             <Text value="${res:Dialog.ProjectOptions.BuildEvents.RunPostBuild}" />
+            <Size value="352, 23" />
             <TextAlign value="BottomLeft" />
-            <Size value="{Width=352, Height=23}" />
-            <TabIndex value="7" />
             <Anchor value="Top, Left, Right" />
+            <TabIndex value="7" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.TextBox>
             <Name value="postBuildEventTextBox" />
             <TabIndex value="5" />
+            <Location value="6, 151" />
             <Anchor value="Top, Left, Right" />
-            <Size value="{Width=304, Height=21}" />
-            <Location value="{X=8,Y=96}" />
+            <ScrollBars value="Both" />
+            <Size value="348, 75" />
+            <Multiline value="True" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="label2" />
-            <Location value="{X=8,Y=70}" />
+            <Location value="6, 125" />
             <Text value="${res:Dialog.ProjectOptions.BuildEvents.PostBuild}" />
+            <Size value="344, 23" />
             <TextAlign value="BottomLeft" />
-            <Size value="{Width=344, Height=23}" />
-            <TabIndex value="4" />
             <Anchor value="Top, Left, Right" />
+            <TabIndex value="4" />
           </System.Windows.Forms.Label>
-          <System.Windows.Forms.Button>
-            <Name value="postBuildEventBrowseButton" />
-            <Location value="{X=316,Y=98}" />
-            <Text value="..." />
-            <Size value="{Width=40, Height=23}" />
-            <Anchor value="Top, Right" />
-            <TabIndex value="6" />
-          </System.Windows.Forms.Button>
           <System.Windows.Forms.TextBox>
             <Name value="preBuildEventTextBox" />
             <TabIndex value="2" />
+            <Location value="8, 49" />
             <Anchor value="Top, Left, Right" />
-            <Size value="{Width=304, Height=21}" />
-            <Location value="{X=8,Y=49}" />
+            <ScrollBars value="Both" />
+            <Size value="346, 75" />
+            <Multiline value="True" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="label1" />
-            <Location value="{X=8,Y=23}" />
+            <Location value="8, 23" />
             <Text value="${res:Dialog.ProjectOptions.BuildEvents.PreBuild}" />
+            <Size value="344, 23" />
             <TextAlign value="BottomLeft" />
-            <Size value="{Width=344, Height=23}" />
-            <TabIndex value="1" />
             <Anchor value="Top, Left, Right" />
+            <TabIndex value="1" />
           </System.Windows.Forms.Label>
-          <System.Windows.Forms.Button>
-            <Name value="preBuildEventBrowseButton" />
-            <Location value="{X=316,Y=50}" />
-            <Text value="..." />
-            <Size value="{Width=40, Height=21}" />
-            <Anchor value="Top, Right" />
-            <TabIndex value="3" />
-          </System.Windows.Forms.Button>
         </Controls>
       </System.Windows.Forms.GroupBox>
     </Controls>
