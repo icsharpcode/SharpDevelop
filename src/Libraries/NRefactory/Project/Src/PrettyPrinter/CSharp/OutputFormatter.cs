@@ -154,7 +154,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					WriteLineInPreviousLine("///" + comment.CommentText, forceWriteInPreviousBlock);
 					break;
 				default:
-					WriteLineInPreviousLine("//" + comment.CommentText, forceWriteInPreviousBlock);
+					// 3 because startposition is start of the text (after the tag)
+					WriteLineInPreviousLine("//" + comment.CommentText, forceWriteInPreviousBlock, comment.StartPosition.Column != 3);
 					break;
 			}
 		}
