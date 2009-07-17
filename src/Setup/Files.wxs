@@ -78,7 +78,7 @@
 								<RegistryValue Id="SD.booprojfile" Root="HKCR" Type="string" Key="SD.booprojfile" Value="Boo Project" KeyPath="yes" />
 								<RegistryValue Id="SD.booprojfile.command" Root="HKCR" Type="string" Key="SD.booprojfile\shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
 								<RegistryValue Id="SD.booprojfile.icon" Root="HKCR" Type="string" Key="SD.booprojfile\DefaultIcon" Value="&quot;[#prjx.ico]&quot;" />
-								<RegistryValue Id="SD.booprojfile.association" Root="HKCR" Type="string" Key="SD.booprojfile\.booproj" Value="SD.booprojfile" />
+								<RegistryValue Id="SD.booprojfile.association" Root="HKCR" Type="string" Key=".booproj" Value="SD.booprojfile" />
 							</Component>
 							<Component Id="SharpDevelopCombineFileAssociation" Guid="9D7E0D45-CD48-4A52-8875-939A78B8F710" DiskId="1">
 								<RegistryValue Id="SD.cmbxfile" Root="HKCR" Type="string" Key="SD.cmbxfile" Value="SharpDevelop 1.x Combine" KeyPath="yes" />
