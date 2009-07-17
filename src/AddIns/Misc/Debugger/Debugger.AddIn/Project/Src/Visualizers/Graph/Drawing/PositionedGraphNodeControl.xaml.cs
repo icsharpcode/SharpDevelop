@@ -66,12 +66,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 				this.listView.ItemsSource = new VirtualizingObservableCollection<ContentNode>(this.view);
 				
 				int maxLen = this.view.MaxOrDefault(contentNode => { return contentNode.Name.Length; }, 0);
-				int spaces = Math.Max((int)(maxLen * 1.5), 0);
+				int spaces = Math.Max((int)(maxLen * 1.8 - 3), 0);
 				string addedSpaces = StringHelper.Repeat(' ', spaces);
 				
 				GridView gv = listView.View as GridView;
 				gv.Columns[1].Header = "Name" + addedSpaces;
-				
 				
 				//AutoSizeColumns();
 				

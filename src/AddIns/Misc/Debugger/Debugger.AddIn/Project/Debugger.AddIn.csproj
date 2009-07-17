@@ -145,6 +145,7 @@
     <Compile Include="Src\Visualizers\Graph\TreeModel\NestedNodeType.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\NonPublicMembersNode.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\PropertyNode.cs" />
+    <Compile Include="Src\Visualizers\PresentationBindings\TooltipVisibilityConverter.cs" />
     <Compile Include="Src\Visualizers\Utils\AtomicType.cs" />
     <Compile Include="Src\Visualizers\Utils\ITreeNode.cs" />
     <Compile Include="Src\Visualizers\Utils\LinqUtils.cs" />
