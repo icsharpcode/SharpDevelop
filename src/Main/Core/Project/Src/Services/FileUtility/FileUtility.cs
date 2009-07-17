@@ -318,28 +318,33 @@ namespace ICSharpCode.Core
 		{
 			// If Directory.GetFiles() searches the 8.3 name as well as the full name so if the filemask is
 			// "*.xpt" it will return "Template.xpt~"
-			bool isExtMatch = Regex.IsMatch(filemask, @"^\*\..{3}$");
-			string ext = null;
-			string[] file = Directory.GetFiles(directory, filemask);
-			if (isExtMatch) ext = filemask.Remove(0,1);
-			
-			foreach (string f in file) {
-				if (ignoreHidden && (File.GetAttributes(f) & FileAttributes.Hidden) == FileAttributes.Hidden) {
-					continue;
-				}
-				if (isExtMatch && Path.GetExtension(f) != ext) continue;
+			try {
+				bool isExtMatch = Regex.IsMatch(filemask, @"^\*\..{3}$");
+				string ext = null;
+				string[] file = Directory.GetFiles(directory, filemask);
+				if (isExtMatch) ext = filemask.Remove(0,1);
 				
-				collection.Add(f);
-			}
-			
-			if (searchSubdirectories) {
-				string[] dir = Directory.GetDirectories(directory);
-				foreach (string d in dir) {
-					if (ignoreHidden && (File.GetAttributes(d) & FileAttributes.Hidden) == FileAttributes.Hidden) {
+				foreach (string f in file) {
+					if (ignoreHidden && (File.GetAttributes(f) & FileAttributes.Hidden) == FileAttributes.Hidden) {
 						continue;
 					}
-					SearchDirectory(d, filemask, collection, searchSubdirectories, ignoreHidden);
+					if (isExtMatch && Path.GetExtension(f) != ext) continue;
+					
+					collection.Add(f);
 				}
+				
+				if (searchSubdirectories) {
+					string[] dir = Directory.GetDirectories(directory);
+					foreach (string d in dir) {
+						if (ignoreHidden && (File.GetAttributes(d) & FileAttributes.Hidden) == FileAttributes.Hidden) {
+							continue;
+						}
+						SearchDirectory(d, filemask, collection, searchSubdirectories, ignoreHidden);
+					}
+				}
+			} catch (UnauthorizedAccessException) {
+				// Ignore exception when access to a directory is denied.
+				// Fixes SD2-893.
 			}
 		}
 		
