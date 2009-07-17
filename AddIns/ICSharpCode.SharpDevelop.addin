@@ -258,6 +258,9 @@
 		<MenuItem id      = "OpenFileWith"
 		          label = "${res:Gui.ProjectBrowser.OpenWith}"
 		          class   = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileFromProjectBrowserWith"/>
+		<MenuItem id = "OpenFolderContainingFile"
+		          label = "${res:OpenFileTabEventHandler.FileContainingFolderInExplorer}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFolderContainingFile"/>
 		
 		<MenuItem id = "OpenSeparator" type = "Separator" />
 		<Include id="CutCopyRemoveRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyRemoveRename"/>
@@ -321,6 +324,13 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
+		<MenuItem id = "OpenFolder"
+		          label = "${res:Gui.ProjectBrowser.OpenFolderInExplorer}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenProjectFolder"/>
+		<MenuItem id = "OpenProjectOutputFolder"
+		          label = "${res:ProjectComponent.ContextMenu.OpenProjectOutputFolder}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenProjectOutputFolder"/>
+		
 		<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False" action="Disable">
 			<MenuItem id          = "Run"
 			          label       = "${res:ProjectComponent.ContextMenu.RunProject}"
@@ -338,9 +348,6 @@
 		<MenuItem id = "GenerateDocumentation"
 		          label = "${res:ProjectComponent.ContextMenu.GenerateDocumentation}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.GenerateProjectDocumentation"/>
-		<MenuItem id = "OpenProjectOutputFolder"
-		          label = "${res:ProjectComponent.ContextMenu.OpenProjectOutputFolder}"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenProjectOutputFolder"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode">
@@ -544,6 +551,9 @@
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingFolderToProject"/>
 			</MenuItem>
 			<MenuItem id = "AddSeparator" type = "Separator"  />
+			<MenuItem id = "OpenFolder"
+			          label = "${res:Gui.ProjectBrowser.OpenFolderInExplorer}"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFolder"/>
 			
 			<ComplexCondition>
 				<Or>

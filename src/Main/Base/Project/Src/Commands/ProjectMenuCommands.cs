@@ -89,6 +89,22 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	/// <summary>
 	/// Opens the projects output folder in an explorer window.
 	/// </summary>
+	public class OpenProjectFolder : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			IProject project = ProjectService.CurrentProject;
+			if (project == null) {
+				return;
+			}
+			
+			OpenFolder.OpenFolderInExplorer(project.Directory);
+		}
+	}
+	
+	/// <summary>
+	/// Opens the projects output folder in an explorer window.
+	/// </summary>
 	public class OpenProjectOutputFolder : AbstractMenuCommand
 	{
 		public override void Run()
@@ -104,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				Directory.CreateDirectory(outputFolder);
 			}
 			
-			Process.Start(outputFolder);
+			OpenFolder.OpenFolderInExplorer(outputFolder);
 		}
 	}
 }
