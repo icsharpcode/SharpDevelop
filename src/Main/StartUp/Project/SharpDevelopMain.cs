@@ -108,7 +108,16 @@ namespace ICSharpCode.SharpDevelop
 			// or Windows app (release mode). Because this flag also affects the default encoding
 			// when reading from other processes' standard output, we explicitly set the encoding to get
 			// consistent behaviour in debug and release builds of SharpDevelop.
-			Console.OutputEncoding = System.Text.Encoding.Default;
+			
+			#if DEBUG
+			// Console apps use the system's OEM codepage, windows apps the ANSI codepage.
+			// We'll always use the Windows (ANSI) codepage.
+			try {
+				Console.OutputEncoding = System.Text.Encoding.Default;
+			} catch (IOException) {
+				// can happen if SharpDevelop doesn't have a console
+			}
+			#endif
 			
 			LoggingService.Info("Starting SharpDevelop...");
 			try {
