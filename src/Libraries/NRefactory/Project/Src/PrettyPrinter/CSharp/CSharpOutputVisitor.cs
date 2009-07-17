@@ -1275,6 +1275,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			if (ifElseStatement.HasElseStatements) {
 				if (prettyPrintOptions.PlaceElseOnNewLine) {
+					outputFormatter.NewLine();
 					outputFormatter.Indent();
 				} else {
 					outputFormatter.Space();
