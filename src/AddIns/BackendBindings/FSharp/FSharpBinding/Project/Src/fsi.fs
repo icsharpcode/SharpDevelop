@@ -64,7 +64,8 @@ module TheControl =
                 let possibleFiles =
                     fsdirs |> Array.choose 
                         (fun x -> 
-                            let fileInfo = new FileInfo(Path.Combine(x, "bin\fsi.exe"))
+                            LoggingService.Debug("Trying to find fsi in '" + x + "'")
+                            let fileInfo = new FileInfo(Path.Combine(x, "bin\\fsi.exe"))
                             if fileInfo.Exists then
                                 Some fileInfo
                             else
