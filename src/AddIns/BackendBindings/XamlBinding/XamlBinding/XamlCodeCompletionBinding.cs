@@ -149,11 +149,9 @@ namespace ICSharpCode.XamlBinding
 					// DO NOT USE CompletionDataHelper.CreateListForContext here!!! results in endless recursion!!!!
 					if (!string.IsNullOrEmpty(context.AttributeName)) {
 						if (!DoMarkupExtensionCompletion(context)) {
-							XamlResolver resolver = new XamlResolver();
 							var completionList = new XamlCompletionItemList();
 							
-							var mrr = resolver.Resolve(new ExpressionResult(context.AttributeName, context),
-							                           context.ParseInformation, context.Editor.Document.Text) as MemberResolveResult;
+							var mrr = XamlResolver.Resolve(context.AttributeName, context) as MemberResolveResult;
 							if (mrr != null && mrr.ResolvedType != null) {
 								var c = mrr.ResolvedType.GetUnderlyingClass();
 								
@@ -163,6 +161,8 @@ namespace ICSharpCode.XamlBinding
 							
 							if (context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter")
 								DoSetterAndEventSetterCompletion(context, completionList);
+							
+							completionList.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
 							
 							completionList.SortItems();
 							
@@ -293,7 +293,8 @@ namespace ICSharpCode.XamlBinding
 			if (context.Description == XamlContextDescription.InMarkupExtension && context.AttributeValue != null && !context.AttributeValue.IsString) {
 				if (!XamlBindingOptions.UseExtensionCompletion)
 					return false;
-				var completionList = CompletionDataHelper.CreateMarkupExtensionCompletion(context);
+				XamlCompletionItemList completionList = CompletionDataHelper.CreateMarkupExtensionCompletion(context) as XamlCompletionItemList;
+				completionList.PreselectionLength = context.Editor.GetWordBeforeCaretExtended().Length;
 				context.Editor.ShowCompletionWindow(completionList);
 				var insightList = CompletionDataHelper.CreateMarkupExtensionInsight(context);
 				context.Editor.ShowInsightWindow(insightList);
