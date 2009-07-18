@@ -35,6 +35,17 @@ namespace ICSharpCode.XamlBinding
 				return QualifiedName.Prefix;
 			}
 		}
+
+		public string FullXmlName {
+			get {
+				string name = Prefix;
+				if (!string.IsNullOrEmpty(name))
+					name += ":";
+				
+				name += Name;
+				return name;
+			}
+		}
 		
 		public QualifiedNameWithLocation(string localName, string namespaceName, string prefix, int line, int column)
 			: this(localName, namespaceName, prefix, new Location(column, line))

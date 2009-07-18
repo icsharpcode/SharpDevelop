@@ -370,6 +370,7 @@ namespace ICSharpCode.XamlBinding
 					if (context.Forced) {
 						list.Items.AddRange(standardElements);
 						list.Items.AddRange(CreateElementList(context, false));
+						AddClosingTagCompletion(context, list);
 					}
 					break;
 				case XamlContextDescription.AtTag:
@@ -378,6 +379,7 @@ namespace ICSharpCode.XamlBinding
 					} else {
 						list.Items.AddRange(standardElements);
 						list.Items.AddRange(CreateElementList(context, false));
+						AddClosingTagCompletion(context, list);
 					}
 					break;
 				case XamlContextDescription.InTag:
@@ -412,6 +414,26 @@ namespace ICSharpCode.XamlBinding
 			list.SortItems();
 			
 			return list;
+		}
+		
+		static void AddClosingTagCompletion(XamlCompletionContext context, XamlCompletionItemList list)
+		{
+			if (context.ParentElement != null && !context.InRoot) {
+				ResolveResult rr = XamlResolver.Resolve(context.ParentElement.FullXmlName, context);
+				TypeResolveResult prr = XamlResolver.Resolve(context.ParentElement.FullXmlName.Substring(0, context.ParentElement.FullXmlName.IndexOf('.') + 1).TrimEnd('.'),
+				                                             context) as TypeResolveResult;
+				if (rr is TypeResolveResult) {
+					TypeResolveResult trr = rr as TypeResolveResult;
+					if (trr.ResolvedClass == null)
+						return;
+					list.Items.Add(new XamlCodeCompletionItem("/" + trr.ResolvedClass.Name, trr.ResolvedClass));
+				} else if (rr is MemberResolveResult && prr != null) {
+					MemberResolveResult mrr = rr as MemberResolveResult;
+					if (mrr.ResolvedMember == null)
+						return;
+					list.Items.Add(new XamlCodeCompletionItem("/" + prr.ResolvedType.Name + "." + mrr.ResolvedMember.Name, mrr.ResolvedMember));
+				}
+			}
 		}
 
 		public static IEnumerable<IInsightItem> CreateMarkupExtensionInsight(XamlCompletionContext context)
