@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="AlignedImage.cs" />
     <Compile Include="AvalonDockBrushes.cs" />
+    <Compile Include="ColorFactory.cs" />
     <Compile Include="ContextMenuElement.cs" />
     <Compile Include="DeserializationCallbackEventArgs.cs" />
     <Compile Include="DockableContent.cs" />
@@ -127,6 +128,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="RequestDocumentCloseEventArgs.cs" />
     <Compile Include="ResizingPanel.cs" />
     <Compile Include="ResizingPanelSplitter.cs" />
     <Compile Include="WindowInteropWrapper.cs" />
@@ -182,7 +184,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="themes\classic2.xaml">
+    <Page Include="themes\classic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -194,6 +196,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="themes\luna.normalcolor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\images\DockBottom.PNG" />
@@ -201,9 +207,6 @@
     <Resource Include="Resources\images\DockPane.PNG" />
     <Resource Include="Resources\images\DockRight.PNG" />
     <Resource Include="Resources\images\DockTop.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\DocumentHS.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\images\PinClose.png" />

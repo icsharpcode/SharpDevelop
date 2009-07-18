@@ -26,8 +26,10 @@
     </ContextMenu>
 
 
+	<!--DockableContentTabItemStyle-->
     <Style x:Key="DockableContentTabItemStyle" TargetType="{x:Type ad:DockableContent}">
-        <Setter Property="Template">
+		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+		<Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ad:DockableContent}">
                     <Grid SnapsToDevicePixels="True">
@@ -113,10 +115,11 @@
         </Setter>
     </Style>
 
-
+	<!--DockablePane-->
     <Style TargetType="{x:Type ad:DockablePane}">
         <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}"/>
-        <Setter Property="Template">
+		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+		<Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ad:DockablePane}"><!--Background="{TemplateBinding Background}"-->
                     <Border  

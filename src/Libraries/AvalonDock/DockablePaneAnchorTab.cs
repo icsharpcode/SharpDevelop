@@ -40,40 +40,6 @@ using System.Diagnostics;
 
 namespace AvalonDock
 {
-    /// <summary>
-    /// ========================================
-    /// .NET Framework 3.0 Custom Control
-    /// ========================================
-    ///
-    /// Follow steps 1a or 1b and then 2 to use this custom control in a XAML file.
-    ///
-    /// Step 1a) Using this custom control in a XAML file that exists in the current project.
-    /// Add this XmlNamespace attribute to the root element of the markup file where it is 
-    /// to be used:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:AvalonDock"
-    ///
-    ///
-    /// Step 1b) Using this custom control in a XAML file that exists in a different project.
-    /// Add this XmlNamespace attribute to the root element of the markup file where it is 
-    /// to be used:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:AvalonDock;assembly=AvalonDock"
-    ///
-    /// You will also need to add a project reference from the project where the XAML file lives
-    /// to this project and Rebuild to avoid compilation errors:
-    ///
-    ///     Right click on the target project in the Solution Explorer and
-    ///     "Add Reference"->"Projects"->[Browse to and select this project]
-    ///
-    ///
-    /// Step 2)
-    /// Go ahead and use your control in the XAML file. Note that Intellisense in the
-    /// XML editor does not currently work on custom controls and its child elements.
-    ///
-    ///     <MyNamespace:DockablePaneAnchorTab/>
-    ///
-    /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class DockablePaneAnchorTab : System.Windows.Controls.Control, INotifyPropertyChanged
     {
@@ -87,7 +53,7 @@ namespace AvalonDock
         public DockableContent ReferencedContent
         {
             get { return (DockableContent)GetValue(ReferencedContentPropertyKey.DependencyProperty); }
-            internal set { SetValue(ReferencedContentPropertyKey, value); }
+            set { SetValue(ReferencedContentPropertyKey, value); }
         }
 
         // Using a DependencyProperty as the backing store for DockableContent.  This enables animation, styling, binding, etc...
@@ -99,11 +65,12 @@ namespace AvalonDock
         {
             if (e.Property == ReferencedContentPropertyKey.DependencyProperty)
             {
-                if (((DockablePaneAnchorTab)depObj).PropertyChanged != null)
+                DockablePaneAnchorTab _this = depObj as DockablePaneAnchorTab;
+                if (_this.PropertyChanged != null)
                 {
-                    ((DockablePaneAnchorTab)depObj).PropertyChanged(depObj, new PropertyChangedEventArgs("Anchor"));
-                    ((DockablePaneAnchorTab)depObj).PropertyChanged(depObj, new PropertyChangedEventArgs("Icon"));
-                    ((DockablePaneAnchorTab)depObj).PropertyChanged(depObj, new PropertyChangedEventArgs("ReferencedContent"));
+                    _this.PropertyChanged(depObj, new PropertyChangedEventArgs("Anchor"));
+                    _this.PropertyChanged(depObj, new PropertyChangedEventArgs("Icon"));
+                    _this.PropertyChanged(depObj, new PropertyChangedEventArgs("ReferencedContent"));
                 }
             }
 
@@ -122,9 +89,8 @@ namespace AvalonDock
         protected override void OnMouseMove(MouseEventArgs e)
         {
             if (ReferencedContent != null)
-            {
                 ReferencedContent.Manager.ShowFlyoutWindow(ReferencedContent);
-            }
+
             base.OnMouseMove(e);
         }
 
@@ -140,14 +106,12 @@ namespace AvalonDock
         public static readonly DependencyProperty IconProperty =
             DependencyProperty.Register("Icon", typeof(object), typeof(DockablePaneAnchorTab));
 
-
-
-
-
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+
+
     }
 }

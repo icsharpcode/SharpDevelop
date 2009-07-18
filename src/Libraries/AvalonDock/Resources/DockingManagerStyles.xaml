@@ -8,22 +8,23 @@
         <ResourceDictionary Source="/AvalonDock;component/Resources/Brushes.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
+	<!--DockablePaneAnchorTab-->
     <Style TargetType="{x:Type ad:DockablePaneAnchorTab}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ad:DockablePaneAnchorTab}">
                     <Grid>
                         <Border 
-                          Name="PART_Border" CornerRadius="0,0,3,3" BorderThickness="1"
-                          BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}"
-                          Background="{StaticResource ManagedContentTabItemNormalBackground}">
+							  Name="PART_Border" CornerRadius="0,0,3,3" BorderThickness="1"
+							  BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}"
+							  Background="{StaticResource ManagedContentTabItemNormalBackground}">
                             <StackPanel Orientation="Horizontal">
                                 <ad:AlignedImage>
 									<Border Width="16" Height="16">
 										<Border.Background>
 											<VisualBrush Stretch="None" Visual="{Binding Path=ReferencedContent.Icon, RelativeSource={RelativeSource TemplatedParent}}"/>
 										</Border.Background>
-                                </Border>
+									</Border>
                                 </ad:AlignedImage>
 								<TextBlock 
                                     Text="{Binding Path=ReferencedContent.Title, RelativeSource={RelativeSource TemplatedParent}}"  
@@ -65,24 +66,25 @@
                             <Setter Property="VerticalAlignment" Value="Top" TargetName="HighlightBorder"/>
                         </Trigger>
 
-
-                        
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Visibility" Value="Visible" TargetName="HighlightBorder"/>
                         </Trigger>
-
-
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="{x:Type ad:DockablePaneAnchorTabGroup}">
+   
+	<!--DockablePaneAnchorTabGroup-->
+	<Style TargetType="{x:Type ad:DockablePaneAnchorTabGroup}">
         <Setter Property="Orientation" Value="Horizontal"/>
         <Setter Property="Margin" Value="3,0,0,0"/>
     </Style>
+	
+	<!--DockingManager-->
     <Style TargetType="{x:Type ad:DockingManager}">
 		<Setter Property="Background" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}"/>
+		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
 		<Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ad:DockingManager}">

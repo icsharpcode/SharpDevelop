@@ -4,14 +4,10 @@
     xmlns:ad="clr-namespace:AvalonDock"
     >
 
-
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/AvalonDock;component/Resources/Brushes.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     
-    
-    <!--<ad:FindResourcePathConverter x:Key="resourcePathConverter"/>-->
-
     <ContextMenu
 		     x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type ad:DockingManager}, ResourceId={x:Static ad:ContextMenuElement.FloatingWindow}}">
         <MenuItem Command="ad:FloatingWindow.SetAsFloatingWindowCommand"/>
@@ -20,8 +16,9 @@
         <MenuItem Command="ad:FloatingWindow.CloseCommand"/>
     </ContextMenu>
 
+	<!--ResizingPanelSplitter-->
     <Style TargetType="{x:Type ad:ResizingPanelSplitter}">
-        <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}"/>
+		<Setter Property="Background" Value="Transparent" /> <!--{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}"/>-->
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ad:ResizingPanelSplitter}">
@@ -41,7 +38,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 
     <Style x:Key="PaneHeaderCommandStyle" TargetType="{x:Type Button}">
         <Setter Property="Template">
@@ -96,8 +92,4 @@
 
         </Style.Triggers>
    </Style>
-
-    
-
-    
 </ResourceDictionary>

@@ -72,6 +72,10 @@ namespace AvalonDock
             SelectedItem = this.Items[0];
         }
 
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+        }
 
         internal void RestoreOriginalPane()
         {

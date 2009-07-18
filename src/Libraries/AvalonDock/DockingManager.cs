@@ -41,6 +41,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using System.Linq;
+using System.Collections;
+using System.Collections.Specialized;
 
 namespace AvalonDock
 {
@@ -168,6 +170,29 @@ namespace AvalonDock
 
         bool _OnApplyTemplateFlag = false;
 
+
+        Panel ReplaceAnchorTabPanel(Panel oldPanel, Panel newPanel)
+        {
+            if (oldPanel == null)
+            {
+                _anchorTabPanels.Add(newPanel);
+                return newPanel;
+            }
+            else
+            {
+                _anchorTabPanels.Remove(oldPanel);
+                while (oldPanel.Children.Count > 0)
+                {
+                    UIElement tabToTransfer = oldPanel.Children[0];
+                    oldPanel.Children.RemoveAt(0);
+
+                    newPanel.Children.Add(tabToTransfer);
+                }
+                _anchorTabPanels.Add(newPanel);
+
+                return newPanel;
+            }
+        }
         
         /// <summary>
         /// Overriden to get a reference to underlying template elements
@@ -176,24 +201,28 @@ namespace AvalonDock
         {
             base.OnApplyTemplate();
 
-            _leftAnchorTabPanel = GetTemplateChild("PART_LeftAnchorTabPanel") as Panel;
-            _rightAnchorTabPanel = GetTemplateChild("PART_RightAnchorTabPanel") as Panel;
-            _topAnchorTabPanel = GetTemplateChild("PART_TopAnchorTabPanel") as Panel;
-            _bottomAnchorTabPanel = GetTemplateChild("PART_BottomAnchorTabPanel") as Panel;
+            Panel leftPanel = GetTemplateChild("PART_LeftAnchorTabPanel") as Panel;
+            if (leftPanel == null)
+                throw new ArgumentException("PART_LeftAnchorTabPanel template child element not fount!");
 
-            if (_leftAnchorTabPanel != null)
-                _anchorTabPanels.Add(_leftAnchorTabPanel);
-            if (_rightAnchorTabPanel != null)
-                _anchorTabPanels.Add(_rightAnchorTabPanel);
-            if (_topAnchorTabPanel != null)
-                _anchorTabPanels.Add(_topAnchorTabPanel);
-            if (_bottomAnchorTabPanel != null)
-                _anchorTabPanels.Add(_bottomAnchorTabPanel);
+            Panel rightPanel = GetTemplateChild("PART_RightAnchorTabPanel") as Panel;
+            if (rightPanel == null)
+                throw new ArgumentException("PART_RightAnchorTabPanel template child element not fount!");
 
-            System.Diagnostics.Debug.Assert(_leftAnchorTabPanel != null);
-            System.Diagnostics.Debug.Assert(_rightAnchorTabPanel != null);
-            System.Diagnostics.Debug.Assert(_topAnchorTabPanel != null);
-            System.Diagnostics.Debug.Assert(_bottomAnchorTabPanel != null);
+            Panel topPanel = GetTemplateChild("PART_TopAnchorTabPanel") as Panel;
+            if (topPanel == null)
+                throw new ArgumentException("PART_TopAnchorTabPanel template child element not fount!");
+
+            Panel bottomPanel = GetTemplateChild("PART_BottomAnchorTabPanel") as Panel;
+            if (bottomPanel == null)
+                throw new ArgumentException("PART_BottomAnchorTabPanel template child element not fount!");
+
+
+            _leftAnchorTabPanel = ReplaceAnchorTabPanel(_leftAnchorTabPanel, leftPanel);
+            _rightAnchorTabPanel = ReplaceAnchorTabPanel(_rightAnchorTabPanel, rightPanel);
+            _topAnchorTabPanel = ReplaceAnchorTabPanel(_topAnchorTabPanel, topPanel);
+            _bottomAnchorTabPanel = ReplaceAnchorTabPanel(_bottomAnchorTabPanel, bottomPanel);
+            
             _OnApplyTemplateFlag = true;
         }
 
@@ -213,9 +242,21 @@ namespace AvalonDock
             }
             set
             {
+                //Debug.WriteLine(string.Format("SetActiveDocument to '{0}'", value != null ? value.Name : "null"));
+
                 if (_activeDocument != value/* &&
                     value.ContainerPane is DocumentPane*/)
                 {
+                    if (value != null &&
+                        (value.FindVisualAncestor<DocumentPane>(false) == null &&
+                        !(value is DocumentContent))
+                        )
+                    { 
+                        //value is not contained in a document pane/ documentfloatingwindow so cant be the active document!
+                        return;
+                    }
+
+
                     List<ManagedContent> listOfAllDocuments = FindContents<ManagedContent>();
                     listOfAllDocuments.ForEach((ManagedContent cnt) =>
                         {
@@ -242,6 +283,7 @@ namespace AvalonDock
             }
             internal set
             {
+                //Debug.WriteLine(string.Format("SetActiveContent to '{0}'", value != null ? value.Name : "null"));
                 ActiveDocument = value;
 
                 if (_activeContent != value)
@@ -321,6 +363,85 @@ namespace AvalonDock
                 return FindContents<DocumentContent>().ToArray<DocumentContent>();
             }
         }
+
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Bindable(true)]
+        public IEnumerable DocumentsSource
+        {
+            get { return (IEnumerable)GetValue(DocumentsSourceProperty); }
+            set { SetValue(DocumentsSourceProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for DocumentsSource.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DocumentsSourceProperty =
+            DependencyProperty.Register("DocumentsSource", typeof(IEnumerable), typeof(DockingManager), new UIPropertyMetadata(null, new PropertyChangedCallback((s, e) => ((DockingManager)s).OnDocumentsSourceChanged(e.OldValue as IEnumerable, e.NewValue as IEnumerable))));
+
+
+        void OnDocumentsSourceChanged(IEnumerable oldSource, IEnumerable newSource)
+        {
+            if (oldSource != null)
+            {
+                INotifyCollectionChanged oldSourceNotityIntf = oldSource as INotifyCollectionChanged;
+                if (oldSourceNotityIntf != null)
+                    oldSourceNotityIntf.CollectionChanged -= new NotifyCollectionChangedEventHandler(DocumentsSourceCollectionChanged);
+            }
+
+            if (newSource != null)
+            {
+                INotifyCollectionChanged newSourceNotityIntf = newSource as INotifyCollectionChanged;
+                if (newSourceNotityIntf != null)
+                    newSourceNotityIntf.CollectionChanged += new NotifyCollectionChangedEventHandler(DocumentsSourceCollectionChanged);
+            }
+        }
+
+        void DocumentsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                DocumentContent[] docs = this.Documents;
+
+                foreach (DocumentContent doc in docs)
+                    doc.Close();
+            }
+
+            if (MainDocumentPane == null)
+                return;
+
+            if (e.Action == NotifyCollectionChangedAction.Remove ||
+                e.Action == NotifyCollectionChangedAction.Replace)
+            {
+                foreach (object newDoc in e.OldItems)
+                {
+                    if (newDoc is DocumentContent)
+                        (newDoc as DocumentContent).InternalClose();
+                    else if (newDoc is FrameworkElement)
+                    {
+                        DocumentContent docContainer = ((FrameworkElement)newDoc).Parent as DocumentContent;
+                        if (docContainer != null)
+                            docContainer.InternalClose();
+                    }
+                }
+            }
+
+            if (e.Action == NotifyCollectionChangedAction.Add ||
+                e.Action == NotifyCollectionChangedAction.Replace)
+            {
+                foreach (object newDoc in e.NewItems)
+                {
+                    if (newDoc is DocumentContent)
+                        MainDocumentPane.Items.Add(newDoc);
+                    else if (newDoc is FrameworkElement) //limit objects to be at least framework elements
+                    {
+                        DocumentContent docContainer = new DocumentContent();
+                        docContainer.Content = newDoc;
+
+                        MainDocumentPane.Items.Add(docContainer);
+                    }
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// Returns the main document pane
@@ -403,7 +524,25 @@ namespace AvalonDock
             internal set
             {
                 if (_mainDocumentPane == null)
+                {
                     _mainDocumentPane = value;
+
+                    if (DocumentsSource != null)
+                    {
+                        foreach (object newDoc in DocumentsSource)
+                        {
+                            if (newDoc is DocumentContent)
+                                MainDocumentPane.Items.Add(newDoc);
+                            else if (newDoc is FrameworkElement) //limit objects to be at least framework elements
+                            {
+                                DocumentContent docContainer = new DocumentContent();
+                                docContainer.Content = newDoc;
+
+                                MainDocumentPane.Items.Add(docContainer);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -586,7 +725,8 @@ namespace AvalonDock
         {
             if (navigatorWindow != null)
             {
-                navigatorWindow.Hide();
+                navigatorWindow.Close();
+                navigatorWindow = null;
             }
         }
 
@@ -1497,8 +1637,11 @@ namespace AvalonDock
                 _hiddenContents.Add(content);
             }
 
-            //if (ActiveContent == content)
-            //    ActiveContent = null;
+            if (ActiveDocument == content)
+                ActiveDocument = null;
+
+            if (ActiveContent == content)
+                ActiveContent = null;
         }
 
         /// <summary>
@@ -1923,7 +2066,7 @@ namespace AvalonDock
             _flyoutWindow = new FlyoutPaneWindow(this, content);
             _flyoutWindow.Owner = parentWindow;
             _flyoutWindow.FlowDirection = this.FlowDirection;
-            
+
             UpdateFlyoutWindowPosition(true);
 
             _flyoutWindow.Closing += new System.ComponentModel.CancelEventHandler(_flyoutWindow_Closing);
@@ -1955,6 +2098,8 @@ namespace AvalonDock
         {
             if (_flyoutWindow == null)
                 return;
+
+            Debug.WriteLine("_leftAnchorTabPanel " + _leftAnchorTabPanel.ActualWidth + " - " + _leftAnchorTabPanel.Children.Count);
 
             double leftTabsWidth = FlowDirection == FlowDirection.LeftToRight ? _leftAnchorTabPanel.ActualWidth : _rightAnchorTabPanel.ActualWidth;
             double rightTabsWidth = FlowDirection == FlowDirection.LeftToRight ? _rightAnchorTabPanel.ActualWidth : _leftAnchorTabPanel.ActualWidth;
@@ -2338,6 +2483,7 @@ namespace AvalonDock
         void SaveLayout(XmlWriter xmlWriter, DockableContent content)
         {
             Debug.Assert(!string.IsNullOrEmpty(content.Name));
+
             if (!string.IsNullOrEmpty(content.Name))
             {
                 xmlWriter.WriteStartElement("DockableContent");
@@ -2937,6 +3083,26 @@ namespace AvalonDock
             OnDocumentClosed();
         }
 
+
+        public event EventHandler<RequestDocumentCloseEventArgs> RequestDocumentClose;
+
+        internal bool FireRequestDocumentCloseEvent(DocumentContent doc)
+        {
+            bool res = false;
+
+            if (RequestDocumentClose != null)
+            {
+                RequestDocumentCloseEventArgs args = new RequestDocumentCloseEventArgs(doc);
+                RequestDocumentClose(this, args);
+                res = !args.Cancel;
+            }
+
+            return res;
+        }
+
+
         #endregion
+
+
     }
 }

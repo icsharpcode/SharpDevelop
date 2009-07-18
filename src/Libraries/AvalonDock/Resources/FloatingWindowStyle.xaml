@@ -8,6 +8,7 @@
     </ResourceDictionary.MergedDictionaries>
 
 
+	<!--DockableFloatingWindow-->
     <Style TargetType="{x:Type ad:DockableFloatingWindow}">
         <Setter Property="Title" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=HostedPane.SelectedItem.Title}"/>
         <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}"/>
@@ -15,15 +16,16 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ad:DockableFloatingWindow}">
                     <Border Background="{TemplateBinding Background}">
-                        <ContentPresenter
-                            ad:ResizingPanel.ResizeWidth="{TemplateBinding ad:ResizingPanel.ResizeWidth}"
-                            ad:ResizingPanel.ResizeHeight="{TemplateBinding ad:ResizingPanel.ResizeHeight}"/>
+						<ContentPresenter/>
+							<!--ad:ResizingPanel.ResizeWidth="{TemplateBinding ad:ResizingPanel.ResizeWidth}"
+                            ad:ResizingPanel.ResizeHeight="{TemplateBinding ad:ResizingPanel.ResizeHeight}"/>-->
                     </Border><!---->
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+	<!--DocumentFloatingWindow-->
     <Style TargetType="{x:Type ad:DocumentFloatingWindow}">
         <Setter Property="Background" Value = "Transparent"/>
         <Setter Property="Width" Value="100"/>
@@ -55,21 +57,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type ad:FloatingDockablePane}">
-        <Setter Property="ShowHeader" Value="False"/>
-        <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ad:FloatingDockablePane}">
-                    <Border Background="{TemplateBinding Background}">
-                        <ContentPresenter />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    
+    <!--FlyoutPaneWindow-->
     <Style TargetType="{x:Type ad:FlyoutPaneWindow}">
         <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}"/>
         <Setter Property="Template">
@@ -120,84 +108,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <!--<Style TargetType="{x:Type ad:FlyoutPaneWindow}">
-        <Style.Resources>
-            <Storyboard x:Key="ClosingStoryboard">
-                
-                <DoubleAnimation
-                            Storyboard.TargetName="{x:Null}"
-                            Storyboard.TargetProperty="(ad:ResizingPanel.ResizeHeight)"
-                            To="0" Duration="0:0:0.200" />
-                <DoubleAnimation
-                            Storyboard.TargetName="{x:Null}"
-                            Storyboard.TargetProperty="(ad:ResizingPanel.ResizeWidth)"
-                            To="0" Duration="0:0:0.200" />
-                <DoubleAnimation
-                            Storyboard.TargetName="{x:Null}"
-                            Storyboard.TargetProperty="Opacity"
-                            To="0" Duration="0:0:0.200" />
-                <DoubleAnimation
-                            Storyboard.TargetName="{x:Null}"
-                            Storyboard.TargetProperty="Height"
-                            To="0" Duration="0:0:0.200" />
-                <DoubleAnimation
-                            Storyboard.TargetName="{x:Null}"
-                            Storyboard.TargetProperty="Width"
-                            To="0" Duration="0:0:0.200" />
-                <DoubleAnimation
-                            Storyboard.TargetName="{x:Null}"
-                            Storyboard.TargetProperty="Opacity"
-                            To="0" Duration="0:0:0.200" />
-            </Storyboard>
-        </Style.Resources>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ad:FlyoutPaneWindow}">
-                    <ad:ResizingPanel Name="INT_resizePanel" Orientation="Vertical">
-                        <ContentPresenter Name="INT_pane"
-                                          ad:ResizingPanel.ResizeWidth="{TemplateBinding ad:ResizingPanel.ResizeWidth}"
-                                          ad:ResizingPanel.ResizeHeight="{TemplateBinding ad:ResizingPanel.ResizeHeight}"/>
-                        <Border Name="INT_dummySpace" />
-                    </ad:ResizingPanel>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="Anchor" Value="Left" >
-                            
-                            <Setter Property="ad:ResizingPanel.Orientation" Value="Horizontal" TargetName="INT_resizePanel"/>
-                            <Setter Property="ad:ResizingPanel.ResizingDirection" Value="Direct" TargetName="INT_resizePanel"/>
-                        </Trigger>
-                        <Trigger Property="Anchor" Value="Right" >
-                            
-                            <Setter Property="ad:ResizingPanel.Orientation" Value="Horizontal" TargetName="INT_resizePanel"/>
-                            <Setter Property="ad:ResizingPanel.ResizingDirection" Value="Inverse" TargetName="INT_resizePanel"/>
-                        </Trigger>
-                        <Trigger Property="Anchor" Value="Top"  >
-                           
-                            <Setter Property="ad:ResizingPanel.Orientation" Value="Vertical" TargetName="INT_resizePanel"/>
-                            <Setter Property="ad:ResizingPanel.ResizingDirection" Value="Direct" TargetName="INT_resizePanel"/>
-                        </Trigger>
-                        <Trigger Property="Anchor" Value="Bottom" >
-                            
-                            <Setter Property="ad:ResizingPanel.Orientation" Value="Vertical" TargetName="INT_resizePanel"/>
-                            <Setter Property="ad:ResizingPanel.ResizingDirection" Value="Inverse" TargetName="INT_resizePanel"/>
-                        </Trigger>
-                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="INT_pane"
-                                        Storyboard.TargetProperty="(ad:ResizingPanel.ResizeHeight)"
-                                        From="0" Duration="0:0:0.200" />
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="INT_pane"
-                                        Storyboard.TargetProperty="(ad:ResizingPanel.ResizeWidth)"
-                                        From="0" Duration="0:0:0.200" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>-->
 </ResourceDictionary>

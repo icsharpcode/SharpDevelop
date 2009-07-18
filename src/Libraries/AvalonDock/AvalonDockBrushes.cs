@@ -91,6 +91,10 @@ namespace AvalonDock
         DocumentHeaderBackgroundMouseOver,
 
 
+        DocumentHeaderBorder,
+
+        DocumentHeaderBorder2,
+
         NavigatorWindowTopBackground,
         
         NavigatorWindowTitleForeground,

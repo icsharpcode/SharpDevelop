@@ -64,11 +64,12 @@ namespace AvalonDock
             Size desideredSize = new Size(0, availableSize.Height);
             int i = 1;
 
-            foreach (UIElement child in Children)
+            foreach (ManagedContent child in Children)
             {
                 Panel.SetZIndex(child, Selector.GetIsSelected(child)?1:-i);
                 i++;
-
+                child.Width = double.NaN;
+                child.Height = double.NaN;
                 child.Measure(new Size(double.PositiveInfinity, availableSize.Height));
                 desideredSize.Width += child.DesiredSize.Width;
             }

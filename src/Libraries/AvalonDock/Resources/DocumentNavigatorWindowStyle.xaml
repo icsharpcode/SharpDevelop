@@ -8,6 +8,7 @@
         <ResourceDictionary Source="/AvalonDock;component/Resources/Common.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
+	<!--DocumentNavigatorWindow-->
     <Style TargetType="{x:Type ad:DocumentNavigatorWindow}">
         <Style.Resources>
             <Style x:Key="listItemStyle" TargetType="ListBoxItem">

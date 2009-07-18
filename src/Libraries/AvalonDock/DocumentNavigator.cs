@@ -57,7 +57,7 @@ namespace AvalonDock
         void OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Tab)
-                Close();//Hide();
+                CloseThisWindow();//Hide();
             else
             {
                 e.Handled = true;
@@ -68,11 +68,18 @@ namespace AvalonDock
         void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Tab)
-                Close();//Hide();
+                CloseThisWindow();//Hide();
             else
             {
                 e.Handled = true;
             }
+        }
+
+        void CloseThisWindow()
+        {
+            Window wndParent = this.Owner;
+            Close();
+            wndParent.Activate();
         }
 
         DockingManager _manager;
@@ -133,7 +140,7 @@ namespace AvalonDock
             }
 
             if (!_isClosing)
-                Close();// Hide();
+                CloseThisWindow();// Hide();
 
             base.OnDeactivated(e);
         }
@@ -180,7 +187,7 @@ namespace AvalonDock
                     NotifyPropertyChanged("SelectedContent");
 
                     if (!_internalSelect && _selectedContent != null)
-                        Close();//Hide();
+                        CloseThisWindow();//Hide();
                     
                     if (_internalSelect && _itemsControl != null)
                         _itemsControl.ScrollIntoView(_selectedContent);

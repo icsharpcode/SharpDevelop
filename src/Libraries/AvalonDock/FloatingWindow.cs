@@ -386,8 +386,6 @@ namespace AvalonDock
                 e.CanExecute = IsDockableWindow;
             else
                 e.CanExecute = true;
-
-
         }
         #endregion
 

@@ -48,7 +48,7 @@ using System.Threading;
 namespace AvalonDock
 {
     [ContentPropertyAttribute("ReferencedPane")]
-    internal class FlyoutPaneWindow : System.Windows.Window
+    public class FlyoutPaneWindow : System.Windows.Window
     {
         static FlyoutPaneWindow()
         {
@@ -255,7 +255,7 @@ namespace AvalonDock
 
         FlyoutDockablePane _refPane;
 
-        public FlyoutDockablePane ReferencedPane
+        internal FlyoutDockablePane ReferencedPane
         {
             get { return _refPane; }
             //set 

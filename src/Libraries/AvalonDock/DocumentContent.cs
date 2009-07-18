@@ -52,12 +52,12 @@ namespace AvalonDock
 
         static DocumentContent()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(DocumentContent), new FrameworkPropertyMetadata(typeof(DocumentContent)));
+            //DefaultStyleKeyProperty.OverrideMetadata(typeof(DocumentContent), new FrameworkPropertyMetadata(typeof(DocumentContent)));
 
-            Control.WidthProperty.OverrideMetadata(typeof(DocumentContent),
-                new FrameworkPropertyMetadata(new PropertyChangedCallback(OnSizePropertyChanged), new CoerceValueCallback(CourceSizeToNaN)));
-            Control.HeightProperty.OverrideMetadata(typeof(DocumentContent),
-                new FrameworkPropertyMetadata(new PropertyChangedCallback(OnSizePropertyChanged), new CoerceValueCallback(CourceSizeToNaN)));
+            //Control.WidthProperty.OverrideMetadata(typeof(DocumentContent),
+            //    new FrameworkPropertyMetadata(new PropertyChangedCallback(OnSizePropertyChanged), new CoerceValueCallback(CourceSizeToNaN)));
+            //Control.HeightProperty.OverrideMetadata(typeof(DocumentContent),
+            //    new FrameworkPropertyMetadata(new PropertyChangedCallback(OnSizePropertyChanged), new CoerceValueCallback(CourceSizeToNaN)));
         }
 
         public DocumentContent()
@@ -88,7 +88,8 @@ namespace AvalonDock
 
         static object CourceSizeToNaN(DependencyObject sender, object value)
         {
-            return double.NaN;
+            //return double.NaN;
+            return value;
         }
 
         string _infoTip;
@@ -189,6 +190,32 @@ namespace AvalonDock
         }
 
         /// <summary>
+        /// Close this content without notifications
+        /// </summary>
+        internal void InternalClose()
+        {
+            DocumentPane parentPane = ContainerPane as DocumentPane;
+            DockingManager manager = Manager;
+
+            if (parentPane != null)
+            {
+                parentPane.Items.Remove(this);
+
+                parentPane.CheckContentsEmpty();
+            }
+
+
+            if (manager != null)
+            {
+                if (manager.ActiveDocument == this)
+                    manager.ActiveDocument = null;
+
+                if (manager.ActiveContent == this)
+                    manager.ActiveContent = null;
+            }
+        }
+
+        /// <summary>
         /// Close this document removing it from its parent container
         /// </summary>
         /// <remarks>Use this function to close a document and remove it from its parent container. Please note
@@ -198,33 +225,38 @@ namespace AvalonDock
         /// Note:<see cref="DockableContent"/> cannot be closed: AvalonDock simply hide a <see cref="DockableContent"/> removing all the reference to it.
         /// </para>
         /// </remarks>
-        public void Close()
+        public bool Close()
         {
+            //if documents are attached to an external source via DockingManager.DocumentsSource
+            //let application host handle the document closing by itself
+            if (Manager.DocumentsSource != null)
+            {
+                return Manager.FireRequestDocumentCloseEvent(this);
+            }
+
+
             CancelEventArgs e = new CancelEventArgs(false);
             OnClosing(e);
             
             if (e.Cancel)
-                return;
+                return false;
+
+            DockingManager oldManager = Manager;
 
             if (Manager != null)
                 Manager.FireDocumentClosingEvent(e);
 
             if (e.Cancel)
-                return;
+                return false;
 
-            DocumentPane parentPane = ContainerPane as DocumentPane;
-
-            if (parentPane != null)
-            {
-                parentPane.Items.Remove(this);
-
-                parentPane.CheckContentsEmpty();
-            }
+            InternalClose();
 
             OnClosed();
 
-            if (Manager != null)
-                Manager.FireDocumentClosedEvent();
+            if (oldManager != null)
+                oldManager.FireDocumentClosedEvent();
+
+            return true;
         }
      
    

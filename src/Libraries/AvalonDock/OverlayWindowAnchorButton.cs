@@ -74,7 +74,10 @@ namespace AvalonDock
             get
             {
                 if (!IsSurfaceVisible)
-                    return new Rect();
+                    return Rect.Empty;
+
+                if (PresentationSource.FromVisual(_btnDock) == null)
+                    return Rect.Empty;
 
                 return new Rect(HelperFunc.PointToScreenWithoutFlowDirection(_btnDock, new Point()), new Size(_btnDock.ActualWidth, _btnDock.ActualHeight));
             }

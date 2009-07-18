@@ -123,7 +123,7 @@ namespace AvalonDock
         public bool ShowTabs
         {
             get { return (bool)GetValue(ShowTabsProperty); }
-            protected set { SetValue(ShowTabsProperty, value); }
+            set { SetValue(ShowTabsProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for ShowTabs.  This enables animation, styling, binding, etc...

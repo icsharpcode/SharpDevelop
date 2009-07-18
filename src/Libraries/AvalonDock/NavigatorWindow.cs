@@ -141,7 +141,7 @@ namespace AvalonDock
         void OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Tab)
-                Close();//Hide();
+                CloseThisWindow();//Hide();
             else
             {
                 e.Handled = true;
@@ -152,7 +152,7 @@ namespace AvalonDock
         void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Tab)
-                Close();//Hide();
+                CloseThisWindow();//Hide();
             else
             {
                 e.Handled = true;
@@ -229,9 +229,16 @@ namespace AvalonDock
             }
             
             if (!_isClosing)
-                Close();//Hide();
+                CloseThisWindow();//Hide();
 
             base.OnDeactivated(e);
+        }
+
+        void CloseThisWindow()
+        {
+            Window wndParent = this.Owner;
+            Close();
+            wndParent.Activate();
         }
 
         List<NavigatorWindowDocumentItem> _documents = new List<NavigatorWindowDocumentItem>();
