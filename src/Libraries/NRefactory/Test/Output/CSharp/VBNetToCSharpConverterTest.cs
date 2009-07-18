@@ -168,21 +168,21 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void AbstractProperty1()
 		{
 			TestMember("Public MustOverride Property Salary() As Decimal",
-			           "public abstract decimal Salary {\n  get;\n  set;\n}");
+			           "public abstract decimal Salary { get; set; }");
 		}
 		
 		[Test]
 		public void AbstractProperty2()
 		{
 			TestMember("Public ReadOnly MustOverride Property Salary() As Decimal",
-			           "public abstract decimal Salary {\n  get;\n}");
+			           "public abstract decimal Salary { get; }");
 		}
 		
 		[Test]
 		public void AbstractProperty3()
 		{
 			TestMember("Public WriteOnly MustOverride Property Salary() As Decimal",
-			           "public abstract decimal Salary {\n  set;\n}");
+			           "public abstract decimal Salary { set; }");
 		}
 		
 		[Test]
@@ -358,12 +358,10 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("Do \n Loop",
 			              "do {\n" +
-			              "}\n" +
-			              "while (true);");
+			              "} while (true);");
 			TestStatement("Do \n Loop Until i = 10000",
 			              "do {\n" +
-			              "}\n" +
-			              "while (!(i == 10000));");
+			              "} while (!(i == 10000));");
 		}
 		
 		[Test]
@@ -615,10 +613,7 @@ static int static_Test2_j = 0;");
 			           "public interface ITest\n" +
 			           "{\n" +
 			           "  void Test();\n" +
-			           "  string Name {\n" +
-			           "    get;\n" +
-			           "    set;\n" +
-			           "  }\n" +
+			           "  string Name { get; set; }\n" +
 			           "}");
 		}
 		
@@ -655,10 +650,8 @@ static int static_Test2_j = 0;");
 		{
 			TestStatement("If a Then\nElse If b Then\nElse\nEnd If",
 			              "if (a) {\n" +
-			              "}\n" +
-			              "else if (b) {\n" +
-			              "}\n" +
-			              "else {\n" +
+			              "} else if (b) {\n" +
+			              "} else {\n" +
 			              "}");
 		}
 		

@@ -94,17 +94,19 @@ namespace SearchAndReplace
 			
 			if (info != null && textIterator != null && documentIterator.CurrentFileName != null) {
 				ProvidedDocumentInformation currentInfo = documentIterator.Current;
-				if (!info.Equals(currentInfo)) { // create new iterator, if document changed
-					info         = currentInfo;
-					textIterator = textIteratorBuilder.BuildTextIterator(info);
-				} else { // old document -> initialize iterator position to caret pos
-					textIterator.Position = info.CurrentOffset;
-				}
-				
-				SearchResultMatch result = CreateNamedSearchResult(searchStrategy.FindNext(textIterator));
-				if (result != null) {
-					info.CurrentOffset = textIterator.Position;
-					return result;
+				if (currentInfo != null) {
+					if (!info.Equals(currentInfo)) { // create new iterator, if document changed
+						info         = currentInfo;
+						textIterator = textIteratorBuilder.BuildTextIterator(info);
+					} else { // old document -> initialize iterator position to caret pos
+						textIterator.Position = info.CurrentOffset;
+					}
+					
+					SearchResultMatch result = CreateNamedSearchResult(searchStrategy.FindNext(textIterator));
+					if (result != null) {
+						info.CurrentOffset = textIterator.Position;
+						return result;
+					}
 				}
 			}
 			
@@ -127,17 +129,19 @@ namespace SearchAndReplace
 		{
 			if (info != null && textIterator != null && documentIterator.CurrentFileName != null) {
 				ProvidedDocumentInformation currentInfo = documentIterator.Current;
-				if (!info.Equals(currentInfo)) { // create new iterator, if document changed
-					info         = currentInfo;
-					textIterator = textIteratorBuilder.BuildTextIterator(info);
-				} else { // old document -> initialize iterator position to caret pos
-					textIterator.Position = info.CurrentOffset;
-				}
-				
-				SearchResultMatch result = CreateNamedSearchResult(searchStrategy.FindNext(textIterator, offset, length));
-				if (result != null) {
-					info.CurrentOffset = textIterator.Position;
-					return result;
+				if (currentInfo != null) {
+					if (!info.Equals(currentInfo)) { // create new iterator, if document changed
+						info         = currentInfo;
+						textIterator = textIteratorBuilder.BuildTextIterator(info);
+					} else { // old document -> initialize iterator position to caret pos
+						textIterator.Position = info.CurrentOffset;
+					}
+					
+					SearchResultMatch result = CreateNamedSearchResult(searchStrategy.FindNext(textIterator, offset, length));
+					if (result != null) {
+						info.CurrentOffset = textIterator.Position;
+						return result;
+					}
 				}
 			}
 			

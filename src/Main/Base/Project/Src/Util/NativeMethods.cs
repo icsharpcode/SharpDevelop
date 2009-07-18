@@ -7,8 +7,9 @@
 
 using System;
 using System.IO;
-using System.Security;
 using System.Runtime.InteropServices;
+using System.Security;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop
@@ -109,5 +110,20 @@ namespace ICSharpCode.SharpDevelop
 				throw new IOException("Could not delete file " + fileName + ". Error " + result);
 		}
 		#endregion
+		
+		[DllImport("kernel32.dll")]
+		static extern int GetOEMCP();
+		
+		public static Encoding OemEncoding {
+			get {
+				try {
+					return Encoding.GetEncoding(GetOEMCP());
+				} catch (ArgumentException) {
+					return Encoding.Default;
+				} catch (NotSupportedException) {
+					return Encoding.Default;
+				}
+			}
+		}
 	}
 }

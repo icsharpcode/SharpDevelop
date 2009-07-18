@@ -20,6 +20,12 @@ namespace ICSharpCode.SharpDevelop.Util
 	/// </summary>
 	public class ProcessRunner : IDisposable
 	{
+		public static Encoding OemEncoding {
+			get {
+				return NativeMethods.OemEncoding;
+			}
+		}
+		
 		Process process;
 		StringBuilder standardOutput = new StringBuilder();
 		StringBuilder standardError = new StringBuilder();
@@ -153,13 +159,17 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// pass to the command.</param>
 		public void Start(string command, string arguments)
 		{
+			Encoding encoding = OemEncoding;
+			
 			process = new Process();
 			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.FileName = command;
 			process.StartInfo.WorkingDirectory = WorkingDirectory;
 			process.StartInfo.RedirectStandardOutput = true;
+			process.StartInfo.StandardOutputEncoding = encoding;
 			process.OutputDataReceived += OnOutputLineReceived;
 			process.StartInfo.RedirectStandardError = true;
+			process.StartInfo.StandardErrorEncoding = encoding;
 			process.ErrorDataReceived += OnErrorLineReceived;
 			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.Arguments = arguments;

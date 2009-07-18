@@ -36,6 +36,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(1, td.BodyStartLocation.Line, "BodyStartLocation.Y");
 			Assert.AreEqual(14, td.BodyStartLocation.Column, "BodyStartLocation.X");
 			Assert.AreEqual(3, td.EndLocation.Line, "EndLocation.Y");
+			Assert.AreEqual(2, td.EndLocation.Column, "EndLocation.Y");
 		}
 		
 		[Test]
@@ -194,6 +195,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			Assert.AreEqual(1, td.BodyStartLocation.Line, "bodystart line");
 			Assert.AreEqual(16, td.BodyStartLocation.Column, "bodystart col");
 			Assert.AreEqual(2, td.EndLocation.Line, "end line");
+			Assert.AreEqual(10, td.EndLocation.Column, "end col");
 		}
 		
 		[Test]

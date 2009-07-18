@@ -69,7 +69,7 @@ namespace ICSharpCode.FiletypeRegisterer {
 					if (extKey != null)
 						clsKeyName = (string)extKey.GetValue("Progid", "");
 				}
-				if (clsKeyName == null) {
+				if (string.IsNullOrEmpty(clsKeyName)) {
 					using (RegistryKey extKey = Registry.ClassesRoot.OpenSubKey("." + extension)) {
 						if (extKey != null)
 							clsKeyName = (string)extKey.GetValue("", "");

@@ -765,7 +765,7 @@ templates);
 			}
 
 #line  390 "cs.ATG" 
-			newType.EndLocation = t.Location; 
+			newType.EndLocation = t.EndLocation; 
 			compilationUnit.BlockEnd();
 			
 		} else if (StartOf(9)) {
@@ -814,7 +814,7 @@ templates);
 				}
 
 #line  414 "cs.ATG" 
-				newType.EndLocation = t.Location; 
+				newType.EndLocation = t.EndLocation; 
 				compilationUnit.BlockEnd();
 				
 			} else if (la.kind == 83) {
@@ -859,7 +859,7 @@ templates);
 				}
 
 #line  437 "cs.ATG" 
-				newType.EndLocation = t.Location; 
+				newType.EndLocation = t.EndLocation; 
 				compilationUnit.BlockEnd();
 				
 			} else if (la.kind == 68) {
@@ -894,7 +894,7 @@ out name);
 				}
 
 #line  452 "cs.ATG" 
-				newType.EndLocation = t.Location; 
+				newType.EndLocation = t.EndLocation; 
 				compilationUnit.BlockEnd();
 				
 			} else {
@@ -947,7 +947,7 @@ templates);
 				Expect(11);
 
 #line  474 "cs.ATG" 
-				delegateDeclr.EndLocation = t.Location;
+				delegateDeclr.EndLocation = t.EndLocation;
 				compilationUnit.AddChild(delegateDeclr);
 				
 			}

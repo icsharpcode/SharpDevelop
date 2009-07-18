@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	}
 	
 	/// <summary>
-	/// Opens the containing folder in the clipboard.
+	/// Opens the folder containing the selected file.
 	/// </summary>
 	public class OpenFolderContainingFile : AbstractMenuCommand
 	{
@@ -111,8 +111,30 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public static void OpenContainingFolderInExplorer(string fileName)
 		{
-			if (File.Exists(fileName)) {
+			if (fileName != null && File.Exists(fileName)) {
 				Process.Start("explorer", "/select,\"" + fileName + "\"");
+			}
+		}
+	}
+	
+	/// <summary>
+	/// Opens the selected folder in Explorer.
+	/// </summary>
+	public class OpenFolder : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			DirectoryNode directoryNode = ProjectBrowserPad.Instance.SelectedNode as DirectoryNode;
+			if (directoryNode != null) {
+				OpenFolderInExplorer(directoryNode.Directory);
+				return;
+			}
+		}
+		
+		public static void OpenFolderInExplorer(string directory)
+		{
+			if (directory != null && Directory.Exists(directory)) {
+				Process.Start(directory);
 			}
 		}
 	}

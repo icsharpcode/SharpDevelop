@@ -21,22 +21,22 @@ namespace SearchAndReplace
 	{
 		public static SearchAndReplaceDialog SearchAndReplaceDialog = null;
 		
-		static Search find                  = new Search();
+		static Search find = new Search();
 		
 		static SearchReplaceManager()
 		{
 			find.TextIteratorBuilder = new ForwardTextIteratorBuilder();
 		}
 		
-		static void SetSearchOptions()
+		static void SetSearchOptions(IProgressMonitor monitor)
 		{
 			find.SearchStrategy   = SearchReplaceUtilities.CreateSearchStrategy(SearchOptions.SearchStrategyType);
-			find.DocumentIterator = SearchReplaceUtilities.CreateDocumentIterator(SearchOptions.DocumentIteratorType);
+			find.DocumentIterator = SearchReplaceUtilities.CreateDocumentIterator(SearchOptions.DocumentIteratorType, monitor);
 		}
 		
 		public static void Replace(IProgressMonitor monitor)
 		{
-			SetSearchOptions();
+			SetSearchOptions(monitor);
 			if (lastResult != null) {
 				ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 				if (provider != null) {
@@ -62,7 +62,7 @@ namespace SearchAndReplace
 		
 		public static void ReplaceFirstInSelection(int offset, int length, IProgressMonitor monitor)
 		{
-			SetSearchOptions();
+			SetSearchOptions(monitor);
 			FindFirstInSelection(offset, length, monitor);
 		}
 		
@@ -93,7 +93,7 @@ namespace SearchAndReplace
 		
 		public static void MarkAll(IProgressMonitor monitor)
 		{
-			SetSearchOptions();
+			SetSearchOptions(monitor);
 			ClearSelection();
 			find.Reset();
 			if (!find.SearchStrategy.CompilePattern(monitor))
@@ -115,7 +115,7 @@ namespace SearchAndReplace
 		
 		public static void MarkAll(int offset, int length, IProgressMonitor monitor)
 		{
-			SetSearchOptions();
+			SetSearchOptions(monitor);
 			find.Reset();
 			
 			if (!find.SearchStrategy.CompilePattern(monitor))
@@ -160,7 +160,8 @@ namespace SearchAndReplace
 				ShowNotFoundMessage(monitor);
 			} else {
 				if (monitor != null) monitor.ShowingDialog = true;
-				MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}", "${res:Global.FinishedCaptionText}");
+				MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}", new string[,]{{ "Count", count.ToString() }}),
+				                           "${res:Global.FinishedCaptionText}");
 				if (monitor != null) monitor.ShowingDialog = false;
 			}
 		}
@@ -171,14 +172,15 @@ namespace SearchAndReplace
 				ShowNotFoundMessage(monitor);
 			} else {
 				if (monitor != null) monitor.ShowingDialog = true;
-				MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}", "${res:Global.FinishedCaptionText}");
+				MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}", new string[,]{{ "Count", count.ToString() }}),
+				                           "${res:Global.FinishedCaptionText}");
 				if (monitor != null) monitor.ShowingDialog = false;
 			}
 		}
 		
 		public static void ReplaceAll(IProgressMonitor monitor)
 		{
-			SetSearchOptions();
+			SetSearchOptions(monitor);
 			ClearSelection();
 			find.Reset();
 			if (!find.SearchStrategy.CompilePattern(monitor))
@@ -225,7 +227,7 @@ namespace SearchAndReplace
 		
 		public static void ReplaceAll(int offset, int length, IProgressMonitor monitor)
 		{
-			SetSearchOptions();
+			SetSearchOptions(monitor);
 			find.Reset();
 			
 			if (!find.SearchStrategy.CompilePattern(monitor))
@@ -256,7 +258,7 @@ namespace SearchAndReplace
 		
 		public static void FindNext(IProgressMonitor monitor)
 		{
-			SetSearchOptions();
+			SetSearchOptions(monitor);
 			if (find == null ||
 			    SearchOptions.FindPattern == null ||
 			    SearchOptions.FindPattern.Length == 0) {
@@ -300,7 +302,7 @@ namespace SearchAndReplace
 		{
 			foundAtLeastOneItem = false;
 			textSelection = null;
-			SetSearchOptions();
+			SetSearchOptions(monitor);
 			
 			if (find == null ||
 			    SearchOptions.FindPattern == null ||

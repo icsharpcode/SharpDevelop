@@ -44,6 +44,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public PrettyPrintOptions Options {
 			get { return prettyPrintOptions; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException();
+				prettyPrintOptions = value;
+			}
 		}
 		
 		public IOutputFormatter OutputFormatter {
@@ -589,13 +594,42 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintIdentifier(propertyDeclaration.Name);
 			
-			outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle, this.prettyPrintOptions.IndentPropertyBody);
+			OutputGetAndSetRegion(propertyDeclaration.GetRegion, propertyDeclaration.SetRegion);
 			
-			TrackVisit(propertyDeclaration.GetRegion, data);
-			TrackVisit(propertyDeclaration.SetRegion, data);
-			
-			outputFormatter.EndBrace(this.prettyPrintOptions.IndentPropertyBody);
 			return null;
+		}
+		
+		void OutputGetAndSetRegion(PropertyGetRegion getRegion, PropertySetRegion setRegion)
+		{
+			BraceStyle braceStyle = this.prettyPrintOptions.PropertyBraceStyle;
+			
+			if (getRegion.Block.IsNull && setRegion.Block.IsNull && getRegion.Attributes.Count == 0 && setRegion.Attributes.Count == 0
+			    && (braceStyle == BraceStyle.EndOfLine || braceStyle == BraceStyle.EndOfLineWithoutSpace))
+			{
+				if (braceStyle == BraceStyle.EndOfLine)
+					outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
+				// automatic property / abstract property:
+				// output in a single line: "string Text { get; set; }"
+				if (!getRegion.IsNull) {
+					outputFormatter.Space();
+					OutputModifier(getRegion.Modifier);
+					outputFormatter.PrintText("get;");
+				}
+				if (!setRegion.IsNull) {
+					outputFormatter.Space();
+					OutputModifier(setRegion.Modifier);
+					outputFormatter.PrintText("set;");
+				}
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+				outputFormatter.NewLine();
+			} else {
+				outputFormatter.BeginBrace(braceStyle, this.prettyPrintOptions.IndentPropertyBody);
+				TrackVisit(getRegion, null);
+				TrackVisit(setRegion, null);
+				outputFormatter.EndBrace(this.prettyPrintOptions.IndentPropertyBody);
+			}
 		}
 		
 		public override object TrackedVisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data)
@@ -658,7 +692,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();
 			} else {
-				outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle, this.prettyPrintOptions.IndentEventBody);
+				outputFormatter.BeginBrace(this.prettyPrintOptions.EventBraceStyle, this.prettyPrintOptions.IndentEventBody);
 				TrackVisit(eventDeclaration.AddRegion, data);
 				TrackVisit(eventDeclaration.RemoveRegion, data);
 				outputFormatter.EndBrace(this.prettyPrintOptions.IndentEventBody);
@@ -950,18 +984,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (this.prettyPrintOptions.SpacesWithinBrackets) {
 				outputFormatter.Space();
 			}
+			
 			outputFormatter.PrintToken(Tokens.CloseSquareBracket);
-			outputFormatter.NewLine();
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
+			
+			outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle, this.prettyPrintOptions.IndentPropertyBody);
+			
 			TrackVisit(indexerDeclaration.GetRegion, data);
 			TrackVisit(indexerDeclaration.SetRegion, data);
-			--outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
-			outputFormatter.NewLine();
+			
+			outputFormatter.EndBrace(this.prettyPrintOptions.IndentPropertyBody);
 			return null;
 		}
 		
@@ -1275,6 +1306,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			if (ifElseStatement.HasElseStatements) {
 				if (prettyPrintOptions.PlaceElseOnNewLine) {
+					outputFormatter.NewLine();
 					outputFormatter.Indent();
 				} else {
 					outputFormatter.Space();
@@ -2562,8 +2594,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.LambdaArrow);
-			outputFormatter.Space();
 			if (!lambdaExpression.ExpressionBody.IsNull) {
+				outputFormatter.Space();
 				TrackVisit(lambdaExpression.ExpressionBody, null);
 			}
 			if (!lambdaExpression.StatementBody.IsNull) {

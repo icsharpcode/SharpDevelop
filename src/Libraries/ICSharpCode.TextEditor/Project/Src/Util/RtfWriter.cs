@@ -145,7 +145,7 @@ namespace ICSharpCode.TextEditor.Util
 										printWord = word.Word;
 									}
 									
-									rtf.Append(printWord.Replace(@"\", @"\\").Replace("{", "\\{").Replace("}", "\\}"));
+									AppendText(rtf, printWord);
 								}
 								offset += word.Length;
 								break;
@@ -159,6 +159,32 @@ namespace ICSharpCode.TextEditor.Util
 			}
 			
 			return rtf.ToString();
+		}
+		
+		static void AppendText(StringBuilder rtfOutput, string text)
+		{
+			//rtf.Append(printWord.Replace(@"\", @"\\").Replace("{", "\\{").Replace("}", "\\}"));
+			foreach (char c in text) {
+				switch (c) {
+					case '\\':
+						rtfOutput.Append(@"\\");
+						break;
+					case '{':
+						rtfOutput.Append("\\{");
+						break;
+					case '}':
+						rtfOutput.Append("\\}");
+						break;
+					default:
+						if (c < 256) {
+							rtfOutput.Append(c);
+						} else {
+							// yes, RTF really expects signed 16-bit integers!
+							rtfOutput.Append("\\u" + unchecked((short)c).ToString() + "?");
+						}
+						break;
+				}
+			}
 		}
 	}
 }

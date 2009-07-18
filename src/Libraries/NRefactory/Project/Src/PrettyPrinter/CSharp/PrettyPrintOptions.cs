@@ -351,45 +351,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#endregion
 		
 		#region NewLines
-		bool placeCatchOnNewLine = true;
-		public bool PlaceCatchOnNewLine {
-			get {
-				return placeCatchOnNewLine;
-			}
-			set {
-				placeCatchOnNewLine  = value;
-			}
-		}
-		
-		bool placeFinallyOnNewLine = true;
-		public bool PlaceFinallyOnNewLine {
-			get {
-				return placeFinallyOnNewLine;
-			}
-			set {
-				placeFinallyOnNewLine  = value;
-			}
-		}
-		
-		bool placeElseOnNewLine = true;
-		public bool PlaceElseOnNewLine {
-			get {
-				return placeElseOnNewLine;
-			}
-			set {
-				placeElseOnNewLine  = value;
-			}
-		}
-		
-		bool placeWhileOnNewLine = true;
-		public bool PlaceWhileOnNewLine {
-			get {
-				return placeWhileOnNewLine;
-			}
-			set {
-				placeWhileOnNewLine  = value;
-			}
-		}
+		public bool PlaceCatchOnNewLine { get; set; }
+		public bool PlaceFinallyOnNewLine { get; set; }
+		public bool PlaceElseOnNewLine { get; set; }
+		public bool PlaceWhileOnNewLine { get; set; }
 		#endregion
 		
 		#region Spaces

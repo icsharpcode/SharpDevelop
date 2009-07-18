@@ -635,7 +635,7 @@ namespace VBNetBinding.FormattingStrategy
 			
 			ApplyToRange(textArea, indentation, oldLine, newLine, begin, end);
 			
-			return indentation.Peek().Length;
+			return (indentation.PeekOrDefault() ?? string.Empty).Length;
 		}
 		
 		int GetLastVisualLine(int line, TextArea area)
@@ -650,7 +650,7 @@ namespace VBNetBinding.FormattingStrategy
 
 		void Unindent(Stack<string> indentation)
 		{
-			indentation.Pop();
+			indentation.PopOrDefault();
 		}
 
 		void Indent(TextArea textArea, Stack<string> indentation)
@@ -660,7 +660,7 @@ namespace VBNetBinding.FormattingStrategy
 			
 			string addIndent = (useSpaces) ? new string(' ', indentationSize) : "\t";
 			
-			indentation.Push(indentation.Peek() + addIndent);
+			indentation.Push((indentation.PeekOrDefault() ?? string.Empty) + addIndent);
 		}
 		
 		bool IsBlockStart(ILexer lexer, Token current, Token prev)
@@ -779,7 +779,7 @@ namespace VBNetBinding.FormattingStrategy
 				string noComments = StripComment(lineText).TrimEnd(' ', '\t', '\r', '\n');
 				
 				if (i < selBegin || i > selEnd) {
-					indentation.Pop();
+					indentation.PopOrDefault();
 					indentation.Push(GetIndentation(textArea, i));
 				}
 				
@@ -789,7 +789,7 @@ namespace VBNetBinding.FormattingStrategy
 					multiLine = false;
 				}
 				
-				SmartReplaceLine(textArea.Document, curLine, indentation.Peek() + lineText);
+				SmartReplaceLine(textArea.Document, curLine, (indentation.PeekOrDefault() ?? string.Empty) + lineText);
 				
 				// change indentation afterwards (indent next line)
 				if (!multiLine && noComments.EndsWith("_")) {

@@ -138,15 +138,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			WriteInPreviousLine(txt + Environment.NewLine, forceWriteInPreviousBlock);
 		}
+		protected void WriteLineInPreviousLine(string txt, bool forceWriteInPreviousBlock, bool indent)
+		{
+			WriteInPreviousLine(txt + Environment.NewLine, forceWriteInPreviousBlock, indent);
+		}
 		
 		protected void WriteInPreviousLine(string txt, bool forceWriteInPreviousBlock)
+		{
+			WriteInPreviousLine(txt, forceWriteInPreviousBlock, true);
+		}
+		protected void WriteInPreviousLine(string txt, bool forceWriteInPreviousBlock, bool indent)
 		{
 			if (txt.Length == 0) return;
 			
 			bool lastCharacterWasNewLine = LastCharacterIsNewLine;
 			if (lastCharacterWasNewLine) {
 				if (forceWriteInPreviousBlock == false) {
-					if (txt != Environment.NewLine) Indent();
+					if (indent && txt != Environment.NewLine) Indent();
 					text.Append(txt);
 					lineBeforeLastStart = lastLineStart;
 					lastLineStart = text.Length;
@@ -156,7 +164,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			string lastLine = text.ToString(lastLineStart, text.Length - lastLineStart);
 			text.Remove(lastLineStart, text.Length - lastLineStart);
-			if (txt != Environment.NewLine) {
+			if (indent && txt != Environment.NewLine) {
 				if (forceWriteInPreviousBlock) ++indentationLevel;
 				Indent();
 				if (forceWriteInPreviousBlock) --indentationLevel;

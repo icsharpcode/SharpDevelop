@@ -25,9 +25,14 @@ namespace PythonBinding.Tests.Converter
 						"\t{" +
 						"\t\tbutton = new Button();\r\n" +
 						"\t\tbutton.Click += ButtonClick;\r\n" +
+						"\t\tbutton.MouseDown += self.OnMouseDown;\r\n" +
 						"\t}\r\n" +
 						"\r\n" +
 						"\tvoid ButtonClick(object sender, EventArgs e)\r\n" +
+						"\t{\r\n" +
+						"\t}\r\n" +
+						"\r\n" +
+						"\tvoid OnMouseDown(object sender, EventArgs e)\r\n" +
 						"\t{\r\n" +
 						"\t}\r\n" +
 						"}";
@@ -38,9 +43,13 @@ namespace PythonBinding.Tests.Converter
 			string expectedCode = "class Foo(object):\r\n" +
 									"\tdef __init__(self):\r\n" +
 									"\t\tbutton = Button()\r\n" +
-									"\t\tbutton.Click += ButtonClick\r\n" +
+									"\t\tbutton.Click += self.ButtonClick\r\n" +
+									"\t\tbutton.MouseDown += self.OnMouseDown\r\n" +
 									"\r\n" +
 									"\tdef ButtonClick(self, sender, e):\r\n" +
+									"\t\tpass\r\n" +
+									"\r\n" +
+									"\tdef OnMouseDown(self, sender, e):\r\n" +
 									"\t\tpass";
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string code = converter.Convert(csharp);

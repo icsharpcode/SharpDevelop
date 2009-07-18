@@ -54,7 +54,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public static IDocumentIterator CreateDocumentIterator(DocumentIteratorType type)
+		public static IDocumentIterator CreateDocumentIterator(DocumentIteratorType type, IProgressMonitor monitor)
 		{
 			switch (type) {
 				case DocumentIteratorType.CurrentDocument:
@@ -63,11 +63,15 @@ namespace SearchAndReplace
 				case DocumentIteratorType.Directory:
 					try {
 						if (!Directory.Exists(SearchOptions.LookIn)) {
+							if (monitor != null) monitor.ShowingDialog = true;
 							MessageService.ShowMessageFormatted("${res:Dialog.NewProject.SearchReplace.SearchStringNotFound.Title}", "${res:Dialog.NewProject.SearchReplace.LookIn.DirectoryNotFound}", FileUtility.NormalizePath(SearchOptions.LookIn));
+							if (monitor != null) monitor.ShowingDialog = false;
 							return new DummyDocumentIterator();
 						}
 					} catch (Exception ex) {
+						if (monitor != null) monitor.ShowingDialog = true;
 						MessageService.ShowMessage(ex.Message);
+						if (monitor != null) monitor.ShowingDialog = false;
 						return new DummyDocumentIterator();
 					}
 					return new DirectoryDocumentIterator(SearchOptions.LookIn,

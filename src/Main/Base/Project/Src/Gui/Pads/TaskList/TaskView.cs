@@ -272,6 +272,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			try {
 				path = Path.GetDirectoryName(path);
+				if (Project.ProjectService.OpenSolution != null) {
+					path = FileUtility.GetRelativePath(Project.ProjectService.OpenSolution.Directory, path);
+				}
 			} catch (Exception) {}
 			
 			ListViewItem item = new ListViewItem(new string[] {

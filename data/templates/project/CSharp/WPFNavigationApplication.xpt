@@ -43,7 +43,7 @@
 		
 		<Files>
 			<File name="App.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application x:Class="${StandardNamespace}.App"
-	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	StartupUri="Page1.xaml"
 	>
@@ -71,7 +71,7 @@ namespace ${StandardNamespace}
 	}
 }]]></File>
 			<File name="Page1.xaml" language="XML" buildAction="Page"><![CDATA[<Page x:Class="${StandardNamespace}.Page1"
-	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="Page1"
 	>
