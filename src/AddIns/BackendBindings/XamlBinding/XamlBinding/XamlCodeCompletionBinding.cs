@@ -35,7 +35,7 @@ namespace ICSharpCode.XamlBinding
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			XamlCompletionContext context = CompletionDataHelper.ResolveCompletionContext(editor, ch);
-			ICompletionItemList list;
+			XamlCompletionItemList list;
 			
 			if (context.Description == XamlContextDescription.InComment)
 				return CodeCompletionKeyPressResult.None;
@@ -87,6 +87,7 @@ namespace ICSharpCode.XamlBinding
 					if (context.ActiveElement != null && XmlParser.GetQualifiedAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset) == null) {
 						if (!context.AttributeName.StartsWith("xmlns")) {
 							list = CompletionDataHelper.CreateListForContext(context);
+							list.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
 							editor.ShowCompletionWindow(list);
 							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 						}

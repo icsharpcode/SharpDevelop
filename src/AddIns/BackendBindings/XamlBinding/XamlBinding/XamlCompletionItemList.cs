@@ -18,7 +18,7 @@ using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
-	sealed class XamlCompletionItemList : DefaultCompletionItemList
+	public sealed class XamlCompletionItemList : DefaultCompletionItemList
 	{
 		public XamlCompletionItemList()
 		{

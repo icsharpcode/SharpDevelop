@@ -358,7 +358,7 @@ namespace ICSharpCode.XamlBinding
 			return neededItems.ToList();
 		}
 
-		public static ICompletionItemList CreateListForContext(XamlCompletionContext context)
+		public static XamlCompletionItemList CreateListForContext(XamlCompletionContext context)
 		{
 			XamlCompletionItemList list = new XamlCompletionItemList();
 			
