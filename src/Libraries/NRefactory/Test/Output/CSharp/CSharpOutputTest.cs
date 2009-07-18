@@ -7,10 +7,11 @@
 
 using System;
 using System.IO;
-using NUnit.Framework;
-using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using NUnit.Framework;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 {
@@ -19,10 +20,16 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 	{
 		void TestProgram(string program)
 		{
+			TestProgram(program, new PrettyPrintOptions());
+		}
+		
+		void TestProgram(string program, PrettyPrintOptions options)
+		{
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
+			outputVisitor.Options = options;
 			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(StripWhitespace(program), StripWhitespace(outputVisitor.Text));
@@ -30,17 +37,49 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		
 		internal static string StripWhitespace(string text)
 		{
-			return text.Trim().Replace("\t", "").Replace("\r", "").Replace("\n", " ").Replace("  ", " ");
+			return text.Trim().Replace("\t", "  ").Replace("\r", "");
 		}
 		
 		void TestTypeMember(string program)
 		{
-			TestProgram("class A { " + program + " }");
+			TestTypeMember(program, new PrettyPrintOptions());
+		}
+		
+		void TestTypeMember(string program, PrettyPrintOptions options)
+		{
+			StringBuilder b = new StringBuilder();
+			b.AppendLine("class A");
+			b.AppendLine("{");
+			using (StringReader r = new StringReader(program)) {
+				string line;
+				while ((line = r.ReadLine()) != null) {
+					b.Append("  ");
+					b.AppendLine(line);
+				}
+			}
+			b.AppendLine("}");
+			TestProgram(b.ToString(), options);
 		}
 		
 		void TestStatement(string statement)
 		{
-			TestTypeMember("void Method() { " + statement + " }");
+			TestStatement(statement, new PrettyPrintOptions());
+		}
+		
+		void TestStatement(string statement, PrettyPrintOptions options)
+		{
+			StringBuilder b = new StringBuilder();
+			b.AppendLine("void Method()");
+			b.AppendLine("{");
+			using (StringReader r = new StringReader(statement)) {
+				string line;
+				while ((line = r.ReadLine()) != null) {
+					b.Append("  ");
+					b.AppendLine(line);
+				}
+			}
+			b.AppendLine("}");
+			TestTypeMember(b.ToString(), options);
 		}
 		
 		void TestExpression(string expression)
@@ -59,15 +98,15 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void Namespace()
 		{
-			TestProgram("namespace System { }");
+			TestProgram("namespace System\n{\n}");
 		}
 		
 		[Test]
 		public void CustomEvent()
 		{
-			TestTypeMember("public event EventHandler Click {" +
-			               " add { obj.Click += value; }" +
-			               " remove { obj.Click -= value; } " +
+			TestTypeMember("public event EventHandler Click {\n" +
+			               "  add { obj.Click += value; }\n" +
+			               "  remove { obj.Click -= value; }\n" +
 			               "}");
 		}
 		
@@ -86,43 +125,50 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void Method()
 		{
-			TestTypeMember("void Method() { }");
+			TestTypeMember("void Method()\n{\n}");
 		}
 		
 		[Test]
 		public void StaticMethod()
 		{
-			TestTypeMember("static void Method() { }");
+			TestTypeMember("static void Method()\n{\n}");
 		}
 		
 		[Test]
 		public void PartialModifier()
 		{
-			TestProgram("public partial class Foo { }");
+			TestProgram("public partial class Foo\n{\n}");
 		}
 		
 		[Test]
 		public void GenericClassDefinition()
 		{
-			TestProgram("public class Foo<T> where T : IDisposable, ICloneable { }");
+			TestProgram("public class Foo<T> where T : IDisposable, ICloneable\n{\n}");
 		}
 		
 		[Test]
 		public void InterfaceWithOutParameters()
 		{
-			TestProgram("public interface ITest { void Method(out int a, ref double b); }");
+			TestProgram("public interface ITest\n" +
+			            "{\n" +
+			            "  void Method(out int a, ref double b);\n" +
+			            "}");
 		}
 		
 		[Test]
 		public void GenericClassDefinitionWithBaseType()
 		{
-			TestProgram("public class Foo<T> : BaseClass where T : IDisposable, ICloneable { }");
+			TestProgram("public class Foo<T> : BaseClass where T : IDisposable, ICloneable\n" +
+			            "{\n" +
+			            "}");
 		}
 		
 		[Test]
 		public void GenericMethodDefinition()
 		{
-			TestTypeMember("public void Foo<T>(T arg) where T : IDisposable, ICloneable { }");
+			TestTypeMember("public void Foo<T>(T arg) where T : IDisposable, ICloneable\n" +
+			               "{\n" +
+			               "}");
 		}
 		
 		[Test]
@@ -140,23 +186,67 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void ArrayInitializer()
 		{
-			TestStatement("object[] a = new object[] { 1, 2, 3 };");
+			TestStatement("object[] a = new object[] {\n" +
+			              "  1,\n" +
+			              "  2,\n" +
+			              "  3\n" +
+			              "};");
 		}
 		
 		[Test]
 		public void IfStatement()
 		{
-			TestStatement("if (a) { m1(); } else { m2(); }");
-			
-			TestStatement("if (a) m1();else m2(); ");
+			TestStatement("if (a) {\n" +
+			              "  m1();\n" +
+			              "} else {\n" +
+			              "  m2();\n" +
+			              "}");
 			
 			TestStatement("if (a) {\n" +
-			              "\tm1();\n" +
+			              "  m1();\n" +
 			              "} else if (b) {\n" +
-			              "\tm2();\n" +
+			              "  m2();\n" +
 			              "} else {\n" +
-			              "\tm3();\n" +
+			              "  m3();\n" +
 			              "}");
+		}
+		
+		[Test]
+		[Ignore("PlaceElseOnNewLine is currently broken")]
+		public void IfStatementSeparateLines()
+		{
+			PrettyPrintOptions options = new PrettyPrintOptions();
+			options.PlaceElseOnNewLine = true;
+			options.StatementBraceStyle = BraceStyle.NextLine;
+			
+			TestStatement("if (a)\n" +
+			              "{\n" +
+			              "  m1();\n" +
+			              "}\n" +
+			              "else\n" +
+			              "{\n" +
+			              "  m2();\n" +
+			              "}", options);
+			
+			TestStatement("if (a)\n" +
+			              "{\n" +
+			              "  m1();\n" +
+			              "}\n" +
+			              "else if (b)\n" +
+			              "{\n" +
+			              "  m2();\n" +
+			              "}\n" +
+			              "else\n" +
+			              "{\n" +
+			              "  m3();\n" +
+			              "}", options);
+		}
+		
+		[Test]
+		[Ignore("Single-line if-else is currently broken.")]
+		public void SingleLineIfElseStatement()
+		{
+			TestStatement("if (a) m1(); else m2();");
 		}
 		
 		[Test]
@@ -174,47 +264,50 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void BlockStatements()
 		{
-			TestStatement("checked { }");
-			TestStatement("unchecked { }");
-			TestStatement("unsafe { }");
+			TestStatement("checked {\n}");
+			TestStatement("unchecked {\n}");
+			TestStatement("unsafe {\n}");
 		}
 		
 		[Test]
 		public void ExceptionHandling()
 		{
-			TestStatement("try { throw new Exception(); } " +
-			              "catch (FirstException e) { } " +
-			              "catch (SecondException) { } " +
-			              "catch { throw; } " +
-			              "finally { }");
+			TestStatement("try {\n" +
+			              "  throw new Exception();\n" +
+			              "} catch (FirstException e) {\n" +
+			              "} catch (SecondException) {\n" +
+			              "} catch {\n" +
+			              "  throw;\n" +
+			              "} finally {\n" +
+			              "}");
 		}
 		
 		[Test]
 		public void LoopStatements()
 		{
-			TestStatement("foreach (Type var in col) { }");
-			TestStatement("while (true) { }");
-			TestStatement("do { } while (true);");
+			TestStatement("foreach (Type var in col) {\n}");
+			TestStatement("while (true) {\n}");
+			TestStatement("do {\n} while (true);");
 		}
 		
 		[Test]
 		public void Switch()
 		{
-			TestStatement("switch (a) {" +
-			              " case 0:" +
-			              " case 1:" +
-			              "  break;" +
-			              " case 2:" +
-			              "  return;" +
-			              " default:" +
-			              "  throw new Exception(); " +
+			TestStatement("switch (a) {\n" +
+			              "  case 0:\n" +
+			              "  case 1:\n" +
+			              "    break;\n" +
+			              "  case 2:\n" +
+			              "    return;\n" +
+			              "  default:\n" +
+			              "    throw new Exception();\n" +
 			              "}");
 		}
 		
 		[Test]
 		public void MultipleVariableForLoop()
 		{
-			TestStatement("for (int a = 0, b = 0; b < 100; ++b,a--) { }");
+			TestStatement("for (int a = 0, b = 0; b < 100; ++b,a--) {\n}");
 		}
 		
 		[Test]
@@ -336,25 +429,39 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void Enum()
 		{
-			TestProgram("enum MyTest { Red, Green, Blue, Yellow }");
+			TestProgram("enum MyTest\n{\n" +
+			            "  Red,\n" +
+			            "  Green,\n" +
+			            "  Blue,\n" +
+			            "  Yellow\n" +
+			            "}");
 		}
 		
 		[Test]
 		public void EnumWithInitializers()
 		{
-			TestProgram("enum MyTest { Red = 1, Green = 2, Blue = 4, Yellow = 8 }");
+			TestProgram("enum MyTest\n{\n" +
+			            "  Red = 1,\n" +
+			            "  Green = 2,\n" +
+			            "  Blue = 4,\n" +
+			            "  Yellow = 8\n" +
+			            "}");
 		}
 		
 		[Test]
 		public void SyncLock()
 		{
-			TestStatement("lock (a) { Work(); }");
+			TestStatement("lock (a) {\n" +
+			              "  Work();\n" +
+			              "}");
 		}
 		
 		[Test]
 		public void Using()
 		{
-			TestStatement("using (A a = new A()) { a.Work(); }");
+			TestStatement("using (A a = new A()) {\n" +
+			              "  a.Work();\n" +
+			              "}");
 		}
 		
 		[Test]
@@ -368,7 +475,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void SetOnlyProperty()
 		{
-			TestTypeMember("public bool ExpectsValue { set { DoSomething(value); } }");
+			TestTypeMember("public bool ExpectsValue {\n" +
+			               "  set { DoSomething(value); }\n" +
+			               "}");
 		}
 		
 		[Test]
@@ -388,51 +497,56 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void Interface()
 		{
-			TestProgram("interface ITest {" +
-			            " bool GetterAndSetter { get; set; }" +
-			            " bool GetterOnly { get; }" +
-			            " bool SetterOnly { set; }" +
-			            " void InterfaceMethod();" +
-			            " string InterfaceMethod2();\n" +
+			TestProgram("interface ITest\n" +
+			            "{\n" +
+			            "  bool GetterAndSetter { get; set; }\n" +
+			            "  bool GetterOnly { get; }\n" +
+			            "  bool SetterOnly { set; }\n" +
+			            "  void InterfaceMethod();\n" +
+			            "  string InterfaceMethod2();\n" +
 			            "}");
 		}
 		
 		[Test]
 		public void IndexerDeclaration()
 		{
-			TestTypeMember("public string this[int index] { get { return index.ToString(); } set { } }");
-			TestTypeMember("public string IList.this[int index] { get { return index.ToString(); } set { } }");
+			TestTypeMember("public string this[int index] {\n" +
+			               "  get { return index.ToString(); }\n" +
+			               "  set { }\n" +
+			               "}");
+			TestTypeMember("public string IList.this[int index] {\n" +
+			               "  get { return index.ToString(); }\n" +
+			               "  set { }\n" +
+			               "}");
 		}
 		
 		[Test]
 		public void OverloadedConversionOperators()
 		{
-			TestTypeMember("public static explicit operator TheBug(XmlNode xmlNode) { }");
-			TestTypeMember("public static implicit operator XmlNode(TheBug bugNode) { }");
+			TestTypeMember("public static explicit operator TheBug(XmlNode xmlNode)\n{\n}");
+			TestTypeMember("public static implicit operator XmlNode(TheBug bugNode)\n{\n}");
 		}
 		
 		[Test]
 		public void OverloadedTrueFalseOperators()
 		{
-			TestTypeMember("public static bool operator true(TheBug bugNode) { }");
-			TestTypeMember("public static bool operator false(TheBug bugNode) { }");
+			TestTypeMember("public static bool operator true(TheBug bugNode)\n{\n}");
+			TestTypeMember("public static bool operator false(TheBug bugNode)\n{\n}");
 		}
 		
 		[Test]
 		public void OverloadedOperators()
 		{
-			TestTypeMember("public static TheBug operator +(TheBug bugNode, TheBug bugNode2) { }");
-			TestTypeMember("public static TheBug operator >>(TheBug bugNode, int b) { }");
+			TestTypeMember("public static TheBug operator +(TheBug bugNode, TheBug bugNode2)\n{\n}");
+			TestTypeMember("public static TheBug operator >>(TheBug bugNode, int b)\n{\n}");
 		}
 		
 		[Test]
 		public void PropertyWithAccessorAccessModifiers()
 		{
 			TestTypeMember("public bool ExpectsValue {\n" +
-			               "\tinternal get {\n" +
-			               "\t}\n" +
-			               "\tprotected set {\n" +
-			               "\t}\n" +
+			               "  internal get { }\n" +
+			               "  protected set { }\n" +
 			               "}");
 		}
 		
@@ -463,7 +577,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void ExtensionMethod()
 		{
-			TestTypeMember("public static T[] Slice<T>(this T[] source, int index, int count)\n{ }");
+			TestTypeMember("public static T[] Slice<T>(this T[] source, int index, int count)\n{\n}");
 		}
 		
 		[Test]
@@ -528,68 +642,125 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void ObjectInitializer()
 		{
-			TestExpression("new Point { X = 0, Y = 1 }");
-			TestExpression("new Rectangle { P1 = new Point { X = 0, Y = 1 }, P2 = new Point { X = 2, Y = 3 } }");
-			TestExpression("new Rectangle(arguments) { P1 = { X = 0, Y = 1 }, P2 = { X = 2, Y = 3 } }");
+			TestExpression("new Point {\n" +
+			               "  X = 0,\n" +
+			               "  Y = 1\n" +
+			               "}");
+			TestExpression("new Rectangle {\n" +
+			               "  P1 = new Point {\n" +
+			               "    X = 0,\n" +
+			               "    Y = 1\n" +
+			               "  },\n" +
+			               "  P2 = new Point {\n" +
+			               "    X = 2,\n" +
+			               "    Y = 3\n" +
+			               "  }\n" +
+			               "}");
+			TestExpression("new Rectangle(arguments) {\n" +
+			               "  P1 = {\n" +
+			               "    X = 0,\n" +
+			               "    Y = 1\n" +
+			               "  },\n" +
+			               "  P2 = {\n" +
+			               "    X = 2,\n" +
+			               "    Y = 3\n" +
+			               "  }\n" +
+			               "}");
 		}
 		
 		[Test]
 		public void CollectionInitializer()
 		{
-			TestExpression("new List<int> { 0, 1, 2, 3, 4, 5 }");
-			TestExpression(@"new List<Contact> { new Contact { Name = ""Chris Smith"", PhoneNumbers = { ""206-555-0101"", ""425-882-8080"" } }, new Contact { Name = ""Bob Harris"", PhoneNumbers = { ""650-555-0199"" } } }");
+			TestExpression("new List<int> {\n" +
+			               "  0,\n" +
+			               "  1,\n" +
+			               "  2,\n" +
+			               "  3,\n" +
+			               "  4,\n" +
+			               "  5\n" +
+			               "}");
+			TestExpression(@"new List<Contact> {
+  new Contact {
+    Name = ""Chris Smith"",
+    PhoneNumbers = {
+      ""206-555-0101"",
+      ""425-882-8080""
+    }
+  },
+  new Contact {
+    Name = ""Bob Harris"",
+    PhoneNumbers = { ""650-555-0199"" }
+  }
+}");
 		}
 		
 		[Test]
 		public void AnonymousTypeCreation()
 		{
-			TestExpression("new { obj.Name, Price = 26.9, ident }");
+			TestExpression("new {\n" +
+			               "  obj.Name,\n" +
+			               "  Price = 26.9,\n" +
+			               "  ident\n" +
+			               "}");
 		}
 		
 		[Test]
 		public void ImplicitlyTypedArrayCreation()
 		{
-			TestExpression("new[] { 1, 10, 100, 1000 }");
+			TestExpression("new[] {\n" +
+			               "  1,\n" +
+			               "  10,\n" +
+			               "  100,\n" +
+			               "  1000\n" +
+			               "}");
 		}
 		
 		[Test]
 		public void QuerySimpleWhere()
 		{
-			TestExpression("from n in numbers where n < 5 select n");
+			TestExpression("from n in numbers\n" +
+			               "  where n < 5\n" +
+			               "  select n");
 		}
 		
 		[Test]
 		public void QueryMultipleFrom()
 		{
-			TestExpression("from c in customers" +
-			               " where c.Region == \"WA\"" +
-			               " from o in c.Orders" +
-			               " where o.OrderDate >= cutoffDate" +
-			               " select new { c.CustomerID, o.OrderID }");
+			TestExpression("from c in customers\n" +
+			               "  where c.Region == \"WA\"\n" +
+			               "  from o in c.Orders\n" +
+			               "  where o.OrderDate >= cutoffDate\n" +
+			               "  select new {\n" +
+			               "    c.CustomerID,\n" +
+			               "    o.OrderID\n" +
+			               "  }");
 		}
 		
 		[Test]
 		public void QuerySimpleOrdering()
 		{
-			TestExpression("from w in words" +
-			               " orderby w" +
-			               " select w");
+			TestExpression("from w in words\n" +
+			               "  orderby w\n" +
+			               "  select w");
 		}
 		
 		[Test]
 		public void QueryComplexOrdering()
 		{
-			TestExpression("from w in words" +
-			               " orderby w.Length descending, w ascending" +
-			               " select w");
+			TestExpression("from w in words\n" +
+			               "  orderby w.Length descending, w ascending\n" +
+			               "  select w");
 		}
 		
 		[Test]
 		public void QueryGroupInto()
 		{
-			TestExpression("from n in numbers" +
-			               " group n by n % 5 into g" +
-			               " select new { Remainder = g.Key, Numbers = g }");
+			TestExpression("from n in numbers\n" +
+			               "  group n by n % 5 into g\n" +
+			               "  select new {\n" +
+			               "    Remainder = g.Key,\n" +
+			               "    Numbers = g\n" +
+			               "  }");
 		}
 		
 		[Test]
