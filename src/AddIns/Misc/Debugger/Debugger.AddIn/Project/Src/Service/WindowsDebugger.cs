@@ -79,8 +79,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		Process debuggedProcess;
 		
-		DynamicTreeDebuggerRow currentTooltipRow;
-		Expression             currentTooltipExpression;
+		//DynamicTreeDebuggerRow currentTooltipRow;
+		//Expression             currentTooltipExpression;
 		
 		public event EventHandler<ProcessEventArgs> ProcessSelected;
 		
@@ -379,7 +379,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// Gets the tooltip control that shows the value of given variable.
 		/// Return null if no tooltip is available.
 		/// </summary>
-		public DebuggerGridControl GetTooltipControl(string variableName)
+		public object GetTooltipControl(string variableName)
 		{
 			ValueNode valueNode;
 			try {
@@ -390,13 +390,14 @@ namespace ICSharpCode.SharpDevelop.Services
 				return null;
 			}
 			
-			try {
+			/*try {
 				currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, valueNode);
 			} catch (AbortedBecauseDebuggeeResumedException) {
 				return null;
-			}
-			currentTooltipExpression = valueNode.Expression;
-			return new DebuggerGridControl(currentTooltipRow);
+			}*/
+			//currentTooltipExpression = valueNode.Expression;
+			//return new DebuggerGridControl(currentTooltipRow);
+			return valueNode.Expression + " = " + valueNode.Text + ", type: " + valueNode.Type;
 		}
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)
@@ -633,7 +634,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			using(new PrintTimes("Jump to current line")) {
 				JumpToCurrentLine();
 			}
-			if (currentTooltipRow != null && currentTooltipRow.IsShown) {
+			// TODO update tooltip
+			/*if (currentTooltipRow != null && currentTooltipRow.IsShown) {
 				using(new PrintTimes("Update tooltip")) {
 					try {
 						Utils.DoEvents(debuggedProcess);
@@ -642,7 +644,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					} catch (AbortedBecauseDebuggeeResumedException) {
 					}
 				}
-			}
+			}*/
 		}
 		
 		void debuggedProcess_DebuggingResumed(object sender, ProcessEventArgs e)

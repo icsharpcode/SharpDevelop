@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets the tooltip control that shows the value of given variable.
 		/// Return null if no tooltip is available.
 		/// </summary>
-		DebuggerGridControl GetTooltipControl(string variable);
+		object GetTooltipControl(string variable);
 		
 		/// <summary>
 		/// Queries the debugger whether it is possible to set the instruction pointer to a given position.

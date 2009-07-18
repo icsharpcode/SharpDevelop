@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets the tooltip control that shows the value of given variable.
 		/// Return null if no tooltip is available.
 		/// </summary>
-		public DebuggerGridControl GetTooltipControl(string variable)
+		public object GetTooltipControl(string variable)
 		{
 			return null;
 		}
