@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.XmlEditor;
 using System;
+using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using System.IO;
 
 namespace ICSharpCode.XamlBinding.Tests
 {
@@ -66,6 +67,45 @@ namespace ICSharpCode.XamlBinding.Tests
 			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 2, 26);
 			
 			Assert.AreEqual(XamlContextDescription.InTag, context.Description);
+		}
+		
+		[Test]
+		public void ContextAtTagDescriptionTest3()
+		{
+			string xaml = File.ReadAllText("Test4.xaml");
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 13, 8);
+			
+			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
+		}
+		
+		[Test]
+		public void ParentElementTestSimple1()
+		{
+			string xaml = File.ReadAllText("Test1.xaml");
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 8, 12);
+			
+			Assert.AreEqual("CheckBox", context.ActiveElement.Name);
+			Assert.AreEqual("Grid", context.ParentElement.Name);
+		}
+		
+		[Test]
+		public void ParentElementTestSimple2()
+		{
+			string xaml = File.ReadAllText("Test4.xaml");
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 13, 8);
+			
+			Assert.AreEqual("Grid", context.ActiveElement.Name);
+			Assert.AreEqual("Grid", context.ParentElement.Name);
+		}
+
+		[Test]
+		public void RootElementTest()
+		{
+			string xaml = File.ReadAllText("Test1.xaml");
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 2, 9);
+			
+			Assert.AreEqual("Window", context.ActiveElement.Name);
+			Assert.AreEqual(null, context.ParentElement);
 		}
 	}
 }

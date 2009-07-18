@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.XmlEditor;
@@ -132,22 +132,6 @@ namespace ICSharpCode.XamlBinding
 			return list.ToArray();
 		}
 		
-		public static int GetPreviousLTCharPos(string text, int startIndex)
-		{
-			if (text == null)
-				throw new ArgumentNullException("text");
-			
-			if (startIndex < 0)
-				return -1;
-			if (startIndex >= text.Length)
-				startIndex = text.Length - 1;
-			
-			while (startIndex > -1 && text[startIndex] != '<')
-				startIndex--;
-			
-			return startIndex;
-		}
-		
 		static char[] whitespace = new char[] {' ', '\t', '\n', '\r'};
 		
 		public static string GetXamlNamespacePrefix(XamlContext context)
@@ -222,12 +206,45 @@ namespace ICSharpCode.XamlBinding
 			
 			return (offsetStack.Count > 0) ? offsetStack.Pop() : -1;
 		}
+				
+		static QualifiedNameWithLocation ResolveCurrentElement(string text, int offset, Dictionary<string, string> xmlnsDefinitions)
+		{
+			if (offset < 0)
+				return null;
+			
+			string elementName = text.GetWordAfterOffset(offset + 1).Trim('>', '<');
+			
+			string prefix = "";
+			string element = "";
+			
+			Location location = GetLocationInfoFromOffset(text, offset + 1);
+			
+			if (elementName.IndexOf(':') > -1) {
+				string[] data = elementName.Split(':');
+				prefix = data[0];
+				element = data[1];
+			} else {
+				element = elementName;
+			}
+			
+			string xmlns = xmlnsDefinitions.ContainsKey(prefix) ? xmlnsDefinitions[prefix] : string.Empty;
+			
+			return new QualifiedNameWithLocation(element, xmlns, prefix, location.Line, location.Column);
+		}
+		
+		public static Location GetLocationInfoFromOffset(string text, int offset)
+		{
+			string[] lines = text.Substring(0, offset).Split('\n');
+			string line = lines.LastOrDefault() ?? string.Empty;
+			
+			return new Location(line.Length + 1, lines.Length);
+		}
 		
 		public 	static void LookUpInfoAtTarget(string fileContent, int caretLine, int caretColumn, int offset,
-		                                       out Dictionary<string, string> xmlns, out QualifiedName active,
-		                                       out QualifiedName parent, out int activeElementStartIndex, out bool isRoot)
+		                                       out Dictionary<string, string> xmlns, out QualifiedNameWithLocation active,
+		                                       out QualifiedNameWithLocation parent, out int activeElementStartIndex, out bool isRoot)
 		{			
-			Stack<QualifiedName> stack = new Stack<QualifiedName>();
+			Stack<QualifiedNameWithLocation> stack = new Stack<QualifiedNameWithLocation>();
 			
 			isRoot = false;
 
@@ -243,7 +260,7 @@ namespace ICSharpCode.XamlBinding
 							break;
 						case XmlNodeType.Element:
 							if (!r.IsEmptyElement)
-								stack.Push(new QualifiedName(r.LocalName, r.NamespaceURI, r.Prefix));
+								stack.Push(new QualifiedNameWithLocation(r.LocalName, r.NamespaceURI, r.Prefix, r.LineNumber, r.LinePosition));
 							break;
 					}
 				}
@@ -253,14 +270,12 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			activeElementStartIndex = XmlParser.GetActiveElementStartIndex(fileContent, Math.Min(offset + 1, fileContent.Length - 1));
-			active = CompletionDataHelper.ResolveCurrentElement(fileContent, activeElementStartIndex, xmlns);
+			
+			active =  ResolveCurrentElement(fileContent, activeElementStartIndex, xmlns);
 			parent = stack.PopOrDefault();
 			
-			if (active == parent) {
-				if (stack.Count == 0)
-					isRoot = true;
+			if (active == parent)
 				parent = stack.PopOrDefault();
-			}
 			
 			if (parent == null)
 				isRoot = true;

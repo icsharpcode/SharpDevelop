@@ -147,5 +147,17 @@ namespace ICSharpCode.XamlBinding.Tests
 			string text = editor.GetWordBeforeCaretExtended();
 			Assert.AreEqual("member.v", text);
 		}
+		
+		[Test]
+		[STAThread]
+		public void InValueCompletionTest1()
+		{
+			
+		}
 	}
+	
+//	public class MockTextEditor : ITextEditor
+//	{
+//		
+//	}
 }

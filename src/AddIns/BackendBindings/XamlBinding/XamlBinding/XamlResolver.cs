@@ -213,7 +213,7 @@ namespace ICSharpCode.XamlBinding
 				return ResolveProperty(attributeXmlNamespace, className, attributeName, true);
 			}
 			else {
-				QualifiedName lastElement = context.ActiveElement;
+				QualifiedNameWithLocation lastElement = context.ActiveElement;
 				return ResolveProperty(lastElement.Namespace, lastElement.Name, attributeName, false);
 			}
 		}

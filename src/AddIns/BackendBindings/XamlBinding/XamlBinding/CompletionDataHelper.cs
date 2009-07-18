@@ -63,7 +63,7 @@ namespace ICSharpCode.XamlBinding
 			XamlContextDescription description = XamlContextDescription.None;
 			
 			Dictionary<string, string> xmlnsDefs;
-			QualifiedName active, parent;
+			QualifiedNameWithLocation active, parent;
 			int elementStartIndex;
 			bool isRoot;
 			
@@ -108,29 +108,6 @@ namespace ICSharpCode.XamlBinding
 			return context;
 		}
 		
-		public static QualifiedName ResolveCurrentElement(string text, int offset, Dictionary<string, string> xmlnsDefinitions)
-		{
-			if (offset < 0)
-				return null;
-			
-			string elementName = text.GetWordAfterOffset(offset + 1).Trim('>', '<');
-			
-			string prefix = "";
-			string element = "";
-			
-			if (elementName.IndexOf(':') > -1) {
-				string[] data = elementName.Split(':');
-				prefix = data[0];
-				element = data[1];
-			} else {
-				element = elementName;
-			}
-			
-			string xmlns = xmlnsDefinitions.ContainsKey(prefix) ? xmlnsDefinitions[prefix] : string.Empty;
-			
-			return new QualifiedName(element, xmlns, prefix);
-		}
-		
 		public static XamlCompletionContext ResolveCompletionContext(ITextEditor editor, char typedValue)
 		{
 			var context = new XamlCompletionContext(ResolveContext(editor.Document.Text, editor.FileName, editor.Caret.Line, editor.Caret.Column)) {
@@ -141,9 +118,9 @@ namespace ICSharpCode.XamlBinding
 			return context;
 		}
 		
-		static List<ICompletionItem> CreateAttributeList(XamlCompletionContext context, string[] existingItems, bool includeEvents)
+		static List<ICompletionItem> CreateAttributeList(XamlCompletionContext context, bool includeEvents)
 		{
-			QualifiedName lastElement = context.ActiveElement;
+			QualifiedNameWithLocation lastElement = context.ActiveElement;
 			if (context.ParseInformation == null)
 				return emptyList;
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
@@ -155,35 +132,47 @@ namespace ICSharpCode.XamlBinding
 			
 			string xamlPrefix = Utils.GetXamlNamespacePrefix(context);
 			
-			if (rt == null) {
-				list.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, "Uid"));
-				return list;
+			if (lastElement.Name.EndsWith(".") || context.PressedKey == '.') {
+				if (context.ParentElement.Name.StartsWith(lastElement.Name.TrimEnd('.')))
+					AddAttributes(rt, list, includeEvents);
+				else if (rt != null && rt.GetUnderlyingClass() != null) {
+					string key = string.IsNullOrEmpty(lastElement.Prefix) ? "" : lastElement.Prefix + ":";
+
+					AddAttachedProperties(rt.GetUnderlyingClass(), list, key, lastElement.Name.Trim('.'));
+				}
 			} else {
-				foreach (string item in XamlNamespaceAttributes.Where(item => AllowedInElement(context.InRoot, item))) {
-					if (!existingItems.Contains(xamlPrefix + ":" + item)) {
+				if (rt == null) {
+					list.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, "Uid"));
+					return list;
+				} else {
+					AddAttributes(rt, list, includeEvents);
+					list.AddRange(GetListOfAttached(context, string.Empty, string.Empty, includeEvents, true));
+					foreach (string item in XamlNamespaceAttributes.Where(item => AllowedInElement(context.InRoot, item)))
 						list.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, item));
-					}
 				}
 			}
 			
+			return list;
+		}
+		
+		static void AddAttributes(IReturnType rt, IList<ICompletionItem> list, bool includeEvents)
+		{
+			if (rt == null)
+				return;
+			
 			foreach (IProperty p in rt.GetProperties()) {
-				if (p.IsPublic && (p.CanSet || p.ReturnType.IsCollectionReturnType()) && !existingItems.Contains(p.Name)) {
+				if (p.IsPublic && (p.CanSet || p.ReturnType.IsCollectionReturnType())) {
 					list.Add(new XamlCodeCompletionItem(p));
 				}
 			}
 			
 			if (includeEvents) {
 				foreach (IEvent e in rt.GetEvents()) {
-					if (e.IsPublic && !existingItems.Contains(e.Name)) {
+					if (e.IsPublic) {
 						list.Add(new XamlCodeCompletionItem(e));
 					}
 				}
 			}
-			
-			if (!lastElement.Name.EndsWith(".", StringComparison.OrdinalIgnoreCase) && context.PressedKey != '.')
-				list.AddRange(GetListOfAttached(context, string.Empty, string.Empty, includeEvents, true));
-			
-			return list;
 		}
 		
 		static bool AllowedInElement(bool inRoot, string item)
@@ -385,9 +374,7 @@ namespace ICSharpCode.XamlBinding
 					break;
 				case XamlContextDescription.AtTag:
 					if ((editor.Caret.Offset > 0 && editor.Document.GetCharAt(editor.Caret.Offset - 1) == '.') || context.PressedKey == '.') {
-						var loc = editor.Document.OffsetToPosition(Utils.GetParentElementStart(editor));
-						var existing = Utils.GetListOfExistingAttributeNames(editor.Document.Text, loc.Line, loc.Column);
-						list.Items.AddRange(CreateAttributeList(context, existing, false));
+						list.Items.AddRange(CreateAttributeList(context, false));
 					} else {
 						list.Items.AddRange(standardElements);
 						list.Items.AddRange(CreateElementList(context, false));
@@ -409,11 +396,11 @@ namespace ICSharpCode.XamlBinding
 						if (typeClass != null && typeClass.DerivesFrom("System.Windows.DependencyObject"))
 							list.Items.AddRange(GetListOfAttached(context, word.Substring(pos + 1, word.Length - pos - 1).TrimEnd('.'), ns, true, true));
 					} else {
-						QualifiedName last = context.ActiveElement;
+						QualifiedNameWithLocation last = context.ActiveElement;
 						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(last.Name, context), info, editor.Document.Text) as TypeResolveResult;
 						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
 						
-						list.Items.AddRange(CreateAttributeList(context, existingAttribs, true));
+						list.Items.AddRange(CreateAttributeList(context, true));
 						list.Items.AddRange(standardAttributes);
 					}
 					break;

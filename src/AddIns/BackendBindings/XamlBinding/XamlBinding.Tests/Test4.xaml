@@ -1,0 +1,19 @@
+<!-- This file is just a testing file -->
+<Window x:Class="XamlTest.Test"
+    xmlns:local="clr-namespace:XamlTest"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+>
+	<Window.Resources>
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="AllowDrop" Value="False" />
+		</Style>
+	</Window.Resources>
+	<Grid>
+		<Grid
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" />
+		</Grid.ColumnDefinitions>
+		<Button x:Name="t" Content="{Binding TestValue}"/>
+	</Grid>
+</Window>

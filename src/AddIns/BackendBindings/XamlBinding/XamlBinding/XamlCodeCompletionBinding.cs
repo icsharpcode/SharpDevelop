@@ -121,7 +121,6 @@ namespace ICSharpCode.XamlBinding
 						DoMarkupExtensionCompletion(context);
 						return CodeCompletionKeyPressResult.EatKey;
 					}
-					break;
 				default:
 					if (context.Description != XamlContextDescription.None && !char.IsWhiteSpace(ch)) {
 						string starter = editor.GetWordBeforeCaretExtended();
@@ -213,6 +212,8 @@ namespace ICSharpCode.XamlBinding
 							                        loc2.Column, "Property"));
 						if (!propType.IsString)
 							break;
+						
+						context.Description = XamlContextDescription.AtTag;
 						
 						var member = XamlResolver.Resolve(typeNameString + "." + propType.StringValue, context) as MemberResolveResult;
 						

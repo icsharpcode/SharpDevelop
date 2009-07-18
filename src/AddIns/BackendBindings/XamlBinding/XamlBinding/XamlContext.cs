@@ -19,8 +19,8 @@ using ICSharpCode.XmlEditor;
 namespace ICSharpCode.XamlBinding
 {
 	public class XamlContext : ExpressionContext {
-		public QualifiedName ActiveElement { get; set; }
-		public QualifiedName ParentElement { get; set; }
+		public QualifiedNameWithLocation ActiveElement { get; set; }
+		public QualifiedNameWithLocation ParentElement { get; set; }
 		public string AttributeName { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public string RawAttributeValue { get; set; }
