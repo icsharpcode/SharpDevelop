@@ -126,7 +126,7 @@ namespace PythonBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public DebuggerGridControl GetTooltipControl(string variable)
+		public object GetTooltipControl(string variable)
 		{
 			throw new NotImplementedException();
 		}
