@@ -92,9 +92,39 @@ namespace Debugger.AddIn
 		
 		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
-			// Calculate right first so that left does not get invalidated by its calculation
-			Value right = ((Value)assignmentExpression.Right.AcceptVisitor(this, null)).GetPermanentReference();
-			Value left = (Value)assignmentExpression.Left.AcceptVisitor(this, null);
+			BinaryOperatorType op;
+			switch (assignmentExpression.Op) {
+				case AssignmentOperatorType.Assign:        op = BinaryOperatorType.None; break;
+				case AssignmentOperatorType.Add:           op = BinaryOperatorType.Add; break;
+				case AssignmentOperatorType.ConcatString:  op = BinaryOperatorType.Concat; break;
+				case AssignmentOperatorType.Subtract:      op = BinaryOperatorType.Subtract; break;
+				case AssignmentOperatorType.Multiply:      op = BinaryOperatorType.Multiply; break;
+				case AssignmentOperatorType.Divide:        op = BinaryOperatorType.Divide; break;
+				case AssignmentOperatorType.DivideInteger: op = BinaryOperatorType.DivideInteger; break;
+				case AssignmentOperatorType.ShiftLeft:     op = BinaryOperatorType.ShiftLeft; break;
+				case AssignmentOperatorType.ShiftRight:    op = BinaryOperatorType.ShiftRight; break;
+				case AssignmentOperatorType.ExclusiveOr:   op = BinaryOperatorType.ExclusiveOr; break;
+				case AssignmentOperatorType.Modulus:       op = BinaryOperatorType.Modulus; break;
+				case AssignmentOperatorType.BitwiseAnd:    op = BinaryOperatorType.BitwiseAnd; break;
+				case AssignmentOperatorType.BitwiseOr:     op = BinaryOperatorType.BitwiseOr; break;
+				case AssignmentOperatorType.Power:         op = BinaryOperatorType.Power; break;
+				default: throw new GetValueException("Unknown operator " + assignmentExpression.Op);
+			}
+			
+			Value right;
+			if (op == BinaryOperatorType.None) {
+				right = ((Value)assignmentExpression.Right.AcceptVisitor(this, null)).GetPermanentReference();
+			} else {
+				BinaryOperatorExpression binOpExpr = new BinaryOperatorExpression();
+				binOpExpr.Left  = assignmentExpression.Left;
+				binOpExpr.Op    = op;
+				binOpExpr.Right = assignmentExpression.Right;
+				right = (Value)VisitBinaryOperatorExpression(binOpExpr, null);
+			}
+			right = right.GetPermanentReference();
+			
+			Value left = ((Value)assignmentExpression.Left.AcceptVisitor(this, null));
+			
 			if (!left.IsReference && left.Type.FullName != right.Type.FullName) {
 				throw new GetValueException(string.Format("Type {0} expected, {1} seen", left.Type.FullName, right.Type.FullName));
 			}
@@ -161,6 +191,15 @@ namespace Debugger.AddIn
 					intIndexes.Add((int)index.PrimitiveValue);
 				}
 				return target.GetArrayElement(intIndexes.ToArray());
+			}
+			
+			if (target.Type.IsPrimitive && target.PrimitiveValue is string) {
+				if (indexes.Count == 1 && indexes[0].Type.IsInteger) {
+					int index = (int)indexes[0].PrimitiveValue;
+					return Eval.CreateValue(context.Process, ((string)target.PrimitiveValue)[index]);
+				} else {
+					throw new GetValueException("Expected single integer index");
+				}
 			}
 			
 			PropertyInfo pi = target.Type.GetProperty("Item");
