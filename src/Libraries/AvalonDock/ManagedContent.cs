@@ -172,6 +172,8 @@ namespace AvalonDock
                 _dragEnabledArea.MouseMove += new MouseEventHandler(OnDragMouseMove);
                 _dragEnabledArea.MouseUp += new MouseButtonEventHandler(OnDragMouseUp);
                 _dragEnabledArea.MouseLeave += new MouseEventHandler(OnDragMouseLeave);
+                
+                _dragEnabledArea.InputBindings.Add(new InputBinding(ApplicationCommands.Close, new MouseGesture(MouseAction.MiddleClick)));
             }
         }
 
