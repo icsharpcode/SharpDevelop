@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Debugger.Expressions;
+using Mono.Cecil.Signatures;
 using System;
 using System.Collections.Generic;
+using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
@@ -69,6 +70,45 @@ namespace Debugger.MetaData
 		public override uint MetadataToken {
 			get {
 				return methodProps.Token;
+			}
+		}
+		
+		MethodDefSig methodDefSig;
+		
+		MethodDefSig MethodDefSig {
+			get {
+				if (methodDefSig == null) {
+					SignatureReader sigReader = new SignatureReader(methodProps.SigBlob.GetData());
+					methodDefSig = sigReader.GetMethodDefSig(0);
+				}
+				return methodDefSig;
+			}
+		}
+		
+		DebugType returnType;
+		
+		/// <summary> The type of the return value as specified in the method signature </summary>
+		/// <returns> Null if the return type is Void</returns>
+		public DebugType ReturnType {
+			get {
+				if (this.MethodDefSig.RetType.Void) return null;
+				if (returnType == null) {
+					returnType = DebugType.Create(this.Module, this.MethodDefSig.RetType.Type, this.DeclaringType);
+				}
+				return returnType;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the types of the parameters of the method
+		/// </summary>
+		public DebugType[] ParameterTypes {
+			get {
+				List<DebugType> types = new List<DebugType>();
+				foreach(Param param in this.methodDefSig.Parameters) {
+					types.Add(DebugType.Create(this.Module, param.Type, this.DeclaringType));
+				}
+				return types.ToArray();
 			}
 		}
 		
@@ -342,10 +382,9 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> Gets the number of paramters of this method </summary>
-		[Debugger.Tests.Ignore]
 		public int ParameterCount {
 			get {
-				return this.Module.MetaData.GetParamCount(this.MetadataToken);
+				return this.MethodDefSig.ParamCount;
 			}
 		}
 		

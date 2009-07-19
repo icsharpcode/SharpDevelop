@@ -91,7 +91,8 @@ namespace Debugger.Tests {
           IsPublic="False"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="privateField" />
+          Name="privateField"
+          Type="System.Int16" />
       </Item>
       <Item>
         <FieldInfo
@@ -104,7 +105,8 @@ namespace Debugger.Tests {
           IsPublic="True"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="publicField" />
+          Name="publicField"
+          Type="System.Int16" />
       </Item>
       <Item>
         <FieldInfo
@@ -117,7 +119,8 @@ namespace Debugger.Tests {
           IsPublic="False"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="protectedField" />
+          Name="protectedField"
+          Type="System.Int16" />
       </Item>
       <Item>
         <FieldInfo
@@ -130,7 +133,8 @@ namespace Debugger.Tests {
           IsPublic="False"
           IsStatic="False"
           Module="Metadata.exe"
-          Name="internalField" />
+          Name="internalField"
+          Type="System.Int16" />
       </Item>
       <Item>
         <FieldInfo
@@ -143,7 +147,8 @@ namespace Debugger.Tests {
           IsPublic="False"
           IsStatic="True"
           Module="Metadata.exe"
-          Name="staticField" />
+          Name="staticField"
+          Type="System.Int16" />
       </Item>
       <Item>
         <MethodInfo
@@ -157,6 +162,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="get_privateProperty"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="System.Int32"
           StepOver="False" />
       </Item>
       <Item>
@@ -171,6 +179,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="get_publicProperty"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="System.Int32"
           StepOver="False" />
       </Item>
       <Item>
@@ -185,6 +196,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="get_protectedProperty"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="System.Int32"
           StepOver="False" />
       </Item>
       <Item>
@@ -199,6 +213,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="get_internalProperty"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="System.Int32"
           StepOver="False" />
       </Item>
       <Item>
@@ -213,6 +230,9 @@ namespace Debugger.Tests {
           IsStatic="True"
           Module="Metadata.exe"
           Name="get_staticProperty"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="System.Int32"
           StepOver="False" />
       </Item>
       <Item>
@@ -227,6 +247,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="privateMethod"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="null"
           StepOver="False" />
       </Item>
       <Item>
@@ -241,6 +264,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="publicMethod"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="null"
           StepOver="False" />
       </Item>
       <Item>
@@ -255,6 +281,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="protectedMethod"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="null"
           StepOver="False" />
       </Item>
       <Item>
@@ -269,6 +298,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="internalMethod"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="null"
           StepOver="False" />
       </Item>
       <Item>
@@ -283,6 +315,9 @@ namespace Debugger.Tests {
           IsStatic="True"
           Module="Metadata.exe"
           Name="staticMethod"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="null"
           StepOver="False" />
       </Item>
       <Item>
@@ -297,6 +332,9 @@ namespace Debugger.Tests {
           IsStatic="True"
           Module="Metadata.exe"
           Name="Main"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="null"
           StepOver="False" />
       </Item>
       <Item>
@@ -311,6 +349,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name=".ctor"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="null"
           StepOver="True" />
       </Item>
       <Item>
@@ -325,7 +366,8 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="privateProperty"
-          SetMethod="null" />
+          SetMethod="null"
+          Type="System.Int32" />
       </Item>
       <Item>
         <PropertyInfo
@@ -339,7 +381,8 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="publicProperty"
-          SetMethod="null" />
+          SetMethod="null"
+          Type="System.Int32" />
       </Item>
       <Item>
         <PropertyInfo
@@ -353,7 +396,8 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="protectedProperty"
-          SetMethod="null" />
+          SetMethod="null"
+          Type="System.Int32" />
       </Item>
       <Item>
         <PropertyInfo
@@ -367,7 +411,8 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="Metadata.exe"
           Name="internalProperty"
-          SetMethod="null" />
+          SetMethod="null"
+          Type="System.Int32" />
       </Item>
       <Item>
         <PropertyInfo
@@ -381,7 +426,8 @@ namespace Debugger.Tests {
           IsStatic="True"
           Module="Metadata.exe"
           Name="staticProperty"
-          SetMethod="null" />
+          SetMethod="null"
+          Type="System.Int32" />
       </Item>
       <Item>
         <MethodInfo
@@ -395,6 +441,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name=".ctor"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="null"
           StepOver="True" />
       </Item>
       <Item>
@@ -409,6 +458,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name="ToString"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="System.String"
           StepOver="True" />
       </Item>
       <Item>
@@ -423,6 +475,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name="Equals"
+          ParameterCount="1"
+          ParameterTypes="{System.Object}"
+          ReturnType="System.Boolean"
           StepOver="True" />
       </Item>
       <Item>
@@ -437,6 +492,9 @@ namespace Debugger.Tests {
           IsStatic="True"
           Module="mscorlib.dll"
           Name="Equals"
+          ParameterCount="2"
+          ParameterTypes="{System.Object, System.Object}"
+          ReturnType="System.Boolean"
           StepOver="True" />
       </Item>
       <Item>
@@ -451,6 +509,9 @@ namespace Debugger.Tests {
           IsStatic="True"
           Module="mscorlib.dll"
           Name="ReferenceEquals"
+          ParameterCount="2"
+          ParameterTypes="{System.Object, System.Object}"
+          ReturnType="System.Boolean"
           StepOver="True" />
       </Item>
       <Item>
@@ -465,6 +526,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name="GetHashCode"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="System.Int32"
           StepOver="True" />
       </Item>
       <Item>
@@ -479,6 +543,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name="GetType"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="System.Type"
           StepOver="True" />
       </Item>
       <Item>
@@ -493,6 +560,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name="Finalize"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="null"
           StepOver="True" />
       </Item>
       <Item>
@@ -507,6 +577,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name="MemberwiseClone"
+          ParameterCount="0"
+          ParameterTypes="{}"
+          ReturnType="System.Object"
           StepOver="True" />
       </Item>
       <Item>
@@ -521,6 +594,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name="FieldSetter"
+          ParameterCount="3"
+          ParameterTypes="{System.String, System.String, System.Object}"
+          ReturnType="null"
           StepOver="True" />
       </Item>
       <Item>
@@ -535,6 +611,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name="FieldGetter"
+          ParameterCount="3"
+          ParameterTypes="{System.String, System.String, System.Object}"
+          ReturnType="null"
           StepOver="True" />
       </Item>
       <Item>
@@ -549,6 +628,9 @@ namespace Debugger.Tests {
           IsStatic="False"
           Module="mscorlib.dll"
           Name="GetFieldInfo"
+          ParameterCount="2"
+          ParameterTypes="{System.String, System.String}"
+          ReturnType="System.Reflection.FieldInfo"
           StepOver="True" />
       </Item>
     </Members>

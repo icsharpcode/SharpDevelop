@@ -56,6 +56,13 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		/// <summary> The type of the property</summary>
+		public DebugType Type {
+			get {
+				return getMethod.ReturnType;
+			}
+		}
+		
 		/// <summary> Gets the name of this property </summary>
 		public override string Name {
 			get {

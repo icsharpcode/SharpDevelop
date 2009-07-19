@@ -846,6 +846,8 @@ namespace Debugger.Wrappers.MetaData
 		
 		// Custom methods
 		
+		/*
+		
 		public int GetParamCount(uint methodToken)
 		{
 			int count = 0;
@@ -859,11 +861,11 @@ namespace Debugger.Wrappers.MetaData
 			return count;
 		}
 		
+		*/
+		
 		public int GetGenericParamCount(uint typeDef_methodDef)
 		{
-			int count = 0;
-			foreach(uint genericParam in EnumGenericParams(typeDef_methodDef)) count++;
-			return count;
+			return EnumGenericParams(typeDef_methodDef).Length;
 		}
 		
 		#region Util

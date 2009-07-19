@@ -153,6 +153,9 @@ namespace Debugger.Tests {
             IsStatic="False"
             Module="Generics.exe"
             Name="Metod"
+            ParameterCount="2"
+            ParameterTypes="{System.Int32, System.String}"
+            ReturnType="System.String"
             StepOver="False">
             <DeclaringType>
               <DebugType
@@ -221,6 +224,9 @@ namespace Debugger.Tests {
             IsStatic="False"
             Module="Generics.exe"
             Name="GenericMethod"
+            ParameterCount="2"
+            ParameterTypes="{System.Int32, System.String}"
+            ReturnType="System.Object"
             StepOver="False">
             <DeclaringType>
               <DebugType
@@ -289,6 +295,9 @@ namespace Debugger.Tests {
             IsStatic="True"
             Module="Generics.exe"
             Name="StaticMetod"
+            ParameterCount="2"
+            ParameterTypes="{System.Int32, System.String}"
+            ReturnType="System.String"
             StepOver="False">
             <DeclaringType>
               <DebugType
@@ -357,6 +366,9 @@ namespace Debugger.Tests {
             IsStatic="True"
             Module="Generics.exe"
             Name="StaticGenericMethod"
+            ParameterCount="2"
+            ParameterTypes="{System.Int32, System.String}"
+            ReturnType="System.Object"
             StepOver="False">
             <DeclaringType>
               <DebugType
@@ -425,6 +437,9 @@ namespace Debugger.Tests {
             IsStatic="False"
             Module="Generics.exe"
             Name="Metod"
+            ParameterCount="2"
+            ParameterTypes="{System.Int32, System.String}"
+            ReturnType="System.String"
             StepOver="False">
             <DeclaringType>
               <DebugType
@@ -493,6 +508,9 @@ namespace Debugger.Tests {
             IsStatic="False"
             Module="Generics.exe"
             Name="GenericMethod"
+            ParameterCount="2"
+            ParameterTypes="{System.Int32, System.String}"
+            ReturnType="System.Object"
             StepOver="False">
             <DeclaringType>
               <DebugType
@@ -561,6 +579,9 @@ namespace Debugger.Tests {
             IsStatic="True"
             Module="Generics.exe"
             Name="StaticMetod"
+            ParameterCount="2"
+            ParameterTypes="{System.Int32, System.String}"
+            ReturnType="System.String"
             StepOver="False">
             <DeclaringType>
               <DebugType
@@ -629,6 +650,9 @@ namespace Debugger.Tests {
             IsStatic="True"
             Module="Generics.exe"
             Name="StaticGenericMethod"
+            ParameterCount="2"
+            ParameterTypes="{System.Int32, System.String}"
+            ReturnType="System.Object"
             StepOver="False">
             <DeclaringType>
               <DebugType

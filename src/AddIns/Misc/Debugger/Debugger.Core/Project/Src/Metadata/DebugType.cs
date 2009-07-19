@@ -356,14 +356,14 @@ namespace Debugger.MetaData
 			return Create(module, token, null);
 		}
 		
-		public static DebugType Create(Module module, uint token, DebugType signatureContext)
+		public static DebugType Create(Module module, uint token, DebugType declaringType)
 		{
 			CorTokenType tokenType = (CorTokenType)(token & 0xFF000000);
 			if (tokenType == CorTokenType.TypeDef || tokenType == CorTokenType.TypeRef) {
 				return Create(module.Process, GetCorClass(module, token));
 			} else if (tokenType == CorTokenType.TypeSpec) {
 				Blob typeSpecBlob = module.MetaData.GetTypeSpecFromToken(token);
-				return Create(module, typeSpecBlob.GetData(), signatureContext);
+				return Create(module, typeSpecBlob.GetData(), declaringType);
 			} else {
 				throw new DebuggerException("Unknown token type");
 			}
@@ -375,20 +375,24 @@ namespace Debugger.MetaData
 		}
 		
 		/// <param name="signatureContext">Type definition to use to resolve numbered generic references</param>
-		public static DebugType Create(Module module, byte[] sig, DebugType signatureContext)
+		public static DebugType Create(Module module, byte[] sig, DebugType declaringType)
 		{
 			SignatureReader sigReader = new SignatureReader(sig);
 			int start;
 			SigType sigType = sigReader.ReadType(sig, 0, out start);
 			
-			return Create(module, sigType, signatureContext);
+			return Create(module, sigType, declaringType);
 		}
 		
-		static DebugType Create(Module module, SigType sigType, DebugType signatureContext)
+		internal static DebugType Create(Module module, SigType sigType, DebugType declaringType)
 		{
 			System.Type sysType = CorElementTypeToManagedType((CorElementType)(uint)sigType.ElementType);
 			if (sysType != null) {
 				return Create(module.Process, module.AppDomainID, sysType.FullName);
+			}
+			
+			if (sigType.ElementType == Mono.Cecil.Metadata.ElementType.Object) {
+				return Create(module.Process, module.AppDomainID, "System.Object");
 			}
 			
 			if (sigType is CLASS) {
@@ -402,9 +406,14 @@ namespace Debugger.MetaData
 			}
 			
 			// Numbered generic reference
-			if (sigType is VAR) {			
-				if (signatureContext == null) throw new DebuggerException("Signature context is needed");
-				return signatureContext.GenericArguments[((VAR)sigType).Index];
+			if (sigType is VAR) {
+				if (declaringType == null) throw new DebuggerException("declaringType is needed");
+				return declaringType.GenericArguments[((VAR)sigType).Index];
+			}
+			
+			// Numbered generic reference
+			if (sigType is MVAR) {
+				return Create(module.Process, module.AppDomainID, "System.Object");
 			}
 			
 			if (sigType is GENERICINST) {
@@ -413,7 +422,7 @@ namespace Debugger.MetaData
 				ICorDebugClass corClass = GetCorClass(module, genInst.Type.ToUInt());
 				ICorDebugType[] genArgs = new ICorDebugType[genInst.Signature.Arity];
 				for(int i = 0; i < genArgs.Length; i++) {
-					genArgs[i] = Create(module, genInst.Signature.Types[i].Type, signatureContext).CorType;
+					genArgs[i] = Create(module, genInst.Signature.Types[i].Type, declaringType).CorType;
 				}
 				
 				ICorDebugType genInstance = corClass.CastTo<ICorDebugClass2>().GetParameterizedType((uint)classOrValueType, genArgs);

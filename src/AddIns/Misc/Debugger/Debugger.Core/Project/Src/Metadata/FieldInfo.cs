@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Mono.Cecil.Signatures;
 using System;
 using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
@@ -58,6 +59,13 @@ namespace Debugger.MetaData
 		public override uint MetadataToken {
 			get {
 				return fieldProps.Token;
+			}
+		}
+		
+		/// <summary> The type of the field</summary>
+		public DebugType Type {
+			get {
+				return DebugType.Create(this.Module, fieldProps.SigBlob.GetData(), this.DeclaringType);
 			}
 		}
 		
