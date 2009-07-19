@@ -276,6 +276,7 @@
     <Compile Include="Parsing\ParseClassWithMethodTestFixture.cs" />
     <Compile Include="Parsing\ParseImportTestFixture.cs" />
     <Compile Include="Parsing\ParseInvalidPythonCodeTestFixture.cs" />
+    <Compile Include="Parsing\ParseMethodsWithNoClassTestFixture.cs" />
     <Compile Include="Parsing\ParserTestFixture.cs" />
     <Compile Include="Parsing\ParseSingleClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidClassTestFixture.cs" />
