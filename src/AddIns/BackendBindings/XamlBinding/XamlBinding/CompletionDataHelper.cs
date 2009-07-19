@@ -31,6 +31,14 @@ namespace ICSharpCode.XamlBinding
 			new SpecialCompletionItem("?")
 		};
 		
+		// [XAML 2009]
+		static readonly List<string> xamlBuiltInTypes = new List<string> {
+			"Object", "Boolean", "Char", 	"String", "Decimal", "Single", "Double",
+			"Int16", "Int32", "Int64", "TimeSpan", "Uri", 	"Byte", "Array", "List", "Dictionary",
+			// This is no built in type, but a markup extension
+			"Reference"
+		};
+		
 		static readonly List<ICompletionItem> standardAttributes = new List<ICompletionItem> {
 			new SpecialCompletionItem("xmlns:")
 		};
@@ -48,6 +56,9 @@ namespace ICSharpCode.XamlBinding
 		
 		public const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
 		public const string WpfXamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+		public const string MarkupCompatibilityNamespace = "http://schemas.openxmlformats.org/markup-compatibility/2006";
+		
+		public const bool EnableXaml2009 = true;
 		
 		public static XamlContext ResolveContext(string text, string fileName, int line, int col)
 		{
@@ -131,6 +142,10 @@ namespace ICSharpCode.XamlBinding
 			var list = new List<ICompletionItem>();
 			
 			string xamlPrefix = Utils.GetXamlNamespacePrefix(context);
+			string xKey = string.IsNullOrEmpty(xamlPrefix) ? "" : xamlPrefix + ":";
+			
+			if (xamlBuiltInTypes.Concat(XamlNamespaceAttributes).Select(s => xKey + s).Contains(lastElement.FullXmlName))
+				return emptyList;
 			
 			if (lastElement.Name.EndsWith(".") || context.PressedKey == '.') {
 				if (context.ParentElement.Name.StartsWith(lastElement.Name.TrimEnd('.')))
@@ -335,15 +350,25 @@ namespace ICSharpCode.XamlBinding
 				}
 			}
 			
+			string xamlPrefix = Utils.GetXamlNamespacePrefix(context);
+			
+			var xamlItems = XamlNamespaceAttributes.AsEnumerable();
+			
+			if (EnableXaml2009)
+				xamlItems = xamlBuiltInTypes.Concat(XamlNamespaceAttributes);
+			
+			foreach (string item in xamlItems)
+				result.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, item));
+			
 			return result;
 		}
 
-		public static IList<ICompletionItem> CreateListOfMarkupExtensions(XamlCompletionContext context)
+		public static IEnumerable<ICompletionItem> CreateListOfMarkupExtensions(XamlCompletionContext context)
 		{
 			var list = CreateElementList(context, true);
 			
-			var neededItems = list
-				.Where(i => ((i as XamlCodeCompletionItem).Entity as IClass).DerivesFrom("System.Windows.Markup.MarkupExtension"));
+			var neededItems = list.OfType<XamlCodeCompletionItem>()
+				.Where(i => (i.Entity as IClass).DerivesFrom("System.Windows.Markup.MarkupExtension"));
 			neededItems
 				.ForEach(
 					selItem => {
@@ -355,7 +380,7 @@ namespace ICSharpCode.XamlBinding
 					}
 				);
 			
-			return neededItems.ToList();
+			return neededItems.Cast<ICompletionItem>().Add(new XamlCompletionItem(Utils.GetXamlNamespacePrefix(context), XamlNamespace, "Reference"));
 		}
 
 		public static XamlCompletionItemList CreateListForContext(XamlCompletionContext context)
@@ -559,18 +584,22 @@ namespace ICSharpCode.XamlBinding
 			
 			switch (c.ClassType) {
 				case ClassType.Class:
-					if (c.FullyQualifiedName == "System.String") {
-						// return nothing
-					} else if (c.FullyQualifiedName == "System.Type") {
-						foreach (var item in CreateElementList(context, true))
-							yield return item;
-					} else {
-						if (context.Description == XamlContextDescription.InMarkupExtension) {
-							foreach (IField f in c.Fields)
-								yield return new XamlCodeCompletionItem(textPrefix + f.Name, f);
-							foreach (IProperty p in c.Properties.Where(pr => pr.IsPublic && pr.IsStatic && pr.CanGet))
-								yield return new XamlCodeCompletionItem(textPrefix + p.Name, p);
-						}
+					switch (c.FullyQualifiedName) {
+						case "System.String":
+							// return nothing
+							break;
+						case "System.Type":
+							foreach (var item in CreateElementList(context, true))
+								yield return item;
+							break;
+						default:
+							if (context.Description == XamlContextDescription.InMarkupExtension) {
+								foreach (IField f in c.Fields)
+									yield return new XamlCodeCompletionItem(textPrefix + f.Name, f);
+								foreach (IProperty p in c.Properties.Where(pr => pr.IsPublic && pr.IsStatic && pr.CanGet))
+									yield return new XamlCodeCompletionItem(textPrefix + p.Name, p);
+							}
+							break;
 					}
 					break;
 				case ClassType.Enum:

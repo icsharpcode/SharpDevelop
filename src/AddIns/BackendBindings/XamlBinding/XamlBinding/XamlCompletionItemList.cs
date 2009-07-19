@@ -87,6 +87,9 @@ namespace ICSharpCode.XamlBinding
 									context.Editor.Caret.Offset = oldOffset;
 								}
 							}
+							
+							if (cItem.Text.EndsWith("="))
+								XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 						}
 					}
 				}
@@ -100,7 +103,7 @@ namespace ICSharpCode.XamlBinding
 					context.Editor.Caret.Offset++;
 				}
 				
-				if (item is XamlCompletionItem) {
+				if (item is XamlCompletionItem && xamlContext.Description == XamlContextDescription.InTag) {
 					XamlCompletionItem xamlItem = item as XamlCompletionItem;
 					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 					context.Editor.Caret.Offset--;
