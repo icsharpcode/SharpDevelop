@@ -80,5 +80,59 @@ namespace ICSharpCode.XamlBinding.Tests
 			Assert.AreEqual("{Binding Value, Path=Control}", XmlParser.GetAttributeValueAtIndex(xaml, offset));
 			Assert.AreEqual("val1", XmlParser.GetAttributeNameAtIndex(xaml, offset));
 		}
+		
+		[Test]
+		public void AtEqualSignTest1()
+		{
+			string xaml = "<Test val1 = \"{Binding Value, Path=Control}\" />";
+			int offset = "<Test val1 =".Length;
+			
+			Assert.AreEqual("val1", XmlParser.GetAttributeNameAtIndex(xaml, offset));
+		}
+		
+		[Test]
+		public void AtEqualSignTest2()
+		{
+			string xaml = "<Test val1 = \"{Binding Value, Path=Control}\" />";
+			int offset = "<Te".Length;
+			
+			Assert.AreEqual("", XmlParser.GetAttributeNameAtIndex(xaml, offset));
+		}
+		
+		[Test]
+		public void AtEqualSignTest3()
+		{
+			string xaml = "<Test val1   = \"{Binding Value, Path=Control}\" />";
+			int offset = "<Test val1   = \"{Binding Value, Path".Length;
+			
+			Assert.AreEqual("val1", XmlParser.GetAttributeNameAtIndex(xaml, offset));
+		}
+		
+		[Test]
+		public void AtEqualSignTest4()
+		{
+			string xaml = "<Test val1   = \"{Binding Value, Path=Control}\" />";
+			int offset = "<Test val1  ".Length;
+			
+			Assert.AreEqual("val1", XmlParser.GetAttributeNameAtIndex(xaml, offset));
+		}
+		
+		[Test]
+		public void AtEqualSignTest5()
+		{
+			string xaml = "<Test val1   = \"{Binding Value, Path=Control}\" />";
+			int offset = "<Test val1   = \"{Binding Value, Path=".Length;
+			
+			Assert.AreEqual("val1", XmlParser.GetAttributeNameAtIndex(xaml, offset));
+		}
+		
+		[Test]
+		public void AtEqualSignTest6()
+		{
+			string xaml = "<Test val1   = \"{Binding Value, Path=Control}\" />";
+			int offset = "<Test val1   = \"{Binding Value, Path=C".Length;
+			
+			Assert.AreEqual("val1", XmlParser.GetAttributeNameAtIndex(xaml, offset));
+		}
 	}
 }

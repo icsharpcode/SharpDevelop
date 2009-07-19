@@ -136,7 +136,12 @@ namespace ICSharpCode.XamlBinding
 		
 		public static string GetXamlNamespacePrefix(XamlContext context)
 		{
-			var item = context.XmlnsDefinitions.FirstOrDefault(i => i.Value == CompletionDataHelper.XamlNamespace);
+			return GetNamespacePrefix(CompletionDataHelper.XamlNamespace, context);
+		}
+		
+		public static string GetNamespacePrefix(string namespaceUri, XamlContext context)
+		{
+			var item = context.XmlnsDefinitions.FirstOrDefault(i => i.Value == namespaceUri);
 
 			if (item.Key != null)
 				return item.Key;
@@ -206,7 +211,7 @@ namespace ICSharpCode.XamlBinding
 			
 			return (offsetStack.Count > 0) ? offsetStack.Pop() : -1;
 		}
-				
+		
 		static QualifiedNameWithLocation ResolveCurrentElement(string text, int offset, Dictionary<string, string> xmlnsDefinitions)
 		{
 			if (offset < 0)
@@ -241,15 +246,22 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		public 	static void LookUpInfoAtTarget(string fileContent, int caretLine, int caretColumn, int offset,
-		                                       out Dictionary<string, string> xmlns, out QualifiedNameWithLocation active,
+		                                       out Dictionary<string, string> xmlns, out List<string> ignoredXmlns, out QualifiedNameWithLocation active,
 		                                       out QualifiedNameWithLocation parent, out int activeElementStartIndex, out bool isRoot)
-		{			
+		{
 			Stack<QualifiedNameWithLocation> stack = new Stack<QualifiedNameWithLocation>();
 			
 			isRoot = false;
 
 			XmlTextReader r = new XmlTextReader(new StringReader(fileContent));
 			r.XmlResolver = null;
+			
+			char[] separators = new char[] {
+				' ', '\t', '\n', '\r'
+			};
+			
+			ignoredXmlns = new List<string>();
+			
 			try {
 				r.WhitespaceHandling = WhitespaceHandling.Significant;
 				// move reader to correct position
@@ -261,6 +273,18 @@ namespace ICSharpCode.XamlBinding
 						case XmlNodeType.Element:
 							if (!r.IsEmptyElement)
 								stack.Push(new QualifiedNameWithLocation(r.LocalName, r.NamespaceURI, r.Prefix, r.LineNumber, r.LinePosition));
+							if (r.HasAttributes) {
+								r.MoveToFirstAttribute();
+								do {
+									if (r.NamespaceURI == CompletionDataHelper.MarkupCompatibilityNamespace) {
+										if (r.LocalName == "Ignorable") {
+											ignoredXmlns.AddRange(r.Value.Split(separators, StringSplitOptions.RemoveEmptyEntries));
+										} else if (r.LocalName == "ProcessContent") {
+											// TODO : add support for ProcessContent
+										}
+									}
+								} while (r.MoveToNextAttribute());
+							}
 							break;
 					}
 				}

@@ -39,10 +39,11 @@ namespace ICSharpCode.XamlBinding
 		public string FullXmlName {
 			get {
 				string name = Prefix;
+				
 				if (!string.IsNullOrEmpty(name))
 					name += ":";
 				
-				name += Name;
+				name += Name;				
 				return name;
 			}
 		}

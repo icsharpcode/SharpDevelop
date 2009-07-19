@@ -21,6 +21,9 @@ namespace ICSharpCode.XamlBinding
 		public Brush NamespaceDeclarationForegroundBrush { get; set; }
 		public Brush NamespaceDeclarationBackgroundBrush { get; set; }
 		
+		public Brush IgnoredForegroundBrush { get; set; }
+		public Brush IgnoredBackgroundBrush { get; set; }
+		
 		public XamlColorizerSettings()
 		{
 			this.PropertyBackgroundBrush = Brushes.Transparent;
@@ -31,6 +34,9 @@ namespace ICSharpCode.XamlBinding
 			
 			this.NamespaceDeclarationBackgroundBrush = Brushes.Transparent;
 			this.NamespaceDeclarationForegroundBrush = Brushes.Orange;
+			
+			this.IgnoredBackgroundBrush = Brushes.Transparent;
+			this.IgnoredForegroundBrush = Brushes.LightGray;
 		}
 	}
 }

@@ -264,6 +264,15 @@ namespace ICSharpCode.XmlEditor
 							ignoreEqualsSign = true;
 						} else if (ch == '=') {
 							// Do nothing.
+						} else if (char.IsWhiteSpace(ch)) {
+							// fix if index is after an equals sign
+							int oldIndex =  index;
+							// move back to first non-whitespace
+							while (index > -1 && char.IsWhiteSpace(xml[index]))
+								index--;
+							// if no equals sign is found reset index
+							if (index > -1 && xml[index] != '=')
+								index = oldIndex;
 						} else {
 							return String.Empty;
 						}

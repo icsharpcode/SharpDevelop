@@ -47,7 +47,7 @@ namespace ICSharpCode.XamlBinding
 				case XamlContextDescription.InTag:
 					return ResolveAttribute(resolveExpression) ?? ResolveElementName(resolveExpression);
 				case XamlContextDescription.InAttributeValue:
-					MemberResolveResult mrr = ResolveAttribute(context.AttributeName);
+					MemberResolveResult mrr = ResolveAttribute(context.AttributeName.FullXmlName);
 					if (mrr != null) {
 						var rr = ResolveAttributeValue(mrr.ResolvedMember, resolveExpression) ?? mrr;
 						return rr;

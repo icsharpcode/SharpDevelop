@@ -71,8 +71,27 @@ namespace ICSharpCode.XamlBinding
 			
 			public bool CompletedSuccessfully {
 				get {
-					return task.IsCompleted && task.Status == Tasks.TaskStatus.RanToCompletion;
+					return task.IsCompleted && task.Status == Tasks.TaskStatus.RanToCompletion && !Invalid;
 				}
+			}
+			
+			public bool Invalid { get; set; }
+			
+			public void Invalidate(string fileContent, string fileName, DocumentLine currentLine, TextView textView)
+			{
+				task.Cancel();
+				this.Invalid = false;
+				
+				this.FileContent = fileContent;
+				this.FileName = fileName;
+				this.textView = textView;
+				
+				this.LineNumber = currentLine.LineNumber;
+				this.LineText = currentLine.Text;
+				this.Offset = currentLine.Offset;
+				
+				this.task = new System.Threading.Tasks.Task(Process);
+				this.task.Start();
 			}
 			
 			void Process()
@@ -82,6 +101,9 @@ namespace ICSharpCode.XamlBinding
 				foreach (HighlightingInfo info in GetInfo()) {
 					IMember member = null;
 					
+					if (task.IsCancellationRequested)
+						return;
+					
 					if (!info.Token.StartsWith("xmlns")) {
 						MemberResolveResult rr = new XamlResolver().Resolve(info.GetExpressionResult(), info.Context.ParseInformation, FileContent) as MemberResolveResult;
 						member = (rr != null) ? rr.ResolvedMember : null;
@@ -90,7 +112,10 @@ namespace ICSharpCode.XamlBinding
 					results.Add(new Highlight() { Member = member, Info = info });
 				}
 				
-				this.results = results;
+				lock (this) {
+					this.results = results;
+					this.Invalid = false;
+				}
 				
 				WorkbenchSingleton.SafeThreadAsyncCall(InvokeRedraw);
 			}
@@ -113,9 +138,9 @@ namespace ICSharpCode.XamlBinding
 					index = LineText.IndexOfAny(index + 1, '=', '.');
 					if (index > -1) {
 						context = CompletionDataHelper.ResolveContext(FileContent, FileName, LineNumber, index);
-						string elementName = context.ActiveElement.Name;
+						string elementName = context.ActiveElement.FullXmlName;
 						int propertyNameIndex = elementName.IndexOf('.');
-						string attribute = context.AttributeName;
+						string attribute = (context.AttributeName != null) ? context.AttributeName.FullXmlName : string.Empty;
 						if (attribute.Contains(".")) {
 							int tmp = attribute.IndexOf('.');
 							index += attribute.Substring(tmp).Length;
@@ -185,20 +210,51 @@ namespace ICSharpCode.XamlBinding
 					}
 				}
 			}
+			ColorizeInvalidated();
 		}
 		
 		void ColorizeMember(HighlightingInfo info, DocumentLine line, IMember member)
 		{
-			if (member != null) {
-				if (member is IEvent)
-					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
-				else
-					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
-			} else {
-				if (info.Token.StartsWith("xmlns"))
-					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
-				else
-					Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);
+			try {
+				if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":"))) {
+					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightIgnored);
+				} else {
+					if (member != null) {
+						if (member is IEvent)
+							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
+						else
+							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
+					} else {
+						if (info.Token.StartsWith("xmlns") || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":"))
+							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
+						else
+							Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);
+					}
+				}
+			} catch (ArgumentOutOfRangeException) {
+				highlightCache.Remove(line);
+			}
+		}
+		
+		void ColorizeInvalidated()
+		{
+			foreach (var item in highlightCache) {
+				if (item.Value.Invalid) {
+					item.Value.Invalidate(this.fileContent, this.fileName, item.Key, this.TextView);
+				}
+			}
+		}
+				
+		void InvalidateLines(DocumentLine line)
+		{
+			DocumentLine current = line;
+			while (current != null) {
+				HighlightTask task;
+				if (highlightCache.TryGetValue(current, out task)) {
+					task.Invalid = true;
+				}
+
+				current = current.NextLine;
 			}
 		}
 		
@@ -220,14 +276,22 @@ namespace ICSharpCode.XamlBinding
 			element.TextRunProperties.SetBackgroundBrush(settings.NamespaceDeclarationBackgroundBrush);
 		}
 		
+		void HighlightIgnored(VisualLineElement element)
+		{
+			element.TextRunProperties.SetForegroundBrush(settings.IgnoredForegroundBrush);
+			element.TextRunProperties.SetBackgroundBrush(settings.IgnoredBackgroundBrush);
+		}
+		
 		public void BeforeRemoveLine(DocumentLine line)
 		{
 			highlightCache.Remove(line);
+			InvalidateLines(line.NextLine);
 		}
 		
 		public void SetLineLength(DocumentLine line, int newTotalLength)
 		{
 			highlightCache.Remove(line);
+			InvalidateLines(line.NextLine);
 		}
 		
 		public void LineInserted(DocumentLine insertionPos, DocumentLine newLine)

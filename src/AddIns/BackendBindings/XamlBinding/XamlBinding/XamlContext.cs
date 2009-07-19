@@ -21,7 +21,7 @@ namespace ICSharpCode.XamlBinding
 	public class XamlContext : ExpressionContext {
 		public QualifiedNameWithLocation ActiveElement { get; set; }
 		public QualifiedNameWithLocation ParentElement { get; set; }
-		public string AttributeName { get; set; }
+		public QualifiedNameWithLocation AttributeName { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public string RawAttributeValue { get; set; }
 		public int ValueStartOffset { get; set; }
@@ -29,6 +29,7 @@ namespace ICSharpCode.XamlBinding
 		public Dictionary<string, string> XmlnsDefinitions { get; set; }
 		public ParseInformation ParseInformation { get; set; }
 		public bool InRoot { get; set; }
+		public List<string> IgnoredXmlns { get; set; }
 		
 		public XamlContext() {}
 		
@@ -53,6 +54,7 @@ namespace ICSharpCode.XamlBinding
 			this.ValueStartOffset = context.ValueStartOffset;
 			this.XmlnsDefinitions = context.XmlnsDefinitions;
 			this.InRoot = context.InRoot;
+			this.IgnoredXmlns = context.IgnoredXmlns;
 		}
 		
 		public char PressedKey { get; set; }	

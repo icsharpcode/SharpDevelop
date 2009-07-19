@@ -70,6 +70,15 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
+		public void ElementNameWithDotTest1()
+		{
+			string xaml = "<Grid>\n\t<Grid.ColumnDefinitions />\n</Grid>";
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 2, 12);
+			
+			Assert.AreEqual("Grid.ColumnDefinitions", context.ActiveElement.Name);
+		}
+		
+		[Test]
 		public void ContextAtTagDescriptionTest3()
 		{
 			string xaml = File.ReadAllText("Test4.xaml");
@@ -106,6 +115,16 @@ namespace ICSharpCode.XamlBinding.Tests
 			
 			Assert.AreEqual("Window", context.ActiveElement.Name);
 			Assert.AreEqual(null, context.ParentElement);
+		}
+		
+		[Test]
+		public void IgnoredXmlnsTest1()
+		{
+			string xaml = File.ReadAllText("Test2.xaml");
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 11, 24);
+			
+			Assert.AreEqual(1, context.IgnoredXmlns.Count);
+			Assert.AreEqual("d", context.IgnoredXmlns[0]);
 		}
 	}
 }
