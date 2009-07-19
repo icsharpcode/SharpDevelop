@@ -80,8 +80,10 @@ namespace Debugger.Tests {
 				-i
 				++i
 				i++
+				i
 				i += 1
 				i
+				~i
 				flag
 				!flag
 			";
@@ -161,13 +163,15 @@ namespace Debugger.Tests {
     <Eval> list = List&lt;Char&gt; {H, e, l, l, o, *, 4} </Eval>
     <Eval> </Eval>
     <Eval> i = 10 = 10 </Eval>
-    <Eval> -i = Error: Language feature not implemented: UnaryOperatorExpression </Eval>
-    <Eval> ++i = Error: Language feature not implemented: UnaryOperatorExpression </Eval>
-    <Eval> i++ = Error: Language feature not implemented: UnaryOperatorExpression </Eval>
-    <Eval> i += 1 = 11 </Eval>
-    <Eval> i = 11 </Eval>
+    <Eval> -i = -10 </Eval>
+    <Eval> ++i = 11 </Eval>
+    <Eval> i++ = 11 </Eval>
+    <Eval> i = 12 </Eval>
+    <Eval> i += 1 = 13 </Eval>
+    <Eval> i = 13 </Eval>
+    <Eval> ~i = -14 </Eval>
     <Eval> flag = True </Eval>
-    <Eval> !flag = Error: Language feature not implemented: UnaryOperatorExpression </Eval>
+    <Eval> !flag = False </Eval>
     <Eval> </Eval>
     <ProcessExited />
   </Test>

@@ -113,7 +113,7 @@ namespace Debugger.AddIn
 			
 			Value right;
 			if (op == BinaryOperatorType.None) {
-				right = ((Value)assignmentExpression.Right.AcceptVisitor(this, null)).GetPermanentReference();
+				right = (Value)assignmentExpression.Right.AcceptVisitor(this, null);
 			} else {
 				BinaryOperatorExpression binOpExpr = new BinaryOperatorExpression();
 				binOpExpr.Left  = assignmentExpression.Left;
@@ -259,6 +259,63 @@ namespace Debugger.AddIn
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			return context.GetThisValue();
+		}
+		
+		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
+		{
+			Value value = ((Value)unaryOperatorExpression.Expression.AcceptVisitor(this, null));
+			
+			if (!value.Type.IsPrimitive) throw new GetValueException("Primitive value expected");
+			
+			object val = value.PrimitiveValue;
+			UnaryOperatorType op = unaryOperatorExpression.Op;
+			
+			object result = null;
+			
+			// Bool operation
+			if (val is bool) {
+				bool a = Convert.ToBoolean(val);
+				switch (op) {
+					case UnaryOperatorType.Not: result = !a; break;
+				}
+			}
+			
+			// Float operation
+			if (val is double || val is float) {
+				double a = Convert.ToDouble(val);
+				switch (op) {
+					case UnaryOperatorType.Minus: result = -a; break;
+					case UnaryOperatorType.Plus:  result = +a; break;
+				}
+			}
+		
+			// Integer operation
+			if (val is byte || val is sbyte || val is int || val is uint || val is long || val is ulong) {
+				long a = Convert.ToInt64(val);
+				switch (op) {
+					case UnaryOperatorType.Decrement:     result = a - 1; break;
+					case UnaryOperatorType.Increment:     result = a + 1; break;
+					case UnaryOperatorType.PostDecrement: result = a; break;
+					case UnaryOperatorType.PostIncrement: result = a; break;
+					case UnaryOperatorType.Minus:         result = -a; break;
+					case UnaryOperatorType.Plus:          result = a; break;
+					case UnaryOperatorType.BitNot:        result = ~a; break;
+				}
+				switch (op) {
+					case UnaryOperatorType.Decrement:
+					case UnaryOperatorType.PostDecrement:
+						VisitAssignmentExpression(new AssignmentExpression(unaryOperatorExpression.Expression, AssignmentOperatorType.Subtract, new PrimitiveExpression(1)), null);
+						break;
+					case UnaryOperatorType.Increment:
+					case UnaryOperatorType.PostIncrement:
+						VisitAssignmentExpression(new AssignmentExpression(unaryOperatorExpression.Expression, AssignmentOperatorType.Add, new PrimitiveExpression(1)), null);
+						break;
+				}
+			}
+			
+			if (result == null) throw new GetValueException("Unsuppored unary expression " + op);
+			
+			return Eval.CreateValue(context.Process, result);
 		}
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
