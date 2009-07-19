@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +13,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media.TextFormatting;
-
 using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Rendering
@@ -173,8 +173,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public int GetVisualColumn(int relativeTextOffset)
 		{
-			if (relativeTextOffset < 0)
-				throw new ArgumentOutOfRangeException("relativeTextOffset", relativeTextOffset, "Value must be non-negative");
+			ThrowUtil.CheckNotNegative(relativeTextOffset, "relativeTextOffset");
 			foreach (VisualLineElement element in elements) {
 				if (element.RelativeTextOffset <= relativeTextOffset
 				    && element.RelativeTextOffset + element.DocumentLength >= relativeTextOffset)
@@ -190,8 +189,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public int GetRelativeOffset(int visualColumn)
 		{
-			if (visualColumn < 0)
-				throw new ArgumentOutOfRangeException("visualColumn", visualColumn, "Value must be non-negative");
+			ThrowUtil.CheckNotNegative(visualColumn, "visualColumn");
 			int documentLength = 0;
 			foreach (VisualLineElement element in elements) {
 				if (element.VisualColumn <= visualColumn
@@ -209,8 +207,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public TextLine GetTextLine(int visualColumn)
 		{
-			if (visualColumn < 0 || visualColumn > VisualLength)
-				throw new ArgumentOutOfRangeException("visualColumn", visualColumn, "Value must be between 0 and " + VisualLength);
+			ThrowUtil.CheckInRangeInclusive(visualColumn, "visualColumn", 0, VisualLength);
 			if (visualColumn == VisualLength)
 				return TextLines[TextLines.Count - 1];
 			foreach (TextLine line in TextLines) {

@@ -14,7 +14,7 @@ using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 {
 	using ICSharpCode.AvalonEdit;
 	

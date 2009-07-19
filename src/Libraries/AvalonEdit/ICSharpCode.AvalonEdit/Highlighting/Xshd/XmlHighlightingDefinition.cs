@@ -129,6 +129,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				if (ruleSet.IgnoreCase != null)
 					ignoreCase = ruleSet.IgnoreCase.Value;
 				
+				rs.Name = ruleSet.Name;
+				
 				foreach (XshdElement element in ruleSet.Elements) {
 					object o = element.AcceptVisitor(this);
 					HighlightingRuleSet elementRuleSet = o as HighlightingRuleSet;
@@ -168,6 +170,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				else
 					c = new HighlightingColor();
 				
+				c.Name = color.Name;
 				c.Foreground = color.Foreground;
 				c.FontStyle = color.FontStyle;
 				c.FontWeight = color.FontWeight;

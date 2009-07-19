@@ -24,5 +24,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// Gets/Sets the highlighting color.
 		/// </summary>
 		public HighlightingColor Color { get; set; }
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return "[" + GetType().Name + " " + Regex + "]";
+		}
 	}
 }

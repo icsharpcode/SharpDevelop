@@ -13,6 +13,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// <summary>
 	/// A collection that cannot contain null values.
 	/// </summary>
+	[Serializable]
 	public class NullSafeCollection<T> : Collection<T> where T : class
 	{
 		/// <inheritdoc/>

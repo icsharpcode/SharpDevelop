@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 
 using ICSharpCode.NRefactory;
@@ -369,57 +370,47 @@ namespace CSharpBinding.FormattingStrategy
 						return;
 					}
 					
-					/*
-					int addCursorOffset = 0;
-					if (lineAbove.HighlightSpanStack != null && !lineAbove.HighlightSpanStack.IsEmpty) {
-						if (!lineAbove.HighlightSpanStack.Peek().StopEOL) {	// case for /* style comments
-							int index = lineAboveText.IndexOf("/*");
-							if (index > 0) {
-								StringBuilder indentation = new StringBuilder(GetIndentation(textArea, lineNr - 1));
-								for (int i = indentation.Length; i < index; ++ i) {
-									indentation.Append(' ');
-								}
-								//// adding curline text
-								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation.ToString() + " * " + curLineText);
-								textArea.Caret.Column = indentation.Length + 3 + curLineText.Length;
-								return;
-							}
-							
-							index = lineAboveText.IndexOf("*");
-							if (index > 0) {
-								StringBuilder indentation = new StringBuilder(GetIndentation(textArea, lineNr - 1));
-								for (int i = indentation.Length; i < index; ++ i) {
-									indentation.Append(' ');
-								}
-								//// adding curline if present
-								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation.ToString() + "* " + curLineText);
-								textArea.Caret.Column = indentation.Length + 2 + curLineText.Length;
-								return;
-							}
-						} else { // don't handle // lines, because they're only one lined comments
-							int indexAbove = lineAboveText.IndexOf("///");
-							int indexNext  = nextLineText.IndexOf("///");
-							if (indexAbove > 0 && (indexNext != -1 || indexAbove + 4 < lineAbove.Length)) {
-								StringBuilder indentation = new StringBuilder(GetIndentation(textArea, lineNr - 1));
-								for (int i = indentation.Length; i < indexAbove; ++ i) {
-									indentation.Append(' ');
-								}
-								//// adding curline text if present
-								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation.ToString() + "/// " + curLineText);
-								textArea.Caret.Column = indentation.Length + 4;
-								return;
-							}
-							
-							if (IsInNonVerbatimString(lineAboveText, curLineText)) {
-								textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
-								                         "\" +");
-								curLine = textArea.Document.GetLineSegment(lineNr);
-								textArea.Document.Insert(curLine.Offset, "\"");
-								addCursorOffset = 1;
-							}
+					ISyntaxHighlighter highlighter = textArea.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
+					bool isInMultilineComment = false;
+					bool isInMultilineString = false;
+					if (highlighter != null && lineAbove != null) {
+						var spanStack = highlighter.GetSpanColorNamesFromLineStart(lineNr);
+						isInMultilineComment = spanStack.Contains(SyntaxHighligherKnownSpanNames.Comment);
+						isInMultilineString = spanStack.Contains(SyntaxHighligherKnownSpanNames.String);
+					}
+					bool isInNormalCode = !(isInMultilineComment || isInMultilineString);
+					
+					if (lineAbove != null && isInMultilineComment) {
+						string lineAboveTextTrimmed = lineAboveText.TrimStart();
+						if (lineAboveTextTrimmed.StartsWith("/*", StringComparison.Ordinal)) {
+							textArea.Document.Insert(cursorOffset, " * ");
+							return;
 						}
-					}*/
-					if (textArea.Options.AutoInsertBlockEnd && lineAbove != null) {
+						
+						if (lineAboveTextTrimmed.StartsWith("*", StringComparison.Ordinal)) {
+							textArea.Document.Insert(cursorOffset, "* ");
+							return;
+						}
+					}
+					
+					if (lineAbove != null && isInNormalCode) {
+						IDocumentLine nextLine  = lineNr + 1 <= textArea.Document.TotalNumberOfLines ? textArea.Document.GetLine(lineNr + 1) : null;
+						string nextLineText = (nextLine != null) ? nextLine.Text : "";
+						
+						int indexAbove = lineAboveText.IndexOf("///");
+						int indexNext  = nextLineText.IndexOf("///");
+						if (indexAbove > 0 && (indexNext != -1 || indexAbove + 4 < lineAbove.Length)) {
+							textArea.Document.Insert(cursorOffset, "/// ");
+							return;
+						}
+						
+						if (IsInNonVerbatimString(lineAboveText, curLineText)) {
+							textArea.Document.Insert(cursorOffset, "\"");
+							textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
+							                         "\" +");
+						}
+					}
+					if (textArea.Options.AutoInsertBlockEnd && lineAbove != null && isInNormalCode) {
 						string oldLineText = lineAbove.Text;
 						if (oldLineText.EndsWith("{")) {
 							if (NeedCurlyBracket(textArea.Document.Text)) {

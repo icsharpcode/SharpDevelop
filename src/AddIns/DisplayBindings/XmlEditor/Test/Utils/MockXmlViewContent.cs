@@ -8,6 +8,7 @@
 using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace XmlEditor.Tests.Utils

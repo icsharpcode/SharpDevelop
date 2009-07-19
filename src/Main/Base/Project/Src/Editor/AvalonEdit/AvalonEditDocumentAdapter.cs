@@ -10,7 +10,7 @@ using System.Diagnostics;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 {
 	/// <summary>
 	/// Wraps the AvalonEdit TextDocument to provide the IDocument interface.

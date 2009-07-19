@@ -39,14 +39,21 @@ namespace ICSharpCode.AvalonEdit.Utils
 			return val;
 		}
 		
+		public static int CheckInRangeInclusive(int val, string parameterName, int lower, int upper)
+		{
+			if (val < lower || val > upper)
+				throw new ArgumentOutOfRangeException(parameterName, val, "Expected: " + lower.ToString() + " <= " + parameterName + " <= " + upper.ToString());
+			return val;
+		}
+		
 		public static InvalidOperationException NoDocumentAssigned()
 		{
-			throw new InvalidOperationException("Document is null");
+			return new InvalidOperationException("Document is null");
 		}
 		
 		public static InvalidOperationException NoValidCaretPosition()
 		{
-			throw new InvalidOperationException("Could not find a valid caret position in the line");
+			return new InvalidOperationException("Could not find a valid caret position in the line");
 		}
 	}
 }

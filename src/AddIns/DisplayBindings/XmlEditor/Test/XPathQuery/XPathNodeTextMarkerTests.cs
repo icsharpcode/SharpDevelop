@@ -5,17 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Tests.Utils;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
-using System.Xml;
-using System.Xml.XPath;
+
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Tests.Utils;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.XPathQuery
 {

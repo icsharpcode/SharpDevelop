@@ -644,7 +644,20 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		/// <summary>
-		/// Runs text input.
+		/// Performs text input.
+		/// This raises the <see cref="TextEntering"/> event, replaces the selection with the text,
+		/// and then raises the <see cref="TextEntered"/> event.
+		/// </summary>
+		public void PerformTextInput(string text)
+		{
+			TextComposition textComposition = new TextComposition(InputManager.Current, this, text);
+			TextCompositionEventArgs e = new TextCompositionEventArgs(Keyboard.PrimaryDevice, textComposition);
+			e.RoutedEvent = TextInputEvent;
+			PerformTextInput(e);
+		}
+		
+		/// <summary>
+		/// Performs text input.
 		/// This raises the <see cref="TextEntering"/> event, replaces the selection with the text,
 		/// and then raises the <see cref="TextEntered"/> event.
 		/// </summary>

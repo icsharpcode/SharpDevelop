@@ -17,6 +17,7 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// Markup extension that retrieves localized resource strings.
 	/// </summary>
+	[MarkupExtensionReturnType(typeof(string))]
 	public class LocalizeExtension : MarkupExtension
 	{
 		public LocalizeExtension(string key)

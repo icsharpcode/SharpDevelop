@@ -26,14 +26,24 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		}
 		
 		/// <summary>
+		/// Gets/Sets the name of the rule set.
+		/// </summary>
+		public string Name { get; set; }
+		
+		/// <summary>
 		/// Gets the list of spans.
 		/// </summary>
 		public IList<HighlightingSpan> Spans { get; private set; }
-		
 		
 		/// <summary>
 		/// Gets the list of rules.
 		/// </summary>
 		public IList<HighlightingRule> Rules { get; private set; }
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return "[" + GetType().Name + " " + Name + "]";
+		}
 	}
 }

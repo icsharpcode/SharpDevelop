@@ -7,12 +7,14 @@
 
 using System;
 using System.Windows.Markup;
+using System.Windows.Media.Imaging;
 
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
 	/// Markup extension that gets a BitmapSource object for a ResourceService bitmap.
 	/// </summary>
+	[MarkupExtensionReturnType(typeof(BitmapSource))]
 	public class GetBitmapExtension : MarkupExtension
 	{
 		public GetBitmapExtension(string key)

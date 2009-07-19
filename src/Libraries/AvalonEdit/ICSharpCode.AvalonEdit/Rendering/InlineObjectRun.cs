@@ -68,7 +68,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <param name="element">The <see cref="UIElement"/> to display.</param>
 		public InlineObjectRun(int length, TextRunProperties properties, UIElement element)
 		{
-			if (length < 0)
+			if (length <= 0)
 				throw new ArgumentOutOfRangeException("length", length, "Value must be positive");
 			if (properties == null)
 				throw new ArgumentNullException("properties");

@@ -5,18 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -261,7 +259,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return c.CompilationUnit.FileName == null || c.GetCompoundClass().IsSynthetic;
 		}
 		
-		public static ICSharpCode.TextEditor.TextEditorControl JumpToDefinition(IMember member)
+		public static ITextEditor JumpToDefinition(IMember member)
 		{
 			IViewContent viewContent = null;
 			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
@@ -275,11 +273,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
-			ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider tecp = viewContent as ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
-			return (tecp == null) ? null : tecp.TextEditorControl;
+			ITextEditorProvider tecp = viewContent as ITextEditorProvider;
+			return (tecp == null) ? null : tecp.TextEditor;
 		}
 		
-		public static ICSharpCode.TextEditor.TextEditorControl JumpBehindDefinition(IMember member)
+		public static ITextEditor JumpBehindDefinition(IMember member)
 		{
 			IViewContent viewContent = null;
 			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
@@ -293,8 +291,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
-			ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider tecp = viewContent as ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
-			return (tecp == null) ? null : tecp.TextEditorControl;
+			ITextEditorProvider tecp = viewContent as ITextEditorProvider;
+			return (tecp == null) ? null : tecp.TextEditor;
 		}
 		
 		public static bool CheckName(string name, string oldName)

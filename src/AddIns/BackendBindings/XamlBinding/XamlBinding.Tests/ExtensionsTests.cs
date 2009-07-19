@@ -6,8 +6,9 @@
 // </file>
 
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using NUnit.Framework;
 
 namespace ICSharpCode.XamlBinding.Tests

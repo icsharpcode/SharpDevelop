@@ -84,7 +84,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 			set {
 				if (value < 0)
-					throw new ArgumentOutOfRangeException("value", "Offset must be non-negative");
+					throw new ArgumentOutOfRangeException("value", "Offset must not be negative");
 				if (this.StartOffset != value) {
 					// need a copy of the variable because ownerTree.Remove() sets ownerTree to null
 					ISegmentTree ownerTree = this.ownerTree;
@@ -117,7 +117,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 			set {
 				if (value < 0)
-					throw new ArgumentOutOfRangeException("value", "value must not be negative");
+					throw new ArgumentOutOfRangeException("value", "Length must not be negative");
 				segmentLength = value;
 				if (ownerTree != null)
 					ownerTree.UpdateAugmentedData(this);

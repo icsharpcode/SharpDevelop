@@ -13,6 +13,8 @@ namespace ICSharpCode.AvalonEdit.Utils
 {
 	/// <summary>
 	/// An immutable stack.
+	/// 
+	/// Using 'foreach' on the stack will return the items from top to bottom (in the order they would be popped).
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
@@ -98,10 +100,10 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			StringBuilder b = new StringBuilder("[Stack");
 			foreach (T val in this) {
-				b.Append(" ");
+				b.Append(' ');
 				b.Append(val);
 			}
-			b.Append("]");
+			b.Append(']');
 			return b.ToString();
 		}
 	}

@@ -9,7 +9,7 @@
 using ICSharpCode.AvalonEdit.Document;
 using System;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 {
 	public class AvalonEditTextSourceAdapter : ITextBuffer
 	{

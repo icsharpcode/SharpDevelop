@@ -17,7 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -29,6 +28,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -170,6 +170,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			var iconBarMargin = new IconBarMargin(iconBarManager) { TextView = textView };
 			textEditor.TextArea.LeftMargins.Insert(0, iconBarMargin);
+			
+			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			
 			textEditor.TextArea.TextView.MouseRightButtonDown += textEditor_TextArea_TextView_MouseRightButtonDown;
 			textEditor.TextArea.TextView.ContextMenuOpening += textEditor_TextArea_TextView_ContextMenuOpening;
@@ -366,7 +368,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (e.Text.Length > 0 && !e.Handled) {
 				if (formattingStrategy != null) {
-					formattingStrategy.FormatLine(GetAdapterFromSender(sender), e.Text[0]);
+					char c = e.Text[0];
+					// When entering a newline, AvalonEdit might use either "\r\n" or "\n", depending on
+					// what was passed to TextArea.PerformTextInput. We'll normalize this to '\n'
+					// so that formatting strategies don't have to handle both cases.
+					if (c == '\r')
+						c = '\n';
+					formattingStrategy.FormatLine(GetAdapterFromSender(sender), c);
 				}
 			}
 		}

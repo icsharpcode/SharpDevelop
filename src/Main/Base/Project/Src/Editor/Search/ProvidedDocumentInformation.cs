@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
 using System;
-using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
 {

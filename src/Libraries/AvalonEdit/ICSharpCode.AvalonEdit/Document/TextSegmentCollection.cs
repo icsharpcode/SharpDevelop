@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -307,8 +308,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public ReadOnlyCollection<T> FindOverlappingSegments(int offset, int length)
 		{
-			if (length < 0)
-				throw new ArgumentOutOfRangeException("length", "length must be non-negative");
+			ThrowUtil.CheckNotNegative(length, "length");
 			List<T> results = new List<T>();
 			if (root != null) {
 				FindOverlappingSegments(results, root, offset, offset + length);

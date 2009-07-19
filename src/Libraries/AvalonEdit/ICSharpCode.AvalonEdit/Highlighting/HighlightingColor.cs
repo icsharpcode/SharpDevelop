@@ -19,6 +19,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	public class HighlightingColor
 	{
 		/// <summary>
+		/// Gets/Sets the name of the color.
+		/// </summary>
+		public string Name { get; set; }
+		
+		/// <summary>
 		/// Gets/sets the font weight. Null if the highlighting color does not change the font weight.
 		/// </summary>
 		public FontWeight? FontWeight { get; set; }
@@ -57,6 +62,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				b.Append("; ");
 			}
 			return b.ToString();
+		}
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return "[" + GetType() + " " + (string.IsNullOrEmpty(this.Name) ? ToCss() : this.Name) + "]";
 		}
 	}
 }

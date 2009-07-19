@@ -45,5 +45,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// Gets the color used for the text matching the end expression.
 		/// </summary>
 		public HighlightingColor EndColor { get; set; }
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return "[" + GetType().Name + " Start=" + StartExpression + ", End=" + EndExpression + "]";
+		}
 	}
 }

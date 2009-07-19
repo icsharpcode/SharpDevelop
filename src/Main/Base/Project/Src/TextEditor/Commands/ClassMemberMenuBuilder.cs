@@ -130,32 +130,38 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IField member = (IField)item.Tag;
-			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
+			ITextEditor textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			
-			CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
-			codeGen.InsertCodeAfter(member, new RefactoringDocumentAdapter(new TextEditorDocument(textEditor.Document)),
-			                        codeGen.CreateProperty(member, true, includeSetter));
-			ParserService.ParseCurrentViewContent();
+			if (textEditor != null) {
+				CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
+				codeGen.InsertCodeAfter(member, new RefactoringDocumentAdapter(textEditor.Document),
+				                        codeGen.CreateProperty(member, true, includeSetter));
+				ParserService.ParseCurrentViewContent();
+			}
 		}
 		
 		void CreateChangedEvent(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IProperty member = (IProperty)item.Tag;
-			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
-			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateChangedEvent(member, new RefactoringDocumentAdapter(new TextEditorDocument(textEditor.Document)));
-			ParserService.ParseCurrentViewContent();
+			ITextEditor textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
+			if (textEditor != null) {
+				member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateChangedEvent(member, new RefactoringDocumentAdapter(textEditor.Document));
+				ParserService.ParseCurrentViewContent();
+			}
 		}
 		
 		void CreateOnEventMethod(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IEvent member = (IEvent)item.Tag;
-			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
-			CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
-			codeGen.InsertCodeAfter(member, new RefactoringDocumentAdapter(new TextEditorDocument(textEditor.Document)),
-			                        codeGen.CreateOnEventMethod(member));
-			ParserService.ParseCurrentViewContent();
+			ITextEditor textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
+			if (textEditor != null) {
+				CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
+				codeGen.InsertCodeAfter(member, new RefactoringDocumentAdapter(textEditor.Document),
+				                        codeGen.CreateOnEventMethod(member));
+				ParserService.ParseCurrentViewContent();
+			}
 		}
 		
 		void GotoTagMember(object sender, EventArgs e)

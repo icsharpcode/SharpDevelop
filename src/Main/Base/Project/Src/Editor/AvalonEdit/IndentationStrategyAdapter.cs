@@ -9,7 +9,7 @@ using System;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Indentation;
 
-namespace ICSharpCode.SharpDevelop.Editor
+namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 {
 	/// <summary>
 	/// Implements AvalonEdit's <see cref="IIndentationStrategy"/> by forwarding calls

@@ -144,8 +144,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <remarks>GetSpanStack(0) is valid and will always return the empty stack.</remarks>
 		public SpanStack GetSpanStack(int lineNumber)
 		{
-			if (lineNumber < 0 || lineNumber > document.LineCount)
-				throw new ArgumentOutOfRangeException("lineNumber", lineNumber, "Value must be between 0 and " + document.LineCount);
+			ThrowUtil.CheckInRangeInclusive(lineNumber, "lineNumber", 0, document.LineCount);
 			if (firstInvalidLine <= lineNumber) {
 				CheckIsHighlighting();
 				isHighlighting = true;
@@ -263,7 +262,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 						Debug.Assert(index >= 0 && index < matches.Length);
 						if (matches[index].Index == position) {
 							throw new InvalidOperationException(
-								"A highlighting span matched 0 characters, which would cause an endlees loop.\n" +
+								"A highlighting span matched 0 characters, which would cause an endless loop.\n" +
 								"Change the highlighting definition so that either the start or the end regex matches at least one character.\n" +
 								"Start regex: " + poppedSpan.StartExpression + "\n" +
 								"End regex: " + poppedSpan.EndExpression);
@@ -312,7 +311,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					int ruleIndex = Array.IndexOf(matches, firstMatch);
 					if (firstMatch.Length == 0) {
 						throw new InvalidOperationException(
-							"A highlighting rule matched 0 characters, which would cause an endlees loop.\n" +
+							"A highlighting rule matched 0 characters, which would cause an endless loop.\n" +
 							"Change the highlighting definition so that the rule matches at least one character.\n" +
 							"Regex: " + rules[ruleIndex].Regex);
 					}
@@ -325,7 +324,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			position = until;
 		}
 		
-		static readonly HighlightingRuleSet emptyRuleSet = new HighlightingRuleSet();
+		static readonly HighlightingRuleSet emptyRuleSet = new HighlightingRuleSet() { Name = "EmptyRuleSet" };
 		
 		HighlightingRuleSet CurrentRuleSet {
 			get {

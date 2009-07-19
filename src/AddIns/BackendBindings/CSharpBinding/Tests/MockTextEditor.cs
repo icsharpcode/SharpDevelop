@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.AvalonEdit.Highlighting;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit;
@@ -13,6 +13,8 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace CSharpBinding.Tests
 {
@@ -32,6 +34,9 @@ namespace CSharpBinding.Tests
 			PropertyService.InitializeServiceForUnitTests();
 			pc = new DefaultProjectContent();
 			pc.ReferencedContents.Add(ParserService.DefaultProjectContentRegistry.Mscorlib);
+			
+			this.TextEditor.TextArea.TextView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(this.TextEditor));
+			this.TextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
 		}
 		
 		public override string FileName {
@@ -52,9 +57,10 @@ namespace CSharpBinding.Tests
 			get { return lastCompletionItemList; }
 		}
 		
-		public override void ShowCompletionWindow(ICompletionItemList data)
+		public override ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)
 		{
 			this.lastCompletionItemList = data;
+			return null;
 		}
 		
 		public override IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)

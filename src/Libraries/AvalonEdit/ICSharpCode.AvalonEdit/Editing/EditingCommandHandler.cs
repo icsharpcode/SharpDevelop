@@ -168,10 +168,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null) {
-				TextComposition textComposition = new TextComposition(InputManager.Current, textArea, "\n");
-				TextCompositionEventArgs e = new TextCompositionEventArgs(Keyboard.PrimaryDevice, textComposition);
-				e.RoutedEvent = TextArea.TextInputEvent;
-				textArea.PerformTextInput(e);
+				textArea.PerformTextInput("\n");
 				args.Handled = true;
 			}
 		}

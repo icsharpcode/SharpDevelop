@@ -17,6 +17,7 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// Markup extension that works like StringParser.Parse
 	/// </summary>
+	[MarkupExtensionReturnType(typeof(string))]
 	public class StringParseExtension : MarkupExtension
 	{
 		protected string text;

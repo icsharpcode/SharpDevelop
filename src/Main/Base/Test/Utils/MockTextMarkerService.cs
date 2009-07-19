@@ -8,9 +8,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Windows.Media;
 
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Tests.Utils
 {
