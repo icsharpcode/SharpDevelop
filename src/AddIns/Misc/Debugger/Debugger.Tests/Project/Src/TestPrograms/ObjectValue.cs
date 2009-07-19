@@ -80,8 +80,6 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="{Debugger.Tests.TestPrograms.ObjectValue}"
         Expression="val"
-        IsInvalid="False"
-        IsNull="False"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="Debugger.Tests.TestPrograms.ObjectValue" />
@@ -94,8 +92,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="c"
           Expression="val.privateField"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="c"
           Type="System.String" />
@@ -107,8 +103,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="d"
           Expression="val.publicFiled"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="d"
           Type="System.String" />
@@ -120,8 +114,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="a"
           Expression="val.basePublic"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="a"
           Type="System.String" />
@@ -133,8 +125,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="b"
           Expression="val.basePrivate"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="b"
           Type="System.String" />
@@ -146,8 +136,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="c"
           Expression="val.PublicProperty"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="c"
           Type="System.String" />
@@ -161,8 +149,6 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="{Debugger.Tests.TestPrograms.ObjectValue}"
         Expression="val"
-        IsInvalid="False"
-        IsNull="False"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="Debugger.Tests.TestPrograms.ObjectValue" />
@@ -175,8 +161,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="new private"
           Expression="val.privateField"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="new private"
           Type="System.String" />
@@ -188,8 +172,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="d"
           Expression="val.publicFiled"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="d"
           Type="System.String" />
@@ -201,8 +183,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="a"
           Expression="val.basePublic"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="a"
           Type="System.String" />
@@ -214,8 +194,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="b"
           Expression="val.basePrivate"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="b"
           Type="System.String" />
@@ -227,8 +205,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="new private"
           Expression="val.PublicProperty"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="new private"
           Type="System.String" />

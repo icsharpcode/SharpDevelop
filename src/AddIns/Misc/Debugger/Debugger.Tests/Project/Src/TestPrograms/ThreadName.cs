@@ -56,78 +56,54 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ThreadStartedEvent>
       <Thread
-        CurrentException="null"
-        CurrentExceptionIsUnhandled="False"
         CurrentExceptionType="0"
-        HasExited="False"
         IsAtSafePoint="True"
         IsInValidState="True"
-        IsMostRecentStackFrameNative="False"
         MostRecentStackFrame="System.AppDomain.SetupDomain"
-        MostRecentStackFrameWithLoadedSymbols="null"
         Name=""
         OldestStackFrame="System.AppDomain.SetupDomain"
         Priority="Normal"
-        RuntimeValue="? = null"
-        SelectedStackFrame="null"
-        Suspended="False" />
+        RuntimeValue="? = null" />
     </ThreadStartedEvent>
     <ModuleLoaded>ThreadName.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break ThreadName.cs:17,4-17,40</DebuggingPaused>
     <Thread>
       <Thread
-        CurrentException="null"
-        CurrentExceptionIsUnhandled="False"
         CurrentExceptionType="0"
-        HasExited="False"
         IsAtSafePoint="True"
         IsInValidState="True"
-        IsMostRecentStackFrameNative="False"
         MostRecentStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
         MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.ThreadName.Main"
         Name=""
         OldestStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
         Priority="AboveNormal"
         RuntimeValue="? = {System.Threading.Thread}"
-        SelectedStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
-        Suspended="False" />
+        SelectedStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main" />
     </Thread>
     <DebuggingPaused>Break ThreadName.cs:19,4-19,40</DebuggingPaused>
     <Thread>
       <Thread
-        CurrentException="null"
-        CurrentExceptionIsUnhandled="False"
         CurrentExceptionType="0"
-        HasExited="False"
         IsAtSafePoint="True"
         IsInValidState="True"
-        IsMostRecentStackFrameNative="False"
         MostRecentStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
         MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.ThreadName.Main"
         Name="ThreadName"
         OldestStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
         Priority="AboveNormal"
         RuntimeValue="? = {System.Threading.Thread}"
-        SelectedStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
-        Suspended="False" />
+        SelectedStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main" />
     </Thread>
     <ThreadStartedEvent>
       <Thread
-        CurrentException="null"
-        CurrentExceptionIsUnhandled="False"
         CurrentExceptionType="0"
-        HasExited="False"
         IsAtSafePoint="True"
         IsInValidState="True"
-        IsMostRecentStackFrameNative="False"
         MostRecentStackFrame="System.Threading.ReaderWriterLock.Finalize"
-        MostRecentStackFrameWithLoadedSymbols="null"
         Name=""
         OldestStackFrame="System.Threading.ReaderWriterLock.Finalize"
         Priority="Normal"
-        RuntimeValue="? = null"
-        SelectedStackFrame="null"
-        Suspended="False" />
+        RuntimeValue="? = null" />
     </ThreadStartedEvent>
     <ProcessExited />
   </Test>

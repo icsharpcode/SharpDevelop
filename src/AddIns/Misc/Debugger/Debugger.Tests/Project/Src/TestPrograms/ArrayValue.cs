@@ -62,8 +62,6 @@ namespace Debugger.Tests {
         ArrayRank="1"
         AsString="{System.Int32[]}"
         Expression="array"
-        IsInvalid="False"
-        IsNull="False"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="System.Int32[]" />
@@ -76,9 +74,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="0"
           Expression="array[0]"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
@@ -89,9 +84,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="1"
           Expression="array[1]"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="1"
           Type="System.Int32" />
       </Item>
@@ -102,9 +94,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="2"
           Expression="array[2]"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="2"
           Type="System.Int32" />
       </Item>
@@ -115,9 +104,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="3"
           Expression="array[3]"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
@@ -128,9 +114,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="4"
           Expression="array[4]"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="4"
           Type="System.Int32" />
       </Item>
@@ -140,28 +123,20 @@ namespace Debugger.Tests {
         BaseType="System.Array"
         ElementType="System.Int32"
         FullName="System.Int32[]"
-        GenericArguments="{}"
-        Interfaces="{}"
         Kind="Array"
         Module="{Exception: The type is not a class or value type.}"
         Name="Int32[]">
         <BaseType>
           <DebugType
             BaseType="System.Object"
-            ElementType="null"
             FullName="System.Array"
-            GenericArguments="{}"
             Interfaces="{System.ICloneable, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IStructuralComparable, System.Collections.IStructuralEquatable}"
             Kind="Class"
             Module="mscorlib.dll"
             Name="Array">
             <BaseType>
               <DebugType
-                BaseType="null"
-                ElementType="null"
                 FullName="System.Object"
-                GenericArguments="{}"
-                Interfaces="{}"
                 Kind="Class"
                 Module="mscorlib.dll"
                 Name="Object">
@@ -179,9 +154,6 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="5"
         Expression="array.Length"
-        IsInvalid="False"
-        IsNull="False"
-        IsReference="False"
         PrimitiveValue="5"
         Type="System.Int32" />
     </array.Length>

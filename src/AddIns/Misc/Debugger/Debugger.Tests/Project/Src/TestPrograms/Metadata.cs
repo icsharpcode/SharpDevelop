@@ -84,12 +84,7 @@ namespace Debugger.Tests {
         <FieldInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.privateField"
-          IsInternal="False"
-          IsLiteral="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="privateField"
           Type="System.Int16" />
@@ -98,12 +93,7 @@ namespace Debugger.Tests {
         <FieldInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.publicField"
-          IsInternal="False"
-          IsLiteral="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="publicField"
           Type="System.Int16" />
@@ -112,12 +102,7 @@ namespace Debugger.Tests {
         <FieldInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.protectedField"
-          IsInternal="False"
-          IsLiteral="False"
-          IsPrivate="False"
           IsProtected="True"
-          IsPublic="False"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="protectedField"
           Type="System.Int16" />
@@ -127,11 +112,6 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.internalField"
           IsInternal="True"
-          IsLiteral="False"
-          IsPrivate="False"
-          IsProtected="False"
-          IsPublic="False"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="internalField"
           Type="System.Int16" />
@@ -140,11 +120,7 @@ namespace Debugger.Tests {
         <FieldInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.staticField"
-          IsInternal="False"
-          IsLiteral="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
           IsStatic="True"
           Module="Metadata.exe"
           Name="staticField"
@@ -154,204 +130,111 @@ namespace Debugger.Tests {
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.get_privateProperty"
-          IsInternal="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
           IsSpecialName="True"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="get_privateProperty"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="System.Int32"
-          StepOver="False" />
+          ReturnType="System.Int32" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.get_publicProperty"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
           IsSpecialName="True"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="get_publicProperty"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="System.Int32"
-          StepOver="False" />
+          ReturnType="System.Int32" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.get_protectedProperty"
-          IsInternal="False"
-          IsPrivate="False"
           IsProtected="True"
-          IsPublic="False"
           IsSpecialName="True"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="get_protectedProperty"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="System.Int32"
-          StepOver="False" />
+          ReturnType="System.Int32" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.get_internalProperty"
           IsInternal="True"
-          IsPrivate="False"
-          IsProtected="False"
-          IsPublic="False"
           IsSpecialName="True"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="get_internalProperty"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="System.Int32"
-          StepOver="False" />
+          ReturnType="System.Int32" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.get_staticProperty"
-          IsInternal="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
           IsSpecialName="True"
           IsStatic="True"
           Module="Metadata.exe"
           Name="get_staticProperty"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="System.Int32"
-          StepOver="False" />
+          ReturnType="System.Int32" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.privateMethod"
-          IsInternal="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="Metadata.exe"
-          Name="privateMethod"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="null"
-          StepOver="False" />
+          Name="privateMethod" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.publicMethod"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="Metadata.exe"
-          Name="publicMethod"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="null"
-          StepOver="False" />
+          Name="publicMethod" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.protectedMethod"
-          IsInternal="False"
-          IsPrivate="False"
           IsProtected="True"
-          IsPublic="False"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="Metadata.exe"
-          Name="protectedMethod"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="null"
-          StepOver="False" />
+          Name="protectedMethod" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.internalMethod"
           IsInternal="True"
-          IsPrivate="False"
-          IsProtected="False"
-          IsPublic="False"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="Metadata.exe"
-          Name="internalMethod"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="null"
-          StepOver="False" />
+          Name="internalMethod" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.staticMethod"
-          IsInternal="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
-          IsSpecialName="False"
           IsStatic="True"
           Module="Metadata.exe"
-          Name="staticMethod"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="null"
-          StepOver="False" />
+          Name="staticMethod" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.Main"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
-          IsSpecialName="False"
           IsStatic="True"
           Module="Metadata.exe"
-          Name="Main"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="null"
-          StepOver="False" />
+          Name="Main" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata..ctor"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
           IsSpecialName="True"
-          IsStatic="False"
           Module="Metadata.exe"
           Name=".ctor"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="null"
           StepOver="True" />
       </Item>
       <Item>
@@ -359,14 +242,9 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.privateProperty"
           GetMethod="get_privateProperty"
-          IsInternal="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="privateProperty"
-          SetMethod="null"
           Type="System.Int32" />
       </Item>
       <Item>
@@ -374,14 +252,9 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.publicProperty"
           GetMethod="get_publicProperty"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="publicProperty"
-          SetMethod="null"
           Type="System.Int32" />
       </Item>
       <Item>
@@ -389,14 +262,9 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.protectedProperty"
           GetMethod="get_protectedProperty"
-          IsInternal="False"
-          IsPrivate="False"
           IsProtected="True"
-          IsPublic="False"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="protectedProperty"
-          SetMethod="null"
           Type="System.Int32" />
       </Item>
       <Item>
@@ -405,13 +273,8 @@ namespace Debugger.Tests {
           FullName="Debugger.Tests.TestPrograms.Metadata.internalProperty"
           GetMethod="get_internalProperty"
           IsInternal="True"
-          IsPrivate="False"
-          IsProtected="False"
-          IsPublic="False"
-          IsStatic="False"
           Module="Metadata.exe"
           Name="internalProperty"
-          SetMethod="null"
           Type="System.Int32" />
       </Item>
       <Item>
@@ -419,47 +282,29 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.Metadata"
           FullName="Debugger.Tests.TestPrograms.Metadata.staticProperty"
           GetMethod="get_staticProperty"
-          IsInternal="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
           IsStatic="True"
           Module="Metadata.exe"
           Name="staticProperty"
-          SetMethod="null"
           Type="System.Int32" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object..ctor"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
           IsSpecialName="True"
-          IsStatic="False"
           Module="mscorlib.dll"
           Name=".ctor"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="null"
           StepOver="True" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.ToString"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="mscorlib.dll"
           Name="ToString"
-          ParameterCount="0"
-          ParameterTypes="{}"
           ReturnType="System.String"
           StepOver="True" />
       </Item>
@@ -467,12 +312,7 @@ namespace Debugger.Tests {
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.Equals"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="mscorlib.dll"
           Name="Equals"
           ParameterCount="1"
@@ -484,11 +324,7 @@ namespace Debugger.Tests {
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.Equals"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
-          IsSpecialName="False"
           IsStatic="True"
           Module="mscorlib.dll"
           Name="Equals"
@@ -501,11 +337,7 @@ namespace Debugger.Tests {
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.ReferenceEquals"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
-          IsSpecialName="False"
           IsStatic="True"
           Module="mscorlib.dll"
           Name="ReferenceEquals"
@@ -518,16 +350,9 @@ namespace Debugger.Tests {
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.GetHashCode"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="mscorlib.dll"
           Name="GetHashCode"
-          ParameterCount="0"
-          ParameterTypes="{}"
           ReturnType="System.Int32"
           StepOver="True" />
       </Item>
@@ -535,16 +360,9 @@ namespace Debugger.Tests {
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.GetType"
-          IsInternal="False"
-          IsPrivate="False"
-          IsProtected="False"
           IsPublic="True"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="mscorlib.dll"
           Name="GetType"
-          ParameterCount="0"
-          ParameterTypes="{}"
           ReturnType="System.Type"
           StepOver="True" />
       </Item>
@@ -552,33 +370,18 @@ namespace Debugger.Tests {
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.Finalize"
-          IsInternal="False"
-          IsPrivate="False"
           IsProtected="True"
-          IsPublic="False"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="mscorlib.dll"
           Name="Finalize"
-          ParameterCount="0"
-          ParameterTypes="{}"
-          ReturnType="null"
           StepOver="True" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.MemberwiseClone"
-          IsInternal="False"
-          IsPrivate="False"
           IsProtected="True"
-          IsPublic="False"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="mscorlib.dll"
           Name="MemberwiseClone"
-          ParameterCount="0"
-          ParameterTypes="{}"
           ReturnType="System.Object"
           StepOver="True" />
       </Item>
@@ -586,46 +389,29 @@ namespace Debugger.Tests {
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.FieldSetter"
-          IsInternal="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="mscorlib.dll"
           Name="FieldSetter"
           ParameterCount="3"
           ParameterTypes="{System.String, System.String, System.Object}"
-          ReturnType="null"
           StepOver="True" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.FieldGetter"
-          IsInternal="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="mscorlib.dll"
           Name="FieldGetter"
           ParameterCount="3"
           ParameterTypes="{System.String, System.String, System.Object}"
-          ReturnType="null"
           StepOver="True" />
       </Item>
       <Item>
         <MethodInfo
           DeclaringType="System.Object"
           FullName="System.Object.GetFieldInfo"
-          IsInternal="False"
           IsPrivate="True"
-          IsProtected="False"
-          IsPublic="False"
-          IsSpecialName="False"
-          IsStatic="False"
           Module="mscorlib.dll"
           Name="GetFieldInfo"
           ParameterCount="2"

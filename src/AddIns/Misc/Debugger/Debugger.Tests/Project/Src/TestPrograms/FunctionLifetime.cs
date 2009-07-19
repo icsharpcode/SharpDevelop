@@ -77,7 +77,6 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
-        IsInvalid="False"
         MethodInfo="Function"
         NextStatement="FunctionLifetime.cs:22,4-22,40" />
     </SelectedStackFrame>
@@ -88,17 +87,14 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
-        IsInvalid="False"
         MethodInfo="Function"
         NextStatement="FunctionLifetime.cs:23,4-23,18" />
     </Old_StackFrame>
     <SelectedStackFrame>
       <StackFrame
-        ArgumentCount="0"
         ChainIndex="1"
         FrameIndex="2"
         HasSymbols="True"
-        IsInvalid="False"
         MethodInfo="SubFunction"
         NextStatement="FunctionLifetime.cs:29,4-29,40" />
     </SelectedStackFrame>
@@ -109,7 +105,6 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
-        IsInvalid="False"
         MethodInfo="Function"
         NextStatement="FunctionLifetime.cs:24,4-24,40" />
     </Old_StackFrame>
@@ -119,18 +114,14 @@ namespace Debugger.Tests {
         ChainIndex="1"
         FrameIndex="1"
         HasSymbols="True"
-        IsInvalid="False"
         MethodInfo="Function"
         NextStatement="FunctionLifetime.cs:24,4-24,40" />
     </SelectedStackFrame>
     <DebuggingPaused>Break FunctionLifetime.cs:17,4-17,40</DebuggingPaused>
     <Main>
       <StackFrame
-        ArgumentCount="0"
         ChainIndex="1"
-        FrameIndex="0"
         HasSymbols="True"
-        IsInvalid="False"
         MethodInfo="Main"
         NextStatement="FunctionLifetime.cs:17,4-17,40" />
     </Main>
@@ -146,11 +137,8 @@ namespace Debugger.Tests {
     </Old_StackFrame>
     <SelectedStackFrame>
       <StackFrame
-        ArgumentCount="0"
         ChainIndex="1"
-        FrameIndex="0"
         HasSymbols="True"
-        IsInvalid="False"
         MethodInfo="Main"
         NextStatement="FunctionLifetime.cs:17,4-17,40" />
     </SelectedStackFrame>

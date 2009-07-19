@@ -118,7 +118,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="nullMyClass"
-          IsInvalid="False"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -126,10 +125,7 @@ namespace Debugger.Tests {
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="MyClass"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Class"
               Module="DebugTypes.exe"
               Name="MyClass">
@@ -145,18 +141,13 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="nullObject"
-          IsInvalid="False"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
             <DebugType
-              BaseType="null"
-              ElementType="null"
               FullName="System.Object"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll"
               Name="Object">
@@ -172,18 +163,13 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="nullString"
-          IsInvalid="False"
           IsNull="True"
           IsReference="True"
-          PrimitiveValue="null"
           Type="System.String">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.String"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}"
               Name="String">
@@ -199,18 +185,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="obj"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
             <DebugType
-              BaseType="null"
-              ElementType="null"
               FullName="System.Object"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll"
               Name="Object">
@@ -226,18 +206,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="42"
           Expression="loc"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="42"
           Type="System.Int32">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.Int32"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32">
@@ -253,18 +227,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="43"
           Expression="locByRef"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="43"
           Type="System.Int32">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.Int32"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32">
@@ -280,28 +248,20 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32*}"
           Expression="locPtr"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32*">
           <Type>
             <DebugType
-              BaseType="null"
               ElementType="System.Int32"
               FullName="System.Int32*"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32*">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
-                  ElementType="null"
                   FullName="System.Int32"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Int32">
@@ -319,28 +279,20 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32*}"
           Expression="locPtrByRef"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32*">
           <Type>
             <DebugType
-              BaseType="null"
               ElementType="System.Int32"
               FullName="System.Int32*"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32*">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
-                  ElementType="null"
                   FullName="System.Int32"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Int32">
@@ -358,38 +310,27 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32**}"
           Expression="locPtrPtr"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32**">
           <Type>
             <DebugType
-              BaseType="null"
               ElementType="System.Int32*"
               FullName="System.Int32**"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32**">
               <ElementType>
                 <DebugType
-                  BaseType="null"
                   ElementType="System.Int32"
                   FullName="System.Int32*"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Pointer"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Int32*">
                   <ElementType>
                     <DebugType
                       BaseType="System.Object"
-                      ElementType="null"
                       FullName="System.Int32"
-                      GenericArguments="{}"
-                      Interfaces="{}"
                       Kind="Primitive"
                       Module="{Exception: The type is not a class or value type.}"
                       Name="Int32">
@@ -409,28 +350,19 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Void*}"
           Expression="locVoidPtr"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Void*">
           <Type>
             <DebugType
-              BaseType="null"
               ElementType="System.Void"
               FullName="System.Void*"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}"
               Name="Void*">
               <ElementType>
                 <DebugType
-                  BaseType="null"
-                  ElementType="null"
                   FullName="System.Void"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Void"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Void">
@@ -448,18 +380,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="locObj"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
             <DebugType
-              BaseType="null"
-              ElementType="null"
               FullName="System.Object"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll"
               Name="Object">
@@ -475,18 +401,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="locObjByRef"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
             <DebugType
-              BaseType="null"
-              ElementType="null"
               FullName="System.Object"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll"
               Name="Object">
@@ -502,8 +422,6 @@ namespace Debugger.Tests {
           ArrayRank="1"
           AsString="{System.Char[]}"
           Expression="locSZArray"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Char[]">
@@ -512,18 +430,13 @@ namespace Debugger.Tests {
               BaseType="System.Array"
               ElementType="System.Char"
               FullName="System.Char[]"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Array"
               Module="{Exception: The type is not a class or value type.}"
               Name="Char[]">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
-                  ElementType="null"
                   FullName="System.Char"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Char">
@@ -541,8 +454,6 @@ namespace Debugger.Tests {
           ArrayRank="2"
           AsString="{System.Char[,]}"
           Expression="locArray"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Char[,]">
@@ -551,18 +462,13 @@ namespace Debugger.Tests {
               BaseType="System.Array"
               ElementType="System.Char"
               FullName="System.Char[,]"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Array"
               Module="{Exception: The type is not a class or value type.}"
               Name="Char[,]">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
-                  ElementType="null"
                   FullName="System.Char"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Char">
@@ -580,18 +486,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{Point}"
           Expression="locStruct"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Point">
           <Type>
             <DebugType
               BaseType="System.ValueType"
-              ElementType="null"
               FullName="Point"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="ValueType"
               Module="DebugTypes.exe"
               Name="Point">
@@ -607,28 +507,20 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{Point*}"
           Expression="locStructPtr"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Point*">
           <Type>
             <DebugType
-              BaseType="null"
               ElementType="Point"
               FullName="Point*"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}"
               Name="Point*">
               <ElementType>
                 <DebugType
                   BaseType="System.ValueType"
-                  ElementType="null"
                   FullName="Point"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="ValueType"
                   Module="DebugTypes.exe"
                   Name="Point">
@@ -646,17 +538,13 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32}"
           Expression="box"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="40"
           Type="System.Int32">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.Int32"
-              GenericArguments="{}"
               Interfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable&lt;System.Int32&gt;, System.IEquatable&lt;System.Int32&gt;}"
               Kind="ValueType"
               Module="mscorlib.dll"
@@ -673,15 +561,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{MyInterfaceImpl&lt;System.Int32&gt;}"
           Expression="myInterfaceImpl"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="MyInterfaceImpl&lt;System.Int32&gt;">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="MyInterfaceImpl&lt;System.Int32&gt;"
               GenericArguments="{System.Int32}"
               Interfaces="{MyInterface&lt;System.String,System.Collections.Generic.IEnumerable&lt;System.Int32&gt;,MyClass&gt;}"
@@ -700,15 +585,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{MyInterfaceImpl&lt;System.Int32&gt;}"
           Expression="myInterface"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="MyInterfaceImpl&lt;System.Int32&gt;">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="MyInterfaceImpl&lt;System.Int32&gt;"
               GenericArguments="{System.Int32}"
               Interfaces="{MyInterface&lt;System.String,System.Collections.Generic.IEnumerable&lt;System.Int32&gt;,MyClass&gt;}"
@@ -732,18 +614,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="42"
           Expression="arg"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="42"
           Type="System.Int32">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.Int32"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32">
@@ -759,18 +635,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="43"
           Expression="argByRef"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="43"
           Type="System.Int32">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.Int32"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32">
@@ -786,28 +656,20 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32*}"
           Expression="argPtr"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32*">
           <Type>
             <DebugType
-              BaseType="null"
               ElementType="System.Int32"
               FullName="System.Int32*"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32*">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
-                  ElementType="null"
                   FullName="System.Int32"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Int32">
@@ -825,28 +687,20 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32*}"
           Expression="argPtrByRef"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32*">
           <Type>
             <DebugType
-              BaseType="null"
               ElementType="System.Int32"
               FullName="System.Int32*"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32*">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
-                  ElementType="null"
                   FullName="System.Int32"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Int32">
@@ -864,38 +718,27 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32**}"
           Expression="argPtrPtr"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32**">
           <Type>
             <DebugType
-              BaseType="null"
               ElementType="System.Int32*"
               FullName="System.Int32**"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32**">
               <ElementType>
                 <DebugType
-                  BaseType="null"
                   ElementType="System.Int32"
                   FullName="System.Int32*"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Pointer"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Int32*">
                   <ElementType>
                     <DebugType
                       BaseType="System.Object"
-                      ElementType="null"
                       FullName="System.Int32"
-                      GenericArguments="{}"
-                      Interfaces="{}"
                       Kind="Primitive"
                       Module="{Exception: The type is not a class or value type.}"
                       Name="Int32">
@@ -915,28 +758,19 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Void*}"
           Expression="argVoidPtr"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Void*">
           <Type>
             <DebugType
-              BaseType="null"
               ElementType="System.Void"
               FullName="System.Void*"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}"
               Name="Void*">
               <ElementType>
                 <DebugType
-                  BaseType="null"
-                  ElementType="null"
                   FullName="System.Void"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Void"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Void">
@@ -954,18 +788,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="argObj"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
             <DebugType
-              BaseType="null"
-              ElementType="null"
               FullName="System.Object"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll"
               Name="Object">
@@ -981,18 +809,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="argObjByRef"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object">
           <Type>
             <DebugType
-              BaseType="null"
-              ElementType="null"
               FullName="System.Object"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Class"
               Module="mscorlib.dll"
               Name="Object">
@@ -1008,8 +830,6 @@ namespace Debugger.Tests {
           ArrayRank="1"
           AsString="{System.Char[]}"
           Expression="argSZArray"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Char[]">
@@ -1018,18 +838,13 @@ namespace Debugger.Tests {
               BaseType="System.Array"
               ElementType="System.Char"
               FullName="System.Char[]"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Array"
               Module="{Exception: The type is not a class or value type.}"
               Name="Char[]">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
-                  ElementType="null"
                   FullName="System.Char"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Char">
@@ -1047,8 +862,6 @@ namespace Debugger.Tests {
           ArrayRank="2"
           AsString="{System.Char[,]}"
           Expression="argArray"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Char[,]">
@@ -1057,18 +870,13 @@ namespace Debugger.Tests {
               BaseType="System.Array"
               ElementType="System.Char"
               FullName="System.Char[,]"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Array"
               Module="{Exception: The type is not a class or value type.}"
               Name="Char[,]">
               <ElementType>
                 <DebugType
                   BaseType="System.Object"
-                  ElementType="null"
                   FullName="System.Char"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Primitive"
                   Module="{Exception: The type is not a class or value type.}"
                   Name="Char">
@@ -1086,18 +894,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{Point}"
           Expression="argStruct"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Point">
           <Type>
             <DebugType
               BaseType="System.ValueType"
-              ElementType="null"
               FullName="Point"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="ValueType"
               Module="DebugTypes.exe"
               Name="Point">
@@ -1113,18 +915,12 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{Point}"
           Expression="argStructByRef"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Point">
           <Type>
             <DebugType
               BaseType="System.ValueType"
-              ElementType="null"
               FullName="Point"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="ValueType"
               Module="DebugTypes.exe"
               Name="Point">
@@ -1140,28 +936,20 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{Point*}"
           Expression="argStructPtr"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Point*">
           <Type>
             <DebugType
-              BaseType="null"
               ElementType="Point"
               FullName="Point*"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Pointer"
               Module="{Exception: The type is not a class or value type.}"
               Name="Point*">
               <ElementType>
                 <DebugType
                   BaseType="System.ValueType"
-                  ElementType="null"
                   FullName="Point"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="ValueType"
                   Module="DebugTypes.exe"
                   Name="Point">
@@ -1179,17 +967,13 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32}"
           Expression="argBox"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="40"
           Type="System.Int32">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.Int32"
-              GenericArguments="{}"
               Interfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable&lt;System.Int32&gt;, System.IEquatable&lt;System.Int32&gt;}"
               Kind="ValueType"
               Module="mscorlib.dll"
@@ -1206,17 +990,13 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32}"
           Expression="argBoxByRef"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="40"
           Type="System.Int32">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.Int32"
-              GenericArguments="{}"
               Interfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable&lt;System.Int32&gt;, System.IEquatable&lt;System.Int32&gt;}"
               Kind="ValueType"
               Module="mscorlib.dll"

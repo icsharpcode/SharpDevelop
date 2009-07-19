@@ -106,9 +106,6 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="1"
         Expression="argument"
-        IsInvalid="False"
-        IsNull="False"
-        IsReference="False"
         PrimitiveValue="1"
         Type="System.Int32" />
     </argument>
@@ -119,9 +116,6 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="2"
         Expression="local"
-        IsInvalid="False"
-        IsNull="False"
-        IsReference="False"
         PrimitiveValue="2"
         Type="System.Int32" />
     </local>
@@ -132,9 +126,6 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="3"
         Expression="this.class"
-        IsInvalid="False"
-        IsNull="False"
-        IsReference="False"
         PrimitiveValue="3"
         Type="System.Int32" />
     </_x0040_class>
@@ -185,9 +176,6 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="4"
         Expression="localInSubFunction"
-        IsInvalid="False"
-        IsNull="False"
-        IsReference="False"
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction>
@@ -304,9 +292,6 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="4"
         Expression="localInSubFunction"
-        IsInvalid="False"
-        IsNull="False"
-        IsReference="False"
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction_x0028_new_x0029_>

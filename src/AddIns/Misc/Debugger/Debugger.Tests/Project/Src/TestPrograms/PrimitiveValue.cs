@@ -66,28 +66,18 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="True"
           Expression="b"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="True"
           Type="System.Boolean">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.Boolean"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}"
               Name="Boolean">
               <BaseType>
                 <DebugType
-                  BaseType="null"
-                  ElementType="null"
                   FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Class"
                   Module="mscorlib.dll"
                   Name="Object">
@@ -105,28 +95,18 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="5"
           Expression="i"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="5"
           Type="System.Int32">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.Int32"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}"
               Name="Int32">
               <BaseType>
                 <DebugType
-                  BaseType="null"
-                  ElementType="null"
                   FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Class"
                   Module="mscorlib.dll"
                   Name="Object">
@@ -144,28 +124,19 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="five"
           Expression="s"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="five"
           Type="System.String">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.String"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}"
               Name="String">
               <BaseType>
                 <DebugType
-                  BaseType="null"
-                  ElementType="null"
                   FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Class"
                   Module="mscorlib.dll"
                   Name="Object">
@@ -183,28 +154,18 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="5.5"
           Expression="d"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="5.5"
           Type="System.Double">
           <Type>
             <DebugType
               BaseType="System.Object"
-              ElementType="null"
               FullName="System.Double"
-              GenericArguments="{}"
-              Interfaces="{}"
               Kind="Primitive"
               Module="{Exception: The type is not a class or value type.}"
               Name="Double">
               <BaseType>
                 <DebugType
-                  BaseType="null"
-                  ElementType="null"
                   FullName="System.Object"
-                  GenericArguments="{}"
-                  Interfaces="{}"
                   Kind="Class"
                   Module="mscorlib.dll"
                   Name="Object">

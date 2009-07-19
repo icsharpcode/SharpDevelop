@@ -60,38 +60,25 @@ namespace Debugger.Tests {
         ArrayRank="{Exception: Value is not an array}"
         AsString="{Debugger.Tests.ValueType}"
         Expression="this"
-        IsInvalid="False"
-        IsNull="False"
-        IsReference="False"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="Debugger.Tests.ValueType">
         <Type>
           <DebugType
             BaseType="System.ValueType"
-            ElementType="null"
             FullName="Debugger.Tests.ValueType"
-            GenericArguments="{}"
-            Interfaces="{}"
             Kind="ValueType"
             Module="ValueType.exe"
             Name="ValueType">
             <BaseType>
               <DebugType
                 BaseType="System.Object"
-                ElementType="null"
                 FullName="System.ValueType"
-                GenericArguments="{}"
-                Interfaces="{}"
                 Kind="Class"
                 Module="mscorlib.dll"
                 Name="ValueType">
                 <BaseType>
                   <DebugType
-                    BaseType="null"
-                    ElementType="null"
                     FullName="System.Object"
-                    GenericArguments="{}"
-                    Interfaces="{}"
                     Kind="Class"
                     Module="mscorlib.dll"
                     Name="Object">

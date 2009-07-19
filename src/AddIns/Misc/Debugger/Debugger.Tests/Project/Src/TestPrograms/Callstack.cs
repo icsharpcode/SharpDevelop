@@ -61,31 +61,24 @@ namespace Debugger.Tests {
     <Callstack>
       <Item>
         <StackFrame
-          ArgumentCount="0"
           ChainIndex="1"
           FrameIndex="2"
           HasSymbols="True"
-          IsInvalid="False"
           MethodInfo="Sub2"
           NextStatement="Callstack.cs:26,4-26,40" />
       </Item>
       <Item>
         <StackFrame
-          ArgumentCount="0"
           ChainIndex="1"
           FrameIndex="1"
           HasSymbols="True"
-          IsInvalid="False"
           MethodInfo="Sub1"
           NextStatement="Callstack.cs:21,4-21,11" />
       </Item>
       <Item>
         <StackFrame
-          ArgumentCount="0"
           ChainIndex="1"
-          FrameIndex="0"
           HasSymbols="True"
-          IsInvalid="False"
           MethodInfo="Main"
           NextStatement="Callstack.cs:16,4-16,11" />
       </Item>
@@ -94,21 +87,16 @@ namespace Debugger.Tests {
     <Callstack>
       <Item>
         <StackFrame
-          ArgumentCount="0"
           ChainIndex="1"
           FrameIndex="1"
           HasSymbols="True"
-          IsInvalid="False"
           MethodInfo="Sub1"
           NextStatement="Callstack.cs:21,4-21,11" />
       </Item>
       <Item>
         <StackFrame
-          ArgumentCount="0"
           ChainIndex="1"
-          FrameIndex="0"
           HasSymbols="True"
-          IsInvalid="False"
           MethodInfo="Main"
           NextStatement="Callstack.cs:16,4-16,11" />
       </Item>
@@ -117,11 +105,8 @@ namespace Debugger.Tests {
     <Callstack>
       <Item>
         <StackFrame
-          ArgumentCount="0"
           ChainIndex="1"
-          FrameIndex="0"
           HasSymbols="True"
-          IsInvalid="False"
           MethodInfo="Main"
           NextStatement="Callstack.cs:16,4-16,11" />
       </Item>

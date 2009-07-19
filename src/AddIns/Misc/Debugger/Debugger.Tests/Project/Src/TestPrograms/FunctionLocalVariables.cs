@@ -59,9 +59,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="0"
           Expression="i"
-          IsInvalid="False"
-          IsNull="False"
-          IsReference="False"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
@@ -72,8 +69,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="S"
           Expression="s"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="S"
           Type="System.String" />
@@ -85,8 +80,6 @@ namespace Debugger.Tests {
           ArrayRank="1"
           AsString="{System.String[]}"
           Expression="args"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
@@ -98,7 +91,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="n"
-          IsInvalid="False"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -111,8 +103,6 @@ namespace Debugger.Tests {
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="o"
-          IsInvalid="False"
-          IsNull="False"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Object" />

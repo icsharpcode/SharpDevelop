@@ -65,39 +65,28 @@ namespace Debugger.Tests {
       Count="2">
       <Item>
         <Thread
-          CurrentException="null"
-          CurrentExceptionIsUnhandled="False"
           CurrentExceptionType="0"
-          HasExited="False"
           IsAtSafePoint="True"
           IsInValidState="True"
-          IsMostRecentStackFrameNative="False"
           MostRecentStackFrame="Debugger.Tests.TestPrograms.MainThreadExit.Main"
           MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.MainThreadExit.Main"
           Name=""
           OldestStackFrame="Debugger.Tests.TestPrograms.MainThreadExit.Main"
           Priority="Normal"
           RuntimeValue="? = {System.Threading.Thread}"
-          SelectedStackFrame="Debugger.Tests.TestPrograms.MainThreadExit.Main"
-          Suspended="False" />
+          SelectedStackFrame="Debugger.Tests.TestPrograms.MainThreadExit.Main" />
       </Item>
       <Item>
         <Thread
-          CurrentException="null"
-          CurrentExceptionIsUnhandled="False"
           CurrentExceptionType="0"
-          HasExited="False"
           IsAtSafePoint="True"
           IsInValidState="True"
-          IsMostRecentStackFrameNative="False"
           MostRecentStackFrame="System.Threading.WaitHandle.InternalWaitOne"
           MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime"
           Name="Worker thread"
           OldestStackFrame="System.Threading.ThreadHelper.ThreadStart"
           Priority="Normal"
-          RuntimeValue="? = {System.Threading.Thread}"
-          SelectedStackFrame="null"
-          Suspended="False" />
+          RuntimeValue="? = {System.Threading.Thread}" />
       </Item>
     </ThreadsBeforeExit>
     <DebuggingPaused>ForcedBreak MainThreadExit.cs:29,4-29,26</DebuggingPaused>
@@ -105,39 +94,23 @@ namespace Debugger.Tests {
       Count="2">
       <Item>
         <Thread
-          CurrentException="null"
-          CurrentExceptionIsUnhandled="False"
           CurrentExceptionType="0"
-          HasExited="False"
-          IsAtSafePoint="False"
-          IsInValidState="False"
-          IsMostRecentStackFrameNative="False"
-          MostRecentStackFrame="null"
-          MostRecentStackFrameWithLoadedSymbols="null"
           Name=""
-          OldestStackFrame="null"
           Priority="Normal"
-          RuntimeValue="{Exception: The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)}"
-          SelectedStackFrame="null"
-          Suspended="False" />
+          RuntimeValue="{Exception: The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)}" />
       </Item>
       <Item>
         <Thread
-          CurrentException="null"
-          CurrentExceptionIsUnhandled="False"
           CurrentExceptionType="0"
-          HasExited="False"
           IsAtSafePoint="True"
           IsInValidState="True"
-          IsMostRecentStackFrameNative="False"
           MostRecentStackFrame="System.Threading.WaitHandle.InternalWaitOne"
           MostRecentStackFrameWithLoadedSymbols="Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime"
           Name="Worker thread"
           OldestStackFrame="System.Threading.ThreadHelper.ThreadStart"
           Priority="Normal"
           RuntimeValue="? = {System.Threading.Thread}"
-          SelectedStackFrame="Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime"
-          Suspended="False" />
+          SelectedStackFrame="Debugger.Tests.TestPrograms.MainThreadExit.WaitForALongTime" />
       </Item>
     </ThreadsAfterExit>
     <ProcessExited />

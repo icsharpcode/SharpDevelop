@@ -68,8 +68,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break Breakpoint.cs:16,4-16,40</DebuggingPaused>
     <Breakpoint1>
       <Breakpoint
-        CheckSum="null"
-        Column="0"
         Enabled="True"
         FileName="Breakpoint.cs"
         IsSet="True"
@@ -78,8 +76,6 @@ namespace Debugger.Tests {
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
-        CheckSum="null"
-        Column="0"
         Enabled="True"
         FileName="Breakpoint.cs"
         IsSet="True"
@@ -97,21 +93,15 @@ namespace Debugger.Tests {
     <ProcessExited />
     <Breakpoint1>
       <Breakpoint
-        CheckSum="null"
-        Column="0"
         Enabled="True"
         FileName="Breakpoint.cs"
-        IsSet="False"
         Line="18"
         OriginalLocation="Breakpoint.cs:18,4-18,49" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
-        CheckSum="null"
-        Column="0"
         Enabled="True"
         FileName="Breakpoint.cs"
-        IsSet="False"
         Line="19"
         OriginalLocation="Breakpoint.cs:20,4-20,49" />
     </Breakpoint2>

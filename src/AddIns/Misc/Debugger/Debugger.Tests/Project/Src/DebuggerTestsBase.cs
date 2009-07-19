@@ -274,15 +274,34 @@ namespace Debugger.Tests
 					while(e.InnerException != null) e = e.InnerException;
 					val = "{Exception: " + e.Message + "}";
 				}
-				if (val == null) val = "null";
+								
 				if (val is IEnumerable && !(val is string)) {
 					List<string> vals = new List<string>();
 					foreach(object o in (IEnumerable)val) {
 						vals.Add(o.ToString());
 					}
-					container.SetAttribute(property.Name, "{" + string.Join(", ", vals.ToArray()) + "}");
+					if (vals.Count != 0) {
+						container.SetAttribute(property.Name, "{" + string.Join(", ", vals.ToArray()) + "}");
+					}
 				} else {
-					container.SetAttribute(property.Name, val.ToString());
+					bool isDefault = false;
+						
+					if (property.PropertyType == typeof(bool)) {
+						isDefault = false.Equals(val);
+					} else if (property.PropertyType == typeof(string)) {
+						isDefault = val == null;
+					} else if (property.PropertyType == typeof(int)) {
+						isDefault = 0.Equals(val);
+					} else if (property.PropertyType == typeof(uint)) {
+						isDefault = ((uint)0).Equals(val);
+					} else {
+						isDefault = val == null;
+					}
+
+					if (val == null) val = "null";
+					if (!isDefault) {
+						container.SetAttribute(property.Name, val.ToString());
+					}
 				}
 				
 				
@@ -344,7 +363,7 @@ namespace Debugger.Tests
 			compParams.IncludeDebugInformation = true;
 			compParams.ReferencedAssemblies.Add("System.dll");
 			compParams.OutputAssembly = exeFilename;
-			compParams.CompilerOptions = "/unsafe";
+			compParams.CompilerOptions = "/unsafe /target:winexe";
 			compParams.ReferencedAssemblies.Add(typeof(TestFixtureAttribute).Assembly.Location);
 			
 			CSharpCodeProvider compiler = new CSharpCodeProvider();
