@@ -53,10 +53,18 @@ namespace ICSharpCode.Core
 				if (sb.Length > 0) sb.Append(", ");
 				sb.Append("[");
 				sb.Append(addIn.Name);
-				sb.Append(", Enabled=");
-				sb.Append(addIn.Enabled);
-				sb.Append(", Action=");
-				sb.Append(addIn.Action.ToString());
+				if (addIn.Version != null) {
+					sb.Append(' ');
+					sb.Append(addIn.Version.ToString());
+				}
+				if (!addIn.Enabled) {
+					sb.Append(", Enabled=");
+					sb.Append(addIn.Enabled);
+				}
+				if (addIn.Action != AddInAction.Enable) {
+					sb.Append(", Action=");
+					sb.Append(addIn.Action.ToString());
+				}
 				sb.Append("]");
 			}
 			return sb.ToString();
