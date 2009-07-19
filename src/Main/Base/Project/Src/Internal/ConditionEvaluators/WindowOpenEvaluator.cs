@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop
 	/// "*" to test if any window is open.
 	/// </attribute>
 	/// <example title="Test if a text editor is opened">
-	/// &lt;Condition name="WindowOpen" openwindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"&gt;
+	/// &lt;Condition name="WindowOpen" openwindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider"&gt;
 	/// </example>
 	/// <example title="Test if any window is open">
 	/// &lt;Condition name="WindowOpen" openwindow="*"&gt;

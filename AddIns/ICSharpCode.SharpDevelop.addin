@@ -1291,7 +1291,7 @@
 			          type = "Item"
 			          command = "Delete"/>
 			<MenuItem id = "Separator2" type = "Separator"  />
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
 				<MenuItem id = "Insert" label = "${res:XML.MainMenu.EditMenu.Insert}" type="Menu">
 					<MenuItem id = "PasteAsComment"
 					          label = "${res:XML.MainMenu.EditMenu.Paste.AsComment}"
@@ -1547,7 +1547,7 @@
 			          shortcut = "Control|Shift|E"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunReverseIncrementalSearch"/>
 			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
-			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
+			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable"> -->
 			<MenuItem id = "ToggleBookmark"
 			          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
 			          shortcut = "Control|F2"
@@ -1590,11 +1590,7 @@
 			<Include id = "ToolList" path = "/Workspace/Tools" />
 			<MenuItem id = "Separator2" type = "Separator" />
 			
-			<ComplexCondition action = "Disable">
-				<Or>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-				</Or>
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider">
 				<MenuItem id = "ConvertCode" label = "${res:XML.MainMenu.ToolMenu.ConvertCodeTo}" type="Menu">
 					<Condition name="ActiveContentExtension" activeextension=".vb" action = "Disable">
 						<MenuItem id = "CSharp"
@@ -1607,9 +1603,9 @@
 						          class = "ICSharpCode.SharpDevelop.Commands.VBConvertBuffer"/>
 					</Condition>
 				</MenuItem>
-			</ComplexCondition>
+			</Condition>
 			
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
 				<MenuItem id = "GenerateCodeAction"
 				          label = "${res:XML.MainMenu.ToolMenu.GenerateCode}"
 				          shortcut = "Alt|Insert"
@@ -1856,7 +1852,7 @@
 			<Include id = "Indent" item = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/Indent" />
 		</MenuItem>
 		<MenuItem id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu">
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
 				<MenuItem id          = "ToggleFolding"
 				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
 				          shortcut    = "Shift|Control|M"

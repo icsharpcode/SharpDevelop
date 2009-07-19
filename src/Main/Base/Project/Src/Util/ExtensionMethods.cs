@@ -313,7 +313,13 @@ namespace ICSharpCode.SharpDevelop
 			r.Header = MenuService.ConvertLabel(item.Text);
 			if (item.ImageIndex >= 0)
 				r.Icon = ClassBrowserIconService.GetImageByIndex(item.ImageIndex).CreateImage();
-			r.Click += delegate { item.PerformClick(); };
+			if (item.DropDownItems.Count > 0) {
+				foreach (ToolStripMenuItem subItem in item.DropDownItems) {
+					r.Items.Add(TranslateMenuItemToWpf(subItem));
+				}
+			} else {
+				r.Click += delegate { item.PerformClick(); };
+			}
 			return r;
 		}
 	}

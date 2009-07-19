@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop
 	/// "*" to test if any window is active.
 	/// </attribute>
 	/// <example title="Test if the current window is a text editor">
-	/// &lt;Condition name="WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"&gt;
+	/// &lt;Condition name="WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider"&gt;
 	/// </example>
 	/// <example title="Test if any window is active">
 	/// &lt;Condition name="WindowActive" activewindow="*"&gt;

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -73,6 +74,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void UpdateTick(ParserUpdateStepEventArgs e)
 		{
+			if (!this.IsVisible) return;
 			LoggingService.Debug("DefinitionViewPad.Update");
 			
 			ResolveResult res = ResolveAtCaret(e);
@@ -90,17 +92,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return null;
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 			if (window == null) return null;
-			ITextEditorControlProvider provider = window.ActiveViewContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = window.ActiveViewContent as ITextEditorProvider;
 			if (provider == null) return null;
-			TextEditorControl ctl = provider.TextEditorControl;
+			ITextEditor editor = provider.TextEditor;
 			
 			// e might be null when this is a manually triggered update
-			string fileName = (e == null) ? ctl.FileName : e.FileName;
-			if (ctl.FileName != fileName) return null;
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
+			// don't resolve when an unrelated file was changed
+			if (e != null && editor.FileName != e.FileName) return null;
+			
+			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(editor.FileName);
 			if (expressionFinder == null) return null;
-			Caret caret = ctl.ActiveTextAreaControl.Caret;
-			string content = (e == null) ? ctl.Text : e.Content;
+			ITextEditorCaret caret = editor.Caret;
+			string content = (e == null) ? editor.Document.Text : e.Content;
 			if (caret.Offset > content.Length) {
 				LoggingService.Debug("caret.Offset = " + caret.Offset + ", content.Length=" + content.Length);
 				return null;
@@ -108,11 +111,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
 				if (expr.Expression == null) return null;
-				return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
+				return ParserService.Resolve(expr, caret.Line, caret.Column, editor.FileName, content);
 			} catch (Exception ex) {
 				disableDefinitionView = true;
 				ctl.Visible = false;
-				MessageService.ShowError(ex, "Error resolving at " + (caret.Line + 1) + "/" + (caret.Column + 1)
+				MessageService.ShowError(ex, "Error resolving at " + caret.Line + "/" + caret.Column
 				                         + ". DefinitionViewPad is disabled until you restart SharpDevelop.");
 				return null;
 			}
@@ -138,16 +141,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void LoadFile(string fileName)
 		{
 			// Get currently open text editor that matches the filename.
-			TextEditorControl openTextEditor = null;
-			ITextEditorControlProvider provider = FileService.GetOpenFile(fileName) as ITextEditorControlProvider;
+			ITextEditor openTextEditor = null;
+			ITextEditorProvider provider = FileService.GetOpenFile(fileName) as ITextEditorProvider;
 			if (provider != null) {
-				openTextEditor = provider.TextEditorControl;
+				openTextEditor = provider.TextEditor;
 			}
 			
 			// Load the text into the definition view's text editor.
 			if (openTextEditor != null) {
 				ctl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
-				ctl.Text = openTextEditor.Text;
+				ctl.Text = openTextEditor.Document.Text;
 				ctl.FileName = fileName;
 			} else {
 				ctl.LoadFile(fileName, true, true); // TODO: get AutoDetectEncoding from settings

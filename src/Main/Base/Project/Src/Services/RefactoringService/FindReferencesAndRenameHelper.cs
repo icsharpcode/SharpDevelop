@@ -495,9 +495,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 
 		public static IDocument GetDocument(IClass c)
 		{
-			ITextEditorControlProvider tecp = FileService.OpenFile(c.CompilationUnit.FileName) as ITextEditorControlProvider;
+			ITextEditorProvider tecp = FileService.OpenFile(c.CompilationUnit.FileName) as ITextEditorProvider;
 			if (tecp == null) return null;
-			return new TextEditorDocument(tecp.TextEditorControl.Document);
+			return tecp.TextEditor.Document;
 		}
 		
 		#endregion
