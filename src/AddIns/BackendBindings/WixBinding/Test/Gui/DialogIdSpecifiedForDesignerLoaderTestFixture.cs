@@ -62,7 +62,7 @@ namespace WixBinding.Tests.Gui
 		public void NameCreationServiceCreated()
 		{
 			INameCreationService nameCreationService = (INameCreationService)loaderHost.GetService(typeof(INameCreationService));
-			Assert.IsTrue(nameCreationService is XmlDesignerLoader.NameCreationService);
+			Assert.IsTrue(nameCreationService is XmlDesignerNameCreationService);
 		}
 		
 		[Test]

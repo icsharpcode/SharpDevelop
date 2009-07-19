@@ -63,7 +63,6 @@
     <Compile Include="Src\DesignerGenerator\XmlDesignerGenerator.cs" />
     <Compile Include="Src\DesignerLoader\AbstractCodeDomDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\NRefactoryDesignerLoader.cs" />
-    <Compile Include="Src\DesignerLoader\XmlDesignerLoader.cs" />
     <Compile Include="Src\DesignerSourceCodeStorage.cs" />
     <Compile Include="Src\Gui\ImageResourceEditorDialog.cs" />
     <Compile Include="Src\Gui\ImageResourceEditorDialog.Designer.cs">
@@ -107,6 +106,7 @@
     <Compile Include="Src\Services\ToolboxService.cs" />
     <Compile Include="Src\Services\TypeResolutionService.cs" />
     <Compile Include="Src\Services\UIService.cs" />
+    <Compile Include="Src\Services\XmlDesignerNameCreationService.cs" />
     <Compile Include="Src\ToolboxProvider.cs" />
     <None Include="FormsDesigner.addin">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

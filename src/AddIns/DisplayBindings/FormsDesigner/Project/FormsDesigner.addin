@@ -17,7 +17,7 @@
 		<DisplayBinding id    = "FormsDesigner"
 		                type  = "Secondary"
 		                class = "ICSharpCode.FormsDesigner.FormsDesignerSecondaryDisplayBinding"
-		                fileNamePattern = "\.(cs|vb|xfrm)$"/>
+		                fileNamePattern = "\.(cs|vb)$"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/SelectionMenu">

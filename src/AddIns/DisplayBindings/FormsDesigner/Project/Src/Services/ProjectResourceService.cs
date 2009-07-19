@@ -5,16 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using System;
 using System.CodeDom;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -119,11 +118,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			// It would be better if we could use a real code parser for this, but
 			// that is not possible without getting dependent on the programming language.
 			
-			IDocument doc = new DocumentFactory().CreateDocument();
-			doc.TextContent = ParserService.GetParseableFileContent(resourceClass.CompilationUnit.FileName);
+			IDocument doc = new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditDocumentAdapter();
+			doc.Text = ParserService.GetParseableFileContent(resourceClass.CompilationUnit.FileName);
 			
-			int startOffset = doc.PositionToOffset(new TextLocation(prop.GetterRegion.BeginColumn - 1, prop.GetterRegion.BeginLine - 1));
-			int endOffset   = doc.PositionToOffset(new TextLocation(prop.GetterRegion.EndColumn - 1, prop.GetterRegion.EndLine - 1));
+			int startOffset = doc.PositionToOffset(prop.GetterRegion.BeginLine, prop.GetterRegion.BeginColumn);
+			int endOffset   = doc.PositionToOffset(prop.GetterRegion.EndLine, prop.GetterRegion.EndColumn);
 			
 			string code = doc.GetText(startOffset, endOffset - startOffset + 1);
 			

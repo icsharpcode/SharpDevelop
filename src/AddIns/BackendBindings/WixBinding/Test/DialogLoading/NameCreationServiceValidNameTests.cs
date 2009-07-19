@@ -21,14 +21,14 @@ namespace WixBinding.Tests.DialogLoading
 	[TestFixture]
 	public class NameCreationServiceValidNameTests
 	{
-		XmlDesignerLoader.NameCreationService nameCreationService;
+		XmlDesignerNameCreationService nameCreationService;
 		MockDesignerLoaderHost loaderHost;
 		
 		[SetUp]
 		public void Init()
 		{
 			loaderHost = new MockDesignerLoaderHost();
-			nameCreationService = new XmlDesignerLoader.NameCreationService(loaderHost);
+			nameCreationService = new XmlDesignerNameCreationService(loaderHost);
 		}
 		
 		[Test]

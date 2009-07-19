@@ -45,7 +45,7 @@ namespace ICSharpCode.PythonBinding
 		public override void BeginLoad(IDesignerLoaderHost host)
 		{
 			host.AddService(typeof(ComponentSerializationService), new CodeDomComponentSerializationService((IServiceProvider)host));
-			host.AddService(typeof(INameCreationService), new XmlDesignerLoader.NameCreationService(host));
+			host.AddService(typeof(INameCreationService), new XmlDesignerNameCreationService(host));
 			host.AddService(typeof(IDesignerSerializationService), new DesignerSerializationService(host));
 
 			base.BeginLoad(host);

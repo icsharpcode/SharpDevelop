@@ -8,7 +8,6 @@
 using System;
 using System.ComponentModel.Design.Serialization;
 using ICSharpCode.NRefactory;
-using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -29,18 +28,6 @@ namespace ICSharpCode.FormsDesigner
 		public DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
 			return new NRefactoryDesignerLoader(language, generator);
-		}
-	}
-	
-	public class XmlDesignerLoaderProvider : IDesignerLoaderProvider
-	{
-		public XmlDesignerLoaderProvider()
-		{
-		}
-		
-		public DesignerLoader CreateLoader(IDesignerGenerator generator)
-		{
-			return new XmlDesignerLoader(generator);
 		}
 	}
 }

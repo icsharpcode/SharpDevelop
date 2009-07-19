@@ -8,12 +8,12 @@
 using System;
 using System.IO;
 using System.Linq;
+
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
 
 namespace Grunwald.BooBinding.Designer
 {
@@ -31,14 +31,14 @@ namespace Grunwald.BooBinding.Designer
 		
 		public bool CanAttachTo(IViewContent viewContent)
 		{
-			if (viewContent is ITextEditorControlProvider) {
-				ITextEditorControlProvider textAreaControlProvider = (ITextEditorControlProvider)viewContent;
+			if (viewContent is ITextEditorProvider) {
+				ITextEditorProvider textEditorProvider = (ITextEditorProvider)viewContent;
 				string fileExtension = String.Empty;
 				string fileName      = viewContent.PrimaryFileName;
 				if (fileName == null)
 					return false;
 				if (Path.GetExtension(fileName).Equals(".boo", StringComparison.OrdinalIgnoreCase)) {
-					ParseInformation info = ParserService.ParseFile(fileName, textAreaControlProvider.TextEditorControl.Document.TextContent, false);
+					ParseInformation info = ParserService.ParseFile(fileName, textEditorProvider.TextEditor.Document.Text, false);
 					if (FormsDesignerSecondaryDisplayBinding.IsDesignable(info))
 						return true;
 				}

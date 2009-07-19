@@ -164,7 +164,7 @@ namespace ICSharpCode.FormsDesigner
 					this.ReplaceFieldDeclaration(doc, oldField, GenerateFieldDeclaration(domGenerator, newField));
 					file.MakeDirty();
 				} else {
-					int endOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(initializeComponents.BodyRegion.EndLine, 1);
+					int endOffset = this.ViewContent.DesignerCodeFileDocument.PositionToOffset(initializeComponents.BodyRegion.EndLine + 1, 1);
 					this.ViewContent.DesignerCodeFileDocument.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
 				}
 			} catch (Exception ex) {

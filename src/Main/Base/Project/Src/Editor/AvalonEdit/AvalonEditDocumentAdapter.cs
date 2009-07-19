@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		}
 		
 		/// <summary>
-		/// Used in Unit Tests
+		/// Creates a new document.
 		/// </summary>
 		public AvalonEditDocumentAdapter()
 		{
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		}
 		
 		/// <summary>
-		/// Used in Unit Tests
+		/// Creates a new document.
 		/// </summary>
 		public AvalonEditDocumentAdapter(IServiceProvider parentServiceProvider)
 		{

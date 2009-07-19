@@ -108,7 +108,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void NameCreationServiceCreated()
 		{
-			XmlDesignerLoader.NameCreationService service = mockDesignerLoaderHost.GetService(typeof(INameCreationService)) as XmlDesignerLoader.NameCreationService;
+			XmlDesignerNameCreationService service = mockDesignerLoaderHost.GetService(typeof(INameCreationService)) as XmlDesignerNameCreationService;
 			Assert.IsNotNull(service);
 		}
 		

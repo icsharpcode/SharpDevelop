@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.IO;
 using System.Linq;
@@ -84,8 +85,8 @@ namespace ICSharpCode.FormsDesigner
 		
 		public bool CanAttachTo(IViewContent viewContent)
 		{
-			if (viewContent is ITextEditorControlProvider) {
-				ITextEditorControlProvider textAreaControlProvider = (ITextEditorControlProvider)viewContent;
+			if (viewContent is ITextEditorProvider) {
+				ITextEditorProvider textEditorProvider = (ITextEditorProvider)viewContent;
 				string fileExtension = String.Empty;
 				string fileName      = viewContent.PrimaryFileName;
 				if (fileName == null)
@@ -96,13 +97,11 @@ namespace ICSharpCode.FormsDesigner
 				switch (fileExtension) {
 					case ".cs":
 					case ".vb":
-						ParseInformation info = ParserService.ParseFile(fileName, textAreaControlProvider.TextEditorControl.Document.TextContent, false);
+						ParseInformation info = ParserService.ParseFile(fileName, textEditorProvider.TextEditor.Document.Text, false);
 						
 						if (IsDesignable(info))
 							return true;
 						break;
-					case ".xfrm":
-						return true;
 				}
 			}
 			return false;
@@ -130,10 +129,6 @@ namespace ICSharpCode.FormsDesigner
 				case ".vb":
 					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.VBNet);
 					generator = new VBNetDesignerGenerator();
-					break;
-				case ".xfrm":
-					loader    = new XmlDesignerLoaderProvider();
-					generator = new XmlDesignerGenerator();
 					break;
 				default:
 					throw new ApplicationException("Cannot create content for " + fileExtension);

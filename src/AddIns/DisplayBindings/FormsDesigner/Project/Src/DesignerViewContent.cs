@@ -581,9 +581,9 @@ namespace ICSharpCode.FormsDesigner
 		public void ShowSourceCode(int lineNumber)
 		{
 			ShowSourceCode();
-			ITextEditorControlProvider tecp = this.primaryViewContent as ITextEditorControlProvider;
+			ITextEditorProvider tecp = this.primaryViewContent as ITextEditorProvider;
 			if (tecp != null) {
-				tecp.TextEditorControl.ActiveTextAreaControl.JumpTo(lineNumber - 1);
+				tecp.TextEditor.JumpTo(lineNumber, 1);
 			}
 		}
 		

@@ -82,15 +82,17 @@ namespace ICSharpCode.FormsDesigner
 		
 		// static method that for use by the WPF designer
 		public static void CreateComponentEvent(
-			IClass c, IDocument document,
+			IClass c, ITextEditor editor,
 			Type eventType, string eventMethodName, string body, out int lineNumber)
 		{
 			if (c == null)
 				throw new ArgumentNullException("c");
-			if (document == null)
-				throw new ArgumentNullException("document");
+			if (editor == null)
+				throw new ArgumentNullException("editor");
 			if (eventType == null)
 				throw new ArgumentNullException("edesc");
+			
+			IDocument document = editor.Document;
 			
 			CSharpDesignerGenerator gen = new CSharpDesignerGenerator();
 			
@@ -99,7 +101,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			int offset = document.GetLine(line).Offset;
 			
-			string tabs = SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.IndentationString;
+			string tabs = editor.Options.IndentationString;
 			tabs += tabs;
 			
 			document.Insert(offset, gen.CreateEventHandler(eventType, eventMethodName, body, tabs));
