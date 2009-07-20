@@ -23,7 +23,8 @@ namespace ICSharpCode.XamlBinding
 		
 		public static void InitializeServer()
 		{
-			WorkbenchSingleton.Workbench.ViewOpened += new ViewContentEventHandler(WorkbenchSingleton_Workbench_ViewOpened);
+			if (WorkbenchSingleton.Workbench != null)
+				WorkbenchSingleton.Workbench.ViewOpened += new ViewContentEventHandler(WorkbenchSingleton_Workbench_ViewOpened);
 		}
 
 		static void WorkbenchSingleton_Workbench_ViewOpened(object sender, ViewContentEventArgs e)

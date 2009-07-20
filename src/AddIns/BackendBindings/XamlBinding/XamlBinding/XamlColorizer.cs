@@ -26,8 +26,6 @@ namespace ICSharpCode.XamlBinding
 	
 	public class XamlColorizer : DocumentColorizingTransformer, ILineTracker
 	{
-		static readonly XamlColorizerSettings defaultSettings = new XamlColorizerSettings();
-		
 		public struct Highlight {
 			public IMember Member { get; set; }
 			public HighlightingInfo Info { get; set; }
@@ -71,7 +69,7 @@ namespace ICSharpCode.XamlBinding
 			
 			public bool CompletedSuccessfully {
 				get {
-					return task.IsCompleted && task.Status == Tasks.TaskStatus.RanToCompletion && !Invalid;
+					return task.IsCompleted && task.Status == Tasks.TaskStatus.RanToCompletion;
 				}
 			}
 			
@@ -150,10 +148,12 @@ namespace ICSharpCode.XamlBinding
 						}
 						if (context.Description != XamlContextDescription.InComment && !string.IsNullOrEmpty(attribute)) {
 							int startIndex = LineText.Substring(0, Math.Min(index, LineText.Length)).LastIndexOf(attribute);
-							if (propertyNameIndex > -1)
-								infos.Add(new HighlightingInfo(attribute.Trim('/'), startIndex + propertyNameIndex + 1, startIndex + attribute.TrimEnd('/').Length, Offset, context));
-							else
-								infos.Add(new HighlightingInfo(attribute, startIndex, startIndex + attribute.Length, Offset, context));
+                            if (startIndex >= 0) {
+                                if (propertyNameIndex > -1)
+                                    infos.Add(new HighlightingInfo(attribute.Trim('/'), startIndex + propertyNameIndex + 1, startIndex + attribute.TrimEnd('/').Length, Offset, context));
+                                else
+                                    infos.Add(new HighlightingInfo(attribute, startIndex, startIndex + attribute.Length, Offset, context));
+                            }
 						}
 					}
 				} while (index > -1);
@@ -162,7 +162,6 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		XamlColorizerSettings settings = defaultSettings;
 		string fileContent;
 		string fileName;
 		IDocument document;
@@ -186,6 +185,16 @@ namespace ICSharpCode.XamlBinding
 			this.document = documentProvider.GetDocumentForFile(this.Content.PrimaryFile);
 			
 			WeakLineTracker.Register(this.document.GetService(typeof(TextDocument)) as TextDocument, this);
+			
+			ParserService.LoadSolutionProjectsThreadEnded += delegate {
+				WorkbenchSingleton.SafeThreadAsyncCall(() => ParserServiceLoadSolutionProjectsThreadEnded(null, EventArgs.Empty));
+			};
+		}
+
+		void ParserServiceLoadSolutionProjectsThreadEnded(object sender, EventArgs e)
+		{
+			highlightCache.Clear();
+			TextView.Redraw();
 		}
 		
 		protected override void Colorize(ITextRunConstructionContext context)
@@ -215,24 +224,20 @@ namespace ICSharpCode.XamlBinding
 		
 		void ColorizeMember(HighlightingInfo info, DocumentLine line, IMember member)
 		{
-			try {
-				if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":"))) {
-					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightIgnored);
+			if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":"))) {
+				ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightIgnored);
+			} else {
+				if (member != null) {
+					if (member is IEvent)
+						ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
+					else
+						ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
 				} else {
-					if (member != null) {
-						if (member is IEvent)
-							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
-						else
-							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
-					} else {
-						if (info.Token.StartsWith("xmlns") || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":"))
-							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
-						else
-							Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);
-					}
+					if (info.Token.StartsWith("xmlns") || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":"))
+						ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
+					else
+						Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);
 				}
-			} catch (ArgumentOutOfRangeException) {
-				highlightCache.Remove(line);
 			}
 		}
 		
@@ -244,7 +249,7 @@ namespace ICSharpCode.XamlBinding
 				}
 			}
 		}
-				
+		
 		void InvalidateLines(DocumentLine line)
 		{
 			DocumentLine current = line;
@@ -260,26 +265,26 @@ namespace ICSharpCode.XamlBinding
 		
 		void HighlightProperty(VisualLineElement element)
 		{
-			element.TextRunProperties.SetForegroundBrush(settings.PropertyForegroundBrush);
-			element.TextRunProperties.SetBackgroundBrush(settings.PropertyBackgroundBrush);
+			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.PropertyForegroundBrush);
+			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.PropertyBackgroundBrush);
 		}
 		
 		void HighlightEvent(VisualLineElement element)
 		{
-			element.TextRunProperties.SetForegroundBrush(settings.EventForegroundBrush);
-			element.TextRunProperties.SetBackgroundBrush(settings.EventBackgroundBrush);
+			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.EventForegroundBrush);
+			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.EventBackgroundBrush);
 		}
 		
 		void HighlightNamespaceDeclaration(VisualLineElement element)
 		{
-			element.TextRunProperties.SetForegroundBrush(settings.NamespaceDeclarationForegroundBrush);
-			element.TextRunProperties.SetBackgroundBrush(settings.NamespaceDeclarationBackgroundBrush);
+			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.NamespaceDeclarationForegroundBrush);
+			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.NamespaceDeclarationBackgroundBrush);
 		}
 		
 		void HighlightIgnored(VisualLineElement element)
 		{
-			element.TextRunProperties.SetForegroundBrush(settings.IgnoredForegroundBrush);
-			element.TextRunProperties.SetBackgroundBrush(settings.IgnoredBackgroundBrush);
+			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.IgnoredForegroundBrush);
+			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.IgnoredBackgroundBrush);
 		}
 		
 		public void BeforeRemoveLine(DocumentLine line)

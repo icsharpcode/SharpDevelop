@@ -4,6 +4,21 @@
 	xmlns:addin="clr-namespace:ICSharpCode.XamlBinding"
 	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<gui:OptionPanel.Resources>
+		<Style x:Key="ColorComboBox" TargetType="ComboBox">
+			<Setter Property="ItemTemplate">
+				<Setter.Value>
+					<DataTemplate>
+						<StackPanel Orientation="Horizontal">
+							<Rectangle Fill="{Binding}" Width="14" Height="14" Margin="2" SnapsToDevicePixels="True" Stroke="Black" />
+							<TextBlock Text="{Binding}" Margin="5,0" />
+						</StackPanel>
+					</DataTemplate>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="ItemsSource" Value="{x:Static addin:XamlBindingOptions.Colors}" />
+		</Style>
+	</gui:OptionPanel.Resources>
 	<StackPanel>
 		<GroupBox Header="{sd:Localize AddIns.XamlBinding.Options.CodeCompletionGroupLabel}">
 			<StackPanel>			
@@ -15,7 +30,18 @@
 					<Label Content="{sd:Localize AddIns.XamlBinding.Options.EventHandlerNamePattern}" />
 					<TextBox Text="{sd:OptionBinding addin:XamlBindingOptions.EventHandlerNamePattern}" />
 				</DockPanel>
-			</StackPanel>		
+			</StackPanel>
+		</GroupBox>
+		<GroupBox Header="{sd:Localize AddIns.XamlBinding.Options.HighlightingGroupLabel}">
+			<StackPanel>
+				<TextBlock Margin="3" Text="{sd:Localize AddIns.XamlBinding.Options.HighlightingDescription}" />
+				<DockPanel>
+					<Label Content="{sd:Localize AddIns.XamlBinding.Options.PropertyColor}" />
+					<ComboBox x:Name="cmbPropertyColor"
+					          SelectedValue="{sd:OptionBinding addin:XamlBindingOptions.PropertyForegroundBrush}"
+					          Style="{StaticResource ColorComboBox}" />
+				</DockPanel>
+			</StackPanel>
 		</GroupBox>
 	</StackPanel>
 </gui:OptionPanel>

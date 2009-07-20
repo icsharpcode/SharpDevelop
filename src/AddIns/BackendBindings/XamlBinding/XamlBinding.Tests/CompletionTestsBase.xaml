@@ -1,0 +1,7 @@
+<Window x:Class="ICSharpCode.XamlBinding.Tests.CompletionTestsBase"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid>
+		
+	</Grid>
+</Window>

@@ -107,7 +107,6 @@
     <Compile Include="XamlClassReturnType.cs" />
     <Compile Include="XamlCodeCompletionBinding.cs" />
     <Compile Include="XamlColorizerServer.cs" />
-    <Compile Include="XamlColorizerSettings.cs" />
     <Compile Include="XamlCompilationUnit.cs" />
     <Compile Include="XamlCompletionItem.cs" />
     <Compile Include="XamlCompletionItemList.cs" />

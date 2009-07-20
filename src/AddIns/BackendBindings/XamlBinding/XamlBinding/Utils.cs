@@ -245,11 +245,17 @@ namespace ICSharpCode.XamlBinding
 			return new Location(line.Length + 1, lines.Length);
 		}
 		
+		class IgnoredXmlnsWrapper {
+			public IEnumerable<string> Items { get; set; }
+			public QualifiedNameWithLocation Item { get; set; }
+		}
+		
 		public 	static void LookUpInfoAtTarget(string fileContent, int caretLine, int caretColumn, int offset,
 		                                       out Dictionary<string, string> xmlns, out List<string> ignoredXmlns, out QualifiedNameWithLocation active,
 		                                       out QualifiedNameWithLocation parent, out int activeElementStartIndex, out bool isRoot)
 		{
 			Stack<QualifiedNameWithLocation> stack = new Stack<QualifiedNameWithLocation>();
+			Stack<IgnoredXmlnsWrapper> ignoredXmlnsStack = new Stack<IgnoredXmlnsWrapper>();
 			
 			isRoot = false;
 
@@ -268,28 +274,35 @@ namespace ICSharpCode.XamlBinding
 				while (r.Read() && !IsReaderAtTarget(r, caretLine, caretColumn)) {
 					switch (r.NodeType) {
 						case XmlNodeType.EndElement:
-							stack.PopOrDefault();
+							var stackItem = stack.PopOrDefault();
+							if (ignoredXmlnsStack.Count > 0 && ignoredXmlnsStack.Peek().Item == stackItem)
+								ignoredXmlnsStack.PopOrDefault();
 							break;
 						case XmlNodeType.Element:
-							if (!r.IsEmptyElement)
-								stack.Push(new QualifiedNameWithLocation(r.LocalName, r.NamespaceURI, r.Prefix, r.LineNumber, r.LinePosition));
-							if (r.HasAttributes) {
-								r.MoveToFirstAttribute();
-								do {
-									if (r.NamespaceURI == CompletionDataHelper.MarkupCompatibilityNamespace) {
-										if (r.LocalName == "Ignorable") {
-											ignoredXmlns.AddRange(r.Value.Split(separators, StringSplitOptions.RemoveEmptyEntries));
-										} else if (r.LocalName == "ProcessContent") {
-											// TODO : add support for ProcessContent
+							if (!r.IsEmptyElement) {
+								var item = new QualifiedNameWithLocation(r.LocalName, r.NamespaceURI, r.Prefix, r.LineNumber, r.LinePosition);
+								stack.Push(item);
+								if (r.HasAttributes) {
+									r.MoveToFirstAttribute();
+									do {
+										if (r.NamespaceURI == CompletionDataHelper.MarkupCompatibilityNamespace) {
+											if (r.LocalName == "Ignorable") {
+												ignoredXmlnsStack.Push(
+													new IgnoredXmlnsWrapper() { Items = r.Value.Split(separators, StringSplitOptions.RemoveEmptyEntries), Item = item }
+												);
+											} else if (r.LocalName == "ProcessContent") {
+												// TODO : add support for ProcessContent
+											}
 										}
-									}
-								} while (r.MoveToNextAttribute());
+									} while (r.MoveToNextAttribute());
+								}
 							}
 							break;
 					}
 				}
 			} catch (XmlException) {
 			} finally {
+				ignoredXmlns = ignoredXmlnsStack.SelectMany(item => item.Items).ToList();
 				xmlns = new Dictionary<string, string>(r.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml));
 			}
 			
