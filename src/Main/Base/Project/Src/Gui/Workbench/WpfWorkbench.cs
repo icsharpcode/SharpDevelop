@@ -94,11 +94,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			UpdateMenu();
 			
 			AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(OnRequestNavigate));
+			Project.ProjectService.CurrentProjectChanged += SetProjectTitle;
 			
 			requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
 			CommandManager.RequerySuggested += requerySuggestedEventHandler;
 			
 			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
+		}
+		
+		// keep a reference to the event handler to prevent it from being garbage collected
+		// (CommandManager.RequerySuggested only keeps weak references to the event handlers)
+		EventHandler requerySuggestedEventHandler;
+
+		void CommandManager_RequerySuggested(object sender, EventArgs e)
+		{
+			UpdateMenu();
 		}
 		
 		void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -114,13 +124,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		// keep a reference to the event handler to prevent it from being garbage collected
-		// (CommandManager.RequerySuggested only keeps weak references to the event handlers)
-		EventHandler requerySuggestedEventHandler;
-
-		void CommandManager_RequerySuggested(object sender, EventArgs e)
+		void SetProjectTitle(object sender, Project.ProjectEventArgs e)
 		{
-			UpdateMenu();
+			if (e.Project != null) {
+				Title = e.Project.Name + " - " + ResourceService.GetString("MainWindow.DialogName");
+			} else {
+				Title = ResourceService.GetString("MainWindow.DialogName");
+			}
 		}
 		
 		void UpdateMenu()

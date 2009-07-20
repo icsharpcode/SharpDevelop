@@ -67,6 +67,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			ResourceService.RegisterNeutralImages(new ResourceManager("Resources.BitmapResources", exe));
 			
 			MenuCommand.LinkCommandCreator = delegate(string link) { return new LinkCommand(link); };
+			MenuCommand.KnownCommandCreator = CreateICommandForWPFCommand;
 			Core.Presentation.MenuService.LinkCommandCreator = MenuCommand.LinkCommandCreator;
 			StringParser.RegisterStringTagProvider(new SharpDevelopStringTagProvider());
 			
@@ -99,6 +100,41 @@ namespace ICSharpCode.SharpDevelop.Sda
 			FileUtility.FileSaved  += delegate(object sender, FileNameEventArgs e) { this.callback.FileSaved(e.FileName); };
 			
 			LoggingService.Info("InitSharpDevelop finished");
+		}
+		
+		static ICommand CreateICommandForWPFCommand(AddIn addIn, string commandName)
+		{
+			var wpfCommand = Core.Presentation.MenuService.GetRegisteredCommand(addIn, commandName);
+			if (wpfCommand != null)
+				return new WpfCommandWrapper(wpfCommand);
+			else
+				return null;
+		}
+		
+		sealed class WpfCommandWrapper : AbstractCommand
+		{
+			readonly System.Windows.Input.ICommand wpfCommand;
+			
+			public WpfCommandWrapper(System.Windows.Input.ICommand wpfCommand)
+			{
+				this.wpfCommand = wpfCommand;
+			}
+			
+			public override void Run()
+			{
+				var routedCommand = wpfCommand as System.Windows.Input.RoutedCommand;
+				if (routedCommand != null) {
+					var target = System.Windows.Input.FocusManager.GetFocusedElement(WorkbenchSingleton.MainWindow);
+					routedCommand.Execute(this.Owner, target);
+				} else {
+					wpfCommand.Execute(this.Owner);
+				}
+			}
+			
+			public override string ToString()
+			{
+				return "[WpfCommandWrapper " + wpfCommand + "]";
+			}
 		}
 		#endregion
 		

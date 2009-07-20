@@ -217,7 +217,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		// HACK: find a better way to allow the host app to process link commands
-		public static Converter<string, ICommand> LinkCommandCreator { get; set; }
+		public static Func<string, ICommand> LinkCommandCreator { get; set; }
 		
 		/// <summary>
 		/// Creates an KeyGesture for a shortcut.
