@@ -1,11 +1,3 @@
-/*
- * Created by SharpDevelop.
- * User: Administrator
- * Date: 7/13/2009
- * Time: 5:10 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,8 +17,7 @@ namespace ICSharpCode.Core.Presentation
         private ObservableCollection<InputBindingInfo> _inputBindings;
         private ObservableCollection<CommandBindingInfo> _commandBindings;
 
-        private List<string> _attachedNamedInstances = new List<string>();
-        private List<UIElement> _attachedInstances = new List<UIElement>();
+        private HashSet<UIElement> _attachedInstances = new HashSet<UIElement>();
         
         private List<BindingGroup> _nestedGroups = new List<BindingGroup>();
         
@@ -44,89 +35,72 @@ namespace ICSharpCode.Core.Presentation
         	get; set;
         }
         
+        public static bool IsActive(IBindingInfo bindingInfo)
+        {
+			if(bindingInfo.OwnerInstances != null && bindingInfo.Groups != null && bindingInfo.Groups.Count > 0) {
+				return bindingInfo.Groups.IsAttachedToAny(bindingInfo.OwnerInstances);
+			}
+			
+			return true;
+        }
+        
         public bool IsAttachedTo(UIElement instance) 
         {
         	return _attachedInstances.Contains(instance);
         }
         
-        public bool IsAttachedTo(string instanceName) 
-        {
-        	return _attachedNamedInstances.Contains(instanceName);
-        }
-        
         public void AttachTo(UIElement instance)
         {
-        	if(!_attachedInstances.Contains(instance)) {
-        		AttachToWithoutInvoke(instance);
-        	}
-        }
-        
-        public void AttachTo(string instanceName)
-        {
-        	if(!_attachedNamedInstances.Contains(instanceName)) {
-        		AttachToWithoutInvoke(instanceName);
-        	}
+        	AttachToWithoutInvoke(instance);
+        	InvokeBindingUpdateHandlers(instance);
         }
         
         private void AttachToWithoutInvoke(UIElement instance)
         {
-        	if(!_attachedInstances.Contains(instance)) {
-        		_attachedInstances.Add(instance);
-        		
-        		foreach(var nestedGroup in _nestedGroups) {
-        			nestedGroup.AttachToWithoutInvoke(instance);
-        		}
-        	}
-        }
-        
-        private void AttachToWithoutInvoke(string instanceName)
-        {
-        	if(!_attachedNamedInstances.Contains(instanceName)) {
-        		_attachedNamedInstances.Add(instanceName);
-        		
-        		foreach(var nestedGroup in _nestedGroups) {
-        			nestedGroup.AttachToWithoutInvoke(instanceName);
-        		}
-        	}
+    		_attachedInstances.Add(instance);
+    		
+    		foreach(var nestedGroup in _nestedGroups) {
+    			nestedGroup.AttachToWithoutInvoke(instance);
+    		}
         }
         
         public void DetachFromWithoutInvoke(UIElement instance)
         {
-        	if(_attachedInstances.Contains(instance)) {
-        		_attachedInstances.Remove(instance);
-        		
-        		foreach(var nestedGroup in _nestedGroups) {
-        			nestedGroup.DetachFrom(instance);
-        		}
-        	}
-        }
-        
-        public void DetachFromWithoutInvoke(string instanceName)
-        {
-        	if(_attachedNamedInstances.Contains(instanceName)) {
-        		_attachedNamedInstances.Remove(instanceName);
-        		
-        		foreach(var nestedGroup in _nestedGroups) {
-        			nestedGroup.DetachFrom(instanceName);
-        		}
-        	}
+    		_attachedInstances.Remove(instance);
+    		
+    		foreach(var nestedGroup in _nestedGroups) {
+    			nestedGroup.DetachFrom(instance);
+    		}
         }
         
         public void DetachFrom(UIElement instance)
         {
-        	if(_attachedInstances.Contains(instance)) {
-        		DetachFromWithoutInvoke(instance);
-        	}
+        	DetachFromWithoutInvoke(instance);
+        	InvokeBindingUpdateHandlers(instance);
         }
         
-        public void DetachFrom(string instanceName)
+        private void InvokeBindingUpdateHandlers(UIElement instance)
         {
-        	if(_attachedNamedInstances.Contains(instanceName)) {
-        		DetachFromWithoutInvoke(instanceName);
-        		
-        		CommandManager.InvokeCommandBindingUpdateHandlers(null, instanceName);
-        		CommandManager.InvokeInputBindingUpdateHandlers(null, instanceName);
+        	var i = 0;
+        	
+        	// Invoke class wide and instance update handlers
+        	var instanceNames = CommandManager.GetUIElementNameCollection(instance);
+        	var typeNames = CommandManager.GetUITypeNameCollection(instance.GetType());
+        	
+        	var bindingInfoTemplates = new BindingInfoTemplate[instanceNames.Count + typeNames.Count + 2];
+        	bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerInstances = new[] { instance }};
+        	bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerTypes = new[] { instance.GetType() }};
+        	
+        	foreach(var instanceName in instanceNames) {
+        		bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerInstanceName = instanceName };
         	}
+        	
+        	foreach(var typeName in typeNames) {
+        		bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerTypeName = typeName };
+        	}
+        	
+        	CommandManager.InvokeCommandBindingUpdateHandlers(bindingInfoTemplates);
+        	CommandManager.InvokeInputBindingUpdateHandlers(bindingInfoTemplates);
         }
         
         public List<BindingGroup> NestedGroups
@@ -139,22 +113,19 @@ namespace ICSharpCode.Core.Presentation
         public ICollection<BindingGroup> FlatNestedGroups
         {
         	get {
-        		var foundNestedGroups = new List<BindingGroup>();
+        		var foundNestedGroups = new HashSet<BindingGroup>();
         		FlattenNestedGroups(this, foundNestedGroups);
         		
-        		return foundNestedGroups.AsReadOnly();
+        		return foundNestedGroups;
         	}
         }
         
-        internal void FlattenNestedGroups(BindingGroup rootGroup, ICollection<BindingGroup> foundGroups)
+        internal void FlattenNestedGroups(BindingGroup rootGroup, HashSet<BindingGroup> foundGroups)
         {
-        	if(!foundGroups.Contains(rootGroup)) {
-        		foundGroups.Add(rootGroup);
-        	}
+        	foundGroups.Add(rootGroup);
         	
         	foreach(var nestedGroup in NestedGroups) {
-        		if(!foundGroups.Contains(nestedGroup)) {
-        			foundGroups.Add(nestedGroup);
+        		if(foundGroups.Add(nestedGroup)) {
         			FlattenNestedGroups(nestedGroup, foundGroups);
         		}
         	}

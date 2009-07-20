@@ -23,7 +23,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 {
 	static class CaretNavigationCommandHandler
 	{
-		static BindingGroup bindingGroup;
+		public static BindingGroup ClassWideBindingGroup
+		{
+			get; private set;
+		}
 		
 		/// <summary>
 		/// Creates a new <see cref="TextAreaInputHandler"/> for the text area.
@@ -31,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public static TextAreaInputHandler Create(TextArea textArea)
 		{
 			TextAreaInputHandler handler = new TextAreaInputHandler(textArea);
-			handler.BindingGroup = bindingGroup;
+			handler.BindingGroup = ClassWideBindingGroup;
 			
 			// TODO: DELETE
 			// handler.CommandBindings.AddRange(CommandBindings);
@@ -53,8 +56,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			var inputBinding = new InputBindingInfo();
 			inputBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
-			inputBinding.DefaultGestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFrom(gesturesString);
-			inputBinding.Groups.Add(bindingGroup);
+			inputBinding.DefaultGestures.AddRange((InputGestureCollection)new InputGestureCollectionConverter().ConvertFrom(gesturesString));
+			inputBinding.Groups.Add(ClassWideBindingGroup);
 			inputBinding.RoutedCommandName = routedCommandName;
 			SDCommandManager.RegisterInputBinding(inputBinding);
 		}
@@ -66,14 +69,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 			commandBinding.ExecutedEventHandler = executedHandler;
 			commandBinding.CanExecuteEventHandler = canExecuteHandler;
 			commandBinding.IsLazy = false;
-			commandBinding.Groups.Add(bindingGroup);
+			commandBinding.Groups.Add(ClassWideBindingGroup);
 			commandBinding.RoutedCommandName = routedCommandName;
 			SDCommandManager.RegisterCommandBinding(commandBinding);
 		}
 		
 		static CaretNavigationCommandHandler()
 		{
-			bindingGroup = new BindingGroup();
+			ClassWideBindingGroup = new BindingGroup();
 			
 			AddBinding("EditingCommands.MoveLeftByCharacter", "Left", null, OnMoveCaret(CaretMovementType.CharLeft));
 			AddBinding("EditingCommands.SelectLeftByCharacter", "Shift+Left", null, OnMoveCaretExtendSelection(CaretMovementType.CharLeft));

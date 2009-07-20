@@ -11,14 +11,13 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// Stores details about <see cref="CommandBinding" />
 	/// </summary>
-	public class CommandBindingInfo 
+	public class CommandBindingInfo : IBindingInfo
 	{	
 		/// <summary>
 		/// Creates new instance of <see cref="CommandBindingInfo" />
 		/// </summary>
 		public CommandBindingInfo()
 		{
-			IsModifyed = true;
 			OldCommandBindings = new CommandBindingCollection();
 			ActiveCommandBindings = new CommandBindingCollection();
 			
@@ -45,22 +44,18 @@ namespace ICSharpCode.Core.Presentation
 			get; private set;
 		}
 		
-		public bool IsActive
-		{
-			get {
-				if(OwnerInstanceName != null && Groups != null && Groups.Count > 0) {
-					return Groups.IsAttachedTo(OwnerInstanceName);
-				}
-				
-				return true;
-			}
-		}
+		private string routedCommandName;
 		
 		/// <summary>
 		/// Name of the routed command which will be invoked when this binding is triggered
 		/// </summary>
 		public string RoutedCommandName { 
-			get; set;
+			get {
+				return routedCommandName;
+			}
+			set {
+				routedCommandName = value;
+			}
 		}
 		
 		/// <summary>
@@ -217,7 +212,7 @@ namespace ICSharpCode.Core.Presentation
 		public ICollection<UIElement> OwnerInstances {
 			get {
 				if(_ownerInstanceName != null) {
-					return CommandManager.GetNamedUIElement(_ownerInstanceName);
+					return CommandManager.GetNamedUIElementCollection(_ownerInstanceName);
 				}
 				
 				return null;
@@ -256,11 +251,16 @@ namespace ICSharpCode.Core.Presentation
 		public ICollection<Type> OwnerTypes { 
 			get {
 				if(_ownerTypeName != null) {
-					return CommandManager.GetNamedUIType(_ownerTypeName);
+					return CommandManager.GetNamedUITypeCollection(_ownerTypeName);
 				}
 				
 				return null;
 			}
+		}
+		
+		public bool IsRegistered
+		{
+			get; set;
 		}
 			
 		private BindingsUpdatedHandler defaultCommandBindingHandler;
@@ -273,7 +273,7 @@ namespace ICSharpCode.Core.Presentation
 			get {
 				if(defaultCommandBindingHandler == null && OwnerTypeName != null) {
 	 				defaultCommandBindingHandler = delegate {
-						if(OwnerTypes != null && IsModifyed) {
+						if(RoutedCommand != null && OwnerTypes != null && IsRegistered) {
 							GenerateCommandBindings();
 							
 							foreach(var ownerType in OwnerTypes) {
@@ -285,13 +285,11 @@ namespace ICSharpCode.Core.Presentation
 									System.Windows.Input.CommandManager.RegisterClassCommandBinding(ownerType, binding);
 								}
 							}
-							
-							IsModifyed = false;
 						}
 					};
 				} else if(defaultCommandBindingHandler == null && OwnerInstanceName != null) {
 		 			defaultCommandBindingHandler = delegate {
-						if(OwnerInstances != null && IsModifyed) {
+						if(RoutedCommand != null && OwnerInstances != null && IsRegistered) {
 							GenerateCommandBindings();
 							
 							foreach(var ownerInstance in OwnerInstances) {
@@ -301,8 +299,6 @@ namespace ICSharpCode.Core.Presentation
 							
 								ownerInstance.CommandBindings.AddRange(ActiveCommandBindings);
 							}
-							
-							IsModifyed = false;
 						}
 					};
 				}
@@ -324,14 +320,6 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Indicates whether <see cref="CommandBindingInfo" /> was modified. When modified
-		/// <see cref="CommandBinding" />s are re-generated
-		/// </summary>
-		public bool IsModifyed {
-			get; set;
-		}
-		
-		/// <summary>
 		/// Re-generate <see cref="CommandBinding" /> from <see cref="CommandBindingInfo" />
 		/// </summary>
 		internal void GenerateCommandBindings() 
@@ -340,7 +328,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			ActiveCommandBindings = new CommandBindingCollection();
 			
-			if(IsActive) {
+			if(BindingGroup.IsActive(this)) {
 				var commandBinding = new CommandBinding(RoutedCommand);
 				commandBinding.CanExecute += GenerateCanExecuteEventHandler;					
 				commandBinding.Executed += GenerateExecutedEventHandler;

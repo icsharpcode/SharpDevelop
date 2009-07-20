@@ -51,14 +51,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 		readonly TextArea textArea;
 		bool isAttached;
 		
-		private BindingGroup m_bindingGroup;
+		private BindingGroup _bindingGroup;
 		public BindingGroup BindingGroup
 		{
 			get {
-				return m_bindingGroup;
+				return _bindingGroup;
 			}
 			set {
-				m_bindingGroup = value;
+				_bindingGroup = value;
 			}
 		}
 		
@@ -179,12 +179,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 				BindingGroup.AttachTo(textArea);
 			}
 			
-			// TODO: REMOVE
+			textArea.CommandBindings.AddRange(commandBindings);
+			textArea.InputBindings.AddRange(inputBindings);
 			
-			// textArea.CommandBindings.AddRange(commandBindings);
-			// textArea.InputBindings.AddRange(inputBindings);
-			//foreach (ITextAreaInputHandler handler in nestedInputHandlers)
-			//	handler.Attach();
+			foreach (ITextAreaInputHandler handler in nestedInputHandlers)
+				handler.Attach();
 		}
 		
 		/// <inheritdoc/>
@@ -194,16 +193,20 @@ namespace ICSharpCode.AvalonEdit.Editing
 				throw new InvalidOperationException("Input handler is not attached");
 			isAttached = false;
 			
-			BindingGroup.DetachFrom(textArea);
+			// Detach binding from textarea
+			if(BindingGroup != null) {
+				BindingGroup.DetachFrom(textArea);
+			}
 			
-			// TODO: REMOVE
+			// Detach binding to specified input and command bindings
+			foreach (CommandBinding b in commandBindings)
+			 	textArea.CommandBindings.Remove(b);
+			foreach (InputBinding b in inputBindings)
+			 	textArea.InputBindings.Remove(b);
 			
-			// foreach (CommandBinding b in commandBindings)
-			// 	textArea.CommandBindings.Remove(b);
-			// foreach (InputBinding b in inputBindings)
-			// 	textArea.InputBindings.Remove(b);
-			// foreach (ITextAreaInputHandler handler in nestedInputHandlers)
-			// 	handler.Detach();
+			// Detach nested handlers
+			foreach (ITextAreaInputHandler handler in nestedInputHandlers)
+			 	handler.Detach();
 		}
 		#endregion
 	}

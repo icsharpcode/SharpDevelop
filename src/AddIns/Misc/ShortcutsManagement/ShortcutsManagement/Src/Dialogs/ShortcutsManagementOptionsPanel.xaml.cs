@@ -193,7 +193,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                     }
             }
             
-            var inputBindingInfos = CommandManager.FindInputBindingInfos(null, null, null, null);
+            var inputBindingInfos = CommandManager.FindInputBindingInfos(new BindingInfoTemplate());
             foreach (var inputBindingInfo in inputBindingInfos)
             {
                 // Get shortcut entry text. Normaly shortcut entry text is equal to routed command text
@@ -210,7 +210,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 // Strip this sign from shortcut entry text
                 shortcutText = Regex.Replace(shortcutText, @"&([^\s])", @"$1");
 
-                var shortcutGestures = new InputGestureCollection(inputBindingInfo.DefaultGestures);
+                var shortcutGestures = inputBindingInfo.DefaultGestures.GetInputGestureCollection();
                 if(SelectedProfile != null && SelectedProfile[inputBindingInfo.Identifier] != null) {
                 	shortcutGestures = new InputGestureCollection(SelectedProfile[inputBindingInfo.Identifier]);
                 }
@@ -254,10 +254,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                 }
             }
 
-            shortcutsMap.ForEach(b => b.Value.IsModifyed = true);
-
             UserDefinedGesturesManager.CurrentProfile = SelectedProfile;
-            CommandManager.InvokeInputBindingUpdateHandlers();
 
             profiles.ForEach(p => p.Save());
 

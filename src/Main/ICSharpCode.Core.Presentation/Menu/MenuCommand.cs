@@ -130,20 +130,27 @@ namespace ICSharpCode.Core.Presentation
 			var routedCommand = CommandManager.GetRoutedUICommand(routedCommandName);
 			if(routedCommand != null) {
 				this.Command = routedCommand;
-			} else
-			{
-				Console.WriteLine(routedCommandName);
 			}
 			
 			// Register input bindings update handler
 			BindingsUpdatedHandler gesturesUpdateHandler = delegate {
-				var updatedGestures = CommandManager.FindInputGestures(null, null, routedCommandName, null);
+				var gesturesTemplate = new BindingInfoTemplate();
+				gesturesTemplate.RoutedCommandName = routedCommandName;
+				var updatedGestures = CommandManager.FindInputGestures(gesturesTemplate);
 				
 				this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 			};
-			
 			gesturesUpdateHandler.Invoke();
-			CommandManager.RegisterClassInputBindingsUpdateHandler(CommandManager.DefaultContextName, gesturesUpdateHandler);
+			
+			var bindingTemplate = new BindingInfoTemplate();
+			if(codon.Properties.Contains("ownerinstance")) {
+				bindingTemplate.OwnerInstanceName = codon.Properties["ownerinstance"];
+			} else if(codon.Properties.Contains("ownertype")) {
+				bindingTemplate.OwnerTypeName = codon.Properties["ownertype"];
+			}
+			bindingTemplate.RoutedCommandName = routedCommandName;
+			
+			CommandManager.RegisterInputBindingsUpdateHandler(bindingTemplate, gesturesUpdateHandler);
 		}
 	}
 }

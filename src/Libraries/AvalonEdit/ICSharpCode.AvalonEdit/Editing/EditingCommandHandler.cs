@@ -31,7 +31,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// </summary>
 	static class EditingCommandHandler
 	{
-		static BindingGroup bindingGroup;
+		public static BindingGroup ClassWideBindingGroup
+		{
+			get; private set;
+		}
 		
 		/// <summary>
 		/// Creates a new <see cref="TextAreaInputHandler"/> for the text area.
@@ -39,19 +42,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public static TextAreaInputHandler Create(TextArea textArea)
 		{
 			TextAreaInputHandler handler = new TextAreaInputHandler(textArea);
-			handler.BindingGroup = bindingGroup;
-			
-			// TODO: REMOVE
-			
-			// var groups = new BindingGroupCollection { bindingGroup };
-			
-			// var commandBindings = SDCommandManager.FindCommandBindings(null, null, null, groups);
-			// handler.CommandBindings.AddRange(commandBindings.Cast<CommandBinding>()); // Todo: fix later
-			
-			// var inputBindings = SDCommandManager.FindInputBindings(null, null, null, groups);
-			// handler.InputBindings.AddRange(inputBindings.Cast<InputBinding>()); // Todo: fix later
-			
-			
+			handler.BindingGroup = ClassWideBindingGroup;
 			
 			return handler;
 		}
@@ -69,8 +60,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			var inputBinding = new InputBindingInfo();
 			inputBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
-			inputBinding.DefaultGestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFrom(gesturesString);
-			inputBinding.Groups.Add(bindingGroup);
+			inputBinding.DefaultGestures.AddRange((InputGestureCollection)new InputGestureCollectionConverter().ConvertFrom(gesturesString));
+			inputBinding.Groups.Add(ClassWideBindingGroup);
 			inputBinding.Categories.AddRange(SDCommandManager.GetInputBindingCategoryCollection("/MainMenu/Edit", true));
 			inputBinding.RoutedCommandName = routedCommandName;
 			SDCommandManager.RegisterInputBinding(inputBinding);
@@ -83,14 +74,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 			commandBinding.ExecutedEventHandler = executedHandler;
 			commandBinding.CanExecuteEventHandler = canExecuteHandler;
 			commandBinding.IsLazy = false;
-			commandBinding.Groups.Add(bindingGroup);
+			commandBinding.Groups.Add(ClassWideBindingGroup);
 			commandBinding.RoutedCommandName = routedCommandName;
 			SDCommandManager.RegisterCommandBinding(commandBinding);
 		}
 		
 		static EditingCommandHandler()
 		{
-			bindingGroup = new BindingGroup();
+			ClassWideBindingGroup = new BindingGroup();
 			
 			AddCommandBinding("ApplicationCommands.Delete", CanDelete, OnDelete(ApplicationCommands.NotACommand));
 			AddBinding("EditingCommands.Delete", "Delete", null, OnDelete(EditingCommands.SelectRightByCharacter));

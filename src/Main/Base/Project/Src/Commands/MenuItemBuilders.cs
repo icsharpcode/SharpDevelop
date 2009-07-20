@@ -243,8 +243,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 					CommandManager.RegisterInputBinding(inputBindingInfo);
 				}		
 				
-				var updatedGestures = CommandManager.FindInputGestures(CommandManager.DefaultContextName, null, routedCommandName, null);
+				var gesturesTemplate = new BindingInfoTemplate();
+				gesturesTemplate.OwnerTypeName = CommandManager.DefaultContextName;
+				gesturesTemplate.RoutedCommandName = routedCommandName;
+				var updatedGestures = CommandManager.FindInputGestures(gesturesTemplate);
 				var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+				
 				items[i].InputGestureText = updatedGesturesText;					
 				items[i].Command = CommandManager.GetRoutedUICommand(routedCommandName);
 				items[i].Header = StringParser.Parse(tool.ToString());
@@ -535,7 +539,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						var inputBindingInfo = new InputBindingInfo();
 						inputBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
 						inputBindingInfo.RoutedCommandName = routedCommandName;
-						inputBindingInfo.DefaultGestures = gestures;
+						inputBindingInfo.DefaultGestures.AddRange(gestures);
 						
 						
 						var categoryPath = "/MainMenu/View" + (Category == padContent.Category && padContent.Category != "Main" ? "/" + padContent.Class : "");
@@ -554,7 +558,10 @@ namespace ICSharpCode.SharpDevelop.Commands
 					
 					item.Command = CommandManager.GetRoutedUICommand(routedCommandName);
 					
-					var updatedGestures = CommandManager.FindInputGestures(CommandManager.DefaultContextName, null, routedCommandName, null);
+					var gesturesTemplate = new BindingInfoTemplate();
+					gesturesTemplate.OwnerTypeName = CommandManager.DefaultContextName;
+					gesturesTemplate.RoutedCommandName = routedCommandName;
+					var updatedGestures = CommandManager.FindInputGestures(gesturesTemplate);
 					var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 					item.InputGestureText = updatedGesturesText;
 					

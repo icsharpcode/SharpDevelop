@@ -69,14 +69,17 @@
     </Compile>
     <Compile Include="CommandsService\BindingGroup.cs" />
     <Compile Include="CommandsService\BindingGroupCollection.cs" />
+    <Compile Include="CommandsService\BindingInfoTemplate.cs" />
     <Compile Include="CommandsService\BindingsUpdatedHandler.cs" />
     <Compile Include="CommandsService\CommandBindingInfo.cs" />
     <Compile Include="CommandsService\CommandManager.cs" />
     <Compile Include="CommandsService\CommandsService.cs" />
     <Compile Include="CommandsService\GesturePlaceHolderRegistry.cs" />
+    <Compile Include="CommandsService\IBindingInfo.cs" />
     <Compile Include="CommandsService\InputBindingCategory.cs" />
     <Compile Include="CommandsService\InputBindingCategoryCollection.cs" />
     <Compile Include="CommandsService\InputBindingInfo.cs" />
+    <Compile Include="CommandsService\ObservableInputGestureCollection.cs" />
     <Compile Include="CommandsService\UserDefinedGesturesManager.cs" />
     <Compile Include="CommandsService\UserGesturesProfile.cs" />
     <Compile Include="CommandsService\WpfCommandWrapper.cs" />

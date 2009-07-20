@@ -10,10 +10,10 @@ using System;
 using System.Xml;
 using System.Windows.Input;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ICSharpCode.Core.Presentation
 {
-	
 	/// <summary>
 	/// Description of UserGesturesProfile.
 	/// </summary>
@@ -141,8 +141,17 @@ namespace ICSharpCode.Core.Presentation
 			xmlDocument.Save(Path);
 		}
 		
+		public event InputBindingGesturesChangedHandler InputBindingGesturesChanged;
+		
 		public void Clear()
 		{
+			if(InputBindingGesturesChanged != null) {
+				var identifiers = new List<InputBindingIdentifier>();
+				foreach(var userDefinedGesture in userDefinedGestures) {
+					InputBindingGesturesChanged.Invoke(this, new InputBindingGesturesChangedArgs { InputBindingIdentifier = userDefinedGesture.Key});
+				}
+			}
+			
 			userDefinedGestures.Clear();
 		}
 		
@@ -172,6 +181,10 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputGestureCollection">Gesture assigned to this input binding</param>
 		private void SetInputBindingGestures(InputBindingIdentifier identifier, InputGestureCollection inputGestureCollection) 
 		{
+			if(InputBindingGesturesChanged != null) {
+				InputBindingGesturesChanged.Invoke(this, new InputBindingGesturesChangedArgs { InputBindingIdentifier = identifier});
+			}
+			
 			userDefinedGestures[identifier] = inputGestureCollection;
 		}
 		
@@ -196,4 +209,14 @@ namespace ICSharpCode.Core.Presentation
 			return profile;
 		}
 	}
+	
+	public class InputBindingGesturesChangedArgs
+	{
+		public InputBindingIdentifier InputBindingIdentifier
+		{
+			get; set;
+		}
+	}
+	
+	public delegate void InputBindingGesturesChangedHandler(object sender, InputBindingGesturesChangedArgs args);
 }

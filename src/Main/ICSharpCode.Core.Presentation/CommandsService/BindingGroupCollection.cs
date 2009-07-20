@@ -1,16 +1,9 @@
-/*
- * Created by SharpDevelop.
- * User: Administrator
- * Date: 7/14/2009
- * Time: 1:20 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Windows;
 
 using ICSharpCode.Core;
 
@@ -33,20 +26,36 @@ namespace ICSharpCode.Core.Presentation
     	public BindingGroupCollection FlatNesteGroups
     	{
     		get {
-    			var flatGroups = new BindingGroupCollection();
+    			var flatGroups = new HashSet<BindingGroup>();
     			foreach(var bindingGroup in this) {
     				bindingGroup.FlattenNestedGroups(bindingGroup, flatGroups);
     			}
     			
-    			return flatGroups;
+    			var flatBindingGroupCollection = new BindingGroupCollection();
+    			flatBindingGroupCollection.AddRange(flatGroups);
+    			
+    			return flatBindingGroupCollection;
     		}
     	}
     	
-    	public bool IsAttachedTo(string instanceName)
+    	public bool IsAttachedTo(UIElement instance)
     	{
     		foreach(var bindingGroup in FlatNesteGroups) {
-    			if(bindingGroup.IsAttachedTo(instanceName)) {
+    			if(bindingGroup.IsAttachedTo(instance)) {
     				return true;
+    			}
+    		}
+    		
+    		return false;
+    	}
+    	
+    	public bool IsAttachedToAny(ICollection<UIElement> instances)
+    	{
+    		if(instances != null && instances.Count > 0) {
+    			foreach(var instance in instances) {
+    				if(IsAttachedTo(instance)) {
+    					return true;
+    				}
     			}
     		}
     		

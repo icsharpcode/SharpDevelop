@@ -124,7 +124,6 @@
 		<RoutedUICommand name="SDDebugCommands.StepOut" text="${res:XML.MainMenu.DebugMenu.StepOut}" />
 		<RoutedUICommand name="SDDebugCommands.ToggleBreakpoint" text="${res:XML.MainMenu.DebugMenu.ToggleBreakpoint}" />
 
-
 		<RoutedUICommand name="SDSearchCommands.ToggleBookmark" text="${res:XML.MainMenu.SearchMenu.ToggleBookmark}" />
 		<RoutedUICommand name="SDSearchCommands.PrevBookmark" text="${res:XML.MainMenu.SearchMenu.PrevBookmark}" />
 		<RoutedUICommand name="SDSearchCommands.NextBookmark" text="${res:XML.MainMenu.SearchMenu.NextBookmark}" />

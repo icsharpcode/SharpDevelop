@@ -19,6 +19,10 @@ namespace ICSharpCode.Core
     	/// <returns><code>true</code> if item is found; otherwise false</returns>
     	public static bool ContainsAnyFromCollection<T>(this ICollection<T> thisCollection, ICollection<T> otherCollection) 
     	{
+    		if(otherCollection == null) {
+    			throw new ArgumentNullException("otherCollection");
+    		}
+    		
 			foreach(var thisCollectionItem in thisCollection) {
     			if(otherCollection.Contains(thisCollectionItem)) {
     				return true;

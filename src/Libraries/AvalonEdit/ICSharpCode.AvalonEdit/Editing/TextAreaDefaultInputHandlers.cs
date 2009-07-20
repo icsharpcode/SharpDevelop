@@ -8,6 +8,8 @@
 using System;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Core.Presentation;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -31,32 +33,76 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public ITextAreaInputHandler MouseSelection { get; private set; }
 		
+		public static BindingGroup ClassWideBindingGroup
+		{
+			get; private set;
+		}
+		
+		static TextAreaDefaultInputHandler()
+		{
+			ClassWideBindingGroup = new BindingGroup();	
+			AddCommandBinding("ApplicationCommands.Undo", CanExecuteUndo, ExecuteUndo);
+			AddCommandBinding("ApplicationCommands.Redo", CanExecuteRedo, ExecuteRedo);
+		}
+		
+		static void AddBinding(string routedCommandName, string gesturesString, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)
+		{
+			AddCommandBinding(routedCommandName, canExecuteHandler, executedHandler);
+			AddInputBinding(routedCommandName, gesturesString);
+		}
+		
+		static void AddInputBinding(string routedCommandName, string gesturesString)
+		{
+			var inputBinding = new InputBindingInfo();
+			inputBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
+			inputBinding.DefaultGestures.AddRange((InputGestureCollection)new InputGestureCollectionConverter().ConvertFrom(gesturesString));
+			inputBinding.Groups.Add(ClassWideBindingGroup);
+			inputBinding.Categories.AddRange(SDCommandManager.GetInputBindingCategoryCollection("/MainMenu/Edit", true));
+			inputBinding.RoutedCommandName = routedCommandName;
+			SDCommandManager.RegisterInputBinding(inputBinding);
+		}
+		
+		static void AddCommandBinding(string routedCommandName, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)
+		{
+			var commandBinding = new CommandBindingInfo();
+			commandBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
+			commandBinding.ExecutedEventHandler = executedHandler;
+			commandBinding.CanExecuteEventHandler = canExecuteHandler;
+			commandBinding.IsLazy = false;
+			commandBinding.Groups.Add(ClassWideBindingGroup);
+			commandBinding.RoutedCommandName = routedCommandName;
+			SDCommandManager.RegisterCommandBinding(commandBinding);
+		}
+		
 		/// <summary>
 		/// Creates a new TextAreaDefaultInputHandler instance.
 		/// </summary>
 		public TextAreaDefaultInputHandler(TextArea textArea) : base(textArea)
 		{
+			BindingGroup = ClassWideBindingGroup;
+			
 			this.NestedInputHandlers.Add(CaretNavigation = CaretNavigationCommandHandler.Create(textArea));
 			this.NestedInputHandlers.Add(Editing = EditingCommandHandler.Create(textArea));
 			this.NestedInputHandlers.Add(MouseSelection = new SelectionMouseHandler(textArea));
 			
-			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, ExecuteUndo, CanExecuteUndo));
-			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, ExecuteRedo, CanExecuteRedo));
+			// TODO: DELETE
+			
+			// this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, ExecuteUndo, CanExecuteUndo));
+			// this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, ExecuteRedo, CanExecuteRedo));
 		}
 		
 		#region Undo / Redo
-		UndoStack GetUndoStack()
+		static UndoStack GetUndoStack(TextArea textArea)
 		{
-			TextDocument document = this.TextArea.Document;
-			if (document != null)
-				return document.UndoStack;
+			if (textArea != null && textArea.Document != null)
+				return textArea.Document.UndoStack;
 			else
 				return null;
 		}
 		
-		void ExecuteUndo(object sender, ExecutedRoutedEventArgs e)
+		static void ExecuteUndo(object sender, ExecutedRoutedEventArgs e)
 		{
-			var undoStack = GetUndoStack();
+			var undoStack = GetUndoStack(sender as TextArea);
 			if (undoStack != null) {
 				if (undoStack.CanUndo)
 					undoStack.Undo();
@@ -64,18 +110,18 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
-		void CanExecuteUndo(object sender, CanExecuteRoutedEventArgs e)
+		static void CanExecuteUndo(object sender, CanExecuteRoutedEventArgs e)
 		{
-			var undoStack = GetUndoStack();
+			var undoStack = GetUndoStack(sender as TextArea);
 			if (undoStack != null) {
 				e.Handled = true;
 				e.CanExecute = undoStack.CanUndo;
 			}
 		}
 		
-		void ExecuteRedo(object sender, ExecutedRoutedEventArgs e)
+		static void ExecuteRedo(object sender, ExecutedRoutedEventArgs e)
 		{
-			var undoStack = GetUndoStack();
+			var undoStack = GetUndoStack(sender as TextArea);
 			if (undoStack != null) {
 				if (undoStack.CanRedo)
 					undoStack.Redo();
@@ -83,9 +129,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
-		void CanExecuteRedo(object sender, CanExecuteRoutedEventArgs e)
+		static void CanExecuteRedo(object sender, CanExecuteRoutedEventArgs e)
 		{
-			var undoStack = GetUndoStack();
+			var undoStack = GetUndoStack(sender as TextArea);
 			if (undoStack != null) {
 				e.Handled = true;
 				e.CanExecute = undoStack.CanRedo;

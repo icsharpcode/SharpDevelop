@@ -12,14 +12,14 @@
 	</Runtime>
 	
 	<!-- Commands registry test -->
-	<Path name="/SharpDevelop/Workbench/RoutedUICommands">
+	<Path name="/SharpDevelop/CommandManager/RoutedUICommands">
 		<RoutedUICommand name="SDSearchAndReplace.Find" text="${res:XML.MainMenu.SearchMenu.Find}" />
 		<RoutedUICommand name="SDSearchAndReplace.FindNext" text="${res:XML.MainMenu.SearchMenu.FindNext}" />
 		<RoutedUICommand name="SDSearchAndReplace.FindNextSelected" text="${res:XML.MainMenu.SearchMenu.FindNextSelected}" />
 		<RoutedUICommand name="SDSearchAndReplace.Replace" text="${res:XML.MainMenu.SearchMenu.Replace}" />
 	</Path>
 	
-	<Path name="/SharpDevelop/Workbench/CommandBindings">
+	<Path name="/SharpDevelop/CommandManager/CommandBindings">
 		<CommandBinding command="SDSearchAndReplace.Find" class="SearchAndReplace.Find" lazy="true" gestures="Ctrl+F" />
 		<CommandBinding command="SDSearchAndReplace.FindNext" class="SearchAndReplace.FindNext" lazy="true" gestures="F3" />
 		<CommandBinding command="SDSearchAndReplace.FindNextSelected" class="SearchAndReplace.FindNextSelected" lazy="true" gestures="Ctrl+F3" />
@@ -27,10 +27,6 @@
 	</Path>
 	<!-- Commands registry test -->
 	
-	<Path name="/SharpDevelop/Workbench/GesturePlaceHolder">
-		<GesturesPlaceHolder name="SDSearchAndReplace.Find" text="Find next" gestures="Ctrl+F" />
-		<GesturesPlaceHolder name="SDSearchAndReplace.Replace" text="Find next" gestures="F3" />
-	</Path>
 	
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Search">

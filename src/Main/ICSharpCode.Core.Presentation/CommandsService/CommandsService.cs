@@ -161,7 +161,7 @@ namespace ICSharpCode.Core.Presentation
 			var descriptors = AddInTree.BuildItems<CommandBindingDescriptor>(path, caller, false);
 			foreach(var desc in descriptors) {
 				var commandBindingInfoName = new StringBuilder();
-
+				
 				// If routed with such name is not registered register routed command with text same as name
 				if(CommandManager.GetRoutedUICommand(desc.Command) == null) {
 					var commandText = string.IsNullOrEmpty(desc.CommandText) ? desc.Command : desc.CommandText;
@@ -200,7 +200,7 @@ namespace ICSharpCode.Core.Presentation
 					
 					inputBindingInfo.AddIn = desc.Codon.AddIn;
 					inputBindingInfo.RoutedCommandName = desc.Command;
-					inputBindingInfo.DefaultGestures = gestures;
+					inputBindingInfo.DefaultGestures.AddRange(gestures);
 					
 					if(!string.IsNullOrEmpty(desc.CommandText)) {
 						inputBindingInfo.RoutedCommandText = desc.CommandText;
@@ -234,7 +234,7 @@ namespace ICSharpCode.Core.Presentation
 				
 				inputBindingInfo.AddIn = desc.Codon.AddIn;
 				inputBindingInfo.RoutedCommandName = desc.Command;
-				inputBindingInfo.DefaultGestures = gestures;
+				inputBindingInfo.DefaultGestures.AddRange(gestures);
 				
 				if(!string.IsNullOrEmpty(desc.CommandText)) {
 					inputBindingInfo.RoutedCommandText = desc.CommandText;
