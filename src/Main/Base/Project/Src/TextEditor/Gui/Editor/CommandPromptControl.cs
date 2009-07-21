@@ -5,9 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
@@ -19,12 +21,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		TextMarker readOnlyMarker;
 		int promptStartOffset;
 		int promptEndOffset;
+		IList<string> history;
+		int historyPointer;
 		
 		public CommandPromptControl()
 			: base(false, false)
 		{
 			this.TextEditorProperties.SupportReadOnlySegments = true;
 			this.TextEditorProperties.ShowLineNumbers = false;
+			this.history = new List<string>();
 			base.contextMenuPath = null;
 		}
 		
@@ -80,11 +85,36 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return this.Document.GetText(promptEndOffset, this.Document.TextLength - promptEndOffset);
 		}
 		
+		/// <summary>
+		/// Sets the current command
+		/// </summary>
+		protected void SetCommand(string cmd)
+		{
+			this.Document.Replace(promptEndOffset, this.Document.TextLength - promptEndOffset, cmd);
+			this.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, this.Document.GetLineNumberForOffset(promptEndOffset)));
+			this.Document.CommitUpdate();
+			this.ActiveTextAreaControl.Caret.Position = this.Document.OffsetToPosition(this.Document.TextLength);
+		}
+		
 		bool HandleDialogKey(Keys keys)
 		{
-			if (keys == Keys.Enter) {
-				AcceptCommand(GetCommand());
-				return true;
+			switch (keys) {
+				case Keys.Enter:
+					history.Add(GetCommand());
+					historyPointer = history.Count;
+					AcceptCommand(GetCommand());
+					return true;
+				case Keys.Up:
+					historyPointer = Math.Max(historyPointer - 1, 0);
+					SetCommand(history[historyPointer]);
+					return true;
+				case Keys.Down:
+					historyPointer = Math.Min(historyPointer + 1, history.Count);
+					if (historyPointer == history.Count)
+						SetCommand(string.Empty);
+					else
+						SetCommand(history[historyPointer]);
+					return true;
 			}
 			return false;
 		}
