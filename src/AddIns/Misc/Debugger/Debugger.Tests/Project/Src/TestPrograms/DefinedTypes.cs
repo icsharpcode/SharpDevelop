@@ -37,8 +37,8 @@ namespace Debugger.Tests {
 		{
 			StartTest("DefinedTypes.cs");
 			
-			ObjectDump("TypesAsString", process.GetModule("DefinedTypes.exe").GetNamesOfDefinedTypes());
-			ObjectDump("Types", process.GetModule("DefinedTypes.exe").GetDefinedTypes());
+			ObjectDump("TypesAsString", process.Modules["DefinedTypes.exe"].GetNamesOfDefinedTypes());
+			ObjectDump("Types", process.Modules["DefinedTypes.exe"].GetDefinedTypes());
 			
 			EndTest();
 		}

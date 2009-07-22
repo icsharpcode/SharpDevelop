@@ -336,7 +336,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "LoadModule " + pModule.Name, pAppDomain);
 			
-			process.AddModule(pModule);
+			process.Modules.Add(new Module(process, pModule));
 			
 			ExitCallback();
 		}
@@ -395,7 +395,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "UnloadModule", pAppDomain);
 			
-			process.RemoveModule(pModule);
+			process.Modules.Remove(process.Modules.Get(pModule));
 			
 			ExitCallback();
 		}

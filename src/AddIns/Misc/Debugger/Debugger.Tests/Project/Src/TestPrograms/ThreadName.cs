@@ -30,7 +30,7 @@ namespace Debugger.Tests {
 		{
 			debugger.Processes.Added += debugger_ProcessStarted;
 			StartTest("ThreadName.cs");
-			debugger.Processes.Removed -= debugger_ProcessStarted;
+			debugger.Processes.Added -= debugger_ProcessStarted;
 			ObjectDump("Thread", process.SelectedThread);
 			process.Continue();
 			ObjectDump("Thread", process.SelectedThread);

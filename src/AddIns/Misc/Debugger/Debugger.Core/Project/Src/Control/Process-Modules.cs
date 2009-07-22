@@ -14,47 +14,33 @@ namespace Debugger
 {
 	public partial class Process
 	{
-		int lastAssignedModuleOrderOfLoading= 0;
-
-		List<Module> moduleCollection = new List<Module>();
-
-		public event EventHandler<ModuleEventArgs> ModuleLoaded;
-		public event EventHandler<ModuleEventArgs> ModuleUnloaded;
-
-		protected void OnModuleLoaded(Module module)
-		{
-			if (ModuleLoaded != null) {
-				ModuleLoaded(this, new ModuleEventArgs(module));
-			}
-		}
-
-		protected void OnModuleUnloaded(Module module)
-		{
-			if (ModuleUnloaded != null) {
-				ModuleUnloaded(this, new ModuleEventArgs(module));
-			}
-		}
+		ModuleCollection modules;
 		
-		public IList<Module> Modules { 
-			get{ 
-				return moduleCollection.AsReadOnly();
-			} 
+		public ModuleCollection Modules {
+			get { return modules; }
 		}
+	}
+	
+	public class ModuleCollection: CollectionWithEvents<Module>
+	{
+		public ModuleCollection(NDebugger debugger):base (debugger) {}
+		
+		int lastAssignedModuleOrderOfLoading = 0;
 
-		public Module GetModule(string filename) 
-		{
-			foreach(Module module in moduleCollection) {
-				if (module.Filename == filename) {
-					return module;
+		public Module this[string filename] {
+			get {
+				foreach(Module module in this) {
+					if (module.Filename == filename) {
+						return module;
+					}
 				}
+				throw new DebuggerException("Module \"" + filename + "\" is not in collection");
 			}
-
-			throw new DebuggerException("Module \"" + filename + "\" is not in collection");
 		}
 
-		internal Module GetModule(ICorDebugModule corModule) 
+		internal Module Get(ICorDebugModule corModule) 
 		{
-			foreach(Module module in moduleCollection) {
+			foreach(Module module in this) {
 				if (module.CorModule == corModule) {
 					return module;
 				}
@@ -62,39 +48,19 @@ namespace Debugger
 
 			throw new DebuggerException("Module is not in collection");
 		}
-
-		internal void AddModule(Module module)
+		
+		protected override void OnAdded(Module module)
 		{
 			module.OrderOfLoading = lastAssignedModuleOrderOfLoading;
 			lastAssignedModuleOrderOfLoading++;
-			moduleCollection.Add(module);
-			debugger.Breakpoints.SetInModule(module);
-			OnModuleLoaded(module);
+			this.Debugger.Breakpoints.SetInModule(module);
+			base.OnAdded(module);
 		}
-
-		internal void AddModule(ICorDebugModule corModule)
+		
+		protected override void OnRemoved(Module module)
 		{
-			AddModule(new Module(this, corModule));
-		}
-
-		internal void RemoveModule(Module module)
-		{
-			moduleCollection.Remove(module);
-			OnModuleUnloaded(module);
+			base.OnRemoved(module);
 			module.Dispose();
-		}
-
-		internal void RemoveModule(ICorDebugModule corModule)
-		{
-			RemoveModule(GetModule(corModule));
-		}
-
-		internal void ClearModules()
-		{
-			while(moduleCollection.Count > 0) {
-				RemoveModule(moduleCollection[0]);
-			}
-			lastAssignedModuleOrderOfLoading = 0;
 		}
 	}
 }

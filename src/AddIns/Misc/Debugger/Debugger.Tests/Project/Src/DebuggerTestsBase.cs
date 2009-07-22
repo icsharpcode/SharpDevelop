@@ -144,8 +144,8 @@ namespace Debugger.Tests
 				lastLogMessage = e.Message;
 				LogEvent("LogMessage", e.Message.Replace("\r",@"\r").Replace("\n",@"\n"));
 			};
-			process.ModuleLoaded += delegate(object sender, ModuleEventArgs e) {
-				LogEvent("ModuleLoaded", e.Module.Filename + (e.Module.HasSymbols ? " (Has symbols)" : " (No symbols)"));
+			process.Modules.Added += delegate(object sender, CollectionItemEventArgs<Module> e) {
+				LogEvent("ModuleLoaded", e.Item.Filename + (e.Item.HasSymbols ? " (Has symbols)" : " (No symbols)"));
 			};
 			process.Paused += delegate(object sender, ProcessEventArgs e) {
 				LogEvent("DebuggingPaused", e.Process.PauseSession.PausedReason.ToString() + " " + e.Process.SelectedStackFrame.NextStatement.ToString());

@@ -105,25 +105,25 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void SelectProcess(Process process)
 		{
 			if (debuggedProcess != null) {
-				debuggedProcess.ModuleLoaded -= debuggedProcess_ModuleLoaded;
-				debuggedProcess.ModuleUnloaded -= debuggedProcess_ModuleUnloaded;
+				debuggedProcess.Modules.Added -= debuggedProcess_ModuleLoaded;
+				debuggedProcess.Modules.Removed -= debuggedProcess_ModuleUnloaded;
 			}
 			debuggedProcess = process;
 			if (debuggedProcess != null) {
-				debuggedProcess.ModuleLoaded += debuggedProcess_ModuleLoaded;
-				debuggedProcess.ModuleUnloaded += debuggedProcess_ModuleUnloaded;
+				debuggedProcess.Modules.Added += debuggedProcess_ModuleLoaded;
+				debuggedProcess.Modules.Removed += debuggedProcess_ModuleUnloaded;
 			}
 			RefreshPad();
 		}
 		
-		void debuggedProcess_ModuleLoaded(object sender, ModuleEventArgs e)
+		void debuggedProcess_ModuleLoaded(object sender, CollectionItemEventArgs<Module> e)
 		{
-			AddModule(e.Module);
+			AddModule(e.Item);
 		}
 		
-		void debuggedProcess_ModuleUnloaded(object sender, ModuleEventArgs e)
+		void debuggedProcess_ModuleUnloaded(object sender, CollectionItemEventArgs<Module> e)
 		{
-			RemoveModule(e.Module);
+			RemoveModule(e.Item);
 		}
 		
 		public override void RefreshPad()

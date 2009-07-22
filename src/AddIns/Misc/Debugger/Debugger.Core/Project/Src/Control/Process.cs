@@ -73,6 +73,7 @@ namespace Debugger
 			this.callbackInterface = new ManagedCallback(this);
 			
 			evals = new EvalCollection(debugger);
+			modules = new ModuleCollection(debugger);
 		}
 		
 		internal ICorDebugProcess CorProcess {
