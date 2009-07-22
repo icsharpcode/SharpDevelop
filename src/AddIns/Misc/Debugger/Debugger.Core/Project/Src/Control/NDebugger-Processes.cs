@@ -14,20 +14,23 @@ namespace Debugger
 {
 	public partial class NDebugger
 	{
-		List<Process> processCollection = new List<Process>();
+		ProcessCollection processes;
 		
-		public event EventHandler<ProcessEventArgs> ProcessStarted;
-		public event EventHandler<ProcessEventArgs> ProcessExited;
-		
-		public IList<Process> Processes {
-			get {
-				return processCollection.AsReadOnly();
-			}
+		public ProcessCollection Processes {
+			get { return processes; }
 		}
-
-		internal Process GetProcess(ICorDebugProcess corProcess)
+	}
+	
+	public class ProcessCollection: CollectionWithEvents<Process>
+	{
+		public ProcessCollection(NDebugger debugger): base(debugger)
 		{
-			foreach (Process process in Processes) {
+			
+		}
+		
+		internal Process Get(ICorDebugProcess corProcess)
+		{
+			foreach (Process process in this) {
 				if (process.CorProcess == corProcess) {
 					return process;
 				}
@@ -35,33 +38,13 @@ namespace Debugger
 			return null;
 		}
 
-		internal void AddProcess(Process process)
+		protected override void OnRemoved(Process item)
 		{
-			processCollection.Add(process);
-			OnProcessStarted(process);
-		}
-
-		internal void RemoveProcess(Process process)
-		{
-			processCollection.Remove(process);
-			OnProcessExited(process);
-			if (processCollection.Count == 0) {
+			base.OnRemoved(item);
+			
+			if (this.Count == 0) {
 				// Exit callback and then terminate the debugger
-				this.MTA2STA.AsyncCall( delegate { this.TerminateDebugger(); } );
-			}
-		}
-
-		protected virtual void OnProcessStarted(Process process)
-		{
-			if (ProcessStarted != null) {
-				ProcessStarted(this, new ProcessEventArgs(process));
-			}
-		}
-
-		protected virtual void OnProcessExited(Process process)
-		{
-			if (ProcessExited != null) {
-				ProcessExited(this, new ProcessEventArgs(process));
+				this.Debugger.MTA2STA.AsyncCall( delegate { this.Debugger.TerminateDebugger(); } );
 			}
 		}
 	}

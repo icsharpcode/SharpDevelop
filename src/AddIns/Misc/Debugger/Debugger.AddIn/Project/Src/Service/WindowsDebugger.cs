@@ -442,8 +442,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			debugger.Options = DebuggingOptions.Instance;
 			
 			debugger.DebuggerTraceMessage    += debugger_TraceMessage;
-			debugger.ProcessStarted          += debugger_ProcessStarted;
-			debugger.ProcessExited           += debugger_ProcessExited;
+			debugger.Processes.Added         += debugger_ProcessStarted;
+			debugger.Processes.Removed       += debugger_ProcessExited;
 			
 			DebuggerService.BreakPointAdded  += delegate (object sender, BreakpointBookmarkEventArgs e) {
 				AddBreakpoint(e.BreakpointBookmark);
@@ -513,12 +513,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			setBookmarkColor();
 			
-			EventHandler<ProcessEventArgs> bp_debugger_ProcessStarted = (sender, e) => {
+			EventHandler<CollectionItemEventArgs<Process>> bp_debugger_ProcessStarted = (sender, e) => {
 				setBookmarkColor();
 				// User can change line number by inserting or deleting lines
 				breakpoint.Line = bookmark.LineNumber;
 			};
-			EventHandler<ProcessEventArgs> bp_debugger_ProcessExited = (sender, e) => {
+			EventHandler<CollectionItemEventArgs<Process>> bp_debugger_ProcessExited = (sender, e) => {
 				setBookmarkColor();
 			};
 			
@@ -549,15 +549,15 @@ namespace ICSharpCode.SharpDevelop.Services
 					debugger.Breakpoints.Remove(breakpoint);
 					
 					// unregister the events
-					debugger.ProcessStarted -= bp_debugger_ProcessStarted;
-					debugger.ProcessExited -= bp_debugger_ProcessExited;
+					debugger.Processes.Added -= bp_debugger_ProcessStarted;
+					debugger.Processes.Removed -= bp_debugger_ProcessExited;
 					breakpoint.Hit -= bp_debugger_BreakpointHit;
 					BookmarkManager.Removed -= bp_bookmarkManager_Removed;
 				}
 			};
 			// register the events
-			debugger.ProcessStarted += bp_debugger_ProcessStarted;
-			debugger.ProcessExited += bp_debugger_ProcessExited;
+			debugger.Processes.Added += bp_debugger_ProcessStarted;
+			debugger.Processes.Removed += bp_debugger_ProcessExited;
 			breakpoint.Hit += bp_debugger_BreakpointHit;
 			BookmarkManager.Removed += bp_bookmarkManager_Removed;
 		}
@@ -588,17 +588,17 @@ namespace ICSharpCode.SharpDevelop.Services
 			LoggingService.Debug("Debugger: " + e.Message);
 		}
 		
-		void debugger_ProcessStarted(object sender, ProcessEventArgs e)
+		void debugger_ProcessStarted(object sender, CollectionItemEventArgs<Process> e)
 		{
 			if (debugger.Processes.Count == 1) {
 				if (DebugStarted != null) {
 					DebugStarted(this, EventArgs.Empty);
 				}
 			}
-			e.Process.LogMessage += LogMessage;
+			e.Item.LogMessage += LogMessage;
 		}
 		
-		void debugger_ProcessExited(object sender, ProcessEventArgs e)
+		void debugger_ProcessExited(object sender, CollectionItemEventArgs<Process> e)
 		{
 			if (debugger.Processes.Count == 0) {
 				if (DebugStopped != null) {

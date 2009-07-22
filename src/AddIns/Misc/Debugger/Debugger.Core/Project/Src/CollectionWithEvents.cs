@@ -59,7 +59,7 @@ namespace Debugger
 			this.debugger = debugger;
 		}
 		
-		public NDebugger Debugger {
+		protected NDebugger Debugger {
 			get {
 				return debugger;
 			}

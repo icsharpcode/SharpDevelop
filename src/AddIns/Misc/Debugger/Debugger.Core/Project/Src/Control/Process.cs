@@ -41,7 +41,7 @@ namespace Debugger
 				if (IsPaused) {
 					NotifyResumed(DebuggeeStateAction.Clear);
 				}
-				debugger.RemoveProcess(this);
+				debugger.Processes.Remove(this);
 			}
 		}
 		

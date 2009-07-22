@@ -53,6 +53,7 @@ namespace Debugger
 		
 		public NDebugger()
 		{
+			processes   = new ProcessCollection(this);
 			breakpoints = new BreakpointCollection(this);
 			
 			if (ApartmentState.STA == System.Threading.Thread.CurrentThread.GetApartmentState()) {
@@ -166,7 +167,7 @@ namespace Debugger
 		{
 			InitDebugger(GetProgramVersion(filename));
 			Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
-			AddProcess(process);
+			this.Processes.Add(process);
 			return process;
 		}
 		
@@ -175,7 +176,7 @@ namespace Debugger
 			InitDebugger(GetProgramVersion(existingProcess.MainModule.FileName));
 			ICorDebugProcess corDebugProcess = corDebug.DebugActiveProcess((uint)existingProcess.Id, 0);
 			Process process = new Process(this, corDebugProcess);
-			AddProcess(process);
+			this.Processes.Add(process);
 			return process;
 		}
 		
@@ -187,8 +188,8 @@ namespace Debugger
 			}
 			
 			// Detach all processes.
-			while (processCollection.Count > 0) {
-				Process process = processCollection[0];
+			while (this.Processes.Count > 0) {
+				Process process = this.Processes[0];
 				process.Detach();
 			}
 		}
