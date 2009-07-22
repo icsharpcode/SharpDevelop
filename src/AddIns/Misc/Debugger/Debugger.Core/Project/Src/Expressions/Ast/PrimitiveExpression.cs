@@ -35,7 +35,7 @@ namespace Debugger.Expressions
 		
 		protected override Value EvaluateInternal(StackFrame context)
 		{
-			return Eval.CreateValue(context.Process, this.Value);
+			return Eval.CreateValue(context.AppDomain, this.Value);
 		}
 		
 		#region GetHashCode and Equals

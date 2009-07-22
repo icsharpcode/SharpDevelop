@@ -22,6 +22,7 @@ namespace Debugger
 	/// </summary>
 	public partial class Value: DebuggerObject
 	{
+		AppDomain      appDomain;
 		Process        process;
 		Expression     expression;
 		ICorDebugValue corValue;
@@ -57,12 +58,15 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> The process that owns the value </summary>
+		/// <summary> The appdomain that owns the value </summary>
+		[Debugger.Tests.Ignore]
+		public AppDomain AppDomain {
+			get { return appDomain; }
+		}
+		
 		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
 		}
 		
 		/// <summary> Returns true if the Value can not be used anymore.
@@ -116,14 +120,14 @@ namespace Debugger
 			ICorDebugValue corValue;
 			if (this.Type.IsPrimitive) {
 				// Get value type for the primive type
-				corValue = Eval.NewObjectNoConstructor(DebugType.Create(process, null, this.Type.FullName)).CorValue;
+				corValue = Eval.NewObjectNoConstructor(DebugType.Create(appDomain, this.Type.FullName)).CorValue;
 			} else {
 				corValue = Eval.NewObjectNoConstructor(this.Type).CorValue;
 			}
 			// Make the reference to box permanent
 			corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
 			// Create new value
-			Value newValue = new Value(process, expression, corValue);
+			Value newValue = new Value(appDomain, expression, corValue);
 			// Copy the data inside the box
 			newValue.CorGenericValue.RawValue = rawValue;
 			return newValue;
@@ -143,15 +147,16 @@ namespace Debugger
 					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
 				}
 			}
-			return new Value(process, expression, corValue);
+			return new Value(appDomain, expression, corValue);
 		}
 		
-		internal Value(Process process, Expression expression, ICorDebugValue corValue)
+		internal Value(AppDomain appDomain, Expression expression, ICorDebugValue corValue)
 		{
 			if (corValue == null) {
 				throw new ArgumentNullException("corValue");
 			}
-			this.process = process;
+			this.appDomain = appDomain;
+			this.process = appDomain.Process;
 			this.expression = expression;
 			this.corValue = corValue;
 			this.corValue_pauseSession = process.PauseSession;
@@ -162,10 +167,10 @@ namespace Debugger
 			{
 				// We were passed null reference and no metadata description
 				// (happens during CreateThread callback for the thread object)
-				this.type = DebugType.Create(this.Process, null, "System.Object");
+				this.type = DebugType.Create(appDomain, "System.Object");
 			} else {
 				ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().ExactType;
-				this.type = DebugType.Create(this.Process, exactType);
+				this.type = DebugType.Create(appDomain, exactType);
 			}
 		}
 		
@@ -193,7 +198,7 @@ namespace Debugger
 			if (corRef.Value == 0 || corRef.Dereference() == null) {
 				return null;
 			} else {
-				return new Value(this.Process, new DereferenceExpression(this.Expression), corRef.Dereference());
+				return new Value(this.AppDomain, new DereferenceExpression(this.Expression), corRef.Dereference());
 			}
 		}
 		

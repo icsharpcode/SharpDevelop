@@ -80,7 +80,7 @@ namespace Debugger
 		{
 			int[] indices = (int[])elementIndices.Clone();
 			
-			return new Value(Process, new ArrayIndexerExpression(this.Expression, indices), GetCorValueOfArrayElement(indices));
+			return new Value(this.AppDomain, new ArrayIndexerExpression(this.Expression, indices), GetCorValueOfArrayElement(indices));
 		}
 		
 		// May be called later

@@ -66,7 +66,7 @@ namespace Debugger.AddIn
 					if (i > 0) sb.Append(", ");
 					PropertyInfo itemProperty = val.Type.GetProperty("Item");
 					// TODO: Appdomain constriant for create value
-					Value item = val.GetPropertyValue(itemProperty, Eval.CreateValue(val.Process, i));
+					Value item = val.GetPropertyValue(itemProperty, Eval.CreateValue(val.AppDomain, i));
 					sb.Append(FormatValue(item));
 				}
 				sb.Append("}");
@@ -196,7 +196,7 @@ namespace Debugger.AddIn
 			if (target.Type.IsPrimitive && target.PrimitiveValue is string) {
 				if (indexes.Count == 1 && indexes[0].Type.IsInteger) {
 					int index = (int)indexes[0].PrimitiveValue;
-					return Eval.CreateValue(context.Process, ((string)target.PrimitiveValue)[index]);
+					return Eval.CreateValue(context.AppDomain, ((string)target.PrimitiveValue)[index]);
 				} else {
 					throw new GetValueException("Expected single integer index");
 				}
@@ -253,7 +253,7 @@ namespace Debugger.AddIn
 		
 		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
-			return Eval.CreateValue(context.Process, primitiveExpression.Value);
+			return Eval.CreateValue(context.AppDomain, primitiveExpression.Value);
 		}
 		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
@@ -315,7 +315,7 @@ namespace Debugger.AddIn
 			
 			if (result == null) throw new GetValueException("Unsuppored unary expression " + op);
 			
-			return Eval.CreateValue(context.Process, result);
+			return Eval.CreateValue(context.AppDomain, result);
 		}
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
@@ -326,7 +326,7 @@ namespace Debugger.AddIn
 			object result = VisitBinaryOperatorExpressionInternal(left, right, binaryOperatorExpression.Op);
 			// Conver long to int if possible
 			if (result is long && int.MinValue <= (long)result && (long)result <= int.MaxValue) result = (int)(long)result;
-			return Eval.CreateValue(context.Process, result);
+			return Eval.CreateValue(context.AppDomain, result);
 		}
 		
 		public object VisitBinaryOperatorExpressionInternal(Value leftValue, Value rightValue, BinaryOperatorType op)

@@ -21,11 +21,9 @@ namespace Debugger
 	{
 		Process process;
 		
-		[Tests.Ignore]
+		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
 		}
 		
 		public DebuggeeState(Process process)

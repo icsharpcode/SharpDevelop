@@ -46,7 +46,7 @@ namespace Debugger
 			set {
 				if (this.Type.PrimitiveType == null) throw new DebuggerException("Value is not a primitive type");
 				if (this.Type.IsString) {
-					this.SetValue(Eval.NewString(this.Process, value.ToString()));
+					this.SetValue(Eval.NewString(this.AppDomain, value.ToString()));
 				} else {
 					if (value == null) throw new DebuggerException("Can not set primitive value to null");
 					object newValue;

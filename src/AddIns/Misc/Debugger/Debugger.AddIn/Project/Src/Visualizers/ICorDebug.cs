@@ -49,12 +49,12 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public static InfoNode GetDebugInfoRoot(Process process, ICorDebugValue corValue)
+		public static InfoNode GetDebugInfoRoot(AppDomain appDomain, ICorDebugValue corValue)
 		{
-			return new InfoNode("ICorDebug", "", GetDebugInfo(process, corValue));
+			return new InfoNode("ICorDebug", "", GetDebugInfo(appDomain, corValue));
 		}
 		
-		public static List<AbstractNode> GetDebugInfo(Process process, ICorDebugValue corValue)
+		public static List<AbstractNode> GetDebugInfo(AppDomain appDomain, ICorDebugValue corValue)
 		{
 			List<AbstractNode> items = new List<AbstractNode>();
 			
@@ -70,7 +70,7 @@ namespace Debugger.AddIn.TreeModel
 				ICorDebugValue2 corValue2 = corValue.CastTo<ICorDebugValue2>();
 				string fullname;
 				try {
-					fullname = DebugType.Create(process, corValue2.ExactType).FullName;
+					fullname = DebugType.Create(appDomain, corValue2.ExactType).FullName;
 				} catch (DebuggerException e) {
 					fullname = e.Message;
 				}
@@ -100,7 +100,7 @@ namespace Debugger.AddIn.TreeModel
 				if (refValue.IsNull == 0) {
 					info.AddChild("Value", refValue.Value.ToString("X8"));
 					if (refValue.Dereference() != null) {
-						info.AddChild("Dereference", "", GetDebugInfo(process, refValue.Dereference()));
+						info.AddChild("Dereference", "", GetDebugInfo(appDomain, refValue.Dereference()));
 					} else {
 						info.AddChild("Dereference", "N/A");
 					}
@@ -130,7 +130,7 @@ namespace Debugger.AddIn.TreeModel
 			if (corValue.Is<ICorDebugBoxValue>()) {
 				InfoNode info = new InfoNode("ICorDebugBoxValue", "");
 				ICorDebugBoxValue boxValue = corValue.CastTo<ICorDebugBoxValue>();
-				info.AddChild("Object", "", GetDebugInfo(process, boxValue.Object.CastTo<ICorDebugValue>()));
+				info.AddChild("Object", "", GetDebugInfo(appDomain, boxValue.Object.CastTo<ICorDebugValue>()));
 				items.Add(info);
 			}
 			if (corValue.Is<ICorDebugStringValue>()) {

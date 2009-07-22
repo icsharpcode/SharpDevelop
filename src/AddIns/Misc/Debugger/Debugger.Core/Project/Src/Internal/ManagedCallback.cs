@@ -29,9 +29,7 @@ namespace Debugger
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
 		}
 		
 		public bool IsInCallback {
@@ -321,6 +319,7 @@ namespace Debugger
 			EnterCallback(PausedReason.Other, "CreateAppDomain", pAppDomain);
 
 			pAppDomain.Attach();
+			process.AppDomains.Add(new AppDomain(process, pAppDomain));
 
 			ExitCallback();
 		}
@@ -336,7 +335,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "LoadModule " + pModule.Name, pAppDomain);
 			
-			process.Modules.Add(new Module(process, pModule));
+			process.Modules.Add(new Module(process.AppDomains[pAppDomain], pModule));
 			
 			ExitCallback();
 		}
@@ -368,7 +367,7 @@ namespace Debugger
 			// and we continue from this callback anyway
 			EnterCallback(PausedReason.Other, "CreateThread " + pThread.ID, pAppDomain);
 			
-			process.Threads.Add(new Thread(process, pThread));
+			process.Threads.Add(new Thread(process.AppDomains[pAppDomain], pThread));
 			
 			ExitCallback();
 		}
@@ -433,6 +432,8 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "ExitAppDomain", pAppDomain);
 			
+			process.AppDomains.Remove(process.AppDomains[pAppDomain]);
+			
 			ExitCallback();
 		}
 		
@@ -477,7 +478,7 @@ namespace Debugger
 			// Watch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
-			process.SelectedThread.CurrentException = new Exception(new Value(process, new Expressions.CurrentExceptionExpression(), process.SelectedThread.CorThread.CurrentException));
+			process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], new Expressions.CurrentExceptionExpression(), process.SelectedThread.CorThread.CurrentException));
 			process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
 			process.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
 			process.SelectedThread.CurrentExceptionIsUnhandled = (ExceptionType)exceptionType == ExceptionType.Unhandled;

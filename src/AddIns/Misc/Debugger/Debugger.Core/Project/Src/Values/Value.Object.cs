@@ -94,7 +94,7 @@ namespace Debugger
 		{
 			Expression objectInstanceExpression = objectInstance != null ? objectInstance.Expression : new EmptyExpression();
 			return new Value(
-				fieldInfo.Process,
+				fieldInfo.AppDomain,
 				new MemberReferenceExpression(objectInstanceExpression, fieldInfo),
 				GetFieldCorValue(objectInstance, fieldInfo)
 			);
@@ -150,7 +150,7 @@ namespace Debugger
 			}
 			
 			return new Value(
-				propertyInfo.Process,
+				propertyInfo.AppDomain,
 				new MemberReferenceExpression(objectInstanceExpression, propertyInfo, argumentExpressions.ToArray()),
 				Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments).CorValue
 			);
@@ -222,7 +222,7 @@ namespace Debugger
 			if (this.Type.IsPrimitive) return AsString;
 			if (this.Type.IsPointer) return "0x" + this.PointerAddress.ToString("X");
 			// if (!IsObject) // Can invoke on primitives
-			return Eval.InvokeMethod(Process, this.Type.AppDomainID, typeof(object), "ToString", this, new Value[] {}).AsString;
+			return Eval.InvokeMethod(this.AppDomain, typeof(object), "ToString", this, new Value[] {}).AsString;
 		}
 		
 		#region Convenience overload methods

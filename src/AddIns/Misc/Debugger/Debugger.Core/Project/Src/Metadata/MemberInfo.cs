@@ -22,10 +22,13 @@ namespace Debugger.MetaData
 		
 		/// <summary> Gets the process in which the type was loaded </summary>
 		[Debugger.Tests.Ignore]
+		public AppDomain AppDomain {
+			get { return declaringType.AppDomain; }
+		}
+		
+		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return declaringType.Process;
-			}
+			get { return this.AppDomain.Process; }
 		}
 		
 		/// <summary> Gets the name of this member </summary>

@@ -26,7 +26,8 @@ namespace Debugger.MetaData
 	/// </remarks>
 	public partial class DebugType: DebuggerObject
 	{
-		Process process;
+		AppDomain appDomain;
+		Process   process;
 		ICorDebugType corType;
 		CorElementType corElementType;
 		string name;
@@ -53,12 +54,15 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets the process in which the type was loaded </summary>
+		/// <summary> Gets the appdomain in which the type was loaded </summary>
+		[Debugger.Tests.Ignore]
+		public AppDomain AppDomain {
+			get { return appDomain; }
+		}
+		
 		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
 		}
 		
 		internal ICorDebugType CorType {
@@ -310,29 +314,30 @@ namespace Debugger.MetaData
 				}
 				// corType.Base does not work for arrays
 				if (this.IsArray) {
-					return DebugType.Create(this.Process, AppDomainID, "System.Array");
+					return DebugType.Create(this.AppDomain, "System.Array");
 				}
 				// corType.Base does not work for primitive types
 				if (this.IsPrimitive) {
-					return DebugType.Create(this.Process, AppDomainID, "System.Object");
+					return DebugType.Create(this.AppDomain, "System.Object");
 				}
 				if (this.IsPointer || this.IsVoid) {
 					return null;
 				}
 				ICorDebugType baseType = corType.Base;
 				if (baseType != null) {
-					return Create(process, baseType);
+					return Create(this.AppDomain, baseType);
 				} else {
 					return null;
 				}
 			}
 		}
 		
-		DebugType(Process process, ICorDebugType corType)
+		DebugType(AppDomain appDomain, ICorDebugType corType)
 		{
 			if (corType == null) throw new ArgumentNullException("corType");
 			
-			this.process = process;
+			this.appDomain = appDomain;
+			this.process = appDomain.Process;
 			this.corType = corType;
 			this.corElementType = (CorElementType)corType.Type;
 			
@@ -343,7 +348,7 @@ namespace Debugger.MetaData
 			
 			if (this.IsClass || this.IsValueType || this.IsArray || this.IsPointer) {
 				foreach(ICorDebugType t in corType.EnumerateTypeParameters().Enumerator) {
-					typeArguments.Add(DebugType.Create(process, t));
+					typeArguments.Add(DebugType.Create(appDomain, t));
 				}
 			}
 			
@@ -360,7 +365,7 @@ namespace Debugger.MetaData
 		{
 			CorTokenType tokenType = (CorTokenType)(token & 0xFF000000);
 			if (tokenType == CorTokenType.TypeDef || tokenType == CorTokenType.TypeRef) {
-				return Create(module.Process, GetCorClass(module, token));
+				return Create(module.AppDomain, GetCorClass(module, token));
 			} else if (tokenType == CorTokenType.TypeSpec) {
 				Blob typeSpecBlob = module.MetaData.GetTypeSpecFromToken(token);
 				return Create(module, typeSpecBlob.GetData(), declaringType);
@@ -388,21 +393,21 @@ namespace Debugger.MetaData
 		{
 			System.Type sysType = CorElementTypeToManagedType((CorElementType)(uint)sigType.ElementType);
 			if (sysType != null) {
-				return Create(module.Process, module.AppDomainID, sysType.FullName);
+				return Create(module.AppDomain, sysType.FullName);
 			}
 			
 			if (sigType.ElementType == Mono.Cecil.Metadata.ElementType.Object) {
-				return Create(module.Process, module.AppDomainID, "System.Object");
+				return Create(module.AppDomain, "System.Object");
 			}
 			
 			if (sigType is CLASS) {
 				ICorDebugClass corClass = GetCorClass(module, ((CLASS)sigType).Type.ToUInt());
-				return Create(module.Process, corClass);
+				return Create(module.AppDomain, corClass);
 			}
 			
 			if (sigType is VALUETYPE) {
 				ICorDebugClass corClass = GetCorClass(module, ((VALUETYPE)sigType).Type.ToUInt());
-				return Create(module.Process, corClass);
+				return Create(module.AppDomain, corClass);
 			}
 			
 			// Numbered generic reference
@@ -413,7 +418,7 @@ namespace Debugger.MetaData
 			
 			// Numbered generic reference
 			if (sigType is MVAR) {
-				return Create(module.Process, module.AppDomainID, "System.Object");
+				return Create(module.AppDomain, "System.Object");
 			}
 			
 			if (sigType is GENERICINST) {
@@ -426,15 +431,15 @@ namespace Debugger.MetaData
 				}
 				
 				ICorDebugType genInstance = corClass.CastTo<ICorDebugClass2>().GetParameterizedType((uint)classOrValueType, genArgs);
-				return Create(module.Process, genInstance);
+				return Create(module.AppDomain, genInstance);
 			}
 			
 			throw new NotImplementedException(sigType.ElementType.ToString());
 		}
 		
-		public static DebugType Create(Process process, uint? domainID, string fullTypeName)
+		public static DebugType Create(AppDomain appDomain, string fullTypeName)
 		{
-			return Create(process, GetCorClass(process, domainID, fullTypeName, 0));
+			return Create(appDomain, GetCorClass(appDomain, fullTypeName, 0));
 		}
 		
 		static ICorDebugClass GetCorClass(Module module, uint token)
@@ -452,17 +457,16 @@ namespace Debugger.MetaData
 					ICorDebugClass enclosingClass = GetCorClass(module, refProps.ResolutionScope);
 					enclosingClassTk = enclosingClass.Token;
 				}
-				return GetCorClass(module.Process, module.AppDomainID, fullName, enclosingClassTk);
+				return GetCorClass(module.AppDomain, fullName, enclosingClassTk);
 			} else {
 				throw new DebuggerException("TypeDef or TypeRef expected");
 			}
 		}
 		
-		static ICorDebugClass GetCorClass(Process process, uint? domainID, string fullTypeName, uint enclosingClass)
+		static ICorDebugClass GetCorClass(AppDomain appDomain, string fullTypeName, uint enclosingClass)
 		{
-			// 
-			foreach(Module module in process.Modules) {
-				if (!domainID.HasValue || domainID == module.CorModule.Assembly.AppDomain.ID) {
+			foreach(Module module in appDomain.Process.Modules) {
+				if (module.AppDomain == appDomain) {
 					try {
 						uint token = module.MetaData.FindTypeDefPropsByName(fullTypeName, enclosingClass).Token;
 						return module.CorModule.GetClassFromToken(token);
@@ -474,9 +478,9 @@ namespace Debugger.MetaData
 			throw new DebuggerException("Can not find type " + fullTypeName);
 		}
 		
-		static public DebugType Create(Process process, ICorDebugClass corClass, params ICorDebugType[] typeArguments)
+		static public DebugType Create(AppDomain appDomain, ICorDebugClass corClass, params ICorDebugType[] typeArguments)
 		{
-			MetaDataImport metaData = process.Modules[corClass.Module].MetaData;
+			MetaDataImport metaData = appDomain.Process.Modules[corClass.Module].MetaData;
 			
 			bool isValueType = false;
 			uint superClassToken = metaData.GetTypeDefProps(corClass.Token).SuperClassToken;
@@ -499,15 +503,15 @@ namespace Debugger.MetaData
 				typeArguments
 			);
 			
-			return Create(process, corType);
+			return Create(appDomain, corType);
 		}
 		
 		/// <summary> Obtains instance of DebugType. Same types will return identical instance. </summary>
-		static public DebugType Create(Process process, ICorDebugType corType)
+		static public DebugType Create(AppDomain appDomain, ICorDebugType corType)
 		{
 			DateTime startTime = Util.HighPrecisionTimer.Now;
 			
-			DebugType type = new DebugType(process, corType);
+			DebugType type = new DebugType(appDomain, corType);
 			
 			// Get types with matching names from cache
 			List<DebugType> typesWithMatchingName;
@@ -521,8 +525,8 @@ namespace Debugger.MetaData
 			foreach(DebugType loadedType in typesWithMatchingName) {
 				if (loadedType.Equals(type)) {
 					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-					if (process.Options.Verbose) {
-						process.TraceMessage("Type " + type.FullName + " was loaded already (" + totalTime.TotalMilliseconds + " ms)");
+					if (appDomain.Process.Options.Verbose) {
+						appDomain.Process.TraceMessage("Type " + type.FullName + " was loaded already (" + totalTime.TotalMilliseconds + " ms)");
 					}
 					return loadedType; // Type was loaded before
 				}
@@ -535,14 +539,14 @@ namespace Debugger.MetaData
 			if (type.IsClass || type.IsValueType) {
 				type.LoadMemberInfo();
 			}
-			type.Process.Exited += delegate { typesWithMatchingName.Remove(type); };
+			type.AppDomain.Process.Exited += delegate { typesWithMatchingName.Remove(type); };
 			
 			TimeSpan totalTime2 = Util.HighPrecisionTimer.Now - startTime;
 			string prefix = type.IsInterface ? "interface" : "type";
-			if (process.Options.Verbose) {
-				process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, type.FullName, totalTime2.TotalMilliseconds);
+			if (appDomain.Process.Options.Verbose) {
+				appDomain.Process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, type.FullName, totalTime2.TotalMilliseconds);
 				foreach(DebugType inter in type.Interfaces) {
-					process.TraceMessage(" - Implements {0}", inter.FullName);
+					appDomain.Process.TraceMessage(" - Implements {0}", inter.FullName);
 				}
 			}
 			
@@ -685,7 +689,7 @@ namespace Debugger.MetaData
 		public override bool Equals(object obj)
 		{
 			DebugType other = obj as DebugType;
-			if (other != null && this.Process == other.Process) {
+			if (other != null && this.AppDomain == other.AppDomain) {
 				if (this.IsArray) {
 					return other.IsArray &&
 					       other.GetArrayRank() == this.GetArrayRank() &&

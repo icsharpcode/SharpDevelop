@@ -21,6 +21,7 @@ namespace Debugger
 		EvalCollection activeEvals;
 		ModuleCollection modules;
 		ThreadCollection threads;
+		AppDomainCollection appDomains;
 		
 		#region IExpirable
 		
@@ -90,6 +91,10 @@ namespace Debugger
 			set { this.Threads.Selected = value; }
 		}
 		
+		public AppDomainCollection AppDomains {
+			get { return appDomains; }
+		}
+		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess)
 		{
 			this.debugger = debugger;
@@ -100,6 +105,7 @@ namespace Debugger
 			activeEvals = new EvalCollection(debugger);
 			modules = new ModuleCollection(debugger);
 			threads = new ThreadCollection(debugger);
+			appDomains = new AppDomainCollection(debugger);
 		}
 		
 		internal ICorDebugProcess CorProcess {
@@ -233,9 +239,7 @@ namespace Debugger
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
 		}
 		
 		public ProcessEventArgs(Process process): base(process == null ? null : process.Debugger)

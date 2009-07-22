@@ -17,7 +17,8 @@ namespace Debugger
 {
 	public partial class Thread: DebuggerObject
 	{
-		Process process;
+		AppDomain appDomain;
+		Process   process;
 		
 		uint id;
 		ICorDebugThread corThread;
@@ -35,6 +36,11 @@ namespace Debugger
 
 		public event EventHandler<ThreadEventArgs> NameChanged;
 		public event EventHandler<ThreadEventArgs> Exited;
+		
+		[Debugger.Tests.Ignore]
+		public AppDomain AppDomain {
+			get { return appDomain; }
+		}
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
@@ -82,16 +88,17 @@ namespace Debugger
 			}
 		}
 		
-		internal Thread(Process process, ICorDebugThread corThread)
+		internal Thread(AppDomain appDomain, ICorDebugThread corThread)
 		{
-			this.process = process;
+			this.appDomain = appDomain;
+			this.process = appDomain.Process;
 			this.corThread = corThread;
 			this.id = CorThread.ID;
 		}
 		
 		internal void NotifyExited()
 		{
-			if (this.hasExited) throw new DebuggerException("Already exited");
+			if (this.HasExited) throw new DebuggerException("Already exited");
 			
 			process.TraceMessage("Thread " + this.ID + " exited");
 			if (process.SelectedThread == this) {
@@ -159,7 +166,7 @@ namespace Debugger
 				process.AssertPaused();
 				
 				ICorDebugValue corValue = this.CorThread.Object;
-				return new Value(process, new EmptyExpression(), corValue);
+				return new Value(appDomain, new EmptyExpression(), corValue);
 			}
 		}
 		
@@ -191,7 +198,7 @@ namespace Debugger
 		
 		public Exception CurrentException {
 			get {
-				if (currentException_DebuggeeState == this.Process.DebuggeeState) {
+				if (currentException_DebuggeeState == process.DebuggeeState) {
 					return currentException;
 				} else {
 					return null;
@@ -240,8 +247,8 @@ namespace Debugger
 				return false;
 			}
 			
-			Process.AsyncContinue(DebuggeeStateAction.Keep);
-			Process.WaitForPause();
+			process.AsyncContinue(DebuggeeStateAction.Keep);
+			process.WaitForPause();
 			return true;
 		}
 		

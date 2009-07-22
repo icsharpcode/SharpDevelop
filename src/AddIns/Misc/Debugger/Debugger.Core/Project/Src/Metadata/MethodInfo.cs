@@ -196,7 +196,7 @@ namespace Debugger.MetaData
 			foreach(byte b in code) {
 				codeTxt += b.ToString("X2") + " ";
 			}
-			this.Process.TraceMessage("Code of " + Name + ": " + codeTxt);
+			process.TraceMessage("Code of " + Name + ": " + codeTxt);
 			 */
 			
 			uint token = 0;
@@ -241,7 +241,7 @@ namespace Debugger.MetaData
 			}
 			
 			if (token != 0) {
-				// this.Process.TraceMessage("Token: " + token.ToString("x"));
+				// process.TraceMessage("Token: " + token.ToString("x"));
 				
 				MemberInfo member = this.DeclaringType.GetMember(token);
 				
@@ -351,13 +351,13 @@ namespace Debugger.MetaData
 		/// <summary>
 		/// Get a method from a managed type, method name and argument count
 		/// </summary>
-		public static MethodInfo GetFromName(Process process, uint? domainID, System.Type type, string methodName, int paramCount)
+		public static MethodInfo GetFromName(AppDomain appDomain, System.Type type, string methodName, int paramCount)
 		{
 			if (type.IsNested) throw new DebuggerException("Not implemented for nested types");
 			if (type.IsGenericType) throw new DebuggerException("Not implemented for generic types");
 			if (type.IsGenericParameter) throw new DebuggerException("Type can not be generic parameter");
 			
-			DebugType debugType = DebugType.Create(process, domainID, type.FullName);
+			DebugType debugType = DebugType.Create(appDomain, type.FullName);
 			if (debugType == null) {
 				throw new DebuggerException("Type " + type.FullName + " not found");
 			}

@@ -17,15 +17,26 @@ namespace Debugger
 		
 		ICorDebugAppDomain corAppDomain;
 		
+		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
 		}
 		
 		public uint ID {
 			get {
 				return corAppDomain.ID;
+			}
+		}
+		
+		public Module Mscorlib {
+			get {
+				foreach(Module m in Process.Modules) {
+					if (m.FullPath == "mscorlib.dll" &&
+					    m.AppDomain == this) {
+						return m;
+					}
+				}
+				throw new DebuggerException("Mscorlib not loaded");
 			}
 		}
 		

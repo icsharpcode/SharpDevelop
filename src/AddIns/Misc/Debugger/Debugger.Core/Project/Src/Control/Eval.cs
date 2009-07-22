@@ -29,11 +29,18 @@ namespace Debugger
 	{
 		delegate void EvalStarter(Eval eval);
 		
+		AppDomain     appDomain;
 		Process       process;
+		
 		string        description;
 		ICorDebugEval corEval;
 		Value         result;
 		EvalState     state;
+		
+		[Debugger.Tests.Ignore]
+		public AppDomain AppDomain {
+			get { return appDomain; }
+		}
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
@@ -75,20 +82,20 @@ namespace Debugger
 			}
 		}
 		
-		Eval(Process process, string description, ICorDebugEval corEval)
+		Eval(AppDomain appDomain, string description, ICorDebugEval corEval)
 		{
-			this.process = process;
+			this.appDomain = appDomain;
+			this.process = appDomain.Process;
 			this.description = description;
 			this.corEval = corEval;
 			this.state = EvalState.Evaluating;
 		}
 
-	    /// <exception cref="GetValueException">Can not evaluate because no thread is selected</exception>
-	    static ICorDebugEval CreateCorEval(Process process)
+	    static ICorDebugEval CreateCorEval(AppDomain appDomain)
 		{
-			process.AssertPaused();
+			appDomain.Process.AssertPaused();
 			
-			Thread targetThread = process.SelectedThread;
+			Thread targetThread = appDomain.Process.SelectedThread;
 			
 			if (targetThread == null) {
 				throw new GetValueException("Can not evaluate because no thread is selected");
@@ -106,12 +113,11 @@ namespace Debugger
 			return targetThread.CorThread.CreateEval();
 		}
 
-	    /// <exception cref="GetValueException">Can not evaluate in optimized code</exception>
-	    static Eval CreateEval(Process process, string description, EvalStarter evalStarter)
+	    static Eval CreateEval(AppDomain appDomain, string description, EvalStarter evalStarter)
 		{
-			ICorDebugEval corEval = CreateCorEval(process);
+			ICorDebugEval corEval = CreateCorEval(appDomain);
 			
-			Eval newEval = new Eval(process, description, corEval);
+			Eval newEval = new Eval(appDomain, description, corEval);
 			
 			try {
 				evalStarter(newEval);
@@ -135,8 +141,8 @@ namespace Debugger
 				}
 			}
 			
-			process.ActiveEvals.Add(newEval);
-			process.AsyncContinue(DebuggeeStateAction.Keep);
+			appDomain.Process.ActiveEvals.Add(newEval);
+			appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep);
 			
 			return newEval;
 		}
@@ -188,16 +194,16 @@ namespace Debugger
 				} else {
 					state = EvalState.EvaluatedException;
 				}
-				result = new Value(process, new EmptyExpression(), corEval.Result);
+				result = new Value(AppDomain, new EmptyExpression(), corEval.Result);
 			}
 		}
 		
 		#region Convenience methods
 		
 		/// <summary> Synchronously calls a function and returns its return value </summary>
-		public static Value InvokeMethod(Process process, uint? domainID, System.Type type, string name, Value thisValue, Value[] args)
+		public static Value InvokeMethod(AppDomain appDomain, System.Type type, string name, Value thisValue, Value[] args)
 		{
-			return InvokeMethod(MethodInfo.GetFromName(process, domainID, type, name, args.Length), thisValue, args);
+			return InvokeMethod(MethodInfo.GetFromName(appDomain, type, name, args.Length), thisValue, args);
 		}
 		
 		#endregion
@@ -215,7 +221,7 @@ namespace Debugger
 		public static Eval AsyncInvokeMethod(MethodInfo method, Value thisValue, Value[] args)
 		{
 			return CreateEval(
-				method.Process,
+				method.AppDomain,
 				"Function call: " + method.FullName,
 				delegate(Eval eval) {
 					MethodInvokeStarter(eval, method, thisValue, args);
@@ -259,18 +265,18 @@ namespace Debugger
 			);
 		}
 	    
-	    public static Value CreateValue(Process process, object value)
+	    public static Value CreateValue(AppDomain appDomain, object value)
 	    {
 	    	if (value == null) {
-				ICorDebugClass corClass = DebugType.Create(process, null, typeof(object).FullName).CorType.Class;
-				ICorDebugEval corEval = CreateCorEval(process);
+				ICorDebugClass corClass = DebugType.Create(appDomain, typeof(object).FullName).CorType.Class;
+				ICorDebugEval corEval = CreateCorEval(appDomain);
 				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
-				return new Value(process, new Expressions.PrimitiveExpression(value), corValue);
+				return new Value(appDomain, new Expressions.PrimitiveExpression(value), corValue);
 			} else if (value is string) {
-	    		return Eval.NewString(process, (string)value);
+	    		return Eval.NewString(appDomain, (string)value);
 			} else {
 	    		// TODO: Check if it is primitive type
-				Value val = Eval.NewObjectNoConstructor(DebugType.Create(process, null, value.GetType().FullName));
+				Value val = Eval.NewObjectNoConstructor(DebugType.Create(appDomain, value.GetType().FullName));
 				val.PrimitiveValue = value;
 				return val;
 			}
@@ -304,17 +310,17 @@ namespace Debugger
 		
 		#region Convenience methods
 		
-		public static Value NewString(Process process, string textToCreate)
+		public static Value NewString(AppDomain appDomain, string textToCreate)
 		{
-			return AsyncNewString(process, textToCreate).WaitForResult();
+			return AsyncNewString(appDomain, textToCreate).WaitForResult();
 		}
 		
 		#endregion
 		
-		public static Eval AsyncNewString(Process process, string textToCreate)
+		public static Eval AsyncNewString(AppDomain appDomain, string textToCreate)
 		{
 			return CreateEval(
-				process,
+				appDomain,
 				"New string: " + textToCreate,
 				delegate(Eval eval) {
 					eval.CorEval.CastTo<ICorDebugEval2>().NewStringWithLength(textToCreate, (uint)textToCreate.Length);
@@ -334,7 +340,7 @@ namespace Debugger
 		public static Eval AsyncNewObjectNoConstructor(DebugType debugType)
 		{
 			return CreateEval(
-				debugType.Process,
+				debugType.AppDomain,
 				"New object: " + debugType.FullName,
 				delegate(Eval eval) {
 					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.Class, (uint)debugType.GenericArguments.Count, debugType.GenericArgumentsAsCorDebugType);

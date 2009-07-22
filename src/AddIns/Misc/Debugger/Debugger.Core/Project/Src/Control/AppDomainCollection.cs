@@ -12,18 +12,19 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class Process
+	public class AppDomainCollection: CollectionWithEvents<AppDomain>
 	{
-		List<AppDomain> appDomainCollection = new List<AppDomain>();
+		public AppDomainCollection(NDebugger dbgr): base(dbgr) {}
 		
-		public AppDomain GetAppDomain(ICorDebugAppDomain corAppDomain)
-		{
-			foreach(AppDomain a in appDomainCollection) {
-				if (a.CorDebugAppDomain.Equals(corAppDomain)) {
-					return a;
+		public AppDomain this[ICorDebugAppDomain corAppDomain] {
+			get {
+				foreach(AppDomain a in this) {
+					if (a.CorDebugAppDomain.Equals(corAppDomain)) {
+						return a;
+					}
 				}
+				throw new DebuggerException("AppDomain not found");
 			}
-			throw new DebuggerException("AppDomain not found");
 		}
 	}
 }

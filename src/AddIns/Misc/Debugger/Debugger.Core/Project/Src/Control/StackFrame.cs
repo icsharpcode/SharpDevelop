@@ -21,8 +21,8 @@ namespace Debugger
 	/// </summary>
 	public class StackFrame: DebuggerObject
 	{	
-		Process process;
 		Thread thread;
+		Process process;
 		
 		ICorDebugILFrame  corILFrame;
 		object            corILFramePauseSession;
@@ -34,10 +34,13 @@ namespace Debugger
 		
 		/// <summary> The process in which this stack frame is executed </summary>
 		[Debugger.Tests.Ignore]
+		public AppDomain AppDomain {
+			get { return thread.AppDomain; }
+		}
+		
+		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
 		}
 		
 		/// <summary> Get the method which this stack frame is executing </summary>
@@ -95,7 +98,7 @@ namespace Debugger
 			this.frameIndex = frameIndex;
 			
 			DebugType debugType = DebugType.Create(
-				this.Process, 
+				this.AppDomain, 
 				corFunction.Class,
 				corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList().ToArray()
 			);
@@ -110,7 +113,7 @@ namespace Debugger
 		
 		internal ICorDebugILFrame CorILFrame {
 			get {
-				if (corILFramePauseSession != this.Process.PauseSession) {
+				if (corILFramePauseSession != process.PauseSession) {
 					// Reobtain the stackframe
 					StackFrame stackFrame = this.Thread.GetStackFrameAt(chainIndex, frameIndex);
 					if (stackFrame.MethodInfo != this.MethodInfo) throw new DebuggerException("The stack frame on the thread does not represent the same method anymore");
@@ -138,21 +141,21 @@ namespace Debugger
 		public void StepInto()
 		{
 			AsyncStepInto();
-			this.Process.WaitForPause();
+			process.WaitForPause();
 		}
 		
 		/// <summary> Step over next instruction </summary>
 		public void StepOver()
 		{
 			AsyncStepOver();
-			this.Process.WaitForPause();
+			process.WaitForPause();
 		}
 		
 		/// <summary> Step out of the stack frame </summary>
 		public void StepOut()
 		{
 			AsyncStepOut();
-			this.Process.WaitForPause();
+			process.WaitForPause();
 		}
 		
 		/// <summary> Step into next instruction </summary>
@@ -263,7 +266,7 @@ namespace Debugger
 		/// </summary>
 		public Value GetThisValue()
 		{
-			return new Value(process, new ThisReferenceExpression(), GetThisCorValue());
+			return new Value(thread.AppDomain, new ThisReferenceExpression(), GetThisCorValue());
 		}
 		
 		ICorDebugValue GetThisCorValue()
@@ -300,7 +303,7 @@ namespace Debugger
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgumentValue(int index)
 		{
-			return new Value(process, new ParameterIdentifierExpression(this.MethodInfo, index), GetArgumentCorValue(index));
+			return new Value(thread.AppDomain, new ParameterIdentifierExpression(this.MethodInfo, index), GetArgumentCorValue(index));
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)
@@ -359,7 +362,7 @@ namespace Debugger
 		/// <summary> Returns value of give local variable </summary>
 		public Value GetLocalVariableValue(ISymUnmanagedVariable symVar)
 		{
-			return new Value(this.Process, new LocalVariableIdentifierExpression(MethodInfo, symVar), GetLocalVariableCorValue(symVar));
+			return new Value(this.AppDomain, new LocalVariableIdentifierExpression(MethodInfo, symVar), GetLocalVariableCorValue(symVar));
 		}
 		
 		ICorDebugValue GetLocalVariableCorValue(ISymUnmanagedVariable symVar)

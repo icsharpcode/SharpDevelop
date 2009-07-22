@@ -16,7 +16,8 @@ namespace Debugger
 {
 	public class Module: DebuggerObject, IDisposable
 	{
-		Process process;
+		AppDomain appDomain;
+		Process   process;
 		
 		bool   unloaded = false;
 		string fullPath;
@@ -36,16 +37,17 @@ namespace Debugger
 		}
 		
 		[Debugger.Tests.Ignore]
+		public AppDomain AppDomain {
+			get { return appDomain; }
+		}
+		
+		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
 		}
 		
 		NDebugger Debugger {
-			get {
-				return this.Process.Debugger;
-			}
+			get { return this.AppDomain.Process.Debugger; }
 		}
 		
 		public MetaDataImport MetaData {
@@ -164,9 +166,10 @@ namespace Debugger
 			return names;
 		}
 		
-		internal Module(Process process, ICorDebugModule pModule)
+		internal Module(AppDomain appDomain, ICorDebugModule pModule)
 		{
-			this.process = process;
+			this.appDomain = appDomain;
+			this.process = appDomain.Process;
 			
 			corModule = pModule;
 			
@@ -207,7 +210,7 @@ namespace Debugger
 		public void ResetJustMyCodeStatus()
 		{
 			uint unused = 0;
-			if (this.Process.Options.StepOverNoSymbols && !this.HasSymbols) {
+			if (process.Options.StepOverNoSymbols && !this.HasSymbols) {
 				// Optimization - set the code as non-user right away
 				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(0, 0, ref unused);
 				return;
