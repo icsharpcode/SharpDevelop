@@ -33,6 +33,14 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			public string Name { get; set; }
 		}
 		
+		bool HasSelection {
+			get { return this.lvClasses.SelectedIndex != -1; }
+		}
+		
+		public IClass SelectedClass {
+			get { return HasSelection ? ((ClassWrapper)this.lvClasses.SelectedItem).Class : null; }
+		}
+		
 		public SelectSourceClassDialog()
 		{
 			InitializeComponent();
@@ -64,7 +72,27 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		static bool Filter(string value, ClassWrapper item)
 		{
-			return item.Name.Contains(value);
+			return item.Name.IndexOf(value, StringComparison.OrdinalIgnoreCase) > -1;
+		}
+	}
+	
+	public class SelectionConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			if (value is int) {
+				return ((int)value) != -1;
+			}
+			
+			return false;
+		}
+		
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			if (value is bool)
+				return ((bool)value) ? 0 : -1;
+			
+			return -1;
 		}
 	}
 }

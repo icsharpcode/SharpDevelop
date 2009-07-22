@@ -57,7 +57,9 @@ namespace ICSharpCode.XamlBinding
 			// output
 			public IList<Highlight> GetResults()
 			{
-				return results;
+				lock (this) {
+					return results;
+				}
 			}
 			
 			Tasks.Task task;
@@ -77,8 +79,7 @@ namespace ICSharpCode.XamlBinding
 			
 			public void Invalidate(string fileContent, string fileName, DocumentLine currentLine, TextView textView)
 			{
-				task.Cancel();
-				this.Invalid = false;
+				task.CancelAndWait();
 				
 				this.FileContent = fileContent;
 				this.FileName = fileName;
@@ -148,12 +149,12 @@ namespace ICSharpCode.XamlBinding
 						}
 						if (context.Description != XamlContextDescription.InComment && !string.IsNullOrEmpty(attribute)) {
 							int startIndex = LineText.Substring(0, Math.Min(index, LineText.Length)).LastIndexOf(attribute);
-                            if (startIndex >= 0) {
-                                if (propertyNameIndex > -1)
-                                    infos.Add(new HighlightingInfo(attribute.Trim('/'), startIndex + propertyNameIndex + 1, startIndex + attribute.TrimEnd('/').Length, Offset, context));
-                                else
-                                    infos.Add(new HighlightingInfo(attribute, startIndex, startIndex + attribute.Length, Offset, context));
-                            }
+							if (startIndex >= 0) {
+								if (propertyNameIndex > -1)
+									infos.Add(new HighlightingInfo(attribute.Trim('/'), startIndex + propertyNameIndex + 1, startIndex + attribute.TrimEnd('/').Length, Offset, context));
+								else
+									infos.Add(new HighlightingInfo(attribute, startIndex, startIndex + attribute.Length, Offset, context));
+							}
 						}
 					}
 				} while (index > -1);
@@ -214,6 +215,7 @@ namespace ICSharpCode.XamlBinding
 			} else {
 				HighlightTask task = highlightCache[line];
 				if (task.CompletedSuccessfully) {
+					task.Invalid = false;
 					foreach (var result in task.GetResults()) {
 						ColorizeMember(result.Info, line, result.Member);
 					}

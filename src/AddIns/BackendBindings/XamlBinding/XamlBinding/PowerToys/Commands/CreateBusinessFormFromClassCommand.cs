@@ -21,7 +21,15 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		/// </summary>
 		public override void Run()
 		{
-			new SelectSourceClassDialog().ShowDialog();
+			SelectSourceClassDialog selectSourceClass = new SelectSourceClassDialog();
+			
+			if (selectSourceClass.ShowDialog() ?? false) {
+				SourceClassFormEditor editor = new SourceClassFormEditor(selectSourceClass.SelectedClass);
+				
+				if (editor.ShowDialog() ?? false) {
+					return;
+				}
+			}
 		}
 	}
 }

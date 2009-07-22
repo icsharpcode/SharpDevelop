@@ -505,7 +505,11 @@ namespace ICSharpCode.XamlBinding
 		{
 			var list = new XamlCompletionItemList();
 			string visibleValue = context.RawAttributeValue.Substring(0, context.ValueStartOffset + 1);
-			var markup = Utils.GetInnermostMarkupExtensionInfo(MarkupExtensionParser.Parse(visibleValue));
+			if (context.PressedKey == '=')
+				visibleValue += "=";
+			context.RawAttributeValue = visibleValue;
+			context.AttributeValue = MarkupExtensionParser.ParseValue(visibleValue);
+			var markup = Utils.GetInnermostMarkupExtensionInfo(context.AttributeValue.ExtensionValue);
 			var type = ResolveType(markup.ExtensionType, context) ?? ResolveType(markup.ExtensionType + "Extension", context);
 			
 			if (type == null) {
@@ -530,7 +534,7 @@ namespace ICSharpCode.XamlBinding
 				int lastStart = markup.NamedArguments.Max(i => i.Value.StartOffset);
 				var item = markup.NamedArguments.First(p => p.Value.StartOffset == lastStart);
 				
-				if (context.Editor.Document.GetCharAt(context.Editor.Caret.Offset - 1) == '=' ||
+				if (context.RawAttributeValue.EndsWith("=") ||
 				    (item.Value.IsString && item.Value.StringValue.EndsWith(context.Editor.GetWordBeforeCaretExtended()))) {
 					MemberResolveResult mrr = XamlResolver.ResolveMember(item.Key, context) as MemberResolveResult;
 					if (mrr != null && mrr.ResolvedMember != null && mrr.ResolvedMember.ReturnType != null) {
@@ -604,8 +608,15 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (type == null || type.GetUnderlyingClass() == null)
 				yield break;
-			
+
 			var c = type.GetUnderlyingClass();
+			
+			if (type is ConstructedReturnType &&  type.TypeArgumentCount > 0 && c.FullyQualifiedName == "System.Nullable") {
+				ConstructedReturnType rt = type as ConstructedReturnType;
+				c = rt.TypeArguments.First().GetUnderlyingClass();
+				if (c == null)
+					yield break;
+			}
 			
 			switch (c.ClassType) {
 				case ClassType.Class:

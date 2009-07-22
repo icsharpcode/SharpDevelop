@@ -5,12 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using System.Xml;
 using System.Xml.Linq;
+
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -28,6 +31,12 @@ namespace ICSharpCode.XamlBinding
 				throw new ArgumentNullException("element");
 			element.SetAttributeValue(name, value);
 			return element;
+		}
+		
+		public static void AddRange(this UIElementCollection coll, IEnumerable<UIElement> items)
+		{
+			foreach (var item in items)
+				coll.Add(item);
 		}
 		
 		public static string[] Split(this string thisValue, StringSplitOptions options, params char[] delimiters)

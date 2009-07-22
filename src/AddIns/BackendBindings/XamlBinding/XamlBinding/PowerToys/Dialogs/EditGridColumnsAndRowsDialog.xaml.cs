@@ -37,8 +37,6 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		XElement rowDefitions;
 		XElement colDefitions;
 		IList<XElement> additionalProperties;
-		int selectedCellX = -1, selectedCellY = -1;
-		bool? swap = null;
 		
 		class UndoStep
 		{
@@ -91,10 +89,13 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			this.redoStack = new Stack<UndoStep>();
 			this.undoStack = new Stack<UndoStep>();
 			
+			CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, delegate { UndoItemClick(null, null); }));
+			CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, delegate { RedoItemClick(null, null); }));
+			
 			RebuildGrid();
 		}
 		
-		MenuItem CreateItem(string header, Action<TextBlock> clickAction, TextBlock senderItem)
+		MenuItem CreateItem(string header, Action<StackPanel> clickAction, StackPanel senderItem)
 		{
 			MenuItem item = new MenuItem();
 			
@@ -104,7 +105,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			return item;
 		}
 		
-		void InsertAbove(TextBlock block)
+		void InsertAbove(StackPanel block)
 		{
 			UpdateUndoRedoState();
 			
@@ -142,7 +143,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			RebuildGrid();
 		}
 		
-		void InsertBelow(TextBlock block)
+		void InsertBelow(StackPanel block)
 		{
 			UpdateUndoRedoState();
 			
@@ -180,7 +181,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			RebuildGrid();
 		}
 		
-		void MoveUp(TextBlock block)
+		void MoveUp(StackPanel block)
 		{
 			int row = (int)block.GetValue(Grid.RowProperty);
 			if (row > 0) {
@@ -241,7 +242,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			}
 		}
 		
-		void MoveDown(TextBlock block)
+		void MoveDown(StackPanel block)
 		{
 			int row = (int)block.GetValue(Grid.RowProperty);
 			if (row < rowDefitions.Elements().Count() - 1) {
@@ -302,7 +303,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			}
 		}
 		
-		void DeleteRow(TextBlock block)
+		void DeleteRow(StackPanel block)
 		{
 			int row = (int)block.GetValue(Grid.RowProperty);
 			UpdateUndoRedoState();
@@ -335,7 +336,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			RebuildGrid();
 		}
 		
-		void InsertBefore(TextBlock block)
+		void InsertBefore(StackPanel block)
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
 			UpdateUndoRedoState();
@@ -372,7 +373,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			RebuildGrid();
 		}
 		
-		void InsertAfter(TextBlock block)
+		void InsertAfter(StackPanel block)
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
 			UpdateUndoRedoState();
@@ -409,7 +410,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			RebuildGrid();
 		}
 		
-		void MoveLeft(TextBlock block)
+		void MoveLeft(StackPanel block)
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
 			
@@ -471,7 +472,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			}
 		}
 		
-		void MoveRight(TextBlock block)
+		void MoveRight(StackPanel block)
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
 			
@@ -533,7 +534,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			}
 		}
 		
-		void DeleteColumn(TextBlock block)
+		void DeleteColumn(StackPanel block)
 		{
 			int column = (int)block.GetValue(Grid.ColumnProperty);
 			UpdateUndoRedoState();
@@ -566,50 +567,6 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			RebuildGrid();
 		}
 		
-		void SwapContent(TextBlock block)
-		{
-			lblInstruction.Text = "Click on the cell you want to swap the selected cell with.";
-			lblInstruction.Visibility = Visibility.Visible;
-			
-			this.selectedCellX = (int)block.GetValue(Grid.ColumnProperty);
-			this.selectedCellY = (int)block.GetValue(Grid.RowProperty);
-			
-			swap = true;
-		}
-		
-		void MoveContent(TextBlock block)
-		{
-			lblInstruction.Text = "Click on the cell you want to move the selected content to.";
-			lblInstruction.Visibility = Visibility.Visible;
-			
-			this.selectedCellX = (int)block.GetValue(Grid.ColumnProperty);
-			this.selectedCellY = (int)block.GetValue(Grid.RowProperty);
-			
-			swap = false;
-		}
-		
-		void DeleteContent(TextBlock block)
-		{
-			int column = (int)block.GetValue(Grid.ColumnProperty);
-			int row = (int)block.GetValue(Grid.RowProperty);
-			UpdateUndoRedoState();
-
-			gridTree.Elements()
-				.Where(
-					element => {
-						var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-						var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						int colAttribValue = 0, rowAttribValue = 0;
-						if (int.TryParse(colAttrib.Value, out colAttribValue) && int.TryParse(rowAttrib.Value, out rowAttribValue))
-							return colAttribValue == column && rowAttribValue == row;
-						
-						return false;
-					}
-				).ForEach(item => item.Remove());
-			
-			RebuildGrid();
-		}
-		
 		void BtnCancelClick(object sender, RoutedEventArgs e)
 		{
 			this.DialogResult = false;
@@ -618,32 +575,6 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		void BtnOKClick(object sender, RoutedEventArgs e)
 		{
 			this.DialogResult = true;
-		}
-		
-		string BuildDescriptionForCell(int row, int col)
-		{
-			StringBuilder builder = new StringBuilder();
-			
-			var controls = gridTree
-				.Elements()
-				.Where(
-					element => {
-						var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-						return 	row.ToString() == rowAttrib.Value && col.ToString() == colAttrib.Value;
-					}
-				);
-			
-			foreach (var control in controls) {
-				var nameAttrib = control.Attribute(XName.Get("Name", CompletionDataHelper.XamlNamespace)) ?? control.Attribute(XName.Get("Name"));
-				if (builder.Length > 0)
-					builder.Append(", ");
-				builder.Append(control.Name.LocalName);
-				if (nameAttrib != null)
-					builder.Append(" (" + nameAttrib.Value + ")");
-			}
-			
-			return builder.ToString();
 		}
 		
 		void RebuildGrid()
@@ -671,19 +602,23 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				this.gridDisplay.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
 				
 				for (int j = 0; j < cols; j++) {
-					TextBlock displayRect = new TextBlock() {
+					StackPanel displayRect = new StackPanel() {
 						Margin = new Thickness(5),
-						Background = Brushes.CornflowerBlue,
-						Text = BuildDescriptionForCell(i, j),
-						TextAlignment = TextAlignment.Center,
-						TextWrapping = TextWrapping.Wrap
+						Background = Brushes.LightGray,
+						Orientation = Orientation.Vertical
 					};
+					
+					displayRect.AllowDrop = true;
+					
+					displayRect.Drop += new DragEventHandler(DisplayRectDrop);
+					displayRect.DragOver += new DragEventHandler(DisplayRectDragOver);
+					
+					displayRect.Children.AddRange(BuildItemsForCell(i, j));
 					
 					displayRect.SetValue(Grid.RowProperty, i);
 					displayRect.SetValue(Grid.ColumnProperty, j);
 					
 					displayRect.ContextMenuOpening += new ContextMenuEventHandler(DisplayRectContextMenuOpening);
-					displayRect.MouseLeftButtonDown += new MouseButtonEventHandler(DisplayRectMouseLeftButtonDown);
 					
 					this.gridDisplay.Children.Add(displayRect);
 				}
@@ -691,70 +626,75 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			this.InvalidateVisual();
 		}
+
+		void DisplayRectDragOver(object sender, DragEventArgs e)
+		{
+			StackPanel target = sender as StackPanel;
+			
+//			if (target != null) {
+//				foreach (UIElement element in target.Children) {
+//					element.
+//				}
+//			}
+		}
+
+		void DisplayRectDrop(object sender, DragEventArgs e)
+		{
+			XElement data = e.Data.GetData(typeof(XElement)) as XElement;
+			if (data != null) {
+				UpdateUndoRedoState();
+				
+				StackPanel target = sender as StackPanel;
+				int x = (int)target.GetValue(Grid.ColumnProperty);
+				int y = (int)target.GetValue(Grid.RowProperty);
+				
+				data.SetAttributeValue(XName.Get("Grid.Column"), x);
+				data.SetAttributeValue(XName.Get("Grid.Row"), y);
+			}
+		}
+		
+		IEnumerable<UIElement> BuildItemsForCell(int row, int column)
+		{
+			var controls = gridTree
+				.Elements()
+				.Where(
+					element => {
+						var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
+						var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
+						return 	row.ToString() == rowAttrib.Value && column.ToString() == colAttrib.Value;
+					}
+				);
+			
+			foreach (var control in controls) {
+				var nameAttrib = control.Attribute(XName.Get("Name", CompletionDataHelper.XamlNamespace)) ?? control.Attribute(XName.Get("Name"));
+				StringBuilder builder = new StringBuilder(control.Name.LocalName);
+				if (nameAttrib != null)
+					builder.Append(" (" + nameAttrib.Value + ")");
+				
+				Label label = new Label() {
+					Content = builder.ToString(),
+					Template = this.Resources["itemTemplate"] as ControlTemplate,
+					AllowDrop = true,
+					Tag = control
+				};
+				
+				label.MouseLeftButtonDown += new MouseButtonEventHandler(LabelMouseLeftButtonDown);
+				
+				yield return label;
+			}
+		}
+
+		void LabelMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			DragDropEffects allowedEffects = DragDropEffects.Move;
+			if (DragDrop.DoDragDrop(sender as Label, (sender as Label).Tag, allowedEffects) != DragDropEffects.None)
+				RebuildGrid();
+		}
 		
 		void UpdateUndoRedoState()
 		{
 			this.undoStack.Push(UndoStep.CreateStep(gridTree, rowDefitions, colDefitions, additionalProperties));
 			this.redoStack.Clear();
-		}
-
-		void DisplayRectMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-		{
-			if (selectedCellX > -1 && selectedCellY > -1 && swap.HasValue) {
-				UpdateUndoRedoState();
-				
-				TextBlock block = sender as TextBlock;
-				int targetX = (int)block.GetValue(Grid.ColumnProperty);
-				int targetY = (int)block.GetValue(Grid.RowProperty);
-				
-				var elements = gridTree.Elements()
-					.Where(
-						element => {
-							var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-							var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-							int colAttribValue = 0, rowAttribValue = 0;
-							if (int.TryParse(colAttrib.Value, out colAttribValue) && int.TryParse(rowAttrib.Value, out rowAttribValue))
-								return colAttribValue == targetX && rowAttribValue == targetY;
-							
-							return false;
-						}
-					).ToList();
-				
-				var elements2 = gridTree.Elements()
-					.Where(
-						element => {
-							var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-							var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-							int colAttribValue = 0, rowAttribValue = 0;
-							if (int.TryParse(colAttrib.Value, out colAttribValue) && int.TryParse(rowAttrib.Value, out rowAttribValue))
-								return colAttribValue == selectedCellX && rowAttribValue == selectedCellY;
-							
-							return false;
-						}
-					).ToList();
-
-				if (swap == true) {
-					elements.ForEach(
-						element => {
-							element.SetAttributeValue(XName.Get("Grid.Column"), selectedCellX);
-							element.SetAttributeValue(XName.Get("Grid.Row"), selectedCellY);
-						}
-					);
-				}
-				
-				elements2.ForEach(
-					element => {
-						element.SetAttributeValue(XName.Get("Grid.Column"), targetX);
-						element.SetAttributeValue(XName.Get("Grid.Row"), targetY);
-					}
-				);
-			}
-			
-			lblInstruction.Visibility = Visibility.Collapsed;
-			selectedCellX = selectedCellY = -1;
-			swap = null;
-			
-			RebuildGrid();
 		}
 		
 		public XElement GetConstructedTree()
@@ -778,6 +718,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			redoItem.IsEnabled = redoStack.Count > 0;
 			redoItem.Click += new RoutedEventHandler(RedoItemClick);
 			
+			StackPanel block = sender as StackPanel;
+			
 			ContextMenu menu = new ContextMenu() {
 				Items = {
 					undoItem,
@@ -786,33 +728,25 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					new MenuItem() {
 						Header = "Row",
 						Items = {
-							CreateItem("Insert above", InsertAbove, sender as TextBlock),
-							CreateItem("Insert below", InsertBelow, sender as TextBlock),
+							CreateItem("Insert above", InsertAbove, block),
+							CreateItem("Insert below", InsertBelow, block),
 							new Separator(),
-							CreateItem("Move up", MoveUp, sender as TextBlock),
-							CreateItem("Move down", MoveDown, sender as TextBlock),
+							CreateItem("Move up", MoveUp, block),
+							CreateItem("Move down", MoveDown, block),
 							new Separator(),
-							CreateItem("Delete", DeleteRow, sender as TextBlock)
+							CreateItem("Delete", DeleteRow, block)
 						}
 					},
 					new MenuItem() {
 						Header = "Column",
 						Items = {
-							CreateItem("Insert before", InsertBefore, sender as TextBlock),
-							CreateItem("Insert after", InsertAfter, sender as TextBlock),
+							CreateItem("Insert before", InsertBefore, block),
+							CreateItem("Insert after", InsertAfter, block),
 							new Separator(),
-							CreateItem("Move left", MoveLeft, sender as TextBlock),
-							CreateItem("Move right", MoveRight, sender as TextBlock),
+							CreateItem("Move left", MoveLeft, block),
+							CreateItem("Move right", MoveRight, block),
 							new Separator(),
-							CreateItem("Delete", DeleteColumn, sender as TextBlock)
-						}
-					},
-					new MenuItem() {
-						Header = "Cell",
-						Items = {
-							CreateItem("Swap content", SwapContent, sender as TextBlock),
-							CreateItem("Move content", MoveContent, sender as TextBlock),
-							CreateItem("Delete content", DeleteContent, sender as TextBlock)
+							CreateItem("Delete", DeleteColumn, block)
 						}
 					}
 				}
@@ -823,12 +757,14 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 
 		void RedoItemClick(object sender, RoutedEventArgs e)
 		{
-			HandleSteps(redoStack, undoStack);
+			if (redoStack.Count > 0)
+				HandleSteps(redoStack, undoStack);
 		}
 
 		void UndoItemClick(object sender, RoutedEventArgs e)
 		{
-			HandleSteps(undoStack, redoStack);
+			if (undoStack.Count > 0)
+				HandleSteps(undoStack, redoStack);
 		}
 		
 		void HandleSteps(Stack<UndoStep> stack1, Stack<UndoStep> stack2)
@@ -841,6 +777,18 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			this.rowDefitions = step.RowDefinitions;
 			this.colDefitions = step.ColumnDefinitions;
 			this.gridTree = step.Tree;
+			
+			RebuildGrid();
+		}
+		
+		void BtnDeleteItemClick(object sender, RoutedEventArgs e)
+		{
+			Button source = sender as Button;
+			XElement item = source.Tag as XElement;
+			if (item != null) {
+				UpdateUndoRedoState();
+				item.Remove();
+			}
 			
 			RebuildGrid();
 		}
