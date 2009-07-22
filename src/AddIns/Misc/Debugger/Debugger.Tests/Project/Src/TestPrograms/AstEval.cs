@@ -57,6 +57,8 @@ namespace Debugger.Tests {
 				pi + ' ' + hi
 				
 				(5 + 6) % (1 + 2)
+				15 & 255
+				15 && 255
 				b + 3 == i
 				b + 4 == i
 				true == true
@@ -143,6 +145,8 @@ namespace Debugger.Tests {
     <Eval> pi + " " + hi = 3.14 hi </Eval>
     <Eval> </Eval>
     <Eval> (5 + 6) % (1 + 2) = 2 </Eval>
+    <Eval> 15 &amp; 255 = 15 </Eval>
+    <Eval> 15 &amp;&amp; 255 = Error: Unsupported operator for integers: LogicalAnd </Eval>
     <Eval> b + 3 == i = True </Eval>
     <Eval> b + 4 == i = False </Eval>
     <Eval> true == true = True </Eval>

@@ -368,6 +368,7 @@ namespace Debugger.AddIn
 							case BinaryOperatorType.ReferenceEquality:   return a == b;
 							case BinaryOperatorType.ReferenceInequality: return a != b;
 							case BinaryOperatorType.NullCoalescing:      return a ?? b;
+							default: throw new GetValueException("Unsupported operator for strings: " + op);
 						}
 					}
 					
@@ -387,6 +388,8 @@ namespace Debugger.AddIn
 							
 							case BinaryOperatorType.ReferenceEquality:   return a == b;
 							case BinaryOperatorType.ReferenceInequality: return a != b;
+							
+							default: throw new GetValueException("Unsupported operator for bools: " + op);
 						}
 					}
 					
@@ -411,6 +414,8 @@ namespace Debugger.AddIn
 							
 							case BinaryOperatorType.ReferenceEquality:   return a == b;
 							case BinaryOperatorType.ReferenceInequality: return a != b;
+							
+							default: throw new GetValueException("Unsupported operator for floats: " + op);
 						}
 					}
 					
@@ -442,6 +447,8 @@ namespace Debugger.AddIn
 							
 							case BinaryOperatorType.ReferenceEquality:   return a == b;
 							case BinaryOperatorType.ReferenceInequality: return a != b;
+							
+							default: throw new GetValueException("Unsupported operator for integers: " + op);
 						}
 					}
 					
@@ -472,6 +479,8 @@ namespace Debugger.AddIn
 							
 							case BinaryOperatorType.ReferenceEquality:   return a == b;
 							case BinaryOperatorType.ReferenceInequality: return a != b;
+							
+							default: throw new GetValueException("Unsupported operator for chars: " + op);
 						}
 					}
 				} catch(FormatException e) {
