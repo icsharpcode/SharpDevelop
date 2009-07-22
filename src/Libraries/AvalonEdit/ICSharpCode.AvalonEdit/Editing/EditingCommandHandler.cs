@@ -86,6 +86,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			ClassWideBindingGroup = new BindingGroup();
 			classWideInputBindingCategory = new InputBindingCategory("/EditingCommands", "Editing commands");
+			SDCommandManager.RegisterInputBindingCategory(classWideInputBindingCategory);
 			
 			AddCommandBinding("ApplicationCommands.Delete", CanDelete, OnDelete(ApplicationCommands.NotACommand));
 			AddBinding("EditingCommands.Delete", "Delete", null, OnDelete(EditingCommands.SelectRightByCharacter));

@@ -77,6 +77,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			ClassWideBindingGroup = new BindingGroup();
 			classWideInputBindingCategory = new InputBindingCategory("/CaretNavigation", "Caret navigation commands");
+			SDCommandManager.RegisterInputBindingCategory(classWideInputBindingCategory);
 			
 			AddBinding("EditingCommands.MoveLeftByCharacter", "Left", null, OnMoveCaret(CaretMovementType.CharLeft));
 			AddBinding("EditingCommands.SelectLeftByCharacter", "Shift+Left", null, OnMoveCaretExtendSelection(CaretMovementType.CharLeft));

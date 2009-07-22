@@ -23,7 +23,44 @@ namespace ICSharpCode.Core.Presentation
 			ActiveCommandBindings = new CommandBindingCollection();
 			
 			Groups = new BindingGroupCollection();
-			Groups.CollectionChanged += Groups_CollectionChanged;
+		}
+		
+		private BindingGroupCollection _groups;
+		
+		public BindingGroupCollection Groups
+		{
+			get {
+				return _groups;
+			}
+			set {
+				if(value == null) {
+					throw new ArgumentException("Groups collection can not be null");
+				}
+
+				var oldValue = _groups;
+				_groups = value;
+				_groups.CollectionChanged += Groups_CollectionChanged;	
+				
+				if(oldValue != null) {
+					var oldItemsList = new System.Collections.ArrayList();
+					foreach(var oldItem in oldValue) {
+						oldItemsList.Add(oldItem);
+					}
+					
+					var newItemsList = new System.Collections.ArrayList();
+					foreach(var newItem in value) {
+						newItemsList.Add(newItem);
+					}
+					
+					var args = new NotifyCollectionChangedEventArgs(
+						NotifyCollectionChangedAction.Replace,
+						newItemsList, 
+						oldItemsList,
+						0);
+					
+					Groups_CollectionChanged(this, args);
+				}
+			}
 		}
 		
 		private void Groups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {  
@@ -38,11 +75,6 @@ namespace ICSharpCode.Core.Presentation
 					newGroup.CommandBindings.Add(this);
 				}
 			}
-		}
-		
-		public BindingGroupCollection Groups
-		{
-			get; private set;
 		}
 		
 		private string routedCommandName;

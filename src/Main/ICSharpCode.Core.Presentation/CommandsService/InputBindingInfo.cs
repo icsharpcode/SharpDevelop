@@ -56,8 +56,8 @@ namespace ICSharpCode.Core.Presentation
 					
 					var args = new NotifyCollectionChangedEventArgs(
 						NotifyCollectionChangedAction.Replace,
-						oldItemsList,
 						newItemsList, 
+						oldItemsList,
 						0);
 					
 					Groups_CollectionChanged(this, args);
@@ -247,8 +247,8 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// List of categories associated with input binding 
 		/// </summary>
-		public InputBindingCategoryCollection Categories {
-
+		public InputBindingCategoryCollection Categories
+		{
 			get {
 				return _categories;
 			}
@@ -257,7 +257,29 @@ namespace ICSharpCode.Core.Presentation
 					throw new ArgumentException("Categories collection can not be null");
 				}
 				
+				var oldValue = _categories;
 				_categories = value;
+				_categories.CollectionChanged += Categories_CollectionChanged;	
+				
+				if(oldValue != null) {
+					var oldItemsList = new System.Collections.ArrayList();
+					foreach(var oldItem in oldValue) {
+						oldItemsList.Add(oldItem);
+					}
+					
+					var newItemsList = new System.Collections.ArrayList();
+					foreach(var newItem in value) {
+						newItemsList.Add(newItem);
+					}
+					
+					var args = new NotifyCollectionChangedEventArgs(
+						NotifyCollectionChangedAction.Replace,
+						newItemsList, 
+						oldItemsList,
+						0);
+					
+					Categories_CollectionChanged(this, args);
+				}
 			}
 		}
 			
@@ -285,6 +307,17 @@ namespace ICSharpCode.Core.Presentation
 				identifier.RoutedCommandName = RoutedCommandName;
 				
 				return identifier;
+			}
+		}
+		
+		private void Categories_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) 
+		{
+			if(e.NewItems != null) {
+				foreach(InputBindingCategory addedCategory in e.NewItems) {
+					if(!SDCommandManager.InputBindingCategories.Contains(addedCategory)) {
+						throw new ArgumentException("InputBindingCategory is not registered in CommandManager");
+					}
+				}
 			}
 		}
 		

@@ -132,7 +132,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="type">Type</param>
 		public static void RegisterNamedUIType(string typeName, Type type)
 		{
-			if(type.IsSubclassOf(typeof(UIElement))) {
+			if(!(type == typeof(UIElement) || type.IsSubclassOf(typeof(UIElement)))) {
 				throw new ArgumentException("Type is not subclass of UIElement");
 			}
 			
@@ -326,6 +326,20 @@ namespace ICSharpCode.Core.Presentation
 			} else {
 				inputBidnings.Add(inputBindingInfo);
 				inputBindingInfo.IsRegistered = true;
+				
+				RegisterInputBindingsUpdateHandler(similarBindingTemplate, inputBindingInfo.DefaultInputBindingHandler);
+			}
+			
+			if(similarBindingTemplate.OwnerInstanceName != null) {
+				similarBindingTemplate.OwnerInstances = GetNamedUIElementCollection(similarBindingTemplate.OwnerInstanceName);
+			}
+			
+			if(similarBindingTemplate.OwnerTypeName != null) {
+				similarBindingTemplate.OwnerTypes = GetNamedUITypeCollection(similarBindingTemplate.OwnerTypeName);
+			}
+			
+			if(similarBindingTemplate.RoutedCommandName != null) {
+				similarBindingTemplate.RoutedCommand = GetRoutedUICommand(similarBindingTemplate.RoutedCommandName);
 			}
 			
 			InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet, similarBindingTemplate);
@@ -427,8 +441,21 @@ namespace ICSharpCode.Core.Presentation
 			commandBindings.Add(commandBindingInfo);
 			commandBindingInfo.IsRegistered = true;
 			
-			RegisterInputBindingsUpdateHandler(registeredBindingTemplate, commandBindingInfo.DefaultCommandBindingHandler);
-			InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet, registeredBindingTemplate);
+			RegisterCommandBindingsUpdateHandler(registeredBindingTemplate, commandBindingInfo.DefaultCommandBindingHandler);
+			
+			if(registeredBindingTemplate.OwnerInstanceName != null) {
+				registeredBindingTemplate.OwnerInstances = GetNamedUIElementCollection(registeredBindingTemplate.OwnerInstanceName);
+			}
+			
+			if(registeredBindingTemplate.OwnerTypeName != null) {
+				registeredBindingTemplate.OwnerTypes = GetNamedUITypeCollection(registeredBindingTemplate.OwnerTypeName);
+			}
+			
+			if(registeredBindingTemplate.RoutedCommandName != null) {
+				registeredBindingTemplate.RoutedCommand = GetRoutedUICommand(registeredBindingTemplate.RoutedCommandName);
+			}
+			
+			InvokeCommandBindingUpdateHandlers(BindingInfoMatchType.SubSet, registeredBindingTemplate);
 		}
 		
 		/// <summary>
@@ -468,6 +495,10 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static void UnegisterCommandBindingsUpdateHandler(BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params IBindingInfo[] templates) 
 		{
+			if(handler == null) {
+				throw new ArgumentNullException("handler");
+			}
+			
 			UnregisterBindingsUpdateHandler(commandBindingUpdatedHandlers, handler, matchType, templates);
 		}
 		
@@ -484,6 +515,10 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static void UnregisterInputBindingsUpdateHandler(BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params IBindingInfo[] templates)
 		{
+			if(handler == null) {
+				throw new ArgumentNullException("handler");
+			}
+			
 			UnregisterBindingsUpdateHandler(inputBindingUpdatedHandlers, handler, matchType, templates);
 		}
 
@@ -494,6 +529,8 @@ namespace ICSharpCode.Core.Presentation
 					if(template.IsTemplateFor(updateHandlerPair.Key, matchType)) {
 						if(handler != null) {
 							updateHandlerPair.Value.Remove(handler);
+						} else {
+							updateHandlerDictionary.Remove(updateHandlerPair.Key);
 						}
 					}
 				}
@@ -671,6 +708,31 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			InputBindingCategories.Add(category);
+		}
+		
+		/// <summary>
+		/// Use for unit tests only
+		/// </summary>
+		public static void Reset()
+		{
+			DefaultContextName = null;
+			
+			commandBindings.Clear();
+			inputBidnings.Clear();
+		
+			routedCommands.Clear();
+			commands.Clear();
+		
+			inputBindingUpdatedHandlers.Clear();
+			commandBindingUpdatedHandlers.Clear();
+		
+			namedUIInstances.Clear();
+			namedUITypes.Clear();
+		
+			reverseNamedUIInstances.Clear();
+			reverseNamedUITypes.Clear();
+		
+			InputBindingCategories.Clear();
 		}
 		
 	}	

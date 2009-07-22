@@ -8,6 +8,8 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -16,7 +18,7 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public class InputBindingCategoryCollection : ICollection<InputBindingCategory>
 	{
-		private List<InputBindingCategory> categories = new List<InputBindingCategory>();
+		private ObservableCollection<InputBindingCategory> categories = new ObservableCollection<InputBindingCategory>();
 		
 		public InputBindingCategoryCollection()
 		{
@@ -31,6 +33,16 @@ namespace ICSharpCode.Core.Presentation
 		public bool IsReadOnly {
 			get {
 				return false;
+			}
+		}
+		
+		public event NotifyCollectionChangedEventHandler CollectionChanged
+		{
+			add {
+				categories.CollectionChanged += value;
+			}
+			remove {
+				categories.CollectionChanged -= value;
 			}
 		}
 		
