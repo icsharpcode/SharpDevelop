@@ -434,27 +434,37 @@ namespace Debugger.MetaData
 		
 		public static DebugType Create(Process process, uint? domainID, string fullTypeName)
 		{
-			return Create(process, GetCorClass(process, domainID, fullTypeName));
+			return Create(process, GetCorClass(process, domainID, fullTypeName, 0));
 		}
 		
 		static ICorDebugClass GetCorClass(Module module, uint token)
 		{
-			if ((token & 0xFF000000) == (uint)CorTokenType.TypeDef) {
+			CorTokenType tkType = (CorTokenType)(token & 0xFF000000);
+			if (tkType == CorTokenType.TypeDef) {
 				return module.CorModule.GetClassFromToken(token);
-			} else if ((token & 0xFF000000) == (uint)CorTokenType.TypeRef) {
-				string fullName = module.MetaData.GetTypeRefProps(token).Name;
-				return GetCorClass(module.Process, module.AppDomainID, fullName);
+			} else if (tkType == CorTokenType.TypeRef) {
+				TypeRefProps refProps = module.MetaData.GetTypeRefProps(token);
+				string fullName = refProps.Name;
+				CorTokenType scopeType = (CorTokenType)(refProps.ResolutionScope & 0xFF000000);
+				uint enclosingClassTk = 0;
+				if (scopeType == CorTokenType.TypeDef || scopeType == CorTokenType.TypeRef) {
+					// Resolve the enclosingClass TypeRef in this scope
+					ICorDebugClass enclosingClass = GetCorClass(module, refProps.ResolutionScope);
+					enclosingClassTk = enclosingClass.Token;
+				}
+				return GetCorClass(module.Process, module.AppDomainID, fullName, enclosingClassTk);
 			} else {
 				throw new DebuggerException("TypeDef or TypeRef expected");
 			}
 		}
 		
-		static ICorDebugClass GetCorClass(Process process, uint? domainID, string fullTypeName)
+		static ICorDebugClass GetCorClass(Process process, uint? domainID, string fullTypeName, uint enclosingClass)
 		{
+			// 
 			foreach(Module module in process.Modules) {
 				if (!domainID.HasValue || domainID == module.CorModule.Assembly.AppDomain.ID) {
 					try {
-						uint token = module.MetaData.FindTypeDefPropsByName(fullTypeName, 0 /* enclosing class for nested */).Token;
+						uint token = module.MetaData.FindTypeDefPropsByName(fullTypeName, enclosingClass).Token;
 						return module.CorModule.GetClassFromToken(token);
 					} catch {
 						continue;
