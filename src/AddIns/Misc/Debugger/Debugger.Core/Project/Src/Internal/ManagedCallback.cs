@@ -78,7 +78,7 @@ namespace Debugger
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugThread pThread)
 		{
 			EnterCallback(pausedReason, name, pThread.Process);
-			process.SelectedThread = process.Threads.Get(pThread);
+			process.SelectedThread = process.Threads[pThread];
 		}
 		
 		void ExitCallback()
@@ -123,7 +123,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.StepComplete, "StepComplete (" + reason.ToString() + ")", pThread);
 			
-			Thread thread = process.Threads.Get(pThread);
+			Thread thread = process.Threads[pThread];
 			Stepper stepper = thread.GetStepper(pStepper);
 			
 			StackFrame currentStackFrame = process.SelectedThread.MostRecentStackFrame;
@@ -164,7 +164,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Breakpoint, "Breakpoint", pThread);
 			
-			Breakpoint breakpoint = process.Debugger.Breakpoints.Get(corBreakpoint);
+			Breakpoint breakpoint = process.Debugger.Breakpoints[corBreakpoint];
 			// The event will be risen outside the callback
 			process.BreakpointHitEventQueue.Enqueue(breakpoint);
 			
@@ -256,7 +256,7 @@ namespace Debugger
 		void HandleEvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval, bool exception)
 		{
 			// Let the eval know that the CorEval has finished
-			Eval eval = process.ActiveEvals.Get(corEval);
+			Eval eval = process.ActiveEvals[corEval];
 			eval.NotifyEvaluationComplete(!exception);
 			process.ActiveEvals.Remove(eval);
 			
@@ -354,7 +354,7 @@ namespace Debugger
 				
 				EnterCallback(PausedReason.Other, "NameChange: pThread", pThread);
 				
-				Thread thread = process.Threads.Get(pThread);
+				Thread thread = process.Threads[pThread];
 				thread.NotifyNameChanged();
 				
 				ExitCallback();
@@ -395,7 +395,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "UnloadModule", pAppDomain);
 			
-			process.Modules.Remove(process.Modules.Get(pModule));
+			process.Modules.Remove(process.Modules[pModule]);
 			
 			ExitCallback();
 		}
@@ -413,7 +413,7 @@ namespace Debugger
 			if (process.Threads.Contains(pThread)) {
 				EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, pThread);
 				
-				process.Threads.Get(pThread).NotifyExited();
+				process.Threads[pThread].NotifyExited();
 			} else {
 			    EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, process.CorProcess);
 			    

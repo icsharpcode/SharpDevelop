@@ -62,7 +62,8 @@ namespace Debugger.Tests {
     <ModuleLoaded>MainThreadExit.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break MainThreadExit.cs:24,4-24,40</DebuggingPaused>
     <ThreadsBeforeExit
-      Count="2">
+      Count="2"
+      Selected="Thread Name =  Suspended = False">
       <Item>
         <Thread
           CurrentExceptionType="0"
@@ -91,7 +92,8 @@ namespace Debugger.Tests {
     </ThreadsBeforeExit>
     <DebuggingPaused>ForcedBreak MainThreadExit.cs:29,4-29,26</DebuggingPaused>
     <ThreadsAfterExit
-      Count="2">
+      Count="2"
+      Selected="Thread Name = Worker thread Suspended = False">
       <Item>
         <Thread
           CurrentExceptionType="0"

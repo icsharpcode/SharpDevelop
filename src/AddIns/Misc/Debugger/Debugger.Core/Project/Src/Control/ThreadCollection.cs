@@ -12,20 +12,6 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class Process
-	{
-		ThreadCollection threads;
-		
-		public ThreadCollection Threads {
-			get { return threads; }
-		}
-		
-		public Thread SelectedThread {
-			get { return this.Threads.Selected; }
-			set { this.Threads.Selected = value; }
-		}
-	}
-	
 	public class ThreadCollection: CollectionWithEvents<Thread>
 	{
 		public ThreadCollection(NDebugger debugger): base(debugger) {}
@@ -45,14 +31,15 @@ namespace Debugger
 			return false;
 		}
 		
-		internal Thread Get(ICorDebugThread corThread)
-		{
-			foreach(Thread thread in this) {
-				if (thread.CorThread == corThread) {
-					return thread;
+		internal Thread this[ICorDebugThread corThread] {
+			get {
+				foreach(Thread thread in this) {
+					if (thread.CorThread == corThread) {
+						return thread;
+					}
 				}
+				throw new DebuggerException("Thread is not in collection");
 			}
-			throw new DebuggerException("Thread is not in collection");
 		}
 	}
 }

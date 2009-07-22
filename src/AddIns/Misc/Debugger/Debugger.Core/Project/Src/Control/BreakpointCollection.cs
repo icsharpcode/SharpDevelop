@@ -11,15 +11,6 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class NDebugger
-	{
-		BreakpointCollection breakpoints;
-		
-		public BreakpointCollection Breakpoints {
-			get { return breakpoints; }
-		}
-	}
-	
 	public class BreakpointCollection: CollectionWithEvents<Breakpoint>
 	{
 		public event EventHandler<CollectionItemEventArgs<Breakpoint>> Hit;
@@ -31,19 +22,17 @@ namespace Debugger
 			}
 		}
 		
-		public BreakpointCollection(NDebugger debugger):base(debugger)
-		{
-			
-		}
+		public BreakpointCollection(NDebugger debugger):base(debugger) { }
 		
-		internal Breakpoint Get(ICorDebugBreakpoint corBreakpoint)
-		{
-			foreach (Breakpoint breakpoint in this) {
-				if (breakpoint.IsOwnerOf(corBreakpoint)) {
-					return breakpoint;
+		internal Breakpoint this[ICorDebugBreakpoint corBreakpoint] {
+			get {
+				foreach (Breakpoint breakpoint in this) {
+					if (breakpoint.IsOwnerOf(corBreakpoint)) {
+						return breakpoint;
+					}
 				}
+				return null;
 			}
-			return null;
 		}
 		
 		public new void Add(Breakpoint breakpoint)

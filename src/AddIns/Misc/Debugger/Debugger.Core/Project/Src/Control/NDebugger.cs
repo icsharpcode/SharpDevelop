@@ -22,6 +22,9 @@ namespace Debugger
 		ManagedCallbackSwitch      managedCallbackSwitch;
 		ManagedCallbackProxy       managedCallbackProxy;
 		
+		BreakpointCollection breakpoints;
+		ProcessCollection processes;
+		
 		MTA2STA mta2sta = new MTA2STA();
 		
 		string debuggeeVersion;
@@ -49,6 +52,14 @@ namespace Debugger
 		public Options Options {
 			get { return options; }
 			set { options = value; }
+		}
+		
+		public BreakpointCollection Breakpoints {
+			get { return breakpoints; }
+		}
+		
+		public ProcessCollection Processes {
+			get { return processes; }
 		}
 		
 		public NDebugger()

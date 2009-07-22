@@ -73,7 +73,7 @@ namespace Debugger
 		
 		public ManagedCallback GetProcessCallbackInterface(string name, ICorDebugProcess pProcess)
 		{
-			Process process = debugger.Processes.Get(pProcess);
+			Process process = debugger.Processes[pProcess];
 			// Make *really* sure the process is not dead
 			if (process == null) {
 				debugger.TraceMessage("Ignoring callback \"" + name + "\": Process not found");

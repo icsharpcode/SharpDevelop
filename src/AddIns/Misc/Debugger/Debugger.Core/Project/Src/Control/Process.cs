@@ -18,6 +18,10 @@ namespace Debugger
 		ICorDebugProcess corProcess;
 		ManagedCallback callbackInterface;
 		
+		EvalCollection activeEvals;
+		ModuleCollection modules;
+		ThreadCollection threads;
+		
 		#region IExpirable
 		
 		bool hasExited = false;
@@ -65,6 +69,27 @@ namespace Debugger
 			}
 		}
 		
+		public EvalCollection ActiveEvals {
+			get { return activeEvals; }
+		}
+		
+		internal bool Evaluating {
+			get { return activeEvals.Count > 0; }
+		}
+		
+		public ModuleCollection Modules {
+			get { return modules; }
+		}
+		
+		public ThreadCollection Threads {
+			get { return threads; }
+		}
+		
+		public Thread SelectedThread {
+			get { return this.Threads.Selected; }
+			set { this.Threads.Selected = value; }
+		}
+		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess)
 		{
 			this.debugger = debugger;
@@ -72,7 +97,7 @@ namespace Debugger
 			
 			this.callbackInterface = new ManagedCallback(this);
 			
-			evals = new EvalCollection(debugger);
+			activeEvals = new EvalCollection(debugger);
 			modules = new ModuleCollection(debugger);
 			threads = new ThreadCollection(debugger);
 		}

@@ -337,7 +337,7 @@ namespace Debugger.MetaData
 			this.corElementType = (CorElementType)corType.Type;
 			
 			if (this.IsClass || this.IsValueType) {
-				this.module = process.Modules.Get(corType.Class.Module);
+				this.module = process.Modules[corType.Class.Module];
 				this.classProps = module.MetaData.GetTypeDefProps(corType.Class.Token);
 			}
 			
@@ -476,7 +476,7 @@ namespace Debugger.MetaData
 		
 		static public DebugType Create(Process process, ICorDebugClass corClass, params ICorDebugType[] typeArguments)
 		{
-			MetaDataImport metaData = process.Modules.Get(corClass.Module).MetaData;
+			MetaDataImport metaData = process.Modules[corClass.Module].MetaData;
 			
 			bool isValueType = false;
 			uint superClassToken = metaData.GetTypeDefProps(corClass.Token).SuperClassToken;

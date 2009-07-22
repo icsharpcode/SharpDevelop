@@ -12,30 +12,19 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class NDebugger
-	{
-		ProcessCollection processes;
-		
-		public ProcessCollection Processes {
-			get { return processes; }
-		}
-	}
-	
 	public class ProcessCollection: CollectionWithEvents<Process>
 	{
-		public ProcessCollection(NDebugger debugger): base(debugger)
-		{
-			
-		}
+		public ProcessCollection(NDebugger debugger): base(debugger) {}
 		
-		internal Process Get(ICorDebugProcess corProcess)
-		{
-			foreach (Process process in this) {
-				if (process.CorProcess == corProcess) {
-					return process;
+		internal Process this[ICorDebugProcess corProcess] {
+			get {
+				foreach (Process process in this) {
+					if (process.CorProcess == corProcess) {
+						return process;
+					}
 				}
+				return null;
 			}
-			return null;
 		}
 
 		protected override void OnRemoved(Process item)

@@ -12,15 +12,6 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class Process
-	{
-		ModuleCollection modules;
-		
-		public ModuleCollection Modules {
-			get { return modules; }
-		}
-	}
-	
 	public class ModuleCollection: CollectionWithEvents<Module>
 	{
 		public ModuleCollection(NDebugger debugger):base (debugger) {}
@@ -38,15 +29,15 @@ namespace Debugger
 			}
 		}
 
-		internal Module Get(ICorDebugModule corModule) 
-		{
-			foreach(Module module in this) {
-				if (module.CorModule == corModule) {
-					return module;
+		internal Module this[ICorDebugModule corModule] {
+			get {
+				foreach(Module module in this) {
+					if (module.CorModule == corModule) {
+						return module;
+					}
 				}
+				throw new DebuggerException("Module is not in collection");
 			}
-
-			throw new DebuggerException("Module is not in collection");
 		}
 		
 		protected override void OnAdded(Module module)
