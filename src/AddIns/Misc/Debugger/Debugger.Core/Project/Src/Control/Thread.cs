@@ -100,6 +100,7 @@ namespace Debugger
 			
 			this.HasExited = true;
 			OnExited(new ThreadEventArgs(this));
+			process.Threads.Remove(this);
 		}
 		
 		protected virtual void OnExited(ThreadEventArgs e)

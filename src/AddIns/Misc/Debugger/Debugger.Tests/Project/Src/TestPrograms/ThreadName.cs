@@ -39,8 +39,8 @@ namespace Debugger.Tests {
 
 		void debugger_ProcessStarted(object sender, CollectionItemEventArgs<Process> e)
 		{
-			e.Item.ThreadStarted += delegate(object sender2, ThreadEventArgs f) {
-				ObjectDump("ThreadStartedEvent", f.Thread);
+			e.Item.Threads.Added += delegate(object sender2, CollectionItemEventArgs<Thread> f) {
+				ObjectDump("ThreadStartedEvent", f.Item);
 			};
 		}
 	}

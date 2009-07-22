@@ -74,6 +74,7 @@ namespace Debugger
 			
 			evals = new EvalCollection(debugger);
 			modules = new ModuleCollection(debugger);
+			threads = new ThreadCollection(debugger);
 		}
 		
 		internal ICorDebugProcess CorProcess {

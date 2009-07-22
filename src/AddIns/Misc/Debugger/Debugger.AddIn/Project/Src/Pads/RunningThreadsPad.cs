@@ -102,12 +102,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused               -= debuggedProcess_Paused;
-				debuggedProcess.ThreadStarted        -= debuggedProcess_ThreadStarted;
+				debuggedProcess.Threads.Added        -= debuggedProcess_ThreadStarted;
 			}
 			debuggedProcess = process;
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused               += debuggedProcess_Paused;
-				debuggedProcess.ThreadStarted        += debuggedProcess_ThreadStarted;
+				debuggedProcess.Threads.Added        += debuggedProcess_ThreadStarted;
 			}
 			runningThreadsList.Items.Clear();
 			RefreshPad();
@@ -118,9 +118,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			RefreshPad();
 		}
 		
-		void debuggedProcess_ThreadStarted(object sender, ThreadEventArgs e)
+		void debuggedProcess_ThreadStarted(object sender, CollectionItemEventArgs<Thread> e)
 		{
-			AddThread(e.Thread);
+			AddThread(e.Item);
 		}
 		
 		public override void RefreshPad()

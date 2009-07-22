@@ -14,67 +14,45 @@ namespace Debugger
 {
 	public partial class Process
 	{
-		Thread selectedThread;
-		List<Thread> threadCollection = new List<Thread>();
+		ThreadCollection threads;
 		
-		public event EventHandler<ThreadEventArgs> ThreadStarted;
-		
-		protected virtual void OnThreadStarted(Thread thread)
-		{
-			if (ThreadStarted != null) {
-				ThreadStarted(this, new ThreadEventArgs(thread));
-			}
+		public ThreadCollection Threads {
+			get { return threads; }
 		}
 		
 		public Thread SelectedThread {
-			get {
-				return selectedThread;
-			}
-			set {
-				selectedThread = value;
-			}
+			get { return this.Threads.Selected; }
+			set { this.Threads.Selected = value; }
+		}
+	}
+	
+	public class ThreadCollection: CollectionWithEvents<Thread>
+	{
+		public ThreadCollection(NDebugger debugger): base(debugger) {}
+		
+		Thread selected;
+		
+		public Thread Selected {
+			get { return selected; }
+			set { selected = value; }
 		}
 		
-		public IList<Thread> Threads {
-			get {
-				List<Thread> threads = new List<Thread>();
-				foreach(Thread thread in threadCollection) {
-					if (!thread.HasExited) {
-						threads.Add(thread);
-					}
-				}
-				return threads.AsReadOnly();
-			}
-		}
-		
-		internal bool ContainsThread(ICorDebugThread corThread)
+		internal bool Contains(ICorDebugThread corThread)
 		{
-			foreach(Thread thread in threadCollection) {
+			foreach(Thread thread in this) {
 				if (thread.CorThread == corThread) return true;
 			}
 			return false;
 		}
 		
-		internal Thread GetThread(ICorDebugThread corThread)
+		internal Thread Get(ICorDebugThread corThread)
 		{
-			foreach(Thread thread in threadCollection) {
+			foreach(Thread thread in this) {
 				if (thread.CorThread == corThread) {
 					return thread;
 				}
 			}
-			
 			throw new DebuggerException("Thread is not in collection");
-		}
-		
-		internal void AddThread(ICorDebugThread corThread)
-		{
-			Thread thread = new Thread(this, corThread);
-			threadCollection.Add(thread);
-			OnThreadStarted(thread);
-			
-			thread.Exited += delegate {
-				threadCollection.Remove(thread);
-			};
 		}
 	}
 }
