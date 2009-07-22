@@ -164,7 +164,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Breakpoint, "Breakpoint", pThread);
 			
-			Breakpoint breakpoint = process.Debugger.GetBreakpoint(corBreakpoint);
+			Breakpoint breakpoint = process.Debugger.Breakpoints.Get(corBreakpoint);
 			// The event will be risen outside the callback
 			process.BreakpointHitEventQueue.Enqueue(breakpoint);
 			
@@ -295,7 +295,7 @@ namespace Debugger
 				if (module.CorModule == pModule) {
 					process.TraceMessage("UpdateModuleSymbols: Found module: " + pModule.Name);
 					module.UpdateSymbolsFromStream(pSymbolStream);
-					process.Debugger.SetBreakpointsInModule(module);
+					process.Debugger.Breakpoints.SetInModule(module);
 					break;
 				}
 			}

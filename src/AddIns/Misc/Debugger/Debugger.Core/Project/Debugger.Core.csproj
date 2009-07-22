@@ -56,11 +56,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\CollectionWithEvents.cs" />
+    <Compile Include="Src\Control\AppDomain.cs" />
     <Compile Include="Src\Control\Eval.cs" />
     <Compile Include="Src\Control\Module.cs" />
     <Compile Include="Src\Control\NDebugger-Breakpoints.cs" />
     <Compile Include="Src\Control\NDebugger-Processes.cs" />
     <Compile Include="Src\Control\NDebugger.cs" />
+    <Compile Include="Src\Control\Process-AppDomains.cs" />
     <Compile Include="Src\Control\Process-Evals.cs" />
     <Compile Include="Src\Control\Process-Modules.cs" />
     <Compile Include="Src\Control\Process-StateControl.cs" />

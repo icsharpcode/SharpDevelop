@@ -53,6 +53,8 @@ namespace Debugger
 		
 		public NDebugger()
 		{
+			breakpoints = new BreakpointCollection(this);
+			
 			if (ApartmentState.STA == System.Threading.Thread.CurrentThread.GetApartmentState()) {
 				mta2sta.CallMethod = CallMethod.HiddenFormWithTimeout;
 			} else {
@@ -118,7 +120,10 @@ namespace Debugger
 		
 		internal void TerminateDebugger()
 		{
-			MarkBreakpointsAsDeactivated();
+			// Mark breakpints as deactivated
+			foreach (Breakpoint b in this.Breakpoints) {
+				b.MarkAsDeactivated();
+			}
 			
 			TraceMessage("Reset done");
 			
@@ -176,7 +181,10 @@ namespace Debugger
 		
 		public void Detach()
 		{
-			DeactivateBreakpoints();
+			// Deactivate breakpoints
+			foreach (Breakpoint b in this.Breakpoints) {
+				b.Deactivate();
+			}
 			
 			// Detach all processes.
 			while (processCollection.Count > 0) {

@@ -80,7 +80,7 @@ namespace Debugger
 		internal void NotifyHit()
 		{
 			OnHit(new BreakpointEventArgs(this));
-			debugger.OnBreakpointHit(this);
+			debugger.Breakpoints.OnHit(this);
 		}
 		
 		protected virtual void OnSet(BreakpointEventArgs e)
@@ -141,7 +141,7 @@ namespace Debugger
 		/// <summary> Remove this breakpoint </summary>
 		public void Remove()
 		{
-			debugger.RemoveBreakpoint(this);
+			debugger.Breakpoints.Remove(this);
 		}
 	}
 	

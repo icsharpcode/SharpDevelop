@@ -469,7 +469,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void AddBreakpoint(BreakpointBookmark bookmark)
 		{
-			Breakpoint breakpoint = debugger.AddBreakpoint(bookmark.FileName, null, bookmark.LineNumber, 0, bookmark.IsEnabled);
+			Breakpoint breakpoint = debugger.Breakpoints.Add(bookmark.FileName, null, bookmark.LineNumber, 0, bookmark.IsEnabled);
 			MethodInvoker setBookmarkColor = delegate {
 				if (debugger.Processes.Count == 0) {
 					bookmark.IsHealthy = true;
@@ -546,7 +546,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			BookmarkEventHandler bp_bookmarkManager_Removed = null;
 			bp_bookmarkManager_Removed = (sender, e) => {
 				if (bookmark == e.Bookmark) {
-					debugger.RemoveBreakpoint(breakpoint);
+					debugger.Breakpoints.Remove(breakpoint);
 					
 					// unregister the events
 					debugger.ProcessStarted -= bp_debugger_ProcessStarted;

@@ -13,42 +13,32 @@ namespace Debugger
 {
 	public partial class NDebugger
 	{
-		List<Breakpoint> breakpointCollection = new List<Breakpoint>();
+		BreakpointCollection breakpoints;
 		
-		public event EventHandler<BreakpointEventArgs> BreakpointAdded;
-		public event EventHandler<BreakpointEventArgs> BreakpointRemoved;
-		public event EventHandler<BreakpointEventArgs> BreakpointHit;
+		public BreakpointCollection Breakpoints {
+			get { return breakpoints; }
+		}
+	}
+	
+	public class BreakpointCollection: CollectionWithEvents<Breakpoint>
+	{
+		public event EventHandler<CollectionItemEventArgs<Breakpoint>> Hit;
 		
-		protected virtual void OnBreakpointAdded(Breakpoint breakpoint)
+		protected internal void OnHit(Breakpoint item)
 		{
-			if (BreakpointAdded != null) {
-				BreakpointAdded(this, new BreakpointEventArgs(breakpoint));
+			if (Hit != null) {
+				Hit(this, new CollectionItemEventArgs<Breakpoint>(item));
 			}
 		}
 		
-		protected virtual void OnBreakpointRemoved(Breakpoint breakpoint)
+		public BreakpointCollection(NDebugger debugger):base(debugger)
 		{
-			if (BreakpointRemoved != null) {
-				BreakpointRemoved(this, new BreakpointEventArgs(breakpoint));
-			}
+			
 		}
 		
-		protected internal virtual void OnBreakpointHit(Breakpoint breakpoint)
+		internal Breakpoint Get(ICorDebugBreakpoint corBreakpoint)
 		{
-			if (BreakpointHit != null) {
-				BreakpointHit(this, new BreakpointEventArgs(breakpoint));
-			}
-		}
-		
-		public IList<Breakpoint> Breakpoints {
-			get {
-				return breakpointCollection.AsReadOnly();
-			}
-		}
-
-		internal Breakpoint GetBreakpoint(ICorDebugBreakpoint corBreakpoint)
-		{
-			foreach (Breakpoint breakpoint in this.Breakpoints) {
+			foreach (Breakpoint breakpoint in this) {
 				if (breakpoint.IsOwnerOf(corBreakpoint)) {
 					return breakpoint;
 				}
@@ -56,68 +46,54 @@ namespace Debugger
 			return null;
 		}
 		
-		public Breakpoint AddBreakpoint(Breakpoint breakpoint)  
+		public new void Add(Breakpoint breakpoint)
 		{
-			breakpointCollection.Add(breakpoint);
-			
-			foreach(Process process in this.Processes) {
+			base.Add(breakpoint);
+		}
+		
+		public Breakpoint Add(string filename, int line)
+		{
+			Breakpoint breakpoint = new Breakpoint(this.Debugger, filename, null, line, 0, true);
+			Add(breakpoint);
+			return breakpoint;
+		}
+		
+		public Breakpoint Add(string fileName, byte[] checkSum, int line, int column, bool enabled)
+		{
+			Breakpoint breakpoint = new Breakpoint(this.Debugger, fileName, checkSum, line, column, enabled);
+			Add(breakpoint);
+			return breakpoint;
+		}
+		
+		protected override void OnAdded(Breakpoint breakpoint)
+		{
+			foreach(Process process in this.Debugger.Processes) {
 				foreach(Module module in process.Modules) {
 					breakpoint.SetBreakpoint(module);
 				}
 			}
 			
-			OnBreakpointAdded(breakpoint);
+			base.OnAdded(breakpoint);
+		}
+		
+		public new void Remove(Breakpoint breakpoint)
+		{
+			base.Remove(breakpoint);
+		}
+		
+		protected override void OnRemoved(Breakpoint breakpoint)
+		{
+			breakpoint.Deactivate();
 			
-			return breakpoint;
+			base.OnRemoved(breakpoint);
 		}
 		
-		public Breakpoint AddBreakpoint(string filename, int line)
-		{
-			return AddBreakpoint(new Breakpoint(this, filename, null, line, 0, true));
-		}
-		
-		public Breakpoint AddBreakpoint(string fileName, byte[] checkSum, int line, int column, bool enabled)
-		{
-			return AddBreakpoint(new Breakpoint(this, fileName, checkSum, line, column, enabled));
-		}
-		
-		public void RemoveBreakpoint(Breakpoint breakpoint)  
-		{
-			if (breakpointCollection.Contains(breakpoint)) {
-				breakpoint.Deactivate();
-				breakpointCollection.Remove(breakpoint);
-				OnBreakpointRemoved(breakpoint);
-			}
-		}
-
-		void MarkBreakpointsAsDeactivated()
-		{
-			foreach (Breakpoint b in breakpointCollection) {
-				b.MarkAsDeactivated();
-			}
-		}
-		
-		void DeactivateBreakpoints()
-		{
-			foreach (Breakpoint b in breakpointCollection) {
-				b.Deactivate();
-			}
-		}
-
-		public void ClearBreakpoints()
-		{
-			foreach (Breakpoint b in breakpointCollection) {
-				OnBreakpointRemoved(b);
-			}
-			breakpointCollection.Clear();
-		}
-
-		internal void SetBreakpointsInModule(Module module) 
+		internal void SetInModule(Module module) 
 		{
 			// This is in case that the client modifies the collection as a response to set breakpoint
 			// NB: If client adds new breakpoint, it will be set directly as a result of his call, not here (because module is already loaded)
 			List<Breakpoint> collection = new List<Breakpoint>();
-			collection.AddRange(breakpointCollection);
+			collection.AddRange(this);
 			
 			foreach (Breakpoint b in collection) {
 				b.SetBreakpoint(module);

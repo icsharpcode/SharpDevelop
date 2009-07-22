@@ -32,8 +32,8 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Breakpoint()
 		{
-			Breakpoint breakpoint1 = debugger.AddBreakpoint(@"Breakpoint.cs", 18);
-			Breakpoint breakpoint2 = debugger.AddBreakpoint(@"Breakpoint.cs", 19);
+			Breakpoint breakpoint1 = debugger.Breakpoints.Add(@"Breakpoint.cs", 18);
+			Breakpoint breakpoint2 = debugger.Breakpoints.Add(@"Breakpoint.cs", 19);
 			
 			StartTest("Breakpoint.cs");
 			

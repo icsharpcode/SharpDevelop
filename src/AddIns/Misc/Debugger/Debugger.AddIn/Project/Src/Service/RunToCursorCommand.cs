@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			ITextEditor textEditor = provider.TextEditor;
 			
-			Breakpoint breakpoint = winDebugger.DebuggerCore.AddBreakpoint(textEditor.FileName, null, textEditor.Caret.Line, textEditor.Caret.Column, true);
+			Breakpoint breakpoint = winDebugger.DebuggerCore.Breakpoints.Add(textEditor.FileName, null, textEditor.Caret.Line, textEditor.Caret.Column, true);
 			breakpoint.Hit += delegate { breakpoint.Remove(); };
 			winDebugger.DebuggedProcess.Paused += delegate { breakpoint.Remove(); };
 			if (!winDebugger.IsProcessRunning) {
