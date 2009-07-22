@@ -13,32 +13,29 @@ namespace Debugger
 {
 	public partial class Process
 	{
-		List<Eval> activeEvals = new List<Eval>();
+		EvalCollection evals;
 		
-		public bool Evaluating {
-			get {
-				return activeEvals.Count > 0;
-			}
+		public EvalCollection ActiveEvals {
+			get { return evals; }
 		}
 		
-		internal Eval GetEval(ICorDebugEval corEval)
+		internal bool Evaluating {
+			get { return evals.Count > 0; }
+		}
+	}
+	
+	public class EvalCollection: CollectionWithEvents<Eval>
+	{
+		public EvalCollection(NDebugger debugger): base(debugger) {}
+		
+		internal Eval Get(ICorDebugEval corEval)
 		{
-			foreach(Eval eval in activeEvals) {
+			foreach(Eval eval in this) {
 				if (eval.IsCorEval(corEval)) {
 					return eval;
 				}
 			}
 			throw new DebuggerException("Eval not found for given ICorDebugEval");
-		}
-		
-		internal void NotifyEvaluationStarted(Eval eval)
-		{
-			activeEvals.Add(eval);
-		}
-		
-		internal void NotifyEvaluationComplete(Eval eval)
-		{
-			activeEvals.Remove(eval);
 		}
 	}
 }

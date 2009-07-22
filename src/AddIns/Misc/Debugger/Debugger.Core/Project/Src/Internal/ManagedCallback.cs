@@ -256,9 +256,9 @@ namespace Debugger
 		void HandleEvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval, bool exception)
 		{
 			// Let the eval know that the CorEval has finished
-			Eval eval = process.GetEval(corEval);
+			Eval eval = process.ActiveEvals.Get(corEval);
 			eval.NotifyEvaluationComplete(!exception);
-			process.NotifyEvaluationComplete(eval);
+			process.ActiveEvals.Remove(eval);
 			
 			pauseOnNextExit = true;
 			ExitCallback();
