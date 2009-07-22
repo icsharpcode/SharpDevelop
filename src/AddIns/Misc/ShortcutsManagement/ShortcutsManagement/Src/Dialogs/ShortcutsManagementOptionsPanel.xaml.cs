@@ -193,7 +193,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
                     }
             }
             
-            var inputBindingInfos = CommandManager.FindInputBindingInfos(new BindingInfoTemplate());
+            var inputBindingInfos = CommandManager.FindInputBindingInfos(BindingInfoMatchType.SuperSet, new BindingInfoTemplate());
             foreach (var inputBindingInfo in inputBindingInfos)
             {
                 // Get shortcut entry text. Normaly shortcut entry text is equal to routed command text

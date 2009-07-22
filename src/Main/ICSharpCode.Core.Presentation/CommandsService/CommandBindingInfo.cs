@@ -4,7 +4,8 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
-using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using CommandManager=System.Windows.Input.CommandManager;
 	
 namespace ICSharpCode.Core.Presentation
 {
@@ -63,7 +64,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public RoutedUICommand RoutedCommand { 
 			get {
-				return CommandManager.GetRoutedUICommand(RoutedCommandName);
+				return SDCommandManager.GetRoutedUICommand(RoutedCommandName);
 			}
 		}
 		
@@ -117,11 +118,11 @@ namespace ICSharpCode.Core.Presentation
 				}
 				
 				if(AddIn != null && (AddIn.DependenciesLoaded || IsLazy)) {
-					CommandManager.LoadAddinCommands(AddIn);
+					SDCommandManager.LoadAddinCommands(AddIn);
 				}
 				
 				System.Windows.Input.ICommand command;
-				CommandManager.commands.TryGetValue(CommandTypeName, out command);
+				SDCommandManager.commands.TryGetValue(CommandTypeName, out command);
 				commandInstance = command;
 
 				return command;
@@ -212,7 +213,7 @@ namespace ICSharpCode.Core.Presentation
 		public ICollection<UIElement> OwnerInstances {
 			get {
 				if(_ownerInstanceName != null) {
-					return CommandManager.GetNamedUIElementCollection(_ownerInstanceName);
+					return SDCommandManager.GetNamedUIElementCollection(_ownerInstanceName);
 				}
 				
 				return null;
@@ -251,7 +252,7 @@ namespace ICSharpCode.Core.Presentation
 		public ICollection<Type> OwnerTypes { 
 			get {
 				if(_ownerTypeName != null) {
-					return CommandManager.GetNamedUITypeCollection(_ownerTypeName);
+					return SDCommandManager.GetNamedUITypeCollection(_ownerTypeName);
 				}
 				
 				return null;
@@ -261,6 +262,27 @@ namespace ICSharpCode.Core.Presentation
 		public bool IsRegistered
 		{
 			get; set;
+		}
+		
+		public void RemoveActiveCommandBindings()
+		{
+			if(_ownerTypeName != null) {
+				if(OwnerTypes != null) {
+					foreach(var ownerType in OwnerTypes) {
+						foreach(CommandBinding binding in ActiveCommandBindings) {
+							SDCommandManager.RemoveClassCommandBinding(ownerType, binding);
+						}
+					}
+				}
+			} else if(_ownerInstanceName != null) {
+				if(OwnerInstances != null) {
+					foreach(var ownerInstance in OwnerInstances) {
+						foreach(CommandBinding binding in ActiveCommandBindings) {
+							ownerInstance.CommandBindings.Remove(binding);
+						}
+					}
+				}
+			}
 		}
 			
 		private BindingsUpdatedHandler defaultCommandBindingHandler;
@@ -273,12 +295,16 @@ namespace ICSharpCode.Core.Presentation
 			get {
 				if(defaultCommandBindingHandler == null && OwnerTypeName != null) {
 	 				defaultCommandBindingHandler = delegate {
-						if(RoutedCommand != null && OwnerTypes != null && IsRegistered) {
+						var routedCommand = RoutedCommand;
+						var ownerTypes = OwnerTypes;
+						var isRegistered = IsRegistered;
+					
+						if(routedCommand != null && ownerTypes != null && isRegistered) {
 							GenerateCommandBindings();
 							
-							foreach(var ownerType in OwnerTypes) {
+							foreach(var ownerType in ownerTypes) {
 								foreach(CommandBinding binding in OldCommandBindings) {
-									CommandManager.RemoveClassCommandBinding(ownerType, binding);
+									SDCommandManager.RemoveClassCommandBinding(ownerType, binding);
 								}
 								
 								foreach(CommandBinding binding in ActiveCommandBindings) {
@@ -368,7 +394,7 @@ namespace ICSharpCode.Core.Presentation
 					AddIn.LoadRuntimeAssemblies();
 					
 					var command = (ICommand)AddIn.CreateObject(CommandTypeName);
-					CommandManager.LoadCommand(CommandTypeName, command);
+					SDCommandManager.LoadCommand(CommandTypeName, command);
 				}
 				
 				if(CommandInstance != null) {

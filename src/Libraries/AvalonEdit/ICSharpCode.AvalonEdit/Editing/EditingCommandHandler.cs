@@ -36,6 +36,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			get; private set;
 		}
 		
+		private static InputBindingCategory classWideInputBindingCategory;
+		
 		/// <summary>
 		/// Creates a new <see cref="TextAreaInputHandler"/> for the text area.
 		/// </summary>
@@ -62,6 +64,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			inputBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
 			inputBinding.DefaultGestures.AddRange((InputGestureCollection)new InputGestureCollectionConverter().ConvertFrom(gesturesString));
 			inputBinding.Groups.Add(ClassWideBindingGroup);
+			inputBinding.Categories.Add(classWideInputBindingCategory);
 			inputBinding.Categories.AddRange(SDCommandManager.GetInputBindingCategoryCollection("/MainMenu/Edit", true));
 			inputBinding.RoutedCommandName = routedCommandName;
 			SDCommandManager.RegisterInputBinding(inputBinding);
@@ -82,6 +85,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		static EditingCommandHandler()
 		{
 			ClassWideBindingGroup = new BindingGroup();
+			classWideInputBindingCategory = new InputBindingCategory("/EditingCommands", "Editing commands");
 			
 			AddCommandBinding("ApplicationCommands.Delete", CanDelete, OnDelete(ApplicationCommands.NotACommand));
 			AddBinding("EditingCommands.Delete", "Delete", null, OnDelete(EditingCommands.SelectRightByCharacter));

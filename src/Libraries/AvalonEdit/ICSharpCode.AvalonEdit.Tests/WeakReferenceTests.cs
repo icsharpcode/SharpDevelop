@@ -9,6 +9,8 @@ using System;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using NUnit.Framework;
 
 namespace ICSharpCode.AvalonEdit.Tests
@@ -16,6 +18,14 @@ namespace ICSharpCode.AvalonEdit.Tests
 	[TestFixture]
 	public class WeakReferenceTests
 	{
+		[TestFixtureSetUp]
+		public void FixtureSetup()
+		{
+			PropertyService.InitializeServiceForUnitTests();
+			var category = new InputBindingCategory("/MainMenu/Edit", "Edit");
+			CommandManager.RegisterInputBindingCategory(category);
+		}
+		
 		[Test]
 		public void GCCallbackTest()
 		{

@@ -4,6 +4,9 @@ using System.Windows.Input;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
+using System.Reflection;
+using CommandManager = System.Windows.Input.CommandManager;
+using SDCommandManager = ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -22,12 +25,44 @@ namespace ICSharpCode.Core.Presentation
 			DefaultGestures = new ObservableInputGestureCollection();
 			Categories = new InputBindingCategoryCollection();
 			Groups = new BindingGroupCollection();
-			Groups.CollectionChanged += Groups_CollectionChanged;
 		}
+		
+		private BindingGroupCollection _groups;
 		
 		public BindingGroupCollection Groups
 		{
-			get; private set;
+			get {
+				return _groups;
+			}
+			set {
+				if(value == null) {
+					throw new ArgumentException("Groups collection can not be null");
+				}
+
+				var oldValue = _groups;
+				_groups = value;
+				_groups.CollectionChanged += Groups_CollectionChanged;	
+				
+				if(oldValue != null) {
+					var oldItemsList = new System.Collections.ArrayList();
+					foreach(var oldItem in oldValue) {
+						oldItemsList.Add(oldItem);
+					}
+					
+					var newItemsList = new System.Collections.ArrayList();
+					foreach(var newItem in value) {
+						newItemsList.Add(newItem);
+					}
+					
+					var args = new NotifyCollectionChangedEventArgs(
+						NotifyCollectionChangedAction.Replace,
+						oldItemsList,
+						newItemsList, 
+						0);
+					
+					Groups_CollectionChanged(this, args);
+				}
+			}
 		}
 		
 		public string _ownerInstanceName;
@@ -66,7 +101,7 @@ namespace ICSharpCode.Core.Presentation
 		public ICollection<UIElement> OwnerInstances {
 			get {
 				if(_ownerInstanceName != null) {
-					return CommandManager.GetNamedUIElementCollection(_ownerInstanceName);
+					return SDCommandManager.GetNamedUIElementCollection(_ownerInstanceName);
 				}
 				
 				return null;
@@ -109,7 +144,7 @@ namespace ICSharpCode.Core.Presentation
 		public ICollection<Type> OwnerTypes { 
 			get {
 				if(_ownerTypeName != null) {
-					return CommandManager.GetNamedUITypeCollection(_ownerTypeName);
+					return SDCommandManager.GetNamedUITypeCollection(_ownerTypeName);
 				}
 				
 				return null;
@@ -203,15 +238,27 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public RoutedUICommand RoutedCommand { 
 			get {
-				return CommandManager.GetRoutedUICommand(RoutedCommandName);
+				return SDCommandManager.GetRoutedUICommand(RoutedCommandName);
 			}
 		}
+		
+		InputBindingCategoryCollection _categories;
 		
 		/// <summary>
 		/// List of categories associated with input binding 
 		/// </summary>
 		public InputBindingCategoryCollection Categories {
-			get; private set;
+
+			get {
+				return _categories;
+			}
+			set {
+				if(value == null) {
+					throw new ArgumentException("Categories collection can not be null");
+				}
+				
+				_categories = value;
+			}
 		}
 			
 		
@@ -263,7 +310,7 @@ namespace ICSharpCode.Core.Presentation
 			template.OwnerTypeName = OwnerTypeName;
 			template.RoutedCommandName = RoutedCommandName;
 			
-			CommandManager.InvokeInputBindingUpdateHandlers(template);
+			SDCommandManager.InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, template);
 		}
 		
 		/// <summary>
@@ -282,6 +329,26 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		public void RemoveActiveInputBindings()
+		{
+			if(_ownerTypeName != null) {
+				if(OwnerTypes != null) {
+					foreach(var ownerType in OwnerTypes) {
+						foreach(InputBinding binding in ActiveInputBindings) {
+							SDCommandManager.RemoveClassInputBinding(ownerType, binding);
+						}
+					}
+				}
+			} else if(_ownerInstanceName != null) {
+				if(OwnerInstances != null) {
+					foreach(var ownerInstance in OwnerInstances) {
+						foreach(InputBinding binding in ActiveInputBindings) {
+							ownerInstance.InputBindings.Remove(binding);
+						}
+					}
+				}
+			}
+		}
 		
 		private BindingsUpdatedHandler defaultInputBindingHandler;
 		
@@ -298,14 +365,21 @@ namespace ICSharpCode.Core.Presentation
 							
 							foreach(var ownerType in OwnerTypes) {
 								foreach(InputBinding binding in OldInputBindings) {
-									CommandManager.RemoveClassInputBinding(ownerType, binding);
+									SDCommandManager.RemoveClassInputBinding(ownerType, binding);
 								}
 								
 								foreach(InputBinding binding in ActiveInputBindings) {
 									System.Windows.Input.CommandManager.RegisterClassInputBinding(ownerType, binding);
 								}
 								
-								CommandManager.OrderClassInputBindingsByChords(ownerType);
+								var fieldInfo = typeof(System.Windows.Input.CommandManager).GetField("_classInputBindings", BindingFlags.Static | BindingFlags.NonPublic);
+								var fieldData = (HybridDictionary)fieldInfo.GetValue(null);
+								var classInputBindings = (InputBindingCollection)fieldData[ownerType];
+							
+								// Sorting input bindings. This may be slow
+								if(classInputBindings != null) {
+									classInputBindings.SortByChords();
+								}
 							}
 							
 							if(ActiveInputBindingsChanged != null) {
@@ -325,7 +399,10 @@ namespace ICSharpCode.Core.Presentation
 								
 								ownerInstance.InputBindings.AddRange(ActiveInputBindings);
 								
-								CommandManager.OrderInstanceInputBindingsByChords(ownerInstance);
+								// Sorting input bindings. This may be slow
+								if(ownerInstance.InputBindings != null) {
+									ownerInstance.InputBindings.SortByChords();
+								}
 							}
 						}
 					};

@@ -57,6 +57,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingInfoTemplateTests.cs" />
+    <Compile Include="CommandManagerTests.cs" />
     <Compile Include="InputGestureTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserDefinedGestureProfileTests.cs" />

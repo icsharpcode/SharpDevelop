@@ -41,25 +41,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		static TextAreaDefaultInputHandler()
 		{
 			ClassWideBindingGroup = new BindingGroup();	
+			
 			AddCommandBinding("ApplicationCommands.Undo", CanExecuteUndo, ExecuteUndo);
 			AddCommandBinding("ApplicationCommands.Redo", CanExecuteRedo, ExecuteRedo);
-		}
-		
-		static void AddBinding(string routedCommandName, string gesturesString, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)
-		{
-			AddCommandBinding(routedCommandName, canExecuteHandler, executedHandler);
-			AddInputBinding(routedCommandName, gesturesString);
-		}
-		
-		static void AddInputBinding(string routedCommandName, string gesturesString)
-		{
-			var inputBinding = new InputBindingInfo();
-			inputBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
-			inputBinding.DefaultGestures.AddRange((InputGestureCollection)new InputGestureCollectionConverter().ConvertFrom(gesturesString));
-			inputBinding.Groups.Add(ClassWideBindingGroup);
-			inputBinding.Categories.AddRange(SDCommandManager.GetInputBindingCategoryCollection("/MainMenu/Edit", true));
-			inputBinding.RoutedCommandName = routedCommandName;
-			SDCommandManager.RegisterInputBinding(inputBinding);
 		}
 		
 		static void AddCommandBinding(string routedCommandName, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)

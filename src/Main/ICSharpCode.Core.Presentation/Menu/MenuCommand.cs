@@ -136,7 +136,14 @@ namespace ICSharpCode.Core.Presentation
 			BindingsUpdatedHandler gesturesUpdateHandler = delegate {
 				var gesturesTemplate = new BindingInfoTemplate();
 				gesturesTemplate.RoutedCommandName = routedCommandName;
-				var updatedGestures = CommandManager.FindInputGestures(gesturesTemplate);
+				
+				if(codon.Properties.Contains("ownerinstance")) {
+					gesturesTemplate.OwnerInstanceName = codon.Properties["ownerinstance"];
+				} else if(codon.Properties.Contains("ownertype")) {
+					gesturesTemplate.OwnerTypeName = codon.Properties["ownertype"];
+				}
+				
+				var updatedGestures = CommandManager.FindInputGestures(BindingInfoMatchType.SuperSet, gesturesTemplate);
 				
 				this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 			};

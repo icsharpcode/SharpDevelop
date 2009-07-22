@@ -99,8 +99,8 @@ namespace ICSharpCode.Core.Presentation
         		bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerTypeName = typeName };
         	}
         	
-        	CommandManager.InvokeCommandBindingUpdateHandlers(bindingInfoTemplates);
-        	CommandManager.InvokeInputBindingUpdateHandlers(bindingInfoTemplates);
+        	CommandManager.InvokeCommandBindingUpdateHandlers(BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, bindingInfoTemplates);
+        	CommandManager.InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, bindingInfoTemplates);
         }
         
         public List<BindingGroup> NestedGroups
