@@ -65,7 +65,9 @@ namespace Debugger.MetaData
 		/// <summary> The type of the field</summary>
 		public DebugType Type {
 			get {
-				return DebugType.Create(this.Module, fieldProps.SigBlob.GetData(), this.DeclaringType);
+				SignatureReader sigReader = new SignatureReader(fieldProps.SigBlob.GetData());
+				FieldSig fieldSig = sigReader.GetFieldSig(0);
+				return DebugType.Create(this.Module, fieldSig.Type, this.DeclaringType);
 			}
 		}
 		

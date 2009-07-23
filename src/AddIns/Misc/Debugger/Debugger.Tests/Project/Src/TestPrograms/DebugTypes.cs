@@ -12,9 +12,24 @@ namespace Debugger.Tests.TestPrograms
 {
 	public class DebugTypes
 	{
-		public class MyClass
+		public unsafe class MyClass
 		{
+			public delegate int Add(byte b1, byte b2);
 			
+			public int i;
+			public bool b;
+			public char c;
+			public IntPtr intPtr;
+			public int* pInt;
+			public int[] intArray;
+			public int[,] intMultiArray;
+			public List<int> intList;
+			public List<int>[] intListArray;
+			public Point point;
+			public MyClass myClass;
+			public Add fnPtr;
+			
+			public T Foo<T>(ref T tRef, T[] tArray) { return tRef; }
 		}
 		
 		public interface MyInterface<K, V, T>
@@ -40,6 +55,7 @@ namespace Debugger.Tests.TestPrograms
 			object nullObject = null;
 			string nullString = null;
 			object obj = new Object();
+			MyClass myClass = new MyClass();
 			int loc = 42;
 			int locByRef = 43;
 			int* locPtr = &loc;
@@ -90,6 +106,7 @@ namespace Debugger.Tests {
 				"DebugType.ElementType"
 			);
 			StartTest("DebugTypes.cs");
+			ObjectDump("MyClassMemberts", process.SelectedStackFrame.GetLocalVariableValue("myClass").Type.GetMembers());
 			ObjectDump("LocalVariables", process.SelectedStackFrame.GetLocalVariableValues());
 			process.Continue();
 			ObjectDump("Arguments", process.SelectedStackFrame.GetArgumentValues());
@@ -107,10 +124,143 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugTypes.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugTypes.cs:59,4-59,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugTypes.cs:75,4-75,40</DebuggingPaused>
+    <MyClassMemberts
+      Capacity="16"
+      Count="14">
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.i"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="i"
+          Type="System.Int32" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.b"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="b"
+          Type="System.Boolean" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.c"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="c"
+          Type="System.Char" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.intPtr"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="intPtr"
+          Type="System.IntPtr" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.pInt"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="pInt"
+          Type="{Exception: Ptr}" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.intArray"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="intArray"
+          Type="{Exception: SzArray}" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.intMultiArray"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="intMultiArray"
+          Type="{Exception: Array}" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.intList"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="intList"
+          Type="System.Collections.Generic.List&lt;System.Int32&gt;" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.intListArray"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="intListArray"
+          Type="{Exception: SzArray}" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.point"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="point"
+          Type="Point" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.myClass"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="myClass"
+          Type="MyClass" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.fnPtr"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="fnPtr"
+          Type="Add" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.Foo"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="Foo"
+          ParameterCount="2"
+          ParameterTypes="{Exception: SzArray}"
+          ReturnType="System.Object" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="MyClass"
+          FullName="MyClass..ctor"
+          IsPublic="True"
+          IsSpecialName="True"
+          Module="DebugTypes.exe"
+          Name=".ctor"
+          StepOver="True" />
+      </Item>
+    </MyClassMemberts>
     <LocalVariables
       Capacity="32"
-      Count="19">
+      Count="20">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is null}"
@@ -194,6 +344,28 @@ namespace Debugger.Tests {
               Kind="Class"
               Module="mscorlib.dll"
               Name="Object">
+              <ElementType>null</ElementType>
+            </DebugType>
+          </Type>
+        </Value>
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="{MyClass}"
+          Expression="myClass"
+          IsReference="True"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="MyClass">
+          <Type>
+            <DebugType
+              BaseType="System.Object"
+              FullName="MyClass"
+              Kind="Class"
+              Module="DebugTypes.exe"
+              Name="MyClass">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
@@ -603,7 +775,7 @@ namespace Debugger.Tests {
         </Value>
       </Item>
     </LocalVariables>
-    <DebuggingPaused>Break DebugTypes.cs:76,4-76,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugTypes.cs:92,4-92,40</DebuggingPaused>
     <Arguments
       Capacity="16"
       Count="15">

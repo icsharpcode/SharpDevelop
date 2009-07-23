@@ -346,21 +346,14 @@ namespace Debugger.MetaData
 			if (tokenType == CorTokenType.TypeDef || tokenType == CorTokenType.TypeRef) {
 				return Create(module.AppDomain, GetCorClass(module, token));
 			} else if (tokenType == CorTokenType.TypeSpec) {
-				Blob typeSpecBlob = module.MetaData.GetTypeSpecFromToken(token);
-				return Create(module, typeSpecBlob.GetData(), declaringType);
+				byte[] typeSpecBlob = module.MetaData.GetTypeSpecFromToken(token).GetData();
+				SignatureReader sigReader = new SignatureReader(typeSpecBlob);
+				int start;
+				SigType sigType = sigReader.ReadType(typeSpecBlob, 0, out start);
+				return Create(module, sigType, declaringType);
 			} else {
 				throw new DebuggerException("Unknown token type");
 			}
-		}
-		
-		/// <param name="signatureContext">Type definition to use to resolve numbered generic references</param>
-		public static DebugType Create(Module module, byte[] sig, DebugType declaringType)
-		{
-			SignatureReader sigReader = new SignatureReader(sig);
-			int start;
-			SigType sigType = sigReader.ReadType(sig, 0, out start);
-			
-			return Create(module, sigType, declaringType);
 		}
 		
 		internal static DebugType Create(Module module, SigType sigType, DebugType declaringType)

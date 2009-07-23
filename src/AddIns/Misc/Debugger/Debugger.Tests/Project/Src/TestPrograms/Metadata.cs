@@ -87,7 +87,7 @@ namespace Debugger.Tests {
           IsPrivate="True"
           Module="Metadata.exe"
           Name="privateField"
-          Type="System.Int16" />
+          Type="System.Int32" />
       </Item>
       <Item>
         <FieldInfo
@@ -96,7 +96,7 @@ namespace Debugger.Tests {
           IsPublic="True"
           Module="Metadata.exe"
           Name="publicField"
-          Type="System.Int16" />
+          Type="System.Int32" />
       </Item>
       <Item>
         <FieldInfo
@@ -105,7 +105,7 @@ namespace Debugger.Tests {
           IsProtected="True"
           Module="Metadata.exe"
           Name="protectedField"
-          Type="System.Int16" />
+          Type="System.Int32" />
       </Item>
       <Item>
         <FieldInfo
@@ -114,7 +114,7 @@ namespace Debugger.Tests {
           IsInternal="True"
           Module="Metadata.exe"
           Name="internalField"
-          Type="System.Int16" />
+          Type="System.Int32" />
       </Item>
       <Item>
         <FieldInfo
@@ -124,7 +124,7 @@ namespace Debugger.Tests {
           IsStatic="True"
           Module="Metadata.exe"
           Name="staticField"
-          Type="System.Int16" />
+          Type="System.Int32" />
       </Item>
       <Item>
         <MethodInfo

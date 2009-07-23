@@ -240,9 +240,9 @@ namespace Mono.Cecil.Signatures {
 
 		public override void VisitFieldSig (FieldSig field)
 		{
-			int start;
-			Utilities.ReadCompressedInteger (m_blobData, (int) field.BlobIndex, out start);
-			field.CallingConvention = m_blobData [start];
+			int start = 0;
+			//Utilities.ReadCompressedInteger (m_blobData, (int) field.BlobIndex, out start);
+			//field.CallingConvention = m_blobData [start];
 			field.Field = (field.CallingConvention & 0x6) != 0;
 			field.CustomMods = ReadCustomMods (m_blobData, start + 1, out start);
 			field.Type = ReadType (m_blobData, start, out start);
