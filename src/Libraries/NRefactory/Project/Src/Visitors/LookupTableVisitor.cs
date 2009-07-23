@@ -296,7 +296,7 @@ namespace ICSharpCode.NRefactory.Visitors
 						if (catchClause.TypeReference != null && catchClause.VariableName != null) {
 							AddVariable(catchClause.TypeReference,
 							            catchClause.VariableName,
-							            catchClause.StatementBlock.StartLocation,
+							            catchClause.StartLocation,
 							            catchClause.StatementBlock.EndLocation,
 							            false, false, null, null, false);
 						}
