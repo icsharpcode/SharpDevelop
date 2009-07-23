@@ -613,6 +613,11 @@ namespace ICSharpCode.XamlBinding
 			
 			if (type is ConstructedReturnType &&  type.TypeArgumentCount > 0 && c.FullyQualifiedName == "System.Nullable") {
 				ConstructedReturnType rt = type as ConstructedReturnType;
+				string nullExtensionName = "Null";
+				string prefix = Utils.GetXamlNamespacePrefix(context);
+				if (!string.IsNullOrEmpty(prefix))
+					nullExtensionName = prefix + ":" + nullExtensionName;
+				yield return new SpecialCompletionItem("{" + nullExtensionName + "}");
 				c = rt.TypeArguments.First().GetUnderlyingClass();
 				if (c == null)
 					yield break;

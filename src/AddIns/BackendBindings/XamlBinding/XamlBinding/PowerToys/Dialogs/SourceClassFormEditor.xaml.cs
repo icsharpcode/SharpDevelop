@@ -48,7 +48,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			}
 		}
 		
-		GridSplitter CreateGridSplitter(int column)
+		static GridSplitter CreateGridSplitter(int column)
 		{
 			GridSplitter splitter = new GridSplitter() { Width = 5, HorizontalAlignment = HorizontalAlignment.Left };
 			splitter.SetValue(Grid.ColumnProperty, column);

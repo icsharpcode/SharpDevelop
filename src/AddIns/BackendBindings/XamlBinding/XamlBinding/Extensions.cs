@@ -33,6 +33,34 @@ namespace ICSharpCode.XamlBinding
 			return element;
 		}
 		
+		public static XElement MoveBefore(this XElement element, XElement target)
+		{
+			if (element == null)
+				throw new ArgumentNullException("element");
+			
+			if (element.Parent != null)
+				element.Remove();
+			
+			if (target.Parent != null)
+				target.AddBeforeSelf(element);
+			
+			return element;
+		}
+		
+		public static XElement MoveAfter(this XElement element, XElement target)
+		{
+			if (element == null)
+				throw new ArgumentNullException("element");
+			
+			if (element.Parent != null)
+				element.Remove();
+			
+			if (target.Parent != null)
+				target.AddAfterSelf(element);
+			
+			return element;
+		}
+		
 		public static void AddRange(this UIElementCollection coll, IEnumerable<UIElement> items)
 		{
 			foreach (var item in items)

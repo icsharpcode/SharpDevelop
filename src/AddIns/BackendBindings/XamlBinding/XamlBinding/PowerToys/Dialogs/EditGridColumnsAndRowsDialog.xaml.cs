@@ -5,10 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -19,6 +18,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Xml.Linq;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 {
@@ -95,7 +97,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			RebuildGrid();
 		}
 		
-		MenuItem CreateItem(string header, Action<StackPanel> clickAction, StackPanel senderItem)
+		static MenuItem CreateItem(string header, Action<StackPanel> clickAction, StackPanel senderItem)
 		{
 			MenuItem item = new MenuItem();
 			
@@ -626,30 +628,104 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			this.InvalidateVisual();
 		}
+		
+		class DragDropMarkerAdorner : Adorner
+		{
+			DragDropMarkerAdorner(UIElement adornedElement)
+				: base(adornedElement)
+			{
+			}
+			
+			Point start, end;
+			
+			protected override void OnRender(DrawingContext drawingContext)
+			{
+				drawingContext.DrawLine(new Pen(Brushes.Black, 2), start, end);
+				
+				base.OnRender(drawingContext);
+			}
+			
+			public static DragDropMarkerAdorner CreateAdorner(StackPanel panel, UIElement aboveElement)
+			{
+				DragDropMarkerAdorner adorner = new DragDropMarkerAdorner(panel);
+				
+				if (aboveElement == null) {
+					aboveElement = panel.Children.Count > 0 ? panel.Children[0] : null;
+					if (aboveElement == null) {
+						adorner.start = new Point(5, 5);
+						adorner.end = new Point(panel.Width, 5);
+					} else {
+						adorner.start = new Point(5, 5);
+						adorner.end = new Point(panel.Width, 5);
+					}
+				} else {
+					adorner.start = new Point(5, 5);
+					adorner.end = new Point(panel.Width, 5);
+				}
+				
+				AdornerLayer.GetAdornerLayer(panel).Add(adorner);
+				
+				panel.InvalidateVisual();
+				
+				return adorner;
+			}
+		}
 
 		void DisplayRectDragOver(object sender, DragEventArgs e)
 		{
 			StackPanel target = sender as StackPanel;
 			
-//			if (target != null) {
-//				foreach (UIElement element in target.Children) {
-//					element.
-//				}
-//			}
+			if (target != null) {
+				Point p = e.GetPosition(target);
+				UIElement element = target.InputHitTest(p) as UIElement;
+				
+				DragDropMarkerAdorner.CreateAdorner(target, element);
+
+				e.Effects = DragDropEffects.Move;
+				e.Handled = true;
+			}
 		}
 
 		void DisplayRectDrop(object sender, DragEventArgs e)
 		{
-			XElement data = e.Data.GetData(typeof(XElement)) as XElement;
-			if (data != null) {
-				UpdateUndoRedoState();
-				
-				StackPanel target = sender as StackPanel;
-				int x = (int)target.GetValue(Grid.ColumnProperty);
-				int y = (int)target.GetValue(Grid.RowProperty);
-				
-				data.SetAttributeValue(XName.Get("Grid.Column"), x);
-				data.SetAttributeValue(XName.Get("Grid.Row"), y);
+			try {
+				XElement data = e.Data.GetData(typeof(XElement)) as XElement;
+				if (data != null) {
+					UpdateUndoRedoState();
+					
+					StackPanel target = sender as StackPanel;
+					int x = (int)target.GetValue(Grid.ColumnProperty);
+					int y = (int)target.GetValue(Grid.RowProperty);
+					
+					data.SetAttributeValue(XName.Get("Grid.Column"), x);
+					data.SetAttributeValue(XName.Get("Grid.Row"), y);
+					
+					Point p = e.GetPosition(target);
+					TextBlock block = target.InputHitTest(p) as TextBlock;
+										
+					if (block != null) {
+						Debug.Assert(block.Tag != null && block.Tag is XElement);
+						XElement element = block.Tag as XElement;
+						data.MoveBefore(element);
+					} else {
+						XElement parent = gridTree;
+						XElement element = parent.Elements().LastOrDefault();
+						if (data.Parent != null)
+							data.Remove();
+						if (element == null)
+							parent.Add(data);
+						else {
+							if (element.Parent == null)
+								parent.Add(data);
+							else
+								element.AddAfterSelf(data);
+						}
+					}
+					
+					RebuildGrid();
+				}
+			} catch (InvalidOperationException ex) {
+				Core.LoggingService.Error(ex);
 			}
 		}
 		
@@ -679,6 +755,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				};
 				
 				label.MouseLeftButtonDown += new MouseButtonEventHandler(LabelMouseLeftButtonDown);
+
+                Debug.Assert(label.Tag != null);
 				
 				yield return label;
 			}
@@ -687,8 +765,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		void LabelMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			DragDropEffects allowedEffects = DragDropEffects.Move;
-			if (DragDrop.DoDragDrop(sender as Label, (sender as Label).Tag, allowedEffects) != DragDropEffects.None)
-				RebuildGrid();
+			DragDrop.DoDragDrop(sender as Label, (sender as Label).Tag, allowedEffects);
 		}
 		
 		void UpdateUndoRedoState()
@@ -782,7 +859,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		}
 		
 		void BtnDeleteItemClick(object sender, RoutedEventArgs e)
-		{
+		{			
 			Button source = sender as Button;
 			XElement item = source.Tag as XElement;
 			if (item != null) {

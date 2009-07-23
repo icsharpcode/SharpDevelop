@@ -67,7 +67,9 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="MarkupExtensionInfo.cs" />
-    <Compile Include="MarkupExtensionParser.cs" />
+    <Compile Include="MarkupExtensionParser.cs">
+      <DependentUpon>MarkupExtensionTokenizer.cs</DependentUpon>
+    </Compile>
     <Compile Include="CompletionDataHelper.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="MarkupExtensionTokenizer.cs" />

@@ -52,7 +52,7 @@ namespace ICSharpCode.XamlBinding.PowerToys
 			}
 		}
 		
-		XmlWriterSettings CreateSettings()
+		static XmlWriterSettings CreateSettings()
 		{
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;

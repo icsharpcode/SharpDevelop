@@ -32,8 +32,9 @@
 			</ControlTemplate.Triggers>
 			<Border x:Name="BorderControl" Background="Gray" CornerRadius="5" Margin="3" Padding="5">
 				<DockPanel>
-					<Button x:Name="btnDeleteItem" Content="r" Tag="{TemplateBinding Tag}" FontFamily="Webdings" FontSize="10" FontWeight="Bold" DockPanel.Dock="Right" Click="BtnDeleteItemClick" />
-					<TextBlock Text="{TemplateBinding Content}" />
+					<Button x:Name="btnDeleteItem" Content="r" Tag="{TemplateBinding Tag}" FontFamily="Webdings"
+						FontSize="10" FontWeight="Bold" DockPanel.Dock="Right" Click="BtnDeleteItemClick" />
+					<TextBlock Tag="{TemplateBinding Tag}" Text="{TemplateBinding Content}" />
 				</DockPanel>
 			</Border>
 		</ControlTemplate>

@@ -70,7 +70,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			return false;
 		}
 		
-		IMember Resolve(XAttribute attribute, ITextEditor editor)
+		static IMember Resolve(XAttribute attribute, ITextEditor editor)
 		{
 			XamlContext context = CompletionDataHelper.ResolveContext(editor.Document.Text, editor.FileName,
 			                                                          attribute.GetLineNumber(), attribute.GetLinePosition());
@@ -84,7 +84,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			return null;
 		}
 		
-		IMember Resolve(XElement element, ITextEditor editor)
+		static IMember Resolve(XElement element, ITextEditor editor)
 		{
 			XamlContext context = CompletionDataHelper.ResolveContext(editor.Document.Text, editor.FileName,
 			                                                          element.GetLineNumber(), element.GetLinePosition());
@@ -124,7 +124,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			return style;
 		}
 		
-		XElement CreateEventSetter(string eventName, string handler)
+		static XElement CreateEventSetter(string eventName, string handler)
 		{
 			XElement eventSetter = new XElement(XName.Get("EventSetter", CompletionDataHelper.WpfXamlNamespace));
 			eventSetter.SetAttributeValue(XName.Get("Event"), eventName);
@@ -132,7 +132,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			return eventSetter;
 		}
 		
-		XElement CreateSetter(string property, string value)
+		static XElement CreateSetter(string property, string value)
 		{
 			XElement setter = new XElement(XName.Get("Setter", CompletionDataHelper.WpfXamlNamespace));
 			setter.SetAttributeValue(XName.Get("Property"), property);
@@ -140,7 +140,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			return setter;
 		}
 		
-		XElement CreateExtendedEventSetter(string eventName, string handler)
+		static XElement CreateExtendedEventSetter(string eventName, string handler)
 		{
 			XElement eventSetter = new XElement(XName.Get("EventSetter", CompletionDataHelper.WpfXamlNamespace));
 			eventSetter.SetAttributeValue(XName.Get("Event"), eventName);
@@ -148,7 +148,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			return eventSetter;
 		}
 		
-		XElement CreateExtendedSetter(string property, string value)
+		static XElement CreateExtendedSetter(string property, string value)
 		{
 			XElement setter = new XElement(XName.Get("Setter", CompletionDataHelper.WpfXamlNamespace));
 			setter.SetAttributeValue(XName.Get("Property"), property);

@@ -74,11 +74,15 @@ namespace ICSharpCode.XamlBinding
 					if (context.AttributeName != null
 					    && XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)
 					    && !(context.RawAttributeValue.StartsWith("{}") && context.RawAttributeValue.Length != 2)) {
-						editor.Document.Insert(editor.Caret.Offset, "}");
+						
+						if (editor.SelectionLength != 0)
+							editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
+						
+						editor.Document.Insert(editor.Caret.Offset, "{}");
 						editor.Caret.Offset--;
 						
-						DoMarkupExtensionCompletion(CompletionDataHelper.ResolveCompletionContext(editor, '{'));
-						return CodeCompletionKeyPressResult.Completed;
+						this.CtrlSpace(editor);
+						return CodeCompletionKeyPressResult.EatKey;
 					}
 					break;
 				case '.':

@@ -10,6 +10,8 @@ using System;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using NUnit.Framework;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace ICSharpCode.XamlBinding.Tests
 {
@@ -150,15 +152,14 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
-		public void InValueCompletionTest1()
+		public void MoveBeforeTest1()
 		{
-			
+			string xml = "<Test value=\"A\"><Item value=\"B\" /><Item value=\"C\" /></Test>";
+			XElement parent = XElement.Parse(xml);
+			XElement item = parent.Elements().ElementAt(0);
+			XElement itemToMove = parent.Elements().ElementAt(1);
+			itemToMove.MoveBefore(item);
+			Assert.AreEqual(itemToMove, parent.Elements().First());
 		}
 	}
-	
-//	public class MockTextEditor : ITextEditor
-//	{
-//		
-//	}
 }
