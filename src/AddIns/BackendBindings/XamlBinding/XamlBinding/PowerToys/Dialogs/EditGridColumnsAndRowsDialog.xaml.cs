@@ -577,6 +577,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void RebuildGrid()
 		{
+			this.marker = null;
 			this.gridDisplay.Children.Clear();
 			this.gridDisplay.RowDefinitions.Clear();
 			this.gridDisplay.ColumnDefinitions.Clear();
@@ -636,49 +637,70 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			protected override void OnRender(DrawingContext drawingContext)
 			{
-				drawingContext.DrawLine(new Pen(Brushes.Black, 2), start, end);
-				
 				base.OnRender(drawingContext);
+				
+				drawingContext.DrawLine(new Pen(Brushes.Black, 1), start, end);
 			}
 			
-			public static DragDropMarkerAdorner CreateAdorner(StackPanel panel, UIElement aboveElement)
+			protected override Size MeasureOverride(Size constraint)
 			{
-				DragDropMarkerAdorner adorner = new DragDropMarkerAdorner(panel);
+				return new Size(1, 1); // dummy values
+			}
+			
+			protected override Size ArrangeOverride(Size finalSize)
+			{
+				return new Size(1, 1); // dummy values
+			}
+			
+			public static DragDropMarkerAdorner CreateAdorner(StackPanel panel, FrameworkElement aboveElement)
+			{
+				DragDropMarkerAdorner adorner;
 				
-				if (aboveElement == null) {
-					aboveElement = panel.Children.Count > 0 ? panel.Children[0] : null;
-					if (aboveElement == null) {
-						adorner.start = new Point(5, 5);
-						adorner.end = new Point(panel.Width, 5);
-					} else {
-						adorner.start = new Point(5, 5);
-						adorner.end = new Point(panel.Width, 5);
-					}
+				if (aboveElement is StackPanel) {
+					aboveElement = (panel.Children.Count > 0 ? panel.Children[panel.Children.Count - 1] : panel) as FrameworkElement;
+
+					Core.LoggingService.Info("aboveElement second");
+					adorner = new DragDropMarkerAdorner(aboveElement);
+					adorner.start = new Point(5, 5 + aboveElement.DesiredSize.Height);
+					adorner.end = new Point(panel.ActualWidth - 10, 5 + aboveElement.DesiredSize.Height);
 				} else {
-					adorner.start = new Point(5, 5);
-					adorner.end = new Point(panel.Width, 5);
+					aboveElement = aboveElement.TemplatedParent as FrameworkElement;
+					Core.LoggingService.Info("aboveElement normal: " + aboveElement);
+					adorner = new DragDropMarkerAdorner(aboveElement);
+					adorner.start = new Point(5, 0);
+					adorner.end = new Point(panel.ActualWidth - 10, 0);
 				}
 				
-				AdornerLayer.GetAdornerLayer(panel).Add(adorner);
-				
-				panel.InvalidateVisual();
+				AdornerLayer.GetAdornerLayer(aboveElement).Add(adorner);
 				
 				return adorner;
 			}
 		}
+		
+		DragDropMarkerAdorner marker = null;
 
 		void DisplayRectDragOver(object sender, DragEventArgs e)
 		{
 			StackPanel target = sender as StackPanel;
 			
+			if (marker != null) {
+				AdornerLayer.GetAdornerLayer(marker.AdornedElement).Remove(marker);
+				marker = null;
+			}
+			
 			if (target != null) {
 				Point p = e.GetPosition(target);
-				UIElement element = target.InputHitTest(p) as UIElement;
+				FrameworkElement element = target.InputHitTest(p) as FrameworkElement;
 				
-				DragDropMarkerAdorner.CreateAdorner(target, element);
+				if (element is StackPanel || element.TemplatedParent is Label) {
+					marker = DragDropMarkerAdorner.CreateAdorner(target, element);
 
-				e.Effects = DragDropEffects.Move;
-				e.Handled = true;
+					e.Effects = DragDropEffects.Move;
+					e.Handled = true;
+				} else {
+					e.Effects = DragDropEffects.None;
+					e.Handled =  true;
+				}
 			}
 		}
 
@@ -700,7 +722,6 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					TextBlock block = target.InputHitTest(p) as TextBlock;
 					
 					if (block != null) {
-						Debug.Assert(block.Tag != null && block.Tag is XElement);
 						XElement element = block.Tag as XElement;
 						data.MoveBefore(element);
 					} else {
@@ -859,7 +880,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void BtnDeleteItemClick(object sender, RoutedEventArgs e)
 		{
-			Button source = sender as Button;
+			Button source = e.OriginalSource as Button;
 			XElement item = source.Tag as XElement;
 			if (item != null) {
 				UpdateUndoRedoState();

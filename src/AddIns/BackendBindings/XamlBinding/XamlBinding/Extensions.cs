@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -38,11 +39,13 @@ namespace ICSharpCode.XamlBinding
 			if (element == null)
 				throw new ArgumentNullException("element");
 			
-			if (element.Parent != null)
-				element.Remove();
-			
-			if (target.Parent != null)
-				target.AddBeforeSelf(element);
+			if (element != target) {
+				if (element.Parent != null)
+					element.Remove();
+				
+				if (target.Parent != null)
+					target.AddBeforeSelf(element);
+			}
 			
 			return element;
 		}
@@ -52,11 +55,13 @@ namespace ICSharpCode.XamlBinding
 			if (element == null)
 				throw new ArgumentNullException("element");
 			
-			if (element.Parent != null)
-				element.Remove();
-			
-			if (target.Parent != null)
-				target.AddAfterSelf(element);
+			if (element != target) {
+				if (element.Parent != null)
+					element.Remove();
+				
+				if (target.Parent != null)
+					target.AddAfterSelf(element);
+			}
 			
 			return element;
 		}
