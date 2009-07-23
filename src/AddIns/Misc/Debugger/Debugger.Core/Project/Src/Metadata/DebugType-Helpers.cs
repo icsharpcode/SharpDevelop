@@ -297,23 +297,23 @@ namespace Debugger.MetaData
 		
 		#endregion
 		
-		private bool primitiveTypeCached = false;
-		private System.Type primitiveTypeCache;
+		private bool primitiveTypeCached;
+		private System.Type primitiveType;
 		
 		/// <summary> Returns simple managed type coresponding to the primitive type. </summary>
 		[Tests.Ignore]
 		public System.Type PrimitiveType {
 			get {
-				if (!this.primitiveTypeCached) {
-					this.primitiveTypeCache = getPrimitiveType();
-					this.primitiveTypeCached = true;
+				if (!primitiveTypeCached) {
+					primitiveTypeCached = true;
+					primitiveType = GetPrimitiveType();
 				}
-				return this.primitiveTypeCache;
+				return primitiveType;
 			}
 		}
 		
 		/// <summary> Returns simple managed type coresponding to the primitive type. </summary>
-		private System.Type getPrimitiveType()
+		private System.Type GetPrimitiveType()
 		{
 			if (corElementType == CorElementType.VALUETYPE) {
 				CorElementType corType;

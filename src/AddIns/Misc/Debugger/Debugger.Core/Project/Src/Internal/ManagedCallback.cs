@@ -367,7 +367,7 @@ namespace Debugger
 			// and we continue from this callback anyway
 			EnterCallback(PausedReason.Other, "CreateThread " + pThread.ID, pAppDomain);
 			
-			process.Threads.Add(new Thread(process.AppDomains[pAppDomain], pThread));
+			process.Threads.Add(new Thread(process, pThread));
 			
 			ExitCallback();
 		}

@@ -5,13 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-using Debugger.MetaData;
 using Debugger.Expressions;
+using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
+using Debugger.Wrappers.MetaData;
 
 namespace Debugger
 {
@@ -22,6 +24,7 @@ namespace Debugger
 	public class StackFrame: DebuggerObject
 	{	
 		Thread thread;
+		AppDomain appDomain;
 		Process process;
 		
 		ICorDebugILFrame  corILFrame;
@@ -35,7 +38,7 @@ namespace Debugger
 		/// <summary> The process in which this stack frame is executed </summary>
 		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
-			get { return thread.AppDomain; }
+			get { return appDomain; }
 		}
 		
 		[Debugger.Tests.Ignore]
@@ -91,16 +94,21 @@ namespace Debugger
 		{
 			this.process = thread.Process;
 			this.thread = thread;
+			this.appDomain = process.AppDomains[corILFrame.Function.Class.Module.Assembly.AppDomain];
 			this.corILFrame = corILFrame;
 			this.corILFramePauseSession = process.PauseSession;
 			this.corFunction = corILFrame.Function;
 			this.chainIndex = chainIndex;
 			this.frameIndex = frameIndex;
 			
+			MetaDataImport metaData = thread.Process.Modules[corFunction.Class.Module].MetaData;
+			ICorDebugType[] genArgs = corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList().ToArray();
+			Array.Resize(ref genArgs, metaData.GetGenericParamCount(corFunction.Class.Token));
+			
 			DebugType debugType = DebugType.Create(
 				this.AppDomain, 
 				corFunction.Class,
-				corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList().ToArray()
+				genArgs
 			);
 			this.methodInfo = debugType.GetMethod(corFunction.Token);
 		}
@@ -266,7 +274,7 @@ namespace Debugger
 		/// </summary>
 		public Value GetThisValue()
 		{
-			return new Value(thread.AppDomain, new ThisReferenceExpression(), GetThisCorValue());
+			return new Value(appDomain, new ThisReferenceExpression(), GetThisCorValue());
 		}
 		
 		ICorDebugValue GetThisCorValue()
@@ -303,7 +311,7 @@ namespace Debugger
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgumentValue(int index)
 		{
-			return new Value(thread.AppDomain, new ParameterIdentifierExpression(this.MethodInfo, index), GetArgumentCorValue(index));
+			return new Value(appDomain, new ParameterIdentifierExpression(this.MethodInfo, index), GetArgumentCorValue(index));
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)

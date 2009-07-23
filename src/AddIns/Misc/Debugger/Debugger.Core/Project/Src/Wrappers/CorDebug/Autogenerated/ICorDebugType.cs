@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -85,7 +85,7 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public override int GetHashCode()
 		{
-			return base.GetHashCode();
+			return wrappedObject.GetHashCode();
 		}
 		
 		public override bool Equals(object o)

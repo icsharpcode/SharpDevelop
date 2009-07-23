@@ -42,6 +42,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\DebuggerTests.cs" />
     <Compile Include="Src\DebuggerTestsBase.cs" />
+    <Compile Include="Src\TestPrograms\AppDomains.cs" />
     <Compile Include="Src\TestPrograms\ArrayValue.cs" />
     <Compile Include="Src\TestPrograms\AstEval.cs" />
     <Compile Include="Src\TestPrograms\Break.cs" />

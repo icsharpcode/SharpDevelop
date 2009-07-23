@@ -17,7 +17,7 @@ namespace Debugger
 {
 	public partial class Thread: DebuggerObject
 	{
-		AppDomain appDomain;
+		// AppDomain for thread can be changing
 		Process   process;
 		
 		uint id;
@@ -36,11 +36,6 @@ namespace Debugger
 
 		public event EventHandler<ThreadEventArgs> NameChanged;
 		public event EventHandler<ThreadEventArgs> Exited;
-		
-		[Debugger.Tests.Ignore]
-		public AppDomain AppDomain {
-			get { return appDomain; }
-		}
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
@@ -88,10 +83,9 @@ namespace Debugger
 			}
 		}
 		
-		internal Thread(AppDomain appDomain, ICorDebugThread corThread)
+		internal Thread(Process process, ICorDebugThread corThread)
 		{
-			this.appDomain = appDomain;
-			this.process = appDomain.Process;
+			this.process = process;
 			this.corThread = corThread;
 			this.id = CorThread.ID;
 		}
@@ -166,7 +160,7 @@ namespace Debugger
 				process.AssertPaused();
 				
 				ICorDebugValue corValue = this.CorThread.Object;
-				return new Value(appDomain, new EmptyExpression(), corValue);
+				return new Value(process.AppDomains[this.CorThread.AppDomain], new EmptyExpression(), corValue);
 			}
 		}
 		

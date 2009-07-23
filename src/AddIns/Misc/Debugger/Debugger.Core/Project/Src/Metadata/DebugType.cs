@@ -45,7 +45,7 @@ namespace Debugger.MetaData
 		List<MemberInfo>   members = new List<MemberInfo>();
 		
 		// Stores all DebugType instances. FullName is the key
-		static Dictionary<string, List<DebugType>> loadedTypes = new Dictionary<string, List<DebugType>>();
+		static Dictionary<ICorDebugType, DebugType> loadedTypes = new Dictionary<ICorDebugType, DebugType>();
 		
 		void AssertClassOrValueType()
 		{
@@ -66,9 +66,7 @@ namespace Debugger.MetaData
 		}
 		
 		internal ICorDebugType CorType {
-			get {
-				return corType;
-			}
+			get { return corType; }
 		}
 		
 		/// <summary>
@@ -102,9 +100,7 @@ namespace Debugger.MetaData
 		/// <summary> Returns a string describing the type including the namespace
 		/// and generic arguments but excluding the assembly name. </summary>
 		public string FullName { 
-			get {
-				return fullName;
-			} 
+			get { return fullName; } 
 		}
 		
 		/// <summary> Returns the number of dimensions of an array </summary>
@@ -118,9 +114,7 @@ namespace Debugger.MetaData
 		
 		/// <summary> Gets a list of all interfaces that this type implements </summary>
 		public List<DebugType> Interfaces {
-			get {
-				return interfaces;
-			}
+			get { return interfaces; }
 		}
 		
 		/// <summary> Return an interface with the given name </summary>
@@ -290,16 +284,6 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		internal uint? AppDomainID {
-			get {
-				if (IsClass || IsValueType) {
-					return this.Module.AppDomainID;
-				} else {
-					return null;
-				}
-			}
-		}
-		
 		/// <summary>
 		/// Gets the type from which this type inherits. 
 		/// <para>
@@ -356,11 +340,6 @@ namespace Debugger.MetaData
 			this.name = GetName(false);
 		}
 		
-		public static DebugType Create(Module module, uint token)
-		{
-			return Create(module, token, null);
-		}
-		
 		public static DebugType Create(Module module, uint token, DebugType declaringType)
 		{
 			CorTokenType tokenType = (CorTokenType)(token & 0xFF000000);
@@ -372,11 +351,6 @@ namespace Debugger.MetaData
 			} else {
 				throw new DebuggerException("Unknown token type");
 			}
-		}
-		
-		public static DebugType Create(Module module, byte[] sig)
-		{
-			return Create(module, sig, null);
 		}
 		
 		/// <param name="signatureContext">Type definition to use to resolve numbered generic references</param>
@@ -478,7 +452,7 @@ namespace Debugger.MetaData
 			throw new DebuggerException("Can not find type " + fullTypeName);
 		}
 		
-		static public DebugType Create(AppDomain appDomain, ICorDebugClass corClass, params ICorDebugType[] typeArguments)
+		static public DebugType Create(AppDomain appDomain, ICorDebugClass corClass, params ICorDebugType[] genericArguments)
 		{
 			MetaDataImport metaData = appDomain.Process.Modules[corClass.Module].MetaData;
 			
@@ -495,12 +469,13 @@ namespace Debugger.MetaData
 				}
 			}
 			
-			int getArgsCount = metaData.GetGenericParamCount(corClass.Token);
+			if (genericArguments.Length != metaData.GetGenericParamCount(corClass.Token)) {
+				throw new DebuggerException("Incorrect number of generic arguments");
+			}
 			
-			Array.Resize(ref typeArguments, getArgsCount);
 			ICorDebugType corType = corClass.CastTo<ICorDebugClass2>().GetParameterizedType(
 				isValueType ? (uint)CorElementType.VALUETYPE : (uint)CorElementType.CLASS,
-				typeArguments
+				genericArguments
 			);
 			
 			return Create(appDomain, corType);
@@ -509,41 +484,23 @@ namespace Debugger.MetaData
 		/// <summary> Obtains instance of DebugType. Same types will return identical instance. </summary>
 		static public DebugType Create(AppDomain appDomain, ICorDebugType corType)
 		{
+			if (loadedTypes.ContainsKey(corType)) return loadedTypes[corType];
+			
 			DateTime startTime = Util.HighPrecisionTimer.Now;
 			
 			DebugType type = new DebugType(appDomain, corType);
 			
-			// Get types with matching names from cache
-			List<DebugType> typesWithMatchingName;
-			if (!loadedTypes.TryGetValue(type.FullName, out typesWithMatchingName)) {
-				// No types with such name - create a new list
-				typesWithMatchingName = new List<DebugType>(1);
-				loadedTypes.Add(type.FullName, typesWithMatchingName);
-			}
+			// Loading of memebers might access the type again
+			loadedTypes[corType] = type;
 			
-			// Try to find the type
-			foreach(DebugType loadedType in typesWithMatchingName) {
-				if (loadedType.Equals(type)) {
-					TimeSpan totalTime = Util.HighPrecisionTimer.Now - startTime;
-					if (appDomain.Process.Options.Verbose) {
-						appDomain.Process.TraceMessage("Type " + type.FullName + " was loaded already (" + totalTime.TotalMilliseconds + " ms)");
-					}
-					return loadedType; // Type was loaded before
-				}
-			}
-			
-			// This has to be done before LoadMemberInfo since it might use it
-			typesWithMatchingName.Add(type);
-			
-			// The type is not in the cache, finish loading it and add it to the cache
 			if (type.IsClass || type.IsValueType) {
 				type.LoadMemberInfo();
 			}
-			type.AppDomain.Process.Exited += delegate { typesWithMatchingName.Remove(type); };
+			type.AppDomain.Process.Exited += delegate { loadedTypes.Remove(corType); };
 			
 			TimeSpan totalTime2 = Util.HighPrecisionTimer.Now - startTime;
-			string prefix = type.IsInterface ? "interface" : "type";
 			if (appDomain.Process.Options.Verbose) {
+				string prefix = type.IsInterface ? "interface" : "type";
 				appDomain.Process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, type.FullName, totalTime2.TotalMilliseconds);
 				foreach(DebugType inter in type.Interfaces) {
 					appDomain.Process.TraceMessage(" - Implements {0}", inter.FullName);
@@ -554,13 +511,13 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> Returns all non-generic types defined in the given module </summary>
+		/// <remarks> Generic types can not be returned, because we do not how to instanciate them </remarks>
 		public static List<DebugType> GetDefinedTypesInModule(Module module)
 		{
-			// TODO: Generic types
 			List<DebugType> types = new List<DebugType>();
 			foreach(TypeDefProps typeDef in module.MetaData.EnumTypeDefProps()) {
 				if (module.MetaData.GetGenericParamCount(typeDef.Token) == 0) {
-					types.Add(DebugType.Create(module, typeDef.Token));
+					types.Add(DebugType.Create(module, typeDef.Token, null));
 				}
 			}
 			return types;
@@ -685,48 +642,9 @@ namespace Debugger.MetaData
 			return (GetMembers(bindingFlags).Count > 0);
 		}
 		
-		/// <summary> Compares two types </summary>
-		public override bool Equals(object obj)
-		{
-			DebugType other = obj as DebugType;
-			if (other != null && this.AppDomain == other.AppDomain) {
-				if (this.IsArray) {
-					return other.IsArray &&
-					       other.GetArrayRank() == this.GetArrayRank() &&
-					       other.ElementType.Equals(this.ElementType);
-				}
-				if (this.IsPrimitive) {
-					return other.IsPrimitive &&
-					       other.PrimitiveType == this.PrimitiveType &&
-							other.IsValueType == this.IsValueType;
-				}
-				if (this.IsClass || this.IsValueType) {
-					return (other.IsClass || other.IsValueType) &&
-					       other.Module == this.Module &&
-					       other.Token == this.Token;
-				}
-				if (this.IsPointer) {
-					return other.IsPointer &&
-					       other.ElementType.Equals(this.ElementType);
-				}
-				if (this.IsVoid) {
-					return other.IsVoid;
-				}
-				throw new DebuggerException("Unknown type");
-			} else {
-				return false;
-			}
-		}
-		
-		/// <summary> Get hash code of the object </summary>
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-		
 		public override string ToString()
 		{
-			return string.Format("{0}", this.fullName);
+			return string.Format("{0}", this.FullName);
 		}
 	}
 }
