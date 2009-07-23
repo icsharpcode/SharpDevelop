@@ -42,10 +42,10 @@ namespace ICSharpCode.CodeAnalysis
 				if (p.CompilationUnit == null || p.FileName == null || p.Line <= 0)
 					continue;
 				IViewContent viewContent = FileService.OpenFile(p.FileName);
-				ITextEditorControlProvider provider = viewContent as ITextEditorControlProvider;
+				ITextEditorProvider provider = viewContent as ITextEditorProvider;
 				if (provider == null)
 					continue;
-				IDocument document = new TextEditorDocument(provider.TextEditorControl.Document);
+				IDocument document = provider.TextEditor.Document;
 				if (p.Line >= document.TotalNumberOfLines)
 					continue;
 				IDocumentLine line = document.GetLine(p.Line);
@@ -60,8 +60,7 @@ namespace ICSharpCode.CodeAnalysis
 				string code = codegen.GenerateCode(CreateSuppressAttribute(p.CompilationUnit, tag), indentation.ToString());
 				if (!code.EndsWith("\n")) code += Environment.NewLine;
 				document.Insert(line.Offset, code);
-				provider.TextEditorControl.ActiveTextAreaControl.Caret.Line = p.Line - 1;
-				provider.TextEditorControl.ActiveTextAreaControl.ScrollToCaret();
+				provider.TextEditor.JumpTo(p.Line, p.Column);
 				TaskService.Remove(t);
 				ParserService.ParseViewContent(viewContent);
 			}

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Globalization;
 using System.IO;
 using ICSharpCode.Core.Services;
 using log4net;
@@ -30,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		public void DebugFormatted(string format, params object[] args)
 		{
-			log.DebugFormat(format, args);
+			log.DebugFormat(CultureInfo.InvariantCulture, format, args);
 		}
 		
 		public void Info(object message)
@@ -40,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		public void InfoFormatted(string format, params object[] args)
 		{
-			log.InfoFormat(format, args);
+			log.InfoFormat(CultureInfo.InvariantCulture, format, args);
 		}
 		
 		public void Warn(object message)
@@ -55,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		public void WarnFormatted(string format, params object[] args)
 		{
-			log.WarnFormat(format, args);
+			log.WarnFormat(CultureInfo.InvariantCulture, format, args);
 		}
 		
 		public void Error(object message)
@@ -70,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		public void ErrorFormatted(string format, params object[] args)
 		{
-			log.ErrorFormat(format, args);
+			log.ErrorFormat(CultureInfo.InvariantCulture, format, args);
 		}
 		
 		public void Fatal(object message)
@@ -85,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		public void FatalFormatted(string format, params object[] args)
 		{
-			log.FatalFormat(format, args);
+			log.FatalFormat(CultureInfo.InvariantCulture, format, args);
 		}
 		
 		public bool IsDebugEnabled {

@@ -96,7 +96,7 @@ namespace SearchAndReplace
 			if (displayText != null) {
 				textBlock.Inlines.Add(displayText);
 			} else if (inlineBuilder != null) {
-				textBlock.Inlines.AddRange(inlineBuilder.CreateInlines());
+				textBlock.Inlines.AddRange(inlineBuilder.CreateRuns());
 			}
 			
 			if (showFileName) {

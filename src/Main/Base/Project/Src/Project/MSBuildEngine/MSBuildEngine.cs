@@ -187,6 +187,14 @@ namespace ICSharpCode.SharpDevelop.Project
 
 			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
 			
+			List<ILogger> loggers = new List<ILogger> {
+				new SharpDevelopLogger(this),
+				//new BuildLogFileLogger(fileName + ".log", LoggerVerbosity.Diagnostic)
+			};
+			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
+				loggers.Add(loggerProvider.CreateLogger(this));
+			}
+			
 			// Get ParallelMSBuildManager (or create a new one if one doesn't exist already).
 			// The serviceContainer will automatically dispose it after the build has completed.
 			ParallelMSBuildManager manager = (ParallelMSBuildManager)serviceContainer.GetOrCreateService(
@@ -226,10 +234,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			string fileName = project.FileName;
 			string[] targets = { options.Target.TargetName };
 			BuildRequestData requestData = new BuildRequestData(fileName, globalProperties, null, targets, new HostServices());
-			ILogger[] loggers = {
-				new SharpDevelopLogger(this),
-				//new BuildLogFileLogger(fileName + ".log", LoggerVerbosity.Diagnostic)
-			};
 			manager.StartBuild(requestData, loggers, OnComplete);
 		}
 		
@@ -285,7 +289,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				buildInProcess = true;
 			}
 			LoggingService.Info("Start job (buildInProcess=" + buildInProcess + "): " + job.ToString());
-		*/
+		 */
 		
 		static string EnsureBackslash(string path)
 		{

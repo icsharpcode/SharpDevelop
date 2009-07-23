@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
 	/// The SearchClassReturnType is used when only a part of the class name is known and the
-	/// type can only be resolved on demand (the ConvertVisitor uses SearchClassReturnType's).
+	/// type can only be resolved on demand (the ConvertVisitor uses SearchClassReturnTypes).
 	/// </summary>
 	public sealed class SearchClassReturnType : ProxyReturnType
 	{

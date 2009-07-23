@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Globalization;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {
@@ -42,7 +43,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		public static int CheckInRangeInclusive(int val, string parameterName, int lower, int upper)
 		{
 			if (val < lower || val > upper)
-				throw new ArgumentOutOfRangeException(parameterName, val, "Expected: " + lower.ToString() + " <= " + parameterName + " <= " + upper.ToString());
+				throw new ArgumentOutOfRangeException(parameterName, val, "Expected: " + lower.ToString(CultureInfo.InvariantCulture) + " <= " + parameterName + " <= " + upper.ToString(CultureInfo.InvariantCulture));
 			return val;
 		}
 		

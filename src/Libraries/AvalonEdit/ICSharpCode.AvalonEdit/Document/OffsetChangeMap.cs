@@ -5,10 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -59,11 +61,15 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// Describes a series of offset changes.
 	/// </summary>
 	[Serializable]
+	[SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
+	                 Justification="It's a mapping old offsets -> new offsets")]
 	public sealed class OffsetChangeMap : Collection<OffsetChangeMapEntry>
 	{
 		/// <summary>
 		/// Immutable OffsetChangeMap that is empty.
 		/// </summary>
+		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes",
+		                 Justification="The Empty instance is immutable")]
 		public static readonly OffsetChangeMap Empty = new OffsetChangeMap(Utils.Empty<OffsetChangeMapEntry>.ReadOnlyCollection);
 		
 		/// <summary>
@@ -138,7 +144,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// This represents the offset of a document change (either insertion or removal, not both at once).
 	/// </summary>
 	[Serializable]
-	public struct OffsetChangeMapEntry
+	public struct OffsetChangeMapEntry : IEquatable<OffsetChangeMapEntry>
 	{
 		readonly int offset;
 		readonly int removalLength;
@@ -155,7 +161,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// The number of characters removed.
 		/// Returns 0 if this entry represents an insertion.
 		/// </summary>
-		public int RemovalLength { 
+		public int RemovalLength {
 			get { return removalLength; }
 		}
 		
@@ -205,6 +211,42 @@ namespace ICSharpCode.AvalonEdit.Document
 			this.offset = offset;
 			this.removalLength = removalLength;
 			this.insertionLength = insertionLength;
+		}
+		
+		/// <inheritdoc/>
+		public override int GetHashCode()
+		{
+			unchecked {
+				return offset + 3559 * insertionLength + 3571 * removalLength;
+			}
+		}
+		
+		/// <inheritdoc/>
+		public override bool Equals(object obj)
+		{
+			return obj is OffsetChangeMapEntry && this.Equals((OffsetChangeMapEntry)obj);
+		}
+		
+		/// <inheritdoc/>
+		public bool Equals(OffsetChangeMapEntry other)
+		{
+			return offset == other.offset && insertionLength == other.insertionLength && removalLength == other.removalLength;
+		}
+		
+		/// <summary>
+		/// Tests the two entries for equality.
+		/// </summary>
+		public static bool operator ==(OffsetChangeMapEntry left, OffsetChangeMapEntry right)
+		{
+			return left.Equals(right);
+		}
+		
+		/// <summary>
+		/// Tests the two entries for inequality.
+		/// </summary>
+		public static bool operator !=(OffsetChangeMapEntry left, OffsetChangeMapEntry right)
+		{
+			return !left.Equals(right);
 		}
 	}
 }

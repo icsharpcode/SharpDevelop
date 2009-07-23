@@ -52,7 +52,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		int GetIndexForOffset(int offset)
 		{
 			if (offset < 0 || offset > text.Length)
-				throw new ArgumentOutOfRangeException();
+				throw new ArgumentOutOfRangeException("offset");
 			int index = stateChangeOffsets.BinarySearch(offset);
 			if (index < 0) {
 				index = ~index;
@@ -152,7 +152,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Creates WPF Run instances that can be used for TextBlock.Inlines.
 		/// </summary>
-		public Run[] CreateInlines()
+		public Run[] CreateRuns()
 		{
 			Run[] runs = new Run[stateChanges.Count];
 			for (int i = 0; i < runs.Length; i++) {

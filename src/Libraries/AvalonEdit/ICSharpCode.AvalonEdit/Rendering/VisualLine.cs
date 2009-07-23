@@ -384,6 +384,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return mode == CaretPositioningMode.Normal;
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "mode",
+		                                                 Justification = "make method consistent with HasImplicitStopAtLineStart; might depend on mode in the future")]
 		static bool HasImplicitStopAtLineEnd(CaretPositioningMode mode)
 		{
 			return true;
