@@ -33,7 +33,7 @@ namespace ICSharpCode.XamlBinding
 			return element;
 		}
 		
-		public static XElement MoveBefore(this XElement element, XElement target)
+		public static XElement MoveBefore(this XElement element, XNode target)
 		{
 			if (element == null)
 				throw new ArgumentNullException("element");
@@ -47,7 +47,7 @@ namespace ICSharpCode.XamlBinding
 			return element;
 		}
 		
-		public static XElement MoveAfter(this XElement element, XElement target)
+		public static XElement MoveAfter(this XElement element, XNode target)
 		{
 			if (element == null)
 				throw new ArgumentNullException("element");
@@ -61,10 +61,10 @@ namespace ICSharpCode.XamlBinding
 			return element;
 		}
 		
-		public static void AddRange(this UIElementCollection coll, IEnumerable<UIElement> items)
+		public static void AddRange(this UIElementCollection collection, IEnumerable<UIElement> items)
 		{
 			foreach (var item in items)
-				coll.Add(item);
+				collection.Add(item);
 		}
 		
 		public static string[] Split(this string thisValue, StringSplitOptions options, params char[] delimiters)
@@ -88,24 +88,24 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		public static string Replace(this string str, int index, int length, string text)
+		public static string Replace(this string thisValue, int index, int length, string text)
 		{
-			if (str == null)
-				throw new ArgumentNullException("str");
-			if (index < 0 || index > str.Length)
-				throw new ArgumentOutOfRangeException("index", index, "Value must be between 0 and " + str.Length);
-			if (length < 0 || length > str.Length)
-				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + str.Length);
-			if ((index + length) > str.Length)
-				throw new ArgumentOutOfRangeException("index + length", index + length, "Value must be between 0 and " + str.Length);
+			if (thisValue == null)
+				throw new ArgumentNullException("thisValue");
+			if (index < 0 || index > thisValue.Length)
+				throw new ArgumentOutOfRangeException("index", index, "Value must be between 0 and " + thisValue.Length);
+			if (length < 0 || length > thisValue.Length)
+				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + thisValue.Length);
+			if ((index + length) > thisValue.Length)
+				throw new ArgumentOutOfRangeException("index + length", index + length, "Value must be between 0 and " + thisValue.Length);
 			
-			return str.Substring(0, index) + text + str.Substring(index + length);
+			return thisValue.Substring(0, index) + text + thisValue.Substring(index + length);
 		}
 		
-		public static bool Is(char value, params char[] chars)
+		public static bool Is(char value, params char[] choice)
 		{
-			foreach (var c in chars) {
-				if (c == value)
+			foreach (var ch in choice) {
+				if (ch == value)
 					return true;
 			}
 			
@@ -175,9 +175,9 @@ namespace ICSharpCode.XamlBinding
 			return text.Substring(startIndex, offset - startIndex + 1).Trim();
 		}
 		
-		public static TKey GetKeyByValue<TKey, TValue>(this Dictionary<TKey, TValue> dict, TValue value)
+		public static TKey GetKeyByValue<TKey, TValue>(this Dictionary<TKey, TValue> thisValue, TValue value)
 		{
-			foreach (var pair in dict) {
+			foreach (var pair in thisValue) {
 				if (pair.Value.Equals(value))
 					return pair.Key;
 			}
@@ -185,22 +185,22 @@ namespace ICSharpCode.XamlBinding
 			return default(TKey);
 		}
 		
-		public static int GetLineNumber(this XObject item)
+		public static int GetLineNumber(this IXmlLineInfo thisValue)
 		{
-			return (item as IXmlLineInfo).LineNumber;
+			return thisValue.LineNumber;
 		}
 		
-		public static int GetLinePosition(this XObject item)
+		public static int GetLinePosition(this IXmlLineInfo thisValue)
 		{
-			return (item as IXmlLineInfo).LinePosition;
+			return thisValue.LinePosition;
 		}
 		
-		public static bool IsInRange(this XObject item, Location begin, Location end)
+		public static bool IsInRange(this IXmlLineInfo item, Location begin, Location end)
 		{
 			return IsInRange(item, begin.Line, begin.Column, end.Line, end.Column);
 		}
 		
-		public static bool IsInRange(this XObject item, int beginLine, int beginColumn, int endLine, int endColumn)
+		public static bool IsInRange(this IXmlLineInfo item, int beginLine, int beginColumn, int endLine, int endColumn)
 		{
 			if (item.GetLineNumber() >= beginLine && item.GetLineNumber() <= endLine) {
 				if (item.GetLineNumber() == beginLine) {
@@ -215,11 +215,11 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		public static bool IsCollectionType(this IClass c)
+		public static bool IsCollectionType(this IClass thisValue)
 		{
-			if (c == null)
-				throw new ArgumentNullException("c");
-			return c.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.ICollection");
+			if (thisValue == null)
+				throw new ArgumentNullException("thisValue");
+			return thisValue.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.ICollection");
 		}
 		
 		public static bool IsCollectionReturnType(this IReturnType type)
@@ -232,11 +232,11 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		public static bool IsListType(this IClass c)
+		public static bool IsListType(this IClass thisValue)
 		{
-			if (c == null)
-				throw new ArgumentNullException("c");
-			return c.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.IList");
+			if (thisValue == null)
+				throw new ArgumentNullException("thisValue");
+			return thisValue.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.IList");
 		}
 		
 		public static bool IsListReturnType(this IReturnType type)
@@ -250,9 +250,9 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		/// <remarks>Works only if fullyQualyfiedClassName is the name of a class!</remarks>
-		public static bool DerivesFrom(this IClass myClass, string fullyQualyfiedClassName)
+		public static bool DerivesFrom(this IClass myClass, string fullyQualifiedClassName)
 		{
-			return myClass.ClassInheritanceTreeClassesOnly.Any(c => c.FullyQualifiedName == fullyQualyfiedClassName);
+			return myClass.ClassInheritanceTreeClassesOnly.Any(c => c.FullyQualifiedName == fullyQualifiedClassName);
 		}
 		
 		public static T PopOrDefault<T>(this Stack<T> stack)

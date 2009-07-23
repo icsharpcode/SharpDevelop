@@ -68,13 +68,13 @@ namespace ICSharpCode.XamlBinding
 			return Name.GetHashCode() ^ Location.GetHashCode();
 		}
 		
-		public bool Equals(QualifiedNameWithLocation obj)
+		public bool Equals(QualifiedNameWithLocation other)
 		{
-			if (obj == null)
+			if (other == null)
 				return false;
 			
-			return obj.QualifiedName == QualifiedName &&
-				obj.Location == Location;
+			return other.QualifiedName == QualifiedName &&
+				other.Location == Location;
 		}
 		
 		public static bool operator ==(QualifiedNameWithLocation lhs, QualifiedNameWithLocation rhs)

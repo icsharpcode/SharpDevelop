@@ -5,10 +5,12 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
-using ICSharpCode.Core;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -65,27 +67,6 @@ namespace ICSharpCode.XamlBinding
 			this.@namespace = @namespace;
 			this.name = name;
 			this.Image = ClassBrowserIconService.Namespace;
-		}
-		
-		public XamlCompletionItem(string @namespace, string name)
-			: base(name)
-		{
-			this.prefix = "";
-			this.@namespace = @namespace;
-			this.name = name;
-			this.Image = ClassBrowserIconService.Namespace;
-		}
-		
-		public string Prefix {
-			get { return prefix; }
-		}
-		
-		public string Namespace {
-			get { return @namespace; }
-		}
-		
-		public string Name {
-			get { return name; }
 		}
 	}
 	
@@ -196,19 +177,19 @@ namespace ICSharpCode.XamlBinding
 			
 			while (namePatternRegex.IsMatch(name)) {
 				Match match = namePatternRegex.Match(name);
-				switch (match.Value.ToLowerInvariant()) {
-					case "%object%":
+				switch (match.Value.ToUpperInvariant()) {
+					case "%OBJECT%":
 						if (char.IsUpper(match.Value[1]))
-							objectName = objectName.ToUpper()[0] + objectName.Substring(1, objectName.Length - 1);
+							objectName = objectName.ToUpperInvariant()[0] + objectName.Substring(1, objectName.Length - 1);
 						else
-							objectName = objectName.ToLower()[0] + objectName.Substring(1, objectName.Length - 1);
+							objectName = objectName.ToLowerInvariant()[0] + objectName.Substring(1, objectName.Length - 1);
 						name = name.Replace(match.Index, match.Length, objectName);
 						break;
-					case "%event%":
+					case "%EVENT%":
 						if (char.IsUpper(match.Value[1]))
-							eventName = eventName.ToUpper()[0] + eventName.Substring(1, eventName.Length - 1);
+							eventName = eventName.ToUpperInvariant()[0] + eventName.Substring(1, eventName.Length - 1);
 						else
-							eventName = eventName.ToLower()[0] + eventName.Substring(1, eventName.Length - 1);
+							eventName = eventName.ToLowerInvariant()[0] + eventName.Substring(1, eventName.Length - 1);
 						name = name.Replace(match.Index, match.Length, eventName);
 						break;
 					case "%%":
@@ -232,10 +213,6 @@ namespace ICSharpCode.XamlBinding
 			if (entity == null)
 				throw new ArgumentNullException("entity");
 			this.ctor = entity;
-		}
-		
-		public IMethod Ctor {
-			get { return ctor; }
 		}
 		
 		string headerText;
@@ -275,10 +252,6 @@ namespace ICSharpCode.XamlBinding
 		string description;
 		bool descriptionCreated;
 		IMember member;
-		
-		public IMember Member {
-			get { return member; }
-		}
 		
 		public MemberInsightItem(IMember member, string insightText)
 		{

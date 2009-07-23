@@ -250,14 +250,12 @@ namespace ICSharpCode.XamlBinding
 			public QualifiedNameWithLocation Item { get; set; }
 		}
 		
-		public 	static void LookUpInfoAtTarget(string fileContent, int caretLine, int caretColumn, int offset,
-		                                       out Dictionary<string, string> xmlns, out List<string> ignoredXmlns, out QualifiedNameWithLocation active,
-		                                       out QualifiedNameWithLocation parent, out int activeElementStartIndex, out bool isRoot)
+		public 	static LookupInfo LookupInfoAtTarget(string fileContent, int caretLine, int caretColumn, int offset)
 		{
 			Stack<QualifiedNameWithLocation> stack = new Stack<QualifiedNameWithLocation>();
 			Stack<IgnoredXmlnsWrapper> ignoredXmlnsStack = new Stack<IgnoredXmlnsWrapper>();
 			
-			isRoot = false;
+			var isRoot = false;
 
 			XmlTextReader r = new XmlTextReader(new StringReader(fileContent));
 			r.XmlResolver = null;
@@ -266,8 +264,9 @@ namespace ICSharpCode.XamlBinding
 				' ', '\t', '\n', '\r'
 			};
 			
-			ignoredXmlns = new List<string>();
-			
+			var ignoredXmlns = new List<string>();
+			Dictionary<string, string> xmlns;
+
 			try {
 				r.WhitespaceHandling = WhitespaceHandling.Significant;
 				// move reader to correct position
@@ -306,10 +305,10 @@ namespace ICSharpCode.XamlBinding
 				xmlns = new Dictionary<string, string>(r.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml));
 			}
 			
-			activeElementStartIndex = XmlParser.GetActiveElementStartIndex(fileContent, Math.Min(offset + 1, fileContent.Length - 1));
+			var activeElementStartIndex = XmlParser.GetActiveElementStartIndex(fileContent, Math.Min(offset + 1, fileContent.Length - 1));
 			
-			active =  ResolveCurrentElement(fileContent, activeElementStartIndex, xmlns);
-			parent = stack.PopOrDefault();
+			var active = ResolveCurrentElement(fileContent, activeElementStartIndex, xmlns);
+			var parent = stack.PopOrDefault();
 			
 			if (active == parent)
 				parent = stack.PopOrDefault();
@@ -319,6 +318,15 @@ namespace ICSharpCode.XamlBinding
 			
 			if (active == null)
 				active = parent;
+			
+			return new LookupInfo() {
+				Active = active,
+				ActiveElementStartIndex = activeElementStartIndex,
+				IgnoredXmlns = ignoredXmlns,
+				IsRoot = isRoot,
+				Parent = parent,
+				XmlnsDefinitions = xmlns
+			};
 		}
 		
 		public 	static XmlTextReader CreateReaderAtTarget(string fileContent, int caretLine, int caretColumn)

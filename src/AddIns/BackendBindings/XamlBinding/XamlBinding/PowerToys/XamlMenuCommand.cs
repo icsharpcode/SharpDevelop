@@ -5,17 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.XmlEditor;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using System.Xaml;
 using System.Xml;
 using System.Xml.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding.PowerToys
 {
@@ -38,7 +40,7 @@ namespace ICSharpCode.XamlBinding.PowerToys
 					document.Declaration = null;
 					if (Refactor(provider.TextEditor, document)) {
 						using (provider.TextEditor.Document.OpenUndoGroup()) {
-							StringWriter sWriter = new StringWriter();
+							StringWriter sWriter = new StringWriter(CultureInfo.InvariantCulture);
 							XmlWriter writer = XmlWriter.Create(sWriter, CreateSettings());
 							document.WriteTo(writer);
 							writer.Flush();

@@ -103,7 +103,7 @@ namespace ICSharpCode.XamlBinding
 					if (task.IsCancellationRequested)
 						return;
 					
-					if (!info.Token.StartsWith("xmlns")) {
+					if (!info.Token.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase)) {
 						MemberResolveResult rr = new XamlResolver().Resolve(info.GetExpressionResult(), info.Context.ParseInformation, FileContent) as MemberResolveResult;
 						member = (rr != null) ? rr.ResolvedMember : null;
 					}
@@ -148,7 +148,7 @@ namespace ICSharpCode.XamlBinding
 							index += attribute.Substring(propertyNameIndex).Length;
 						}
 						if (context.Description != XamlContextDescription.InComment && !string.IsNullOrEmpty(attribute)) {
-							int startIndex = LineText.Substring(0, Math.Min(index, LineText.Length)).LastIndexOf(attribute);
+							int startIndex = LineText.Substring(0, Math.Min(index, LineText.Length)).LastIndexOf(attribute, StringComparison.Ordinal);
 							if (startIndex >= 0) {
 								if (propertyNameIndex > -1)
 									infos.Add(new HighlightingInfo(attribute.Trim('/'), startIndex + propertyNameIndex + 1, startIndex + attribute.TrimEnd('/').Length, Offset, context));
@@ -226,7 +226,7 @@ namespace ICSharpCode.XamlBinding
 		
 		void ColorizeMember(HighlightingInfo info, DocumentLine line, IMember member)
 		{
-			if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":"))) {
+			if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":", StringComparison.OrdinalIgnoreCase))) {
 				ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightIgnored);
 			} else {
 				if (member != null) {
@@ -235,7 +235,7 @@ namespace ICSharpCode.XamlBinding
 					else
 						ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
 				} else {
-					if (info.Token.StartsWith("xmlns") || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":"))
+					if (info.Token.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase) || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":", StringComparison.OrdinalIgnoreCase))
 						ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
 					else
 						Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);

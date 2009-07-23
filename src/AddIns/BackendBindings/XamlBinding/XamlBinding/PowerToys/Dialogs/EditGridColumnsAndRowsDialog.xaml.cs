@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -61,11 +62,6 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					ColumnDefinitions = colCopy,
 					AdditionalProperties = propertiesCopy
 				};
-			}
-			
-			public static UndoStep Copy(UndoStep original)
-			{
-				return CreateStep(original.Tree, original.RowDefinitions, original.ColumnDefinitions, original.AdditionalProperties);
 			}
 		}
 		
@@ -138,7 +134,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			controls.ForEach(
 				item => {
 					var rowAttrib = item.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value) + 1);
+					item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
 				}
 			);
 			
@@ -176,7 +172,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			controls.ForEach(
 				item => {
 					var rowAttrib = item.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value) + 1);
+					item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
 				}
 			);
 			
@@ -229,14 +225,14 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				controls.ForEach(
 					item => {
 						var rowAttrib = item.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value) - 1);
+						item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
 					}
 				);
 				
 				controlsDown.ForEach(
 					item2 => {
 						var rowAttrib = item2.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						item2.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value) + 1);
+						item2.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
 					}
 				);
 				
@@ -290,14 +286,14 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				controls.ForEach(
 					item => {
 						var rowAttrib = item.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value) + 1);
+						item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
 					}
 				);
 				
 				controlsUp.ForEach(
 					item2 => {
 						var rowAttrib = item2.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						item2.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value) - 1);
+						item2.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
 					}
 				);
 				
@@ -331,7 +327,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			controls.ForEach(
 				item => {
 					var rowAttrib = item.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value) - 1);
+					item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
 				}
 			);
 			
@@ -368,7 +364,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			controls.ForEach(
 				item => {
 					var colAttrib = item.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value) + 1);
+					item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
 				}
 			);
 			
@@ -405,7 +401,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			controls.ForEach(
 				item => {
 					var colAttrib = item.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value) + 1);
+					item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
 				}
 			);
 			
@@ -459,14 +455,14 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				controls.ForEach(
 					item => {
 						var colAttrib = item.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-						item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value) - 1);
+						item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
 					}
 				);
 				
 				controlsLeft.ForEach(
 					item2 => {
 						var colAttrib = item2.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-						item2.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value) + 1);
+						item2.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
 					}
 				);
 				
@@ -521,14 +517,14 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				controls.ForEach(
 					item => {
 						var colAttrib = item.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-						item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value) + 1);
+						item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
 					}
 				);
 				
 				controlsRight.ForEach(
 					item2 => {
 						var colAttrib = item2.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-						item2.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value) - 1);
+						item2.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
 					}
 				);
 				
@@ -562,7 +558,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			controls.ForEach(
 				item => {
 					var colAttrib = item.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value) - 1);
+					item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
 				}
 			);
 			
@@ -702,7 +698,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					
 					Point p = e.GetPosition(target);
 					TextBlock block = target.InputHitTest(p) as TextBlock;
-										
+					
 					if (block != null) {
 						Debug.Assert(block.Tag != null && block.Tag is XElement);
 						XElement element = block.Tag as XElement;
@@ -756,7 +752,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				
 				label.MouseLeftButtonDown += new MouseButtonEventHandler(LabelMouseLeftButtonDown);
 
-                Debug.Assert(label.Tag != null);
+				Debug.Assert(label.Tag != null);
 				
 				yield return label;
 			}
@@ -765,7 +761,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		void LabelMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			DragDropEffects allowedEffects = DragDropEffects.Move;
-			DragDrop.DoDragDrop(sender as Label, (sender as Label).Tag, allowedEffects);
+			Label label = sender as Label;
+			DragDrop.DoDragDrop(label, label.Tag, allowedEffects);
 		}
 		
 		void UpdateUndoRedoState()
@@ -774,13 +771,15 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			this.redoStack.Clear();
 		}
 		
-		public XElement GetConstructedTree()
+		public XElement ConstructedTree
 		{
-			gridTree.AddFirst(additionalProperties);
-			gridTree.AddFirst(colDefitions);
-			gridTree.AddFirst(rowDefitions);
-			
-			return gridTree;
+			get {
+				gridTree.AddFirst(additionalProperties);
+				gridTree.AddFirst(colDefitions);
+				gridTree.AddFirst(rowDefitions);
+				
+				return gridTree;
+			}
 		}
 
 		void DisplayRectContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -859,7 +858,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		}
 		
 		void BtnDeleteItemClick(object sender, RoutedEventArgs e)
-		{			
+		{
 			Button source = sender as Button;
 			XElement item = source.Tag as XElement;
 			if (item != null) {

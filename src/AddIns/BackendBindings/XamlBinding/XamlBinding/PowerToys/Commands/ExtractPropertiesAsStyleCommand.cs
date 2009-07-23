@@ -100,7 +100,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		
 		// TODO : make the methods xmlns independent
 		
-		XElement CreateStyle(string name, string targetType, IEnumerable<PropertyEntry> entries)
+		static XElement CreateStyle(string name, string targetType, IEnumerable<PropertyEntry> entries)
 		{
 			XElement style = new XElement(XName.Get("Style", CompletionDataHelper.WpfXamlNamespace));
 			if (!string.IsNullOrEmpty(name))

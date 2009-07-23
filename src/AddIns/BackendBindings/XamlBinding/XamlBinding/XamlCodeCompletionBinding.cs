@@ -73,7 +73,7 @@ namespace ICSharpCode.XamlBinding
 				case '{': // starting point for Markup Extension Completion
 					if (context.AttributeName != null
 					    && XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)
-					    && !(context.RawAttributeValue.StartsWith("{}") && context.RawAttributeValue.Length != 2)) {
+					    && !(context.RawAttributeValue.StartsWith("{}", StringComparison.OrdinalIgnoreCase) && context.RawAttributeValue.Length != 2)) {
 						
 						if (editor.SelectionLength != 0)
 							editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
@@ -97,7 +97,7 @@ namespace ICSharpCode.XamlBinding
 					break;
 				case ':':
 					if (context.ActiveElement != null && XmlParser.GetQualifiedAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset) == null) {
-						if (context.AttributeName != null && !context.AttributeName.Name.StartsWith("xmlns")) {
+						if (context.AttributeName != null && !context.AttributeName.Name.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase)) {
 							list = CompletionDataHelper.CreateListForContext(context);
 							list.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
 							editor.ShowCompletionWindow(list);
@@ -143,7 +143,7 @@ namespace ICSharpCode.XamlBinding
 						
 						string attributeName = (context.AttributeName != null) ? context.AttributeName.Name : string.Empty;
 						
-						if (!attributeName.StartsWith("xmlns"))
+						if (!attributeName.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase))
 							this.CtrlSpace(editor);
 						trackForced = true;
 						return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
@@ -174,8 +174,6 @@ namespace ICSharpCode.XamlBinding
 							
 							var mrr = XamlResolver.Resolve(context.AttributeName.FullXmlName, context) as MemberResolveResult;
 							if (mrr != null && mrr.ResolvedType != null) {
-								var c = mrr.ResolvedType.GetUnderlyingClass();
-								
 								completionList.Items.AddRange(CompletionDataHelper.MemberCompletion(context, mrr.ResolvedType, string.Empty));
 								editor.ShowInsightWindow(CompletionDataHelper.MemberInsight(mrr));
 							}

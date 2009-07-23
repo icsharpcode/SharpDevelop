@@ -79,7 +79,7 @@ namespace ICSharpCode.XamlBinding
 									int spaces = CountWhiteSpacesAtEnd(context.Editor.GetWordBeforeCaret());
 									int typeNameStart = markup.ExtensionType.IndexOf(':') + 1;
 									
-									if (!word.EndsWith(",") && markup.ExtensionType.Substring(typeNameStart, markup.ExtensionType.Length - typeNameStart) != word) {
+									if (!word.EndsWith(",", StringComparison.OrdinalIgnoreCase) && markup.ExtensionType.Substring(typeNameStart, markup.ExtensionType.Length - typeNameStart) != word) {
 										context.Editor.Document.Replace(context.Editor.Caret.Offset - spaces, spaces, ", ");
 										oldOffset += (2 - spaces);
 									}
@@ -88,7 +88,7 @@ namespace ICSharpCode.XamlBinding
 								}
 							}
 							
-							if (cItem.Text.EndsWith("="))
+							if (cItem.Text.EndsWith("=", StringComparison.OrdinalIgnoreCase))
 								XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 						}
 					}
@@ -104,7 +104,6 @@ namespace ICSharpCode.XamlBinding
 				}
 				
 				if (item is XamlCompletionItem && xamlContext.Description == XamlContextDescription.InTag) {
-					XamlCompletionItem xamlItem = item as XamlCompletionItem;
 					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 					context.Editor.Caret.Offset--;
 				}

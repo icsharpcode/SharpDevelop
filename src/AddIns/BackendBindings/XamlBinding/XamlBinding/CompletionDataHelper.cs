@@ -5,26 +5,21 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Xml;
+
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.XmlEditor;
-using LoggingService = ICSharpCode.Core.LoggingService;
 
 namespace ICSharpCode.XamlBinding
 {
 	public static class CompletionDataHelper
 	{
-		#region Pre-defined lists
 		static readonly List<ICompletionItem> standardElements = new List<ICompletionItem> {
 			new SpecialCompletionItem("!--"),
 			new SpecialCompletionItem("![CDATA["),
@@ -43,16 +38,15 @@ namespace ICSharpCode.XamlBinding
 			new SpecialCompletionItem("xmlns:")
 		};
 		
-		public static readonly List<string> XamlNamespaceAttributes = new List<string> {
+		public static readonly ReadOnlyCollection<string> XamlNamespaceAttributes = new List<string> {
 			"Class", "ClassModifier", "FieldModifier", "Name", "Subclass", "TypeArguments", "Uid", "Key"
-		};
+		}.AsReadOnly(); // TODO : .AsReadOnly() cannot be resolved, report to Daniel
 		
-		public static readonly List<string> RootOnlyElements = new List<string> {
+		public static readonly ReadOnlyCollection<string> RootOnlyElements = new List<string> {
 			"Class", "ClassModifier", "Subclass"
-		};
+		}.AsReadOnly();
 		
 		static readonly List<ICompletionItem> emptyList = new List<ICompletionItem>();
-		#endregion
 		
 		public const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
 		public const string WpfXamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
@@ -73,22 +67,16 @@ namespace ICSharpCode.XamlBinding
 			AttributeValue value = MarkupExtensionParser.ParseValue(attributeValue);
 			XamlContextDescription description = XamlContextDescription.None;
 			
-			Dictionary<string, string> xmlnsDefs;
-			List<string> ignoredXmlns;
-			QualifiedNameWithLocation active, parent;
-			int elementStartIndex;
-			bool isRoot;
-			
-			Utils.LookUpInfoAtTarget(text, line, col, offset, out xmlnsDefs, out ignoredXmlns, out active, out parent, out elementStartIndex, out isRoot);
+			var lookUpInfo = Utils.LookupInfoAtTarget(text, line, col, offset);
 			
 			string wordBeforeIndex = text.GetWordBeforeOffset(offset);
 			
-			if (active != null && parent != active)
+			if (lookUpInfo.Active != null && lookUpInfo.Parent != lookUpInfo.Active)
 				description = XamlContextDescription.AtTag;
 			
-			if (elementStartIndex > -1 &&
+			if (lookUpInfo.ActiveElementStartIndex > -1 &&
 			    (char.IsWhiteSpace(text[offset]) || !string.IsNullOrEmpty(attribute) ||
-			     Extensions.Is(text[offset], '"', '\'') || !wordBeforeIndex.StartsWith("<")))
+			     Extensions.Is(text[offset], '"', '\'') || !wordBeforeIndex.StartsWith("<", StringComparison.OrdinalIgnoreCase)))
 				description = XamlContextDescription.InTag;
 
 			if (inAttributeValue) {
@@ -115,22 +103,22 @@ namespace ICSharpCode.XamlBinding
 				localName = attribute.Substring(prefixEnd + 1, attribute.Length - prefix.Length - 1);
 			}
 			
-			xmlnsDefs.TryGetValue(prefix, out xmlNamespace);
+			lookUpInfo.XmlnsDefinitions.TryGetValue(prefix, out xmlNamespace);
 			
 			var qAttribute = new QualifiedNameWithLocation(localName, xmlNamespace, prefix, -1, -1);
 			
 			var context = new XamlContext() {
 				Description = description,
-				ActiveElement = active,
-				ParentElement = parent,
+				ActiveElement = lookUpInfo.Active,
+				ParentElement = lookUpInfo.Parent,
 				AttributeName = string.IsNullOrEmpty(attribute) ? null : qAttribute,
-				InRoot = isRoot,
+				InRoot = lookUpInfo.IsRoot,
 				AttributeValue = value,
 				RawAttributeValue = attributeValue,
 				ValueStartOffset = offsetFromValueStart,
-				XmlnsDefinitions = xmlnsDefs,
+				XmlnsDefinitions = lookUpInfo.XmlnsDefinitions,
 				ParseInformation = info,
-				IgnoredXmlns = ignoredXmlns
+				IgnoredXmlns = lookUpInfo.IgnoredXmlns.AsReadOnly()
 			};
 
 			return context;
@@ -164,8 +152,8 @@ namespace ICSharpCode.XamlBinding
 			if (xamlBuiltInTypes.Concat(XamlNamespaceAttributes).Select(s => xKey + s).Contains(lastElement.FullXmlName))
 				return emptyList;
 			
-			if (lastElement.Name.EndsWith(".") || context.PressedKey == '.') {
-				if (context.ParentElement.Name.StartsWith(lastElement.Name.TrimEnd('.')))
+			if (lastElement.Name.EndsWith(".", StringComparison.OrdinalIgnoreCase) || context.PressedKey == '.') {
+				if (context.ParentElement.Name.StartsWith(lastElement.Name.TrimEnd('.'), StringComparison.OrdinalIgnoreCase))
 					AddAttributes(rt, list, includeEvents);
 				else if (rt != null && rt.GetUnderlyingClass() != null) {
 					string key = string.IsNullOrEmpty(lastElement.Prefix) ? "" : lastElement.Prefix + ":";
@@ -308,7 +296,7 @@ namespace ICSharpCode.XamlBinding
 			bool inContentRoot = false;
 			
 			if (last != null && cu != null) {
-				if (!last.Name.Contains(".") || last.Name.EndsWith(".")) {
+				if (!last.Name.Contains(".") || last.Name.EndsWith(".", StringComparison.OrdinalIgnoreCase)) {
 					elementReturnType = rt = cu.CreateType(last.Namespace, last.Name.Trim('.'));
 					string contentPropertyName = GetContentPropertyName(rt);
 					if (!string.IsNullOrEmpty(contentPropertyName)) {
@@ -434,7 +422,6 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				case XamlContextDescription.InTag:
-					var existingAttribs = Utils.GetListOfExistingAttributeNames(editor.Document.Text, editor.Caret.Line, editor.Caret.Column);
 					string word = context.Editor.GetWordBeforeCaretExtended();
 					
 					if (context.PressedKey == '.') {
@@ -471,14 +458,14 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (context.ParentElement != null && !context.InRoot) {
 				ResolveResult rr = XamlResolver.Resolve(context.ParentElement.FullXmlName, context);
+				TypeResolveResult trr = rr as TypeResolveResult;
+				MemberResolveResult mrr = rr as MemberResolveResult;
 
-				if (rr is TypeResolveResult) {
-					TypeResolveResult trr = rr as TypeResolveResult;
+				if (trr != null) {
 					if (trr.ResolvedClass == null)
 						return;
 					list.Items.Add(new XamlCodeCompletionItem("/" + context.ParentElement.FullXmlName, trr.ResolvedClass));
-				} else if (rr is MemberResolveResult) {
-					MemberResolveResult mrr = rr as MemberResolveResult;
+				} else if (mrr != null) {
 					if (mrr.ResolvedMember == null)
 						return;
 					list.Items.Add(new XamlCodeCompletionItem("/" + context.ParentElement.FullXmlName, mrr.ResolvedMember));
@@ -530,12 +517,12 @@ namespace ICSharpCode.XamlBinding
 
 		static void DoNamedArgsCompletion(XamlCompletionItemList list, XamlCompletionContext context, IReturnType type, MarkupExtensionInfo markup)
 		{
-			if (markup.NamedArguments.Count > 0 && !context.Editor.GetWordBeforeCaret().StartsWith(",")) {
+			if (markup.NamedArguments.Count > 0 && !context.Editor.GetWordBeforeCaret().StartsWith(",", StringComparison.OrdinalIgnoreCase)) {
 				int lastStart = markup.NamedArguments.Max(i => i.Value.StartOffset);
 				var item = markup.NamedArguments.First(p => p.Value.StartOffset == lastStart);
 				
-				if (context.RawAttributeValue.EndsWith("=") ||
-				    (item.Value.IsString && item.Value.StringValue.EndsWith(context.Editor.GetWordBeforeCaretExtended()))) {
+				if (context.RawAttributeValue.EndsWith("=", StringComparison.OrdinalIgnoreCase) ||
+				    (item.Value.IsString && item.Value.StringValue.EndsWith(context.Editor.GetWordBeforeCaretExtended(), StringComparison.Ordinal))) {
 					MemberResolveResult mrr = XamlResolver.ResolveMember(item.Key, context) as MemberResolveResult;
 					if (mrr != null && mrr.ResolvedMember != null && mrr.ResolvedMember.ReturnType != null) {
 						IReturnType memberType = mrr.ResolvedMember.ReturnType;

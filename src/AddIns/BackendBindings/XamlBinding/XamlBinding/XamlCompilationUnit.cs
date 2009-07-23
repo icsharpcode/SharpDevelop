@@ -34,7 +34,7 @@ namespace ICSharpCode.XamlBinding
 			if (string.IsNullOrEmpty(className) || className.Contains("."))
 				return null;
 			
-			if (xmlNamespace.StartsWith("clr-namespace:")) {
+			if (xmlNamespace.StartsWith("clr-namespace:", StringComparison.OrdinalIgnoreCase)) {
 				return CreateClrNamespaceType(this.ProjectContent, xmlNamespace, className);
 			} else {
 				return new XamlClassReturnType(this, xmlNamespace, className);

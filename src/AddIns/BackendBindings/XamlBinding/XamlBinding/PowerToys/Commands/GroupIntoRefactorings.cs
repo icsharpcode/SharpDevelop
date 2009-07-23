@@ -102,7 +102,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		public abstract ICollection BuildItems(Codon codon, object owner);
 		
-		protected MenuItem CreateItem(string header, Action clickAction)
+		protected static MenuItem CreateItem(string header, Action clickAction)
 		{
 			MenuItem item = new MenuItem() { Header = header };
 			item.Click += new RoutedEventHandler(delegate { clickAction(); });

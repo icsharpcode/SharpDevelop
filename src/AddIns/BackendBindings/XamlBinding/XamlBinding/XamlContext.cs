@@ -5,15 +5,17 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml;
+
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
@@ -29,7 +31,7 @@ namespace ICSharpCode.XamlBinding
 		public Dictionary<string, string> XmlnsDefinitions { get; set; }
 		public ParseInformation ParseInformation { get; set; }
 		public bool InRoot { get; set; }
-		public List<string> IgnoredXmlns { get; set; }
+		public ReadOnlyCollection<string> IgnoredXmlns { get; set; }
 		
 		public XamlContext() {}
 		
