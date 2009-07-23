@@ -24,8 +24,6 @@ namespace PythonBinding.Tests.Parsing
 	public class ParseMethodsWithNoClassTestFixture
 	{
 		ICompilationUnit compilationUnit;
-		FoldingRegion fooFoldingRegion;
-		FoldingRegion barFoldingRegion;
 		FoldMarker fooMethodMarker;
 		FoldMarker barMethodMarker;
 		IClass globalClass;
@@ -44,11 +42,6 @@ namespace PythonBinding.Tests.Parsing
 			DefaultProjectContent projectContent = new DefaultProjectContent();
 			PythonParser parser = new PythonParser();
 			compilationUnit = parser.Parse(projectContent, @"C:\test.py", python);			
-
-			if (compilationUnit.FoldingRegions.Count > 1) {
-				fooFoldingRegion = compilationUnit.FoldingRegions[0];
-				barFoldingRegion = compilationUnit.FoldingRegions[1];
-			}
 			
 			if (compilationUnit.Classes.Count > 0) {
 				globalClass = compilationUnit.Classes[0];

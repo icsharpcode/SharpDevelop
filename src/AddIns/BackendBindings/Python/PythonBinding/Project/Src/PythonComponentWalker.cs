@@ -110,7 +110,7 @@ namespace ICSharpCode.PythonBinding
 					MemberExpression rhsMemberExpression = node.Right as MemberExpression;
 					if (rhsMemberExpression != null) {
 						object propertyValue = GetPropertyValueFromAssignmentRhs(rhsMemberExpression);
-						SetPropertyValue(fieldExpression.MemberName, propertyValue);
+						SetPropertyValue(fieldExpression, propertyValue);
 					} else {
 						walkingAssignment = true;
 						BinaryExpression binaryExpression = node.Right as BinaryExpression;
@@ -136,12 +136,8 @@ namespace ICSharpCode.PythonBinding
 			if (!FoundInitializeComponentMethod) {
 				return false;
 			}
-
-			if (fieldExpression.IsSelfReference) {
-				SetPropertyValue(fieldExpression.MemberName, node.Value);
-			} else {
-				SetPropertyValue(componentCreator.GetInstance(fieldExpression.VariableName), fieldExpression.MemberName, node.Value);
-			}
+			
+			SetPropertyValue(fieldExpression, node.Value);
 			return false;
 		}
 		
@@ -165,7 +161,7 @@ namespace ICSharpCode.PythonBinding
 				return false;
 			}
 			
-			SetPropertyValue(fieldExpression.MemberName, node.Name.ToString());
+			SetPropertyValue(fieldExpression, node.Name.ToString());
 			return false;
 		}
 		
@@ -213,6 +209,18 @@ namespace ICSharpCode.PythonBinding
 			return name == "initializecomponent" || name == "initializecomponents";
 		}
 
+		/// <summary>
+		/// Checks the field expression to see if it references an class instance variable (e.g. self._treeView1) 
+		/// or a variable that is local to the InitializeComponent method (e.g. treeNode1.BackColor)
+		/// </summary>
+		bool SetPropertyValue(PythonControlFieldExpression fieldExpression, object propertyValue)
+		{
+			if (fieldExpression.IsSelfReference) {
+				return SetPropertyValue(fieldExpression.MemberName, propertyValue);
+			} 
+			return SetPropertyValue(componentCreator.GetInstance(fieldExpression.VariableName), fieldExpression.MemberName, propertyValue);
+		}
+		
 		/// <summary>
 		/// Sets the value of a property on the current control.
 		/// </summary>
@@ -325,13 +333,13 @@ namespace ICSharpCode.PythonBinding
 				string name = GetInstanceName(fieldExpression);
 				object instance = CreateInstance(name, node);
 				if (instance != null) {
-					if (!SetPropertyValue(fieldExpression.MemberName, instance)) {
+					if (!SetPropertyValue(fieldExpression, instance)) {
 						AddComponent(fieldExpression.MemberName, instance);
 					}
 				} else {
 					object obj = deserializer.Deserialize(node);
 					if (obj != null) {
-						SetPropertyValue(component, fieldExpression.MemberName, obj);
+						SetPropertyValue(fieldExpression, obj);
 					} else if (IsResource(memberExpression)) {
 						SetPropertyValue(fieldExpression.MemberName, GetResource(node));
 					} else {

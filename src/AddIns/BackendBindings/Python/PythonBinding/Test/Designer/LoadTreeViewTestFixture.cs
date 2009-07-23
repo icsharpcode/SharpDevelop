@@ -33,7 +33,11 @@ namespace PythonBinding.Tests.Designer
 						"        # \r\n" +
 						"        # treeView1\r\n" +
 						"        # \r\n" +
+						"        treeNode1.BackColor = System.Drawing.Color.Yellow\r\n" +
+						"        treeNode1.Checked = True\r\n" +
+						"        treeNode1.ForeColor = System.Drawing.Color.FromArgb(0, 64, 64)\r\n" +
 						"        treeNode1.Name = \"RootNode0\"\r\n" +
+						"        treeNode1.NodeFont = System.Drawing.Font(\"Times New Roman\", 8.25, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 1)\r\n" +
 						"        treeNode1.Text = \"RootNode0.Text\"\r\n" +
 						"        treeNode1.Nodes.AddRange(System.Array[System.Windows.Forms.TreeNode](\r\n" +
 						"            [treeNode2]))\r\n" +
@@ -64,6 +68,10 @@ namespace PythonBinding.Tests.Designer
 			get { return Form.Controls[0] as TreeView; }
 		}
 		
+		public TreeNode RootTreeNode {
+			get { return TreeView.Nodes[0]; }
+		}
+		
 		[Test]
 		public void OneRootNode()
 		{
@@ -73,13 +81,38 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void RootNodeHasOneChildNode()
 		{
-			Assert.AreEqual(1, TreeView.Nodes[0].Nodes.Count);
+			Assert.AreEqual(1, RootTreeNode.Nodes.Count);
 		}
 		
 		[Test]
 		public void ChildNodeHasOneChildNode()
 		{
-			Assert.AreEqual(1, TreeView.Nodes[0].Nodes[0].Nodes.Count);
+			Assert.AreEqual(1, RootTreeNode.Nodes[0].Nodes.Count);
 		}
+		
+		[Test]
+		public void RootTreeNodeBackColor()
+		{
+			Assert.AreEqual(Color.Yellow, RootTreeNode.BackColor);
+		}
+		
+		[Test]
+		public void RootTreeNodeForeColor()
+		{
+			Assert.AreEqual(Color.FromArgb(0, 64, 64), RootTreeNode.ForeColor);
+		}
+		
+		[Test]
+		public void RootTreeNodeFontProperty()
+		{
+			Font font = new Font("Times New Roman", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 1);
+			Assert.AreEqual(font, RootTreeNode.NodeFont);
+		}
+		
+		[Test]
+		public void RootTreeNodeCheckedProperty()
+		{
+			Assert.IsTrue(RootTreeNode.Checked);
+		}		
 	}
 }
