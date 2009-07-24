@@ -38,7 +38,11 @@ type FSharpProject = class
     new (info : ProjectCreateInformation) as x = 
         { inherit CompilableProject(info.Solution) } then
         x.Create(info)
-        base.AddImport(@"$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets", null)
+        try
+            base.AddImport(@"$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets", null)
+        with
+            | :? Microsoft.Build.BuildEngine.InvalidProjectFileException as ex ->
+                raise (ProjectLoadException("Please ensure that the F# compiler is installed on your computer.\n\n" + ex.Message, ex))
     override x.GetDefaultItemType(fileName : string) = 
         if String.Equals(".fs", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase) then
             ItemType.Compile
