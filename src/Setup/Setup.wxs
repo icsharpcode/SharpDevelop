@@ -23,8 +23,13 @@
 		<Upgrade Id="757486BE-1F27-4BED-9A3B-737906728F1C">
 			<!-- The UpgradeCode must be changed to allow two versions of SharpDevelop to be installed side-by-side -->
 			
+			<!-- Checks for 3.0 versions (too old for upgrade due to SD2-1565 - Microsoft.Scripting.dll removed by upgrade 3.0 -> 3.1) -->
+			<UpgradeVersion OnlyDetect="yes"
+				Property="OLDVERSIONFOUND"
+				Maximum="3.1.0"
+				IncludeMaximum="no"/>
 			<!-- Checks for older versions -->
-			<UpgradeVersion Minimum="3.0.0"
+			<UpgradeVersion Minimum="3.1.0"
 				IncludeMinimum="yes"
 				Maximum="3.1.$(var.PRODUCTBUILDVERSION)"
 				IncludeMaximum="no" 
@@ -598,6 +603,7 @@
 			configured everything.
 		-->
 		<CustomAction Id="NoDowngrade" Error="A later version of [ProductName] is already installed." />
+		<CustomAction Id="UpgradeNotPossible" Error="This setup cannot upgrade existing SharpDevelop 3.0 installations, please uninstall SharpDevelop 3.0." />
 		
 		<!-- Add RemoveExistingProducts action to install sequence so upgrades can work -->
 		<InstallExecuteSequence>
@@ -609,6 +615,7 @@
 				inform the user that a newer version already exists.
  			-->
 			<Custom Action="NoDowngrade" After="FindRelatedProducts">NEWERVERSIONFOUND</Custom>
+			<Custom Action="UpgradeNotPossible" After="FindRelatedProducts">OLDVERSIONFOUND</Custom>
 			<!--
 				Removes the older version of SharpDevelop 3.1, if we are upgrading,
 				before installing the new version.
