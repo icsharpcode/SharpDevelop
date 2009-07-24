@@ -15,6 +15,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
 using Debugger.AddIn.Visualizers.Utils;
@@ -28,6 +29,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	public partial class GridVisualizerWindow : Window
 	{
 		private WindowsDebugger debuggerService;
+		private GridViewColumnHider columnHider;
+		private SelectedProperties selectedProperties;
 		
 		public GridVisualizerWindow()
 		{
@@ -54,13 +57,14 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			if (val != null && !val.IsNull)
 			{
 				DebugType iListType, listItemType;
+				IList<MemberInfo> itemTypeMembers = null;
+				
 				if (val.Type.ResolveIListImplementation(out iListType, out listItemType))
 				{
 					var valuesProvider = new ListValuesProvider(val.Expression, iListType, listItemType);
 					var virtCollection = new VirtualizingCollection<ObjectValue>(valuesProvider);
 					
-					IList<MemberInfo> listItemTypeMembers = valuesProvider.GetItemTypeMembers();
-					createListViewColumns(listItemTypeMembers);
+					itemTypeMembers = valuesProvider.GetItemTypeMembers();
 					
 					this.listView.ItemsSource = virtCollection;
 				}
@@ -69,21 +73,25 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					DebugType iEnumerableType, itemType;
 					if (val.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
 					{
-						var lazyListView = new LazyListView<ObjectValue>(this.listView);
+						var lazyListViewWrapper = new LazyListView<ObjectValue>(this.listView);
 						var iEnumerableValuesProvider = new EnumerableValuesProvider(val.Expression, iEnumerableType, itemType);
 						
-						IList<MemberInfo> itemTypeMembers = iEnumerableValuesProvider.GetItemTypeMembers();
-						createListViewColumns(itemTypeMembers);
-						
-						lazyListView.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(iEnumerableValuesProvider.ItemsSource);
+						itemTypeMembers = iEnumerableValuesProvider.GetItemTypeMembers();
+
+						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(iEnumerableValuesProvider.ItemsSource);
 					}
 				}
+				
+				createGridViewColumns((GridView)this.listView.View, itemTypeMembers);
+				this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
+				
+				this.selectedProperties = initializeSelectedPropertiesWithEvents(itemTypeMembers);
+				cmbColumns.ItemsSource = this.selectedProperties;
 			}
 		}
 		
-		private void createListViewColumns(IList<MemberInfo> itemTypeMembers)
+		private void createGridViewColumns(GridView gridView, IList<MemberInfo> itemTypeMembers)
 		{
-			var gridView = (GridView)listView.View;
 			gridView.Columns.Clear();
 			foreach (var member in itemTypeMembers)
 			{
@@ -92,6 +100,30 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				// "{Binding Path=[Name]}"
 				column.DisplayMemberBinding = new Binding("[" + member.Name + "].Value");
 				gridView.Columns.Add(column);
+			}
+		}
+		
+		private SelectedProperties initializeSelectedPropertiesWithEvents(IList<MemberInfo> itemTypeMembers)
+		{
+			var selectedProperties = new SelectedProperties(itemTypeMembers.Select(member => member.Name));
+			foreach (var selectedProperty in selectedProperties)
+			{
+				selectedProperty.SelectedChanged += new EventHandler(selectedProperty_SelectedChanged);
+			}
+			return selectedProperties;
+		}
+		
+		void selectedProperty_SelectedChanged(object sender, EventArgs e)
+		{
+			var propertySeleted = ((SelectedProperty)sender);
+			var columnName = propertySeleted.Name;
+			if (propertySeleted.IsSelected)
+			{
+				columnHider.ShowColumn(columnName);
+			}
+			else
+			{
+				columnHider.HideColumn(columnName);
 			}
 		}
 	}
