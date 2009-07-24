@@ -21,6 +21,7 @@ namespace Debugger.Tests.TestPrograms
 			public char c;
 			public IntPtr intPtr;
 			public int* pInt;
+			public void* pVoid;
 			public int[] intArray;
 			public int[,] intMultiArray;
 			public List<int> intList;
@@ -124,10 +125,10 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugTypes.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugTypes.cs:75,4-75,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugTypes.cs:76,4-76,40</DebuggingPaused>
     <MyClassMemberts
       Capacity="16"
-      Count="14">
+      Count="15">
       <Item>
         <FieldInfo
           DeclaringType="MyClass"
@@ -171,7 +172,16 @@ namespace Debugger.Tests {
           IsPublic="True"
           Module="DebugTypes.exe"
           Name="pInt"
-          Type="{Exception: Ptr}" />
+          Type="System.Int32*" />
+      </Item>
+      <Item>
+        <FieldInfo
+          DeclaringType="MyClass"
+          FullName="MyClass.pVoid"
+          IsPublic="True"
+          Module="DebugTypes.exe"
+          Name="pVoid"
+          Type="System.Void*" />
       </Item>
       <Item>
         <FieldInfo
@@ -180,7 +190,7 @@ namespace Debugger.Tests {
           IsPublic="True"
           Module="DebugTypes.exe"
           Name="intArray"
-          Type="{Exception: SzArray}" />
+          Type="System.Int32[]" />
       </Item>
       <Item>
         <FieldInfo
@@ -189,7 +199,7 @@ namespace Debugger.Tests {
           IsPublic="True"
           Module="DebugTypes.exe"
           Name="intMultiArray"
-          Type="{Exception: Array}" />
+          Type="System.Int32[,]" />
       </Item>
       <Item>
         <FieldInfo
@@ -207,7 +217,7 @@ namespace Debugger.Tests {
           IsPublic="True"
           Module="DebugTypes.exe"
           Name="intListArray"
-          Type="{Exception: SzArray}" />
+          Type="System.Collections.Generic.List&lt;System.Int32&gt;[]" />
       </Item>
       <Item>
         <FieldInfo
@@ -244,7 +254,7 @@ namespace Debugger.Tests {
           Module="DebugTypes.exe"
           Name="Foo"
           ParameterCount="2"
-          ParameterTypes="{Exception: SzArray}"
+          ParameterTypes="{System.Object, System.Object[]}"
           ReturnType="System.Object" />
       </Item>
       <Item>
@@ -775,7 +785,7 @@ namespace Debugger.Tests {
         </Value>
       </Item>
     </LocalVariables>
-    <DebuggingPaused>Break DebugTypes.cs:92,4-92,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugTypes.cs:93,4-93,40</DebuggingPaused>
     <Arguments
       Capacity="16"
       Count="15">

@@ -19,7 +19,7 @@ namespace Debugger
 		public AppDomain this[ICorDebugAppDomain corAppDomain] {
 			get {
 				foreach(AppDomain a in this) {
-					if (a.CorDebugAppDomain.Equals(corAppDomain)) {
+					if (a.CorAppDomain.Equals(corAppDomain)) {
 						return a;
 					}
 				}

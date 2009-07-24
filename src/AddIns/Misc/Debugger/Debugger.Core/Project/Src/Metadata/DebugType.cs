@@ -401,6 +401,36 @@ namespace Debugger.MetaData
 				return Create(module.AppDomain, genInstance);
 			}
 			
+			if (sigType is ARRAY) {
+				ARRAY arraySig = (ARRAY)sigType;
+				DebugType elementType = Create(module, arraySig.Type, declaringType);
+				ICorDebugType res = module.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)sigType.ElementType, (uint)arraySig.Shape.Rank, elementType.CorType);
+				return Create(module.AppDomain, res);
+			}
+			
+			if (sigType is SZARRAY) {
+				SZARRAY arraySig = (SZARRAY)sigType;
+				DebugType elementType = Create(module, arraySig.Type, declaringType);
+				ICorDebugType res = module.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)sigType.ElementType, 1, elementType.CorType);
+				return Create(module.AppDomain, res);
+			}
+			
+			if (sigType is PTR) {
+				PTR ptrSig = (PTR)sigType;
+				DebugType elementType;
+				if (ptrSig.Void) {
+					elementType = Create(module.AppDomain, typeof(void).FullName);
+				} else {
+					elementType = Create(module, ptrSig.PtrType, declaringType);
+				}
+				ICorDebugType res = module.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)sigType.ElementType, 0, elementType.CorType);
+				return Create(module.AppDomain, res);
+			}
+			
+			if (sigType is FNPTR) {
+				// TODO: FNPTR
+			}
+			
 			throw new NotImplementedException(sigType.ElementType.ToString());
 		}
 		

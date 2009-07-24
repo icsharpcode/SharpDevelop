@@ -40,7 +40,7 @@ namespace Debugger
 			}
 		}
 		
-		internal ICorDebugAppDomain CorDebugAppDomain {
+		internal ICorDebugAppDomain CorAppDomain {
 			get {
 				return corAppDomain;
 			}
