@@ -43,6 +43,7 @@ namespace PythonBinding.Tests.Designer
 						"            [treeNode2]))\r\n" +
 						"        treeNode2.Name = \"ChildNode0\"\r\n" +
 						"        treeNode2.Text = \"ChildNode0.Text\"\r\n" +
+						"        treeNode2.NodeFont = System.Drawing.Font(\"Garamond\", 8.25, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0)\r\n" +
 						"        treeNode2.Nodes.AddRange(System.Array[System.Windows.Forms.TreeNode](\r\n" +
 						"            [treeNode3]))\r\n" +
 						"        treeNode3.Name = \"ChildNode1\"\r\n" +
@@ -70,6 +71,10 @@ namespace PythonBinding.Tests.Designer
 		
 		public TreeNode RootTreeNode {
 			get { return TreeView.Nodes[0]; }
+		}
+		
+		public TreeNode FirstChildTreeNode {
+			get { return RootTreeNode.Nodes[0]; }
 		}
 		
 		[Test]
@@ -113,6 +118,27 @@ namespace PythonBinding.Tests.Designer
 		public void RootTreeNodeCheckedProperty()
 		{
 			Assert.IsTrue(RootTreeNode.Checked);
-		}		
+		}
+		
+		[Test]
+		public void ChildTreeNodeFontProperty()
+		{
+			Font font = new Font("Garamond", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);		
+			Assert.AreEqual(font, FirstChildTreeNode.NodeFont);
+		}
+		
+		/// <summary>
+		/// Ensures that we are not creating an instance with a name of NodeFont.
+		/// </summary>
+		[Test]
+		public void InstancesCreated()
+		{
+			foreach (CreatedInstance instance in ComponentCreator.CreatedInstances) {
+				if (instance.InstanceType == typeof(Font)) {
+					Assert.IsNull(instance.Name);
+				}
+			}
+			Assert.IsTrue(ComponentCreator.CreatedInstances.Count > 0);
+		}
 	}
 }

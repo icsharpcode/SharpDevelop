@@ -355,9 +355,11 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		string GetInstanceName(PythonControlFieldExpression fieldExpression)
 		{
-			if (!HasPropertyValue(fieldExpression.MemberName)) {
-				return PythonControlFieldExpression.GetVariableName(fieldExpression.MemberName);
-			}			
+			if (fieldExpression.IsSelfReference) {
+				if (!HasPropertyValue(fieldExpression.MemberName)) {
+					return PythonControlFieldExpression.GetVariableName(fieldExpression.MemberName);
+				}
+			}
 			return null;
 		}
 		
