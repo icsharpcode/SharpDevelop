@@ -24,7 +24,7 @@ namespace ICSharpCode.XamlBinding
 {
 	using Tasks = System.Threading.Tasks;
 	
-	public class XamlColorizer : DocumentColorizingTransformer, ILineTracker
+	public class XamlColorizer : DocumentColorizingTransformer, ILineTracker, IDisposable
 	{
 		public struct Highlight {
 			public IMember Member { get; set; }
@@ -165,43 +165,47 @@ namespace ICSharpCode.XamlBinding
 		
 		string fileContent;
 		string fileName;
-		IDocument document;
 		
 		Dictionary<DocumentLine, HighlightTask> highlightCache = new Dictionary<DocumentLine, HighlightTask>();
 		
-		public IViewContent Content { get; set; }
+		public ITextEditor Editor { get; set; }
 		
 		public AvalonEdit.Rendering.TextView TextView { get; set;	}
 		
-		public XamlColorizer(IViewContent content, TextView textView)
+		public XamlColorizer(ITextEditor editor, TextView textView)
 		{
-			this.Content = content;
+			this.Editor = editor;
 			this.TextView = textView;
 			
-			IFileDocumentProvider documentProvider = this.Content as IFileDocumentProvider;
+			WeakLineTracker.Register(this.Editor.Document.GetService(typeof(TextDocument)) as TextDocument, this);
 			
-			if (documentProvider == null)
-				throw new InvalidOperationException("XamlColorizer only works with ITextEditor view contents");
-			
-			this.document = documentProvider.GetDocumentForFile(this.Content.PrimaryFile);
-			
-			WeakLineTracker.Register(this.document.GetService(typeof(TextDocument)) as TextDocument, this);
-			
-			ParserService.LoadSolutionProjectsThreadEnded += delegate {
-				WorkbenchSingleton.SafeThreadAsyncCall(() => ParserServiceLoadSolutionProjectsThreadEnded(null, EventArgs.Empty));
-			};
+			ParserService.LoadSolutionProjectsThreadEnded += ParserServiceLoadSolutionProjectsThreadEnded;
 		}
 
 		void ParserServiceLoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
-			highlightCache.Clear();
-			TextView.Redraw();
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				() => {
+					highlightCache.Clear();
+					TextView.Redraw();
+				}
+			);
+		}
+		
+		bool disposed;
+		
+		public void Dispose()
+		{
+			if (!disposed) {
+				ParserService.LoadSolutionProjectsThreadEnded -= ParserServiceLoadSolutionProjectsThreadEnded;
+			}
+			disposed = true;
 		}
 		
 		protected override void Colorize(ITextRunConstructionContext context)
 		{
-			this.fileContent = this.document.CreateSnapshot().Text;
-			this.fileName = this.Content.PrimaryFileName;
+			this.fileContent = this.Editor.Document.CreateSnapshot().Text;
+			this.fileName = this.Editor.FileName;
 			
 			base.Colorize(context);
 		}

@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (solutionFolderNode == null)
 				throw new ArgumentNullException("solutionFolderNode");
 			ProjectLoadInformation loadInfo = new ProjectLoadInformation(solutionFolderNode.Solution, fileName, Path.GetFileNameWithoutExtension(fileName));
-			AddProject(solutionFolderNode, LanguageBindingService.LoadProject(loadInfo));
+			AddProject(solutionFolderNode, ProjectBindingService.LoadProject(loadInfo));
 		}
 		
 		public static void AddProject(ISolutionFolderNode solutionFolderNode, IProject newProject)

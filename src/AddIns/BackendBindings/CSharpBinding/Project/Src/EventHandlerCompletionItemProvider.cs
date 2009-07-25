@@ -251,7 +251,7 @@ namespace CSharpBinding
 						
 						editor.Document.Insert(editor.Caret.Offset, this.newHandlerCode);
 	
-						editor.FormattingStrategy.IndentLines(editor, region.EndLine, editor.Caret.Line);
+						editor.Language.FormattingStrategy.IndentLines(editor, region.EndLine, editor.Caret.Line);
 						
 						IDocumentLine line = editor.Document.GetLine(editor.Caret.Line - 1);
 						int indentationLength = DocumentUtilitites.GetIndentation(editor.Document, line.Offset).Length;

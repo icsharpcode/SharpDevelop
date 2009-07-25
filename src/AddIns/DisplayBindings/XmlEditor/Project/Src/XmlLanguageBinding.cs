@@ -6,24 +6,18 @@
 // </file>
 
 using System;
-using CSharpBinding.FormattingStrategy;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace CSharpBinding
+namespace ICSharpCode.XmlEditor
 {
 	/// <summary>
-	/// Description of CSharpLanguageBinding.
+	/// Description of XmlLanguageBinding.
 	/// </summary>
-	public class CSharpLanguageBinding : DefaultLanguageBinding
+	public class XmlLanguageBinding : DefaultLanguageBinding
 	{
 		public override IFormattingStrategy FormattingStrategy {
-			get { return new CSharpFormattingStrategy(); }
-		}
-		
-		public override LanguageProperties Properties {
-			get { return LanguageProperties.CSharp; }
+			get { return new XmlFormattingStrategy(); }
 		}
 	}
 }

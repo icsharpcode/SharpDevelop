@@ -1,50 +1,42 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
+using System.IO;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop
 {
 	public class LanguageBindingDescriptor
 	{
-		ILanguageBinding binding = null;
 		Codon codon;
+		string[] extensions;
 		
-		public ILanguageBinding Binding {
-			get {
-				if (binding == null) {
-					binding = (ILanguageBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
-					if (binding != null) {
-						if (binding.Language != this.Language)
-							throw new InvalidOperationException("The Language property of the language binding must be equal to the id of the LanguageBinding codon!");
-					}
+		public LanguageBindingDescriptor(Codon codon)
+		{
+			this.codon = codon;
+		}
+		
+		internal ILanguageBinding CreateBinding(ITextEditor editor) {
+			return (ILanguageBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
+		}
+		
+		internal bool CanAttach(ITextEditor editor)
+		{
+			if (!string.IsNullOrEmpty(editor.FileName)) {
+				string extension = Path.GetExtension(editor.FileName).ToLowerInvariant();
+				foreach (var ext in Extensions) {
+					if (extension == ext)
+						return true;
 				}
-				return binding;
 			}
-		}
-		public Codon Codon {
-			get {
-				return codon;
-			}
-		}
-		
-		public string ProjectFileExtension {
-			get {
-				return codon.Properties["projectfileextension"];
-			}
-		}
-		
-		
-		public string Guid {
-			get {
-				return codon.Properties["guid"];
-			}
+			
+			return false;
 		}
 		
 		public string Language {
@@ -53,23 +45,22 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		string[] codeFileExtensions;
-		
-		public string[] CodeFileExtensions {
+		public Codon Codon {
 			get {
-				if (codeFileExtensions == null) {
-					if (codon.Properties["supportedextensions"].Length == 0)
-						codeFileExtensions = new string[0];
-					else
-						codeFileExtensions = codon.Properties["supportedextensions"].ToLowerInvariant().Split(';');
-				}
-				return codeFileExtensions;
+				return codon;
 			}
 		}
 		
-		public LanguageBindingDescriptor(Codon codon)
-		{
-			this.codon = codon;
+		public string[] Extensions {
+			get {
+				if (extensions == null) {
+					if (codon.Properties["extensions"].Length == 0)
+						extensions = new string[0];
+					else
+						extensions = codon.Properties["extensions"].ToLowerInvariant().Split(';');
+				}
+				return extensions;
+			}
 		}
 	}
 }

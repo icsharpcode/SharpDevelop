@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				endLine = provider.TextEditor.Document.GetLineForOffset(provider.TextEditor.SelectionStart + provider.TextEditor.SelectionLength).LineNumber;
 			}
 			
-			provider.TextEditor.FormattingStrategy.IndentLines(provider.TextEditor, beginLine, endLine);
+			provider.TextEditor.Language.FormattingStrategy.IndentLines(provider.TextEditor, beginLine, endLine);
 		}
 	}
 }

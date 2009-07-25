@@ -78,7 +78,7 @@ namespace SharpRefactoring
 					                         DocumentUtilitites.GetLineTerminator(textArea.Document, textArea.Caret.Line) + newCodeLine);
 				}
 				int endLine = textArea.Caret.Line;
-				textArea.FormattingStrategy.IndentLines(textArea, startLine, endLine);
+				textArea.Language.FormattingStrategy.IndentLines(textArea, startLine, endLine);
 			}
 		}
 		

@@ -44,12 +44,12 @@ namespace PythonBinding.Tests.Converter
 		{
 			MSBuildEngineHelper.InitMSBuildEngine();
 
-			List<LanguageBindingDescriptor> bindings = new List<LanguageBindingDescriptor>();
+			List<ProjectBindingDescriptor> bindings = new List<ProjectBindingDescriptor>();
 			using (TextReader reader = PythonBindingAddInFile.ReadAddInFile()) {
 				AddIn addin = AddIn.Load(reader, String.Empty);
-				bindings.Add(new LanguageBindingDescriptor(AddInHelper.GetCodon(addin, "/SharpDevelop/Workbench/LanguageBindings", "Python")));
+				bindings.Add(new ProjectBindingDescriptor(AddInHelper.GetCodon(addin, "/SharpDevelop/Workbench/ProjectBindings", "Python")));
 			}
-			LanguageBindingService.SetBindings(bindings);
+			ProjectBindingService.SetBindings(bindings);
 			
 			mockTextEditorProperties = new MockTextEditorProperties();
 			convertProjectCommand = new DerivedConvertProjectToPythonProjectCommand(mockTextEditorProperties);
@@ -83,7 +83,7 @@ namespace PythonBinding.Tests.Converter
 		[Test]
 		public void CommandHasPythonTargetLanguage()
 		{
-			Assert.AreEqual(PythonLanguageBinding.LanguageName, convertProjectCommand.TargetLanguageName);
+			Assert.AreEqual(PythonProjectBinding.LanguageName, convertProjectCommand.TargetLanguageName);
 		}
 		
 		[Test]

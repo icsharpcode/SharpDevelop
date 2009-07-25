@@ -64,8 +64,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\BooProject.cs" />
     <Compile Include="Src\BooLanguageBinding.cs" />
+    <Compile Include="Src\BooProject.cs" />
+    <Compile Include="Src\BooProjectBinding.cs" />
     <Compile Include="Src\BooAmbience.cs" />
     <Compile Include="Src\CodeCompletion\BooParser.cs" />
     <Compile Include="Src\CodeCompletion\ExpressionFinder.cs" />

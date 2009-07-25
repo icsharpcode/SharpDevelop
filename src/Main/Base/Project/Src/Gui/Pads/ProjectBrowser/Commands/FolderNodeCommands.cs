@@ -48,11 +48,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		int GetFileFilterIndex(IProject project, string[] fileFilters)
 		{
 			if (project != null) {
-				LanguageBindingDescriptor languageCodon = LanguageBindingService.GetCodonPerLanguageName(project.Language);
-				if (languageCodon != null) {
+				ProjectBindingDescriptor projectCodon = ProjectBindingService.GetCodonPerLanguageName(project.Language);
+				if (projectCodon != null) {
 					for (int i = 0; i < fileFilters.Length; ++i) {
-						for (int j = 0; j < languageCodon.CodeFileExtensions.Length; ++j) {
-							if (fileFilters[i].ToUpperInvariant().IndexOf(languageCodon.CodeFileExtensions[j].ToUpperInvariant()) >= 0) {
+						for (int j = 0; j < projectCodon.CodeFileExtensions.Length; ++j) {
+							if (fileFilters[i].ToUpperInvariant().IndexOf(projectCodon.CodeFileExtensions[j].ToUpperInvariant()) >= 0) {
 								return i + 1;
 							}
 						}

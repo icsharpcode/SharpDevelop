@@ -93,12 +93,23 @@
 		        class = "Grunwald.BooBinding.CodeCompletion.BooParser"/>
 	</Path>
 	
+	<!--
+	depreciated, use LanguageBinding instead
+	
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/Boo">
 		<Class id = "BooFormatter" class = "Grunwald.BooBinding.BooFormattingStrategy"/>
 	</Path>
 	
 	<Path name = "/AddIns/DefaultTextEditor/AdvancedHighlighter/Boo">
 		<Class id = "BooFormatter" class = "Grunwald.BooBinding.CodeCompletion.BooAdvancedHighlighter"/>
+	</Path>
+	-->
+	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding
+			id="Boo"
+		    class="Grunwald.BooBinding.BooLanguageBinding"
+		    extensions=".boo" />
 	</Path>
 	
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
@@ -138,12 +149,12 @@
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id                   = "Boo"
-		                 guid                 = "{A33008B1-5DAC-44D5-9060-242E3B6E38F2}"
-		                 supportedextensions  = ".boo"
-		                 projectfileextension = ".booproj"
-		                 class                = "Grunwald.BooBinding.BooLanguageBinding" />
+	<Path name = "/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id                   = "Boo"
+		                guid                 = "{A33008B1-5DAC-44D5-9060-242E3B6E38F2}"
+		                supportedextensions  = ".boo"
+		                projectfileextension = ".booproj"
+		                class                = "Grunwald.BooBinding.BooProjectBinding" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools/ConvertCode">

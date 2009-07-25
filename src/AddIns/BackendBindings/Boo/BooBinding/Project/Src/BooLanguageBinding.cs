@@ -1,42 +1,20 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
-using System.Xml;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop;
 
 namespace Grunwald.BooBinding
 {
-	public class BooLanguageBinding : ILanguageBinding
+	public class BooLanguageBinding : DefaultLanguageBinding
 	{
-		public const string LanguageName = "Boo";
-		
-		public string Language {
-			get {
-				return LanguageName;
-			}
-		}
-		
-		public IProject LoadProject(ProjectLoadInformation loadInformation)
-		{
-			return new BooProject(loadInformation);
-		}
-		
-		public IProject CreateProject(ProjectCreateInformation info)
-		{
-			return new BooProject(info);
-		}
-		
-		public LanguageProperties LanguageProperties {
-			get {
-				return BooLanguageProperties.Instance;
-			}
+		public override IFormattingStrategy FormattingStrategy {
+			get { return new BooFormattingStrategy(); }
 		}
 	}
 }

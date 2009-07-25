@@ -110,9 +110,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (fileName != value) {
 					fileName = value;
 					
+					primaryTextEditorAdapter.FileNameChanged();
+					if (secondaryTextEditorAdapter != null)
+						secondaryTextEditorAdapter.FileNameChanged();
+					
 					FetchParseInformation();
 				}
 			}
+		}
+		
+		internal void DisposeLanguageBinding()
+		{
+			primaryTextEditorAdapter.Language.Detach();
+			if (secondaryTextEditorAdapter != null)
+				secondaryTextEditorAdapter.Language.Detach();
 		}
 		
 		public void Redraw(ISegment segment, DispatcherPriority priority)
@@ -229,11 +240,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				
 				SetRow(secondaryTextEditor, 2);
 				this.Children.Add(secondaryTextEditor);
+				
+				secondaryTextEditorAdapter.FileNameChanged();
 			} else {
 				// remove secondary editor
 				this.Children.Remove(secondaryTextEditor);
 				DisposeTextEditor(secondaryTextEditor);
 				secondaryTextEditor = null;
+				secondaryTextEditorAdapter.Language.Detach();
 				secondaryTextEditorAdapter = null;
 				this.RowDefinitions.RemoveAt(this.RowDefinitions.Count - 1);
 			}
@@ -367,14 +381,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
 		{
 			if (e.Text.Length > 0 && !e.Handled) {
-				if (formattingStrategy != null) {
+				ILanguageBinding languageBinding = GetAdapterFromSender(sender).Language;
+				if (languageBinding != null && languageBinding.FormattingStrategy != null) {
 					char c = e.Text[0];
 					// When entering a newline, AvalonEdit might use either "\r\n" or "\n", depending on
 					// what was passed to TextArea.PerformTextInput. We'll normalize this to '\n'
 					// so that formatting strategies don't have to handle both cases.
 					if (c == '\r')
 						c = '\n';
-					formattingStrategy.FormatLine(GetAdapterFromSender(sender), c);
+					languageBinding.FormattingStrategy.FormatLine(GetAdapterFromSender(sender), c);
 				}
 			}
 		}
@@ -464,23 +479,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					}
 				}
 			));
-		}
-		
-		IFormattingStrategy formattingStrategy;
-		
-		public IFormattingStrategy FormattingStrategy {
-			get { return formattingStrategy; }
-			set {
-				if (formattingStrategy != value) {
-					formattingStrategy = value;
-					if (value != null)
-						primaryTextEditor.TextArea.IndentationStrategy = new IndentationStrategyAdapter(primaryTextEditorAdapter, value);
-					else
-						primaryTextEditor.TextArea.IndentationStrategy = new DefaultIndentationStrategy();
-					// no need to update the secondary text editor - its IndentationStrategy property will
-					// update using a binding.
-				}
-			}
 		}
 		
 		public IHighlightingDefinition SyntaxHighlighting {

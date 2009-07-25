@@ -1,20 +1,21 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Xml;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.WixBinding
+namespace Grunwald.BooBinding
 {
-	public class WixLanguageBinding : ILanguageBinding
+	public class BooProjectBinding : IProjectBinding
 	{
-		public const string LanguageName = "Wix";
+		public const string LanguageName = "Boo";
 		
 		public string Language {
 			get {
@@ -24,12 +25,18 @@ namespace ICSharpCode.WixBinding
 		
 		public IProject LoadProject(ProjectLoadInformation loadInformation)
 		{
-			return new WixProject(loadInformation);
+			return new BooProject(loadInformation);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)
 		{
-			return new WixProject(info);
+			return new BooProject(info);
+		}
+		
+		public LanguageProperties LanguageProperties {
+			get {
+				return BooLanguageProperties.Instance;
+			}
 		}
 	}
 }

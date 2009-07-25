@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			contractRef.ClientProtocol.Documents.Add(contractRef.Url, desc);
 			protocol.References.Add(contractRef);
 			
-			WebReferenceTestHelper.InitializeLanguageBindings();
+			WebReferenceTestHelper.InitializeProjectBindings();
 			
 			webReference = new SD.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
 			

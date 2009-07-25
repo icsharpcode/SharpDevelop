@@ -537,7 +537,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						loadInfo.TypeGuid = projectGuid;
 						loadInfo.Guid = guid;
 //						loadInfo.ProgressMonitor = progressMonitor;
-//						IProject newProject = LanguageBindingService.LoadProject(loadInfo);
+//						IProject newProject = ProjectBindingService.LoadProject(loadInfo);
 //						newProject.IdGuid = guid;
 						projectsToLoad.Add(loadInfo);
 						IList<ProjectSection> currentProjectSections = new List<ProjectSection>();
@@ -572,7 +572,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				loadInfo.Platform = AbstractProject.GetPlatformNameFromKey(projectConfig.Location);
 				
 				loadInfo.ProgressMonitor = progressMonitor;
-				IProject newProject = LanguageBindingService.LoadProject(loadInfo);
+				IProject newProject = ProjectBindingService.LoadProject(loadInfo);
 				newProject.IdGuid = loadInfo.Guid;
 				newProject.ProjectSections.AddRange(projectSections);
 				newSolution.AddFolder(newProject);

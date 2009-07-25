@@ -41,8 +41,15 @@
 	</Path>
 	
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
-		<CodeCompletionBinding id = "Xaml" extensions = ".xaml" class = "ICSharpCode.XamlBinding.XamlCodeCompletionBinding"/>
+		<CodeCompletionBinding id = "XAML" extensions = ".xaml" class = "ICSharpCode.XamlBinding.XamlCodeCompletionBinding"/>
 	</Path>
+	
+<Path name="/SharpDevelop/Workbench/LanguageBindings">
+	<LanguageBinding
+		id="XAML"
+	    class="ICSharpCode.XamlBinding.XamlLanguageBinding"
+	    extensions=".xaml" />
+</Path>
 
 	<!-- Options panel -->
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">

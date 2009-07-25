@@ -256,8 +256,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 				
 				string language = string.IsNullOrEmpty(languageName) ? defaultLanguage : languageName;
-				LanguageBindingDescriptor descriptor = LanguageBindingService.GetCodonPerLanguageName(language);
-				ILanguageBinding languageinfo = (descriptor != null) ? descriptor.Binding : null;
+				ProjectBindingDescriptor descriptor = ProjectBindingService.GetCodonPerLanguageName(language);
+				IProjectBinding languageinfo = (descriptor != null) ? descriptor.Binding : null;
 				
 				if (languageinfo == null) {
 					StringParser.Properties["type"] = language;
@@ -269,7 +269,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				                                           	{"ProjectName", projectCreateInformation.ProjectName}
 				                                           });
 				string projectLocation = Path.GetFullPath(Path.Combine(projectCreateInformation.ProjectBasePath,
-				                                                       newProjectName + LanguageBindingService.GetProjectFileExtension(language)));
+				                                                       newProjectName + ProjectBindingService.GetProjectFileExtension(language)));
 				
 				
 				StringBuilder standardNamespace = new StringBuilder();

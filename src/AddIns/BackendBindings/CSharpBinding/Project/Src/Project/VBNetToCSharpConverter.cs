@@ -23,7 +23,7 @@ namespace CSharpBinding
 	{
 		public override string TargetLanguageName {
 			get {
-				return CSharpLanguageBinding.LanguageName;
+				return CSharpProjectBinding.LanguageName;
 			}
 		}
 		

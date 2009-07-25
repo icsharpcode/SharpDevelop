@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			protocol = new DiscoveryClientProtocol();
 			
-			WebReferenceTestHelper.InitializeLanguageBindings();
+			WebReferenceTestHelper.InitializeProjectBindings();
 			
 			webReference = new SD.WebReference(project, updateFromUrl, name, proxyNamespace, protocol);
 			webReferenceUrl = (WebReferenceUrl)WebReferenceTestHelper.GetProjectItem(webReference.Items, ItemType.WebReferenceUrl);

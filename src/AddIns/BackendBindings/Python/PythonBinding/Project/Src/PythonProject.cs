@@ -35,7 +35,7 @@ namespace ICSharpCode.PythonBinding
 		/// Gets the language associated with the project.
 		/// </summary>
 		public override string Language {
-			get { return PythonLanguageBinding.LanguageName; }
+			get { return PythonProjectBinding.LanguageName; }
 		}
 		
 		/// <summary>

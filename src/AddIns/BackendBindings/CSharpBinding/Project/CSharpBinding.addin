@@ -58,6 +58,13 @@
 		<CodeCompletionBinding id = "CSharp" extensions = ".cs" class = "CSharpBinding.CSharpCompletionBinding"/>
 	</Path>
 	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding
+			id="CSharp"
+		    class="CSharpBinding.CSharpLanguageBinding"
+		    extensions=".cs" />
+	</Path>
+	
 	<!--
 	<Path name = "/AddIns/DefaultTextEditor/AdvancedHighlighter/C#">
 		<Class id = "CSharpHighlighter" class = "CSharpBinding.CSharpAdvancedHighlighter"/>
@@ -89,9 +96,13 @@
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>
 	
+	<!--
+	depreciated, use LanguageBinding instead
+
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/C#">
 		<Class id ="CSharpFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
 	</Path>
+	-->
 	
 	<Path name = "/Workspace/Icons">
 		<!-- C# -->
@@ -104,12 +115,12 @@
 		      resource   = "C#.FileIcon"/>
 	</Path>
 	
-	<Path path = "/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id                   = "C#"
-		                 guid                 = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-		                 supportedextensions  = ".cs"
-		                 projectfileextension = ".csproj"
-		                 class                = "CSharpBinding.CSharpLanguageBinding" />
+	<Path path = "/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id                   = "C#"
+		                guid                 = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+		                supportedextensions  = ".cs"
+		                projectfileextension = ".csproj"
+		                class                = "CSharpBinding.CSharpProjectBinding" />
 	</Path>
 </AddIn>
 

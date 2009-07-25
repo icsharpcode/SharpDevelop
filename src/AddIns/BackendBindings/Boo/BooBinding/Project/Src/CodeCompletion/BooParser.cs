@@ -51,7 +51,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public bool CanParse(IProject project)
 		{
-			return project.Language == BooLanguageBinding.LanguageName;
+			return project.Language == BooProjectBinding.LanguageName;
 		}
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)

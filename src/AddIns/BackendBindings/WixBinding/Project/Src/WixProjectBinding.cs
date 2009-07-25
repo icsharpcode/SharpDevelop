@@ -1,7 +1,7 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Markus Palme" email="MarkusPalme@gmx.de"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -10,14 +10,13 @@ using System.Xml;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace VBNetBinding
+namespace ICSharpCode.WixBinding
 {
-	public class VBNetLanguageBinding : ILanguageBinding
+	public class WixProjectBinding : IProjectBinding
 	{
-		public const string LanguageName = "VBNet";
+		public const string LanguageName = "Wix";
 		
-		public string Language
-		{
+		public string Language {
 			get {
 				return LanguageName;
 			}
@@ -25,12 +24,12 @@ namespace VBNetBinding
 		
 		public IProject LoadProject(ProjectLoadInformation loadInformation)
 		{
-			return new VBNetProject(loadInformation);
+			return new WixProject(loadInformation);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)
 		{
-			return new VBNetProject(info);
+			return new WixProject(info);
 		}
 	}
 }

@@ -316,7 +316,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		string GetProxyFileNameExtension(string language)
 		{
-			LanguageBindingDescriptor binding = LanguageBindingService.GetCodonPerLanguageName(language);
+			ProjectBindingDescriptor binding = ProjectBindingService.GetCodonPerLanguageName(language);
 			if (binding != null) {
 				string[] extensions = binding.CodeFileExtensions;
 				if (extensions.Length > 0) {

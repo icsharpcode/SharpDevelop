@@ -86,7 +86,7 @@ namespace VBNetBinding
 		}
 		
 		public override string Language {
-			get { return VBNetLanguageBinding.LanguageName; }
+			get { return VBNetProjectBinding.LanguageName; }
 		}
 		
 		public override LanguageProperties LanguageProperties {

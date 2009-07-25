@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Indentation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -34,12 +34,30 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return codeEditor.FileName; }
 		}
 		
-		public override IFormattingStrategy FormattingStrategy {
-			get { return codeEditor.FormattingStrategy; }
-		}
-		
 		public override ICompletionListWindow ActiveCompletionWindow {
 			get { return codeEditor.ActiveCompletionWindow; }
+		}
+		
+		ILanguageBinding languageBinding;
+		
+		public override ILanguageBinding Language {
+			get { return languageBinding; }
+		}
+		
+		internal void FileNameChanged()
+		{
+			if (languageBinding != null)
+				languageBinding.Detach();
+			
+			languageBinding = LanguageBindingService.CreateBinding(this);
+			if (languageBinding != null) {
+				languageBinding.Attach(this);
+				
+				// update properties set by languageBinding
+				this.TextEditor.TextArea.IndentationStrategy = new IndentationStrategyAdapter(this, languageBinding.FormattingStrategy);
+			} else {
+				this.TextEditor.TextArea.IndentationStrategy = new DefaultIndentationStrategy();
+			}
 		}
 		
 		public override ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)

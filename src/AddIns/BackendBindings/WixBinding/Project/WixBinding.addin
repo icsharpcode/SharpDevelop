@@ -71,12 +71,12 @@
 		             class = "ICSharpCode.WixBinding.PreprocessorVariablesPanel"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id                   = "Wix"
+	<Path name = "/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id                   = "Wix"
 		                 guid                 = "{CFEE4113-1246-4D54-95CB-156813CB8593}"
 		                 supportedextensions  = ".wxs"
 		                 projectfileextension = ".wixproj"
-		                 class                = "ICSharpCode.WixBinding.WixLanguageBinding" />
+		                 class                = "ICSharpCode.WixBinding.WixProjectBinding" />
 	</Path>
 
 	<!-- Project Explorer tree node builders -->

@@ -45,7 +45,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void Language()
 		{
-			Assert.AreEqual(PythonLanguageBinding.LanguageName, project.Language);
+			Assert.AreEqual(PythonProjectBinding.LanguageName, project.Language);
 		}
 		
 		[Test]

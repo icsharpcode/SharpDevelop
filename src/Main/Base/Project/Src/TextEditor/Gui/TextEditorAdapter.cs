@@ -135,10 +135,6 @@ namespace ICSharpCode.SharpDevelop
 		public ITextEditorCaret Caret { get; private set; }
 		public ITextEditorOptions Options { get; private set; }
 		
-		public virtual Editor.IFormattingStrategy FormattingStrategy { 
-			get { return Editor.DefaultFormattingStrategy.DefaultInstance; }
-		}
-		
 		public string FileName {
 			get { return editor.FileName; }
 		}
@@ -247,6 +243,12 @@ namespace ICSharpCode.SharpDevelop
 		public IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
 		{
 			return null;
+		}
+		
+		public ILanguageBinding Language {
+			get {
+				throw new NotImplementedException();
+			}
 		}
 	}
 	

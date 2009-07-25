@@ -126,6 +126,7 @@
     </Compile>
     <Compile Include="Src\StylesheetAssignedCondition.cs" />
     <Compile Include="Src\XmlFoldingStrategy.cs" />
+    <Compile Include="Src\XmlLanguageBinding.cs" />
     <Compile Include="Src\XmlNamespace.cs" />
     <Compile Include="Src\XmlParser.cs" />
     <Compile Include="Src\XmlSchemaAssociation.cs" />

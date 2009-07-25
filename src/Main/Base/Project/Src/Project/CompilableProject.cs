@@ -386,7 +386,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public override string TypeGuid {
 			get {
-				return LanguageBindingService.GetCodonPerLanguageName(Language).Guid;
+				return ProjectBindingService.GetCodonPerLanguageName(Language).Guid;
 			}
 			set {
 				throw new NotSupportedException();

@@ -56,6 +56,7 @@
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
     <Compile Include="Src\CSharpAdvancedHighlighter.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
+    <Compile Include="Src\CSharpProjectBinding.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\DocumentAccessor.cs" />
     <Compile Include="Src\FormattingStrategy\Indentation.cs" />

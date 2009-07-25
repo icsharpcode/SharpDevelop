@@ -51,21 +51,21 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			}
 		}
 		
-		public static void InitializeLanguageBindings()
+		public static void InitializeProjectBindings()
 		{
 			Properties prop = new Properties();
 			prop["id"] = "C#";
 			prop["supportedextensions"] = ".cs";
 			prop["projectfileextension"] = ".csproj";
-			Codon codon1 = new Codon(null, "LanguageBinding", prop, new Condition[0]);
+			Codon codon1 = new Codon(null, "ProjectBinding", prop, new Condition[0]);
 			prop = new Properties();
 			prop["id"] = "VBNet";
 			prop["supportedextensions"] = ".vb";
 			prop["projectfileextension"] = ".vbproj";
-			Codon codon2 = new Codon(null, "LanguageBinding", prop, new Condition[0]);
-			LanguageBindingService.SetBindings(new LanguageBindingDescriptor[] {
-			                                   	new LanguageBindingDescriptor(codon1),
-			                                   	new LanguageBindingDescriptor(codon2)
+			Codon codon2 = new Codon(null, "ProjectBinding", prop, new Condition[0]);
+			ProjectBindingService.SetBindings(new ProjectBindingDescriptor[] {
+			                                   	new ProjectBindingDescriptor(codon1),
+			                                   	new ProjectBindingDescriptor(codon2)
 			                                   });
 		}
 		

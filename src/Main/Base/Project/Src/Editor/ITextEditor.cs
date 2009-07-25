@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		ITextEditorCaret Caret { get; }
 		ITextEditorOptions Options { get; }
 		
-		IFormattingStrategy FormattingStrategy { get; }
+		ILanguageBinding Language { get; }
 		
 		/// <summary>
 		/// Gets the start offset of the selection.

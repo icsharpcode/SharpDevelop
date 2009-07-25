@@ -52,11 +52,11 @@ namespace SharpRefactoring
 		/*
 		MethodExtractorBase GetCurrentExtractor(TextEditorControl editor)
 		{
-			switch (LanguageBindingService.GetCodonPerCodeFileName(editor.FileName).Language) {
+			switch (ProjectBindingService.GetCodonPerCodeFileName(editor.FileName).Language) {
 				case "C#":
 					return new CSharpMethodExtractor(editor, editor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0]);
 				default:
-					MessageService.ShowError(string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.ExtractMethodNotSupported}"), LanguageBindingService.GetCodonPerCodeFileName(editor.FileName).Language));
+					MessageService.ShowError(string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.ExtractMethodNotSupported}"), ProjectBindingService.GetCodonPerCodeFileName(editor.FileName).Language));
 					return null;
 			}
 		}*/

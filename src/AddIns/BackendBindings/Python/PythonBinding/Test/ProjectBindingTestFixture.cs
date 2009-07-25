@@ -14,29 +14,29 @@ using NUnit.Framework;
 namespace PythonBinding.Tests
 {
 	/// <summary>
-	/// Tests the PythonLanguageBinding class.
+	/// Tests the PythonProjectBinding class.
 	/// </summary>
 	[TestFixture]
-	public class LanguageBindingTestFixture
+	public class ProjectBindingTestFixture
 	{
-		PythonLanguageBinding languageBinding;
+		PythonProjectBinding projectBinding;
 		PythonProject project;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			languageBinding = new PythonLanguageBinding();
+			projectBinding = new PythonProjectBinding();
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
 			createInfo.ProjectName = "Python";
 			createInfo.OutputProjectFileName = @"C:\Projects\Python.pyproj";
 			createInfo.Solution = new Solution();
-			project = languageBinding.CreateProject(createInfo) as PythonProject;
+			project = projectBinding.CreateProject(createInfo) as PythonProject;
 		}
 		
 		[Test]
 		public void Language()
 		{
-			Assert.AreEqual("Python", languageBinding.Language);
+			Assert.AreEqual("Python", projectBinding.Language);
 		}
 		
 		[Test]

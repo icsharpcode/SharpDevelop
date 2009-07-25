@@ -28,7 +28,7 @@ namespace Grunwald.BooBinding
 		}
 		
 		public override string Language {
-			get { return BooLanguageBinding.LanguageName; }
+			get { return BooProjectBinding.LanguageName; }
 		}
 		
 		public override LanguageProperties LanguageProperties {

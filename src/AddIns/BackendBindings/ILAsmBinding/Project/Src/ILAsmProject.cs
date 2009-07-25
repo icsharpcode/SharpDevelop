@@ -27,7 +27,7 @@ namespace ICSharpCode.ILAsmBinding
 		}
 		
 		public override string Language {
-			get { return ILAsmLanguageBinding.LanguageName; }
+			get { return ILAsmProjectBinding.LanguageName; }
 		}
 		
 		public override LanguageProperties LanguageProperties {

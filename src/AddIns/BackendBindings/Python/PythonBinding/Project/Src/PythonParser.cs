@@ -70,7 +70,7 @@ namespace ICSharpCode.PythonBinding
 		public bool CanParse(IProject project)
 		{
 			if (project != null) {
-				return project.Language == PythonLanguageBinding.LanguageName;
+				return project.Language == PythonProjectBinding.LanguageName;
 			}
 			return false;
 		}

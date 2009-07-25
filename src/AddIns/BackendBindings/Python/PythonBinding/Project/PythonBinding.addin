@@ -86,12 +86,12 @@
 	</Path>
 	
 	<!-- Register Python MSBuild project (.pyproj) -->
-	<Path name="/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id="Python"
+	<Path name="/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id="Python"
 		                 guid="{FD48973F-F585-4F70-812B-4D0503B36CE9}"
 		                 supportedextensions=".py"
 		                 projectfileextension=".pyproj"
-		                 class="ICSharpCode.PythonBinding.PythonLanguageBinding" />
+		                 class="ICSharpCode.PythonBinding.PythonProjectBinding" />
 	</Path>
 	
 	<!-- The Python code completion binding -->

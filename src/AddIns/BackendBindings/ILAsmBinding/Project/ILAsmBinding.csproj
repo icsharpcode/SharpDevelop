@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\AssemblyInfo.cs" />
-    <Compile Include="Src\ILAsmLanguageBinding.cs" />
+    <Compile Include="Src\ILAsmProjectBinding.cs" />
     <EmbeddedResource Include="Resources\ILAsm-Mode.xshd" />
     <None Include="ILAsmBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

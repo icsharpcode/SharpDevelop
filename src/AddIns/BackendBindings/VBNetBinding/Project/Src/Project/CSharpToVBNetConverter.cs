@@ -22,7 +22,7 @@ namespace VBNetBinding
 	{
 		public override string TargetLanguageName {
 			get {
-				return VBNetLanguageBinding.LanguageName;
+				return VBNetProjectBinding.LanguageName;
 			}
 		}
 		

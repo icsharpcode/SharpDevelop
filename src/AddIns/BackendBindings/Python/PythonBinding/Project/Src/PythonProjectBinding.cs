@@ -1,35 +1,39 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
-using System.Xml;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.ILAsmBinding
+namespace ICSharpCode.PythonBinding
 {
-	public class ILAsmLanguageBinding : ILanguageBinding
+	/// <summary>
+	/// Language binding for Python.
+	/// </summary>
+	public class PythonProjectBinding : IProjectBinding
 	{
-		public const string LanguageName = "ILAsm";
+		public const string LanguageName = "Python";
+		
+		public PythonProjectBinding()
+		{
+		}
 		
 		public string Language {
-			get {
-				return LanguageName;
-			}
+			get { return LanguageName; }
 		}
 		
 		public IProject LoadProject(ProjectLoadInformation loadInformation)
 		{
-			return new ILAsmProject(loadInformation);
+			return new PythonProject(loadInformation);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)
 		{
-			return new ILAsmProject(info);
+			return new PythonProject(info);
 		}
 	}
 }

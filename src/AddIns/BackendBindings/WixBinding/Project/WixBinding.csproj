@@ -49,7 +49,7 @@
     <Compile Include="Src\Commands\AddWixItemToProjectBaseCommand.cs" />
     <Compile Include="Src\Project\WixExtensionFolderNode.cs" />
     <Compile Include="Src\Project\WixExtensionNode.cs" />
-    <Compile Include="Src\WixLanguageBinding.cs" />
+    <Compile Include="Src\WixProjectBinding.cs" />
     <Compile Include="Src\Project\WixProject.cs" />
     <Compile Include="Src\Gui\CompilerParametersPanel.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />

@@ -55,12 +55,12 @@ namespace PythonBinding.Tests.Converter
 		{
 			MSBuildEngineHelper.InitMSBuildEngine();
 
-			List<LanguageBindingDescriptor> bindings = new List<LanguageBindingDescriptor>();
+			List<ProjectBindingDescriptor> bindings = new List<ProjectBindingDescriptor>();
 			using (TextReader reader = PythonBindingAddInFile.ReadAddInFile()) {
 				AddIn addin = AddIn.Load(reader, String.Empty);
-				bindings.Add(new LanguageBindingDescriptor(AddInHelper.GetCodon(addin, "/SharpDevelop/Workbench/LanguageBindings", "Python")));
+				bindings.Add(new ProjectBindingDescriptor(AddInHelper.GetCodon(addin, "/SharpDevelop/Workbench/ProjectBindings", "Python")));
 			}
-			LanguageBindingService.SetBindings(bindings);
+			ProjectBindingService.SetBindings(bindings);
 			
 			// Set up IProjectContent so the ConvertProjectToPythonProjectCommand can
 			// locate the startup object and determine it's filename.

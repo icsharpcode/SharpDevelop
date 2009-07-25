@@ -52,7 +52,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		public override string Language {
-			get { return WixLanguageBinding.LanguageName; }
+			get { return WixProjectBinding.LanguageName; }
 		}
 		
 		public override LanguageProperties LanguageProperties {

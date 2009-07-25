@@ -277,7 +277,7 @@
     <Compile Include="FromImportCompletion.cs">
     </Compile>
     <Compile Include="ImportCompletionTestFixture.cs" />
-    <Compile Include="LanguageBindingTestFixture.cs" />
+    <Compile Include="ProjectBindingTestFixture.cs" />
     <Compile Include="Parsing\ClassWithBaseClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidCastInPythonParserTestFixture.cs" />
     <Compile Include="Parsing\MethodWithParametersTestFixture.cs" />

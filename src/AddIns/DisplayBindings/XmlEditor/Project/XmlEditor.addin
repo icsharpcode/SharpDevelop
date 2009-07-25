@@ -27,6 +27,13 @@
 		/>
 	</Path>
 	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding
+			id="XML"
+		    class="ICSharpCode.XmlEditor.XmlLanguageBinding"
+		    extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco" />
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id               = "XmlTreeView"
 		                type             = "Secondary"

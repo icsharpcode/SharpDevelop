@@ -114,7 +114,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XamlClassReturnType.cs" />
     <Compile Include="XamlCodeCompletionBinding.cs" />
-    <Compile Include="XamlColorizerServer.cs" />
     <Compile Include="XamlCompilationUnit.cs" />
     <Compile Include="XamlCompletionItem.cs" />
     <Compile Include="XamlCompletionItemList.cs" />
@@ -126,6 +125,7 @@
     <Compile Include="XamlColorizer.cs" />
     <Compile Include="MarkupExtensionParseException.cs">
     </Compile>
+    <Compile Include="XamlLanguageBinding.cs" />
     <Compile Include="XamlParser.cs" />
     <Compile Include="XamlResolver.cs" />
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

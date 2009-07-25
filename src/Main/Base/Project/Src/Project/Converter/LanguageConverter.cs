@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			info.ProjectName = sourceProject.Name + ".Converted";
 			info.RootNamespace = sourceProject.RootNamespace;
 			
-			LanguageBindingDescriptor descriptor = LanguageBindingService.GetCodonPerLanguageName(TargetLanguageName);
+			ProjectBindingDescriptor descriptor = ProjectBindingService.GetCodonPerLanguageName(TargetLanguageName);
 			if (descriptor == null || descriptor.Binding == null)
 				throw new InvalidOperationException("Cannot get Language Binding for " + TargetLanguageName);
 			

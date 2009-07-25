@@ -37,7 +37,7 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		public override string TargetLanguageName {
-			get { return PythonLanguageBinding.LanguageName; }
+			get { return PythonProjectBinding.LanguageName; }
 		}
 		
 		/// <summary>

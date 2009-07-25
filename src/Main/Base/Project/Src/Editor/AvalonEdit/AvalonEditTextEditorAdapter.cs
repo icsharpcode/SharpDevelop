@@ -70,8 +70,8 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		public ITextEditorCaret Caret { get; private set; }
 		public ITextEditorOptions Options { get; private set; }
 		
-		public virtual IFormattingStrategy FormattingStrategy {
-			get { return DefaultFormattingStrategy.DefaultInstance; }
+		public virtual ILanguageBinding Language {
+			get { return null; }
 		}
 		
 		sealed class CaretAdapter : ITextEditorCaret

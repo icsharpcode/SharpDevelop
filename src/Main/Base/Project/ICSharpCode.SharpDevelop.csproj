@@ -175,6 +175,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\IImage.cs" />
+    <Compile Include="Src\Gui\Pads\OutlinePad.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
@@ -220,6 +221,12 @@
     <Compile Include="Src\Services\File\FileChangeWatcher.cs" />
     <Compile Include="Src\Services\File\OpenedFile.cs" />
     <Compile Include="Src\Services\File\RecentOpen.cs" />
+    <Compile Include="Src\Services\LanguageBinding\AggregatedLanguageBinding.cs" />
+    <Compile Include="Src\Services\LanguageBinding\DefaultLanguageBinding.cs" />
+    <Compile Include="Src\Services\LanguageBinding\ILanguageBinding.cs" />
+    <Compile Include="Src\Services\LanguageBinding\LanguageBindingDescriptor.cs" />
+    <Compile Include="Src\Services\LanguageBinding\LanguageBindingDoozer.cs" />
+    <Compile Include="Src\Services\LanguageBinding\LanguageBindingService.cs" />
     <Compile Include="Src\Services\Language\LanguageService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowActiveEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\DefaultOptionPanelDescriptor.cs" />
@@ -237,13 +244,13 @@
     <Compile Include="Src\Services\DisplayBinding\IDisplayBinding.cs" />
     <Compile Include="Src\Internal\ExternalTool\ToolLoader.cs" />
     <Compile Include="Src\Internal\Templates\CodeTemplateLoader.cs" />
-    <Compile Include="Src\Services\LanguageBinding\ILanguageBinding.cs" />
+    <Compile Include="Src\Services\ProjectBinding\IProjectBinding.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectCreateInformation.cs" />
-    <Compile Include="Src\Services\LanguageBinding\LanguageBindingService.cs" />
+    <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
-    <Compile Include="Src\Services\LanguageBinding\LanguageBindingDoozer.cs" />
+    <Compile Include="Src\Services\ProjectBinding\ProjectBindingDoozer.cs" />
     <Compile Include="Src\Services\Language\Language.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
@@ -445,7 +452,7 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\DefaultFileNodeCommands.cs" />
     <Compile Include="Src\Gui\Dialogs\ProjectOptionsView.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ToolbarCommands.cs" />
-    <Compile Include="Src\Services\LanguageBinding\LanguageBindingDescriptor.cs" />
+    <Compile Include="Src\Services\ProjectBinding\ProjectBindingDescriptor.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDescriptor.cs" />
     <Compile Include="Src\Services\ParserService\Doozer\ParserDoozer.cs" />
     <Compile Include="Src\Services\ParserService\Doozer\ParserDescriptor.cs" />
@@ -828,6 +835,7 @@
     </Content>
     <Folder Include="Src\Editor" />
     <Folder Include="Src\Project\MSBuildEngine" />
+    <Folder Include="Src\Services\LanguageBinding" />
     <Folder Include="Src\Services\Profiler" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />

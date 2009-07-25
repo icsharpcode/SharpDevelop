@@ -37,6 +37,7 @@
 			<Doozer name="OptionPanel" class="ICSharpCode.SharpDevelop.OptionPanelDoozer"/>
 			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.DisplayBindingDoozer"/>
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
+			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.ProjectBindingDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
 			<Doozer name="Parser" class="ICSharpCode.SharpDevelop.ParserDoozer"/>
 			<Doozer name="ProjectContentRegistry" class="ICSharpCode.SharpDevelop.ProjectContentRegistryDoozer"/>
@@ -90,6 +91,13 @@
 		     icon     = "PadIcons.Toolbar"
 		     shortcut = "Control|Alt|X"
 		     class    = "ICSharpCode.SharpDevelop.Gui.ToolsPad"
+		     defaultPosition = "Left" />
+		
+		<Pad id       = "OutlinePad"
+		     category = "Main"
+		     title    = "${res:MainWindow.Windows.OutlinePad}"
+		     icon     = "PadIcons.Toolbar"
+		     class    = "ICSharpCode.SharpDevelop.Gui.OutlinePad"
 		     defaultPosition = "Left" />
 		
 		<Pad id       = "ErrorList"

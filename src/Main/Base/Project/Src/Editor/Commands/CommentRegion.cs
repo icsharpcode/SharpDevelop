@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			if (provider == null)
 				return;
 			
-			provider.TextEditor.FormattingStrategy.SurroundSelectionWithComment(provider.TextEditor);
+			provider.TextEditor.Language.FormattingStrategy.SurroundSelectionWithComment(provider.TextEditor);
 		}
 	}
 }

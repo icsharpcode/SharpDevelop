@@ -35,7 +35,7 @@ namespace PythonBinding.Tests
 		Codon parserCodon;
 		Runtime pythonBindingRuntime;
 		Codon additionalMSBuildPropertiesCodon;
-		Codon languageBindingCodon;
+		Codon projectBindingCodon;
 		Codon projectFileFilterCodon;
 		Codon codeCompletionBindingCodon;
 		LazyConditionEvaluator isPythonRunningConditionEvaluator;
@@ -71,7 +71,7 @@ namespace PythonBinding.Tests
 				optionsPanelCodon = GetCodon("/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions", "PythonOptionsPanel");
 				parserCodon = GetCodon("/Workspace/Parser", "Python");
 				additionalMSBuildPropertiesCodon = GetCodon("/SharpDevelop/MSBuildEngine/AdditionalProperties", "PythonBinPath");
-				languageBindingCodon = GetCodon("/SharpDevelop/Workbench/LanguageBindings", "Python");
+				projectBindingCodon = GetCodon("/SharpDevelop/Workbench/ProjectBindings", "Python");
 				projectFileFilterCodon = GetCodon("/SharpDevelop/Workbench/Combine/FileFilter", "PythonProject");
 				codeCompletionBindingCodon = GetCodon("/AddIns/DefaultTextEditor/CodeCompletion", "Python");
 				applicationSettingsOptionsCodon = GetCodon("/SharpDevelop/BackendBindings/ProjectOptions/Python", "Application");
@@ -401,27 +401,27 @@ namespace PythonBinding.Tests
 		}
 		
 		[Test]
-		public void LanguageBindingSupportedExtensions()
+		public void ProjectBindingSupportedExtensions()
 		{
-			Assert.AreEqual(".py", languageBindingCodon["supportedextensions"]);
+			Assert.AreEqual(".py", projectBindingCodon["supportedextensions"]);
 		}
 		
 		[Test]
-		public void LanguageBindingGuid()
+		public void ProjectBindingGuid()
 		{
-			Assert.AreEqual("{FD48973F-F585-4F70-812B-4D0503B36CE9}", languageBindingCodon["guid"]);
+			Assert.AreEqual("{FD48973F-F585-4F70-812B-4D0503B36CE9}", projectBindingCodon["guid"]);
 		}
 		
 		[Test]
-		public void LanguageBindingProjectFileExtension()
+		public void ProjectBindingProjectFileExtension()
 		{
-			Assert.AreEqual(".pyproj", languageBindingCodon["projectfileextension"]);
+			Assert.AreEqual(".pyproj", projectBindingCodon["projectfileextension"]);
 		}
 		
 		[Test]
-		public void LanguageBindingClass()
+		public void ProjectBindingClass()
 		{
-			Assert.AreEqual("ICSharpCode.PythonBinding.PythonLanguageBinding", languageBindingCodon["class"]);
+			Assert.AreEqual("ICSharpCode.PythonBinding.PythonProjectBinding", projectBindingCodon["class"]);
 		}
 		
 		[Test]

@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			foreach (ListViewItem item in SelectedItems) {
 				IProject project = (IProject)item.Tag;
-				ILanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName(project.Language);
+				IProjectBinding binding = ProjectBindingService.GetBindingPerLanguageName(project.Language);
 				
 				selectDialog.AddReference(
 					project.Name, "Project", project.OutputAssemblyFullPath,

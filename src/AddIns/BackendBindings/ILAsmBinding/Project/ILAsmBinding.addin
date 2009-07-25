@@ -57,11 +57,11 @@
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id                   = "ILAsm"
+	<Path name = "/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id                   = "ILAsm"
 		                 guid                 = "{12B76EC0-1D7B-4FA7-A7D0-C524288B48A1}"
 		                 supportedextensions  = ".il"
 		                 projectfileextension = ".ilproj"
-		                 class                = "ICSharpCode.ILAsmBinding.ILAsmLanguageBinding" />
+		                 class                = "ICSharpCode.ILAsmBinding.ILAsmProjectBinding" />
 	</Path>
 </AddIn>

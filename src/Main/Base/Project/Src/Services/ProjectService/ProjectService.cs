@@ -367,10 +367,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			Solution solution = new Solution();
 			solution.Name = Path.GetFileNameWithoutExtension(fileName);
-			ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(fileName);
+			IProjectBinding binding = ProjectBindingService.GetBindingPerProjectFile(fileName);
 			IProject project;
 			if (binding != null) {
-				project = LanguageBindingService.LoadProject(new ProjectLoadInformation(solution, fileName, solution.Name));
+				project = ProjectBindingService.LoadProject(new ProjectLoadInformation(solution, fileName, solution.Name));
 				if (project is UnknownProject) {
 					if (((UnknownProject)project).WarningDisplayedToUser == false) {
 						((UnknownProject)project).ShowWarningMessageBox();

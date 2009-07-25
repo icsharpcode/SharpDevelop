@@ -44,7 +44,7 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void Language()
 		{
-			Assert.AreEqual(WixLanguageBinding.LanguageName, project.Language);
+			Assert.AreEqual(WixProjectBinding.LanguageName, project.Language);
 		}
 		
 		[Test]

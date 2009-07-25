@@ -124,6 +124,7 @@
 			<xs:element ref="FileFilter" />
 			<xs:element ref="Icon" />
 			<xs:element ref="Include" />
+			<xs:element ref="ProjectBinding" />
 			<xs:element ref="LanguageBinding" />
 			<xs:element ref="MenuItem" />
 			<xs:element ref="Pad" />
@@ -194,6 +195,7 @@
 			<xs:element ref="FileFilter" />
 			<xs:element ref="Icon" />
 			<xs:element ref="Include" />
+			<xs:element ref="ProjectBinding" />
 			<xs:element ref="LanguageBinding" />
 			<xs:element ref="MenuItem" />
 			<xs:element ref="Pad" />
@@ -667,7 +669,7 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:complexType name="LanguageBinding">
+	<xs:complexType name="ProjectBinding">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
 				<xs:attribute name="guid" use="required" type="xs:string">
@@ -694,6 +696,33 @@
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
+						Name of the IProjectBinding class.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ProjectBinding" type="ProjectBinding">
+		<xs:annotation>
+			<xs:documentation>
+			Creates ProjectBindingDescriptor objects for the project service.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="LanguageBinding">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="extensions" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+						Semicolon-separated list of file extensions that are handled by the language binding (e.g. .xaml)
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="class" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
 						Name of the ILanguageBinding class.
 						</xs:documentation>
 					</xs:annotation>
@@ -704,7 +733,7 @@
 	<xs:element name="LanguageBinding" type="LanguageBinding">
 		<xs:annotation>
 			<xs:documentation>
-			Creates LanguageBindingDescriptor objects for the project service.
+			Creates LanguageBindingDescriptor objects for the language service.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>

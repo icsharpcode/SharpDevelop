@@ -35,8 +35,6 @@ namespace ICSharpCode.XamlBinding
 		
 		public XamlParser()
 		{
-			// HACK to make colorizing working!
-			XamlColorizerServer.InitializeServer();
 		}
 
 		public bool CanParse(string fileName)
