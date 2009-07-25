@@ -164,12 +164,6 @@ namespace PythonBinding.Tests
 		}
 		
 		[Test]
-		public void FileFilterDescription()
-		{
-			Assert.AreEqual("Python Files (*.py)", fileFilterCodon["name"]);
-		}
-		
-		[Test]
 		public void FileFilterInsertBefore()
 		{
 			Assert.AreEqual("Resources", fileFilterCodon.InsertBefore);
@@ -434,12 +428,6 @@ namespace PythonBinding.Tests
 		public void ProjectFileFilterClass()
 		{
 			Assert.AreEqual("ICSharpCode.SharpDevelop.Project.LoadProject", projectFileFilterCodon["class"]);
-		}
-		
-		[Test]
-		public void ProjectFileFilterName()
-		{
-			Assert.AreEqual("Python Project Files (*.pyproj)", projectFileFilterCodon["name"]);
 		}
 		
 		[Test]
