@@ -5,17 +5,16 @@
  * Time: 16:34
  */
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
 using System.Resources;
 using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.TextEditor;
 
 namespace StringResourceToolAddIn
 {
@@ -25,18 +24,18 @@ namespace StringResourceToolAddIn
 		{
 			// Here an example that shows how to access the current text document:
 			
-			ITextEditorControlProvider tecp = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorControlProvider;
+			ITextEditorProvider tecp = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
 			if (tecp == null) {
 				// active content is not a text editor control
 				return;
 			}
 			
 			// Get the active text area from the control:
-			TextArea textArea = tecp.TextEditorControl.ActiveTextAreaControl.TextArea;
-			if (!textArea.SelectionManager.HasSomethingSelected)
+			ITextEditor textEditor = tecp.TextEditor;
+			if (textEditor.SelectionLength == 0)
 				return;
 			// get the selected text:
-			string text = textArea.SelectionManager.SelectedText;
+			string text = textEditor.SelectedText;
 			
 			string sdSrcPath = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location),
 			                                "../../../..");
@@ -47,7 +46,7 @@ namespace StringResourceToolAddIn
 				// Goes through the enumerator, printing out the key and value pairs.
 				while (en.MoveNext()) {
 					if (object.Equals(en.Value, text)) {
-						SetText(textArea, en.Key.ToString(), text);
+						SetText(textEditor, en.Key.ToString(), text);
 						return;
 					}
 				}
@@ -61,7 +60,7 @@ namespace StringResourceToolAddIn
 			string purpose = MessageService.ShowInputBox("Add Resource", "Enter resource purpose (may be empty)", "");
 			if (purpose == null) return;
 			
-			SetText(textArea, resourceName, text);
+			SetText(textEditor, resourceName, text);
 			
 			string path = Path.GetFullPath(Path.Combine(sdSrcPath, "Tools/StringResourceTool/bin/Debug"));
 			ProcessStartInfo info = new ProcessStartInfo(path + "\\StringResourceTool.exe",
@@ -76,19 +75,15 @@ namespace StringResourceToolAddIn
 			}
 		}
 		
-		void SetText(TextArea textArea, string resourceName, string oldText)
+		void SetText(ITextEditor textEditor, string resourceName, string oldText)
 		{
-			// ensure caret is at start of selection
-			textArea.Caret.Position = textArea.SelectionManager.SelectionCollection[0].StartPosition;
-			// deselect text
-			textArea.SelectionManager.ClearSelection();
+			// ensure caret is at start of selection / deselect text
+			textEditor.Select(textEditor.SelectionStart, 0);
 			// replace the selected text with the new text:
 			// Replace() takes the arguments: start offset to replace, length of the text to remove, new text
-			textArea.Document.Replace(textArea.Caret.Offset,
-			                          oldText.Length,
-			                          "$" + "{res:" + resourceName + "}");
-			// Redraw:
-			textArea.Refresh();
+			textEditor.Document.Replace(textEditor.Caret.Offset,
+			                            oldText.Length,
+			                            "$" + "{res:" + resourceName + "}");
 		}
 	}
 }

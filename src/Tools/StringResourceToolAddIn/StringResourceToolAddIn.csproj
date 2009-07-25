@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>StringResourceToolAddIn</RootNamespace>
@@ -15,6 +15,7 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
@@ -45,11 +46,6 @@
     </Reference>
     <Reference Include="ICSharpCode.Core">
       <HintPath>..\..\..\bin\ICSharpCode.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>..\..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
