@@ -259,7 +259,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <param name="content">Content of the file to create</param>
 		public static IViewContent NewFile(string defaultName, string content)
 		{
-			return NewFile(defaultName, ParserService.DefaultFileEncoding.GetBytes(content));
+			return NewFile(defaultName, ParserService.DefaultFileEncoding.GetBytesWithPreamble(content));
 		}
 		
 		/// <summary>

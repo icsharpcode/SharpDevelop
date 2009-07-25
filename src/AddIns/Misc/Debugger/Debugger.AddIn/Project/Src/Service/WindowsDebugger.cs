@@ -482,14 +482,8 @@ namespace ICSharpCode.SharpDevelop.Services
 					byte[] fileMD5;
 					TextEditorDisplayBindingWrapper file = FileService.GetOpenFile(bookmark.FileName) as TextEditorDisplayBindingWrapper;
 					if (file != null) {
-						byte[] fileContent = Encoding.UTF8.GetBytes(file.Text);
-						// Insert UTF-8 BOM
-						byte[] fileContent2 = new byte[fileContent.Length + 3];
-						Array.Copy(fileContent, 0, fileContent2, 3, fileContent.Length);
-						fileContent2[0] = 0xEF;
-						fileContent2[1] = 0xBB;
-						fileContent2[2] = 0xBF;
-						fileMD5 = new MD5CryptoServiceProvider().ComputeHash(fileContent2);
+						byte[] fileContent = Encoding.UTF8.GetBytesWithPreamble(file.Text);
+						fileMD5 = new MD5CryptoServiceProvider().ComputeHash(fileContent);
 					} else {
 						fileMD5 = new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(bookmark.FileName));
 					}

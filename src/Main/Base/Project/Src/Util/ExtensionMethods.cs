@@ -130,5 +130,19 @@ namespace ICSharpCode.SharpDevelop
 			result.Append(original, currentPos, original.Length - currentPos);
 			return result.ToString();
 		}
+		
+		public static byte[] GetBytesWithPreamble(this Encoding encoding, string text)
+		{
+			byte[] encodedText = encoding.GetBytes(text);
+			byte[] bom = encoding.GetPreamble();
+			if (bom != null && bom.Length > 0) {
+				byte[] result = new byte[bom.Length + encodedText.Length];
+				bom.CopyTo(result, 0);
+				encodedText.CopyTo(result, bom.Length);
+				return result;
+			} else {
+				return encodedText;
+			}
+		}
 	}
 }
