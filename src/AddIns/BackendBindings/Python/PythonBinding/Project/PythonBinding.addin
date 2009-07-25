@@ -29,7 +29,7 @@
 		<FileFilter id="Python"
 		            insertbefore="Resources"
 		            insertafter="Icons"
-		            name="Python Files (*.py)"
+		            name="${res:ICSharpCode.PythonBinding.PythonFiles} (*.py)"
 		            extensions="*.py"/>
 	</Path>
 	
@@ -37,7 +37,7 @@
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id="PythonProject"
 		            insertbefore="AllFiles"
-		            name="Python Project Files (*.pyproj)"
+		            name="${res:ICSharpCode.PythonBinding.PythonProjectFiles} (*.pyproj)"
 		            class="ICSharpCode.SharpDevelop.Project.LoadProject"
 		            extensions="*.pyproj"/>
 	</Path>
@@ -171,7 +171,7 @@
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id           = "PythonConsole"
 		     category     = "Tools"
-		     title        = "Python Console"
+		     title        = "${res:ICSharpCode.PythonBinding.PythonConsole}"
 		     insertafter  = "Bookmarks"
 		     insertbefore = "DefinitionView"
 		     icon         = "PadIcons.Output"

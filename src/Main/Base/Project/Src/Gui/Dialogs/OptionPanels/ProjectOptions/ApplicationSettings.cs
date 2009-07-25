@@ -63,8 +63,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			b.CreateLocationButton("win32ResourceFileTextBox");
 			
 			applicationManifestComboBox = Get<ComboBox>("applicationManifest");
-			applicationManifestComboBox.Items.Add("Embed default manifest");
-			applicationManifestComboBox.Items.Add("Do not embed manifest");
+			applicationManifestComboBox.Items.Add("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.EmbedDefault}");
+			applicationManifestComboBox.Items.Add("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.DoNotEmbedManifest}");
 			foreach (string fileName in Directory.GetFiles(project.Directory, "*.manifest")) {
 				applicationManifestComboBox.Items.Add(Path.GetFileName(fileName));
 			}
@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		void BrowseForManifest()
 		{
 			applicationManifestComboBox.SelectedIndex = -1;
-			BrowseForFile(applicationManifestComboBox, "Manifest files|*.manifest|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditEvaluatedProperty);
+			BrowseForFile(applicationManifestComboBox, "${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.ManifestFiles}|*.manifest|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditEvaluatedProperty);
 		}
 		
 		void CreateManifest()

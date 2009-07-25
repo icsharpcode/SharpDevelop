@@ -50,7 +50,7 @@
 		             insertafter="CodingOptions"
 		             insertbefore="TextEditorOptions">
 			<DialogPanel id="GeneralOptionsPanel"
-			             label="${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
+			             label="${res:Dialog.Options.IDEOptions.General}"
 			             class="ICSharpCode.ComponentInspector.AddIn.GeneralOptionsPanel"/>
 			<DialogPanel id="ObjectTreeOptionsPanel"
 			             label="${res:ComponentInspector.InspectorMenu.ObjectTreeOptionsPanel.Title}"

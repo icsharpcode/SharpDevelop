@@ -128,14 +128,14 @@ namespace HexEditor.View
 			fdSelectFont.ShowEffects = false;
 			fdSelectFont.ShowColor = false;
 			
-			cmbForeColor.Items.Add("Custom");
+			cmbForeColor.Items.Add(StringParser.Parse("${res:Global.FontStyle.CustomColor}"));
 			
 			foreach (Color c in Colors) {
 				cmbForeColor.Items.Add(c.Name);
 			}
 			
-			lstElements.Items.Add("Offset");
-			lstElements.Items.Add("Data");
+			lstElements.Items.Add(StringParser.Parse("${res:AddIns.HexEditor.Display.Elements.Offset}"));
+			lstElements.Items.Add(StringParser.Parse("${res:AddIns.HexEditor.Display.Elements.Data}"));
 
 			lstElements.SetSelected(0, true);
 			

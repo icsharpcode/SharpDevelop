@@ -12,7 +12,7 @@
       <System.Windows.Forms.Label>
         <Name value="label10" />
         <Location value="41, 166" />
-        <Text value="Application &amp;manifest:" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.Manifest}" />
         <Size value="126, 20" />
         <TextAlign value="MiddleRight" />
         <TabIndex value="11" />

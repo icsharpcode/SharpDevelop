@@ -521,11 +521,11 @@ namespace HexEditor
 			string text = String.Empty;
 			int count = top + this.GetMaxVisibleLines();
 
-			StringBuilder builder = new StringBuilder("Offset\n0\n");
+			StringBuilder builder = new StringBuilder(StringParser.Parse("${res:AddIns.HexEditor.Display.Elements.Offset}\n"));
+			if (count == 0)
+				builder.Append("0\n");
 
 			for (int i = top; i < count; i++) {
-				if (i == top) builder = new StringBuilder("Offset\n");
-				
 				if ((i * this.BytesPerLine) <= this.buffer.BufferSize) {
 					switch (this.ViewMode) {
 						case ViewMode.Decimal:
