@@ -15,19 +15,6 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
-	public class ShowSensitiveHelp : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			IContextHelpProvider helpProvider = WorkbenchSingleton.Workbench.ActiveContent as IContextHelpProvider;
-			if (helpProvider == null)
-				helpProvider = WorkbenchSingleton.Workbench.ActiveViewContent as IContextHelpProvider;
-			if (helpProvider != null) {
-				helpProvider.ShowHelp();
-			}
-		}
-	}
-	
 	public class LinkCommand : AbstractMenuCommand
 	{
 		string site;

@@ -1230,11 +1230,11 @@
 				          label = "${res:XML.MainMenu.FileMenu.Print}"
 				          icon = "Icons.16x16.Print"
 				          shortcut = "Control|P"
-				          class = "ICSharpCode.SharpDevelop.Commands.Print"/>
+				          command = "Print"/>
 				<MenuItem id = "PrintPreview"
 				          label = "${res:XML.MainMenu.FileMenu.PrintPreview}"
 				          icon = "Icons.16x16.PreView"
-				          class = "ICSharpCode.SharpDevelop.Commands.PrintPreview"/>
+				          command = "PrintPreview"/>
 			</Condition>
 			
 			<MenuItem id = "RecentSeparator" type = "Separator"  />
@@ -1662,7 +1662,7 @@
 			          label = "${res:XML.MainMenu.HelpMenu.ContextHelp}"
 			          icon = "Icons.16x16.HelpIcon"
 			          shortcut = "F1"
-			          class = "ICSharpCode.SharpDevelop.Commands.ShowSensitiveHelp"/>
+			          command = "Help"/>
 			<MenuItem id = "Help"
 			          label = "${res:XML.MainMenu.HelpMenu.Topics}"
 			          shortcut = "Alt|F1"

@@ -265,60 +265,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 	
-	public class Print : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			IPrintable printable = WorkbenchSingleton.Workbench.ActiveViewContent as IPrintable;
-			if (printable != null) {
-				using (PrintDocument pdoc = printable.PrintDocument) {
-					if (pdoc != null) {
-						using (PrintDialog ppd = new PrintDialog()) {
-							ppd.Document  = pdoc;
-							ppd.AllowSomePages = true;
-							if (ppd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) { // fixed by Roger Rubin
-								pdoc.Print();
-							}
-						}
-					} else {
-						MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError}");
-					}
-				}
-			} else {
-				MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CantPrintWindowContentError}");
-			}
-		}
-	}
-	
-	public class PrintPreview : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			try {
-				IPrintable printable = WorkbenchSingleton.Workbench.ActiveViewContent as IPrintable;
-				if (printable != null) {
-					using (PrintDocument pdoc = printable.PrintDocument) {
-						if (pdoc != null) {
-							PrintPreviewDialog ppd = new PrintPreviewDialog();
-							ppd.TopMost   = true;
-							ppd.Document  = pdoc;
-							ppd.Show(WorkbenchSingleton.MainWin32Window);
-						} else {
-							MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError}");
-						}
-					}
-				}
-			} catch (InvalidPrinterException) {}
-		}
-	}
-
 	public class ClearRecentFiles : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			try {
-				FileService.RecentOpen.ClearRecentFiles();
-			} catch {}
+			FileService.RecentOpen.ClearRecentFiles();
 		}
 	}
 
@@ -326,9 +277,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			try {
-				FileService.RecentOpen.ClearRecentProjects();
-			} catch {}
+			FileService.RecentOpen.ClearRecentProjects();
 		}
 	}
 }

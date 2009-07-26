@@ -781,6 +781,7 @@
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\ThreadSafeServiceProvider.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
+    <Compile Include="Src\Util\WindowsFormsPrinting.cs" />
     <Compile Include="Src\Util\WpfSynchronizeInvoke.cs" />
     <Compile Include="Src\Util\WorkerThread.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />

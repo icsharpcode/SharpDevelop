@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.DefaultEditor;
 using System;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
-using ICSharpCode.SharpDevelop.DefaultEditor;
+using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -36,6 +37,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AddBinding(ApplicationCommands.Help, (IContextHelpProvider h) => h.ShowHelp(), h => true);
 			AddBinding(ApplicationCommands.Undo, (IUndoHandler u) => u.Undo(), u => u.EnableUndo);
 			AddBinding(ApplicationCommands.Redo, (IUndoHandler u) => u.Redo(), u => u.EnableRedo);
+			AddBinding(ApplicationCommands.Print, (IPrintable p) => WindowsFormsPrinting.Print(p), p => true);
+			AddBinding(ApplicationCommands.PrintPreview, (IPrintable p) => WindowsFormsPrinting.PrintPreview(p), p => true);
 		}
 		
 		void AddBinding<T>(ICommand command, Action<T> execute, Predicate<T> canExecute) where T : class
