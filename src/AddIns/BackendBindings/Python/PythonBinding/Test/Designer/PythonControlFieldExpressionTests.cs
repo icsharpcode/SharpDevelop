@@ -212,7 +212,7 @@ namespace PythonBinding.Tests.Designer
 				AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("self._button1.Size = System.Drawing.Size(10, 10)");
 				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
 								
-				Assert.AreEqual(button, field.GetObject(button));
+				Assert.AreEqual(button, field.GetObjectForMemberName(button));
 			}
 		}
 
@@ -223,7 +223,7 @@ namespace PythonBinding.Tests.Designer
 				AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("_button1.Size = System.Drawing.Size(10, 10)");
 				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
 								
-				Assert.AreEqual(button, field.GetObject(button));
+				Assert.AreEqual(button, field.GetObjectForMemberName(button));
 			}
 		}
 		
@@ -234,7 +234,7 @@ namespace PythonBinding.Tests.Designer
 				AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("self._button1.FlatAppearance.BorderSize = 3");
 				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
 								
-				Assert.AreEqual(button.FlatAppearance, field.GetObject(button));
+				Assert.AreEqual(button.FlatAppearance, field.GetObjectForMemberName(button));
 			}
 		}
 		
@@ -245,7 +245,7 @@ namespace PythonBinding.Tests.Designer
 				AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("_button1.FlatAppearance.BorderSize = 3");
 				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
 								
-				Assert.AreEqual(button.FlatAppearance, field.GetObject(button));
+				Assert.AreEqual(button.FlatAppearance, field.GetObjectForMemberName(button));
 			}
 		}
 		
@@ -256,7 +256,7 @@ namespace PythonBinding.Tests.Designer
 				AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("self._button1.InvalidProperty.BorderSize = 3");
 				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
 								
-				Assert.IsNull(field.GetObject(button));
+				Assert.IsNull(field.GetObjectForMemberName(button));
 			}
 		}
 		
