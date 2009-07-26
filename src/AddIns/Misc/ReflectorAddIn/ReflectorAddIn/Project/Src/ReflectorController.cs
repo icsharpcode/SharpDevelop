@@ -57,8 +57,12 @@ namespace ReflectorAddIn
 			// start Reflector
 			ProcessStartInfo psi = new ProcessStartInfo(reflectorExeFullPath);
 			psi.WorkingDirectory = Path.GetDirectoryName(psi.FileName);
-			using(Process p = Process.Start(psi)) {
-				p.WaitForInputIdle(7500);
+			using (Process p = Process.Start(psi)) {
+				try {
+					p.WaitForInputIdle(10000);
+				} catch (InvalidOperationException) {
+					// can happen if Reflector is configured to run elevated
+				}
 			}
 			
 			for (int retryCount = 0; retryCount < 10; retryCount++) {

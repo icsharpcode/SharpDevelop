@@ -101,6 +101,12 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 		}
 		
+		public override object VisitCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit, object data)
+		{
+			variables.Clear ();
+			return base.VisitCompilationUnit (compilationUnit, data);
+		}
+		
 		public override object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			endLocationStack.Push(blockStatement.EndLocation);
@@ -296,7 +302,7 @@ namespace ICSharpCode.NRefactory.Visitors
 						if (catchClause.TypeReference != null && catchClause.VariableName != null) {
 							AddVariable(catchClause.TypeReference,
 							            catchClause.VariableName,
-							            catchClause.StatementBlock.StartLocation,
+							            catchClause.StartLocation,
 							            catchClause.StatementBlock.EndLocation,
 							            false, false, null, null, false);
 						}

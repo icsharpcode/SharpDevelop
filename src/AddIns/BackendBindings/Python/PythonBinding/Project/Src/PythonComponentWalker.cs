@@ -107,20 +107,7 @@ namespace ICSharpCode.PythonBinding
 				NameExpression lhsNameExpression = node.Left[0] as NameExpression;
 				if (lhsMemberExpression != null) {
 					fieldExpression = PythonControlFieldExpression.Create(lhsMemberExpression);
-					MemberExpression rhsMemberExpression = node.Right as MemberExpression;
-					if (rhsMemberExpression != null) {
-						object propertyValue = GetPropertyValueFromAssignmentRhs(rhsMemberExpression);
-						SetPropertyValue(fieldExpression.MemberName, propertyValue);
-					} else {
-						walkingAssignment = true;
-						BinaryExpression binaryExpression = node.Right as BinaryExpression;
-						if (binaryExpression != null) {
-							WalkAssignment(binaryExpression);
-						} else {
-							node.Right.Walk(this);
-						}
-						walkingAssignment = false;
-					}
+					WalkMemberExpressionAssignmentRhs(node.Right);
 				} else if (lhsNameExpression != null) {
 					CallExpression callExpression = node.Right as CallExpression;
 					if (callExpression != null) {
@@ -136,12 +123,8 @@ namespace ICSharpCode.PythonBinding
 			if (!FoundInitializeComponentMethod) {
 				return false;
 			}
-
-			if (fieldExpression.IsSelfReference) {
-				SetPropertyValue(fieldExpression.MemberName, node.Value);
-			} else {
-				SetPropertyValue(componentCreator.GetInstance(fieldExpression.VariableName), fieldExpression.MemberName, node.Value);
-			}
+			
+			SetPropertyValue(fieldExpression, node.Value);
 			return false;
 		}
 		
@@ -165,7 +148,7 @@ namespace ICSharpCode.PythonBinding
 				return false;
 			}
 			
-			SetPropertyValue(fieldExpression.MemberName, node.Name.ToString());
+			SetPropertyValue(fieldExpression, node.Name.ToString());
 			return false;
 		}
 		
@@ -206,6 +189,27 @@ namespace ICSharpCode.PythonBinding
 			object value = deserializer.Deserialize(binaryExpression);
 			SetPropertyValue(fieldExpression.MemberName, value);
 		}
+
+		/// <summary>
+		/// Walks the right hand side of an assignment to a member expression.
+		/// </summary>
+		void WalkMemberExpressionAssignmentRhs(Expression rhs)
+		{
+			MemberExpression rhsMemberExpression = rhs as MemberExpression;
+			if (rhsMemberExpression != null) {
+				object propertyValue = GetPropertyValueFromAssignmentRhs(rhsMemberExpression);
+				SetPropertyValue(fieldExpression, propertyValue);
+			} else {
+				walkingAssignment = true;
+				BinaryExpression binaryExpression = rhs as BinaryExpression;
+				if (binaryExpression != null) {
+					WalkAssignment(binaryExpression);
+				} else {
+					rhs.Walk(this);
+				}
+				walkingAssignment = false;
+			}
+		}
 		
 		static bool IsInitializeComponentMethod(FunctionDefinition node)
 		{
@@ -213,6 +217,18 @@ namespace ICSharpCode.PythonBinding
 			return name == "initializecomponent" || name == "initializecomponents";
 		}
 
+		/// <summary>
+		/// Checks the field expression to see if it references an class instance variable (e.g. self._treeView1) 
+		/// or a variable that is local to the InitializeComponent method (e.g. treeNode1.BackColor)
+		/// </summary>
+		bool SetPropertyValue(PythonControlFieldExpression fieldExpression, object propertyValue)
+		{
+			if (fieldExpression.IsSelfReference) {
+				return SetPropertyValue(fieldExpression.GetObject(GetCurrentComponent()), fieldExpression.MemberName, propertyValue);
+			} 
+			return SetPropertyValue(componentCreator.GetInstance(fieldExpression.VariableName), fieldExpression.MemberName, propertyValue);
+		}
+		
 		/// <summary>
 		/// Sets the value of a property on the current control.
 		/// </summary>
@@ -285,10 +301,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		object GetCurrentComponent()
 		{
-			if (fieldExpression.VariableName.Length > 0) {
-				return componentCreator.GetComponent(fieldExpression.VariableName);
-			}
-			return component;
+			return fieldExpression.GetObject(componentCreator);
 		}
 		
 		/// <summary>
@@ -325,13 +338,13 @@ namespace ICSharpCode.PythonBinding
 				string name = GetInstanceName(fieldExpression);
 				object instance = CreateInstance(name, node);
 				if (instance != null) {
-					if (!SetPropertyValue(fieldExpression.MemberName, instance)) {
+					if (!SetPropertyValue(fieldExpression, instance)) {
 						AddComponent(fieldExpression.MemberName, instance);
 					}
 				} else {
 					object obj = deserializer.Deserialize(node);
 					if (obj != null) {
-						SetPropertyValue(component, fieldExpression.MemberName, obj);
+						SetPropertyValue(fieldExpression, obj);
 					} else if (IsResource(memberExpression)) {
 						SetPropertyValue(fieldExpression.MemberName, GetResource(node));
 					} else {
@@ -347,9 +360,11 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		string GetInstanceName(PythonControlFieldExpression fieldExpression)
 		{
-			if (!HasPropertyValue(fieldExpression.MemberName)) {
-				return PythonControlFieldExpression.GetVariableName(fieldExpression.MemberName);
-			}			
+			if (fieldExpression.IsSelfReference) {
+				if (!HasPropertyValue(fieldExpression.MemberName)) {
+					return PythonControlFieldExpression.GetVariableName(fieldExpression.MemberName);
+				}
+			}
 			return null;
 		}
 		

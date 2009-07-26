@@ -786,15 +786,17 @@ namespace ICSharpCode.SharpDevelop
 
 		static void OnParseInformationUpdated(ParseInformationEventArgs e)
 		{
-			if (ParseInformationUpdated != null) {
-				ParseInformationUpdated(null, e);
+			ParseInformationEventHandler handler = ParseInformationUpdated;
+			if (handler != null) {
+				handler(null, e);
 			}
 		}
 		
 		static void OnLoadSolutionProjectsThreadEnded(EventArgs e)
 		{
-			if (LoadSolutionProjectsThreadEnded != null) {
-				LoadSolutionProjectsThreadEnded(null, e);
+			EventHandler handler = LoadSolutionProjectsThreadEnded;
+			if (handler != null) {
+				handler(null, e);
 			}
 		}
 		

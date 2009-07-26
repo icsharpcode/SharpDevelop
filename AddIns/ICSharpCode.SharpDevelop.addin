@@ -1880,7 +1880,7 @@
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog">
 		<OptionPanel id = "General"
-		             label = "${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
+		             label = "${res:Dialog.Options.IDEOptions.General}"
 		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
 		<OptionPanel id = "Markers"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"
@@ -1943,7 +1943,7 @@
 		             insertbefore = "ToolsOptions"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditorOptionsText}">
 			<OptionPanel id = "General"
-			             label = "${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
+			             label = "${res:Dialog.Options.IDEOptions.General}"
 			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
 			<OptionPanel id = "Markers"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"

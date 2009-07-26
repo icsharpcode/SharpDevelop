@@ -99,5 +99,11 @@ namespace PythonBinding.Tests.Designer
 			string expectedText = "\"c:\\\\te\\\"mp\"";
 			Assert.AreEqual(expectedText, PythonPropertyValueAssignment.ToString(text));
 		}
+		
+		[Test]
+		public void DefaultCursorToString()
+		{
+			Assert.AreEqual("System.Windows.Forms.Cursors.Default", PythonPropertyValueAssignment.ToString(Cursors.Default));
+		}
 	}
 }

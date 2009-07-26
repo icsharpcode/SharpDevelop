@@ -176,6 +176,40 @@ namespace ICSharpCode.PythonBinding
 			}
 			return names.ToArray();
 		}
+
+		/// <summary>
+		/// Gets the object that the field expression variable refers to.
+		/// </summary>
+		public object GetObject(IComponentCreator componentCreator)
+		{
+			if (variableName.Length > 0) {
+				return componentCreator.GetComponent(variableName);
+			}
+			return componentCreator.RootComponent;		
+		}
+		
+		/// <summary>
+		/// Returns the object that the property is defined on. This method may just return the object
+		/// passed to it if the property is defined on that object.
+		/// </summary>
+		/// <remarks>The object parameter must be equivalent to the object referred to
+		/// by the variable name in this PythonControlFieldExpression 
+		/// (e.g. button1 in self._button1.FlatAppearance.BorderSize).</remarks>
+		public object GetObject(object component)
+		{
+			string[] members = fullMemberName.Split('.');
+			int startIndex = GetMembersStartIndex(members);
+			
+			object currentComponent = component;
+			for (int i = startIndex; i < members.Length - 1; ++i) {
+				PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(currentComponent).Find(members[i], true);
+				if (propertyDescriptor == null) {
+					return null;
+				}
+				currentComponent = propertyDescriptor.GetValue(currentComponent);
+			}
+			return currentComponent;
+		}		
 		
 		/// <summary>
 		/// Gets the member object that matches the field member.
@@ -197,11 +231,7 @@ namespace ICSharpCode.PythonBinding
 			
 			if (obj != null) {
 				string[] memberNames = fullMemberName.Split('.');
-				int startIndex = 2;
-				if (!ContainsSelfReference(memberNames)) {
-					// No self to skip over when searching for member.
-					startIndex = 1;
-				}
+				int startIndex = GetMembersStartIndex(memberNames);
 				return GetMember(obj, memberNames, startIndex, memberNames.Length - 1);
 			}
 			return null;
@@ -296,6 +326,19 @@ namespace ICSharpCode.PythonBinding
 				return "self".Equals(members[0], StringComparison.InvariantCultureIgnoreCase);
 			}
 			return false;
+		}
+		
+		/// <summary>
+		/// Returns the index into the members array where the members actually start.
+		/// The "self" and variable name are skipped.
+		/// </summary>
+		int GetMembersStartIndex(string[] members)
+		{
+			if (ContainsSelfReference(members)) {
+				// Skip self over when searching for member.
+				return 2;
+			}
+			return 1;
 		}
 	}
 }

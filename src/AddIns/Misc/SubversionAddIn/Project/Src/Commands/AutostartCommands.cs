@@ -85,6 +85,8 @@ namespace ICSharpCode.Svn.Commands
 				foreach (IProject p in e.Solution.Projects) {
 					ProjectCreated(null, new ProjectEventArgs(p));
 				}
+			} catch (SvnClientException ex) {
+				MessageService.ShowError(ex.Message);
 			} catch (Exception ex) {
 				MessageService.ShowError(ex, "Solution add exception");
 			}
@@ -124,6 +126,8 @@ namespace ICSharpCode.Svn.Commands
 					}
 					AddFileWithParentDirectoriesToSvn(client, e.Project.FileName);
 				}
+			} catch (SvnClientException ex) {
+				MessageService.ShowError(ex.Message);
 			} catch (Exception ex) {
 				MessageService.ShowError(ex, "Project add exception");
 			}

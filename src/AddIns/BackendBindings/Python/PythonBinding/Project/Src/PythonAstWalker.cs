@@ -13,6 +13,7 @@ using System.IO;
 using ICSharpCode.SharpDevelop.Dom;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;
+using IronPython.Runtime;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -23,6 +24,7 @@ namespace ICSharpCode.PythonBinding
 	{
 		DefaultCompilationUnit compilationUnit;
 		DefaultClass currentClass;
+		DefaultClass globalClass;
 		string ns;
 		
 		/// <summary>
@@ -77,22 +79,30 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public override bool Walk(FunctionDefinition node)
 		{
-			if (currentClass != null) {
-				string methodName = node.Name.ToString();
-				DomRegion bodyRegion = GetBodyRegion(node.Body, node.Header);
-				DomRegion region = GetMethodRegion(node);
-				
-				DefaultMethod method;
-				if (methodName == "__init__") {
-					method = new Constructor(ModifierEnum.Public, region, bodyRegion, currentClass);
-				} else {
-					method = new DefaultMethod(methodName, new DefaultReturnType(currentClass), ModifierEnum.Public, region, bodyRegion, currentClass);
-				}
-				foreach (IParameter parameter in ConvertParameters(node.Parameters)) {
-					method.Parameters.Add(parameter);
-				}
-				currentClass.Methods.Add(method);
+			bool ignoreFirstMethodParameter = true;
+			IClass c = currentClass;
+			if (currentClass == null) {
+				// Walking a global method.
+				CreateGlobalClass();
+				c = globalClass;
+				ignoreFirstMethodParameter = false;
 			}
+
+			// Create method.
+			string methodName = node.Name.ToString();
+			DomRegion bodyRegion = GetBodyRegion(node.Body, node.Header);
+			DomRegion region = GetMethodRegion(node);
+			
+			DefaultMethod method;
+			if (methodName == "__init__") {
+				method = new Constructor(ModifierEnum.Public, region, bodyRegion, c);
+			} else {
+				method = new DefaultMethod(methodName, new DefaultReturnType(c), ModifierEnum.Public, region, bodyRegion, c);
+			}
+			foreach (IParameter parameter in ConvertParameters(node.Parameters, ignoreFirstMethodParameter)) {
+				method.Parameters.Add(parameter);
+			}
+			c.Methods.Add(method);
 			return true;
 		}
 		
@@ -175,16 +185,22 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Converts from Python AST expressions to parameters.
 		/// </summary>
-		IParameter[] ConvertParameters(Parameter[] parameters)
+		/// <remarks>If the parameters belong to a class method then the first
+		/// "self" parameter can be ignored.</remarks>
+		IParameter[] ConvertParameters(Parameter[] parameters, bool ignoreFirstParameter)
 		{
-			List<IParameter> convertedTarameters = new List<IParameter>();
+			List<IParameter> convertedParameters = new List<IParameter>();
 
-			// Ignore first parameter since this is the "self" parameter.
-			for (int i = 1; i < parameters.Length; ++i) {
-				DefaultParameter parameter = new DefaultParameter(parameters[i].Name.ToString(), null, new DomRegion());
-				convertedTarameters.Add(parameter);
+			int startingIndex = 0;
+			if (ignoreFirstParameter) {
+				startingIndex = 1;
 			}
-			return convertedTarameters.ToArray();
+			
+			for (int i = startingIndex; i < parameters.Length; ++i) {				
+				DefaultParameter parameter = new DefaultParameter(parameters[i].Name.ToString(), null, new DomRegion());
+				convertedParameters.Add(parameter);
+			}
+			return convertedParameters.ToArray();
 		}
 		
 		
@@ -194,6 +210,17 @@ namespace ICSharpCode.PythonBinding
 		string GetFullyQualifiedClassName(ClassDefinition classDef)
 		{
 			return String.Concat(ns, ".", classDef.Name.ToString());
+		}
+		
+		/// <summary>
+		/// Creates the dummy class that is used to hold global methods.
+		/// </summary>
+		void CreateGlobalClass()
+		{
+			if (globalClass == null) {
+				globalClass = new DefaultClass(compilationUnit, ns);
+				compilationUnit.Classes.Add(globalClass);
+			}
 		}
 	}
 }

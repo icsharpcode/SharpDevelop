@@ -303,7 +303,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				StringParser.Properties["StandardNamespace"] = projectCreateInformation.RootNamespace;
 				
-				IProject project = languageinfo.CreateProject(projectCreateInformation);
+				IProject project;
+				try {
+					project = languageinfo.CreateProject(projectCreateInformation);
+				} catch (ProjectLoadException ex) {
+					MessageService.ShowError(ex.Message);
+					return null;
+				}
 				
 				// Add Project items
 				foreach (ProjectItem projectItem in projectItems) {
