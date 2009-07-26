@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -68,13 +69,9 @@ namespace ICSharpCode.PythonBinding
 		
 		static string GetCursorAsString(Cursor cursor)
 		{
-			foreach (PropertyInfo propertyInfo in typeof(Cursors).GetProperties(BindingFlags.Public | BindingFlags.Static)) {
-				Cursor standardCursor = (Cursor)propertyInfo.GetValue(null, null);
-				if (standardCursor == cursor) {
-					return typeof(Cursors).FullName + "." + propertyInfo.Name;
-				}
-			}
-			return String.Empty;
+			TypeConverter converter = TypeDescriptor.GetConverter(typeof(Cursor));
+			string cursorName = converter.ConvertToString(null, CultureInfo.InvariantCulture, cursor);
+			return typeof(Cursors).FullName + "." + cursorName;
 		}
 		
 		static string GetColorAsString(Color color)
