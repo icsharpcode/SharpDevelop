@@ -19,7 +19,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// Wraps the CodeEditor class to provide the ITextEditor interface.
 	/// </summary>
-	public class CodeEditorAdapter : AvalonEditTextEditorAdapter
+	sealed class CodeEditorAdapter : AvalonEditTextEditorAdapter
 	{
 		readonly CodeEditor codeEditor;
 		
@@ -87,6 +87,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public override IInsightWindow ActiveInsightWindow {
 			get { return codeEditor.ActiveInsightWindow; }
+		}
+		
+		public override ITextEditor PrimaryView {
+			get { return codeEditor.PrimaryTextEditorAdapter; }
 		}
 	}
 }

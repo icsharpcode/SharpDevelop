@@ -223,5 +223,11 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		{
 			return null;
 		}
+		
+		public virtual ITextEditor PrimaryView {
+			get {
+				return this;
+			}
+		}
 	}
 }

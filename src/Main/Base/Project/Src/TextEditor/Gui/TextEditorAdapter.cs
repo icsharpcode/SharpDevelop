@@ -250,6 +250,12 @@ namespace ICSharpCode.SharpDevelop
 				throw new NotImplementedException();
 			}
 		}
+		
+		public ITextEditor PrimaryView {
+			get {
+				return this;
+			}
+		}
 	}
 	
 	sealed class CompletionItemListAdapter : ICompletionDataProvider

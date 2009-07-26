@@ -35,6 +35,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 {
 	/// <summary>
 	/// Integrates AvalonEdit with SharpDevelop.
+	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
 	/// </summary>
 	public class CodeEditor : Grid
 	{
@@ -85,8 +86,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return primaryTextEditorAdapter.Document; }
 		}
 		
+		public ITextEditor PrimaryTextEditorAdapter {
+			get { return primaryTextEditorAdapter; }
+		}
 		
-		public CodeEditorAdapter ActiveTextEditorAdapter {
+		public ITextEditor ActiveTextEditorAdapter {
 			get { return GetAdapter(this.ActiveTextEditor); }
 		}
 		
@@ -234,8 +238,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				
 				secondaryTextEditor.SetBinding(TextEditor.DocumentProperty,
 				                               new Binding(TextEditor.DocumentProperty.Name) { Source = primaryTextEditor });
-				secondaryTextEditor.TextArea.SetBinding(TextArea.IndentationStrategyProperty,
-				                                        new Binding(TextArea.IndentationStrategyProperty.Name) { Source = primaryTextEditor.TextArea });
 				secondaryTextEditor.SyntaxHighlighting = primaryTextEditor.SyntaxHighlighting;
 				
 				SetRow(secondaryTextEditor, 2);
