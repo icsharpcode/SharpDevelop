@@ -107,20 +107,7 @@ namespace ICSharpCode.PythonBinding
 				NameExpression lhsNameExpression = node.Left[0] as NameExpression;
 				if (lhsMemberExpression != null) {
 					fieldExpression = PythonControlFieldExpression.Create(lhsMemberExpression);
-					MemberExpression rhsMemberExpression = node.Right as MemberExpression;
-					if (rhsMemberExpression != null) {
-						object propertyValue = GetPropertyValueFromAssignmentRhs(rhsMemberExpression);
-						SetPropertyValue(fieldExpression, propertyValue);
-					} else {
-						walkingAssignment = true;
-						BinaryExpression binaryExpression = node.Right as BinaryExpression;
-						if (binaryExpression != null) {
-							WalkAssignment(binaryExpression);
-						} else {
-							node.Right.Walk(this);
-						}
-						walkingAssignment = false;
-					}
+					WalkMemberExpressionAssignmentRhs(node.Right);
 				} else if (lhsNameExpression != null) {
 					CallExpression callExpression = node.Right as CallExpression;
 					if (callExpression != null) {
@@ -202,6 +189,27 @@ namespace ICSharpCode.PythonBinding
 			object value = deserializer.Deserialize(binaryExpression);
 			SetPropertyValue(fieldExpression.MemberName, value);
 		}
+
+		/// <summary>
+		/// Walks the right hand side of an assignment to a member expression.
+		/// </summary>
+		void WalkMemberExpressionAssignmentRhs(Expression rhs)
+		{
+			MemberExpression rhsMemberExpression = rhs as MemberExpression;
+			if (rhsMemberExpression != null) {
+				object propertyValue = GetPropertyValueFromAssignmentRhs(rhsMemberExpression);
+				SetPropertyValue(fieldExpression, propertyValue);
+			} else {
+				walkingAssignment = true;
+				BinaryExpression binaryExpression = rhs as BinaryExpression;
+				if (binaryExpression != null) {
+					WalkAssignment(binaryExpression);
+				} else {
+					rhs.Walk(this);
+				}
+				walkingAssignment = false;
+			}
+		}
 		
 		static bool IsInitializeComponentMethod(FunctionDefinition node)
 		{
@@ -216,7 +224,7 @@ namespace ICSharpCode.PythonBinding
 		bool SetPropertyValue(PythonControlFieldExpression fieldExpression, object propertyValue)
 		{
 			if (fieldExpression.IsSelfReference) {
-				return SetPropertyValue(fieldExpression.MemberName, propertyValue);
+				return SetPropertyValue(fieldExpression.GetObject(GetCurrentComponent()), fieldExpression.MemberName, propertyValue);
 			} 
 			return SetPropertyValue(componentCreator.GetInstance(fieldExpression.VariableName), fieldExpression.MemberName, propertyValue);
 		}

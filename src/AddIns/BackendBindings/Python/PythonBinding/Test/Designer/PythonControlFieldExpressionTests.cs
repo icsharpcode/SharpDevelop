@@ -204,6 +204,61 @@ namespace PythonBinding.Tests.Designer
 			PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
 			Assert.IsTrue(field.IsSelfReference);
 		}
+
+		[Test]
+		public void GetButtonObjectForSelfReference()
+		{
+			using (Button button = new Button()) {
+				AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("self._button1.Size = System.Drawing.Size(10, 10)");
+				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
+								
+				Assert.AreEqual(button, field.GetObject(button));
+			}
+		}
+
+		[Test]
+		public void GetButtonObject()
+		{
+			using (Button button = new Button()) {
+				AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("_button1.Size = System.Drawing.Size(10, 10)");
+				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
+								
+				Assert.AreEqual(button, field.GetObject(button));
+			}
+		}
+		
+		[Test]
+		public void GetButtonFlatAppearanceObjectForSelfReference()
+		{
+			using (Button button = new Button()) {
+				AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("self._button1.FlatAppearance.BorderSize = 3");
+				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
+								
+				Assert.AreEqual(button.FlatAppearance, field.GetObject(button));
+			}
+		}
+		
+		[Test]
+		public void GetButtonFlatAppearanceObject()
+		{
+			using (Button button = new Button()) {
+				AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("_button1.FlatAppearance.BorderSize = 3");
+				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
+								
+				Assert.AreEqual(button.FlatAppearance, field.GetObject(button));
+			}
+		}
+		
+		[Test]
+		public void GetInvalidTwoLevelDeepButtonPropertyDescriptorForSelfReference()
+		{
+			using (Button button = new Button()) {
+				AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("self._button1.InvalidProperty.BorderSize = 3");
+				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
+								
+				Assert.IsNull(field.GetObject(button));
+			}
+		}
 		
 		void AssertAreEqual(PythonControlFieldExpression field, string variableName, string memberName, string methodName, string fullMemberName)
 		{

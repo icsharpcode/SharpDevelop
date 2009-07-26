@@ -502,7 +502,7 @@ namespace ICSharpCode.PythonBinding
 				}
 			} else { 
 				// DesignerSerializationVisibility.Content
-				AppendMethodCallWithArrayParameter(codeBuilder, propertyOwnerName, obj, propertyDescriptor);
+				AppendPropertyContents(codeBuilder, propertyOwnerName, obj, propertyDescriptor);
 			}
 		}
 
@@ -802,6 +802,20 @@ namespace ICSharpCode.PythonBinding
 			}
 			reversedCollection.Reverse();
 			return reversedCollection;
-		}		
+		}
+		
+		/// <summary>
+		/// Appends a property that needs its contents serialized.
+		/// </summary>
+		void AppendPropertyContents(PythonCodeBuilder codeBuilder, string propertyOwnerName, object propertyOwner, PropertyDescriptor propertyDescriptor)
+		{
+			object propertyValue = propertyDescriptor.GetValue(propertyOwner);
+			if (propertyValue is ICollection) {
+				AppendMethodCallWithArrayParameter(codeBuilder, propertyOwnerName, propertyOwner, propertyDescriptor);
+			} else {
+				propertyOwnerName += "." + propertyDescriptor.Name;
+				AppendProperties(codeBuilder, propertyOwnerName, propertyValue);
+			}
+		}
 	}
 }

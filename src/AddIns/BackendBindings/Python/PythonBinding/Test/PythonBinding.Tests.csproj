@@ -180,6 +180,7 @@
     <Compile Include="Designer\GenerateAutoScaleModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
     <Compile Include="Designer\GenerateBackgroundWorkerTestFixture.cs" />
+    <Compile Include="Designer\GenerateButtonFlatAppearanceTestFixture.cs" />
     <Compile Include="Designer\GenerateComboBoxItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateContextMenuStripTestFixture.cs" />
     <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="Designer\LoadAcceptButtonFormTestFixture.cs" />
     <Compile Include="Designer\LoadAccessibleRoleTestFixture.cs" />
     <Compile Include="Designer\LoadAnchorStylesFormTestFixture.cs" />
+    <Compile Include="Designer\LoadButtonFlatAppearanceTestFixture.cs" />
     <Compile Include="Designer\LoadColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\LoadControlEventHandlerTestFixture.cs" />
     <Compile Include="Designer\LoadCursorTestFixture.cs" />
