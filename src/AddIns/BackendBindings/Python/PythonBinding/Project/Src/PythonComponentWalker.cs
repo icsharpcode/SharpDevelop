@@ -301,10 +301,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		object GetCurrentComponent()
 		{
-			if (fieldExpression.VariableName.Length > 0) {
-				return componentCreator.GetComponent(fieldExpression.VariableName);
-			}
-			return component;
+			return fieldExpression.GetObject(componentCreator);
 		}
 		
 		/// <summary>

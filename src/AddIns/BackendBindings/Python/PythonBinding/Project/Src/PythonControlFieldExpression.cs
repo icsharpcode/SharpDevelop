@@ -178,6 +178,17 @@ namespace ICSharpCode.PythonBinding
 		}
 
 		/// <summary>
+		/// Gets the object that the field expression variable refers to.
+		/// </summary>
+		public object GetObject(IComponentCreator componentCreator)
+		{
+			if (variableName.Length > 0) {
+				return componentCreator.GetComponent(variableName);
+			}
+			return componentCreator.RootComponent;		
+		}
+		
+		/// <summary>
 		/// Returns the object that the property is defined on. This method may just return the object
 		/// passed to it if the property is defined on that object.
 		/// </summary>
@@ -192,6 +203,9 @@ namespace ICSharpCode.PythonBinding
 			object currentComponent = component;
 			for (int i = startIndex; i < members.Length - 1; ++i) {
 				PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(currentComponent).Find(members[i], true);
+				if (propertyDescriptor == null) {
+					return null;
+				}
 				currentComponent = propertyDescriptor.GetValue(currentComponent);
 			}
 			return currentComponent;
