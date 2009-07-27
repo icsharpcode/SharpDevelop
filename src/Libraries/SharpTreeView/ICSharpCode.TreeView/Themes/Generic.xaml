@@ -273,6 +273,12 @@
                                     Property="Visibility"
                                     Value="Collapsed" />
                         </DataTrigger>
+                    	  <DataTrigger Binding="{Binding ShowIcon}"
+                                     Value="False">
+                    		  <Setter TargetName="icon"
+                                    Property="Visibility"
+                                   Value="Collapsed" />
+ 						  </DataTrigger>
                         <DataTrigger Binding="{Binding IsExpanded}"
                                      Value="True">
                             <Setter TargetName="icon"

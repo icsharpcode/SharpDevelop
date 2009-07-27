@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return;
 				}
 			}
-			contentControl.SetContent(StringParser.Parse("${res:SharpDevelop.SideBar.NoOutlineContentAvailableForCurrentDocument}"));
+			contentControl.SetContent(StringParser.Parse("${res:MainWindow.Windows.OutlinePad.NoContentAvailable}"));
 		}
 	}
 }

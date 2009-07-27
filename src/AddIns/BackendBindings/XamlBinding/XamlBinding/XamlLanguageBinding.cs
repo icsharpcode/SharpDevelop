@@ -5,12 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.AvalonEdit.Editing;
 using System;
+using System.Linq;
+using System.Windows.Controls;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
@@ -52,22 +55,6 @@ namespace ICSharpCode.XamlBinding
 				textView.LineTransformers.Remove(colorizer);
 				textView.Services.RemoveService(typeof(IOutlineContentHost));
 				colorizer.Dispose();
-			}
-		}
-	}
-	
-	class XamlOutlineContentHost : IOutlineContentHost
-	{
-		ITextEditor editor;
-		
-		public XamlOutlineContentHost(ITextEditor editor)
-		{
-			this.editor = editor;
-		}
-		
-		public object OutlineContent {
-			get {
-				return "Hello from XAML " + editor.FileName;
 			}
 		}
 	}

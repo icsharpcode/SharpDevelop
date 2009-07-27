@@ -68,9 +68,7 @@
     </Compile>
     <Compile Include="LookupInfo.cs" />
     <Compile Include="MarkupExtensionInfo.cs" />
-    <Compile Include="MarkupExtensionParser.cs">
-      <DependentUpon>MarkupExtensionTokenizer.cs</DependentUpon>
-    </Compile>
+    <Compile Include="MarkupExtensionParser.cs" />
     <Compile Include="CompletionDataHelper.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="MarkupExtensionTokenizer.cs" />
@@ -97,6 +95,10 @@
     </Compile>
     <Compile Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml.cs">
       <DependentUpon>ExtractPropertiesAsStyleDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PowerToys\Dialogs\GridLengthEditor.xaml.cs">
+      <DependentUpon>GridLengthEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PowerToys\Dialogs\SelectSourceClassDialog.xaml.cs">
@@ -126,6 +128,10 @@
     <Compile Include="MarkupExtensionParseException.cs">
     </Compile>
     <Compile Include="XamlLanguageBinding.cs" />
+    <Compile Include="XamlOutlineContentHost.xaml.cs">
+      <DependentUpon>XamlOutlineContentHost.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="XamlParser.cs" />
     <Compile Include="XamlResolver.cs" />
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
@@ -136,6 +142,11 @@
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -183,7 +194,9 @@
     <Page Include="Options\CodeCompletion.xaml" />
     <Page Include="PowerToys\Dialogs\EditGridColumnsAndRowsDialog.xaml" />
     <Page Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml" />
+    <Page Include="PowerToys\Dialogs\GridLengthEditor.xaml" />
     <Page Include="PowerToys\Dialogs\SelectSourceClassDialog.xaml" />
     <Page Include="PowerToys\Dialogs\SourceClassFormEditor.xaml" />
+    <Page Include="XamlOutlineContentHost.xaml" />
   </ItemGroup>
 </Project>

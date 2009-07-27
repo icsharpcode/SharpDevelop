@@ -290,14 +290,10 @@ namespace ICSharpCode.XamlBinding
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
 			
 			IReturnType rt = null;
-			IReturnType elementReturnType = null;
-			
-			bool isMember = false;
-			bool inContentRoot = false;
-			
+
 			if (last != null && cu != null) {
 				if (!last.Name.Contains(".") || last.Name.EndsWith(".", StringComparison.OrdinalIgnoreCase)) {
-					elementReturnType = rt = cu.CreateType(last.Namespace, last.Name.Trim('.'));
+					rt = cu.CreateType(last.Namespace, last.Name.Trim('.'));
 					string contentPropertyName = GetContentPropertyName(rt);
 					if (!string.IsNullOrEmpty(contentPropertyName)) {
 						string fullName = string.IsNullOrEmpty(last.Prefix) ? last.Name + "." + contentPropertyName : last.Prefix + ":" + last.Name + "." + contentPropertyName;
@@ -305,10 +301,7 @@ namespace ICSharpCode.XamlBinding
 						
 						if (mrr != null) {
 							rt = mrr.ResolvedType;
-							isMember = true;
-						}
-						
-						inContentRoot = true;
+						}	
 					}
 				} else {
 					string fullName = string.IsNullOrEmpty(last.Prefix) ? last.Name : last.Prefix + ":" + last.Name;
@@ -316,7 +309,6 @@ namespace ICSharpCode.XamlBinding
 					
 					if (mrr != null) {
 						rt = mrr.ResolvedType;
-						isMember = true;
 					}
 				}
 			}
@@ -349,18 +341,6 @@ namespace ICSharpCode.XamlBinding
 					}
 					
 					result.Add(new XamlCodeCompletionItem(c, ns.Key));
-				}
-			}
-			
-			if (!(rt == null || isMember || classesOnly)) {
-				foreach (IProperty p in rt.GetProperties()) {
-					if (p.IsPublic && (p.CanSet || p.ReturnType.IsCollectionReturnType()))
-						result.Add(new XamlCodeCompletionItem(p, last.Prefix, last.Name));
-				}
-			} else if (elementReturnType != null && inContentRoot) {
-				foreach (IProperty p in elementReturnType.GetProperties()) {
-					if (p.IsPublic && (p.CanSet || p.ReturnType.IsCollectionReturnType()))
-						result.Add(new XamlCodeCompletionItem(p, last.Prefix, last.Name));
 				}
 			}
 			
@@ -439,7 +419,7 @@ namespace ICSharpCode.XamlBinding
 						QualifiedNameWithLocation last = context.ActiveElement;
 						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(last.Name, context), info, editor.Document.Text) as TypeResolveResult;
 						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
-						
+						list = new XamlAttributeCompletionItemList();
 						list.Items.AddRange(CreateAttributeList(context, true));
 						list.Items.AddRange(standardAttributes);
 					}
@@ -856,7 +836,7 @@ namespace ICSharpCode.XamlBinding
 				var ns = context.XmlnsDefinitions[prefixNamespace];
 				IClass c = XamlCompilationUnit.GetNamespaceMembers(pc, ns).FirstOrDefault(item => item.Name == prefixClassName);
 				if (c != null) {
-					if (!(c.IsAbstract && c.IsStatic
+					if (!(c.IsAbstract
 					      && !c.ClassInheritanceTree.Any(b => b.FullyQualifiedName == "System.Attribute")
 					      && c.Methods.Any(m => m.IsConstructor && m.IsPublic))) {
 						prefixNamespace = string.IsNullOrEmpty(prefixNamespace) ? prefixNamespace : prefixNamespace + ":";
@@ -879,10 +859,8 @@ namespace ICSharpCode.XamlBinding
 							continue;
 						if (!c.Methods.Any(m => m.IsConstructor && m.IsPublic))
 							continue;
-						if (properties)
-							AddAttachedProperties(c, result, key, string.Empty);
-						if (events)
-							AddAttachedEvents(c, result, key, string.Empty);
+						if (c.HasAttached(properties, events))
+							result.Add(new XamlCodeCompletionItem(c, ns.Key));
 					}
 				}
 			}

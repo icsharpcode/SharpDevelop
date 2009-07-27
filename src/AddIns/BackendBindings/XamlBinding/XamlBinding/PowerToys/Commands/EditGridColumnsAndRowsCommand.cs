@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Gui;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.XamlBinding.PowerToys.Dialogs;
 
@@ -22,12 +23,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	public class EditGridColumnsAndRowsCommand : XamlMenuCommand
 	{
 		protected override bool Refactor(ITextEditor editor, XDocument document)
-		{
-			if (editor.SelectionLength == 0) {
-				MessageService.ShowError("Please select a Grid!");
-				return false;
-			}
-			
+		{			
 			Location startLoc = editor.Document.OffsetToPosition(editor.SelectionStart);
 			Location endLoc = editor.Document.OffsetToPosition(editor.SelectionStart + editor.SelectionLength);
 			
@@ -40,6 +36,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			}
 			
 			EditGridColumnsAndRowsDialog dialog = new EditGridColumnsAndRowsDialog(selectedItem);
+			dialog.Owner = WorkbenchSingleton.MainWindow;
 			
 			if (dialog.ShowDialog() ?? false) {
 				selectedItem.ReplaceWith(dialog.ConstructedTree);

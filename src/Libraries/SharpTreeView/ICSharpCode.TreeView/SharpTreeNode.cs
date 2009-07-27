@@ -147,6 +147,17 @@ namespace ICSharpCode.TreeView
 				RaisePropertyChanged("ShowExpander");
 			}
 		}
+		
+		bool showIcon;
+		
+		public bool ShowIcon
+		{
+			get { return showIcon; }
+			set {
+				showIcon = value;
+				RaisePropertyChanged("ShowIcon");
+			}
+		}
 
 		public virtual void LoadChildren()
 		{

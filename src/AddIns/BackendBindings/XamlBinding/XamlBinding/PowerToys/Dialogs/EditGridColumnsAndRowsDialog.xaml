@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
 	Title="Edit grid columns and rows" Height="500" Width="500"
+    ShowInTaskbar="False"
 	WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
 	<Window.Resources>
 		<Style x:Key="normal" TargetType="{x:Type Button}">
@@ -44,6 +45,12 @@
 			<Button x:Name="btnOK" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" Style="{StaticResource normal}" />
 			<Button x:Name="btnCancel" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" Style="{StaticResource normal}" />
 		</StackPanel>
-		<Grid x:Name="gridDisplay" />
+		<Grid DockPanel.Dock="Top" x:Name="columnWidthGrid">
+			
+		</Grid>
+		<Grid DockPanel.Dock="Left" x:Name="rowHeightGrid">
+			
+		</Grid>
+		<Grid x:Name="gridDisplay" ShowGridLines="True" />
 	</DockPanel>
 </Window>

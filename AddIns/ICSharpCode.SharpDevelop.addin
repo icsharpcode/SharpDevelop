@@ -98,7 +98,7 @@
 		     title    = "${res:MainWindow.Windows.OutlinePad}"
 		     icon     = "PadIcons.Toolbar"
 		     class    = "ICSharpCode.SharpDevelop.Gui.OutlinePad"
-		     defaultPosition = "Left" />
+		     defaultPosition = "Left, Hidden" />
 		
 		<Pad id       = "ErrorList"
 		     category = "Main"

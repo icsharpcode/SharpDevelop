@@ -41,6 +41,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		XElement colDefitions;
 		IList<XElement> additionalProperties;
 		
+		bool gridLengthInvalid;
+		
 		class UndoStep
 		{
 			public XElement Tree { get; set; }
@@ -81,6 +83,30 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			if (this.colDefitions.Parent != null)
 				this.colDefitions.Remove();
 			
+			this.rowDefitions
+				.Elements()
+				.Select(row => row.Attribute("Height"))
+				.ForEach(
+					height => {
+						if (height.Value.Trim() == "1*")
+							height.Value = "*";
+						else
+							height.Value = height.Value.Trim();
+					}
+				);
+			
+			this.colDefitions
+				.Elements()
+				.Select(col => col.Attribute("Width"))
+				.ForEach(
+					width => {
+						if (width.Value.Trim() == "1*")
+							width.Value = "*";
+						else
+							width.Value = width.Value.Trim();
+					}
+				);
+			
 			this.additionalProperties = gridTree.Elements().Where(e => e.Name.LocalName.Contains(".")).ToList();
 			this.additionalProperties.ForEach(item => { if (item.Parent != null) item.Remove(); });
 			
@@ -110,7 +136,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			int row = (int)block.GetValue(Grid.RowProperty);
 			
 			var newRow = new XElement(rowDefName);
-			newRow.SetAttributeValue(XName.Get("Height"), "Auto");
+			newRow.SetAttributeValue(XName.Get("Height"), "*");
 			var items = rowDefitions.Elements().Skip(row);
 			var selItem = items.FirstOrDefault();
 			if (selItem != null)
@@ -148,7 +174,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			int row = (int)block.GetValue(Grid.RowProperty);
 			
 			var newRow = new XElement(rowDefName);
-			newRow.SetAttributeValue(XName.Get("Height"), "Auto");
+			newRow.SetAttributeValue(XName.Get("Height"), "*");
 			var items = rowDefitions.Elements().Skip(row);
 			var selItem = items.FirstOrDefault();
 			if (selItem != null)
@@ -572,6 +598,11 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void BtnOKClick(object sender, RoutedEventArgs e)
 		{
+			if (gridLengthInvalid) {
+				MessageService.ShowError("Grid is invalid, please check the row heights and column widths!");
+				return;
+			}
+			
 			this.DialogResult = true;
 		}
 		
@@ -582,23 +613,39 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			this.gridDisplay.RowDefinitions.Clear();
 			this.gridDisplay.ColumnDefinitions.Clear();
 			
+			this.columnWidthGrid.ColumnDefinitions.Clear();
+			this.columnWidthGrid.Children.Clear();
+			
+			this.rowHeightGrid.RowDefinitions.Clear();
+			this.rowHeightGrid.Children.Clear();
+			
 			int rows = rowDefitions.Elements().Count();
 			int cols = colDefitions.Elements().Count();
 			
 			if (rows == 0) {
-				rowDefitions.Add(new XElement(rowDefName).AddAttribute("Height", "Auto"));
+				rowDefitions.Add(new XElement(rowDefName).AddAttribute("Height", "*"));
 				rows = 1;
 			}
 			if (cols == 0) {
-				colDefitions.Add(new XElement(colDefName).AddAttribute("Width", "Auto"));
+				colDefitions.Add(new XElement(colDefName).AddAttribute("Width", "*"));
 				cols = 1;
 			}
 			
-			for (int i = 0; i < cols; i++)
+			for (int i = 0; i < cols; i++) {
 				this.gridDisplay.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+				this.columnWidthGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+				GridLengthEditor editor = new GridLengthEditor(Orientation.Horizontal, i, (colDefitions.Elements().ElementAt(i).Attribute("Width") ?? new XAttribute("Width", "")).Value);
+				editor.SelectedValueChanged += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorSelectedValueChanged);
+				this.columnWidthGrid.Children.Add(editor);
+			}
 			
 			for (int i = 0; i < rows; i++) {
 				this.gridDisplay.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+				
+				this.rowHeightGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+				GridLengthEditor editor = new GridLengthEditor(Orientation.Vertical, i, (rowDefitions.Elements().ElementAt(i).Attribute("Height") ?? new XAttribute("Height", "")).Value);
+				editor.SelectedValueChanged += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorSelectedValueChanged);
+				this.rowHeightGrid.Children.Add(editor);
 				
 				for (int j = 0; j < cols; j++) {
 					StackPanel displayRect = new StackPanel() {
@@ -624,6 +671,29 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			}
 			
 			this.InvalidateVisual();
+		}
+
+		void EditorSelectedValueChanged(object sender, GridLengthSelectionChangedEventArgs e)
+		{
+			gridLengthInvalid = colDefitions.Elements().Any(col => (col.Attribute("Width") ?? new XAttribute("Width", "*")).Value == "Invalid")
+				|| rowDefitions.Elements().Any(row => (row.Attribute("Height") ?? new XAttribute("Height", "*")).Value == "Invalid")
+				|| !e.Value.HasValue;
+			
+			string value = "Invalid";
+			
+			if (e.Value.HasValue) {
+				if (e.Value.Value.IsAuto)
+					value = "Auto";
+				if (e.Value.Value.IsStar)
+					value = (e.Value.Value.Value == 1) ? "*" : e.Value.Value.Value + "*";
+				if (e.Value.Value.IsAbsolute)
+					value = e.Value.Value.Value + "px";
+			}
+
+			if (e.Type == Orientation.Horizontal)
+				colDefitions.Elements().ElementAt(e.Cell).SetAttributeValue("Width", value);
+			else
+				rowDefitions.Elements().ElementAt(e.Cell).SetAttributeValue("Height", value);
 		}
 		
 		class DragDropMarkerAdorner : Adorner
@@ -658,14 +728,11 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				
 				if (aboveElement is StackPanel) {
 					aboveElement = (panel.Children.Count > 0 ? panel.Children[panel.Children.Count - 1] : panel) as FrameworkElement;
-
-					Core.LoggingService.Info("aboveElement second");
 					adorner = new DragDropMarkerAdorner(aboveElement);
 					adorner.start = new Point(5, 5 + aboveElement.DesiredSize.Height);
 					adorner.end = new Point(panel.ActualWidth - 10, 5 + aboveElement.DesiredSize.Height);
 				} else {
 					aboveElement = aboveElement.TemplatedParent as FrameworkElement;
-					Core.LoggingService.Info("aboveElement normal: " + aboveElement);
 					adorner = new DragDropMarkerAdorner(aboveElement);
 					adorner.start = new Point(5, 0);
 					adorner.end = new Point(panel.ActualWidth - 10, 0);

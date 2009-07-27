@@ -254,7 +254,77 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		/// <remarks>Works only if fullyQualyfiedClassName is the name of a class!</remarks>
+		public static bool HasAttached(this IClass thisValue, bool lookForProperties, bool lookForEvents)
+		{
+			if (!lookForProperties && !lookForEvents)
+				return false;
+			
+			foreach (IField field in thisValue.Fields) {
+				if (!field.IsPublic || !field.IsStatic || !field.IsReadonly || field.ReturnType == null)
+					continue;
+				
+				bool foundMethod = false;
+				
+				if (lookForProperties) {
+					if (field.ReturnType.FullyQualifiedName != "System.Windows.DependencyProperty")
+						continue;
+					if (field.Name.Length <= "Property".Length)
+						continue;
+					if (!field.Name.EndsWith("Property", StringComparison.Ordinal))
+						continue;
+					
+					string fieldName = field.Name.Remove(field.Name.Length - "Property".Length);
+					
+					foreach (IMethod method in thisValue.Methods) {
+						if (!method.IsPublic || !method.IsStatic || method.Name.Length <= 3)
+							continue;
+						if (!method.Name.StartsWith("Get") && !method.Name.StartsWith("Set"))
+							continue;
+						foundMethod = method.Name.Remove(0, 3) == fieldName;
+						if (foundMethod)
+							return true;
+					}
+				}
+				
+				if (lookForEvents && !foundMethod) {
+					if (field.ReturnType.FullyQualifiedName != "System.Windows.RoutedEvent")
+						continue;
+					if (field.Name.Length <= "Event".Length)
+						continue;
+					if (!field.Name.EndsWith("Event", StringComparison.Ordinal))
+						continue;
+					
+					string fieldName = field.Name.Remove(field.Name.Length - "Event".Length);
+					
+					foreach (IMethod method in thisValue.Methods) {
+						if (!method.IsPublic || !method.IsStatic || method.Name.Length <= 3)
+							continue;
+						
+						string methodName = string.Empty;
+						
+						if (methodName.EndsWith("Handler", StringComparison.Ordinal))
+							methodName = method.Name.Remove(method.Name.Length - "Handler".Length);
+						else
+							continue;
+						
+						if (methodName.StartsWith("Add"))
+							methodName = methodName.Remove(0, 3);
+						else if (methodName.StartsWith("Remove"))
+							methodName = methodName.Remove(0, 6);
+						else
+							continue;
+						
+						foundMethod = methodName == fieldName;
+						if (foundMethod)
+							return true;
+					}
+				}
+			}
+			
+			return false;
+		}
+		
+		/// <remarks>Works only if fullyQualifiedClassName is the name of a class!</remarks>
 		public static bool DerivesFrom(this IClass myClass, string fullyQualifiedClassName)
 		{
 			return myClass.ClassInheritanceTreeClassesOnly.Any(c => c.FullyQualifiedName == fullyQualifiedClassName);

@@ -36,7 +36,7 @@ namespace ICSharpCode.XamlBinding.PowerToys
 				
 				if (provider != null) {
 					TextReader reader = provider.TextEditor.Document.CreateReader();
-					XDocument document = XDocument.Load(reader, LoadOptions.PreserveWhitespace | LoadOptions.SetLineInfo);
+					XDocument document = XDocument.Load(reader, LoadOptions.SetLineInfo);
 					document.Declaration = null;
 					if (Refactor(provider.TextEditor, document)) {
 						using (provider.TextEditor.Document.OpenUndoGroup()) {
@@ -45,7 +45,6 @@ namespace ICSharpCode.XamlBinding.PowerToys
 							document.WriteTo(writer);
 							writer.Flush();
 							provider.TextEditor.Document.Text = sWriter.ToString();
-							XmlView.FormatXml(provider.TextEditor);
 						}
 					}
 				}
@@ -59,6 +58,7 @@ namespace ICSharpCode.XamlBinding.PowerToys
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
 			settings.OmitXmlDeclaration = true;
+			settings.NewLineOnAttributes = true;
 			return settings;
 		}
 		

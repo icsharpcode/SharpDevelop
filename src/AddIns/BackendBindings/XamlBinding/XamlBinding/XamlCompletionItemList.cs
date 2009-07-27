@@ -18,12 +18,19 @@ using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
-	public sealed class XamlCompletionItemList : DefaultCompletionItemList
+	public class XamlAttributeCompletionItemList : XamlCompletionItemList
 	{
-		public XamlCompletionItemList()
+		public override CompletionItemListKeyResult ProcessInput(char key)
 		{
+			if (key == '.')
+				return CompletionItemListKeyResult.NormalKey;
+			
+			return base.ProcessInput(key);
 		}
-		
+	}
+	
+	public class XamlCompletionItemList : DefaultCompletionItemList
+	{
 		public override CompletionItemListKeyResult ProcessInput(char key)
 		{
 			if (key == ':' || key == '/')
@@ -32,7 +39,7 @@ namespace ICSharpCode.XamlBinding
 			return base.ProcessInput(key);
 		}
 		
-		public static int CountWhiteSpacesAtEnd(string text)
+		static int CountWhiteSpacesAtEnd(string text)
 		{
 			if (string.IsNullOrEmpty(text))
 				return 0;

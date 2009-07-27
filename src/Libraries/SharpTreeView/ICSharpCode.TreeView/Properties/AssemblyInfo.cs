@@ -46,6 +46,6 @@ using System.Windows.Markup;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: XmlnsPrefix("http://sharpdevelop.net", "sd")]
+[assembly: XmlnsPrefix("http://icsharpcode.net/sharpdevelop/treeview", "treeview")]
 
-[assembly: XmlnsDefinition("http://sharpdevelop.net", "ICSharpCode.TreeView")]
+[assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/treeview", "ICSharpCode.TreeView")]

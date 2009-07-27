@@ -131,12 +131,14 @@ namespace ICSharpCode.XamlBinding
 				List<HighlightingInfo> infos = new List<HighlightingInfo>();
 				
 				do {
-					if (index + 1 >= LineText.Length)
+					if (index + 1 >= LineText.Length) 
 						break;
 
 					index = LineText.IndexOfAny(index + 1, '=', '.');
 					if (index > -1) {
 						context = CompletionDataHelper.ResolveContext(FileContent, FileName, LineNumber, index);
+						if (context.ActiveElement == null)
+							continue;
 						string elementName = context.ActiveElement.FullXmlName;
 						int propertyNameIndex = elementName.IndexOf('.');
 						string attribute = (context.AttributeName != null) ? context.AttributeName.FullXmlName : string.Empty;
