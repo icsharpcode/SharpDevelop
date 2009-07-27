@@ -36,15 +36,33 @@ namespace ICSharpCode.Core.Presentation
 		{
 			var allItems = new HashSet<T>();
 			
+			foreach(var bucket in FindBuckets(template, matchType)) {
+				foreach(var item in bucket) {
+					allItems.Add(item);
+				}
+			}
+			
+			return allItems;
+		}
+		
+		public IEnumerable<HashSet<T>> FindBuckets(BindingInfoTemplate template, BindingInfoMatchType matchType) 
+		{
+			if((matchType & BindingInfoMatchType.Exact) == BindingInfoMatchType.Exact) {
+				HashSet<T> items;
+				superSetDictionary.TryGetValue(template, out items);
+				
+				if(items != null) {
+					yield return items;
+				}
+			}
+			   
 			if((matchType & BindingInfoMatchType.SubSet) == BindingInfoMatchType.SubSet) {
 				foreach(var wildCardTemplate in template.GetWildCardTemplates()) {
 					HashSet<T> items;
 					superSetDictionary.TryGetValue(wildCardTemplate, out items);
 					
 					if(items != null) {
-						foreach(var item in items) {
-							allItems.Add(item);
-						}
+						yield return items;
 					}
 				}
 			}
@@ -54,13 +72,9 @@ namespace ICSharpCode.Core.Presentation
 				subSetDictionary.TryGetValue(template, out items);
 				
 				if(items != null) {
-					foreach(var item in items) {
-						allItems.Add(item);
-					}
+					yield return items;
 				}
 			}
-			
-			return allItems;
 		}
 		
 		public void Remove(T item) 
@@ -68,8 +82,16 @@ namespace ICSharpCode.Core.Presentation
 			foreach(var pair in subSetDictionary) {
 				pair.Value.Remove(item);
 			}
+			
 			foreach(var pair in superSetDictionary) {
 				pair.Value.Remove(item);
+			}
+		}
+		
+		public void Remove(BindingInfoTemplate template, BindingInfoMatchType matchType, T item) 
+		{
+			foreach(var bucket in FindBuckets(template, matchType)) {
+				bucket.Remove(item);
 			}
 		}
 
@@ -78,5 +100,6 @@ namespace ICSharpCode.Core.Presentation
 	    	superSetDictionary.Clear();
 	    	subSetDictionary.Clear();
 	    }
+	    
     }
 }

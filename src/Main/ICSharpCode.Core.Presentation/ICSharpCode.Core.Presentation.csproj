@@ -83,6 +83,7 @@
     <Compile Include="CommandsService\RelationshipMap.cs" />
     <Compile Include="CommandsService\UserDefinedGesturesManager.cs" />
     <Compile Include="CommandsService\UserGesturesProfile.cs" />
+    <Compile Include="CommandsService\Utils\WeakReferenceEqualirtyComparer.cs" />
     <Compile Include="CommandsService\WpfCommandWrapper.cs" />
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="DropDownButton.cs" />
@@ -122,6 +123,7 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="CommandsService\Utils" />
     <Folder Include="Input" />
     <Folder Include="Menu" />
     <Folder Include="CommandsService" />

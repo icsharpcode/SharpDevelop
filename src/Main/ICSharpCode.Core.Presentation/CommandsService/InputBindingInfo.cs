@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Collections.Generic;
@@ -323,15 +324,24 @@ namespace ICSharpCode.Core.Presentation
 		
 		private void Groups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) 
 		{
-			if(e.OldItems != null) {
-				foreach(BindingGroup oldGroup in e.OldItems) {
-					oldGroup.InputBindings.Remove(this);
+			if(IsRegistered) {
+				if(e.OldItems != null) {
+					foreach(BindingGroup oldGroup in e.OldItems) {
+						var template = this.GenerateTemplates(false).First();
+						template.Group = oldGroup;
+						CommandManager.UnregisterInputBindingsUpdateHandler(
+							DefaultBindingsUpdateHandler, 
+							BindingInfoMatchType.Exact,
+							template);
+					}
 				}
-			}
-			
-			if(e.NewItems != null) {
-				foreach(BindingGroup oldGroup in e.NewItems) {
-					oldGroup.InputBindings.Add(this);
+				
+				if(e.NewItems != null) {
+					foreach(BindingGroup newGroup in e.NewItems) {
+						var template = this.GenerateTemplates(false).First();
+						template.Group = newGroup;
+						CommandManager.RegisterInputBindingsUpdateHandler(template, DefaultBindingsUpdateHandler);
+					}
 				}
 			}
 		}
@@ -354,7 +364,7 @@ namespace ICSharpCode.Core.Presentation
 			OldInputBindings = ActiveInputBindings;
 			
 			ActiveInputBindings = new InputBindingCollection();
-			if(ActiveGestures != null && BindingGroup.IsActive(this)) {
+			if(Groups.Count > 0 && Groups.IsAttachedToAny(OwnerInstances)) {
 				foreach(InputGesture gesture in ActiveGestures) {
 					var inputBinding = new InputBinding(RoutedCommand, gesture);
 					ActiveInputBindings.Add(inputBinding);
@@ -362,7 +372,7 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		public void RemoveActiveInputBindings()
+		public void RemoveActiveBindings()
 		{
 			if(_ownerTypeName != null) {
 				if(OwnerTypes != null) {
@@ -388,7 +398,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Updates owner bindings
 		/// </summary>
-		internal BindingsUpdatedHandler DefaultInputBindingHandler
+		public BindingsUpdatedHandler DefaultBindingsUpdateHandler
 		{
 			get {
 				if(defaultInputBindingHandler == null && OwnerTypeName != null) {

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Collections.Generic;
@@ -64,15 +65,24 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		private void Groups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {  
-			if(e.OldItems != null) {
-				foreach(BindingGroup oldGroup in e.OldItems) {
-					oldGroup.CommandBindings.Remove(this);
+			if(IsRegistered) {
+				if(e.OldItems != null) {
+					foreach(BindingGroup oldGroup in e.OldItems) {
+						var template = this.GenerateTemplates(false).First();
+						template.Group = oldGroup;
+						CommandManager.UnregisterCommandBindingsUpdateHandler(
+							DefaultBindingsUpdateHandler, 
+							BindingInfoMatchType.Exact,
+							template);
+					}
 				}
-			}
-			
-			if(e.NewItems != null) {
-				foreach(BindingGroup newGroup in e.NewItems) {
-					newGroup.CommandBindings.Add(this);
+				
+				if(e.NewItems != null) {
+					foreach(BindingGroup newGroup in e.NewItems) {
+						var template = this.GenerateTemplates(false).First();
+						template.Group = newGroup;
+						CommandManager.RegisterCommandBindingsUpdateHandler(template, DefaultBindingsUpdateHandler);
+					}
 				}
 			}
 		}
@@ -296,7 +306,7 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 		
-		public void RemoveActiveCommandBindings()
+		public void RemoveActiveBindings()
 		{
 			if(_ownerTypeName != null) {
 				if(OwnerTypes != null) {
@@ -322,7 +332,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Updates owner bindings
 		/// </summary>
-		internal BindingsUpdatedHandler DefaultCommandBindingHandler
+		public BindingsUpdatedHandler DefaultBindingsUpdateHandler
 		{
 			get {
 				if(defaultCommandBindingHandler == null && OwnerTypeName != null) {
@@ -386,7 +396,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			ActiveCommandBindings = new CommandBindingCollection();
 			
-			if(BindingGroup.IsActive(this)) {
+			if(Groups.Count > 0 && Groups.IsAttachedToAny(OwnerInstances)) {
 				var commandBinding = new CommandBinding(RoutedCommand);
 				commandBinding.CanExecute += GenerateCanExecuteEventHandler;					
 				commandBinding.Executed += GenerateExecutedEventHandler;

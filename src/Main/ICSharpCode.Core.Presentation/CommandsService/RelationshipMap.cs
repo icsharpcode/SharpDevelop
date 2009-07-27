@@ -11,8 +11,20 @@ namespace ICSharpCode.Core.Presentation
 {
 	public class RelationshipMap<T1, T2>
 	{
-		private static Dictionary<T1, HashSet<T2>> forwardMap = new Dictionary<T1, HashSet<T2>>();
-		private static Dictionary<T2, HashSet<T1>> backwardMap = new Dictionary<T2, HashSet<T1>>();
+		private static Dictionary<T1, HashSet<T2>> forwardMap;
+		private static Dictionary<T2, HashSet<T1>> backwardMap;
+		
+		public RelationshipMap()
+		{
+			forwardMap = new Dictionary<T1, HashSet<T2>>();
+			backwardMap = new Dictionary<T2, HashSet<T1>>();
+		}
+		
+		public RelationshipMap(IEqualityComparer<T1> t1Comparer, IEqualityComparer<T2> t2Comparer)
+		{
+			forwardMap = new Dictionary<T1, HashSet<T2>>(t1Comparer);
+			backwardMap = new Dictionary<T2, HashSet<T1>>(t2Comparer);
+		}
 		
 		public bool Add(T1 item1, T2 item2) 
 		{
@@ -28,6 +40,7 @@ namespace ICSharpCode.Core.Presentation
 			var backwardRemoveResult = backwardMap[item2].Add(item1);
 			
 			return forwardRemoveResult || backwardRemoveResult;
+			//return forwardRemoveResult;
 		}
 		
 		public ICollection<T2> MapForward(T1 item) {

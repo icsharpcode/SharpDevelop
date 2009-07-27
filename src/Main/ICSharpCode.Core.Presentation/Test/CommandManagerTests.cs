@@ -44,7 +44,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 		[Test]
 		public void InvokeInputBindingUpdateHandlersWithTwoParamsManually()
 		{
-			var testResults = new HashSet<string>();
+			var testResults = new List<string>();
 			
 			System.IO.File.AppendAllText("C:/test.txt", "Add" + Environment.NewLine);
 					
@@ -271,6 +271,36 @@ namespace ICSharpCode.Core.Presentation.Tests
 			Assert.IsFalse(testResults.Contains("instanceTest0"));
 			Assert.IsTrue(testResults.Contains("instanceTest1"));
 			Assert.IsTrue(testResults.Contains("instanceTest2"));
+		}
+		
+		[Test]
+		public void NamedUIElementOperationsTest()
+		{
+        	var uiElementName = "test";
+        	var uiElement = new UIElement();
+        	SDCommandManager.RegisterNamedUIElement(uiElementName, uiElement);
+        	
+        	// Map forward
+        	var retrievedInstances = SDCommandManager.GetNamedUIElementCollection(uiElementName);
+        	Assert.AreEqual(1, retrievedInstances.Count);
+        	Assert.AreSame(retrievedInstances.First(), uiElement);
+        	retrievedInstances = null;
+        		
+        	// Map backward
+        	var retrievedNames = SDCommandManager.GetUIElementNameCollection(uiElement);
+        	Assert.AreEqual(1, retrievedNames.Count);
+        	Assert.AreSame(retrievedNames.First(), uiElementName);
+        	retrievedNames = null;
+        	
+        	uiElement = null;        	
+        	GC.Collect();
+        	
+        	// Map forward (after GC)
+        	var retrievedAfterGCInstances = SDCommandManager.GetNamedUIElementCollection(uiElementName);
+        	Assert.AreEqual(0, retrievedAfterGCInstances.Count);
+        	
+			// Map backward (after GC)
+			Assert.Throws(typeof(ArgumentNullException), delegate { SDCommandManager.GetUIElementNameCollection(uiElement); });
 		}
 	}
 }

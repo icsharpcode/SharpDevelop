@@ -48,13 +48,47 @@ namespace ICSharpCode.Core.Presentation
         {
         	get;
         }
+        
+        BindingsUpdatedHandler DefaultBindingsUpdateHandler
+        {
+        	get;
+        }
+        
+        void RemoveActiveBindings();
     }
     
+    internal static class IBindingInfoExtensions
+    {
+    	public static BindingInfoTemplate[] GenerateTemplates(this IBindingInfo thisObject, bool includeGroup)
+    	{
+    		var invokeTemplates = new BindingInfoTemplate[thisObject.Groups.Count == 0 || !includeGroup ? 1 : thisObject.Groups.Count];
+    		var groupEnumerator = thisObject.Groups.Count == 0 ? null : thisObject.Groups.GetEnumerator();
+			var groupCounter = 0;
+			while(groupEnumerator == null || groupEnumerator.MoveNext()) {
+				var invokeTemplate = new BindingInfoTemplate();
+				invokeTemplate.RoutedCommandName = thisObject.RoutedCommandName;
+				invokeTemplate.OwnerInstanceName = thisObject.OwnerInstanceName;
+				invokeTemplate.OwnerTypeName = thisObject.OwnerTypeName;
+				if(includeGroup && groupEnumerator != null) {
+					invokeTemplate.Group = groupEnumerator.Current;
+				}
+				
+				invokeTemplates[groupCounter++] = invokeTemplate;
+				
+				if(groupEnumerator == null || !includeGroup) {
+					break;
+				}
+			}
+			
+			return invokeTemplates;
+    	}
+    }
     
     [FlagsAttribute]
     public enum BindingInfoMatchType
     {
     	SubSet = 1,
     	SuperSet = 2,
+    	Exact
     }
 }

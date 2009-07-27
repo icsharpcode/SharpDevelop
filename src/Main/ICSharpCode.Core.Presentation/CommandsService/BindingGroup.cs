@@ -14,39 +14,19 @@ namespace ICSharpCode.Core.Presentation
     /// </summary>
     public class BindingGroup
     {
-        private ObservableCollection<InputBindingInfo> _inputBindings;
-        private ObservableCollection<CommandBindingInfo> _commandBindings;
-
-        private HashSet<UIElement> _attachedInstances = new HashSet<UIElement>();
+        private HashSet<WeakReference> _attachedInstances = new HashSet<WeakReference>(new WeakReferenceEqualirtyComparer());
         
         private List<BindingGroup> _nestedGroups = new List<BindingGroup>();
         
-        public BindingGroup()
-        {
-        	_inputBindings = new ObservableCollection<InputBindingInfo>();
-        	_inputBindings.CollectionChanged += inputBindings_CollectionChanged;
-        	
-        	_commandBindings = new ObservableCollection<CommandBindingInfo>();
-        	_commandBindings.CollectionChanged += commandBindings_CollectionChanged;
-        }
         
         public string Name
         {
         	get; set;
         }
         
-        public static bool IsActive(IBindingInfo bindingInfo)
-        {
-			if(bindingInfo.OwnerInstances != null && bindingInfo.Groups != null && bindingInfo.Groups.Count > 0) {
-				return bindingInfo.Groups.IsAttachedToAny(bindingInfo.OwnerInstances);
-			}
-			
-			return true;
-        }
-        
         public bool IsAttachedTo(UIElement instance) 
         {
-        	return _attachedInstances.Contains(instance);
+        	return _attachedInstances.Contains(new WeakReference(instance));
         }
         
         public void AttachTo(UIElement instance)
@@ -57,7 +37,7 @@ namespace ICSharpCode.Core.Presentation
         
         private void AttachToWithoutInvoke(UIElement instance)
         {
-    		_attachedInstances.Add(instance);
+    		_attachedInstances.Add(new WeakReference(instance));
     		
     		foreach(var nestedGroup in _nestedGroups) {
     			nestedGroup.AttachToWithoutInvoke(instance);
@@ -66,7 +46,7 @@ namespace ICSharpCode.Core.Presentation
         
         public void DetachFromWithoutInvoke(UIElement instance)
         {
-    		_attachedInstances.Remove(instance);
+    		_attachedInstances.Remove(new WeakReference(instance));
     		
     		foreach(var nestedGroup in _nestedGroups) {
     			nestedGroup.DetachFrom(instance);
@@ -97,8 +77,13 @@ namespace ICSharpCode.Core.Presentation
         		bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerTypeName = typeName };
         	}
         	
-        	CommandManager.InvokeCommandBindingUpdateHandlers(BindingInfoMatchType.SubSet, bindingInfoTemplates);
-        	CommandManager.InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet, bindingInfoTemplates);
+        	CommandManager.InvokeCommandBindingUpdateHandlers(
+        		BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, 
+        		bindingInfoTemplates);
+        	
+        	CommandManager.InvokeInputBindingUpdateHandlers(
+        		BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, 
+        		bindingInfoTemplates);
         }
         
         public List<BindingGroup> NestedGroups
@@ -127,30 +112,6 @@ namespace ICSharpCode.Core.Presentation
         			FlattenNestedGroups(nestedGroup, foundGroups);
         		}
         	}
-        }
-        
-        public ICollection<InputBindingInfo> InputBindings
-        {
-        	get {
-        		return _inputBindings;
-        	}
-        }
-        
-        public ICollection<CommandBindingInfo> CommandBindings
-        {
-        	get {
-        		return _commandBindings;
-        	}
-        }
-        
-        private void commandBindings_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-        	
-        }
-        
-        private void inputBindings_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-        	
         }
     }
 }

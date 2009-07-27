@@ -29,9 +29,13 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 		
+		public static bool SuspendUpdateHandlers {
+			get; set;
+		}
+		
 		// Binding infos
-		private static BindingInfoTemplateDictionary<CommandBindingInfo> commandBindings = new BindingInfoTemplateDictionary<CommandBindingInfo>();
-		private static BindingInfoTemplateDictionary<InputBindingInfo> inputBidnings = new BindingInfoTemplateDictionary<InputBindingInfo>();
+		private static BindingInfoTemplateDictionary<IBindingInfo> commandBindings = new BindingInfoTemplateDictionary<IBindingInfo>();
+		private static BindingInfoTemplateDictionary<IBindingInfo> inputBidnings = new BindingInfoTemplateDictionary<IBindingInfo>();
 		
 		// Binding update handlers
 		private static BindingInfoTemplateDictionary<BindingsUpdatedHandler> inputBindingUpdatedHandlers = new BindingInfoTemplateDictionary<BindingsUpdatedHandler>();
@@ -42,11 +46,16 @@ namespace ICSharpCode.Core.Presentation
 		internal static Dictionary<string, System.Windows.Input.ICommand> commands = new Dictionary<string, System.Windows.Input.ICommand>();
 		
 		// Named instances and types
-		private static RelationshipMap<string, UIElement> namedUIInstances = new RelationshipMap<string, UIElement>();
+		private static RelationshipMap<string, WeakReference> namedUIInstances;
 		private static RelationshipMap<string, Type> namedUITypes = new RelationshipMap<string, Type>();
 		
 		// Categories
 		public static List<InputBindingCategory> InputBindingCategories = new List<InputBindingCategory>();
+		
+		static CommandManager()
+		{
+			namedUIInstances = new RelationshipMap<string, WeakReference>(null, new WeakReferenceEqualirtyComparer());
+		}
 		
 		/// <summary>
 		/// Register UI element instance accessible by unique name
@@ -55,10 +64,15 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="element">Instance</param>
 		public static void RegisterNamedUIElement(string instanceName, UIElement element)
 		{	
-			if(namedUIInstances.Add(instanceName, element)) {
-				// If there are some bindings and update handlers already registered, 
-				// but owner is not loaded then invoke those bindings
-				
+			if(instanceName == null) {
+				throw new ArgumentNullException("instanceName");
+			}
+			if(element == null) {
+				throw new ArgumentNullException("element");
+			}
+			
+			var container = new WeakReference(element);
+			if(namedUIInstances.Add(instanceName, container)) {
 				InvokeCommandBindingUpdateHandlers(
 					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
 					new BindingInfoTemplate { OwnerInstanceName = instanceName });
@@ -71,7 +85,15 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static void UnregisterNamedUIElement(string instanceName, UIElement instance)
 		{	
-			if(namedUIInstances.Remove(instanceName, instance)) {
+			if(instanceName == null) {
+				throw new ArgumentNullException("instanceName");
+			}
+			if(instance == null) {
+				throw new ArgumentNullException("element");
+			}
+			
+			var container = new WeakReference(instance);
+			if(namedUIInstances.Remove(instanceName, container)) {
 				InvokeCommandBindingUpdateHandlers(
 					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, 
 					new BindingInfoTemplate { OwnerInstanceName = instanceName });
@@ -89,12 +111,21 @@ namespace ICSharpCode.Core.Presentation
 		/// <returns></returns>
 		public static ICollection<UIElement> GetNamedUIElementCollection(string instanceName)
 		{
-			return namedUIInstances.MapForward(instanceName);
+			if(instanceName == null) {
+				throw new ArgumentNullException("instanceName");
+			}
+			
+			return namedUIInstances.MapForward(instanceName).Where(reference => reference.Target != null).Select(reference => (UIElement)reference.Target).ToList();
 		}
 		
 		public static ICollection<string> GetUIElementNameCollection(UIElement instance)
 		{
-			return namedUIInstances.MapBackward(instance);
+			if(instance == null) {
+				throw new ArgumentNullException("instance");
+			}
+			
+			var container = new WeakReference(instance);
+			return namedUIInstances.MapBackward(container);
 		}
 		
 		/// <summary>
@@ -104,9 +135,14 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="type">Type</param>
 		public static void RegisterNamedUIType(string typeName, Type type)
 		{
+			if(typeName == null) {
+				throw new ArgumentNullException("typeName");
+			}
+			if(type == null) {
+				throw new ArgumentNullException("type");
+			}
+			
 			if(namedUITypes.Add(typeName, type)) {
-				// If any update handlers where assigned to the type and type was not 
-				// loaded yet then invoke update handlers
 				InvokeCommandBindingUpdateHandlers(
 					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
 					new BindingInfoTemplate { OwnerTypeName = typeName });
@@ -119,6 +155,13 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static void UnregisterNamedUIType(string typeName, Type type)
 		{	
+			if(typeName == null) {
+				throw new ArgumentNullException("typeName");
+			}
+			if(type == null) {
+				throw new ArgumentNullException("type");
+			}
+			
 			if(namedUITypes.Remove(typeName, type)) {
 				InvokeCommandBindingUpdateHandlers(
 					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,						
@@ -137,11 +180,19 @@ namespace ICSharpCode.Core.Presentation
 		/// <returns>Type</returns>
 		public static ICollection<Type> GetNamedUITypeCollection(string typeName)
 		{
+			if(typeName == null) {
+				throw new ArgumentNullException("typeName");
+			}
+			
 			return namedUITypes.MapForward(typeName);
 		}
 		
 		public static ICollection<string> GetUITypeNameCollection(Type type)
 		{
+			if(type == null) {
+				throw new ArgumentNullException("type");
+			}
+			
 			return namedUITypes.MapBackward(type);
 		}
 
@@ -245,10 +296,12 @@ namespace ICSharpCode.Core.Presentation
 				throw new ArgumentException("Routed command name must be specified");
 			}
 			
-			var similarBindingTemplate = new  BindingInfoTemplate();
-			similarBindingTemplate.OwnerTypeName = inputBindingInfo.OwnerTypeName;
-			similarBindingTemplate.OwnerInstanceName = inputBindingInfo.OwnerInstanceName;
-			similarBindingTemplate.RoutedCommandName = inputBindingInfo.RoutedCommandName;
+			if(inputBindingInfo.RoutedCommandName == "EditingCommands.MoveLeftByCharacter") 
+			{
+				
+			}
+			
+			var similarBindingTemplate = inputBindingInfo.GenerateTemplates(false).First();
 			var similarInputBinding = FindInputBindingInfos(BindingInfoMatchType.SuperSet, similarBindingTemplate).FirstOrDefault();
 			
 			if(similarInputBinding != null) {
@@ -262,50 +315,17 @@ namespace ICSharpCode.Core.Presentation
 				similarInputBinding.Categories.AddRange(inputBindingInfo.Categories);
 				similarInputBinding.Groups.AddRange(inputBindingInfo.Groups);
 			} else {
-				inputBidnings.Add(similarBindingTemplate, inputBindingInfo);
-				inputBindingInfo.IsRegistered = true;
+				similarInputBinding = inputBindingInfo;
 				
-				RegisterInputBindingsUpdateHandler(similarBindingTemplate, inputBindingInfo.DefaultInputBindingHandler);
-			}
-			
-			InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet, similarBindingTemplate);
-		}
-		
-		/// <summary>
-		/// Unregister input binding
-		/// </summary>
-		/// <param name="inputBindingInfo">Input binding parameters</param>
-		public static void UnregisterInputBinding(BindingInfoMatchType matchType,  params BindingInfoTemplate[] templates)
-		{
-			foreach(var similarInputBindingInfo in FindInputBindingInfos(matchType, templates).ToArray()) {
-				inputBidnings.Remove(similarInputBindingInfo);
-				similarInputBindingInfo.RemoveActiveInputBindings();
-			}
-			
-			InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet, templates);
-		}
-		
-		public static IEnumerable<InputBindingInfo> FindInputBindingInfos(BindingInfoMatchType matchType, params BindingInfoTemplate[] templates)
-		{
-        	foreach(var template in templates) {
-				foreach(var item in inputBidnings.FindItems(template, matchType)) {
-					if(item != null) {
-						yield return (InputBindingInfo)item;
-					}
+				inputBidnings.Add(similarBindingTemplate, similarInputBinding);
+				similarInputBinding.IsRegistered = true;
+				
+				foreach(var template in similarInputBinding.GenerateTemplates(true)) {
+					RegisterInputBindingsUpdateHandler(template, similarInputBinding.DefaultBindingsUpdateHandler);
 				}
-        	}
-		}
-		
-		public static InputBindingCollection FindInputBindings(BindingInfoMatchType matchType, params BindingInfoTemplate[] templates) 
-		{
-			var inputBindingInfoCollection = FindInputBindingInfos(matchType, templates);
-			
-			var inputBindingCollection = new InputBindingCollection();
-			foreach(var bindingInfo in inputBindingInfoCollection) {
-				inputBindingCollection.AddRange(bindingInfo.ActiveInputBindings);
 			}
 			
-			return inputBindingCollection;
+			InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet, similarInputBinding.GenerateTemplates(true));
 		}
 		
 		/// <summary>
@@ -352,35 +372,19 @@ namespace ICSharpCode.Core.Presentation
 			if(commandBindingInfo.RoutedCommandName == null) {
 				throw new ArgumentException("Routed command name must be specified");
 			}
-				
-			var registeredBindingTemplate = new BindingInfoTemplate();
-			registeredBindingTemplate.OwnerInstanceName = commandBindingInfo.OwnerInstanceName;
-			registeredBindingTemplate.OwnerTypeName = commandBindingInfo.OwnerTypeName;
-			registeredBindingTemplate.RoutedCommandName = commandBindingInfo.RoutedCommandName;
-			
-			commandBindings.Add(registeredBindingTemplate, commandBindingInfo);
+
+			var bindingInfoTemplate = commandBindingInfo.GenerateTemplates(false).First();
+			commandBindings.Add(bindingInfoTemplate, commandBindingInfo);
 			commandBindingInfo.IsRegistered = true;
 			
-			RegisterCommandBindingsUpdateHandler(registeredBindingTemplate, commandBindingInfo.DefaultCommandBindingHandler);
-			InvokeCommandBindingUpdateHandlers(BindingInfoMatchType.SubSet, registeredBindingTemplate);
-		}
-		
-		/// <summary>
-		/// Unregister command binding
-		/// </summary>
-		/// <param name="commandBindingInfo">Command binding parameters</param>
-		public static void UnregisterCommandBinding(BindingInfoMatchType matchType,  params BindingInfoTemplate[] templates) {
-			foreach(var similarCommandBindingInfo in FindCommandBindingInfos(matchType, templates).ToArray()) {
-				commandBindings.Remove(similarCommandBindingInfo);
-				similarCommandBindingInfo.RemoveActiveCommandBindings();
+			foreach(var template in commandBindingInfo.GenerateTemplates(false)) {
+				RegisterCommandBindingsUpdateHandler(template, commandBindingInfo.DefaultBindingsUpdateHandler);
 			}
 			
-			InvokeCommandBindingUpdateHandlers(BindingInfoMatchType.SubSet, templates);
+			InvokeCommandBindingUpdateHandlers(BindingInfoMatchType.SubSet, commandBindingInfo.GenerateTemplates(true));
 		}
 		
-		#region Update handlers
-
-		
+		#region Register update handler
 		/// <summary>
 		/// Register command binding update handler which is triggered when input bindings associated 
 		/// with specified type change
@@ -389,16 +393,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="handler">Update handler</param>
 		public static void RegisterCommandBindingsUpdateHandler(BindingInfoTemplate template, BindingsUpdatedHandler handler) 
 		{
-			commandBindingUpdatedHandlers.Add(template, handler);
-		}
-		
-		public static void UnegisterCommandBindingsUpdateHandler(BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params IBindingInfo[] templates) 
-		{
-			if(handler == null) {
-				throw new ArgumentNullException("handler");
-			}
-			
-			UnregisterBindingsUpdateHandler(commandBindingUpdatedHandlers, handler, matchType, templates);
+			RegisterBindingsUpdateHandler(commandBindingUpdatedHandlers, template, handler);
 		}
 		
 		/// <summary>
@@ -409,39 +404,63 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="handler">Update handler</param>
 		public static void RegisterInputBindingsUpdateHandler(BindingInfoTemplate template, BindingsUpdatedHandler handler) 
 		{
-			inputBindingUpdatedHandlers.Add(template, handler);
+			RegisterBindingsUpdateHandler(inputBindingUpdatedHandlers, template, handler);
 		}
 		
-		public static void UnregisterInputBindingsUpdateHandler(BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params IBindingInfo[] templates)
+		private static void RegisterBindingsUpdateHandler(BindingInfoTemplateDictionary<BindingsUpdatedHandler> updateHanlders, BindingInfoTemplate template, BindingsUpdatedHandler handler) 
+		{
+			updateHanlders.Add(template, handler);
+		}
+		#endregion
+		
+		
+		#region Unregister update handler
+		public static void UnregisterInputBindingsUpdateHandler(BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params BindingInfoTemplate[] templates)
+		{
+			UnregisterdBindingsUpdateHandler(inputBindingUpdatedHandlers, handler, matchType, templates);
+		}
+		
+		
+		public static void UnregisterCommandBindingsUpdateHandler(BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params BindingInfoTemplate[] templates) 
+		{
+			UnregisterdBindingsUpdateHandler(commandBindingUpdatedHandlers, handler, matchType, templates);
+		}
+		
+		private static void UnregisterdBindingsUpdateHandler(BindingInfoTemplateDictionary<BindingsUpdatedHandler> updateHandlers, BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params BindingInfoTemplate[] templates) 
 		{
 			if(handler == null) {
 				throw new ArgumentNullException("handler");
 			}
 			
-			UnregisterBindingsUpdateHandler(inputBindingUpdatedHandlers, handler, matchType, templates);
+			foreach(var template in templates) {
+				updateHandlers.Remove(template, matchType, handler);
+			}
 		}
-
-		private static void UnregisterBindingsUpdateHandler(BindingInfoTemplateDictionary<BindingsUpdatedHandler> updateHandlerDictionary, BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params IBindingInfo[] templates)
-		{
-			inputBindingUpdatedHandlers.Remove(handler);
-		}
+		#endregion
 		
+		
+		#region Invoke binding update handlers
 		public static void InvokeCommandBindingUpdateHandlers(BindingInfoMatchType matchType, params BindingInfoTemplate[] templates)
 		{
-        	foreach(var template in templates) {
-				foreach(var handler in commandBindingUpdatedHandlers.FindItems(template, matchType)) {
-					handler.Invoke();
-				}
-        	}
+			InvokeBindingUpdateHandlers(commandBindingUpdatedHandlers, matchType, templates);
 		}
 		
 		public static void InvokeInputBindingUpdateHandlers(BindingInfoMatchType matchType, params BindingInfoTemplate[] templates)
 		{
-        	foreach(var template in templates) {
-				foreach(var handler in inputBindingUpdatedHandlers.FindItems(template, matchType)) {
-					handler.Invoke();
-				}
-        	}
+			InvokeBindingUpdateHandlers(inputBindingUpdatedHandlers, matchType, templates);
+		}
+		
+		private static void InvokeBindingUpdateHandlers(BindingInfoTemplateDictionary<BindingsUpdatedHandler> updateHandlerDictionary, BindingInfoMatchType matchType, params BindingInfoTemplate[] templates)
+		{
+			if(!SuspendUpdateHandlers) {
+	        	foreach(var template in templates) {
+					foreach(var handler in updateHandlerDictionary.FindItems(template, matchType)) {
+						if(handler != null) {
+							handler.Invoke();
+						}
+					}
+	        	}
+			}
 		}
 		#endregion
 		
@@ -481,6 +500,53 @@ namespace ICSharpCode.Core.Presentation
 				commands.Add(commandName, wpfCommand);
 			}
 		}
+		
+		#region Unregister binding infos
+		
+		/// <summary>
+		/// Unregister input binding
+		/// </summary>
+		/// <param name="inputBindingInfo">Input binding parameters</param>
+		public static void UnregisterInputBinding(BindingInfoMatchType matchType,  params BindingInfoTemplate[] templates)
+		{
+			UnregisterBindingInfo(inputBidnings, inputBindingUpdatedHandlers, matchType, templates);
+		}
+		
+		/// <summary>
+		/// Unregister command binding
+		/// </summary>
+		/// <param name="commandBindingInfo">Command binding parameters</param>
+		public static void UnregisterCommandBinding(BindingInfoMatchType matchType,  params BindingInfoTemplate[] templates) 
+		{
+			UnregisterBindingInfo(commandBindings, commandBindingUpdatedHandlers, matchType, templates);
+		}
+		
+		private static void UnregisterBindingInfo(BindingInfoTemplateDictionary<IBindingInfo> bindingInfoDictionary, BindingInfoTemplateDictionary<BindingsUpdatedHandler> updateHandlerDictionary, BindingInfoMatchType matchType,  params BindingInfoTemplate[] templates)
+		{
+			foreach(var similarBindingInfo in FindBindingInfos(bindingInfoDictionary, matchType, templates).ToArray()) {
+				var bindingInfoTemplate = similarBindingInfo.GenerateTemplates(false).First();
+				
+				BindingsUpdatedHandler defaultUpdatesHandler;
+				if(similarBindingInfo is InputBindingInfo) {
+					defaultUpdatesHandler = ((InputBindingInfo)similarBindingInfo).DefaultBindingsUpdateHandler;
+					((InputBindingInfo)similarBindingInfo).IsRegistered = false;
+				} else {
+					defaultUpdatesHandler = ((CommandBindingInfo)similarBindingInfo).DefaultBindingsUpdateHandler;
+					((CommandBindingInfo)similarBindingInfo).IsRegistered = false;
+				}
+					
+				bindingInfoDictionary.Remove(bindingInfoTemplate, BindingInfoMatchType.Exact, similarBindingInfo);
+				updateHandlerDictionary.Remove(bindingInfoTemplate, BindingInfoMatchType.Exact, defaultUpdatesHandler);
+				
+				similarBindingInfo.RemoveActiveBindings();
+			}
+			
+			InvokeBindingUpdateHandlers(updateHandlerDictionary, BindingInfoMatchType.SuperSet | BindingInfoMatchType.SubSet, templates);
+		}
+		
+		#endregion
+		
+		#region Find binding infos
 
 		/// <summary>
 		/// Get list of all command bindings which satisfy provided parameters
@@ -494,14 +560,28 @@ namespace ICSharpCode.Core.Presentation
 		/// <returns>Collection of managed command bindings</returns>
 		public static IEnumerable<CommandBindingInfo> FindCommandBindingInfos(BindingInfoMatchType matchType, params BindingInfoTemplate[] templates)
 		{
+			var bindings = FindBindingInfos(commandBindings, matchType, templates).ToList();
+			
+			return bindings.Cast<CommandBindingInfo>();
+		}
+		
+		public static IEnumerable<InputBindingInfo> FindInputBindingInfos(BindingInfoMatchType matchType, params BindingInfoTemplate[] templates)
+		{
+			var bindings = FindBindingInfos(inputBidnings, matchType, templates).ToList();
+			
+			return bindings.Cast<InputBindingInfo>();
+		}
+		
+		private static IEnumerable<IBindingInfo> FindBindingInfos(BindingInfoTemplateDictionary<IBindingInfo> bindingInfos, BindingInfoMatchType matchType, params BindingInfoTemplate[] templates)
+		{
         	foreach(var template in templates) {
-				foreach(var item in commandBindings.FindItems(template, matchType)) {
+				foreach(var item in bindingInfos.FindItems(template, matchType)) {
 					if(item != null) {
-						yield return (CommandBindingInfo)item;
+						yield return item;
 					}
 				}
         	}
-		}
+		}		
 
 		public static CommandBindingCollection FindCommandBindings(BindingInfoMatchType matchType, params BindingInfoTemplate[] templates) 
 		{
@@ -512,6 +592,18 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			return commandBindingCollection;
+		}
+		
+		public static InputBindingCollection FindInputBindings(BindingInfoMatchType matchType, params BindingInfoTemplate[] templates) 
+		{
+			var inputBindingInfoCollection = FindInputBindingInfos(matchType, templates);
+			
+			var inputBindingCollection = new InputBindingCollection();
+			foreach(var bindingInfo in inputBindingInfoCollection) {
+				inputBindingCollection.AddRange(bindingInfo.ActiveInputBindings);
+			}
+			
+			return inputBindingCollection;
 		}
 		
 		/// <summary>
@@ -539,6 +631,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			return gestures;
 		}
+		#endregion
 		
 		public static InputBindingCategory GetInputBindingCategory(string categoryPath, bool throwWhenNotFound)
 		{
@@ -560,7 +653,7 @@ namespace ICSharpCode.Core.Presentation
 			var categoryPathCollection = categoryPathCollectionString.Split(',');
 			var categories = new List<InputBindingCategory>();
 			foreach(var categoryPath in categoryPathCollection) {
-				var category = CommandManager.GetInputBindingCategory(categoryPath, throwWhenNotFound);
+				var category = GetInputBindingCategory(categoryPath, throwWhenNotFound);
 				
 				if(category != null) {
 					categories.Add(category);
@@ -628,4 +721,5 @@ namespace ICSharpCode.Core.Presentation
 			return string.Format("{0}, {1}", type.FullName, type.Assembly.GetName().Name);
 		}
 	}
+	
 }
