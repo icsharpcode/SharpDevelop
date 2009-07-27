@@ -343,7 +343,7 @@ namespace ICSharpCode.Core.Presentation
 			template.OwnerTypeName = OwnerTypeName;
 			template.RoutedCommandName = RoutedCommandName;
 			
-			SDCommandManager.InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, template);
+			SDCommandManager.InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet, template);
 		}
 		
 		/// <summary>

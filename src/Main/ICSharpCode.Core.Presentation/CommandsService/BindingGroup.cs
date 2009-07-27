@@ -87,9 +87,7 @@ namespace ICSharpCode.Core.Presentation
         	var instanceNames = CommandManager.GetUIElementNameCollection(instance);
         	var typeNames = CommandManager.GetUITypeNameCollection(instance.GetType());
         	
-        	var bindingInfoTemplates = new BindingInfoTemplate[instanceNames.Count + typeNames.Count + 2];
-        	bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerInstances = new[] { instance }};
-        	bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerTypes = new[] { instance.GetType() }};
+        	var bindingInfoTemplates = new BindingInfoTemplate[instanceNames.Count + typeNames.Count];
         	
         	foreach(var instanceName in instanceNames) {
         		bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerInstanceName = instanceName };
@@ -99,8 +97,8 @@ namespace ICSharpCode.Core.Presentation
         		bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerTypeName = typeName };
         	}
         	
-        	CommandManager.InvokeCommandBindingUpdateHandlers(BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, bindingInfoTemplates);
-        	CommandManager.InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, bindingInfoTemplates);
+        	CommandManager.InvokeCommandBindingUpdateHandlers(BindingInfoMatchType.SubSet, bindingInfoTemplates);
+        	CommandManager.InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet, bindingInfoTemplates);
         }
         
         public List<BindingGroup> NestedGroups

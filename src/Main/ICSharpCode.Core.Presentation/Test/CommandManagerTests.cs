@@ -13,10 +13,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 	[TestFixture]
     public class CommandManagerTests
     {
-    	UIElement namedInstanceScope;
-    	BindingGroup bindingGroup;
-    	BindingGroup bindingGroup2;
-    	
     	[TestFixtureSetUp]
     	public void TestFixtureSetUp()
     	{
@@ -26,164 +22,44 @@ namespace ICSharpCode.Core.Presentation.Tests
     	[SetUp]
     	public void SetuUp()
     	{
-    		namedInstanceScope = new UIElement();
-    		bindingGroup = new BindingGroup();
-    		bindingGroup2 = new BindingGroup();
-    		
-    		SDCommandManager.RegisterNamedUIType("Global", typeof(UIElement));
-    		SDCommandManager.RegisterNamedUIElement("NamedInstanceScope", namedInstanceScope);
-    		
-			SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerTypeName = "Global",
-				RoutedCommandName = "TestCommands.DoSomething" });
-    		
-			SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerTypeName = "Global",
-				RoutedCommandName = "TestCommands.DoSomething" });
-			
-    		
-			SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerTypeName = "Global",
-				RoutedCommandName = "TestCommands.DoSomething" });
-    		
-			SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerTypeName = "Global",
-				RoutedCommandName = "TestCommands.DoSomething" });
-    		
-    		
-			SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerTypeName = "Global",
-				RoutedCommandName = "TestCommands.DoSomethingOther" });
-    		
-			SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerTypeName = "Global",
-				RoutedCommandName = "TestCommands.DoSomethingOther" });
-    		
-    		
-    		SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerTypeName = "Local",
-				RoutedCommandName = "TestCommands.DoSomething" });
-			
-    		SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerTypeName = "Local",
-				RoutedCommandName = "TestCommands.DoSomething" });
-    		
-    		
-    		SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerTypeName = "UnrelatedScope",
-				RoutedCommandName = "TestCommands.DoSomethingCompletelyOther" });
-    		
-    		SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerTypeName = "UnrelatedScope",
-				RoutedCommandName = "TestCommands.DoSomethingCompletelyOther" });
-    		
-    		
-    		SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerTypeName = "NamedScope",
-				RoutedCommandName = "TestCommands.DoSomethingCompletelyElse" });
-    		
-    		SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerTypeName = "NamedScope",
-				RoutedCommandName = "TestCommands.DoSomethingCompletelyElse" });
-    		
-    		
-    		SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerInstanceName = "NamedInstanceScope",
-				RoutedCommandName = "TestCommands.DoSomething" });
-    		
-    		SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerInstanceName = "NamedInstanceScope",
-				RoutedCommandName = "TestCommands.DoSomething" });
-    		
-    		
-    		SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerInstanceName = "OtherNamedInstanceScope",
-				RoutedCommandName = "TestCommands.DoSomething" });
-    		
-    		SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerInstanceName = "OtherNamedInstanceScope",
-				RoutedCommandName = "TestCommands.DoSomething" });
-    		
-    		
-    		SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerInstanceName = "OtherNamedInstanceScope",
-				RoutedCommandName = "TestCommands.DoSomethingElse" ,
-				Groups = new BindingGroupCollection { bindingGroup2 }});
-    		
-    		SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerInstanceName = "OtherNamedInstanceScope",
-				RoutedCommandName = "TestCommands.DoSomethingElse" ,
-				Groups = new BindingGroupCollection { bindingGroup2 }});
-    		
-    		
-    		SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerTypeName = "UnrelatedInstanceScope",
-				RoutedCommandName = "TestCommands.DoSomethingCompletelyOther" ,
-				Groups = new BindingGroupCollection { bindingGroup }});
-    		
-    		SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerTypeName = "UnrelatedInstanceScope",
-				RoutedCommandName = "TestCommands.DoSomethingCompletelyOther" ,
-				Groups = new BindingGroupCollection { bindingGroup }});
-    		
-    		
-    		SDCommandManager.RegisterInputBinding(new InputBindingInfo {
-				OwnerTypeName = "UnrelatedInstanceScope2",
-				RoutedCommandName = "TestCommands.DoSomethingCompletelyOther",
-				Groups = new BindingGroupCollection { bindingGroup }});
-    		
-    		SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
-				OwnerTypeName = "UnrelatedInstanceScope2",
-				RoutedCommandName = "TestCommands.DoSomethingCompletelyOther",
-				Groups = new BindingGroupCollection { bindingGroup }});
     	}
     	
     	[TearDown]
     	public void TearDown()
     	{
-    		bindingGroup = null;
-    		bindingGroup2 = null;
-    		namedInstanceScope = null;
-    		
     		SDCommandManager.Reset();
     	}
     	
-    	[Test]
-		public void FindCommandBindingInfosTests()
+		[Test]
+		public void InvokeInputBindingUpdateHandlersManually()
 		{
-			var doSomethingBindingInfos = SDCommandManager.FindCommandBindingInfos(
-									BindingInfoMatchType.SuperSet, 
-									new BindingInfoTemplate { RoutedCommandName = "TestCommands.DoSomething" });
-			Assert.AreEqual(5, doSomethingBindingInfos.Count());
+			var testResult = false;
 			
-			var namedInstanceBindingInfos = SDCommandManager.FindCommandBindingInfos(
-									BindingInfoMatchType.SuperSet, 
-									new BindingInfoTemplate { OwnerInstances = new[] { namedInstanceScope },  RoutedCommandName = "TestCommands.DoSomething" });
-			Assert.AreEqual(1, namedInstanceBindingInfos.Count());
+			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest" }, () => testResult = true);
+			SDCommandManager.InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet, new BindingInfoTemplate { RoutedCommandName = "InvokeTest" });
 			
-			var groupBindingInfos = SDCommandManager.FindCommandBindingInfos(
-									BindingInfoMatchType.SuperSet, 
-									new BindingInfoTemplate { Groups = new BindingGroupCollection { bindingGroup }});
-			Assert.AreEqual(2, groupBindingInfos.Count());
-		}    	
-
-    	[Test]
-		public void FindInputBindingInfosTests()
+			Assert.IsTrue(testResult);
+		}
+		
+		[Test]
+		public void InvokeInputBindingUpdateHandlersWithTwoParamsManually()
 		{
-			var doSomethingBindingInfos = SDCommandManager.FindInputBindingInfos(
-									BindingInfoMatchType.SuperSet, 
-									new BindingInfoTemplate { RoutedCommandName = "TestCommands.DoSomething" });
-			Assert.AreEqual(4, doSomethingBindingInfos.Count());
+			var testResults = new HashSet<string>();
 			
-			var namedInstanceBindingInfos = SDCommandManager.FindInputBindingInfos(
-									BindingInfoMatchType.SuperSet, 
-									new BindingInfoTemplate { OwnerInstances = new[] { namedInstanceScope },  RoutedCommandName = "TestCommands.DoSomething" });
-			Assert.AreEqual(1, namedInstanceBindingInfos.Count());
+			System.IO.File.AppendAllText("C:/test.txt", "Add" + Environment.NewLine);
+					
 			
-			var groupBindingInfos = SDCommandManager.FindInputBindingInfos(
-									BindingInfoMatchType.SuperSet, 
-									new BindingInfoTemplate { Groups = new BindingGroupCollection { bindingGroup }});
-			Assert.AreEqual(2, groupBindingInfos.Count());
+			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerTypeName = "InvokeOwner" }, () => testResults.Add("TwoExactAttributes"));
+			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest" }, () => testResults.Add("LessMatchingAttributes"));
+			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest2" }, () => testResults.Add("LessNotMatchingAttributes"));
+			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate(), () => testResults.Add("NoAttributes"));
+			
+			SDCommandManager.InvokeInputBindingUpdateHandlers(BindingInfoMatchType.SubSet, new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerTypeName = "InvokeOwner" });
+		
+			Assert.IsTrue(testResults.Contains("TwoExactAttributes"));
+			Assert.IsTrue(testResults.Contains("LessMatchingAttributes"));
+			Assert.IsFalse(testResults.Contains("LessNotMatchingAttributes"));
+			Assert.IsTrue(testResults.Contains("NoAttributes"));
 		}
 		
 		[Test]
@@ -193,19 +69,17 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest" }, () => testResults.Add("test1"));
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerTypeName = "TestOwner" }, () => testResults.Add("test2"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommand = ApplicationCommands.Copy }, () => testResults.Add("ApplicationCommands.Copy1"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "ApplicationCommands.Copy" }, () => testResults.Add("ApplicationCommands.Copy2"));
+			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "ApplicationCommands.Copy" }, () => testResults.Add("ApplicationCommands.Copy"));
 			
 			SDCommandManager.RegisterRoutedUICommand("InvokeTest", "text");
 			
 			Assert.IsTrue(testResults.Contains("test1"));
 			Assert.IsTrue(testResults.Contains("test2"));
-			Assert.IsFalse(testResults.Contains("ApplicationCommands.Copy1"));
+			Assert.IsFalse(testResults.Contains("ApplicationCommands.Copy"));
 			
 			SDCommandManager.RegisterRoutedUICommand(ApplicationCommands.Copy);
 			
-			Assert.IsTrue(testResults.Contains("ApplicationCommands.Copy1"));
-			Assert.IsTrue(testResults.Contains("ApplicationCommands.Copy2"));
+			Assert.IsTrue(testResults.Contains("ApplicationCommands.Copy"));
 		}
 		
 		[Test]
@@ -215,19 +89,17 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest" }, () => testResults.Add("test1"));
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerTypeName = "TestOwner" }, () => testResults.Add("test2"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommand = ApplicationCommands.Copy }, () => testResults.Add("ApplicationCommands.Copy1"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "ApplicationCommands.Copy" }, () => testResults.Add("ApplicationCommands.Copy2"));
+			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "ApplicationCommands.Copy" }, () => testResults.Add("ApplicationCommands.Copy"));
 			
 			SDCommandManager.RegisterRoutedUICommand("InvokeTest", "text");
 			
 			Assert.IsTrue(testResults.Contains("test1"));
 			Assert.IsTrue(testResults.Contains("test2"));
-			Assert.IsFalse(testResults.Contains("ApplicationCommands.Copy1"));
+			Assert.IsFalse(testResults.Contains("ApplicationCommands.Copy"));
 			
 			SDCommandManager.RegisterRoutedUICommand(ApplicationCommands.Copy);
 			
-			Assert.IsTrue(testResults.Contains("ApplicationCommands.Copy1"));
-			Assert.IsTrue(testResults.Contains("ApplicationCommands.Copy2"));
+			Assert.IsTrue(testResults.Contains("ApplicationCommands.Copy"));
 		}
 		
 		[Test]
@@ -237,20 +109,11 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { OwnerTypeName = "TestOwnerType" }, () => testResults.Add("TestOwnerType1"));
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "RoutedCommand", OwnerTypeName = "TestOwnerType" }, () => testResults.Add("TestOwnerType2"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { OwnerTypes = new[] { typeof(UIElement) }}, () => testResults.Add("UIElement1"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { OwnerTypeName = "UIElement" }, () => testResults.Add("UIElement2"));
 			
 			SDCommandManager.RegisterNamedUIType("TestOwnerType", typeof(UserControl));
 			
 			Assert.IsTrue(testResults.Contains("TestOwnerType1"));
 			Assert.IsTrue(testResults.Contains("TestOwnerType2"));
-			Assert.IsFalse(testResults.Contains("UIElement1"));
-			Assert.IsFalse(testResults.Contains("UIElement2"));
-			
-			SDCommandManager.RegisterNamedUIType("UIElement", typeof(UIElement));
-			
-			Assert.IsTrue(testResults.Contains("UIElement1"));
-			Assert.IsTrue(testResults.Contains("UIElement2"));
 		}
 		
 		[Test]
@@ -260,20 +123,10 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { OwnerTypeName = "TestOwnerType" }, () => testResults.Add("TestOwnerType1"));
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "RoutedCommand", OwnerTypeName = "TestOwnerType" }, () => testResults.Add("TestOwnerType2"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { OwnerTypes = new[] { typeof(UIElement) }}, () => testResults.Add("UIElement1"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { OwnerTypeName = "UIElement" }, () => testResults.Add("UIElement2"));
-			
 			SDCommandManager.RegisterNamedUIType("TestOwnerType", typeof(UserControl));
 			
 			Assert.IsTrue(testResults.Contains("TestOwnerType1"));
 			Assert.IsTrue(testResults.Contains("TestOwnerType2"));
-			Assert.IsFalse(testResults.Contains("UIElement1"));
-			Assert.IsFalse(testResults.Contains("UIElement2"));
-			
-			SDCommandManager.RegisterNamedUIType("UIElement", typeof(UIElement));
-			
-			Assert.IsTrue(testResults.Contains("UIElement1"));
-			Assert.IsTrue(testResults.Contains("UIElement2"));
 		}
 		
 		[Test]
@@ -286,23 +139,10 @@ namespace ICSharpCode.Core.Presentation.Tests
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { OwnerInstanceName = "TestOwnerInstance" }, () => testResults.Add("TestOwnerInstance1"));
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "RoutedCommand", OwnerInstanceName = "TestOwnerInstance" }, () => testResults.Add("TestOwnerInstance2"));
 			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { OwnerInstances = new[] { uiElement }}, () => testResults.Add("UIElement1"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { OwnerInstances = new[] { new UIElement() }}, () => testResults.Add("UIElement2"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { OwnerInstanceName = "UIElement" }, () => testResults.Add("UIElement3"));
-			
 			SDCommandManager.RegisterNamedUIElement("TestOwnerInstance", new UIElement());
 			
 			Assert.IsTrue(testResults.Contains("TestOwnerInstance1"));
 			Assert.IsTrue(testResults.Contains("TestOwnerInstance2"));
-			Assert.IsFalse(testResults.Contains("UIElement1"));
-			Assert.IsFalse(testResults.Contains("UIElement2"));
-			Assert.IsFalse(testResults.Contains("UIElement3"));
-			
-			SDCommandManager.RegisterNamedUIElement("UIElement", uiElement);
-			
-			Assert.IsTrue(testResults.Contains("UIElement1"));
-			Assert.IsFalse(testResults.Contains("UIElement2"));
-			Assert.IsTrue(testResults.Contains("UIElement3"));
 		}
 		
 		[Test]
@@ -314,24 +154,10 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { OwnerInstanceName = "TestOwnerInstance" }, () => testResults.Add("TestOwnerInstance1"));
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "RoutedCommand", OwnerInstanceName = "TestOwnerInstance" }, () => testResults.Add("TestOwnerInstance2"));
-			
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { OwnerInstances = new[] { uiElement }}, () => testResults.Add("UIElement1"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { OwnerInstances = new[] { new UIElement() }}, () => testResults.Add("UIElement2"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { OwnerInstanceName = "UIElement" }, () => testResults.Add("UIElement3"));
-			
 			SDCommandManager.RegisterNamedUIElement("TestOwnerInstance", new UIElement());
 			
 			Assert.IsTrue(testResults.Contains("TestOwnerInstance1"));
 			Assert.IsTrue(testResults.Contains("TestOwnerInstance2"));
-			Assert.IsFalse(testResults.Contains("UIElement1"));
-			Assert.IsFalse(testResults.Contains("UIElement2"));
-			Assert.IsFalse(testResults.Contains("UIElement3"));
-			
-			SDCommandManager.RegisterNamedUIElement("UIElement", uiElement);
-			
-			Assert.IsTrue(testResults.Contains("UIElement1"));
-			Assert.IsFalse(testResults.Contains("UIElement2"));
-			Assert.IsTrue(testResults.Contains("UIElement3"));
 		}
 		
 		[Test]
@@ -346,7 +172,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeSomethingUnrelatedTest" }, () => testResults.Add("commandTest0"));
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "RoutedCommandName" }, () => testResults.Add("commandTest1"));
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "RoutedCommandName", OwnerTypeName = "TestOwner" }, () => testResults.Add("commandTest2"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommand = routedCommand}, () => testResults.Add("commandTest3"));
 			
 			SDCommandManager.RegisterInputBinding(new InputBindingInfo {
 				RoutedCommandName = "RoutedCommandName",
@@ -354,8 +179,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			Assert.IsFalse(testResults.Contains("commandTest0"));
 			Assert.IsTrue(testResults.Contains("commandTest1"));
-			Assert.IsTrue(testResults.Contains("commandTest2"));
-			Assert.IsTrue(testResults.Contains("commandTest3"));
+			Assert.IsFalse(testResults.Contains("commandTest2"));
 			
 			
 			// Update handles is interested about changes in owner type
@@ -365,8 +189,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeSomethingUnrelatedTest" }, () => testResults.Add("typeTest0"));
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest" }, () => testResults.Add("typeTest1"));
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerTypeName = "TestOwner" }, () => testResults.Add("typeTest2"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerTypes = new[] { testType }}, () => testResults.Add("typeTest3"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { OwnerTypes = new[] { testType }}, () => testResults.Add("typeTest4"));
 			
 			SDCommandManager.RegisterInputBinding(new InputBindingInfo {
 				RoutedCommandName = "InvokeTest",
@@ -375,8 +197,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			Assert.IsFalse(testResults.Contains("typeTest0"));
 			Assert.IsTrue(testResults.Contains("typeTest1"));
 			Assert.IsTrue(testResults.Contains("typeTest2"));
-			Assert.IsTrue(testResults.Contains("typeTest3"));
-			Assert.IsTrue(testResults.Contains("typeTest4"));
 			
 			
 			// Update handles is interested about changes in owner instance
@@ -386,8 +206,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeSomethingUnrelatedTest" }, () => testResults.Add("instanceTest0"));
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest" }, () => testResults.Add("instanceTest1"));
 			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerInstanceName = "TestOwnerInstance" }, () => testResults.Add("instanceTest2"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerInstances = new[] { testInstance }}, () => testResults.Add("instanceTest3"));
-			SDCommandManager.RegisterInputBindingsUpdateHandler(new BindingInfoTemplate { OwnerInstances = new[] { testInstance }}, () => testResults.Add("instanceTest4"));
 			
 			SDCommandManager.RegisterInputBinding(new InputBindingInfo {
 				RoutedCommandName = "InvokeTest",
@@ -396,8 +214,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			Assert.IsFalse(testResults.Contains("instanceTest0"));
 			Assert.IsTrue(testResults.Contains("instanceTest1"));
 			Assert.IsTrue(testResults.Contains("instanceTest2"));
-			Assert.IsTrue(testResults.Contains("instanceTest3"));
-			Assert.IsTrue(testResults.Contains("instanceTest4"));
 		}
 		
 		
@@ -413,7 +229,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeSomethingUnrelatedTest" }, () => testResults.Add("commandTest0"));
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "RoutedCommandName" }, () => testResults.Add("commandTest1"));
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "RoutedCommandName", OwnerTypeName = "TestOwner" }, () => testResults.Add("commandTest2"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommand = routedCommand}, () => testResults.Add("commandTest3"));
 			
 			SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
 				RoutedCommandName = "RoutedCommandName",
@@ -421,8 +236,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			Assert.IsFalse(testResults.Contains("commandTest0"));
 			Assert.IsTrue(testResults.Contains("commandTest1"));
-			Assert.IsTrue(testResults.Contains("commandTest2"));
-			Assert.IsTrue(testResults.Contains("commandTest3"));
+			Assert.IsFalse(testResults.Contains("commandTest2"));
 			
 			
 			// Update handles is interested about changes in owner type
@@ -432,8 +246,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeSomethingUnrelatedTest" }, () => testResults.Add("typeTest0"));
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest" }, () => testResults.Add("typeTest1"));
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerTypeName = "TestOwner" }, () => testResults.Add("typeTest2"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerTypes = new[] { testType }}, () => testResults.Add("typeTest3"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { OwnerTypes = new[] { testType }}, () => testResults.Add("typeTest4"));
 			
 			SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
 				RoutedCommandName = "InvokeTest",
@@ -442,8 +254,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			Assert.IsFalse(testResults.Contains("typeTest0"));
 			Assert.IsTrue(testResults.Contains("typeTest1"));
 			Assert.IsTrue(testResults.Contains("typeTest2"));
-			Assert.IsTrue(testResults.Contains("typeTest3"));
-			Assert.IsTrue(testResults.Contains("typeTest4"));
 			
 			
 			// Update handles is interested about changes in owner instance
@@ -453,8 +263,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeSomethingUnrelatedTest" }, () => testResults.Add("instanceTest0"));
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest" }, () => testResults.Add("instanceTest1"));
 			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerInstanceName = "TestOwnerInstance" }, () => testResults.Add("instanceTest2"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { RoutedCommandName = "InvokeTest", OwnerInstances = new[] { testInstance }}, () => testResults.Add("instanceTest3"));
-			SDCommandManager.RegisterCommandBindingsUpdateHandler(new BindingInfoTemplate { OwnerInstances = new[] { testInstance }}, () => testResults.Add("instanceTest4"));
 			
 			SDCommandManager.RegisterCommandBinding(new CommandBindingInfo {
 				RoutedCommandName = "InvokeTest",
@@ -463,8 +271,6 @@ namespace ICSharpCode.Core.Presentation.Tests
 			Assert.IsFalse(testResults.Contains("instanceTest0"));
 			Assert.IsTrue(testResults.Contains("instanceTest1"));
 			Assert.IsTrue(testResults.Contains("instanceTest2"));
-			Assert.IsTrue(testResults.Contains("instanceTest3"));
-			Assert.IsTrue(testResults.Contains("instanceTest4"));
 		}
 	}
 }

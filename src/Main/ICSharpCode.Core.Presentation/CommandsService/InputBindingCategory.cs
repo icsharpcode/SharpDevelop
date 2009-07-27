@@ -20,6 +20,11 @@ namespace ICSharpCode.Core.Presentation
 			Text = text;
 		}
 		
+		public string Path
+		{
+			get; set;
+		}
+		
 		/// <summary>
 		/// Category name
 		/// </summary>

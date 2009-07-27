@@ -57,6 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingInfoTemplateDictionaryTests.cs" />
     <Compile Include="BindingInfoTemplateTests.cs" />
     <Compile Include="CommandManagerTests.cs" />
     <Compile Include="InputBindingCategoryTests.cs" />
