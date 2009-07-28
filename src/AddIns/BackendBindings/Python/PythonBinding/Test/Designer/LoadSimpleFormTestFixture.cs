@@ -74,15 +74,22 @@ namespace PythonBinding.Tests.Designer
 			Size size = new Size(300, 400);
 			Assert.AreEqual(size, Form.ClientSize);
 		}
+
+		[Test]
+		public void BaseClassTypeNameLookedUp()
+		{
+			Assert.AreEqual("System.Windows.Forms.Form", ComponentCreator.TypeNames[0]);
+		}
 		
 		/// <summary>
 		/// The System.Drawing.Size type name should have been looked up by the PythonFormWalker when
-		/// parsing the InitializeComponent method.
+		/// parsing the InitializeComponent method. Note that this is the second type that is looked up.
+		/// The first lookup is the base class type.
 		/// </summary>
 		[Test]
 		public void TypeNameLookedUp()
 		{
-			Assert.AreEqual("System.Drawing.Size", ComponentCreator.TypeNames[0]);
+			Assert.AreEqual("System.Drawing.Size", ComponentCreator.TypeNames[1]);
 		}
 
 		[Test]

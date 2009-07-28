@@ -34,6 +34,7 @@ namespace PythonBinding.Tests.Utils
 		bool getResourceWriterCalled;
 		CultureInfo cultureInfoPassedToGetResourceWriter;
 		IResourceReader resourceReader;
+		Dictionary<string, Type> types = new Dictionary<string, Type>();
 		
 		public MockComponentCreator()
 		{
@@ -109,6 +110,14 @@ namespace PythonBinding.Tests.Utils
 			return o;
 		}
 		
+		/// <summary>
+		/// Adds a type that can be returned from the GetType method.
+		/// </summary>
+		public void AddType(string name, Type type)
+		{
+			types.Add(name, type);
+		}
+		
 		public Type GetType(string typeName)
 		{
 			typeNames.Add(typeName);
@@ -124,6 +133,9 @@ namespace PythonBinding.Tests.Utils
 			}
 			if (type == null) {
 				type = typeof(Component).Assembly.GetType(typeName);
+			}
+			if (type == null) {
+				types.TryGetValue(typeName, out type);
 			}
 			
 			return type;

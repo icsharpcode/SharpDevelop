@@ -33,8 +33,7 @@ namespace ICSharpCode.PythonBinding
 		PythonCodeDeserializer deserializer;
 		ClassDefinition classDefinition;
 		
-		public PythonComponentWalker(IComponentCreator componentCreator)
-		{
+		public PythonComponentWalker(IComponentCreator componentCreator)		{
 			this.componentCreator = componentCreator;
 			deserializer = new PythonCodeDeserializer(componentCreator);
 		}
@@ -232,6 +231,11 @@ namespace ICSharpCode.PythonBinding
 		Type GetComponentType()
 		{
 			string baseClass = GetBaseClassName(classDefinition);
+			Type type = componentCreator.GetType(baseClass);
+			if (type != null) {
+				return type;
+			}
+			
 			if (baseClass.Contains("UserControl")) {
 				return typeof(UserControl);
 			}

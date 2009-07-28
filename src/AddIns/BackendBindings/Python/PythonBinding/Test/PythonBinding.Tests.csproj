@@ -175,6 +175,7 @@
     <Compile Include="Designer\EventHandlerExistsWithIncorrectParameterCountTestFixture.cs" />
     <Compile Include="Designer\FindAddRangeMethodTests.cs" />
     <Compile Include="Designer\FindInitializeComponentMethodTestFixture.cs" />
+    <Compile Include="Designer\FormBaseClassCreatedOnLoadTestFixture.cs" />
     <Compile Include="Designer\GenerateAcceptButtonFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAccessibleRoleFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAutoScaleModeFormTestFixture.cs" />
