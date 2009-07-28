@@ -2083,7 +2083,7 @@
 	<Path name = "/Workspace/Icons">
 		<!-- Resources -->
 		<Icon id         = "ResourceFileIcon"
-		      extensions = ".resources,.resx"
+		      extensions = ".resources;.resx"
 		      resource   = "Icons.16x16.ResourceFileIcon" />
 		
 		<!-- XML -->
@@ -2104,11 +2104,11 @@
 		      resource   = "Icons.16x16.XSLIcon"/>
 		
 		<Icon id         = "HtmlFileIcon"
-		      extensions = ".html,.htm"
+		      extensions = ".html;.htm"
 		      resource   = "Icons.16x16.HTMLIcon"/>
 		
 		<Icon id         = "AspFileIcon"
-		      extensions = ".asp,.aspx"
+		      extensions = ".asp;.aspx"
 		      resource   = "Icons.16x16.ASPFileIcon"/>
 		
 		<Icon id         = "AddInFileIcon"
@@ -2117,7 +2117,7 @@
 		
 		<!-- TextFiles -->
 		<Icon id         = "TextFileIcon"
-		      extensions = ".txt,.doc"
+		      extensions = ".txt;.doc"
 		      resource   = "Icons.16x16.TextFileIcon"/>
 		
 		<Icon id= "CssFileIcon"
