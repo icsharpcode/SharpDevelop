@@ -228,7 +228,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 
 				// ObjectGraphProperty needs an expression
 				// to use expanded / nonexpanded (and to evaluate?)
-				Expression propExpression = value.Expression.AppendMemberReference(memberProp);
+				Expression propExpression = value.ExpressionTree.AppendMemberReference(memberProp);
 				// Value, IsAtomic are lazy evaluated
 				propertyList.Add(new ObjectGraphProperty
 				                 { Name = memberProp.Name,
