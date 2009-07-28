@@ -63,7 +63,7 @@ namespace Debugger.Tests {
         Name=""
         OldestStackFrame="System.AppDomain.SetupDomain"
         Priority="Normal"
-        RuntimeValue="? = null" />
+        RuntimeValue=" = null" />
     </ThreadStartedEvent>
     <ModuleLoaded>ThreadName.exe (Has symbols)</ModuleLoaded>
     <DebuggingPaused>Break ThreadName.cs:17,4-17,40</DebuggingPaused>
@@ -77,7 +77,7 @@ namespace Debugger.Tests {
         Name=""
         OldestStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
         Priority="AboveNormal"
-        RuntimeValue="? = {System.Threading.Thread}"
+        RuntimeValue=" = {System.Threading.Thread}"
         SelectedStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main" />
     </Thread>
     <DebuggingPaused>Break ThreadName.cs:19,4-19,40</DebuggingPaused>
@@ -91,7 +91,7 @@ namespace Debugger.Tests {
         Name="ThreadName"
         OldestStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main"
         Priority="AboveNormal"
-        RuntimeValue="? = {System.Threading.Thread}"
+        RuntimeValue=" = {System.Threading.Thread}"
         SelectedStackFrame="Debugger.Tests.TestPrograms.ThreadName.Main" />
     </Thread>
     <ThreadStartedEvent>
@@ -103,7 +103,7 @@ namespace Debugger.Tests {
         Name=""
         OldestStackFrame="System.Threading.ReaderWriterLock.Finalize"
         Priority="Normal"
-        RuntimeValue="? = null" />
+        RuntimeValue=" = null" />
     </ThreadStartedEvent>
     <ProcessExited />
   </Test>

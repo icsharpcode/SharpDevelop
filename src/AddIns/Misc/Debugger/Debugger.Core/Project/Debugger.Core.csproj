@@ -82,17 +82,8 @@
     <Compile Include="Src\Debugger\PausedReason.cs" />
     <Compile Include="Src\Debugger\PauseSession.cs" />
     <Compile Include="Src\Debugger\SourcecodeSegment.cs" />
-    <Compile Include="Src\Expressions\Ast\ArrayIndexerExpression.cs" />
-    <Compile Include="Src\Expressions\Ast\CurrentExceptionExpression.cs" />
-    <Compile Include="Src\Expressions\Ast\DereferenceExpression.cs" />
-    <Compile Include="Src\Expressions\Ast\EmptyExpression.cs" />
-    <Compile Include="Src\Expressions\Ast\LocalVariableIdentifierExpression.cs" />
-    <Compile Include="Src\Expressions\Ast\MemberReferenceExpression.cs" />
-    <Compile Include="Src\Expressions\Ast\ParameterIdentifierExpression.cs" />
-    <Compile Include="Src\Expressions\Ast\PrimitiveExpression.cs" />
-    <Compile Include="Src\Expressions\Ast\ThisReferenceExpression.cs" />
-    <Compile Include="Src\Expressions\Expression.Create.cs" />
-    <Compile Include="Src\Expressions\Expression.cs" />
+    <Compile Include="Src\Expressions\ExpressionEvaluator.cs" />
+    <Compile Include="Src\Expressions\ExpressionExtensionMethods.cs" />
     <Compile Include="Src\Internal\ManagedCallback.cs" />
     <Compile Include="Src\Internal\ManagedCallbackProxy.cs" />
     <Compile Include="Src\Internal\ManagedCallbackSwitch.cs" />
@@ -466,6 +457,13 @@
     <Folder Include="Src\Mono.Cecil\Mono.Cecil.Binary" />
     <Folder Include="Src\Mono.Cecil\Mono.Cecil.Metadata" />
     <Folder Include="Src\Mono.Cecil\Mono.Cecil.Signatures" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

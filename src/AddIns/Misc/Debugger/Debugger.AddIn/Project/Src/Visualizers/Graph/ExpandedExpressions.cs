@@ -4,11 +4,12 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Debugger.AddIn.Visualizers.Graph.Layout;
+using Expression = ICSharpCode.NRefactory.Ast.Expression;
+
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
@@ -25,17 +26,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public bool IsExpanded(Expression expression)
 		{
-			return expanded.IsExpanded(expression.Code);
+			return expanded.IsExpanded(expression.PrettyPrint());
 		}
 		
 		public void SetExpanded(Expression expression)
 		{
-			expanded.SetExpanded(expression.Code);
+			expanded.SetExpanded(expression.PrettyPrint());
 		}
 		
 		public void SetCollapsed(Expression expression)
 		{
-			expanded.SetCollapsed(expression.Code);
+			expanded.SetCollapsed(expression.PrettyPrint());
 		}
 	}
 }

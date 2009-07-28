@@ -6,8 +6,8 @@
 // </file>
 using Debugger.MetaData;
 using System;
-using Debugger.Expressions;
 using ICSharpCode.SharpDevelop.Services;
+using Expression = ICSharpCode.NRefactory.Ast.Expression;
 
 namespace Debugger.AddIn.Visualizers.Utils
 {

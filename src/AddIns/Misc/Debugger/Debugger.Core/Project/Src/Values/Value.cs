@@ -5,11 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
-
 using Debugger.MetaData;
-using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
@@ -30,8 +29,15 @@ namespace Debugger
 		DebugType      type;
 		
 		/// <summary> Expression which can be used to reobtain this value. </summary>
-		public Expression Expression {
+		public string Expression {
+			get { return expression.PrettyPrint(); }
+		}
+		
+		/// <summary> Abstract syntax three of the expression which can be used to reobtain this value. </summary>
+		[Tests.Ignore]
+		public Expression ExpressionTree {
 			get { return expression; }
+			set { expression = value; }
 		}
 		
 		/// <summary> Returns true if the value is null </summary>
@@ -81,7 +87,9 @@ namespace Debugger
 		[Tests.Ignore]
 		public ICorDebugValue CorValue {
 			get {
-				if (this.IsInvalid) throw new GetValueException("Value is no longer valid");
+				if (this.IsInvalid) {
+					throw new GetValueException("Value is no longer valid");
+				}
 				
 				return corValue;
 			}
@@ -198,7 +206,7 @@ namespace Debugger
 			if (corRef.Value == 0 || corRef.Dereference() == null) {
 				return null;
 			} else {
-				return new Value(this.AppDomain, new DereferenceExpression(this.Expression), corRef.Dereference());
+				return new Value(this.AppDomain, new UnaryOperatorExpression(this.ExpressionTree, UnaryOperatorType.Dereference), corRef.Dereference());
 			}
 		}
 		
@@ -219,17 +227,17 @@ namespace Debugger
 		
 		public override string ToString()
 		{
-			return this.Expression.Code + " = " + this.AsString;
+			return this.Expression + " = " + this.AsString;
 		}
 	}
 	
 	public class GetValueException: DebuggerException
 	{
-		Expression expression;
+		INode expression;
 		string error;
 		
 		/// <summary> Expression that has caused this exception to occur </summary>
-		public Expression Expression {
+		public INode Expression {
 			get { return expression; }
 			set { expression = value; }
 		}
@@ -243,9 +251,15 @@ namespace Debugger
 				if (expression == null) {
 					return error;
 				} else {
-					return String.Format("Error evaluating \"{0}\": {1}", expression.Code, error);
+					return String.Format("Error evaluating \"{0}\": {1}", expression.PrettyPrint(), error);
 				}
 			}
+		}
+		
+		public GetValueException(INode expression, string error):base(error)
+		{
+			this.expression = expression;
+			this.error = error;
 		}
 		
 		public GetValueException(string error):base(error)

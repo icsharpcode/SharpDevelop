@@ -13,16 +13,16 @@ namespace Debugger.AddIn.TreeModel
 {
 	public class ICorDebug
 	{
-		public class InfoNode: AbstractNode
+		public class InfoNode: TreeNode
 		{
-			List<AbstractNode> children;
+			List<TreeNode> children;
 			
 			public InfoNode(string name, string text): this(name, text, null)
 			{
 				
 			}
 			
-			public InfoNode(string name, string text, List<AbstractNode> children)
+			public InfoNode(string name, string text, List<TreeNode> children)
 			{
 				this.Name = name;
 				this.Text = text;
@@ -33,16 +33,16 @@ namespace Debugger.AddIn.TreeModel
 			public void AddChild(string name, string text)
 			{
 				if (children == null) {
-					children = new List<AbstractNode>();
+					children = new List<TreeNode>();
 					this.ChildNodes = children;
 				}
 				children.Add(new InfoNode(name, text));
 			}
 			
-			public void AddChild(string name, string text, List<AbstractNode> subChildren)
+			public void AddChild(string name, string text, List<TreeNode> subChildren)
 			{
 				if (children == null) {
-					children = new List<AbstractNode>();
+					children = new List<TreeNode>();
 					this.ChildNodes = children;
 				}
 				children.Add(new InfoNode(name, text, subChildren));
@@ -54,9 +54,9 @@ namespace Debugger.AddIn.TreeModel
 			return new InfoNode("ICorDebug", "", GetDebugInfo(appDomain, corValue));
 		}
 		
-		public static List<AbstractNode> GetDebugInfo(AppDomain appDomain, ICorDebugValue corValue)
+		public static List<TreeNode> GetDebugInfo(AppDomain appDomain, ICorDebugValue corValue)
 		{
-			List<AbstractNode> items = new List<AbstractNode>();
+			List<TreeNode> items = new List<TreeNode>();
 			
 			if (corValue.Is<ICorDebugValue>()) {
 				InfoNode info = new InfoNode("ICorDebugValue", "");

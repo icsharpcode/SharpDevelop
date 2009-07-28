@@ -12,6 +12,7 @@
 // Replace with:
 // \1\2\n\1{\n\1\tEnterCallback(PausedReason.Other, "\3");\n\1\t\n\1\tExitCallback_Continue();\n\1}
 
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Runtime.InteropServices;
 using Debugger.Wrappers.CorDebug;
@@ -134,7 +135,7 @@ namespace Debugger
 				// The stepper is ignored
 				process.TraceMessage(" - ignored");
 			} else if (thread.CurrentStepIn != null &&
-				       thread.CurrentStepIn.StackFrame.Equals(currentStackFrame) &&
+			           thread.CurrentStepIn.StackFrame.Equals(currentStackFrame) &&
 			           thread.CurrentStepIn.IsInStepRanges((int)currentStackFrame.CorInstructionPtr)) {
 				Stepper.StepIn(currentStackFrame, thread.CurrentStepIn.StepRanges, "finishing step in");
 				process.TraceMessage(" - finishing step in");
@@ -205,8 +206,8 @@ namespace Debugger
 			} else {
 				// This callback should be ignored in v2 applications
 				EnterCallback(PausedReason.Other, "Exception", pThread);
-	
-				ExitCallback();	
+				
+				ExitCallback();
 			}
 		}
 
@@ -248,7 +249,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.EvalComplete, "EvalComplete", pThread);
 			
-			HandleEvalComplete(pAppDomain, pThread, corEval, false);			
+			HandleEvalComplete(pAppDomain, pThread, corEval, false);
 		}
 		
 		void HandleEvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval, bool exception)
@@ -414,9 +415,9 @@ namespace Debugger
 				
 				process.Threads[pThread].NotifyExited();
 			} else {
-			    EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, process.CorProcess);
-			    
-			    // TODO: Investigate
+				EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, process.CorProcess);
+				
+				// TODO: Investigate
 				process.TraceMessage("ERROR: Thread does not exist " + pThread.ID);
 			}
 			
@@ -478,13 +479,13 @@ namespace Debugger
 			// Watch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
-			process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], new Expressions.CurrentExceptionExpression(), process.SelectedThread.CorThread.CurrentException));
+			process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], new IdentifierExpression("__exception"), process.SelectedThread.CorThread.CurrentException));
 			process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
 			process.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
 			process.SelectedThread.CurrentExceptionIsUnhandled = (ExceptionType)exceptionType == ExceptionType.Unhandled;
 			
 			if (process.SelectedThread.CurrentExceptionIsUnhandled ||
-			    process.PauseOnHandledException) 
+			    process.PauseOnHandledException)
 			{
 				pauseOnNextExit = true;
 			}
@@ -515,8 +516,8 @@ namespace Debugger
 			ExitCallback();
 		}
 
-	    /// <exception cref="Exception">Unknown callback argument</exception>
-	    public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
+		/// <exception cref="Exception">Unknown callback argument</exception>
+		public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
 		{
 			if (c.Is<ICorDebugAppDomain>()) {
 				EnterCallback(PausedReason.Other, "MDANotification", c.CastTo<ICorDebugAppDomain>());

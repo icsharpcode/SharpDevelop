@@ -5,11 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
-
 using Debugger.MetaData;
-using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
@@ -92,10 +91,9 @@ namespace Debugger
 		/// <param name="objectInstance">null if field is static</param>
 		public static Value GetFieldValue(Value objectInstance, FieldInfo fieldInfo)
 		{
-			Expression objectInstanceExpression = objectInstance != null ? objectInstance.Expression : new EmptyExpression();
 			return new Value(
 				fieldInfo.AppDomain,
-				new MemberReferenceExpression(objectInstanceExpression, fieldInfo),
+				ExpressionExtensionMethods.AppendMemberReference(fieldInfo.IsStatic ? null : objectInstance.ExpressionTree, fieldInfo),
 				GetFieldCorValue(objectInstance, fieldInfo)
 			);
 		}
@@ -142,18 +140,15 @@ namespace Debugger
 			
 			if (propertyInfo.GetMethod == null) throw new GetValueException("Property does not have a get method");
 			
-			Expression objectInstanceExpression = objectInstance != null ? objectInstance.Expression : new EmptyExpression();
+			Value val = Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments);
 			
-			List<Expression> argumentExpressions = new List<Expression>();
-			foreach(Value argument in arguments) {
-				argumentExpressions.Add(argument.Expression);
+			List<Expression> argExprs = new List<Expression>();
+			foreach(Value arg in arguments) {
+				argExprs.Add(arg.ExpressionTree);
 			}
+			val.ExpressionTree = ExpressionExtensionMethods.AppendMemberReference(propertyInfo.IsStatic ? null : objectInstance.ExpressionTree, propertyInfo, argExprs.ToArray());
 			
-			return new Value(
-				propertyInfo.AppDomain,
-				new MemberReferenceExpression(objectInstanceExpression, propertyInfo, argumentExpressions.ToArray()),
-				Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments).CorValue
-			);
+			return val;
 		}
 		
 		#region Convenience overload methods

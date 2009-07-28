@@ -7,9 +7,9 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.NRefactory.Ast;
 using Debugger;
 using Debugger.MetaData;
-using Debugger.Expressions;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.AddIn.Visualizers.Common;
 
@@ -148,7 +148,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			if (thisNode.PermanentReference.Type.ResolveIListImplementation(out iListType, out listItemType))
 			{
 				// it is a collection
-				loadNodeCollectionContent(contentRoot, thisNode.PermanentReference.Expression, iListType);
+				loadNodeCollectionContent(contentRoot, thisNode.PermanentReference.ExpressionTree, iListType);
 			}
 			else
 			{
@@ -159,12 +159,11 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		private void loadNodeCollectionContent(AbstractNode node, Expression thisObject, DebugType iListType)
 		{
-			PropertyInfo itemPropertyInfo = iListType.GetProperty("Item");
 			int listCount = getIListCount(thisObject, iListType);
 			
 			for (int i = 0; i < listCount; i++)
 			{
-				Expression itemExpr = thisObject.AppendMemberReference(itemPropertyInfo, new PrimitiveExpression(i));
+				Expression itemExpr = thisObject.AppendIndexer(i);
 				
 				PropertyNode itemNode = new PropertyNode(
 					new ObjectGraphProperty {	Name = "[" + i + "]", Expression = itemExpr, Value = "", IsAtomic = true, TargetNode = null });
@@ -175,16 +174,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 		private int getIListCount(Expression targetObject, DebugType iListType)
 		{
 			PropertyInfo countProperty = iListType.GetGenericInterface("System.Collections.Generic.ICollection").GetProperty("Count");
-			Expression countExpr = targetObject.AppendPropertyReference(countProperty);
-			int count = 0;
 			try {
 				// Do not get string representation since it can be printed in hex later
-				Value countValue = countExpr.Evaluate(WindowsDebugger.CurrentProcess);
-				count = (int)countValue.PrimitiveValue;
+				Value countValue = targetObject.Evaluate(WindowsDebugger.CurrentProcess).GetPropertyValue(countProperty);
+				return (int)countValue.PrimitiveValue;
 			} catch (GetValueException) {
-				count = -1;
+				return -1;
 			}
-			return count;
 		}
 		
 		private void loadNodeObjectContent(AbstractNode node, Value value, DebugType type)

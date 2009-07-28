@@ -21,13 +21,13 @@ namespace Debugger.AddIn.TreeModel
 		// 3 = value
 		Process process;
 		
-		AbstractNode content;
+		TreeNode content;
 		
 		bool isShown;
 		bool isExpanded;
 		bool childsLoaded;
 		
-		public AbstractNode Content {
+		public TreeNode Content {
 			get { return content; }
 		}
 		
@@ -39,7 +39,7 @@ namespace Debugger.AddIn.TreeModel
 			get { return isExpanded; }
 		}
 		
-		public DynamicTreeDebuggerRow(Process process, AbstractNode content)
+		public DynamicTreeDebuggerRow(Process process, TreeNode content)
 		{
 			this.process = process;
 			
@@ -57,7 +57,7 @@ namespace Debugger.AddIn.TreeModel
 			SetContentRecursive(content);
 		}
 		
-		public void SetContentRecursive(AbstractNode content)
+		public void SetContentRecursive(TreeNode content)
 		{
 			this.content = content;
 			
@@ -80,12 +80,12 @@ namespace Debugger.AddIn.TreeModel
 			Utils.DoEvents(process);
 		}
 		
-		public void SetChildContentRecursive(IEnumerable<AbstractNode> contentEnum)
+		public void SetChildContentRecursive(IEnumerable<TreeNode> contentEnum)
 		{
-			contentEnum = contentEnum ?? new AbstractNode[0];
+			contentEnum = contentEnum ?? new TreeNode[0];
 			
 			int index = 0;
-			foreach(AbstractNode content in contentEnum) {
+			foreach(TreeNode content in contentEnum) {
 				// Add or overwrite existing items
 				if (index < ChildRows.Count) {
 					// Overwrite

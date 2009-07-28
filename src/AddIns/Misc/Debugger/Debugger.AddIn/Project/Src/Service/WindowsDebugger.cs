@@ -49,7 +49,6 @@ using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
 using Debugger.Core.Wrappers.CorPub;
-using Debugger.Expressions;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
@@ -343,7 +342,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
 				return null;
 			} else {
-				return AstEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
+				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
 			}
 		}
 		
@@ -381,11 +380,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public object GetTooltipControl(string variableName)
 		{
-			ValueNode valueNode;
+			ExpressionNode valueNode;
 			try {
 				Value val = GetValueFromName(variableName);
 				if (val == null) return null;
-				valueNode = new ValueNode(val);
+				valueNode = new ExpressionNode(null, variableName, val.ExpressionTree);
 			} catch (GetValueException) {
 				return null;
 			}
@@ -560,7 +559,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			try {
 				SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language.Replace("#", "Sharp"), true);
-				Value val = AstEvaluator.Evaluate(code, supportedLanguage, debuggedProcess.SelectedStackFrame);
+				Value val = ExpressionEvaluator.Evaluate(code, supportedLanguage, debuggedProcess.SelectedStackFrame);
 				
 				if (val.PrimitiveValue is bool)
 					return (bool)val.PrimitiveValue;

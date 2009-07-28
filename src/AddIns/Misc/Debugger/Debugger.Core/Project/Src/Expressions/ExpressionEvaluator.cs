@@ -4,38 +4,90 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using ICSharpCode.NRefactory.PrettyPrinter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
-using System.Text;
 
-namespace Debugger.AddIn
+namespace Debugger
 {
-	public class AstEvaluator: NotImplementedAstVisitor
+	public class ExpressionEvaluator: NotImplementedAstVisitor
 	{
+		/// <summary> Evaluate given expression.  If you expression tree already, use overloads of this method.</summary>
 		/// <returns> Returned value or null for statements </returns>
 		public static Value Evaluate(string code, SupportedLanguage language, StackFrame context)
 		{
 			SnippetParser parser = new SnippetParser(language);
 			INode astRoot = parser.Parse(code);
-			if (parser.SnippetType == SnippetType.Expression ||
-			    parser.SnippetType == SnippetType.Statements) {
-				if (parser.Errors.Count > 0) {
-					throw new GetValueException(parser.Errors.ErrorOutput);
-				}
-				try {
-					AstEvaluator visitor = new AstEvaluator(context);
-					
-					return astRoot.AcceptVisitor(visitor, null) as Value;
-				} catch (NotImplementedException e) {
-					throw new GetValueException("Language feature not implemented: " + e.Message);
+			if (parser.Errors.Count > 0) {
+				throw new GetValueException(parser.Errors.ErrorOutput);
+			}
+			if (parser.SnippetType != SnippetType.Expression && parser.SnippetType != SnippetType.Statements) {
+				throw new GetValueException("Code must be expression or statement");
+			}
+			return Evaluate(astRoot, context);
+		}
+		
+		public static Value Evaluate(INode code, Process context)
+		{
+			if (context.SelectedStackFrame != null) {
+				return Evaluate(code, context.SelectedStackFrame);
+			} else if (context.SelectedThread.MostRecentStackFrame != null ) {
+				return Evaluate(code, context.SelectedThread.MostRecentStackFrame);
+			} else {
+				// This can happen when needed 'dll' is missing.  This causes an exception dialog to be shown even before the applicaiton starts
+				throw new GetValueException("Can not evaluate because the process has no managed stack frames");
+			}
+		}
+		
+		static Dictionary<AppDomain, Dictionary<string, Value>> expressionCache = new Dictionary<AppDomain, Dictionary<string, Value>>();
+		
+		public static Value Evaluate(INode code, StackFrame context)
+		{
+			if (context == null) throw new ArgumentNullException("context");
+			if (context.IsInvalid) throw new DebuggerException("The context is no longer valid");
+			
+			string codeAsText = code.PrettyPrint();
+			
+			// Get value from cache if possible
+			if (expressionCache.ContainsKey(context.AppDomain) &&
+			    expressionCache[context.AppDomain].ContainsKey(codeAsText)) {
+				Value cached = expressionCache[context.AppDomain][codeAsText];
+				if (!cached.IsInvalid) {
+					if (context.Process.Options.Verbose) {
+						context.Process.TraceMessage(string.Format("Cached: {0}", codeAsText));
+					}
+					return cached;
 				}
 			}
-			throw new GetValueException("Code must be expression or statement");
+			
+			Value result;
+			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
+			try {
+				result = (Value)code.AcceptVisitor(new ExpressionEvaluator(context), null);
+			} catch (GetValueException) {
+				throw;
+			} catch (NotImplementedException e) {
+				throw new GetValueException(code, "Language feature not implemented: " + e.Message);
+			}
+			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
+			
+			// Store value in cache
+			if (!expressionCache.ContainsKey(context.AppDomain)) {
+				expressionCache[context.AppDomain] = new Dictionary<string, Value>();
+				// TODO
+			}
+			// expressionCache[context.AppDomain][codeAsText] = result;
+			
+			if (context.Process.Options.Verbose) {
+				context.Process.TraceMessage(string.Format("Evaluated: {0} ({1} ms)", code, (end - start).TotalMilliseconds));
+			}
+			return result;
 		}
 		
 		public static string FormatValue(Value val)
@@ -65,7 +117,6 @@ namespace Debugger.AddIn
 				for(int i = 0; i < count; i++) {
 					if (i > 0) sb.Append(", ");
 					PropertyInfo itemProperty = val.Type.GetProperty("Item");
-					// TODO: Appdomain constriant for create value
 					Value item = val.GetPropertyValue(itemProperty, Eval.CreateValue(val.AppDomain, i));
 					sb.Append(FormatValue(item));
 				}
@@ -85,7 +136,7 @@ namespace Debugger.AddIn
 			get { return context; }
 		}
 		
-		public AstEvaluator(StackFrame context)
+		public ExpressionEvaluator(StackFrame context)
 		{
 			this.context = context;
 		}
@@ -154,6 +205,14 @@ namespace Debugger.AddIn
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			string identifier = identifierExpression.Identifier;
+			
+			if (identifier == "__exception") {
+				if (context.Thread.CurrentException != null) {
+					return context.Thread.CurrentException.Value;
+				} else {
+					throw new GetValueException("No current exception");
+				}
+			}
 			
 			Value arg = context.GetArgumentValue(identifier);
 			if (arg != null) return arg;
@@ -264,11 +323,16 @@ namespace Debugger.AddIn
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			Value value = ((Value)unaryOperatorExpression.Expression.AcceptVisitor(this, null));
+			UnaryOperatorType op = unaryOperatorExpression.Op;
+			
+			if (op == UnaryOperatorType.Dereference) {
+				if (!value.Type.IsPointer) throw new GetValueException("Target object is not a pointer");
+				return value.Dereference();
+			}
 			
 			if (!value.Type.IsPrimitive) throw new GetValueException("Primitive value expected");
 			
 			object val = value.PrimitiveValue;
-			UnaryOperatorType op = unaryOperatorExpression.Op;
 			
 			object result = null;
 			

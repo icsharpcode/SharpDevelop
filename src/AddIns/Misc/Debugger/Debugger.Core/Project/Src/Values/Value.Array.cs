@@ -5,10 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
-
-using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 
 // TODO: Test non-zero LowerBound
@@ -80,7 +79,7 @@ namespace Debugger
 		{
 			int[] indices = (int[])elementIndices.Clone();
 			
-			return new Value(this.AppDomain, new ArrayIndexerExpression(this.Expression, indices), GetCorValueOfArrayElement(indices));
+			return new Value(this.AppDomain, this.ExpressionTree.AppendIndexer(indices), GetCorValueOfArrayElement(indices));
 		}
 		
 		// May be called later

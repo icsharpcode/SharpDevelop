@@ -46,7 +46,7 @@ namespace Debugger.AddIn.TreeModel
 		}
 		protected override bool CanEdit(TreeNodeAdv node)
 		{
-			AbstractNode content = ((TreeViewVarNode)node).Content;
+			TreeNode content = ((TreeViewVarNode)node).Content;
 			return (content is ISetText) && ((ISetText)content).CanSetText;
 		}
 		public override object GetValue(TreeNodeAdv node)
@@ -67,8 +67,8 @@ namespace Debugger.AddIn.TreeModel
 		}
 		protected override void OnDrawText(DrawEventArgs args)
 		{
-			AbstractNode content = ((TreeViewVarNode)args.Node).Content;
-			if (content is ErrorNode) {
+			TreeNode content = ((TreeViewVarNode)args.Node).Content;
+			if (content is ExpressionNode && ((ExpressionNode)content).Error != null) {
 				args.TextColor = Color.Red;
 			} else if (((TreeViewVarNode)args.Node).TextChanged) {
 				args.TextColor = Color.Blue;
@@ -77,7 +77,7 @@ namespace Debugger.AddIn.TreeModel
 		}
 		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
 		{
-			AbstractNode content = ((TreeViewVarNode)args.Node).Content;
+			TreeNode content = ((TreeViewVarNode)args.Node).Content;
 			if (content is IContextMenu && args.Button == MouseButtons.Right) {
 				ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
 				if (menu != null) {
@@ -115,12 +115,12 @@ namespace Debugger.AddIn.TreeModel
 		
 		TreeViewAdv localVarList;
 		Process process;
-		AbstractNode content;
+		TreeNode content;
 		
 		bool childsLoaded;
 		bool textChanged;
 		
-		public AbstractNode Content {
+		public TreeNode Content {
 			get { return content; }
 		}
 		
@@ -138,7 +138,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public TreeViewVarNode(Process process, TreeViewAdv localVarList, AbstractNode content): base(localVarList, new object())
+		public TreeViewVarNode(Process process, TreeViewAdv localVarList, TreeNode content): base(localVarList, new object())
 		{
 			this.process = process;
 			this.localVarList = localVarList;
@@ -156,7 +156,7 @@ namespace Debugger.AddIn.TreeModel
 		/// it will recureively set those as well.
 		/// </summary>
 		/// <param name="content">Contains the name value and type of the variable stored in this particular TreeViewNode.</param>
-		private void SetContentRecursive(AbstractNode content)
+		private void SetContentRecursive(TreeNode content)
 		{
 			this.textChanged =
 				this.content != null &&
@@ -197,12 +197,12 @@ namespace Debugger.AddIn.TreeModel
 		/// <param name="localVarList"></param>
 		/// <param name="childNodes"></param>
 		/// <param name="contentEnum"></param>
-		private static void SetContentRecursive(Process process, TreeViewAdv localVarList, IList<TreeNodeAdv> childNodes, IEnumerable<AbstractNode> contentEnum)
+		private static void SetContentRecursive(Process process, TreeViewAdv localVarList, IList<TreeNodeAdv> childNodes, IEnumerable<TreeNode> contentEnum)
 		{
-			contentEnum = contentEnum ?? new AbstractNode[0];
+			contentEnum = contentEnum ?? new TreeNode[0];
 			
 			int index = 0;
-			foreach(AbstractNode content in contentEnum) {
+			foreach(TreeNode content in contentEnum) {
 				// Add or overwrite existing items
 				if (index < childNodes.Count) {
 					// Overwrite
@@ -226,7 +226,7 @@ namespace Debugger.AddIn.TreeModel
 		/// <param name="process">The process that contains the stackframe with the given variables.</param>
 		/// <param name="localVarList">A list of local variables.</param>
 		/// <param name="contentEnum">A list of local variables.</param>
-		public static void SetContentRecursive(Process process, TreeViewAdv localVarList, IEnumerable<AbstractNode> contentEnum) {
+		public static void SetContentRecursive(Process process, TreeViewAdv localVarList, IEnumerable<TreeNode> contentEnum) {
 			IList<TreeNodeAdv> childNodes = localVarList.Root.Children;
 			SetContentRecursive(process, localVarList, childNodes, contentEnum);
 		}

@@ -4,11 +4,11 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.Expressions;
 using System;
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 using ICSharpCode.SharpDevelop.Services;
+using Expression = ICSharpCode.NRefactory.Ast.Expression;
 
 namespace Debugger.AddIn.Visualizers.Utils
 {

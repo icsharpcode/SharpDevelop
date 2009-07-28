@@ -61,7 +61,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				
 				if (val.Type.ResolveIListImplementation(out iListType, out listItemType))
 				{
-					var valuesProvider = new ListValuesProvider(val.Expression, iListType, listItemType);
+					var valuesProvider = new ListValuesProvider(val.ExpressionTree, iListType, listItemType);
 					var virtCollection = new VirtualizingCollection<ObjectValue>(valuesProvider);
 					
 					itemTypeMembers = valuesProvider.GetItemTypeMembers();
@@ -74,7 +74,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					if (val.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
 					{
 						var lazyListViewWrapper = new LazyListView<ObjectValue>(this.listView);
-						var iEnumerableValuesProvider = new EnumerableValuesProvider(val.Expression, iEnumerableType, itemType);
+						var iEnumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
 						
 						itemTypeMembers = iEnumerableValuesProvider.GetItemTypeMembers();
 

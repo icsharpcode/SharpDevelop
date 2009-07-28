@@ -4,12 +4,12 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.AddIn.Visualizers.Utils;
+using Expression = ICSharpCode.NRefactory.Ast.Expression;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Debugger.Expressions;
 using System.Linq;
+using System.Text;
+using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
@@ -29,7 +29,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Expression used to obtain this node.
 		/// </summary>
-		public Expressions.Expression Expression { get { return this.PermanentReference.Expression; } }
+		public Expression Expression { get { return this.PermanentReference.ExpressionTree; } }
 
 		/// <summary>
 		/// Property tree of this node.

@@ -78,8 +78,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return "The process is running";
 			}
 			try {
-				Value val = AstEvaluator.Evaluate(code, SupportedLanguage.CSharp, process.SelectedStackFrame);
-				return AstEvaluator.FormatValue(val);
+				Value val = ExpressionEvaluator.Evaluate(code, SupportedLanguage.CSharp, process.SelectedStackFrame);
+				return ExpressionEvaluator.FormatValue(val);
 			} catch (GetValueException e) {
 				return e.Message;
 			}

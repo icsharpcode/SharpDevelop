@@ -9,9 +9,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Debugger.AddIn.Visualizers.Utils;
-using Debugger.Expressions;
 using Debugger.MetaData;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -48,10 +48,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		
 		public ObjectValue GetItemAt(int index)
 		{
-			PropertyInfo itemProperty = iListType.GetProperty("Item");
-			Expression itemExpr = targetObject.AppendMemberReference(itemProperty, new PrimitiveExpression(index));
 			return ObjectValue.Create(
-				itemExpr.Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference(), 
+				targetObject.AppendIndexer(index).Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference(), 
 				this.listItemType, this.bindingFlags);
 		}
 		
@@ -66,16 +64,13 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		private int evaluateCount()
 		{
 			PropertyInfo countProperty = iListType.GetGenericInterface("System.Collections.Generic.ICollection").GetProperty("Count");
-			Expression countExpr = targetObject.AppendPropertyReference(countProperty);
-			int count = 0;
 			try {
 				// Do not get string representation since it can be printed in hex later
-				Value countValue = countExpr.Evaluate(WindowsDebugger.CurrentProcess);
-				count = (int)countValue.PrimitiveValue;
+				Value countValue = targetObject.Evaluate(WindowsDebugger.CurrentProcess).GetPropertyValue(countProperty);
+				return (int)countValue.PrimitiveValue;
 			} catch (GetValueException) {
-				count = -1;
+				return -1;
 			}
-			return count;
 		}
 	}
 }

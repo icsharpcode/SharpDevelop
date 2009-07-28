@@ -16,10 +16,11 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using Exception=System.Exception;
+using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class TextNode : AbstractNode, ISetText
+	public class TextNode : Debugger.AddIn.TreeModel.TreeNode, ISetText
 	{
 		public TextNode(string text)
 		{
@@ -61,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		protected override bool CanEdit(TreeNodeAdv node)
 		{
-			AbstractNode content = ((TreeViewVarNode)node).Content;
+			TreeNode content = ((TreeViewVarNode)node).Content;
 			return (content is ISetText) && ((ISetText)content).CanSetText;
 		}
 		public override object GetValue(TreeNodeAdv node)
@@ -79,13 +80,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				MessageBox.Show("You can not set name to an empty string!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else
 			{
-				if (((TreeViewVarNode)node).Content is ValueNode) {
-					WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((ValueNode)((TreeViewVarNode)node).Content).Name);
-					((ValueNode)((TreeViewVarNode)node).Content).SetName(value.ToString());
+				if (((TreeViewVarNode)node).Content is ExpressionNode) {
+					WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((ExpressionNode)((TreeViewVarNode)node).Content).Name);
+					((ExpressionNode)((TreeViewVarNode)node).Content).Name = value.ToString();
 				} else {
 					if (((TreeViewVarNode)node).Content is TextNode) {
 						WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((TextNode)((TreeViewVarNode)node).Content).Name);
-						((TextNode)((TreeViewVarNode)node).Content).SetName(value.ToString());
+						((TextNode)((TreeViewVarNode)node).Content).Name = value.ToString();
 					}
 				}
 				
@@ -98,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				base.MouseDown(args);
 				return;
 			}
-			AbstractNode content = ((TreeViewVarNode)args.Node).Content;
+			TreeNode content = ((TreeViewVarNode)args.Node).Content;
 			if (content is IContextMenu && args.Button == MouseButtons.Right) {
 				ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
 				if (menu != null) {
@@ -289,9 +290,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					foreach (var nod in watches) {
 						try {
 							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(nod.Name) ? "is null or empty!" : nod.Name));
-							Value val = AstEvaluator.Evaluate(nod.Name, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
-							ValueNode valNode = new ValueNode(val);
-							valNode.SetName(nod.Name);
+							Value val = ExpressionEvaluator.Evaluate(nod.Name, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
+							ExpressionNode valNode = new ExpressionNode(null, nod.Name, val.ExpressionTree);
 							nodes.Add(new TreeViewVarNode(debuggedProcess, watchList, valNode));
 						} catch (GetValueException) {
 							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), nod.Name);

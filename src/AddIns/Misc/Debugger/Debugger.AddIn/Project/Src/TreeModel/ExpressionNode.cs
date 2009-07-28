@@ -6,13 +6,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Debugger.Expressions;
+
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui.Pads;
@@ -21,66 +23,79 @@ using ICSharpCode.SharpDevelop.Services;
 namespace Debugger.AddIn.TreeModel
 {
 	/// <summary>
-	/// Represents the data in a row in a TreeViewNode.
+	/// Node in the tree which can be defined by a debugger expression.
+	/// The expression will be lazyly evaluated when needed.
 	/// </summary>
-	public class ValueNode: AbstractNode, ISetText, IContextMenu
+	public class ExpressionNode: TreeNode, ISetText, IContextMenu
 	{
+		bool evaluated;
+		
 		Expression expression;
 		bool canSetText;
+		GetValueException error;
+		
 		string fullText;
 		
 		public Expression Expression {
 			get { return expression; }
 		}
 		
-		/// <remarks>HACK for WatchPad</remarks>
-		public void SetName(string name)
+		public bool CanSetText {
+			get {
+				if (!evaluated) EvaluateExpression();
+				return canSetText;
+			}
+		}
+		
+		public GetValueException Error {
+			get {
+				if (!evaluated) EvaluateExpression();
+				return error;
+			}
+		}
+		
+		public override string Text {
+			get {
+				if (!evaluated) EvaluateExpression();
+				return base.Text;
+			}
+		}
+		
+		public override string Type {
+			get {
+				if (!evaluated) EvaluateExpression();
+				return base.Type;
+			}
+		}
+		
+		public override IEnumerable<TreeNode> ChildNodes {
+			get {
+				if (!evaluated) EvaluateExpression();
+				return base.ChildNodes;
+			}
+		}
+		
+		public ExpressionNode(Image image, string name, Expression expression)
 		{
+			this.Image = image;
 			this.Name = name;
+			this.expression = expression;
 		}
 		
-		/// <summary>
-		/// Factory method to create an instance.
-		/// </summary>
-		/// <param name="expression">The expression containing the value you wish to display.</param>
-		/// <returns>
-		/// Returns a ValueNode if it can successfully evaluate expression or
-		/// ErrorNode if it fails to do so.
-		/// </returns>
-		/// <see cref=ErrorNode""/>
-		public static AbstractNode Create(Expression expression)
+		void EvaluateExpression()
 		{
+			evaluated = true;
+			
+			Value val;
 			try {
-				Value val = expression.Evaluate(WindowsDebugger.DebuggedProcess);
-				return new ValueNode(val);
+				val = expression.Evaluate(WindowsDebugger.DebuggedProcess);
 			} catch (GetValueException e) {
-				return new ErrorNode(expression, e);
-			}
-		}
-		
-		/// <summary>
-		/// Constructor used by the factory method Create()
-		/// </summary>
-		/// <param name="val"></param>
-		/// <exception cref="System.Management.Automation.GetValueException">
-		/// Can be thrown by InvokeToString()
-		/// </exception>
-		public ValueNode(Value val)
-		{
-			this.expression = val.Expression;
-			
-			canSetText = false;
-			if (val.Type.IsInteger) {
-				canSetText =
-					(val.Expression is LocalVariableIdentifierExpression) ||
-					(val.Expression is ParameterIdentifierExpression) ||
-					(val.Expression is ArrayIndexerExpression) ||
-					(val.Expression is MemberReferenceExpression && ((MemberReferenceExpression)val.Expression).MemberInfo is FieldInfo);
+				error = e;
+				this.Text = e.Message;
+				return;
 			}
 			
-			this.Image = IconService.GetBitmap("Icons.16x16." + GetImageName(val));
-			
-			this.Name = val.Expression.CodeTail;
+			this.canSetText = val.Type.IsPrimitive;
 			
 			if (DebuggingOptions.Instance.ShowValuesInHexadecimal && val.Type.IsInteger) {
 				fullText = String.Format("0x{0:X}", val.PrimitiveValue);
@@ -90,29 +105,24 @@ namespace Debugger.AddIn.TreeModel
 				fullText = val.AsString;
 			}
 			
-			if (val.Type != null) {
-				this.Type = val.Type.Name;
-			} else {
-				this.Type = String.Empty;
-			}
+			this.Type = val.Type.Name;
 			
 			// Note that these return enumerators so they are lazy-evaluated
-			this.ChildNodes = null;
 			if (val.IsNull) {
 			} else if (val.Type.IsClass || val.Type.IsValueType) {
-				this.ChildNodes = Utils.GetChildNodesOfObject(this.Expression, val.Type);
+				this.ChildNodes = Utils.LazyGetChildNodesOfObject(this.Expression, val.Type);
 			} else if (val.Type.IsArray) {
-				this.ChildNodes = Utils.GetChildNodesOfArray(this.Expression, val.ArrayDimensions);
+				this.ChildNodes = Utils.LazyGetChildNodesOfArray(this.Expression, val.ArrayDimensions);
 			} else if (val.Type.IsPointer) {
 				Value deRef = val.Dereference();
 				if (deRef != null) {
-					this.ChildNodes = new AbstractNode [] { new ValueNode(deRef) };
+					this.ChildNodes = new ExpressionNode [] { new ExpressionNode(this.Image, "*" + this.Name, this.Expression.AppendDereference()) };
 				}
 			}
 			
 			if (DebuggingOptions.Instance.ICorDebugVisualizerEnabled) {
-				AbstractNode info = ICorDebug.GetDebugInfoRoot(val.AppDomain, val.CorValue);
-				this.ChildNodes = PrependNode(info, this.ChildNodes);
+				TreeNode info = ICorDebug.GetDebugInfoRoot(val.AppDomain, val.CorValue);
+				this.ChildNodes = Utils.PrependNode(info, this.ChildNodes);
 			}
 			
 			// Do last since it may expire the object
@@ -123,27 +133,11 @@ namespace Debugger.AddIn.TreeModel
 			this.Text = (fullText.Length > 256) ? fullText.Substring(0, 256) + "..." : fullText;
 		}
 		
-		IEnumerable<AbstractNode> PrependNode(AbstractNode node, IEnumerable<AbstractNode> rest)
-		{
-			yield return node;
-			if (rest != null) {
-				foreach(AbstractNode absNode in rest) {
-					yield return absNode;
-				}
-			}
-		}
-		
-		public bool CanSetText {
-			get {
-				return canSetText;
-			}
-		}
-		
 		public bool SetText(string newText)
 		{
 			Value val = null;
 			try {
-				val = this.Expression.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame);
+				val = this.Expression.Evaluate(WindowsDebugger.DebuggedProcess);
 				if (val.Type.IsInteger && newText.StartsWith("0x")) {
 					try {
 						val.PrimitiveValue = long.Parse(newText.Substring(2), NumberStyles.HexNumber);
@@ -170,55 +164,53 @@ namespace Debugger.AddIn.TreeModel
 			return false;
 		}
 		
-		string GetImageName(Value val)
+		public static Image GetImageForThis()
 		{
-			Expression expr = val.Expression;
-			if (expr is ThisReferenceExpression) {
-				if (val.Type.IsClass) {
-					return "Class";
-				}
-				if (val.Type.IsValueType) {
-					return "Struct";
-				}
+			return IconService.GetBitmap("Icons.16x16.Parameter");
+		}
+		
+		public static Image GetImageForParameter()
+		{
+			return IconService.GetBitmap("Icons.16x16.Parameter");
+		}
+		
+		public static Image GetImageForLocalVariable()
+		{
+			return IconService.GetBitmap("Icons.16x16.Local");
+		}
+		
+		public static Image GetImageForArrayIndexer()
+		{
+			return IconService.GetBitmap("Icons.16x16.Field");
+		}
+		
+		public static Image GetImageForMember(MemberInfo memberInfo)
+		{
+			string name = string.Empty;
+			if (memberInfo.IsPublic) {
+			} else if (memberInfo.IsInternal) {
+				name += "Internal";
+			} else if (memberInfo.IsProtected) {
+				name += "Protected";
+			} else if (memberInfo.IsPrivate) {
+				name += "Private";
 			}
-			if (expr is ParameterIdentifierExpression) {
-				return "Parameter";
+			if (memberInfo is FieldInfo) {
+				name += "Field";
+			} else if (memberInfo is PropertyInfo) {
+				name += "Property";
+			} else if (memberInfo is MethodInfo) {
+				name += "Method";
+			} else {
+				throw new DebuggerException("Unknown member type " + memberInfo.GetType().FullName);
 			}
-			if (expr is MemberReferenceExpression) {
-				MemberInfo memberInfo = ((MemberReferenceExpression)expr).MemberInfo;
-				string prefix;
-				if (memberInfo.IsPublic) {
-					prefix = "";
-				} else if (memberInfo.IsInternal) {
-					prefix = "Internal";
-				} else if (memberInfo.IsProtected) {
-					prefix = "Protected";
-				} else if (memberInfo.IsPrivate) {
-					prefix = "Private";
-				} else {
-					prefix = "";
-				}
-				if (memberInfo is FieldInfo) {
-					return prefix + "Field";
-				}
-				if (memberInfo is PropertyInfo) {
-					return prefix + "Property";
-				}
-				if (memberInfo is MethodInfo) {
-					return prefix + "Method";
-				}
-			}
-			if (expr is LocalVariableIdentifierExpression) {
-				return "Local";
-			}
-			if (expr is ArrayIndexerExpression) {
-				return "Field";
-			}
-			return "Field";
+			return IconService.GetBitmap("Icons.16x16." + name);
 		}
 		
 		public ContextMenuStrip GetContextMenu()
 		{
+			if (this.Error != null) return GetErrorContextMenu();
+			
 			ContextMenuStrip menu = new ContextMenuStrip();
 			
 			ToolStripMenuItem copyItem;
@@ -246,6 +238,25 @@ namespace Debugger.AddIn.TreeModel
 			menu.Items.AddRange(new ToolStripItem[] {
 			                    	copyItem,
 			                    	hexView
+			                    });
+			
+			return menu;
+		}
+		
+		public ContextMenuStrip GetErrorContextMenu()
+		{
+			ContextMenuStrip menu = new ContextMenuStrip();
+			
+			ToolStripMenuItem showError;
+			showError = new ToolStripMenuItem();
+			showError.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.ShowFullError}");
+			showError.Checked = false;
+			showError.Click += delegate {
+				MessageService.ShowError(error, null);
+			};
+			
+			menu.Items.AddRange(new ToolStripItem[] {
+			                    	showError
 			                    });
 			
 			return menu;

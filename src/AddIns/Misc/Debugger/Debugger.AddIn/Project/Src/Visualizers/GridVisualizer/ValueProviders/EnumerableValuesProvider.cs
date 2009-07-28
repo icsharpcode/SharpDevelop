@@ -5,11 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 using Debugger.MetaData;
+using Debugger.AddIn.Visualizers.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Debugger.Expressions;
 using ICSharpCode.SharpDevelop.Services;
+using Expression = ICSharpCode.NRefactory.Ast.Expression;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {

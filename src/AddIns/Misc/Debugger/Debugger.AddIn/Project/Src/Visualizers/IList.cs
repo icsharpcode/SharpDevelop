@@ -4,16 +4,16 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Ast;
 using System.Collections;
 using System.Collections.Generic;
-using Debugger.Expressions;
 using Debugger.MetaData;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.TreeModel
 {
-	public class IListNode: AbstractNode
+	public class IListNode: TreeNode
 	{
 		Expression targetObject;
 		DebugType iListType;
@@ -24,7 +24,7 @@ namespace Debugger.AddIn.TreeModel
 			this.iListType = iListType;
 			
 			this.Name = "IList";
-			this.ChildNodes = GetChildNodes();
+			this.ChildNodes = LazyGetChildNodes();
 		}
 		
 		public static WindowsDebugger WindowsDebugger {
@@ -33,27 +33,20 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		IEnumerable<AbstractNode> GetChildNodes()
+		IEnumerable<TreeNode> LazyGetChildNodes()
 		{
 			PropertyInfo countProperty = iListType.GetInterface(typeof(ICollection).FullName).GetProperty("Count");
-			Expression countExpr = targetObject.AppendPropertyReference(countProperty);
 			int count = 0;
 			try {
 				// Do not get string representation since it can be printed in hex
-				Value countValue = countExpr.Evaluate(WindowsDebugger.DebuggedProcess.SelectedStackFrame);
-				count = (int)countValue.PrimitiveValue;
+				Value list = targetObject.Evaluate(WindowsDebugger.DebuggedProcess);
+				count = (int)list.GetPropertyValue(countProperty).PrimitiveValue;
 			} catch (GetValueException) {
-				count = -1;
-			}
-			if (count == -1) {
-				yield return ValueNode.Create(countExpr);
 				yield break;
 			}
 			
 			for(int i = 0; i < count; i++) {
-				PropertyInfo itemProperty = iListType.GetProperty("Item");
-				Expression itemExpr = targetObject.AppendMemberReference(itemProperty, new PrimitiveExpression(i));
-				yield return ValueNode.Create(itemExpr);
+				yield return new ExpressionNode(ExpressionNode.GetImageForArrayIndexer(), "[" + i + "]", targetObject.AppendIndexer(i));
 			}
 		}
 	}

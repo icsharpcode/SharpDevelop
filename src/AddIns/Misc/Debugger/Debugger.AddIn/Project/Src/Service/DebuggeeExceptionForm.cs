@@ -46,7 +46,6 @@ using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 using Debugger;
 using Debugger.AddIn.TreeModel;
-using Debugger.Expressions;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 

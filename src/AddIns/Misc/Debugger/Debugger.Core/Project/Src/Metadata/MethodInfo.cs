@@ -5,13 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Mono.Cecil.Signatures;
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
-using Debugger.Expressions;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
+using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData
 {
@@ -401,13 +401,15 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> Get names of all parameters in order </summary>
-		public string[] GetParameterNames()
-		{
-			List<string> names = new List<string>();
-			for(int i = 0; i < ParameterCount; i++) {
-				names.Add(GetParameterName(i));
+		[Tests.Ignore]
+		public string[] ParameterNames {
+			get {
+				List<string> names = new List<string>();
+				for(int i = 0; i < ParameterCount; i++) {
+					names.Add(GetParameterName(i));
+				}
+				return names.ToArray();
 			}
-			return names.ToArray();
 		}
 		
 		[Debugger.Tests.Ignore]
@@ -418,6 +420,18 @@ namespace Debugger.MetaData
 				} else {
 					return new List<ISymUnmanagedVariable>();
 				}
+			}
+		}
+		
+		public string[] LocalVariableNames {
+			get {
+				List<ISymUnmanagedVariable> vars = LocalVariables;
+				List<string> names = new List<string>();
+				for(int i = 0; i < vars.Count; i++) {
+					names.Add(vars[i].Name);
+				}
+				names.Sort();
+				return names.ToArray();
 			}
 		}
 		
@@ -434,86 +448,5 @@ namespace Debugger.MetaData
 			}
 			return vars;
 		}
-		
-		#region Convenience methods
-		
-		/// <summary> Returns expression for 'this' value of the stack frame </summary>
-		public Expression GetExpressionForThis()
-		{
-			return new ThisReferenceExpression();
-		}
-		
-		/// <summary> Returns expression for argument with the given index </summary>
-		public Expression GetExpressionForParameter(int index)
-		{
-			return new ParameterIdentifierExpression(this, index);
-		}
-		
-		/// <summary> Returns expression for argument with the given name </summary>
-		public Expression GetExpressionForParameter(string name)
-		{
-			for(int i = 0; i < this.ParameterCount; i++) {
-				if (this.GetParameterName(i) == name) {
-					return GetExpressionForParameter(i);
-				}
-			}
-			return null;
-		}
-		
-		/// <summary> Returns expressions for all arguments of this stack frame </summary>
-		public List<Expression> GetExpressionsForParameters()
-		{
-			List<Expression> ret = new List<Expression>();
-			for (int i = 0; i < this.ParameterCount; i++) {
-				ret.Add(GetExpressionForParameter(i));
-			}
-			ret.Sort();
-			return ret;
-		}
-		
-		/// <summary> Returns expression for the given local variable </summary>
-		public Expression GetExpressionForLocalVariable(ISymUnmanagedVariable symVar)
-		{
-			return new LocalVariableIdentifierExpression(this, symVar);
-		}
-		
-		/// <summary> Returns expression for local variable with the given name </summary>
-		/// <returns> Null if not found </returns>
-		public Expression GetExpressionForLocalVariable(string name)
-		{
-			foreach(ISymUnmanagedVariable symVar in this.LocalVariables) {
-				if (symVar.Name == name) {
-					return GetExpressionForLocalVariable(symVar);
-				}
-			}
-			return null;
-		}
-		
-		/// <summary> Returns expressions for all local variables </summary>
-		public List<Expression> GetExpressionsForLocalVariables()
-		{
-			List<Expression> ret = new List<Expression>();
-			foreach(ISymUnmanagedVariable symVar in this.LocalVariables) {
-				ret.Add(GetExpressionForLocalVariable(symVar));
-			}
-			ret.Sort();
-			return ret;
-		}
-		
-		/// <summary> Returns a combined collection of all variables in this stack frame </summary>
-		public List<Expression> GetExpressionsForAllVariables()
-		{
-			List<Expression> vars = new List<Expression>();
-			
-			if (!this.IsStatic) {
-				vars.Add(GetExpressionForThis());
-			}
-			vars.AddRange(GetExpressionsForParameters());
-			vars.AddRange(GetExpressionsForLocalVariables());
-			
-			return vars;
-		}
-		
-		#endregion
 	}
 }

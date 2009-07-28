@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Debugger.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger
 {
@@ -36,6 +36,7 @@ namespace Debugger
 		ICorDebugEval corEval;
 		Value         result;
 		EvalState     state;
+		Expression    expression;
 		
 		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
@@ -49,6 +50,10 @@ namespace Debugger
 		
 		public string Description {
 			get { return description; }
+		}
+		
+		public Expression Expression {
+			get { return expression; }
 		}
 		
 		ICorDebugEval CorEval {
@@ -82,13 +87,40 @@ namespace Debugger
 			}
 		}
 		
-		Eval(AppDomain appDomain, string description, ICorDebugEval corEval)
+		Eval(AppDomain appDomain, string description, Expression expression, EvalStarter evalStarter)
 		{
 			this.appDomain = appDomain;
 			this.process = appDomain.Process;
 			this.description = description;
-			this.corEval = corEval;
+			this.expression = expression;
 			this.state = EvalState.Evaluating;
+			
+			this.corEval = CreateCorEval(appDomain);
+			
+			try {
+				evalStarter(this);
+			} catch (COMException e) {
+				if ((uint)e.ErrorCode == 0x80131C26) {
+					throw new GetValueException("Can not evaluate in optimized code");
+				} else if ((uint)e.ErrorCode == 0x80131C28) {
+					throw new GetValueException("Object is in wrong AppDomain");
+				} else if ((uint)e.ErrorCode == 0x8013130A) {
+					// Happens on getting of Sytem.Threading.Thread.ManagedThreadId; See SD2-1116
+					throw new GetValueException("Function does not have IL code");
+				} else if ((uint)e.ErrorCode == 0x80131C23) {
+					// The operation failed because it is a GC unsafe point. (Exception from HRESULT: 0x80131C23)
+					// This can probably happen when we break and the thread is in native code
+					throw new GetValueException("Thread is in GC unsafe point");
+				} else if ((uint)e.ErrorCode == 0x80131C22) {
+					// The operation is illegal because of a stack overflow.
+					throw new GetValueException("Can not evaluate after stack overflow");
+				} else {
+					throw;
+				}
+			}
+			
+			appDomain.Process.ActiveEvals.Add(this);
+			appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep);
 		}
 
 	    static ICorDebugEval CreateCorEval(AppDomain appDomain)
@@ -113,40 +145,6 @@ namespace Debugger
 			return targetThread.CorThread.CreateEval();
 		}
 
-	    static Eval CreateEval(AppDomain appDomain, string description, EvalStarter evalStarter)
-		{
-			ICorDebugEval corEval = CreateCorEval(appDomain);
-			
-			Eval newEval = new Eval(appDomain, description, corEval);
-			
-			try {
-				evalStarter(newEval);
-			} catch (COMException e) {
-				if ((uint)e.ErrorCode == 0x80131C26) {
-					throw new GetValueException("Can not evaluate in optimized code");
-				} else if ((uint)e.ErrorCode == 0x80131C28) {
-					throw new GetValueException("Object is in wrong AppDomain");
-				} else if ((uint)e.ErrorCode == 0x8013130A) {
-					// Happens on getting of Sytem.Threading.Thread.ManagedThreadId; See SD2-1116
-					throw new GetValueException("Function does not have IL code");
-				} else if ((uint)e.ErrorCode == 0x80131C23) {
-					// The operation failed because it is a GC unsafe point. (Exception from HRESULT: 0x80131C23)
-					// This can probably happen when we break and the thread is in native code
-					throw new GetValueException("Thread is in GC unsafe point");
-				} else if ((uint)e.ErrorCode == 0x80131C22) {
-					// The operation is illegal because of a stack overflow.
-					throw new GetValueException("Can not evaluate after stack overflow");
-				} else {
-					throw;
-				}
-			}
-			
-			appDomain.Process.ActiveEvals.Add(newEval);
-			appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep);
-			
-			return newEval;
-		}
-		
 		internal bool IsCorEval(ICorDebugEval corEval)
 		{
 			return this.corEval == corEval;
@@ -194,7 +192,7 @@ namespace Debugger
 				} else {
 					state = EvalState.EvaluatedException;
 				}
-				result = new Value(AppDomain, new EmptyExpression(), corEval.Result);
+				result = new Value(AppDomain, expression, corEval.Result);
 			}
 		}
 		
@@ -220,9 +218,15 @@ namespace Debugger
 		
 		public static Eval AsyncInvokeMethod(MethodInfo method, Value thisValue, Value[] args)
 		{
-			return CreateEval(
+			List<Expression> argExprs = new List<Expression>();
+			foreach(Value arg in args) {
+				argExprs.Add(arg.ExpressionTree);
+			}
+			
+			return new Eval(
 				method.AppDomain,
 				"Function call: " + method.FullName,
+				ExpressionExtensionMethods.AppendMemberReference(method.IsStatic ? null : thisValue.ExpressionTree, method, argExprs.ToArray()),
 				delegate(Eval eval) {
 					MethodInvokeStarter(eval, method, thisValue, args);
 				}
@@ -271,13 +275,14 @@ namespace Debugger
 				ICorDebugClass corClass = DebugType.Create(appDomain, typeof(object).FullName).CorType.Class;
 				ICorDebugEval corEval = CreateCorEval(appDomain);
 				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
-				return new Value(appDomain, new Expressions.PrimitiveExpression(value), corValue);
+				return new Value(appDomain, new PrimitiveExpression(value), corValue);
 			} else if (value is string) {
 	    		return Eval.NewString(appDomain, (string)value);
 			} else {
 	    		// TODO: Check if it is primitive type
 				Value val = Eval.NewObjectNoConstructor(DebugType.Create(appDomain, value.GetType().FullName));
 				val.PrimitiveValue = value;
+				val.ExpressionTree = new PrimitiveExpression(val);
 				return val;
 			}
 	    }
@@ -319,9 +324,10 @@ namespace Debugger
 		
 		public static Eval AsyncNewString(AppDomain appDomain, string textToCreate)
 		{
-			return CreateEval(
+			return new Eval(
 				appDomain,
 				"New string: " + textToCreate,
+				new PrimitiveExpression(textToCreate),
 				delegate(Eval eval) {
 					eval.CorEval.CastTo<ICorDebugEval2>().NewStringWithLength(textToCreate, (uint)textToCreate.Length);
 				}
@@ -339,9 +345,10 @@ namespace Debugger
 		
 		public static Eval AsyncNewObjectNoConstructor(DebugType debugType)
 		{
-			return CreateEval(
+			return new Eval(
 				debugType.AppDomain,
 				"New object: " + debugType.FullName,
+				new ObjectCreateExpression(new TypeReference(debugType.FullName), new List<Expression>()),
 				delegate(Eval eval) {
 					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.Class, (uint)debugType.GenericArguments.Count, debugType.GenericArgumentsAsCorDebugType);
 				}

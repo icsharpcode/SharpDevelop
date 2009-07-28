@@ -4,6 +4,7 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using ICSharpCode.NRefactory.Ast;
 using System;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
@@ -72,7 +73,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// Full Debugger expression used to obtain value of this property.
 		/// </summary>
-		public Debugger.Expressions.Expression Expression { get { return this.objectGraphProperty.Expression; } }
+		public Expression Expression { get { return this.objectGraphProperty.Expression; } }
 		
 		/// <summary>
         /// Is this property of atomic type? (int, string, etc.)

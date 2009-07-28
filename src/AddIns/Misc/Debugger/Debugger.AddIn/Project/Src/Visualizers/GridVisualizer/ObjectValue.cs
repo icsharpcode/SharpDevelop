@@ -8,7 +8,6 @@ using ICSharpCode.SharpDevelop.Services;
 using System;
 using System.Collections.Generic;
 using Debugger.AddIn.Visualizers.Utils;
-using Debugger.Expressions;
 using Debugger.MetaData;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
@@ -33,11 +32,13 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		public static ObjectValue Create(Debugger.Value value, DebugType type, BindingFlags bindingFlags)
 		{
 			ObjectValue result = new ObjectValue();
-			foreach(Value memberValue in value.GetMemberValues(bindingFlags))
+			foreach(MemberInfo memberInfo in value.Type.GetMembers(bindingFlags))
 			{
+				Value memberValue = value.GetMemberValue(memberInfo);
+				
 				ObjectProperty property = new ObjectProperty();
 				
-				property.Name = memberValue.Expression.CodeTail;
+				property.Name = memberInfo.Name;
 				// property.Expression = ?.Age 
 				// - cannot use expression, 
 				// if the value is returned from an enumerator, it has no meaningful expression

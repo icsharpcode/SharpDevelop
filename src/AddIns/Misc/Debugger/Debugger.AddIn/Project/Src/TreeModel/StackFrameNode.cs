@@ -5,11 +5,11 @@
 // </file>
 
 using System.Collections.Generic;
-using Debugger.Expressions;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.TreeModel
 {
-	public class StackFrameNode: AbstractNode
+	public class StackFrameNode: TreeNode
 	{
 		StackFrame stackFrame;
 		
@@ -22,16 +22,19 @@ namespace Debugger.AddIn.TreeModel
 			this.stackFrame = stackFrame;
 			
 			this.Name = stackFrame.MethodInfo.Name;
-			this.ChildNodes = GetChildNodes();
+			this.ChildNodes = LazyGetChildNodes();
 		}
 		
-		IEnumerable<AbstractNode> GetChildNodes()
+		IEnumerable<TreeNode> LazyGetChildNodes()
 		{
-			foreach(Expression expr in stackFrame.MethodInfo.GetExpressionsForAllVariables()) {
-				yield return ValueNode.Create(expr);
+			foreach(string arg in stackFrame.MethodInfo.ParameterNames) {
+				yield return new ExpressionNode(ExpressionNode.GetImageForParameter(), arg, new IdentifierExpression(arg));
+			}
+			foreach(string loc in stackFrame.MethodInfo.LocalVariableNames) {
+				yield return new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), loc, new IdentifierExpression(loc));
 			}
 			if (stackFrame.Thread.CurrentException != null) {
-				yield return ValueNode.Create(new CurrentExceptionExpression());
+				yield return new ExpressionNode(null, "__exception", new IdentifierExpression("__exception"));
 			}
 		}
 	}

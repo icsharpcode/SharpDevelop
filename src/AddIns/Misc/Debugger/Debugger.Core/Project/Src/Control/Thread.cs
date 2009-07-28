@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Debugger.Expressions;
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -160,7 +160,7 @@ namespace Debugger
 				process.AssertPaused();
 				
 				ICorDebugValue corValue = this.CorThread.Object;
-				return new Value(process.AppDomains[this.CorThread.AppDomain], new EmptyExpression(), corValue);
+				return new Value(process.AppDomains[this.CorThread.AppDomain], Expression.Null, corValue);
 			}
 		}
 		

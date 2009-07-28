@@ -79,7 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Expressions\AstEvaluator.cs" />
     <Compile Include="Src\IsBreakpointCondition.cs" />
     <Compile Include="Src\Options\DebuggingOptions.cs" />
     <Compile Include="Src\Options\DebuggingOptionsPanel.cs">
@@ -186,14 +185,13 @@
     <Compile Include="Src\Pads\DebuggerPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.Menu.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.Menu.cs" />
-    <Compile Include="Src\TreeModel\AbstractNode.cs" />
+    <Compile Include="Src\TreeModel\TreeNode.cs" />
     <Compile Include="Src\TreeModel\Adapters\DynamicTreeDebuggerRow.cs" />
     <Compile Include="Src\TreeModel\Adapters\TreeViewVarNode.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\TreeModel\ArrayRangeNode.cs" />
-    <Compile Include="Src\TreeModel\ErrorNode.cs" />
-    <Compile Include="Src\TreeModel\ValueNode.cs" />
+    <Compile Include="Src\TreeModel\ExpressionNode.cs" />
     <Compile Include="Src\TreeModel\IContextMenu.cs" />
     <Compile Include="Src\TreeModel\ISetText.cs" />
     <Compile Include="Src\TreeModel\ChildNodesOfObject.cs" />

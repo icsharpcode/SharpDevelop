@@ -31,7 +31,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public string FullPath
 		{
-			get { return this.containingNode.ObjectNode.Expression.Code + "/" + this.Path; }
+			get { return this.containingNode.ObjectNode.Expression.PrettyPrint() + "/" + this.Path; }
 		}
 		
 		private ContentNode parent;

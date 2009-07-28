@@ -9,11 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-using Debugger.Expressions;
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
+
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger
 {
@@ -311,7 +312,7 @@ namespace Debugger
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgumentValue(int index)
 		{
-			return new Value(appDomain, new ParameterIdentifierExpression(this.MethodInfo, index), GetArgumentCorValue(index));
+			return new Value(appDomain, new IdentifierExpression(methodInfo.GetParameterName(index)), GetArgumentCorValue(index));
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)
@@ -370,7 +371,7 @@ namespace Debugger
 		/// <summary> Returns value of give local variable </summary>
 		public Value GetLocalVariableValue(ISymUnmanagedVariable symVar)
 		{
-			return new Value(this.AppDomain, new LocalVariableIdentifierExpression(MethodInfo, symVar), GetLocalVariableCorValue(symVar));
+			return new Value(this.AppDomain, new IdentifierExpression(symVar.Name), GetLocalVariableCorValue(symVar));
 		}
 		
 		ICorDebugValue GetLocalVariableCorValue(ISymUnmanagedVariable symVar)

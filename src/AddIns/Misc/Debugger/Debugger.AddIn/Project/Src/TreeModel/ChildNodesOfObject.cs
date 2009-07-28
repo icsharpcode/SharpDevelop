@@ -6,131 +6,96 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using Debugger.Expressions;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.TreeModel
 {
 	public partial class Utils
 	{
-		public static IEnumerable<AbstractNode> GetChildNodesOfObject(Expression targetObject, DebugType shownType)
+		public static IEnumerable<TreeNode> LazyGetChildNodesOfObject(Expression targetObject, DebugType shownType)
 		{
-			BindingFlags Flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
-			if (shownType.BaseType != null) {
-				yield return new BaseClassNode(targetObject, shownType.BaseType);
+			BindingFlags publicStaticFlags        = BindingFlags.Public | BindingFlags.Static | BindingFlags.Field | BindingFlags.GetProperty;
+			BindingFlags publicInstanceFlags      = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
+			BindingFlags nonPublicStaticFlags     = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Field | BindingFlags.GetProperty;
+			BindingFlags nonPublicInstanceFlags   = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
+			
+			DebugType baseType = shownType.BaseType;
+			if (baseType != null) {
+				yield return new TreeNode(
+					IconService.GetBitmap("Icons.16x16.Class"),
+					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}"),
+					string.Empty,
+					baseType.FullName,
+					baseType.FullName == "System.Object" ? null : Utils.LazyGetChildNodesOfObject(targetObject, baseType)
+				);
 			}
-			if (shownType.HasMembers(NonPublicInstanceMembersNode.Flags)) {
-				yield return new NonPublicInstanceMembersNode(targetObject, shownType);
+			
+			if (shownType.HasMembers(nonPublicInstanceFlags)) {
+				yield return new TreeNode(
+					null,
+					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}"),
+					string.Empty,
+					string.Empty,
+					Utils.LazyGetMembersOfObject(targetObject, shownType, nonPublicInstanceFlags)
+				);
 			}
-			if (shownType.HasMembers(StaticMembersNode.Flags) ||
-			    shownType.HasMembers(NonPublicStaticMembersNode.Flags)) 
-			{
-				yield return new StaticMembersNode(targetObject, shownType);
+			
+			if (shownType.HasMembers(publicStaticFlags) || shownType.HasMembers(nonPublicStaticFlags)) {
+				IEnumerable<TreeNode> childs = Utils.LazyGetMembersOfObject(targetObject, shownType, publicStaticFlags);
+				if (shownType.HasMembers(nonPublicStaticFlags)) {
+					TreeNode nonPublicStaticNode = new TreeNode(
+						null,
+						StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicStaticMembers}"),
+						string.Empty,
+						string.Empty,
+						Utils.LazyGetMembersOfObject(targetObject, shownType, nonPublicStaticFlags)
+					);
+					childs = Utils.PrependNode(nonPublicStaticNode, childs);
+				}
+				yield return new TreeNode(
+					null,
+					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.StaticMembers}"),
+					string.Empty,
+					string.Empty,
+					childs
+				);
 			}
+			
 			DebugType iListType = shownType.GetInterface(typeof(IList).FullName);
 			if (iListType != null) {
 				yield return new IListNode(targetObject, iListType);
 			}
-			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return ValueNode.Create(childExpr);
-			}
-		}
-	}
-	
-	public class BaseClassNode: AbstractNode
-	{
-		Expression targetObject;
-		DebugType shownType;
-		
-		public BaseClassNode(Expression targetObject, DebugType shownType)
-		{
-			this.targetObject = targetObject;
-			this.shownType = shownType;
 			
-			this.Image = IconService.GetBitmap("Icons.16x16.Class");
-			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}");
-			this.Type = shownType.FullName;
-			if (shownType.FullName == "System.Object") {
-				this.ChildNodes = null;
-			} else {
-				this.ChildNodes = Utils.GetChildNodesOfObject(targetObject, shownType);
+			foreach(TreeNode node in LazyGetMembersOfObject(targetObject, shownType, publicInstanceFlags)) {
+				yield return node;
 			}
 		}
-	}
-	
-	public class NonPublicInstanceMembersNode: AbstractNode
-	{
-		public static BindingFlags Flags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
 		
-		Expression targetObject;
-		DebugType shownType;
-		
-		public NonPublicInstanceMembersNode(Expression targetObject, DebugType shownType)
+		public static IEnumerable<TreeNode> LazyGetMembersOfObject(Expression expression, DebugType type, BindingFlags bindingFlags)
 		{
-			this.targetObject = targetObject;
-			this.shownType = shownType;
+			List<TreeNode> members = new List<TreeNode>();
 			
-			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}");
-			this.ChildNodes = GetChildNodes();
-		}
-		
-		IEnumerable<AbstractNode> GetChildNodes()
-		{
-			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return ValueNode.Create(childExpr);
+			foreach(FieldInfo field in type.GetFields(bindingFlags)) {
+				members.Add(new ExpressionNode(ExpressionNode.GetImageForMember(field), field.Name, expression.AppendMemberReference(field)));
 			}
-		}
-	}
-	
-	public class StaticMembersNode: AbstractNode
-	{
-		public static BindingFlags Flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Field | BindingFlags.GetProperty;
-		
-		Expression targetObject;
-		DebugType shownType;
-		
-		public StaticMembersNode(Expression targetObject, DebugType shownType)
-		{
-			this.targetObject = targetObject;
-			this.shownType = shownType;
+			foreach(PropertyInfo property in type.GetProperties(bindingFlags)) {
+				members.Add(new ExpressionNode(ExpressionNode.GetImageForMember(property), property.Name, expression.AppendMemberReference(property)));
+			}
 			
-			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.StaticMembers}");
-			this.ChildNodes = GetChildNodes();
+			members.Sort();
+			return members;
 		}
 		
-		IEnumerable<AbstractNode> GetChildNodes()
+		public static IEnumerable<TreeNode> PrependNode(TreeNode node, IEnumerable<TreeNode> rest)
 		{
-			if (shownType.HasMembers(NonPublicStaticMembersNode.Flags)) {
-				yield return new NonPublicStaticMembersNode(targetObject, shownType);
-			}
-			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return ValueNode.Create(childExpr);
-			}
-		}
-	}
-	
-	public class NonPublicStaticMembersNode: AbstractNode
-	{
-		public static BindingFlags Flags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Field | BindingFlags.GetProperty;
-		
-		Expression targetObject;
-		DebugType shownType;
-		
-		public NonPublicStaticMembersNode(Expression targetObject, DebugType shownType)
-		{
-			this.targetObject = targetObject;
-			this.shownType = shownType;
-			
-			this.Name = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicStaticMembers}");
-			this.ChildNodes = GetChildNodes();
-		}
-		
-		IEnumerable<AbstractNode> GetChildNodes()
-		{
-			foreach(Expression childExpr in targetObject.AppendObjectMembers(shownType, Flags)) {
-				yield return ValueNode.Create(childExpr);
+			yield return node;
+			if (rest != null) {
+				foreach(TreeNode absNode in rest) {
+					yield return absNode;
+				}
 			}
 		}
 	}

@@ -32,7 +32,6 @@ namespace Debugger.Tests.TestPrograms
 
 #if TEST_CODE
 namespace Debugger.Tests {
-	using Debugger.AddIn;
 	using ICSharpCode.NRefactory;
 	using ICSharpCode.NRefactory.Ast;
 	
@@ -106,8 +105,8 @@ namespace Debugger.Tests {
 				restultFmted = null;
 			} else {
 				try {
-					Value result = AstEvaluator.Evaluate(expr, SupportedLanguage.CSharp, process.SelectedStackFrame);
-					restultFmted = AstEvaluator.FormatValue(result);
+					Value result = ExpressionEvaluator.Evaluate(expr, SupportedLanguage.CSharp, process.SelectedStackFrame);
+					restultFmted = ExpressionEvaluator.FormatValue(result);
 				} catch (GetValueException e) {
 					restultFmted = "Error: " + e.Message;
 				}
