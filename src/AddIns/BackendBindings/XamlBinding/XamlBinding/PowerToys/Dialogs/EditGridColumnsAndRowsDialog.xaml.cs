@@ -36,6 +36,9 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		static readonly XName rowDefName = XName.Get("RowDefinition", CompletionDataHelper.WpfXamlNamespace);
 		static readonly XName colDefName = XName.Get("ColumnDefinition", CompletionDataHelper.WpfXamlNamespace);
 		
+		static readonly XName gridRowName = XName.Get("Grid.Row");
+		static readonly XName gridColName = XName.Get("Grid.Column");
+		
 		XElement gridTree;
 		XElement rowDefitions;
 		XElement colDefitions;
@@ -116,6 +119,27 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, delegate { UndoItemClick(null, null); }));
 			CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, delegate { RedoItemClick(null, null); }));
 			
+			int maxCols = this.colDefitions.Elements().Count();
+			int maxRows = this.rowDefitions.Elements().Count();
+			
+			this.gridTree.Elements()
+				.ForEach(
+					el => {
+						Core.LoggingService.Debug(el);
+						XAttribute a = el.Attribute(gridColName);
+						XAttribute b = el.Attribute(gridRowName);
+						int value;
+						if (a != null && int.TryParse(a.Value, out value))
+							el.SetAttributeValue(gridColName, Math.Min(Math.Max(0, value), maxCols - 1));
+						else
+							el.SetAttributeValue(gridColName, 0);
+						if (b != null && int.TryParse(b.Value, out value))
+							el.SetAttributeValue(gridRowName, Math.Min(Math.Max(0, value), maxRows - 1));
+						else
+							el.SetAttributeValue(gridRowName, 0);
+					}
+				);
+			
 			RebuildGrid();
 		}
 		
@@ -148,7 +172,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				.Elements()
 				.Where(
 					element => {
-						var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
+						var rowAttrib = element.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
 						int rowAttribValue = 0;
 						if (int.TryParse(rowAttrib.Value, out rowAttribValue))
 							return rowAttribValue >= row;
@@ -159,8 +183,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			controls.ForEach(
 				item => {
-					var rowAttrib = item.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
+					var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+					item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
 				}
 			);
 			
@@ -186,7 +210,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				.Elements()
 				.Where(
 					element => {
-						var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
+						var rowAttrib = element.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
 						int rowAttribValue = 0;
 						if (int.TryParse(rowAttrib.Value, out rowAttribValue))
 							return rowAttribValue > row;
@@ -197,8 +221,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			controls.ForEach(
 				item => {
-					var rowAttrib = item.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
+					var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+					item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
 				}
 			);
 			
@@ -226,7 +250,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					.Elements()
 					.Where(
 						element => {
-							var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
+							var rowAttrib = element.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
 							int rowAttribValue = 0;
 							if (int.TryParse(rowAttrib.Value, out rowAttribValue))
 								return rowAttribValue == row;
@@ -239,7 +263,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					.Elements()
 					.Where(
 						element2 => {
-							var rowAttrib = element2.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
+							var rowAttrib = element2.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
 							int rowAttribValue = 0;
 							if (int.TryParse(rowAttrib.Value, out rowAttribValue))
 								return rowAttribValue == (row - 1);
@@ -250,15 +274,15 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				
 				controls.ForEach(
 					item => {
-						var rowAttrib = item.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
+						var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+						item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
 					}
 				);
 				
 				controlsDown.ForEach(
 					item2 => {
-						var rowAttrib = item2.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						item2.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
+						var rowAttrib = item2.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+						item2.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
 					}
 				);
 				
@@ -287,7 +311,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					.Elements()
 					.Where(
 						element => {
-							var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
+							var rowAttrib = element.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
 							int rowAttribValue = 0;
 							if (int.TryParse(rowAttrib.Value, out rowAttribValue))
 								return rowAttribValue == row;
@@ -300,7 +324,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					.Elements()
 					.Where(
 						element2 => {
-							var rowAttrib = element2.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
+							var rowAttrib = element2.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
 							int rowAttribValue = 0;
 							if (int.TryParse(rowAttrib.Value, out rowAttribValue))
 								return rowAttribValue == (row + 1);
@@ -311,15 +335,15 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				
 				controls.ForEach(
 					item => {
-						var rowAttrib = item.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
+						var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+						item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
 					}
 				);
 				
 				controlsUp.ForEach(
 					item2 => {
-						var rowAttrib = item2.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						item2.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
+						var rowAttrib = item2.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+						item2.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
 					}
 				);
 				
@@ -341,7 +365,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				.Elements()
 				.Where(
 					element => {
-						var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
+						var rowAttrib = element.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
 						int rowAttribValue = 0;
 						if (int.TryParse(rowAttrib.Value, out rowAttribValue))
 							return rowAttribValue >= row;
@@ -352,8 +376,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			controls.ForEach(
 				item => {
-					var rowAttrib = item.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Row"), int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
+					var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+					item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
 				}
 			);
 			
@@ -378,7 +402,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				.Elements()
 				.Where(
 					element => {
-						var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
+						var colAttrib = element.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
 						int colAttribValue = 0;
 						if (int.TryParse(colAttrib.Value, out colAttribValue))
 							return colAttribValue >= column;
@@ -389,8 +413,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			controls.ForEach(
 				item => {
-					var colAttrib = item.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
+					var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+					item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
 				}
 			);
 			
@@ -415,7 +439,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				.Elements()
 				.Where(
 					element => {
-						var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
+						var colAttrib = element.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
 						int colAttribValue = 0;
 						if (int.TryParse(colAttrib.Value, out colAttribValue))
 							return colAttribValue > column;
@@ -426,8 +450,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			controls.ForEach(
 				item => {
-					var colAttrib = item.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
+					var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+					item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
 				}
 			);
 			
@@ -456,7 +480,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					.Elements()
 					.Where(
 						element => {
-							var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
+							var colAttrib = element.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
 							int colAttribValue = 0;
 							if (int.TryParse(colAttrib.Value, out colAttribValue))
 								return colAttribValue == column;
@@ -469,7 +493,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					.Elements()
 					.Where(
 						element2 => {
-							var colAttrib = element2.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
+							var colAttrib = element2.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
 							int colAttribValue = 0;
 							if (int.TryParse(colAttrib.Value, out colAttribValue))
 								return colAttribValue == (column - 1);
@@ -480,15 +504,15 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				
 				controls.ForEach(
 					item => {
-						var colAttrib = item.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-						item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
+						var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+						item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
 					}
 				);
 				
 				controlsLeft.ForEach(
 					item2 => {
-						var colAttrib = item2.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-						item2.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
+						var colAttrib = item2.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+						item2.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
 					}
 				);
 				
@@ -518,7 +542,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					.Elements()
 					.Where(
 						element => {
-							var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
+							var colAttrib = element.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
 							int colAttribValue = 0;
 							if (int.TryParse(colAttrib.Value, out colAttribValue))
 								return colAttribValue == column;
@@ -531,7 +555,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					.Elements()
 					.Where(
 						element2 => {
-							var colAttrib = element2.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
+							var colAttrib = element2.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
 							int colAttribValue = 0;
 							if (int.TryParse(colAttrib.Value, out colAttribValue))
 								return colAttribValue == (column + 1);
@@ -542,15 +566,15 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				
 				controls.ForEach(
 					item => {
-						var colAttrib = item.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-						item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
+						var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+						item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
 					}
 				);
 				
 				controlsRight.ForEach(
 					item2 => {
-						var colAttrib = item2.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-						item2.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
+						var colAttrib = item2.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+						item2.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
 					}
 				);
 				
@@ -572,7 +596,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				.Elements()
 				.Where(
 					element => {
-						var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
+						var colAttrib = element.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
 						int colAttribValue = 0;
 						if (int.TryParse(colAttrib.Value, out colAttribValue))
 							return colAttribValue >= column;
@@ -583,8 +607,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			controls.ForEach(
 				item => {
-					var colAttrib = item.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
-					item.SetAttributeValue(XName.Get("Grid.Column"), int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
+					var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+					item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
 				}
 			);
 			
@@ -635,10 +659,38 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				this.gridDisplay.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
 				this.columnWidthGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
 				GridLengthEditor editor = new GridLengthEditor(Orientation.Horizontal, i, (colDefitions.Elements().ElementAt(i).Attribute("Width") ?? new XAttribute("Width", "")).Value);
+				
 				editor.SelectedValueChanged += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorSelectedValueChanged);
 				editor.Deleted += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorDeleted);
-				editor.Added += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorAdded);
+				
 				this.columnWidthGrid.Children.Add(editor);
+				
+				Button leftAddButton = new Button() {
+					Content = "+",
+					HorizontalAlignment = HorizontalAlignment.Left,
+					Margin = new Thickness(-10, 10, 5,10),
+					Padding = new Thickness(3),
+					Tag = i
+				};
+				
+				leftAddButton.Click += BtnAddColumnClick;
+				
+				leftAddButton.SetValue(Grid.ColumnProperty, i);
+				this.columnWidthGrid.Children.Add(leftAddButton);
+				
+				if (cols == i + 1) {
+					Button rightAddButton = new Button() {
+						Content = "+",
+						HorizontalAlignment = HorizontalAlignment.Right,
+						Margin = new Thickness(5, 10, 0, 10),
+						Padding = new Thickness(3),
+					};
+					
+					rightAddButton.Click += BtnAddColumnClick;
+					
+					rightAddButton.SetValue(Grid.ColumnProperty, i);
+					this.columnWidthGrid.Children.Add(rightAddButton);
+				}
 			}
 			
 			for (int i = 0; i < rows; i++) {
@@ -646,10 +698,38 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				
 				this.rowHeightGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
 				GridLengthEditor editor = new GridLengthEditor(Orientation.Vertical, i, (rowDefitions.Elements().ElementAt(i).Attribute("Height") ?? new XAttribute("Height", "")).Value);
+				
 				editor.SelectedValueChanged += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorSelectedValueChanged);
 				editor.Deleted += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorDeleted);
-				editor.Added += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorAdded);
+				
 				this.rowHeightGrid.Children.Add(editor);
+				
+				Button topAddButton = new Button() {
+					Content = "+",
+					VerticalAlignment = VerticalAlignment.Top,
+					Margin = new Thickness(10, -10, 10, 5),
+					Padding = new Thickness(3),
+					Tag = i
+				};
+				
+				topAddButton.Click += BtnAddRowClick;
+				
+				topAddButton.SetValue(Grid.RowProperty, i);
+				this.rowHeightGrid.Children.Add(topAddButton);
+				
+				if (rows == i + 1) {
+					Button bottomAddButton = new Button() {
+						Content = "+",
+						VerticalAlignment = VerticalAlignment.Bottom,
+						Margin = new Thickness(10, 5, 10, 0),
+						Padding = new Thickness(3),
+					};
+					
+					bottomAddButton.Click += BtnAddRowClick;
+					
+					bottomAddButton.SetValue(Grid.RowProperty, i);
+					this.rowHeightGrid.Children.Add(bottomAddButton);
+				}
 				
 				for (int j = 0; j < cols; j++) {
 					StackPanel displayRect = new StackPanel() {
@@ -662,6 +742,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					
 					displayRect.Drop += new DragEventHandler(DisplayRectDrop);
 					displayRect.DragOver += new DragEventHandler(DisplayRectDragOver);
+					displayRect.MouseLeftButtonDown += new MouseButtonEventHandler(DisplayRectMouseLeftButtonDown);
 					
 					displayRect.Children.AddRange(BuildItemsForCell(i, j));
 					
@@ -677,12 +758,11 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			this.InvalidateVisual();
 		}
 
-		void EditorAdded(object sender, GridLengthSelectionChangedEventArgs e)
+		void DisplayRectMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			if (e.Type == Orientation.Horizontal)
-				InsertBefore(gridDisplay.Children.OfType<StackPanel>().First(item => (int)item.GetValue(Grid.ColumnProperty) == e.Cell));
-			else
-				InsertAbove(gridDisplay.Children.OfType<StackPanel>().First(item => (int)item.GetValue(Grid.RowProperty) == e.Cell));
+			DragDropEffects allowedEffects = DragDropEffects.Move;
+			StackPanel panel = sender as StackPanel;
+			DragDrop.DoDragDrop(panel, panel, allowedEffects);
 		}
 
 		void EditorDeleted(object sender, GridLengthSelectionChangedEventArgs e)
@@ -743,7 +823,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				return new Size(1, 1); // dummy values
 			}
 			
-			public static DragDropMarkerAdorner CreateAdorner(StackPanel panel, FrameworkElement aboveElement)
+			public static DragDropMarkerAdorner CreateAdornerContentMove(StackPanel panel, FrameworkElement aboveElement)
 			{
 				DragDropMarkerAdorner adorner;
 				
@@ -763,48 +843,84 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				
 				return adorner;
 			}
+			
+			public static DragDropMarkerAdorner CreateAdornerCellMove(StackPanel panel, int count, Orientation orientation)
+			{
+				DragDropMarkerAdorner adorner = new DragDropMarkerAdorner(panel);
+				
+				if (orientation == Orientation.Horizontal) {
+					adorner.start = new Point(5,5);
+					adorner.end = new Point(5, panel.ActualHeight * count);
+				} else {
+					adorner.start = new Point(5,5);
+					adorner.end = new Point(panel.ActualWidth * count, 5);
+				}
+				
+				AdornerLayer.GetAdornerLayer(panel).Add(adorner);
+				
+				return adorner;
+			}
 		}
 		
 		DragDropMarkerAdorner marker = null;
 
 		void DisplayRectDragOver(object sender, DragEventArgs e)
 		{
-			StackPanel target = sender as StackPanel;
-			
-			if (marker != null) {
-				AdornerLayer.GetAdornerLayer(marker.AdornedElement).Remove(marker);
-				marker = null;
-			}
-			
-			if (target != null) {
-				Point p = e.GetPosition(target);
-				FrameworkElement element = target.InputHitTest(p) as FrameworkElement;
+			try {
+				StackPanel target = sender as StackPanel;
 				
-				if (element is StackPanel || element.TemplatedParent is Label) {
-					marker = DragDropMarkerAdorner.CreateAdorner(target, element);
-
-					e.Effects = DragDropEffects.Move;
-					e.Handled = true;
-				} else {
-					e.Effects = DragDropEffects.None;
-					e.Handled =  true;
+				if (marker != null) {
+					AdornerLayer.GetAdornerLayer(marker.AdornedElement).Remove(marker);
+					marker = null;
 				}
+				
+				if (target != null) {
+					Point p = e.GetPosition(target);
+					FrameworkElement element = target.InputHitTest(p) as FrameworkElement;
+					if (e.Data.GetData(typeof(XElement)) != null) {
+						if (element is StackPanel || element.TemplatedParent is Label) {
+							marker = DragDropMarkerAdorner.CreateAdornerContentMove(target, element);
+
+							e.Effects = DragDropEffects.Move;
+							e.Handled = true;
+						} else {
+							e.Effects = DragDropEffects.None;
+							e.Handled =  true;
+						}
+					} else if (e.Data.GetData(typeof(StackPanel)) != null) {
+						if (element is StackPanel && e.Data.GetData(typeof(StackPanel)) != element) {
+							marker = DragDropMarkerAdorner.CreateAdornerCellMove(target, rowDefitions.Elements().Count(), Orientation.Horizontal);
+
+							e.Effects = DragDropEffects.Move;
+							e.Handled = true;
+						} else {
+							e.Effects = DragDropEffects.None;
+							e.Handled =  true;
+						}
+					} else {
+						e.Effects = DragDropEffects.None;
+						e.Handled =  true;
+					}
+				}
+			} catch (Exception ex) {
+				Core.LoggingService.Error(ex);
 			}
 		}
 
 		void DisplayRectDrop(object sender, DragEventArgs e)
 		{
 			try {
-				XElement data = e.Data.GetData(typeof(XElement)) as XElement;
-				if (data != null) {
+				if (e.Data.GetData(typeof(XElement)) != null) {
+					XElement data = e.Data.GetData(typeof(XElement)) as XElement;
+					
 					UpdateUndoRedoState();
 					
 					StackPanel target = sender as StackPanel;
 					int x = (int)target.GetValue(Grid.ColumnProperty);
 					int y = (int)target.GetValue(Grid.RowProperty);
 					
-					data.SetAttributeValue(XName.Get("Grid.Column"), x);
-					data.SetAttributeValue(XName.Get("Grid.Row"), y);
+					data.SetAttributeValue(gridColName, x);
+					data.SetAttributeValue(gridRowName, y);
 					
 					Point p = e.GetPosition(target);
 					TextBlock block = target.InputHitTest(p) as TextBlock;
@@ -828,8 +944,27 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					}
 					
 					RebuildGrid();
+				} else if (e.Data.GetData(typeof(StackPanel)) != null) {
+					StackPanel source = e.Data.GetData(typeof(StackPanel)) as StackPanel;
+					int sourceX = (int)source.GetValue(Grid.ColumnProperty);
+					//int sourceY = (int)source.GetValue(Grid.RowProperty);
+					
+					StackPanel target = sender as StackPanel;
+					int targetX = (int)target.GetValue(Grid.ColumnProperty);
+					//int targetY = (int)target.GetValue(Grid.RowProperty);
+					
+					// TODO : finish this
+					
+					if (sourceX > targetX) {
+						//XElement colDef =
+						// move to the right
+					} else {
+						// move to the left
+					}
+					
+					RebuildGrid();
 				}
-			} catch (InvalidOperationException ex) {
+			} catch (Exception ex) {
 				Core.LoggingService.Error(ex);
 			}
 		}
@@ -840,8 +975,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				.Elements()
 				.Where(
 					element => {
-						var rowAttrib = element.Attribute(XName.Get("Grid.Row")) ?? new XAttribute(XName.Get("Grid.Row"), 0);
-						var colAttrib = element.Attribute(XName.Get("Grid.Column")) ?? new XAttribute(XName.Get("Grid.Column"), 0);
+						var rowAttrib = element.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+						var colAttrib = element.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
 						return 	row.ToString() == rowAttrib.Value && column.ToString() == colAttrib.Value;
 					}
 				);
@@ -980,12 +1115,26 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void BtnAddRowClick(object sender, RoutedEventArgs e)
 		{
-			InsertBelow(gridDisplay.Children.OfType<StackPanel>().First(item => (int)item.GetValue(Grid.RowProperty) == rowDefitions.Elements().Count() - 1));
+			Button b = sender as Button;
+			if (b.Tag == null) {
+				InsertBelow(gridDisplay.Children.OfType<StackPanel>()
+				            .First(item => (int)item.GetValue(Grid.RowProperty) == rowDefitions.Elements().Count() - 1));
+			} else {
+				InsertAbove(gridDisplay.Children.OfType<StackPanel>()
+				            .First(item => (int)item.GetValue(Grid.RowProperty) == (int)b.Tag));
+			}
 		}
 		
 		void BtnAddColumnClick(object sender, RoutedEventArgs e)
 		{
-			InsertAfter(gridDisplay.Children.OfType<StackPanel>().First(item => (int)item.GetValue(Grid.ColumnProperty) == colDefitions.Elements().Count() - 1));
+			Button b = sender as Button;
+			if (b.Tag == null) {
+				InsertAfter(gridDisplay.Children.OfType<StackPanel>()
+				            .First(item => (int)item.GetValue(Grid.ColumnProperty) == colDefitions.Elements().Count() - 1));
+			} else {
+				InsertBefore(gridDisplay.Children.OfType<StackPanel>()
+				             .First(item => (int)item.GetValue(Grid.ColumnProperty) == (int)b.Tag));
+			}
 		}
 	}
 }
