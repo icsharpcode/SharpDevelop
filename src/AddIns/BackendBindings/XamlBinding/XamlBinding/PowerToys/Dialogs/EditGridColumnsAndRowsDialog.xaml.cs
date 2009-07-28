@@ -366,7 +366,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			UpdateUndoRedoState();
 
 			var newColumn = new XElement(colDefName);
-			newColumn.SetAttributeValue(XName.Get("Width"), "Auto");
+			newColumn.SetAttributeValue(XName.Get("Width"), "*");
 			var items = colDefitions.Elements().Skip(column);
 			var selItem = items.FirstOrDefault();
 			if (selItem != null)
@@ -403,11 +403,11 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			UpdateUndoRedoState();
 
 			var newColumn = new XElement(colDefName);
-			newColumn.SetAttributeValue(XName.Get("Width"), "Auto");
+			newColumn.SetAttributeValue(XName.Get("Width"), "*");
 			var items = colDefitions.Elements().Skip(column);
 			var selItem = items.FirstOrDefault();
 			if (selItem != null)
-				selItem.AddBeforeSelf(newColumn);
+				selItem.AddAfterSelf(newColumn);
 			else
 				colDefitions.Add(newColumn);
 			
@@ -636,6 +636,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				this.columnWidthGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
 				GridLengthEditor editor = new GridLengthEditor(Orientation.Horizontal, i, (colDefitions.Elements().ElementAt(i).Attribute("Width") ?? new XAttribute("Width", "")).Value);
 				editor.SelectedValueChanged += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorSelectedValueChanged);
+				editor.Deleted += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorDeleted);
+				editor.Added += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorAdded);
 				this.columnWidthGrid.Children.Add(editor);
 			}
 			
@@ -645,6 +647,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				this.rowHeightGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
 				GridLengthEditor editor = new GridLengthEditor(Orientation.Vertical, i, (rowDefitions.Elements().ElementAt(i).Attribute("Height") ?? new XAttribute("Height", "")).Value);
 				editor.SelectedValueChanged += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorSelectedValueChanged);
+				editor.Deleted += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorDeleted);
+				editor.Added += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorAdded);
 				this.rowHeightGrid.Children.Add(editor);
 				
 				for (int j = 0; j < cols; j++) {
@@ -673,11 +677,25 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			this.InvalidateVisual();
 		}
 
+		void EditorAdded(object sender, GridLengthSelectionChangedEventArgs e)
+		{
+			if (e.Type == Orientation.Horizontal)
+				InsertBefore(gridDisplay.Children.OfType<StackPanel>().First(item => (int)item.GetValue(Grid.ColumnProperty) == e.Cell));
+			else
+				InsertAbove(gridDisplay.Children.OfType<StackPanel>().First(item => (int)item.GetValue(Grid.RowProperty) == e.Cell));
+		}
+
+		void EditorDeleted(object sender, GridLengthSelectionChangedEventArgs e)
+		{
+			if (e.Type == Orientation.Horizontal)
+				DeleteColumn(gridDisplay.Children.OfType<StackPanel>().First(item => (int)item.GetValue(Grid.ColumnProperty) == e.Cell));
+			else
+				DeleteRow(gridDisplay.Children.OfType<StackPanel>().First(item => (int)item.GetValue(Grid.RowProperty) == e.Cell));
+		}
+
 		void EditorSelectedValueChanged(object sender, GridLengthSelectionChangedEventArgs e)
 		{
-			gridLengthInvalid = colDefitions.Elements().Any(col => (col.Attribute("Width") ?? new XAttribute("Width", "*")).Value == "Invalid")
-				|| rowDefitions.Elements().Any(row => (row.Attribute("Height") ?? new XAttribute("Height", "*")).Value == "Invalid")
-				|| !e.Value.HasValue;
+			UpdateUndoRedoState();
 			
 			string value = "Invalid";
 			
@@ -694,6 +712,9 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				colDefitions.Elements().ElementAt(e.Cell).SetAttributeValue("Width", value);
 			else
 				rowDefitions.Elements().ElementAt(e.Cell).SetAttributeValue("Height", value);
+			
+			gridLengthInvalid = colDefitions.Elements().Any(col => (col.Attribute("Width") ?? new XAttribute("Width", "*")).Value == "Invalid")
+				|| rowDefitions.Elements().Any(row => (row.Attribute("Height") ?? new XAttribute("Height", "*")).Value == "Invalid");
 		}
 		
 		class DragDropMarkerAdorner : Adorner
@@ -955,6 +976,16 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			}
 			
 			RebuildGrid();
+		}
+		
+		void BtnAddRowClick(object sender, RoutedEventArgs e)
+		{
+			InsertBelow(gridDisplay.Children.OfType<StackPanel>().First(item => (int)item.GetValue(Grid.RowProperty) == rowDefitions.Elements().Count() - 1));
+		}
+		
+		void BtnAddColumnClick(object sender, RoutedEventArgs e)
+		{
+			InsertAfter(gridDisplay.Children.OfType<StackPanel>().First(item => (int)item.GetValue(Grid.ColumnProperty) == colDefitions.Elements().Count() - 1));
 		}
 	}
 }

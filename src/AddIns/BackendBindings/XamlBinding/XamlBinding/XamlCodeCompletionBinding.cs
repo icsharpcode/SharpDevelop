@@ -162,8 +162,12 @@ namespace ICSharpCode.XamlBinding
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && context.Description != XamlContextDescription.InAttributeValue) {
 					var list = CompletionDataHelper.CreateListForContext(context) as XamlCompletionItemList;
 					string starter = editor.GetWordBeforeCaretExtended().TrimStart('/');
-					if (context.Description != XamlContextDescription.None && !string.IsNullOrEmpty(starter))
-						list.PreselectionLength = starter.Length;
+					if (context.Description != XamlContextDescription.None && !string.IsNullOrEmpty(starter)) {
+						if (starter.Contains("."))
+							list.PreselectionLength = starter.Length - starter.IndexOf('.') - 1;
+						else
+							list.PreselectionLength = starter.Length;
+					}
 					editor.ShowCompletionWindow(list);
 					return true;
 				} else {

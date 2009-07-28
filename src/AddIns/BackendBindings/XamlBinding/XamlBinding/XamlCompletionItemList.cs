@@ -18,17 +18,6 @@ using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
-	public class XamlAttributeCompletionItemList : XamlCompletionItemList
-	{
-		public override CompletionItemListKeyResult ProcessInput(char key)
-		{
-			if (key == '.')
-				return CompletionItemListKeyResult.NormalKey;
-			
-			return base.ProcessInput(key);
-		}
-	}
-	
 	public class XamlCompletionItemList : DefaultCompletionItemList
 	{
 		public override CompletionItemListKeyResult ProcessInput(char key)

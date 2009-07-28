@@ -97,7 +97,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					txtNumericValue.Visibility = Visibility.Collapsed;
 					break;
 			}
-			OnSelectedValueChanged(new GridLengthSelectionChangedEventArgs(this.panel.Orientation, this.cell, SelectedValue));
+			TxtNumericValueTextChanged(null, null);
 		}
 		
 		public GridLength? SelectedValue {
@@ -119,6 +119,24 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		}
 		
 		public event EventHandler<GridLengthSelectionChangedEventArgs> SelectedValueChanged;
+		
+		public event EventHandler<GridLengthSelectionChangedEventArgs> Deleted;
+		
+		public event EventHandler<GridLengthSelectionChangedEventArgs> Added;
+		
+		protected virtual void OnAdded(GridLengthSelectionChangedEventArgs e)
+		{
+			if (Added != null) {
+				Added(this, e);
+			}
+		}
+		
+		protected virtual void OnDeleted(GridLengthSelectionChangedEventArgs e)
+		{
+			if (Deleted != null) {
+				Deleted(this, e);
+			}
+		}
 		
 		protected virtual void OnSelectedValueChanged(GridLengthSelectionChangedEventArgs e)
 		{
@@ -143,6 +161,16 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				}
 			}
 			OnSelectedValueChanged(new GridLengthSelectionChangedEventArgs(this.panel.Orientation, cell, SelectedValue));
+		}
+		
+		void BtnDelClick(object sender, RoutedEventArgs e)
+		{
+			OnDeleted(new GridLengthSelectionChangedEventArgs(this.panel.Orientation, cell, SelectedValue));
+		}
+		
+		void BtnInsertCellsClick(object sender, RoutedEventArgs e)
+		{
+			OnAdded(new GridLengthSelectionChangedEventArgs(this.panel.Orientation, cell, SelectedValue));
 		}
 	}
 	

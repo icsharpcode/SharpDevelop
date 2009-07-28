@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 
 using ICSharpCode.SharpDevelop;
@@ -301,7 +302,7 @@ namespace ICSharpCode.XamlBinding
 						
 						if (mrr != null) {
 							rt = mrr.ResolvedType;
-						}	
+						}
 					}
 				} else {
 					string fullName = string.IsNullOrEmpty(last.Prefix) ? last.Name : last.Prefix + ":" + last.Name;
@@ -404,22 +405,26 @@ namespace ICSharpCode.XamlBinding
 				case XamlContextDescription.InTag:
 					string word = context.Editor.GetWordBeforeCaretExtended();
 					
-					if (context.PressedKey == '.') {
-						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(word.TrimEnd('.'), context), info, editor.Document.Text) as TypeResolveResult;
-						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
-						
+					if (context.PressedKey == '.' || word.Contains(".")) {
 						string ns = "";
 						int pos = word.IndexOf(':');
 						if (pos > -1)
 							ns = word.Substring(0, pos);
 						
+						string element = word.Substring(pos + 1, word.Length - pos - 1);
+						string className = element;
+						int propertyStart = element.IndexOf('.');
+						if (propertyStart != -1)
+							className = element.Substring(0, propertyStart).TrimEnd('.');
+						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(className, context), info, editor.Document.Text) as TypeResolveResult;
+						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
+						
 						if (typeClass != null && typeClass.DerivesFrom("System.Windows.DependencyObject"))
-							list.Items.AddRange(GetListOfAttached(context, word.Substring(pos + 1, word.Length - pos - 1).TrimEnd('.'), ns, true, true));
+							list.Items.AddRange(GetListOfAttached(context, className, ns, true, true));
 					} else {
 						QualifiedNameWithLocation last = context.ActiveElement;
 						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(last.Name, context), info, editor.Document.Text) as TypeResolveResult;
 						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
-						list = new XamlAttributeCompletionItemList();
 						list.Items.AddRange(CreateAttributeList(context, true));
 						list.Items.AddRange(standardAttributes);
 					}
