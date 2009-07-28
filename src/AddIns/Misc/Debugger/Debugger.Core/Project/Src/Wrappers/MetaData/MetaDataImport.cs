@@ -1201,6 +1201,12 @@ namespace Debugger.Wrappers.MetaData
 		public bool IsInterface {
 			get { return (Flags & 0x00000020) != 0; }
 		}
+		
+		public bool IsNested {
+			get {
+				return (Flags & 0x00000007) >= 2;
+			}
+		}
 	}
 	
 	public class TypeRefProps

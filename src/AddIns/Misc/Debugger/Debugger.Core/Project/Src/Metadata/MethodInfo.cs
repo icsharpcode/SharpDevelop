@@ -93,7 +93,7 @@ namespace Debugger.MetaData
 			get {
 				if (this.MethodDefSig.RetType.Void) return null;
 				if (returnType == null) {
-					returnType = DebugType.Create(this.Module, this.MethodDefSig.RetType.Type, this.DeclaringType);
+					returnType = DebugType.CreateFromSignature(this.Module, this.MethodDefSig.RetType.Type, this.DeclaringType);
 				}
 				return returnType;
 			}
@@ -106,7 +106,7 @@ namespace Debugger.MetaData
 			get {
 				List<DebugType> types = new List<DebugType>();
 				foreach(Param param in this.methodDefSig.Parameters) {
-					types.Add(DebugType.Create(this.Module, param.Type, this.DeclaringType));
+					types.Add(DebugType.CreateFromSignature(this.Module, param.Type, this.DeclaringType));
 				}
 				return types.ToArray();
 			}
@@ -357,7 +357,7 @@ namespace Debugger.MetaData
 			if (type.IsGenericType) throw new DebuggerException("Not implemented for generic types");
 			if (type.IsGenericParameter) throw new DebuggerException("Type can not be generic parameter");
 			
-			DebugType debugType = DebugType.Create(appDomain, type.FullName);
+			DebugType debugType = DebugType.CreateFromType(appDomain, type);
 			if (debugType == null) {
 				throw new DebuggerException("Type " + type.FullName + " not found");
 			}

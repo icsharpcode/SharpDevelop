@@ -70,7 +70,7 @@ namespace Debugger.AddIn.TreeModel
 				ICorDebugValue2 corValue2 = corValue.CastTo<ICorDebugValue2>();
 				string fullname;
 				try {
-					fullname = DebugType.Create(appDomain, corValue2.ExactType).FullName;
+					fullname = DebugType.CreateFromCorType(appDomain, corValue2.ExactType).FullName;
 				} catch (DebuggerException e) {
 					fullname = e.Message;
 				}

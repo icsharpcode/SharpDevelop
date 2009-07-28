@@ -150,10 +150,17 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Get all non-generic types defined in this module </summary>
+		/// <summary> Returns all non-generic types defined in the module </summary>
+		/// <remarks> Generic types can not be returned, because we do not know how to instanciate them </remarks>
 		public List<DebugType> GetDefinedTypes()
 		{
-			return DebugType.GetDefinedTypesInModule(this);
+			List<DebugType> types = new List<DebugType>();
+			foreach(TypeDefProps typeDef in this.MetaData.EnumTypeDefProps()) {
+				if (this.MetaData.GetGenericParamCount(typeDef.Token) == 0) {
+					types.Add(DebugType.CreateFromTypeDefOrRef(this, null, typeDef.Token, null));
+				}
+			}
+			return types;
 		}
 		
 		/// <summary> Get names of all generic and non-generic types defined in this module </summary>

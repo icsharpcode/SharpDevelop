@@ -128,7 +128,7 @@ namespace Debugger
 			ICorDebugValue corValue;
 			if (this.Type.IsPrimitive) {
 				// Get value type for the primive type
-				corValue = Eval.NewObjectNoConstructor(DebugType.Create(appDomain, this.Type.FullName)).CorValue;
+				corValue = Eval.NewObjectNoConstructor(DebugType.CreateFromName(appDomain, this.Type.FullName)).CorValue;
 			} else {
 				corValue = Eval.NewObjectNoConstructor(this.Type).CorValue;
 			}
@@ -175,10 +175,10 @@ namespace Debugger
 			{
 				// We were passed null reference and no metadata description
 				// (happens during CreateThread callback for the thread object)
-				this.type = DebugType.Create(appDomain, "System.Object");
+				this.type = DebugType.CreateFromType(appDomain, typeof(object));
 			} else {
 				ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().ExactType;
-				this.type = DebugType.Create(appDomain, exactType);
+				this.type = DebugType.CreateFromCorType(appDomain, exactType);
 			}
 		}
 		

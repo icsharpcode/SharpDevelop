@@ -103,13 +103,21 @@ namespace Debugger
 			this.frameIndex = frameIndex;
 			
 			MetaDataImport metaData = thread.Process.Modules[corFunction.Class.Module].MetaData;
-			ICorDebugType[] genArgs = corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList().ToArray();
-			Array.Resize(ref genArgs, metaData.GetGenericParamCount(corFunction.Class.Token));
+			int methodGenArgs = metaData.GetGenericParamCount(corFunction.Token);
+			// Class parameters are first, then the method ones
+			List<ICorDebugType> corGenArgs = corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList();
+			// Remove method parametrs at the end
+			corGenArgs.RemoveRange(corGenArgs.Count - methodGenArgs, methodGenArgs);
+			List<DebugType> genArgs = new List<DebugType>(corGenArgs.Count);
+			foreach(ICorDebugType corGenArg in corGenArgs) {
+				genArgs.Add(DebugType.CreateFromCorType(this.AppDomain, corGenArg));
+			}
 			
-			DebugType debugType = DebugType.Create(
-				this.AppDomain, 
+			DebugType debugType = DebugType.CreateFromCorClass(
+				this.AppDomain,
+				null,
 				corFunction.Class,
-				genArgs
+				genArgs.ToArray()
 			);
 			this.methodInfo = debugType.GetMethod(corFunction.Token);
 		}

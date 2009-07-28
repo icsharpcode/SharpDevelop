@@ -298,83 +298,107 @@ namespace Debugger.MetaData
 				}
 				// corType.Base does not work for arrays
 				if (this.IsArray) {
-					return DebugType.Create(this.AppDomain, "System.Array");
+					return DebugType.CreateFromType(this.AppDomain, typeof(System.Array));
 				}
 				// corType.Base does not work for primitive types
 				if (this.IsPrimitive) {
-					return DebugType.Create(this.AppDomain, "System.Object");
+					return DebugType.CreateFromType(this.AppDomain, typeof(object));
 				}
 				if (this.IsPointer || this.IsVoid) {
 					return null;
 				}
 				ICorDebugType baseType = corType.Base;
 				if (baseType != null) {
-					return Create(this.AppDomain, baseType);
+					return CreateFromCorType(this.AppDomain, baseType);
 				} else {
 					return null;
 				}
 			}
 		}
 		
-		DebugType(AppDomain appDomain, ICorDebugType corType)
+		public static DebugType CreateFromTypeDefOrRef(Module module, bool? valueType, uint token, DebugType[] genericArguments)
 		{
-			if (corType == null) throw new ArgumentNullException("corType");
-			
-			this.appDomain = appDomain;
-			this.process = appDomain.Process;
-			this.corType = corType;
-			this.corElementType = (CorElementType)corType.Type;
-			
-			if (this.IsClass || this.IsValueType) {
-				this.module = process.Modules[corType.Class.Module];
-				this.classProps = module.MetaData.GetTypeDefProps(corType.Class.Token);
+			CorTokenType tkType = (CorTokenType)(token & 0xFF000000);
+			if (tkType == CorTokenType.TypeDef) {
+				ICorDebugClass corClass = module.CorModule.GetClassFromToken(token);
+				return CreateFromCorClass(module.AppDomain, valueType, corClass, genericArguments);
+			} else if (tkType == CorTokenType.TypeRef) {
+				TypeRefProps refProps = module.MetaData.GetTypeRefProps(token);
+				string fullName = refProps.Name;
+				CorTokenType scopeType = (CorTokenType)(refProps.ResolutionScope & 0xFF000000);
+				DebugType enclosingType = null;
+				if (scopeType == CorTokenType.TypeDef || scopeType == CorTokenType.TypeRef) {
+					// Resolve the enclosing TypeRef in this scope
+					enclosingType = CreateFromTypeDefOrRef(module, null, refProps.ResolutionScope, genericArguments);
+				}
+				return CreateFromName(module.AppDomain, fullName, enclosingType, genericArguments);
+			} else {
+				throw new DebuggerException("TypeDef or TypeRef expected.  Seen " + tkType);
 			}
-			
-			if (this.IsClass || this.IsValueType || this.IsArray || this.IsPointer) {
-				foreach(ICorDebugType t in corType.EnumerateTypeParameters().Enumerator) {
-					typeArguments.Add(DebugType.Create(appDomain, t));
+		}
+		
+		public static DebugType CreateFromType(AppDomain appDomain, System.Type type, params DebugType[] genericArguments)
+		{
+			return CreateFromName(appDomain, type.FullName, genericArguments);
+		}
+		
+		public static DebugType CreateFromName(AppDomain appDomain, string typeName, params DebugType[] genericArguments)
+		{
+			return CreateFromName(appDomain, typeName, null, genericArguments);
+		}
+		
+		public static DebugType CreateFromName(AppDomain appDomain, string typeName, DebugType enclosingType, params DebugType[] genericArguments)
+		{
+			foreach(Module module in appDomain.Process.Modules) {
+				if (module.AppDomain == appDomain) {
+					uint token;
+					try {
+						token = module.MetaData.FindTypeDefPropsByName(typeName, enclosingType == null ? 0 : enclosingType.Token).Token;
+					} catch {
+						continue;
+					}
+					return CreateFromTypeDefOrRef(module, null, token, genericArguments);
 				}
 			}
-			
-			this.fullName = GetName(true);
-			this.name = GetName(false);
+			throw new DebuggerException("Can not find type " + typeName);
 		}
 		
-		public static DebugType Create(Module module, uint token, DebugType declaringType)
+		public static DebugType CreateFromTypeSpec(Module module, uint token, DebugType declaringType)
 		{
 			CorTokenType tokenType = (CorTokenType)(token & 0xFF000000);
-			if (tokenType == CorTokenType.TypeDef || tokenType == CorTokenType.TypeRef) {
-				return Create(module.AppDomain, GetCorClass(module, token));
-			} else if (tokenType == CorTokenType.TypeSpec) {
-				byte[] typeSpecBlob = module.MetaData.GetTypeSpecFromToken(token).GetData();
-				SignatureReader sigReader = new SignatureReader(typeSpecBlob);
-				int start;
-				SigType sigType = sigReader.ReadType(typeSpecBlob, 0, out start);
-				return Create(module, sigType, declaringType);
-			} else {
-				throw new DebuggerException("Unknown token type");
+			if (tokenType != CorTokenType.TypeSpec) {
+				throw new DebuggerException("TypeSpec expected.  Seen " + tokenType);
 			}
+			
+			byte[] typeSpecBlob = module.MetaData.GetTypeSpecFromToken(token).GetData();
+			return CreateFromSignature(module, typeSpecBlob, declaringType);
 		}
 		
-		internal static DebugType Create(Module module, SigType sigType, DebugType declaringType)
+		public static DebugType CreateFromSignature(Module module, byte[] signature, DebugType declaringType)
+		{
+			SignatureReader sigReader = new SignatureReader(signature);
+			int start;
+			SigType sigType = sigReader.ReadType(signature, 0, out start);
+			return CreateFromSignature(module, sigType, declaringType);
+		}
+		
+		internal static DebugType CreateFromSignature(Module module, SigType sigType, DebugType declaringType)
 		{
 			System.Type sysType = CorElementTypeToManagedType((CorElementType)(uint)sigType.ElementType);
 			if (sysType != null) {
-				return Create(module.AppDomain, sysType.FullName);
+				return CreateFromType(module.AppDomain, sysType);
 			}
 			
 			if (sigType.ElementType == Mono.Cecil.Metadata.ElementType.Object) {
-				return Create(module.AppDomain, "System.Object");
+				return CreateFromType(module.AppDomain, typeof(object));
 			}
 			
 			if (sigType is CLASS) {
-				ICorDebugClass corClass = GetCorClass(module, ((CLASS)sigType).Type.ToUInt());
-				return Create(module.AppDomain, corClass);
+				return CreateFromTypeDefOrRef(module, false, ((CLASS)sigType).Type.ToUInt(), null);
 			}
 			
 			if (sigType is VALUETYPE) {
-				ICorDebugClass corClass = GetCorClass(module, ((VALUETYPE)sigType).Type.ToUInt());
-				return Create(module.AppDomain, corClass);
+				return CreateFromTypeDefOrRef(module, true, ((VALUETYPE)sigType).Type.ToUInt(), null);
 			}
 			
 			// Numbered generic reference
@@ -385,46 +409,44 @@ namespace Debugger.MetaData
 			
 			// Numbered generic reference
 			if (sigType is MVAR) {
-				return Create(module.AppDomain, "System.Object");
+				return CreateFromType(module.AppDomain, typeof(object));
 			}
 			
 			if (sigType is GENERICINST) {
 				GENERICINST genInst = (GENERICINST)sigType;
-				CorElementType classOrValueType = genInst.ValueType ? CorElementType.VALUETYPE : CorElementType.CLASS;
-				ICorDebugClass corClass = GetCorClass(module, genInst.Type.ToUInt());
-				ICorDebugType[] genArgs = new ICorDebugType[genInst.Signature.Arity];
-				for(int i = 0; i < genArgs.Length; i++) {
-					genArgs[i] = Create(module, genInst.Signature.Types[i].Type, declaringType).CorType;
+				
+				List<DebugType> genArgs = new List<DebugType>(genInst.Signature.Arity);
+				foreach(GenericArg genArgSig in genInst.Signature.Types) {
+					genArgs.Add(CreateFromSignature(module, genArgSig.Type, declaringType));
 				}
 				
-				ICorDebugType genInstance = corClass.CastTo<ICorDebugClass2>().GetParameterizedType((uint)classOrValueType, genArgs);
-				return Create(module.AppDomain, genInstance);
+				return CreateFromTypeDefOrRef(module, genInst.ValueType, genInst.Type.ToUInt(), genArgs.ToArray());
 			}
 			
 			if (sigType is ARRAY) {
 				ARRAY arraySig = (ARRAY)sigType;
-				DebugType elementType = Create(module, arraySig.Type, declaringType);
+				DebugType elementType = CreateFromSignature(module, arraySig.Type, declaringType);
 				ICorDebugType res = module.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)sigType.ElementType, (uint)arraySig.Shape.Rank, elementType.CorType);
-				return Create(module.AppDomain, res);
+				return CreateFromCorType(module.AppDomain, res);
 			}
 			
 			if (sigType is SZARRAY) {
 				SZARRAY arraySig = (SZARRAY)sigType;
-				DebugType elementType = Create(module, arraySig.Type, declaringType);
+				DebugType elementType = CreateFromSignature(module, arraySig.Type, declaringType);
 				ICorDebugType res = module.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)sigType.ElementType, 1, elementType.CorType);
-				return Create(module.AppDomain, res);
+				return CreateFromCorType(module.AppDomain, res);
 			}
 			
 			if (sigType is PTR) {
 				PTR ptrSig = (PTR)sigType;
 				DebugType elementType;
 				if (ptrSig.Void) {
-					elementType = Create(module.AppDomain, typeof(void).FullName);
+					elementType = CreateFromType(module.AppDomain, typeof(void));
 				} else {
-					elementType = Create(module, ptrSig.PtrType, declaringType);
+					elementType = CreateFromSignature(module, ptrSig.PtrType, declaringType);
 				}
 				ICorDebugType res = module.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)sigType.ElementType, 0, elementType.CorType);
-				return Create(module.AppDomain, res);
+				return CreateFromCorType(module.AppDomain, res);
 			}
 			
 			if (sigType is FNPTR) {
@@ -434,116 +456,86 @@ namespace Debugger.MetaData
 			throw new NotImplementedException(sigType.ElementType.ToString());
 		}
 		
-		public static DebugType Create(AppDomain appDomain, string fullTypeName)
-		{
-			return Create(appDomain, GetCorClass(appDomain, fullTypeName, 0));
-		}
-		
-		static ICorDebugClass GetCorClass(Module module, uint token)
-		{
-			CorTokenType tkType = (CorTokenType)(token & 0xFF000000);
-			if (tkType == CorTokenType.TypeDef) {
-				return module.CorModule.GetClassFromToken(token);
-			} else if (tkType == CorTokenType.TypeRef) {
-				TypeRefProps refProps = module.MetaData.GetTypeRefProps(token);
-				string fullName = refProps.Name;
-				CorTokenType scopeType = (CorTokenType)(refProps.ResolutionScope & 0xFF000000);
-				uint enclosingClassTk = 0;
-				if (scopeType == CorTokenType.TypeDef || scopeType == CorTokenType.TypeRef) {
-					// Resolve the enclosingClass TypeRef in this scope
-					ICorDebugClass enclosingClass = GetCorClass(module, refProps.ResolutionScope);
-					enclosingClassTk = enclosingClass.Token;
-				}
-				return GetCorClass(module.AppDomain, fullName, enclosingClassTk);
-			} else {
-				throw new DebuggerException("TypeDef or TypeRef expected");
-			}
-		}
-		
-		static ICorDebugClass GetCorClass(AppDomain appDomain, string fullTypeName, uint enclosingClass)
-		{
-			foreach(Module module in appDomain.Process.Modules) {
-				if (module.AppDomain == appDomain) {
-					try {
-						uint token = module.MetaData.FindTypeDefPropsByName(fullTypeName, enclosingClass).Token;
-						return module.CorModule.GetClassFromToken(token);
-					} catch {
-						continue;
-					}
-				}
-			}
-			throw new DebuggerException("Can not find type " + fullTypeName);
-		}
-		
-		static public DebugType Create(AppDomain appDomain, ICorDebugClass corClass, params ICorDebugType[] genericArguments)
+		public static DebugType CreateFromCorClass(AppDomain appDomain, bool? valueType, ICorDebugClass corClass, DebugType[] genericArguments)
 		{
 			MetaDataImport metaData = appDomain.Process.Modules[corClass.Module].MetaData;
 			
-			bool isValueType = false;
-			uint superClassToken = metaData.GetTypeDefProps(corClass.Token).SuperClassToken;
-			if ((superClassToken & 0xFF000000) == 0x02000000) { // TypeDef
-				if (metaData.GetTypeDefProps(superClassToken).Name == "System.ValueType") {
-					isValueType = true;
+			if (valueType == null) {
+				uint superClassToken = metaData.GetTypeDefProps(corClass.Token).SuperClassToken;
+				if ((superClassToken & 0xFF000000) == 0x02000000) { // TypeDef
+					valueType = metaData.GetTypeDefProps(superClassToken).Name == typeof(ValueType).FullName;
 				}
-			}
-			if ((superClassToken & 0xFF000000) == 0x01000000) { // TypeRef
-				if (metaData.GetTypeRefProps(superClassToken).Name == "System.ValueType") {
-					isValueType = true;
+				if ((superClassToken & 0xFF000000) == 0x01000000) { // TypeRef
+					valueType = metaData.GetTypeRefProps(superClassToken).Name == typeof(ValueType).FullName;
 				}
 			}
 			
-			if (genericArguments.Length != metaData.GetGenericParamCount(corClass.Token)) {
-				throw new DebuggerException("Incorrect number of generic arguments");
+			genericArguments = genericArguments ?? new DebugType[] {};
+			if (genericArguments.Length < metaData.GetGenericParamCount(corClass.Token)) {
+				throw new DebuggerException("Not enough generic arguments");
 			}
 			
-			ICorDebugType corType = corClass.CastTo<ICorDebugClass2>().GetParameterizedType(
-				isValueType ? (uint)CorElementType.VALUETYPE : (uint)CorElementType.CLASS,
-				genericArguments
-			);
+			List<ICorDebugType> corGenArgs = new List<ICorDebugType>(genericArguments.Length);
+			foreach(DebugType genAgr in genericArguments) {
+				corGenArgs.Add(genAgr.CorType);
+			}
 			
-			return Create(appDomain, corType);
+			ICorDebugType corType = corClass.CastTo<ICorDebugClass2>().GetParameterizedType((uint)(valueType.Value ? CorElementType.VALUETYPE : CorElementType.CLASS), corGenArgs.ToArray());
+			
+			return CreateFromCorType(appDomain, corType);
 		}
 		
 		/// <summary> Obtains instance of DebugType. Same types will return identical instance. </summary>
-		static public DebugType Create(AppDomain appDomain, ICorDebugType corType)
+		public static DebugType CreateFromCorType(AppDomain appDomain, ICorDebugType corType)
 		{
 			if (loadedTypes.ContainsKey(corType)) return loadedTypes[corType];
 			
+			return new DebugType(appDomain, corType);
+		}
+		
+		DebugType(AppDomain appDomain, ICorDebugType corType)
+		{
+			if (corType == null) throw new ArgumentNullException("corType");
 			DateTime startTime = Util.HighPrecisionTimer.Now;
 			
-			DebugType type = new DebugType(appDomain, corType);
+			this.appDomain = appDomain;
+			this.process = appDomain.Process;
+			this.corType = corType;
+			this.corElementType = (CorElementType)corType.Type;
 			
-			// Loading of memebers might access the type again
-			loadedTypes[corType] = type;
+			// Loading might access the type again
+			loadedTypes[corType] = this;
 			
-			if (type.IsClass || type.IsValueType) {
-				type.LoadMemberInfo();
+			// We need to know generic arguments before getting name
+			if (this.IsClass || this.IsValueType || this.IsArray || this.IsPointer) {
+				foreach(ICorDebugType t in corType.EnumerateTypeParameters().Enumerator) {
+					typeArguments.Add(DebugType.CreateFromCorType(appDomain, t));
+				}
 			}
-			type.AppDomain.Process.Exited += delegate { loadedTypes.Remove(corType); };
+			
+			// We need class props for getting name
+			if (this.IsClass || this.IsValueType) {
+				this.module = process.Modules[corType.Class.Module];
+				this.classProps = module.MetaData.GetTypeDefProps(corType.Class.Token);
+			}
+			
+			this.fullName = GetName(true);
+			this.name = GetName(false);
+			
+			if (this.IsClass || this.IsValueType) {
+				LoadMemberInfo();
+			}
+			
+			this.Process.Exited += delegate { loadedTypes.Remove(corType); };
 			
 			TimeSpan totalTime2 = Util.HighPrecisionTimer.Now - startTime;
 			if (appDomain.Process.Options.Verbose) {
-				string prefix = type.IsInterface ? "interface" : "type";
-				appDomain.Process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, type.FullName, totalTime2.TotalMilliseconds);
-				foreach(DebugType inter in type.Interfaces) {
+				string prefix = this.IsInterface ? "interface" : "type";
+				appDomain.Process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, this.FullName, totalTime2.TotalMilliseconds);
+				foreach(DebugType inter in this.Interfaces) {
 					appDomain.Process.TraceMessage(" - Implements {0}", inter.FullName);
 				}
 			}
-			
-			return type;
-		}
-		
-		/// <summary> Returns all non-generic types defined in the given module </summary>
-		/// <remarks> Generic types can not be returned, because we do not how to instanciate them </remarks>
-		public static List<DebugType> GetDefinedTypesInModule(Module module)
-		{
-			List<DebugType> types = new List<DebugType>();
-			foreach(TypeDefProps typeDef in module.MetaData.EnumTypeDefProps()) {
-				if (module.MetaData.GetGenericParamCount(typeDef.Token) == 0) {
-					types.Add(DebugType.Create(module, typeDef.Token, null));
-				}
-			}
-			return types;
 		}
 		
 		string GetName(bool includeNamespace)
@@ -563,10 +555,16 @@ namespace Debugger.MetaData
 					className = className.Substring(0, index);
 				}
 				if (argNames.Count > 0) {
-					return className + "<" + String.Join(",", argNames.ToArray()) + ">";
-				} else {
-					return className;
+					className += "<" + String.Join(",", argNames.ToArray()) + ">";
 				}
+				/*
+				if (classProps.IsNested) {
+					uint enclosingTk = module.MetaData.GetNestedClassProps(this.Token).EnclosingClass;
+					DebugType enclosingType = DebugType.CreateFromTypeDefOrRef(this.Module, null, enclosingTk, this.GenericArguments.ToArray());
+					className = enclosingType.FullName + "." + className;
+				}
+				*/
+				return className;
 			} else if (IsPrimitive) {
 				return Trim(this.PrimitiveType.ToString(), includeNamespace);
 			} else if (IsPointer) {
@@ -595,7 +593,14 @@ namespace Debugger.MetaData
 		{
 			// Load interfaces
 			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps(this.Token)) {
-				this.interfaces.Add(DebugType.Create(module, implProps.Interface, this));
+				CorTokenType tkType = (CorTokenType)(implProps.Interface & 0xFF000000);
+				if (tkType == CorTokenType.TypeDef || tkType == CorTokenType.TypeRef) {
+					this.interfaces.Add(DebugType.CreateFromTypeDefOrRef(module, false, implProps.Interface, null));
+				} else if (tkType == CorTokenType.TypeSpec) {
+					this.interfaces.Add(DebugType.CreateFromTypeSpec(module, implProps.Interface, this));
+				} else {
+					throw new DebuggerException("Uknown token type for interface: " + tkType);
+				}
 			}
 			
 			// Load fields

@@ -45,7 +45,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		{
 			if (DebuggerHelpers.hashCodeMethod == null)
 			{
-				DebugType typeRuntimeHelpers = DebugType.Create(value.AppDomain, "System.Runtime.CompilerServices.RuntimeHelpers");
+				DebugType typeRuntimeHelpers = DebugType.CreateFromType(value.AppDomain, typeof(System.Runtime.CompilerServices.RuntimeHelpers));
 				DebuggerHelpers.hashCodeMethod = typeRuntimeHelpers.GetMember("GetHashCode", BindingFlags.Public | BindingFlags.Static | BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
 				if (DebuggerHelpers.hashCodeMethod == null)
 				{
