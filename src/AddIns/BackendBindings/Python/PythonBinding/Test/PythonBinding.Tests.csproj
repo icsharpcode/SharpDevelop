@@ -196,6 +196,7 @@
     <Compile Include="Designer\GenerateFormResourcesTestFixture.cs" />
     <Compile Include="Designer\GenerateImageListResourcesTestFixture.cs" />
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateInheritedFormTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewItemTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewSubItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewWithImageListTestFixture.cs" />

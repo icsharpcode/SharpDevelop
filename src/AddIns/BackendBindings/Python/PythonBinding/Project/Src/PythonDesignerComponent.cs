@@ -247,7 +247,10 @@ namespace ICSharpCode.PythonBinding
 				designerContainerComponents = new List<PythonDesignerComponent>();
 				ComponentCollection components = Component.Site.Container.Components;
 				for (int i = 1; i < components.Count; ++i) {
-					designerContainerComponents.Add(PythonDesignerComponentFactory.CreateDesignerComponent(this, components[i]));
+					PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(this, components[i]);
+					if (!designerComponent.IsInheritedReadOnly) {
+						designerContainerComponents.Add(designerComponent);
+					}
 				}
 			}
 			return designerContainerComponents.ToArray();
@@ -278,6 +281,28 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public bool IsSited {
 			get { return IsSitedComponent(component); }
+		}
+		
+		/// <summary>
+		/// Returns true if the component has an InheritanceAttribute set to InheritanceLevel.InheritedReadOnly
+		/// </summary>
+		public static bool IsInheritedReadOnlyComponent(object component)
+		{
+			if (component != null) {
+				AttributeCollection attributes = TypeDescriptor.GetAttributes(component);
+				InheritanceAttribute attribute = (InheritanceAttribute)attributes[typeof(InheritanceAttribute)];
+				if (attribute != null) {
+					return attribute.InheritanceLevel == InheritanceLevel.InheritedReadOnly;
+				}
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Returns true if the component has an InheritanceAttribute set to InheritanceLevel.InheritedReadOnly
+		/// </summary>
+		public bool IsInheritedReadOnly {
+			get { return IsInheritedReadOnlyComponent(component); }
 		}
 				
 		/// <summary>
@@ -470,7 +495,7 @@ namespace ICSharpCode.PythonBinding
 					}
 					foreach (object item in collectionProperty) {
 						IComponent collectionComponent = item as IComponent;
-						if (PythonDesignerComponent.IsSitedComponent(collectionComponent)) {
+						if (PythonDesignerComponent.IsSitedComponent(collectionComponent) && !PythonDesignerComponent.IsInheritedReadOnlyComponent(collectionComponent)) {
 							codeBuilder.AppendIndentedLine(propertyOwnerName + "." + propertyDescriptor.Name + "." + addMethod.Name + "(self._" + collectionComponent.Site.Name + ")");
 						}
 					}
@@ -726,7 +751,7 @@ namespace ICSharpCode.PythonBinding
 		void AppendCreateChildComponents(PythonCodeBuilder codeBuilder, PythonDesignerComponent[] childComponents)
 		{
 			foreach (PythonDesignerComponent designerComponent in childComponents) {
-				if (designerComponent.IsSited) {
+				if (designerComponent.IsSited) {					
 					designerComponent.AppendCreateInstance(codeBuilder);
 				}
 			}
