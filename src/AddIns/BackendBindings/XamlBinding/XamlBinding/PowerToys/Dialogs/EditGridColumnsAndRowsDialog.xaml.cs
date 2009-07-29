@@ -46,30 +46,6 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		bool gridLengthInvalid;
 		
-		class UndoStep
-		{
-			public XElement Tree { get; set; }
-			public XElement RowDefinitions { get; set; }
-			public XElement ColumnDefinitions { get; set; }
-			public IList<XElement> AdditionalProperties { get; set; }
-			
-			public static UndoStep CreateStep(XElement tree, XElement rows, XElement cols, IEnumerable<XElement> properties)
-			{
-				XElement rowCopy = new XElement(rows);
-				XElement colCopy = new XElement(cols);
-				XElement treeCopy = new XElement(tree);
-				
-				IList<XElement> propertiesCopy = properties.Select(item => new XElement(item)).ToList();
-				
-				return new UndoStep() {
-					Tree = treeCopy,
-					RowDefinitions = rowCopy,
-					ColumnDefinitions = colCopy,
-					AdditionalProperties = propertiesCopy
-				};
-			}
-		}
-		
 		Stack<UndoStep> undoStack;
 		Stack<UndoStep> redoStack;
 		
@@ -122,25 +98,24 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			int maxCols = this.colDefitions.Elements().Count();
 			int maxRows = this.rowDefitions.Elements().Count();
 			
-			this.gridTree.Elements()
-				.ForEach(
-					el => {
-						Core.LoggingService.Debug(el);
-						XAttribute a = el.Attribute(gridColName);
-						XAttribute b = el.Attribute(gridRowName);
-						int value;
-						if (a != null && int.TryParse(a.Value, out value))
-							el.SetAttributeValue(gridColName, Math.Min(Math.Max(0, value), maxCols - 1));
-						else
-							el.SetAttributeValue(gridColName, 0);
-						if (b != null && int.TryParse(b.Value, out value))
-							el.SetAttributeValue(gridRowName, Math.Min(Math.Max(0, value), maxRows - 1));
-						else
-							el.SetAttributeValue(gridRowName, 0);
-					}
-				);
+			this.gridTree.Elements().ForEach(el => NormalizeElementGridIndices(el, maxCols, maxRows));
 			
 			RebuildGrid();
+		}
+		
+		static void NormalizeElementGridIndices(XElement element, int maxCols, int maxRows)
+		{
+			XAttribute a = element.Attribute(gridColName);
+			XAttribute b = element.Attribute(gridRowName);
+			int value;
+			if (a != null && int.TryParse(a.Value, out value))
+				element.SetAttributeValue(gridColName, Math.Min(Math.Max(0, value), maxCols - 1));
+			else
+				element.SetAttributeValue(gridColName, 0);
+			if (b != null && int.TryParse(b.Value, out value))
+				element.SetAttributeValue(gridRowName, Math.Min(Math.Max(0, value), maxRows - 1));
+			else
+				element.SetAttributeValue(gridRowName, 0);
 		}
 		
 		static MenuItem CreateItem(string header, Action<StackPanel> clickAction, StackPanel senderItem)
@@ -149,6 +124,16 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			item.Header = header;
 			item.Click += delegate { clickAction(senderItem); };
+			
+			return item;
+		}
+		
+		static MenuItem CreateItem(string header, Action<int, int> clickAction, int cellIndex)
+		{
+			MenuItem item = new MenuItem();
+			
+			item.Header = header;
+			item.Click += delegate { clickAction(cellIndex, 1); };
 			
 			return item;
 		}
@@ -181,12 +166,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					}
 				);
 			
-			controls.ForEach(
-				item => {
-					var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-					item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
-				}
-			);
+			controls.ForEach(item => MoveRowItem(item, 1));
 			
 			RebuildGrid();
 		}
@@ -219,136 +199,93 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					}
 				);
 			
-			controls.ForEach(
-				item => {
-					var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-					item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
-				}
-			);
+			controls.ForEach(item => MoveRowItem(item, 1));
 			
 			RebuildGrid();
 		}
 		
-		void MoveUp(StackPanel block)
+		void MoveUp(int row, int steps)
 		{
-			int row = (int)block.GetValue(Grid.RowProperty);
-			if (row > 0) {
-				UpdateUndoRedoState();
-				
-				var items = rowDefitions.Elements().Skip(row);
-				var selItem = items.FirstOrDefault();
-				if (selItem == null)
-					return;
-				selItem.Remove();
-				items = rowDefitions.Elements().Skip(row - 1);
-				var before = items.FirstOrDefault();
-				if (before == null)
-					return;
-				before.AddBeforeSelf(selItem);
-				
-				var controls = gridTree
-					.Elements()
-					.Where(
-						element => {
-							var rowAttrib = element.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-							int rowAttribValue = 0;
-							if (int.TryParse(rowAttrib.Value, out rowAttribValue))
-								return rowAttribValue == row;
-							
-							return false;
-						}
-					).ToList();
-				
-				var controlsDown = gridTree
-					.Elements()
-					.Where(
-						element2 => {
-							var rowAttrib = element2.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-							int rowAttribValue = 0;
-							if (int.TryParse(rowAttrib.Value, out rowAttribValue))
-								return rowAttribValue == (row - 1);
-							
-							return false;
-						}
-					).ToList();
-				
-				controls.ForEach(
-					item => {
-						var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-						item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
+			if (steps < 1 || row - steps < 0)
+				return;
+			
+			UpdateUndoRedoState();
+			
+			var selItem = rowDefitions.Elements().Skip(row).FirstOrDefault();
+			if (selItem == null)
+				return;
+			selItem.Remove();
+			
+			var before = rowDefitions.Elements().Skip(row - steps).FirstOrDefault();
+			if (before == null)
+				return;
+			before.AddBeforeSelf(selItem);
+			
+			var controls = gridTree.Elements().Where(element => IsSameRow(element, row)).ToList();
+			
+			var controlsDown = gridTree.Elements()
+				.Where(
+					element2 => {
+						var rowAttrib = element2.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+						int rowAttribValue = 0;
+						if (int.TryParse(rowAttrib.Value, out rowAttribValue))
+							return rowAttribValue < row && rowAttribValue >= (row - steps);
+						
+						return false;
 					}
-				);
-				
-				controlsDown.ForEach(
-					item2 => {
-						var rowAttrib = item2.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-						item2.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
-					}
-				);
-				
-				RebuildGrid();
-			}
+				).ToList();
+			
+			controls.ForEach(item => MoveRowItem(item, -steps));
+			controlsDown.ForEach(item2 => MoveRowItem(item2, 1));
+			
+			RebuildGrid();
 		}
 		
-		void MoveDown(StackPanel block)
+		bool IsSameRow(XElement element, int row)
 		{
-			int row = (int)block.GetValue(Grid.RowProperty);
-			if (row < rowDefitions.Elements().Count() - 1) {
-				UpdateUndoRedoState();
+			var rowAttrib = element.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+			int rowAttribValue = 0;
+			if (int.TryParse(rowAttrib.Value, out rowAttribValue))
+				return rowAttribValue == row;
+			
+			return false;
+		}
+		
+		void MoveDown(int row, int steps)
+		{
+			if (steps < 1 || row + steps > rowDefitions.Elements().Count())
+				return;
+			
+			UpdateUndoRedoState();
 
-				var items = rowDefitions.Elements().Skip(row);
-				var selItem = items.FirstOrDefault();
-				if (selItem == null)
-					return;
-				selItem.Remove();
-				items = rowDefitions.Elements().Skip(row - 1);
-				var before = items.FirstOrDefault();
-				if (before == null)
-					return;
+			var selItem = rowDefitions.Elements().Skip(row).FirstOrDefault();
+			if (selItem == null)
+				return;
+			selItem.Remove();
+			var before = rowDefitions.Elements().Skip(row + steps).FirstOrDefault();
+			if (before == null)
+				rowDefitions.Add(selItem);
+			else
 				before.AddBeforeSelf(selItem);
-				
-				var controls = gridTree
-					.Elements()
-					.Where(
-						element => {
-							var rowAttrib = element.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-							int rowAttribValue = 0;
-							if (int.TryParse(rowAttrib.Value, out rowAttribValue))
-								return rowAttribValue == row;
-							
-							return false;
-						}
-					).ToList();
-				
-				var controlsUp = gridTree
-					.Elements()
-					.Where(
-						element2 => {
-							var rowAttrib = element2.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-							int rowAttribValue = 0;
-							if (int.TryParse(rowAttrib.Value, out rowAttribValue))
-								return rowAttribValue == (row + 1);
-							
-							return false;
-						}
-					).ToList();
-				
-				controls.ForEach(
-					item => {
-						var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-						item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + 1);
+			
+			var controls = gridTree.Elements().Where(element => IsSameRow(element, row)).ToList();
+			
+			var controlsUp = gridTree.Elements()
+				.Where(
+					element2 => {
+						var rowAttrib = element2.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+						int rowAttribValue = 0;
+						if (int.TryParse(rowAttrib.Value, out rowAttribValue))
+							return rowAttribValue > row && rowAttribValue <= (row + steps);
+						
+						return false;
 					}
-				);
-				
-				controlsUp.ForEach(
-					item2 => {
-						var rowAttrib = item2.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-						item2.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
-					}
-				);
-				
-				RebuildGrid();
-			}
+				).ToList();
+			
+			controls.ForEach(item => MoveRowItem(item, steps));
+			controlsUp.ForEach(item2 => MoveRowItem(item2, -1));
+			
+			RebuildGrid();
 		}
 		
 		void DeleteRow(StackPanel block)
@@ -361,8 +298,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			if (selItem != null)
 				selItem.Remove();
 			
-			var controls = gridTree
-				.Elements()
+			var controls = gridTree.Elements()
 				.Where(
 					element => {
 						var rowAttrib = element.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
@@ -374,12 +310,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					}
 				);
 			
-			controls.ForEach(
-				item => {
-					var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
-					item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) - 1);
-				}
-			);
+			controls.ForEach(item => MoveRowItem(item, -1));
 			
 			RebuildGrid();
 		}
@@ -398,8 +329,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			else
 				colDefitions.Add(newColumn);
 			
-			var controls = gridTree
-				.Elements()
+			var controls = gridTree.Elements()
 				.Where(
 					element => {
 						var colAttrib = element.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
@@ -411,12 +341,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					}
 				);
 			
-			controls.ForEach(
-				item => {
-					var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-					item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
-				}
-			);
+			controls.ForEach(item => MoveColumnItem(item, 1));
 			
 			RebuildGrid();
 		}
@@ -448,138 +373,107 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					}
 				);
 			
-			controls.ForEach(
-				item => {
-					var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-					item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
-				}
-			);
+			controls.ForEach(item => MoveColumnItem(item, 1));
 			
 			RebuildGrid();
 		}
 		
-		void MoveLeft(StackPanel block)
+		void MoveLeft(int column, int steps)
 		{
-			int column = (int)block.GetValue(Grid.ColumnProperty);
+			if (steps < 1 || column - steps < 0)
+				return;
 			
-			if (column > 0) {
-				UpdateUndoRedoState();
-				
-				var items = colDefitions.Elements().Skip(column);
-				var selItem = items.FirstOrDefault();
-				if (selItem == null)
-					return;
-				selItem.Remove();
-				items = colDefitions.Elements().Skip(column - 1);
-				var before = items.FirstOrDefault();
-				if (before == null)
-					return;
-				before.AddBeforeSelf(selItem);
-				
-				var controls = gridTree
-					.Elements()
-					.Where(
-						element => {
-							var colAttrib = element.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-							int colAttribValue = 0;
-							if (int.TryParse(colAttrib.Value, out colAttribValue))
-								return colAttribValue == column;
-							
-							return false;
-						}
-					).ToList();
-				
-				var controlsLeft = gridTree
-					.Elements()
-					.Where(
-						element2 => {
-							var colAttrib = element2.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-							int colAttribValue = 0;
-							if (int.TryParse(colAttrib.Value, out colAttribValue))
-								return colAttribValue == (column - 1);
-							
-							return false;
-						}
-					).ToList();
-				
-				controls.ForEach(
-					item => {
-						var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-						item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
+			UpdateUndoRedoState();
+			
+			var selItem = colDefitions.Elements().Skip(column).FirstOrDefault();
+			if (selItem == null)
+				return;
+			selItem.Remove();
+			var before = colDefitions.Elements().Skip(column - steps).FirstOrDefault();
+			if (before == null)
+				return;
+			before.AddBeforeSelf(selItem);
+			
+			var controls = gridTree.Elements().Where(element => IsSameColumn(element, column)).ToList();
+			
+			var controlsLeft = gridTree
+				.Elements()
+				.Where(
+					element2 => {
+						var colAttrib = element2.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+						int colAttribValue = 0;
+						if (int.TryParse(colAttrib.Value, out colAttribValue))
+							return colAttribValue < column && colAttribValue >= (column - steps);
+						
+						return false;
 					}
-				);
-				
-				controlsLeft.ForEach(
-					item2 => {
-						var colAttrib = item2.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-						item2.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
-					}
-				);
-				
-				RebuildGrid();
-			}
+				).ToList();
+			
+			controls.ForEach(item => MoveColumnItem(item, -steps));
+			controlsLeft.ForEach(item => MoveColumnItem(item, 1));
+
+			
+			RebuildGrid();
 		}
 		
-		void MoveRight(StackPanel block)
+		bool IsSameColumn(XElement element, int column)
 		{
-			int column = (int)block.GetValue(Grid.ColumnProperty);
+			var colAttrib = element.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+			int colAttribValue = 0;
+			if (int.TryParse(colAttrib.Value, out colAttribValue))
+				return colAttribValue == column;
 			
-			if (column < colDefitions.Elements().Count() - 1) {
-				UpdateUndoRedoState();
-				
-				var items = colDefitions.Elements().Skip(column);
-				var selItem = items.FirstOrDefault();
-				if (selItem == null)
-					return;
-				selItem.Remove();
-				items = colDefitions.Elements().Skip(column - 1);
-				var before = items.FirstOrDefault();
-				if (before == null)
-					return;
+			return false;
+		}
+		
+		void MoveColumnItem(XElement item, int steps)
+		{
+			var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+			item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + steps);
+		}
+		
+		void MoveRowItem(XElement item, int steps)
+		{
+			var rowAttrib = item.Attribute(gridRowName) ?? new XAttribute(gridRowName, 0);
+			item.SetAttributeValue(gridRowName, int.Parse(rowAttrib.Value, CultureInfo.InvariantCulture) + steps);
+		}
+		
+		void MoveRight(int column, int steps)
+		{
+			if (steps < 1 || column + steps > colDefitions.Elements().Count())
+				return;
+			
+			UpdateUndoRedoState();
+			
+			var selItem = colDefitions.Elements().Skip(column).FirstOrDefault();
+			if (selItem == null)
+				return;
+			selItem.Remove();
+			var before = colDefitions.Elements().Skip(column + steps).FirstOrDefault();
+			if (before == null)
+				colDefitions.Add(selItem);
+			else
 				before.AddBeforeSelf(selItem);
-				
-				var controls = gridTree
-					.Elements()
-					.Where(
-						element => {
-							var colAttrib = element.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-							int colAttribValue = 0;
-							if (int.TryParse(colAttrib.Value, out colAttribValue))
-								return colAttribValue == column;
-							
-							return false;
-						}
-					).ToList();
-				
-				var controlsRight = gridTree
-					.Elements()
-					.Where(
-						element2 => {
-							var colAttrib = element2.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-							int colAttribValue = 0;
-							if (int.TryParse(colAttrib.Value, out colAttribValue))
-								return colAttribValue == (column + 1);
-							
-							return false;
-						}
-					).ToList();
-				
-				controls.ForEach(
-					item => {
-						var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-						item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) + 1);
+			
+			var controls = gridTree.Elements().Where(element => IsSameColumn(element, column)).ToList();
+			
+			var controlsRight = gridTree
+				.Elements()
+				.Where(
+					element2 => {
+						var colAttrib = element2.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
+						int colAttribValue = 0;
+						if (int.TryParse(colAttrib.Value, out colAttribValue))
+							return colAttribValue > column && colAttribValue <= (column + steps);
+						
+						return false;
 					}
-				);
-				
-				controlsRight.ForEach(
-					item2 => {
-						var colAttrib = item2.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-						item2.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
-					}
-				);
-				
-				RebuildGrid();
-			}
+				).ToList();
+			
+			controls.ForEach(item => MoveColumnItem(item, steps));
+			controlsRight.ForEach(item2 => MoveColumnItem(item2, -1));
+			
+			RebuildGrid();
 		}
 		
 		void DeleteColumn(StackPanel block)
@@ -605,12 +499,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					}
 				);
 			
-			controls.ForEach(
-				item => {
-					var colAttrib = item.Attribute(gridColName) ?? new XAttribute(gridColName, 0);
-					item.SetAttributeValue(gridColName, int.Parse(colAttrib.Value, CultureInfo.InvariantCulture) - 1);
-				}
-			);
+			controls.ForEach(item => MoveColumnItem(item, -1));
+
 			
 			RebuildGrid();
 		}
@@ -632,10 +522,16 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void RebuildGrid()
 		{
-			this.marker = null;
+			if (this.marker != null) {
+				AdornerLayer.GetAdornerLayer(this.buttonPanel).Remove(this.marker);
+				AdornerLayer.GetAdornerLayer(this.dropPanel).Remove(this.marker);
+				this.marker = null;
+			}
+			
 			this.gridDisplay.Children.Clear();
 			this.gridDisplay.RowDefinitions.Clear();
 			this.gridDisplay.ColumnDefinitions.Clear();
+			
 			
 			this.columnWidthGrid.ColumnDefinitions.Clear();
 			this.columnWidthGrid.Children.Clear();
@@ -662,6 +558,11 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				
 				editor.SelectedValueChanged += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorSelectedValueChanged);
 				editor.Deleted += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorDeleted);
+				editor.MouseLeftButtonDown += new MouseButtonEventHandler(EditorMouseLeftButtonDown);
+				editor.Drop += new DragEventHandler(EditorDrop);
+				editor.DragOver += new DragEventHandler(EditorDragOver);
+				
+				editor.AllowDrop = true;
 				
 				this.columnWidthGrid.Children.Add(editor);
 				
@@ -683,7 +584,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 						Content = "+",
 						HorizontalAlignment = HorizontalAlignment.Right,
 						Margin = new Thickness(5, 10, 0, 10),
-						Padding = new Thickness(3),
+						Padding = new Thickness(3)
 					};
 					
 					rightAddButton.Click += BtnAddColumnClick;
@@ -701,6 +602,11 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				
 				editor.SelectedValueChanged += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorSelectedValueChanged);
 				editor.Deleted += new EventHandler<GridLengthSelectionChangedEventArgs>(EditorDeleted);
+				editor.MouseLeftButtonDown += new MouseButtonEventHandler(EditorMouseLeftButtonDown);
+				editor.Drop += new DragEventHandler(EditorDrop);
+				editor.DragOver += new DragEventHandler(EditorDragOver);
+				
+				editor.AllowDrop = true;
 				
 				this.rowHeightGrid.Children.Add(editor);
 				
@@ -722,7 +628,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 						Content = "+",
 						VerticalAlignment = VerticalAlignment.Bottom,
 						Margin = new Thickness(10, 5, 10, 0),
-						Padding = new Thickness(3),
+						Padding = new Thickness(3)
 					};
 					
 					bottomAddButton.Click += BtnAddRowClick;
@@ -742,7 +648,6 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					
 					displayRect.Drop += new DragEventHandler(DisplayRectDrop);
 					displayRect.DragOver += new DragEventHandler(DisplayRectDragOver);
-					displayRect.MouseLeftButtonDown += new MouseButtonEventHandler(DisplayRectMouseLeftButtonDown);
 					
 					displayRect.Children.AddRange(BuildItemsForCell(i, j));
 					
@@ -758,11 +663,62 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			this.InvalidateVisual();
 		}
 
-		void DisplayRectMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		void EditorDragOver(object sender, DragEventArgs e)
+		{
+			try {
+				GridLengthEditor target = sender as GridLengthEditor;
+				GridLengthEditor source = e.Data.GetData(typeof(GridLengthEditor)) as GridLengthEditor;
+				e.Handled =  true;
+				
+				if (marker != null) {
+					AdornerLayer.GetAdornerLayer(marker.AdornedElement).Remove(marker);
+					marker = null;
+				}
+				
+				if (target != null && source != null && source.Orientation == target.Orientation
+				    && (target != source && (target.Cell < source.Cell || target.Cell > source.Cell + 1))) {
+					marker = DragDropMarkerAdorner.CreateAdornerCellMove(target);
+					e.Effects = DragDropEffects.Move;
+					return;
+				}
+				
+				e.Effects = DragDropEffects.None;
+			} catch (Exception ex) {
+				Core.LoggingService.Error(ex);
+			}
+		}
+
+		void EditorDrop(object sender, DragEventArgs e)
+		{
+			try {
+				GridLengthEditor source = e.Data.GetData(typeof(GridLengthEditor)) as GridLengthEditor;
+				GridLengthEditor target = sender as GridLengthEditor;
+				
+				if (source != null && target != null) {
+					if (source.Orientation == Orientation.Horizontal) {
+						if (source.Cell > target.Cell)
+							MoveLeft(source.Cell, Math.Abs(source.Cell - target.Cell));
+						else
+							MoveRight(source.Cell, Math.Abs(source.Cell - target.Cell) - 1);
+					}
+					
+					if (source.Orientation == Orientation.Vertical) {
+						if (source.Cell > target.Cell)
+							MoveUp(source.Cell, Math.Abs(source.Cell - target.Cell));
+						else
+							MoveDown(source.Cell, Math.Abs(source.Cell - target.Cell) - 1);
+					}
+				}
+			} catch (Exception ex) {
+				Core.LoggingService.Error(ex);
+			}
+		}
+
+		void EditorMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			DragDropEffects allowedEffects = DragDropEffects.Move;
-			StackPanel panel = sender as StackPanel;
-			DragDrop.DoDragDrop(panel, panel, allowedEffects);
+			GridLengthEditor editor = sender as GridLengthEditor;
+			DragDrop.DoDragDrop(editor, editor, allowedEffects);
 		}
 
 		void EditorDeleted(object sender, GridLengthSelectionChangedEventArgs e)
@@ -797,77 +753,13 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				|| rowDefitions.Elements().Any(row => (row.Attribute("Height") ?? new XAttribute("Height", "*")).Value == "Invalid");
 		}
 		
-		class DragDropMarkerAdorner : Adorner
-		{
-			DragDropMarkerAdorner(UIElement adornedElement)
-				: base(adornedElement)
-			{
-			}
-			
-			Point start, end;
-			
-			protected override void OnRender(DrawingContext drawingContext)
-			{
-				base.OnRender(drawingContext);
-				
-				drawingContext.DrawLine(new Pen(Brushes.Black, 1), start, end);
-			}
-			
-			protected override Size MeasureOverride(Size constraint)
-			{
-				return new Size(1, 1); // dummy values
-			}
-			
-			protected override Size ArrangeOverride(Size finalSize)
-			{
-				return new Size(1, 1); // dummy values
-			}
-			
-			public static DragDropMarkerAdorner CreateAdornerContentMove(StackPanel panel, FrameworkElement aboveElement)
-			{
-				DragDropMarkerAdorner adorner;
-				
-				if (aboveElement is StackPanel) {
-					aboveElement = (panel.Children.Count > 0 ? panel.Children[panel.Children.Count - 1] : panel) as FrameworkElement;
-					adorner = new DragDropMarkerAdorner(aboveElement);
-					adorner.start = new Point(5, 5 + aboveElement.DesiredSize.Height);
-					adorner.end = new Point(panel.ActualWidth - 10, 5 + aboveElement.DesiredSize.Height);
-				} else {
-					aboveElement = aboveElement.TemplatedParent as FrameworkElement;
-					adorner = new DragDropMarkerAdorner(aboveElement);
-					adorner.start = new Point(5, 0);
-					adorner.end = new Point(panel.ActualWidth - 10, 0);
-				}
-				
-				AdornerLayer.GetAdornerLayer(aboveElement).Add(adorner);
-				
-				return adorner;
-			}
-			
-			public static DragDropMarkerAdorner CreateAdornerCellMove(StackPanel panel, int count, Orientation orientation)
-			{
-				DragDropMarkerAdorner adorner = new DragDropMarkerAdorner(panel);
-				
-				if (orientation == Orientation.Horizontal) {
-					adorner.start = new Point(5,5);
-					adorner.end = new Point(5, panel.ActualHeight * count);
-				} else {
-					adorner.start = new Point(5,5);
-					adorner.end = new Point(panel.ActualWidth * count, 5);
-				}
-				
-				AdornerLayer.GetAdornerLayer(panel).Add(adorner);
-				
-				return adorner;
-			}
-		}
-		
 		DragDropMarkerAdorner marker = null;
 
 		void DisplayRectDragOver(object sender, DragEventArgs e)
 		{
 			try {
 				StackPanel target = sender as StackPanel;
+				e.Handled =  true;
 				
 				if (marker != null) {
 					AdornerLayer.GetAdornerLayer(marker.AdornedElement).Remove(marker);
@@ -875,33 +767,15 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 				}
 				
 				if (target != null) {
-					Point p = e.GetPosition(target);
-					FrameworkElement element = target.InputHitTest(p) as FrameworkElement;
-					if (e.Data.GetData(typeof(XElement)) != null) {
-						if (element is StackPanel || element.TemplatedParent is Label) {
-							marker = DragDropMarkerAdorner.CreateAdornerContentMove(target, element);
-
-							e.Effects = DragDropEffects.Move;
-							e.Handled = true;
-						} else {
-							e.Effects = DragDropEffects.None;
-							e.Handled =  true;
-						}
-					} else if (e.Data.GetData(typeof(StackPanel)) != null) {
-						if (element is StackPanel && e.Data.GetData(typeof(StackPanel)) != element) {
-							marker = DragDropMarkerAdorner.CreateAdornerCellMove(target, rowDefitions.Elements().Count(), Orientation.Horizontal);
-
-							e.Effects = DragDropEffects.Move;
-							e.Handled = true;
-						} else {
-							e.Effects = DragDropEffects.None;
-							e.Handled =  true;
-						}
-					} else {
-						e.Effects = DragDropEffects.None;
-						e.Handled =  true;
+					FrameworkElement element = target.InputHitTest(e.GetPosition(target)) as FrameworkElement;
+					if (e.Data.GetData(typeof(XElement)) != null && (element is StackPanel || element.TemplatedParent is Label)) {
+						marker = DragDropMarkerAdorner.CreateAdornerContentMove(target, element);
+						e.Effects = DragDropEffects.Move;
+						return;
 					}
 				}
+				
+				e.Effects = DragDropEffects.None;
 			} catch (Exception ex) {
 				Core.LoggingService.Error(ex);
 			}
@@ -941,25 +815,6 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 							else
 								element.AddAfterSelf(data);
 						}
-					}
-					
-					RebuildGrid();
-				} else if (e.Data.GetData(typeof(StackPanel)) != null) {
-					StackPanel source = e.Data.GetData(typeof(StackPanel)) as StackPanel;
-					int sourceX = (int)source.GetValue(Grid.ColumnProperty);
-					//int sourceY = (int)source.GetValue(Grid.RowProperty);
-					
-					StackPanel target = sender as StackPanel;
-					int targetX = (int)target.GetValue(Grid.ColumnProperty);
-					//int targetY = (int)target.GetValue(Grid.RowProperty);
-					
-					// TODO : finish this
-					
-					if (sourceX > targetX) {
-						//XElement colDef =
-						// move to the right
-					} else {
-						// move to the left
 					}
 					
 					RebuildGrid();
@@ -1051,8 +906,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 							CreateItem("Insert above", InsertAbove, block),
 							CreateItem("Insert below", InsertBelow, block),
 							new Separator(),
-							CreateItem("Move up", MoveUp, block),
-							CreateItem("Move down", MoveDown, block),
+							CreateItem("Move up", MoveUp, (int)block.GetValue(Grid.RowProperty)),
+							CreateItem("Move down", MoveDown, (int)block.GetValue(Grid.RowProperty)),
 							new Separator(),
 							CreateItem("Delete", DeleteRow, block)
 						}
@@ -1063,8 +918,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 							CreateItem("Insert before", InsertBefore, block),
 							CreateItem("Insert after", InsertAfter, block),
 							new Separator(),
-							CreateItem("Move left", MoveLeft, block),
-							CreateItem("Move right", MoveRight, block),
+							CreateItem("Move left", MoveLeft,  (int)block.GetValue(Grid.ColumnProperty)),
+							CreateItem("Move right", MoveRight, (int)block.GetValue(Grid.ColumnProperty)),
 							new Separator(),
 							CreateItem("Delete", DeleteColumn, block)
 						}
@@ -1134,6 +989,78 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			} else {
 				InsertBefore(gridDisplay.Children.OfType<StackPanel>()
 				             .First(item => (int)item.GetValue(Grid.ColumnProperty) == (int)b.Tag));
+			}
+		}
+		
+		void ButtonPanelDrop(object sender, DragEventArgs e)
+		{
+			try {
+				GridLengthEditor source = e.Data.GetData(typeof(GridLengthEditor)) as GridLengthEditor;
+				
+				if (source != null)
+					MoveDown(source.Cell, Math.Abs(source.Cell - rowDefitions.Elements().Count()) - 1);
+			} catch (Exception ex) {
+				Core.LoggingService.Error(ex);
+			}
+		}
+		
+		void DropPanelDrop(object sender, DragEventArgs e)
+		{
+			try {
+				GridLengthEditor source = e.Data.GetData(typeof(GridLengthEditor)) as GridLengthEditor;
+				
+				if (source != null)
+					MoveRight(source.Cell, Math.Abs(source.Cell - colDefitions.Elements().Count()) - 1);
+			} catch (Exception ex) {
+				Core.LoggingService.Error(ex);
+			}
+		}
+		
+		void DropPanelDragOver(object sender, DragEventArgs e)
+		{
+			try {
+				StackPanel target = sender as StackPanel;
+				GridLengthEditor source = e.Data.GetData(typeof(GridLengthEditor)) as GridLengthEditor;
+				e.Handled = true;
+				
+				if (marker != null) {
+					AdornerLayer.GetAdornerLayer(marker.AdornedElement).Remove(marker);
+					marker = null;
+				}
+				
+				if (target != null && source != null && source.Orientation == Orientation.Horizontal && source.Cell + 1 < colDefitions.Elements().Count()) {
+					marker = DragDropMarkerAdorner.CreateAdornerCellMove(target);
+					e.Effects = DragDropEffects.Move;
+					return;
+				}
+				
+				e.Effects = DragDropEffects.None;
+			} catch (Exception ex) {
+				Core.LoggingService.Error(ex);
+			}
+		}
+		
+		void ButtonPanelDragOver(object sender, DragEventArgs e)
+		{
+			try {
+				StackPanel target = sender as StackPanel;
+				GridLengthEditor source = e.Data.GetData(typeof(GridLengthEditor)) as GridLengthEditor;
+				e.Handled = true;
+				
+				if (marker != null) {
+					AdornerLayer.GetAdornerLayer(marker.AdornedElement).Remove(marker);
+					marker = null;
+				}
+				
+				if (target != null && source != null && source.Orientation == Orientation.Vertical && source.Cell + 1 < rowDefitions.Elements().Count()) {
+					marker = DragDropMarkerAdorner.CreateAdornerCellMove(target);
+					e.Effects = DragDropEffects.Move;
+					return;
+				}
+				
+				e.Effects = DragDropEffects.None;
+			} catch (Exception ex) {
+				Core.LoggingService.Error(ex);
 			}
 		}
 	}

@@ -22,8 +22,9 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 	/// </summary>
 	public partial class GridLengthEditor : UserControl
 	{
-		GridUnitType type = GridUnitType.Star;
-		int cell;
+		public GridUnitType Type { get; private set; }
+		public int Cell { get; private set; }
+		public Orientation Orientation { get; private set; }
 		
 		public GridLengthEditor(Orientation type, int cell, string value)
 		{
@@ -36,33 +37,33 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			SetValue(value.Trim());
 			
-			this.cell = cell;
+			this.Cell = cell;
 			
-			this.panel.Orientation = type;
+			this.panel.Orientation = this.Orientation = type;
 		}
 		
 		void SetValue(string value)
 		{
 			if (value.Equals("Auto", StringComparison.OrdinalIgnoreCase)) {
-				type = GridUnitType.Auto;
+				Type = GridUnitType.Auto;
 				txtNumericValue.Text = "";
 			} else {
 				if (value.EndsWith("px", StringComparison.OrdinalIgnoreCase)) {
-					type = GridUnitType.Pixel;
+					Type = GridUnitType.Pixel;
 					txtNumericValue.Text = value.Remove(value.Length - 2);
 				} else if (value.EndsWith("*", StringComparison.OrdinalIgnoreCase)) {
-					type = GridUnitType.Star;
+					Type = GridUnitType.Star;
 					txtNumericValue.Text = value.Remove(value.Length - 1);
 				} else if (string.IsNullOrEmpty(value)) {
-					type = GridUnitType.Star;
+					Type = GridUnitType.Star;
 					txtNumericValue.Text = "";
 				} else	{
-					type = GridUnitType.Pixel;
+					Type = GridUnitType.Pixel;
 					txtNumericValue.Text = value;
 				}
 			}
 			
-			switch (type) {
+			switch (Type) {
 				case GridUnitType.Star:
 					btnType.Content = "  *  ";
 					txtNumericValue.Visibility = Visibility.Visible;
@@ -80,19 +81,21 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void BtnTypeClick(object sender, RoutedEventArgs e)
 		{
-			switch (type) {
+			switch (Type) {
 				case GridUnitType.Auto:
-					type = GridUnitType.Star;
+					if (txtNumericValue.Text == "Invalid")
+						txtNumericValue.Text = "";
+					Type = GridUnitType.Star;
 					btnType.Content = "  *  ";
 					txtNumericValue.Visibility = Visibility.Visible;
 					break;
 				case GridUnitType.Star:
-					type = GridUnitType.Pixel;
+					Type = GridUnitType.Pixel;
 					btnType.Content = "Pixel";
 					txtNumericValue.Visibility = Visibility.Visible;
 					break;
 				case GridUnitType.Pixel:
-					type = GridUnitType.Auto;
+					Type = GridUnitType.Auto;
 					btnType.Content = "Auto";
 					txtNumericValue.Visibility = Visibility.Collapsed;
 					break;
@@ -102,13 +105,13 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		public GridLength? SelectedValue {
 			get {
-				if (type == GridUnitType.Star || type == GridUnitType.Pixel) {
+				if (Type == GridUnitType.Star || Type == GridUnitType.Pixel) {
 					double value;
-					if (type == GridUnitType.Star && string.IsNullOrEmpty(txtNumericValue.Text)) {
-						return new GridLength(1, type);
+					if (Type == GridUnitType.Star && string.IsNullOrEmpty(txtNumericValue.Text)) {
+						return new GridLength(1, Type);
 					} else {
 						if (double.TryParse(txtNumericValue.Text, out value))
-							return new GridLength(value, type);
+							return new GridLength(value, Type);
 					}
 					
 					return null;
@@ -138,7 +141,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void TxtNumericValueTextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (type == GridUnitType.Star && string.IsNullOrEmpty(txtNumericValue.Text)) {
+			if (Type == GridUnitType.Star && string.IsNullOrEmpty(txtNumericValue.Text)) {
 				txtNumericValue.ClearValue(TextBox.BackgroundProperty);
 				txtNumericValue.ClearValue(TextBox.ForegroundProperty);
 			} else {
@@ -151,12 +154,12 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 					txtNumericValue.ClearValue(TextBox.ForegroundProperty);
 				}
 			}
-			OnSelectedValueChanged(new GridLengthSelectionChangedEventArgs(this.panel.Orientation, cell, SelectedValue));
+			OnSelectedValueChanged(new GridLengthSelectionChangedEventArgs(this.panel.Orientation, Cell, SelectedValue));
 		}
 		
 		void BtnDelClick(object sender, RoutedEventArgs e)
 		{
-			OnDeleted(new GridLengthSelectionChangedEventArgs(this.panel.Orientation, cell, SelectedValue));
+			OnDeleted(new GridLengthSelectionChangedEventArgs(this.panel.Orientation, Cell, SelectedValue));
 		}
 	}
 	

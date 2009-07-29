@@ -89,6 +89,7 @@
     <Compile Include="PowerToys\Commands\PropertyEntry.cs" />
     <Compile Include="PowerToys\Commands\RemoveMarginCommand.cs" />
     <Compile Include="PowerToys\Commands\RemoveUnnecessaryAttributesCommand.cs" />
+    <Compile Include="PowerToys\Dialogs\DragDropMarkerAdorner.cs" />
     <Compile Include="PowerToys\Dialogs\EditGridColumnsAndRowsDialog.xaml.cs">
       <DependentUpon>EditGridColumnsAndRowsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -109,6 +110,7 @@
       <DependentUpon>SourceClassFormEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PowerToys\Dialogs\UndoStep.cs" />
     <Compile Include="PowerToys\XamlMenuCommand.cs" />
     <Compile Include="QualifiedNameWithLocation.cs" />
     <Compile Include="Utils.cs">

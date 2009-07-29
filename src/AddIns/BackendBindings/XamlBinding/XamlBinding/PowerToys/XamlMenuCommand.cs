@@ -40,11 +40,7 @@ namespace ICSharpCode.XamlBinding.PowerToys
 					document.Declaration = null;
 					if (Refactor(provider.TextEditor, document)) {
 						using (provider.TextEditor.Document.OpenUndoGroup()) {
-							StringWriter sWriter = new StringWriter(CultureInfo.InvariantCulture);
-							XmlWriter writer = XmlWriter.Create(sWriter, CreateSettings());
-							document.WriteTo(writer);
-							writer.Flush();
-							provider.TextEditor.Document.Text = sWriter.ToString();
+							provider.TextEditor.Document.Text = document.ToString();
 						}
 					}
 				}

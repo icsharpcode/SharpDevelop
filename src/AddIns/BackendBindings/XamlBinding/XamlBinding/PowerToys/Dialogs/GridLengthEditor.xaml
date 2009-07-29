@@ -6,17 +6,17 @@
       Orientation="Horizontal"
       HorizontalAlignment="Center"
       VerticalAlignment="Center">
+      <TextBox
+        x:Name="txtNumericValue"
+        MaxLength="10"
+        Width="30"
+        Margin="3"
+        TextChanged="TxtNumericValueTextChanged" />
       <Button
         x:Name="btnType"
         Margin="3"
         Content="  *  "
         Click="BtnTypeClick" />
-      <TextBox
-        x:Name="txtNumericValue"
-        MaxLength="10"
-        Width="20"
-        Margin="3"
-        TextChanged="TxtNumericValueTextChanged" />
       <Button
         x:Name="btnDel"
         Margin="3"

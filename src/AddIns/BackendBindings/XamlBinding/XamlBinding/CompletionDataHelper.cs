@@ -41,7 +41,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public static readonly ReadOnlyCollection<string> XamlNamespaceAttributes = new List<string> {
 			"Class", "ClassModifier", "FieldModifier", "Name", "Subclass", "TypeArguments", "Uid", "Key"
-		}.AsReadOnly(); // TODO : .AsReadOnly() cannot be resolved, report to Daniel
+		}.AsReadOnly();
 		
 		public static readonly ReadOnlyCollection<string> RootOnlyElements = new List<string> {
 			"Class", "ClassModifier", "Subclass"

@@ -41,10 +41,13 @@
 		</ControlTemplate>
 	</Window.Resources>
 	<DockPanel>
-		<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
-			<Button x:Name="btnOK" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" Style="{StaticResource normal}" />
-			<Button x:Name="btnCancel" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" Style="{StaticResource normal}" />
+		<StackPanel Background="WhiteSmoke" AllowDrop="True" x:Name="buttonPanel" Drop="ButtonPanelDrop" DragOver="ButtonPanelDragOver" DockPanel.Dock="Bottom" HorizontalAlignment="Stretch">
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+				<Button x:Name="btnOK" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" Style="{StaticResource normal}" />
+				<Button x:Name="btnCancel" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" Style="{StaticResource normal}" />
+			</StackPanel>
 		</StackPanel>
+		<StackPanel Background="WhiteSmoke" AllowDrop="True" x:Name="dropPanel" Drop="DropPanelDrop" DragOver="DropPanelDragOver" DockPanel.Dock="Right" Width="25" />
 		<Grid>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
