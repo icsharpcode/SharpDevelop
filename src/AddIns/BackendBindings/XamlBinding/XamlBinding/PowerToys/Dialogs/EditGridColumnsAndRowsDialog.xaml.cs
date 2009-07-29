@@ -95,8 +95,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, delegate { UndoItemClick(null, null); }));
 			CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, delegate { RedoItemClick(null, null); }));
 			
-			int maxCols = this.colDefitions.Elements().Count();
-			int maxRows = this.rowDefitions.Elements().Count();
+			int maxCols = Math.Max(this.colDefitions.Elements().Count(), 1);
+			int maxRows = Math.Max(this.rowDefitions.Elements().Count(), 1);
 			
 			this.gridTree.Elements().ForEach(el => NormalizeElementGridIndices(el, maxCols, maxRows));
 			
@@ -735,14 +735,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			
 			string value = "Invalid";
 			
-			if (e.Value.HasValue) {
-				if (e.Value.Value.IsAuto)
-					value = "Auto";
-				if (e.Value.Value.IsStar)
-					value = (e.Value.Value.Value == 1) ? "*" : e.Value.Value.Value + "*";
-				if (e.Value.Value.IsAbsolute)
-					value = e.Value.Value.Value + "px";
-			}
+			if (e.Value != null)
+				value = e.Value;
 
 			if (e.Type == Orientation.Horizontal)
 				colDefitions.Elements().ElementAt(e.Cell).SetAttributeValue("Width", value);

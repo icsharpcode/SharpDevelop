@@ -1,5 +1,5 @@
 <UserControl
-  x:Class="ICSharpCode.XamlBinding.PowerToys.Dialogs.GridLengthEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  x:Class="ICSharpCode.XamlBinding.PowerToys.Dialogs.GridLengthEditor" xmlns:local="clr-namespace:ICSharpCode.XamlBinding.PowerToys.Dialogs" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Border CornerRadius="15" Margin="5" Background="WhiteSmoke">
     <StackPanel
       x:Name="panel"
@@ -12,11 +12,14 @@
         Width="30"
         Margin="3"
         TextChanged="TxtNumericValueTextChanged" />
-      <Button
-        x:Name="btnType"
-        Margin="3"
-        Content="  *  "
-        Click="BtnTypeClick" />
+    	<ComboBox x:Name="cmbType" SelectionChanged="CmbTypeSelectionChanged" Margin="3">
+			<ComboBoxItem Content="Auto" />
+			<ComboBoxItem Content="*" />
+			<ComboBoxItem Content="Pixel" />
+			<ComboBoxItem Content="Point" />
+			<ComboBoxItem Content="Centimeter" />
+			<ComboBoxItem Content="Inch" />
+    	</ComboBox>
       <Button
         x:Name="btnDel"
         Margin="3"

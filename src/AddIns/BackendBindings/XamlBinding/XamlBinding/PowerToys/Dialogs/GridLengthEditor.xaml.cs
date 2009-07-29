@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,12 +18,21 @@ using System.Windows.Media;
 
 namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 {
+	public enum UnitType : int {
+		Auto = 0,
+		Star = 1,
+		Pixel = 2,
+		Point = 3,
+		Centimeter = 4,
+		Inch = 5
+	}
+	
 	/// <summary>
 	/// Interaction logic for GridLengthEditor.xaml
 	/// </summary>
 	public partial class GridLengthEditor : UserControl
-	{
-		public GridUnitType Type { get; private set; }
+	{		
+		public UnitType Unit { get; private set; }
 		public int Cell { get; private set; }
 		public Orientation Orientation { get; private set; }
 		
@@ -44,80 +54,75 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void SetValue(string value)
 		{
-			if (value.Equals("Auto", StringComparison.OrdinalIgnoreCase)) {
-				Type = GridUnitType.Auto;
+			string stringValue = value.Trim();
+			double numValue;
+			bool success = double.TryParse(stringValue.ToUpperInvariant().Trim('P', 'X', 'T', 'C', 'M', 'I', 'N'), out numValue);
+			
+			if (stringValue.Equals("Auto", StringComparison.OrdinalIgnoreCase)) {
+				Unit = UnitType.Auto;
 				txtNumericValue.Text = "";
 			} else {
 				if (value.EndsWith("px", StringComparison.OrdinalIgnoreCase)) {
-					Type = GridUnitType.Pixel;
-					txtNumericValue.Text = value.Remove(value.Length - 2);
+					Unit = UnitType.Pixel;
+					txtNumericValue.Text = stringValue.Remove(value.Length - 2);
+				} else 	if (value.EndsWith("pt", StringComparison.OrdinalIgnoreCase)) {
+					Unit = UnitType.Point;
+					txtNumericValue.Text = stringValue.Remove(value.Length - 2);
+				} else	if (value.EndsWith("cm", StringComparison.OrdinalIgnoreCase)) {
+					Unit = UnitType.Centimeter;
+					txtNumericValue.Text = stringValue.Remove(value.Length - 2);
+				} else	if (value.EndsWith("in", StringComparison.OrdinalIgnoreCase)) {
+					Unit = UnitType.Inch;
+					txtNumericValue.Text = stringValue.Remove(value.Length - 2);
 				} else if (value.EndsWith("*", StringComparison.OrdinalIgnoreCase)) {
-					Type = GridUnitType.Star;
-					txtNumericValue.Text = value.Remove(value.Length - 1);
-				} else if (string.IsNullOrEmpty(value)) {
-					Type = GridUnitType.Star;
+					Unit = UnitType.Star;
+					txtNumericValue.Text = stringValue.Remove(value.Length - 1);
+				} else if (string.IsNullOrEmpty(stringValue)) {
+					Unit = UnitType.Star;
 					txtNumericValue.Text = "";
 				} else	{
-					Type = GridUnitType.Pixel;
-					txtNumericValue.Text = value;
+					Unit = UnitType.Pixel;
+					txtNumericValue.Text = stringValue;
 				}
 			}
 			
-			switch (Type) {
-				case GridUnitType.Star:
-					btnType.Content = "  *  ";
-					txtNumericValue.Visibility = Visibility.Visible;
-					break;
-				case GridUnitType.Pixel:
-					btnType.Content = "Pixel";
-					txtNumericValue.Visibility = Visibility.Visible;
-					break;
-				case GridUnitType.Auto:
-					btnType.Content = "Auto";
-					txtNumericValue.Visibility = Visibility.Collapsed;
-					break;
-			}
+			cmbType.SelectedIndex = (int)Unit;
 		}
 		
-		void BtnTypeClick(object sender, RoutedEventArgs e)
-		{
-			switch (Type) {
-				case GridUnitType.Auto:
-					if (txtNumericValue.Text == "Invalid")
-						txtNumericValue.Text = "";
-					Type = GridUnitType.Star;
-					btnType.Content = "  *  ";
-					txtNumericValue.Visibility = Visibility.Visible;
-					break;
-				case GridUnitType.Star:
-					Type = GridUnitType.Pixel;
-					btnType.Content = "Pixel";
-					txtNumericValue.Visibility = Visibility.Visible;
-					break;
-				case GridUnitType.Pixel:
-					Type = GridUnitType.Auto;
-					btnType.Content = "Auto";
-					txtNumericValue.Visibility = Visibility.Collapsed;
-					break;
-			}
-			TxtNumericValueTextChanged(null, null);
-		}
-		
-		public GridLength? SelectedValue {
+		public string SelectedValue {
 			get {
-				if (Type == GridUnitType.Star || Type == GridUnitType.Pixel) {
-					double value;
-					if (Type == GridUnitType.Star && string.IsNullOrEmpty(txtNumericValue.Text)) {
-						return new GridLength(1, Type);
-					} else {
-						if (double.TryParse(txtNumericValue.Text, out value))
-							return new GridLength(value, Type);
-					}
-					
-					return null;
+				string stringValue = txtNumericValue.Text.Trim().ToUpperInvariant();
+				double value;
+				bool success = double.TryParse(stringValue.Trim('P', 'X', 'T', 'C', 'M', 'I', 'N'),
+				                               NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+				string result = "";
+				
+				switch (Unit) {
+					case UnitType.Auto:
+						return "Auto";
+					case UnitType.Centimeter:
+						result = value.ToString(CultureInfo.InvariantCulture) + "cm";
+						break;
+					case UnitType.Inch:
+						result = value.ToString(CultureInfo.InvariantCulture) + "in";
+						break;
+					case UnitType.Pixel:
+						result = value.ToString(CultureInfo.InvariantCulture) + "px";
+						break;
+					case UnitType.Point:
+						result = value.ToString(CultureInfo.InvariantCulture) + "pt";
+						break;
+					case UnitType.Star:
+						if (string.IsNullOrEmpty(stringValue))
+							return "*";
+						result = value.ToString(CultureInfo.InvariantCulture) + "*";
+						break;
 				}
 				
-				return GridLength.Auto;
+				if (success)
+					return result;
+				else
+					return null;
 			}
 		}
 		
@@ -141,12 +146,13 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		
 		void TxtNumericValueTextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (Type == GridUnitType.Star && string.IsNullOrEmpty(txtNumericValue.Text)) {
+			if (Unit == UnitType.Star && string.IsNullOrEmpty(txtNumericValue.Text)) {
 				txtNumericValue.ClearValue(TextBox.BackgroundProperty);
 				txtNumericValue.ClearValue(TextBox.ForegroundProperty);
 			} else {
-				double x;
-				if (!double.TryParse(txtNumericValue.Text, out x)) {
+				double value;
+				if (!double.TryParse(txtNumericValue.Text.Trim('P', 'X', 'T', 'C', 'M', 'I', 'N'),
+				                               NumberStyles.Any, CultureInfo.InvariantCulture, out value)) {
 					txtNumericValue.Background = Brushes.Red;
 					txtNumericValue.Foreground = Brushes.White;
 				} else {
@@ -161,15 +167,27 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		{
 			OnDeleted(new GridLengthSelectionChangedEventArgs(this.panel.Orientation, Cell, SelectedValue));
 		}
+		
+		void CmbTypeSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			Unit = (UnitType)cmbType.SelectedIndex;
+			
+			if (Unit == UnitType.Auto)
+				txtNumericValue.Visibility = Visibility.Collapsed;
+			else
+				txtNumericValue.Visibility = Visibility.Visible;
+			
+			TxtNumericValueTextChanged(null, null);
+		}
 	}
-	
+
 	public class GridLengthSelectionChangedEventArgs : EventArgs
 	{
 		public Orientation Type { get; private set; }
 		public int Cell { get; private set; }
-		public GridLength? Value { get; private set; }
+		public string Value { get; private set; }
 		
-		public GridLengthSelectionChangedEventArgs(Orientation type, int cell, GridLength? value)
+		public GridLengthSelectionChangedEventArgs(Orientation type, int cell, string value)
 		{
 			this.Type = type;
 			this.Cell = cell;
