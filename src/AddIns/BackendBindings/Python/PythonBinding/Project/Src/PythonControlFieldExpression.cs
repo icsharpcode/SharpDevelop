@@ -255,6 +255,19 @@ namespace ICSharpCode.PythonBinding
 			}
 			return SetPropertyValue(component, memberName, propertyValue);
 		}
+		
+		/// <summary>
+		/// Converts the value to the property's type if required.
+		/// </summary>
+		public static object ConvertPropertyValue(PropertyDescriptor propertyDescriptor, object propertyValue)
+		{
+			if (propertyValue != null) {
+				if (!propertyDescriptor.PropertyType.IsAssignableFrom(propertyValue.GetType())) {
+					return propertyDescriptor.Converter.ConvertFrom(propertyValue);
+				}
+			}
+			return propertyValue;
+		}		
 						
 		/// <summary>
 		/// Gets the member object that matches the field member.
@@ -399,16 +412,5 @@ namespace ICSharpCode.PythonBinding
 			}
 			return false;
 		}
-
-		/// <summary>
-		/// Converts the value to the property's type if required.
-		/// </summary>
-		static object ConvertPropertyValue(PropertyDescriptor propertyDescriptor, object propertyValue)
-		{
-			if (!propertyDescriptor.PropertyType.IsAssignableFrom(propertyValue.GetType())) {
-				return propertyDescriptor.Converter.ConvertFrom(propertyValue);
-			}
-			return propertyValue;
-		}		
 	}
 }

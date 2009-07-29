@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
 using IronPython.Compiler.Ast;
@@ -257,6 +258,15 @@ namespace PythonBinding.Tests.Designer
 				PythonControlFieldExpression field = PythonControlFieldExpression.Create(statement.Left[0] as MemberExpression);
 								
 				Assert.IsNull(field.GetObjectForMemberName(button));
+			}
+		}
+		
+		[Test]
+		public void NullPropertyValueConversion()
+		{
+			using (Form form = new Form()) {
+				PropertyDescriptor descriptor = TypeDescriptor.GetProperties(form).Find("Text", true);
+				Assert.IsNull(PythonControlFieldExpression.ConvertPropertyValue(descriptor, null));
 			}
 		}
 		

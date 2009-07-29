@@ -35,6 +35,10 @@ namespace ICSharpCode.PythonBinding
 		/// </remarks>
 		public static string ToString(object propertyValue)
 		{
+			if (propertyValue == null) {
+				return "None";
+			}
+			
 			Type propertyType = propertyValue.GetType();
 			if (propertyType == typeof(String)) {
 				return GetQuotedString((string)propertyValue);
