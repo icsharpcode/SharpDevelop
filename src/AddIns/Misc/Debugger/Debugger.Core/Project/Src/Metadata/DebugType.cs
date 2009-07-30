@@ -462,11 +462,15 @@ namespace Debugger.MetaData
 			
 			if (valueType == null) {
 				uint superClassToken = metaData.GetTypeDefProps(corClass.Token).SuperClassToken;
-				if ((superClassToken & 0xFF000000) == 0x02000000) { // TypeDef
+				CorTokenType tkType = (CorTokenType)(superClassToken & 0xFF000000);
+				if (tkType == CorTokenType.TypeDef) {
 					valueType = metaData.GetTypeDefProps(superClassToken).Name == typeof(ValueType).FullName;
 				}
-				if ((superClassToken & 0xFF000000) == 0x01000000) { // TypeRef
+				if (tkType == CorTokenType.TypeRef) {
 					valueType = metaData.GetTypeRefProps(superClassToken).Name == typeof(ValueType).FullName;
+				}
+				if (tkType == CorTokenType.TypeSpec) {
+					valueType = false; // TODO: Resolve properly
 				}
 			}
 			

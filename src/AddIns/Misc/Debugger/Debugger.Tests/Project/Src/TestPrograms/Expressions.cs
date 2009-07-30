@@ -43,8 +43,19 @@ namespace Debugger.Tests.TestPrograms
 			int i = 0;
 			string[] array = {"one", "two", "three"};
 			string[,] array2 = {{"A","B"},{"C","D"}};
+			string BaseClass = "baseClassString";
 			
 			System.Diagnostics.Debugger.Break();
+		}
+		
+		public void Test(int arg)
+		{
+			
+		}
+		
+		public void Test(TestClass[] arg)
+		{
+			
 		}
 	}
 }
@@ -61,6 +72,7 @@ namespace Debugger.Tests {
 			ObjectDump("Arguments", process.SelectedStackFrame.GetArgumentValues());
 			ObjectDump("LocalVariables", process.SelectedStackFrame.GetLocalVariableValues());
 			ObjectDump("this", process.SelectedStackFrame.GetThisValue().GetMemberValues());
+			ObjectDump("methods", process.SelectedStackFrame.MethodInfo.DeclaringType.GetMethods());
 			
 			EndTest();
 		}
@@ -76,7 +88,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Expressions.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Expressions.cs:47,4-47,40</DebuggingPaused>
+    <DebuggingPaused>Break Expressions.cs:48,4-48,40</DebuggingPaused>
     <Arguments
       Capacity="4"
       Count="1">
@@ -94,7 +106,7 @@ namespace Debugger.Tests {
     </Arguments>
     <LocalVariables
       Capacity="4"
-      Count="3">
+      Count="4">
       <Item>
         <Value
           ArrayDimensions="{Exception: Value is not an array}"
@@ -126,6 +138,17 @@ namespace Debugger.Tests {
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[,]" />
+      </Item>
+      <Item>
+        <Value
+          ArrayDimensions="{Exception: Value is not an array}"
+          ArrayLength="{Exception: Value is not an array}"
+          ArrayRank="{Exception: Value is not an array}"
+          AsString="baseClassString"
+          Expression="BaseClass"
+          IsReference="True"
+          PrimitiveValue="baseClassString"
+          Type="System.String" />
       </Item>
     </LocalVariables>
     <this>
@@ -218,6 +241,70 @@ namespace Debugger.Tests {
           Type="System.String" />
       </Item>
     </this>
+    <methods
+      Capacity="8"
+      Count="6">
+      <Item>
+        <MethodInfo
+          DeclaringType="Debugger.Tests.TestPrograms.TestClass"
+          FullName="Debugger.Tests.TestPrograms.TestClass.get_Name"
+          IsPublic="True"
+          IsSpecialName="True"
+          Module="Expressions.exe"
+          Name="get_Name"
+          ReturnType="System.String"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="Debugger.Tests.TestPrograms.TestClass"
+          FullName="Debugger.Tests.TestPrograms.TestClass.Main"
+          IsPublic="True"
+          IsStatic="True"
+          Module="Expressions.exe"
+          Name="Main" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="Debugger.Tests.TestPrograms.TestClass"
+          FullName="Debugger.Tests.TestPrograms.TestClass.Test"
+          IsPublic="True"
+          LocalVariableNames="{array, array2, BaseClass, i}"
+          Module="Expressions.exe"
+          Name="Test"
+          ParameterCount="1"
+          ParameterTypes="{System.String}" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="Debugger.Tests.TestPrograms.TestClass"
+          FullName="Debugger.Tests.TestPrograms.TestClass.Test"
+          IsPublic="True"
+          Module="Expressions.exe"
+          Name="Test"
+          ParameterCount="1"
+          ParameterTypes="{System.Int32}" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="Debugger.Tests.TestPrograms.TestClass"
+          FullName="Debugger.Tests.TestPrograms.TestClass.Test"
+          IsPublic="True"
+          Module="Expressions.exe"
+          Name="Test"
+          ParameterCount="1"
+          ParameterTypes="{Debugger.Tests.TestPrograms.TestClass[]}" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="Debugger.Tests.TestPrograms.TestClass"
+          FullName="Debugger.Tests.TestPrograms.TestClass..ctor"
+          IsPublic="True"
+          IsSpecialName="True"
+          Module="Expressions.exe"
+          Name=".ctor" />
+      </Item>
+    </methods>
     <ProcessExited />
   </Test>
 </DebuggerTests>
