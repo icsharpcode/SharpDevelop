@@ -10,7 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Services;
-using Expression = ICSharpCode.NRefactory.Ast.Expression;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {

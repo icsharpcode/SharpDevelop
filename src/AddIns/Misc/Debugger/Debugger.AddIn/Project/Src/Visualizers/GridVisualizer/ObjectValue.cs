@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -37,7 +38,6 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				Value memberValue = value.GetMemberValue(memberInfo);
 				
 				ObjectProperty property = new ObjectProperty();
-				
 				property.Name = memberInfo.Name;
 				// property.Expression = ?.Age 
 				// - cannot use expression, 
@@ -45,31 +45,30 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				property.IsAtomic = memberValue.Type.IsPrimitive;
 				property.IsNull = memberValue.IsNull;
 				//property.Value = memberValue.AsString;
-				property.Value = memberValue.InvokeToString();
-				
+				property.Value = memberValue.IsNull ? "" : memberValue.InvokeToString();
 				result.properties.Add(property.Name, property);
 			}
 			return result;
 		}
 		
-		/*public static ObjectValue Create(Expression expr, DebugType type, BindingFlags bindingFlags)
+		public static ObjectValue Create(Expression expr, DebugType type, BindingFlags bindingFlags)
 		{
 			ObjectValue result = new ObjectValue();
-			foreach(Expression memberExpr in expr.AppendObjectMembers(type, bindingFlags))
+			foreach(MemberInfo memberInfo in type.GetMembers(bindingFlags))
 			{
+				Expression memberExpression = expr.AppendMemberReference(memberInfo);
+				Value memberValue = memberExpression.Evaluate(WindowsDebugger.CurrentProcess);
+					
 				ObjectProperty property = new ObjectProperty();
-				
-				Value propertyValue = memberExpr.Evaluate(WindowsDebugger.CurrentProcess);
-				property.Name = memberExpr.CodeTail;
-				property.Expression = memberExpr;
-				property.IsAtomic = propertyValue.Type.IsPrimitive;
-				property.IsNull = propertyValue.IsNull;
-				//property.Value = property.IsNull ? "" : propertyValue.AsString;
-				property.Value = propertyValue.AsString;
-				
+				property.Name = memberInfo.Name;
+				property.Expression = memberExpression;
+				property.IsAtomic = memberValue.Type.IsPrimitive;
+				property.IsNull = memberValue.IsNull;
+				property.Value = memberValue.IsNull ? "" : memberValue.InvokeToString();
+
 				result.properties.Add(property.Name, property);
 			}
 			return result;
-		}*/
+		}
 	}
 }

@@ -11,7 +11,7 @@ using System;
 namespace Debugger.AddIn.Visualizers.Utils
 {
 	/// <summary>
-	/// Anything that that has recursive children. Used by <see cref="TreeFlattener">.
+	/// Anything that has recursive children. Used by <see cref="TreeFlattener">.
 	/// </summary>
 	public interface ITreeNode<T>
 	{

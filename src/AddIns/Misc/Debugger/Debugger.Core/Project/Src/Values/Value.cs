@@ -33,7 +33,7 @@ namespace Debugger
 			get { return expression.PrettyPrint(); }
 		}
 		
-		/// <summary> Abstract syntax three of the expression which can be used to reobtain this value. </summary>
+		/// <summary> Abstract syntax tree of the expression which can be used to reobtain this value. </summary>
 		[Tests.Ignore]
 		public Expression ExpressionTree {
 			get { return expression; }

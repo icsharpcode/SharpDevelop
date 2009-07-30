@@ -50,6 +50,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		{
 			return ObjectValue.Create(
 				targetObject.AppendIndexer(index).Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference(), 
+				// don't use PermanentReference
+				//targetObject.AppendIndexer(index), 
 				this.listItemType, this.bindingFlags);
 		}
 		

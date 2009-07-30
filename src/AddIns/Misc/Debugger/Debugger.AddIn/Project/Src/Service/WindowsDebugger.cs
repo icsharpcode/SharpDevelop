@@ -396,7 +396,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}*/
 			//currentTooltipExpression = valueNode.Expression;
 			//return new DebuggerGridControl(currentTooltipRow);
-			return valueNode.Expression + " = " + valueNode.Text + ", type: " + valueNode.Type;
+			return variableName + " = " + valueNode.Text + ", type: " + valueNode.Type;
 		}
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)
