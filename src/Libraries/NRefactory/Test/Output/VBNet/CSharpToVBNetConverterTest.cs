@@ -419,9 +419,9 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void StaticClass()
 		{
 			TestProgram("public static class Test {}", @"Public NotInheritable Class Test" + Environment.NewLine +
-"  Private Sub New()" + Environment.NewLine +
-"  End Sub" + Environment.NewLine +
-"End Class" + Environment.NewLine);
+			            "  Private Sub New()" + Environment.NewLine +
+			            "  End Sub" + Environment.NewLine +
+			            "End Class" + Environment.NewLine);
 		}
 		
 		[Test]
@@ -500,17 +500,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram(@"public class Convert { void Run(string s) { char c; if ((c = s[0]) == '\n') { c = ' '; } } }",
 			            @"Public Class Convert" + Environment.NewLine +
-"  Private Sub Run(ByVal s As String)" + Environment.NewLine +
-"    Dim c As Char" + Environment.NewLine +
-"    If (InlineAssignHelper(c, s(0))) = ControlChars.Lf Then" + Environment.NewLine +
-"      c = \" \"C" + Environment.NewLine +
-"    End If" + Environment.NewLine +
-"  End Sub" + Environment.NewLine +
-"  Private Shared Function InlineAssignHelper(Of T)(ByRef target As T, ByVal value As T) As T" + Environment.NewLine +
-"    target = value" + Environment.NewLine +
-"    Return value" + Environment.NewLine +
-"  End Function" + Environment.NewLine +
-"End Class" + Environment.NewLine);
+			            "  Private Sub Run(ByVal s As String)" + Environment.NewLine +
+			            "    Dim c As Char" + Environment.NewLine +
+			            "    If (InlineAssignHelper(c, s(0))) = ControlChars.Lf Then" + Environment.NewLine +
+			            "      c = \" \"C" + Environment.NewLine +
+			            "    End If" + Environment.NewLine +
+			            "  End Sub" + Environment.NewLine +
+			            "  Private Shared Function InlineAssignHelper(Of T)(ByRef target As T, ByVal value As T) As T" + Environment.NewLine +
+			            "    target = value" + Environment.NewLine +
+			            "    Return value" + Environment.NewLine +
+			            "  End Function" + Environment.NewLine +
+			            "End Class" + Environment.NewLine);
 		}
 		
 		[Test]
@@ -537,6 +537,20 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement(@"string Test = ""\t\a"";",
 			              @"Dim Test As String = vbTab & ChrW(7)");
+		}
+		
+		[Test]
+		public void SizeOfInt32()
+		{
+			TestStatement(@"byte[] ret = new byte[IntPtr.Size * sizeof(int)];",
+			              @"Dim ret As Byte() = New Byte(IntPtr.Size * 4 - 1) {}");
+		}
+		
+		[Test]
+		public void SizeOfInt32Pointer()
+		{
+			TestStatement(@"int i = sizeof(int*);",
+			              @"Dim i As Integer = IntPtr.Size");
 		}
 	}
 }

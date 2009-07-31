@@ -814,7 +814,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
-				VisitReturnTypeAttributes(parameterDeclarationExpression.Attributes, data);
+			VisitReturnTypeAttributes(parameterDeclarationExpression.Attributes, data);
 			TrackedVisit(parameterDeclarationExpression.TypeReference, data);
 			return null;
 		}
@@ -983,7 +983,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
-				VisitReturnTypeAttributes(indexerDeclaration.Attributes, data);
+			VisitReturnTypeAttributes(indexerDeclaration.Attributes, data);
 			TrackedVisit(indexerDeclaration.TypeReference, data);
 			PrintInterfaceImplementations(indexerDeclaration.InterfaceImplementations);
 			
@@ -1410,6 +1410,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
 			UnsupportedNode(yieldStatement);
+			outputFormatter.PrintText("yield ");
+			TrackedVisit(yieldStatement.Statement, data);
 			return null;
 		}
 		
@@ -2420,7 +2422,38 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
 		{
+			if (!sizeOfExpression.TypeReference.IsArrayType) {
+				if (sizeOfExpression.TypeReference.PointerNestingLevel != 0) {
+					outputFormatter.PrintText("IntPtr.Size");
+					return null;
+				} else {
+					switch (sizeOfExpression.TypeReference.Type) {
+						case "System.Byte":
+						case "System.SByte":
+							outputFormatter.PrintText("1");
+							return null;
+						case "System.Char":
+						case "System.Int16":
+						case "System.UInt16":
+							outputFormatter.PrintText("2");
+							return null;
+						case "System.Single":
+						case "System.Int32":
+						case "System.UInt32":
+							outputFormatter.PrintText("4");
+							return null;
+						case "System.Double":
+						case "System.Int64":
+						case "System.UInt64":
+							outputFormatter.PrintText("8");
+							return null;
+					}
+				}
+			}
 			UnsupportedNode(sizeOfExpression);
+			outputFormatter.PrintText("sizeof(");
+			TrackedVisit(sizeOfExpression.TypeReference, data);
+			outputFormatter.PrintText(")");
 			return null;
 		}
 		
@@ -2481,6 +2514,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
 			UnsupportedNode(pointerReferenceExpression);
+			TrackedVisit(pointerReferenceExpression.TargetObject, data);
+			outputFormatter.PrintText(".");
+			outputFormatter.PrintIdentifier(pointerReferenceExpression.MemberName);
+			PrintTypeArguments(pointerReferenceExpression.TypeArguments);
 			return null;
 		}
 		
@@ -2565,6 +2602,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
 		{
 			UnsupportedNode(stackAllocExpression);
+			outputFormatter.PrintText("stackalloc");
 			return null;
 		}
 		
