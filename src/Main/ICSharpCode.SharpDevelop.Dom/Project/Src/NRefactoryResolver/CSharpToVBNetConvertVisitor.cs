@@ -331,6 +331,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return false;
 		}
 		
+		bool IsFloatingPoint(IReturnType rt)
+		{
+			if (rt != null && rt.IsDefaultReturnType) {
+				switch (rt.FullyQualifiedName) {
+					case "System.Single":
+					case "System.Double":
+					case "System.Decimal":
+						return true;
+				}
+			}
+			return false;
+		}
+		
 		bool NeedsExplicitConversionToString(IReturnType rt)
 		{
 			if (rt != null) {
@@ -441,21 +454,28 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (resolver.CompilationUnit == null)
 				return null;
 			
+			IReturnType targetType = ResolveType(castExpression.CastTo);
+			IClass targetClass = targetType != null ? targetType.GetUnderlyingClass() : null;
 			if (castExpression.CastType != CastType.TryCast) {
-				IReturnType targetType = ResolveType(castExpression.CastTo);
-				if (targetType != null) {
-					IClass targetClass = targetType.GetUnderlyingClass();
-					if (targetClass != null && (targetClass.ClassType == ClassType.Struct || targetClass.ClassType == ClassType.Enum)) {
-						// cast to value type is a conversion
-						castExpression.CastType = CastType.Conversion;
-					}
-					if (targetClass != null && targetClass.FullyQualifiedName == "System.Char") {
-						// C# cast to char is done using ChrW function
+				if (targetClass != null && (targetClass.ClassType == ClassType.Struct || targetClass.ClassType == ClassType.Enum)) {
+					// cast to value type is a conversion
+					castExpression.CastType = CastType.Conversion;
+					if (IsInteger(targetType)) {
 						ResolveResult sourceRR = resolver.ResolveInternal(castExpression.Expression, ExpressionContext.Default);
 						IReturnType sourceType = sourceRR != null ? sourceRR.ResolvedType : null;
-						if (IsInteger(sourceType)) {
-							ReplaceCurrentNode(new IdentifierExpression("ChrW").Call(castExpression.Expression));
+						if (IsFloatingPoint(sourceType)) {
+							// casts from float to int in C# truncate, but VB rounds
+							// we'll have to introduce a call to Math.Truncate
+							castExpression.Expression = ExpressionBuilder.Identifier("Math").Call("Truncate", castExpression.Expression);
 						}
+					}
+				}
+				if (targetClass != null && targetClass.FullyQualifiedName == "System.Char") {
+					// C# cast to char is done using ChrW function
+					ResolveResult sourceRR = resolver.ResolveInternal(castExpression.Expression, ExpressionContext.Default);
+					IReturnType sourceType = sourceRR != null ? sourceRR.ResolvedType : null;
+					if (IsInteger(sourceType)) {
+						ReplaceCurrentNode(new IdentifierExpression("ChrW").Call(castExpression.Expression));
 					}
 				}
 			}

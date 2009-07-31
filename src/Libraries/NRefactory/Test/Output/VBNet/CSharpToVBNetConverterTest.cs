@@ -547,10 +547,40 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
-		public void SizeOfInt32Pointer()
+		public void AutomaticProperty()
 		{
-			TestStatement(@"int i = sizeof(int*);",
-			              @"Dim i As Integer = IntPtr.Size");
+			TestMember(@"public string Name { get; set; }",
+			           @"Public Property Name() As String
+  Get
+    Return m_Name
+  End Get
+  Set
+    m_Name = Value
+  End Set
+End Property
+Private m_Name As String");
+		}
+		
+		[Test]
+		public void AutomaticPropertyPrivateSetter()
+		{
+			TestMember(@"public string Name { get; private set; }",
+			           @"Public Property Name() As String
+  Get
+    Return m_Name
+  End Get
+  Private Set
+    m_Name = Value
+  End Set
+End Property
+Private m_Name As String");
+		}
+		
+		[Test]
+		public void DefaultValueExpression()
+		{
+			TestStatement(@"object x = default(int);",
+			              @"Dim x As Object = 0");
 		}
 	}
 }

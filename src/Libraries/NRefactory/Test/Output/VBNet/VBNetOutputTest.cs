@@ -381,6 +381,12 @@ End Using");
 		}
 		
 		[Test]
+		public void FieldWithoutType()
+		{
+			TestTypeMember("Dim X");
+		}
+		
+		[Test]
 		public void UsingStatementForExistingVariable()
 		{
 			TestStatement("Using obj\nEnd Using");
@@ -432,6 +438,12 @@ End Using");
 		}
 		
 		[Test]
+		public void Double()
+		{
+			TestExpression("1.0");
+		}
+		
+		[Test]
 		public void HexadecimalInteger()
 		{
 			TestExpression("&H10");
@@ -441,6 +453,19 @@ End Using");
 		public void HexadecimalMinusOne()
 		{
 			TestExpression("&Hffffffff");
+		}
+		
+		[Test]
+		public void TypeCharacters()
+		{
+			TestExpression("347S");
+			TestExpression("347L");
+			TestExpression("347D");
+			TestExpression("347F");
+			TestExpression("347US");
+			TestExpression("347UI");
+			TestExpression("347UL");
+			TestExpression("\".\"C");
 		}
 	}
 }

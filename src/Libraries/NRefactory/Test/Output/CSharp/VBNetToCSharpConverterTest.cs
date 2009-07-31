@@ -697,5 +697,11 @@ static int static_Test2_j = 0;");
 			            "  public const int C = 0;" + Environment.NewLine +
 			            "}" + Environment.NewLine);
 		}
+		
+		[Test]
+		public void CastToInteger()
+		{
+			TestStatement("Dim x As Integer = CInt(obj)", "int x = Convert.ToInt32(obj);");
+		}
 	}
 }
