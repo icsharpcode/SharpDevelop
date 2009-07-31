@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.Core.Presentation
 { 
-	internal class WeakReferenceEqualirtyComparer : IEqualityComparer<WeakReference>
+	public class WeakReferenceEqualirtyComparer : IEqualityComparer<WeakReference>
 	{
 		bool IEqualityComparer<WeakReference>.Equals(WeakReference container1, WeakReference container2) 
 		{

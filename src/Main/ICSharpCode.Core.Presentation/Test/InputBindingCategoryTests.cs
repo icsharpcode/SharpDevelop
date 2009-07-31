@@ -13,6 +13,12 @@ namespace ICSharpCode.Core.Presentation.Tests
 	[TestFixture]
     public class InputBindingCategoryTests
     {
+    	[TestFixtureSetUp]
+    	public void TestFixtureSetUp()
+    	{
+    		PropertyService.InitializeServiceForUnitTests();
+    	}
+    	
 
     	[SetUp]
     	public void SetuUp()
@@ -75,6 +81,20 @@ namespace ICSharpCode.Core.Presentation.Tests
 			bindingInfo.Categories = new InputBindingCategoryCollection();
 			SDCommandManager.RegisterInputBindingCategory(category);
 			Assert.DoesNotThrow(delegate { bindingInfo.Categories = categoryCollection; });
+		}
+        
+    	[Test]
+		public void InputBindingCategoryCollectionClearTest()
+		{
+			var category = new InputBindingCategory("/test", "Test");
+			var categories = new InputBindingCategoryCollection { category };
+			
+			var result = false;
+			categories.CollectionChanged += delegate { result = true; };
+			
+			Assert.IsFalse(result);
+			categories.Clear();
+			Assert.IsTrue(result);
 		}
     }
 }

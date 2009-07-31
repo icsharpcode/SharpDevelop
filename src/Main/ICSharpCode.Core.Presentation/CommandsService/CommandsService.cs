@@ -223,7 +223,7 @@ namespace ICSharpCode.Core.Presentation
 				var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(desc.Gestures);
 				
 				var inputBindingInfo = new InputBindingInfo();
-					
+				
 				if(!string.IsNullOrEmpty(desc.OwnerInstanceName)) {
 					inputBindingInfo.OwnerInstanceName = desc.OwnerInstanceName;
 				} else if(!string.IsNullOrEmpty(desc.OwnerTypeName)) {

@@ -12,27 +12,18 @@ namespace ICSharpCode.Core.Presentation
     /// </summary>
     public class BindingInfoTemplateDictionary<T>
     {
-		private Dictionary<BindingInfoTemplate, HashSet<T>> superSetDictionary = new Dictionary<BindingInfoTemplate, HashSet<T>>();
-		private Dictionary<BindingInfoTemplate, HashSet<T>> subSetDictionary = new Dictionary<BindingInfoTemplate, HashSet<T>>();
-	
-		public void Add(BindingInfoTemplate template, T item)
+    	private Dictionary<IBindingInfoTemplate, HashSet<T>> dictionary = new Dictionary<IBindingInfoTemplate, HashSet<T>>(new IBindingInfoTemplateEqualityComparer());
+		                              
+		public void Add(IBindingInfoTemplate template, T item)
 		{
-			if(!superSetDictionary.ContainsKey(template)) {
-				superSetDictionary.Add(template, new HashSet<T>());
+			if(!dictionary.ContainsKey(template)) {
+				dictionary.Add(template, new HashSet<T>());
 			}
 			
-			superSetDictionary[template].Add(item);
-			
-			foreach(var wildCardTemplate in template.GetWildCardTemplates()) {
-				if(!subSetDictionary.ContainsKey(wildCardTemplate)) {
-					subSetDictionary.Add(wildCardTemplate, new HashSet<T>());
-				}
-				
-				subSetDictionary[wildCardTemplate].Add(item);
-			}
+			dictionary[template].Add(item);
 		}
 		
-		public HashSet<T> FindItems(BindingInfoTemplate template, BindingInfoMatchType matchType) 
+		public HashSet<T> FindItems(IBindingInfoTemplate template, BindingInfoMatchType matchType) 
 		{
 			var allItems = new HashSet<T>();
 			
@@ -45,50 +36,23 @@ namespace ICSharpCode.Core.Presentation
 			return allItems;
 		}
 		
-		public IEnumerable<HashSet<T>> FindBuckets(BindingInfoTemplate template, BindingInfoMatchType matchType) 
+		public IEnumerable<HashSet<T>> FindBuckets(IBindingInfoTemplate template, BindingInfoMatchType matchType) 
 		{
-			if((matchType & BindingInfoMatchType.Exact) == BindingInfoMatchType.Exact) {
-				HashSet<T> items;
-				superSetDictionary.TryGetValue(template, out items);
-				
-				if(items != null) {
-					yield return items;
-				}
-			}
-			   
-			if((matchType & BindingInfoMatchType.SubSet) == BindingInfoMatchType.SubSet) {
-				foreach(var wildCardTemplate in template.GetWildCardTemplates()) {
-					HashSet<T> items;
-					superSetDictionary.TryGetValue(wildCardTemplate, out items);
-					
-					if(items != null) {
-						yield return items;
-					}
-				}
-			}
-			
-			if((matchType & BindingInfoMatchType.SuperSet) == BindingInfoMatchType.SuperSet) {
-				HashSet<T> items;
-				subSetDictionary.TryGetValue(template, out items);
-				
-				if(items != null) {
-					yield return items;
+			foreach(var pair in dictionary) {
+				if(template.IsTemplateFor(pair.Key, matchType)) {
+					yield return pair.Value;
 				}
 			}
 		}
 		
 		public void Remove(T item) 
 		{
-			foreach(var pair in subSetDictionary) {
-				pair.Value.Remove(item);
-			}
-			
-			foreach(var pair in superSetDictionary) {
+			foreach(var pair in dictionary) {
 				pair.Value.Remove(item);
 			}
 		}
 		
-		public void Remove(BindingInfoTemplate template, BindingInfoMatchType matchType, T item) 
+		public void Remove(IBindingInfoTemplate template, BindingInfoMatchType matchType, T item) 
 		{
 			foreach(var bucket in FindBuckets(template, matchType)) {
 				bucket.Remove(item);
@@ -97,8 +61,7 @@ namespace ICSharpCode.Core.Presentation
 
 	    public void Clear() 
 	    {
-	    	superSetDictionary.Clear();
-	    	subSetDictionary.Clear();
+	    	dictionary.Clear();
 	    }
 	    
     }

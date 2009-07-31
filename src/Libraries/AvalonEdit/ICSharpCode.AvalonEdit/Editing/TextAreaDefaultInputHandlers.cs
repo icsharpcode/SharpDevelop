@@ -68,11 +68,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.NestedInputHandlers.Add(CaretNavigation = CaretNavigationCommandHandler.Create(textArea));
 			this.NestedInputHandlers.Add(Editing = EditingCommandHandler.Create(textArea));
 			this.NestedInputHandlers.Add(MouseSelection = new SelectionMouseHandler(textArea));
-			
-			// TODO: DELETE
-			
-			// this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, ExecuteUndo, CanExecuteUndo));
-			// this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, ExecuteRedo, CanExecuteRedo));
 		}
 		
 		#region Undo / Redo

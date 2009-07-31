@@ -9,16 +9,20 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.Core.Presentation
 {
-    public class BindingGroupCollection : ICollection<BindingGroup>
+    public class BindingGroupCollection : IObservableCollection<BindingGroup>
     {
     	private ObservableCollection<BindingGroup> _bindingGroups = new ObservableCollection<BindingGroup>();
+    	
+    	private event NotifyCollectionChangedEventHandler _bindingGroupsCollectionChanged;
     	
     	public event NotifyCollectionChangedEventHandler CollectionChanged
     	{
     		add {
+    			_bindingGroupsCollectionChanged += value;
     			_bindingGroups.CollectionChanged += value;
     		}
     		remove {
+    			_bindingGroupsCollectionChanged -= value;
     			_bindingGroups.CollectionChanged -= value;
     		}
     	}
@@ -62,6 +66,30 @@ namespace ICSharpCode.Core.Presentation
     		return false;
     	}
     	
+    	public ICollection<UIElement> GetAttachedInstances(ICollection<Type> types)
+    	{
+			var instances = new HashSet<UIElement>();
+			foreach(var group in FlatNesteGroups) {
+				foreach(var instance in group.GetAttachedInstances(types)) {
+					instances.Add(instance);
+				}
+			}
+			
+			return instances;
+    	}
+    	
+		public ICollection<UIElement> GetAttachedInstances(ICollection<UIElement> instances)
+		{
+			var attachedInstances = new HashSet<UIElement>();
+			foreach(var group in FlatNesteGroups) {
+				foreach(var instance in group.GetAttachedInstances(instances)) {
+					attachedInstances.Add(instance);
+				}
+			}
+			
+			return attachedInstances;
+		}
+    	
 		public int Count {
 			get {
 				return _bindingGroups.Count;
@@ -87,7 +115,20 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void Clear()
 		{
-			_bindingGroups.Clear();
+			var itemsBackup = _bindingGroups;
+			
+			_bindingGroups = new ObservableCollection<BindingGroup>();
+			foreach(NotifyCollectionChangedEventHandler handler in _bindingGroupsCollectionChanged.GetInvocationList()) {
+				_bindingGroups.CollectionChanged += handler;
+			}
+			
+			if(_bindingGroupsCollectionChanged != null) {
+				_bindingGroupsCollectionChanged.Invoke(
+					this,
+					new NotifyCollectionChangedEventArgs(
+						NotifyCollectionChangedAction.Remove,
+						itemsBackup));
+			}
 		}
 		
 		public bool ContainsNestedAny(BindingGroupCollection bindingGroups)

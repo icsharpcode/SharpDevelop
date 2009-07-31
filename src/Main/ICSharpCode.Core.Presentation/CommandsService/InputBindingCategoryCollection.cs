@@ -1,11 +1,3 @@
-/*
- * Created by SharpDevelop.
- * User: Administrator
- * Date: 7/4/2009
- * Time: 9:02 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -16,13 +8,9 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// Description of InputBindingCategoryCollection.
 	/// </summary>
-	public class InputBindingCategoryCollection : ICollection<InputBindingCategory>
+	public class InputBindingCategoryCollection : IObservableCollection<InputBindingCategory>
 	{
 		private ObservableCollection<InputBindingCategory> categories = new ObservableCollection<InputBindingCategory>();
-		
-		public InputBindingCategoryCollection()
-		{
-		}
 		
 		public int Count {
 			get {
@@ -36,12 +24,16 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		private event NotifyCollectionChangedEventHandler categoriesCollectionChanged;
+		
 		public event NotifyCollectionChangedEventHandler CollectionChanged
 		{
 			add {
+				categoriesCollectionChanged += value;
 				categories.CollectionChanged += value;
 			}
 			remove {
+				categoriesCollectionChanged -= value;
 				categories.CollectionChanged -= value;
 			}
 		}
@@ -59,7 +51,20 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void Clear()
 		{
-			categories.Clear();
+			var categoriesBackup = categories;
+			
+			categories =new ObservableCollection<InputBindingCategory>();
+			foreach(NotifyCollectionChangedEventHandler handler in categoriesCollectionChanged.GetInvocationList()) {
+				categories.CollectionChanged += handler;
+			}
+			
+			if(categoriesCollectionChanged != null) {
+				categoriesCollectionChanged.Invoke(
+					this,
+					new NotifyCollectionChangedEventArgs(
+						NotifyCollectionChangedAction.Remove,
+						categoriesBackup));
+			}
 		}
 		
 		public bool Contains(InputBindingCategory category)

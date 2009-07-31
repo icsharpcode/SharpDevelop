@@ -14,6 +14,9 @@ namespace ICSharpCode.Core.Presentation
 		private static Dictionary<T1, HashSet<T2>> forwardMap;
 		private static Dictionary<T2, HashSet<T1>> backwardMap;
 		
+		private IEqualityComparer<T1> t1Comparer;
+		private IEqualityComparer<T2> t2Comparer;
+		
 		public RelationshipMap()
 		{
 			forwardMap = new Dictionary<T1, HashSet<T2>>();
@@ -22,6 +25,9 @@ namespace ICSharpCode.Core.Presentation
 		
 		public RelationshipMap(IEqualityComparer<T1> t1Comparer, IEqualityComparer<T2> t2Comparer)
 		{
+			this.t1Comparer = t1Comparer;
+			this.t2Comparer = t2Comparer;
+			
 			forwardMap = new Dictionary<T1, HashSet<T2>>(t1Comparer);
 			backwardMap = new Dictionary<T2, HashSet<T1>>(t2Comparer);
 		}
@@ -29,11 +35,11 @@ namespace ICSharpCode.Core.Presentation
 		public bool Add(T1 item1, T2 item2) 
 		{
 			if(!forwardMap.ContainsKey(item1)){
-				forwardMap.Add(item1, new HashSet<T2>());
+				forwardMap.Add(item1, new HashSet<T2>(t2Comparer));
 			}
 			
 			if(!backwardMap.ContainsKey(item2)) {
-				backwardMap.Add(item2, new HashSet<T1>());
+				backwardMap.Add(item2, new HashSet<T1>(t1Comparer));
 			}
 			
 			var forwardRemoveResult = forwardMap[item1].Add(item2);
@@ -59,8 +65,11 @@ namespace ICSharpCode.Core.Presentation
 		
 		public bool Remove(T1 item1, T2 item2) 
 		{
-			var forwardRemoveResult = MapForward(item1).Remove(item2);
-			var backwardRemoveResult = MapBackward(item2).Remove(item1);
+			var forwardBucket = MapForward(item1);
+			var forwardRemoveResult = forwardBucket.Remove(item2);
+			
+			var backwardBucket = MapBackward(item2);
+			var backwardRemoveResult = backwardBucket.Remove(item1);
 			
 			return forwardRemoveResult || backwardRemoveResult;
 		}

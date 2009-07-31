@@ -13,7 +13,7 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// Stores details about <see cref="CommandBinding" />
 	/// </summary>
-	public class CommandBindingInfo : IBindingInfo
+	public class CommandBindingInfo : BindingInfoBase
 	{	
 		/// <summary>
 		/// Creates new instance of <see cref="CommandBindingInfo" />
@@ -26,95 +26,36 @@ namespace ICSharpCode.Core.Presentation
 			Groups = new BindingGroupCollection();
 		}
 		
-		private BindingGroupCollection _groups;
-		
 		public BindingGroupCollection Groups
 		{
 			get {
-				return _groups;
+				return base.Groups;
 			}
 			set {
-				if(value == null) {
-					throw new ArgumentException("Groups collection can not be null");
-				}
-
-				var oldValue = _groups;
-				_groups = value;
-				_groups.CollectionChanged += Groups_CollectionChanged;	
+				var oldGroups = base.Groups;
+				base.Groups = value;
 				
-				if(oldValue != null) {
-					var oldItemsList = new System.Collections.ArrayList();
-					foreach(var oldItem in oldValue) {
-						oldItemsList.Add(oldItem);
-					}
-					
-					var newItemsList = new System.Collections.ArrayList();
-					foreach(var newItem in value) {
-						newItemsList.Add(newItem);
-					}
-					
-					var args = new NotifyCollectionChangedEventArgs(
-						NotifyCollectionChangedAction.Replace,
-						newItemsList, 
-						oldItemsList,
-						0);
-					
-					Groups_CollectionChanged(this, args);
-				}
+				SetCollectionChanged<BindingGroup>(oldGroups, value, Groups_CollectionChanged);
 			}
 		}
 		
 		private void Groups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {  
 			if(IsRegistered) {
-				if(e.OldItems != null) {
-					foreach(BindingGroup oldGroup in e.OldItems) {
-						var template = this.GenerateTemplates(false).First();
-						template.Group = oldGroup;
-						CommandManager.UnregisterCommandBindingsUpdateHandler(
-							DefaultBindingsUpdateHandler, 
-							BindingInfoMatchType.Exact,
-							template);
-					}
+				var modifiedGroups = new BindingGroupCollection();
+				if(e.NewItems != null) {						
+					modifiedGroups.AddRange(e.NewItems.Cast<BindingGroup>());
 				}
 				
-				if(e.NewItems != null) {
-					foreach(BindingGroup newGroup in e.NewItems) {
-						var template = this.GenerateTemplates(false).First();
-						template.Group = newGroup;
-						CommandManager.RegisterCommandBindingsUpdateHandler(template, DefaultBindingsUpdateHandler);
-					}
+				if(e.OldItems != null) {
+					modifiedGroups.AddRange(e.OldItems.Cast<BindingGroup>());
 				}
+				
+				SDCommandManager.InvokeCommandBindingUpdateHandlers(
+					this,
+					new BindingsUpdatedHandlerArgs(),
+					BindingInfoMatchType.SubSet,
+					new BindingInfoTemplate(this, false) { Groups = modifiedGroups });
 			}
-		}
-		
-		private string routedCommandName;
-		
-		/// <summary>
-		/// Name of the routed command which will be invoked when this binding is triggered
-		/// </summary>
-		public string RoutedCommandName { 
-			get {
-				return routedCommandName;
-			}
-			set {
-				routedCommandName = value;
-			}
-		}
-		
-		/// <summary>
-		/// Routed command instance which will be invoked when this binding is triggered
-		/// </summary>
-		public RoutedUICommand RoutedCommand { 
-			get {
-				return SDCommandManager.GetRoutedUICommand(RoutedCommandName);
-			}
-		}
-		
-		/// <summary>
-		/// Add-in to which binding belongs
-		/// </summary>
-		public AddIn AddIn {
-			get; set;
 		}
 		
 		private string commandTypeName;
@@ -222,159 +163,43 @@ namespace ICSharpCode.Core.Presentation
 				canExecuteEventHandler = value;
 			}
 		}
-
-		public string _ownerInstanceName;
 		
-		/// <summary>
-		/// Stores name of named instance to which this binding belongs. When this binding is registered a
-		/// <see cref="CommandBinding" /> is assigned to owner instance
-		/// 
-		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerType" /> and
-		/// <see cref="OwnerTypeName" /> can not be set
-		/// </summary>
-		public string OwnerInstanceName {
-			get {
-				return _ownerInstanceName;
-			}
-			set {
-				if(_ownerInstanceName != null || _ownerTypeName != null) {
-					throw new ArgumentException("This binding already has an owner");
-				}
-				
-				_ownerInstanceName = value;
-			}
-		}
-		
-		/// <summary>
-		/// Stores owner instance to which this binding belongs. When this binding is registered a
-		/// <see cref="CommandBinding" /> is assigned to owner instance
-		/// 
-		/// If this attribute is used <see cref="OwnerInstanceName" />, <see cref="OwnerType" /> and
-		/// <see cref="OwnerTypeName" /> can not be set
-		/// </summary>
-		public ICollection<UIElement> OwnerInstances {
-			get {
-				if(_ownerInstanceName != null) {
-					return SDCommandManager.GetNamedUIElementCollection(_ownerInstanceName);
-				}
-				
-				return null;
-			}
-		}
-					
-		private string _ownerTypeName;
-		
-		/// <summary>
-		/// Stores name of owner type. Full name with assembly should be used. When this binding is 
-		/// registered <see cref="CommandBinding" /> is assigned to all instances of provided class
-		/// 
-		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerInstanceName" /> and
-		/// <see cref="OwnerType" /> can not be set
-		/// </summary>
-		public string OwnerTypeName{
-			get {
-				return _ownerTypeName;
-			}
-			set {
-				if(_ownerInstanceName != null || _ownerTypeName != null) {
-					throw new ArgumentException("This binding already has an owner");
-				}
-				
-				_ownerTypeName = value;
-			}
-		}
-		
-		/// <summary>
-		/// Stores owner type. When this binding is registered <see cref="CommandBinding" /> 
-		/// is assigned to all instances of provided class
-		/// 
-		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerInstanceName" /> and
-		/// <see cref="OwnerTypeName" /> can not be set
-		/// </summary>
-		public ICollection<Type> OwnerTypes { 
-			get {
-				if(_ownerTypeName != null) {
-					return SDCommandManager.GetNamedUITypeCollection(_ownerTypeName);
-				}
-				
-				return null;
-			}
-		}
-		
-		public bool IsRegistered
-		{
-			get; set;
-		}
-		
-		public void RemoveActiveBindings()
-		{
-			if(_ownerTypeName != null) {
-				if(OwnerTypes != null) {
-					foreach(var ownerType in OwnerTypes) {
-						foreach(CommandBinding binding in ActiveCommandBindings) {
-							SDCommandManager.RemoveClassCommandBinding(ownerType, binding);
-						}
-					}
-				}
-			} else if(_ownerInstanceName != null) {
-				if(OwnerInstances != null) {
-					foreach(var ownerInstance in OwnerInstances) {
-						foreach(CommandBinding binding in ActiveCommandBindings) {
-							ownerInstance.CommandBindings.Remove(binding);
-						}
+		protected override void SetInstanceBindings(ICollection<UIElement> newInstances, ICollection<UIElement> oldInstances)
+		{												
+			if(oldInstances != null) {
+				foreach(var ownerInstance in oldInstances) {
+					foreach(CommandBinding binding in OldCommandBindings) {
+						ownerInstance.CommandBindings.Remove(binding);
 					}
 				}
 			}
-		}
 			
-		private BindingsUpdatedHandler defaultCommandBindingHandler;
-		
-		/// <summary>
-		/// Updates owner bindings
-		/// </summary>
-		public BindingsUpdatedHandler DefaultBindingsUpdateHandler
-		{
-			get {
-				if(defaultCommandBindingHandler == null && OwnerTypeName != null) {
-	 				defaultCommandBindingHandler = delegate {
-						var routedCommand = RoutedCommand;
-						var ownerTypes = OwnerTypes;
-						var isRegistered = IsRegistered;
-					
-						if(routedCommand != null && ownerTypes != null && isRegistered) {
-							GenerateCommandBindings();
-							
-							foreach(var ownerType in ownerTypes) {
-								foreach(CommandBinding binding in OldCommandBindings) {
-									SDCommandManager.RemoveClassCommandBinding(ownerType, binding);
-								}
-								
-								foreach(CommandBinding binding in ActiveCommandBindings) {
-									System.Windows.Input.CommandManager.RegisterClassCommandBinding(ownerType, binding);
-								}
-							}
-						}
-					};
-				} else if(defaultCommandBindingHandler == null && OwnerInstanceName != null) {
-		 			defaultCommandBindingHandler = delegate {
-						if(RoutedCommand != null && OwnerInstances != null && IsRegistered) {
-							GenerateCommandBindings();
-							
-							foreach(var ownerInstance in OwnerInstances) {
-								foreach(CommandBinding binding in OldCommandBindings) {
-									ownerInstance.CommandBindings.Remove(binding);
-								}
-							
-								ownerInstance.CommandBindings.AddRange(ActiveCommandBindings);
-							}
-						}
-					};
+			if(newInstances != null) {
+				foreach(var ownerInstance in newInstances) {
+					ownerInstance.CommandBindings.AddRange(ActiveCommandBindings);
 				}
-				
-				return defaultCommandBindingHandler;
 			}
 		}
 		
+		protected override void SetClassBindings(ICollection<Type> oldTypes, ICollection<Type> newTypes)
+		{
+			if(oldTypes != null) {
+				foreach(var ownerType in oldTypes) {
+					foreach(CommandBinding binding in OldCommandBindings) {
+						SDCommandManager.RemoveClassCommandBinding(ownerType, binding);
+					}
+				}
+			}
+			
+			if(newTypes != null) {
+				foreach(var ownerType in newTypes) {
+					foreach(CommandBinding binding in ActiveCommandBindings) {
+						System.Windows.Input.CommandManager.RegisterClassCommandBinding(ownerType, binding);
+					}
+				}
+			}
+		}
+
 		/// <summary>
 		/// Lazy load
 		/// 
@@ -390,18 +215,16 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Re-generate <see cref="CommandBinding" /> from <see cref="CommandBindingInfo" />
 		/// </summary>
-		internal void GenerateCommandBindings() 
+		protected override void GenerateBindings() 
 		{			
 			OldCommandBindings = ActiveCommandBindings;
 			
 			ActiveCommandBindings = new CommandBindingCollection();
 			
-			if(Groups.Count > 0 && Groups.IsAttachedToAny(OwnerInstances)) {
-				var commandBinding = new CommandBinding(RoutedCommand);
-				commandBinding.CanExecute += GenerateCanExecuteEventHandler;					
-				commandBinding.Executed += GenerateExecutedEventHandler;
-				ActiveCommandBindings.Add(commandBinding);
-			}
+			var commandBinding = new CommandBinding(RoutedCommand);
+			commandBinding.CanExecute += GenerateCanExecuteEventHandler;					
+			commandBinding.Executed += GenerateExecutedEventHandler;
+			ActiveCommandBindings.Add(commandBinding);
 		}
 		
 		/// <summary>

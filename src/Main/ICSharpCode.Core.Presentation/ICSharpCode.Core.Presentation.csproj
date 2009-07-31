@@ -67,6 +67,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CommandsService\BindingInfoBase.cs" />
     <Compile Include="CommandsService\BindingInfoTemplateDictionary.cs" />
     <Compile Include="CommandsService\BindingGroup.cs" />
     <Compile Include="CommandsService\BindingGroupCollection.cs" />
@@ -83,6 +84,8 @@
     <Compile Include="CommandsService\RelationshipMap.cs" />
     <Compile Include="CommandsService\UserDefinedGesturesManager.cs" />
     <Compile Include="CommandsService\UserGesturesProfile.cs" />
+    <Compile Include="CommandsService\Utils\IBindingInfoEqualityComparer.cs" />
+    <Compile Include="CommandsService\Utils\IObservableCollection.cs" />
     <Compile Include="CommandsService\Utils\WeakReferenceEqualirtyComparer.cs" />
     <Compile Include="CommandsService\WpfCommandWrapper.cs" />
     <Compile Include="ConditionalSeparator.cs" />

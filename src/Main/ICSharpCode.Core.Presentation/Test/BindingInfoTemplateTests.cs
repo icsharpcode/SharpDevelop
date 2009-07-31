@@ -1,12 +1,30 @@
 using System;
 using NUnit.Framework;
 using ICSharpCode.Core.Presentation;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.Core.Presentation.Tests
 {
 	[TestFixture]
 	public class BindingInfoTemplateTests
-	{
+	{    	
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+    	{
+    		PropertyService.InitializeServiceForUnitTests();
+    	}
+    	
+    	[SetUp]
+    	public void SetuUp()
+    	{
+    	}
+    	
+    	[TearDown]
+    	public void TearDown()
+    	{
+    		SDCommandManager.Reset();
+    	}
+		
 		[TestAttribute]
 	    public void IsTemplateForSupersetsTests()
 	    {
@@ -52,18 +70,14 @@ namespace ICSharpCode.Core.Presentation.Tests
 	    	var emptyTemplate = new BindingInfoTemplate();
 	    	Assert.IsFalse(emptyTemplate.IsTemplateFor(source, BindingInfoMatchType.SubSet));
 			
-			var matchingTemplate = new BindingInfoTemplate();
-			matchingTemplate.RoutedCommandName = "TestCommand";
-			Assert.IsTrue(matchingTemplate.IsTemplateFor(source, BindingInfoMatchType.SubSet));
-			
-			var unmatchingTemplate = new BindingInfoTemplate();
-			unmatchingTemplate.RoutedCommandName = "OtherTestCommand";
-			Assert.IsFalse(unmatchingTemplate.IsTemplateFor(source, BindingInfoMatchType.SubSet));
+			var smallerTemplate = new BindingInfoTemplate();
+			smallerTemplate.RoutedCommandName = "TestCommand";
+			Assert.IsFalse(smallerTemplate.IsTemplateFor(source, BindingInfoMatchType.SubSet));
 			
 			var overlappingTemplate = new BindingInfoTemplate();
 			overlappingTemplate.RoutedCommandName = "TestCommand";
 			overlappingTemplate.OwnerInstanceName = "TestOwnerInstance";
-			Assert.IsTrue(overlappingTemplate.IsTemplateFor(source, BindingInfoMatchType.SubSet));
+			Assert.IsFalse(overlappingTemplate.IsTemplateFor(source, BindingInfoMatchType.SubSet));
 			
 			var biggerTemplate = new BindingInfoTemplate();
 			biggerTemplate.RoutedCommandName = "TestCommand";
@@ -98,7 +112,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			var overlappingTemplate = new BindingInfoTemplate();
 			overlappingTemplate.RoutedCommandName = "TestCommand";
 			overlappingTemplate.OwnerInstanceName = "TestOwnerInstance";
-			Assert.IsTrue(overlappingTemplate.IsTemplateFor(source, BindingInfoMatchType.SuperSet | BindingInfoMatchType.SubSet));
+			Assert.IsFalse(overlappingTemplate.IsTemplateFor(source, BindingInfoMatchType.SuperSet | BindingInfoMatchType.SubSet));
 			
 			var biggerTemplate = new BindingInfoTemplate();
 			biggerTemplate.RoutedCommandName = "TestCommand";

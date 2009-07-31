@@ -147,7 +147,7 @@ namespace ICSharpCode.Core.Presentation
 				
 				this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 			};
-			gesturesUpdateHandler.Invoke();
+			gesturesUpdateHandler.Invoke(this, new BindingsUpdatedHandlerArgs());
 			
 			var bindingTemplate = new BindingInfoTemplate();
 			if(codon.Properties.Contains("ownerinstance")) {

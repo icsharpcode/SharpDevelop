@@ -24,5 +24,22 @@ namespace ICSharpCode.Core.Presentation.Tests
 			Assert.IsNull(map.MapForward("test").First().Target);
 			Assert.AreEqual(1, map.MapBackward(container).Count);
         }
+        
+        [Test]
+        public void WeakEqualityComparerSupportTest()
+        {
+        	var map = new RelationshipMap<string, WeakReference>(null, new WeakReferenceEqualirtyComparer());
+        	var uiElement = new UIElement();
+        	var container = new WeakReference(uiElement);
+        	map.Add("test", container);
+        	
+			Assert.AreEqual(1, map.MapForward("test").Count);
+			Assert.AreEqual(1, map.MapBackward(new WeakReference(uiElement)).Count);
+        	
+        	map.Remove("test", new WeakReference(uiElement));
+        	
+			Assert.AreEqual(0, map.MapForward("test").Count);
+			Assert.AreEqual(0, map.MapBackward(new WeakReference(uiElement)).Count);
+        }
     }
 }
