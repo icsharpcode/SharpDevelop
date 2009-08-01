@@ -202,14 +202,38 @@ namespace ICSharpCode.PythonBinding
 			}
 			return null;
 		}
+
+		/// <summary>
+		/// Looks for a field in the component with the given name.
+		/// </summary>
+		public static object GetInheritedObject(string name, object component)
+		{
+			if (component != null) {
+				FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+				foreach (FieldInfo field in fields) {
+					if (String.Equals(name, field.Name, StringComparison.InvariantCultureIgnoreCase)) {
+						return field.GetValue(component);
+					}
+				}
+			}
+			return null;
+		}
 		
 		/// <summary>
 		/// Gets the object that the field expression variable refers to.
 		/// </summary>
+		/// <remarks>
+		/// This method will also check form's base class for any inherited objects that match
+		/// the object being referenced.
+		/// </remarks>
 		public object GetObject(IComponentCreator componentCreator)
 		{
 			if (variableName.Length > 0) {
-				return componentCreator.GetComponent(variableName);
+				object component = componentCreator.GetComponent(variableName);
+				if (component != null) {
+					return component;
+				}	
+				return GetInheritedObject(variableName, componentCreator.RootComponent);
 			}
 			return componentCreator.RootComponent;		
 		}

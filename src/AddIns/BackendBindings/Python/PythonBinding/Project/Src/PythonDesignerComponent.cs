@@ -284,25 +284,46 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Returns true if the component has an InheritanceAttribute set to InheritanceLevel.InheritedReadOnly
+		/// Returns true if the component has an InheritanceAttribute set to InheritanceLevel.Inherited or 
+		/// InheritanceLevel.InheritedReadOnly
 		/// </summary>
-		public static bool IsInheritedReadOnlyComponent(object component)
+		public static bool IsInheritedComponent(object component)
 		{
 			if (component != null) {
-				AttributeCollection attributes = TypeDescriptor.GetAttributes(component);
-				InheritanceAttribute attribute = (InheritanceAttribute)attributes[typeof(InheritanceAttribute)];
-				if (attribute != null) {
-					return attribute.InheritanceLevel == InheritanceLevel.InheritedReadOnly;
-				}
+				InheritanceAttribute attribute = GetInheritanceAttribute(component);
+				return attribute.InheritanceLevel != InheritanceLevel.NotInherited;
 			}
 			return false;
+		}
+		
+		/// <summary>
+		/// Returns true if the component has an InheritanceAttribute set to InheritanceLevel.Inherited or 
+		/// InheritanceLevel.InheritedReadOnly
+		/// </summary>
+		public bool IsInherited {
+			get { return IsInheritedComponent(component); }
 		}
 		
 		/// <summary>
 		/// Returns true if the component has an InheritanceAttribute set to InheritanceLevel.InheritedReadOnly
 		/// </summary>
 		public bool IsInheritedReadOnly {
-			get { return IsInheritedReadOnlyComponent(component); }
+			get { 
+				InheritanceAttribute attribute = GetInheritanceAttribute(component);
+				if (attribute != null) {
+					return attribute.InheritanceLevel == InheritanceLevel.InheritedReadOnly;
+				}
+				return false;
+			}
+		}
+		
+		public static InheritanceAttribute GetInheritanceAttribute(object component)
+		{
+			if (component != null) {
+				AttributeCollection attributes = TypeDescriptor.GetAttributes(component);
+				return attributes[typeof(InheritanceAttribute)] as InheritanceAttribute;
+			}
+			return null;	
 		}
 				
 		/// <summary>
@@ -495,7 +516,7 @@ namespace ICSharpCode.PythonBinding
 					}
 					foreach (object item in collectionProperty) {
 						IComponent collectionComponent = item as IComponent;
-						if (PythonDesignerComponent.IsSitedComponent(collectionComponent) && !PythonDesignerComponent.IsInheritedReadOnlyComponent(collectionComponent)) {
+						if (PythonDesignerComponent.IsSitedComponent(collectionComponent) && !PythonDesignerComponent.IsInheritedComponent(collectionComponent)) {
 							codeBuilder.AppendIndentedLine(propertyOwnerName + "." + propertyDescriptor.Name + "." + addMethod.Name + "(self._" + collectionComponent.Site.Name + ")");
 						}
 					}
@@ -639,9 +660,15 @@ namespace ICSharpCode.PythonBinding
 
 		/// <summary>
 		/// Gets the owner of any properties generated (e.g. "self._textBox1").
+		/// For an inherited component the actual component name is used without any underscore prefix.
+		/// </summary>
 		public virtual string GetPropertyOwnerName()
 		{
-			return "self._" + component.Site.Name;			
+			string componentName = component.Site.Name;
+			if (IsInherited) {
+				return "self." + componentName;
+			}
+			return "self._" + componentName;			
 		}
 		
 		/// <summary>
@@ -741,7 +768,7 @@ namespace ICSharpCode.PythonBinding
 		static bool HasSitedComponents(PythonDesignerComponent[] components)
 		{	
 			foreach (PythonDesignerComponent component in components) {
-				if (component.IsSited) {
+				if (component.IsSited && !component.IsInherited) {
 					return true;
 				}
 			}
@@ -751,7 +778,7 @@ namespace ICSharpCode.PythonBinding
 		void AppendCreateChildComponents(PythonCodeBuilder codeBuilder, PythonDesignerComponent[] childComponents)
 		{
 			foreach (PythonDesignerComponent designerComponent in childComponents) {
-				if (designerComponent.IsSited) {					
+				if (designerComponent.IsSited && !designerComponent.IsInherited) {					
 					designerComponent.AppendCreateInstance(codeBuilder);
 				}
 			}
