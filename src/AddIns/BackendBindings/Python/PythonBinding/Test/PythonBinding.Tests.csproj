@@ -198,6 +198,7 @@
     <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateInheritedFormTestFixture.cs" />
     <Compile Include="Designer\GenerateInheritedProtectedPanelFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateInheritedToolTipTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewItemTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewSubItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewWithImageListTestFixture.cs" />
@@ -238,6 +239,7 @@
     <Compile Include="Designer\LoadFormWithSysPathAppendStatementTestFixture.cs" />
     <Compile Include="Designer\LoadInheritedProtectedPanelFormTestFixture.cs" />
     <Compile Include="Designer\LoadInheritedPublicPanelFormTestFixture.cs" />
+    <Compile Include="Designer\LoadInheritedToolTipTestFixture.cs" />
     <Compile Include="Designer\LoadListViewFormTestFixture.cs" />
     <Compile Include="Designer\LoadLocalImageResourceTestFixture.cs" />
     <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />

@@ -309,6 +309,9 @@ namespace ICSharpCode.PythonBinding
 			object obj = componentCreator.GetComponent(variableName);
 			if (obj == null) {
 				obj = componentCreator.GetInstance(variableName);
+				if (obj == null) {
+					obj = GetInheritedObject(memberName, componentCreator.RootComponent);
+				}
 			}
 			
 			if (obj != null) {

@@ -557,8 +557,8 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void AppendExtenderProperty(PythonCodeBuilder codeBuilder, string propertyOwnerName, ExtenderProvidedPropertyAttribute extender, PropertyDescriptor propertyDescriptor, object propertyValue)
 		{
-			IComponent component = extender.Provider as IComponent;
-			codeBuilder.AppendIndented("self._" + component.Site.Name);
+			PythonDesignerComponent designerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(extender.Provider as IComponent);
+			codeBuilder.AppendIndented(designerComponent.GetPropertyOwnerName());
 			codeBuilder.Append(".Set" + propertyDescriptor.Name);
 			codeBuilder.Append("(");
 			codeBuilder.Append(propertyOwnerName);
