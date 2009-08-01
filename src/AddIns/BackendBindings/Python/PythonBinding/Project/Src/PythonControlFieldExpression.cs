@@ -209,7 +209,7 @@ namespace ICSharpCode.PythonBinding
 		public static object GetInheritedObject(string name, object component)
 		{
 			if (component != null) {
-				FieldInfo[] fields = component.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+				FieldInfo[] fields = component.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 				foreach (FieldInfo field in fields) {
 					if (String.Equals(name, field.Name, StringComparison.InvariantCultureIgnoreCase)) {
 						return field.GetValue(component);

@@ -237,6 +237,7 @@
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
     <Compile Include="Designer\LoadFormWithSysPathAppendStatementTestFixture.cs" />
     <Compile Include="Designer\LoadInheritedProtectedPanelFormTestFixture.cs" />
+    <Compile Include="Designer\LoadInheritedPublicPanelFormTestFixture.cs" />
     <Compile Include="Designer\LoadListViewFormTestFixture.cs" />
     <Compile Include="Designer\LoadLocalImageResourceTestFixture.cs" />
     <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />
