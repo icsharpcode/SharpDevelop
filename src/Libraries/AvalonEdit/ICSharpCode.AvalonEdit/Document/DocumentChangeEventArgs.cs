@@ -50,7 +50,8 @@ namespace ICSharpCode.AvalonEdit.Document
 				OffsetChangeMap map = offsetChangeMap;
 				if (map == null) {
 					// create OffsetChangeMap on demand
-					offsetChangeMap = OffsetChangeMap.FromSingleElement(CreateSingleChangeMapEntry());
+					map = OffsetChangeMap.FromSingleElement(CreateSingleChangeMapEntry());
+					offsetChangeMap = map;
 				}
 				return map;
 			}
