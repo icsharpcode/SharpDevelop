@@ -12,6 +12,7 @@ namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
 	/// Describes a change of the document text.
+	/// This class is thread-safe.
 	/// </summary>
 	[Serializable]
 	public class DocumentChangeEventArgs : EventArgs
@@ -43,14 +44,13 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the OffsetChangeMap associated with this document change.
 		/// </summary>
+		/// <remarks>The OffsetChangeMap instance is guaranteed to be frozen and thus thread-safe.</remarks>
 		public OffsetChangeMap OffsetChangeMap {
 			get {
 				OffsetChangeMap map = offsetChangeMap;
 				if (map == null) {
 					// create OffsetChangeMap on demand
-					map = new OffsetChangeMap(1);
-					map.Add(CreateSingleChangeMapEntry());
-					offsetChangeMap = map;
+					offsetChangeMap = OffsetChangeMap.FromSingleElement(CreateSingleChangeMapEntry());
 				}
 				return map;
 			}
@@ -62,7 +62,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
-		/// Gets the OffsetChangeMap, or null if the default offset map (=removal followed by insertion) is being used.
+		/// Gets the OffsetChangeMap, or null if the default offset map (=single replacement) is being used.
 		/// </summary>
 		internal OffsetChangeMap OffsetChangeMapOrNull {
 			get {
@@ -103,6 +103,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			this.InsertedText = insertedText;
 			
 			if (offsetChangeMap != null) {
+				if (!offsetChangeMap.IsFrozen)
+					throw new ArgumentException("The OffsetChangeMap must be frozen before it can be used in DocumentChangeEventArgs");
 				if (!offsetChangeMap.IsValidForDocumentChange(offset, removalLength, insertedText.Length))
 					throw new ArgumentException("OffsetChangeMap is not valid for this document change", "offsetChangeMap");
 				this.offsetChangeMap = offsetChangeMap;

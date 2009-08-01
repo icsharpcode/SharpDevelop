@@ -70,7 +70,19 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes",
 		                 Justification="The Empty instance is immutable")]
-		public static readonly OffsetChangeMap Empty = new OffsetChangeMap(Utils.Empty<OffsetChangeMapEntry>.ReadOnlyCollection);
+		public static readonly OffsetChangeMap Empty = new OffsetChangeMap(Empty<OffsetChangeMapEntry>.Array, true);
+		
+		/// <summary>
+		/// Creates a new OffsetChangeMap with a single element.
+		/// </summary>
+		/// <param name="entry">The entry.</param>
+		/// <returns>Returns a frozen OffsetChangeMap with a single entry.</returns>
+		public static OffsetChangeMap FromSingleElement(OffsetChangeMapEntry entry)
+		{
+			return new OffsetChangeMap(new OffsetChangeMapEntry[] { entry }, true);
+		}
+		
+		bool isFrozen;
 		
 		/// <summary>
 		/// Creates a new OffsetChangeMap instance.
@@ -79,20 +91,15 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 		}
 		
-		/// <summary>
-		/// Creates a new OffsetChangeMap instance.
-		/// </summary>
-		public OffsetChangeMap(int capacity)
+		internal OffsetChangeMap(int capacity)
 			: base(new List<OffsetChangeMapEntry>(capacity))
 		{
 		}
 		
-		/// <summary>
-		/// Private constructor for immutable 'Empty' instance.
-		/// </summary>
-		private OffsetChangeMap(IList<OffsetChangeMapEntry> entries)
+		private OffsetChangeMap(IList<OffsetChangeMapEntry> entries, bool isFrozen)
 			: base(entries)
 		{
+			this.isFrozen = isFrozen;
 		}
 		
 		/// <summary>
@@ -136,6 +143,55 @@ namespace ICSharpCode.AvalonEdit.Document
 				newMap.Add(new OffsetChangeMapEntry(entry.Offset, entry.InsertionLength, entry.RemovalLength));
 			}
 			return newMap;
+		}
+		
+		/// <inheritdoc/>
+		protected override void ClearItems()
+		{
+			CheckFrozen();
+			base.ClearItems();
+		}
+		
+		/// <inheritdoc/>
+		protected override void InsertItem(int index, OffsetChangeMapEntry item)
+		{
+			CheckFrozen();
+			base.InsertItem(index, item);
+		}
+		
+		/// <inheritdoc/>
+		protected override void RemoveItem(int index)
+		{
+			CheckFrozen();
+			base.RemoveItem(index);
+		}
+		
+		/// <inheritdoc/>
+		protected override void SetItem(int index, OffsetChangeMapEntry item)
+		{
+			CheckFrozen();
+			base.SetItem(index, item);
+		}
+		
+		void CheckFrozen()
+		{
+			if (isFrozen)
+				throw new InvalidOperationException("This instance is frozen and cannot be modified.");
+		}
+		
+		/// <summary>
+		/// Gets if this instance is frozen. Frozen instances are immutable and thus thread-safe.
+		/// </summary>
+		public bool IsFrozen {
+			get { return isFrozen; }
+		}
+		
+		/// <summary>
+		/// Freezes this instance.
+		/// </summary>
+		public void Freeze()
+		{
+			isFrozen = true;
 		}
 	}
 	

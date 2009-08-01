@@ -16,6 +16,6 @@ namespace ICSharpCode.AvalonEdit.Utils
 	static class Empty<T>
 	{
 		public static readonly T[] Array = new T[0];
-		public static readonly ReadOnlyCollection<T> ReadOnlyCollection = new ReadOnlyCollection<T>(Array);
+		//public static readonly ReadOnlyCollection<T> ReadOnlyCollection = new ReadOnlyCollection<T>(Array);
 	}
 }

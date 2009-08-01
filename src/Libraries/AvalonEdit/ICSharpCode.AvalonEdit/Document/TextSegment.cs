@@ -6,11 +6,12 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
-	/// A segment that can be put into a SegmentTree.
+	/// A segment that can be put into a TextSegmentCollection.
 	/// </summary>
 	public class TextSegment : ISegment
 	{
@@ -30,7 +31,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// The total "length" of this subtree.
 		/// </summary>
-		internal int totalNodeLength; // totalLength = length + left.totalLength + right.totalLength
+		internal int totalNodeLength; // totalNodeLength = nodeLength + left.totalNodeLength + right.totalNodeLength
 		
 		/// <summary>
 		/// The length of the segment (do not confuse with nodeLength).
@@ -65,8 +66,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			get {
 				// If the segment is not connected to a tree, we store the offset in "nodeLength".
 				// Otherwise, "nodeLength" contains the distance to the start offset of the previous node
-				if (ownerTree == null)
-					return nodeLength;
+				Debug.Assert(!(ownerTree == null && parent != null));
+				Debug.Assert(!(ownerTree == null && left != null));
 				
 				TextSegment n = this;
 				int offset = n.nodeLength;
@@ -86,7 +87,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				if (value < 0)
 					throw new ArgumentOutOfRangeException("value", "Offset must not be negative");
 				if (this.StartOffset != value) {
-					// need a copy of the variable because ownerTree.Remove() sets ownerTree to null
+					// need a copy of the variable because ownerTree.Remove() sets this.ownerTree to null
 					ISegmentTree ownerTree = this.ownerTree;
 					if (ownerTree != null) {
 						ownerTree.Remove(this);

@@ -379,6 +379,7 @@ namespace ICSharpCode.AvalonEdit.Document
 						OffsetChangeMap map = new OffsetChangeMap(2);
 						map.Add(new OffsetChangeMapEntry(offset, length, 0));
 						map.Add(new OffsetChangeMapEntry(offset, 0, text.Length));
+						map.Freeze();
 						Replace(offset, length, text, map);
 					}
 					break;
@@ -388,15 +389,13 @@ namespace ICSharpCode.AvalonEdit.Document
 						// OffsetChangeMappingType doesn't matter, just use Normal.
 						Replace(offset, length, text, null);
 					} else if (text.Length > length) {
-						OffsetChangeMap map = new OffsetChangeMap(1);
 						// look at OffsetChangeMappingType.CharacterReplace XML comments on why we need to replace
 						// the last
-						map.Add(new OffsetChangeMapEntry(offset + length - 1, 1, 1 + text.Length - length));
-						Replace(offset, length, text, map);
+						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + length - 1, 1, 1 + text.Length - length);
+						Replace(offset, length, text, OffsetChangeMap.FromSingleElement(entry));
 					} else if (text.Length < length) {
-						OffsetChangeMap map = new OffsetChangeMap(1);
-						map.Add(new OffsetChangeMapEntry(offset + length - text.Length, length - text.Length, 0));
-						Replace(offset, length, text, map);
+						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + length - text.Length, length - text.Length, 0);
+						Replace(offset, length, text, OffsetChangeMap.FromSingleElement(entry));
 					} else {
 						Replace(offset, length, text, OffsetChangeMap.Empty);
 					}
@@ -423,11 +422,17 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// in OffsetChangeMappingType.Normal mode.
 		/// If you pass OffsetChangeMap.Empty, then everything will stay in its old place (OffsetChangeMappingType.CharacterReplace mode).
 		/// The offsetChangeMap must be a valid 'explanation' for the document change. See <see cref="OffsetChangeMap.IsValidForDocumentChange"/>.
+		/// Passing an OffsetChangeMap to the Replace method will automatically freeze it to ensure the thread safety of the resulting
+		/// DocumentChangeEventArgs instance.
 		/// </param>
 		public void Replace(int offset, int length, string text, OffsetChangeMap offsetChangeMap)
 		{
 			if (text == null)
 				throw new ArgumentNullException("text");
+			
+			if (offsetChangeMap != null)
+				offsetChangeMap.Freeze();
+			
 			BeginUpdate();
 			try {
 				if (inDocumentChanging)

@@ -545,6 +545,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		#endregion
 		
 		#region Measure
+		/// <summary>
+		/// Additonal amount that allows horizontal scrolling past the end of the longest line.
+		/// This is necessary to ensure the caret always is visible, even when it is at the end of the longest line.
+		/// </summary>
+		const double AdditionalHorizontalScrollAmount = 30;
+		
 		Size lastAvailableSize;
 		bool inMeasure;
 		
@@ -584,6 +590,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			
 			textLayer.RemoveInlineObjectsNow();
 			
+			maxWidth += AdditionalHorizontalScrollAmount;
 			double heightTreeHeight = this.DocumentHeight;
 			
 			SetScrollData(availableSize,

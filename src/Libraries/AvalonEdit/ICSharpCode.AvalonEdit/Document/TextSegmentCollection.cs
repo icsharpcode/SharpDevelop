@@ -30,13 +30,17 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <summary>
 	/// A collection of text segments that supports efficient lookup of segments
 	/// intersecting with another segment.
+	/// 
+	/// When the document changes, the offsets of all text segments in the collection will be adjusted accordingly.
+	/// If a document change causes a segment to be deleted completely, it will be reduced to length 0, but segments are
+	/// never automatically removed.
 	/// </summary>
 	public sealed class TextSegmentCollection<T> : ICollection<T>, ISegmentTree, IWeakEventListener where T : TextSegment
 	{
 		// Implementation: this is basically a mixture of an augmented interval tree
 		// and the TextAnchorTree.
 		
-		// WARNING: you need to understand how interval trees (the version with the augmented 'high'/'max' field)
+		// WARNING: you need to understand interval trees (the version with the augmented 'high'/'max' field)
 		// and how the TextAnchorTree works before you have any chance of understanding this code.
 		
 		// This means that every node holds two "segments":
@@ -47,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		// with interval segments starting at the end of every node segment.
 		
 		// Performance:
-		// Add is O(m + lg n) with m being the number of segments at the same start offset
+		// Add is O(lg n)
 		// Remove is O(lg n)
 		// DocumentChanged is O(m * lg n), with m the number of segments that intersect with the changed document section
 		// FindFirstSegmentWithStartAfter is O(m + lg n) with m being the number of segments at the same offset as the result segment
@@ -55,10 +59,18 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		int count;
 		TextSegment root;
+		bool isConnectedToDocument;
 		
 		#region Constructor
 		/// <summary>
-		/// Creates a new SegmentTree.
+		/// Creates a new TextSegmentCollection that needs manual calls to <see cref="UpdateOffsets"/>.
+		/// </summary>
+		public TextSegmentCollection()
+		{
+		}
+		
+		/// <summary>
+		/// Creates a new TextSegmentCollection that updates the offsets automatically.
 		/// </summary>
 		/// <param name="textDocument">The document to which the text segments
 		/// that will be added to the tree belong. When the document changes, the
@@ -68,6 +80,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (textDocument == null)
 				throw new ArgumentNullException("textDocument");
 			
+			textDocument.VerifyAccess();
+			isConnectedToDocument = true;
 			TextDocumentWeakEventManager.Changed.AddListener(textDocument, this);
 		}
 		#endregion
@@ -82,9 +96,23 @@ namespace ICSharpCode.AvalonEdit.Document
 			return false;
 		}
 		
+		/// <summary>
+		/// Updates the start and end offsets of all segments stored in this collection.
+		/// </summary>
+		/// <param name="e">DocumentChangeEventArgs instance describing the change to the document.</param>
+		public void UpdateOffsets(DocumentChangeEventArgs e)
+		{
+			if (e == null)
+				throw new ArgumentNullException("e");
+			if (isConnectedToDocument)
+				throw new InvalidOperationException("This TextSegmentCollection will automatically update offsets; do not call UpdateOffsets manually!");
+			OnDocumentChanged(e);
+		}
+		
 		void OnDocumentChanged(DocumentChangeEventArgs e)
 		{
 			foreach (OffsetChangeMapEntry entry in e.OffsetChangeMap) {
+				// TODO: this needs improvement: separate remove+insert steps don't handle text replacements correctly
 				RemoveText(entry.Offset, entry.RemovalLength);
 				InsertText(entry.Offset, entry.InsertionLength);
 			}
@@ -122,8 +150,10 @@ namespace ICSharpCode.AvalonEdit.Document
 			foreach (TextSegment segment in FindOverlappingSegments(offset, length)) {
 				if (segment.StartOffset < offset) {
 					if (segment.EndOffset > offset + length) {
+						// removal in middle of segment: shorten segment by length
 						segment.Length -= length;
 					} else {
+						// removal at end of segment: set segment end to removal position
 						//segment.EndOffset = offset;
 						segment.Length = offset - segment.StartOffset;
 					}
@@ -155,7 +185,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (item == null)
 				throw new ArgumentNullException("item");
 			if (item.ownerTree != null)
-				throw new ArgumentException("The segment is already added to a SegmentTree.");
+				throw new ArgumentException("The segment is already added to a SegmentCollection.");
 			AddSegment(item);
 		}
 		
