@@ -42,6 +42,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			if (!countEvaluated)
 			{
 				this.count = evaluateCount();
+				countEvaluated = true;
 			}
 			return this.count;
 		}
@@ -50,8 +51,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		{
 			return ObjectValue.Create(
 				targetObject.AppendIndexer(index).Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference(), 
-				// don't use PermanentReference
-				//targetObject.AppendIndexer(index), 
+				//targetObject.AppendIndexer(index), // don't use PermanentReference - possible only for IList though
 				this.listItemType, this.bindingFlags);
 		}
 		
