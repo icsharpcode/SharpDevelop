@@ -507,7 +507,7 @@ namespace ICSharpCode.PythonBinding
 				MethodInfo addRangeMethod = GetAddRangeSerializationMethod(collectionProperty);
 				if (addRangeMethod != null) {
 					Type arrayElementType = GetArrayParameterType(addRangeMethod);
-					AppendSystemArray(codeBuilder, component.Site.Name, propertyDescriptor.Name + "." + addRangeMethod.Name, arrayElementType.FullName, GetSitedComponentsAndNonComponents(collectionProperty));
+					AppendSystemArray(codeBuilder, propertyOwnerName, propertyDescriptor.Name + "." + addRangeMethod.Name, arrayElementType.FullName, GetSitedComponentsAndNonComponents(collectionProperty));
 				} else {
 					MethodInfo addMethod = GetAddSerializationMethod(collectionProperty);
 					ParameterInfo[] parameters = addMethod.GetParameters();
@@ -712,10 +712,10 @@ namespace ICSharpCode.PythonBinding
 			get { return parent; }
 		}
 
-		public static void AppendSystemArray(PythonCodeBuilder codeBuilder, string componentName, string methodName, string typeName, ICollection components)
+		public static void AppendSystemArray(PythonCodeBuilder codeBuilder, string propertyName, string methodName, string typeName, ICollection components)
 		{
 			if (components.Count > 0) {
-				codeBuilder.AppendIndented("self._" + componentName + "." + methodName + "(");
+				codeBuilder.AppendIndented(propertyName + "." + methodName + "(");
 				AppendSystemArray(codeBuilder, typeName, components);
 				codeBuilder.Append(")");
 				codeBuilder.AppendLine();

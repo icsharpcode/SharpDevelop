@@ -178,6 +178,7 @@
     <Compile Include="Designer\FormBaseClassCreatedOnLoadTestFixture.cs" />
     <Compile Include="Designer\GenerateAcceptButtonFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAccessibleRoleFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateAddRangeForNonComponentTestFixture.cs" />
     <Compile Include="Designer\GenerateAutoScaleModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
     <Compile Include="Designer\GenerateBackgroundWorkerTestFixture.cs" />
