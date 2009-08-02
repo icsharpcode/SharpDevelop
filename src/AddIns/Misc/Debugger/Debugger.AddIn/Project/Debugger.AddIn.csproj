@@ -145,9 +145,12 @@
     <Compile Include="Src\Visualizers\Graph\TreeModel\NonPublicMembersNode.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\PropertyNode.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\SelectedProperties.cs" />
+    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\GridValuesProvider.cs" />
     <Compile Include="Src\Visualizers\PresentationBindings\GridViewColumnHider.cs" />
+    <Compile Include="Src\Visualizers\PresentationBindings\ScrollUtils.cs" />
     <Compile Include="Src\Visualizers\PresentationBindings\TooltipVisibilityConverter.cs" />
     <Compile Include="Src\Visualizers\Utils\AtomicType.cs" />
+    <Compile Include="Src\Visualizers\Utils\IEnumerableExtensions.cs" />
     <Compile Include="Src\Visualizers\Utils\ITreeNode.cs" />
     <Compile Include="Src\Visualizers\Utils\LinqUtils.cs" />
     <Compile Include="Src\Visualizers\Utils\ListHelper.cs" />

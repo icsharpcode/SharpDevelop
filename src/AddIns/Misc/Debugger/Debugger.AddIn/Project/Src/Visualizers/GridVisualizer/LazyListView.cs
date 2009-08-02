@@ -37,7 +37,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			set 
 			{
 				this.itemsSource = value;
-				this.itemsSource.RequestNextItems(14);
+				this.itemsSource.RequestNextItems(25);
 				this.listView.ItemsSource = value;
 			}
 		}

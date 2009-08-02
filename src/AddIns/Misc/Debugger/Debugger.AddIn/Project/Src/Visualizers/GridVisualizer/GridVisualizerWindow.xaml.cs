@@ -39,7 +39,11 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		
 		private void btnInspect_Click(object sender, RoutedEventArgs e)
 		{
+			// clear ListView
 			listView.ItemsSource = null;
+			ScrollViewer listViewScroller = listView.GetScrollViewer();
+			if (listViewScroller != null)
+				listViewScroller.ScrollToVerticalOffset(0);
 			
 			this.debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
 			if (debuggerService == null)
@@ -56,35 +60,40 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			}
 			if (val != null && !val.IsNull)
 			{
-				DebugType iListType, listItemType;
-				IList<MemberInfo> itemTypeMembers = null;
+				GridValuesProvider gridValuesProvider;
 				
+				// Value is IList?
+				DebugType iListType, listItemType;
 				if (val.Type.ResolveIListImplementation(out iListType, out listItemType))
 				{
-					var valuesProvider = new ListValuesProvider(val.ExpressionTree, iListType, listItemType);
-					var virtCollection = new VirtualizingCollection<ObjectValue>(valuesProvider);
-					
-					itemTypeMembers = valuesProvider.GetItemTypeMembers();
-					
+					var listValuesProvider = new ListValuesProvider(val.ExpressionTree, iListType, listItemType);
+					var virtCollection = new VirtualizingCollection<ObjectValue>(listValuesProvider);
 					this.listView.ItemsSource = virtCollection;
+					gridValuesProvider = listValuesProvider;
 				}
 				else
 				{
+					// Value is IEnumerable?
 					DebugType iEnumerableType, itemType;
 					if (val.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
 					{
 						var lazyListViewWrapper = new LazyListView<ObjectValue>(this.listView);
-						var iEnumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
-						
-						itemTypeMembers = iEnumerableValuesProvider.GetItemTypeMembers();
-
-						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(iEnumerableValuesProvider.ItemsSource);
+						var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
+						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
+						gridValuesProvider = enumerableValuesProvider;
+					}
+					else
+					{
+						// Value cannot be displayed in GridVisualizer
+						return;
 					}
 				}
 				
+				IList<MemberInfo> itemTypeMembers = gridValuesProvider.GetItemTypeMembers();
+				// create ListView columns
 				createGridViewColumns((GridView)this.listView.View, itemTypeMembers);
 				this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
-				
+				// fill column-choosing ComboBox
 				this.selectedProperties = initializeSelectedPropertiesWithEvents(itemTypeMembers);
 				cmbColumns.ItemsSource = this.selectedProperties;
 			}
@@ -119,11 +128,11 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			var columnName = propertySeleted.Name;
 			if (propertySeleted.IsSelected)
 			{
-				columnHider.ShowColumn(columnName);
+				this.columnHider.ShowColumn(columnName);
 			}
 			else
 			{
-				columnHider.HideColumn(columnName);
+				this.columnHider.HideColumn(columnName);
 			}
 		}
 	}

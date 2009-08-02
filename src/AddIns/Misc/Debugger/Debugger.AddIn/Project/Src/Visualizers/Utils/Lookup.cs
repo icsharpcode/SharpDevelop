@@ -14,19 +14,20 @@ namespace Debugger.AddIn.Visualizers.Utils
 	/// </summary>
 	public class Lookup<TKey, TValue>
 	{
-		private Dictionary<TKey, LookupValueCollection<TValue>> _dictionary;
+		/// <summary>Wrapped dictionary</summary>
+		private Dictionary<TKey, LookupValueCollection<TValue>> dictionary;
 		
 		public Lookup()
 		{
-			_dictionary = new Dictionary<TKey, LookupValueCollection<TValue>>();
+			dictionary = new Dictionary<TKey, LookupValueCollection<TValue>>();
 		}
 		
 		public LookupValueCollection<TValue> this[TKey key]
 		{
-			get 
+			get
 			{
 				LookupValueCollection<TValue> values = null;
-				if (_dictionary.TryGetValue(key, out values))
+				if (dictionary.TryGetValue(key, out values))
 				{
 					return values;
 				}
@@ -36,13 +37,13 @@ namespace Debugger.AddIn.Visualizers.Utils
 		
 		public void Add(TKey key, TValue value)
 		{
-			LookupValueCollection<TValue> values = null;;
-            if (!_dictionary.TryGetValue(key, out values))
-            {
-            	values = new LookupValueCollection<TValue>();
-                 _dictionary.Add(key, values);
-            }
-            values.Add(value);
+			LookupValueCollection<TValue> values = null;
+			if (!dictionary.TryGetValue(key, out values))
+			{
+				values = new LookupValueCollection<TValue>();
+				dictionary.Add(key, values);
+			}
+			values.Add(value);
 		}
 	}
 }

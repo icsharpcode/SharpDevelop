@@ -17,23 +17,11 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// <summary>
 	/// Provides <see cref="ObjectValue"/>s for debugee objects implementing IEnumerable.
 	/// </summary>
-	public class EnumerableValuesProvider
+	public class EnumerableValuesProvider : GridValuesProvider
 	{
-		private readonly Debugger.MetaData.BindingFlags bindingFlags =
-			BindingFlags.Public | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
-		
-		//private WindowsDebugger debugger;
-		
-		private Expression targetObject;
-		private DebugType iEnumerableType;
-		private DebugType itemType;
-		
 		public EnumerableValuesProvider(Expression targetObject, DebugType iEnumerableType, DebugType itemType)
+			:base(targetObject, iEnumerableType, itemType)
 		{
-			this.targetObject = targetObject;
-			this.iEnumerableType = iEnumerableType;
-			this.itemType = itemType;
-			
 			this.itemsSource = enumerateItems();
 		}
 		
@@ -43,14 +31,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			get { return this.itemsSource; }
 		} 
 		
-		public IList<MemberInfo> GetItemTypeMembers()
-		{
-			return itemType.GetMembers(this.bindingFlags);
-		}
-		
 		private IEnumerable<ObjectValue> enumerateItems()
 		{
-			MethodInfo enumeratorMethod = iEnumerableType.GetMethod("GetEnumerator");
+			MethodInfo enumeratorMethod = collectionType.GetMethod("GetEnumerator");
 			Value enumerator = targetObject.Evaluate(WindowsDebugger.CurrentProcess).InvokeMethod(enumeratorMethod, null).GetPermanentReference();
 			
 			MethodInfo moveNextMethod = enumerator.Type.GetMethod("MoveNext");
@@ -58,8 +41,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 
 			while ((bool)enumerator.InvokeMethod(moveNextMethod, null).PrimitiveValue)
 			{
-				Value currentValue = enumerator.GetPropertyValue(currentproperty).GetPermanentReference();
-				yield return ObjectValue.Create(currentValue, this.itemType, this.bindingFlags);
+				Value currentValue = enumerator.GetPropertyValue(currentproperty);
+				yield return ObjectValue.Create(currentValue, this.memberFromNameMap);
 			}
 		}
 	}

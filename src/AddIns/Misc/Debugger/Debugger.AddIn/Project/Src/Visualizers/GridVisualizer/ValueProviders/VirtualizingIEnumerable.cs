@@ -13,7 +13,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// <summary>
 	/// A wrapper around IEnumerable&lt;T&gt; with RequestNextItems method for pulling additional items 
 	/// from the IEnumerable&lt;T&gt; when needed.
-	/// Can be used as source for LazyListView.
+	/// Can be used as source for <see cref="LazyListView" />.
+	/// (Used to wrap EnumerableValuesProvider.ItemsSource)
 	/// </summary>
 	public class VirtualizingIEnumerable<T> : ObservableCollection<T>
 	{

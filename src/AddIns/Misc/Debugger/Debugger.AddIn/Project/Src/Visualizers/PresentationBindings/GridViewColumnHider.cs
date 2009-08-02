@@ -18,7 +18,7 @@ namespace Debugger.AddIn.Visualizers
     }
 	
 	/// <summary>
-	/// Utility for hiding and showing columns in GridView (GridViewColumn does not have Visility).
+	/// Utility for hiding and showing columns in GridView (GridViewColumn does not have Visility property).
 	/// </summary>
 	public class GridViewColumnHider
     {
