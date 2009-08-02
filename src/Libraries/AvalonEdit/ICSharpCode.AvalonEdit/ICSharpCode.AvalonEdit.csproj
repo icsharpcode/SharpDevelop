@@ -304,6 +304,9 @@
     <Compile Include="Utils\ThrowUtil.cs" />
     <Compile Include="Utils\Win32.cs" />
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
+    <Compile Include="XmlParser\ObservableCollections.cs" />
+    <Compile Include="XmlParser\RawObjects.cs" />
+    <Compile Include="XmlParser\XmlParser.cs" />
     <Resource Include="themes\RightArrow.cur" />
     <EmbeddedResource Include="Highlighting\Resources\ASPX.xshd" />
     <EmbeddedResource Include="Highlighting\Resources\BAT-Mode.xshd" />
@@ -343,6 +346,7 @@
     <Folder Include="Rendering" />
     <Folder Include="Utils" />
     <Folder Include="themes" />
+    <Folder Include="XmlParser" />
     <Page Include="CodeCompletion\CompletionList.xaml" />
     <Page Include="CodeCompletion\InsightWindow.xaml" />
     <Page Include="TextEditor.xaml" />
