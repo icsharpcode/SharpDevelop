@@ -8,7 +8,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -54,7 +56,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		protected void OnLocalDataChanged()
 		{
-			Log("XML DOM: Local data changed for {0}", this);
+			if (!inCloning) {
+				Log("XML DOM: Local data changed for {0}", this);
+			}
 			if (LocalDataChanged != null) {
 				LocalDataChanged(this, EventArgs.Empty);
 			}
@@ -74,13 +78,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.ReadCallID = new object();
 		}
 		
+		// Disable some log messages during cloning
+		static bool inCloning = false;
+		
 		public RawObject Clone()
 		{
 			RawObject clone = (RawObject)System.Activator.CreateInstance(this.GetType());
-			bool oldVal = LoggingEnabled;
-			LoggingEnabled = false;
+			inCloning = true;
 			clone.UpdateDataFrom(this);
-			LoggingEnabled = oldVal;
+			inCloning = false;
 			return clone;
 		}
 		
@@ -110,6 +116,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		public static void LogLinq(string format, params object[] args)
+		{
+			if (LoggingEnabled) {
+				System.Diagnostics.Debug.WriteLine("XML Linq: " + format, args);
+			}
+		}
+		
 		internal void OnInserting(RawObject parent, int index)
 		{
 			Log("XML DOM: Inserting {0} at index {1}", this, index);
@@ -130,6 +143,17 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					this.Document.OnObjectDettached(new RawObjectEventArgs() { Object = obj });
 				}
 			}
+		}
+		
+		protected XName EncodeXName(string name, string ns)
+		{
+			if (string.IsNullOrEmpty(name)) name = "_";
+			name = XmlConvert.EncodeLocalName(name);
+			
+			if (ns == null) ns = string.Empty;
+			ns = XmlConvert.EncodeLocalName(ns);
+			
+			return XName.Get(name, ns);
 		}
 	}
 	
@@ -179,8 +203,24 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public XDocument CreateXDocument(bool autoUpdate)
 		{
+			LogLinq("Creating XDocument");
 			XDocument doc = new XDocument();
+			doc.AddAnnotation(this);
+			UpdateXDocument(doc, autoUpdate);
+			this.Children.CollectionChanged += delegate { UpdateXDocument(doc, autoUpdate); };
 			return doc;
+		}
+		
+		void UpdateXDocument(XDocument doc, bool autoUpdate)
+		{
+			RawElement root = this.Children.OfType<RawElement>().FirstOrDefault(x => x.StartTag.OpeningBracket == "<");
+			if (doc.Root.GetRawObject() != root) {
+				if (root != null) {
+					doc.ReplaceNodes(root.CreateXElement(autoUpdate));
+				} else {
+					doc.RemoveNodes();
+				}
+			}
 		}
 		
 		public override string ToString()
@@ -192,6 +232,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	public class RawTag: RawObject
 	{
 		public string OpeningBracket { get; set; } // "<" or "</"
+		public string Namesapce { get; set; }
 		public string Name { get; set; }
 		public ObservableCollection<RawObject> Attributes { get; set; }
 		public string ClosingBracket { get; set; } // ">" or "/>" for well formed
@@ -215,10 +256,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			base.UpdateDataFrom(source);
 			RawTag src = (RawTag)source;
 			if (this.OpeningBracket != src.OpeningBracket ||
+			    this.Namesapce != src.Namesapce ||
 				this.Name != src.Name ||
 				this.ClosingBracket != src.ClosingBracket)
 			{
 				this.OpeningBracket = src.OpeningBracket;
+				this.Namesapce = src.Namesapce;
 				this.Name = src.Name;
 				this.ClosingBracket = src.ClosingBracket;
 				OnLocalDataChanged();
@@ -277,15 +320,44 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public XElement CreateXElement(bool autoUpdate)
 		{
-			XElement elem = new XElement(string.Empty);
-			UpdateXElement(elem);
-			if (autoUpdate) this.StartTag.LocalDataChanged += delegate { UpdateXElement(elem); };
+			LogLinq("Creating XElement '{0}'", this.StartTag.Name);
+			XElement elem = new XElement(EncodeXName(this.StartTag.Name, this.EndTag.Namesapce));
+			elem.AddAnnotation(this);
+			UpdateXElement(elem, autoUpdate);
+			UpdateXElementAttributes(elem, autoUpdate);
+			UpdateXElementChildren(elem, autoUpdate);
+			if (autoUpdate) {
+				this.StartTag.LocalDataChanged += delegate { UpdateXElement(elem, autoUpdate); };
+				this.StartTag.Attributes.CollectionChanged += delegate { UpdateXElementAttributes(elem, autoUpdate); };
+				this.Children.CollectionChanged += delegate { UpdateXElementChildren(elem, autoUpdate); };
+			}
 			return elem;
 		}
-		
-		void UpdateXElement(XElement elem)
+
+		void UpdateXElement(XElement elem, bool autoUpdate)
 		{
-			elem.Name = this.StartTag.Name;
+			LogLinq("Updating XElement '{0}'", this.StartTag.Name);
+			elem.Name = EncodeXName(this.StartTag.Name, this.EndTag.Namesapce);
+		}
+		
+		internal void UpdateXElementAttributes(XElement elem, bool autoUpdate)
+		{
+			List<XAttribute> xAttrs = new List<XAttribute>();
+			foreach(RawAttribute attr in this.StartTag.Attributes.OfType<RawAttribute>()) {
+				XAttribute existing = elem.Attributes().FirstOrDefault(x => x.GetRawObject() == attr);
+				xAttrs.Add(existing ?? attr.CreateXAttribute(autoUpdate));
+			}
+			elem.ReplaceAttributes(xAttrs.ToArray());
+		}
+		
+		void UpdateXElementChildren(XElement elem, bool autoUpdate)
+		{
+			List<XElement> xElems = new List<XElement>();
+			foreach(RawElement rawElem in this.Children.OfType<RawElement>()) {
+				XElement existing = (XElement)elem.Nodes().FirstOrDefault(x => x.GetRawObject() == rawElem);
+				xElems.Add(existing ?? rawElem.CreateXElement(autoUpdate));
+			}
+			elem.ReplaceNodes(xElems);
 		}
 		
 		public override string ToString()
@@ -296,6 +368,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	
 	public class RawAttribute: RawObject
 	{
+		public string Namesapce { get; set; }
 		public string Name { get; set; }
 		public string EqualsSign { get; set; }
 		public string Value { get; set; }
@@ -305,10 +378,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (this.ReadCallID == source.ReadCallID) return;
 			base.UpdateDataFrom(source);
 			RawAttribute src = (RawAttribute)source;
-			if (this.Name != src.Name ||
+			if (this.Namesapce != src.Namesapce ||
+				this.Name != src.Name ||
 				this.EqualsSign != src.EqualsSign ||
 				this.Value != src.Value)
 			{
+				this.Namesapce = src.Namesapce;
 				this.Name = src.Name;
 				this.EqualsSign = src.EqualsSign;
 				this.Value = src.Value;
@@ -318,15 +393,27 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public XAttribute CreateXAttribute(bool autoUpdate)
 		{
-			XAttribute attr = new XAttribute(string.Empty, string.Empty);
-			UpdateXAttribute(attr);
-			if (autoUpdate) this.LocalDataChanged += delegate { UpdateXAttribute(attr); };
+			LogLinq("Creating XAttribute '{0}={1}'", this.Name, this.Value);
+			XAttribute attr = new XAttribute(EncodeXName(this.Name, this.Namesapce), string.Empty);
+			attr.AddAnnotation(this);
+			bool deleted = false;
+			UpdateXAttribute(attr, autoUpdate, ref deleted);
+			if (autoUpdate) this.LocalDataChanged += delegate { UpdateXAttribute(attr, autoUpdate, ref deleted); };
 			return attr;
 		}
 		
-		void UpdateXAttribute(XAttribute attr)
+		void UpdateXAttribute(XAttribute attr, bool autoUpdate, ref bool deleted)
 		{
-			attr.Value = this.Value;
+			if (deleted) return;
+			LogLinq("Updating XAttribute '{0}={1}'", this.Name, this.Value);
+			if (attr.Name == EncodeXName(this.Name, this.Namesapce)) {
+				attr.Value = this.Value ?? string.Empty;
+			} else {
+				XElement parent = attr.Parent;
+				attr.Remove();
+				deleted = true;
+				((RawElement)parent.GetRawObject()).UpdateXElementAttributes(parent, autoUpdate);
+			}
 		}
 		
 		public override string ToString()
@@ -352,14 +439,17 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public XText CreateXText(bool autoUpdate)
 		{
+			LogLinq("Creating XText Length={0}", this.Value.Length);
 			XText text = new XText(string.Empty);
-			UpdateXText(text);
-			if (autoUpdate) this.LocalDataChanged += delegate { UpdateXText(text); };
+			text.AddAnnotation(this);
+			UpdateXText(text, autoUpdate);
+			if (autoUpdate) this.LocalDataChanged += delegate { UpdateXText(text, autoUpdate); };
 			return text;
 		}
 		
-		void UpdateXText(XText text)
+		void UpdateXText(XText text, bool autoUpdate)
 		{
+			LogLinq("Updating XText Length={0}", this.Value.Length);
 			text.Value = this.Value;
 		}
 		
@@ -371,6 +461,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	
 	public static class RawUtils
 	{
+		public static RawObject GetRawObject(this XObject xObj)
+		{
+			if (xObj == null) return null;
+			return xObj.Annotation<RawObject>();
+		}
+		
 		/// <summary>
 		/// Copy items from source list over to destination list.  
 		/// Prefer updating items with matching offsets.

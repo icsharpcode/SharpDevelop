@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Xml.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
@@ -19,6 +20,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	public class XmlParser
 	{
 		RawDocument userDocument;
+		XDocument userLinqDocument;
 		TextDocument textDocument;
 		TextSegmentCollection<RawObject> userDom;
 		TextSegmentCollection<RawObject> parsedDom;
@@ -36,6 +38,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.userDocument.ObjectDettached += delegate(object sender, RawObjectEventArgs e) {
 				this.userDom.Remove(e.Object);
 			};
+			this.userLinqDocument = this.userDocument.CreateXDocument(true);
 		}
 		
 		public RawDocument Parse()
@@ -108,6 +111,16 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		bool TryRead(string text)
+		{
+			if (TryPeek(text)) {
+				currentLocation += text.Length;
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
 		bool TryPeek(char c)
 		{
 			if (currentLocation == input.Length) return false;
@@ -141,7 +154,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		static char[] WhiteSpaceChars = new char[] {' ', '\n', '\r', '\t'};
-		static char[] WhiteSpaceAndReservedChars = new char[] {' ', '\n', '\r', '\t', '<', '=', '>', '/'};
+		static char[] WhiteSpaceAndReservedChars = new char[] {' ', '\n', '\r', '\t', '<', '=', '>', '/', ':', '?'};
 		
 		bool? IsWhiteSpace()
 		{
@@ -206,7 +219,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			element.StartOffset = currentLocation;
 			element.StartTag = ReadTag(element);
 			// Read content
-			if (element.StartTag.ClosingBracket == ">") {
+			if (element.StartTag.ClosingBracket == ">" &&
+			    element.StartTag.OpeningBracket != "<?" &&
+			    element.StartTag.OpeningBracket != "<!" &&
+			    element.StartTag.OpeningBracket != "<!--" )
+			{
 				while(true) {
 					if (IsEndOfFile()) {
 						break;
@@ -244,10 +261,20 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				tag.OpeningBracket = "<";
 				if (TryRead('/')) {
 					tag.OpeningBracket += "/";
+				} else if (TryRead('?')) {
+					tag.OpeningBracket += "?";
+				} else if (TryRead("!--")) {
+					tag.OpeningBracket += "!--";
+				} else if (TryRead('!')) {
+					tag.OpeningBracket += "!";
 				}
 			}
 			if (HasMoreData()) {
 				tag.Name = ReadName();
+				if (TryRead(':')) {
+					tag.Namesapce = tag.Name;
+					tag.Name = ReadName();
+				}
 			}
 			// Read attributes
 			while(true) {
@@ -263,7 +290,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						tag.ClosingBracket += ">";
 					}
 					break;
-				}
+				} else 	if (TryRead('?')) {
+					tag.ClosingBracket = "?";
+					if (TryRead('>')) {
+						tag.ClosingBracket += ">";
+					}
+					break;
+				} 
 				if (TryPeek('<')) break;
 				if (HasMoreData()) {
 					tag.Attributes.Add(ReadAttribulte(tag));
@@ -309,6 +342,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			attr.StartOffset = currentLocation;
 			if (HasMoreData()) {
 				attr.Name = ReadName();
+				if (TryRead(':')) {
+					attr.Namesapce = attr.Name;
+					attr.Name = ReadName();
+				}
 			}
 			int checkpoint = currentLocation;
 			attr.EqualsSign = string.Empty; 
