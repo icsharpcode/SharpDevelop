@@ -123,16 +123,16 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// Children of the node.  Can be Elements, Attributes, etc...
 		/// Please do not modify directly!
 		/// </summary>
-		public ObservableCollection<RawObject> Children { get; private set; }
+		public ChildrenCollection<RawObject> Children { get; private set; }
 		
 		public RawContainer()
 		{
-			this.Children = new ObservableCollection<RawObject>();
+			this.Children = new ChildrenCollection<RawObject>();
 		}
 		
 		public ObservableCollection<RawObject> Helper_Elements {
 			get {
-				return new FilteredObservableCollection<RawObject>(this.Children, x => x is RawElement);
+				return new FilteredCollection<ChildrenCollection<RawObject>, RawObject>(this.Children, x => x is RawElement);
 			}
 		}
 		
@@ -158,30 +158,55 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public void AddChild(RawObject item)
 		{
 			item.Parent = this;
-			this.Children.Add(item);
+			this.Children.InsertItems(this.Children.Count, new RawObject[] {item}.ToList());
 		}
 		
-		protected virtual void Insert(int index, RawObject item)
+		/// <summary>
+		/// Insert children, set parent for them and notify the document
+		/// </summary>
+		protected virtual void Insert(int index, IList<RawObject> items)
 		{
-			LogDom("Inserting {0} at index {1}", item, index);
-			item.Parent = this;
-			this.Children.Insert(index, item);
-			if (this.Document != null) {
-				foreach(RawObject obj in GetSelfAndAllChildren()) {
-					this.Document.OnObjectAttached(item);
+			if (items.Count == 1) {
+				LogDom("Inserting {0} at index {1}", items[0], index);
+			} else {
+				LogDom("Inserting at index {0}:", index);
+				foreach(RawObject item in items) LogDom("  {0}", item);
+			}
+			foreach(RawObject item in items) item.Parent = this;
+			this.Children.InsertItems(index, items);
+			RawDocument document = this.Document;
+			if (document != null) {
+				foreach(RawObject item in items)  {
+					foreach(RawObject obj in item.GetSelfAndAllChildren()) {
+						document.OnObjectAttached(obj);
+					}
 				}
 			}
 		}
 		
-		protected virtual void RemoveAt(int index)
+		/// <summary>
+		/// Remove children, set parent to null for them and notify the document
+		/// </summary>
+		protected virtual void RemoveAt(int index, int count)
 		{
-			RawObject removedItem = this.Children[index];
-			LogDom("Removing {0} at index {1}", removedItem, index);
-			removedItem.Parent = null;
-			this.Children.RemoveAt(index);
-			if (this.Document != null) {
-				foreach(RawObject obj in GetSelfAndAllChildren()) {
-					this.Document.OnObjectDettached(removedItem);
+			List<RawObject> removed = new List<RawObject>(count);
+			for(int i = 0; i < count; i++) {
+				removed.Add(this.Children[index + i]);
+			}
+			if (count == 1) {
+				LogDom("Removing {0} at index {1}", removed[0], index);
+			} else {
+				LogDom("Removing at index {0}:", index);
+				foreach(RawObject item in removed) LogDom("  {0}", item);
+			}
+			foreach(RawObject item in removed) item.Parent = null;
+			this.Children.RemoveItems(index, count);
+			RawDocument document = this.Document;
+			if (document != null) {
+				foreach(RawObject item in removed) {
+					foreach(RawObject obj in item.GetSelfAndAllChildren()) {
+						document.OnObjectDettached(obj);
+					}
 				}
 			}
 		}
@@ -204,7 +229,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			while(i < srcList.Count) {
 				// Item is missing - 'i' is invalid index
 				if (i >= dstList.Count) {
-					Insert(i, srcList[i]);
+					// Add the rest of the items
+					List<RawObject> itemsToAdd = new List<RawObject>();
+					for(int j = i; j < srcList.Count; j++) {
+						itemsToAdd.Add(srcList[j]);
+					}
+					Insert(i, itemsToAdd);
 					i++; continue;
 				}
 				RawObject srcItem = srcList[i];
@@ -225,9 +255,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				for(int srcItemIndex = i; srcItemIndex < srcList.Count; srcItemIndex++) {
 					RawObject src = srcList[srcItemIndex];
 					if (src.StartOffset == dstItem.StartOffset && src.GetType() == dstItem.GetType()) {
+						List<RawObject> itemsToAdd = new List<RawObject>();
 						for(int j = i; j < srcItemIndex; j++) {
-							Insert(j, srcList[j]);
+							itemsToAdd.Add(srcList[j]);
 						}
+						Insert(i, itemsToAdd);
 						i = srcItemIndex;
 						goto continue2;
 					}
@@ -236,9 +268,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				for(int dstItemIndex = i; dstItemIndex < dstList.Count; dstItemIndex++) {
 					RawObject dst = dstList[dstItemIndex];
 					if (srcItem.StartOffset == dst.StartOffset && srcItem.GetType() == dst.GetType()) {
-						for(int j = 0; j < dstItemIndex - i; j++) {
-							RemoveAt(i);
-						}
+						RemoveAt(i, dstItemIndex - i);
 						goto continue2;
 					}
 				}
@@ -247,22 +277,22 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					dstItem.UpdateDataFrom(srcItem);
 					i++; continue;
 				}
-				// Remove whitespace in hope that element update will occur next
-				if (dstItem is RawText) {
-					RemoveAt(i);
+				// Remove fluf in hope that element/attribute update will occur next
+				if (!(dstItem is RawElement) && !(dstItem is RawAttribute)) {
+					RemoveAt(i, 1);
 					continue;
 				}
 				// Otherwise just add the item
 				{
-					Insert(i, srcList[i]);
+					Insert(i, new RawObject[] {srcList[i]}.ToList());
 					i++; continue;
 				}
 				// Continue for inner loops
 				continue2:;
 			}
 			// Remove extra items
-			while(dstList.Count > srcList.Count) {
-				RemoveAt(srcList.Count);
+			if (dstList.Count > srcList.Count) {
+				RemoveAt(srcList.Count, dstList.Count - srcList.Count);
 			}
 		}
 	}
@@ -357,9 +387,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public ObservableCollection<RawObject> Helper_AttributesAndElements {
 			get {
-				return new MergedObservableCollection<RawObject>(
-					new FilteredObservableCollection<RawObject>(this.StartTag.Children, x => x is RawAttribute),
-					new FilteredObservableCollection<RawObject>(this.Children, x => x is RawElement)
+				return new MergedCollection<ObservableCollection<RawObject>, RawObject>(
+					new FilteredCollection<ChildrenCollection<RawObject>, RawObject>(this.StartTag.Children, x => x is RawAttribute),
+					new FilteredCollection<ChildrenCollection<RawObject>, RawObject>(this.Children, x => x is RawElement)
 				);
 			}
 		}
@@ -394,9 +424,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (!firstUpdate) LogLinq("Updating XElement Attributes of '{0}'", this.StartTag.Name);
 			
 			xElem.ReplaceAttributes(); // Otherwise we get duplicate item exception
-			xElem.ReplaceAttributes(
-				this.StartTag.Children.OfType<RawAttribute>().Select(x => x.GetXAttribute()).ToArray()
-			);
+			XAttribute[] attrs = this.StartTag.Children.OfType<RawAttribute>().Select(x => x.GetXAttribute()).Distinct(new AttributeNameComparer()).ToArray();
+			xElem.ReplaceAttributes(attrs);
 		}
 		
 		void UpdateXElementChildren(bool firstUpdate)
@@ -406,6 +435,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			xElem.ReplaceNodes(
 				this.Children.OfType<RawElement>().Select(x => x.GetXElement()).ToArray()
 			);
+		}
+		
+		class AttributeNameComparer: IEqualityComparer<XAttribute>
+		{
+			public bool Equals(XAttribute x, XAttribute y)
+			{
+				return x.Name == y.Name;
+			}
+			
+			public int GetHashCode(XAttribute obj)
+			{
+				return obj.Name.GetHashCode();
+			}
 		}
 		
 		public override string ToString()
@@ -461,7 +503,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (xAttr.Name == EncodeXName(this.Name, this.Namesapce)) {
 				xAttr.Value = this.Value ?? string.Empty;
 			} else {
-				xAttr.Remove();
+				XElement xParent = xAttr.Parent;
+				if (xAttr.Parent != null) xAttr.Remove(); // Duplicate items are not added
 				xAttr = null;
 				deleted = true; // No longer get events for this instance
 				((RawElement)this.Parent.Parent).UpdateXElementAttributes(false);

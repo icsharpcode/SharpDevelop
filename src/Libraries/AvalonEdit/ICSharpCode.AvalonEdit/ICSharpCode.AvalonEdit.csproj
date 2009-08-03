@@ -304,7 +304,7 @@
     <Compile Include="Utils\ThrowUtil.cs" />
     <Compile Include="Utils\Win32.cs" />
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
-    <Compile Include="XmlParser\ObservableCollections.cs" />
+    <Compile Include="XmlParser\Collections.cs" />
     <Compile Include="XmlParser\RawObjects.cs" />
     <Compile Include="XmlParser\XmlParser.cs" />
     <Resource Include="themes\RightArrow.cur" />
