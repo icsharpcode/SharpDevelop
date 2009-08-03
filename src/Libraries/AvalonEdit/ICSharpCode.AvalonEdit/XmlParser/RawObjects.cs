@@ -100,28 +100,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			System.Diagnostics.Debug.WriteLine("XML Linq: " + format, args);
 		}
 		
-		internal void OnInserting(RawObject parent, int index)
-		{
-			LogDom("Inserting {0} at index {1}", this, index);
-			this.Parent = parent;
-//			if (this.Document != null) {
-//				foreach(RawObject obj in GetSeftAndAllNestedObjects()) {
-//					this.Document.OnObjectAttached(new RawObjectEventArgs() { Object = obj });
-//				}
-//			}
-		}
-		
-		internal void OnRemoving(RawObject parent, int index)
-		{
-			LogDom("Removing {0} at index {1}", this, index);
-			this.Parent = null;
-//			if (this.Document != null) {
-//				foreach(RawObject obj in GetSeftAndAllNestedObjects()) {
-//					this.Document.OnObjectDettached(new RawObjectEventArgs() { Object = obj });
-//				}
-//			}
-		}
-		
 		protected XName EncodeXName(string name, string ns)
 		{
 			if (string.IsNullOrEmpty(name)) name = "_";
@@ -134,18 +112,151 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 	}
 	
-	public class RawDocument: RawObject
+	public abstract class RawContainer: RawObject
 	{
-		public ObservableCollection<RawObject> Children { get; set; }
+		/// <summary>
+		/// Children of the node.  Can be Elements, Attributes, etc...
+		/// Please do not modify directly!
+		/// </summary>
+		public ObservableCollection<RawObject> Children { get; private set; }
 		
-//		public event EventHandler<RawObjectEventArgs> ObjectAttached;
-//		public event EventHandler<RawObjectEventArgs> ObjectDettached;
+		public RawContainer()
+		{
+			this.Children = new ObservableCollection<RawObject>();
+		}
 		
 		public ObservableCollection<RawObject> Helper_Elements {
 			get {
 				return new FilteredObservableCollection<RawObject>(this.Children, x => x is RawElement);
 			}
 		}
+		
+		public override void UpdateDataFrom(RawObject source)
+		{
+			if (this.ReadCallID == source.ReadCallID) return;
+			base.UpdateDataFrom(source);
+			RawContainer src = (RawContainer)source;
+			UpdateChildrenFrom(src.Children);
+		}
+		
+		// The following should be the only methods that are ever
+		// used to modify the children collection
+		
+		public void AddChild(RawObject item)
+		{
+			item.Parent = this;
+			this.Children.Add(item);
+		}
+		
+		protected virtual void Insert(int index, RawObject item)
+		{
+			LogDom("Inserting {0} at index {1}", item, index);
+			item.Parent = this;
+			this.Children.Insert(index, item);
+//			if (this.Document != null) {
+//				foreach(RawObject obj in GetSeftAndAllNestedObjects()) {
+//					this.Document.OnObjectAttached(new RawObjectEventArgs() { Object = obj });
+//				}
+//			}
+		}
+		
+		protected virtual void RemoveAt(int index)
+		{
+			LogDom("Removing {0} at index {1}", this.Children[index], index);
+			this.Children[index].Parent = null;
+			this.Children.RemoveAt(index);
+//			if (this.Document != null) {
+//				foreach(RawObject obj in GetSeftAndAllNestedObjects()) {
+//					this.Document.OnObjectDettached(new RawObjectEventArgs() { Object = obj });
+//				}
+//			}
+		}
+		
+		/// <summary>
+		/// Copy items from source list over to destination list.  
+		/// Prefer updating items with matching offsets.
+		/// </summary>
+		public void UpdateChildrenFrom(IList<RawObject> srcList)
+		{
+			IList<RawObject> dstList = this.Children;
+			
+			// Items up to 'i' shall be matching
+			int i = 0;
+			// Do not do anything smart with the start tag
+			if (this is RawElement) {
+				dstList[0].UpdateDataFrom(srcList[0]);
+				i++;
+			}
+			while(i < srcList.Count) {
+				// Item is missing - 'i' is invalid index
+				if (i >= dstList.Count) {
+					Insert(i, srcList[i]);
+					i++; continue;
+				}
+				RawObject srcItem = srcList[i];
+				RawObject dstItem = dstList[i];
+				// Matching and updated
+				if (srcItem.ReadCallID == dstItem.ReadCallID) {
+					i++; continue;
+				}
+				// Offsets and types are matching
+				if (srcItem.StartOffset == dstItem.StartOffset &&
+				    srcItem.GetType() == dstItem.GetType())
+				{
+					dstItem.UpdateDataFrom(srcItem);
+					i++; continue;
+				}
+				// Try to be smart by inserting or removing items
+				// Dst offset matches with future src
+				for(int srcItemIndex = i; srcItemIndex < srcList.Count; srcItemIndex++) {
+					RawObject src = srcList[srcItemIndex];
+					if (src.StartOffset == dstItem.StartOffset && src.GetType() == dstItem.GetType()) {
+						for(int j = i; j < srcItemIndex; j++) {
+							Insert(j, srcList[j]);
+						}
+						i = srcItemIndex;
+						goto continue2;
+					}
+				}
+				// Scr offset matches with future dst
+				for(int dstItemIndex = i; dstItemIndex < dstList.Count; dstItemIndex++) {
+					RawObject dst = dstList[dstItemIndex];
+					if (srcItem.StartOffset == dst.StartOffset && srcItem.GetType() == dst.GetType()) {
+						for(int j = 0; j < dstItemIndex - i; j++) {
+							RemoveAt(i);
+						}
+						goto continue2;
+					}
+				}
+				// No matches found - just update
+				if (dstItem.GetType() == srcItem.GetType()) {
+					dstItem.UpdateDataFrom(srcItem);
+					i++; continue;
+				}
+				// Remove whitespace in hope that element update will occur next
+				if (dstItem is RawText) {
+					RemoveAt(i);
+					continue;
+				}
+				// Otherwise just add the item
+				{
+					Insert(i, srcList[i]);
+					i++; continue;
+				}
+				// Continue for inner loops
+				continue2:;
+			}
+			// Remove extra items
+			while(dstList.Count > srcList.Count) {
+				RemoveAt(srcList.Count);
+			}
+		}
+	}
+	
+	public class RawDocument: RawContainer
+	{
+//		public event EventHandler<RawObjectEventArgs> ObjectAttached;
+//		public event EventHandler<RawObjectEventArgs> ObjectDettached;
 		
 //		internal void OnObjectAttached(RawObjectEventArgs e)
 //		{
@@ -156,19 +267,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 //		{
 //			if (ObjectDettached != null) ObjectDettached(this, e);
 //		}
-		
-		public RawDocument()
-		{
-			this.Children = new ObservableCollection<RawObject>();
-		}
-		
-		public override void UpdateDataFrom(RawObject source)
-		{
-			if (this.ReadCallID == source.ReadCallID) return;
-			base.UpdateDataFrom(source);
-			RawDocument src = (RawDocument)source;
-			RawUtils.SmartListUpdate(src.Children, this.Children, this);
-		}
 		
 		public XDocument CreateXDocument(bool autoUpdate)
 		{
@@ -198,18 +296,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 	}
 	
-	public class RawTag: RawObject
+	public class RawTag: RawContainer
 	{
 		public string OpeningBracket { get; set; } // "<" or "</"
 		public string Namesapce { get; set; }
 		public string Name { get; set; }
-		public ObservableCollection<RawObject> Attributes { get; set; }
 		public string ClosingBracket { get; set; } // ">" or "/>" for well formed
-		
-		public RawTag()
-		{
-			this.Attributes = new ObservableCollection<RawObject>();
-		}
 		
 		public override void UpdateDataFrom(RawObject source)
 		{
@@ -227,59 +319,42 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				this.ClosingBracket = src.ClosingBracket;
 				OnLocalDataChanged();
 			}
-			RawUtils.SmartListUpdate(src.Attributes, this.Attributes, this);
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("[{0} '{1}{2}{3}' Attr:{4}]", base.ToString(), this.OpeningBracket, this.Name, this.ClosingBracket, this.Attributes.Count);
+			return string.Format("[{0} '{1}{2}{3}' Attr:{4}]", base.ToString(), this.OpeningBracket, this.Name, this.ClosingBracket, this.Children.Count);
 		}
 	}
 	
-	public class RawElement: RawObject
+	public class RawElement: RawContainer
 	{
-		public RawTag StartTag { get; set; }
-		public ObservableCollection<RawObject> Children { get; set; }
-		public bool HasEndTag { get; set; }
-		public RawTag EndTag { get; set; }
+		public RawTag StartTag {
+			get {
+				return (RawTag)this.Children[0];
+			}
+		}
 		
 		public ObservableCollection<RawObject> Helper_AttributesAndElements {
 			get {
 				return new MergedObservableCollection<RawObject>(
-					new FilteredObservableCollection<RawObject>(this.StartTag.Attributes, x => x is RawAttribute),
+					new FilteredObservableCollection<RawObject>(this.StartTag.Children, x => x is RawAttribute),
 					new FilteredObservableCollection<RawObject>(this.Children, x => x is RawElement)
 				);
 			}
 		}
 		
-		public RawElement()
-		{
-			this.StartTag = new RawTag() { Parent = this };
-			this.Children = new ObservableCollection<RawObject>();
-			this.EndTag   = new RawTag() { Parent = this };
-		}
-		
-		public override void UpdateDataFrom(RawObject source)
-		{
-			if (this.ReadCallID == source.ReadCallID) return;
-			base.UpdateDataFrom(source);
-			RawElement src = (RawElement)source;
-			this.StartTag.UpdateDataFrom(src.StartTag);
-			RawUtils.SmartListUpdate(src.Children, this.Children, this);
-			this.EndTag.UpdateDataFrom(src.EndTag);
-		}
-		
 		public XElement CreateXElement(bool autoUpdate)
 		{
 			LogLinq("Creating XElement '{0}'", this.StartTag.Name);
-			XElement elem = new XElement(EncodeXName(this.StartTag.Name, this.EndTag.Namesapce));
+			XElement elem = new XElement(EncodeXName(this.StartTag.Name, this.StartTag.Namesapce));
 			elem.AddAnnotation(this);
 			UpdateXElement(elem, autoUpdate);
 			UpdateXElementAttributes(elem, autoUpdate);
 			UpdateXElementChildren(elem, autoUpdate);
 			if (autoUpdate) {
 				this.StartTag.LocalDataChanged += delegate { UpdateXElement(elem, autoUpdate); };
-				this.StartTag.Attributes.CollectionChanged += delegate { UpdateXElementAttributes(elem, autoUpdate); };
+				this.StartTag.Children.CollectionChanged += delegate { UpdateXElementAttributes(elem, autoUpdate); };
 				this.Children.CollectionChanged += delegate { UpdateXElementChildren(elem, autoUpdate); };
 			}
 			return elem;
@@ -288,13 +363,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		void UpdateXElement(XElement elem, bool autoUpdate)
 		{
 			LogLinq("Updating XElement '{0}'", this.StartTag.Name);
-			elem.Name = EncodeXName(this.StartTag.Name, this.EndTag.Namesapce);
+			elem.Name = EncodeXName(this.StartTag.Name, this.StartTag.Namesapce);
 		}
 		
 		internal void UpdateXElementAttributes(XElement elem, bool autoUpdate)
 		{
 			List<XAttribute> xAttrs = new List<XAttribute>();
-			foreach(RawAttribute attr in this.StartTag.Attributes.OfType<RawAttribute>()) {
+			foreach(RawAttribute attr in this.StartTag.Children.OfType<RawAttribute>()) {
 				XAttribute existing = elem.Attributes().FirstOrDefault(x => x.GetRawObject() == attr);
 				xAttrs.Add(existing ?? attr.CreateXAttribute(autoUpdate));
 			}
@@ -313,7 +388,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public override string ToString()
 		{
-			return string.Format("[{0} '{1}{2}{3}' Attr:{4} Chld:{5}]", base.ToString(), this.StartTag.OpeningBracket, this.StartTag.Name, this.StartTag.ClosingBracket, this.StartTag.Attributes.Count, this.Children.Count);
+			return string.Format("[{0} '{1}{2}{3}' Attr:{4} Chld:{5}]", base.ToString(), this.StartTag.OpeningBracket, this.StartTag.Name, this.StartTag.ClosingBracket, this.StartTag.Children.Count, this.Children.Count);
 		}
 	}
 	
@@ -416,84 +491,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			if (xObj == null) return null;
 			return xObj.Annotation<RawObject>();
-		}
-		
-		/// <summary>
-		/// Copy items from source list over to destination list.  
-		/// Prefer updating items with matching offsets.
-		/// </summary>
-		public static void SmartListUpdate(IList<RawObject> srcList, IList<RawObject> dstList, RawObject dstListOwner)
-		{
-			// Items up to 'i' shall be matching
-			for(int i = 0; i < srcList.Count;) {
-				// Item is missing - 'i' is invalid index
-				if (i >= dstList.Count) {
-					srcList[i].OnInserting(dstListOwner, i);
-					dstList.Insert(i, srcList[i]);
-					i++; continue;
-				}
-				RawObject srcItem = srcList[i];
-				RawObject dstItem = dstList[i];
-				// Matching and updated
-				if (srcItem.ReadCallID == dstItem.ReadCallID) {
-					i++; continue;
-				}
-				// Offsets and types are matching
-				if (srcItem.StartOffset == dstItem.StartOffset &&
-				    srcItem.GetType() == dstItem.GetType())
-				{
-					dstItem.UpdateDataFrom(srcItem);
-					i++; continue;
-				}
-				// Try to be smart by inserting or removing items
-				// Dst offset matches with future src
-				for(int srcItemIndex = i; srcItemIndex < srcList.Count; srcItemIndex++) {
-					RawObject src = srcList[srcItemIndex];
-					if (src.StartOffset == dstItem.StartOffset && src.GetType() == dstItem.GetType()) {
-						for(int j = i; j < srcItemIndex; j++) {
-							srcList[j].OnInserting(dstListOwner, j);
-							dstList.Insert(j, srcList[j]);
-						}
-						i = srcItemIndex;
-						goto continue2;
-					}
-				}
-				// Scr offset matches with future dst
-				for(int dstItemIndex = i; dstItemIndex < dstList.Count; dstItemIndex++) {
-					RawObject dst = dstList[dstItemIndex];
-					if (srcItem.StartOffset == dst.StartOffset && srcItem.GetType() == dst.GetType()) {
-						for(int j = 0; j < dstItemIndex - i; j++) {
-							dstList[i].OnRemoving(dstListOwner, i);
-							dstList.RemoveAt(i);
-						}
-						goto continue2;
-					}
-				}
-				// No matches found - just update
-				if (dstItem.GetType() == srcItem.GetType()) {
-					dstItem.UpdateDataFrom(srcItem);
-					i++; continue;
-				}
-				// Remove whitespace in hope that element update will occur next
-				if (dstItem is RawText) {
-					dstList[i].OnRemoving(dstListOwner, i);
-					dstList.RemoveAt(i);
-					continue;
-				}
-				// Otherwise just add the item
-				{
-					srcList[i].OnInserting(dstListOwner, i);
-					dstList.Insert(i, srcList[i]);
-					i++; continue;
-				}
-			}
-			// Remove extra items
-			while(dstList.Count > srcList.Count) {
-				dstList[srcList.Count].OnRemoving(dstListOwner, srcList.Count);
-				dstList.RemoveAt(srcList.Count);
-			}
-			// Continue for inner loops
-			continue2:;
 		}
 	}
 }

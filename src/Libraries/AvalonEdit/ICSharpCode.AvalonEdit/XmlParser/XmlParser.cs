@@ -192,9 +192,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				if (IsEndOfFile()) {
 					break;
 				} else if (TryPeek('<')) {
-					doc.Children.Add(ReadElement(doc));
+					doc.AddChild(ReadElement());
 				} else {
-					doc.Children.Add(ReadCharacterData(doc));
+					doc.AddChild(ReadCharacterData());
 				}
 			}
 			doc.EndOffset = currentLocation;
@@ -204,17 +204,18 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return doc;
 		}
 		
-		RawElement ReadElement(RawObject parent)
+		RawElement ReadElement()
 		{
 			Debug.Assert(HasMoreData() && TryPeek('<'));
 			
 			RawElement element = ReadFromCache<RawElement>(currentLocation);
 			if (element != null) return element;
 
-			element = new RawElement() { Parent = parent };
+			element = new RawElement();
 			
 			element.StartOffset = currentLocation;
-			element.StartTag = ReadTag(element);
+			// Read start tag
+			element.AddChild(ReadTag());
 			// Read content
 			if (element.StartTag.ClosingBracket == ">" &&
 			    element.StartTag.OpeningBracket != "<?" &&
@@ -226,16 +227,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						break;
 					} else if (TryPeek('<')) {
 						if (TryPeek("</")) break;
-						element.Children.Add(ReadElement(element));
+						element.AddChild(ReadElement());
 					} else {
-						element.Children.Add(ReadCharacterData(element));
+						element.AddChild(ReadCharacterData());
 					}
 				}
 			}
-			// Read closing tag
+			// Read end tag
 			if (TryPeek("</")) {
-				element.HasEndTag = true;
-				element.EndTag = ReadTag(element);
+				element.AddChild(ReadTag());
 			}
 			element.EndOffset = currentLocation;
 			
@@ -244,14 +244,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return element;
 		}
 		
-		RawTag ReadTag(RawObject parent)
+		RawTag ReadTag()
 		{
 			Debug.Assert(HasMoreData() && TryPeek('<'));
 			
 			RawTag tag = ReadFromCache<RawTag>(currentLocation);
 			if (tag != null) return tag;
 			
-			tag = new RawTag() { Parent = parent };
+			tag = new RawTag();
 			
 			tag.StartOffset = currentLocation;
 			if (TryRead('<')) {
@@ -276,7 +276,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			// Read attributes
 			while(true) {
 				if (IsWhiteSpace() == true) {
-					tag.Attributes.Add(ReadWhiteSpace(tag));
+					tag.AddChild(ReadWhiteSpace());
 				}
 				if (TryRead('>')) {
 					tag.ClosingBracket = ">";
@@ -296,7 +296,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				} 
 				if (TryPeek('<')) break;
 				if (HasMoreData()) {
-					tag.Attributes.Add(ReadAttribulte(tag));
+					tag.AddChild(ReadAttribulte());
 					continue;
 				}
 				break;
@@ -308,14 +308,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return tag;
 		}
 		
-		RawText ReadWhiteSpace(RawObject parent)
+		RawText ReadWhiteSpace()
 		{
 			Debug.Assert(HasMoreData() && IsWhiteSpace() == true);
 			
 			RawText ws = ReadFromCache<RawText>(currentLocation);
 			if (ws != null) return ws;
 			
-			ws = new RawText() { Parent = parent };
+			ws = new RawText();
 			
 			ws.StartOffset = currentLocation;
 			int start = currentLocation;
@@ -327,14 +327,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return ws;
 		}
 		
-		RawAttribute ReadAttribulte(RawObject parent)
+		RawAttribute ReadAttribulte()
 		{
 			Debug.Assert(HasMoreData());
 			
 			RawAttribute attr = ReadFromCache<RawAttribute>(currentLocation);
 			if (attr != null) return attr;
 			
-			attr = new RawAttribute() { Parent = parent };
+			attr = new RawAttribute();
 			
 			attr.StartOffset = currentLocation;
 			if (HasMoreData()) {
@@ -346,10 +346,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 			int checkpoint = currentLocation;
 			attr.EqualsSign = string.Empty; 
-			if (IsWhiteSpace() == true) attr.EqualsSign += ReadWhiteSpace(attr).Value;
+			if (IsWhiteSpace() == true) attr.EqualsSign += ReadWhiteSpace().Value;
 			if (TryRead('=')) {
 				attr.EqualsSign += "=";
-				if (IsWhiteSpace() == true) attr.EqualsSign += ReadWhiteSpace(attr).Value;
+				if (IsWhiteSpace() == true) attr.EqualsSign += ReadWhiteSpace().Value;
 				if (IsWhiteSpaceOrReserved() == false) {
 					// Read attribute value
 					int start = currentLocation;
@@ -375,14 +375,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return attr;
 		}
 		
-		RawText ReadCharacterData(RawObject parent)
+		RawText ReadCharacterData()
 		{
 			Debug.Assert(HasMoreData());
 			
 			RawText charData = ReadFromCache<RawText>(currentLocation);
 			if (charData != null) return charData;
 			
-			charData = new RawText() { Parent = parent };
+			charData = new RawText();
 			
 			charData.StartOffset = currentLocation;
 			int start = currentLocation;
