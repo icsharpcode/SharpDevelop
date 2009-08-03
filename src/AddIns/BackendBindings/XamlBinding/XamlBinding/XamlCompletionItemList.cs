@@ -5,14 +5,16 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 
@@ -92,7 +94,11 @@ namespace ICSharpCode.XamlBinding
 				
 				if (item is NewEventCompletionItem) {
 					NewEventCompletionItem eventItem = item as NewEventCompletionItem;
-					CreateEventHandlerCode(context, eventItem);
+					int discriminator;
+					if (CreateEventHandlerCode(context, eventItem, out discriminator)) {
+						if (discriminator > 0)
+							context.Editor.Document.Insert(context.EndOffset, discriminator.ToString());
+					}
 				}
 				
 				if (item is XmlnsCompletionItem) {
@@ -126,16 +132,27 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		static void CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem)
+		static bool CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem, out int discriminator)
 		{
 			ParseInformation p = ParserService.GetParseInformation(context.Editor.FileName);
 			var unit = p.MostRecentCompilationUnit;
 			var loc = context.Editor.Document.OffsetToPosition(context.StartOffset);
 			IClass c = unit.GetInnermostClass(loc.Line, loc.Column);
+			
+			discriminator = 1;
+			
 			if (c == null)
-				return;
+				return false;
 			IMethod initializeComponent = c.Methods[0];
 			CompoundClass compound = c.GetCompoundClass() as CompoundClass;
+			
+			IMethod invokeMethod = completionItem.EventType.ReturnType.GetMethods().FirstOrDefault(m => m.Name == "Invoke");
+			
+			string handlerName = completionItem.HandlerName;
+			
+			if (invokeMethod == null)
+				throw new ArgumentException("delegateType is not a valid delegate!");
+
 			if (compound != null) {
 				foreach (IClass part in compound.Parts) {
 					IMember lastMember = part.Methods.LastOrDefault();
@@ -144,31 +161,38 @@ namespace ICSharpCode.XamlBinding
 						continue;
 					
 					if (completionItem.EventType.ReturnType == null)
-						return;
+						return false;
 					
-					IMethod method = completionItem.EventType.ReturnType.GetMethods().FirstOrDefault(m => m.Name == "Invoke");
+					while (part.Methods.Any(m => m.Name == handlerName &&
+					                        m.Parameters.Count == invokeMethod.Parameters.Count &&
+					                        m.Parameters.SequenceEqual(invokeMethod.Parameters, new ParameterComparer())
+					                       )) {
+						handlerName = completionItem.HandlerName + discriminator;
+						discriminator++;
+					}
 					
-					if (method == null)
-						throw new ArgumentException("delegateType is not a valid delegate!");
+					discriminator--;
 					
-					ParametrizedNode node = CodeGenerator.ConvertMember(method, new ClassFinder(part, context.Editor.Caret.Line, context.Editor.Caret.Column));
+					ParametrizedNode node = CodeGenerator.ConvertMember(invokeMethod, new ClassFinder(part, context.Editor.Caret.Line, context.Editor.Caret.Column));
 					
-					node.Name = completionItem.HandlerName;
+					node.Name = handlerName;
 					
 					node.Modifier = Modifiers.None;
 
 					IViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName, XamlBindingOptions.SwitchToCodeViewAfterInsertion);
 					IFileDocumentProvider document = viewContent as IFileDocumentProvider;
 					
-					if (viewContent != null || document != null) {
+					if (viewContent != null && document != null) {
 						if (lastMember != null)
 							unit.ProjectContent.Language.CodeGenerator.InsertCodeAfter(lastMember, new RefactoringDocumentAdapter(document.GetDocumentForFile(viewContent.PrimaryFile)), node);
 						else
 							unit.ProjectContent.Language.CodeGenerator.InsertCodeAtEnd(part.Region, new RefactoringDocumentAdapter(document.GetDocumentForFile(viewContent.PrimaryFile)), node);
 					}
-					return;
+					return true;
 				}
 			}
+			
+			return false;
 		}
 	}
 }

@@ -340,12 +340,8 @@ namespace ICSharpCode.XamlBinding
 						if (invoker == null)
 							break;
 						
-						var list = new List<ICompletionItem>() {
-							new NewEventCompletionItem(evtMember.ResolvedMember as IEvent, typeName.Name)
-						};
-						
 						completionList.Items.AddRange(
-							CompletionDataHelper.AddMatchingEventHandlers(context, invoker).Concat(list)
+							CompletionDataHelper.AddMatchingEventHandlers(context, invoker).Add(new NewEventCompletionItem(evtMember.ResolvedMember as IEvent, typeName.Name))
 						);
 						break;
 				}

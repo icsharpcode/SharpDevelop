@@ -56,6 +56,28 @@ namespace ICSharpCode.XamlBinding
 		}
 	}
 	
+	class XamlLazyValueCompletionItem : XamlCodeCompletionItem
+	{
+		bool addType;
+		
+		public XamlLazyValueCompletionItem(IEntity entity, string text, bool addType)
+			: base(entity)
+		{
+			this.addType = addType;
+			this.Text = text;
+		}
+		
+		public override void Complete(CompletionContext context)
+		{
+			if (addType) {
+				string newText = Entity.DeclaringType.Name + "." + Text;
+				context.Editor.Document.Replace(context.StartOffset, context.Length, newText);
+				context.EndOffset = context.StartOffset + newText.Length;
+			} else
+				base.Complete(context);
+		}
+	}
+	
 	class XamlCompletionItem : DefaultCompletionItem
 	{
 		string prefix, @namespace, name;

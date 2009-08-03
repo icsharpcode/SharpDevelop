@@ -231,34 +231,6 @@ namespace ICSharpCode.XamlBinding
 				.Cast<ICompletionItem>();
 		}
 		
-		sealed class XmlnsEqualityComparer : IEqualityComparer<XmlnsCompletionItem> {
-			public bool Equals(XmlnsCompletionItem x, XmlnsCompletionItem y)
-			{
-				return x.Namespace == y.Namespace && x.Assembly == y.Assembly;
-			}
-			
-			public int GetHashCode(XmlnsCompletionItem obj)
-			{
-				return string.IsNullOrEmpty(obj.Assembly) ? obj.Namespace.GetHashCode() : obj.Namespace.GetHashCode() ^ obj.Assembly.GetHashCode();
-			}
-		}
-		
-		sealed class XmlnsComparer : IComparer<XmlnsCompletionItem> {
-			public int Compare(XmlnsCompletionItem x, XmlnsCompletionItem y)
-			{
-				if (x.IsUrl && y.IsUrl)
-					return string.CompareOrdinal(x.Namespace, y.Namespace);
-				if (x.IsUrl)
-					return -1;
-				if (y.IsUrl)
-					return 1;
-				if (x.Assembly == y.Assembly)
-					return string.CompareOrdinal(x.Namespace, y.Namespace);
-				else
-					return string.CompareOrdinal(x.Assembly, y.Assembly);
-			}
-		}
-		
 		static string GetContentPropertyName(IReturnType type)
 		{
 			if (type == null)
@@ -681,8 +653,10 @@ namespace ICSharpCode.XamlBinding
 					yield break;
 			}
 			
-			bool isExplicit;
+			bool isExplicit, showFull = false;
 			IReturnType typeName;
+			
+			string valueBeforeCaret = (context.ValueStartOffset > 0) ? context.RawAttributeValue.Substring(0, context.ValueStartOffset + 1) : "";
 			
 			switch (c.ClassType) {
 				case ClassType.Class:
@@ -701,16 +675,26 @@ namespace ICSharpCode.XamlBinding
 							
 							bool isReadOnly = context.ActiveElement.Name.EndsWith("Trigger");
 							
+							Core.LoggingService.Debug("value: " + valueBeforeCaret);
+
+							if (!isExplicit && valueBeforeCaret.Contains("."))
+								showFull = true;
+							
 							if (typeName != null) {
-								foreach (var item in typeName.GetDependencyProperties(true, !isExplicit, !isReadOnly))
+								foreach (var item in typeName.GetDependencyProperties(true, !isExplicit, !isReadOnly, showFull))
 									yield return item;
 							}
 							break;
 						case "System.Windows.RoutedEvent":
 							typeName = GetType(context, out isExplicit);
 							
+							Core.LoggingService.Debug("value: " + valueBeforeCaret);
+							
+							if (!isExplicit && valueBeforeCaret.Contains("."))
+								showFull = true;
+							
 							if (typeName != null) {
-								foreach (var item in typeName.GetRoutedEvents(true, !isExplicit))
+								foreach (var item in typeName.GetRoutedEvents(true, !isExplicit, showFull))
 									yield return item;
 							}
 							break;
@@ -896,12 +880,7 @@ namespace ICSharpCode.XamlBinding
 						if ((m.ReturnType != null && delegateInvoker.ReturnType != null) && m.ReturnType.DotNetName != delegateInvoker.ReturnType.DotNetName)
 							continue;
 						
-						bool equal = true;
-						for (int i = 0; i < m.Parameters.Count; i++) {
-							equal &= CompareParameter(m.Parameters[i], delegateInvoker.Parameters[i]);
-							if (!equal)
-								break;
-						}
+						bool equal = m.Parameters.SequenceEqual(delegateInvoker.Parameters, new ParameterComparer());
 						if (equal) {
 							yield return new XamlCodeCompletionItem(m);
 						}
@@ -910,7 +889,7 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 
-		static bool CompareParameter(IParameter p1, IParameter p2)
+		public static bool Compare(this IParameter p1, IParameter p2)
 		{
 			return (p1.ReturnType.DotNetName == p2.ReturnType.DotNetName) &&
 				(p1.IsOut == p2.IsOut) && (p1.IsParams == p2.IsParams) && (p1.IsRef == p2.IsRef);
@@ -939,7 +918,7 @@ namespace ICSharpCode.XamlBinding
 				 (thisValue.SetterModifiers & ModifierEnum.Public) == ModifierEnum.Public);
 		}
 		
-		public static IEnumerable<ICompletionItem> GetDependencyProperties(this IReturnType type, bool excludeSuffix, bool addType, bool requiresSetable)
+		public static IEnumerable<ICompletionItem> GetDependencyProperties(this IReturnType type, bool excludeSuffix, bool addType, bool requiresSetable, bool showFull)
 		{
 			foreach (var field in type.GetFields()) {
 				if (field.ReturnType.FullyQualifiedName != "System.Windows.DependencyProperty")
@@ -950,20 +929,23 @@ namespace ICSharpCode.XamlBinding
 				IProperty property = type.GetProperties().FirstOrDefault(p => p.Name == fieldName);
 				if (property == null)
 					continue;
-				if (requiresSetable && property.IsPubliclySetable())
-					
-					
-					if (!excludeSuffix)
-					fieldName += "Property";
+				if (requiresSetable && !property.IsPubliclySetable())
+					continue;
 				
-				if (addType)
-					fieldName = type.Name + "." + fieldName;
+				if (!excludeSuffix)
+					fieldName = field.Name;
 				
-				yield return new XamlCodeCompletionItem(fieldName, field);
+				if (showFull) {
+					addType = false;
+					
+					fieldName = field.DeclaringType.Name + "." + fieldName;
+				}
+				
+				yield return new XamlLazyValueCompletionItem(field, fieldName, addType);
 			}
 		}
 		
-		public static IEnumerable<ICompletionItem> GetRoutedEvents(this IReturnType type, bool excludeSuffix, bool addType)
+		public static IEnumerable<ICompletionItem> GetRoutedEvents(this IReturnType type, bool excludeSuffix, bool addType, bool showFull)
 		{
 			foreach (var field in type.GetFields()) {
 				if (field.ReturnType.FullyQualifiedName != "System.Windows.RoutedEvent")
@@ -975,12 +957,15 @@ namespace ICSharpCode.XamlBinding
 					continue;
 				
 				if (!excludeSuffix)
-					fieldName += "Event";
+					fieldName = field.Name;
 				
-				if (addType)
-					fieldName = type.Name + "." + fieldName;
+				if (showFull) {
+					addType = false;
+					
+					fieldName = field.DeclaringType.Name + "." + fieldName;
+				}
 				
-				yield return new XamlCodeCompletionItem(fieldName, field);
+				yield return new XamlLazyValueCompletionItem(field, fieldName, addType);
 			}
 		}
 
