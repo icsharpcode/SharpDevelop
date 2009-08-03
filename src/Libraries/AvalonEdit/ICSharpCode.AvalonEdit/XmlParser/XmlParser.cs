@@ -28,7 +28,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public XmlParser(TextDocument textDocument)
 		{
-			this.userLinqDocument = userDocument.CreateXDocument(true);
+			this.userLinqDocument = userDocument.GetXDocument();
 			this.textDocument = textDocument;
 			this.textDocument.Changed += delegate(object sender, DocumentChangeEventArgs e) {
 				changesSinceLastParse.Add(e);
@@ -50,12 +50,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				end = Math.Max(Math.Min(end, textDocument.TextLength - 1), 0);
 				foreach(RawObject obj in parsedItems.FindOverlappingSegments(start, end - start)) {
 					parsedItems.Remove(obj);
-					Log("Removed cached item: {0}", obj);
+					Log("Removed cached item {0}", obj);
 				}
 			}
 			changesSinceLastParse.Clear();
 			
 			RawDocument parsedDocument = ReadDocument();
+			if (parsedDocument.ReadCallID != userDocument.ReadCallID) {
+				RawObject.LogDom("Updating main DOM tree...");
+			}
 			userDocument.UpdateDataFrom(parsedDocument);
 			return userDocument;
 		}

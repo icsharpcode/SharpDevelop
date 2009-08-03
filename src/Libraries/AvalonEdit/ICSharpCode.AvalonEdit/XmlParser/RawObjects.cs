@@ -39,17 +39,17 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public RawObject Parent { get; set; }
 		
-//		public RawDocument Document {
-//			get {
-//				if (this.Parent != null) {
-//					return this.Parent.Document;
-//				} else if (this is RawDocument) {
-//					return (RawDocument)this;
-//				} else {
-//					return null;
-//				}
-//			}
-//		}
+		public RawDocument Document {
+			get {
+				if (this.Parent != null) {
+					return this.Parent.Document;
+				} else if (this is RawDocument) {
+					return (RawDocument)this;
+				} else {
+					return null;
+				}
+			}
+		}
 		
 		/// <summary> Occurs when the value of any local properties changes.  Nested changes do not cause the event to occur </summary>
 		public event EventHandler LocalDataChanged;
@@ -74,6 +74,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public RawObject()
 		{
 			this.ReadCallID = new object();
+		}
+		
+		public virtual IEnumerable<RawObject> GetSelfAndAllChildren()
+		{
+			return new RawObject[] { this };
 		}
 		
 		public virtual void UpdateDataFrom(RawObject source)
@@ -139,6 +144,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			UpdateChildrenFrom(src.Children);
 		}
 		
+		public override IEnumerable<RawObject> GetSelfAndAllChildren()
+		{
+			return Enumerable.Union(
+				new RawContainer[] { this },
+				this.Children.SelectMany(x => x.GetSelfAndAllChildren())
+			);
+		}
+		
 		// The following should be the only methods that are ever
 		// used to modify the children collection
 		
@@ -153,23 +166,24 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			LogDom("Inserting {0} at index {1}", item, index);
 			item.Parent = this;
 			this.Children.Insert(index, item);
-//			if (this.Document != null) {
-//				foreach(RawObject obj in GetSeftAndAllNestedObjects()) {
-//					this.Document.OnObjectAttached(new RawObjectEventArgs() { Object = obj });
-//				}
-//			}
+			if (this.Document != null) {
+				foreach(RawObject obj in GetSelfAndAllChildren()) {
+					this.Document.OnObjectAttached(item);
+				}
+			}
 		}
 		
 		protected virtual void RemoveAt(int index)
 		{
-			LogDom("Removing {0} at index {1}", this.Children[index], index);
-			this.Children[index].Parent = null;
+			RawObject removedItem = this.Children[index];
+			LogDom("Removing {0} at index {1}", removedItem, index);
+			removedItem.Parent = null;
 			this.Children.RemoveAt(index);
-//			if (this.Document != null) {
-//				foreach(RawObject obj in GetSeftAndAllNestedObjects()) {
-//					this.Document.OnObjectDettached(new RawObjectEventArgs() { Object = obj });
-//				}
-//			}
+			if (this.Document != null) {
+				foreach(RawObject obj in GetSelfAndAllChildren()) {
+					this.Document.OnObjectDettached(removedItem);
+				}
+			}
 		}
 		
 		/// <summary>
@@ -255,37 +269,43 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	
 	public class RawDocument: RawContainer
 	{
-//		public event EventHandler<RawObjectEventArgs> ObjectAttached;
-//		public event EventHandler<RawObjectEventArgs> ObjectDettached;
+		public event EventHandler<RawObjectEventArgs> ObjectAttached;
+		public event EventHandler<RawObjectEventArgs> ObjectDettached;
 		
-//		internal void OnObjectAttached(RawObjectEventArgs e)
-//		{
-//			if (ObjectAttached != null) ObjectAttached(this, e);
-//		}
-//		
-//		internal void OnObjectDettached(RawObjectEventArgs e)
-//		{
-//			if (ObjectDettached != null) ObjectDettached(this, e);
-//		}
-		
-		public XDocument CreateXDocument(bool autoUpdate)
+		internal void OnObjectAttached(RawObject obj)
 		{
-			LogLinq("Creating XDocument");
-			XDocument doc = new XDocument();
-			doc.AddAnnotation(this);
-			UpdateXDocument(doc, autoUpdate);
-			this.Children.CollectionChanged += delegate { UpdateXDocument(doc, autoUpdate); };
-			return doc;
+			if (ObjectAttached != null) ObjectAttached(this, new RawObjectEventArgs() { Object = obj } );
 		}
 		
-		void UpdateXDocument(XDocument doc, bool autoUpdate)
+		internal void OnObjectDettached(RawObject obj)
 		{
+			if (ObjectDettached != null) ObjectDettached(this, new RawObjectEventArgs() { Object = obj } );
+		}
+		
+		XDocument xDoc;
+		
+		public XDocument GetXDocument()
+		{
+			if (xDoc == null) {
+				LogLinq("Creating XDocument");
+				xDoc = new XDocument();
+				xDoc.AddAnnotation(this);
+				UpdateXDocumentChildren(true);
+				this.Children.CollectionChanged += delegate { UpdateXDocumentChildren(false); };
+			}
+			return xDoc;
+		}
+		
+		void UpdateXDocumentChildren(bool firstUpdate)
+		{
+			if (!firstUpdate) LogLinq("Updating XDocument Children");
+			
 			RawElement root = this.Children.OfType<RawElement>().FirstOrDefault(x => x.StartTag.OpeningBracket == "<");
-			if (doc.Root.GetRawObject() != root) {
+			if (xDoc.Root.GetRawObject() != root) {
 				if (root != null) {
-					doc.ReplaceNodes(root.CreateXElement(autoUpdate));
+					xDoc.ReplaceNodes(root.GetXElement());
 				} else {
-					doc.RemoveNodes();
+					xDoc.RemoveNodes();
 				}
 			}
 		}
@@ -344,46 +364,48 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		public XElement CreateXElement(bool autoUpdate)
+		XElement xElem;
+		
+		public XElement GetXElement()
 		{
-			LogLinq("Creating XElement '{0}'", this.StartTag.Name);
-			XElement elem = new XElement(EncodeXName(this.StartTag.Name, this.StartTag.Namesapce));
-			elem.AddAnnotation(this);
-			UpdateXElement(elem, autoUpdate);
-			UpdateXElementAttributes(elem, autoUpdate);
-			UpdateXElementChildren(elem, autoUpdate);
-			if (autoUpdate) {
-				this.StartTag.LocalDataChanged += delegate { UpdateXElement(elem, autoUpdate); };
-				this.StartTag.Children.CollectionChanged += delegate { UpdateXElementAttributes(elem, autoUpdate); };
-				this.Children.CollectionChanged += delegate { UpdateXElementChildren(elem, autoUpdate); };
+			if (xElem == null) {
+				LogLinq("Creating XElement '{0}'", this.StartTag.Name);
+				xElem = new XElement(EncodeXName(this.StartTag.Name, this.StartTag.Namesapce));
+				xElem.AddAnnotation(this);
+				UpdateXElement(true);
+				UpdateXElementAttributes(true);
+				UpdateXElementChildren(true);
+				this.StartTag.LocalDataChanged += delegate { UpdateXElement(false); };
+				this.StartTag.Children.CollectionChanged += delegate { UpdateXElementAttributes(false); };
+				this.Children.CollectionChanged += delegate { UpdateXElementChildren(false); };
 			}
-			return elem;
+			return xElem;
 		}
 
-		void UpdateXElement(XElement elem, bool autoUpdate)
+		void UpdateXElement(bool firstUpdate)
 		{
-			LogLinq("Updating XElement '{0}'", this.StartTag.Name);
-			elem.Name = EncodeXName(this.StartTag.Name, this.StartTag.Namesapce);
+			if (!firstUpdate) LogLinq("Updating XElement '{0}'", this.StartTag.Name);
+			
+			xElem.Name = EncodeXName(this.StartTag.Name, this.StartTag.Namesapce);
 		}
 		
-		internal void UpdateXElementAttributes(XElement elem, bool autoUpdate)
+		internal void UpdateXElementAttributes(bool firstUpdate)
 		{
-			List<XAttribute> xAttrs = new List<XAttribute>();
-			foreach(RawAttribute attr in this.StartTag.Children.OfType<RawAttribute>()) {
-				XAttribute existing = elem.Attributes().FirstOrDefault(x => x.GetRawObject() == attr);
-				xAttrs.Add(existing ?? attr.CreateXAttribute(autoUpdate));
-			}
-			elem.ReplaceAttributes(xAttrs.ToArray());
+			if (!firstUpdate) LogLinq("Updating XElement Attributes of '{0}'", this.StartTag.Name);
+			
+			xElem.ReplaceAttributes(); // Otherwise we get duplicate item exception
+			xElem.ReplaceAttributes(
+				this.StartTag.Children.OfType<RawAttribute>().Select(x => x.GetXAttribute()).ToArray()
+			);
 		}
 		
-		void UpdateXElementChildren(XElement elem, bool autoUpdate)
+		void UpdateXElementChildren(bool firstUpdate)
 		{
-			List<XElement> xElems = new List<XElement>();
-			foreach(RawElement rawElem in this.Children.OfType<RawElement>()) {
-				XElement existing = (XElement)elem.Nodes().FirstOrDefault(x => x.GetRawObject() == rawElem);
-				xElems.Add(existing ?? rawElem.CreateXElement(autoUpdate));
-			}
-			elem.ReplaceNodes(xElems);
+			if (!firstUpdate) LogLinq("Updating XElement Children of '{0}'", this.StartTag.Name);
+			
+			xElem.ReplaceNodes(
+				this.Children.OfType<RawElement>().Select(x => x.GetXElement()).ToArray()
+			);
 		}
 		
 		public override string ToString()
@@ -417,28 +439,32 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		public XAttribute CreateXAttribute(bool autoUpdate)
+		XAttribute xAttr;
+		
+		public XAttribute GetXAttribute()
 		{
-			LogLinq("Creating XAttribute '{0}={1}'", this.Name, this.Value);
-			XAttribute attr = new XAttribute(EncodeXName(this.Name, this.Namesapce), string.Empty);
-			attr.AddAnnotation(this);
-			bool deleted = false;
-			UpdateXAttribute(attr, autoUpdate, ref deleted);
-			if (autoUpdate) this.LocalDataChanged += delegate { UpdateXAttribute(attr, autoUpdate, ref deleted); };
-			return attr;
+			if (xAttr == null) {
+				LogLinq("Creating XAttribute '{0}={1}'", this.Name, this.Value);
+				xAttr = new XAttribute(EncodeXName(this.Name, this.Namesapce), string.Empty);
+				xAttr.AddAnnotation(this);
+				bool deleted = false;
+				UpdateXAttribute(true, ref deleted);
+				this.LocalDataChanged += delegate { if (!deleted) UpdateXAttribute(false, ref deleted); };
+			}
+			return xAttr;
 		}
 		
-		void UpdateXAttribute(XAttribute attr, bool autoUpdate, ref bool deleted)
+		void UpdateXAttribute(bool firstUpdate, ref bool deleted)
 		{
-			if (deleted) return;
-			LogLinq("Updating XAttribute '{0}={1}'", this.Name, this.Value);
-			if (attr.Name == EncodeXName(this.Name, this.Namesapce)) {
-				attr.Value = this.Value ?? string.Empty;
+			if (!firstUpdate) LogLinq("Updating XAttribute '{0}={1}'", this.Name, this.Value);
+			
+			if (xAttr.Name == EncodeXName(this.Name, this.Namesapce)) {
+				xAttr.Value = this.Value ?? string.Empty;
 			} else {
-				XElement parent = attr.Parent;
-				attr.Remove();
-				deleted = true;
-				((RawElement)parent.GetRawObject()).UpdateXElementAttributes(parent, autoUpdate);
+				xAttr.Remove();
+				xAttr = null;
+				deleted = true; // No longer get events for this instance
+				((RawElement)this.Parent.Parent).UpdateXElementAttributes(false);
 			}
 		}
 		
