@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -14,7 +15,7 @@ namespace Debugger.AddIn.TreeModel
 	/// A node in the variable tree.
 	/// The node is imutable.
 	/// </summary>
-	public class TreeNode: IComparable<TreeNode>
+	public class TreeNode: IComparable<TreeNode>, ITreeNode
 	{
 		Image  image = null;
 		string name  = string.Empty;
@@ -32,7 +33,8 @@ namespace Debugger.AddIn.TreeModel
 			set { name = value; }
 		}
 		
-		public virtual string Text {
+		public virtual string Text
+		{
 			get { return text; }
 			protected set { text = value; }
 		}
@@ -47,9 +49,12 @@ namespace Debugger.AddIn.TreeModel
 			protected set { childNodes = value; }
 		}
 		
+		IEnumerable<ITreeNode> ITreeNode.ChildNodes {
+			get { return this.childNodes; }
+		}
+		
 		public TreeNode()
 		{
-			
 		}
 		
 		public TreeNode(Image image, string name, string text, string type, IEnumerable<TreeNode> childNodes)

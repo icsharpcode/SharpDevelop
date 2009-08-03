@@ -215,6 +215,14 @@
     <Compile Include="Src\Project\Solution\ProjectTypeGuids.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
+    <Compile Include="Src\Services\Debugger\DebuggerTooltipControl.xaml.cs">
+      <DependentUpon>DebuggerTooltipControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Services\Debugger\ITooltip.cs" />
+    <Compile Include="Src\Services\Debugger\ITreeNode.cs" />
+    <Compile Include="Src\Services\Debugger\LazyItemsControl.cs" />
+    <Compile Include="Src\Services\Debugger\VirtualizingIEnumerable.cs" />
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
@@ -772,6 +780,7 @@
     <Compile Include="Src\Project\CompilableProject.cs" />
     <Compile Include="Src\Project\MSBuildInternals.cs" />
     <Compile Include="Src\Util\Pair.cs" />
+    <Compile Include="Src\Util\ScrollUtils.cs" />
     <Compile Include="Src\Util\SDWindowsFormsHost.cs" />
     <Compile Include="Src\Util\Set.cs" />
     <Compile Include="Src\Util\ReadOnlyCollectionWrapper.cs" />
@@ -866,6 +875,7 @@
     <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />
     <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
+    <Page Include="Src\Services\Debugger\DebuggerTooltipControl.xaml" />
     <Page Include="Src\TextEditor\Gui\Dialogs\GotoDialog.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

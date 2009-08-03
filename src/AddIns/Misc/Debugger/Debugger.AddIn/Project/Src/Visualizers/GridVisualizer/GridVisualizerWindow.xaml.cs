@@ -35,6 +35,10 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		public GridVisualizerWindow()
 		{
 			InitializeComponent();
+			
+			this.debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
+			if (debuggerService == null)
+				throw new ApplicationException("Only windows debugger is currently supported");
 		}
 		
 		private void btnInspect_Click(object sender, RoutedEventArgs e)
@@ -44,10 +48,6 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			ScrollViewer listViewScroller = listView.GetScrollViewer();
 			if (listViewScroller != null)
 				listViewScroller.ScrollToVerticalOffset(0);
-			
-			this.debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
-			if (debuggerService == null)
-				throw new ApplicationException("Only windows debugger is currently supported");
 			
 			Value val = null;
 			try
@@ -77,9 +77,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					DebugType iEnumerableType, itemType;
 					if (val.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
 					{
-						var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView);
+						var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, 24);
 						var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
-						lazyListViewWrapper.ItemsSource = enumerableValuesProvider.ItemsSource;
+						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
 						gridValuesProvider = enumerableValuesProvider;
 					}
 					else

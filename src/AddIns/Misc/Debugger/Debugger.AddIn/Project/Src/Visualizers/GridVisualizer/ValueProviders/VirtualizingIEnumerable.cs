@@ -10,34 +10,5 @@ using System.Collections.ObjectModel;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
-	/// <summary>
-	/// A wrapper around IEnumerable&lt;T&gt; with RequestNextItems method for pulling additional items 
-	/// from the IEnumerable&lt;T&gt; when needed.
-	/// Can be used as source for <see cref="LazyListView" />.
-	/// (Used to wrap EnumerableValuesProvider.ItemsSource)
-	/// </summary>
-	public class VirtualizingIEnumerable<T> : ObservableCollection<T>
-	{
-		private IEnumerator<T> originalSourceEnumerator;
-		
-		public VirtualizingIEnumerable(IEnumerable<T> originalSource)
-		{
-			if (originalSource == null)
-				throw new ArgumentNullException("originalSource");
-			
-			this.originalSourceEnumerator = originalSource.GetEnumerator();
-		}
-		
-		/// <summary>
-		/// Requests next <paramref name="count"/> items from underlying IEnumerable source and adds them to the collection.
-		/// </summary>
-		public void AddNextItems(int count)
-		{
-			for (int i = 0; i < count; i++)
-			{
-				if (!originalSourceEnumerator.MoveNext()) break;
-				this.Add(originalSourceEnumerator.Current);
-			}
-		}
-	}
+
 }
