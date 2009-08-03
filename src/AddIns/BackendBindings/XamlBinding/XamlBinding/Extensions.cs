@@ -265,9 +265,7 @@ namespace ICSharpCode.XamlBinding
 				
 				bool foundMethod = false;
 				
-				if (lookForProperties) {
-					if (field.ReturnType.FullyQualifiedName != "System.Windows.DependencyProperty")
-						continue;
+				if (lookForProperties && field.ReturnType.FullyQualifiedName == "System.Windows.DependencyProperty") {
 					if (field.Name.Length <= "Property".Length)
 						continue;
 					if (!field.Name.EndsWith("Property", StringComparison.Ordinal))
@@ -286,38 +284,13 @@ namespace ICSharpCode.XamlBinding
 					}
 				}
 				
-				if (lookForEvents && !foundMethod) {
-					if (field.ReturnType.FullyQualifiedName != "System.Windows.RoutedEvent")
-						continue;
+				if (lookForEvents && !foundMethod && field.ReturnType.FullyQualifiedName == "System.Windows.RoutedEvent") {
 					if (field.Name.Length <= "Event".Length)
 						continue;
 					if (!field.Name.EndsWith("Event", StringComparison.Ordinal))
 						continue;
 					
-					string fieldName = field.Name.Remove(field.Name.Length - "Event".Length);
-					
-					foreach (IMethod method in thisValue.Methods) {
-						if (!method.IsPublic || !method.IsStatic || method.Name.Length <= 3)
-							continue;
-						
-						string methodName = string.Empty;
-						
-						if (methodName.EndsWith("Handler", StringComparison.Ordinal))
-							methodName = method.Name.Remove(method.Name.Length - "Handler".Length);
-						else
-							continue;
-						
-						if (methodName.StartsWith("Add"))
-							methodName = methodName.Remove(0, 3);
-						else if (methodName.StartsWith("Remove"))
-							methodName = methodName.Remove(0, 6);
-						else
-							continue;
-						
-						foundMethod = methodName == fieldName;
-						if (foundMethod)
-							return true;
-					}
+					return true;
 				}
 			}
 			

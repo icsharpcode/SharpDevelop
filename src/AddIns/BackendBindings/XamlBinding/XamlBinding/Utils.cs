@@ -61,21 +61,8 @@ namespace ICSharpCode.XamlBinding
 			try {
 				XmlReader reader = CreateReaderAtTarget(text, line, col);
 				
-				if (!reader.MoveToFirstAttribute()) {
-					/*				int offset = GetOffsetFromFilePos(text, line, col) + 1;
-				
-					if (XmlParser.IsInsideAttributeValue(text, offset))
-						text = text.Substring(0, offset) + "\">";
-					else {
-						if (!string.IsNullOrEmpty(XmlParser.GetAttributeNameAtIndex(text, offset)))
-							text = text.Substring(0, offset) + "=\"\">";
-						else
-							text = text.Substring(0, offset) + ">";
-					}
-					reader = CreateReaderAtTarget(text, line, col);
-					if (!reader.MoveToFirstAttribute()) */
+				if (!reader.MoveToFirstAttribute())
 					return null;
-				}
 				do {
 					LoggingService.Debug("name: " + reader.Name + " value: " + reader.Value);
 					string plainName = reader.Name.ToUpperInvariant();
@@ -188,30 +175,6 @@ namespace ICSharpCode.XamlBinding
 			return offset + col - 1;
 		}
 		
-		public static int GetParentElementStart(ITextEditor editor)
-		{
-			Stack<int> offsetStack = new Stack<int>();
-			using (XmlTextReader xmlReader = new XmlTextReader(new StringReader(editor.Document.GetText(0, editor.Caret.Offset)))) {
-				try {
-					xmlReader.XmlResolver = null; // prevent XmlTextReader from loading external DTDs
-					while (xmlReader.Read()) {
-						switch (xmlReader.NodeType) {
-							case XmlNodeType.Element:
-								if (!xmlReader.IsEmptyElement) {
-									offsetStack.Push(editor.Document.PositionToOffset(xmlReader.LineNumber, xmlReader.LinePosition));
-								}
-								break;
-							case XmlNodeType.EndElement:
-								offsetStack.Pop();
-								break;
-						}
-					}
-				} catch (XmlException) { }
-			}
-			
-			return (offsetStack.Count > 0) ? offsetStack.Pop() : -1;
-		}
-		
 		static QualifiedNameWithLocation ResolveCurrentElement(string text, int offset, Dictionary<string, string> xmlnsDefinitions)
 		{
 			if (offset < 0)
@@ -319,12 +282,19 @@ namespace ICSharpCode.XamlBinding
 			if (active == null)
 				active = parent;
 			
+			if (parent != null)
+				stack.Push(parent);
+			
+			if (active != null && active != parent)
+				stack.Push(active);
+			
 			return new LookupInfo() {
 				Active = active,
 				ActiveElementStartIndex = activeElementStartIndex,
 				IgnoredXmlns = ignoredXmlns,
 				IsRoot = isRoot,
 				Parent = parent,
+				Ancestors = stack,
 				XmlnsDefinitions = xmlns
 			};
 		}

@@ -82,5 +82,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			PropertyService.Set(CustomColorsPropertyName, CustomColorsToString(CustomColors));
 		}
+		
+		public bool? ShowWpfDialog()
+		{
+			return ShowDialog() == DialogResult.OK;
+		}
+		
+		public System.Windows.Media.Color WpfColor {
+			get {
+				return System.Windows.Media.Color.FromArgb(this.Color.A, this.Color.R, this.Color.G, this.Color.B);
+			}
+		}
 	}
 }

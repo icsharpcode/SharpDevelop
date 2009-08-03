@@ -176,19 +176,19 @@ namespace ICSharpCode.XamlBinding
 						if (!DoMarkupExtensionCompletion(context)) {
 							var completionList = new XamlCompletionItemList();
 							
-							var mrr = XamlResolver.Resolve(context.AttributeName.FullXmlName, context) as MemberResolveResult;
-							if (mrr != null && mrr.ResolvedType != null) {
-								completionList.Items.AddRange(CompletionDataHelper.MemberCompletion(context, mrr.ResolvedType, string.Empty));
-								editor.ShowInsightWindow(CompletionDataHelper.MemberInsight(mrr));
+							if ((context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter") && context.AttributeName.Name == "Value")
+								DoSetterAndEventSetterCompletion(context, completionList);
+							else if ((context.ActiveElement.Name.EndsWith("Trigger") || context.ActiveElement.Name == "Condition") && context.AttributeName.Name == "Value")
+								DoTriggerCompletion(context, completionList);
+							else {
+								var mrr = XamlResolver.Resolve(context.AttributeName.FullXmlName, context) as MemberResolveResult;
+								if (mrr != null && mrr.ResolvedType != null) {
+									completionList.Items.AddRange(CompletionDataHelper.MemberCompletion(context, mrr.ResolvedType, string.Empty));
+									editor.ShowInsightWindow(CompletionDataHelper.MemberInsight(mrr));
+								}
 							}
 							
-							if (context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter")
-								DoSetterAndEventSetterCompletion(context, completionList);
-							
 							completionList.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
-							
-							if (context.AttributeName.Name == "TypeArguments" && context.AttributeName.Namespace == CompletionDataHelper.XamlNamespace)
-								DoTypeArgumentsCompletion(context, completionList);
 							
 							completionList.SortItems();
 							
@@ -209,28 +209,61 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		static void DoTypeArgumentsCompletion(XamlCompletionContext context, XamlCompletionItemList completionList) {
-			completionList.Items.AddRange(CompletionDataHelper.CreateElementList(context, false, true));
-			if (context.ValueStartOffset < 1)
-				return;
-			string starter = context.Editor.GetWordBeforeCaretExtended();
-			int lastComma =  starter.LastIndexOf(',');
-			if (lastComma > -1)
-				starter = starter.Substring(lastComma).TrimStart(',', ' ', '\t');
-			completionList.PreselectionLength = starter.Length;
-		}
-		
-		static void DoSetterAndEventSetterCompletion(XamlCompletionContext context, XamlCompletionItemList completionList) {
-			int offset = Utils.GetParentElementStart(context.Editor);
-			var loc = context.Editor.Document.OffsetToPosition(offset);
-			
-			AttributeValue value = MarkupExtensionParser.ParseValue(Utils.GetAttributeValue(context.Editor.Document.Text, loc.Line, loc.Column, "TargetType") ?? string.Empty);
+		static void DoTriggerCompletion(XamlCompletionContext context, XamlCompletionItemList completionList) {
+			bool isExplicit;
+			AttributeValue value = MarkupExtensionParser.ParseValue(CompletionDataHelper.LookForTargetTypeValue(context, out isExplicit, "Trigger") ?? string.Empty);
 			
 			IReturnType typeName = null;
 			string typeNameString = null;
 			
 			if (!value.IsString) {
-				typeNameString = GetTypeNameFromTypeExtension(value.ExtensionValue, context);
+				typeNameString = CompletionDataHelper.GetTypeNameFromTypeExtension(value.ExtensionValue, context);
+				typeName = CompletionDataHelper.ResolveType(typeNameString, context);
+			} else {
+				typeNameString = value.StringValue;
+				typeName = CompletionDataHelper.ResolveType(value.StringValue, context);
+			}
+			
+			if (typeName != null) {
+				switch (context.AttributeName.Name) {
+					case "Value":
+						var loc2 = context.ActiveElement.Location;
+						AttributeValue propType = MarkupExtensionParser.ParseValue(
+							Utils.GetAttributeValue(context.Editor.Document.Text, loc2.Line,
+							                        loc2.Column, "Property"));
+						if (!propType.IsString)
+							break;
+						
+						string name = propType.StringValue;
+						
+						if (!name.Contains("."))
+							name = typeNameString + "." + name;
+						
+						context.Description = XamlContextDescription.AtTag;
+						
+						var member = XamlResolver.Resolve(name, context) as MemberResolveResult;
+						
+						if (member == null || member.ResolvedMember == null)
+							break;
+						
+						completionList.Items.AddRange(
+							CompletionDataHelper.MemberCompletion(context, member.ResolvedMember.ReturnType, string.Empty)
+						);
+						break;
+				}
+			}
+		}
+		
+		static void DoSetterAndEventSetterCompletion(XamlCompletionContext context, XamlCompletionItemList completionList) {
+			bool isExplicit;
+			string element = context.ParentElement.Name.EndsWith("Trigger") ? "Trigger" : context.ParentElement.Name;
+			AttributeValue value = MarkupExtensionParser.ParseValue(CompletionDataHelper.LookForTargetTypeValue(context, out isExplicit, element) ?? string.Empty);
+			
+			IReturnType typeName = null;
+			string typeNameString = null;
+			
+			if (!value.IsString) {
+				typeNameString = CompletionDataHelper.GetTypeNameFromTypeExtension(value.ExtensionValue, context);
 				typeName = CompletionDataHelper.ResolveType(typeNameString, context);
 			} else {
 				typeNameString = value.StringValue;
@@ -249,7 +282,12 @@ namespace ICSharpCode.XamlBinding
 						
 						context.Description = XamlContextDescription.AtTag;
 						
-						var member = XamlResolver.Resolve(typeNameString + "." + propType.StringValue, context) as MemberResolveResult;
+						string name = propType.StringValue;
+						
+						if (!name.Contains("."))
+							name = typeNameString + "." + name;
+						
+						var member = XamlResolver.Resolve(name, context) as MemberResolveResult;
 						
 						if (member == null || member.ResolvedMember == null)
 							break;
@@ -282,7 +320,12 @@ namespace ICSharpCode.XamlBinding
 						if (!evtType.IsString)
 							break;
 						
-						var evtMember = XamlResolver.Resolve(typeNameString + "." + evtType.StringValue, context) as MemberResolveResult;
+						string evtName = evtType.StringValue;
+						
+						if (!evtName.Contains("."))
+							evtName = typeNameString + "." + evtName;
+						
+						var evtMember = XamlResolver.Resolve(evtName, context) as MemberResolveResult;
 						
 						if (evtMember == null || evtMember.ResolvedMember == null || !(evtMember.ResolvedMember is IEvent) || evtMember.ResolvedMember.ReturnType == null)
 							break;
@@ -307,27 +350,6 @@ namespace ICSharpCode.XamlBinding
 						break;
 				}
 			}
-		}
-		
-		static string GetTypeNameFromTypeExtension(MarkupExtensionInfo info, XamlCompletionContext context)
-		{
-			IReturnType type = CompletionDataHelper.ResolveType(info.ExtensionType, context)
-				?? CompletionDataHelper.ResolveType(info.ExtensionType + "Extension", context);
-			
-			if (type == null || type.FullyQualifiedName != "System.Windows.Markup.TypeExtension")
-				return string.Empty;
-			
-			var item = info.PositionalArguments.FirstOrDefault();
-			if (item != null && item.IsString) {
-				return item.StringValue;
-			} else {
-				if (info.NamedArguments.TryGetValue("typename", out item)) {
-					if (item.IsString)
-						return item.StringValue;
-				}
-			}
-			
-			return string.Empty;
 		}
 
 		static bool DoMarkupExtensionCompletion(XamlCompletionContext context)

@@ -23,6 +23,7 @@ namespace ICSharpCode.XamlBinding
 	public class XamlContext : ExpressionContext {
 		public QualifiedNameWithLocation ActiveElement { get; set; }
 		public QualifiedNameWithLocation ParentElement { get; set; }
+		public List<QualifiedNameWithLocation> Ancestors { get; set; }
 		public QualifiedNameWithLocation AttributeName { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public string RawAttributeValue { get; set; }
@@ -47,6 +48,7 @@ namespace ICSharpCode.XamlBinding
 		public XamlCompletionContext(XamlContext context)
 		{
 			this.ActiveElement = context.ActiveElement;
+			this.Ancestors = context.Ancestors;
 			this.AttributeName = context.AttributeName;
 			this.AttributeValue = context.AttributeValue;
 			this.Description = context.Description;

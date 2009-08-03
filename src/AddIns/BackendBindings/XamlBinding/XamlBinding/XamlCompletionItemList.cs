@@ -118,6 +118,11 @@ namespace ICSharpCode.XamlBinding
 						context.Editor.Caret.Offset -= 4;
 						break;
 				}
+				
+				if (item.Text.StartsWith("/", StringComparison.OrdinalIgnoreCase)) {
+					context.Editor.Document.Insert(context.EndOffset, ">");
+					context.Editor.Caret.Offset++;
+				}
 			}
 		}
 		

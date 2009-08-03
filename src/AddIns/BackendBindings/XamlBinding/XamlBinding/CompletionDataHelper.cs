@@ -59,7 +59,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			int offset = Math.Max(0, Math.Min(Utils.GetOffsetFromFilePos(text, line, col), text.Length - 1));
 			
-			ParseInformation info = ParserService.GetParseInformation(fileName);
+			ParseInformation info = string.IsNullOrEmpty(fileName) ? null : ParserService.GetParseInformation(fileName);
 			string attribute = XmlParser.GetAttributeNameAtIndex(text, offset);
 			bool inAttributeValue = XmlParser.IsInsideAttributeValue(text, offset);
 			string attributeValue = XmlParser.GetAttributeValueAtIndex(text, offset);
@@ -109,17 +109,18 @@ namespace ICSharpCode.XamlBinding
 			var qAttribute = new QualifiedNameWithLocation(localName, xmlNamespace, prefix, -1, -1);
 			
 			var context = new XamlContext() {
-				Description = description,
-				ActiveElement = lookUpInfo.Active,
-				ParentElement = lookUpInfo.Parent,
-				AttributeName = string.IsNullOrEmpty(attribute) ? null : qAttribute,
-				InRoot = lookUpInfo.IsRoot,
-				AttributeValue = value,
+				Description       = description,
+				ActiveElement     = lookUpInfo.Active,
+				ParentElement     = lookUpInfo.Parent,
+				Ancestors         = lookUpInfo.Ancestors.ToList(),
+				AttributeName     = string.IsNullOrEmpty(attribute) ? null : qAttribute,
+				InRoot            = lookUpInfo.IsRoot,
+				AttributeValue    = value,
 				RawAttributeValue = attributeValue,
-				ValueStartOffset = offsetFromValueStart,
-				XmlnsDefinitions = lookUpInfo.XmlnsDefinitions,
-				ParseInformation = info,
-				IgnoredXmlns = lookUpInfo.IgnoredXmlns.AsReadOnly()
+				ValueStartOffset  = offsetFromValueStart,
+				XmlnsDefinitions  = lookUpInfo.XmlnsDefinitions,
+				ParseInformation  = info,
+				IgnoredXmlns      = lookUpInfo.IgnoredXmlns.AsReadOnly()
 			};
 
 			return context;
@@ -182,7 +183,7 @@ namespace ICSharpCode.XamlBinding
 				return;
 			
 			foreach (IProperty p in rt.GetProperties()) {
-				if (p.IsPublic && (p.CanSet || p.ReturnType.IsCollectionReturnType())) {
+				if (p.IsPublic && (p.IsPubliclySetable() || p.ReturnType.IsCollectionReturnType())) {
 					list.Add(new XamlCodeCompletionItem(p));
 				}
 			}
@@ -316,6 +317,8 @@ namespace ICSharpCode.XamlBinding
 			
 			bool isList = rt != null && rt.IsListReturnType();
 			
+			bool parentAdded = false;
+			
 			foreach (var ns in items) {
 				foreach (var c in ns.Value) {
 					if (includeAbstract) {
@@ -341,9 +344,17 @@ namespace ICSharpCode.XamlBinding
 							continue;
 					}
 					
+					XamlCodeCompletionItem item = new XamlCodeCompletionItem(c, ns.Key);
+					
+					if (item.Text == last.FullXmlName)
+						parentAdded = true;
+					
 					result.Add(new XamlCodeCompletionItem(c, ns.Key));
 				}
 			}
+			
+			if (!parentAdded && !last.FullXmlName.Contains("."))
+				result.Add(new XamlCodeCompletionItem(cu.CreateType(last.Namespace, last.Name.Trim('.')).GetUnderlyingClass(), last.Prefix));
 			
 			string xamlPrefix = Utils.GetXamlNamespacePrefix(context);
 			
@@ -419,7 +430,7 @@ namespace ICSharpCode.XamlBinding
 						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(className, context), info, editor.Document.Text) as TypeResolveResult;
 						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
 						
-						if (typeClass != null && typeClass.DerivesFrom("System.Windows.DependencyObject"))
+						if (typeClass != null && typeClass.HasAttached(true, true))
 							list.Items.AddRange(GetListOfAttached(context, className, ns, true, true));
 					} else {
 						QualifiedNameWithLocation last = context.ActiveElement;
@@ -575,6 +586,81 @@ namespace ICSharpCode.XamlBinding
 					break;
 			}
 		}
+		
+		public static string LookForTargetTypeValue(XamlCompletionContext context, out bool isExplicit, params string[] elementName) {
+			var loc = context.ParentElement.Location;
+			
+			IList<QualifiedNameWithLocation> ancestors = context.Ancestors;
+			
+			isExplicit = false;
+			
+			for (int i = 0; i < ancestors.Count; i++) {
+				if (ancestors[i].Name == "Style") {
+					isExplicit = true;
+					return Utils.GetAttributeValue(
+						context.Editor.Document.Text,
+						ancestors[i].Location.Line,
+						ancestors[i].Location.Column,
+						"TargetType");
+				}
+				
+				if (ancestors[i].Name.EndsWithAny(elementName.Select(s => "." + s + "s"), StringComparison.Ordinal)
+				    && !ancestors[i].Name.StartsWith("Style.", StringComparison.Ordinal)) {
+					return ancestors[i].Name.Remove(ancestors[i].Name.IndexOf('.'));
+				}
+			}
+			
+			return null;
+		}
+		
+		public static string GetTypeNameFromTypeExtension(MarkupExtensionInfo info, XamlCompletionContext context)
+		{
+			IReturnType type = CompletionDataHelper.ResolveType(info.ExtensionType, context)
+				?? CompletionDataHelper.ResolveType(info.ExtensionType + "Extension", context);
+			
+			if (type == null || type.FullyQualifiedName != "System.Windows.Markup.TypeExtension")
+				return string.Empty;
+			
+			var item = info.PositionalArguments.FirstOrDefault();
+			if (item != null && item.IsString) {
+				return item.StringValue;
+			} else {
+				if (info.NamedArguments.TryGetValue("typename", out item)) {
+					if (item.IsString)
+						return item.StringValue;
+				}
+			}
+			
+			return string.Empty;
+		}
+		
+		public static bool EndsWithAny(this string thisValue, IEnumerable<string> items, StringComparison comparison)
+		{
+			foreach (string item in items) {
+				if (thisValue.EndsWith(item, comparison))
+					return true;
+			}
+			
+			return false;
+		}
+		
+		static IReturnType GetType(XamlCompletionContext context, out bool isExplicit)
+		{
+			AttributeValue value = MarkupExtensionParser.ParseValue(LookForTargetTypeValue(context, out isExplicit, "Trigger", "Setter") ?? string.Empty);
+			
+			IReturnType typeName = null;
+			string typeNameString = null;
+			
+			if (!value.IsString) {
+				typeNameString = GetTypeNameFromTypeExtension(value.ExtensionValue, context);
+				typeName = CompletionDataHelper.ResolveType(typeNameString, context);
+			} else {
+				typeNameString = value.StringValue;
+				typeName = CompletionDataHelper.ResolveType(value.StringValue, context);
+			}
+			
+			return typeName;
+		}
 
 		public static IEnumerable<ICompletionItem> MemberCompletion(XamlCompletionContext context, IReturnType type, string textPrefix)
 		{
@@ -595,6 +681,9 @@ namespace ICSharpCode.XamlBinding
 					yield break;
 			}
 			
+			bool isExplicit;
+			IReturnType typeName;
+			
 			switch (c.ClassType) {
 				case ClassType.Class:
 					switch (c.FullyQualifiedName) {
@@ -604,6 +693,26 @@ namespace ICSharpCode.XamlBinding
 						case "System.Type":
 							foreach (var item in CreateElementList(context, true, true))
 								yield return item;
+							break;
+						case "System.Windows.PropertyPath":
+							break;
+						case "System.Windows.DependencyProperty":
+							typeName = GetType(context, out isExplicit);
+							
+							bool isReadOnly = context.ActiveElement.Name.EndsWith("Trigger");
+							
+							if (typeName != null) {
+								foreach (var item in typeName.GetDependencyProperties(true, !isExplicit, !isReadOnly))
+									yield return item;
+							}
+							break;
+						case "System.Windows.RoutedEvent":
+							typeName = GetType(context, out isExplicit);
+							
+							if (typeName != null) {
+								foreach (var item in typeName.GetRoutedEvents(true, !isExplicit))
+									yield return item;
+							}
 							break;
 						default:
 							if (context.Description == XamlContextDescription.InMarkupExtension) {
@@ -803,13 +912,8 @@ namespace ICSharpCode.XamlBinding
 
 		static bool CompareParameter(IParameter p1, IParameter p2)
 		{
-			bool result = p1.ReturnType.DotNetName == p2.ReturnType.DotNetName;
-			
-			result &= (p1.IsOut == p2.IsOut);
-			result &= (p1.IsParams == p2.IsParams);
-			result &= (p1.IsRef == p2.IsRef);
-			
-			return result;
+			return (p1.ReturnType.DotNetName == p2.ReturnType.DotNetName) &&
+				(p1.IsOut == p2.IsOut) && (p1.IsParams == p2.IsParams) && (p1.IsRef == p2.IsRef);
 		}
 
 		static IDictionary<string, IEnumerable<IClass>> GetClassesFromContext(XamlCompletionContext context)
@@ -827,8 +931,60 @@ namespace ICSharpCode.XamlBinding
 			
 			return result;
 		}
+		
+		public static bool IsPubliclySetable(this IProperty thisValue)
+		{
+			return thisValue.CanSet &&
+				(thisValue.SetterModifiers == ModifierEnum.None ||
+				 (thisValue.SetterModifiers & ModifierEnum.Public) == ModifierEnum.Public);
+		}
+		
+		public static IEnumerable<ICompletionItem> GetDependencyProperties(this IReturnType type, bool excludeSuffix, bool addType, bool requiresSetable)
+		{
+			foreach (var field in type.GetFields()) {
+				if (field.ReturnType.FullyQualifiedName != "System.Windows.DependencyProperty")
+					continue;
+				if (field.Name.Length <= "Property".Length || !field.Name.EndsWith("Property", StringComparison.Ordinal))
+					continue;
+				string fieldName = field.Name.Remove(field.Name.Length - "Property".Length);
+				IProperty property = type.GetProperties().FirstOrDefault(p => p.Name == fieldName);
+				if (property == null)
+					continue;
+				if (requiresSetable && property.IsPubliclySetable())
+					
+					
+					if (!excludeSuffix)
+					fieldName += "Property";
+				
+				if (addType)
+					fieldName = type.Name + "." + fieldName;
+				
+				yield return new XamlCodeCompletionItem(fieldName, field);
+			}
+		}
+		
+		public static IEnumerable<ICompletionItem> GetRoutedEvents(this IReturnType type, bool excludeSuffix, bool addType)
+		{
+			foreach (var field in type.GetFields()) {
+				if (field.ReturnType.FullyQualifiedName != "System.Windows.RoutedEvent")
+					continue;
+				if (field.Name.Length <= "Event".Length || !field.Name.EndsWith("Event", StringComparison.Ordinal))
+					continue;
+				string fieldName = field.Name.Remove(field.Name.Length - "Event".Length);
+				if (!type.GetEvents().Any(p => p.Name == fieldName))
+					continue;
+				
+				if (!excludeSuffix)
+					fieldName += "Event";
+				
+				if (addType)
+					fieldName = type.Name + "." + fieldName;
+				
+				yield return new XamlCodeCompletionItem(fieldName, field);
+			}
+		}
 
-		static List<ICompletionItem> GetListOfAttached(XamlCompletionContext context, string prefixClassName, string prefixNamespace, bool events, bool properties)
+		internal static List<ICompletionItem> GetListOfAttached(XamlCompletionContext context, string prefixClassName, string prefixNamespace, bool events, bool properties)
 		{
 			List<ICompletionItem> result = new List<ICompletionItem>();
 			
@@ -840,10 +996,8 @@ namespace ICSharpCode.XamlBinding
 			if (!string.IsNullOrEmpty(prefixClassName)) {
 				var ns = context.XmlnsDefinitions[prefixNamespace];
 				IClass c = XamlCompilationUnit.GetNamespaceMembers(pc, ns).FirstOrDefault(item => item.Name == prefixClassName);
-				if (c != null) {
-					if (!(c.IsAbstract
-					      && !c.ClassInheritanceTree.Any(b => b.FullyQualifiedName == "System.Attribute")
-					      && c.Methods.Any(m => m.IsConstructor && m.IsPublic))) {
+				if (c != null && c.ClassType == ClassType.Class) {
+					if (!c.ClassInheritanceTree.Any(b => b.FullyQualifiedName == "System.Attribute")) {
 						prefixNamespace = string.IsNullOrEmpty(prefixNamespace) ? prefixNamespace : prefixNamespace + ":";
 						if (properties)
 							AddAttachedProperties(c, result, prefixNamespace, prefixNamespace + prefixClassName);
@@ -858,12 +1012,6 @@ namespace ICSharpCode.XamlBinding
 					foreach (IClass c in XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value)) {
 						if (c.ClassType != ClassType.Class)
 							continue;
-						if (c.IsAbstract && c.IsStatic)
-							continue;
-						if (c.ClassInheritanceTree.Any(b => b.FullyQualifiedName == "System.Attribute"))
-							continue;
-						if (!c.Methods.Any(m => m.IsConstructor && m.IsPublic))
-							continue;
 						if (c.HasAttached(properties, events))
 							result.Add(new XamlCodeCompletionItem(c, ns.Key));
 					}
@@ -873,7 +1021,7 @@ namespace ICSharpCode.XamlBinding
 			return result;
 		}
 		
-		static void AddAttachedProperties(IClass c, List<ICompletionItem> result, string key, string prefix)
+		public static void AddAttachedProperties(IClass c, List<ICompletionItem> result, string key, string prefix)
 		{
 			var attachedProperties = c.Fields
 				.Where(f =>
@@ -917,15 +1065,7 @@ namespace ICSharpCode.XamlBinding
 				       f.ReturnType != null &&
 				       f.ReturnType.FullyQualifiedName == "System.Windows.RoutedEvent" &&
 				       f.Name.Length > "Event".Length &&
-				       f.Name.EndsWith("Event", StringComparison.Ordinal) &&
-				       c.Methods.Any(m =>
-				                     m.IsPublic &&
-				                     m.IsStatic &&
-				                     m.Name.Length > 3 &&
-				                     (m.Name.StartsWith("Add", StringComparison.Ordinal) || m.Name.StartsWith("Remove", StringComparison.Ordinal)) &&
-				                     m.Name.EndsWith("Handler", StringComparison.Ordinal) &&
-				                     IsMethodFromEvent(f, m)
-				                    )
+				       f.Name.EndsWith("Event", StringComparison.Ordinal)
 				      );
 			
 			int prefixLength = (prefix.Length > 0) ? prefix.Length + 1 : 0;

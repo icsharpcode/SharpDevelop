@@ -70,11 +70,13 @@
       <DependentUpon>CompletionTestsBase.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DependencyPropertiesTests.cs" />
     <Compile Include="ExtensionsTests.cs" />
     <Compile Include="MockTextEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MarkupExtensionTests.cs" />
     <Compile Include="ResolveContextTests.cs" />
+    <Compile Include="TextEditorBasedTests.cs" />
     <Compile Include="UtilsTests.cs" />
     <Compile Include="XamlExpressionFinderTests.cs" />
     <Compile Include="XmlTests.cs" />

@@ -182,6 +182,18 @@ namespace ICSharpCode.XamlBinding
 			WeakLineTracker.Register(this.Editor.Document.GetService(typeof(TextDocument)) as TextDocument, this);
 			
 			ParserService.LoadSolutionProjectsThreadEnded += ParserServiceLoadSolutionProjectsThreadEnded;
+			
+			colorizers.Add(this);
+		}
+		
+		static IList<XamlColorizer> colorizers = new List<XamlColorizer>();
+		
+		public static void RefreshAll()
+		{
+			foreach (XamlColorizer colorizer in colorizers) {
+				colorizer.RebuildDocument();
+				colorizer.TextView.Redraw();
+			}
 		}
 
 		void ParserServiceLoadSolutionProjectsThreadEnded(object sender, EventArgs e)
@@ -200,6 +212,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (!disposed) {
 				ParserService.LoadSolutionProjectsThreadEnded -= ParserServiceLoadSolutionProjectsThreadEnded;
+				colorizers.Remove(this);
 			}
 			disposed = true;
 		}

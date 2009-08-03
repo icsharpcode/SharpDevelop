@@ -6,7 +6,6 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,6 +15,8 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XamlBinding.Options
 {
@@ -27,6 +28,27 @@ namespace ICSharpCode.XamlBinding.Options
 		public CodeCompletion()
 		{
 			InitializeComponent();
+		}
+		
+		void ButtonClick(object sender, RoutedEventArgs e)
+		{
+			SharpDevelopColorDialog dialog = new SharpDevelopColorDialog();
+			
+			if (dialog.ShowWpfDialog() ?? false) {
+				Button b = sender as Button;
+				b.Background = new SolidColorBrush(dialog.WpfColor);
+				b.Content = (sender as Button).Background;
+			}
+		}
+		
+		public override bool SaveOptions()
+		{
+			if (base.SaveOptions()) {
+				XamlColorizer.RefreshAll();
+				return true;
+			}
+			
+			return false;
 		}
 	}
 }
