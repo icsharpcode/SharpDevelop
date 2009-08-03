@@ -18,18 +18,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		private System.Diagnostics.Process neatoProcess;
 		
 		/// <summary>
-		/// Creates new NeatoProcess.
-		/// </summary>
-		/// <param name="neatoProcess">Underlying neato.exe process</param>
-		private NeatoProcess(System.Diagnostics.Process neatoProcess)
-		{
-			this.neatoProcess = neatoProcess;
-		}
-		
-		/// <summary>
 		/// Starts neato.exe
 		/// </summary>
-		/// <returns></returns>
 		public static NeatoProcess Start()
 		{
 			System.Diagnostics.Process neatoProcess = new System.Diagnostics.Process();
@@ -56,24 +46,33 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			return new NeatoProcess(neatoProcess);
 		}
 		
+		/// <summary>Creates new NeatoProcess.</summary>
+		/// <param name="neatoProcess">Underlying neato.exe process</param>
+		private NeatoProcess(System.Diagnostics.Process neatoProcess)
+		{
+			this.neatoProcess = neatoProcess;
+		}
+		
+		/// <summary>Gets directory where Debugger.AddIn.dll resides</summary>
 		private static string getCurrentAssemblyPath()
 		{
-			return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+			return Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 		}
 		
 		private static string getNeatoExePath()
 		{
-			return System.IO.Path.Combine(getCurrentAssemblyPath(), "neato.exe");
+			return Path.Combine(getCurrentAssemblyPath(), "neato.exe");
 		}
 		
 		/// <summary>
 		/// Passes given graph to neato and reads output.
 		/// </summary>
 		/// <param name="dotGraph">Graph in Graphviz dot format.</param>
-		/// <returns>Same graph in Graphviz plain with position information added.</returns>
+		/// <returns>Same graph in Graphviz plain format with position information added.</returns>
 		public string CalculatePositions(string dotGraph)
 		{
-			/*using (var writer = new StreamWriter("logIn.gv"))
+			// write the input to neato.exe to a file for testing purposes
+  			/*using (var writer = new StreamWriter(Path.Combine(getCurrentAssemblyPath(), "logIn.gv")))
 			{
 				writer.Write(dotGraph);
 			}*/

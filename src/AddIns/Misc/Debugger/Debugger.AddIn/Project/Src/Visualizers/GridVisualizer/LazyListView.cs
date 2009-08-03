@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Collections.Generic;
 using System.Windows.Controls;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
@@ -13,22 +14,28 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// ListView that takes VirtualizingIEnumerable as source, 
 	/// and requests additional items from the source as needed when scrolling.
 	/// </summary>
-	public class LazyListView<T>
+	public class LazyItemsControl<T>
 	{
-		private ListView listView;
+		private ItemsControl itemsControl;
 		
-		public LazyListView(ListView wrappedListView)
+		public LazyItemsControl(ItemsControl wrappedItemsControl)
 		{
-			if (wrappedListView == null)
+			if (wrappedItemsControl == null)
 				throw new ArgumentNullException("wrappedListView");
 			
-			this.listView = wrappedListView;
-			this.listView.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(handleListViewScroll));
+			this.itemsControl = wrappedItemsControl;
+			this.itemsControl.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(handleListViewScroll));
 		}
 		
-		private VirtualizingIEnumerable<T> itemsSource;
 		
-		public VirtualizingIEnumerable<T> ItemsSource
+		/// <summary> The collection that underlying ItemsControl sees. </summary>
+		private VirtualizingIEnumerable<T> itemsSourceVirtualized;
+		
+		private IEnumerable<T> itemsSource;
+		/// <summary>
+		/// IEnumerable providing all the items. LazyItemsControl pulls next items from this source when scrolled to bottom.
+		/// </summary>
+		public IEnumerable<T> ItemsSource
 		{
 			get
 			{
@@ -37,8 +44,11 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			set 
 			{
 				this.itemsSource = value;
-				this.itemsSource.RequestNextItems(25);
-				this.listView.ItemsSource = value;
+				// virtualize IEnumerable and use it as ItemsControl source 
+				// -> ItemsControl sees only a few items, more are added when scrolled to bottom
+				this.itemsSourceVirtualized = new VirtualizingIEnumerable<T>(value);
+				this.itemsSourceVirtualized.AddNextItems(25);
+				this.itemsControl.ItemsSource = this.itemsSourceVirtualized;
 			}
 		}
 		
@@ -47,9 +57,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			if (e.VerticalChange > 0)
 			{
 				// scrolled to bottom
-				if (e.VerticalOffset == this.itemsSource.Count - e.ViewportHeight)
+				if (e.VerticalOffset == this.itemsSourceVirtualized.Count - e.ViewportHeight)
 				{
-					this.itemsSource.RequestNextItems(1);
+					this.itemsSourceVirtualized.AddNextItems(1);
 				}
 			}
 		}

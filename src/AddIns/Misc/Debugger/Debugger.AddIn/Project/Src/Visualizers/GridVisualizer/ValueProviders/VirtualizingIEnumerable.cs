@@ -28,7 +28,10 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			this.originalSourceEnumerator = originalSource.GetEnumerator();
 		}
 		
-		public void RequestNextItems(int count)
+		/// <summary>
+		/// Requests next <paramref name="count"/> items from underlying IEnumerable source and adds them to the collection.
+		/// </summary>
+		public void AddNextItems(int count)
 		{
 			for (int i = 0; i < count; i++)
 			{

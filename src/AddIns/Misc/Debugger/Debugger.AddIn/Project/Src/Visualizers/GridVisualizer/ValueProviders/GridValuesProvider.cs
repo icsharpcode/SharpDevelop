@@ -4,13 +4,11 @@
 //     <owner name="Martin Koníèek" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.MetaData;
-using Debugger.AddIn.Visualizers.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Services;
+using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
+using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -20,7 +18,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// </summary>
 	public class GridValuesProvider
 	{
-		protected readonly Debugger.MetaData.BindingFlags memberBindingFlags =
+		protected readonly BindingFlags memberBindingFlags =
 			BindingFlags.Public | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
 		
 		/// <summary> Used to quickly find MemberInfo by member name - DebugType.GetMember(name) uses a loop to search members </summary>

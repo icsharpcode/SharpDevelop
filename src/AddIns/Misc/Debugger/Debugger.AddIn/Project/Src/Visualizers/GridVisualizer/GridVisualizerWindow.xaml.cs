@@ -77,9 +77,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					DebugType iEnumerableType, itemType;
 					if (val.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
 					{
-						var lazyListViewWrapper = new LazyListView<ObjectValue>(this.listView);
+						var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView);
 						var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
-						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
+						lazyListViewWrapper.ItemsSource = enumerableValuesProvider.ItemsSource;
 						gridValuesProvider = enumerableValuesProvider;
 					}
 					else
