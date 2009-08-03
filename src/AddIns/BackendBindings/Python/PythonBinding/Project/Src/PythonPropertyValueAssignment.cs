@@ -6,7 +6,10 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -42,70 +45,13 @@ namespace ICSharpCode.PythonBinding
 			Type propertyType = propertyValue.GetType();
 			if (propertyType == typeof(String)) {
 				return GetQuotedString((string)propertyValue);
-			} else if (propertyType == typeof(Size)) {
-				Size size = (Size)propertyValue;
-				return size.GetType().FullName + "(" + size.Width + ", " + size.Height + ")";
-			} else if (propertyType == typeof(SizeF)) {
-				SizeF size = (SizeF)propertyValue;
-				return size.GetType().FullName + "(" + size.Width + ", " + size.Height + ")";				
-			} else if (propertyType == typeof(Cursor)) {
-				return GetCursorAsString(propertyValue as Cursor);
-			} else if (propertyType == typeof(Point)) {
-				Point point = (Point)propertyValue;
-				return point.GetType().FullName + "(" + point.X + ", " + point.Y + ")";
-			} else if (propertyType == typeof(Padding)) {
-				Padding padding = (Padding)propertyValue;
-				return padding.GetType().FullName + "(" + padding.Left + ", " + padding.Top + ", " + padding.Right + ", " + padding.Bottom + ")";
-			} else if (propertyType == typeof(Color)) {
-				Color color = (Color)propertyValue;
-				return GetColorAsString(color);
-			} else if (propertyType == typeof(Font)) {
-				Font font = (Font)propertyValue;
-				return GetFontAsString(font);
 			} else if (propertyType == typeof(AnchorStyles)) {
 				AnchorStyles anchor = (AnchorStyles)propertyValue;
 				return GetAnchorStyleAsString(anchor);
-			} else if (propertyType.IsEnum) {
-				return propertyType.FullName.Replace('+', '.') + "." + propertyValue.ToString();
 			}
-			return propertyValue.ToString();
+			return ConvertTypeToString(propertyValue);
 		}
-		
-		static string GetCursorAsString(Cursor cursor)
-		{
-			TypeConverter converter = TypeDescriptor.GetConverter(typeof(Cursor));
-			string cursorName = converter.ConvertToString(null, CultureInfo.InvariantCulture, cursor);
-			return typeof(Cursors).FullName + "." + cursorName;
-		}
-		
-		static string GetColorAsString(Color color)
-		{
-			if (color.IsSystemColor) {
-				return GetColorAsString(color, typeof(SystemColors));
-			} else if (color.IsNamedColor) {
-				return GetColorAsString(color, typeof(Color));
-			} 
-			
-			// Custom color.
-			return color.GetType().FullName + ".FromArgb(" + color.R + ", " + color.G + ", " + color.B + ")";
-		}
-		
-		static string GetColorAsString(Color color, Type type)
-		{
-			foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Static)) {
-				Color standardColor = (Color)property.GetValue(null, null);
-				if (color == standardColor) {
-					return type.FullName + "." + standardColor.Name;
-				}
-			}
-			return String.Empty;
-		}
-		
-		static string GetFontAsString(Font font)
-		{
-			return String.Concat(font.GetType().FullName, "(\"", font.Name, "\", ", font.Size.ToString(CultureInfo.InvariantCulture), ", ", typeof(FontStyle).FullName, ".", font.Style, ", ", typeof(GraphicsUnit).FullName, ".", font.Unit, ", ", font.GdiCharSet, ")");
-		}
-		
+								
 		static string GetAnchorStyleAsString(AnchorStyles anchorStyles)
 		{
 			if (anchorStyles == AnchorStyles.None) {
@@ -138,6 +84,50 @@ namespace ICSharpCode.PythonBinding
 		static string GetQuotedString(string text)
 		{
 			return "\"" + text.Replace(@"\", @"\\").Replace("\"", "\\\"") + "\"";
+		}
+		
+		/// <summary>
+		/// Looks for an instance descriptor for the property value's type and then tries to convert
+		/// the object creation using this instance descriptor.
+		/// </summary>
+		static string ConvertTypeToString(object propertyValue)
+		{
+			TypeConverter converter = TypeDescriptor.GetConverter(propertyValue);
+			if (converter.CanConvertTo(typeof(InstanceDescriptor))) {
+				InstanceDescriptor instanceDescriptor = converter.ConvertTo(propertyValue, typeof(InstanceDescriptor)) as InstanceDescriptor;
+				if (instanceDescriptor != null) {
+					StringBuilder text = new StringBuilder();
+					MemberInfo memberInfo = instanceDescriptor.MemberInfo;
+					string fullName = memberInfo.DeclaringType.FullName.Replace('+', '.'); // Remove any + chars from enums.
+					text.Append(fullName);
+					if (memberInfo.MemberType != MemberTypes.Constructor) {
+						text.Append('.');
+						text.Append(memberInfo.Name);
+					}
+					
+					// Append arguments.
+					AppendArguments(text, instanceDescriptor.Arguments);
+	
+					return text.ToString();
+				}
+			}
+			return converter.ConvertToString(null, CultureInfo.InvariantCulture, propertyValue);
+		}
+		
+		static void AppendArguments(StringBuilder text, ICollection args)
+		{
+			if (args.Count > 0) {
+				int i = 0;
+				text.Append('(');
+				foreach (object arg in args) {
+					if (i > 0) {
+						text.Append(", ");
+					}
+					text.Append(ToString(arg));
+					++i;
+				}			
+				text.Append(')');
+			}
 		}
 	}
 }
