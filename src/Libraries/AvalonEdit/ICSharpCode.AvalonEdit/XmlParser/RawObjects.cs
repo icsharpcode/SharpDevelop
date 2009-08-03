@@ -39,26 +39,24 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public RawObject Parent { get; set; }
 		
-		public RawDocument Document {
-			get {
-				if (this.Parent != null) {
-					return this.Parent.Document;
-				} else if (this is RawDocument) {
-					return (RawDocument)this;
-				} else {
-					return null;
-				}
-			}
-		}
+//		public RawDocument Document {
+//			get {
+//				if (this.Parent != null) {
+//					return this.Parent.Document;
+//				} else if (this is RawDocument) {
+//					return (RawDocument)this;
+//				} else {
+//					return null;
+//				}
+//			}
+//		}
 		
 		/// <summary> Occurs when the value of any local properties changes.  Nested changes do not cause the event to occur </summary>
 		public event EventHandler LocalDataChanged;
 		
 		protected void OnLocalDataChanged()
 		{
-			if (!inCloning) {
-				Log("XML DOM: Local data changed for {0}", this);
-			}
+			LogDom("Local data changed for {0}", this);
 			if (LocalDataChanged != null) {
 				LocalDataChanged(this, EventArgs.Empty);
 			}
@@ -78,26 +76,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.ReadCallID = new object();
 		}
 		
-		// Disable some log messages during cloning
-		static bool inCloning = false;
-		
-		public RawObject Clone()
-		{
-			RawObject clone = (RawObject)System.Activator.CreateInstance(this.GetType());
-			inCloning = true;
-			clone.UpdateDataFrom(this);
-			inCloning = false;
-			return clone;
-		}
-		
-		public virtual IEnumerable<RawObject> GetSeftAndAllNestedObjects()
-		{
-			yield return this;
-		}
-		
 		public virtual void UpdateDataFrom(RawObject source)
 		{
 			this.ReadCallID = source.ReadCallID;
+			// In some cases we are just updating objects of that same
+			// type and sequential position hoping to be luckily right
 			this.StartOffset = source.StartOffset;
 			this.EndOffset = source.EndOffset;
 		}
@@ -107,42 +90,36 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return string.Format("{0}({1}-{2})", this.GetType().Name.Remove(0, 3), this.StartOffset, this.EndOffset);
 		}
 		
-		public static bool LoggingEnabled = true;
-		
-		public static void Log(string format, params object[] args)
+		public static void LogDom(string format, params object[] args)
 		{
-			if (LoggingEnabled) {
-				System.Diagnostics.Debug.WriteLine(format, args);
-			}
+			System.Diagnostics.Debug.WriteLine("XML DOM: " + format, args);
 		}
 		
 		public static void LogLinq(string format, params object[] args)
 		{
-			if (LoggingEnabled) {
-				System.Diagnostics.Debug.WriteLine("XML Linq: " + format, args);
-			}
+			System.Diagnostics.Debug.WriteLine("XML Linq: " + format, args);
 		}
 		
 		internal void OnInserting(RawObject parent, int index)
 		{
-			Log("XML DOM: Inserting {0} at index {1}", this, index);
+			LogDom("Inserting {0} at index {1}", this, index);
 			this.Parent = parent;
-			if (this.Document != null) {
-				foreach(RawObject obj in GetSeftAndAllNestedObjects()) {
-					this.Document.OnObjectAttached(new RawObjectEventArgs() { Object = obj });
-				}
-			}
+//			if (this.Document != null) {
+//				foreach(RawObject obj in GetSeftAndAllNestedObjects()) {
+//					this.Document.OnObjectAttached(new RawObjectEventArgs() { Object = obj });
+//				}
+//			}
 		}
 		
 		internal void OnRemoving(RawObject parent, int index)
 		{
-			Log("XML DOM: Removing {0} at index {1}", this, index);
+			LogDom("Removing {0} at index {1}", this, index);
 			this.Parent = null;
-			if (this.Document != null) {
-				foreach(RawObject obj in GetSeftAndAllNestedObjects()) {
-					this.Document.OnObjectDettached(new RawObjectEventArgs() { Object = obj });
-				}
-			}
+//			if (this.Document != null) {
+//				foreach(RawObject obj in GetSeftAndAllNestedObjects()) {
+//					this.Document.OnObjectDettached(new RawObjectEventArgs() { Object = obj });
+//				}
+//			}
 		}
 		
 		protected XName EncodeXName(string name, string ns)
@@ -161,8 +138,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	{
 		public ObservableCollection<RawObject> Children { get; set; }
 		
-		public event EventHandler<RawObjectEventArgs> ObjectAttached;
-		public event EventHandler<RawObjectEventArgs> ObjectDettached;
+//		public event EventHandler<RawObjectEventArgs> ObjectAttached;
+//		public event EventHandler<RawObjectEventArgs> ObjectDettached;
 		
 		public ObservableCollection<RawObject> Helper_Elements {
 			get {
@@ -170,27 +147,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		internal void OnObjectAttached(RawObjectEventArgs e)
-		{
-			if (ObjectAttached != null) ObjectAttached(this, e);
-		}
-		
-		internal void OnObjectDettached(RawObjectEventArgs e)
-		{
-			if (ObjectDettached != null) ObjectDettached(this, e);
-		}
+//		internal void OnObjectAttached(RawObjectEventArgs e)
+//		{
+//			if (ObjectAttached != null) ObjectAttached(this, e);
+//		}
+//		
+//		internal void OnObjectDettached(RawObjectEventArgs e)
+//		{
+//			if (ObjectDettached != null) ObjectDettached(this, e);
+//		}
 		
 		public RawDocument()
 		{
 			this.Children = new ObservableCollection<RawObject>();
-		}
-		
-		public override IEnumerable<RawObject> GetSeftAndAllNestedObjects()
-		{
-			return Enumerable.Union(
-				new RawObject[] { this },
-				this.Children.SelectMany(x => x.GetSeftAndAllNestedObjects())
-			);
 		}
 		
 		public override void UpdateDataFrom(RawObject source)
@@ -242,14 +211,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.Attributes = new ObservableCollection<RawObject>();
 		}
 		
-		public override IEnumerable<RawObject> GetSeftAndAllNestedObjects()
-		{
-			return Enumerable.Union(
-				new RawObject[] { this },
-				this.Attributes // Have no nested objects
-			);
-		}
-		
 		public override void UpdateDataFrom(RawObject source)
 		{
 			if (this.ReadCallID == source.ReadCallID) return;
@@ -296,16 +257,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.StartTag = new RawTag() { Parent = this };
 			this.Children = new ObservableCollection<RawObject>();
 			this.EndTag   = new RawTag() { Parent = this };
-		}
-		
-		public override IEnumerable<RawObject> GetSeftAndAllNestedObjects()
-		{
-			return new IEnumerable<RawObject>[] {
-				new RawObject[] { this },
-				this.StartTag.GetSeftAndAllNestedObjects(),
-				this.Children.SelectMany(x => x.GetSeftAndAllNestedObjects()),
-				this.EndTag.GetSeftAndAllNestedObjects()
-			}.SelectMany(x => x);
 		}
 		
 		public override void UpdateDataFrom(RawObject source)
@@ -477,9 +428,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			for(int i = 0; i < srcList.Count;) {
 				// Item is missing - 'i' is invalid index
 				if (i >= dstList.Count) {
-					RawObject clone = srcList[i].Clone();
-					clone.OnInserting(dstListOwner, i);
-					dstList.Insert(i, clone);
+					srcList[i].OnInserting(dstListOwner, i);
+					dstList.Insert(i, srcList[i]);
 					i++; continue;
 				}
 				RawObject srcItem = srcList[i];
@@ -501,9 +451,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					RawObject src = srcList[srcItemIndex];
 					if (src.StartOffset == dstItem.StartOffset && src.GetType() == dstItem.GetType()) {
 						for(int j = i; j < srcItemIndex; j++) {
-							RawObject clone = srcList[j].Clone();
-							clone.OnInserting(dstListOwner, j);
-							dstList.Insert(j, clone);
+							srcList[j].OnInserting(dstListOwner, j);
+							dstList.Insert(j, srcList[j]);
 						}
 						i = srcItemIndex;
 						goto continue2;
@@ -533,9 +482,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				}
 				// Otherwise just add the item
 				{
-					RawObject clone = srcList[i].Clone();
-					clone.OnInserting(dstListOwner, i);
-					dstList.Insert(i, clone);
+					srcList[i].OnInserting(dstListOwner, i);
+					dstList.Insert(i, srcList[i]);
 					i++; continue;
 				}
 			}

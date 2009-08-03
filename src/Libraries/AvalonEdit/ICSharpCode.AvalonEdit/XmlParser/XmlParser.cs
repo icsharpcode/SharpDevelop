@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
@@ -19,26 +20,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 {
 	public class XmlParser
 	{
-		RawDocument userDocument;
+		RawDocument userDocument = new RawDocument();
 		XDocument userLinqDocument;
 		TextDocument textDocument;
-		TextSegmentCollection<RawObject> userDom;
-		TextSegmentCollection<RawObject> parsedDom;
+		TextSegmentCollection<RawObject> parsedItems = new TextSegmentCollection<RawObject>();
+		List<DocumentChangeEventArgs> changesSinceLastParse = new List<DocumentChangeEventArgs>();
 		
 		public XmlParser(TextDocument textDocument)
 		{
-			this.userDocument = new RawDocument();
+			this.userLinqDocument = userDocument.CreateXDocument(true);
 			this.textDocument = textDocument;
-			this.userDom = new TextSegmentCollection<RawObject>(textDocument);
-			this.parsedDom = new TextSegmentCollection<RawObject>(textDocument);
-			this.textDocument.Changed += TextDocument_Changed;
-			this.userDocument.ObjectAttached += delegate(object sender, RawObjectEventArgs e) {
-				this.userDom.Add(e.Object);
+			this.textDocument.Changed += delegate(object sender, DocumentChangeEventArgs e) {
+				changesSinceLastParse.Add(e);
 			};
-			this.userDocument.ObjectDettached += delegate(object sender, RawObjectEventArgs e) {
-				this.userDom.Remove(e.Object);
-			};
-			this.userLinqDocument = this.userDocument.CreateXDocument(true);
 		}
 		
 		public RawDocument Parse()
@@ -46,32 +40,35 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			currentLocation = 0;
 			input = textDocument.Text;
 			
+			foreach(DocumentChangeEventArgs change in changesSinceLastParse) {
+				// Update offsets of all items
+				parsedItems.UpdateOffsets(change);
+				// Remove any items affected by the change
+				int start = change.Offset - 2;
+				int end = change.Offset + change.InsertionLength + 2;
+				start = Math.Max(Math.Min(start, textDocument.TextLength - 1), 0);
+				end = Math.Max(Math.Min(end, textDocument.TextLength - 1), 0);
+				foreach(RawObject obj in parsedItems.FindOverlappingSegments(start, end - start)) {
+					parsedItems.Remove(obj);
+					Log("Removed cached item: {0}", obj);
+				}
+			}
+			changesSinceLastParse.Clear();
+			
 			RawDocument parsedDocument = ReadDocument();
 			userDocument.UpdateDataFrom(parsedDocument);
 			return userDocument;
 		}
-
-		void TextDocument_Changed(object sender, DocumentChangeEventArgs e)
-		{
-			int start = e.Offset - 2;
-			int end = e.Offset + e.InsertionLength + 2;
-			start = Math.Max(Math.Min(start, textDocument.TextLength - 1), 0);
-			end = Math.Max(Math.Min(end, textDocument.TextLength - 1), 0);
-			foreach(RawObject obj in parsedDom.FindOverlappingSegments(start, end - start)) {
-				parsedDom.Remove(obj);
-				Log("Removed cached item: {0}", obj);
-			}
-		}
 		
 		T ReadFromCache<T>(int location) where T: RawObject
 		{
-			RawObject obj = parsedDom.FindFirstSegmentWithStartAfter(location);
+			RawObject obj = parsedItems.FindFirstSegmentWithStartAfter(location);
 			while(obj != null && obj.StartOffset == location) {
 				if (obj is T) {
 					currentLocation += obj.Length;
 					return (T)obj;
 				}
-				obj = parsedDom.GetNextSegment(obj);
+				obj = parsedItems.GetNextSegment(obj);
 			}
 			return null;
 		}
@@ -203,7 +200,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			doc.EndOffset = currentLocation;
 			
 			LogParsed(doc);
-			parsedDom.Add(doc);
+			parsedItems.Add(doc);
 			return doc;
 		}
 		
@@ -243,7 +240,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			element.EndOffset = currentLocation;
 			
 			LogParsed(element);
-			parsedDom.Add(element);
+			parsedItems.Add(element);
 			return element;
 		}
 		
@@ -307,7 +304,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			tag.EndOffset = currentLocation;
 			
 			LogParsed(tag);
-			parsedDom.Add(tag);
+			parsedItems.Add(tag);
 			return tag;
 		}
 		
@@ -326,7 +323,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			ws.Value = GetText(start, currentLocation);
 			ws.EndOffset = currentLocation;
 			
-			parsedDom.Add(ws);
+			parsedItems.Add(ws);
 			return ws;
 		}
 		
@@ -374,7 +371,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 			attr.EndOffset = currentLocation;
 			
-			parsedDom.Add(attr);
+			parsedItems.Add(attr);
 			return attr;
 		}
 		
@@ -393,7 +390,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			charData.Value = GetText(start, currentLocation);
 			charData.EndOffset = currentLocation;
 			
-			parsedDom.Add(charData);
+			parsedItems.Add(charData);
 			return charData;
 		}
 	}
