@@ -201,6 +201,7 @@
     <Compile Include="Designer\GenerateInheritedFormTestFixture.cs" />
     <Compile Include="Designer\GenerateInheritedProtectedPanelFormTestFixture.cs" />
     <Compile Include="Designer\GenerateInheritedToolTipTestFixture.cs" />
+    <Compile Include="Designer\GenerateListViewGroupsTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewItemTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewSubItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateListViewWithImageListTestFixture.cs" />
