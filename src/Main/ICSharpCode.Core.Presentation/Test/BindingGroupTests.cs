@@ -39,7 +39,15 @@ namespace ICSharpCode.Core.Presentation.Tests
 		[Test]
 		public void AttachGroupMethod()
 		{
-			var results = new List<string>();
+			var result = false;
+			
+			SDCommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) {  
+				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified 
+				   && args.AttachedInstances.Contains(uiElement)
+				   && args.Groups.Contains(bindingGroup)) {
+					result = true;
+				}
+			};
 			
 			var bindingInfo = new InputBindingInfo();
 			bindingInfo.RoutedCommandName = "ApplicationCommands.Copy";
@@ -47,30 +55,26 @@ namespace ICSharpCode.Core.Presentation.Tests
 			bindingInfo.DefaultGestures.Add(new KeyGesture(Key.C, ModifierKeys.Alt));
 			bindingInfo.Groups.Add(bindingGroup);
 			SDCommandManager.RegisterInputBinding(bindingInfo);
-			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate(), 
-				delegate { results.Add("SubSetTest"); });
-			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate {                                                
-					RoutedCommandName = "ApplicationCommands.Copy",
-					OwnerInstanceName = "NamedInstance",
-					Groups = new BindingGroupCollection { bindingGroup } },
-				delegate { results.Add("SuperSetTest"); });
-			                                      
-			Assert.AreEqual(0, uiElement.InputBindings.Count);
+			                                    
+			Assert.IsEmpty(uiElement.InputBindings);
 			
 			bindingGroup.AttachTo(uiElement);
 			Assert.AreEqual(1, uiElement.InputBindings.Count);
-			Assert.Contains("SubSetTest", results);
-			Assert.Contains("SuperSetTest", results);
+			Assert.IsTrue(result);
 		}
         
 		[Test]
 		public void DetachGroupMethod()
 		{
-			var results = new List<string>();
+			var result = false;
+			
+			SDCommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) {  
+				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified 
+				   && args.AttachedInstances.Contains(uiElement)
+				   && args.Groups.Contains(bindingGroup)) {
+					result = true;
+				}
+			};
 			
 			var bindingInfo = new InputBindingInfo();
 			bindingInfo.RoutedCommandName = "ApplicationCommands.Copy";
@@ -81,32 +85,26 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			bindingGroup.AttachTo(uiElement);
 			Assert.AreEqual(1, uiElement.InputBindings.Count);
+			Assert.IsTrue(result);
 			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate(), 
-				delegate { results.Add("SuperSetTest"); });
-			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate {                                                
-					RoutedCommandName = "ApplicationCommands.Copy",
-					OwnerInstanceName = "NamedInstance",
-					Groups = new BindingGroupCollection { bindingGroup } },
-				delegate { results.Add("SubSetTest"); });
-			
+			result = false;
 			bindingGroup.DetachFrom(uiElement);
-			Assert.AreEqual(0, uiElement.InputBindings.Count);
-			Assert.Contains("SubSetTest", results);
-			Assert.Contains("SuperSetTest", results);	
+			Assert.IsEmpty(uiElement.InputBindings);
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
 		public void AddAttachedGroupTest()
 		{
-			var results = new List<string>();
+			var result = false;
 			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate { Groups = new BindingGroupCollection { bindingGroup } },
-				delegate { results.Add("SuperSetTest"); });
+			SDCommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) {  
+				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified 
+				   && args.AttachedInstances.Contains(uiElement)
+				   && args.Groups.Contains(bindingGroup)) {
+					result = true;
+				}
+			};
 			
 			var bindingInfo = new InputBindingInfo();
 			bindingInfo.RoutedCommandName = "ApplicationCommands.Copy";
@@ -114,12 +112,11 @@ namespace ICSharpCode.Core.Presentation.Tests
 			bindingInfo.DefaultGestures.Add(new KeyGesture(Key.C, ModifierKeys.Alt));
 			SDCommandManager.RegisterInputBinding(bindingInfo);
 			
-			Assert.IsFalse(results.Contains("SuperSetTest"));
+			Assert.IsFalse(result);
 			
 			bindingGroup.AttachTo(uiElement);
-			
 			bindingInfo.Groups.Add(bindingGroup);
-			Assert.Contains("SuperSetTest", results);
+			Assert.IsTrue(result);
 			Assert.IsTrue(uiElement.InputBindings[0].Command == ApplicationCommands.Copy);
 		}
         
@@ -137,78 +134,14 @@ namespace ICSharpCode.Core.Presentation.Tests
 			bindingInfo.Groups.Add(bindingGroup);
 			SDCommandManager.RegisterInputBinding(bindingInfo);
 			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate(), 
-				delegate { results.Add("SubSetTest"); });
-			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate {                                                
-					RoutedCommandName = "ApplicationCommands.Copy",
-					OwnerInstanceName = "OtherNamedInstance",
-					Groups = new BindingGroupCollection { bindingGroup } },
-				delegate { results.Add("OtherSuperSetTest"); });
-			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate {                                                
-					RoutedCommandName = "ApplicationCommands.Copy",
-					OwnerInstanceName = "NamedInstance",
-					Groups = new BindingGroupCollection { bindingGroup } },
-				delegate { results.Add("SuperSetTest"); });
-			                                     
 			bindingGroup.AttachTo(otherUIElement);
-			Assert.AreEqual(0, uiElement.InputBindings.Count);
-			Assert.IsFalse(results.Contains("SubSetTest"));
-			Assert.IsFalse(results.Contains("OtherSuperSetTest"));
-			Assert.IsFalse(results.Contains("SuperSetTest"));
+			Assert.IsEmpty(otherUIElement.InputBindings);
 			
         	SDCommandManager.RegisterNamedUIElement("OtherNamedInstance", otherUIElement);
-			Assert.AreEqual(1, otherUIElement.InputBindings.Count);
-			Assert.IsTrue(results.Contains("SubSetTest"));
-			Assert.IsTrue(results.Contains("OtherSuperSetTest"));
-			Assert.IsFalse(results.Contains("SuperSetTest"));
-		}
-		[Test]
-		public void UnregisterNamedInstanceAttachedToGroupTest()
-		{
-			var results = new List<string>();
-			
-			var otherUIElement = new UIElement();
-			
-			var bindingInfo = new InputBindingInfo();
-			bindingInfo.RoutedCommandName = "ApplicationCommands.Copy";
-			bindingInfo.OwnerInstanceName = "OtherNamedInstance";
-			bindingInfo.DefaultGestures.Add(new KeyGesture(Key.C, ModifierKeys.Alt));
-			bindingInfo.Groups.Add(bindingGroup);
-			SDCommandManager.RegisterInputBinding(bindingInfo);
-			
-			bindingGroup.AttachTo(otherUIElement);
-        	SDCommandManager.RegisterNamedUIElement("OtherNamedInstance", otherUIElement);
-			Assert.AreEqual(1, otherUIElement.InputBindings.Count);
-			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate(), 
-				delegate { results.Add("SubSetTest"); });
-			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate {                                                
-					RoutedCommandName = "ApplicationCommands.Copy",
-					OwnerInstanceName = "OtherNamedInstance",
-					Groups = new BindingGroupCollection { bindingGroup } },
-				delegate { results.Add("OtherSuperSetTest"); });
-			
-			SDCommandManager.RegisterInputBindingsUpdateHandler(
-				new BindingInfoTemplate {                                                
-					RoutedCommandName = "ApplicationCommands.Copy",
-					OwnerInstanceName = "NamedInstance",
-					Groups = new BindingGroupCollection { bindingGroup } },
-				delegate { results.Add("SuperSetTest"); });
-			
-			SDCommandManager.UnregisterNamedUIElement("OtherNamedInstance", otherUIElement);
-			
-			Assert.AreEqual(0, otherUIElement.InputBindings.Count);
-			Assert.IsTrue(results.Contains("SubSetTest"));
-			Assert.IsTrue(results.Contains("OtherSuperSetTest"));
-			Assert.IsFalse(results.Contains("SuperSetTest"));
+        	Assert.AreEqual(1, otherUIElement.InputBindings.Count);
+        	
+        	SDCommandManager.UnregisterNamedUIElement("OtherNamedInstance", otherUIElement);
+        	Assert.IsEmpty(otherUIElement.InputBindings);
 		}
 		
     	[Test]

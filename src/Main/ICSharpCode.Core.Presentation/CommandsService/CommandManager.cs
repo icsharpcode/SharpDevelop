@@ -34,19 +34,15 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		// Binding infos
-		private static BindingInfoTemplateDictionary<IBindingInfo> commandBindings = new BindingInfoTemplateDictionary<IBindingInfo>();
-		private static BindingInfoTemplateDictionary<IBindingInfo> inputBidnings = new BindingInfoTemplateDictionary<IBindingInfo>();
-		
-		// Binding update handlers
-		private static BindingInfoTemplateDictionary<BindingsUpdatedHandler> inputBindingUpdatedHandlers = new BindingInfoTemplateDictionary<BindingsUpdatedHandler>();
-		private static BindingInfoTemplateDictionary<BindingsUpdatedHandler> commandBindingUpdatedHandlers = new BindingInfoTemplateDictionary<BindingsUpdatedHandler>();
+		private static BindingInfoTemplateDictionary<BindingInfoBase> commandBindings = new BindingInfoTemplateDictionary<BindingInfoBase>();
+		private static BindingInfoTemplateDictionary<BindingInfoBase> inputBidnings = new BindingInfoTemplateDictionary<BindingInfoBase>();
 		
 		// Commands
 		private static Dictionary<string, RoutedUICommand> routedCommands = new Dictionary<string, RoutedUICommand>();
 		internal static Dictionary<string, System.Windows.Input.ICommand> commands = new Dictionary<string, System.Windows.Input.ICommand>();
 		
 		// Named instances and types
-		private static RelationshipMap<string, WeakReference> namedUIInstances;
+		private static RelationshipMap<string, WeakReference> namedUIInstances = new RelationshipMap<string, WeakReference>(null, new WeakReferenceEqualirtyComparer());
 		private static RelationshipMap<string, Type> namedUITypes = new RelationshipMap<string, Type>();
 		
 		// Categories
@@ -54,7 +50,73 @@ namespace ICSharpCode.Core.Presentation
 		
 		static CommandManager()
 		{
-			namedUIInstances = new RelationshipMap<string, WeakReference>(null, new WeakReferenceEqualirtyComparer());
+			// Load gestures profile first
+			var path = PropertyService.Get("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory");
+			if(path != null && File.Exists(path)) {
+				var profile = new UserGesturesProfile();
+				profile.Path = path;
+				profile.Load();
+				
+				UserDefinedGesturesManager.CurrentProfile = profile;
+			}
+			
+			UserDefinedGesturesManager.CurrentProfileChanged += UserDefinedGesturesManager_CurrentProfileChanged;
+		}
+
+		static void UserDefinedGesturesManager_CurrentProfileChanged(object sender, NotifyUserGestureProfileChangedEventArgs args)
+		{
+			var changedGestures = new Dictionary<InputBindingIdentifier, Tuple<InputGestureCollection, InputGestureCollection>>();
+			
+			if(args.OldProfile != null) {
+				args.OldProfile.GesturesChanged -= Profile_GesturesChanged;
+				
+				foreach(var pair in args.OldProfile) {
+					changedGestures.Add(pair.Key, new Tuple<InputGestureCollection, InputGestureCollection>(pair.Value, null));
+				}
+			}
+			
+			if(args.NewProfile != null) {
+				args.NewProfile.GesturesChanged += Profile_GesturesChanged;
+				
+				foreach(var pair in args.NewProfile) {
+					InputGestureCollection item1 = null;
+					if(!changedGestures.ContainsKey(pair.Key)) {
+						changedGestures.Add(pair.Key, new Tuple<InputGestureCollection, InputGestureCollection>(null, pair.Value));
+					} else {
+						changedGestures[pair.Key] = new Tuple<InputGestureCollection, InputGestureCollection>(changedGestures[pair.Key].Item1, pair.Value);
+					}
+				}
+			}
+			
+			var modifiedBindingTemplates = new HashSet<IBindingInfoTemplate>(new IBindingInfoTemplateEqualityComparer());
+			var descriptions = new List<GesturesModificationDescription>(changedGestures.Count);
+			foreach(var changedGesture in changedGestures) {
+				var bindingInfoTemplate = new BindingInfoTemplate(changedGesture.Key);
+				InputGestureCollection defaultUserGesture = null;
+				if(changedGesture.Value.Item1 == null || changedGesture.Value.Item2 == null) {
+					defaultUserGesture = FindInputGestures(BindingInfoMatchType.Exact, bindingInfoTemplate);
+				}
+				
+				var oldGestures = changedGesture.Value.Item1 ?? defaultUserGesture;
+				var newGestures = changedGesture.Value.Item2 ?? defaultUserGesture;
+				descriptions.Add(new GesturesModificationDescription(changedGesture.Key, oldGestures, newGestures));
+						
+				modifiedBindingTemplates.Add(bindingInfoTemplate);
+			}
+			
+			InvokeBindingsChanged(typeof(CommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, modifiedBindingTemplates));
+			InvokeGesturesChanged(typeof(CommandManager), new NotifyGesturesChangedEventArgs(descriptions));
+		}
+
+		static void Profile_GesturesChanged(object sender, NotifyGesturesChangedEventArgs args)
+		{
+			var modifiedBindingTemplates = new HashSet<IBindingInfoTemplate>(new IBindingInfoTemplateEqualityComparer());
+			foreach(var description in args.ModificationDescriptions) {
+				modifiedBindingTemplates.Add(new BindingInfoTemplate(description.InputBindingIdentifier));
+			}
+			
+			InvokeBindingsChanged(typeof(CommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, modifiedBindingTemplates));
+			InvokeGesturesChanged(typeof(CommandManager), args);
 		}
 		
 		/// <summary>
@@ -71,23 +133,18 @@ namespace ICSharpCode.Core.Presentation
 				throw new ArgumentNullException("element");
 			}
 			
+			var oldInstances = GetNamedUIElementCollection(instanceName).ToArray();
+			
 			var container = new WeakReference(element);
 			if(namedUIInstances.Add(instanceName, container)) {
-				var args = new BindingsUpdatedHandlerArgs();
-				args.AddedInstances = new [] { element };
-				
-				InvokeCommandBindingUpdateHandlers(
-					null,
-					args,
-					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-					new BindingInfoTemplate { OwnerInstanceName = instanceName });
-						
-				InvokeInputBindingUpdateHandlers(
-					null,
-					args,
-					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-					new BindingInfoTemplate { OwnerInstanceName = instanceName });
-			}
+				InvokeBindingsChanged(
+					null, 
+					new NotifyBindingsChangedEventArgs(
+						NotifyBindingsChangedAction.NamedInstanceModified,
+						instanceName,
+						oldInstances,
+						GetNamedUIElementCollection(instanceName)));
+			}	
 		}
 		
 		public static void UnregisterNamedUIElement(string instanceName, UIElement instance)
@@ -99,22 +156,17 @@ namespace ICSharpCode.Core.Presentation
 				throw new ArgumentNullException("element");
 			}
 			
+			var oldInstances = GetNamedUIElementCollection(instanceName).ToArray();
+			
 			var container = new WeakReference(instance);
 			if(namedUIInstances.Remove(instanceName, container)) {
-				var args = new BindingsUpdatedHandlerArgs();
-				args.RemovedInstances = new []{ instance };
-				
-				InvokeCommandBindingUpdateHandlers(
-					null,
-					args,
-					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, 
-					new BindingInfoTemplate { OwnerInstanceName = instanceName });
-						
-				InvokeInputBindingUpdateHandlers(
-					null,
-					args,
-					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-					new BindingInfoTemplate { OwnerInstanceName = instanceName });
+				InvokeBindingsChanged(
+					null, 
+					new NotifyBindingsChangedEventArgs(
+						NotifyBindingsChangedAction.NamedInstanceModified,
+						instanceName,
+						oldInstances,
+						GetNamedUIElementCollection(instanceName)));
 			}
 		}
 		
@@ -138,8 +190,7 @@ namespace ICSharpCode.Core.Presentation
 				throw new ArgumentNullException("instance");
 			}
 			
-			var container = new WeakReference(instance);
-			return namedUIInstances.MapBackward(container);
+			return namedUIInstances.MapBackward(new WeakReference(instance));
 		}
 		
 		/// <summary>
@@ -156,21 +207,15 @@ namespace ICSharpCode.Core.Presentation
 				throw new ArgumentNullException("type");
 			}
 			
-			if(namedUITypes.Add(typeName, type)) {
-				var args = new BindingsUpdatedHandlerArgs();
-				args.AddedTypes = new [] { type };
+			var oldTypes = GetNamedUITypeCollection(typeName).ToArray();
 			
-				InvokeCommandBindingUpdateHandlers(
-					null,
-					args,
-					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-					new BindingInfoTemplate { OwnerTypeName = typeName });
-						
-				InvokeInputBindingUpdateHandlers(
-					null,
-					args, 
-					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-					new BindingInfoTemplate { OwnerTypeName = typeName });
+			if(namedUITypes.Add(typeName, type)) {
+				InvokeBindingsChanged(null, 
+					new NotifyBindingsChangedEventArgs(
+						NotifyBindingsChangedAction.NamedTypeModified,
+						typeName,
+						oldTypes,
+						GetNamedUITypeCollection(typeName)));
 			}
 		}
 		
@@ -183,21 +228,16 @@ namespace ICSharpCode.Core.Presentation
 				throw new ArgumentNullException("type");
 			}
 			
-			if(namedUITypes.Remove(typeName, type)) {
-				var args = new BindingsUpdatedHandlerArgs();
-				args.RemovedTypes = new [] { type };
+			var oldTypes = GetNamedUITypeCollection(typeName).ToArray();
 			
-				InvokeCommandBindingUpdateHandlers(
-					null,
-					args,
-					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,						
-					new BindingInfoTemplate { OwnerTypeName = typeName });
-						
-				InvokeInputBindingUpdateHandlers(
-					null,
-					args,
-					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-					new BindingInfoTemplate { OwnerTypeName = typeName });
+			if(namedUITypes.Remove(typeName, type)) {
+				InvokeBindingsChanged(
+					null, 
+					new NotifyBindingsChangedEventArgs(
+						NotifyBindingsChangedAction.NamedTypeModified,
+						typeName,
+						oldTypes,
+						GetNamedUITypeCollection(typeName)));
 			}
 		}
 		
@@ -240,19 +280,9 @@ namespace ICSharpCode.Core.Presentation
 			var routedCommand = new RoutedUICommand(text, routedCommandName, typeof(CommandManager));
 			
 			routedCommands.Add(routedCommandName, routedCommand);
-			
-			InvokeCommandBindingUpdateHandlers(
-				null,
-				new BindingsUpdatedHandlerArgs(),
-				BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-				new BindingInfoTemplate { RoutedCommandName = routedCommandName });
+							
+			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.RoutedUICommandModified, routedCommandName));
 					
-			InvokeInputBindingUpdateHandlers(
-				null,
-				new BindingsUpdatedHandlerArgs(),
-				BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-				new BindingInfoTemplate { RoutedCommandName = routedCommandName });
-			
 			return routedCommand;
 		}
 
@@ -273,17 +303,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			routedCommands.Add(routedCommandName, existingRoutedUICommand);
 			
-			InvokeCommandBindingUpdateHandlers(
-				null,
-				new BindingsUpdatedHandlerArgs(),
-				BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-				new BindingInfoTemplate { RoutedCommandName = routedCommandName });
-					
-			InvokeInputBindingUpdateHandlers(
-				null,
-				new BindingsUpdatedHandlerArgs(),
-				BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-				new BindingInfoTemplate { RoutedCommandName = routedCommandName });
+			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.RoutedUICommandModified, routedCommandName));
 		}
 	
 		/// <summary>
@@ -294,18 +314,8 @@ namespace ICSharpCode.Core.Presentation
 			if(routedCommands.ContainsKey(routedCommandName)) {
 				var routedCommand = routedCommands[routedCommandName];
 				routedCommands.Remove(routedCommandName);
-			
-				InvokeCommandBindingUpdateHandlers(
-					null,
-					new BindingsUpdatedHandlerArgs(),
-					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-					new BindingInfoTemplate { RoutedCommandName = routedCommandName });
-						
-				InvokeInputBindingUpdateHandlers(
-					null,
-					new BindingsUpdatedHandlerArgs(),
-					BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet,
-					new BindingInfoTemplate { RoutedCommandName = routedCommandName });
+				
+				InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.RoutedUICommandModified, routedCommandName));
 			}
 		}
 		
@@ -353,14 +363,10 @@ namespace ICSharpCode.Core.Presentation
 				inputBidnings.Add(inputBindingInfo, inputBindingInfo);
 				inputBindingInfo.IsRegistered = true;
 				
-				RegisterInputBindingsUpdateHandler(inputBindingInfo, inputBindingInfo.DefaultBindingsUpdateHandler);
+				CommandManager.BindingsChanged += inputBindingInfo.BindingsChangedHandler;
 			}
 			
-			InvokeInputBindingUpdateHandlers(
-				null,
-				new BindingsUpdatedHandlerArgs(),
-				BindingInfoMatchType.SubSet, 
-				inputBindingInfo);
+			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new [] { similarTemplate }));
 		}
 		
 		/// <summary>
@@ -410,95 +416,28 @@ namespace ICSharpCode.Core.Presentation
 			
 			commandBindings.Add(commandBindingInfo, commandBindingInfo);
 			commandBindingInfo.IsRegistered = true;
-			
-			RegisterCommandBindingsUpdateHandler(commandBindingInfo, commandBindingInfo.DefaultBindingsUpdateHandler);
-			
-			InvokeCommandBindingUpdateHandlers(
-				null,
-				new BindingsUpdatedHandlerArgs(),
-				BindingInfoMatchType.SubSet, 
-				commandBindingInfo);
+				
+			CommandManager.BindingsChanged += commandBindingInfo.BindingsChangedHandler;
+			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new []{ new BindingInfoTemplate(commandBindingInfo, false) }));
 		}
 		
-		#region Register update handler
-		/// <summary>
-		/// Register command binding update handler which is triggered when input bindings associated 
-		/// with specified type change
-		/// </summary>
-		/// <param name="ownerTypeName">Owner type name</param>
-		/// <param name="handler">Update handler</param>
-		public static void RegisterCommandBindingsUpdateHandler(IBindingInfoTemplate template, BindingsUpdatedHandler handler) 
+		public static event NotifyBindingsChangedEventHandler BindingsChanged;
+		
+		public static void InvokeBindingsChanged(object sender, NotifyBindingsChangedEventArgs args)
 		{
-			RegisterBindingsUpdateHandler(commandBindingUpdatedHandlers, template, handler);
-		}
-		
-		/// <summary>
-		/// Register command binding update handler which is triggered when input bindings associated 
-		/// with specified type change
-		/// </summary>
-		/// <param name="ownerTypeName">Owner type name</param>
-		/// <param name="handler">Update handler</param>
-		public static void RegisterInputBindingsUpdateHandler(IBindingInfoTemplate template, BindingsUpdatedHandler handler) 
-		{
-			RegisterBindingsUpdateHandler(inputBindingUpdatedHandlers, template, handler);
-		}
-		
-		private static void RegisterBindingsUpdateHandler(BindingInfoTemplateDictionary<BindingsUpdatedHandler> updateHanlders, IBindingInfoTemplate template, BindingsUpdatedHandler handler) 
-		{
-			updateHanlders.Add(template, handler);
-		}
-		#endregion
-		
-		
-		#region Unregister update handler
-		public static void UnregisterInputBindingsUpdateHandler(BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates)
-		{
-			UnregisterdBindingsUpdateHandler(inputBindingUpdatedHandlers, handler, matchType, templates);
-		}
-		
-		
-		public static void UnregisterCommandBindingsUpdateHandler(BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates) 
-		{
-			UnregisterdBindingsUpdateHandler(commandBindingUpdatedHandlers, handler, matchType, templates);
-		}
-		
-		private static void UnregisterdBindingsUpdateHandler(BindingInfoTemplateDictionary<BindingsUpdatedHandler> updateHandlers, BindingsUpdatedHandler handler, BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates) 
-		{
-			if(handler == null) {
-				throw new ArgumentNullException("handler");
-			}
-			
-			foreach(var template in templates) {
-				updateHandlers.Remove(template, matchType, handler);
+			if(BindingsChanged != null) {
+				BindingsChanged.Invoke(sender, args);
 			}
 		}
-		#endregion
 		
+		public static event NotifyGesturesChangedEventHandler GesturesChanged;
 		
-		#region Invoke binding update handlers
-		public static void InvokeCommandBindingUpdateHandlers(object sender, BindingsUpdatedHandlerArgs args, BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates)
+		public static void InvokeGesturesChanged(object sender, NotifyGesturesChangedEventArgs args)
 		{
-			InvokeBindingUpdateHandlers(commandBindingUpdatedHandlers, sender, args, matchType, templates);
-		}
-		
-		public static void InvokeInputBindingUpdateHandlers(object sender, BindingsUpdatedHandlerArgs args, BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates)
-		{
-			InvokeBindingUpdateHandlers(inputBindingUpdatedHandlers, sender, args, matchType, templates);
-		}
-		
-		private static void InvokeBindingUpdateHandlers(BindingInfoTemplateDictionary<BindingsUpdatedHandler> updateHandlerDictionary, object sender, BindingsUpdatedHandlerArgs args, BindingInfoMatchType matchType, IBindingInfoTemplate[] templates)
-		{
-			if(!SuspendUpdateHandlers) {
-	        	foreach(var template in templates) {
-					foreach(var handler in updateHandlerDictionary.FindItems(template, matchType)) {
-						if(handler != null) {
-							handler.Invoke(null, args);
-						}
-					}
-	        	}
+			if(GesturesChanged != null) {
+				GesturesChanged.Invoke(sender, args);
 			}
 		}
-		#endregion
 		
 		/// <summary>
 		/// Load all registered commands in add-in
@@ -545,7 +484,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputBindingInfo">Input binding parameters</param>
 		public static void UnregisterInputBinding(BindingInfoMatchType matchType,  params IBindingInfoTemplate[] templates)
 		{
-			UnregisterBindingInfo(inputBidnings, inputBindingUpdatedHandlers, matchType, templates);
+			UnregisterBindingInfo(inputBidnings, matchType, templates);
 		}
 		
 		/// <summary>
@@ -554,12 +493,14 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="commandBindingInfo">Command binding parameters</param>
 		public static void UnregisterCommandBinding(BindingInfoMatchType matchType,  params IBindingInfoTemplate[] templates) 
 		{
-			UnregisterBindingInfo(commandBindings, commandBindingUpdatedHandlers, matchType, templates);
+			UnregisterBindingInfo(commandBindings, matchType, templates);
 		}
 		
-		private static void UnregisterBindingInfo(BindingInfoTemplateDictionary<IBindingInfo> bindingInfoDictionary, BindingInfoTemplateDictionary<BindingsUpdatedHandler> updateHandlerDictionary, BindingInfoMatchType matchType,  params IBindingInfoTemplate[] templates)
+		private static void UnregisterBindingInfo(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfoDictionary, BindingInfoMatchType matchType,  params IBindingInfoTemplate[] templates)
 		{
-			foreach(var similarBindingInfo in FindBindingInfos(bindingInfoDictionary, matchType, templates).ToArray()) {
+			var foundBindings = FindBindingInfos(bindingInfoDictionary, matchType, templates).ToList();
+			
+			foreach(var similarBindingInfo in foundBindings) {
 				BindingsUpdatedHandler defaultUpdatesHandler;
 				if(similarBindingInfo is InputBindingInfo) {
 					((InputBindingInfo)similarBindingInfo).IsRegistered = false;
@@ -567,18 +508,14 @@ namespace ICSharpCode.Core.Presentation
 					((CommandBindingInfo)similarBindingInfo).IsRegistered = false;
 				}
 					
-				bindingInfoDictionary.Remove((IBindingInfoTemplate)similarBindingInfo, BindingInfoMatchType.Exact, similarBindingInfo);
-				updateHandlerDictionary.Remove((IBindingInfoTemplate)similarBindingInfo, BindingInfoMatchType.Exact, similarBindingInfo.DefaultBindingsUpdateHandler);
+				var removedTemplate = new BindingInfoTemplate(similarBindingInfo, false);
+				bindingInfoDictionary.Remove(removedTemplate, BindingInfoMatchType.Exact, similarBindingInfo);
+				CommandManager.BindingsChanged -= similarBindingInfo.BindingsChangedHandler;
 				
 				similarBindingInfo.RemoveActiveBindings();
 			}
 			
-			InvokeBindingUpdateHandlers(
-				updateHandlerDictionary, 
-				null,
-				new BindingsUpdatedHandlerArgs(),
-				BindingInfoMatchType.SuperSet | BindingInfoMatchType.SubSet, 
-				templates);
+			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, templates));
 		}
 		
 		#endregion
@@ -609,7 +546,7 @@ namespace ICSharpCode.Core.Presentation
 			return bindings.Cast<InputBindingInfo>();
 		}
 		
-		private static IEnumerable<IBindingInfo> FindBindingInfos(BindingInfoTemplateDictionary<IBindingInfo> bindingInfos, BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates)
+		private static IEnumerable<BindingInfoBase> FindBindingInfos(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfos, BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates)
 		{
         	foreach(var template in templates) {
 				foreach(var item in bindingInfos.FindItems(template, matchType)) {
@@ -740,13 +677,13 @@ namespace ICSharpCode.Core.Presentation
 			routedCommands.Clear();
 			commands.Clear();
 		
-			inputBindingUpdatedHandlers.Clear();
-			commandBindingUpdatedHandlers.Clear();
-		
 			namedUIInstances.Clear();
 			namedUITypes.Clear();
 		
 			InputBindingCategories.Clear();
+			
+			BindingsChanged = null;
+			GesturesChanged = null;
 		}
 		
 	}	
@@ -758,5 +695,4 @@ namespace ICSharpCode.Core.Presentation
 			return string.Format("{0}, {1}", type.FullName, type.Assembly.GetName().Name);
 		}
 	}
-	
 }

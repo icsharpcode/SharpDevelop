@@ -26,38 +26,6 @@ namespace ICSharpCode.Core.Presentation
 			Groups = new BindingGroupCollection();
 		}
 		
-		public BindingGroupCollection Groups
-		{
-			get {
-				return base.Groups;
-			}
-			set {
-				var oldGroups = base.Groups;
-				base.Groups = value;
-				
-				SetCollectionChanged<BindingGroup>(oldGroups, value, Groups_CollectionChanged);
-			}
-		}
-		
-		private void Groups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {  
-			if(IsRegistered) {
-				var modifiedGroups = new BindingGroupCollection();
-				if(e.NewItems != null) {						
-					modifiedGroups.AddRange(e.NewItems.Cast<BindingGroup>());
-				}
-				
-				if(e.OldItems != null) {
-					modifiedGroups.AddRange(e.OldItems.Cast<BindingGroup>());
-				}
-				
-				SDCommandManager.InvokeCommandBindingUpdateHandlers(
-					this,
-					new BindingsUpdatedHandlerArgs(),
-					BindingInfoMatchType.SubSet,
-					new BindingInfoTemplate(this, false) { Groups = modifiedGroups });
-			}
-		}
-		
 		private string commandTypeName;
 		
 		/// <summary>
@@ -164,8 +132,10 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		protected override void SetInstanceBindings(ICollection<UIElement> newInstances, ICollection<UIElement> oldInstances)
-		{												
+		List<UIElement> oldInstances;
+		
+		protected override void SetInstanceBindings(ICollection<UIElement> newInstances)
+		{				
 			if(oldInstances != null) {
 				foreach(var ownerInstance in oldInstances) {
 					foreach(CommandBinding binding in OldCommandBindings) {
@@ -174,14 +144,19 @@ namespace ICSharpCode.Core.Presentation
 				}
 			}
 			
+			oldInstances = new List<UIElement>();
+			
 			if(newInstances != null) {
 				foreach(var ownerInstance in newInstances) {
 					ownerInstance.CommandBindings.AddRange(ActiveCommandBindings);
+					oldInstances.Add(ownerInstance);
 				}
 			}
 		}
 		
-		protected override void SetClassBindings(ICollection<Type> oldTypes, ICollection<Type> newTypes)
+		List<Type> oldTypes;
+		
+		protected override void SetClassBindings(ICollection<Type> newTypes)
 		{
 			if(oldTypes != null) {
 				foreach(var ownerType in oldTypes) {
@@ -191,10 +166,13 @@ namespace ICSharpCode.Core.Presentation
 				}
 			}
 			
+			oldTypes = new List<Type>();
+			
 			if(newTypes != null) {
 				foreach(var ownerType in newTypes) {
 					foreach(CommandBinding binding in ActiveCommandBindings) {
 						System.Windows.Input.CommandManager.RegisterClassCommandBinding(ownerType, binding);
+						oldTypes.Add(ownerType);
 					}
 				}
 			}

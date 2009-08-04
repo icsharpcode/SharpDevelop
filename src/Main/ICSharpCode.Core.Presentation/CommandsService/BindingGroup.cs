@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 
 namespace ICSharpCode.Core.Presentation
@@ -17,7 +18,7 @@ namespace ICSharpCode.Core.Presentation
 	{
 		private HashSet<WeakReference> _attachedInstances = new HashSet<WeakReference>(new WeakReferenceEqualirtyComparer());
 		
-		private List<BindingGroup> _nestedGroups = new List<BindingGroup>();
+		private BindingGroupCollection _nestedGroups = new BindingGroupCollection();
 		
 		public string Name
 		{
@@ -67,44 +68,12 @@ namespace ICSharpCode.Core.Presentation
 		
 		private void InvokeBindingUpdateHandlers(UIElement instance, bool attaching)
 		{
-			var type = instance.GetType();
-			
-			// Invoke class wide and instance update handlers
-			var instanceNames = CommandManager.GetUIElementNameCollection(instance);
-			var typeNames = CommandManager.GetUITypeNameCollection(type);
-			
-			var bindingInfoTemplates = new IBindingInfoTemplate[instanceNames.Count + typeNames.Count + 1];
-						
-			var i = 0;
-				
-			bindingInfoTemplates[i++] = new BindingInfoTemplate { Groups = new BindingGroupCollection { this } };
-				
-			foreach(var instanceName in instanceNames) {
-				bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerInstanceName = instanceName};
-			} 
-
-			foreach(var typeName in typeNames) {
-				bindingInfoTemplates[i++] = new BindingInfoTemplate { OwnerTypeName = typeName};
-			}
-			
-			var args = new BindingsUpdatedHandlerArgs();
-			if(attaching) {
-				args.AddedInstances = new List<UIElement>{ instance };
-			} else {
-				args.RemovedInstances = new List<UIElement>{ instance };
-			}
-			
-			CommandManager.InvokeCommandBindingUpdateHandlers(
-				this,
-				args,
-				BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, 
-				bindingInfoTemplates);
-			
-			CommandManager.InvokeInputBindingUpdateHandlers(
-				this,
-				args,
-				BindingInfoMatchType.SubSet | BindingInfoMatchType.SuperSet, 
-				bindingInfoTemplates);
+			SDCommandManager.InvokeBindingsChanged(
+				this, 
+				new NotifyBindingsChangedEventArgs(
+					NotifyBindingsChangedAction.GroupAttachmendsModified, 
+					FlatNestedGroups, 
+					new []{instance}));
 		}
 		
 		public ICollection<UIElement> GetAttachedInstances(ICollection<Type> types)
@@ -137,20 +106,22 @@ namespace ICSharpCode.Core.Presentation
 			return attachedInstances;
 		}
 		
-		public List<BindingGroup> NestedGroups
+		public BindingGroupCollection NestedGroups
 		{
 			get {
 				return _nestedGroups;
 			}
 		}
 		
-		public ICollection<BindingGroup> FlatNestedGroups
+		public BindingGroupCollection FlatNestedGroups
 		{
 			get {
 				var foundNestedGroups = new HashSet<BindingGroup>();
 				FlattenNestedGroups(this, foundNestedGroups);
 				
-				return foundNestedGroups;
+				var groups = new BindingGroupCollection();
+				groups.AddRange(foundNestedGroups);
+				return groups;
 			}
 		}
 		

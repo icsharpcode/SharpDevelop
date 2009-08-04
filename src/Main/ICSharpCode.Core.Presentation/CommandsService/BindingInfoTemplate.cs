@@ -34,6 +34,14 @@ namespace ICSharpCode.Core.Presentation
 			
 		}
 		
+		
+		public BindingInfoTemplate(InputBindingIdentifier identifier)
+		{
+			OwnerInstanceName = identifier.OwnerInstanceName;
+			OwnerTypeName = identifier.OwnerTypeName;
+			RoutedCommandName = identifier.RoutedCommandName;
+		}
+		
 		public BindingInfoTemplate(IBindingInfoTemplate template, bool includeGroup)
 		{
 			OwnerInstanceName = template.OwnerInstanceName;

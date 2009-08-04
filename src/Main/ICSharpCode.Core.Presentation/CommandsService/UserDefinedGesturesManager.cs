@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Windows.Input;
 using System.IO;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -21,8 +22,6 @@ namespace ICSharpCode.Core.Presentation
 					Directory.CreateDirectory(_userGestureProfilesDirectory);
 				}
 			}
-			
-			CurrentProfileChanged += CurrentProfile_CurrentProfileChanged;
 		}
 		
 		/// <summary>
@@ -36,119 +35,42 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		private static UserGesturesProfile _currentProfile;
-		private static bool _isCurrentProfileLoaded;
-		
-		public static event UserGestureProfileChangedHandler CurrentProfileChanged;
-		private static Dictionary<InputBindingIdentifier, HashSet<InputBindingGesturesChangedHandler>> ActiveGesturesChangedHandlers = new Dictionary<InputBindingIdentifier, HashSet<InputBindingGesturesChangedHandler>>();
-		
-		public static void AddActiveGesturesChangedHandler(InputBindingIdentifier identifier, InputBindingGesturesChangedHandler handler) 
-		{
-			if(!ActiveGesturesChangedHandlers.ContainsKey(identifier)) {
-				ActiveGesturesChangedHandlers.Add(identifier, new HashSet<InputBindingGesturesChangedHandler>());
-			}
-			
-			ActiveGesturesChangedHandlers[identifier].Add(handler);
-		}
-		
-		public static void RemoveActiveGesturesChangedHandler(InputBindingIdentifier identifier, InputBindingGesturesChangedHandler handler) 
-		{
-			if(ActiveGesturesChangedHandlers.ContainsKey(identifier)) {
-				ActiveGesturesChangedHandlers[identifier].Remove(handler);
-			}
-		}
-		
-		private static void InvokeActiveGesturesChangedHandlers(InputBindingIdentifier identifier) 
-		{
-			var args = new InputBindingGesturesChangedArgs { InputBindingIdentifier = identifier };
-			if(ActiveGesturesChangedHandlers.ContainsKey(identifier)) {
-				foreach(var handler in ActiveGesturesChangedHandlers[identifier]) {
-					handler.Invoke(typeof(UserDefinedGesturesManager), args);
-				}
-			}
-		}
-		
+	
 		public static UserGesturesProfile CurrentProfile
 		{
 			get {
-				if(!_isCurrentProfileLoaded)
-				{
-					var path = PropertyService.Get("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory");
-					if(path != null && File.Exists(path)) {
-						var profile = new UserGesturesProfile();
-						profile.Path = path;
-						profile.Load();
-						
-						_currentProfile = profile;
-						
-						if(CurrentProfileChanged != null) {
-							var args = new UserGestureProfileChangedArgs();
-							args.NewProfile = profile;
-							CurrentProfileChanged.Invoke(typeof(UserDefinedGesturesManager), args);
-						}
-					}
-					
-					_isCurrentProfileLoaded = true;
-				}
-				
 				return _currentProfile;
 			}
 			set {
-				var currentProfileBackup = _currentProfile;
+				var oldProfile = _currentProfile;
 				_currentProfile = value;
 				
-				if(_currentProfile != currentProfileBackup && CurrentProfileChanged != null) {
-					var args = new UserGestureProfileChangedArgs();
-					args.NewProfile = _currentProfile;
-					args.OldProfile = currentProfileBackup;
-					CurrentProfileChanged.Invoke(typeof(UserDefinedGesturesManager), args);
-				}
-				
 				var currentProfilePath = value != null ? value.Path : null;
-				
 				if(currentProfilePath != null) {
 					PropertyService.Set("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory", currentProfilePath);
 				} else {
 					PropertyService.Remove("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory");
 				}
 				
-				_isCurrentProfileLoaded = true;
+				if(_currentProfile != oldProfile) {
+					InvokeCurrentProfileChanged(typeof(UserDefinedGesturesManager), new NotifyUserGestureProfileChangedEventArgs(oldProfile, _currentProfile));
+				}
+			} 
+		}
+		
+		public static event NotifyUserGestureProfileChangedEventHandler CurrentProfileChanged;
+	
+		public static void InvokeCurrentProfileChanged(object sender, NotifyUserGestureProfileChangedEventArgs args)
+		{
+			if(CurrentProfileChanged != null) {
+				CurrentProfileChanged.Invoke(sender, args);
 			}
 		}
 		
-		private static void CurrentProfile_CurrentProfileChanged(object sender, UserGestureProfileChangedArgs args) {
-			var identifiers = new HashSet<InputBindingIdentifier>();
-			
-			if(args.OldProfile != null) {
-				foreach(var gesture in args.OldProfile) {
-					identifiers.Add(gesture.Key);
-				}
-			}
-	
-			if(args.NewProfile != null) {
-				foreach(var gesture in args.NewProfile) {
-					identifiers.Add(gesture.Key);
-				}
-			}
-			
-			foreach(var identifier in identifiers) {
-				InvokeActiveGesturesChangedHandlers(identifier);
-			}
+		public static void Reset()
+		{
+			CurrentProfile = null;
+			CurrentProfileChanged = null;
 		}
 	}
-	
-	public class UserGestureProfileChangedArgs
-	{
-		public UserGesturesProfile OldProfile
-		{
-			get; set;
-		}
-		
-		public UserGesturesProfile NewProfile
-		{
-			get; set;
-		}
-	}
-	
-	public delegate void UserGestureProfileChangedHandler(object sender, UserGestureProfileChangedArgs args);
-	
 }

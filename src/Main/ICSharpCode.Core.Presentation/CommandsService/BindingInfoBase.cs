@@ -27,9 +27,35 @@ namespace ICSharpCode.Core.Presentation
 					throw new ArgumentNullException("value");
 				}
 
+				var oldGroups = _groups;
 				_groups = value;
+				
+				SetCollectionChanged<BindingGroup>(oldGroups, value, Groups_CollectionChanged);
 			}
 		}
+		
+		private void Groups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {  
+			if(IsRegistered) {
+				var modifiedGroups = new BindingGroupCollection();
+				if(e.NewItems != null) {						
+					modifiedGroups.AddRange(e.NewItems.Cast<BindingGroup>());
+				}
+				
+				if(e.OldItems != null) {
+					modifiedGroups.AddRange(e.OldItems.Cast<BindingGroup>());
+				}
+				
+				ICollection<UIElement> attachedInstances = null;
+				if(OwnerInstanceName != null) {
+					attachedInstances = modifiedGroups.FlatNesteGroups.GetAttachedInstances(OwnerInstances);
+				} else {
+					attachedInstances = modifiedGroups.FlatNesteGroups.GetAttachedInstances(OwnerTypes);
+				}
+				
+				SDCommandManager.InvokeBindingsChanged(this, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.GroupAttachmendsModified, modifiedGroups, attachedInstances));
+			}
+		}
+		
 		
 		public string _ownerInstanceName;
 		
@@ -138,7 +164,7 @@ namespace ICSharpCode.Core.Presentation
 		/// Routed command instance which will be invoked when this binding is triggered
 		/// </summary>
 		public RoutedUICommand RoutedCommand { 
-			get {
+			get { 
 				return SDCommandManager.GetRoutedUICommand(RoutedCommandName);
 			}
 		}
@@ -153,17 +179,6 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public AddIn AddIn {
 			get; set;
-		}
-		
-		public InputBindingIdentifier Identifier {
-			get {
-				var identifier = new InputBindingIdentifier();
-				identifier.OwnerInstanceName = OwnerInstanceName;
-				identifier.OwnerTypeName = OwnerTypeName;
-				identifier.RoutedCommandName = RoutedCommandName;
-				
-				return identifier;
-			}
 		}
 		
 		public void SetCollectionChanged<T>(IObservableCollection<T> oldObservableCollection, IObservableCollection<T> newObservableCollection, NotifyCollectionChangedEventHandler handler) 
@@ -187,84 +202,48 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		private BindingsUpdatedHandler defaultCommandBindingHandler;
-		
 		/// <summary>
 		/// Updates owner bindings
 		/// </summary>
-		public BindingsUpdatedHandler DefaultBindingsUpdateHandler
+		public void BindingsChangedHandler(object sender, NotifyBindingsChangedEventArgs args)
 		{
-			get {
-				if(defaultCommandBindingHandler == null && OwnerTypeName != null) {
-					defaultCommandBindingHandler = delegate(object sender, BindingsUpdatedHandlerArgs args) {
-						var ownerTypes = OwnerTypes;
-						
-						if(RoutedCommand != null && OwnerTypes != null && IsRegistered) {
-							GenerateBindings();
-							
-							if(Groups.Count == 0) {
-								var groupInstances = Groups.GetAttachedInstances(ownerTypes);
-								SetInstanceBindings(groupInstances, null);
-								
-								var removedOwnerTypes = new List<Type>(ownerTypes);
-								if(args.RemovedTypes != null) {
-									removedOwnerTypes.AddRange(args.RemovedTypes);
-								}
-								
-								SetClassBindings(removedOwnerTypes, ownerTypes);
-							} else {
-								SetClassBindings(ownerTypes, null);
-								
-								var groupInstances = Groups.GetAttachedInstances(ownerTypes);
-								var removedOwnerInstances = new List<UIElement>(groupInstances);
-								if(args.RemovedInstances != null) {
-									removedOwnerInstances.AddRange(args.RemovedInstances);
-								}
-										
-								SetInstanceBindings(removedOwnerInstances, groupInstances);
-							}
-						}
-					};
-				} else if(defaultCommandBindingHandler == null && OwnerInstanceName != null) {
-		 			defaultCommandBindingHandler = delegate(object sender, BindingsUpdatedHandlerArgs args) {
-						if(RoutedCommand != null && OwnerInstances != null && IsRegistered) {
-							GenerateBindings();
-							
-							if(Groups.Count == 0) {
-								SetInstanceBindings(OwnerInstances, OwnerInstances);
-							} else {
-								var removedInstances = new List<UIElement>(OwnerInstances);
-								if(args.RemovedInstances != null) {
-									removedInstances.AddRange(args.RemovedInstances);
-								}
-								
-								SetInstanceBindings(removedInstances, Groups.GetAttachedInstances(OwnerInstances));
-							}
-						}
-					};
-				}
+			if(!IsRegistered || RoutedCommand == null || (OwnerTypes == null && OwnerInstances == null)) {
+				return;
+			}
+			
+			if( (args.Action == NotifyBindingsChangedAction.BindingInfoModified && args.ModifiedBindingInfoTemplates.Contains(new BindingInfoTemplate(this, false)))
+			 || (args.Action == NotifyBindingsChangedAction.NamedInstanceModified && OwnerInstanceName == args.UIElementName)
+			 || (args.Action == NotifyBindingsChangedAction.RoutedUICommandModified && routedCommandName == args.RoutedCommandName)
+			 || (args.Action == NotifyBindingsChangedAction.NamedTypeModified && OwnerTypeName == args.TypeName)
+			 || (args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified && ((OwnerTypeName != null && OwnerTypes.Any(t1 => args.AttachedInstances.Any(t2 => t1 == t2.GetType())))
+			 	 || (OwnerInstanceName != null && OwnerInstances.Any(t1 => args.AttachedInstances.Any(t2 => t1 == t2)))))
+			 ) {
+				GenerateBindings();
 				
-				return defaultCommandBindingHandler;
+				if(OwnerInstanceName != null) {
+					SetInstanceBindings(Groups.Count == 0 ? OwnerInstances : Groups.GetAttachedInstances(OwnerInstances));
+				} else {
+					if(Groups.Count == 0) {
+						SetInstanceBindings(null);
+						SetClassBindings(OwnerTypes);
+					} else {
+						SetClassBindings(null);
+						SetInstanceBindings(Groups.GetAttachedInstances(OwnerTypes));
+					}
+				}
 			}
 		}
 		
 		public void RemoveActiveBindings()
 		{
-			if(OwnerTypeName != null) {
-				if(Groups.Count > 0) {
-					SetInstanceBindings(Groups.GetAttachedInstances(OwnerTypes), null);
-				}
-				
-				SetClassBindings(OwnerTypes, null);
-			} else if(OwnerInstanceName != null) {
-				SetInstanceBindings(OwnerInstances, null);
-			}
+			SetInstanceBindings(null);
+			SetClassBindings(null);
 		}
 		
 		protected abstract void GenerateBindings();
 		
-		protected abstract void SetInstanceBindings(ICollection<UIElement> oldInstances, ICollection<UIElement> newInstances);
+		protected abstract void SetInstanceBindings(ICollection<UIElement> newInstances);
 		
-		protected abstract void SetClassBindings(ICollection<Type> oldTypes, ICollection<Type> newtTypes);
+		protected abstract void SetClassBindings(ICollection<Type> newtTypes);
     }
 }

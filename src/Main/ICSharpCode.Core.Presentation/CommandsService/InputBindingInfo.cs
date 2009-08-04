@@ -28,56 +28,6 @@ namespace ICSharpCode.Core.Presentation
 			Groups = new BindingGroupCollection();
 		}
 		
-		public BindingGroupCollection Groups
-		{
-			get {
-				return base.Groups;
-			}
-			set {
-				var oldGroups = base.Groups;
-				base.Groups = value;
-				
-				SetCollectionChanged<BindingGroup>(oldGroups, value, Groups_CollectionChanged);
-			}
-		}
-		
-		/// <summary>
-		/// Stores name of named instance to which this binding belongs. When this binding is registered a
-		/// <see cref="InputBinding" /> is assigned to owner instance
-		/// 
-		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerType" /> and
-		/// <see cref="OwnerTypeName" /> can not be set
-		/// </summary>
-		public override string OwnerInstanceName {
-			get {
-				return base.OwnerInstanceName;
-			}
-			set {
-				base.OwnerInstanceName = value;
-				
-				SetActiveGesturesChanged(RoutedCommandName, value, OwnerTypeName);
-			}
-		}
-		
-		/// <summary>
-		/// Stores name of owner type. Full name with assembly should be used. When this binding is 
-		/// registered <see cref="InputBinding" /> is assigned to all instances of provided class
-		/// 
-		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerInstanceName" /> and
-		/// <see cref="OwnerType" /> can not be set
-		/// </summary>
-		public override string OwnerTypeName 
-		{
-			get {
-				return base.OwnerTypeName;
-			}
-			set {
-				base.OwnerTypeName = value;
-				
-				SetActiveGesturesChanged(RoutedCommandName, OwnerInstanceName, value);
-			}
-		}
-		
 		private ObservableInputGestureCollection _defaultGestures;
 		
 		/// <summary>
@@ -88,22 +38,51 @@ namespace ICSharpCode.Core.Presentation
 				return _defaultGestures;
 			}
 			set {
+				if(_defaultGestures != null) {
+					_defaultGestures.CollectionChanged -= DefaultGestures_CollectionChanged;
+				}
+				
+				if(value != null) {
+					value.CollectionChanged += DefaultGestures_CollectionChanged;
+				}
+				
+				var oldGestures = _defaultGestures;
 				_defaultGestures = value;
 				
-				if(value != null)
-				{
-					_defaultGestures.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e) { 
-						// Check for active profile but no custom shortcut
-						if(UserDefinedGesturesManager.CurrentProfile == null) {
-							ActiveGesturesChanged(this, new InputBindingGesturesChangedArgs { InputBindingIdentifier = Identifier });
+				if(IsRegistered && (UserDefinedGesturesManager.CurrentProfile == null || UserDefinedGesturesManager.CurrentProfile[Identifier] == null)) {
+					var description = new GesturesModificationDescription(
+						Identifier, 
+						oldGestures != null ? oldGestures.InputGesturesCollection : new InputGestureCollection(),
+						value != null ? value.InputGesturesCollection : new InputGestureCollection());
+					
+					SDCommandManager.InvokeGesturesChanged(this, new NotifyGesturesChangedEventArgs(description));
+				}
+			}
+		}
+		
+		private void DefaultGestures_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) 
+		{
+			if(IsRegistered && (UserDefinedGesturesManager.CurrentProfile == null || UserDefinedGesturesManager.CurrentProfile[Identifier] == null)) {
+				var newGestures = DefaultGestures.InputGesturesCollection;
+				var oldGestures = new InputGestureCollection();
+				oldGestures.AddRange(newGestures);
+				
+				if(e.Action == NotifyCollectionChangedAction.Add) {
+					if(e.NewItems != null) {
+						foreach(InputGesture ng in e.NewItems) { 
+							oldGestures.Remove(ng); 
 						}
-					};
+					}
+				} else if(e.Action == NotifyCollectionChangedAction.Remove) {
+					if(e.OldItems != null) {
+						foreach(InputGesture og in e.OldItems) { 
+							oldGestures.Add(og); 
+						}
+					}
 				}
 				
-				
-				if(UserDefinedGesturesManager.CurrentProfile == null) {
-					ActiveGesturesChanged(this, new InputBindingGesturesChangedArgs { InputBindingIdentifier = Identifier });
-				}
+				var description = new GesturesModificationDescription(Identifier, oldGestures, newGestures);
+				SDCommandManager.InvokeGesturesChanged(this, new NotifyGesturesChangedEventArgs(description));
 			}
 		}
 		
@@ -118,21 +97,6 @@ namespace ICSharpCode.Core.Presentation
 				} 
 				
 				return UserDefinedGesturesManager.CurrentProfile[Identifier];
-			}
-		}
-		
-		/// <summary>
-		/// Name of the routed command which will be invoked when this binding is triggered
-		/// </summary>
-		public override string RoutedCommandName { 
-			get {
-				return base.RoutedCommandName;
-			}
-			set {
-				var oldValue = base.RoutedCommandName;
-				base.RoutedCommandName = value;
-				
-				SetActiveGesturesChanged(oldValue, OwnerInstanceName, OwnerTypeName);
 			}
 		}
 		
@@ -158,8 +122,6 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		public event ActiveInputBindingsChangedHandler ActiveInputBindingsChanged;
-		
 		/// <summary>
 		/// New input bindings are assigned to owner when <see cref="CommandBindingInfo" /> is modified
 		/// </summary>
@@ -167,8 +129,10 @@ namespace ICSharpCode.Core.Presentation
 		{
 			get; set;
 		}
+		
+		List<UIElement> oldInstances;
 
-		protected override void SetInstanceBindings(ICollection<UIElement> oldInstances, ICollection<UIElement> newInstances)
+		protected override void SetInstanceBindings(ICollection<UIElement> newInstances)
 		{
 			if(oldInstances != null) {
 				foreach(var ownerInstance in oldInstances) {
@@ -177,10 +141,13 @@ namespace ICSharpCode.Core.Presentation
 					}
 				}
 			}
+			
+			oldInstances = new List<UIElement>();
 	
 			if(newInstances != null) {
 				foreach(var ownerInstance in newInstances) {
 					ownerInstance.InputBindings.AddRange(ActiveInputBindings);
+					oldInstances.Add(ownerInstance);
 					
 					// Sorting input bindings. This may be slow
 					if(ownerInstance.InputBindings != null) {
@@ -190,7 +157,9 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		protected override void SetClassBindings(ICollection<Type> oldTypes, ICollection<Type> newTypes)
+		List<Type> oldTypes;
+		
+		protected override void SetClassBindings(ICollection<Type> newTypes)
 		{
 			if(oldTypes != null) {
 				foreach(var ownerType in oldTypes) {
@@ -200,10 +169,13 @@ namespace ICSharpCode.Core.Presentation
 				}
 			}
 			
+			oldTypes = new List<Type>();
+			
 			if(newTypes != null) {
 				foreach(var ownerType in newTypes) {
 					foreach(InputBinding binding in ActiveInputBindings) {
 						System.Windows.Input.CommandManager.RegisterClassInputBinding(ownerType, binding);
+						oldTypes.Add(ownerType);
 					}
 					
 					var fieldInfo = typeof(System.Windows.Input.CommandManager).GetField("_classInputBindings", BindingFlags.Static | BindingFlags.NonPublic);
@@ -215,10 +187,6 @@ namespace ICSharpCode.Core.Presentation
 						classInputBindings.SortByChords();
 					}
 				}
-			}
-			
-			if(ActiveInputBindingsChanged != null) {
-				ActiveInputBindingsChanged.Invoke(this);
 			}
 		}
 		
@@ -233,7 +201,6 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 		
-		
 		private void Categories_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) 
 		{
 			if(e.NewItems != null) {
@@ -243,40 +210,6 @@ namespace ICSharpCode.Core.Presentation
 					}
 				}
 			}
-		}
-		
-		private void Groups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) 
-		{
-			if(IsRegistered) {
-				var modifiedGroups = new BindingGroupCollection();
-				if(e.NewItems != null) {						
-					modifiedGroups.AddRange(e.NewItems.Cast<BindingGroup>());
-				}
-				
-				if(e.OldItems != null) {
-					modifiedGroups.AddRange(e.OldItems.Cast<BindingGroup>());
-				}
-				
-				SDCommandManager.InvokeInputBindingUpdateHandlers(
-					this,
-					new BindingsUpdatedHandlerArgs(),
-					BindingInfoMatchType.SubSet,
-					new BindingInfoTemplate(this, false) { Groups = modifiedGroups });
-			}
-		}
-		
-		private void ActiveGesturesChanged(object sender, InputBindingGesturesChangedArgs args) 
-		{
-			var template = new BindingInfoTemplate();
-			template.OwnerInstanceName = OwnerInstanceName;
-			template.OwnerTypeName = OwnerTypeName;
-			template.RoutedCommandName = RoutedCommandName;
-			
-			SDCommandManager.InvokeInputBindingUpdateHandlers(
-				null,
-				new BindingsUpdatedHandlerArgs(),
-				BindingInfoMatchType.SubSet, 
-				template);
 		}
 		
 		/// <summary>
@@ -293,38 +226,17 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		private void SetActiveGesturesChanged(string oldRoutedCommandName, string oldOwnerInstanceName, string oldOwnerTypeName) 
-		{
-			if(oldRoutedCommandName != null && (oldOwnerInstanceName != null || oldOwnerTypeName != null)) {
-				var oldIdentifier = new InputBindingIdentifier();
-				oldIdentifier.OwnerInstanceName = oldOwnerInstanceName;
-				oldIdentifier.OwnerTypeName = oldOwnerTypeName;
-				oldIdentifier.RoutedCommandName = oldRoutedCommandName;
+		
+		public InputBindingIdentifier Identifier {
+			get {
+				var identifier = new InputBindingIdentifier();
+				identifier.OwnerInstanceName = OwnerInstanceName;
+				identifier.OwnerTypeName = OwnerTypeName;
+				identifier.RoutedCommandName = RoutedCommandName;
 				
-				UserDefinedGesturesManager.RemoveActiveGesturesChangedHandler(oldIdentifier, ActiveGesturesChanged);
-			}
-			
-			if(RoutedCommandName != null && (OwnerInstanceName != null || OwnerTypeName != null)) {
-				UserDefinedGesturesManager.AddActiveGesturesChangedHandler(Identifier, ActiveGesturesChanged);
+				return identifier;
 			}
 		}
 	}
-	
 
-	public struct InputBindingIdentifier 
-	{
-		public string OwnerInstanceName {
-			get; set;
-		}
-		
-		public string OwnerTypeName {
-			get; set;
-		}
-		
-		public string RoutedCommandName {
-			get; set;
-		}
-	}
-	
-	public delegate void ActiveInputBindingsChangedHandler(InputBindingInfo inputBindingInfo);
 }

@@ -49,10 +49,7 @@ namespace ICSharpCode.Core.Presentation
         	get;
         }
         
-        BindingsUpdatedHandler DefaultBindingsUpdateHandler
-        {
-        	get;
-        }
+        void BindingsChangedHandler(object sender, NotifyBindingsChangedEventArgs args);
         
         void RemoveActiveBindings();
     }
@@ -89,6 +86,6 @@ namespace ICSharpCode.Core.Presentation
     {
     	SubSet = 1,
     	SuperSet = 2,
-    	Exact
+    	Exact = 4
     }
 }

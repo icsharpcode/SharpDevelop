@@ -16,7 +16,7 @@ namespace ICSharpCode.Core.Presentation
     /// <summary>
     /// Description of ObservableInputBindingCollection.
     /// </summary>
-    public class ObservableInputGestureCollection : IList<InputGesture>, IEnumerable<InputGesture>, ICollection<InputGesture>
+    public class ObservableInputGestureCollection : IList<InputGesture>, INotifyCollectionChanged, IEnumerable<InputGesture>, ICollection<InputGesture>
     {
 		private ObservableCollection<InputGesture> observedInputGestures;
     	
@@ -125,6 +125,16 @@ namespace ICSharpCode.Core.Presentation
 		{
 			if(CollectionChanged != null) {
 				CollectionChanged.Invoke(sender, e);
+			}
+		}
+		
+		public InputGestureCollection InputGesturesCollection
+		{
+			get {
+				var gestures = new InputGestureCollection();
+				gestures.AddRange(observedInputGestures);
+				
+				return gestures;
 			}
 		}
     }

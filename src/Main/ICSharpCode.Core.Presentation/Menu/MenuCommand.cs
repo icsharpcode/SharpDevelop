@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -118,46 +119,41 @@ namespace ICSharpCode.Core.Presentation
 	
 	class MenuCommand : CoreMenuItem
 	{
+		private BindingInfoTemplate bindingTemplate;
+		
 		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
 		{
-			string routedCommandName = null;
+			bindingTemplate = new BindingInfoTemplate();
+			
 			if(codon.Properties.Contains("command")) {
-				routedCommandName = codon.Properties["command"];				
+				bindingTemplate.RoutedCommandName = codon.Properties["command"];				
 			} else if(codon.Properties.Contains("link") || codon.Properties.Contains("class")) {
-				routedCommandName = string.IsNullOrEmpty(codon.Properties["link"]) ? codon.Properties["class"] : codon.Properties["link"];
-			}
-
-			var routedCommand = CommandManager.GetRoutedUICommand(routedCommandName);
-			if(routedCommand != null) {
-				this.Command = routedCommand;
+				bindingTemplate.RoutedCommandName = string.IsNullOrEmpty(codon.Properties["link"]) ? codon.Properties["class"] : codon.Properties["link"];
 			}
 			
-			// Register input bindings update handler
-			BindingsUpdatedHandler gesturesUpdateHandler = delegate {
-				var gesturesTemplate = new BindingInfoTemplate();
-				gesturesTemplate.RoutedCommandName = routedCommandName;
-				
-				if(codon.Properties.Contains("ownerinstance")) {
-					gesturesTemplate.OwnerInstanceName = codon.Properties["ownerinstance"];
-				} else if(codon.Properties.Contains("ownertype")) {
-					gesturesTemplate.OwnerTypeName = codon.Properties["ownertype"];
-				}
-				
-				var updatedGestures = CommandManager.FindInputGestures(BindingInfoMatchType.SuperSet, gesturesTemplate);
-				
-				this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
-			};
-			gesturesUpdateHandler.Invoke(this, new BindingsUpdatedHandlerArgs());
-			
-			var bindingTemplate = new BindingInfoTemplate();
 			if(codon.Properties.Contains("ownerinstance")) {
 				bindingTemplate.OwnerInstanceName = codon.Properties["ownerinstance"];
 			} else if(codon.Properties.Contains("ownertype")) {
 				bindingTemplate.OwnerTypeName = codon.Properties["ownertype"];
 			}
-			bindingTemplate.RoutedCommandName = routedCommandName;
+
+			var routedCommand = CommandManager.GetRoutedUICommand(bindingTemplate.RoutedCommandName);
+			if(routedCommand != null) {
+				this.Command = routedCommand;
+			}
 			
-			CommandManager.RegisterInputBindingsUpdateHandler(bindingTemplate, gesturesUpdateHandler);
+			var gestures = CommandManager.FindInputGestures(BindingInfoMatchType.SuperSet, bindingTemplate);
+			this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
+			
+			CommandManager.GesturesChanged += MenuCommand_GesturesChanged;
+		}
+		
+		private void MenuCommand_GesturesChanged(object sender, NotifyGesturesChangedEventArgs e) 
+		{
+			if(e.ModificationDescriptions.Any(d => bindingTemplate.IsTemplateFor(new BindingInfoTemplate(d.InputBindingIdentifier), BindingInfoMatchType.SuperSet))) {
+				var updatedGestures = CommandManager.FindInputGestures(BindingInfoMatchType.SuperSet, bindingTemplate);
+				this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+			}
 		}
 	}
 }

@@ -76,9 +76,13 @@
     <Compile Include="CommandsService\CommandBindingInfo.cs" />
     <Compile Include="CommandsService\CommandManager.cs" />
     <Compile Include="CommandsService\CommandsService.cs" />
+    <Compile Include="CommandsService\Events\NotifyBindingsChangedEvent.cs" />
+    <Compile Include="CommandsService\Events\NotifyGesturesChangedEvent.cs" />
+    <Compile Include="CommandsService\Events\NotifyUserGestureProfileChangedEvent.cs" />
     <Compile Include="CommandsService\IBindingInfo.cs" />
     <Compile Include="CommandsService\InputBindingCategory.cs" />
     <Compile Include="CommandsService\InputBindingCategoryCollection.cs" />
+    <Compile Include="CommandsService\InputBindingIndentifier.cs" />
     <Compile Include="CommandsService\InputBindingInfo.cs" />
     <Compile Include="CommandsService\ObservableInputGestureCollection.cs" />
     <Compile Include="CommandsService\RelationshipMap.cs" />
@@ -126,6 +130,7 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="CommandsService\Events" />
     <Folder Include="CommandsService\Utils" />
     <Folder Include="Input" />
     <Folder Include="Menu" />

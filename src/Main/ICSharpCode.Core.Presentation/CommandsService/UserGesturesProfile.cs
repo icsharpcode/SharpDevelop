@@ -11,6 +11,7 @@ using System.Xml;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -141,18 +142,25 @@ namespace ICSharpCode.Core.Presentation
 			xmlDocument.Save(Path);
 		}
 		
-		public event InputBindingGesturesChangedHandler InputBindingGesturesChanged;
-		
 		public void Clear()
 		{
-			if(InputBindingGesturesChanged != null) {
-				var identifiers = new List<InputBindingIdentifier>();
-				foreach(var userDefinedGesture in userDefinedGestures) {
-					InputBindingGesturesChanged.Invoke(this, new InputBindingGesturesChangedArgs { InputBindingIdentifier = userDefinedGesture.Key});
-				}
+			var descriptions = new List<GesturesModificationDescription>();
+			var args = new NotifyGesturesChangedEventArgs();
+			
+			foreach(var pair in this) {
+				var template = new BindingInfoTemplate(pair.Key);
+				var newGestures = SDCommandManager.FindInputGestures(BindingInfoMatchType.SuperSet, template);
+				
+				descriptions.Add(
+					new GesturesModificationDescription(
+						pair.Key, 
+						userDefinedGestures[pair.Key], 
+						newGestures));
 			}
 			
 			userDefinedGestures.Clear();
+			
+			SDCommandManager.InvokeGesturesChanged(this, args);
 		}
 		
 		public InputGestureCollection this[InputBindingIdentifier identifier]
@@ -181,11 +189,23 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="inputGestureCollection">Gesture assigned to this input binding</param>
 		private void SetInputBindingGestures(InputBindingIdentifier identifier, InputGestureCollection inputGestureCollection) 
 		{
-			if(InputBindingGesturesChanged != null) {
-				InputBindingGesturesChanged.Invoke(this, new InputBindingGesturesChangedArgs { InputBindingIdentifier = identifier});
+			var oldGestures = GetInputBindingGesture(identifier);
+			var newGestures = inputGestureCollection;
+			
+			if(oldGestures == null || newGestures == null) {
+				var template = new BindingInfoTemplate(identifier);
+				var defaultGestures = SDCommandManager.FindInputGestures(BindingInfoMatchType.Exact, template);
+				
+				oldGestures = oldGestures ?? defaultGestures;
+				newGestures = newGestures ?? defaultGestures;
 			}
 			
+			var args = new NotifyGesturesChangedEventArgs(
+				new GesturesModificationDescription(identifier, oldGestures, newGestures));
+			
 			userDefinedGestures[identifier] = inputGestureCollection;
+			
+			InvokeGesturesChanged(this, args);
 		}
 		
 		public IEnumerator<KeyValuePair<InputBindingIdentifier, InputGestureCollection>> GetEnumerator()
@@ -196,6 +216,15 @@ namespace ICSharpCode.Core.Presentation
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			return userDefinedGestures.GetEnumerator();
+		}
+		
+		public event NotifyGesturesChangedEventHandler GesturesChanged;
+		
+		public void InvokeGesturesChanged(object sender, NotifyGesturesChangedEventArgs args)
+		{
+			if(GesturesChanged != null) {
+				GesturesChanged.Invoke(sender, args);
+			}
 		}
 		
 		public object Clone()
@@ -209,14 +238,4 @@ namespace ICSharpCode.Core.Presentation
 			return profile;
 		}
 	}
-	
-	public class InputBindingGesturesChangedArgs
-	{
-		public InputBindingIdentifier InputBindingIdentifier
-		{
-			get; set;
-		}
-	}
-	
-	public delegate void InputBindingGesturesChangedHandler(object sender, InputBindingGesturesChangedArgs args);
 }
