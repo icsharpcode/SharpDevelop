@@ -72,11 +72,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			// ...dump it to a file...
 			IViewContent viewContent = FileService.GetOpenFile(newInterfaceFileName);
-			IEditable editable = viewContent as IEditable;
+			ITextEditorProvider editable = viewContent as ITextEditorProvider;
 			
 			if (viewContent != null && editable != null) {
 				// simply update it
-				editable.Text = newInterfaceCode;
+				editable.TextEditor.Document.Text = newInterfaceCode;
 				viewContent.PrimaryFile.SaveToDisk();
 			} else {
 				// create it
@@ -105,12 +105,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					return;
 				}
 				
+				// TODO: replacing the whole text is not an option, we would loose all breakpoints/bookmarks.
 				viewContent = FileService.OpenFile(classFileName);
-				editable = viewContent as IEditable;
+				editable = viewContent as ITextEditorProvider;
 				if (editable == null) {
 					return;
 				}
-				editable.Text = modifiedClassCode;
+				editable.TextEditor.Document.Text = modifiedClassCode;
 			}
 		}
 		#endregion

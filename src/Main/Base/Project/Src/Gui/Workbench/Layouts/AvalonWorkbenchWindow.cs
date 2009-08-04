@@ -338,6 +338,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool CloseWindow(bool force)
 		{
+			WorkbenchSingleton.AssertMainThread();
+			
 			forceClose = force;
 			Close();
 			return this.ViewContents.Count == 0;

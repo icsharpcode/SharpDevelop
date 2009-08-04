@@ -142,7 +142,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		void Log(string text, params object[] pars)
 		{
-			System.Diagnostics.Debug.WriteLine("XML Parser: " + text, pars);
+			System.Diagnostics.Debug.WriteLine(string.Format("XML Parser: " + text, pars));
 		}
 		
 		void LogParsed(RawObject obj)

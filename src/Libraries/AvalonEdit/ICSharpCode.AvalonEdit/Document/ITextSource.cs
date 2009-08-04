@@ -56,15 +56,21 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Creates a snapshot of the current text.
-		/// The snapshot text source will be immutable and thread-safe.
+		/// This method is generally not thread-safe when called on a mutable text buffer, but the resulting text buffer is immutable and thread-safe.
 		/// </summary>
 		ITextSource CreateSnapshot();
+		
+		/// <summary>
+		/// Creates a snapshot of a part of the current text.
+		/// This method is not thread-safe when called on a mutable text buffer, but the resulting text buffer is immutable and thread-safe.
+		/// </summary>
+		ITextSource CreateSnapshot(int offset, int length);
 		
 		/// <summary>
 		/// Creates a text reader.
 		/// If the text is changed while a reader is active, the reader will continue to read from the old text version.
 		/// </summary>
-		TextReader CreateReader(int offset, int length);
+		TextReader CreateReader();
 	}
 	
 	/// <summary>
@@ -124,13 +130,19 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <inheritdoc/>
 		public ITextSource CreateSnapshot()
 		{
-			return new TextSourceView(baseTextSource.CreateSnapshot(), new SimpleSegment(viewedSegment.Offset, viewedSegment.Length));
+			return baseTextSource.CreateSnapshot(viewedSegment.Offset, viewedSegment.Length);
 		}
 		
 		/// <inheritdoc/>
-		public TextReader CreateReader(int offset, int length)
+		public ITextSource CreateSnapshot(int offset, int length)
 		{
-			return baseTextSource.CreateReader(viewedSegment.Offset + offset, length);
+			return baseTextSource.CreateSnapshot(viewedSegment.Offset + offset, length);
+		}
+		
+		/// <inheritdoc/>
+		public TextReader CreateReader()
+		{
+			return CreateSnapshot().CreateReader();
 		}
 	}
 	
@@ -180,15 +192,82 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <inheritdoc/>
-		public TextReader CreateReader(int offset, int length)
+		public TextReader CreateReader()
 		{
-			return new StringReader(text.Substring(offset, length));
+			return new StringReader(text);
 		}
 		
 		/// <inheritdoc/>
 		public ITextSource CreateSnapshot()
 		{
 			return this; // StringTextSource already is immutable
+		}
+		
+		/// <inheritdoc/>
+		public ITextSource CreateSnapshot(int offset, int length)
+		{
+			return new StringTextSource(text.Substring(offset, length));
+		}
+	}
+	
+	/// <summary>
+	/// Implements the ITextSource interface using a rope.
+	/// </summary>
+	public sealed class RopeTextSource : ITextSource
+	{
+		readonly Rope<char> rope;
+		
+		/// <summary>
+		/// Creates a new RopeTextSource.
+		/// </summary>
+		public RopeTextSource(Rope<char> rope)
+		{
+			if (rope == null)
+				throw new ArgumentNullException("rope");
+			this.rope = rope;
+		}
+		
+		// Change event is not supported
+		event EventHandler ITextSource.TextChanged { add {} remove {} }
+		
+		/// <inheritdoc/>
+		public string Text {
+			get { return rope.ToString(); }
+		}
+		
+		/// <inheritdoc/>
+		public int TextLength {
+			get { return rope.Length; }
+		}
+		
+		/// <inheritdoc/>
+		public char GetCharAt(int offset)
+		{
+			return rope[offset];
+		}
+		
+		/// <inheritdoc/>
+		public string GetText(int offset, int length)
+		{
+			return rope.ToString(offset, length);
+		}
+		
+		/// <inheritdoc/>
+		public TextReader CreateReader()
+		{
+			return new RopeTextReader(rope);
+		}
+		
+		/// <inheritdoc/>
+		public ITextSource CreateSnapshot()
+		{
+			return new RopeTextSource(rope.Clone());
+		}
+		
+		/// <inheritdoc/>
+		public ITextSource CreateSnapshot(int offset, int length)
+		{
+			return new RopeTextSource(rope.GetRange(offset, length));
 		}
 	}
 }

@@ -5,13 +5,25 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
+using System;
+
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	public interface IEditable
 	{
+		/// <summary>
+		/// Creates a snapshot of the editor content.
+		/// This method is thread-safe.
+		/// </summary>
+		ITextBuffer CreateSnapshot();
+		
+		/// <summary>
+		/// Thread-safe access to the text in the view content.
+		/// Do not use this property.
+		/// </summary>
 		string Text {
 			get;
-			set;
 		}
 	}
 }

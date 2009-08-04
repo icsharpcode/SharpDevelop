@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Drawing.Printing;
 using System.Windows.Forms;
-
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
@@ -56,18 +56,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			this.TextEditorControl.Document.Replace(0, this.TextEditorControl.Document.TextLength, value);
 		}
 		
+		/// <summary>
+		/// Creates a snapshot of the editor content.
+		/// This method is thread-safe.
+		/// </summary>
+		public ITextBuffer CreateSnapshot()
+		{
+			string content = WorkbenchSingleton.SafeThreadFunction<string>(GetText);
+			return new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditTextSourceAdapter(
+				new ICSharpCode.AvalonEdit.Document.StringTextSource(content));
+		}
+		
 		string IEditable.Text {
 			get {
 				if (WorkbenchSingleton.InvokeRequired)
 					return WorkbenchSingleton.SafeThreadFunction<string>(GetText);
 				else
 					return GetText();
-			}
-			set {
-				if (WorkbenchSingleton.InvokeRequired)
-					WorkbenchSingleton.SafeThreadCall(SetText, value);
-				else
-					SetText(value);
 			}
 		}
 		

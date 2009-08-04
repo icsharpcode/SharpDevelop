@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -17,21 +18,21 @@ namespace ICSharpCode.SharpDevelop.Sda
 	{
 		internal static Document FromWindow(IViewContent viewContent)
 		{
-			IEditable editable = viewContent as IEditable;
+			ITextEditorProvider editable = viewContent as ITextEditorProvider;
 			if (editable != null) {
-				return new Document(viewContent, editable);
+				return new Document(viewContent, editable.TextEditor.PrimaryView.Document);
 			} else {
 				return null;
 			}
 		}
 		
 		IViewContent viewContent;
-		IEditable editable;
+		IDocument textDocument;
 		
-		private Document(IViewContent viewContent, IEditable editable)
+		private Document(IViewContent viewContent, IDocument textDocument)
 		{
 			this.viewContent = viewContent;
-			this.editable = editable;
+			this.textDocument = textDocument;
 		}
 		
 		/// <summary>
@@ -47,12 +48,11 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// Gets/Sets the text displayed in the document.
 		/// </summary>
 		public string Text {
-			// IEditable implementor is responsible for thread-safety
 			get {
-				return editable.Text;
+				return textDocument.Text;
 			}
 			set {
-				editable.Text = value;
+				textDocument.Text = value;
 			}
 		}
 		

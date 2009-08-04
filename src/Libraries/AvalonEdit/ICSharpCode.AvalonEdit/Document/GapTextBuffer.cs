@@ -13,6 +13,7 @@ using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
+	/*
 	/// <summary>
 	/// Implementation of a gap text buffer.
 	/// </summary>
@@ -191,4 +192,5 @@ namespace ICSharpCode.AvalonEdit.Document
 			buffer = newBuffer;
 		}
 	}
+	*/
 }

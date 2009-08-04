@@ -13,6 +13,11 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <summary>
 	/// A segment that can be put into a TextSegmentCollection.
 	/// </summary>
+	/// <remarks>
+	/// On insertions at the start or end offset of the text segment, a TextSegmentCollection handling the document
+	/// changes will keep the TextSegment small;
+	/// i.e. use AfterInsertion for the start position and BeforeInsertion for the end position.
+	/// </remarks>
 	public class TextSegment : ISegment
 	{
 		internal ISegmentTree ownerTree;

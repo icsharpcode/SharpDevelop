@@ -168,6 +168,11 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			return new AvalonEditTextSourceAdapter(document.CreateSnapshot());
 		}
 		
+		public ITextBuffer CreateSnapshot(int offset, int length)
+		{
+			return new AvalonEditTextSourceAdapter(document.CreateSnapshot(offset, length));
+		}
+		
 		public void StartUndoableAction()
 		{
 			document.BeginUpdate();

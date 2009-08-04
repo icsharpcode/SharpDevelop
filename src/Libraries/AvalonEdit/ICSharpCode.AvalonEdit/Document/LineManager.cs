@@ -19,7 +19,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	{
 		#region Constructor
 		readonly TextDocument document;
-		readonly GapTextBuffer textBuffer;
+		readonly IList<char> textBuffer;
 		readonly DocumentLineTree documentLineTree;
 		
 		/// <summary>
@@ -28,7 +28,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		internal ILineTracker[] lineTrackers;
 		
-		public LineManager(GapTextBuffer textBuffer, DocumentLineTree documentLineTree, TextDocument document)
+		public LineManager(IList<char> textBuffer, DocumentLineTree documentLineTree, TextDocument document)
 		{
 			this.document = document;
 			this.textBuffer = textBuffer;
@@ -261,13 +261,13 @@ namespace ICSharpCode.AvalonEdit.Document
 				line.DelimiterLength = 0;
 			} else {
 				int lineOffset = line.Offset;
-				char lastChar = textBuffer.GetCharAt(lineOffset + newTotalLength - 1);
+				char lastChar = textBuffer[lineOffset + newTotalLength - 1];
 				if (lastChar == '\r') {
 					line.DelimiterLength = 1;
 				} else if (lastChar == '\n') {
-					if (newTotalLength >= 2 && textBuffer.GetCharAt(lineOffset + newTotalLength - 2) == '\r') {
+					if (newTotalLength >= 2 && textBuffer[lineOffset + newTotalLength - 2] == '\r') {
 						line.DelimiterLength = 2;
-					} else if (newTotalLength == 1 && lineOffset > 0 && textBuffer.GetCharAt(lineOffset - 1) == '\r') {
+					} else if (newTotalLength == 1 && lineOffset > 0 && textBuffer[lineOffset - 1] == '\r') {
 						// we need to join this line with the previous line
 						DocumentLine previousLine = line.PreviousLine;
 						RemoveLine(line);

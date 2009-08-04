@@ -25,5 +25,10 @@ namespace PythonBinding.Tests.Utils
 			get { return text; }
 			set { text = value; }
 		}		
+		
+		public ICSharpCode.SharpDevelop.Editor.ITextBuffer CreateSnapshot()
+		{
+			return ICSharpCode.SharpDevelop.Editor.DocumentUtilitites.GetBufferForString(text);
+		}
 	}
 }

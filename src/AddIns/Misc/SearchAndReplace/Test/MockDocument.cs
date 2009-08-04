@@ -115,5 +115,10 @@ namespace SearchAndReplace.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+				
+		public ITextBuffer CreateSnapshot(int offset, int length)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.Diagnostics;
 using System.Drawing.Printing;
@@ -15,6 +14,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
@@ -124,18 +124,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			textEditorControl.Document.Replace(0, textEditorControl.Document.TextLength, value);
 		}
 		
-		public string Text {
+		/// <summary>
+		/// Creates a snapshot of the editor content.
+		/// This method is thread-safe.
+		/// </summary>
+		public ICSharpCode.SharpDevelop.Editor.ITextBuffer CreateSnapshot()
+		{
+			string content = WorkbenchSingleton.SafeThreadFunction<string>(GetText);
+			return new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditTextSourceAdapter(
+				new ICSharpCode.AvalonEdit.Document.StringTextSource(content));
+		}
+		
+		string IEditable.Text {
 			get {
 				if (WorkbenchSingleton.InvokeRequired)
 					return WorkbenchSingleton.SafeThreadFunction<string>(GetText);
 				else
 					return GetText();
-			}
-			set {
-				if (WorkbenchSingleton.InvokeRequired)
-					WorkbenchSingleton.SafeThreadCall(SetText, value);
-				else
-					SetText(value);
 			}
 		}
 		

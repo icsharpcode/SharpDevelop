@@ -60,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		#endregion
 		
 		#region Fields + Constructor
-		readonly GapTextBuffer textBuffer = new GapTextBuffer();
+		readonly Rope<char> rope = new Rope<char>();
 		readonly DocumentLineTree lineTree;
 		readonly LineManager lineManager;
 		readonly TextAnchorTree anchorTree;
@@ -71,7 +71,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		public TextDocument()
 		{
 			lineTree = new DocumentLineTree(this);
-			lineManager = new LineManager(textBuffer, lineTree, this);
+			lineManager = new LineManager(rope, lineTree, this);
 			lineTrackers.CollectionChanged += delegate {
 				lineManager.lineTrackers = lineTrackers.ToArray();
 			};
@@ -86,11 +86,11 @@ namespace ICSharpCode.AvalonEdit.Document
 		#region Text
 		void VerifyRange(int offset, int length)
 		{
-			if (offset < 0 || offset > textBuffer.Length) {
-				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + textBuffer.Length.ToString(CultureInfo.InvariantCulture));
+			if (offset < 0 || offset > rope.Length) {
+				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + rope.Length.ToString(CultureInfo.InvariantCulture));
 			}
-			if (length < 0 || offset + length > textBuffer.Length) {
-				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset(" + offset + ")+length <= " + textBuffer.Length.ToString(CultureInfo.InvariantCulture));
+			if (length < 0 || offset + length > rope.Length) {
+				throw new ArgumentOutOfRangeException("length", length, "0 <= length, offset(" + offset + ")+length <= " + rope.Length.ToString(CultureInfo.InvariantCulture));
 			}
 		}
 		
@@ -98,8 +98,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		public string GetText(int offset, int length)
 		{
 			VerifyAccess();
-			VerifyRange(offset, length);
-			return textBuffer.GetText(offset, length);
+			return rope.ToString(offset, length);
 		}
 		
 		/// <summary>
@@ -113,14 +112,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <inheritdoc/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.Int32.ToString")]
 		public char GetCharAt(int offset)
 		{
 			VerifyAccess();
-			if (offset < 0 || offset >= textBuffer.Length) {
-				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset < " + textBuffer.Length.ToString());
-			}
-			return textBuffer.GetCharAt(offset);
+			return rope[offset];
 		}
 		
 //		/// <summary>
@@ -131,6 +126,8 @@ namespace ICSharpCode.AvalonEdit.Document
 //			return textBuffer.GetCharAt(offset);
 //		}
 		
+		WeakReference cachedText;
+		
 		/// <summary>
 		/// Gets/Sets the text of the whole document.
 		/// Get: O(n)
@@ -139,13 +136,18 @@ namespace ICSharpCode.AvalonEdit.Document
 		public string Text {
 			get {
 				VerifyAccess();
-				return textBuffer.Text;
+				string completeText = cachedText != null ? (cachedText.Target as string) : null;
+				if (completeText == null) {
+					completeText = rope.ToString();
+					cachedText = new WeakReference(completeText);
+				}
+				return completeText;
 			}
 			set {
 				VerifyAccess();
 				if (value == null)
 					throw new ArgumentNullException("value");
-				Replace(0, textBuffer.Length, value);
+				Replace(0, rope.Length, value);
 			}
 		}
 		
@@ -156,7 +158,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		public int TextLength {
 			get {
 				VerifyAccess();
-				return textBuffer.Length;
+				return rope.Length;
 			}
 		}
 		
@@ -175,18 +177,45 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public event EventHandler<DocumentChangeEventArgs> Changed;
 		
-		/// <inheritdoc/>
+		/// <summary>
+		/// Creates a snapshot of the current text.
+		/// </summary>
+		/// <returns>Returns a copy of the document's text as a rope.</returns>
+		/// <remarks>
+		/// Unlike all other TextDocument methods, this method may be called from any thread; even when the owning thread
+		/// is concurrently writing to the document.
+		/// This special thread-safety guarantee is valid only for TextDocument.CreateSnapshot(), not necessarily for other
+		/// classes implementing ITextSource.CreateSnapshot().
+		/// </remarks>
 		public ITextSource CreateSnapshot()
 		{
-			VerifyAccess();
-			// It would be nice to have a text buffer that allows efficient snapshots,
-			// but this will do for the moment.
-			return new StringTextSource(textBuffer.Text);
+			lock (rope) {
+				return new RopeTextSource(rope.Clone());
+			}
 		}
 		
-		System.IO.TextReader ITextSource.CreateReader(int offset, int length)
+		/// <summary>
+		/// Creates a snapshot of a part of the current text.
+		/// </summary>
+		/// <remarks>
+		/// Unlike all other TextDocument methods, this method may be called from any thread; even when the owning thread
+		/// is concurrently writing to the document.
+		/// This special thread-safety guarantee is valid only for TextDocument.CreateSnapshot(), not necessarily for other
+		/// classes implementing ITextSource.CreateSnapshot().
+		/// </remarks>
+		public ITextSource CreateSnapshot(int offset, int length)
 		{
-			return CreateSnapshot().CreateReader(offset, length);
+			lock (rope) {
+				return new RopeTextSource(rope.GetRange(offset, length));
+			}
+		}
+		
+		/// <inheritdoc/>
+		public System.IO.TextReader CreateReader()
+		{
+			lock (rope) {
+				return new RopeTextReader(rope);
+			}
 		}
 		#endregion
 		
@@ -278,8 +307,8 @@ namespace ICSharpCode.AvalonEdit.Document
 					TextChanged(this, EventArgs.Empty);
 			}
 			
-			int textLength = textBuffer.Length;
-			if (oldTextLength != textBuffer.Length) {
+			int textLength = rope.Length;
+			if (textLength != oldTextLength) {
 				oldTextLength = textLength;
 				if (TextLengthChanged != null)
 					TextLengthChanged(this, EventArgs.Empty);
@@ -296,11 +325,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		#region Insert / Remove  / Replace
 		/// <summary>
 		/// Inserts text.
-		/// Runtime:
-		///  for updating the text buffer: m=size of new text, d=distance to last change, n=total text length
-		/// 	usual:	O(m+d)
-		/// 	rare:	O(m+n)
-		///  for updating the document lines: O(m*log n), m=number of changed lines, n=total number of lines in document
 		/// </summary>
 		public void Insert(int offset, string text)
 		{
@@ -317,11 +341,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Removes text.
-		/// Runtime:
-		///  for updating the text buffer: d=distance to last change, n=total text length
-		/// 	usual:	O(d)
-		/// 	rare:	O(n)
-		///  for updating the document lines: O(m*log n), m=number of changed lines, n=total number of lines in document
 		/// </summary>
 		public void Remove(int offset, int length)
 		{
@@ -350,11 +369,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Replaces text.
-		/// Runtime:
-		///  for updating the text buffer: m=size of new text, d=distance to last change, n=total text length
-		/// 	usual:	O(m+d)
-		/// 	rare:	O(m+n)
-		///  for updating the document lines: O(m*log n), m=number of changed lines, n=total number of lines in document
 		/// </summary>
 		/// <param name="offset">The starting offset of the text to be replaced.</param>
 		/// <param name="length">The length of the text to be replaced.</param>
@@ -407,11 +421,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Replaces text.
-		/// Runtime:
-		///  for updating the text buffer: m=size of new text, d=distance to last change, n=total text length
-		/// 	usual:	O(m+d)
-		/// 	rare:	O(m+n)
-		///  for updating the document lines: O(m*log n), m=number of changed lines, n=total number of lines in document
 		/// </summary>
 		/// <param name="offset">The starting offset of the text to be replaced.</param>
 		/// <param name="length">The length of the text to be replaced.</param>
@@ -470,25 +479,29 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (Changing != null)
 				Changing(this, args);
 			
+			cachedText = null; // reset cache of complete document text
 			fireTextChanged = true;
 			DelayedEvents delayedEvents = new DelayedEvents();
 			
-			// now update the textBuffer and lineTree
-			if (offset == 0 && length == textBuffer.Length) {
-				// optimize replacing the whole document
-				textBuffer.Text = text;
-				lineManager.Rebuild(text);
-			} else {
-				textBuffer.Remove(offset, length, text.Length);
-				lineManager.Remove(offset, length);
-				#if DEBUG
-				lineTree.CheckProperties();
-				#endif
-				textBuffer.Insert(offset, text);
-				lineManager.Insert(offset, text);
-				#if DEBUG
-				lineTree.CheckProperties();
-				#endif
+			lock (rope) {
+				// now update the textBuffer and lineTree
+				if (offset == 0 && length == rope.Length) {
+					// optimize replacing the whole document
+					rope.Clear();
+					rope.InsertText(0, text);
+					lineManager.Rebuild(text);
+				} else {
+					rope.RemoveRange(offset, length);
+					lineManager.Remove(offset, length);
+					#if DEBUG
+					lineTree.CheckProperties();
+					#endif
+					rope.InsertText(offset, text);
+					lineManager.Insert(offset, text);
+					#if DEBUG
+					lineTree.CheckProperties();
+					#endif
+				}
 			}
 			
 			// update text anchors
@@ -536,8 +549,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		public DocumentLine GetLineByOffset(int offset)
 		{
 			VerifyAccess();
-			if (offset < 0 || offset > textBuffer.Length) {
-				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + textBuffer.Length.ToString());
+			if (offset < 0 || offset > rope.Length) {
+				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + rope.Length.ToString());
 			}
 			return lineTree.GetByOffset(offset);
 		}
@@ -588,8 +601,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		public TextAnchor CreateAnchor(int offset)
 		{
 			VerifyAccess();
-			if (offset < 0 || offset > textBuffer.Length) {
-				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + textBuffer.Length.ToString(CultureInfo.InvariantCulture));
+			if (offset < 0 || offset > rope.Length) {
+				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + rope.Length.ToString(CultureInfo.InvariantCulture));
 			}
 			return anchorTree.CreateAnchor(offset);
 		}

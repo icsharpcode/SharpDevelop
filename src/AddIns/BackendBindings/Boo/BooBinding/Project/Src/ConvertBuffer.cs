@@ -38,7 +38,7 @@ namespace Grunwald.BooBinding
 				Module module;
 				IList<ICSharpCode.NRefactory.ISpecial> specials;
 				CompileUnit compileUnit = new CompileUnit();
-				using (StringReader r = new StringReader(((IEditable)window.ActiveViewContent).Text)) {
+				using (TextReader r = ((IEditable)window.ActiveViewContent).CreateSnapshot().CreateReader()) {
 					string fileName = window.ActiveViewContent.PrimaryFileName;
 					module = Parser.ParseModule(compileUnit, r, ApplySettings(fileName, errors, warnings), out specials);
 				}

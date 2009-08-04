@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 							if (editable == null) {
 								MessageService.ShowWarning("${res:Dialog.WordCountDialog.IsNotTextFile}");
 							} else {
-								Report r = GetReport(viewContent, new StringReader(editable.Text));
+								Report r = GetReport(viewContent, editable.CreateSnapshot().CreateReader());
 								if (r != null) items.Add(r);
 							}
 						}
@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 							foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 								IEditable editable = content as IEditable;
 								if (editable != null) {
-									Report r = GetReport(content, new StringReader(editable.Text));
+									Report r = GetReport(content, editable.CreateSnapshot().CreateReader());
 									if (r != null) {
 										total += r;
 										items.Add(r);

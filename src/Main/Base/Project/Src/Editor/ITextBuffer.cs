@@ -19,8 +19,15 @@ namespace ICSharpCode.SharpDevelop.Editor
 	{
 		/// <summary>
 		/// Creates an immutable snapshot of this text buffer.
+		/// Unlike all other methods in this interface, this method is thread-safe.
 		/// </summary>
 		ITextBuffer CreateSnapshot();
+		
+		/// <summary>
+		/// Creates an immutable snapshot of a part of this text buffer.
+		/// Unlike all other methods in this interface, this method is thread-safe.
+		/// </summary>
+		ITextBuffer CreateSnapshot(int offset, int length);
 		
 		/// <summary>
 		/// Creates a new TextReader to read from this text buffer.

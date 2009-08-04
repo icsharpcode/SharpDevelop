@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			if (content != null && content.PrimaryFileName != null && content is IEditable) {
 				
-				IParser p = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(((IEditable)content).Text));
+				IParser p = ParserFactory.CreateParser(SupportedLanguage.VBNet, ((IEditable)content).CreateSnapshot().CreateReader());
 				p.Parse();
 
 				if (p.Errors.Count > 0) {

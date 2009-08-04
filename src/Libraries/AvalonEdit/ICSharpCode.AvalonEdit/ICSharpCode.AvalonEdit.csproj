@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.AvalonEdit</RootNamespace>
     <AssemblyName>ICSharpCode.AvalonEdit</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -89,6 +89,7 @@
     <Compile Include="CodeCompletion\IOverloadProvider.cs" />
     <Compile Include="CodeCompletion\OverloadInsightWindow.cs" />
     <Compile Include="CodeCompletion\OverloadViewer.cs" />
+    <Compile Include="Document\CharRope.cs" />
     <Compile Include="Document\DocumentChangeOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
@@ -103,6 +104,9 @@
     </Compile>
     <Compile Include="Document\NewLineFinder.cs" />
     <Compile Include="Document\OffsetChangeMap.cs" />
+    <Compile Include="Document\Rope.cs" />
+    <Compile Include="Document\RopeNode.cs" />
+    <Compile Include="Document\RopeTextReader.cs" />
     <Compile Include="Document\TextDocumentWeakEventManager.cs">
       <DependentUpon>TextDocument.cs</DependentUpon>
     </Compile>

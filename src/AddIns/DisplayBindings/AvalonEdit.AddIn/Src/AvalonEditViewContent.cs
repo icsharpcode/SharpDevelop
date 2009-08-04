@@ -159,12 +159,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		#region IEditable
+		/// <summary>
+		/// Thread-safe snapshot creation.
+		/// </summary>
+		public ITextBuffer CreateSnapshot()
+		{
+			return new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditTextSourceAdapter(codeEditor.Document.CreateSnapshot());
+		}
+		
+		/// <summary>
+		/// Thread-safe text getter.
+		/// </summary>
 		public string Text {
 			get {
 				return WorkbenchSingleton.SafeThreadFunction(() => codeEditor.Document.Text);
-			}
-			set {
-				WorkbenchSingleton.SafeThreadCall(text => codeEditor.Document.Text = text, value);
 			}
 		}
 		#endregion

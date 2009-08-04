@@ -96,12 +96,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public static void LogDom(string format, params object[] args)
 		{
-			System.Diagnostics.Debug.WriteLine("XML DOM: " + format, args);
+			System.Diagnostics.Debug.WriteLine(string.Format("XML DOM: " + format, args));
 		}
 		
 		public static void LogLinq(string format, params object[] args)
 		{
-			System.Diagnostics.Debug.WriteLine("XML Linq: " + format, args);
+			System.Diagnostics.Debug.WriteLine(string.Format("XML Linq: " + format, args));
 		}
 		
 		protected XName EncodeXName(string name)

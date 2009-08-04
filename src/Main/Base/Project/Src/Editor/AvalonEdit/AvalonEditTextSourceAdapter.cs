@@ -31,11 +31,20 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		}
 		
 		/// <summary>
+		/// Creates an immutable snapshot of a part of this text buffer.
+		/// Unlike all other methods in this interface, this method is thread-safe.
+		/// </summary>
+		public ITextBuffer CreateSnapshot(int offset, int length)
+		{
+			return new AvalonEditTextSourceAdapter(textSource.CreateSnapshot(offset, length));
+		}
+		
+		/// <summary>
 		/// Creates a new TextReader to read from this text buffer.
 		/// </summary>
 		public System.IO.TextReader CreateReader()
 		{
-			return textSource.CreateReader(0, textSource.TextLength);
+			return textSource.CreateReader();
 		}
 		
 		public int TextLength {

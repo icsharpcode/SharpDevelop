@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// with itself and the additional text segment. A simple insertion of the additional text would have the undesired
 		/// effect of moving anchors immediately after the replaced text into the replacement text if they used
 		/// AnchorMovementStyle.BeforeInsertion.
-		/// Shrinking text is implemented by removal the text segment that's too long.
+		/// Shrinking text is implemented by removing the text segment that's too long.
 		/// If the text keeps its old size, this is implemented as OffsetChangeMap.Empty.
 		/// </remarks>
 		CharacterReplace

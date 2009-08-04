@@ -21,6 +21,14 @@ namespace ICSharpCode.SharpDevelop.Editor
 	public static class DocumentUtilitites
 	{
 		/// <summary>
+		/// Gets a ITextBuffer implementation representing the specified string.
+		/// </summary>
+		public static ITextBuffer GetBufferForString(string text)
+		{
+			return new AvalonEdit.AvalonEditTextSourceAdapter(new ICSharpCode.AvalonEdit.Document.StringTextSource(text));
+		}
+		
+		/// <summary>
 		/// Gets the word in front of the caret.
 		/// </summary>
 		public static string GetWordBeforeCaret(this ITextEditor editor)
@@ -191,17 +199,19 @@ namespace ICSharpCode.SharpDevelop.Editor
 				return textBuffer.GetText(offset, length);
 			}
 			
-			public System.IO.TextReader CreateReader(int offset, int length)
+			public System.IO.TextReader CreateReader()
 			{
-				if (offset == 0 && length == textBuffer.TextLength)
-					return textBuffer.CreateReader();
-				else
-					return new System.IO.StringReader(textBuffer.GetText(offset, length));
+				return textBuffer.CreateReader();
 			}
 			
 			public ITextSource CreateSnapshot()
 			{
 				return GetTextSource(textBuffer.CreateSnapshot());
+			}
+			
+			public ITextSource CreateSnapshot(int offset, int length)
+			{
+				return GetTextSource(textBuffer.CreateSnapshot(offset, length));
 			}
 		}
 		#endregion

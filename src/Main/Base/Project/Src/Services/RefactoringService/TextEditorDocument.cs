@@ -191,6 +191,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			throw new NotImplementedException();
 		}
 		
+		public ITextBuffer CreateSnapshot(int offset, int length)
+		{
+			throw new NotImplementedException();
+		}
+		
 		sealed class AnchorAdapter : ITextAnchor
 		{
 			readonly TextAnchor anchor;

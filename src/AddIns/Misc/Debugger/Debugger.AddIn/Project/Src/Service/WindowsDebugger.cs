@@ -475,7 +475,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					bookmark.Tooltip = null;
 				} else {
 					byte[] fileMD5;
-					TextEditorDisplayBindingWrapper file = FileService.GetOpenFile(bookmark.FileName) as TextEditorDisplayBindingWrapper;
+					IEditable file = FileService.GetOpenFile(bookmark.FileName) as IEditable;
 					if (file != null) {
 						byte[] fileContent = Encoding.UTF8.GetBytesWithPreamble(file.Text);
 						fileMD5 = new MD5CryptoServiceProvider().ComputeHash(fileContent);
