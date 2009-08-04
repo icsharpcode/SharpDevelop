@@ -118,7 +118,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			changesSinceLastParse.Clear();
 			
 			RawDocument parsedDocument = ReadDocument();
+			// Just in case parse method was called redundantly
 			if (parsedDocument.ReadCallID != userDocument.ReadCallID) {
+				PrintStringCacheStats();
 				RawObject.LogDom("Updating main DOM tree...");
 			}
 			userDocument.UpdateDataFrom(parsedDocument);
@@ -146,6 +148,35 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		void LogParsed(RawObject obj)
 		{
 			System.Diagnostics.Debug.WriteLine("XML Parser: Parsed " + obj.ToString());
+		}
+		
+		Dictionary<string, string> stringCache = new Dictionary<string, string>();
+		int stringCacheRequestedCount;
+		int stringCacheRequestedSize;
+		int stringCacheSavedCount;
+		int stringCacheSavedSize;
+		
+		string GetCachedString(string cached)
+		{
+			stringCacheRequestedCount += 1;
+			stringCacheRequestedSize += 8 + 2 * cached.Length;
+			// Do not bother with long strings
+			//if (cached.Length <= 32) return cached;
+			if (stringCache.ContainsKey(cached)) {
+				// Get the instance from the cache instead
+				stringCacheSavedCount += 1;
+				stringCacheSavedSize += 8 + 2 * cached.Length;
+				return stringCache[cached];
+			} else {
+				// Add to cache
+				stringCache.Add(cached, cached);
+				return cached;
+			}
+		}
+		
+		void PrintStringCacheStats()
+		{
+			Log("String cache: Requested {0} ({1} bytes);  Saved {2} ({3} bytes); {4}% Saved", stringCacheRequestedCount, stringCacheRequestedSize, stringCacheSavedCount, stringCacheSavedSize, stringCacheRequestedSize == 0 ? 0 : stringCacheSavedSize * 100 / stringCacheRequestedSize);
 		}
 		
 		string input;
@@ -256,7 +287,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (start == input.Length && end == input.Length) {
 				return string.Empty;
 			} else {
-				return input.Substring(start, end - start);
+				return GetCachedString(input.Substring(start, end - start));
 			}
 		}
 		
