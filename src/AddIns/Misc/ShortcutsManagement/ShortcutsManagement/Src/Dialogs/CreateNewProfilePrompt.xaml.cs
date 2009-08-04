@@ -15,18 +15,18 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         /// </summary>
         public static readonly DependencyProperty BaseProfileProperty = DependencyProperty.Register(
             "BaseProfile",
-            typeof(UserGesturesProfile),
+            typeof(UserGestureProfile),
             typeof(CreateNewProfilePrompt),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
         /// <summary>
         /// Specifies profile which new profile will be based on
         /// </summary>
-        public UserGesturesProfile BaseProfile
+        public UserGestureProfile BaseProfile
         {
             get
             {
-                return (UserGesturesProfile)GetValue(BaseProfileProperty);
+                return (UserGestureProfile)GetValue(BaseProfileProperty);
             }
             set
             {
@@ -63,18 +63,18 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
         /// </summary>
         public static readonly DependencyProperty AvailableBaseProfilesProperty = DependencyProperty.Register(
             "AvailableBaseProfiles",
-            typeof(ICollection<UserGesturesProfile>),
+            typeof(ICollection<UserGestureProfile>),
             typeof(CreateNewProfilePrompt),
-            new FrameworkPropertyMetadata(new List<UserGesturesProfile>(), FrameworkPropertyMetadataOptions.AffectsRender));
+            new FrameworkPropertyMetadata(new List<UserGestureProfile>(), FrameworkPropertyMetadataOptions.AffectsRender));
 
         /// <summary>
         /// Profiles user can choose from when selecting base profile
         /// </summary>
-        public ICollection<UserGesturesProfile> AvailableBaseProfiles
+        public ICollection<UserGestureProfile> AvailableBaseProfiles
         {
             get
             {
-                return (ICollection<UserGesturesProfile>)GetValue(AvailableBaseProfilesProperty);
+                return (ICollection<UserGestureProfile>)GetValue(AvailableBaseProfilesProperty);
             }
             set
             {

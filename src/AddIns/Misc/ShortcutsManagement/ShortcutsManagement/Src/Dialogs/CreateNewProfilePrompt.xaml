@@ -12,7 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources.xaml" />
                 <ResourceDictionary>
-                    <DataTemplate DataType="{x:Type Presentation:UserGesturesProfile}">
+                    <DataTemplate DataType="{x:Type Presentation:UserGestureProfile}">
                         <TextBlock Text="{Binding Path=Text}" />
                     </DataTemplate>
                 </ResourceDictionary>

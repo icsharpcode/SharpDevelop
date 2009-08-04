@@ -53,14 +53,14 @@ namespace ICSharpCode.Core.Presentation
 			// Load gestures profile first
 			var path = PropertyService.Get("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory");
 			if(path != null && File.Exists(path)) {
-				var profile = new UserGesturesProfile();
+				var profile = new UserGestureProfile();
 				profile.Path = path;
 				profile.Load();
 				
-				UserDefinedGesturesManager.CurrentProfile = profile;
+				UserGestureManager.CurrentProfile = profile;
 			}
 			
-			UserDefinedGesturesManager.CurrentProfileChanged += UserDefinedGesturesManager_CurrentProfileChanged;
+			UserGestureManager.CurrentProfileChanged += UserDefinedGesturesManager_CurrentProfileChanged;
 		}
 
 		static void UserDefinedGesturesManager_CurrentProfileChanged(object sender, NotifyUserGestureProfileChangedEventArgs args)

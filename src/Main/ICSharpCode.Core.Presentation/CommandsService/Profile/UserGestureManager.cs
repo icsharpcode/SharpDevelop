@@ -10,11 +10,11 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// Manages user defined gestures
 	/// </summary>
-	public static class UserDefinedGesturesManager
+	public static class UserGestureManager
 	{
 		private static string _userGestureProfilesDirectory;
 		
-		static UserDefinedGesturesManager()
+		static UserGestureManager()
 		{
 			if(PropertyService.ConfigDirectory != null) {
 				_userGestureProfilesDirectory = Path.Combine(PropertyService.ConfigDirectory, "UserGestureProfiles");
@@ -34,9 +34,9 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		private static UserGesturesProfile _currentProfile;
+		private static UserGestureProfile _currentProfile;
 	
-		public static UserGesturesProfile CurrentProfile
+		public static UserGestureProfile CurrentProfile
 		{
 			get {
 				return _currentProfile;
@@ -53,7 +53,7 @@ namespace ICSharpCode.Core.Presentation
 				}
 				
 				if(_currentProfile != oldProfile) {
-					InvokeCurrentProfileChanged(typeof(UserDefinedGesturesManager), new NotifyUserGestureProfileChangedEventArgs(oldProfile, _currentProfile));
+					InvokeCurrentProfileChanged(typeof(UserGestureManager), new NotifyUserGestureProfileChangedEventArgs(oldProfile, _currentProfile));
 				}
 			} 
 		}

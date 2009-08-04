@@ -49,7 +49,7 @@ namespace ICSharpCode.Core.Presentation
 				var oldGestures = _defaultGestures;
 				_defaultGestures = value;
 				
-				if(IsRegistered && (UserDefinedGesturesManager.CurrentProfile == null || UserDefinedGesturesManager.CurrentProfile[Identifier] == null)) {
+				if(IsRegistered && (UserGestureManager.CurrentProfile == null || UserGestureManager.CurrentProfile[Identifier] == null)) {
 					var description = new GesturesModificationDescription(
 						Identifier, 
 						oldGestures != null ? oldGestures.InputGesturesCollection : new InputGestureCollection(),
@@ -62,7 +62,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		private void DefaultGestures_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) 
 		{
-			if(IsRegistered && (UserDefinedGesturesManager.CurrentProfile == null || UserDefinedGesturesManager.CurrentProfile[Identifier] == null)) {
+			if(IsRegistered && (UserGestureManager.CurrentProfile == null || UserGestureManager.CurrentProfile[Identifier] == null)) {
 				var newGestures = DefaultGestures.InputGesturesCollection;
 				var oldGestures = new InputGestureCollection();
 				oldGestures.AddRange(newGestures);
@@ -91,12 +91,12 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public InputGestureCollection ActiveGestures { 
 			get {
-				if(UserDefinedGesturesManager.CurrentProfile == null 
-				   || UserDefinedGesturesManager.CurrentProfile[Identifier] == null) {
+				if(UserGestureManager.CurrentProfile == null 
+				   || UserGestureManager.CurrentProfile[Identifier] == null) {
 					return DefaultGestures.GetInputGestureCollection();
 				} 
 				
-				return UserDefinedGesturesManager.CurrentProfile[Identifier];
+				return UserGestureManager.CurrentProfile[Identifier];
 			}
 		}
 		

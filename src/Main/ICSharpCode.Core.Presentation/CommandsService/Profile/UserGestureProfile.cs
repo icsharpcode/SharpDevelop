@@ -1,11 +1,3 @@
-/*
- * Created by SharpDevelop.
- * User: Administrator
- * Date: 7/1/2009
- * Time: 12:11 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
 using System;
 using System.Xml;
 using System.Windows.Input;
@@ -18,7 +10,7 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// Description of UserGesturesProfile.
 	/// </summary>
-	public class UserGesturesProfile : IEnumerable<KeyValuePair<InputBindingIdentifier, InputGestureCollection>>, ICloneable
+	public class UserGestureProfile : IEnumerable<KeyValuePair<InputBindingIdentifier, InputGestureCollection>>, ICloneable
 	{
 		private Dictionary<InputBindingIdentifier, InputGestureCollection> userDefinedGestures = new Dictionary<InputBindingIdentifier, InputGestureCollection>();
 		
@@ -42,12 +34,12 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 		
-		public UserGesturesProfile()
+		public UserGestureProfile()
 		{
 			
 		}
 		
-		public UserGesturesProfile(string name, string text, bool readOnly)
+		public UserGestureProfile(string name, string text, bool readOnly)
 		{
 			Name = name;
 			Text = text;
@@ -229,7 +221,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		public object Clone()
 		{
-			var profile = new UserGesturesProfile(Name, Text, ReadOnly);
+			var profile = new UserGestureProfile(Name, Text, ReadOnly);
 			
 			foreach(var definedGesture in userDefinedGestures) {
 				profile.userDefinedGestures.Add(definedGesture.Key, new InputGestureCollection(definedGesture.Value));

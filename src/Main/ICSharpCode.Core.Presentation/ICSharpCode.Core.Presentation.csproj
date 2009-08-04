@@ -84,18 +84,18 @@
     <Compile Include="CommandsService\InputBindingCategoryCollection.cs" />
     <Compile Include="CommandsService\InputBindingIndentifier.cs" />
     <Compile Include="CommandsService\InputBindingInfo.cs" />
-    <Compile Include="CommandsService\ObservableInputGestureCollection.cs" />
-    <Compile Include="CommandsService\RelationshipMap.cs" />
-    <Compile Include="CommandsService\UserDefinedGesturesManager.cs" />
-    <Compile Include="CommandsService\UserGesturesProfile.cs" />
+    <Compile Include="CommandsService\Profile\UserGestureManager.cs" />
+    <Compile Include="CommandsService\Profile\UserGestureProfile.cs" />
     <Compile Include="CommandsService\Utils\IBindingInfoEqualityComparer.cs" />
     <Compile Include="CommandsService\Utils\IObservableCollection.cs" />
+    <Compile Include="CommandsService\Utils\RelationshipMap.cs" />
     <Compile Include="CommandsService\Utils\WeakReferenceEqualirtyComparer.cs" />
     <Compile Include="CommandsService\WpfCommandWrapper.cs" />
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="DropDownButton.cs" />
     <Compile Include="GetBitmapExtension.cs" />
     <Compile Include="Input\InputGestureCollectionConverter.cs" />
+    <Compile Include="Input\ObservableInputGestureCollection.cs" />
     <Compile Include="IOptionBindingContainer.cs" />
     <Compile Include="Input\InputGestureCollectionExtensions.cs" />
     <Compile Include="Input\InputGestureExtensions.cs" />
@@ -131,6 +131,8 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="CommandsService\Events" />
+    <Folder Include="CommandsService\Collections" />
+    <Folder Include="CommandsService\Profile" />
     <Folder Include="CommandsService\Utils" />
     <Folder Include="Input" />
     <Folder Include="Menu" />

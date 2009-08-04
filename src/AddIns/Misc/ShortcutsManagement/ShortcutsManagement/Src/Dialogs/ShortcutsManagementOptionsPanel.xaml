@@ -15,7 +15,7 @@
                 <ResourceDictionary>
                     <Converters:ProfilesComboBoxItemStyleSelector x:Key="ProfilesComboBoxItemStyleSelector" />
 
-                    <DataTemplate DataType="{x:Type Presentation:UserGesturesProfile}">
+                    <DataTemplate DataType="{x:Type Presentation:UserGestureProfile}">
                         <TextBlock Text="{Binding Converter={StaticResource ProfileToStringConverter}}" Margin="5" />
                     </DataTemplate>
 

@@ -21,7 +21,7 @@ namespace ICSharpCode.ShortcutsManagement.Converters
         /// <returns>String representing instance of UserGestureProfile</returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var profile = value as UserGesturesProfile;
+            var profile = value as UserGestureProfile;
             if(profile != null)
             {
                 var readOnlyString = "";

@@ -4,23 +4,23 @@ namespace ICSharpCode.Core.Presentation
 {
 	public class NotifyUserGestureProfileChangedEventArgs : EventArgs
 	{
-		private UserGesturesProfile _oldProfile;
-		public UserGesturesProfile OldProfile
+		private UserGestureProfile _oldProfile;
+		public UserGestureProfile OldProfile
 		{
 			get {
 				return _oldProfile;
 			}
 		}
 		
-		private UserGesturesProfile _newProfile;
-		public UserGesturesProfile NewProfile
+		private UserGestureProfile _newProfile;
+		public UserGestureProfile NewProfile
 		{
 			get {
 				return _newProfile;
 			}
 		}
 		
-		public NotifyUserGestureProfileChangedEventArgs(UserGesturesProfile oldProfile, UserGesturesProfile newProfile) 
+		public NotifyUserGestureProfileChangedEventArgs(UserGestureProfile oldProfile, UserGestureProfile newProfile) 
 		{
 			_oldProfile = oldProfile;
 			_newProfile = newProfile;
