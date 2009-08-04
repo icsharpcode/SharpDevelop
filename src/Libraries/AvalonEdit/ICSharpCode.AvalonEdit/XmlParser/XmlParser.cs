@@ -13,11 +13,67 @@ using System.Xml.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
-// Missing XML comment
-#pragma warning disable 1591
-
 namespace ICSharpCode.AvalonEdit.XmlParser
 {
+	/// <summary>
+	/// Creates object tree from XML document.
+	/// </summary>
+	/// <remarks>
+	/// The created tree fully describes the document and thus the orginal XML file can be
+	/// exactly reproduced.
+	/// 
+	/// Any further parses will reparse only the changed parts and the existing three will
+	/// be updated with the changes.  The user can add event handlers to be notified of
+	/// the changes.  The parser tries to minimize the number of changes to the tree.
+	/// (for example, it will add a single child at the start of collection rather than
+	/// clearing the collection and adding new children)
+	/// 
+	/// The object tree consists of following types:
+	///   RawObject - Abstact base class for all types
+	///     RawContainer - Abstact base class for all types that can contain child nodes
+	///       RawDocument - The root object of the XML document
+	///       RawElement - Logical grouping of other nodes together.  The first child is always the start tag.
+	///       RawTag - Represents any markup starting with "&lt;" and (hopefully) ending with ">"
+	///     RawAttribute - Name-value pair in a tag
+	///     RawText - Whitespace or character data
+	/// 
+	/// For example, see the following XML and the produced object tree:
+	/// <![CDATA[
+	///   <!-- My favourite quote -->
+	///   <quote author="Albert Einstein">
+	///     Make everything as simple as possible, but not simpler.
+	///   </quote>
+	/// 
+	///   RawDocument
+	///     RawTag "<!--" "-->"
+	///       RawText " My favourite quote "
+	///     RawElement
+	///       RawTag "<" "quote" ">"
+	///         RawText " "
+	///         RawAttribute 'author="Albert Einstein"'
+	///       RawText "\n  Make everything as simple as possible, but not simpler.\n"
+	///       RawTag "</" "quote" ">"
+	/// ]]>
+	/// 
+	/// The precise content of RawTag depends on what it represents:
+	/// <![CDATA[
+	///   Start tag:  "<"  Name? (RawText+ RawAttribute)* RawText* (">" | "/>")
+	///   End tag:    "</" Name? (RawText+ RawAttribute)* RawText* ">"
+	///   P.instr.:   "<?" Name? (RawText+ RawAttribute)* RawText* "?>"
+	///   Comment:    "<!" partof("--")?     (RawText)* "-->"     (Name is always null)
+	///   DTD:        "<!" partof("DOCTYPE") (RawText)* ">"       (Name is always null)
+	///   CData:      "<!" partof("[CDATA[") (RawText)* "]]" ">"  (Name is always null)
+	/// ]]>
+	/// 
+	/// The type of tag can be identified by the opening backet.
+	/// There are helpper properties in the RawTag class to identify the type, exactly
+	/// one of the properties will be true.
+	/// 
+	/// The closing bracket may be missing or may be different for mallformed XML.
+	/// 
+	/// Note that there can always be multiple consequtive RawText nodes.
+	/// This is to ensure that idividual texts are not too long.
+	/// </remarks>
 	public class XmlParser
 	{
 		RawDocument userDocument = new RawDocument();
@@ -26,6 +82,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		TextSegmentCollection<RawObject> parsedItems = new TextSegmentCollection<RawObject>();
 		List<DocumentChangeEventArgs> changesSinceLastParse = new List<DocumentChangeEventArgs>();
 		
+		/// <summary>
+		/// Create new parser, but do not parse the text yet.
+		/// </summary>
 		public XmlParser(TextDocument textDocument)
 		{
 			this.userLinqDocument = userDocument.GetXDocument();
@@ -35,6 +94,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			};
 		}
 		
+		/// <summary>
+		/// Incrementaly parse the document
+		/// </summary>
 		public RawDocument Parse()
 		{
 			currentLocation = 0;
@@ -99,6 +161,30 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return currentLocation < input.Length;
 		}
 		
+		void AssertHasMoreData()
+		{
+			if (currentLocation == input.Length) {
+				throw new Exception("Unexpected end of files");
+			}
+		}
+		
+		// The methods start with 'try' to make it clear they can silently fail.
+		// Read methods without 'try' have to succed or throw exception.
+		//
+		// For example:
+		//   while(true) TryMoveNext();   is obviously infinite loop
+		// whereas
+		//   while(true) MoveNext();   should eventulay throw exception (if MoveNext it existed)
+		//
+		
+		bool TryMoveNext()
+		{
+			if (currentLocation == input.Length) return false;
+			
+			currentLocation++;
+			return true;
+		}
+		
 		bool TryRead(char c)
 		{
 			if (currentLocation == input.Length) return false;
@@ -121,6 +207,18 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		/// <summary> Returns true if at least one character was read </summary>
+		bool TryReadPartOf(string text)
+		{
+			if (TryPeek(text[0])) {
+				// Keep reading until character differs or we have end of file
+				foreach(char c in text) if (!TryRead(c)) break;
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
 		bool TryPeek(char c)
 		{
 			if (currentLocation == input.Length) return false;
@@ -135,7 +233,16 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return input.Substring(currentLocation, text.Length) == text;
 		}
 		
-		bool TryMoveTo(params char[] c)
+		bool TryMoveTo(char c)
+		{
+			while(true) {
+				if (currentLocation == input.Length) return false;
+				if (input[currentLocation] == c) return true;
+				currentLocation++;
+			}
+		}
+		
+		bool TryMoveToAnyOf(params char[] c)
 		{
 			while(true) {
 				if (currentLocation == input.Length) return false;
@@ -154,32 +261,21 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		static char[] WhiteSpaceChars = new char[] {' ', '\n', '\r', '\t'};
-		static char[] WhiteSpaceAndReservedChars = new char[] {' ', '\n', '\r', '\t', '<', '=', '>', '/', ':', '?'};
+		static char[] WhiteSpaceAndReservedChars = new char[] {' ', '\n', '\r', '\t', '<', '=', '>', '/', '?'};
 		
-		bool? IsWhiteSpace()
+		bool TryPeekWhiteSpace()
 		{
-			if (currentLocation == input.Length) {
-				return null;
-			} else {
-				return WhiteSpaceChars.Contains(input[currentLocation]);
-			}
-		}
-		
-		bool? IsWhiteSpaceOrReserved()
-		{
-			if (currentLocation == input.Length) {
-				return null;
-			} else {
-				return WhiteSpaceAndReservedChars.Contains(input[currentLocation]);
-			}
+			if (currentLocation == input.Length) return false;
+			
+			return WhiteSpaceChars.Contains(input[currentLocation]);
 		}
 		
 		string ReadName()
 		{
-			Debug.Assert(HasMoreData());
+			AssertHasMoreData();
 			
 			int start = currentLocation;
-			TryMoveTo(WhiteSpaceAndReservedChars.ToArray());
+			TryMoveToAnyOf(WhiteSpaceAndReservedChars.ToArray());
 			return GetText(start, currentLocation);
 		}
 		
@@ -195,7 +291,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				if (IsEndOfFile()) {
 					break;
 				} else if (TryPeek('<')) {
-					doc.AddChild(ReadElement());
+					doc.AddChild(ReadElementOrTag());
 				} else {
 					doc.AddChild(ReadCharacterData());
 				}
@@ -207,9 +303,22 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return doc;
 		}
 		
+		RawObject ReadElementOrTag()
+		{
+			AssertHasMoreData();
+			
+			if (TryPeek("<!") || TryPeek("</") || TryPeek("<?")) {
+				return ReadTag();
+			} else if (TryPeek('<')) {
+				return ReadElement();
+			} else {
+				throw new Exception("'<' expected");
+			}
+		}
+		
 		RawElement ReadElement()
 		{
-			Debug.Assert(HasMoreData() && TryPeek('<'));
+			AssertHasMoreData();
 			
 			RawElement element = ReadFromCache<RawElement>(currentLocation);
 			if (element != null) return element;
@@ -219,26 +328,20 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			element.StartOffset = currentLocation;
 			// Read start tag
 			element.AddChild(ReadTag());
-			// Read content
-			if (element.StartTag.ClosingBracket == ">" &&
-			    element.StartTag.OpeningBracket != "<?" &&
-			    element.StartTag.OpeningBracket != "<!" &&
-			    element.StartTag.OpeningBracket != "<!--" )
-			{
+			Debug.Assert(element.StartTag.IsStartTag);
+			// Read content and end tag
+			if (element.StartTag.ClosingBracket == ">") {
 				while(true) {
 					if (IsEndOfFile()) {
 						break;
 					} else if (TryPeek('<')) {
-						if (TryPeek("</")) break;
-						element.AddChild(ReadElement());
+						RawObject content = ReadElementOrTag();
+						if (content is RawTag && ((RawTag)content).IsEndTag) break;
+						element.AddChild(content);
 					} else {
 						element.AddChild(ReadCharacterData());
 					}
 				}
-			}
-			// Read end tag
-			if (TryPeek("</")) {
-				element.AddChild(ReadTag());
 			}
 			element.EndOffset = currentLocation;
 			
@@ -247,9 +350,17 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return element;
 		}
 		
+		
+		//   Start tag:  "<"  Name? (RawText+ RawAttribute)* RawText* (">" | "/>")
+		//   End tag:    "</" Name? (RawText+ RawAttribute)* RawText* ">"
+		//   P.instr.:   "<?" Name? (RawText+ RawAttribute)* RawText* "?>"
+		//   Comment:    "<!" partof("--")?     (RawText)* "-->"     (Name is always null)
+		//   CData:      "<!" partof("[CDATA[") (RawText)* "]]" ">"  (Name is always null)
+		//   DTD:        "<!" partof("DOCTYPE") (RawText)* ">"       (Name is always null)
+		
 		RawTag ReadTag()
 		{
-			Debug.Assert(HasMoreData() && TryPeek('<'));
+			AssertHasMoreData();
 			
 			RawTag tag = ReadFromCache<RawTag>(currentLocation);
 			if (tag != null) return tag;
@@ -257,52 +368,52 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			tag = new RawTag();
 			
 			tag.StartOffset = currentLocation;
-			if (TryRead('<')) {
-				tag.OpeningBracket = "<";
-				if (TryRead('/')) {
-					tag.OpeningBracket += "/";
-				} else if (TryRead('?')) {
-					tag.OpeningBracket += "?";
-				} else if (TryRead("!--")) {
-					tag.OpeningBracket += "!--";
-				} else if (TryRead('!')) {
-					tag.OpeningBracket += "!";
-				}
-			}
-			if (HasMoreData()) {
-				tag.Name = ReadName();
-				if (TryRead(':')) {
-					tag.Namesapce = tag.Name;
+			
+			// Read the opening bracket
+			// It identifies the type of tag and parsing behavior for the rest of it
+			tag.OpeningBracket = ReadOpeningBracket();
+			
+			// Read the name
+			if (tag.IsStartTag || tag.IsEndTag || tag.IsProcessingInstruction) {
+				if (HasMoreData()) {
 					tag.Name = ReadName();
 				}
 			}
-			// Read attributes
-			while(true) {
-				if (IsWhiteSpace() == true) {
-					tag.AddChild(ReadWhiteSpace());
-				}
-				if (TryRead('>')) {
-					tag.ClosingBracket = ">";
-					break;
-				} else 	if (TryRead('/')) {
-					tag.ClosingBracket = "/";
-					if (TryRead('>')) {
-						tag.ClosingBracket += ">";
+			
+			if (tag.IsStartTag || tag.IsEndTag || tag.IsProcessingInstruction) {
+				// Read attributes for the tag
+				while(true) {
+					if (TryPeekWhiteSpace()) {
+						tag.AddChild(ReadWhiteSpace());
 					}
-					break;
-				} else 	if (TryRead('?')) {
-					tag.ClosingBracket = "?";
-					if (TryRead('>')) {
-						tag.ClosingBracket += ">";
+					string bracket;
+					if (TryReadClosingBracket(out bracket)) {
+						tag.ClosingBracket = bracket;
+						break;
 					}
-					break;
-				} 
-				if (TryPeek('<')) break;
-				if (HasMoreData()) {
-					tag.AddChild(ReadAttribulte());
-					continue;
+					if (TryPeek('<')) break;
+					if (HasMoreData()) {
+						tag.AddChild(ReadAttribulte());
+						continue;
+					}
+					break; // End of file
 				}
-				break;
+			} else {
+				// Simple tag types
+				if (tag.IsComment) {
+					// TODO: Be strict only if the opening bracket is complete
+					tag.AddChildren(ReadTextUntil("-->").ToList());
+				} else if (tag.IsCData) {
+					// TODO: Be strict only if the opening bracket is complete
+					tag.AddChildren(ReadTextUntil("]]>").ToList());
+				} else if (tag.IsDocumentType) {
+					// TODO: Nested definition
+					tag.AddChildren(ReadTextUntil(">").ToList());
+				}
+				string bracket;
+				if (TryReadClosingBracket(out bracket)) {
+					tag.ClosingBracket = bracket;
+				}
 			}
 			tag.EndOffset = currentLocation;
 			
@@ -311,28 +422,77 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return tag;
 		}
 		
-		RawText ReadWhiteSpace()
+		/// <summary>
+		/// Reads any of the know opening brackets
+		/// Also accepts them if they are incomplete; one charater is suffcient
+		/// </summary>
+		string ReadOpeningBracket()
 		{
-			Debug.Assert(HasMoreData() && IsWhiteSpace() == true);
-			
-			RawText ws = ReadFromCache<RawText>(currentLocation);
-			if (ws != null) return ws;
-			
-			ws = new RawText();
-			
-			ws.StartOffset = currentLocation;
+			// We are using a lot of string literals so that the memory instances are shared
 			int start = currentLocation;
-			while(IsWhiteSpace() == true) currentLocation++;
-			ws.Value = GetText(start, currentLocation);
-			ws.EndOffset = currentLocation;
-			
-			parsedItems.Add(ws);
-			return ws;
+			if (TryRead('<')) {
+				if (TryRead('/')) {
+					return "</";
+				} else if (TryRead('!')) {
+					if (TryRead('-')) {
+						if (TryRead('-')) {
+							return "<!--";
+						} else {
+							return "<!-";
+						}
+					} else if (TryReadPartOf("[CDATA[")) {
+						return GetText(start, currentLocation);
+					} else if (TryReadPartOf("DOCTYPE")) {
+						return GetText(start, currentLocation);
+					} else {
+						return "<!";
+					}
+				} else if (TryRead('?')) {
+					return "<?";
+				} else {
+					return "<";
+				}
+			} else {
+				throw new Exception("'<' expected");
+			}
+		}
+		
+		/// <summary>
+		/// Reads any of the know closing brackets
+		/// Also accepts them if they are incomplete; one charater is suffcient
+		/// </summary>
+		bool TryReadClosingBracket(out string bracket)
+		{
+			// We are using a lot of string literals so that the memory instances are shared
+			int start = currentLocation;
+			if (TryRead('>')) {
+				bracket = ">";
+			} else 	if (TryRead('/')) {
+				if (TryRead('>')) {
+					bracket = "/>";
+				} else {
+					bracket = "/";
+				}
+			} else 	if (TryRead('?')) {
+				if (TryRead('>')) {
+					bracket = "?>";
+				} else {
+					bracket = "?";
+				}
+			} else if (TryReadPartOf("-->")) {
+				bracket = GetText(start, currentLocation);
+			} else if (TryReadPartOf("]]>")) {
+				bracket = GetText(start, currentLocation);
+			} else {
+				bracket = null;
+				return false;
+			}
+			return true;
 		}
 		
 		RawAttribute ReadAttribulte()
 		{
-			Debug.Assert(HasMoreData());
+			AssertHasMoreData();
 			
 			RawAttribute attr = ReadFromCache<RawAttribute>(currentLocation);
 			if (attr != null) return attr;
@@ -340,33 +500,23 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			attr = new RawAttribute();
 			
 			attr.StartOffset = currentLocation;
-			if (HasMoreData()) {
-				attr.Name = ReadName();
-				if (TryRead(':')) {
-					attr.Namesapce = attr.Name;
-					attr.Name = ReadName();
-				}
-			}
+			if (HasMoreData()) attr.Name = ReadName();
 			int checkpoint = currentLocation;
 			attr.EqualsSign = string.Empty; 
-			if (IsWhiteSpace() == true) attr.EqualsSign += ReadWhiteSpace().Value;
+			if (TryPeekWhiteSpace()) attr.EqualsSign += ReadWhiteSpace().Value;
 			if (TryRead('=')) {
 				attr.EqualsSign += "=";
-				if (IsWhiteSpace() == true) attr.EqualsSign += ReadWhiteSpace().Value;
-				if (IsWhiteSpaceOrReserved() == false) {
-					// Read attribute value
-					int start = currentLocation;
-					if (TryRead('"')) {
-						TryMoveTo('"', '<');
-						TryRead('"');
-						attr.Value = GetText(start, currentLocation);
-					} else if (TryRead('\'')) {
-						TryMoveTo('\'', '<');
-						TryRead('\'');
-						attr.Value = GetText(start, currentLocation);
-					} else {
-						attr.Value = ReadName();
-					}
+				if (TryPeekWhiteSpace()) attr.EqualsSign += ReadWhiteSpace().Value;
+				// Read attribute value
+				int start = currentLocation;
+				if (TryRead('"')) {
+					TryMoveToAnyOf('"', '<');
+					TryRead('"');
+					attr.Value = GetText(start, currentLocation);
+				} else if (TryRead('\'')) {
+					TryMoveToAnyOf('\'', '<');
+					TryRead('\'');
+					attr.Value = GetText(start, currentLocation);
 				}
 			} else {
 				attr.EqualsSign = null;
@@ -376,6 +526,27 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			parsedItems.Add(attr);
 			return attr;
+		}
+		
+		RawText ReadWhiteSpace()
+		{
+			AssertHasMoreData();
+			
+			RawText ws = ReadFromCache<RawText>(currentLocation);
+			if (ws != null) return ws;
+			
+			ws = new RawText();
+			
+			ws.StartOffset = currentLocation;
+			int start = currentLocation;
+			while(TryPeekWhiteSpace()) TryMoveNext();
+			ws.Value = GetText(start, currentLocation);
+			ws.EndOffset = currentLocation;
+			
+			Debug.Assert(ws.Value.Length > 0);
+			
+			parsedItems.Add(ws);
+			return ws;
 		}
 		
 		RawText ReadCharacterData()
@@ -393,8 +564,36 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			charData.Value = GetText(start, currentLocation);
 			charData.EndOffset = currentLocation;
 			
+			Debug.Assert(charData.Value.Length > 0);
+			
 			parsedItems.Add(charData);
 			return charData;
+		}
+		
+		IEnumerable<RawObject> ReadTextUntil(string closingText)
+		{
+			Debug.Assert(HasMoreData());
+			
+			RawText charData = ReadFromCache<RawText>(currentLocation);
+			// TODO: How many return?  Ensure the output is same as before
+			if (charData != null) yield return charData;
+			
+			charData = new RawText();
+			
+			charData.StartOffset = currentLocation;
+			int start = currentLocation;
+			while(true) {
+				if (!TryMoveTo(closingText[0])) break; // End of file
+				if (TryPeek(closingText)) break; // Match
+				TryMoveNext();
+			}
+			charData.Value = GetText(start, currentLocation);
+			charData.EndOffset = currentLocation;
+			
+			Debug.Assert(charData.Value.Length > 0);
+			
+			parsedItems.Add(charData);
+			yield return charData;
 		}
 	}
 }

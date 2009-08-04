@@ -26,8 +26,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	}
 	
 	/// <summary>
-	/// The base class for all XML objects.  The objects store the precise text 
-	/// representation so that generated text will preciesly match original.
+	/// Abstact base class for all types
 	/// </summary>
 	public abstract class RawObject: TextSegment
 	{
@@ -105,23 +104,29 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			System.Diagnostics.Debug.WriteLine("XML Linq: " + format, args);
 		}
 		
-		protected XName EncodeXName(string name, string ns)
+		protected XName EncodeXName(string name)
 		{
+			string namesapce = string.Empty;
+			int colonIndex = name.IndexOf(':');
+			if (colonIndex != -1) {
+				namesapce = name.Substring(0, colonIndex);
+				name = name.Substring(colonIndex + 1);
+			}
 			if (string.IsNullOrEmpty(name)) name = "_";
 			name = XmlConvert.EncodeLocalName(name);
-			
-			if (ns == null) ns = string.Empty;
-			ns = XmlConvert.EncodeLocalName(ns);
-			
-			return XName.Get(name, ns);
+			namesapce = XmlConvert.EncodeLocalName(namesapce);
+			return XName.Get(name, namesapce);
 		}
 	}
 	
+	/// <summary>
+	/// Abstact base class for all types that can contain child nodes
+	/// </summary>
 	public abstract class RawContainer: RawObject
 	{
 		/// <summary>
-		/// Children of the node.  Can be Elements, Attributes, etc...
-		/// Please do not modify directly!
+		/// Children of the node.  It is read-only.
+		/// Note that is has CollectionChanged event.
 		/// </summary>
 		public ChildrenCollection<RawObject> Children { get; private set; }
 		
@@ -152,19 +157,22 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			);
 		}
 		
-		// The following should be the only methods that are ever
-		// used to modify the children collection
+		// Only these four methods should be used to modify the collection
 		
-		public void AddChild(RawObject item)
+		internal void AddChild(RawObject item)
 		{
-			item.Parent = this;
-			this.Children.InsertItems(this.Children.Count, new RawObject[] {item}.ToList());
+			this.InsertChildren(this.Children.Count, new RawObject[] {item}.ToList());
+		}
+		
+		internal void AddChildren(IList<RawObject> items)
+		{
+			this.InsertChildren(this.Children.Count, items);
 		}
 		
 		/// <summary>
 		/// Insert children, set parent for them and notify the document
 		/// </summary>
-		protected virtual void Insert(int index, IList<RawObject> items)
+		void InsertChildren(int index, IList<RawObject> items)
 		{
 			if (items.Count == 1) {
 				LogDom("Inserting {0} at index {1}", items[0], index);
@@ -187,7 +195,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary>
 		/// Remove children, set parent to null for them and notify the document
 		/// </summary>
-		protected virtual void RemoveAt(int index, int count)
+		void RemoveChildrenAt(int index, int count)
 		{
 			List<RawObject> removed = new List<RawObject>(count);
 			for(int i = 0; i < count; i++) {
@@ -234,7 +242,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					for(int j = i; j < srcList.Count; j++) {
 						itemsToAdd.Add(srcList[j]);
 					}
-					Insert(i, itemsToAdd);
+					InsertChildren(i, itemsToAdd);
 					i++; continue;
 				}
 				RawObject srcItem = srcList[i];
@@ -259,7 +267,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						for(int j = i; j < srcItemIndex; j++) {
 							itemsToAdd.Add(srcList[j]);
 						}
-						Insert(i, itemsToAdd);
+						InsertChildren(i, itemsToAdd);
 						i = srcItemIndex;
 						goto continue2;
 					}
@@ -268,7 +276,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				for(int dstItemIndex = i; dstItemIndex < dstList.Count; dstItemIndex++) {
 					RawObject dst = dstList[dstItemIndex];
 					if (srcItem.StartOffset == dst.StartOffset && srcItem.GetType() == dst.GetType()) {
-						RemoveAt(i, dstItemIndex - i);
+						RemoveChildrenAt(i, dstItemIndex - i);
 						goto continue2;
 					}
 				}
@@ -279,12 +287,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				}
 				// Remove fluf in hope that element/attribute update will occur next
 				if (!(dstItem is RawElement) && !(dstItem is RawAttribute)) {
-					RemoveAt(i, 1);
+					RemoveChildrenAt(i, 1);
 					continue;
 				}
 				// Otherwise just add the item
 				{
-					Insert(i, new RawObject[] {srcList[i]}.ToList());
+					InsertChildren(i, new RawObject[] {srcList[i]}.ToList());
 					i++; continue;
 				}
 				// Continue for inner loops
@@ -292,11 +300,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 			// Remove extra items
 			if (dstList.Count > srcList.Count) {
-				RemoveAt(srcList.Count, dstList.Count - srcList.Count);
+				RemoveChildrenAt(srcList.Count, dstList.Count - srcList.Count);
 			}
 		}
 	}
 	
+	/// <summary>
+	/// The root object of the XML document
+	/// </summary>
 	public class RawDocument: RawContainer
 	{
 		public event EventHandler<RawObjectEventArgs> ObjectAttached;
@@ -346,12 +357,22 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 	}
 	
+	/// <summary>
+	/// Represents any markup starting with "&lt;" and (hopefully) ending with ">"
+	/// </summary>
 	public class RawTag: RawContainer
 	{
-		public string OpeningBracket { get; set; } // "<" or "</"
-		public string Namesapce { get; set; }
+		public string OpeningBracket { get; set; }
 		public string Name { get; set; }
-		public string ClosingBracket { get; set; } // ">" or "/>" for well formed
+		public string ClosingBracket { get; set; }
+		
+		// Exactly one of the folling will be true
+		public bool IsStartTag              { get { return OpeningBracket == "<"; } }
+		public bool IsEndTag                { get { return OpeningBracket == "</"; } }
+		public bool IsProcessingInstruction { get { return OpeningBracket == "<?"; } }
+		public bool IsComment               { get { return OpeningBracket.StartsWith("<!") && !IsDocumentType && !IsCData; } }
+		public bool IsDocumentType          { get { return OpeningBracket.StartsWith("<!D"); } }
+		public bool IsCData                 { get { return OpeningBracket.StartsWith("<!["); } }
 		
 		public override void UpdateDataFrom(RawObject source)
 		{
@@ -359,12 +380,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			base.UpdateDataFrom(source);
 			RawTag src = (RawTag)source;
 			if (this.OpeningBracket != src.OpeningBracket ||
-			    this.Namesapce != src.Namesapce ||
 				this.Name != src.Name ||
 				this.ClosingBracket != src.ClosingBracket)
 			{
 				this.OpeningBracket = src.OpeningBracket;
-				this.Namesapce = src.Namesapce;
 				this.Name = src.Name;
 				this.ClosingBracket = src.ClosingBracket;
 				OnLocalDataChanged();
@@ -377,10 +396,17 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 	}
 	
+	/// <summary>
+	/// Logical grouping of other nodes together.  The first child is always the start tag.
+	/// </summary>
 	public class RawElement: RawContainer
 	{
+		/// <summary>
+		/// StartTag of an element.  It is always the first child and its identity does not change.
+		/// </summary>
 		public RawTag StartTag {
 			get {
+				if (this.Children.Count == 0) return null;
 				return (RawTag)this.Children[0];
 			}
 		}
@@ -400,7 +426,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			if (xElem == null) {
 				LogLinq("Creating XElement '{0}'", this.StartTag.Name);
-				xElem = new XElement(EncodeXName(this.StartTag.Name, this.StartTag.Namesapce));
+				xElem = new XElement(EncodeXName(this.StartTag.Name));
 				xElem.AddAnnotation(this);
 				UpdateXElement(true);
 				UpdateXElementAttributes(true);
@@ -416,7 +442,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			if (!firstUpdate) LogLinq("Updating XElement '{0}'", this.StartTag.Name);
 			
-			xElem.Name = EncodeXName(this.StartTag.Name, this.StartTag.Namesapce);
+			xElem.Name = EncodeXName(this.StartTag.Name);
 		}
 		
 		internal void UpdateXElementAttributes(bool firstUpdate)
@@ -456,9 +482,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 	}
 	
+	/// <summary>
+	/// Name-value pair in a tag
+	/// </summary>
 	public class RawAttribute: RawObject
 	{
-		public string Namesapce { get; set; }
 		public string Name { get; set; }
 		public string EqualsSign { get; set; }
 		public string Value { get; set; }
@@ -468,12 +496,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (this.ReadCallID == source.ReadCallID) return;
 			base.UpdateDataFrom(source);
 			RawAttribute src = (RawAttribute)source;
-			if (this.Namesapce != src.Namesapce ||
-				this.Name != src.Name ||
+			if (this.Name != src.Name ||
 				this.EqualsSign != src.EqualsSign ||
 				this.Value != src.Value)
 			{
-				this.Namesapce = src.Namesapce;
 				this.Name = src.Name;
 				this.EqualsSign = src.EqualsSign;
 				this.Value = src.Value;
@@ -487,7 +513,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			if (xAttr == null) {
 				LogLinq("Creating XAttribute '{0}={1}'", this.Name, this.Value);
-				xAttr = new XAttribute(EncodeXName(this.Name, this.Namesapce), string.Empty);
+				xAttr = new XAttribute(EncodeXName(this.Name), string.Empty);
 				xAttr.AddAnnotation(this);
 				bool deleted = false;
 				UpdateXAttribute(true, ref deleted);
@@ -500,7 +526,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			if (!firstUpdate) LogLinq("Updating XAttribute '{0}={1}'", this.Name, this.Value);
 			
-			if (xAttr.Name == EncodeXName(this.Name, this.Namesapce)) {
+			if (xAttr.Name == EncodeXName(this.Name)) {
 				xAttr.Value = this.Value ?? string.Empty;
 			} else {
 				XElement xParent = xAttr.Parent;
@@ -517,6 +543,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 	}
 	
+	/// <summary>
+	/// Whitespace or character data
+	/// </summary>
 	public class RawText: RawObject
 	{
 		public string Value { get; set; }
