@@ -50,7 +50,11 @@ namespace Debugger.AddIn.TreeModel
 		}
 		
 		IEnumerable<ITreeNode> ITreeNode.ChildNodes {
-			get { return this.childNodes; }
+			get { return childNodes; }
+		}
+		
+		public virtual bool HasChildren {
+			get { return childNodes != null; }
 		}
 		
 		public TreeNode()

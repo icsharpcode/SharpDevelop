@@ -4,8 +4,8 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.NRefactory.Ast;
 using System;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers
 {

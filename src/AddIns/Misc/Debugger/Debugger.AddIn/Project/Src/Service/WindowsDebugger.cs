@@ -380,23 +380,17 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public object GetTooltipControl(string variableName)
 		{
-			ExpressionNode valueNode;
+			ExpressionNode expressionNode;
 			try {
 				Value val = GetValueFromName(variableName);
 				if (val == null) return null;
-				valueNode = new ExpressionNode(null, variableName, val.ExpressionTree);
+				//expressionNode = new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), variableName, val.ExpressionTree);
+				expressionNode = new ExpressionNode(null, variableName, val.ExpressionTree);
 			} catch (GetValueException) {
 				return null;
 			}
 			
-			/*try {
-				currentTooltipRow = new DynamicTreeDebuggerRow(DebuggedProcess, valueNode);
-			} catch (AbortedBecauseDebuggeeResumedException) {
-				return null;
-			}*/
-			//currentTooltipExpression = valueNode.Expression;
-			//return new DebuggerGridControl(currentTooltipRow);
-			return variableName + " = " + valueNode.Text + ", type: " + valueNode.Type;
+			return new DebuggerTooltipControl(expressionNode);
 		}
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)

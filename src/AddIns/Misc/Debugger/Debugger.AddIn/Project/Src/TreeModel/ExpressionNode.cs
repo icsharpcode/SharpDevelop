@@ -24,7 +24,7 @@ namespace Debugger.AddIn.TreeModel
 {
 	/// <summary>
 	/// Node in the tree which can be defined by a debugger expression.
-	/// The expression will be lazyly evaluated when needed.
+	/// The expression will be lazily evaluated when needed.
 	/// </summary>
 	public class ExpressionNode: TreeNode, ISetText, IContextMenu
 	{
@@ -72,6 +72,13 @@ namespace Debugger.AddIn.TreeModel
 			get {
 				if (!evaluated) EvaluateExpression();
 				return base.ChildNodes;
+			}
+		}
+		
+		public override bool HasChildren {
+			get { 
+				if (!evaluated) EvaluateExpression();
+				return base.HasChildren; 
 			}
 		}
 		

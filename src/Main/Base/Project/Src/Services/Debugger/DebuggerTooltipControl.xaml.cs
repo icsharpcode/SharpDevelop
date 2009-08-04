@@ -27,6 +27,17 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			InitializeComponent();
 		}
 		
+		public DebuggerTooltipControl(ITreeNode node) 
+			: this(new ITreeNode[] { node })
+		{
+		}
+		
+		public DebuggerTooltipControl(IEnumerable<ITreeNode> nodes) 
+			: this()
+		{
+			this.ItemsSource = nodes;
+		}
+		
 		private LazyItemsControl<ITreeNode> lazyGrid;
 		
 		private IEnumerable<ITreeNode> itemsSource;
@@ -69,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			throw new NotImplementedException();
 		}
 		
-		private void Expander_Click(object sender, RoutedEventArgs e)
+		private void btnExpander_Click(object sender, RoutedEventArgs e)
 		{
 			var clickedButton = (ToggleButton)e.OriginalSource;
 			Point buttonPos = clickedButton.PointToScreen(new Point(0, 0));

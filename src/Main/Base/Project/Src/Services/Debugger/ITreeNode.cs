@@ -21,5 +21,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		string Type { get; }
 		
 		IEnumerable<ITreeNode> ChildNodes { get; }
+		
+		bool HasChildren { get; }
 	}
 }
