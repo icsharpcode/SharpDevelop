@@ -167,6 +167,7 @@
     <Compile Include="Designer\DeserializeAssignmentTestFixtureBase.cs" />
     <Compile Include="Designer\DeserializeColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\DeserializeComponentAssignmentTestFixture.cs" />
+    <Compile Include="Designer\DeserializeDateTimeArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeLocalVariableTestFixture.cs" />
     <Compile Include="Designer\DeserializerConstructorStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeStringArrayTestFixture.cs" />
@@ -209,6 +210,7 @@
     <Compile Include="Designer\GenerateMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\GenerateMenuStripItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateMonthCalendarTestFixture.cs" />
     <Compile Include="Designer\GenerateNestedPanelFormTestFixture.cs" />
     <Compile Include="Designer\GeneratePanelFormTestFixture.cs" />
     <Compile Include="Designer\GenerateRightToLeftFormTestFixture.cs" />
@@ -246,6 +248,7 @@
     <Compile Include="Designer\LoadListViewFormTestFixture.cs" />
     <Compile Include="Designer\LoadLocalImageResourceTestFixture.cs" />
     <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />
+    <Compile Include="Designer\LoadMonthCalendarTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleUserControlTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxOnPanelTestFixture.cs" />

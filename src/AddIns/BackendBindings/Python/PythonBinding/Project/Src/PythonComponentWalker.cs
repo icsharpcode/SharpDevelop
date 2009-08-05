@@ -33,7 +33,8 @@ namespace ICSharpCode.PythonBinding
 		PythonCodeDeserializer deserializer;
 		ClassDefinition classDefinition;
 		
-		public PythonComponentWalker(IComponentCreator componentCreator)		{
+		public PythonComponentWalker(IComponentCreator componentCreator)
+		{
 			this.componentCreator = componentCreator;
 			deserializer = new PythonCodeDeserializer(componentCreator);
 		}
@@ -175,7 +176,7 @@ namespace ICSharpCode.PythonBinding
 			PropertyDescriptor propertyDescriptor = componentCreator.GetEventProperty(eventDescriptor);
 			propertyDescriptor.SetValue(currentComponent, eventHandlerName);
 			return false;
-		}
+		}		
 		
 		/// <summary>
 		/// Walks the binary expression which is the right hand side of an assignment statement.
@@ -277,6 +278,8 @@ namespace ICSharpCode.PythonBinding
 						throw new PythonComponentWalkerException(String.Format("Could not find type '{0}'.", PythonControlFieldExpression.GetMemberName(memberExpression)));
 					}
 				}
+			} else if (node.Target is IndexExpression) {
+				WalkArrayAssignmentRhs(node);
 			}
 		}
 		
@@ -355,6 +358,15 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return null;
+		}
+		
+		/// <summary>
+		/// Walks the right hand side of an assignment when the assignment is an array creation.
+		/// </summary>
+		void WalkArrayAssignmentRhs(CallExpression callExpression)
+		{
+			object array = deserializer.Deserialize(callExpression);
+			fieldExpression.SetPropertyValue(componentCreator, array);	
 		}
 	}
 }

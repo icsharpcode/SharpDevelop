@@ -543,6 +543,10 @@ namespace ICSharpCode.PythonBinding
 					}
 				} else if (IsResourcePropertyValue(propertyValue)) {
 					AppendResourceProperty(codeBuilder, propertyName, propertyValue);
+				} else if (propertyValue.GetType().IsArray) {
+					codeBuilder.AppendIndented(propertyName + " = ");
+					AppendSystemArray(codeBuilder, GetArrayType(propertyValue).FullName, propertyValue as ICollection, false);
+					codeBuilder.AppendLine();
 				} else {
 					codeBuilder.AppendIndentedLine(propertyName + " = " + PythonPropertyValueAssignment.ToString(propertyValue));
 				}
@@ -721,8 +725,18 @@ namespace ICSharpCode.PythonBinding
 				codeBuilder.AppendLine();
 			}
 		}
-		
+
 		public static void AppendSystemArray(PythonCodeBuilder codeBuilder, string typeName, ICollection components)
+		{
+			AppendSystemArray(codeBuilder, typeName, components, true);
+		}
+		
+		/// <summary>
+		/// Appends an array.
+		/// </summary>
+		/// <param name="localVariables">Indicates that the array is for an AddRange method that 
+		/// requires the code to reference local variables.</param>
+		public static void AppendSystemArray(PythonCodeBuilder codeBuilder, string typeName, ICollection components, bool localVariables)
 		{
 			if (components.Count > 0) {
 				codeBuilder.Append("System.Array[" + typeName + "](");
@@ -743,8 +757,10 @@ namespace ICSharpCode.PythonBinding
 						codeBuilder.Append(PythonPropertyValueAssignment.ToString(component));
 					} else if (component is IArrayItem) {
 						codeBuilder.Append(((IArrayItem)component).Name);
-					} else {
+					} else if (localVariables) {
 						codeBuilder.Append(GetVariableName(component, i + 1));
+					} else {
+						codeBuilder.Append(PythonPropertyValueAssignment.ToString(component));
 					}
 					++i;
 				}
@@ -868,6 +884,12 @@ namespace ICSharpCode.PythonBinding
 				propertyOwnerName += "." + propertyDescriptor.Name;
 				AppendProperties(codeBuilder, propertyOwnerName, propertyValue);
 			}
+		}
+		
+		static Type GetArrayType(object obj)
+		{
+			Type type = obj.GetType();
+			return obj.GetType().GetElementType();
 		}
 	}
 }
