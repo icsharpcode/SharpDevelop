@@ -164,9 +164,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.InsertChildren(this.Children.Count, new RawObject[] {item}.ToList());
 		}
 		
-		internal void AddChildren(IList<RawObject> items)
+		internal void AddChildren(IEnumerable<RawObject> items)
 		{
-			this.InsertChildren(this.Children.Count, items);
+			this.InsertChildren(this.Children.Count, items.ToList());
 		}
 		
 		/// <summary>
@@ -543,11 +543,21 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 	}
 	
+	public enum RawTextType
+	{
+		WhiteSpace,
+		CharacterData,
+		Comment,
+		CData,
+		DocumentTypeDefinition
+	}
+	
 	/// <summary>
 	/// Whitespace or character data
 	/// </summary>
 	public class RawText: RawObject
 	{
+		public RawTextType Type { get; set; }
 		public string Value { get; set; }
 		
 		public override void UpdateDataFrom(RawObject source)

@@ -99,8 +99,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		public RawDocument Parse()
 		{
-			currentLocation = 0;
 			input = textDocument.Text;
+			readingEnd = input.Length;
+			currentLocation = 0;
 			
 			foreach(DocumentChangeEventArgs change in changesSinceLastParse) {
 				// Update offsets of all items
@@ -127,27 +128,47 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return userDocument;
 		}
 		
-		T ReadFromCache<T>(int location) where T: RawObject
+		bool TryReadFromCacheOrNew<T>(out T res) where T: RawObject, new()
 		{
-			RawObject obj = parsedItems.FindFirstSegmentWithStartAfter(location);
-			while(obj != null && obj.StartOffset == location) {
-				if (obj is T) {
+			return TryReadFromCacheOrNew<T>(x => true, out res);
+		}
+		
+		bool TryReadFromCacheOrNew<T>(Predicate<T> conditon, out T res) where T: RawObject, new()
+		{
+			RawObject obj = parsedItems.FindFirstSegmentWithStartAfter(currentLocation);
+			while(obj != null && obj.StartOffset == currentLocation) {
+				if (obj is T && conditon((T)obj)) {
 					currentLocation += obj.Length;
-					return (T)obj;
+					res = (T)obj;
+					return true;
 				}
 				obj = parsedItems.GetNextSegment(obj);
 			}
-			return null;
+			res = new T();
+			return false;
+		}
+		
+		int GetStartOfCachedObject<T>(Predicate<T> conditon, int offset, int lookaheadCount) where T: RawObject
+		{
+			RawObject obj = parsedItems.FindFirstSegmentWithStartAfter(offset);
+			while(obj != null && obj.StartOffset <= offset + lookaheadCount) {
+				if (obj is T && conditon((T)obj)) {
+					return obj.StartOffset;
+				}
+				obj = parsedItems.GetNextSegment(obj);
+			}
+			return -1;
+		}
+		
+		void OnParsed(RawObject obj)
+		{
+			parsedItems.Add(obj);
+			System.Diagnostics.Debug.WriteLine("XML Parser: Parsed " + obj.ToString());
 		}
 		
 		void Log(string text, params object[] pars)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("XML Parser: " + text, pars));
-		}
-		
-		void LogParsed(RawObject obj)
-		{
-			System.Diagnostics.Debug.WriteLine("XML Parser: Parsed " + obj.ToString());
 		}
 		
 		Dictionary<string, string> stringCache = new Dictionary<string, string>();
@@ -180,21 +201,22 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		string input;
-		int  currentLocation;
+		int    readingEnd;
+		int    currentLocation;
 		
 		bool IsEndOfFile()
 		{
-			return currentLocation == input.Length;
+			return currentLocation == readingEnd;
 		}
 		
 		bool HasMoreData()
 		{
-			return currentLocation < input.Length;
+			return currentLocation < readingEnd;
 		}
 		
 		void AssertHasMoreData()
 		{
-			if (currentLocation == input.Length) {
+			if (currentLocation == readingEnd) {
 				throw new Exception("Unexpected end of files");
 			}
 		}
@@ -210,7 +232,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		bool TryMoveNext()
 		{
-			if (currentLocation == input.Length) return false;
+			if (currentLocation == readingEnd) return false;
 			
 			currentLocation++;
 			return true;
@@ -218,7 +240,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		bool TryRead(char c)
 		{
-			if (currentLocation == input.Length) return false;
+			if (currentLocation == readingEnd) return false;
 			
 			if (input[currentLocation] == c) {
 				currentLocation++;
@@ -252,23 +274,32 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		bool TryPeek(char c)
 		{
-			if (currentLocation == input.Length) return false;
+			if (currentLocation == readingEnd) return false;
 			
 			return input[currentLocation] == c;
 		}
 		
 		bool TryPeek(string text)
 		{
-			if (currentLocation + text.Length > input.Length) return false;
+			if (currentLocation + text.Length > readingEnd) return false;
 			
-			return input.Substring(currentLocation, text.Length) == text;
+			return TryPeek(text[0]) && input.Substring(currentLocation, text.Length) == text;
 		}
 		
 		bool TryMoveTo(char c)
 		{
 			while(true) {
-				if (currentLocation == input.Length) return false;
+				if (currentLocation == readingEnd) return false;
 				if (input[currentLocation] == c) return true;
+				currentLocation++;
+			}
+		}
+		
+		bool TryMoveTo(string text)
+		{
+			while(true) {
+				if (!TryMoveTo(text[0])) return false; // End of file
+				if (TryPeek(text)) return true;
 				currentLocation++;
 			}
 		}
@@ -276,15 +307,21 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		bool TryMoveToAnyOf(params char[] c)
 		{
 			while(true) {
-				if (currentLocation == input.Length) return false;
+				if (currentLocation == readingEnd) return false;
 				if (c.Contains(input[currentLocation])) return true;
 				currentLocation++;
 			}
 		}
 		
+		bool TryMoveToNonWhiteSpace()
+		{
+			while (TryPeekWhiteSpace()) TryMoveNext();
+			return HasMoreData();
+		}
+		
 		string GetText(int start, int end)
 		{
-			if (start == input.Length && end == input.Length) {
+			if (start == readingEnd && end == readingEnd) {
 				return string.Empty;
 			} else {
 				return GetCachedString(input.Substring(start, end - start));
@@ -296,7 +333,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		bool TryPeekWhiteSpace()
 		{
-			if (currentLocation == input.Length) return false;
+			if (currentLocation == readingEnd) return false;
 			
 			return WhiteSpaceChars.Contains(input[currentLocation]);
 		}
@@ -312,10 +349,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		RawDocument ReadDocument()
 		{
-			RawDocument doc = ReadFromCache<RawDocument>(currentLocation);
-			if (doc != null) return doc;
-			
-			doc = new RawDocument();
+			RawDocument doc;
+			if (TryReadFromCacheOrNew(out doc)) return doc;
 			
 			doc.StartOffset = currentLocation;
 			while(true) {
@@ -324,13 +359,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				} else if (TryPeek('<')) {
 					doc.AddChild(ReadElementOrTag());
 				} else {
-					doc.AddChild(ReadCharacterData());
+					doc.AddChildren(ReadText(RawTextType.CharacterData));
 				}
 			}
 			doc.EndOffset = currentLocation;
 			
-			LogParsed(doc);
-			parsedItems.Add(doc);
+			OnParsed(doc);
 			return doc;
 		}
 		
@@ -351,10 +385,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			AssertHasMoreData();
 			
-			RawElement element = ReadFromCache<RawElement>(currentLocation);
-			if (element != null) return element;
-
-			element = new RawElement();
+			RawElement element;
+			if (TryReadFromCacheOrNew(out element)) return element;
 			
 			element.StartOffset = currentLocation;
 			// Read start tag
@@ -370,17 +402,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						if (content is RawTag && ((RawTag)content).IsEndTag) break;
 						element.AddChild(content);
 					} else {
-						element.AddChild(ReadCharacterData());
+						element.AddChildren(ReadText(RawTextType.CharacterData));
 					}
 				}
 			}
 			element.EndOffset = currentLocation;
 			
-			LogParsed(element);
-			parsedItems.Add(element);
+			OnParsed(element);
 			return element;
 		}
-		
 		
 		//   Start tag:  "<"  Name? (RawText+ RawAttribute)* RawText* (">" | "/>")
 		//   End tag:    "</" Name? (RawText+ RawAttribute)* RawText* ">"
@@ -393,10 +423,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			AssertHasMoreData();
 			
-			RawTag tag = ReadFromCache<RawTag>(currentLocation);
-			if (tag != null) return tag;
-			
-			tag = new RawTag();
+			RawTag tag;
+			if (TryReadFromCacheOrNew(out tag)) return tag;
 			
 			tag.StartOffset = currentLocation;
 			
@@ -415,7 +443,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				// Read attributes for the tag
 				while(true) {
 					if (TryPeekWhiteSpace()) {
-						tag.AddChild(ReadWhiteSpace());
+						tag.AddChildren(ReadText(RawTextType.WhiteSpace));
 					}
 					string bracket;
 					if (TryReadClosingBracket(out bracket)) {
@@ -433,13 +461,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				// Simple tag types
 				if (tag.IsComment) {
 					// TODO: Be strict only if the opening bracket is complete
-					tag.AddChildren(ReadTextUntil("-->").ToList());
+					tag.AddChildren(ReadText(RawTextType.Comment));
 				} else if (tag.IsCData) {
 					// TODO: Be strict only if the opening bracket is complete
-					tag.AddChildren(ReadTextUntil("]]>").ToList());
+					tag.AddChildren(ReadText(RawTextType.CData));
 				} else if (tag.IsDocumentType) {
 					// TODO: Nested definition
-					tag.AddChildren(ReadTextUntil(">").ToList());
+					tag.AddChildren(ReadText(RawTextType.DocumentTypeDefinition));
 				}
 				string bracket;
 				if (TryReadClosingBracket(out bracket)) {
@@ -448,8 +476,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 			tag.EndOffset = currentLocation;
 			
-			LogParsed(tag);
-			parsedItems.Add(tag);
+			OnParsed(tag);
 			return tag;
 		}
 		
@@ -525,19 +552,16 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			AssertHasMoreData();
 			
-			RawAttribute attr = ReadFromCache<RawAttribute>(currentLocation);
-			if (attr != null) return attr;
-			
-			attr = new RawAttribute();
+			RawAttribute attr;
+			if (TryReadFromCacheOrNew(out attr)) return attr;
 			
 			attr.StartOffset = currentLocation;
 			if (HasMoreData()) attr.Name = ReadName();
 			int checkpoint = currentLocation;
-			attr.EqualsSign = string.Empty; 
-			if (TryPeekWhiteSpace()) attr.EqualsSign += ReadWhiteSpace().Value;
+			TryMoveToNonWhiteSpace();
 			if (TryRead('=')) {
-				attr.EqualsSign += "=";
-				if (TryPeekWhiteSpace()) attr.EqualsSign += ReadWhiteSpace().Value;
+				TryMoveToNonWhiteSpace();
+				attr.EqualsSign += GetText(checkpoint, currentLocation);
 				// Read attribute value
 				int start = currentLocation;
 				if (TryRead('"')) {
@@ -550,81 +574,104 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					attr.Value = GetText(start, currentLocation);
 				}
 			} else {
-				attr.EqualsSign = null;
 				currentLocation = checkpoint;
 			}
 			attr.EndOffset = currentLocation;
 			
-			parsedItems.Add(attr);
+			OnParsed(attr);
 			return attr;
 		}
 		
-		RawText ReadWhiteSpace()
-		{
-			AssertHasMoreData();
-			
-			RawText ws = ReadFromCache<RawText>(currentLocation);
-			if (ws != null) return ws;
-			
-			ws = new RawText();
-			
-			ws.StartOffset = currentLocation;
-			int start = currentLocation;
-			while(TryPeekWhiteSpace()) TryMoveNext();
-			ws.Value = GetText(start, currentLocation);
-			ws.EndOffset = currentLocation;
-			
-			Debug.Assert(ws.Value.Length > 0);
-			
-			parsedItems.Add(ws);
-			return ws;
-		}
+		const int maxEntityLenght = 12; // 6 for build-in ones
+		const int maxTextFragmentSize = 8;
+		const int lookAheadLenght = (3 * maxTextFragmentSize) / 2;
+		const int backtrackLenght = 4;  // 2: get back over "]]"   1: so that we have some data   1: safety
 		
-		RawText ReadCharacterData()
+		/// <summary>
+		/// Reads text and optionaly separates it into fragments.
+		/// It can also return empty set for no appropriate text input
+		/// </summary>
+		IEnumerable<RawObject> ReadText(RawTextType type)
 		{
-			Debug.Assert(HasMoreData());
-			
-			RawText charData = ReadFromCache<RawText>(currentLocation);
-			if (charData != null) return charData;
-			
-			charData = new RawText();
-			
-			charData.StartOffset = currentLocation;
-			int start = currentLocation;
-			TryMoveTo('<');
-			charData.Value = GetText(start, currentLocation);
-			charData.EndOffset = currentLocation;
-			
-			Debug.Assert(charData.Value.Length > 0);
-			
-			parsedItems.Add(charData);
-			return charData;
-		}
-		
-		IEnumerable<RawObject> ReadTextUntil(string closingText)
-		{
-			Debug.Assert(HasMoreData());
-			
-			RawText charData = ReadFromCache<RawText>(currentLocation);
-			// TODO: How many return?  Ensure the output is same as before
-			if (charData != null) yield return charData;
-			
-			charData = new RawText();
-			
-			charData.StartOffset = currentLocation;
-			int start = currentLocation;
+			bool lookahead = false;
 			while(true) {
-				if (!TryMoveTo(closingText[0])) break; // End of file
-				if (TryPeek(closingText)) break; // Match
-				TryMoveNext();
+				RawText text;
+				if (TryReadFromCacheOrNew(t => t.Type == type, out text)) {
+					// Cached text found
+					yield return text;
+					lookahead = true; // In the middle of the text edit
+					continue; // Read next fragment;  the method can handle "no text left"
+				}
+				text.Type = type;
+				
+				// Limit the reading to just a few characters
+				int realReadingEnd = readingEnd;
+				readingEnd = Math.Min(realReadingEnd, currentLocation + maxTextFragmentSize);
+				
+				// Look if some futher text has been already processed and align so that
+				// we hit that chache point.  It is expensive so it is off for the first run
+				if (lookahead) {
+					int nextFragmentIndex = GetStartOfCachedObject<RawText>(t => t.Type == type, currentLocation, lookAheadLenght);
+					if (nextFragmentIndex != -1) {
+						// Consider adding "aaa]" before cached fragment "]>bbb"
+						// We must not use cache then - so the overshoot acutally makes sense
+						readingEnd = nextFragmentIndex + backtrackLenght;
+						Log("Parsing only text ({0}-{1}) because later text was already processed", currentLocation, readingEnd);
+					}
+				}
+				lookahead = true;
+				
+				text.StartOffset = currentLocation;
+				int start = currentLocation;
+				
+				// Try move to the terminator given by the context
+				if (type == RawTextType.WhiteSpace) {
+					TryMoveToNonWhiteSpace();
+				} else if (type == RawTextType.CharacterData) {
+					TryMoveTo('<');
+				} else 	if (type == RawTextType.Comment) {
+					TryMoveTo("--");
+				} else if (type == RawTextType.DocumentTypeDefinition) {
+					TryMoveTo('>');
+				} else if (type == RawTextType.CData) {
+					TryMoveTo("]]>");
+				} else {
+					throw new Exception("Uknown type " + type);
+				}
+				
+				// Terminal found or real end was reached;
+				bool finished = currentLocation < readingEnd || currentLocation == realReadingEnd;
+				
+				// Finished reading - restore the old reading end
+				readingEnd = realReadingEnd;
+				
+				if (!finished) {
+					// We have to continue reading more text fragments
+					
+					// We have to backtrack a bit because we just might ended with "]]" and the ">" was cut
+					int backtrack = currentLocation - backtrackLenght;
+					
+					// If there is entity reference, make sure the next segment starts with it to prevent framentation
+					int entitySearchStart = Math.Max(start + 1 /* data for us */, backtrack - maxEntityLenght);
+					int entityIndex = input.LastIndexOf('&', entitySearchStart, backtrack - entitySearchStart);
+					if (entityIndex != -1) {
+						backtrack = entityIndex;
+					}
+					
+					currentLocation = Math.Max(start + 1, backtrack); // Max-just in case
+				}
+				text.Value = GetText(start, currentLocation);
+				text.EndOffset = currentLocation;
+				
+				if (text.Value.Length > 0) {
+					OnParsed(text);
+					yield return text;
+				}
+				
+				if (finished) {
+					yield break;
+				}
 			}
-			charData.Value = GetText(start, currentLocation);
-			charData.EndOffset = currentLocation;
-			
-			Debug.Assert(charData.Value.Length > 0);
-			
-			parsedItems.Add(charData);
-			yield return charData;
 		}
 	}
 }
