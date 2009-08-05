@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -174,6 +175,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.TextEntered += TextArea_TextEntered;
 			textEditor.MouseHover += textEditor_MouseHover;
 			textEditor.MouseHoverStopped += textEditor_MouseHoverStopped;
+			textEditor.MouseLeave += textEditor_MouseLeave;
 			textEditor.TextArea.Caret.PositionChanged += caret_PositionChanged;
 			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
@@ -193,7 +195,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			return textEditor;
 		}
-		
+
 		protected virtual void DisposeTextEditor(TextEditor textEditor)
 		{
 			// detach IconBarMargin from IconBarManager
@@ -295,6 +297,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		ToolTip toolTip;
+		Popup popup;
 
 		void textEditor_MouseHover(object sender, MouseEventArgs e)
 		{
@@ -305,16 +308,74 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (pos.HasValue) {
 				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
 			}
+			
 			ToolTipRequestService.RequestToolTip(args);
+			
 			if (args.ContentToShow != null) {
-				if (toolTip == null) {
-					toolTip = new ToolTip();
-					toolTip.Closed += toolTip_Closed;
+				var contentToShowITooltip = args.ContentToShow as ITooltip;
+				
+				if (contentToShowITooltip != null && contentToShowITooltip.ShowAsPopup) {
+					if (!(args.ContentToShow is UIElement)) {
+						throw new NotSupportedException("Content to show in Popup must be UIElement: " + args.ContentToShow);
+					}
+					if (popup == null) {
+						popup = createPopup();
+					}
+					// close old popup
+					popup.IsOpen = false;
+					popup.Child = (UIElement)args.ContentToShow;
+					setPopupPosition(popup, textEditor, e);
+					// open popup at new location
+					popup.IsOpen = true;
+					e.Handled = true;
 				}
-				toolTip.Content = args.ContentToShow;
-				toolTip.IsOpen = true;
-				e.Handled = true;
+				else {
+					if (toolTip == null) {
+						toolTip = new ToolTip();
+						toolTip.Closed += toolTip_Closed;
+					}
+					toolTip.Content = args.ContentToShow;
+					toolTip.IsOpen = true;
+					e.Handled = true;
+				}
 			}
+			else {
+				// close popup if mouse hovered over empty area
+				if (popup != null) {
+					popup.IsOpen = false;
+					e.Handled = true;
+				}
+			}
+		}
+		
+		void setPopupPosition(Popup popup, TextEditor textEditor, MouseEventArgs mouseArgs)
+		{
+			var popupPosition = getPopupPosition(textEditor, mouseArgs);
+			popup.HorizontalOffset = popupPosition.X;
+			popup.VerticalOffset = popupPosition.Y;
+		}
+		
+		Point getPopupPosition(TextEditor textEditor, MouseEventArgs mouseArgs)
+		{
+			Point mousePos = mouseArgs.GetPosition(textEditor);
+			return textEditor.PointToScreen(mousePos + new Vector(-4, 6));
+			// attempt to align Popup with line bottom
+			/*TextViewPosition? logicalPos = textEditor.GetPositionFromPoint(mousePos);
+			if (logicalPos.HasValue) {
+				return textEditor.TextArea.TextView.GetVisualPosition(logicalPos.Value, VisualYPosition.LineBottom);
+			}
+			else {
+				return popupPos;
+			}*/
+		}
+		
+		Popup createPopup()
+		{
+			popup = new Popup();
+			popup.Closed += popup_Closed;
+			popup.Placement = PlacementMode.Absolute;
+			popup.StaysOpen = true;
+			return popup;
 		}
 		
 		void textEditor_MouseHoverStopped(object sender, MouseEventArgs e)
@@ -324,10 +385,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				e.Handled = true;
 			}
 		}
+		
+		void textEditor_MouseLeave(object sender, MouseEventArgs e)
+		{
+			if (popup != null) {
+				// do not close popup if mouse moved from editor to popup
+				if (!popup.IsMouseOver) {
+					popup.IsOpen = false;
+				}
+			}
+		}
 
 		void toolTip_Closed(object sender, RoutedEventArgs e)
 		{
 			toolTip = null;
+		}
+		
+		void popup_Closed(object sender, EventArgs e)
+		{
+			popup = null;
 		}
 		
 		volatile static ReadOnlyCollection<ICodeCompletionBinding> codeCompletionBindings;

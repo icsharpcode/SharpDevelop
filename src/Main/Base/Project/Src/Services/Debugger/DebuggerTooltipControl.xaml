@@ -91,7 +91,7 @@
         	 <RepeatButton Name="btnUp" Style="{StaticResource upButtonStyle}" Content="^" Click="BtnUp_Click"></RepeatButton>
             <DataGrid VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" 
                               GridLinesVisibility="None" 
-                              RowHeight="20" MaxHeight="202" 
+                              RowHeight="18" MaxHeight="202" 
                               SelectionMode="Single" 
                               SelectionUnit="FullRow" 
                               ItemsSource="{Binding}" 
@@ -153,7 +153,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Border BorderBrush="#FFDDDDDD"  BorderThickness="0 0 1 0">
-                                    <TextBlock Margin="0 0 6 0" Text="{Binding Path=Name, Mode=OneWay}" VerticalAlignment="Center"></TextBlock>
+                                    <TextBlock Margin="6 0" Text="{Binding Path=Name, Mode=OneWay}" VerticalAlignment="Center"></TextBlock>
                                 </Border>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -169,7 +169,7 @@
                 	  <DataGridTemplateColumn MinWidth="20" Header="Text">	    <!-- Text (value) -->
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                        			<TextBlock Margin="0 0 6 0" Text="{Binding Path=Text, Mode=OneWay}" VerticalAlignment="Center"></TextBlock>
+                        			<TextBlock Margin="6 0" Text="{Binding Path=Text, Mode=OneWay}" VerticalAlignment="Center"></TextBlock>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

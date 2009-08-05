@@ -106,6 +106,9 @@
     <Compile Include="Src\Editor\ITextBuffer.cs" />
     <Compile Include="Src\Editor\ITextEditor.cs" />
     <Compile Include="Src\Editor\ITextMarker.cs" />
+    <Compile Include="Src\Editor\ITooltip.cs">
+      <DependentUpon>ToolTipService.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Editor\RefactoringDocumentAdapter.cs" />
     <Compile Include="Src\Editor\Search\ISearchResult.cs" />
     <Compile Include="Src\Editor\Search\ISearchResultFactory.cs" />
@@ -219,7 +222,6 @@
       <DependentUpon>DebuggerTooltipControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Services\Debugger\ITooltip.cs" />
     <Compile Include="Src\Services\Debugger\ITreeNode.cs" />
     <Compile Include="Src\Services\Debugger\LazyItemsControl.cs" />
     <Compile Include="Src\Services\Debugger\VirtualizingIEnumerable.cs" />

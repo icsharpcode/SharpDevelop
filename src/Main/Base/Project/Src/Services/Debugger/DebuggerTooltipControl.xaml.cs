@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -40,6 +41,24 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		private LazyItemsControl<ITreeNode> lazyGrid;
 		
+		/// <summary>
+		/// Determines whether DebuggerTooltipControl should be displayed in WPF Popup.
+		/// </summary>
+		public bool ShowAsPopup {
+			get {
+				return true;
+			}
+		}
+		
+		/// <summary>
+		/// Closes the debugger Popup containing this control. Also closes all child Popups.
+		/// </summary>
+		/// <returns></returns>
+		public bool Close()
+		{
+			throw new NotImplementedException();
+		}
+		
 		private IEnumerable<ITreeNode> itemsSource;
 		public IEnumerable<ITreeNode> ItemsSource
 		{
@@ -60,24 +79,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			{
 				return this.itemsSource;
 			}
-		}
-		
-		/// <summary>
-		/// Determines whether DebuggerTooltipControl should be displayed in WPF Popup.
-		/// </summary>
-		public bool ShowAsPopup {
-			get {
-				return true;
-			}
-		}
-		
-		/// <summary>
-		/// Closes the debugger Popup containing this control. Also closes all child Popups.
-		/// </summary>
-		/// <returns></returns>
-		public bool Close()
-		{
-			throw new NotImplementedException();
 		}
 		
 		private void btnExpander_Click(object sender, RoutedEventArgs e)

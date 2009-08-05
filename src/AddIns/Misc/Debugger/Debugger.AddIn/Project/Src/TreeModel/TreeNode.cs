@@ -53,7 +53,7 @@ namespace Debugger.AddIn.TreeModel
 			get { return childNodes; }
 		}
 		
-		public virtual bool HasChildren {
+		public virtual bool HasChildNodes {
 			get { return childNodes != null; }
 		}
 		

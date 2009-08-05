@@ -75,10 +75,10 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public override bool HasChildren {
+		public override bool HasChildNodes {
 			get { 
 				if (!evaluated) EvaluateExpression();
-				return base.HasChildren; 
+				return base.HasChildNodes; 
 			}
 		}
 		

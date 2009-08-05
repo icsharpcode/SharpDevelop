@@ -236,7 +236,6 @@
       <DependentUpon>GridVisualizerWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Visualizers\GridVisualizer\LazyListView.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ObjectValue.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ShowGridVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />

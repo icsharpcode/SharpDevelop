@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Debugging
 {
 	/// <summary>
-	/// Node that can be bound to DebuggerTooltipControl.
+	/// Node that can be bound to <see cref="DebuggerTooltipControl" />.
 	/// </summary>
 	public interface ITreeNode
 	{
@@ -22,6 +22,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		IEnumerable<ITreeNode> ChildNodes { get; }
 		
-		bool HasChildren { get; }
+		bool HasChildNodes { get; }
 	}
 }

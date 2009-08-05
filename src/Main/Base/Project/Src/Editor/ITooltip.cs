@@ -6,16 +6,17 @@
 // </file>
 using System;
 
-namespace ICSharpCode.SharpDevelop.Debugging
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
-	/// Content of debugger tooltip, specifying whether it should be displayed in a WPF Popup.
+	/// Content of text editor tooltip (<see cref="ToolTipRequestEventArgs.ContentToShow"/>), 
+	/// specifying whether it should be displayed in a WPF Popup.
 	/// </summary>
 	public interface ITooltip
 	{
 		/// <summary>
 		/// If true, this ITooltip will be displayed in a WPF Popup.
-		/// Otherwise this will be displayed in a WPF Tooltip.
+		/// Otherwise it will be displayed in a WPF Tooltip.
 		/// WPF Popups are (unlike WPF Tooltips) focusable.
 		/// </summary>
 		bool ShowAsPopup { get; }
