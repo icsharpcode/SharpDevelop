@@ -362,6 +362,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public class RawTag: RawContainer
 	{
+		public static readonly string[] DTDNames = new string[] {"<!DOCTYPE", "<!NOTATION", "<!ELEMENT", "<!ATTLIST", "<!ENTITY"};
+		
 		public string OpeningBracket { get; set; }
 		public string Name { get; set; }
 		public string ClosingBracket { get; set; }
@@ -370,9 +372,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public bool IsStartTag              { get { return OpeningBracket == "<"; } }
 		public bool IsEndTag                { get { return OpeningBracket == "</"; } }
 		public bool IsProcessingInstruction { get { return OpeningBracket == "<?"; } }
-		public bool IsComment               { get { return OpeningBracket.StartsWith("<!") && !IsDocumentType && !IsCData; } }
-		public bool IsDocumentType          { get { return OpeningBracket.StartsWith("<!D"); } }
-		public bool IsCData                 { get { return OpeningBracket.StartsWith("<!["); } }
+		public bool IsComment               { get { return OpeningBracket == "<!--"; } }
+		public bool IsCData                 { get { return OpeningBracket == "<![CDATA["; } }
+		public bool IsDocumentType          { get { return DTDNames.Contains(OpeningBracket); } }
+		public bool IsUnknownBang           { get { return OpeningBracket == "<!"; } }
 		
 		public override void UpdateDataFrom(RawObject source)
 		{
@@ -549,7 +552,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		CharacterData,
 		Comment,
 		CData,
-		DocumentTypeDefinition
+		DocumentTypeDefinition,
+		Other
 	}
 	
 	/// <summary>

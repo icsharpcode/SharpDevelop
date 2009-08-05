@@ -57,12 +57,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// 
 	/// The precise content of RawTag depends on what it represents:
 	/// <![CDATA[
-	///   Start tag:  "<"  Name? (RawText+ RawAttribute)* RawText* (">" | "/>")
-	///   End tag:    "</" Name? (RawText+ RawAttribute)* RawText* ">"
-	///   P.instr.:   "<?" Name? (RawText+ RawAttribute)* RawText* "?>"
-	///   Comment:    "<!" partof("--")?     (RawText)* "-->"     (Name is always null)
-	///   DTD:        "<!" partof("DOCTYPE") (RawText)* ">"       (Name is always null)
-	///   CData:      "<!" partof("[CDATA[") (RawText)* "]]" ">"  (Name is always null)
+	///   Start tag:  "<"  Name?  (RawText+ RawAttribute)* RawText* (">" | "/>")
+	///   End tag:    "</" Name?  (RawText+ RawAttribute)* RawText* ">"
+	///   P.instr.:   "<?" Name?  (RawText+ RawAttribute)* RawText* "?>"
+	///   Comment:    "<!--"      (RawText)* "-->"
+	///   CData:      "<![CDATA[" (RawText)* "]]" ">"
+	///   DTD:        "<!DOCTYPE" (RawText+ RawTag)* RawText* ">"    (DOCTYPE or other DTD names)
+	///   UknownBang: "<!"        (RawText)* ">"
 	/// ]]>
 	/// 
 	/// The type of tag can be identified by the opening backet.
@@ -412,13 +413,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return element;
 		}
 		
-		//   Start tag:  "<"  Name? (RawText+ RawAttribute)* RawText* (">" | "/>")
-		//   End tag:    "</" Name? (RawText+ RawAttribute)* RawText* ">"
-		//   P.instr.:   "<?" Name? (RawText+ RawAttribute)* RawText* "?>"
-		//   Comment:    "<!" partof("--")?     (RawText)* "-->"     (Name is always null)
-		//   CData:      "<!" partof("[CDATA[") (RawText)* "]]" ">"  (Name is always null)
-		//   DTD:        "<!" partof("DOCTYPE") (RawText)* ">"       (Name is always null)
-		
 		RawTag ReadTag()
 		{
 			AssertHasMoreData();
@@ -432,14 +426,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			// It identifies the type of tag and parsing behavior for the rest of it
 			tag.OpeningBracket = ReadOpeningBracket();
 			
-			// Read the name
 			if (tag.IsStartTag || tag.IsEndTag || tag.IsProcessingInstruction) {
+				// Read the name
 				if (HasMoreData()) {
 					tag.Name = ReadName();
 				}
-			}
-			
-			if (tag.IsStartTag || tag.IsEndTag || tag.IsProcessingInstruction) {
 				// Read attributes for the tag
 				while(true) {
 					if (TryPeekWhiteSpace()) {
@@ -457,23 +448,29 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					}
 					break; // End of file
 				}
+			} else if (tag.IsComment) {
+				// TODO: Backtrack if file end reached
+				tag.AddChildren(ReadText(RawTextType.Comment));
+			} else if (tag.IsCData) {
+				// TODO: Backtrack if file end reached
+				tag.AddChildren(ReadText(RawTextType.CData));
+			} else if (tag.IsDocumentType) {
+				tag.AddChildren(ReadContentOfDTD());
+			} else if (tag.IsUnknownBang) {
+				if (HasMoreData()) {
+					int start = currentLocation;
+					TryMoveToAnyOf('<', '>');
+					tag.AddChild(MakeText(start, currentLocation));
+				}
 			} else {
-				// Simple tag types
-				if (tag.IsComment) {
-					// TODO: Be strict only if the opening bracket is complete
-					tag.AddChildren(ReadText(RawTextType.Comment));
-				} else if (tag.IsCData) {
-					// TODO: Be strict only if the opening bracket is complete
-					tag.AddChildren(ReadText(RawTextType.CData));
-				} else if (tag.IsDocumentType) {
-					// TODO: Nested definition
-					tag.AddChildren(ReadText(RawTextType.DocumentTypeDefinition));
-				}
-				string bracket;
-				if (TryReadClosingBracket(out bracket)) {
-					tag.ClosingBracket = bracket;
-				}
+				throw new Exception(string.Format("Unknown opening bracket '{0}'", tag.OpeningBracket));
 			}
+			
+			if (tag.ClosingBracket == null) {
+				string bracket;
+				if (TryReadClosingBracket(out bracket)) tag.ClosingBracket = bracket;
+			}
+				
 			tag.EndOffset = currentLocation;
 			
 			OnParsed(tag);
@@ -491,22 +488,20 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (TryRead('<')) {
 				if (TryRead('/')) {
 					return "</";
-				} else if (TryRead('!')) {
-					if (TryRead('-')) {
-						if (TryRead('-')) {
-							return "<!--";
-						} else {
-							return "<!-";
-						}
-					} else if (TryReadPartOf("[CDATA[")) {
-						return GetText(start, currentLocation);
-					} else if (TryReadPartOf("DOCTYPE")) {
-						return GetText(start, currentLocation);
-					} else {
-						return "<!";
-					}
 				} else if (TryRead('?')) {
 					return "<?";
+				} else if (TryRead('!')) {
+					if (TryRead("--")) {
+						return "<!--";
+					} else if (TryRead("[CDATA[")) {
+						return "<![CDATA[";
+					} else {
+						foreach(string dtdName in RawTag.DTDNames) {
+							// the dtdName includes "<!"
+							if (TryRead(dtdName.Remove(0, 2))) return dtdName;
+						}
+						return "<!";
+					}
 				} else {
 					return "<";
 				}
@@ -548,6 +543,37 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return true;
 		}
 		
+		IEnumerable<RawObject> ReadContentOfDTD()
+		{
+			int start = currentLocation;
+			while(true) {
+				if (IsEndOfFile()) break;            // End of file
+				TryMoveToNonWhiteSpace();            // Skip whitespace
+				if (TryRead('\'')) TryMoveTo('\'');  // Skip single quoted string
+				if (TryRead('\"')) TryMoveTo('\"');  // Skip single quoted string
+				if (TryRead('[')) {                  // Start of nested infoset
+					// Reading infoset
+					while(true) {
+						if (IsEndOfFile()) break;
+						TryMoveToAnyOf('<', ']');
+						if (TryPeek('<')) {
+							yield return MakeText(start, currentLocation);
+							yield return ReadTag();
+							start = currentLocation;
+						}
+						if (TryPeek(']')) break;
+					}
+				}
+				TryRead(']');                        // End of nested infoset
+				if (TryPeek('>')) break;             // Proper closing
+				if (TryPeek('<')) break;             // Malformed XML
+				TryMoveNext();                       // Skip anything else
+			}
+			if (start != currentLocation) {
+				yield return MakeText(start, currentLocation);
+			}
+		}
+		
 		RawAttribute ReadAttribulte()
 		{
 			AssertHasMoreData();
@@ -580,6 +606,16 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			OnParsed(attr);
 			return attr;
+		}
+		
+		RawText MakeText(int start, int end)
+		{
+			RawText text = new RawText() {
+				StartOffset = start,
+				EndOffset = end,
+				Value = GetText(start, end),
+			};
+			return text;
 		}
 		
 		const int maxEntityLenght = 12; // 6 for build-in ones
