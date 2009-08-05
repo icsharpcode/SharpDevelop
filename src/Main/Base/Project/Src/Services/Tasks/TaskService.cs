@@ -173,8 +173,8 @@ namespace ICSharpCode.SharpDevelop
 			foreach (TagComment tag in tagComments) {
 				newTasks.Add(new Task(fileName,
 				                      tag.Key + tag.CommentString,
-				                      tag.Region.BeginColumn - 1,
-				                      tag.Region.BeginLine - 1,
+				                      tag.Region.BeginColumn,
+				                      tag.Region.BeginLine,
 				                      TaskType.Comment));
 			}
 			List<Task> oldTasks = new List<Task>();

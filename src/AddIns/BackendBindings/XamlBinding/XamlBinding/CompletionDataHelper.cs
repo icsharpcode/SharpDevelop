@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 
 using ICSharpCode.SharpDevelop;
@@ -340,6 +339,18 @@ namespace ICSharpCode.XamlBinding
 			
 			return result;
 		}
+		
+		public static IEnumerable<ICompletionItem> GetAllTypes(XamlCompletionContext context)
+		{
+			var items = GetClassesFromContext(context);
+			
+			foreach (var ns in items) {
+				foreach (var c in ns.Value) {
+					if (c.ClassType == ClassType.Class && !c.DerivesFrom("System.Attribute"))
+						yield return new XamlCodeCompletionItem(c, ns.Key);
+				}
+			}
+		}
 
 		public static IEnumerable<ICompletionItem> CreateListOfMarkupExtensions(XamlCompletionContext context)
 		{
@@ -616,6 +627,16 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
+		public static bool EndsWithAny(this string thisValue, params char[] items)
+		{
+			foreach (char item in items) {
+				if (thisValue.EndsWith(item.ToString()))
+					return true;
+			}
+			
+			return false;
+		}
+		
 		static IReturnType GetType(XamlCompletionContext context, out bool isExplicit)
 		{
 			AttributeValue value = MarkupExtensionParser.ParseValue(LookForTargetTypeValue(context, out isExplicit, "Trigger", "Setter") ?? string.Empty);
@@ -656,7 +677,8 @@ namespace ICSharpCode.XamlBinding
 			bool isExplicit, showFull = false;
 			IReturnType typeName;
 			
-			string valueBeforeCaret = (context.ValueStartOffset > 0) ? context.RawAttributeValue.Substring(0, context.ValueStartOffset + 1) : "";
+			string valueBeforeCaret = (context.ValueStartOffset > 0) ?
+				context.RawAttributeValue.Substring(0, context.ValueStartOffset + 1) : "";
 			
 			switch (c.ClassType) {
 				case ClassType.Class:
@@ -669,14 +691,14 @@ namespace ICSharpCode.XamlBinding
 								yield return item;
 							break;
 						case "System.Windows.PropertyPath":
+							foreach (var item in CreatePropertyPathCompletion(context))
+								yield return item;
 							break;
 						case "System.Windows.DependencyProperty":
 							typeName = GetType(context, out isExplicit);
 							
 							bool isReadOnly = context.ActiveElement.Name.EndsWith("Trigger");
 							
-							Core.LoggingService.Debug("value: " + valueBeforeCaret);
-
 							if (!isExplicit && valueBeforeCaret.Contains("."))
 								showFull = true;
 							
@@ -687,8 +709,6 @@ namespace ICSharpCode.XamlBinding
 							break;
 						case "System.Windows.RoutedEvent":
 							typeName = GetType(context, out isExplicit);
-							
-							Core.LoggingService.Debug("value: " + valueBeforeCaret);
 							
 							if (!isExplicit && valueBeforeCaret.Contains("."))
 								showFull = true;
@@ -741,6 +761,149 @@ namespace ICSharpCode.XamlBinding
 				foreach (var item in coll.Fields.Where(f => f.IsPublic && f.IsStatic && f.ReturnType.FullyQualifiedName == c.FullyQualifiedName))
 					yield return new SpecialValueCompletionItem(item.Name);
 			}
+		}
+		
+		static IList<ICompletionItem> CreatePropertyPathCompletion(XamlCompletionContext context)
+		{
+			bool isExplicit;
+			IReturnType typeName = GetType(context, out isExplicit);
+			IList<ICompletionItem> list = new List<ICompletionItem>();
+			
+			string value = context.ValueStartOffset > -1 ? context.RawAttributeValue.Substring(0, context.ValueStartOffset + 1) : "";
+			
+			if (value.EndsWithAny(']', ')'))
+				return list;
+			
+			var segments = PropertyPathParser.Parse(value).ToList();
+			
+			int completionStart;
+			bool isAtDot = false;
+			
+			IReturnType propertyPathType = ResolvePropertyPath(segments, context, typeName, out completionStart);
+			if (completionStart < segments.Count) {
+				PropertyPathSegment seg = segments[completionStart];
+				switch (seg.Kind) {
+					case SegmentKind.ControlChar:
+						if (seg.Content == ".") {
+							AddAttributes(propertyPathType, list, false);
+							isAtDot = true;
+						}
+						break;
+					case SegmentKind.AttachedProperty:
+						AddAttributes(seg.Resolve(context, propertyPathType), list, false);
+						isAtDot = seg.Content.Contains(".");
+						break;
+					case SegmentKind.PropertyOrType:
+						AddAttributes(propertyPathType, list, false);
+						isAtDot = true;
+						break;
+				}
+			} else if (typeName != null) {
+				AddAttributes(typeName, list, false);
+			}
+			
+			if (!isAtDot) {
+				foreach (var item in GetAllTypes(context))
+					list.Add(item);
+			}
+			
+			return list;
+		}
+		
+		static IReturnType ResolvePropertyPath(IList<PropertyPathSegment> segments, XamlCompletionContext context, IReturnType parentType, out int lastIndex)
+		{
+			IReturnType type = parentType;
+			TypeResolveResult trr;
+			
+			for (lastIndex = 0; lastIndex < segments.Count - 1; lastIndex++) {
+				PropertyPathSegment segment = segments[lastIndex];
+				switch (segment.Kind) {
+					case SegmentKind.AttachedProperty:
+						// do we need to take account of previous results?
+						type = segment.Resolve(context, null);
+						break;
+					case SegmentKind.ControlChar:
+						if (segment.Content == "[" || segment.Content == "(" || segment.Content == "/")
+							return null;
+						return type;
+					case SegmentKind.PropertyOrType:
+						type = segment.Resolve(context, type);
+						break;
+					case SegmentKind.Indexer:
+						if (type != null) {
+							IProperty prop = type.GetProperties().FirstOrDefault(p => p.IsIndexer);
+							if (prop != null) {
+								type = prop.ReturnType;
+							}
+						}
+						break;
+					case SegmentKind.SourceTraversal:
+						// ignore
+						return null;
+				}
+			}
+			
+			return type;
+		}
+		
+		static IReturnType Resolve(this PropertyPathSegment segment, XamlCompletionContext context, IReturnType previousType)
+		{
+			if (segment.Kind == SegmentKind.SourceTraversal)
+				return previousType;
+			if (segment.Kind == SegmentKind.ControlChar)
+				return previousType;
+			
+			string content = segment.Content;
+			
+			if (segment.Kind == SegmentKind.AttachedProperty && content.StartsWith("(")) {
+				content = content.TrimStart('(');
+				if (content.Contains("."))
+					content = content.Remove(content.IndexOf('.'));
+			}
+			
+			XamlContextDescription tmp = context.Description;
+			context.Description = XamlContextDescription.InTag;
+			
+			ResolveResult rr = XamlResolver.Resolve(content, context);
+			IReturnType type = null;
+			
+			if (rr is TypeResolveResult)
+				type = (rr as TypeResolveResult).ResolvedType;
+
+			if (previousType != null) {
+				IMember member = previousType.GetMemberByName(content);
+				if (member != null)
+					type = member.ReturnType;
+			} else {
+				if (rr is MemberResolveResult) {
+					MemberResolveResult mrr = rr as MemberResolveResult;
+					if (mrr.ResolvedMember != null)
+						type = mrr.ResolvedMember.ReturnType;
+				}
+				if (rr is TypeResolveResult)
+					type = (rr as TypeResolveResult).ResolvedType;
+			}
+			
+			context.Description = tmp;
+			return type;
+		}
+		
+		static IMember GetMemberByName(this IReturnType type, string name)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			
+			foreach (IMember member in type.GetFields()) {
+				if (member.Name == name)
+					return member;
+			}
+			
+			foreach (IMember member in type.GetProperties()) {
+				if (member.Name == name)
+					return member;
+			}
+			
+			return null;
 		}
 		
 		static IEnumerable<ICompletionItem> CreateEventCompletion(XamlCompletionContext context, IClass c)

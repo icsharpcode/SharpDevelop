@@ -134,5 +134,25 @@ namespace ICSharpCode.XamlBinding.Tests
 			
 			Assert.AreEqual("val1", XmlParser.GetAttributeNameAtIndex(xaml, offset));
 		}
+		
+		[Test]
+		[Ignore]
+		public void InAttributeValueTest1()
+		{
+			string xaml = "<Test val2='' val1=\"\" />";
+			int offset = "<Test val2='' val1=\"".Length;
+			
+			Assert.AreEqual(true, XmlParser.IsInsideAttributeValue(xaml, offset));
+		}
+		
+		[Test]
+		[Ignore]
+		public void InAttributeValueTest2()
+		{
+			string xaml = "<Test val2=\"\" val1='' />";
+			int offset = "<Test val2=\"\" val1='".Length;
+			
+			Assert.AreEqual(true, XmlParser.IsInsideAttributeValue(xaml, offset));
+		}
 	}
 }

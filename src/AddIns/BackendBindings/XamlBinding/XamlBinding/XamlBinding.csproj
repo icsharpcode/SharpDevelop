@@ -113,7 +113,11 @@
     </Compile>
     <Compile Include="PowerToys\Dialogs\UndoStep.cs" />
     <Compile Include="PowerToys\XamlMenuCommand.cs" />
+    <Compile Include="PropertyPathParser.cs" />
+    <Compile Include="PropertyPathSegment.cs" />
+    <Compile Include="PropertyPathTokenizer.cs" />
     <Compile Include="QualifiedNameWithLocation.cs" />
+    <Compile Include="SegmentKind.cs" />
     <Compile Include="Utils.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -487,7 +487,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	
 	#region MemberResolveResult
 	/// <summary>
-	/// The TypeResolveResult is used when an expression was a member
+	/// The MemberResolveResult is used when an expression was a member
 	/// (field, property, event or method call).
 	/// </summary>
 	/// <example>

@@ -90,9 +90,35 @@ namespace ICSharpCode.XamlBinding
 						list = CompletionDataHelper.CreateListForContext(context);
 						editor.ShowCompletionWindow(list);
 						return CodeCompletionKeyPressResult.Completed;
-					} else if (context.Description == XamlContextDescription.InMarkupExtension) {
-						if (DoMarkupExtensionCompletion(context))
-							return CodeCompletionKeyPressResult.Completed;
+					} else {
+						if (context.Description == XamlContextDescription.InMarkupExtension) {
+							if (DoMarkupExtensionCompletion(context))
+								return CodeCompletionKeyPressResult.Completed;
+						} else if (context.Description == XamlContextDescription.InAttributeValue) {
+							if (editor.SelectionLength != 0)
+								editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
+							
+							editor.Document.Insert(editor.Caret.Offset, ".");
+							
+							this.CtrlSpace(editor);
+							return CodeCompletionKeyPressResult.EatKey;
+						}
+					}
+					break;
+				case '(':
+				case '[':
+					if (context.Description == XamlContextDescription.InAttributeValue) {
+						if (editor.SelectionLength != 0)
+							editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
+						
+						if (ch == '(')
+							editor.Document.Insert(editor.Caret.Offset, "()");
+						if (ch == '[')
+							editor.Document.Insert(editor.Caret.Offset, "[]");
+						editor.Caret.Offset--;
+						
+						this.CtrlSpace(editor);
+						return CodeCompletionKeyPressResult.EatKey;
 					}
 					break;
 				case ':':
@@ -175,6 +201,7 @@ namespace ICSharpCode.XamlBinding
 					if (context.AttributeName != null) {
 						if (!DoMarkupExtensionCompletion(context)) {
 							var completionList = new XamlCompletionItemList();
+							completionList.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
 							
 							if ((context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter") && context.AttributeName.Name == "Value")
 								DoSetterAndEventSetterCompletion(context, completionList);
@@ -185,10 +212,17 @@ namespace ICSharpCode.XamlBinding
 								if (mrr != null && mrr.ResolvedType != null) {
 									completionList.Items.AddRange(CompletionDataHelper.MemberCompletion(context, mrr.ResolvedType, string.Empty));
 									editor.ShowInsightWindow(CompletionDataHelper.MemberInsight(mrr));
+									if (mrr.ResolvedType.FullyQualifiedName == "System.Windows.PropertyPath") {
+										string start = editor.GetWordBeforeCaretExtended();
+										int index = start.LastIndexOfAny(PropertyPathTokenizer.ControlChars);
+										if (index + 1 < start.Length)
+											start = start.Substring(index + 1);
+										else
+											start = "";
+										completionList.PreselectionLength = start.Length;
+									}
 								}
 							}
-							
-							completionList.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
 							
 							completionList.SortItems();
 							
