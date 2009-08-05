@@ -385,8 +385,8 @@ namespace ICSharpCode.Core.Presentation.Tests
 			var sameBinding2 = new InputBindingInfo { OwnerTypeName="Binding", RoutedCommandName="Binding" };
 			var sameBinding3 = new InputBindingInfo { OwnerTypeName="Binding3", RoutedCommandName="Binding" };
 			
-			Assert.AreEqual(sameBinding1.Identifier, sameBinding2.Identifier);
-			Assert.AreNotEqual(sameBinding1.Identifier, sameBinding3.Identifier);
+			Assert.AreEqual(BindingInfoTemplate.CreateFromIBindingInfo(sameBinding1), BindingInfoTemplate.CreateFromIBindingInfo(sameBinding2));
+			Assert.AreNotEqual(BindingInfoTemplate.CreateFromIBindingInfo(sameBinding1), BindingInfoTemplate.CreateFromIBindingInfo(sameBinding3));
 		}
 	}
 }

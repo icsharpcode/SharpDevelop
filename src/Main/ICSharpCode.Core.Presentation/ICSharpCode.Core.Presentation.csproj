@@ -83,11 +83,9 @@
     <Compile Include="CommandsService\Events\NotifyUserGestureProfileChangedEvent.cs" />
     <Compile Include="CommandsService\IBindingInfo.cs" />
     <Compile Include="CommandsService\InputBindingCategory.cs" />
-    <Compile Include="CommandsService\InputBindingIndentifier.cs" />
     <Compile Include="CommandsService\InputBindingInfo.cs" />
     <Compile Include="CommandsService\Profile\UserGestureManager.cs" />
     <Compile Include="CommandsService\Profile\UserGestureProfile.cs" />
-    <Compile Include="CommandsService\Utils\IBindingInfoEqualityComparer.cs" />
     <Compile Include="CommandsService\Utils\IObservableCollection.cs" />
     <Compile Include="CommandsService\Utils\WeakReferenceEqualirtyComparer.cs" />
     <Compile Include="CommandsService\WpfCommandWrapper.cs" />

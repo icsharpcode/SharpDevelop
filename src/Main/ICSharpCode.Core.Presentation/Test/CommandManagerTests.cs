@@ -147,7 +147,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			SDCommandManager.RegisterNamedUIElement("TestOwnerInstance", uiElement);
 			
 			SDCommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) {
-				var template = new BindingInfoTemplate(bindingInfo, false);
+				var template = BindingInfoTemplate.CreateFromIBindingInfo(bindingInfo);
 				var contains = args.ModifiedBindingInfoTemplates.Contains(template);
 				if(args.Action == NotifyBindingsChangedAction.BindingInfoModified && contains) {
 					testResult = true;
@@ -175,7 +175,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			SDCommandManager.RegisterNamedUIElement("TestOwnerInstance", uiElement);
 			
 			SDCommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) {
-				if(args.Action == NotifyBindingsChangedAction.BindingInfoModified && args.ModifiedBindingInfoTemplates.Contains(bindingInfo)) {
+				if(args.Action == NotifyBindingsChangedAction.BindingInfoModified && args.ModifiedBindingInfoTemplates.Contains(BindingInfoTemplate.CreateFromIBindingInfo(bindingInfo))) {
 					testResult = true;
 				}
 			};
@@ -273,7 +273,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			var oldGestures = new InputGestureCollection();
 			var newGestures = new InputGestureCollection();
 			
-			var identifier = new InputBindingIdentifier { OwnerInstanceName = "SomeOwner", RoutedCommandName = "SomeCommand" };
+			var identifier = new BindingInfoTemplate { OwnerInstanceName = "SomeOwner", RoutedCommandName = "SomeCommand" };
 			
 			SDCommandManager.GesturesChanged += delegate(object sender, NotifyGesturesChangedEventArgs args) { 
 				if(args.ModificationDescriptions.Count == 1 
@@ -306,7 +306,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			newGestures.Add(new KeyGesture(Key.C, ModifierKeys.Alt));
 			newGestures.Add(new KeyGesture(Key.D, ModifierKeys.Alt));
 			
-			var identifier = new InputBindingIdentifier { OwnerInstanceName = "SomeOwner", RoutedCommandName = "SomeCommand" };
+			var identifier = new BindingInfoTemplate { OwnerInstanceName = "SomeOwner", RoutedCommandName = "SomeCommand" };
 			
 			SDCommandManager.GesturesChanged += delegate(object sender, NotifyGesturesChangedEventArgs args) { 
 				if(args.ModificationDescriptions.Count == 1 
@@ -361,7 +361,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			SDCommandManager.GesturesChanged += delegate(object sender, NotifyGesturesChangedEventArgs args) { 
 				if(args.ModificationDescriptions.Count == 1 
 				   && args.ModificationDescriptions.Any(
-				   	d => d.InputBindingIdentifier.Equals(bindingInfo.Identifier)
+				   	d => d.InputBindingIdentifier.Equals(BindingInfoTemplate.CreateFromIBindingInfo(bindingInfo))
 				   		&& d.OldGestures.Count == 2
 						&& d.NewGestures.Count == 3)) {
 					results.Add("GestureAdded");
@@ -369,7 +369,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 				
 				if(args.ModificationDescriptions.Count == 1 
 				   && args.ModificationDescriptions.Any(
-				   	d => d.InputBindingIdentifier.Equals(bindingInfo.Identifier)
+				   	d => d.InputBindingIdentifier.Equals(BindingInfoTemplate.CreateFromIBindingInfo(bindingInfo))
 				   		&& d.OldGestures.Count == 3
 						&& d.NewGestures.Count == 2)) {
 					results.Add("GestureRemoved");
@@ -378,7 +378,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 				
 				if(args.ModificationDescriptions.Count == 1 
 				   && args.ModificationDescriptions.Any(
-				   	d => d.InputBindingIdentifier.Equals(bindingInfo.Identifier)
+				   	d => d.InputBindingIdentifier.Equals(BindingInfoTemplate.CreateFromIBindingInfo(bindingInfo))
 				   		&& d.OldGestures.Count == 0
 						&& d.NewGestures.Count == 2)) {
 					results.Add("GesturesSet");
@@ -386,7 +386,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 				
 				if(args.ModificationDescriptions.Count == 1 
 				   && args.ModificationDescriptions.Any(
-				   	d => d.InputBindingIdentifier.Equals(bindingInfo.Identifier)
+				   	d => d.InputBindingIdentifier.Equals(BindingInfoTemplate.CreateFromIBindingInfo(bindingInfo))
 				   		&& d.OldGestures.Count == 2
 						&& d.NewGestures.Count == 0)) {
 					results.Add("GesturesReset");
@@ -407,7 +407,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			Assert.IsFalse(results.Contains("GestureAdded"));
 			
 			var profile = new UserGestureProfile();
-			profile[bindingInfo.Identifier] = new InputGestureCollection();
+			profile[BindingInfoTemplate.CreateFromIBindingInfo(bindingInfo)] = new InputGestureCollection();
 			UserGestureManager.CurrentProfile = profile;
 			
 			// User defined gestures are used
@@ -417,7 +417,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			Assert.IsFalse(results.Contains("GestureRemoved"));
 			Assert.IsFalse(results.Contains("GestureAdded"));
 			
-			profile[bindingInfo.Identifier] = null;
+			profile[BindingInfoTemplate.CreateFromIBindingInfo(bindingInfo)] = null;
 			results.Clear();
 			var backupDefaultGestures = bindingInfo.DefaultGestures;
 			bindingInfo.DefaultGestures = null;

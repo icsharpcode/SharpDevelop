@@ -80,11 +80,6 @@ namespace ICSharpCode.Core.Presentation
 			return observedInputGestures.Contains(item);
 		}
 		
-		public InputGestureCollection GetInputGestureCollection()
-		{
-			return new InputGestureCollection(observedInputGestures);
-		}
-		
 		public void AddRange(InputGestureCollection items)
 		{
 			foreach(InputGesture item in items) {
@@ -131,10 +126,7 @@ namespace ICSharpCode.Core.Presentation
 		public InputGestureCollection InputGesturesCollection
 		{
 			get {
-				var gestures = new InputGestureCollection();
-				gestures.AddRange(observedInputGestures);
-				
-				return gestures;
+				return new InputGestureCollection(observedInputGestures);
 			}
 		}
     }

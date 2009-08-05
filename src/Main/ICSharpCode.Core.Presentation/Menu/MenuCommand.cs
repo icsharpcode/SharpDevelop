@@ -142,7 +142,7 @@ namespace ICSharpCode.Core.Presentation
 				this.Command = routedCommand;
 			}
 			
-			var gestures = CommandManager.FindInputGestures(BindingInfoMatchType.SuperSet, bindingTemplate);
+			var gestures = CommandManager.FindInputGestures(bindingTemplate);
 			this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
 			
 			CommandManager.GesturesChanged += MenuCommand_GesturesChanged;
@@ -150,9 +150,15 @@ namespace ICSharpCode.Core.Presentation
 		
 		private void MenuCommand_GesturesChanged(object sender, NotifyGesturesChangedEventArgs e) 
 		{
-			if(e.ModificationDescriptions.Any(d => bindingTemplate.IsTemplateFor(new BindingInfoTemplate(d.InputBindingIdentifier), BindingInfoMatchType.SuperSet))) {
-				var updatedGestures = CommandManager.FindInputGestures(BindingInfoMatchType.SuperSet, bindingTemplate);
-				this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+			foreach(var desc in e.ModificationDescriptions) {
+				var temp = desc.InputBindingIdentifier;
+				if((bindingTemplate.OwnerInstanceName == null || bindingTemplate.OwnerInstanceName == temp.OwnerInstanceName)
+					&& (bindingTemplate.OwnerTypeName == null || bindingTemplate.OwnerTypeName == temp.OwnerTypeName)
+					&& (bindingTemplate.RoutedCommandName == null || bindingTemplate.RoutedCommandName == temp.RoutedCommandName)) {
+
+					var updatedGestures = CommandManager.FindInputGestures(bindingTemplate);
+					this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+				}
 			}
 		}
 	}

@@ -59,7 +59,6 @@
   <ItemGroup>
     <Compile Include="BindingGroupTests.cs" />
     <Compile Include="BindingInfoTemplateDictionaryTests.cs" />
-    <Compile Include="BindingInfoTemplateTests.cs" />
     <Compile Include="CommandManagerTests.cs" />
     <Compile Include="InputBindingCategoryTests.cs" />
     <Compile Include="InputGestureTests.cs" />

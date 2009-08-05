@@ -49,9 +49,9 @@ namespace ICSharpCode.Core.Presentation
 				var oldGestures = _defaultGestures;
 				_defaultGestures = value;
 				
-				if(IsRegistered && (UserGestureManager.CurrentProfile == null || UserGestureManager.CurrentProfile[Identifier] == null)) {
+				if(IsRegistered && (UserGestureManager.CurrentProfile == null || UserGestureManager.CurrentProfile[BindingInfoTemplate.CreateFromIBindingInfo(this)] == null)) {
 					var description = new GesturesModificationDescription(
-						Identifier, 
+						BindingInfoTemplate.CreateFromIBindingInfo(this), 
 						oldGestures != null ? oldGestures.InputGesturesCollection : new InputGestureCollection(),
 						value != null ? value.InputGesturesCollection : new InputGestureCollection());
 					
@@ -62,7 +62,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		private void DefaultGestures_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) 
 		{
-			if(IsRegistered && (UserGestureManager.CurrentProfile == null || UserGestureManager.CurrentProfile[Identifier] == null)) {
+			if(IsRegistered && (UserGestureManager.CurrentProfile == null || UserGestureManager.CurrentProfile[BindingInfoTemplate.CreateFromIBindingInfo(this)] == null)) {
 				var newGestures = DefaultGestures.InputGesturesCollection;
 				var oldGestures = new InputGestureCollection();
 				oldGestures.AddRange(newGestures);
@@ -81,7 +81,7 @@ namespace ICSharpCode.Core.Presentation
 					}
 				}
 				
-				var description = new GesturesModificationDescription(Identifier, oldGestures, newGestures);
+				var description = new GesturesModificationDescription(BindingInfoTemplate.CreateFromIBindingInfo(this), oldGestures, newGestures);
 				SDCommandManager.InvokeGesturesChanged(this, new NotifyGesturesChangedEventArgs(description));
 			}
 		}
@@ -92,11 +92,11 @@ namespace ICSharpCode.Core.Presentation
 		public InputGestureCollection ActiveGestures { 
 			get {
 				if(UserGestureManager.CurrentProfile == null 
-				   || UserGestureManager.CurrentProfile[Identifier] == null) {
-					return DefaultGestures.GetInputGestureCollection();
+				   || UserGestureManager.CurrentProfile[BindingInfoTemplate.CreateFromIBindingInfo(this)] == null) {
+					return DefaultGestures.InputGesturesCollection;
 				} 
 				
-				return UserGestureManager.CurrentProfile[Identifier];
+				return UserGestureManager.CurrentProfile[BindingInfoTemplate.CreateFromIBindingInfo(this)];
 			}
 		}
 		
@@ -223,18 +223,6 @@ namespace ICSharpCode.Core.Presentation
 			foreach(InputGesture gesture in ActiveGestures) {
 				var inputBinding = new InputBinding(RoutedCommand, gesture);
 				ActiveInputBindings.Add(inputBinding);
-			}
-		}
-		
-		
-		public InputBindingIdentifier Identifier {
-			get {
-				var identifier = new InputBindingIdentifier();
-				identifier.OwnerInstanceName = OwnerInstanceName;
-				identifier.OwnerTypeName = OwnerTypeName;
-				identifier.RoutedCommandName = RoutedCommandName;
-				
-				return identifier;
 			}
 		}
 	}

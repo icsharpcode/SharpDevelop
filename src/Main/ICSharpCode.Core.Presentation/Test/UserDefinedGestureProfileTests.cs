@@ -46,7 +46,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			binding.DefaultGestures.Add(gesture);
 			
 			var userDefinedGestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString("Ctrl+B;Ctrl+C");
-			profile[binding.Identifier] = userDefinedGestures;
+			profile[BindingInfoTemplate.CreateFromIBindingInfo(binding)] = userDefinedGestures;
 			UserGestureManager.CurrentProfile = profile;
 			
 			// Default gestures stay the same
@@ -66,7 +66,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			binding2.DefaultGestures.Add(gesture);
 			
 			var userDefinedGestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString("Ctrl+B;Ctrl+C");
-			profile[binding.Identifier] = userDefinedGestures;
+			profile[BindingInfoTemplate.CreateFromIBindingInfo(binding)] = userDefinedGestures;
 			UserGestureManager.CurrentProfile = profile;
 			
 			// Default gestures are used because current profile doesn't contain modifications to this gesture

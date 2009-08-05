@@ -43,14 +43,14 @@ namespace ICSharpCode.Core.Presentation
     
     public class GesturesModificationDescription
     {
-    	public GesturesModificationDescription(InputBindingIdentifier identifier, InputGestureCollection oldGestures, InputGestureCollection newGestures)
+    	public GesturesModificationDescription(BindingInfoTemplate inputBindingInfoTemplate, InputGestureCollection oldGestures, InputGestureCollection newGestures)
     	{
-    		InputBindingIdentifier = identifier;
+    		InputBindingIdentifier = inputBindingInfoTemplate;
     		OldGestures = oldGestures;
     		NewGestures = newGestures;
     	}
     	
-    	public InputBindingIdentifier InputBindingIdentifier
+    	public BindingInfoTemplate InputBindingIdentifier
     	{
     		get; private set;
     	}

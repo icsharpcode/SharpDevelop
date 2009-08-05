@@ -10,9 +10,9 @@ namespace ICSharpCode.Core.Presentation
 	/// <summary>
 	/// Description of UserGesturesProfile.
 	/// </summary>
-	public class UserGestureProfile : IEnumerable<KeyValuePair<InputBindingIdentifier, InputGestureCollection>>, ICloneable
+	public class UserGestureProfile : IEnumerable<KeyValuePair<BindingInfoTemplate, InputGestureCollection>>, ICloneable
 	{
-		private Dictionary<InputBindingIdentifier, InputGestureCollection> userDefinedGestures = new Dictionary<InputBindingIdentifier, InputGestureCollection>();
+		private Dictionary<BindingInfoTemplate, InputGestureCollection> userDefinedGestures = new Dictionary<BindingInfoTemplate, InputGestureCollection>();
 		
 		public string Path
 		{
@@ -63,7 +63,7 @@ namespace ICSharpCode.Core.Presentation
 			ReadOnly = Convert.ToBoolean(rootNode.Attributes["read-only"].Value);
 
 			foreach(XmlElement bindingInfoNode in xmlDocument.SelectNodes("//InputBinding")) {
-				var identifier = new InputBindingIdentifier();
+				var identifier = new BindingInfoTemplate();
 				identifier.RoutedCommandName = bindingInfoNode.Attributes["routed-command"].Value;
 				
 				var ownerInstanceAttribute = bindingInfoNode.Attributes["owner-instance"];
@@ -140,8 +140,8 @@ namespace ICSharpCode.Core.Presentation
 			var args = new NotifyGesturesChangedEventArgs();
 			
 			foreach(var pair in this) {
-				var template = new BindingInfoTemplate(pair.Key);
-				var newGestures = SDCommandManager.FindInputGestures(BindingInfoMatchType.SuperSet, template);
+				var template = pair.Key;
+				var newGestures = SDCommandManager.FindInputGestures(template);
 				
 				descriptions.Add(
 					new GesturesModificationDescription(
@@ -155,7 +155,7 @@ namespace ICSharpCode.Core.Presentation
 			SDCommandManager.InvokeGesturesChanged(this, args);
 		}
 		
-		public InputGestureCollection this[InputBindingIdentifier identifier]
+		public InputGestureCollection this[BindingInfoTemplate identifier]
 		{
 			get { return GetInputBindingGesture(identifier); }
 			set { SetInputBindingGestures(identifier, value); }
@@ -166,7 +166,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="inputBindingInfoName">Input binding</param>
 		/// <returns>Gestures assigned to this input binding</returns>
-		private InputGestureCollection GetInputBindingGesture(InputBindingIdentifier identifier) 
+		private InputGestureCollection GetInputBindingGesture(BindingInfoTemplate identifier) 
 		{
 			InputGestureCollection gestures;
 			userDefinedGestures.TryGetValue(identifier, out gestures);
@@ -179,14 +179,13 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="inputBindingInfoName">Input binding name</param>
 		/// <param name="inputGestureCollection">Gesture assigned to this input binding</param>
-		private void SetInputBindingGestures(InputBindingIdentifier identifier, InputGestureCollection inputGestureCollection) 
+		private void SetInputBindingGestures(BindingInfoTemplate identifier, InputGestureCollection inputGestureCollection) 
 		{
 			var oldGestures = GetInputBindingGesture(identifier);
 			var newGestures = inputGestureCollection;
 			
 			if(oldGestures == null || newGestures == null) {
-				var template = new BindingInfoTemplate(identifier);
-				var defaultGestures = SDCommandManager.FindInputGestures(BindingInfoMatchType.Exact, template);
+				var defaultGestures = SDCommandManager.FindInputGestures(identifier);
 				
 				oldGestures = oldGestures ?? defaultGestures;
 				newGestures = newGestures ?? defaultGestures;
@@ -200,7 +199,7 @@ namespace ICSharpCode.Core.Presentation
 			InvokeGesturesChanged(this, args);
 		}
 		
-		public IEnumerator<KeyValuePair<InputBindingIdentifier, InputGestureCollection>> GetEnumerator()
+		public IEnumerator<KeyValuePair<BindingInfoTemplate, InputGestureCollection>> GetEnumerator()
 		{
 			return userDefinedGestures.GetEnumerator();
 		}

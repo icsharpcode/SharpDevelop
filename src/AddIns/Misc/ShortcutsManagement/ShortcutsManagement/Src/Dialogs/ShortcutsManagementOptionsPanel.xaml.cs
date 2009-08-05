@@ -178,7 +178,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 				}
 			}
 			
-			var inputBindingInfos = SDCommandManager.FindInputBindingInfos(BindingInfoMatchType.SuperSet, new BindingInfoTemplate());
+			var inputBindingInfos = SDCommandManager.FindInputBindingInfos(new BindingInfoTemplate());
 			foreach (var inputBindingInfo in inputBindingInfos) {
 				// Get shortcut entry text. Normaly shortcut entry text is equal to routed command text
 				// but this value can be overriden through InputBindingInfo.RoutedCommandText value
@@ -193,9 +193,9 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 				// Strip this sign from shortcut entry text
 				shortcutText = Regex.Replace(shortcutText, @"&([^\s])", @"$1");
 				
-				var shortcutGestures = inputBindingInfo.DefaultGestures.GetInputGestureCollection();
-				if(SelectedProfile != null && SelectedProfile[inputBindingInfo.Identifier] != null) {
-					shortcutGestures = new InputGestureCollection(SelectedProfile[inputBindingInfo.Identifier]);
+				var shortcutGestures = inputBindingInfo.DefaultGestures.InputGesturesCollection;
+				if(SelectedProfile != null && SelectedProfile[BindingInfoTemplate.CreateFromIBindingInfo(inputBindingInfo)] != null) {
+					shortcutGestures = new InputGestureCollection(SelectedProfile[BindingInfoTemplate.CreateFromIBindingInfo(inputBindingInfo)]);
 				}
 				
 				var shortcut = new Shortcut(shortcutText, shortcutGestures);
@@ -384,7 +384,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 							originalRelatedShortcut.Gestures.Clear();
 							originalRelatedShortcut.Gestures.AddRange(relatedShortcutCopy.Gestures);
 							
-							var id = shortcutsMap.MapForward(originalRelatedShortcut).Identifier;
+							var id = BindingInfoTemplate.CreateFromIBindingInfo(shortcutsMap.MapForward(originalRelatedShortcut));
 							SelectedProfile[id] = new InputGestureCollection(relatedShortcutCopy.Gestures);
 						}
 					}

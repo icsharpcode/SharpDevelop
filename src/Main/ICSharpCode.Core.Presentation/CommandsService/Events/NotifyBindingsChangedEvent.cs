@@ -11,8 +11,8 @@ namespace ICSharpCode.Core.Presentation
 	
 	public class NotifyBindingsChangedEventArgs : EventArgs
 	{
-		private ICollection<IBindingInfoTemplate> _modifiedBindingInfoTemplates;
-		public ICollection<IBindingInfoTemplate> ModifiedBindingInfoTemplates
+		private ICollection<BindingInfoTemplate> _modifiedBindingInfoTemplates;
+		public ICollection<BindingInfoTemplate> ModifiedBindingInfoTemplates
 		{
 			get {
 				return _modifiedBindingInfoTemplates;
@@ -185,7 +185,7 @@ namespace ICSharpCode.Core.Presentation
 			_routedCommandName = routedCommandName;
 		}
 		
-		public NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction action, IEnumerable<IBindingInfoTemplate> templates)
+		public NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction action, IEnumerable<BindingInfoTemplate> templates)
 		{
 			if(action != NotifyBindingsChangedAction.BindingInfoModified) {
 				throw new ArgumentException("This constructor only supports 'BindingInfoModified' action (got '" + Enum.GetName(typeof(NotifyBindingsChangedAction), action) + "')");
@@ -196,7 +196,7 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			_action = action;
-			_modifiedBindingInfoTemplates = new HashSet<IBindingInfoTemplate>(templates, new IBindingInfoTemplateEqualityComparer());
+			_modifiedBindingInfoTemplates = new HashSet<BindingInfoTemplate>(templates);
 		}
 		
 		public NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction action, BindingGroupCollection groups, ICollection<UIElement> attachedInstances)

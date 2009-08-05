@@ -13,7 +13,7 @@ namespace ICSharpCode.Core.Presentation
     /// <summary>
     /// Description of BindingInfoBase.
     /// </summary>
-    abstract public class BindingInfoBase : IBindingInfo, IBindingInfoTemplate
+    abstract public class BindingInfoBase : IBindingInfo
     {
 		private BindingGroupCollection _groups;
 		
@@ -211,7 +211,7 @@ namespace ICSharpCode.Core.Presentation
 				return;
 			}
 			
-			if( (args.Action == NotifyBindingsChangedAction.BindingInfoModified && args.ModifiedBindingInfoTemplates.Contains(new BindingInfoTemplate(this, false)))
+			if( (args.Action == NotifyBindingsChangedAction.BindingInfoModified && args.ModifiedBindingInfoTemplates.Contains(BindingInfoTemplate.CreateFromIBindingInfo(this)))
 			 || (args.Action == NotifyBindingsChangedAction.NamedInstanceModified && OwnerInstanceName == args.UIElementName)
 			 || (args.Action == NotifyBindingsChangedAction.RoutedUICommandModified && routedCommandName == args.RoutedCommandName)
 			 || (args.Action == NotifyBindingsChangedAction.NamedTypeModified && OwnerTypeName == args.TypeName)

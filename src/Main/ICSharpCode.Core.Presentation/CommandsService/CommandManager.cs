@@ -65,7 +65,7 @@ namespace ICSharpCode.Core.Presentation
 
 		static void UserDefinedGesturesManager_CurrentProfileChanged(object sender, NotifyUserGestureProfileChangedEventArgs args)
 		{
-			var changedGestures = new Dictionary<InputBindingIdentifier, Tuple<InputGestureCollection, InputGestureCollection>>();
+			var changedGestures = new Dictionary<BindingInfoTemplate, Tuple<InputGestureCollection, InputGestureCollection>>();
 			
 			if(args.OldProfile != null) {
 				args.OldProfile.GesturesChanged -= Profile_GesturesChanged;
@@ -88,13 +88,13 @@ namespace ICSharpCode.Core.Presentation
 				}
 			}
 			
-			var modifiedBindingTemplates = new HashSet<IBindingInfoTemplate>(new IBindingInfoTemplateEqualityComparer());
+			var modifiedBindingTemplates = new HashSet<BindingInfoTemplate>();
 			var descriptions = new List<GesturesModificationDescription>(changedGestures.Count);
 			foreach(var changedGesture in changedGestures) {
-				var bindingInfoTemplate = new BindingInfoTemplate(changedGesture.Key);
+				var bindingInfoTemplate = changedGesture.Key;
 				InputGestureCollection defaultUserGesture = null;
 				if(changedGesture.Value.Item1 == null || changedGesture.Value.Item2 == null) {
-					defaultUserGesture = FindInputGestures(BindingInfoMatchType.Exact, bindingInfoTemplate);
+					defaultUserGesture = FindInputGestures(bindingInfoTemplate);
 				}
 				
 				var oldGestures = changedGesture.Value.Item1 ?? defaultUserGesture;
@@ -110,9 +110,9 @@ namespace ICSharpCode.Core.Presentation
 
 		static void Profile_GesturesChanged(object sender, NotifyGesturesChangedEventArgs args)
 		{
-			var modifiedBindingTemplates = new HashSet<IBindingInfoTemplate>(new IBindingInfoTemplateEqualityComparer());
+			var modifiedBindingTemplates = new HashSet<BindingInfoTemplate>();
 			foreach(var description in args.ModificationDescriptions) {
-				modifiedBindingTemplates.Add(new BindingInfoTemplate(description.InputBindingIdentifier));
+				modifiedBindingTemplates.Add(description.InputBindingIdentifier);
 			}
 			
 			InvokeBindingsChanged(typeof(CommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, modifiedBindingTemplates));
@@ -346,8 +346,8 @@ namespace ICSharpCode.Core.Presentation
 				throw new ArgumentException("Routed command name must be specified");
 			}
 			
-			var similarTemplate = new BindingInfoTemplate(inputBindingInfo, false);
-			var similarInputBinding = FindInputBindingInfos(BindingInfoMatchType.SuperSet, similarTemplate).FirstOrDefault();
+			var similarTemplate = BindingInfoTemplate.CreateFromIBindingInfo(inputBindingInfo);
+			var similarInputBinding = FindInputBindingInfos(similarTemplate).FirstOrDefault();
 			
 			if(similarInputBinding != null) {
 				foreach(InputGesture gesture in inputBindingInfo.DefaultGestures) {
@@ -360,7 +360,7 @@ namespace ICSharpCode.Core.Presentation
 				similarInputBinding.Categories.AddRange(inputBindingInfo.Categories);
 				similarInputBinding.Groups.AddRange(inputBindingInfo.Groups);
 			} else {
-				inputBidnings.Add(inputBindingInfo, inputBindingInfo);
+				inputBidnings.Add(BindingInfoTemplate.CreateFromIBindingInfo(inputBindingInfo), inputBindingInfo);
 				inputBindingInfo.IsRegistered = true;
 				
 				CommandManager.BindingsChanged += inputBindingInfo.BindingsChangedHandler;
@@ -414,11 +414,11 @@ namespace ICSharpCode.Core.Presentation
 				throw new ArgumentException("Routed command name must be specified");
 			}
 			
-			commandBindings.Add(commandBindingInfo, commandBindingInfo);
+			commandBindings.Add(BindingInfoTemplate.CreateFromIBindingInfo(commandBindingInfo), commandBindingInfo);
 			commandBindingInfo.IsRegistered = true;
 				
 			CommandManager.BindingsChanged += commandBindingInfo.BindingsChangedHandler;
-			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new []{ new BindingInfoTemplate(commandBindingInfo, false) }));
+			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new []{ BindingInfoTemplate.CreateFromIBindingInfo(commandBindingInfo) }));
 		}
 		
 		public static event NotifyBindingsChangedEventHandler BindingsChanged;
@@ -444,7 +444,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="addIn">Add-in</param>
 		public static void LoadAddinCommands(AddIn addIn) {		
-			foreach(CommandBindingInfo binding in FindCommandBindingInfos(BindingInfoMatchType.SuperSet, new BindingInfoTemplate())) {
+			foreach(CommandBindingInfo binding in FindCommandBindingInfos(new BindingInfoTemplate())) {
 				if(binding.AddIn != addIn) continue;
 		
 				if(binding.CommandTypeName != null && !commands.ContainsKey(binding.CommandTypeName)){
@@ -482,23 +482,23 @@ namespace ICSharpCode.Core.Presentation
 		/// Unregister input binding
 		/// </summary>
 		/// <param name="inputBindingInfo">Input binding parameters</param>
-		public static void UnregisterInputBinding(BindingInfoMatchType matchType,  params IBindingInfoTemplate[] templates)
+		public static void UnregisterInputBinding(params BindingInfoTemplate[] templates)
 		{
-			UnregisterBindingInfo(inputBidnings, matchType, templates);
+			UnregisterBindingInfo(inputBidnings, templates);
 		}
 		
 		/// <summary>
 		/// Unregister command binding
 		/// </summary>
 		/// <param name="commandBindingInfo">Command binding parameters</param>
-		public static void UnregisterCommandBinding(BindingInfoMatchType matchType,  params IBindingInfoTemplate[] templates) 
+		public static void UnregisterCommandBinding(params BindingInfoTemplate[] templates) 
 		{
-			UnregisterBindingInfo(commandBindings, matchType, templates);
+			UnregisterBindingInfo(commandBindings, templates);
 		}
 		
-		private static void UnregisterBindingInfo(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfoDictionary, BindingInfoMatchType matchType,  params IBindingInfoTemplate[] templates)
+		private static void UnregisterBindingInfo(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfoDictionary,  params BindingInfoTemplate[] templates)
 		{
-			var foundBindings = FindBindingInfos(bindingInfoDictionary, matchType, templates).ToList();
+			var foundBindings = FindBindingInfos(bindingInfoDictionary, templates).ToList();
 			
 			foreach(var similarBindingInfo in foundBindings) {
 				BindingsUpdatedHandler defaultUpdatesHandler;
@@ -508,8 +508,8 @@ namespace ICSharpCode.Core.Presentation
 					((CommandBindingInfo)similarBindingInfo).IsRegistered = false;
 				}
 					
-				var removedTemplate = new BindingInfoTemplate(similarBindingInfo, false);
-				bindingInfoDictionary.Remove(removedTemplate, BindingInfoMatchType.Exact, similarBindingInfo);
+				var removedTemplate = BindingInfoTemplate.CreateFromIBindingInfo(similarBindingInfo);
+				bindingInfoDictionary.Remove(removedTemplate, similarBindingInfo);
 				CommandManager.BindingsChanged -= similarBindingInfo.BindingsChangedHandler;
 				
 				similarBindingInfo.RemoveActiveBindings();
@@ -532,24 +532,24 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="routedCommandName">Context class full name</param>
 		/// <param name="className">Context class full name</param>
 		/// <returns>Collection of managed command bindings</returns>
-		public static IEnumerable<CommandBindingInfo> FindCommandBindingInfos(BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates)
+		public static IEnumerable<CommandBindingInfo> FindCommandBindingInfos(params BindingInfoTemplate[] templates)
 		{
-			var bindings = FindBindingInfos(commandBindings, matchType, templates).ToList();
+			var bindings = FindBindingInfos(commandBindings, templates).ToList();
 			
 			return bindings.Cast<CommandBindingInfo>();
 		}
 		
-		public static IEnumerable<InputBindingInfo> FindInputBindingInfos(BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates)
+		public static IEnumerable<InputBindingInfo> FindInputBindingInfos(params BindingInfoTemplate[] templates)
 		{
-			var bindings = FindBindingInfos(inputBidnings, matchType, templates).ToList();
+			var bindings = FindBindingInfos(inputBidnings, templates).ToList();
 			
 			return bindings.Cast<InputBindingInfo>();
 		}
 		
-		private static IEnumerable<BindingInfoBase> FindBindingInfos(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfos, BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates)
+		private static IEnumerable<BindingInfoBase> FindBindingInfos(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfos, params BindingInfoTemplate[] templates)
 		{
         	foreach(var template in templates) {
-				foreach(var item in bindingInfos.FindItems(template, matchType)) {
+				foreach(var item in bindingInfos.FindItems(template)) {
 					if(item != null) {
 						yield return item;
 					}
@@ -557,9 +557,9 @@ namespace ICSharpCode.Core.Presentation
         	}
 		}		
 
-		public static CommandBindingCollection FindCommandBindings(BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates) 
+		public static CommandBindingCollection FindCommandBindings(params BindingInfoTemplate[] templates) 
 		{
-			var commandBindingInfoCollection = FindCommandBindingInfos(matchType, templates);
+			var commandBindingInfoCollection = FindCommandBindingInfos(templates);
 			var commandBindingCollection = new CommandBindingCollection();
 			foreach(var bindingInfo in commandBindingInfoCollection) {
 				commandBindingCollection.AddRange(bindingInfo.ActiveCommandBindings);
@@ -568,9 +568,9 @@ namespace ICSharpCode.Core.Presentation
 			return commandBindingCollection;
 		}
 		
-		public static InputBindingCollection FindInputBindings(BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates) 
+		public static InputBindingCollection FindInputBindings(params BindingInfoTemplate[] templates) 
 		{
-			var inputBindingInfoCollection = FindInputBindingInfos(matchType, templates);
+			var inputBindingInfoCollection = FindInputBindingInfos(templates);
 			
 			var inputBindingCollection = new InputBindingCollection();
 			foreach(var bindingInfo in inputBindingInfoCollection) {
@@ -589,8 +589,8 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="contextInstance">Get gestures assigned only to specific context</param>
 		/// <param name="routedCommandName">Routed UI command name</param>
 		/// <param name="gesture">Gesture</param>
-		public static InputGestureCollection FindInputGestures(BindingInfoMatchType matchType, params IBindingInfoTemplate[] templates) {
-			var bindings = FindInputBindingInfos(matchType, templates);
+		public static InputGestureCollection FindInputGestures(params BindingInfoTemplate[] templates) {
+			var bindings = FindInputBindingInfos(templates);
 			var gestures = new InputGestureCollection();
 			
 			foreach(InputBindingInfo bindingInfo in bindings) {
