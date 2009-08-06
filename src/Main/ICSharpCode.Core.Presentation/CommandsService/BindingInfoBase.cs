@@ -13,7 +13,7 @@ namespace ICSharpCode.Core.Presentation
     /// <summary>
     /// Base class for <see cref="CommandBindingInfo" /> and <see cref="InputBindingInfo" />
     /// </summary>
-    abstract public class BindingInfoBase : IBindingInfo
+    abstract public class BindingInfoBase
     {
 		private BindingGroupCollection _groups;
 		private string _ownerInstanceName;

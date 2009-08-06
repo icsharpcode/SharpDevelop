@@ -71,7 +71,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="bindingInfo">Provided binding info</param>
 		/// <returns>Created <see cref="BndingInfoTemplate" /> instance</returns>
-		public static BindingInfoTemplate CreateFromIBindingInfo(IBindingInfo bindingInfo)
+		public static BindingInfoTemplate CreateFromIBindingInfo(BindingInfoBase bindingInfo)
 		{
 			var tpl = new BindingInfoTemplate();
 			tpl._ownerInstanceName = bindingInfo.OwnerInstanceName;

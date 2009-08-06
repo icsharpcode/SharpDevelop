@@ -12,30 +12,32 @@ namespace ICSharpCode.Core.Presentation
 		ICommand command;
 		
 		/// <summary>
-		/// Constructor
+		/// Creates instance of <see cref="WpfCommandWrapper" />
 		/// </summary>
 		/// <param name="command">SharpDevelop native command</param>
-		public WpfCommandWrapper(ICommand command)
+		public WpfCommandWrapper(ICSharpCode.Core.ICommand command)
 		{
 			this.command = command;
 		}
 		
-		/// <see cref="System.Windows.Input.ICommand.CanExecuteChanged">
+		/// <summary>
+		/// Occurs when <see cref="CanExecute" /> returned value changes
+		/// 
 		/// Not used because SharpDevelop's native command implementation
 		/// doesn't support it
-		/// </see>
+		/// </summary>
 		public event EventHandler CanExecuteChanged {
 			add { }
 			remove { }
 		}
 		
-		/// <see cref="System.Windows.Input.ICommand.Execute(object)" />
+		/// <inheritdoc />
 		public void Execute(object parameter)
 		{
 			command.Run();
 		}
 		
-		/// <see cref="System.Windows.Input.ICommand.CanExecute(object)" />
+		/// <inheritdoc />
 		public bool CanExecute(object parameter)
 		{
 			return true;
