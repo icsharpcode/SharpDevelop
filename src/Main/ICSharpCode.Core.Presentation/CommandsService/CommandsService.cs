@@ -217,6 +217,12 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Register all input bindings from collection of <see cref="InputBindingDescriptor" />s
+		/// found through given path
+		/// </summary>
+		/// <param name="caller">Caller object</param>
+		/// <param name="path">Path to collection of <see cref="InputBindingDescriptor" />s</param>
 		public static void RegisterInputBindings(object caller, string path) 
 		{
 			var descriptors = AddInTree.BuildItems<InputBindingDescriptor>(path, caller, false);

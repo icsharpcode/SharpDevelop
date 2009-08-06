@@ -5,7 +5,7 @@ using System.Windows.Input;
 using System.IO;
 using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
-namespace ICSharpCode.Core.Presentation
+namespace ICSharpCode.Core.Presentation  
 {
 	/// <summary>
 	/// Manages user defined gestures

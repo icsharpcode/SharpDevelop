@@ -16,10 +16,10 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public class InputBindingInfo : BindingInfoBase
 	{
-		InputBindingCollection oldBindingCollection = new InputBindingCollection();
+		private InputBindingCollection oldBindingCollection = new InputBindingCollection();
 		private List<UIElement> oldInstances;
-		List<Type> oldTypes;
-		InputBindingCategoryCollection _categories;
+		private List<Type> oldTypes;
+		private InputBindingCategoryCollection _categories;
 		
 		private ObservableInputGestureCollection _defaultGestures;
 		

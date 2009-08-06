@@ -43,8 +43,8 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			SDCommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) {  
 				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified 
-				   && args.AttachedInstances.Contains(uiElement)
-				   && args.Groups.Contains(bindingGroup)) {
+				   && args.GroupHandledInstances.Contains(uiElement)
+				   && args.ModifiedGroups.Contains(bindingGroup)) {
 					result = true;
 				}
 			};
@@ -70,8 +70,8 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			SDCommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) {  
 				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified 
-				   && args.AttachedInstances.Contains(uiElement)
-				   && args.Groups.Contains(bindingGroup)) {
+				   && args.GroupHandledInstances.Contains(uiElement)
+				   && args.ModifiedGroups.Contains(bindingGroup)) {
 					result = true;
 				}
 			};
@@ -100,8 +100,8 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			SDCommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) {  
 				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified 
-				   && args.AttachedInstances.Contains(uiElement)
-				   && args.Groups.Contains(bindingGroup)) {
+				   && args.GroupHandledInstances.Contains(uiElement)
+				   && args.ModifiedGroups.Contains(bindingGroup)) {
 					result = true;
 				}
 			};

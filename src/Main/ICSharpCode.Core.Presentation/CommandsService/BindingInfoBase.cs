@@ -221,8 +221,8 @@ namespace ICSharpCode.Core.Presentation
 			 || (args.Action == NotifyBindingsChangedAction.NamedInstanceModified && OwnerInstanceName == args.UIElementName)
 			 || (args.Action == NotifyBindingsChangedAction.RoutedUICommandModified && routedCommandName == args.RoutedCommandName)
 			 || (args.Action == NotifyBindingsChangedAction.NamedTypeModified && OwnerTypeName == args.TypeName)
-			 || (args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified && ((OwnerTypeName != null && OwnerTypes.Any(t1 => args.AttachedInstances.Any(t2 => t1 == t2.GetType())))
-			 	 || (OwnerInstanceName != null && OwnerInstances.Any(t1 => args.AttachedInstances.Any(t2 => t1 == t2)))))
+			 || (args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified && ((OwnerTypeName != null && OwnerTypes.Any(t1 => args.GroupHandledInstances.Any(t2 => t1 == t2.GetType())))
+			 	 || (OwnerInstanceName != null && OwnerInstances.Any(t1 => args.GroupHandledInstances.Any(t2 => t1 == t2)))))
 			 ) {
 				GenerateBindings();
 				

@@ -204,11 +204,11 @@ namespace ICSharpCode.Core.Presentation.Tests
 			};
 			
 			CommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) { 
-				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified && args.Groups.Contains(addedGroup)) {
+				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified && args.ModifiedGroups.Contains(addedGroup)) {
 					testResults.Add("GroupAdded");
 				}
 				
-				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified && args.Groups.Contains(removedGroup)) {
+				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified && args.ModifiedGroups.Contains(removedGroup)) {
 					testResults.Add("GroupRemoved");
 				}
 			};
