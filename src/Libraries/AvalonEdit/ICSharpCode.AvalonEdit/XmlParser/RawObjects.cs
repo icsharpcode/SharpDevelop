@@ -8,14 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
-// Missing XML comment
+// TODO: Missing XML comment
 #pragma warning disable 1591
 
 namespace ICSharpCode.AvalonEdit.XmlParser
@@ -106,13 +105,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		protected XName EncodeXName(string name)
 		{
+			if (string.IsNullOrEmpty(name)) name = "_";
+			
 			string namesapce = string.Empty;
 			int colonIndex = name.IndexOf(':');
 			if (colonIndex != -1) {
 				namesapce = name.Substring(0, colonIndex);
 				name = name.Substring(colonIndex + 1);
 			}
-			if (string.IsNullOrEmpty(name)) name = "_";
+			
 			name = XmlConvert.EncodeLocalName(name);
 			namesapce = XmlConvert.EncodeLocalName(namesapce);
 			return XName.Get(name, namesapce);
@@ -452,9 +453,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			if (!firstUpdate) LogLinq("Updating XElement Attributes of '{0}'", this.StartTag.Name);
 			
-			xElem.ReplaceAttributes(); // Otherwise we get duplicate item exception
-			XAttribute[] attrs = this.StartTag.Children.OfType<RawAttribute>().Select(x => x.GetXAttribute()).Distinct(new AttributeNameComparer()).ToArray();
-			xElem.ReplaceAttributes(attrs);
+			// TODO:  Investigate null
+			if (xElem != null) {
+				xElem.ReplaceAttributes(); // Otherwise we get duplicate item exception
+				XAttribute[] attrs = this.StartTag.Children.OfType<RawAttribute>().Select(x => x.GetXAttribute()).Distinct(new AttributeNameComparer()).ToArray();
+				xElem.ReplaceAttributes(attrs);
+			}
 		}
 		
 		void UpdateXElementChildren(bool firstUpdate)
@@ -493,6 +497,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public string Name { get; set; }
 		public string EqualsSign { get; set; }
 		public string Value { get; set; }
+		
+		// TODO: Provide method to dereference Value - &
 		
 		public override void UpdateDataFrom(RawObject source)
 		{
@@ -548,11 +554,25 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	
 	public enum RawTextType
 	{
+		/// <summary> Ends with non-whitespace </summary>
 		WhiteSpace,
+		
+		/// <summary> Ends with "&lt;";  "]]&gt;" is error </summary>
 		CharacterData,
+		
+		/// <summary> Ends with "-->";  "--" is error </summary>
 		Comment,
+		
+		/// <summary> Ends with "]]&gt;" </summary>
 		CData,
-		DocumentTypeDefinition,
+		
+		/// <summary> Ends with "?>" </summary>
+		ProcessingInstruction,
+		
+		/// <summary> Ends with "&lt;" or ">" </summary>
+		UnknownBang,
+		
+		/// <summary> Unknown </summary>
 		Other
 	}
 	
