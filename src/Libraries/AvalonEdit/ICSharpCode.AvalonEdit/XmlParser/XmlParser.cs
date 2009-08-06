@@ -88,7 +88,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </remarks>
 	public class XmlParser
 	{
-		RawDocument userDocument = new RawDocument();
+		// TODO: Error reporting
+		// TODO: Trace touched memory
+		// TODO: Simple tag matching heuristic
+		// TODO: Simple attribute value closing heurisitc
+		// TODO: Backtracking for unclosed long Text sections
+		
+		RawDocument userDocument;
 		XDocument userLinqDocument;
 		TextDocument textDocument;
 		TextSegmentCollection<RawObject> parsedItems = new TextSegmentCollection<RawObject>();
@@ -97,9 +103,18 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary>
 		/// Create new parser, but do not parse the text yet.
 		/// </summary>
-		public XmlParser(TextDocument textDocument)
+		public XmlParser(string input)
 		{
+			this.input = input;
+			this.userDocument = new RawDocument();
 			this.userLinqDocument = userDocument.GetXDocument();
+		}
+		
+		/// <summary>
+		/// Create new parser, but do not parse the text yet.
+		/// </summary>
+		public XmlParser(TextDocument textDocument): this(textDocument.Text)
+		{
 			this.textDocument = textDocument;
 			this.textDocument.Changed += delegate(object sender, DocumentChangeEventArgs e) {
 				changesSinceLastParse.Add(e);
@@ -111,24 +126,27 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		public RawDocument Parse()
 		{
-			input = textDocument.Text;
-			readingEnd = input.Length;
-			currentLocation = 0;
+			// Update source text
+			if (textDocument != null) {
+				input = textDocument.Text;
+			}
 			
+			// Use chages to invalidate cache
 			foreach(DocumentChangeEventArgs change in changesSinceLastParse) {
 				// Update offsets of all items
 				parsedItems.UpdateOffsets(change);
 				// Remove any items affected by the change
-				int start = change.Offset - 2;
-				int end = change.Offset + change.InsertionLength + 2;
-				start = Math.Max(Math.Min(start, textDocument.TextLength - 1), 0);
-				end = Math.Max(Math.Min(end, textDocument.TextLength - 1), 0);
+				int start = Math.Max(change.Offset - 2, 0);
+				int end = Math.Max(change.Offset + change.InsertionLength + 2, 0);
 				foreach(RawObject obj in parsedItems.FindOverlappingSegments(start, end - start)) {
 					parsedItems.Remove(obj);
 					Log("Removed cached item {0}", obj);
 				}
 			}
 			changesSinceLastParse.Clear();
+			
+			currentLocation = 0;
+			readingEnd = input.Length;
 			
 			RawDocument parsedDocument = ReadDocument();
 			// Just in case parse method was called redundantly
@@ -357,8 +375,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		bool TryReadName(out string res)
 		{
-			AssertHasMoreData();
-			
 			int start = currentLocation;
 			TryMoveToAnyOf(WhiteSpaceAndReservedChars.ToArray());
 			if (start == currentLocation) {
@@ -433,8 +449,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						break;
 					} else if (TryPeek('<')) {
 						RawObject content = ReadElementOrTag();
-						if (content is RawTag && ((RawTag)content).IsEndTag) break;
 						element.AddChild(content);
+						if (content is RawTag && ((RawTag)content).IsEndTag) break;
 					} else {
 						element.AddChildren(ReadText(RawTextType.CharacterData));
 					}
@@ -479,7 +495,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				while(true) {					
 					// Chech for all forbiden 'name' charcters first - see ReadName
 					if (IsEndOfFile()) break;
-					if (TryPeekWhiteSpace()) tag.AddChildren(ReadText(RawTextType.WhiteSpace));
+					if (TryPeekWhiteSpace()) {
+						tag.AddChildren(ReadText(RawTextType.WhiteSpace));
+						continue;  // End of file might be next
+					}
 					if (TryPeek('<')) break;
 					if (TryPeek('>') || TryPeek('/') || TryPeek('?')) break;  // End tag
 					

@@ -79,6 +79,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return new RawObject[] { this };
 		}
 		
+		public abstract void AcceptVisitor(IXmlVisitor visitor);
+		
 		public virtual void UpdateDataFrom(RawObject source)
 		{
 			this.ReadCallID = source.ReadCallID;
@@ -324,6 +326,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (ObjectDettached != null) ObjectDettached(this, new RawObjectEventArgs() { Object = obj } );
 		}
 		
+		public override void AcceptVisitor(IXmlVisitor visitor)
+		{
+			visitor.VisitDocument(this);
+		}
+		
 		XDocument xDoc;
 		
 		public XDocument GetXDocument()
@@ -378,6 +385,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public bool IsDocumentType          { get { return DTDNames.Contains(OpeningBracket); } }
 		public bool IsUnknownBang           { get { return OpeningBracket == "<!"; } }
 		
+		public override void AcceptVisitor(IXmlVisitor visitor)
+		{
+			visitor.VisitTag(this);
+		}
+		
 		public override void UpdateDataFrom(RawObject source)
 		{
 			if (this.ReadCallID == source.ReadCallID) return;
@@ -422,6 +434,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					new FilteredCollection<ChildrenCollection<RawObject>, RawObject>(this.Children, x => x is RawElement)
 				);
 			}
+		}
+		
+		public override void AcceptVisitor(IXmlVisitor visitor)
+		{
+			visitor.VisitElement(this);
 		}
 		
 		XElement xElem;
@@ -499,6 +516,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public string Value { get; set; }
 		
 		// TODO: Provide method to dereference Value - &
+		
+		public override void AcceptVisitor(IXmlVisitor visitor)
+		{
+			visitor.VisitAttribute(this);
+		}
 		
 		public override void UpdateDataFrom(RawObject source)
 		{
@@ -583,6 +605,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	{
 		public RawTextType Type { get; set; }
 		public string Value { get; set; }
+		
+		public override void AcceptVisitor(IXmlVisitor visitor)
+		{
+			visitor.VisitText(this);
+		}
 		
 		public override void UpdateDataFrom(RawObject source)
 		{

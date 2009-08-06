@@ -28,6 +28,8 @@ namespace XmlDOM
 	{
 		XmlParser parser;
 		
+		bool textDirty = true;
+		
 		public Window1()
 		{
 			InitializeComponent();
@@ -35,10 +37,11 @@ namespace XmlDOM
 		
 		protected override void OnInitialized(EventArgs e)
 		{
+			editor.Document.Changed += delegate { textDirty = true; };
 			parser = new XmlParser(editor.Document);
 
 			DispatcherTimer timer = new DispatcherTimer();
-			timer.Interval = TimeSpan.FromSeconds(0.25);
+			timer.Interval = TimeSpan.FromSeconds(0.5);
 			timer.Tick += delegate { Button_Click(null, null); };
 			timer.Start();
 			
@@ -47,10 +50,18 @@ namespace XmlDOM
 		
 		void Button_Click(object sender, RoutedEventArgs e)
 		{
+			if (!textDirty) return;
 			RawDocument doc = parser.Parse();
 			if (treeView.Items.Count == 0) {
 				treeView.Items.Add(doc);
 			}
+			PrettyPrintXmlVisitor visitor = new PrettyPrintXmlVisitor();
+			visitor.VisitDocument(doc);
+			string prettyPrintedText = visitor.Output;
+			if (prettyPrintedText != editor.Document.Text) {
+				MessageBox.Show("Original and pretty printer version of XML differ");
+			}
+			textDirty = false;
 		}
 		
 		void BindObject(object sender, EventArgs e)

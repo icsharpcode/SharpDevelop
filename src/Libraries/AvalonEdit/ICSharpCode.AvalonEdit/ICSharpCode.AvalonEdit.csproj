@@ -310,6 +310,7 @@
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
     <Compile Include="XmlParser\Collections.cs" />
     <Compile Include="XmlParser\RawObjects.cs" />
+    <Compile Include="XmlParser\Visitors.cs" />
     <Compile Include="XmlParser\XmlParser.cs" />
     <Resource Include="themes\RightArrow.cur" />
     <EmbeddedResource Include="Highlighting\Resources\ASPX.xshd" />
