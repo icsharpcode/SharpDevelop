@@ -45,7 +45,7 @@ namespace ICSharpCode.Core.Presentation
     	public bool IsAttachedTo(UIElement instance)
     	{
     		foreach(var bindingGroup in FlatNesteGroups) {
-    			if(bindingGroup.IsAttachedTo(instance)) {
+    			if(bindingGroup.IsInstanceRegistered(instance)) {
     				return true;
     			}
     		}
@@ -70,7 +70,7 @@ namespace ICSharpCode.Core.Presentation
     	{
 			var instances = new HashSet<UIElement>();
 			foreach(var group in FlatNesteGroups) {
-				foreach(var instance in group.GetAttachedInstances(types)) {
+				foreach(var instance in group.FilterAttachedInstances(types)) {
 					instances.Add(instance);
 				}
 			}

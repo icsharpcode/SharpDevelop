@@ -8,10 +8,27 @@ namespace ICSharpCode.Core.Presentation
 	
     public class NotifyGesturesChangedEventArgs : EventArgs
     {
+    	private bool _enforceUpdates;
+    	public bool EnforceUpdates
+    	{
+    		get {
+    			return _enforceUpdates;
+    		}
+    	}
+    	
     	List<GesturesModificationDescription> _modificationDescriptions = new List<GesturesModificationDescription>();
+		
+		public ICollection<GesturesModificationDescription> ModificationDescriptions
+		{
+			get
+			{
+				return _modificationDescriptions.AsReadOnly();
+			}
+		}
 		
 		public NotifyGesturesChangedEventArgs()
 		{
+			_enforceUpdates = true;
 		}
 		
 		public NotifyGesturesChangedEventArgs(IEnumerable<GesturesModificationDescription> descriptions)
@@ -30,14 +47,6 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			_modificationDescriptions.Add(description);
-		}
-    	
-		public ICollection<GesturesModificationDescription> ModificationDescriptions
-		{
-			get
-			{
-				return _modificationDescriptions.AsReadOnly();
-			}
 		}
     }
     

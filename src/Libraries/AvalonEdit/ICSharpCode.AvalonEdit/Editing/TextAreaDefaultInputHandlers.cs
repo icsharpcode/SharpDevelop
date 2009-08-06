@@ -40,7 +40,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		static TextAreaDefaultInputHandler()
 		{
-			ClassWideBindingGroup = new BindingGroup();	
+			ClassWideBindingGroup = new BindingGroup("TextAreaDefaultInputHandler");	
 			
 			AddCommandBinding("ApplicationCommands.Undo", CanExecuteUndo, ExecuteUndo);
 			AddCommandBinding("ApplicationCommands.Redo", CanExecuteRedo, ExecuteRedo);
@@ -49,13 +49,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 		static void AddCommandBinding(string routedCommandName, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)
 		{
 			var commandBinding = new CommandBindingInfo();
-			commandBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
+			commandBinding.OwnerTypeName = SDCommandManager.GetShortAssemblyQualifiedName(typeof(TextArea));
 			commandBinding.ExecutedEventHandler = executedHandler;
 			commandBinding.CanExecuteEventHandler = canExecuteHandler;
 			commandBinding.IsLazy = false;
 			commandBinding.Groups.Add(ClassWideBindingGroup);
 			commandBinding.RoutedCommandName = routedCommandName;
-			SDCommandManager.RegisterCommandBinding(commandBinding);
+			SDCommandManager.RegisterCommandBindingInfo(commandBinding);
 		}
 		
 		/// <summary>

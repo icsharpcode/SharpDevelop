@@ -6,6 +6,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Collections;
 using ICSharpCode.Core;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -57,12 +58,12 @@ namespace ICSharpCode.Core.Presentation
 						if(codon.Properties.Contains("ownerinstance")) {
 							commandBindingInfo.OwnerInstanceName = codon.Properties["ownerinstance"];
 						} else {
-							commandBindingInfo.OwnerTypeName = codon.Properties.Contains("ownertype") ? codon.Properties["ownertype"] : CommandManager.DefaultContextName;
+							commandBindingInfo.OwnerTypeName = codon.Properties.Contains("ownertype") ? codon.Properties["ownertype"] : SDCommandManager.DefaultOwnerTypeName;
 						}
 						commandBindingInfo.CommandInstance = CommandWrapper.GetCommand(codon, null, codon.Properties["loadclasslazy"] == "true");
 						commandBindingInfo.RoutedCommandName = routedCommandName;
 						commandBindingInfo.IsLazy = true;
-						CommandManager.RegisterCommandBinding(commandBindingInfo);
+						SDCommandManager.RegisterCommandBindingInfo(commandBindingInfo);
 					}
 					
 					// Register input bindings
@@ -71,7 +72,7 @@ namespace ICSharpCode.Core.Presentation
 					if(codon.Properties.Contains("ownerinstance")) {
 						inputBindingInfo.OwnerInstanceName = codon.Properties["ownerinstance"];
 					} else {
-						inputBindingInfo.OwnerTypeName = codon.Properties.Contains("ownertype") ? codon.Properties["ownertype"] : CommandManager.DefaultContextName;
+						inputBindingInfo.OwnerTypeName = codon.Properties.Contains("ownertype") ? codon.Properties["ownertype"] : SDCommandManager.DefaultOwnerTypeName;
 					}
 					inputBindingInfo.RoutedCommandName = routedCommandName;
 					
@@ -79,21 +80,21 @@ namespace ICSharpCode.Core.Presentation
 					inputBindingInfo.DefaultGestures.AddRange(defaultGesture);
 					
 					// Menu category
-					var menuCategory = CommandManager.GetInputBindingCategory(categoryPath, true);
+					var menuCategory = SDCommandManager.GetInputBindingCategory(categoryPath, true);
 					inputBindingInfo.Categories.Add(menuCategory);
 					
 					// User defined categories
 					if(codon.Properties.Contains("inputbindingcategories")) {
-						var additionalCategories = CommandManager.GetInputBindingCategoryCollection(codon.Properties["inputbindingcategories"], true);
+						var additionalCategories = SDCommandManager.GetInputBindingCategoryCollection(codon.Properties["inputbindingcategories"], true);
 						inputBindingInfo.Categories.AddRange(additionalCategories);
 					}
 					
-					CommandManager.RegisterInputBinding(inputBindingInfo);
+					SDCommandManager.RegisterInputBindingInfo(inputBindingInfo);
 				}
 				
 				if(item.SubItems != null) {
 					var subMenuCategory = new InputBindingCategory(categoryPath + "/" + item.Codon.Id, codon.Properties["label"]);
-					CommandManager.RegisterInputBindingCategory(subMenuCategory);
+					SDCommandManager.RegisterInputBindingCategory(subMenuCategory);
 					
 					RegisterSingleMenuBindings(item.SubItems, caller, categoryPath + "/" + item.Codon.Id);
 				}
@@ -114,7 +115,7 @@ namespace ICSharpCode.Core.Presentation
 				}
 				
 				if(command != null) {
-					CommandManager.RegisterRoutedUICommand(command);
+					SDCommandManager.RegisterRoutedUICommand(command);
 				}
 			}
 		}
@@ -140,7 +141,7 @@ namespace ICSharpCode.Core.Presentation
 		{
 			categoryPath = categoryPath + "/" + descriptor.Id;
 			var category = new InputBindingCategory(categoryPath, descriptor.Text);
-			CommandManager.RegisterInputBindingCategory(category);
+			SDCommandManager.RegisterInputBindingCategory(category);
 			
 			foreach(var desc in descriptor.Children)
 			{
@@ -152,7 +153,7 @@ namespace ICSharpCode.Core.Presentation
 		{
 			var descriptors = AddInTree.BuildItems<RoutedUICommandDescriptor>(path, caller, false);
 			foreach(var desc in descriptors) {
-				CommandManager.RegisterRoutedUICommand(desc.Name, desc.Text);                                                                    	
+				SDCommandManager.RegisterRoutedUICommand(desc.Name, desc.Text);                                                                    	
 			}
 		}
 		
@@ -163,9 +164,9 @@ namespace ICSharpCode.Core.Presentation
 				var commandBindingInfoName = new StringBuilder();
 				
 				// If routed with such name is not registered register routed command with text same as name
-				if(CommandManager.GetRoutedUICommand(desc.Command) == null) {
+				if(SDCommandManager.GetRoutedUICommand(desc.Command) == null) {
 					var commandText = string.IsNullOrEmpty(desc.CommandText) ? desc.Command : desc.CommandText;
-					CommandManager.RegisterRoutedUICommand(desc.Command, commandText);
+					SDCommandManager.RegisterRoutedUICommand(desc.Command, commandText);
 				}
 				
 				var commandBindingInfo = new CommandBindingInfo();
@@ -175,14 +176,14 @@ namespace ICSharpCode.Core.Presentation
 				} else if(!string.IsNullOrEmpty(desc.OwnerTypeName)) {
 					commandBindingInfo.OwnerTypeName = desc.OwnerTypeName;
 				} else {
-					commandBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
+					commandBindingInfo.OwnerTypeName = CommandManager.DefaultOwnerTypeName;
 				}
 				
 				commandBindingInfo.RoutedCommandName = desc.Command;
 				commandBindingInfo.CommandTypeName = desc.Class;
 				commandBindingInfo.AddIn = desc.Codon.AddIn;
 				commandBindingInfo.IsLazy = desc.Lazy;
-				CommandManager.RegisterCommandBinding(commandBindingInfo);
+				SDCommandManager.RegisterCommandBindingInfo(commandBindingInfo);
 				
 				// If gestures are provided register input binding in the same context
 				if(!string.IsNullOrEmpty(desc.Gestures)) {
@@ -195,7 +196,7 @@ namespace ICSharpCode.Core.Presentation
 					} else if(!string.IsNullOrEmpty(desc.OwnerTypeName)) {
 						inputBindingInfo.OwnerTypeName = desc.OwnerTypeName;
 					} else {
-						inputBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
+						inputBindingInfo.OwnerTypeName = CommandManager.DefaultOwnerTypeName;
 					}
 					
 					inputBindingInfo.AddIn = desc.Codon.AddIn;
@@ -211,7 +212,7 @@ namespace ICSharpCode.Core.Presentation
 						inputBindingInfo.Categories.AddRange(categories);
 					}
 					
-					CommandManager.RegisterInputBinding(inputBindingInfo);
+					SDCommandManager.RegisterInputBindingInfo(inputBindingInfo);
 				}
 			}
 		}
@@ -229,7 +230,7 @@ namespace ICSharpCode.Core.Presentation
 				} else if(!string.IsNullOrEmpty(desc.OwnerTypeName)) {
 					inputBindingInfo.OwnerTypeName = desc.OwnerTypeName;
 				} else {
-					inputBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
+					inputBindingInfo.OwnerTypeName = SDCommandManager.DefaultOwnerTypeName;
 				}	
 				
 				inputBindingInfo.AddIn = desc.Codon.AddIn;
@@ -241,11 +242,11 @@ namespace ICSharpCode.Core.Presentation
 				}
 				
 				if(!string.IsNullOrEmpty(desc.Categories)) {
-					var categories = CommandManager.GetInputBindingCategoryCollection(desc.Categories, true);
+					var categories = SDCommandManager.GetInputBindingCategoryCollection(desc.Categories, true);
 					inputBindingInfo.Categories.AddRange(categories);
 				}
 				
-				CommandManager.RegisterInputBinding(inputBindingInfo);
+				SDCommandManager.RegisterInputBindingInfo(inputBindingInfo);
 			}
 		}
 	}

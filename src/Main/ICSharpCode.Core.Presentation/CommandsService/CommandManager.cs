@@ -16,41 +16,50 @@ using ICSharpCode.Core;
 namespace ICSharpCode.Core.Presentation
 {	
 	/// <summary>
-	/// Global registry to store and access commands, command bindings and input bindings
+	/// Provides methods to describe <see cref="CommandBinding" /> and <see cref="InputBinding" /> 
+	/// objects assigned to owners and methods to keep aware of user changes to default gestures
 	/// </summary>
 	public static class CommandManager
 	{
 		/// <summary>
-		/// Default application context.
-		/// 
-		/// This should be set to the root UI element
+		/// Name of the type which should be used as owner if no other 
+		/// owner type or element was provided
 		/// </summary>
-		public static string DefaultContextName {
+		public static string DefaultOwnerTypeName {
 			get; set;
 		}
 		
-		public static bool SuspendUpdateHandlers {
+		/// <summary>
+		/// Suspend <see cref="BindingsChanged" /> and <see cref="GesturesChanged" />
+		/// event handlers from being notified about new events
+		/// 
+		/// This property is usefull when lots of updates hapen. To improve performance
+		/// event notifications can be turned off until all updates are finished and after
+		/// that all handlers should be notified about the changes by calling method 
+		/// <see cref="InvokeBindingsChanged" /> or <see cref="InvokeGesturesChanged" />
+		/// with appropriate arguments
+		public static bool SuspendEvents {
 			get; set;
 		}
 		
-		// Binding infos
+		// Registered binding infos
 		private static BindingInfoTemplateDictionary<BindingInfoBase> commandBindings = new BindingInfoTemplateDictionary<BindingInfoBase>();
 		private static BindingInfoTemplateDictionary<BindingInfoBase> inputBidnings = new BindingInfoTemplateDictionary<BindingInfoBase>();
 		
-		// Commands
+		// Registered commands
 		private static Dictionary<string, RoutedUICommand> routedCommands = new Dictionary<string, RoutedUICommand>();
 		internal static Dictionary<string, System.Windows.Input.ICommand> commands = new Dictionary<string, System.Windows.Input.ICommand>();
 		
-		// Named instances and types
+		// Named UI instances and types
 		private static RelationshipMap<string, WeakReference> namedUIInstances = new RelationshipMap<string, WeakReference>(null, new WeakReferenceEqualirtyComparer());
 		private static RelationshipMap<string, Type> namedUITypes = new RelationshipMap<string, Type>();
 		
-		// Categories
+		// Registered input binding categories
 		public static List<InputBindingCategory> InputBindingCategories = new List<InputBindingCategory>();
 		
 		static CommandManager()
 		{
-			// Load gestures profile first
+			// Load gesture profile first
 			var path = PropertyService.Get("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory");
 			if(path != null && File.Exists(path)) {
 				var profile = new UserGestureProfile();
@@ -65,6 +74,7 @@ namespace ICSharpCode.Core.Presentation
 
 		static void UserDefinedGesturesManager_CurrentProfileChanged(object sender, NotifyUserGestureProfileChangedEventArgs args)
 		{
+			// Collect information about changed gestures and bindings from ProfileChanged event
 			var changedGestures = new Dictionary<BindingInfoTemplate, Tuple<InputGestureCollection, InputGestureCollection>>();
 			
 			if(args.OldProfile != null) {
@@ -79,7 +89,6 @@ namespace ICSharpCode.Core.Presentation
 				args.NewProfile.GesturesChanged += Profile_GesturesChanged;
 				
 				foreach(var pair in args.NewProfile) {
-					InputGestureCollection item1 = null;
 					if(!changedGestures.ContainsKey(pair.Key)) {
 						changedGestures.Add(pair.Key, new Tuple<InputGestureCollection, InputGestureCollection>(null, pair.Value));
 					} else {
@@ -104,38 +113,51 @@ namespace ICSharpCode.Core.Presentation
 				modifiedBindingTemplates.Add(bindingInfoTemplate);
 			}
 			
+			// Notify GesturesChanged and BindingsChanged events handlers about changes
 			InvokeBindingsChanged(typeof(CommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, modifiedBindingTemplates));
 			InvokeGesturesChanged(typeof(CommandManager), new NotifyGesturesChangedEventArgs(descriptions));
 		}
 
 		static void Profile_GesturesChanged(object sender, NotifyGesturesChangedEventArgs args)
 		{
+			// Collect information about changed gestures and bindings from GesturesChanded event in profile
 			var modifiedBindingTemplates = new HashSet<BindingInfoTemplate>();
 			foreach(var description in args.ModificationDescriptions) {
 				modifiedBindingTemplates.Add(description.InputBindingIdentifier);
 			}
 			
+			// Notify GesturesChanged and BindingsChanged events handlers about changes
 			InvokeBindingsChanged(typeof(CommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, modifiedBindingTemplates));
 			InvokeGesturesChanged(typeof(CommandManager), args);
 		}
 		
 		/// <summary>
-		/// Register UI element instance accessible by unique name
+		/// Get fully qualified assembly name without version and locale
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static string GetShortAssemblyQualifiedName(Type type)
+		{
+			return string.Format("{0}, {1}", type.FullName, type.Assembly.GetName().Name);
+		}
+		
+		/// <summary>
+		/// Register <see cref="UIlement" /> instance accessible by unique name
 		/// </summary>
 		/// <param name="instanceName">Instance name</param>
-		/// <param name="element">Instance</param>
-		public static void RegisterNamedUIElement(string instanceName, UIElement element)
+		/// <param name="instance">Instance</param>
+		public static void RegisterNamedUIElement(string instanceName, UIElement instance)
 		{	
 			if(instanceName == null) {
 				throw new ArgumentNullException("instanceName");
 			}
-			if(element == null) {
-				throw new ArgumentNullException("element");
+			if(instance == null) {
+				throw new ArgumentNullException("instance");
 			}
 			
 			var oldInstances = GetNamedUIElementCollection(instanceName).ToArray();
 			
-			var container = new WeakReference(element);
+			var container = new WeakReference(instance);
 			if(namedUIInstances.Add(instanceName, container)) {
 				InvokeBindingsChanged(
 					null, 
@@ -147,6 +169,11 @@ namespace ICSharpCode.Core.Presentation
 			}	
 		}
 		
+		/// <summary>
+		/// Make <see cref="UIlement" /> instance no longer accessible by provided name
+		/// </summary>
+		/// <param name="instanceName">Instance name</param>
+		/// <param name="instance">Instance</param>
 		public static void UnregisterNamedUIElement(string instanceName, UIElement instance)
 		{	
 			if(instanceName == null) {
@@ -171,10 +198,10 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Get instance by unique instance name
+		/// Get collection of <see cref="UIElement" /> instances associated with provided instance name
 		/// </summary>
 		/// <param name="instanceName">Instance name</param>
-		/// <returns></returns>
+		/// <returns>Instances collection</returns>
 		public static ICollection<UIElement> GetNamedUIElementCollection(string instanceName)
 		{
 			if(instanceName == null) {
@@ -184,6 +211,11 @@ namespace ICSharpCode.Core.Presentation
 			return namedUIInstances.MapForward(instanceName).Where(reference => reference.Target != null).Select(reference => (UIElement)reference.Target).ToList();
 		}
 		
+		/// <summary>
+		/// Get collection of names associated with <see cref="UIElement" /> instance
+		/// </summary>
+		/// <param name="instance">Instance</param>
+		/// <returns>Names collection</returns>
 		public static ICollection<string> GetUIElementNameCollection(UIElement instance)
 		{
 			if(instance == null) {
@@ -194,7 +226,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Register UI type which can be accessible by name
+		/// Register <see cref="Type" /> accessible by unique name
 		/// </summary>
 		/// <param name="typeName">Type name</param>
 		/// <param name="type">Type</param>
@@ -219,6 +251,12 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		
+		/// <summary>
+		/// Make <see cref="Type" /> no longer accessible by provided name
+		/// </summary>
+		/// <param name="typeName">Type name</param>
+		/// <param name="type">Type</param>
 		public static void UnregisterNamedUIType(string typeName, Type type)
 		{	
 			if(typeName == null) {
@@ -242,10 +280,10 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Get type by uniqe type name
+		/// Get collection of <see cref="Type" /> associated with provided type name
 		/// </summary>
 		/// <param name="typeName">Type name</param>
-		/// <returns>Type</returns>
+		/// <returns>Types collection</returns>
 		public static ICollection<Type> GetNamedUITypeCollection(string typeName)
 		{
 			if(typeName == null) {
@@ -255,6 +293,11 @@ namespace ICSharpCode.Core.Presentation
 			return namedUITypes.MapForward(typeName);
 		}
 		
+		/// <summary>
+		/// Get collection of names associated with <see cref="Type" />
+		/// </summary>
+		/// <param name="type">Type</param>
+		/// <returns>Names collection</returns>
 		public static ICollection<string> GetUITypeNameCollection(Type type)
 		{
 			if(type == null) {
@@ -265,9 +308,8 @@ namespace ICSharpCode.Core.Presentation
 		}
 
 		/// <summary>
-		/// Register new routed command in the global registry
+		/// Register newly created <see cref="RoutedUICommand" /> with unique name
 		/// 
-		/// Routed command name should be unique in SharpDevelop scope. 
 		/// Use "." to organize commands into groups
 		/// </summary>
 		/// <param name="routedCommandName">Routed command name</param>
@@ -287,11 +329,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 
 		/// <summary>
-		/// Register existing routed command in the global registry
-		/// 
-		/// Routed command then can be accessed 
-		/// Routed command name should be uniq in SharpDevelop scope. 
-		/// Use "." to organize commands into groups
+		/// Register existing routed command
 		/// </summary>
 		/// <param name="routedCommandName">Existing routed command</param>
 		public static void RegisterRoutedUICommand(RoutedUICommand existingRoutedUICommand) {
@@ -307,9 +345,9 @@ namespace ICSharpCode.Core.Presentation
 		}
 	
 		/// <summary>
-		/// Remove routed command from global registry
+		/// Unregister routed command
 		/// </summary>
-		/// <param name="routedCommandName">Routed command name</param>
+		/// <param name="routedCommandName">Unregistered routed command name</param>
 		public static void UnregisterRoutedUICommand(string routedCommandName) {
 			if(routedCommands.ContainsKey(routedCommandName)) {
 				var routedCommand = routedCommands[routedCommandName];
@@ -320,10 +358,10 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Get reference to routed UI command by name
+		/// Get instance of <see cref="RoutedUICommand" /> by name
 		/// </summary>
 		/// <param name="routedCommandName">Routed command name</param>
-		/// <returns>Routed command instance</returns>
+		/// <returns>Routed UI command instance</returns>
 		public static RoutedUICommand GetRoutedUICommand(string routedCommandName) {
 			if(routedCommands != null && routedCommands.ContainsKey(routedCommandName)) {
 				return routedCommands[routedCommandName];
@@ -331,12 +369,32 @@ namespace ICSharpCode.Core.Presentation
 			
 			return null;
 		}
+		
+		/// <summary>
+		/// Register <see cref="CommandBindingInfo" /> instance
+		/// </summary>
+		/// <param name="commandBindingInfo">Binding info</param>
+		public static void RegisterCommandBindingInfo(CommandBindingInfo commandBindingInfo) {
+			if(commandBindingInfo.OwnerInstanceName == null && commandBindingInfo.OwnerTypeName == null) {
+				throw new ArgumentException("Binding owner must be specified");
+			}
+			
+			if(commandBindingInfo.RoutedCommandName == null) {
+				throw new ArgumentException("Routed command name must be specified");
+			}
+			
+			commandBindings.Add(BindingInfoTemplate.CreateFromIBindingInfo(commandBindingInfo), commandBindingInfo);
+			commandBindingInfo.IsRegistered = true;
+				
+			CommandManager.BindingsChanged += commandBindingInfo.BindingsChangedHandler;
+			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new []{ BindingInfoTemplate.CreateFromIBindingInfo(commandBindingInfo) }));
+		}
 
 		/// <summary>
-		/// Register input binding by specifying this binding parameters
+		/// Register <see cref="InputBindingInfo" /> instance
 		/// </summary>
-		/// <param name="inputBindingInfo">Input binding parameters</param>
-		public static void RegisterInputBinding(InputBindingInfo inputBindingInfo)
+		/// <param name="inputBindingInfo">Binding info</param>
+		public static void RegisterInputBindingInfo(InputBindingInfo inputBindingInfo)
 		{
 			if(inputBindingInfo.OwnerInstanceName == null && inputBindingInfo.OwnerTypeName == null) {
 				throw new ArgumentException("Binding owner must be specified");
@@ -364,9 +422,16 @@ namespace ICSharpCode.Core.Presentation
 				inputBindingInfo.IsRegistered = true;
 				
 				CommandManager.BindingsChanged += inputBindingInfo.BindingsChangedHandler;
+				InvokeGesturesChanged(
+					typeof(CommandManager), 
+					new NotifyGesturesChangedEventArgs(
+						new GesturesModificationDescription(
+							similarTemplate,
+							null,
+							inputBindingInfo.ActiveGestures)));
 			}
 			
-			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new [] { similarTemplate }));
+			InvokeBindingsChanged(typeof(CommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new [] { similarTemplate }));
 		}
 		
 		/// <summary>
@@ -402,39 +467,36 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Register command binding by specifying command binding parameters
+		/// Occurs when information relevant to registered <see cref="IBindingInfo"/> changes
 		/// </summary>
-		/// <param name="commandBindingInfo">Command binding parameters</param>
-		public static void RegisterCommandBinding(CommandBindingInfo commandBindingInfo) {
-			if(commandBindingInfo.OwnerInstanceName == null && commandBindingInfo.OwnerTypeName == null) {
-				throw new ArgumentException("Binding owner must be specified");
-			}
-			
-			if(commandBindingInfo.RoutedCommandName == null) {
-				throw new ArgumentException("Routed command name must be specified");
-			}
-			
-			commandBindings.Add(BindingInfoTemplate.CreateFromIBindingInfo(commandBindingInfo), commandBindingInfo);
-			commandBindingInfo.IsRegistered = true;
-				
-			CommandManager.BindingsChanged += commandBindingInfo.BindingsChangedHandler;
-			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new []{ BindingInfoTemplate.CreateFromIBindingInfo(commandBindingInfo) }));
-		}
-		
 		public static event NotifyBindingsChangedEventHandler BindingsChanged;
 		
+		/// <summary>
+		/// Invoke <see cref="BindingsChanged" /> event handlers
+		/// </summary>
+		/// <param name="sender">Sender object</param>
+		/// <param name="args">Event arguments</param>
 		public static void InvokeBindingsChanged(object sender, NotifyBindingsChangedEventArgs args)
 		{
-			if(BindingsChanged != null) {
+			if(!SuspendEvents && BindingsChanged != null) {
 				BindingsChanged.Invoke(sender, args);
 			}
 		}
 		
+		/// <summary>
+		/// Occurs when <see cref="InputBindingInfo.ActiveGestures" /> in any registered
+		/// <see cref="InputBindingInfo" /> changes
+		/// </summary>
 		public static event NotifyGesturesChangedEventHandler GesturesChanged;
 		
+		/// <summary>
+		/// Invoke <see cref="GesturesChanged" /> event handlers
+		/// </summary>
+		/// <param name="sender">Sender object</param>
+		/// <param name="args">Event arguments</param>
 		public static void InvokeGesturesChanged(object sender, NotifyGesturesChangedEventArgs args)
 		{
-			if(GesturesChanged != null) {
+			if(!SuspendEvents && GesturesChanged != null) {
 				GesturesChanged.Invoke(sender, args);
 			}
 		}
@@ -479,43 +541,31 @@ namespace ICSharpCode.Core.Presentation
 		#region Unregister binding infos
 		
 		/// <summary>
-		/// Unregister input binding
+		/// Unregister <see cref="InputBindingInfo" /> instance
 		/// </summary>
-		/// <param name="inputBindingInfo">Input binding parameters</param>
-		public static void UnregisterInputBinding(params BindingInfoTemplate[] templates)
+		/// <param name="inputBindingInfo">Binding info</param>
+		public static void UnregisterInputBinding(InputBindingInfo inputBindingInfo)
 		{
-			UnregisterBindingInfo(inputBidnings, templates);
+			UnregisterBindingInfo(inputBidnings, inputBindingInfo);
 		}
 		
 		/// <summary>
-		/// Unregister command binding
+		/// Unregister <see cref="CommandBindingInfo" /> instance
 		/// </summary>
 		/// <param name="commandBindingInfo">Command binding parameters</param>
-		public static void UnregisterCommandBinding(params BindingInfoTemplate[] templates) 
+		public static void UnregisterCommandBinding(CommandBindingInfo commandBindingInfo) 
 		{
-			UnregisterBindingInfo(commandBindings, templates);
+			UnregisterBindingInfo(commandBindings, commandBindingInfo);
 		}
 		
-		private static void UnregisterBindingInfo(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfoDictionary,  params BindingInfoTemplate[] templates)
+		private static void UnregisterBindingInfo(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfoDictionary, BindingInfoBase bindingInfo)
 		{
-			var foundBindings = FindBindingInfos(bindingInfoDictionary, templates).ToList();
+			bindingInfoDictionary.Remove(bindingInfo);
+			CommandManager.BindingsChanged -= bindingInfo.BindingsChangedHandler;
+			bindingInfo.RemoveActiveBindings();
+			bindingInfo.IsRegistered = false;
 			
-			foreach(var similarBindingInfo in foundBindings) {
-				BindingsUpdatedHandler defaultUpdatesHandler;
-				if(similarBindingInfo is InputBindingInfo) {
-					((InputBindingInfo)similarBindingInfo).IsRegistered = false;
-				} else {
-					((CommandBindingInfo)similarBindingInfo).IsRegistered = false;
-				}
-					
-				var removedTemplate = BindingInfoTemplate.CreateFromIBindingInfo(similarBindingInfo);
-				bindingInfoDictionary.Remove(removedTemplate, similarBindingInfo);
-				CommandManager.BindingsChanged -= similarBindingInfo.BindingsChangedHandler;
-				
-				similarBindingInfo.RemoveActiveBindings();
-			}
-			
-			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, templates));
+			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new[] { BindingInfoTemplate.CreateFromIBindingInfo(bindingInfo) } ));
 		}
 		
 		#endregion
@@ -523,74 +573,40 @@ namespace ICSharpCode.Core.Presentation
 		#region Find binding infos
 
 		/// <summary>
-		/// Get list of all command bindings which satisfy provided parameters
-		/// 
-		/// Null arguments are ignored
+		/// Get list of all <see cref="CommandBindingInfo" />  matched by provided <see cref="BindingInfoTemplate" />
 		/// </summary>
-		/// <param name="contextName">Context class full name</param>
-		/// <param name="contextInstance">Get command bindings assigned only to specific context</param>
-		/// <param name="routedCommandName">Context class full name</param>
-		/// <param name="className">Context class full name</param>
-		/// <returns>Collection of managed command bindings</returns>
-		public static IEnumerable<CommandBindingInfo> FindCommandBindingInfos(params BindingInfoTemplate[] templates)
+		/// <param name="template">Template to match against</param>
+		/// <returns>Collection of matched <see cref="CommandBindingInfo" /> instances</returns>
+		public static ICollection<CommandBindingInfo> FindCommandBindingInfos(BindingInfoTemplate template)
 		{
-			var bindings = FindBindingInfos(commandBindings, templates).ToList();
-			
-			return bindings.Cast<CommandBindingInfo>();
-		}
-		
-		public static IEnumerable<InputBindingInfo> FindInputBindingInfos(params BindingInfoTemplate[] templates)
-		{
-			var bindings = FindBindingInfos(inputBidnings, templates).ToList();
-			
-			return bindings.Cast<InputBindingInfo>();
-		}
-		
-		private static IEnumerable<BindingInfoBase> FindBindingInfos(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfos, params BindingInfoTemplate[] templates)
-		{
-        	foreach(var template in templates) {
-				foreach(var item in bindingInfos.FindItems(template)) {
-					if(item != null) {
-						yield return item;
-					}
-				}
-        	}
-		}		
-
-		public static CommandBindingCollection FindCommandBindings(params BindingInfoTemplate[] templates) 
-		{
-			var commandBindingInfoCollection = FindCommandBindingInfos(templates);
-			var commandBindingCollection = new CommandBindingCollection();
-			foreach(var bindingInfo in commandBindingInfoCollection) {
-				commandBindingCollection.AddRange(bindingInfo.ActiveCommandBindings);
-			}
-			
-			return commandBindingCollection;
-		}
-		
-		public static InputBindingCollection FindInputBindings(params BindingInfoTemplate[] templates) 
-		{
-			var inputBindingInfoCollection = FindInputBindingInfos(templates);
-			
-			var inputBindingCollection = new InputBindingCollection();
-			foreach(var bindingInfo in inputBindingInfoCollection) {
-				inputBindingCollection.AddRange(bindingInfo.ActiveInputBindings);
-			}
-			
-			return inputBindingCollection;
+			return FindBindingInfos(commandBindings, template).Cast<CommandBindingInfo>().ToList();
 		}
 		
 		/// <summary>
-		/// Get list of input gestures from all input bindings which satisfy provided parameters
-		/// 
-		/// Null arguments are ignored
+		/// Get list of all <see cref="InputBindingInfo" />  matched by provided <see cref="BindingInfoTemplate" />
 		/// </summary>
-		/// <param name="contextName">Context class full name</param>
-		/// <param name="contextInstance">Get gestures assigned only to specific context</param>
-		/// <param name="routedCommandName">Routed UI command name</param>
-		/// <param name="gesture">Gesture</param>
-		public static InputGestureCollection FindInputGestures(params BindingInfoTemplate[] templates) {
-			var bindings = FindInputBindingInfos(templates);
+		/// <param name="template">Template to match against</param>
+		/// <returns>Collection of matched <see cref="InputBindingInfo" /> instances</returns>
+		public static ICollection<InputBindingInfo> FindInputBindingInfos(BindingInfoTemplate template)
+		{
+			return FindBindingInfos(inputBidnings, template).Cast<InputBindingInfo>().ToList();
+		}
+		
+		private static ICollection<BindingInfoBase> FindBindingInfos(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfos, BindingInfoTemplate template)
+		{
+			var items = bindingInfos.FindItems(template);
+		
+			return items ?? new List<BindingInfoBase>();
+		}
+		
+		/// <summary>
+		/// Get list of <see cref="System.Windows.Input.InputGesture" /> from <see cref="InputBindingInfo" /> instances matched by
+		/// provided <see cref="BindingInfoTemplate" />
+		/// </summary>
+		/// <param name="template">Template to match against</param>
+		/// <returns>Collection of matched <see cref="System.Windows.Input.InputGesture" /> instances</returns>
+		public static InputGestureCollection FindInputGestures(BindingInfoTemplate template) {
+			var bindings = FindInputBindingInfos(template);
 			var gestures = new InputGestureCollection();
 			
 			foreach(InputBindingInfo bindingInfo in bindings) {
@@ -607,6 +623,12 @@ namespace ICSharpCode.Core.Presentation
 		}
 		#endregion
 		
+		/// <summary>
+		/// Get registered <see cref="InputBindingCategory" /> by path
+		/// </summary>
+		/// <param name="categoryPath">Category path</param>
+		/// <param name="throwWhenNotFound">Defines whether to throw an exception on category with this path not found or not</param>
+		/// <returns></returns>
 		public static InputBindingCategory GetInputBindingCategory(string categoryPath, bool throwWhenNotFound)
 		{
 			foreach(var category in InputBindingCategories) {
@@ -622,10 +644,16 @@ namespace ICSharpCode.Core.Presentation
 			return null;
 		}
 		
-		public static ICollection<InputBindingCategory> GetInputBindingCategoryCollection(string categoryPathCollectionString, bool throwWhenNotFound)
+		/// <summary>
+		/// Get <see cref="InputBindingCategoryCollection" /> of categories matching any of provided paths
+		/// </summary>
+		/// <param name="categoryPathCollectionString">Category paths separated by comma</param>
+		/// <param name="throwWhenNotFound">Defines whether to throw an exception on category with this path not found or not</param>
+		/// <returns></returns>
+		public static InputBindingCategoryCollection GetInputBindingCategoryCollection(string categoryPathCollectionString, bool throwWhenNotFound)
 		{
 			var categoryPathCollection = categoryPathCollectionString.Split(',');
-			var categories = new List<InputBindingCategory>();
+			var categories = new InputBindingCategoryCollection();
 			foreach(var categoryPath in categoryPathCollection) {
 				var category = GetInputBindingCategory(categoryPath, throwWhenNotFound);
 				
@@ -637,21 +665,33 @@ namespace ICSharpCode.Core.Presentation
 			return categories;
 		}
 		
-		public static IEnumerable<InputBindingCategory> GetInputBindingCategoryChildren(string categoryPath) 
+		/// <summary>
+		/// Get <see cref="InputBindingInfoCategoryCollection" /> of children categories from root category path
+		/// </summary>
+		/// <param name="rootCategoryPath">Root category path</param>
+		/// <returns>List of child categories</returns>
+		public static ICollection<InputBindingCategory> GetInputBindingCategoryChildren(string rootCategoryPath) 
 		{
-			var categoryDepth = categoryPath.Count(c => c == '/');
+			var children = new InputBindingCategoryCollection();
+			var categoryDepth = rootCategoryPath.Count(c => c == '/');
 			foreach(var currentCategory in InputBindingCategories) {
-				if(currentCategory.Path.StartsWith(categoryPath)) {
+				if(currentCategory.Path.StartsWith(rootCategoryPath)) {
 					var currentCategoryDepth = currentCategory.Path.Count(c => c == '/');
 					
 					if(currentCategoryDepth == categoryDepth + 1)
 					{
-		 				yield return currentCategory;
+						children.Add(currentCategory);
 					}
 				}
 			}
+			
+			return children;
 		}
 		
+		/// <summary>
+		/// Register <see cref="InputBindingCateogyr" /> with unique path
+		/// </summary>
+		/// <param name="category">Registered category</param>
 		public static void RegisterInputBindingCategory(InputBindingCategory category) 
 		{
 			if(string.IsNullOrEmpty(category.Path)) {
@@ -666,7 +706,9 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Use for unit tests only
+		/// Reset events handlers and registered objects
+		/// 
+		/// Use for nit testing only!
 		/// </summary>
 		public static void Reset()
 		{
@@ -687,12 +729,4 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 	}	
-		
-	public static class TypeExtensions
-	{
-		public static string GetShortAssemblyQualifiedName(this Type type)
-		{
-			return string.Format("{0}, {1}", type.FullName, type.Assembly.GetName().Name);
-		}
-	}
 }

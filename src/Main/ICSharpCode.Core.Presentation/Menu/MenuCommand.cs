@@ -123,21 +123,24 @@ namespace ICSharpCode.Core.Presentation
 		
 		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
 		{
-			bindingTemplate = new BindingInfoTemplate();
-			
+			string tplRoutedCommandName = null;
 			if(codon.Properties.Contains("command")) {
-				bindingTemplate.RoutedCommandName = codon.Properties["command"];				
+				tplRoutedCommandName = codon.Properties["command"];				
 			} else if(codon.Properties.Contains("link") || codon.Properties.Contains("class")) {
-				bindingTemplate.RoutedCommandName = string.IsNullOrEmpty(codon.Properties["link"]) ? codon.Properties["class"] : codon.Properties["link"];
+				tplRoutedCommandName = string.IsNullOrEmpty(codon.Properties["link"]) ? codon.Properties["class"] : codon.Properties["link"];
 			}
 			
+			string tplOwnerInstance = null;
+			string tplOwnerType = null;
 			if(codon.Properties.Contains("ownerinstance")) {
-				bindingTemplate.OwnerInstanceName = codon.Properties["ownerinstance"];
+				tplOwnerInstance = codon.Properties["ownerinstance"];
 			} else if(codon.Properties.Contains("ownertype")) {
-				bindingTemplate.OwnerTypeName = codon.Properties["ownertype"];
+				tplOwnerType = codon.Properties["ownertype"];
 			}
+			
+			var bindingTemplate = BindingInfoTemplate.Create(tplOwnerInstance, tplOwnerType, tplRoutedCommandName);
 
-			var routedCommand = CommandManager.GetRoutedUICommand(bindingTemplate.RoutedCommandName);
+			var routedCommand = CommandManager.GetRoutedUICommand(tplRoutedCommandName);
 			if(routedCommand != null) {
 				this.Command = routedCommand;
 			}

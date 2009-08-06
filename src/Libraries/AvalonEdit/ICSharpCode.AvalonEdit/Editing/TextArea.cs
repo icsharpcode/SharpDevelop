@@ -38,7 +38,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		#region Constructor
 		static TextArea()
 		{
-			SDCommandManager.RegisterNamedUIType(typeof(TextArea).GetShortAssemblyQualifiedName(), typeof(TextArea));
+			SDCommandManager.RegisterNamedUIType(SDCommandManager.GetShortAssemblyQualifiedName(typeof(TextArea)), typeof(TextArea));
 			
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(TextArea),
 			                                         new FrameworkPropertyMetadata(typeof(TextArea)));

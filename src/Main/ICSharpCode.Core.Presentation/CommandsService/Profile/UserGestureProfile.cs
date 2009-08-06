@@ -63,17 +63,17 @@ namespace ICSharpCode.Core.Presentation
 			ReadOnly = Convert.ToBoolean(rootNode.Attributes["read-only"].Value);
 
 			foreach(XmlElement bindingInfoNode in xmlDocument.SelectNodes("//InputBinding")) {
-				var identifier = new BindingInfoTemplate();
-				identifier.RoutedCommandName = bindingInfoNode.Attributes["routed-command"].Value;
-				
+				string identifierInstanceName = null;
+				string identifierTypeName = null;
 				var ownerInstanceAttribute = bindingInfoNode.Attributes["owner-instance"];
 				if(ownerInstanceAttribute != null) {
-					identifier.OwnerInstanceName = ownerInstanceAttribute.Value;
+					identifierInstanceName = ownerInstanceAttribute.Value;
 				} else {
 					var ownerTypeAttribute = bindingInfoNode.Attributes["owner-type"];
-					identifier.OwnerTypeName = ownerTypeAttribute.Value;
+					identifierTypeName = ownerTypeAttribute.Value;
 				}
 				
+				var identifier = BindingInfoTemplate.Create(identifierInstanceName, identifierTypeName, bindingInfoNode.Attributes["routed-command"].Value);
 				var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(bindingInfoNode.Attributes["gestures"].Value);
 				this[identifier] = gestures;
 			}

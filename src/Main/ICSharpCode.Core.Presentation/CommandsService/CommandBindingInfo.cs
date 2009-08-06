@@ -15,24 +15,33 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public class CommandBindingInfo : BindingInfoBase
 	{	
+		// Command associated with command binding info
+		private string commandTypeName;
+		private System.Windows.Input.ICommand commandInstance;
+		private ExecutedRoutedEventHandler executedEventHandler;
+		private CanExecuteRoutedEventHandler canExecuteEventHandler;
+		
+		// Owners which where set earlier
+		private List<UIElement> oldOwnerInstances;
+		private List<Type> oldOwnerTypes;
+		
+		// Command bindings which where set earlier
+		private CommandBindingCollection oldCommandBindingCollection = new CommandBindingCollection();
+		
 		/// <summary>
 		/// Creates new instance of <see cref="CommandBindingInfo" />
 		/// </summary>
 		public CommandBindingInfo()
 		{
-			OldCommandBindings = new CommandBindingCollection();
 			ActiveCommandBindings = new CommandBindingCollection();
 			
 			Groups = new BindingGroupCollection();
 		}
 		
-		private string commandTypeName;
-		
 		/// <summary>
-		/// Binded command type full name
+		/// Gets or sets name of named <see cref="System.Windows.Input.ICommand" /> type associated with this <see cref="CommandBindingInfo" /> 
 		/// 
-		/// Instance of this class is created as soon as user executes the command. See
-		/// <see cref="IsLazy" /> for details
+		/// Instance of this class is created as soon as user executes the command. See <see cref="IsLazy" /> for details
 		/// 
 		/// If this attribute is provided <see cref="CommandInstance" />, <see cref="ExecutedEventHandler" />
 		/// and <see cref="CanExecuteEventHandler" /> can not be used
@@ -50,10 +59,8 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		private System.Windows.Input.ICommand commandInstance;
-		
 		/// <summary>
-		/// Binded command instance
+		/// Gets or sets <see cref="System.Windows.Input.ICommand" /> associated with this <see cref="CommandBindingInfo" />
 		/// 
 		/// If this attribute is provided <see cref="CommandInstanceName" />, <see cref="ExecutedEventHandler" />
 		/// and <see cref="CanExecuteEventHandler" /> can not be used
@@ -87,11 +94,8 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		
-		private ExecutedRoutedEventHandler executedEventHandler;
-		
 		/// <summary>
-		/// Occurs when invoking "Executed" event
+		/// Gets or sets <see cref="CommandBinding" /> "Executed" event handler
 		/// 
 		/// If this attribute is provided <see cref="CommandInstanceName" /> and <see cref="CommandInstance" />
 		/// can not be used
@@ -110,10 +114,8 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		private CanExecuteRoutedEventHandler canExecuteEventHandler;
-		
 		/// <summary>
-		/// Occurs when determining whether "Executed" event can be invoked
+		/// Gets or sets <see cref="CommandBinding" /> "CanExecute" event handler
 		/// 
 		/// If this attribute is provided <see cref="CommandInstanceName" /> and <see cref="CommandInstance" />
 		/// can not be used
@@ -132,47 +134,52 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		List<UIElement> oldInstances;
-		
-		protected override void SetInstanceBindings(ICollection<UIElement> newInstances)
+		/// <summary>
+		/// Apply <see cref="ActiveCommandBindings" /> to new <see cref="System.Windows.UIElement" /> collection
+		/// </summary>
+		/// <param name="newInstances">Collection of modified owner instances</param>
+		protected override void PopulateOwnerInstancesWithBindings(ICollection<UIElement> newInstances)
 		{				
-			if(oldInstances != null) {
-				foreach(var ownerInstance in oldInstances) {
-					foreach(CommandBinding binding in OldCommandBindings) {
+			if(oldOwnerInstances != null) {
+				foreach(var ownerInstance in oldOwnerInstances) {
+					foreach(CommandBinding binding in oldCommandBindingCollection) {
 						ownerInstance.CommandBindings.Remove(binding);
 					}
 				}
 			}
 			
-			oldInstances = new List<UIElement>();
+			oldOwnerInstances = new List<UIElement>();
 			
 			if(newInstances != null) {
 				foreach(var ownerInstance in newInstances) {
 					ownerInstance.CommandBindings.AddRange(ActiveCommandBindings);
-					oldInstances.Add(ownerInstance);
+					oldOwnerInstances.Add(ownerInstance);
 				}
 			}
 		}
 		
-		List<Type> oldTypes;
 		
-		protected override void SetClassBindings(ICollection<Type> newTypes)
+		/// <summary>
+		/// Apply <see cref="ActiveCommandBindings" /> to new <see cref="System.Type" /> collection
+		/// </summary>
+		/// <param name="newInstances">Collection of modified owner types</param>
+		protected override void PopulateOwnerTypesWithBindings(ICollection<Type> newTypes)
 		{
-			if(oldTypes != null) {
-				foreach(var ownerType in oldTypes) {
-					foreach(CommandBinding binding in OldCommandBindings) {
+			if(oldOwnerTypes != null) {
+				foreach(var ownerType in oldOwnerTypes) {
+					foreach(CommandBinding binding in oldCommandBindingCollection) {
 						SDCommandManager.RemoveClassCommandBinding(ownerType, binding);
 					}
 				}
 			}
 			
-			oldTypes = new List<Type>();
+			oldOwnerTypes = new List<Type>();
 			
 			if(newTypes != null) {
 				foreach(var ownerType in newTypes) {
 					foreach(CommandBinding binding in ActiveCommandBindings) {
 						System.Windows.Input.CommandManager.RegisterClassCommandBinding(ownerType, binding);
-						oldTypes.Add(ownerType);
+						oldOwnerTypes.Add(ownerType);
 					}
 				}
 			}
@@ -191,45 +198,35 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Re-generate <see cref="CommandBinding" /> from <see cref="CommandBindingInfo" />
+		/// Re-generate <see cref="ActiveCommandBindings" /> using <see cref="CommandBindingInfo" /> data
 		/// </summary>
 		protected override void GenerateBindings() 
 		{			
-			OldCommandBindings = ActiveCommandBindings;
+			oldCommandBindingCollection = ActiveCommandBindings;
 			
 			ActiveCommandBindings = new CommandBindingCollection();
 			
 			var commandBinding = new CommandBinding(RoutedCommand);
 			commandBinding.CanExecute += GenerateCanExecuteEventHandler;					
-			commandBinding.Executed += GenerateExecutedEventHandler;
+			commandBinding.Executed += ForwardExecutedEventHandler;
 			ActiveCommandBindings.Add(commandBinding);
 		}
 		
 		/// <summary>
-		/// Old command bindings which where assigned to owner when before <see cref="CommandBindingInfo" />
-		/// was modified.
-		/// 
-		/// When new <see cref="CommandBinding" />s are generated these bindings are removed from the owner
-		/// </summary>
-		internal CommandBindingCollection OldCommandBindings
-		{
-			get; set;
-		}
-		
-		/// <summary>
-		/// New input bindings are assigned to owner when <see cref="CommandBindingInfo" /> is modified
+		/// Gets <see cref="InputBindingCollection" /> generated by this <see cref="InputBindingInfo" />
 		/// </summary>
 		public CommandBindingCollection ActiveCommandBindings
 		{
-			get; set;
+			get; private set;
 		}
 
 		/// <summary>
-		/// Forwards "executed" event to event handler provided to user 
+		/// Forwards <see cref="CommandBinding.Executed" /> event to event handler provided provided by developer
+		/// through one of the available means
 		/// </summary>
 		/// <param name="sender">Event sender</param>
 		/// <param name="e">Event arguments</param>
-		internal void GenerateExecutedEventHandler(object sender, ExecutedRoutedEventArgs e) {
+		internal void ForwardExecutedEventHandler(object sender, ExecutedRoutedEventArgs e) {
 			if(ExecutedEventHandler != null) {
 				ExecutedEventHandler.Invoke(sender, e);
 			} else {
@@ -246,8 +243,10 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+
 		/// <summary>
-		/// Forwards "can execute" event to event handler provided to user 
+		/// Forwards <see cref="CommandBinding.CanExecute" /> event to event handler provided provided by developer
+		/// through one of the available means
 		/// </summary>
 		/// <param name="sender">Event sender</param>
 		/// <param name="e">Event arguments</param>

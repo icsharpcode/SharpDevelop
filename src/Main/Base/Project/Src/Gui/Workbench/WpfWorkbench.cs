@@ -20,7 +20,7 @@ using System.Windows.Navigation;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -79,8 +79,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			// Use shortened assembly qualified name to not lose user defined gestures
 			// when sharp develop is updated
-			CommandManager.DefaultContextName = GetType().GetShortAssemblyQualifiedName();
-			CommandManager.RegisterNamedUIType(CommandManager.DefaultContextName, GetType());
+			SDCommandManager.DefaultOwnerTypeName =  SDCommandManager.GetShortAssemblyQualifiedName(GetType());
+			SDCommandManager.RegisterNamedUIType(SDCommandManager.DefaultOwnerTypeName, GetType());
 			
 			CommandsService.RegisterBuiltInRoutedUICommands();
 			CommandsService.RegisterRoutedCommands(typeof(ICSharpCode.AvalonEdit.AvalonEditCommands));
@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			CommandsService.RegisterMenuBindings(this, "/SharpDevelop/CommandManager/MenuLocations");
 				
 			// Register context and load all commands from addin
-			CommandManager.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
+			SDCommandManager.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
 
 			foreach (PadDescriptor content in AddInTree.BuildItems<PadDescriptor>(viewContentPath, this, false)) {
 				if (content != null) {

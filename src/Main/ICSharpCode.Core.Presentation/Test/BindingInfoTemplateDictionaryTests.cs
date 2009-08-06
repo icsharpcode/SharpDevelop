@@ -23,11 +23,11 @@ namespace ICSharpCode.Core.Presentation.Tests
 				new CommandBindingInfo { RoutedCommandName = "SuccessfullTest", OwnerInstanceName = "1" });
 			
 			dictionary.Add(
-				new BindingInfoTemplate { RoutedCommandName = "TestCommands.DoSomething" }, 
+				BindingInfoTemplate.Create(null, null, "TestCommands.DoSomething"),
 				new CommandBindingInfo { RoutedCommandName = "SuccessfullTest", OwnerInstanceName = "2" });
 			
 			dictionary.Add(
-				new BindingInfoTemplate { OwnerTypeName = "Global2", RoutedCommandName = "TestCommands.DoSomething" }, 
+				BindingInfoTemplate.Create(null, "Global2", "TestCommands.DoSomething"),
 				new CommandBindingInfo { RoutedCommandName = "SuccessfullTest", OwnerInstanceName = "3" });
 			
 			var allBindingInfos = dictionary.FindItems(new BindingInfoTemplate());
@@ -41,22 +41,22 @@ namespace ICSharpCode.Core.Presentation.Tests
 			var dictionary = new BindingInfoTemplateDictionary<CommandBindingInfo>();
 			
 			dictionary.Add(
-				new BindingInfoTemplate {  }, 
+				BindingInfoTemplate.Create(null, null, null),
 				new CommandBindingInfo { RoutedCommandName = "UnsuccessfullTest" });
 			
 			dictionary.Add(
-				new BindingInfoTemplate { RoutedCommandName = "TestCommands.DoSomething" }, 
+				BindingInfoTemplate.Create(null, null, "TestCommands.DoSomething"),
 				new CommandBindingInfo { RoutedCommandName = "SuccessfullTest" });
 			
 			dictionary.Add(
-				new BindingInfoTemplate { OwnerTypeName = "Global", RoutedCommandName = "TestCommands.DoSomething" }, 
+				BindingInfoTemplate.Create(null, "Global", "TestCommands.DoSomething"),
 				new CommandBindingInfo { RoutedCommandName = "SuccessfullTest" });
 			
 			dictionary.Add(
-				new BindingInfoTemplate { OwnerTypeName = "Global", RoutedCommandName = "TestCommands.DoSomethingOther" }, 
+				BindingInfoTemplate.Create(null, "Global", "TestCommands.DoSomethingOther"),
 				new CommandBindingInfo { RoutedCommandName = "UnsuccessfullTest" });
 			
-			var doSomethingBindingInfos = dictionary.FindItems(new BindingInfoTemplate { RoutedCommandName = "TestCommands.DoSomething" });
+			var doSomethingBindingInfos = dictionary.FindItems(BindingInfoTemplate.Create(null, null, "TestCommands.DoSomething"));
 			Assert.AreEqual(2, doSomethingBindingInfos.Count());
 			Assert.IsTrue(doSomethingBindingInfos.All(i => i.RoutedCommandName == "SuccessfullTest"));
 		}
@@ -67,23 +67,22 @@ namespace ICSharpCode.Core.Presentation.Tests
 			var dictionary = new BindingInfoTemplateDictionary<CommandBindingInfo>();
 			
 			dictionary.Add(
-				new BindingInfoTemplate {  }, 
+				BindingInfoTemplate.Create(null, null, null),
 				new CommandBindingInfo { RoutedCommandName = "UnsuccessfullTest" });
 			
 			dictionary.Add(
-				new BindingInfoTemplate { RoutedCommandName = "TestCommands.DoSomething" }, 
+				BindingInfoTemplate.Create(null, null, "TestCommands.DoSomething"),
 				new CommandBindingInfo { RoutedCommandName = "UnsuccessfullTest" });
 			
 			dictionary.Add(
-				new BindingInfoTemplate { OwnerTypeName = "Global", RoutedCommandName = "TestCommands.DoSomething" }, 
+				BindingInfoTemplate.Create(null, "Global", "TestCommands.DoSomething"),
 				new CommandBindingInfo { RoutedCommandName = "SuccessfullTest" });
 			
 			dictionary.Add(
-				new BindingInfoTemplate { OwnerTypeName = "Global", RoutedCommandName = "TestCommands.DoSomethingOther" }, 
+				BindingInfoTemplate.Create(null, "Global", "TestCommands.DoSomethingOther"),
 				new CommandBindingInfo { RoutedCommandName = "UnsuccessfullTest" });
 			
-			var doSomethingBindingInfos = dictionary.FindItems(
-				new BindingInfoTemplate { OwnerTypeName = "Global", RoutedCommandName = "TestCommands.DoSomething" });
+			var doSomethingBindingInfos = dictionary.FindItems(BindingInfoTemplate.Create(null, "Global", "TestCommands.DoSomething"));
 			
 			Assert.AreEqual(1, doSomethingBindingInfos.Count());
 			Assert.IsTrue(doSomethingBindingInfos.All(i => i.RoutedCommandName == "SuccessfullTest"));

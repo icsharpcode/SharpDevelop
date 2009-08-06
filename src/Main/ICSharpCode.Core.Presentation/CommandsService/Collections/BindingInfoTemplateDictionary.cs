@@ -101,25 +101,10 @@ namespace ICSharpCode.Core.Presentation
 				var nestedNotNullPropertiesCollection = new List<PropertyInfo>(notNullPropertiesCollection);
 				nestedNotNullPropertiesCollection.Remove(property);
 				
-				var template = new BindingInfoTemplate();
-				
-				if(property == OwnerInstanceNameProperty) {
-					template.OwnerInstanceName = null;
-				} else {
-					template.OwnerInstanceName = rootTemplate.OwnerInstanceName;
-				}
-				
-				if(property == OwnerTypeNameProperty) {
-					template.OwnerTypeName = null;
-				} else {
-					template.OwnerTypeName = rootTemplate.OwnerTypeName;
-				}
-				
-				if(property == RoutedCommandNameProperty) {
-					template.RoutedCommandName = null;
-				} else {
-					template.RoutedCommandName = rootTemplate.RoutedCommandName;
-				}
+				var template = BindingInfoTemplate.Create(
+					property != OwnerInstanceNameProperty ? rootTemplate.OwnerInstanceName : null, 
+					property != OwnerTypeNameProperty ? rootTemplate.OwnerTypeName : null, 
+					property != RoutedCommandNameProperty ? rootTemplate.RoutedCommandName : null);
 				
 				generatedTemplates.Add(template);
 				

@@ -70,7 +70,6 @@
     <Compile Include="CommandsService\BindingInfoBase.cs" />
     <Compile Include="CommandsService\BindingGroup.cs" />
     <Compile Include="CommandsService\BindingInfoTemplate.cs" />
-    <Compile Include="CommandsService\BindingsUpdatedHandler.cs" />
     <Compile Include="CommandsService\Collections\BindingGroupCollection.cs" />
     <Compile Include="CommandsService\Collections\BindingInfoTemplateDictionary.cs" />
     <Compile Include="CommandsService\Collections\InputBindingCategoryCollection.cs" />

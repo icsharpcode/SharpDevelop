@@ -61,30 +61,30 @@ namespace ICSharpCode.AvalonEdit.Editing
 		static void AddInputBinding(string routedCommandName, string gesturesString)
 		{
 			var inputBinding = new InputBindingInfo();
-			inputBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
+			inputBinding.OwnerTypeName = SDCommandManager.GetShortAssemblyQualifiedName(typeof(TextArea));
 			inputBinding.DefaultGestures.AddRange((InputGestureCollection)new InputGestureCollectionConverter().ConvertFrom(gesturesString));
 			inputBinding.Groups.Add(ClassWideBindingGroup);
 			inputBinding.Categories.Add(classWideInputBindingCategory);
 			inputBinding.Categories.AddRange(SDCommandManager.GetInputBindingCategoryCollection("/MainMenu/Edit", true));
 			inputBinding.RoutedCommandName = routedCommandName;
-			SDCommandManager.RegisterInputBinding(inputBinding);
+			SDCommandManager.RegisterInputBindingInfo(inputBinding);
 		}
 		
 		static void AddCommandBinding(string routedCommandName, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)
 		{
 			var commandBinding = new CommandBindingInfo();
-			commandBinding.OwnerTypeName = typeof(TextArea).GetShortAssemblyQualifiedName();
+			commandBinding.OwnerTypeName = SDCommandManager.GetShortAssemblyQualifiedName(typeof(TextArea));
 			commandBinding.ExecutedEventHandler = executedHandler;
 			commandBinding.CanExecuteEventHandler = canExecuteHandler;
 			commandBinding.IsLazy = false;
 			commandBinding.Groups.Add(ClassWideBindingGroup);
 			commandBinding.RoutedCommandName = routedCommandName;
-			SDCommandManager.RegisterCommandBinding(commandBinding);
+			SDCommandManager.RegisterCommandBindingInfo(commandBinding);
 		}
 		
 		static EditingCommandHandler()
 		{
-			ClassWideBindingGroup = new BindingGroup();
+			ClassWideBindingGroup = new BindingGroup("EditingCommandHandler");
 			classWideInputBindingCategory = new InputBindingCategory("/EditingCommands", "Editing commands");
 			SDCommandManager.RegisterInputBindingCategory(classWideInputBindingCategory);
 			

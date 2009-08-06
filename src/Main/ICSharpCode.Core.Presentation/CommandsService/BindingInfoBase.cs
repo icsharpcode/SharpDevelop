@@ -11,12 +11,22 @@ using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 namespace ICSharpCode.Core.Presentation
 {
     /// <summary>
-    /// Description of BindingInfoBase.
+    /// Base class for <see cref="CommandBindingInfo" /> and <see cref="InputBindingInfo" />
     /// </summary>
     abstract public class BindingInfoBase : IBindingInfo
     {
 		private BindingGroupCollection _groups;
+		private string _ownerInstanceName;
+		private string _ownerTypeName;
+		private string routedCommandName;
 		
+		/// <summary>
+		/// Get or sets binding groups
+		/// 
+		/// If <see cref="BindingInfoBase" /> instance has a group assigned 
+		/// then <see cref="InputBindingCollection" /> or <see cref="CommandBindingCollection" />
+		/// is applied only for instances attached to the same group
+		/// </summary>
 		public BindingGroupCollection Groups
 		{
 			get {
@@ -57,7 +67,6 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		
-		public string _ownerInstanceName;
 		
 		/// <summary>
 		/// Stores name of named instance to which this binding belongs. When this binding is registered a
@@ -96,8 +105,6 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 					
-		private string _ownerTypeName;
-		
 		/// <summary>
 		/// Stores name of owner type. Full name with assembly should be used. When this binding is 
 		/// registered <see cref="InputBinding" /> is assigned to all instances of provided class
@@ -146,7 +153,6 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 		
-		private string routedCommandName;
 		
 		/// <summary>
 		/// Name of the routed command which will be invoked when this binding is triggered
@@ -221,14 +227,14 @@ namespace ICSharpCode.Core.Presentation
 				GenerateBindings();
 				
 				if(OwnerInstanceName != null) {
-					SetInstanceBindings(Groups.Count == 0 ? OwnerInstances : Groups.GetAttachedInstances(OwnerInstances));
+					PopulateOwnerInstancesWithBindings(Groups.Count == 0 ? OwnerInstances : Groups.GetAttachedInstances(OwnerInstances));
 				} else {
 					if(Groups.Count == 0) {
-						SetInstanceBindings(null);
-						SetClassBindings(OwnerTypes);
+						PopulateOwnerInstancesWithBindings(null);
+						PopulateOwnerTypesWithBindings(OwnerTypes);
 					} else {
-						SetClassBindings(null);
-						SetInstanceBindings(Groups.GetAttachedInstances(OwnerTypes));
+						PopulateOwnerTypesWithBindings(null);
+						PopulateOwnerInstancesWithBindings(Groups.GetAttachedInstances(OwnerTypes));
 					}
 				}
 			}
@@ -236,14 +242,14 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void RemoveActiveBindings()
 		{
-			SetInstanceBindings(null);
-			SetClassBindings(null);
+			PopulateOwnerInstancesWithBindings(null);
+			PopulateOwnerTypesWithBindings(null);
 		}
 		
 		protected abstract void GenerateBindings();
 		
-		protected abstract void SetInstanceBindings(ICollection<UIElement> newInstances);
+		protected abstract void PopulateOwnerInstancesWithBindings(ICollection<UIElement> newInstances);
 		
-		protected abstract void SetClassBindings(ICollection<Type> newtTypes);
+		protected abstract void PopulateOwnerTypesWithBindings(ICollection<Type> newtTypes);
     }
 }

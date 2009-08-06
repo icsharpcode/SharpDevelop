@@ -176,7 +176,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			isAttached = true;
 			
 			if(BindingGroup != null) {
-				BindingGroup.AttachTo(textArea);
+				BindingGroup.RegisterHandledInstance(textArea);
 			}
 			
 			textArea.CommandBindings.AddRange(commandBindings);
@@ -195,7 +195,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			// Detach binding from textarea
 			if(BindingGroup != null) {
-				BindingGroup.DetachFrom(textArea);
+				BindingGroup.UnregisterHandledInstance(textArea);
 			}
 			
 			// Detach binding to specified input and command bindings

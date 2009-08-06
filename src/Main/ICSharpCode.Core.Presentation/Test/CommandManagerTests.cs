@@ -156,7 +156,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			Assert.IsEmpty(uiElement.InputBindings);
 			
-			SDCommandManager.RegisterInputBinding(bindingInfo);
+			SDCommandManager.RegisterInputBindingInfo(bindingInfo);
 			
 			Assert.IsTrue(testResult);
 			Assert.AreEqual(1, uiElement.InputBindings.Count);
@@ -182,7 +182,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			Assert.IsEmpty(uiElement.InputBindings);
 			
-			SDCommandManager.RegisterCommandBinding(bindingInfo);
+			SDCommandManager.RegisterCommandBindingInfo(bindingInfo);
 			
 			Assert.IsTrue(testResult);
 			Assert.AreEqual(1, uiElement.CommandBindings.Count);
@@ -194,8 +194,8 @@ namespace ICSharpCode.Core.Presentation.Tests
 		{
 			var testResults = new HashSet<string>();
 			
-			var removedGroup = new BindingGroup { Name = "Removed" };
-			var addedGroup = new BindingGroup { Name = "Added" };
+			var removedGroup = new BindingGroup("Removed");
+			var addedGroup = new BindingGroup("Added");
 			
 			var bindingInfo = new CommandBindingInfo {
 				RoutedCommandName = "RoutedCommandName",
@@ -213,7 +213,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 				}
 			};
 			
-			SDCommandManager.RegisterCommandBinding(bindingInfo);
+			SDCommandManager.RegisterCommandBindingInfo(bindingInfo);
 			
 			testResults.Clear();
 			bindingInfo.Groups = new BindingGroupCollection { addedGroup };
@@ -273,7 +273,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			var oldGestures = new InputGestureCollection();
 			var newGestures = new InputGestureCollection();
 			
-			var identifier = new BindingInfoTemplate { OwnerInstanceName = "SomeOwner", RoutedCommandName = "SomeCommand" };
+			var identifier = BindingInfoTemplate.Create("SomeOwner", null, "SomeCommand");
 			
 			SDCommandManager.GesturesChanged += delegate(object sender, NotifyGesturesChangedEventArgs args) { 
 				if(args.ModificationDescriptions.Count == 1 
@@ -306,7 +306,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			newGestures.Add(new KeyGesture(Key.C, ModifierKeys.Alt));
 			newGestures.Add(new KeyGesture(Key.D, ModifierKeys.Alt));
 			
-			var identifier = new BindingInfoTemplate { OwnerInstanceName = "SomeOwner", RoutedCommandName = "SomeCommand" };
+			var identifier = BindingInfoTemplate.Create("SomeOwner", null, "SomeCommand");
 			
 			SDCommandManager.GesturesChanged += delegate(object sender, NotifyGesturesChangedEventArgs args) { 
 				if(args.ModificationDescriptions.Count == 1 
@@ -356,7 +356,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			bindingInfo.OwnerInstanceName = "SomeOwner";
 			bindingInfo.RoutedCommandName = "SomeCommand";
 			bindingInfo.DefaultGestures.AddRange(gestures);
-			SDCommandManager.RegisterInputBinding(bindingInfo);
+			SDCommandManager.RegisterInputBindingInfo(bindingInfo);
 			
 			SDCommandManager.GesturesChanged += delegate(object sender, NotifyGesturesChangedEventArgs args) { 
 				if(args.ModificationDescriptions.Count == 1 

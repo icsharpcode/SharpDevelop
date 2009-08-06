@@ -23,7 +23,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			bindingGroup = new BindingGroup { Name = "BindingGroupTests" };
+			bindingGroup = new BindingGroup("BindingGroupTests");
         	uiElement = new UIElement();
         	
         	SDCommandManager.RegisterNamedUIElement("NamedInstance", uiElement);
@@ -54,11 +54,11 @@ namespace ICSharpCode.Core.Presentation.Tests
 			bindingInfo.OwnerInstanceName = "NamedInstance";
 			bindingInfo.DefaultGestures.Add(new KeyGesture(Key.C, ModifierKeys.Alt));
 			bindingInfo.Groups.Add(bindingGroup);
-			SDCommandManager.RegisterInputBinding(bindingInfo);
+			SDCommandManager.RegisterInputBindingInfo(bindingInfo);
 			                                    
 			Assert.IsEmpty(uiElement.InputBindings);
 			
-			bindingGroup.AttachTo(uiElement);
+			bindingGroup.RegisterHandledInstance(uiElement);
 			Assert.AreEqual(1, uiElement.InputBindings.Count);
 			Assert.IsTrue(result);
 		}
@@ -81,14 +81,14 @@ namespace ICSharpCode.Core.Presentation.Tests
 			bindingInfo.OwnerInstanceName = "NamedInstance";
 			bindingInfo.DefaultGestures.Add(new KeyGesture(Key.C, ModifierKeys.Alt));
 			bindingInfo.Groups.Add(bindingGroup);
-			SDCommandManager.RegisterInputBinding(bindingInfo);
+			SDCommandManager.RegisterInputBindingInfo(bindingInfo);
 			
-			bindingGroup.AttachTo(uiElement);
+			bindingGroup.RegisterHandledInstance(uiElement);
 			Assert.AreEqual(1, uiElement.InputBindings.Count);
 			Assert.IsTrue(result);
 			
 			result = false;
-			bindingGroup.DetachFrom(uiElement);
+			bindingGroup.UnregisterHandledInstance(uiElement);
 			Assert.IsEmpty(uiElement.InputBindings);
 			Assert.IsTrue(result);
 		}
@@ -110,11 +110,11 @@ namespace ICSharpCode.Core.Presentation.Tests
 			bindingInfo.RoutedCommandName = "ApplicationCommands.Copy";
 			bindingInfo.OwnerInstanceName = "NamedInstance";
 			bindingInfo.DefaultGestures.Add(new KeyGesture(Key.C, ModifierKeys.Alt));
-			SDCommandManager.RegisterInputBinding(bindingInfo);
+			SDCommandManager.RegisterInputBindingInfo(bindingInfo);
 			
 			Assert.IsFalse(result);
 			
-			bindingGroup.AttachTo(uiElement);
+			bindingGroup.RegisterHandledInstance(uiElement);
 			bindingInfo.Groups.Add(bindingGroup);
 			Assert.IsTrue(result);
 			Assert.IsTrue(uiElement.InputBindings[0].Command == ApplicationCommands.Copy);
@@ -132,9 +132,9 @@ namespace ICSharpCode.Core.Presentation.Tests
 			bindingInfo.OwnerInstanceName = "OtherNamedInstance";
 			bindingInfo.DefaultGestures.Add(new KeyGesture(Key.C, ModifierKeys.Alt));
 			bindingInfo.Groups.Add(bindingGroup);
-			SDCommandManager.RegisterInputBinding(bindingInfo);
+			SDCommandManager.RegisterInputBindingInfo(bindingInfo);
 			
-			bindingGroup.AttachTo(otherUIElement);
+			bindingGroup.RegisterHandledInstance(otherUIElement);
 			Assert.IsEmpty(otherUIElement.InputBindings);
 			
         	SDCommandManager.RegisterNamedUIElement("OtherNamedInstance", otherUIElement);
@@ -147,7 +147,7 @@ namespace ICSharpCode.Core.Presentation.Tests
     	[Test]
 		public void BindingGroupCollectionClearTest()
 		{
-			var group = new BindingGroup();
+			var group = new BindingGroup("TestGroup");
 			var groups = new BindingGroupCollection{ group };
 			
 			var result = false;

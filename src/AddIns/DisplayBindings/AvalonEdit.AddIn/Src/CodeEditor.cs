@@ -30,7 +30,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
-using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -128,11 +128,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		static CodeEditor()
 		{
 			var commandBindingInfo = new CommandBindingInfo();
-			commandBindingInfo.OwnerTypeName = CommandManager.DefaultContextName;
+			commandBindingInfo.OwnerTypeName = SDCommandManager.DefaultOwnerTypeName;
 			commandBindingInfo.RoutedCommandName = "SDWindowCommands.SplitView";
 			commandBindingInfo.ExecutedEventHandler = OnSplitView;
 			commandBindingInfo.CanExecuteEventHandler = OnCanSplitView;
-			CommandManager.RegisterCommandBinding(commandBindingInfo);
+			SDCommandManager.RegisterCommandBindingInfo(commandBindingInfo);
 		}
 			
 		public CodeEditor()
