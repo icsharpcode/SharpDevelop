@@ -340,14 +340,12 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Gets the member that matches the last item in the memberNames array.
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="memberNames"></param>
 		/// <param name="startIndex">The point at which to start looking in the memberNames.</param>
 		/// <param name="endIndex">The last memberNames item to look at.</param>
 		static object GetMember(object obj, string[] memberNames, int startIndex, int endIndex)
 		{
-			Type type = obj.GetType();
 			for (int i = startIndex; i <= endIndex; ++i) {
+				Type type = obj.GetType();
 				string name = memberNames[i];
 				BindingFlags propertyBindingFlags = BindingFlags.Public | BindingFlags.GetField | BindingFlags.Static | BindingFlags.Instance;
 				PropertyInfo property = type.GetProperty(name, propertyBindingFlags);
