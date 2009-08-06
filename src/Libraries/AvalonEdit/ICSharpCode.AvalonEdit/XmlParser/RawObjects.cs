@@ -160,6 +160,24 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			);
 		}
 		
+		/// <summary>
+		/// Gets a child at the given document offset.
+		/// Goes recursively down the tree.
+		/// </summary>
+		public RawObject GetChildAtOffset(int offset)
+		{
+			foreach(RawObject child in this.Children) {
+				if (child.StartOffset <= offset && offset <= child.EndOffset) {
+					if (child is RawContainer) {
+						return ((RawContainer)child).GetChildAtOffset(offset);
+					} else {
+						return child;
+					}
+				}
+			}
+			return this; // No childs at offset
+		}
+		
 		// Only these four methods should be used to modify the collection
 		
 		internal void AddChild(RawObject item)

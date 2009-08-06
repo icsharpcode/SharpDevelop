@@ -89,7 +89,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	public class XmlParser
 	{
 		// TODO: Error reporting
-		// TODO: Trace touched memory
 		// TODO: Simple tag matching heuristic
 		// TODO: Simple attribute value closing heurisitc
 		// TODO: Backtracking for unclosed long Text sections
@@ -97,8 +96,20 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		RawDocument userDocument;
 		XDocument userLinqDocument;
 		TextDocument textDocument;
-		TextSegmentCollection<RawObject> parsedItems = new TextSegmentCollection<RawObject>();
+		
 		List<DocumentChangeEventArgs> changesSinceLastParse = new List<DocumentChangeEventArgs>();
+		
+		// Stored parsed items as long as they are valid
+		TextSegmentCollection<RawObject> parsedItems = new TextSegmentCollection<RawObject>();
+		
+		// Is used to identify what memory range was touched by object
+		// The default is (StartOffset, EndOffset + 1) which is not stored
+		TextSegmentCollection<TouchedMemoryRange> touchedMemoryRanges = new TextSegmentCollection<TouchedMemoryRange>();
+		
+		class TouchedMemoryRange: TextSegment
+		{
+			public RawObject TouchedByObject { get; set; }
+		}
 		
 		/// <summary>
 		/// Create new parser, but do not parse the text yet.
@@ -135,17 +146,27 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			foreach(DocumentChangeEventArgs change in changesSinceLastParse) {
 				// Update offsets of all items
 				parsedItems.UpdateOffsets(change);
+				touchedMemoryRanges.UpdateOffsets(change);
+				
 				// Remove any items affected by the change
-				int start = Math.Max(change.Offset - 2, 0);
-				int end = Math.Max(change.Offset + change.InsertionLength + 2, 0);
-				foreach(RawObject obj in parsedItems.FindOverlappingSegments(start, end - start)) {
+				Log("Changed offset {0}", change.Offset);
+				// Removing will cause one of the end to be set to change.Offset
+				// FindOverlappingSegments apparently removes any segment intersecting of touching
+				// so that conviniently takes care of the +1 byte
+				foreach(RawObject obj in parsedItems.FindOverlappingSegments(change.Offset, 0)) {
 					parsedItems.Remove(obj);
 					Log("Removed cached item {0}", obj);
+				}
+				foreach(TouchedMemoryRange memory in touchedMemoryRanges.FindOverlappingSegments(change.Offset, 0)) {
+					parsedItems.Remove(memory.TouchedByObject);
+					touchedMemoryRanges.Remove(memory);
+					Log("Removed cached item {0} - depended on memory ({1}-{2})", memory.TouchedByObject, memory.StartOffset, memory.EndOffset);
 				}
 			}
 			changesSinceLastParse.Clear();
 			
 			currentLocation = 0;
+			maxTouchedLocation = 0;
 			readingEnd = input.Length;
 			
 			RawDocument parsedDocument = ReadDocument();
@@ -195,9 +216,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (obj.Length == 0 && !(obj is RawDocument)) {
 				throw new Exception(string.Format("Could not parse {0}.  It has zero length.", obj));
 			}
-			// TODO: Record touched memory
 			parsedItems.Add(obj);
-			System.Diagnostics.Debug.WriteLine("XML Parser: Parsed " + obj.ToString());
+			Log("Parsed {0}", obj);
+			if (maxTouchedLocation > currentLocation) {
+				// location is assumed to be read so the range ends at (location + 1)
+				// For example eg for "a_" it is (0-2)
+				TouchedMemoryRange memRange = new TouchedMemoryRange() {
+					StartOffset = obj.StartOffset,
+					Length = (maxTouchedLocation + 1 - obj.StartOffset),
+					TouchedByObject = obj
+				};
+				touchedMemoryRanges.Add(memRange);
+				Log(" - Touched memory range: ({0}-{1})", memRange.StartOffset, memRange.EndOffset);
+			}
 		}
 		
 		void Log(string text, params object[] pars)
@@ -236,7 +267,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		string input;
 		int    readingEnd;
+		// Do not ever set the value from parsing methods
+		// most importantly do not backtrack except with GoBack(int)
 		int    currentLocation;
+		
+		// CurrentLocation is assumed to be touched and that fact does not
+		// have to be recorded in this variable
+		// This stores any value bigger then that if applicable
+		// acutal value is max(currentLocation, maxTouchedLocation)
+		int    maxTouchedLocation;
 		
 		bool IsEndOfFile()
 		{
@@ -261,6 +300,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			currentLocation++;
 			return true;
+		}
+		
+		void GoBack(int oldLocation)
+		{
+			maxTouchedLocation = Math.Max(maxTouchedLocation, currentLocation);
+			currentLocation = oldLocation;
 		}
 		
 		bool TryRead(char c)
@@ -307,8 +352,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		bool TryPeek(string text)
 		{
 			if (currentLocation + text.Length > readingEnd) return false;
-			
-			return TryPeek(text[0]) && input.Substring(currentLocation, text.Length) == text;
+			// Early exit
+			if (!TryPeek(text[0])) return false;
+			maxTouchedLocation = Math.Max(maxTouchedLocation, currentLocation + (text.Length - 1));
+			return input.Substring(currentLocation, text.Length) == text;
 		}
 		
 		bool TryMoveTo(char c)
@@ -656,8 +703,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				TryMoveToNonWhiteSpace();
 				attr.EqualsSign = GetText(checkpoint, currentLocation);
 			} else {
-				// TODO: Track touched memory
-				currentLocation = checkpoint;
+				GoBack(checkpoint);
 				// TODO: ERROR - Equals expected
 			}
 			
@@ -784,7 +830,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						backtrack = entityIndex;
 					}
 					
-					currentLocation = Math.Max(start + 1, backtrack); // Max-just in case
+					GoBack(Math.Max(start + 1, backtrack)); // Max-just in case
 				}
 				text.Value = GetText(start, currentLocation);
 				text.EndOffset = currentLocation;
