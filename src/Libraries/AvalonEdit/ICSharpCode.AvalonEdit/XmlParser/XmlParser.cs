@@ -90,8 +90,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	{
 		// TODO: Error reporting
 		// TODO: Simple tag matching heuristic
-		// TODO: Simple attribute value closing heurisitc
 		// TODO: Backtracking for unclosed long Text sections
+		// TODO: Delete some read functions and optimize performance
+		// TODO: Rewrite ReadText
 		
 		RawDocument userDocument;
 		XDocument userLinqDocument;
@@ -202,7 +203,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		int GetStartOfCachedObject<T>(Predicate<T> conditon, int offset, int lookaheadCount) where T: RawObject
 		{
 			RawObject obj = parsedItems.FindFirstSegmentWithStartAfter(offset);
-			while(obj != null && obj.StartOffset <= offset + lookaheadCount) {
+			// Recheck the offset!
+			while(obj != null && offset <= obj.StartOffset && obj.StartOffset <= offset + lookaheadCount) {
 				if (obj is T && conditon((T)obj)) {
 					return obj.StartOffset;
 				}
@@ -304,6 +306,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		void GoBack(int oldLocation)
 		{
+			if (oldLocation > currentLocation) throw new Exception("Trying to move forward");
 			maxTouchedLocation = Math.Max(maxTouchedLocation, currentLocation);
 			currentLocation = oldLocation;
 		}
@@ -342,11 +345,26 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		bool TryPeekPrevious(char c, int back)
+		{
+			if (currentLocation - back == readingEnd) return false;
+			if (currentLocation - back < 0 ) return false;
+			
+			return input[currentLocation - back] == c;
+		}
+		
 		bool TryPeek(char c)
 		{
 			if (currentLocation == readingEnd) return false;
 			
 			return input[currentLocation] == c;
+		}
+		
+		bool TryPeekAnyOf(params char[] chars)
+		{
+			if (currentLocation == readingEnd) return false;
+			
+			return chars.Contains(input[currentLocation]);
 		}
 		
 		bool TryPeek(string text)
@@ -410,6 +428,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return WhiteSpaceChars.Contains(input[currentLocation]);
 		}
 		
+		bool TryPeekNameChar()
+		{
+			if (currentLocation == readingEnd) return false;
+			
+			return !WhiteSpaceAndReservedChars.Contains(input[currentLocation]);
+		}
 		
 		/// <summary>
 		/// Read a name token.
@@ -626,7 +650,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		bool TryReadClosingBracket(out string bracket)
 		{
-			// TODO: Touched memory
 			// We are using a lot of string literals so that the memory instances are shared
 			int start = currentLocation;
 			if (TryRead('>')) {
@@ -700,7 +723,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			int checkpoint = currentLocation;
 			TryMoveToNonWhiteSpace();
 			if (TryRead('=')) {
+				int chk2 = currentLocation;
 				TryMoveToNonWhiteSpace();
+				if (!TryPeek('"') && !TryPeek('\'')) {
+					// Do not read whitespace if quote does not follow
+					GoBack(chk2);
+				}
 				attr.EqualsSign = GetText(checkpoint, currentLocation);
 			} else {
 				GoBack(checkpoint);
@@ -709,29 +737,88 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			// Read attribute value
 			int start = currentLocation;
-			if (TryRead('"')) {
-				TryMoveToAnyOf('"', '<');
-				TryRead('"');
-				// TODO: Some backtracking?
-				// TODO: ERROR - Attribute value not closed
-				attr.Value = GetText(start, currentLocation);
-			} else if (TryRead('\'')) {
-				TryMoveToAnyOf('\'', '<');
-				TryRead('\'');
-				// TODO: Some backtracking?
-				// TODO: ERROR - Attribute value not closed
-				attr.Value = GetText(start, currentLocation);
+			char quoteChar = TryPeek('"') ? '"' : '\'';
+			if (TryRead(quoteChar)) {
+				int valueStart = currentLocation;
+				TryMoveToAnyOf(quoteChar, '<');
+				if (TryRead(quoteChar)) {
+					if (!TryPeekAnyOf(' ', '\t', '\n', '\r', '/', '>', '?')) {
+						if (TryPeekPrevious('=', 2) || (TryPeekPrevious('=', 3) && TryPeekPrevious(' ', 2))) {
+							// This actually most likely means that we are in the next attribute value
+							GoBack(valueStart);
+							ReadAttributeValue(quoteChar);
+							if (TryRead(quoteChar)) {
+								// TODO: ERROR - Attribute value not followed by white space of tag end
+							} else {
+								// TODO: ERROR - Quote missing or ws missing after next one
+							}
+						} else {
+							// TODO: ERROR - Attribute value not followed by white space of tag end
+						}
+					}
+				} else {
+					// '<' or end of file
+					// TODO: ERROR - Attribute value not closed
+					GoBack(valueStart);
+					ReadAttributeValue(quoteChar);
+				}
 			} else {
-				// TODO: ERROR - Attribute value expected
+				int valueStart = currentLocation;
+				ReadAttributeValue(null);
+				TryRead('\"');
+				TryRead('\'');
+				if (valueStart == currentLocation) {
+					// TODO: ERROR - Attribute value expected - quote \" \'
+				} else {
+					// TODO: ERROR - Attribute value must be quoted in \" or \'
+				}
 			}
+			attr.Value = GetText(start, currentLocation);
 			
-			// TODO: Heuristic for missing " or '
 			// TODO: Normalize attribute values
 			
 			attr.EndOffset = currentLocation;
 			
 			OnParsed(attr);
 			return attr;
+		}
+		
+		/// <summary>
+		/// Read everything up to quote (excluding), opening/closing tag or attribute signature
+		/// </summary>
+		void ReadAttributeValue(char? quote)
+		{
+			while(true) {
+				if (IsEndOfFile()) return;
+				// What is next?
+				int start = currentLocation;
+				TryMoveToNonWhiteSpace();  // Read white space (if any)
+				if (quote.HasValue) {
+					if (TryPeek(quote.Value)) return;
+				} else {
+					if (TryPeek('"') || TryPeek('\'')) return;
+				}
+				// Opening/closing tag
+				if (TryPeekAnyOf('<', '/', '>')) {
+					GoBack(start);
+					return;
+				}
+				// Try reading attribute signature
+				string name;
+				if (TryReadName(out name)) {
+					int nameEnd = currentLocation;
+					if (TryMoveToNonWhiteSpace() && TryPeek("=")) {
+						// Start of attribute.  Great
+						GoBack(start);
+						return;  // Done
+					} else {
+						// Just some gargabe - make it part of the value
+						GoBack(nameEnd);
+						continue;  // Read more
+					}
+				}
+				TryMoveNext(); // Accept everyting else
+			}
 		}
 		
 		RawText MakeText(int start, int end)
@@ -766,7 +853,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				if (TryReadFromCacheOrNew(t => t.Type == type, out text)) {
 					// Cached text found
 					yield return text;
-					lookahead = true; // In the middle of the text edit
 					continue; // Read next fragment;  the method can handle "no text left"
 				}
 				text.Type = type;
@@ -782,7 +868,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					if (nextFragmentIndex != -1) {
 						// Consider adding "aaa]" before cached fragment "]>bbb"
 						// We must not use cache then - so the overshoot acutally makes sense
-						readingEnd = nextFragmentIndex + backtrackLenght;
+						readingEnd = Math.Min(realReadingEnd, nextFragmentIndex + backtrackLenght);
 						Log("Parsing only text ({0}-{1}) because later text was already processed", currentLocation, readingEnd);
 					}
 				}
