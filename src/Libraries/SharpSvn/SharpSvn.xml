@@ -29,6 +29,10 @@
             <summary>Extended Parameter container of <see cref="M:SharpSvn.SvnClient.Revert(System.String,SharpSvn.SvnRevertArgs)" /></summary>
             <threadsafety static="true" instance="false" />
         </member>
+        <member name="T:SharpSvn.SvnLookGetPropertyArgs">
+            <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnLookClient" />'s Changed method</summary>
+            <threadsafety static="true" instance="false" />
+        </member>
         <member name="M:SharpSvn.Diff.SvnFileDiff.#ctor(svn_diff_t*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,SharpSvn.Implementation.AprPool)">
             <summary>originalPath and modifiedPath must live at least as long as pool</summary>
         </member>
@@ -100,6 +104,10 @@ latest.</summary>
             <summary>Extended Parameter container of <see cref="M:SharpSvn.SvnClient.CreateDirectory(System.String,SharpSvn.SvnCreateDirectoryArgs)" /> and <see cref="M:SharpSvn.SvnClient.RemoteCreateDirectory(System.Uri,SharpSvn.SvnCreateDirectoryArgs)" /></summary>
             <threadsafety static="true" instance="false" />
         </member>
+        <member name="T:SharpSvn.SvnReintegrationMergeArgs">
+            <summary>Extended Parameter container of <see cref="M:SharpSvn.SvnClient.ReintegrationMerge(System.String,SharpSvn.SvnTarget,SharpSvn.SvnReintegrationMergeArgs)" /></summary>
+            <threadsafety static="true" instance="false" />
+        </member>
         <member name="T:SharpSvn.SvnSwitchArgs">
             <summary>Extended Parameter container of <see cref="M:SharpSvn.SvnClient.Switch(System.String,SharpSvn.SvnUriTarget,SharpSvn.SvnSwitchArgs)" /></summary>
             <threadsafety static="true" instance="false" />
@@ -108,11 +116,11 @@ latest.</summary>
             <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnClient" />'s GetSuggestedMergeSources method</summary>
             <threadsafety static="true" instance="false" />
         </member>
-        <member name="P:SharpSvn.SvnBlameArgs.Range">
-            <summary>Gets or sets the blame range as <see cref="T:SharpSvn.SvnRevisionRange" /></summary>
+        <member name="P:SharpSvn.SvnPropertyListArgs.ChangeLists">
+            <summary>Gets the list of changelist-names</summary>
         </member>
-        <member name="T:SharpSvn.SvnBlameArgs">
-            <summary>Extended Parameter container for SvnClient.Blame</summary>
+        <member name="T:SharpSvn.SvnPropertyListArgs">
+            <summary>Extended Parameter container for SvnClient.PropertyList</summary>
             <threadsafety static="true" instance="false" />
         </member>
         <member name="T:SharpSvn.SvnListArgs">
@@ -229,6 +237,13 @@ for addition unversioned files and directories scattered deep within a versioned
         </member>
         <member name="T:SharpSvn.SvnCommitArgs">
             <summary>Extended Parameter container of <see cref="M:SharpSvn.SvnClient.Commit(System.String,SharpSvn.SvnCommitArgs)" /></summary>
+            <threadsafety static="true" instance="false" />
+        </member>
+        <member name="P:SharpSvn.SvnHotCopyRepositoryArgs.CleanLogFiles">
+            <summary>Gets or sets a value indicating whether to clean the database logfiles after the hotcopy</summary>
+        </member>
+        <member name="T:SharpSvn.SvnHotCopyRepositoryArgs">
+            <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnRepositoryClient" />'s CreateRepository method</summary>
             <threadsafety static="true" instance="false" />
         </member>
         <member name="P:SharpSvn.SvnGetPropertyArgs.ChangeLists">
@@ -391,6 +406,11 @@ value to this.
         <member name="P:SharpSvn.SharpSvnStrings.RevisionMustBeGreaterThanOrEqualToZero">
             <summary>
   Looks up a localized string similar to Revision must be &gt;= 0.
+</summary>
+        </member>
+        <member name="P:SharpSvn.SharpSvnStrings.RemoteSessionMustBeOpenToPerformCommand">
+            <summary>
+  Looks up a localized string similar to The remote session must be open before it can perform commands.
 </summary>
         </member>
         <member name="P:SharpSvn.SharpSvnStrings.PropertyNameIsNotValid">
@@ -5846,6 +5866,10 @@ Notifier doesn't know or isn't saying.
  also used for checkouts, switches, and merges.
 
 The type of action occurring. 
+</member>
+        <member name="F:svn_wc_notify_update_obstruction">
+An update tried to add a file or directory at path but an
+   * unversioned obstruction was found.  @since New in 1.7. 
 </member>
         <member name="F:svn_wc_notify_failed_external">
 The path is a subdirectory referenced in an externals definition
@@ -11510,11 +11534,14 @@ Run a command to completion, by first calling svn_io_start_cmd() and
  Wait for the process @a *cmd_proc to complete and optionally retrieve
  its exit code.  @a cmd is used only in error messages.
 
- If @a exitcode is not NULL, @a *exitcode will contain the exit code
- of the process upon return, and if @a exitwhy is not NULL, @a
- *exitwhy will indicate why the process terminated.  If @a exitwhy is
- NULL, and the exit reason is not @c APR_PROC_CHECK_EXIT(), or if
- @a exitcode is NULL and the exit code is non-zero, then an
+ If @a exitcode is not NULL, and SVN_NO_ERROR is returned, @a *exitcode
+ will contain the exit code of the process.  If @a exitcode is NULL and
+ the exit code is non-zero, then an @c SVN_ERR_EXTERNAL_PROGRAM error
+ will be returned.
+
+ If @a exitwhy is not NULL, and SVN_NO_ERROR is returned, @a *exitwhy
+ will indicate why the process terminated.  If @a exitwhy is NULL,
+ and the exit reason is not @c APR_PROC_CHECK_EXIT(), then an
  @c SVN_ERR_EXTERNAL_PROGRAM error will be returned.
 
  @since New in 1.3.
@@ -15082,13 +15109,6 @@ Return a human readable string describing the specified error.
 Type for specifying an error or status code.
 
 </member>
-        <member name="P:SharpSvn.SvnPropertyListArgs.ChangeLists">
-            <summary>Gets the list of changelist-names</summary>
-        </member>
-        <member name="T:SharpSvn.SvnPropertyListArgs">
-            <summary>Extended Parameter container for SvnClient.PropertyList</summary>
-            <threadsafety static="true" instance="false" />
-        </member>
         <member name="P:SharpSvn.SvnMergesEligibleArgs.RetrieveProperties">
             <summary>Gets the list of properties to retrieve. Only SVN 1.5+ repositories allow adding custom properties to this list</summary>
         </member>
@@ -15103,6 +15123,10 @@ Type for specifying an error or status code.
         </member>
         <member name="T:SharpSvn.SvnInfoArgs">
             <summary>Extended Parameter container of SvnClient.Info</summary>
+            <threadsafety static="true" instance="false" />
+        </member>
+        <member name="T:SharpSvn.SvnUpgradeRepositoryArgs">
+            <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnRepositoryClient" />'s RecoverRepository method</summary>
             <threadsafety static="true" instance="false" />
         </member>
         <member name="P:SharpSvn.SvnDiffArgs.ChangeLists">
@@ -15416,8 +15440,8 @@ target's properties).</para>
             <summary>Extended Parameter container of <see cref="M:SharpSvn.SvnClient.Update(System.String,SharpSvn.SvnUpdateArgs)" /></summary>
             <threadsafety static="true" instance="false" />
         </member>
-        <member name="T:SharpSvn.SvnReintegrationMergeArgs">
-            <summary>Extended Parameter container of <see cref="M:SharpSvn.SvnClient.ReintegrationMerge(System.String,SharpSvn.SvnTarget,SharpSvn.SvnReintegrationMergeArgs)" /></summary>
+        <member name="T:SharpSvn.SvnLookPropertyListArgs">
+            <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnLookClient" />'s Changed method</summary>
             <threadsafety static="true" instance="false" />
         </member>
         <member name="T:SharpSvn.SvnLockArgs">
@@ -15443,8 +15467,17 @@ target's properties).</para>
             <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnClient" />'s GetRevisionPropertyList</summary>
             <threadsafety static="true" instance="false" />
         </member>
-        <member name="T:SharpSvn.SvnCleanUpArgs">
-            <summary>Extended parameter container for <see cref="T:SharpSvn.SvnClient" />Cleanup</summary>
+        <member name="P:SharpSvn.SvnSetRevisionPropertyRepositoryArgs.Author">
+            <summary>Gets or sets the author passed to the hook scripts</summary>
+        </member>
+        <member name="P:SharpSvn.SvnSetRevisionPropertyRepositoryArgs.CallPostRevPropChangeHook">
+            <summary>Gets or sets a value indicating whether to call the hook after changing the revision property</summary>
+        </member>
+        <member name="P:SharpSvn.SvnSetRevisionPropertyRepositoryArgs.CallPreRevPropChangeHook">
+            <summary>Gets or sets a value indicating whether to call the hook before changing the revision property</summary>
+        </member>
+        <member name="T:SharpSvn.SvnSetRevisionPropertyRepositoryArgs">
+            <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnRepositoryClient" />'s CreateRepository method</summary>
             <threadsafety static="true" instance="false" />
         </member>
         <member name="T:SharpSvn.SvnGetRevisionPropertyArgs">
@@ -15469,8 +15502,11 @@ target's properties).</para>
             <summary>Extended Parameter container of <see cref="M:SharpSvn.SvnClient.FileVersions(SharpSvn.SvnTarget,SharpSvn.SvnFileVersionsArgs,System.EventHandler`1{SharpSvn.SvnFileVersionEventArgs^})" /></summary>
             <threadsafety static="true" instance="false" />
         </member>
-        <member name="T:SharpSvn.SvnUpgradeRepositoryArgs">
-            <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnRepositoryClient" />'s RecoverRepository method</summary>
+        <member name="P:SharpSvn.SvnBlameArgs.Range">
+            <summary>Gets or sets the blame range as <see cref="T:SharpSvn.SvnRevisionRange" /></summary>
+        </member>
+        <member name="T:SharpSvn.SvnBlameArgs">
+            <summary>Extended Parameter container for SvnClient.Blame</summary>
             <threadsafety static="true" instance="false" />
         </member>
         <member name="M:serf_ssl_trust_cert(serf_ssl_context_t*,serf_ssl_certificate_t*)">
@@ -15519,14 +15555,9 @@ algorithm.
 
 </member>
         <member name="M:serf_bucket_headers_do(serf_bucket_t*,=FUNC:System.Int32(System.Void*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*),System.Void*)">
- Iterates over all headers of the message and invokes the callback 
- function with header key and value. Stop iterating when no more
- headers are available or when the callback function returned a 
- non-0 value.
-
- @param headers_bucket headers to iterate over
- @param func callback routine to invoke for every header in the bucket
- @param baton baton to pass on each invocation to func
+@param headers_bucket headers to iterate over
+@param func callback routine to invoke for every header in the bucket
+@param baton baton to pass on each invocation to func
 
 </member>
         <member name="D:serf_bucket_headers_do_callback_fn_t">
@@ -15859,6 +15890,10 @@ not be traversed while harvesting revision logs for each target. </remarks>
             <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnRepositoryClient" />'s CreateRepository method</summary>
             <threadsafety static="true" instance="false" />
         </member>
+        <member name="T:SharpSvn.SvnLookWriteArgs">
+            <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnLookClient" />'s Write method</summary>
+            <threadsafety static="true" instance="false" />
+        </member>
         <member name="P:SharpSvn.SvnGetWorkingCopyVersionArgs.CommandType">
             <summary>Gets the <see cref="T:SharpSvn.SvnCommandType" /> of the command</summary>
         </member>
@@ -15873,8 +15908,12 @@ not be traversed while harvesting revision logs for each target. </remarks>
             <summary>Extended Parameter container for SvnClient.ListChangeList</summary>
             <threadsafety static="true" instance="false" />
         </member>
-        <member name="T:SharpSvn.SvnLookWriteArgs">
-            <summary>Extended Parameter container of <see cref="T:SharpSvn.SvnLookClient" />'s Write method</summary>
+        <member name="T:SharpSvn.SvnLookListArgs">
+            <summary>Base Extended Parameter container of <see cref="T:SharpSvn.SvnLookClient" /> commands</summary>
+            <threadsafety static="true" instance="false" />
+        </member>
+        <member name="T:SharpSvn.SvnCleanUpArgs">
+            <summary>Extended parameter container for <see cref="T:SharpSvn.SvnClient" />Cleanup</summary>
             <threadsafety static="true" instance="false" />
         </member>
         <member name="P:SharpSvn.SvnSetPropertyArgs.ChangeLists">
@@ -16173,12 +16212,86 @@ is false</summary>
         <member name="P:SharpSvn.SvnException.SubversionErrorCode">
             <summary>Gets the raw subversion error code</summary>
         </member>
+        <member name="M:SharpSvn.SvnRemoteSession.Log(System.Collections.Generic.ICollection`1{System.String^},SharpSvn.SvnRemoteSessionLogArgs,System.EventHandler`1{SharpSvn.SvnRemoteSessionLogEventArgs^})">
+            <summary>Streamingly retrieve the log messages for a set of revision(s).</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRemoteSession.Log(System.Collections.Generic.ICollection`1{System.String^},System.EventHandler`1{SharpSvn.SvnRemoteSessionLogEventArgs^})">
+            <overloads>Streamingly retrieve the log messages for a set of revision(s)</overloads>
+            <summary>Streamingly retrieve the log messages for a set of revision(s).</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRemoteSession.GetLatestRevision(SharpSvn.SvnRemoteSessionLatestRevisionArgs,System.Int64@)">
+            <summary>Get the latest revision in the repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRemoteSession.GetLatestRevision(System.Int64@)">
+            <overloads>Get the latest revision in the repository</overloads>
+            <summary>Get the latest revision in the repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRemoteSession.Reparent(System.Uri,SharpSvn.SvnRemoteSessionReparentArgs)">
+            <summary>Reparents the session to the specified Uri in the same repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRemoteSession.Reparent(System.Uri)">
+            <overloads>Reparents the session to the specified Uri</overloads>
+            <summary>Reparents the session to the specified Uri in the same repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRemoteSession.Open(System.Uri,SharpSvn.SvnRemoteSessionOpenArgs)">
+            <summary>Opens the session to the specified Uri</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRemoteSession.Open(System.Uri)">
+            <overloads>Opens the session to the specified Uri</overloads>
+            <summary>Opens the session to the specified Uri</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRemoteSession.#ctor(System.Uri)">
+            <summary>Initializes a new SvnRemoteSession instance and then <see cref="M:SharpSvn.SvnRemoteSession.Open(System.Uri)" /> a session to the specified url</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRemoteSession.#ctor">
+            <summary>Initializes a new SvnRemoteSession instance</summary>
+        </member>
+        <member name="E:SharpSvn.SvnLookClient.Cancel">
+            <summary>
+Raised to allow canceling operations. The event is first
+raised on the <see cref="T:SharpSvn.SvnClientArgs" /> object and
+then on the <see cref="T:SharpSvn.SvnLookClient" /></summary>
+        </member>
+        <member name="M:SharpSvn.SvnLookClient.GetList(SharpSvn.SvnLookOrigin,System.String,SharpSvn.SvnLookListArgs,System.Collections.ObjectModel.Collection`1{SharpSvn.SvnLookListEventArgs^}@)">
+            <summary>Gets the content of a path directly from a repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnLookClient.GetList(SharpSvn.SvnLookOrigin,System.String,System.Collections.ObjectModel.Collection`1{SharpSvn.SvnLookListEventArgs^}@)">
+            <overloads>Gets the content of a path directly from a repository</overloads>
+            <summary>Gets the content of a path directly from a repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnLookClient.List(SharpSvn.SvnLookOrigin,System.String,SharpSvn.SvnLookListArgs,System.EventHandler`1{SharpSvn.SvnLookListEventArgs^})">
+            <summary>Lists the content of a path directly from a repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnLookClient.List(SharpSvn.SvnLookOrigin,System.String,System.EventHandler`1{SharpSvn.SvnLookListEventArgs^})">
+            <overloads>Lists the content of a path directly from a repository</overloads>
+            <summary>Lists the content of a path directly from a repository</summary>
+        </member>
         <member name="M:SharpSvn.SvnLookClient.Write(SharpSvn.SvnLookOrigin,System.String,System.IO.Stream,SharpSvn.SvnLookWriteArgs)">
             <summary>Writes the content of the specified path to a stream directly from a repository</summary>
         </member>
         <member name="M:SharpSvn.SvnLookClient.Write(SharpSvn.SvnLookOrigin,System.String,System.IO.Stream)">
             <overloads>Writes the content of the specified path to a stream directly from a repository</overloads>
             <summary>Writes the content of the specified path to a stream directly from a repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnLookClient.GetPropertyList(SharpSvn.SvnLookOrigin,System.String,SharpSvn.SvnLookPropertyListArgs,SharpSvn.SvnPropertyCollection@)">
+            <summary>Gets all properties on files or dirs (<c>svn proplist</c>)</summary>
+        </member>
+        <member name="M:SharpSvn.SvnLookClient.GetPropertyList(SharpSvn.SvnLookOrigin,System.String,SharpSvn.SvnPropertyCollection@)">
+            <overloads>Gets all properties on files or dirs (<c>svn proplist</c>)</overloads>
+            <summary>Gets all properties on files or dirs (<c>svn proplist</c>)</summary>
+        </member>
+        <member name="M:SharpSvn.SvnLookClient.GetProperty(SharpSvn.SvnLookOrigin,System.String,System.String,SharpSvn.SvnLookGetPropertyArgs,SharpSvn.SvnPropertyValue@)">
+            <summary>Gets the property value of the specified path directly from a repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnLookClient.GetProperty(SharpSvn.SvnLookOrigin,System.String,System.String,SharpSvn.SvnLookGetPropertyArgs,System.String@)">
+            <summary>Gets the property value of the specified path directly from a repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnLookClient.GetProperty(SharpSvn.SvnLookOrigin,System.String,System.String,SharpSvn.SvnPropertyValue@)">
+            <summary>Gets the property value of the specified path directly from a repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnLookClient.GetProperty(SharpSvn.SvnLookOrigin,System.String,System.String,System.String@)">
+            <overloads>Gets the property value of the specified path directly from a repository</overloads>
+            <summary>Gets the property value of the specified path directly from a repository</summary>
         </member>
         <member name="M:SharpSvn.SvnLookClient.GetRevisionProperty(SharpSvn.SvnLookOrigin,System.String,SharpSvn.SvnLookRevisionPropertyArgs,SharpSvn.SvnPropertyValue@)">
             <summary>Gets the specified revision property directly from the repository</summary>
@@ -16291,6 +16404,35 @@ routine to open its @a path and read the @c SVN_WC_ENTRY_THIS_DIR structure, or 
         </member>
         <member name="M:SharpSvn.SvnWorkingCopyClient.GetState(System.String,SharpSvn.SvnWorkingCopyState@)">
             <summary>Gets the text file status of a working copy path</summary>
+        </member>
+        <member name="E:SharpSvn.SvnRepositoryClient.Cancel">
+            <summary>
+Raised to allow canceling operations. The event is first
+raised on the <see cref="T:SharpSvn.SvnClientArgs" /> object and
+then on the <see cref="T:SharpSvn.SvnRepositoryClient" /></summary>
+        </member>
+        <member name="M:SharpSvn.SvnRepositoryClient.HotCopy(System.String,System.String)">
+            <overloads>Makes a hot copy of a repository</overloads>
+            <summary>Makes a hot copy of a repository</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRepositoryClient.DeleteRevisionProperty(System.String,SharpSvn.SvnRevision,System.String,SharpSvn.SvnSetRevisionPropertyRepositoryArgs)">
+            <summary>Set the property NAME on revision REVISION</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRepositoryClient.DeleteRevisionProperty(System.String,SharpSvn.SvnRevision,System.String)">
+            <overloads>Delete the property NAME on revision REVISION</overloads>
+        </member>
+        <member name="M:SharpSvn.SvnRepositoryClient.SetRevisionProperty(System.String,SharpSvn.SvnRevision,System.String,System.Collections.Generic.ICollection`1{System.Byte},SharpSvn.SvnSetRevisionPropertyRepositoryArgs)">
+            <summary>Set the property NAME on revision REVISION</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRepositoryClient.SetRevisionProperty(System.String,SharpSvn.SvnRevision,System.String,System.String,SharpSvn.SvnSetRevisionPropertyRepositoryArgs)">
+            <summary>Set the property NAME on revision REVISION</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRepositoryClient.SetRevisionProperty(System.String,SharpSvn.SvnRevision,System.String,System.Collections.Generic.ICollection`1{System.Byte})">
+            <summary>Set the property NAME on revision REVISION</summary>
+        </member>
+        <member name="M:SharpSvn.SvnRepositoryClient.SetRevisionProperty(System.String,SharpSvn.SvnRevision,System.String,System.String)">
+            <overloads>Set the property NAME on revision REVISION</overloads>
+            <summary>Set the property NAME on revision REVISION</summary>
         </member>
         <member name="M:SharpSvn.SvnRepositoryClient.UpgradeRepository(System.String,SharpSvn.SvnUpgradeRepositoryArgs)">
             <summary>In-Place Upgrades a repository to a later version</summary>
@@ -18458,6 +18600,9 @@ sequence of whitespace characters as a single space</summary>
         </member>
         <member name="F:SharpSvn.SvnStatus.Zero">
             <summary>Zero value. Never used by Subversion</summary>
+        </member>
+        <member name="F:SharpSvn.SvnNotifyAction.UpdateObstruction">
+            <summary>[[[ Unversioned obstruction error (Not guaranteed compatible with future Subversion versions!)]]]</summary>
         </member>
         <member name="F:SharpSvn.SvnDepth.Infinity">
             <summary>

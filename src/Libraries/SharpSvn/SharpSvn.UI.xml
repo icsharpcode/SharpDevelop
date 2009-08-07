@@ -375,6 +375,12 @@
             (You should use this within .Net development environments (Like MS Visual Studio) implementing this interface)</remarks>
             <value>The UI service.</value>
         </member>
+        <member name="P:SharpSvn.UI.SvnUIBindArgs.AutoScaleBaseSize">
+            <summary>
+            Gets or sets the size of the auto scale base.
+            </summary>
+            <value>The size of the auto scale base.</value>
+        </member>
         <member name="T:SharpSvn.UI.Strings">
             <summary>
               A strongly-typed resource class, for looking up localized strings, etc.
