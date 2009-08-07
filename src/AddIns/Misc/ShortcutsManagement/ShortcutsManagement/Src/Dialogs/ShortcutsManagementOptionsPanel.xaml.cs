@@ -69,17 +69,17 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 		{
 			shortcutsManagementOptionsPanel.searchTextBox.Focus();
 			
-			if (Directory.Exists(UserGestureManager.UserGestureProfilesDirectory)) {
-				var dirInfo = new DirectoryInfo(UserGestureManager.UserGestureProfilesDirectory);
+			if (Directory.Exists(UserGestureProfileManager.UserGestureProfilesDirectory)) {
+				var dirInfo = new DirectoryInfo(UserGestureProfileManager.UserGestureProfilesDirectory);
 				var xmlFiles = dirInfo.GetFiles("*.xml");
 				
 				foreach (var fileInfo in xmlFiles) {
-					var profile = new UserGestureProfile();
-					profile.Path = Path.Combine(UserGestureManager.UserGestureProfilesDirectory, fileInfo.Name);
+					var path = Path.Combine(UserGestureProfileManager.UserGestureProfilesDirectory, fileInfo.Name);
+					var profile = new UserGestureProfile(path);
 					profile.Load();
 					profiles.Add(profile);
 					
-					if (UserGestureManager.CurrentProfile != null && profile.Name == UserGestureManager.CurrentProfile.Name) {
+					if (UserGestureProfileManager.CurrentProfile != null && profile.Name == UserGestureProfileManager.CurrentProfile.Name) {
 						SelectedProfile = profile;
 					}
 				}
@@ -237,7 +237,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 				}
 			}
 			
-			UserGestureManager.CurrentProfile = SelectedProfile;
+			UserGestureProfileManager.CurrentProfile = SelectedProfile;
 			
 			profiles.ForEach(p => p.Save());
 			
@@ -290,13 +290,10 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 					openDialog.FilterIndex = 1;
 					openDialog.RestoreDirectory = false;
 					if(true == openDialog.ShowDialog()) {
-						var loadedProfile = new UserGestureProfile();
-						loadedProfile.Path = openDialog.FileName;
+						var loadedProfilePath = Path.Combine(UserGestureProfileManager.UserGestureProfilesDirectory, Guid.NewGuid().ToString());
+						File.Copy(openDialog.FileName, loadedProfilePath);
+						var loadedProfile = new UserGestureProfile(loadedProfilePath);
 						loadedProfile.Load();
-						
-						loadedProfile.Path = Path.Combine(
-						UserGestureManager.UserGestureProfilesDirectory,
-						Guid.NewGuid().ToString());
 						
 						profiles.Add(loadedProfile);
 						SelectedProfile = loadedProfile;
@@ -315,17 +312,19 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 					if (promptWindow.DialogResult == true) {
 						UserGestureProfile newProfile;
 						
+						var newProfileName = Guid.NewGuid().ToString();
+						newProfile = new UserGestureProfile(
+							Path.Combine(UserGestureProfileManager.UserGestureProfilesDirectory, newProfileName + ".xml"),
+							newProfileName,
+							promptWindow.Text,
+							false);
+						
 						if (promptWindow.BaseProfile != null) {
-						newProfile = (UserGestureProfile) promptWindow.BaseProfile.Clone();
-							newProfile.Name = Guid.NewGuid().ToString();
-							newProfile.Text = promptWindow.Text;
-							newProfile.ReadOnly = false;
-						} else {
-							newProfile = new UserGestureProfile(Guid.NewGuid().ToString(), promptWindow.Text, false);
+							foreach(var pair in promptWindow.BaseProfile) {
+								newProfile[pair.Key] = pair.Value;
+							}
 						}
 						
-						newProfile.Path = Path.Combine(UserGestureManager.UserGestureProfilesDirectory,
-						newProfile.Name + ".xml");
 						profiles.Add(newProfile);
 						
 						SelectedProfile = newProfile;

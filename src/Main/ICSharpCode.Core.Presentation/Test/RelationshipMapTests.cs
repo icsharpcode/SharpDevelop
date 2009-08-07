@@ -28,7 +28,7 @@ namespace ICSharpCode.Core.Presentation.Tests
         [Test]
         public void WeakEqualityComparerSupportTest()
         {
-        	var map = new RelationshipMap<string, WeakReference>(null, new WeakReferenceEqualirtyComparer());
+        	var map = new RelationshipMap<string, WeakReference>(null, new WeakReferenceTargetEqualirtyComparer());
         	var uiElement = new UIElement();
         	var container = new WeakReference(uiElement);
         	map.Add("test", container);

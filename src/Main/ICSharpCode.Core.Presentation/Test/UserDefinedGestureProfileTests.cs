@@ -23,8 +23,8 @@ namespace ICSharpCode.Core.Presentation.Tests
     	[SetUp]
     	public void SetuUp()
     	{
-    		UserGestureManager.CurrentProfile = null;
-    		profile = new UserGestureProfile { Name = "TestProfile1" };
+    		UserGestureProfileManager.CurrentProfile = null;
+    		profile = new UserGestureProfile("") { Name = "TestProfile1" };
         	gesture = (KeyGesture)new KeyGestureConverter().ConvertFromInvariantString("Ctrl+A");
         	binding = new InputBindingInfo { OwnerTypeName="Binding", RoutedCommandName="Binding" };
     	}
@@ -47,7 +47,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			var userDefinedGestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString("Ctrl+B;Ctrl+C");
 			profile[BindingInfoTemplate.CreateFromIBindingInfo(binding)] = userDefinedGestures;
-			UserGestureManager.CurrentProfile = profile;
+			UserGestureProfileManager.CurrentProfile = profile;
 			
 			// Default gestures stay the same
 			Assert.AreEqual(1, binding.DefaultGestures.Count);
@@ -67,7 +67,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 			
 			var userDefinedGestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString("Ctrl+B;Ctrl+C");
 			profile[BindingInfoTemplate.CreateFromIBindingInfo(binding)] = userDefinedGestures;
-			UserGestureManager.CurrentProfile = profile;
+			UserGestureProfileManager.CurrentProfile = profile;
 			
 			// Default gestures are used because current profile doesn't contain modifications to this gesture
 			Assert.AreEqual(1, binding2.ActiveGestures.Count);

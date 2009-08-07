@@ -8,13 +8,14 @@ using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 namespace ICSharpCode.Core.Presentation  
 {
 	/// <summary>
-	/// Manages user defined gestures
+	/// Manages active <see cref="UserGestureProfile" /> 
 	/// </summary>
-	public static class UserGestureManager
+	public static class UserGestureProfileManager
 	{
+		private static UserGestureProfile _currentProfile;
 		private static string _userGestureProfilesDirectory;
 		
-		static UserGestureManager()
+		static UserGestureProfileManager()
 		{
 			if(PropertyService.ConfigDirectory != null) {
 				_userGestureProfilesDirectory = Path.Combine(PropertyService.ConfigDirectory, "UserGestureProfiles");
@@ -25,7 +26,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Path to file where current user defined gestures are set
+		/// Gets path to directory where user gesture profiles are stored as XML files
 		/// </summary>
 		public static string UserGestureProfilesDirectory
 		{
@@ -34,8 +35,11 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		private static UserGestureProfile _currentProfile;
-	
+		/// <summary>
+		/// Gets or sets current profile. 
+		/// 
+		/// Current profile can change <see cref="InputBindingInfo.ActiveGestures" />
+		/// </summary>
 		public static UserGestureProfile CurrentProfile
 		{
 			get {
@@ -53,20 +57,28 @@ namespace ICSharpCode.Core.Presentation
 				}
 				
 				if(_currentProfile != oldProfile) {
-					InvokeCurrentProfileChanged(typeof(UserGestureManager), new NotifyUserGestureProfileChangedEventArgs(oldProfile, _currentProfile));
+					InvokeCurrentProfileChanged(typeof(UserGestureProfileManager), new NotifyUserGestureProfileChangedEventArgs(oldProfile, _currentProfile));
 				}
 			} 
 		}
 		
+		/// <summary>
+		/// Occurs when <see cref="CurrentProfile" /> is changes
+		/// </summary>
 		public static event NotifyUserGestureProfileChangedEventHandler CurrentProfileChanged;
 	
-		public static void InvokeCurrentProfileChanged(object sender, NotifyUserGestureProfileChangedEventArgs args)
+		private static void InvokeCurrentProfileChanged(object sender, NotifyUserGestureProfileChangedEventArgs args)
 		{
 			if(CurrentProfileChanged != null) {
 				CurrentProfileChanged.Invoke(sender, args);
 			}
 		}
 		
+		/// <summary>
+		/// Reset <see cref="UserGestureProfileManager" />
+		/// 
+		/// Intended to use for unit tests only
+		/// </summary>
 		public static void Reset()
 		{
 			CurrentProfile = null;

@@ -11,10 +11,16 @@ using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// Description of CommandsService.
+	/// Utility class to help manage commands and bindings
 	/// </summary>
 	public static class CommandsService
 	{
+		/// <summary>
+		/// Register <see cref="InputBindingInfo" /> and <see cref="CommandBindingInfo" /> 
+		/// for all MenuItem codons under provided path
+		/// </summary>
+		/// <param name="caller">Caller object</param>
+		/// <param name="menuRootsLocationPath">Path to codons</param>
 		public static void RegisterMenuBindings(object caller, string menuRootsLocationPath)
 		{
 			var menuRoots = AddInTree.BuildItems<MenuLocationDescriptor>(menuRootsLocationPath, caller);
@@ -23,6 +29,13 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Register <see cref="InputBindingInfo" /> and <see cref="CommandBindingInfo" /> using data in MenuItem codon
+		/// and nested codons
+		/// </summary>
+		/// <param name="menuPath">Path to MenuItem codon</param>
+		/// <param name="caller">Caller object</param>
+		/// <param name="categoryPath"><see cref="InputBindingCategory" /> path</param>
 		public static void RegisterSingleMenuBindings(string menuPath, object caller, string categoryPath)
 		{
 			var menuItemNode = AddInTree.GetTreeNode(menuPath);
@@ -101,6 +114,10 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Register all <see cref="RoutedUICommand" /> static propertiess in provided class
+		/// </summary>
+		/// <param name="type">Class with static properties returning <see cref="RoutedUICommand" /></param>
 		public static void RegisterRoutedCommands(Type type) {
 			var typeMembers = type.GetMembers(BindingFlags.Static | BindingFlags.Public | BindingFlags.GetField | BindingFlags.GetProperty);
 			foreach(var member in typeMembers) {
@@ -120,6 +137,9 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Register default .Net routed commands
+		/// </summary>
 		public static void RegisterBuiltInRoutedUICommands() {
 			RegisterRoutedCommands(typeof(ApplicationCommands));
 			RegisterRoutedCommands(typeof(ComponentCommands));
@@ -128,6 +148,11 @@ namespace ICSharpCode.Core.Presentation
 			RegisterRoutedCommands(typeof(EditingCommands));
 		}
 		
+		/// <summary>
+		/// Register <see cref="InputBindingCategory">InputBindingCategories</see> described by codons with provided path
+		/// </summary>
+		/// <param name="caller">Caller object</param>
+		/// <param name="path">Path to codons</param>
 		public static void RegisterInputBindingCategories(object caller, string path) {
 			var descriptors = AddInTree.BuildItems<InputBindingCategoryDescriptor>(path, caller, false);
 			
@@ -149,6 +174,11 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Register <see cref="RoutedUICommand" />s described by codons with provided path
+		/// </summary>
+		/// <param name="caller">Caller object</param>
+		/// <param name="path">Path to codons</param>
 		public static void RegisterRoutedUICommands(object caller, string path) 
 		{
 			var descriptors = AddInTree.BuildItems<RoutedUICommandDescriptor>(path, caller, false);
@@ -157,6 +187,11 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Register command and input binding infos described by codons with provided path
+		/// </summary>
+		/// <param name="caller">Caller object</param>
+		/// <param name="path">Path to codons</param>
 		public static void RegisterCommandBindings(object caller, string path) 
 		{
 			var descriptors = AddInTree.BuildItems<CommandBindingDescriptor>(path, caller, false);
@@ -218,11 +253,10 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Register all input bindings from collection of <see cref="InputBindingDescriptor" />s
-		/// found through given path
+		/// Register input binding infos described by codons with provided path
 		/// </summary>
 		/// <param name="caller">Caller object</param>
-		/// <param name="path">Path to collection of <see cref="InputBindingDescriptor" />s</param>
+		/// <param name="path">Path to codons</param>
 		public static void RegisterInputBindings(object caller, string path) 
 		{
 			var descriptors = AddInTree.BuildItems<InputBindingDescriptor>(path, caller, false);

@@ -8,9 +8,9 @@ using System.Reflection;
 
 namespace ICSharpCode.Core.Presentation
 {
-    /// <summary>
-    /// Description of AtomicBindingInfoTemplateDictionary.
-    /// </summary>
+	/// <summary>
+	/// Holds objects of type T which can be searched by <see cref="BindingInfoTemplate" />
+	/// </summary>
     public class BindingInfoTemplateDictionary<T>
     {
 		static List<PropertyInfo> properties;
@@ -18,6 +18,11 @@ namespace ICSharpCode.Core.Presentation
 		static PropertyInfo OwnerTypeNameProperty;
 		static PropertyInfo RoutedCommandNameProperty;
 
+    	private Dictionary<BindingInfoTemplate, HashSet<T>> dictionary = new Dictionary<BindingInfoTemplate, HashSet<T>>();
+		
+		/// <summary>
+		/// Creates new instance of <see cref="BindingInfoTemplateDictionary{T}" />
+		/// </summary>
 		static BindingInfoTemplateDictionary()
 		{
 			var t = typeof(BindingInfoTemplate);
@@ -27,8 +32,11 @@ namespace ICSharpCode.Core.Presentation
 			properties.Add(RoutedCommandNameProperty = t.GetProperty("RoutedCommandName"));
 		}
 		
-    	private Dictionary<BindingInfoTemplate, HashSet<T>> dictionary = new Dictionary<BindingInfoTemplate, HashSet<T>>();
-		                              
+		/// <summary>
+		/// Add new item of type T to the dictionary
+		/// </summary>
+		/// <param name="template">Template which can be used to search for an item</param>
+		/// <param name="item">Added item</param>
 		public void Add(BindingInfoTemplate template, T item)
 		{
 			foreach(var wildCardTemplate in GetWildCardTemplates(template)) {
@@ -40,6 +48,13 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Find items using <see cref="BindingInfoTemplate" />
+		/// 
+		/// <code>null</code> values in the template will act as wildcards
+		/// </summary>
+		/// <param name="template">Template</param>
+		/// <returns>Collection of found items identified by provided <see cref="BindingInfoTemplate" /></returns>
 		public ICollection<T> FindItems(BindingInfoTemplate template) 
 		{
 			var bucket = FindBucket(template);
@@ -52,7 +67,7 @@ namespace ICSharpCode.Core.Presentation
 			return null;
 		}
 		
-		public HashSet<T> FindBucket(BindingInfoTemplate template) 
+		private HashSet<T> FindBucket(BindingInfoTemplate template) 
 		{				
 			HashSet<T> bucket;
 			dictionary.TryGetValue(template, out bucket);
@@ -63,21 +78,20 @@ namespace ICSharpCode.Core.Presentation
 			return bucket;
 		}
 		
+		/// <summary>
+		/// Remove item from template
+		/// </summary>
+		/// <param name="item"></param>
 		public void Remove(T item) 
 		{
 			foreach(var pair in dictionary) {
 				pair.Value.Remove(item);
 			}
 		}
-		
-		public void Remove(BindingInfoTemplate template, T item) 
-		{
-			var bucket = FindBucket(template);
-			if(bucket != null) {
-				bucket.Remove(item);
-			}
-		}
 
+		/// <summary>
+		/// Remove all registered items from dictionary
+		/// </summary>
 	    public void Clear() 
 	    {
 	    	dictionary.Clear();

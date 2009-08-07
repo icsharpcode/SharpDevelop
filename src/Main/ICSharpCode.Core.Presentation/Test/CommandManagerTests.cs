@@ -326,16 +326,16 @@ namespace ICSharpCode.Core.Presentation.Tests
 				}
 			};
 			
-			var profile = new UserGestureProfile();
+			var profile = new UserGestureProfile("");
 			profile[identifier] = newGestures;
 			
 			results.Clear();
-			UserGestureManager.CurrentProfile = profile;
+			UserGestureProfileManager.CurrentProfile = profile;
 			Assert.IsTrue(results.Contains("SetResult"));
 			Assert.IsFalse(results.Contains("ResetResult"));
 			
 			results.Clear();
-			UserGestureManager.CurrentProfile = null;
+			UserGestureProfileManager.CurrentProfile = null;
 			Assert.IsFalse(results.Contains("SetResult"));
 			Assert.IsTrue(results.Contains("ResetResult"));
 		}
@@ -406,9 +406,9 @@ namespace ICSharpCode.Core.Presentation.Tests
 			Assert.IsTrue(results.Contains("GestureRemoved"));
 			Assert.IsFalse(results.Contains("GestureAdded"));
 			
-			var profile = new UserGestureProfile();
+			var profile = new UserGestureProfile("");
 			profile[BindingInfoTemplate.CreateFromIBindingInfo(bindingInfo)] = new InputGestureCollection();
-			UserGestureManager.CurrentProfile = profile;
+			UserGestureProfileManager.CurrentProfile = profile;
 			
 			// User defined gestures are used
 			results.Clear();

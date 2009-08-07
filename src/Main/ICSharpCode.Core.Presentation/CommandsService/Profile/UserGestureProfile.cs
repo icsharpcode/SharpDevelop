@@ -8,15 +8,21 @@ using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// Description of UserGesturesProfile.
+	/// Stores user defined gestures for different actions
 	/// </summary>
-	public class UserGestureProfile : IEnumerable<KeyValuePair<BindingInfoTemplate, InputGestureCollection>>, ICloneable
+	public class UserGestureProfile : IEnumerable<KeyValuePair<BindingInfoTemplate, InputGestureCollection>>
 	{
 		private Dictionary<BindingInfoTemplate, InputGestureCollection> userDefinedGestures = new Dictionary<BindingInfoTemplate, InputGestureCollection>();
+		private string _path;
 		
+		/// <summary>
+		/// Gets path to the file on disk where this profile is stored
+		/// </summary>
 		public string Path
 		{
-			get; set;
+			get {
+				return _path;
+			}
 		}
 		
 		public bool ReadOnly
@@ -34,23 +40,33 @@ namespace ICSharpCode.Core.Presentation
 			get; set;
 		}
 		
-		public UserGestureProfile()
+		/// <summary>
+		/// Creates new instance of <see cref="UserGestureProfile" />
+		/// </summary>
+		/// <param name="filePath">Path to a file where this profile will be stored</param>
+		public UserGestureProfile(string filePath)
 		{
-			
+			_path = filePath;
 		}
 		
-		public UserGestureProfile(string name, string text, bool readOnly)
+		/// <summary>
+		/// Creates new instance of <see cref="UserGestureProfile" />
+		/// </summary>
+		/// <param name="filePath">Path to a file where this profile will be stored</param>
+		/// <param name="name">Name of the profile</param>
+		/// <param name="text">Text presented to user when describing this profile</param>
+		/// <param name="readOnly">Determines whether profile is read-only</param>
+		public UserGestureProfile(string filePath, string name, string text, bool readOnly)
 		{
+			_path = filePath;
 			Name = name;
 			Text = text;
 			ReadOnly = readOnly;
 		}
 		
-		
 		/// <summary>
-		/// Load user defined gesturs from specified file
+		/// Load user defined gestures from file described in <see cref="UserGestureProfile.Path" />
 		/// </summary>
-		/// <param name="sourcePath">Path to the file containing user defined gestures</param>
 		public void Load()
 		{
 			var xmlDocument = new XmlDocument();
@@ -80,9 +96,8 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Save user defined gestures to specified file
+		/// Save user defined gestures to file described in <see cref="UserGestureProfile.Path" />
 		/// </summary>
-		/// <param name="destinationPath">Path to the file containing user defined gestures</param>
 		public void Save()
 		{
 			var xmlDocument = new XmlDocument();
@@ -134,6 +149,9 @@ namespace ICSharpCode.Core.Presentation
 			xmlDocument.Save(Path);
 		}
 		
+		/// <summary>
+		/// Clear all defined gestures
+		/// </summary>
 		public void Clear()
 		{
 			var descriptions = new List<GesturesModificationDescription>();
@@ -155,17 +173,16 @@ namespace ICSharpCode.Core.Presentation
 			SDCommandManager.InvokeGesturesChanged(this, args);
 		}
 		
+		/// <summary>
+		/// Assigns <see cref="InputGestureCollection" /> to <see cref="BindingInfoTemplate" />
+		/// representing <see cref="InputBindingInfo" />
+		/// </summary>
 		public InputGestureCollection this[BindingInfoTemplate identifier]
 		{
 			get { return GetInputBindingGesture(identifier); }
 			set { SetInputBindingGestures(identifier, value); }
 		}
 
-		/// <summary>
-		/// Get user defined input binding gestures
-		/// </summary>
-		/// <param name="inputBindingInfoName">Input binding</param>
-		/// <returns>Gestures assigned to this input binding</returns>
 		private InputGestureCollection GetInputBindingGesture(BindingInfoTemplate identifier) 
 		{
 			InputGestureCollection gestures;
@@ -174,11 +191,6 @@ namespace ICSharpCode.Core.Presentation
 			return gestures;
 		}
 		
-		/// <summary>
-		/// Set user defined input binding gestures
-		/// </summary>
-		/// <param name="inputBindingInfoName">Input binding name</param>
-		/// <param name="inputGestureCollection">Gesture assigned to this input binding</param>
 		private void SetInputBindingGestures(BindingInfoTemplate identifier, InputGestureCollection inputGestureCollection) 
 		{
 			var oldGestures = GetInputBindingGesture(identifier);
@@ -199,34 +211,28 @@ namespace ICSharpCode.Core.Presentation
 			InvokeGesturesChanged(this, args);
 		}
 		
+		/// <inheritdoc />
 		public IEnumerator<KeyValuePair<BindingInfoTemplate, InputGestureCollection>> GetEnumerator()
 		{
 			return userDefinedGestures.GetEnumerator();
 		}
 		
+		/// <inheritdoc />
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			return userDefinedGestures.GetEnumerator();
 		}
 		
+		/// <summary>
+		/// Occurs when any gestures defined in this profile are changed, removed or added
+		/// </summary>
 		public event NotifyGesturesChangedEventHandler GesturesChanged;
 		
-		public void InvokeGesturesChanged(object sender, NotifyGesturesChangedEventArgs args)
+		private void InvokeGesturesChanged(object sender, NotifyGesturesChangedEventArgs args)
 		{
 			if(GesturesChanged != null) {
 				GesturesChanged.Invoke(sender, args);
 			}
-		}
-		
-		public object Clone()
-		{
-			var profile = new UserGestureProfile(Name, Text, ReadOnly);
-			
-			foreach(var definedGesture in userDefinedGestures) {
-				profile.userDefinedGestures.Add(definedGesture.Key, new InputGestureCollection(definedGesture.Value));
-			}
-			
-			return profile;
 		}
 	}
 }

@@ -3,12 +3,12 @@ using System;
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// Represent a method that will handle <see cref="ICSharpCode.Core.Presentation.UserGestureManager.CurrentProfileChanged" /> event
+	/// Represent a method that will handle <see cref="ICSharpCode.Core.Presentation.UserGestureProfileManager.CurrentProfileChanged" /> event
 	/// </summary>
 	public delegate void NotifyUserGestureProfileChangedEventHandler(object sender, NotifyUserGestureProfileChangedEventArgs args);
 	
 	/// <summary>
-	/// Provides data for <see cref="ICSharpCode.Core.Presentation.UserGestureManager.CurrentProfileChanged" /> event
+	/// Provides data for <see cref="ICSharpCode.Core.Presentation.UserGestureProfileManager.CurrentProfileChanged" /> event
 	/// </summary>
 	public class NotifyUserGestureProfileChangedEventArgs : EventArgs
 	{

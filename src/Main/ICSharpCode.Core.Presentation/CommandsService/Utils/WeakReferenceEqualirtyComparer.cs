@@ -3,8 +3,17 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.Core.Presentation
 { 
-	public class WeakReferenceEqualirtyComparer : IEqualityComparer<WeakReference>
+	/// <summary>
+	/// Compares two instances wrapped inside <see cref="WeakReference" />
+	/// </summary>
+	public class WeakReferenceTargetEqualirtyComparer : IEqualityComparer<WeakReference>
 	{
+		/// <summary>
+		/// Determines whether two instances found in <see cref="WeakReference.Target" /> are equal
+		/// </summary>
+		/// <param name="container1">First <see cref="WeakReference" /> container</param>
+		/// <param name="container2">Second <see cref="WeakReference" /> container</param>
+		/// <returns>Returns <code>true</code> if instances in <see cref="WeakReference.Target" /> are equal; otherwise <code>false</code></returns>
 		bool IEqualityComparer<WeakReference>.Equals(WeakReference container1, WeakReference container2) 
 		{
 			object value1 = null;
@@ -27,7 +36,12 @@ namespace ICSharpCode.Core.Presentation
 			return value1 == value2;
 		}
 		
-		int IEqualityComparer<WeakReference>.GetHashCode(WeakReference container) 
+		/// <summary>
+		/// Get hash code of instance found in <see cref="WeakReference.Target" />
+		/// </summary>
+		/// <param name="container"><see cref="WeakReference" /> container</param>
+		/// <returns>Returns hash code of the instace found in <see cref="WeakReference.Target" /></returns>
+		int IEqualityComparer<WeakReference>.GetHashCode(WeakReference container)
 		{
 			object target = null;
 			

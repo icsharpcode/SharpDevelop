@@ -19,6 +19,7 @@ namespace ICSharpCode.Core.Presentation
 		private string _ownerInstanceName;
 		private string _ownerTypeName;
 		private string routedCommandName;
+		private AddIn _addIn;
 		
 		/// <summary>
 		/// Get or sets binding groups
@@ -66,22 +67,25 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		
-		
 		/// <summary>
-		/// Stores name of named instance to which this binding belongs. When this binding is registered a
-		/// <see cref="InputBinding" /> is assigned to owner instance
+		/// Gets name of named owner instance as registered using <see cref="ICSharpCode.Core.Presentation.CommandManager.RegisterNamedUIElement" />
+		///
+		/// If this attribute is used <see cref="OwnerTypeName" /> can not be set
 		/// 
-		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerType" /> and
-		/// <see cref="OwnerTypeName" /> can not be set
+		/// This attribute can't be set while <see cref="InputBindingInfo" /> or <see cref="CommandBindingInfo" />
+		/// is registered in <see cref="ICSharpCode.Core.Presentation.CommandManager" />
 		/// </summary>
 		public virtual string OwnerInstanceName {
 			get {
 				return _ownerInstanceName;
 			}
 			set {
-				if(_ownerInstanceName != null || _ownerTypeName != null) {
-					throw new ArgumentException("This binding already has an owner");
+				if(_ownerTypeName != null) {
+					throw new ArgumentException("This binding info already has an owner");
+				}
+				
+				if(IsRegistered) {
+					throw new ArgumentException("Can not change owner while binding info is registered");
 				}
 				
 				_ownerInstanceName = value;
@@ -89,11 +93,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Stores owner instance to which this binding belongs. When this binding is registered a
-		/// <see cref="InputBinding" /> is assigned to owner instance
-		/// 
-		/// If this attribute is used <see cref="OwnerInstanceName" />, <see cref="OwnerType" /> and
-		/// <see cref="OwnerTypeName" /> can not be set
+		/// Gets collection of instances registered in <see cref="ICSharpCode.Core.Presentation.CommandManager" /> by name found in <see cref="OwnerInstanceName" /> property
 		/// </summary>
 		public ICollection<UIElement> OwnerInstances {
 			get {
@@ -106,11 +106,12 @@ namespace ICSharpCode.Core.Presentation
 		}
 					
 		/// <summary>
-		/// Stores name of owner type. Full name with assembly should be used. When this binding is 
-		/// registered <see cref="InputBinding" /> is assigned to all instances of provided class
+		/// Gets name of named owner type as registered using <see cref="ICSharpCode.Core.Presentation.CommandManager.RegisterNamedUIType" />
+		///
+		/// If this attribute is used <see cref="OwnerInstanceName" /> can not be set
 		/// 
-		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerInstanceName" /> and
-		/// <see cref="OwnerType" /> can not be set
+		/// This attribute can't be set while <see cref="InputBindingInfo" /> or <see cref="CommandBindingInfo" />
+		/// is registered in <see cref="ICSharpCode.Core.Presentation.CommandManager" />
 		/// </summary>
 		public virtual string OwnerTypeName 
 		{
@@ -118,8 +119,12 @@ namespace ICSharpCode.Core.Presentation
 				return _ownerTypeName;
 			}
 			set {
-				if(_ownerInstanceName != null || _ownerTypeName != null) {
-					throw new ArgumentException("This binding already has an owner");
+				if(_ownerTypeName != null) {
+					throw new ArgumentException("This binding info already has an owner");
+				}
+				
+				if(IsRegistered) {
+					throw new ArgumentException("Can not change owner while binding info is registered");
 				}
 				
 				_ownerTypeName = value;
@@ -127,11 +132,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Stores owner type. When this binding is registered <see cref="InputBinding" /> 
-		/// is assigned to all instances of provided class
-		/// 
-		/// If this attribute is used <see cref="OwnerInstance" />, <see cref="OwnerInstanceName" /> and
-		/// <see cref="OwnerTypeName" /> can not be set
+		/// Gets collection of types registered in <see cref="ICSharpCode.Core.Presentation.CommandManager" /> by name found in <see cref="OwnerInstanceName" /> property
 		/// </summary>
 		public ICollection<Type> OwnerTypes { 
 			get {
@@ -144,30 +145,27 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Routed command text
+		/// Gets name of <see cref="RoutedUICommand" /> associated with binding info as registered using 
+		/// <see cref="ICSharpCode.Core.Presentation.CommandManager.RegisterRoutedUICommand" />
 		/// 
-		/// Override routed command text when displaying to user
-		/// </summary>
-		/// <seealso cref="RoutedCommand"></seealso>
-		public string RoutedCommandText { 
-			get; set;
-		}
-		
-		
-		/// <summary>
-		/// Name of the routed command which will be invoked when this binding is triggered
+		/// This attribute can't be set while <see cref="InputBindingInfo" /> or <see cref="CommandBindingInfo" />
+		/// is registered in <see cref="ICSharpCode.Core.Presentation.CommandManager" />
 		/// </summary>
 		public virtual string RoutedCommandName { 
 			get {
 				return routedCommandName;
 			}
 			set {
+				if(IsRegistered) {
+					throw new ArgumentException("Can not change routed command while binding info is registered");
+				}
+				
 				routedCommandName = value;
 			}
 		}
 		
 		/// <summary>
-		/// Routed command instance which will be invoked when this binding is triggered
+		/// Gets <see cref="RoutedUICommand" /> instance registered in <see cref="ICSharpCode.Core.Presentation.CommandManager" /> by name found in <see cref="RoutedCommandName" /> property
 		/// </summary>
 		public RoutedUICommand RoutedCommand { 
 			get { 
@@ -175,19 +173,38 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Gets whether <see cref="CommandBindingInfo" /> or <see cref="InputBindingInfo" /> is registered in 
+		/// <see cref="ICSharpCode.Core.Presentation.CommandManager" /> 
+		/// </summary>
 		public bool IsRegistered
 		{
-			get; set;
+			get; internal set;
 		}
 		
 		/// <summary>
-		/// Add-in to which registered this input binding
+		/// Gets or sets add-in which created this <see cref="CommandBindingInfo" /> or <see cref="InputBindingInfo" />
+		/// 
+		/// In case of <see cref="CommandBindingInfo" /> this reference is used to create an instance of
+		/// associated command when doing lazy loading
+		/// 
+		/// This attribute can't be set while <see cref="InputBindingInfo" /> or <see cref="CommandBindingInfo" />
+		/// is registered in <see cref="ICSharpCode.Core.Presentation.CommandManager" />
 		/// </summary>
 		public AddIn AddIn {
-			get; set;
+			get {
+				return _addIn;
+			} 
+			set {
+				if(IsRegistered) {
+					throw new ArgumentException("Can not change add-in while binding info is registered");
+				}
+				
+				_addIn = value;
+			}
 		}
 		
-		public void SetCollectionChanged<T>(IObservableCollection<T> oldObservableCollection, IObservableCollection<T> newObservableCollection, NotifyCollectionChangedEventHandler handler) 
+		protected void SetCollectionChanged<T>(IObservableCollection<T> oldObservableCollection, IObservableCollection<T> newObservableCollection, NotifyCollectionChangedEventHandler handler) 
 		{
 			newObservableCollection.CollectionChanged += handler;
 			
@@ -209,8 +226,10 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Updates owner bindings
+		/// Handles <see cref="ICSharpCode.Core.Presentation.CommandManager.BindingsChanged" /> event
 		/// </summary>
+		/// <param name="sender">Sender object</param>
+		/// <param name="args">Event data</param>
 		public void BindingsChangedHandler(object sender, NotifyBindingsChangedEventArgs args)
 		{
 			if(!IsRegistered || RoutedCommand == null || (OwnerTypes == null && OwnerInstances == null)) {
@@ -240,16 +259,48 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Remove bindings currently assigned to <see cref="UIElement" /> or <see cref="Type" />
+		/// collection described in this binding info
+		/// </summary>
 		public void RemoveActiveBindings()
 		{
 			PopulateOwnerInstancesWithBindings(null);
 			PopulateOwnerTypesWithBindings(null);
 		}
 		
+		/// <summary>
+		/// Represents instance of <see cref="BindingInfoBase" /> as string
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			return string.Format(
+				"[{0}={1}, RoutedCommandName={2}, Hash={3}",
+				OwnerInstanceName != null ? "OwnerInstanceName" : "OwnerTypeName",
+				OwnerInstanceName != null ? OwnerInstanceName : OwnerTypeName,
+				RoutedCommandName,
+				GetHashCode());
+		}
+		
+		/// <summary>
+		/// Generate up to date <see cref="InputBindings" /> collection in case of <see cref="InputBindingInfo" />
+		/// or <see cref="CommandBindings" /> collection in case of <see cref="CommandBindingInfo" />
+		/// </summary>
 		protected abstract void GenerateBindings();
 		
+		/// <summary>
+		/// Fills <see cref="UIElement.CommandBindings" /> or <see cref="UIElement.InputBindings" /> collections 
+		/// with generated <see cref="CommandBinding" /> or <see cref="InputBinding" /> collections
+		/// </summary>
+		/// <param name="newInstances">Collection of <see cref="UIElement" /></param>
 		protected abstract void PopulateOwnerInstancesWithBindings(ICollection<UIElement> newInstances);
 		
+		/// <summary>
+		/// Using <see cref="System.Windows.Input.CommandManager.RegisterClassCommandBinding" /> or <see cref="System.Windows.Input.CommandManager.RegisterClassCommandBinding" /> methods
+		/// registers generated <see cref="CommandBinding" /> or <see cref="InputBinding" /> collections to collection of provided types
+		/// </summary>
+		/// <param name="newInstances">Collection of <see cref="Type" /></param>
 		protected abstract void PopulateOwnerTypesWithBindings(ICollection<Type> newtTypes);
     }
 }

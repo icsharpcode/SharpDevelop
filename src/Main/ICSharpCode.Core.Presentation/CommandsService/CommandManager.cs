@@ -51,7 +51,7 @@ namespace ICSharpCode.Core.Presentation
 		internal static Dictionary<string, System.Windows.Input.ICommand> commands = new Dictionary<string, System.Windows.Input.ICommand>();
 		
 		// Named UI instances and types
-		private static RelationshipMap<string, WeakReference> namedUIInstances = new RelationshipMap<string, WeakReference>(null, new WeakReferenceEqualirtyComparer());
+		private static RelationshipMap<string, WeakReference> namedUIInstances = new RelationshipMap<string, WeakReference>(null, new WeakReferenceTargetEqualirtyComparer());
 		private static RelationshipMap<string, Type> namedUITypes = new RelationshipMap<string, Type>();
 		
 		// Registered input binding categories
@@ -62,14 +62,13 @@ namespace ICSharpCode.Core.Presentation
 			// Load gesture profile first
 			var path = PropertyService.Get("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory");
 			if(path != null && File.Exists(path)) {
-				var profile = new UserGestureProfile();
-				profile.Path = path;
+				var profile = new UserGestureProfile(path);
 				profile.Load();
 				
-				UserGestureManager.CurrentProfile = profile;
+				UserGestureProfileManager.CurrentProfile = profile;
 			}
 			
-			UserGestureManager.CurrentProfileChanged += UserDefinedGesturesManager_CurrentProfileChanged;
+			UserGestureProfileManager.CurrentProfileChanged += UserDefinedGesturesManager_CurrentProfileChanged;
 		}
 
 		static void UserDefinedGesturesManager_CurrentProfileChanged(object sender, NotifyUserGestureProfileChangedEventArgs args)

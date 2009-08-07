@@ -21,7 +21,7 @@ namespace ICSharpCode.Core.Presentation
 	public class BindingGroup
 	{
 		private string _name;
-		private HashSet<WeakReference> _attachedInstances = new HashSet<WeakReference>(new WeakReferenceEqualirtyComparer());
+		private HashSet<WeakReference> _attachedInstances = new HashSet<WeakReference>(new WeakReferenceTargetEqualirtyComparer());
 		private BindingGroupCollection _nestedGroups = new BindingGroupCollection();
 		
 		/// <summary>
@@ -114,7 +114,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		/// <summary>
 		/// From provided <see cref="ICollection{Type}" /> generate <see cref="ICollection{UIElement}" /> containing 
-		/// instances of any of the provided types and registered in this or any nested group
+		/// instances created from one of the provided types and registered in this or any nested group
 		/// </summary>
 		/// <param name="instances">Collection of examined types</param>
 		/// <returns>Generated instances</returns>
