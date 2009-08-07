@@ -57,6 +57,7 @@
     		<Setter Property="HorizontalAlignment" Value="Stretch" />
     		<Setter Property="Margin" Value="0" />
     		<Setter Property="Background" Value="#FFECF7FC" />
+
     	    <Style.Triggers>
 		 	   <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="False">
               		<Setter Property="Background" Value="#FFE0E0E0"></Setter>
@@ -122,6 +123,12 @@
                     <Style TargetType="{x:Type DataGridCell}">
                         <Setter Property="Focusable" Value="false" />
                         <Setter Property="BorderThickness" Value="0" />
+                			 <Style.Triggers>  
+    	                    	<Trigger Property="IsSelected" Value="True">	<!-- disable selection highlight -->
+    	                     	   <Setter Property="Foreground" Value="Black" />
+                                <Setter Property="Background" Value="{x:Null}" />
+    	                     	</Trigger>
+							</Style.Triggers>
                     </Style>
                 </DataGrid.CellStyle>
                 <DataGrid.Columns>
@@ -134,7 +141,7 @@
                                     </StackPanel>
                                 </Grid>
                                 <DataTemplate.Triggers>
-                                    <DataTrigger Binding="{Binding Path=HasChildren}" Value="False">
+                                    <DataTrigger Binding="{Binding Path=HasChildNodes}" Value="False">
                                         <Setter TargetName="btnExpander"
                                                     Property="Visibility" Value="Hidden"/>
                                     </DataTrigger>

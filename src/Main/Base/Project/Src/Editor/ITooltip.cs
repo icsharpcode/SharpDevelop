@@ -9,7 +9,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
-	/// Content of text editor tooltip (<see cref="ToolTipRequestEventArgs.ContentToShow"/>), 
+	/// Content of text editor tooltip (used as <see cref="ToolTipRequestEventArgs.ContentToShow"/>), 
 	/// specifying whether it should be displayed in a WPF Popup.
 	/// </summary>
 	public interface ITooltip
@@ -22,9 +22,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		bool ShowAsPopup { get; }
 		
 		/// <summary>
-		/// Closes this debugger tooltip.
+		/// Indicates whether this tooltip allows to be closed.
 		/// </summary>
-		/// <returns>True if Close succeeded, false otherwise.</returns>
-		bool Close();
+		bool AllowsClose { get; }
+		
+		/// <summary>
+		/// Closes this tooltip.
+		/// </summary>
+		/// <param name="mouseClick">True if close request is raised 
+		/// because of mouse click on some SharpDevelop GUI element.</param>
+		/// <returns>True if Close succeeded (that is, can close). False otherwise.</returns>
+		bool Close(bool mouseClick);
 	}
 }

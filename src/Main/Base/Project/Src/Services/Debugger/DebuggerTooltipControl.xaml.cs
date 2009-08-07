@@ -28,36 +28,18 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			InitializeComponent();
 		}
 		
-		public DebuggerTooltipControl(ITreeNode node) 
+		public DebuggerTooltipControl(ITreeNode node)
 			: this(new ITreeNode[] { node })
 		{
 		}
 		
-		public DebuggerTooltipControl(IEnumerable<ITreeNode> nodes) 
+		public DebuggerTooltipControl(IEnumerable<ITreeNode> nodes)
 			: this()
 		{
 			this.ItemsSource = nodes;
 		}
 		
 		private LazyItemsControl<ITreeNode> lazyGrid;
-		
-		/// <summary>
-		/// Determines whether DebuggerTooltipControl should be displayed in WPF Popup.
-		/// </summary>
-		public bool ShowAsPopup {
-			get {
-				return true;
-			}
-		}
-		
-		/// <summary>
-		/// Closes the debugger Popup containing this control. Also closes all child Popups.
-		/// </summary>
-		/// <returns></returns>
-		public bool Close()
-		{
-			throw new NotImplementedException();
-		}
 		
 		private IEnumerable<ITreeNode> itemsSource;
 		public IEnumerable<ITreeNode> ItemsSource
@@ -71,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				
 				if (this.lazyGrid.ItemsSourceTotalCount != null)
 				{
+					// hide up, down buttons if too few items
 					btnUp.Visibility = btnDown.Visibility =
 						this.lazyGrid.ItemsSourceTotalCount.Value <= 10 ? Visibility.Collapsed : Visibility.Visible;
 				}
@@ -81,18 +64,89 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		/// <inheritdoc/>
+		public bool ShowAsPopup {
+			get {
+				return true;
+			}
+		}
+		
+		/// <summary>
+		/// When child popup is expanded, returns false. Otherwise true.
+		/// </summary>
+		public bool AllowsClose {
+			get {
+				return !isChildExpanded;
+			}
+		}
+		
+		/// <inheritdoc/>
+		public bool Close(bool mouseClick)
+		{
+			if (mouseClick || (!mouseClick && !isChildExpanded))
+			{
+				CloseChildPopup();
+				return true;
+			} 
+			else
+			{
+				return false;
+			}
+		}
+		
+		DebuggerPopup childPopup;
+		bool isChildExpanded
+		{
+			get {
+				return this.childPopup != null && this.childPopup.IsOpen;
+			}
+		}
+		
+		/// <summary>
+		/// Closes the child popup of this control, if it exists.
+		/// </summary>
+		public void CloseChildPopup()
+		{
+			if (this.childPopup != null)
+			{
+				this.childPopup.Close();
+			}
+		}
+		
+		internal Popup containingPopup;
+		
 		private void btnExpander_Click(object sender, RoutedEventArgs e)
 		{
 			var clickedButton = (ToggleButton)e.OriginalSource;
+			var clickedNode = (ITreeNode)clickedButton.DataContext;
 			Point buttonPos = clickedButton.PointToScreen(new Point(0, 0));
 
 			if (clickedButton.IsChecked.GetValueOrDefault(false))
 			{
+				CloseChildPopup();
+				
 				// open child Popup
+				if (this.childPopup == null)
+				{
+					this.childPopup = new DebuggerPopup();
+					this.childPopup.Placement = PlacementMode.Absolute;
+					this.childPopup.StaysOpen = true;
+				}
+				if (this.containingPopup != null)
+				{
+					this.containingPopup.StaysOpen = true;
+				}
+				// last popup is always StaysOpen = false, therefore focused
+				this.childPopup.StaysOpen = false;
+				this.childPopup.HorizontalOffset = buttonPos.X + 15;
+				this.childPopup.VerticalOffset = buttonPos.Y + 15;
+				this.childPopup.ItemsSource = clickedNode.ChildNodes;
+				this.childPopup.UpdateLayout();
+				this.childPopup.Open();
 			}
 			else
 			{
-				// close child Popups
+				CloseChildPopup();
 			}
 		}
 		

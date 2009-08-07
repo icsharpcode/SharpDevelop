@@ -218,6 +218,7 @@
     <Compile Include="Src\Project\Solution\ProjectTypeGuids.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
+    <Compile Include="Src\Services\Debugger\DebuggerPopup.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerTooltipControl.xaml.cs">
       <DependentUpon>DebuggerTooltipControl.xaml</DependentUpon>
       <SubType>Code</SubType>

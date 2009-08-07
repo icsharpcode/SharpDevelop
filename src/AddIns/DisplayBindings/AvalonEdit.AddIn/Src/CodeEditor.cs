@@ -298,9 +298,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		ToolTip toolTip;
 		Popup popup;
+		bool settingFocus = false;
 
 		void textEditor_MouseHover(object sender, MouseEventArgs e)
 		{
+			LoggingService.Debug("textEditor_MouseHover");
 			TextEditor textEditor = (TextEditor)sender;
 			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(GetAdapter(textEditor));
 			var pos = textEditor.GetPositionFromPoint(e.GetPosition(textEditor));
@@ -319,14 +321,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						throw new NotSupportedException("Content to show in Popup must be UIElement: " + args.ContentToShow);
 					}
 					if (popup == null) {
-						popup = createPopup();
+						popup = createPopup(true);
 					}
-					// close old popup
-					popup.IsOpen = false;
-					popup.Child = (UIElement)args.ContentToShow;
-					setPopupPosition(popup, textEditor, e);
-					// open popup at new location
-					popup.IsOpen = true;
+					if (tryCloseExistingPopup(false)) {
+						popup.Child = (UIElement)args.ContentToShow;
+						setPopupPosition(popup, textEditor, e);
+						LoggingService.Debug("opening new popup");
+						popup.IsOpen = true;
+						/*popup.Child.Focusable = true;
+						popup.Child.PreviewLostKeyboardFocus += (senderChild, _e) => {
+							LoggingService.Debug(string.Format("popup focus lost, source {0}, old {1}, new {2}", _e.Source, _e.OldFocus, _e.NewFocus));
+							//if (_e.OriginalSource == popup.Child) {
+								tryCloseExistingPopup(true);
+							//}
+						};
+						popup.IsOpen = true;
+						//settingFocus = true;
+						textEditor.Focus();	// needed so that popup.Child.Focus() succeds
+						popup.Child.Focus();
+						//settingFocus = false;*/
+					}
 					e.Handled = true;
 				}
 				else {
@@ -342,11 +356,58 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			else {
 				// close popup if mouse hovered over empty area
 				if (popup != null) {
-					popup.IsOpen = false;
 					e.Handled = true;
 				}
+				tryCloseExistingPopup(false);
 			}
 		}
+		
+		ITooltip getExistingITooltipPopupContent()
+		{
+			if (popup == null) {
+				return null;
+			}
+			return popup.Child as ITooltip;
+		}
+		
+		bool tryCloseExistingPopup(bool mouseClick)
+		{
+			bool canClose = true;
+			var popupContentITooltip = getExistingITooltipPopupContent();
+			if (popupContentITooltip != null) {
+				canClose = popupContentITooltip.Close(mouseClick);
+			}
+			if (popup != null && canClose) {
+				popup.IsOpen = false;
+			}
+			return canClose;
+		}
+		
+		/*bool tryCloseExistingPopup(bool mouseClick)
+		{
+			bool canClose = true;
+			var popupContentITooltip = getExistingITooltipPopupContent();
+			if (popupContentITooltip != null) {
+				canClose = popupContentITooltip.AllowsClose;
+			}
+			if (popup != null && canClose) {
+				LoggingService.Debug("popup.IsOpen = false");
+				// popup.IsOpen = false + closing ITooltip in Closed handler
+				// does not work, because Closed is called asynchronously
+				closeITooltipContent(popup);
+				popup.IsOpen = false;
+			}
+			return canClose;
+		}
+		
+		void closeITooltipContent(Popup popup)
+		{
+			var popupContentITooltip = getExistingITooltipPopupContent();
+			if (popupContentITooltip != null) {
+				LoggingService.Debug("Closing popup children");
+				popupContentITooltip.Close();
+			}
+		}*/
 		
 		void setPopupPosition(Popup popup, TextEditor textEditor, MouseEventArgs mouseArgs)
 		{
@@ -369,12 +430,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}*/
 		}
 		
-		Popup createPopup()
+		Popup createPopup(bool staysOpenOnFocusLost)
 		{
 			popup = new Popup();
 			popup.Closed += popup_Closed;
 			popup.Placement = PlacementMode.Absolute;
-			popup.StaysOpen = true;
+			popup.StaysOpen = staysOpenOnFocusLost;
 			return popup;
 		}
 		
@@ -391,7 +452,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (popup != null) {
 				// do not close popup if mouse moved from editor to popup
 				if (!popup.IsMouseOver) {
-					popup.IsOpen = false;
+					tryCloseExistingPopup(false);
 				}
 			}
 		}
