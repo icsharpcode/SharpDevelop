@@ -39,6 +39,21 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			this.ItemsSource = nodes;
 		}
 		
+		public DebuggerTooltipControl(DebuggerTooltipControl parentControl)
+			: this()
+		{
+			this.parentControl = parentControl;
+		}
+		
+		public event RoutedEventHandler Closed;
+		protected void OnClosed()
+		{
+			if (this.Closed != null)
+			{
+				this.Closed(this, new RoutedEventArgs());
+			}
+		}
+		
 		private LazyItemsControl<ITreeNode> lazyGrid;
 		
 		private IEnumerable<ITreeNode> itemsSource;
@@ -53,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				
 				if (this.lazyGrid.ItemsSourceTotalCount != null)
 				{
-					// hide up, down buttons if too few items
+					// hide up/down buttons if too few items
 					btnUp.Visibility = btnDown.Visibility =
 						this.lazyGrid.ItemsSourceTotalCount.Value <= 10 ? Visibility.Collapsed : Visibility.Visible;
 				}
@@ -71,30 +86,24 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		/// <summary>
-		/// When child popup is expanded, returns false. Otherwise true.
-		/// </summary>
-		public bool AllowsClose {
-			get {
-				return !isChildExpanded;
-			}
-		}
-		
 		/// <inheritdoc/>
 		public bool Close(bool mouseClick)
 		{
 			if (mouseClick || (!mouseClick && !isChildExpanded))
 			{
-				CloseChildPopup();
+				CloseChildPopups();
 				return true;
-			} 
+			}
 			else
 			{
 				return false;
 			}
 		}
 		
-		DebuggerPopup childPopup;
+		DebuggerPopup childPopup { get; set; }
+		DebuggerTooltipControl parentControl { get; set; }
+		internal DebuggerPopup containingPopup { get; set; }
+		
 		bool isChildExpanded
 		{
 			get {
@@ -102,18 +111,50 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		private ToggleButton expandedButton;
+		
 		/// <summary>
 		/// Closes the child popup of this control, if it exists.
 		/// </summary>
-		public void CloseChildPopup()
+		public void CloseChildPopups()
 		{
-			if (this.childPopup != null)
+			if (this.expandedButton != null)
 			{
-				this.childPopup.Close();
+				this.expandedButton.IsChecked = false;
+				this.expandedButton = null;
+				// nice simple example of indirect recursion
+				this.childPopup.CloseSelfAndChildren();
 			}
 		}
 		
-		internal Popup containingPopup;
+		public void CloseOnLostFocus()
+		{
+			// when leaf below us closes, we become the leaf
+			if (this.containingPopup != null)
+				this.containingPopup.IsLeaf = true;
+			if (!this.IsMouseOver)
+			{
+				if (this.containingPopup != null)
+				{
+					this.containingPopup.IsOpen = false;
+					this.containingPopup.IsLeaf = false;
+				}
+				if (this.parentControl != null)
+				{
+					this.parentControl.CloseOnLostFocus();
+				}
+				OnClosed();
+			}
+			else
+			{
+				// leaf closed because of click inside this control - stop the closing chaing
+				if (this.expandedButton != null)
+				{
+					this.expandedButton.IsChecked = false;
+					this.expandedButton = null;
+				}
+			}
+		}
 		
 		private void btnExpander_Click(object sender, RoutedEventArgs e)
 		{
@@ -123,30 +164,28 @@ namespace ICSharpCode.SharpDevelop.Debugging
 
 			if (clickedButton.IsChecked.GetValueOrDefault(false))
 			{
-				CloseChildPopup();
+				CloseChildPopups();
+				this.expandedButton = clickedButton;
 				
 				// open child Popup
 				if (this.childPopup == null)
 				{
-					this.childPopup = new DebuggerPopup();
+					this.childPopup = new DebuggerPopup(this);
 					this.childPopup.Placement = PlacementMode.Absolute;
-					this.childPopup.StaysOpen = true;
 				}
 				if (this.containingPopup != null)
 				{
-					this.containingPopup.StaysOpen = true;
+					this.containingPopup.IsLeaf = false;
 				}
-				// last popup is always StaysOpen = false, therefore focused
-				this.childPopup.StaysOpen = false;
+				this.childPopup.IsLeaf = true;
 				this.childPopup.HorizontalOffset = buttonPos.X + 15;
 				this.childPopup.VerticalOffset = buttonPos.Y + 15;
 				this.childPopup.ItemsSource = clickedNode.ChildNodes;
-				this.childPopup.UpdateLayout();
 				this.childPopup.Open();
 			}
 			else
 			{
-				CloseChildPopup();
+				CloseChildPopups();
 			}
 		}
 		

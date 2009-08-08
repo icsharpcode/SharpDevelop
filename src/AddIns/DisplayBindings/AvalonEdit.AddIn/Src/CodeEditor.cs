@@ -176,6 +176,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.MouseHover += textEditor_MouseHover;
 			textEditor.MouseHoverStopped += textEditor_MouseHoverStopped;
 			textEditor.MouseLeave += textEditor_MouseLeave;
+			textView.MouseDown += textEditor_MouseDown;
 			textEditor.TextArea.Caret.PositionChanged += caret_PositionChanged;
 			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
@@ -302,7 +303,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
 		void textEditor_MouseHover(object sender, MouseEventArgs e)
 		{
-			LoggingService.Debug("textEditor_MouseHover");
 			TextEditor textEditor = (TextEditor)sender;
 			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(GetAdapter(textEditor));
 			var pos = textEditor.GetPositionFromPoint(e.GetPosition(textEditor));
@@ -321,25 +321,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						throw new NotSupportedException("Content to show in Popup must be UIElement: " + args.ContentToShow);
 					}
 					if (popup == null) {
-						popup = createPopup(true);
+						popup = createPopup();
 					}
 					if (tryCloseExistingPopup(false)) {
+						// when popup content decides to close, close the popup
+						contentToShowITooltip.Closed += (closedSender, closedArgs) => { popup.IsOpen = false; };
 						popup.Child = (UIElement)args.ContentToShow;
 						setPopupPosition(popup, textEditor, e);
-						LoggingService.Debug("opening new popup");
 						popup.IsOpen = true;
-						/*popup.Child.Focusable = true;
-						popup.Child.PreviewLostKeyboardFocus += (senderChild, _e) => {
-							LoggingService.Debug(string.Format("popup focus lost, source {0}, old {1}, new {2}", _e.Source, _e.OldFocus, _e.NewFocus));
-							//if (_e.OriginalSource == popup.Child) {
-								tryCloseExistingPopup(true);
-							//}
-						};
-						popup.IsOpen = true;
-						//settingFocus = true;
-						textEditor.Focus();	// needed so that popup.Child.Focus() succeds
-						popup.Child.Focus();
-						//settingFocus = false;*/
 					}
 					e.Handled = true;
 				}
@@ -362,52 +351,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		ITooltip getExistingITooltipPopupContent()
-		{
-			if (popup == null) {
-				return null;
-			}
-			return popup.Child as ITooltip;
-		}
-		
 		bool tryCloseExistingPopup(bool mouseClick)
 		{
 			bool canClose = true;
-			var popupContentITooltip = getExistingITooltipPopupContent();
-			if (popupContentITooltip != null) {
-				canClose = popupContentITooltip.Close(mouseClick);
-			}
-			if (popup != null && canClose) {
-				popup.IsOpen = false;
-			}
-			return canClose;
-		}
-		
-		/*bool tryCloseExistingPopup(bool mouseClick)
-		{
-			bool canClose = true;
-			var popupContentITooltip = getExistingITooltipPopupContent();
-			if (popupContentITooltip != null) {
-				canClose = popupContentITooltip.AllowsClose;
-			}
-			if (popup != null && canClose) {
-				LoggingService.Debug("popup.IsOpen = false");
-				// popup.IsOpen = false + closing ITooltip in Closed handler
-				// does not work, because Closed is called asynchronously
-				closeITooltipContent(popup);
-				popup.IsOpen = false;
+			if (popup != null) {
+				var popupContentITooltip = popup.Child as ITooltip;
+				if (popupContentITooltip != null) {
+					canClose = popupContentITooltip.Close(mouseClick);
+				}
+				if (canClose) {
+					popup.IsOpen = false;
+				}
 			}
 			return canClose;
 		}
-		
-		void closeITooltipContent(Popup popup)
-		{
-			var popupContentITooltip = getExistingITooltipPopupContent();
-			if (popupContentITooltip != null) {
-				LoggingService.Debug("Closing popup children");
-				popupContentITooltip.Close();
-			}
-		}*/
 		
 		void setPopupPosition(Popup popup, TextEditor textEditor, MouseEventArgs mouseArgs)
 		{
@@ -430,12 +387,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}*/
 		}
 		
-		Popup createPopup(bool staysOpenOnFocusLost)
+		Popup createPopup()
 		{
 			popup = new Popup();
 			popup.Closed += popup_Closed;
 			popup.Placement = PlacementMode.Absolute;
-			popup.StaysOpen = staysOpenOnFocusLost;
+			popup.StaysOpen = true;
 			return popup;
 		}
 		
@@ -449,12 +406,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void textEditor_MouseLeave(object sender, MouseEventArgs e)
 		{
-			if (popup != null) {
+			if (popup != null && !popup.IsMouseOver) {
 				// do not close popup if mouse moved from editor to popup
-				if (!popup.IsMouseOver) {
-					tryCloseExistingPopup(false);
-				}
+				tryCloseExistingPopup(false);
 			}
+		}
+		
+		void textEditor_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			// close existing popup on text editor mouse down
+			tryCloseExistingPopup(false);
 		}
 
 		void toolTip_Closed(object sender, RoutedEventArgs e)

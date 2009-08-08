@@ -17,20 +17,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	public class DebuggerPopup : Popup
 	{
 		private DebuggerTooltipControl contentControl;
-		//private DebuggerPopup parentPopup;
 		
-		public DebuggerPopup()
+		public DebuggerPopup(DebuggerTooltipControl parentControl)
 		{
-			this.contentControl = new DebuggerTooltipControl();
+			this.contentControl = new DebuggerTooltipControl(parentControl);
 			this.contentControl.containingPopup = this;
 			this.Child = this.contentControl;
-			// to handle closed by lost focus
-			this.Closed += DebuggerPopup_Closed;
-		}
-
-		void DebuggerPopup_Closed(object sender, EventArgs e)
-		{
-			LoggingService.Debug("DebuggerPopup_Closed");
+			this.IsLeaf = false;
 		}
 		
 		public IEnumerable<ITreeNode> ItemsSource
@@ -39,14 +32,35 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			set { this.contentControl.ItemsSource = value;  }
 		}
 		
+		private bool isLeaf;
+		public bool IsLeaf
+		{
+			get { return isLeaf; }
+			set
+			{
+				isLeaf = value;
+				// leaf popup closes on lost focus
+				this.StaysOpen = !isLeaf;
+			}
+		}
+		
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			if (isLeaf)
+			{
+				this.contentControl.CloseOnLostFocus();
+			}
+		}
+		
 		public void Open()
 		{
 			this.IsOpen = true;
 		}
 		
-		public void Close()
+		public void CloseSelfAndChildren()
 		{
-			this.contentControl.CloseChildPopup();
+			this.contentControl.CloseChildPopups();
 			this.IsOpen = false;
 		}
 	}

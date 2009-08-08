@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Windows;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -22,16 +23,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		bool ShowAsPopup { get; }
 		
 		/// <summary>
-		/// Indicates whether this tooltip allows to be closed.
-		/// </summary>
-		bool AllowsClose { get; }
-		
-		/// <summary>
 		/// Closes this tooltip.
 		/// </summary>
 		/// <param name="mouseClick">True if close request is raised 
 		/// because of mouse click on some SharpDevelop GUI element.</param>
 		/// <returns>True if Close succeeded (that is, can close). False otherwise.</returns>
 		bool Close(bool mouseClick);
+		
+		/// <summary>
+		/// Occurs when this tooltip decides to close.
+		/// </summary>
+		event RoutedEventHandler Closed;
 	}
 }

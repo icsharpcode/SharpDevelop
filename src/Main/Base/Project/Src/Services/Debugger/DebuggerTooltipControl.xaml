@@ -56,8 +56,9 @@
     	    <Setter Property="BorderBrush" Value="Gray" />
     		<Setter Property="HorizontalAlignment" Value="Stretch" />
     		<Setter Property="Margin" Value="0" />
+		 	<Setter Property="Padding" Value="0" />
     		<Setter Property="Background" Value="#FFECF7FC" />
-
+			<Setter Property="Height" Value="14" />
     	    <Style.Triggers>
 		 	   <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="False">
               		<Setter Property="Background" Value="#FFE0E0E0"></Setter>
