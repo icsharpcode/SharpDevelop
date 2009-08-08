@@ -254,6 +254,7 @@
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleUserControlTestFixture.cs" />
     <Compile Include="Designer\LoadSplitContainerTestFixture.cs" />
+    <Compile Include="Designer\LoadTableLayoutPanelTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxOnPanelTestFixture.cs" />
     <Compile Include="Designer\LoadTextBoxTestFixture.cs" />
     <Compile Include="Designer\LoadTimerTestFixture.cs" />

@@ -347,8 +347,16 @@ namespace ICSharpCode.PythonBinding
 			for (int i = startIndex; i <= endIndex; ++i) {
 				Type type = obj.GetType();
 				string name = memberNames[i];
-				BindingFlags propertyBindingFlags = BindingFlags.Public | BindingFlags.GetField | BindingFlags.Static | BindingFlags.Instance;
+				
+				// Try class members excluding inherited members first.
+				BindingFlags propertyBindingFlags = BindingFlags.Public | BindingFlags.GetField | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 				PropertyInfo property = type.GetProperty(name, propertyBindingFlags);
+				if (property == null) {
+					// Try inherited members.
+					propertyBindingFlags = propertyBindingFlags & ~BindingFlags.DeclaredOnly;
+					property = type.GetProperty(name, propertyBindingFlags);
+				}
+				
 				if (property != null) {
 					obj = property.GetValue(obj, null);
 				} else {
