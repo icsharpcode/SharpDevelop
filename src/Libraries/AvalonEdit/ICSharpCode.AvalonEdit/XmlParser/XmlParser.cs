@@ -896,7 +896,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					OnSyntaxError(attr, valueStart, currentLocation, "Attribute value must be quoted");
 				}
 			}
-			attr.Value = GetText(start, currentLocation);
+			attr.QuotedValue = GetText(start, currentLocation);
 			
 			attr.EndOffset = currentLocation;
 			

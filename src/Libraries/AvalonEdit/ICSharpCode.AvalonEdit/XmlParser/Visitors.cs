@@ -109,7 +109,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			sb.Append(attribute.Name);
 			sb.Append(attribute.EqualsSign);
-			sb.Append(attribute.Value);
+			sb.Append(attribute.QuotedValue);
 		}
 		
 		/// <summary> Visit RawText </summary>

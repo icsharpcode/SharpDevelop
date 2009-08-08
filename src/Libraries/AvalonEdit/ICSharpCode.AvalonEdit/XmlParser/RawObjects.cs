@@ -165,6 +165,58 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			namesapce = XmlConvert.EncodeLocalName(namesapce);
 			return XName.Get(name, namesapce);
 		}
+		
+		#region Helpper methods
+		
+		/// <summary> The part of name before ":".  Empty string if not found </summary>
+		protected static string GetNamespacePrefix(string name)
+		{
+			int colonIndex = name.IndexOf(':');
+			if (colonIndex != -1) {
+				return name.Substring(0, colonIndex);
+			} else {
+				return string.Empty;
+			}
+		}
+		
+		/// <summary> The part of name after ":".  Whole name if not found </summary>
+		protected static string GetLocalName(string name)
+		{
+			int colonIndex = name.IndexOf(':');
+			if (colonIndex != -1) {
+				return name.Remove(0, colonIndex + 1);
+			} else {
+				return name ?? string.Empty;
+			}
+		}
+		
+		/// <summary> Remove quoting from the given string </summary>
+		protected static string Unquote(string quoted)
+		{
+			if (string.IsNullOrEmpty(quoted)) return string.Empty;
+			char first = quoted[0];
+			if (quoted.Length == 1) return (first == '"' || first == '\'') ? string.Empty : quoted;
+			char last  = quoted[quoted.Length - 1];
+			if (first == '"' || first == '\'') {
+				if (first == last) {
+					// Remove both quotes
+					return quoted.Substring(1, quoted.Length - 2);
+				} else {
+					// Remove first quote
+					return quoted.Remove(0, 1);
+				}
+			} else {
+				if (last == '"' || last == '\'') {
+					// Remove last quote
+					return quoted.Substring(0, quoted.Length - 1);
+				} else {
+					// Keep whole string
+					return quoted;
+				}
+			}
+		}
+		
+		#endregion
 	}
 	
 	/// <summary>
@@ -183,11 +235,21 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.Children = new ChildrenCollection<RawObject>();
 		}
 		
-		public ObservableCollection<RawObject> Helper_Elements {
+		#region Helpper methods
+		
+		ObservableCollection<RawElement> elements;
+		
+		/// <summary> Gets direcly nested elements (non-recursive) </summary>
+		public ObservableCollection<RawElement> Elements {
 			get {
-				return new FilteredCollection<ChildrenCollection<RawObject>, RawObject>(this.Children, x => x is RawElement);
+				if (elements == null) {
+					elements = new FilteredCollection<RawElement, ChildrenCollection<RawObject>>(this.Children);
+				}
+				return elements;
 			}
 		}
+		
+		#endregion
 		
 		public override void UpdateDataFrom(RawObject source)
 		{
@@ -576,14 +638,100 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		public ObservableCollection<RawObject> Helper_AttributesAndElements {
+		#region Helpper methods
+		
+		ObservableCollection<RawAttribute> attributes;
+		
+		/// <summary> Gets attributes of the element </summary>
+		public ObservableCollection<RawAttribute> Attributes {
 			get {
-				return new MergedCollection<ObservableCollection<RawObject>, RawObject>(
-					new FilteredCollection<ChildrenCollection<RawObject>, RawObject>(this.StartTag.Children, x => x is RawAttribute),
-					new FilteredCollection<ChildrenCollection<RawObject>, RawObject>(this.Children, x => x is RawElement)
-				);
+				if (attributes == null) {
+					attributes = new FilteredCollection<RawAttribute, ChildrenCollection<RawObject>>(this.StartTag.Children);
+				}
+				return attributes;
 			}
 		}
+		
+		ObservableCollection<RawObject> attributesAndElements;
+		
+		/// <summary> Gets both attributes and elements </summary>
+		public ObservableCollection<RawObject> AttributesAndElements {
+			get {
+				if (attributesAndElements == null) {
+					attributesAndElements = new MergedCollection<RawObject, ObservableCollection<RawObject>> (
+						// New wrapper with RawObject types
+						new FilteredCollection<RawObject, ChildrenCollection<RawObject>>(this.StartTag.Children, x => x is RawAttribute),
+						new FilteredCollection<RawObject, ChildrenCollection<RawObject>>(this.Children, x => x is RawElement)
+					);
+				}
+				return attributesAndElements;
+			}
+		}
+		
+		/// <summary> The part of name before ":".  Empty string if not found </summary>
+		public string NamespacePrefix {
+			get {
+				return GetNamespacePrefix(this.StartTag.Name);
+			}
+		}
+		
+		/// <summary> The part of name after ":".  Whole name if not found </summary>
+		public string LocalName {
+			get {
+				return GetLocalName(this.StartTag.Name);
+			}
+		}
+		
+		/// <summary> Resolved namespace of the name.  String empty if not found </summary>
+		public string Namespace {
+			get {
+				return ResloveNamespacePrefix(this.NamespacePrefix);
+			}
+		}
+		
+		/// <summary>
+		/// Recursively resolve given prefix in this context.
+		/// If prefix is empty find "xmlns" namespace.
+		/// </summary>
+		public string ResloveNamespacePrefix(string prefix)
+		{
+			string definition = string.IsNullOrEmpty(prefix) ? "xmlns" : "xmlns:" + prefix;
+			RawElement current = this;
+			while(current != null) {
+				string namesapce = current.GetAttributeValue(definition);
+				if (namesapce != null) return namesapce;
+				current = current.Parent as RawElement;
+			}
+			return string.Empty; // Default or undefined
+		}
+		
+		/// <summary>
+		/// Get unqoted value of attribute or null if not found.
+		/// It will match the local name in any namesapce.
+		/// </summary>
+		public string GetAttributeValue(string localName)
+		{
+			return GetAttributeValue(null, localName);
+		}
+		
+		/// <summary>
+		/// Get unqoted value of attribute or null if not found
+		/// </summary>
+		/// <param name="namespace">Namespace.  Empty stirng to match default.  Null to match any.</param>
+		/// <param name="localName">Local name - text after ":"</param>
+		/// <returns></returns>
+		public string GetAttributeValue(string @namespace, string localName)
+		{
+			// TODO: More efficient
+			foreach(RawAttribute attr in this.Attributes) {
+				if (attr.LocalName == localName && (@namespace == null || attr.Namespace == @namespace)) {
+					return attr.Value;
+				}
+			}
+			return null;
+		}
+		
+		#endregion
 		
 		public override void AcceptVisitor(IXmlVisitor visitor)
 		{
@@ -660,11 +808,58 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public class RawAttribute: RawObject
 	{
+		/// <summary> The raw name - exactly as in source file </summary>
 		public string Name { get; set; }
+		/// <summary> Equals sign and surrounding whitespace </summary>
 		public string EqualsSign { get; set; }
-		public string Value { get; set; }
+		/// <summary> The raw value - exactly as in source file (*probably* quoted) </summary>
+		public string QuotedValue { get; set; }
 		
-		// TODO: Provide method to dereference Value - &
+		#region Helpper methods
+		
+		/// <summary> The part of name before ":".  Empty string if not found </summary>
+		public string NamespacePrefix {
+			get {
+				return GetNamespacePrefix(this.Name);
+			}
+		}
+		
+		/// <summary> The part of name after ":".  Whole name if not found </summary>
+		public string LocalName {
+			get {
+				return GetLocalName(this.Name);
+			}
+		}
+		
+		/// <summary> Resolved namespace of the name.  String empty if not found </summary>
+		public string Namespace {
+			get {
+				RawTag tag = this.Parent as RawTag;
+				if (tag != null) {
+					RawElement elem = tag.Parent as RawElement;
+					if (elem != null) {
+						return elem.ResloveNamespacePrefix(this.NamespacePrefix);
+					}
+				}
+				return string.Empty; // Orphaned
+			}
+		}
+		
+		/// <summary> Attribute is declaring namespace ("xmlns" or "xmlns:*") </summary>
+		public bool IsNamespaceDeclaration {
+			get {
+				return this.Name == "xmlns" || this.NamespacePrefix == "xmlns";
+			}
+		}
+		
+		/// <summary> Unquoted value of the attribute </summary>
+		public string Value {
+			get {
+				return Unquote(this.QuotedValue);
+			}
+		}
+		
+		#endregion
 		
 		public override void AcceptVisitor(IXmlVisitor visitor)
 		{
@@ -678,11 +873,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			RawAttribute src = (RawAttribute)source;
 			if (this.Name != src.Name ||
 				this.EqualsSign != src.EqualsSign ||
-				this.Value != src.Value)
+				this.QuotedValue != src.QuotedValue)
 			{
 				this.Name = src.Name;
 				this.EqualsSign = src.EqualsSign;
-				this.Value = src.Value;
+				this.QuotedValue = src.QuotedValue;
 				OnChanged();
 			}
 		}
@@ -692,7 +887,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public XAttribute GetXAttribute()
 		{
 			if (xAttr == null) {
-				LogLinq("Creating XAttribute '{0}={1}'", this.Name, this.Value);
+				LogLinq("Creating XAttribute '{0}={1}'", this.Name, this.QuotedValue);
 				xAttr = new XAttribute(EncodeXName(this.Name), string.Empty);
 				xAttr.AddAnnotation(this);
 				bool deleted = false;
@@ -704,10 +899,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		void UpdateXAttribute(bool firstUpdate, ref bool deleted)
 		{
-			if (!firstUpdate) LogLinq("Updating XAttribute '{0}={1}'", this.Name, this.Value);
+			if (!firstUpdate) LogLinq("Updating XAttribute '{0}={1}'", this.Name, this.QuotedValue);
 			
 			if (xAttr.Name == EncodeXName(this.Name)) {
-				xAttr.Value = this.Value ?? string.Empty;
+				xAttr.Value = this.QuotedValue ?? string.Empty;
 			} else {
 				XElement xParent = xAttr.Parent;
 				if (xAttr.Parent != null) xAttr.Remove(); // Duplicate items are not added
@@ -719,7 +914,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public override string ToString()
 		{
-			return string.Format("[{0} '{1}{2}{3}']", base.ToString(), this.Name, this.EqualsSign, this.Value);
+			return string.Format("[{0} '{1}{2}{3}']", base.ToString(), this.Name, this.EqualsSign, this.QuotedValue);
 		}
 	}
 	

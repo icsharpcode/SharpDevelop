@@ -72,15 +72,18 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	}
 	
 	/// <summary>
-	/// Collection that presents only some items from the wrapped collection
+	/// Collection that presents only some items from the wrapped collection.
+	/// It implicitely filters object that are not of type T (or derived).
 	/// </summary>
-	public class FilteredCollection<C, T>: ObservableCollection<T> where C: INotifyCollectionChanged, IList<T>
+	public class FilteredCollection<T, C>: ObservableCollection<T> where C: INotifyCollectionChanged, IList
 	{
 		C source;
-		Predicate<T> condition;
+		Predicate<object> condition;
 		List<int> srcPtrs = new List<int>(); // Index to the original collection
 		
-		public FilteredCollection(C source, Predicate<T> condition)
+		public FilteredCollection(C source) : this (source, x => true) { }
+		
+		public FilteredCollection(C source, Predicate<object> condition)
 		{
 			this.source = source;
 			this.condition = condition;
@@ -95,8 +98,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.Clear();
 			srcPtrs.Clear();
 			for(int i = 0; i < source.Count; i++) {
-				if (condition(source[i])) {
-					this.Add(source[i]);
+				if (source[i] is T && condition(source[i])) {
+					this.Add((T)source[i]);
 					srcPtrs.Add(i);
 				}
 			}
@@ -117,7 +120,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					if (addIndex == -1) addIndex = this.Count;
 					// Add items to collection
 					for(int i = 0; i < e.NewItems.Count; i++) {
-						if (condition((T)e.NewItems[i])) {
+						if (e.NewItems[i] is T && condition(e.NewItems[i])) {
 							this.InsertItem(addIndex, (T)e.NewItems[i]);
 							srcPtrs.Insert(addIndex, e.NewStartingIndex + i);
 							addIndex++;
@@ -154,7 +157,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// <summary>
 	/// Two collections in sequence
 	/// </summary>
-	public class MergedCollection<C, T>: ObservableCollection<T> where C: INotifyCollectionChanged, IList<T>
+	public class MergedCollection<T, C>: ObservableCollection<T> where C: INotifyCollectionChanged, IList<T>
 	{
 		C a;
 		C b;

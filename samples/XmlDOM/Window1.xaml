@@ -9,10 +9,10 @@
 		<Storyboard x:Key="anim">
 	        <ColorAnimation Storyboard.TargetProperty="(TextBlock.Background).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:4"/>
 	    </Storyboard>
-		<HierarchicalDataTemplate DataType="{x:Type clr:RawDocument}" ItemsSource="{Binding Helper_Elements}">
+		<HierarchicalDataTemplate DataType="{x:Type clr:RawDocument}" ItemsSource="{Binding Elements}">
 			<TextBlock Text="XML Document" Margin="2"/>
 		</HierarchicalDataTemplate>
-		<HierarchicalDataTemplate DataType="{x:Type clr:RawElement}" ItemsSource="{Binding Helper_AttributesAndElements}">
+		<HierarchicalDataTemplate DataType="{x:Type clr:RawElement}" ItemsSource="{Binding AttributesAndElements}">
 			<TextBlock Text="{Binding StartTag.Name}" Margin="2" Initialized="BindElement"/>
 		</HierarchicalDataTemplate>
 		<HierarchicalDataTemplate DataType="{x:Type clr:RawAttribute}">
