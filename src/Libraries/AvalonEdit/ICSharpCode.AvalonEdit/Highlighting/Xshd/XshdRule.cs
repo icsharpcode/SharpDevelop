@@ -12,6 +12,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 	/// <summary>
 	/// &lt;Rule&gt; element.
 	/// </summary>
+	[Serializable]
 	public class XshdRule : XshdElement
 	{
 		/// <summary>

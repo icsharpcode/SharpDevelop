@@ -29,6 +29,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 	/// <summary>
 	/// &lt;Span&gt; element.
 	/// </summary>
+	[Serializable]
 	public class XshdSpan : XshdElement
 	{
 		/// <summary>

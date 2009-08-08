@@ -13,6 +13,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// <summary>
 	/// A highlighting rule.
 	/// </summary>
+	[Serializable]
 	public class HighlightingRule
 	{
 		/// <summary>

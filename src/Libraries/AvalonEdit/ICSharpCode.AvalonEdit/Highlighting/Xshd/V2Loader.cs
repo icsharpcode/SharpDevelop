@@ -281,15 +281,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				return FixedColorHighlightingBrush((Color?)ColorConverter.ConvertFromInvariantString(foreground));
 		}
 		
-		internal static ResourceKeyHighlightingBrush GetSystemColorBrush(IXmlLineInfo lineInfo, string name)
+		internal static SystemColorHighlightingBrush GetSystemColorBrush(IXmlLineInfo lineInfo, string name)
 		{
 			Debug.Assert(name.StartsWith("SystemColors.", StringComparison.Ordinal));
 			string shortName = name.Substring(13);
 			var property = typeof(SystemColors).GetProperty(shortName + "BrushKey");
 			if (property == null)
 				throw Error(lineInfo, "Cannot find '" + name + "'.");
-			ResourceKey key = (ResourceKey)property.GetValue(null, null);
-			return new ResourceKeyHighlightingBrush(key, name);
+			return new SystemColorHighlightingBrush(property);
 		}
 		
 		static HighlightingBrush FixedColorHighlightingBrush(Color? color)

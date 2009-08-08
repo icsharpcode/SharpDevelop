@@ -150,11 +150,17 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					else
 						Debug.Assert(xshd.Extensions.Count == 0);
 					
-//					// round-trip xshd:
-//					using (XmlTextWriter writer = new XmlTextWriter("c:\\temp\\" + resourceName, System.Text.Encoding.UTF8)) {
-//						writer.Formatting = Formatting.Indented;
-//						new Xshd.SaveXshdVisitor(writer).WriteDefinition(xshd);
-//					}
+					// round-trip xshd:
+					using (XmlTextWriter writer = new XmlTextWriter("c:\\temp\\" + resourceName, System.Text.Encoding.UTF8)) {
+						writer.Formatting = Formatting.Indented;
+						new Xshd.SaveXshdVisitor(writer).WriteDefinition(xshd);
+					}
+					using (FileStream fs = File.Create("c:\\temp\\" + resourceName + ".bin")) {
+						new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(fs, xshd);
+					}
+					using (FileStream fs = File.Create("c:\\temp\\" + resourceName + ".compiled")) {
+						new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(fs, Xshd.HighlightingLoader.Load(xshd, this));
+					}
 					
 					RegisterHighlighting(name, extensions, Xshd.HighlightingLoader.Load(xshd, this));
 					#else

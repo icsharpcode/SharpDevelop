@@ -14,6 +14,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// A highlighting span is a region with start+end expression that has a different RuleSet inside
 	/// and colors the region.
 	/// </summary>
+	[Serializable]
 	public class HighlightingSpan
 	{
 		/// <summary>

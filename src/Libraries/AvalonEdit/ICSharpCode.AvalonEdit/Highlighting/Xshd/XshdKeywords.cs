@@ -14,6 +14,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 	/// <summary>
 	/// A list of keywords.
 	/// </summary>
+	[Serializable]
 	public class XshdKeywords : XshdElement
 	{
 		/// <summary>

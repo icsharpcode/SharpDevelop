@@ -235,6 +235,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// RopeTextSource only publishes a copy of the contained rope to ensure that the underlying rope cannot be modified.
 		/// Unless the creator of the RopeTextSource still has a reference on the rope, RopeTextSource is immutable.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification="Not a property because it creates a clone")]
 		public Rope<char> GetRope()
 		{
 			return rope.Clone();

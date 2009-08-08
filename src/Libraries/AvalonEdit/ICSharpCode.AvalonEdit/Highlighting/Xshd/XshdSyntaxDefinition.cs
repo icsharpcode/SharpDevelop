@@ -14,6 +14,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 	/// <summary>
 	/// A &lt;SyntaxDefinition&gt; element.
 	/// </summary>
+	[Serializable]
 	public class XshdSyntaxDefinition
 	{
 		/// <summary>

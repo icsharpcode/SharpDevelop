@@ -12,6 +12,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 	/// <summary>
 	/// &lt;Import&gt; element.
 	/// </summary>
+	[Serializable]
 	public class XshdImport : XshdElement
 	{
 		/// <summary>

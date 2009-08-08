@@ -7,6 +7,8 @@
 
 using System;
 using System.Globalization;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
@@ -16,7 +18,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// <summary>
 	/// A highlighting color is a set of font properties and foreground and background color.
 	/// </summary>
-	public class HighlightingColor
+	[Serializable]
+	public class HighlightingColor : ISerializable
 	{
 		/// <summary>
 		/// Gets/Sets the name of the color.
@@ -37,6 +40,46 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// Gets/sets the foreground color applied by the highlighting.
 		/// </summary>
 		public HighlightingBrush Foreground { get; set; }
+		
+		/// <summary>
+		/// Creates a new HighlightingColor instance.
+		/// </summary>
+		public HighlightingColor()
+		{
+		}
+		
+		/// <summary>
+		/// Deserializes a HighlightingColor.
+		/// </summary>
+		protected HighlightingColor(SerializationInfo info, StreamingContext context)
+		{
+			if (info == null)
+				throw new ArgumentNullException("info");
+			this.Name = info.GetString("Name");
+			if (info.GetBoolean("HasWeight"))
+				this.FontWeight = System.Windows.FontWeight.FromOpenTypeWeight(info.GetInt32("Weight"));
+			if (info.GetBoolean("HasStyle"))
+				this.FontStyle = (FontStyle?)new FontStyleConverter().ConvertFromInvariantString(info.GetString("Style"));
+			this.Foreground = (HighlightingBrush)info.GetValue("Foreground", typeof(HighlightingBrush));
+		}
+		
+		/// <summary>
+		/// Serializes this HighlightingColor instance.
+		/// </summary>
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			if (info == null)
+				throw new ArgumentNullException("info");
+			info.AddValue("Name", this.Name);
+			info.AddValue("HasWeight", this.FontWeight.HasValue);
+			if (this.FontWeight.HasValue)
+				info.AddValue("Weight", this.FontWeight.Value.ToOpenTypeWeight());
+			info.AddValue("HasStyle", this.FontStyle.HasValue);
+			if (this.FontStyle.HasValue)
+				info.AddValue("Style", this.FontStyle.Value.ToString());
+			info.AddValue("Foreground", this.Foreground);
+		}
 		
 		/// <summary>
 		/// Gets CSS code for the color.

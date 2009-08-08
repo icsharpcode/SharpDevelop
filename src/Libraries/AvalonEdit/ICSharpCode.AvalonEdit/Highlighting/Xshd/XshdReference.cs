@@ -12,6 +12,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 	/// <summary>
 	/// A reference to an xshd color, or an inline xshd color.
 	/// </summary>
+	[Serializable]
 	public struct XshdReference<T> : IEquatable<XshdReference<T>> where T : XshdElement
 	{
 		string referencedDefinition;

@@ -27,7 +27,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (documentLine == null)
 				throw new ArgumentNullException("documentLine");
 			this.DocumentLine = documentLine;
-			this.Sections = new List<HighlightedSection>();
+			this.Sections = new NullSafeCollection<HighlightedSection>();
 		}
 		
 		/// <summary>

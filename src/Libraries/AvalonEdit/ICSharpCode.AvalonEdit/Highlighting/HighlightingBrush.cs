@@ -6,6 +6,10 @@
 // </file>
 
 using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
+using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Media;
 
@@ -16,6 +20,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// <summary>
 	/// A brush used for syntax highlighting. Can retrieve a real brush on-demand.
 	/// </summary>
+	[Serializable]
 	public abstract class HighlightingBrush
 	{
 		/// <summary>
@@ -41,11 +46,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// <summary>
 	/// Highlighting brush implementation that takes a frozen brush.
 	/// </summary>
-	sealed class SimpleHighlightingBrush : HighlightingBrush
+	[Serializable]
+	sealed class SimpleHighlightingBrush : HighlightingBrush, ISerializable
 	{
-		readonly Brush brush;
+		readonly SolidColorBrush brush;
 		
-		public SimpleHighlightingBrush(Brush brush)
+		public SimpleHighlightingBrush(SolidColorBrush brush)
 		{
 			brush.Freeze();
 			this.brush = brush;
@@ -62,33 +68,53 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			return brush.ToString();
 		}
+		
+		SimpleHighlightingBrush(SerializationInfo info, StreamingContext context)
+		{
+			this.brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(info.GetString("color")));
+			brush.Freeze();
+		}
+		
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue("color", brush.Color.ToString(CultureInfo.InvariantCulture));
+		}
 	}
 	
 	/// <summary>
 	/// HighlightingBrush implementation that finds a brush using a resource.
 	/// </summary>
-	sealed class ResourceKeyHighlightingBrush : HighlightingBrush
+	[Serializable]
+	sealed class SystemColorHighlightingBrush : HighlightingBrush, ISerializable
 	{
-		readonly ResourceKey resourceKey;
-		readonly string name;
+		readonly PropertyInfo property;
 		
-		public ResourceKeyHighlightingBrush(ResourceKey resourceKey, string name)
+		public SystemColorHighlightingBrush(PropertyInfo property)
 		{
-			this.resourceKey = resourceKey;
-			this.name = name;
+			Debug.Assert(property.ReflectedType == typeof(SystemColors));
+			this.property = property;
 		}
 		
 		public override Brush GetBrush(ITextRunConstructionContext context)
 		{
-			if (context != null && context.TextView != null)
-				return (Brush)context.TextView.FindResource(resourceKey);
-			else
-				return (Brush)Application.Current.FindResource(resourceKey);
+			return (Brush)property.GetValue(null, null);
 		}
 		
 		public override string ToString()
 		{
-			return name;
+			return property.Name;
+		}
+		
+		SystemColorHighlightingBrush(SerializationInfo info, StreamingContext context)
+		{
+			property = typeof(SystemColors).GetProperty(info.GetString("propertyName"));
+			if (property == null)
+				throw new ArgumentException("Error deserializing SystemColorHighlightingBrush");
+		}
+		
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue("propertyName", property.Name);
 		}
 	}
 }

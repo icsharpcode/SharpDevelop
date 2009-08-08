@@ -14,6 +14,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// <summary>
 	/// A highlighting rule set describes a set of spans that are valid at a given code location.
 	/// </summary>
+	[Serializable]
 	public class HighlightingRuleSet
 	{
 		/// <summary>
