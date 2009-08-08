@@ -543,7 +543,7 @@ namespace ICSharpCode.PythonBinding
 					}
 				} else if (IsResourcePropertyValue(propertyValue)) {
 					AppendResourceProperty(codeBuilder, propertyName, propertyValue);
-				} else if (propertyValue.GetType().IsArray) {
+				} else if (IsArray(propertyValue)) {
 					codeBuilder.AppendIndented(propertyName + " = ");
 					AppendSystemArray(codeBuilder, GetArrayType(propertyValue).FullName, propertyValue as ICollection, false);
 					codeBuilder.AppendLine();
@@ -890,6 +890,14 @@ namespace ICSharpCode.PythonBinding
 		{
 			Type type = obj.GetType();
 			return obj.GetType().GetElementType();
+		}
+		
+		static bool IsArray(object obj)
+		{
+			if (obj != null) {
+				return obj.GetType().IsArray;
+			}
+			return false;
 		}
 	}
 }
