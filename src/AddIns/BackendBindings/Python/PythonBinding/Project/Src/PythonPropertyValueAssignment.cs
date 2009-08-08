@@ -80,10 +80,15 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Returns the string enclosed by double quotes.
 		/// Escapes any double quotes or backslashes in the string itself.
+		/// If the string is multline triple quotes used.
 		/// </summary>
 		static string GetQuotedString(string text)
 		{
-			return "\"" + text.Replace(@"\", @"\\").Replace("\"", "\\\"") + "\"";
+			string quotes = "\"";
+			if (text.Contains("\n")) {
+				quotes = "\"\"\"";
+			}
+			return quotes + text.Replace(@"\", @"\\").Replace("\"", "\\\"") + quotes;
 		}
 		
 		/// <summary>

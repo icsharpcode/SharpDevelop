@@ -213,6 +213,7 @@
     <Compile Include="Designer\GenerateMonthCalendarTestFixture.cs" />
     <Compile Include="Designer\GenerateNestedPanelFormTestFixture.cs" />
     <Compile Include="Designer\GeneratePanelFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateRichTextBoxTestFixture.cs" />
     <Compile Include="Designer\GenerateRightToLeftFormTestFixture.cs" />
     <Compile Include="Designer\GenerateSimpleFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTextBoxFormTestFixture.cs" />
