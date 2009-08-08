@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace ICSharpCode.AvalonEdit.Document
+namespace ICSharpCode.AvalonEdit.Utils
 {
 	/// <summary>
 	/// TextReader implementation that reads text from a rope.
@@ -27,19 +27,14 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// version of the rope if it is modified. <seealso cref="Rope{T}.Clone()"/>
 		/// </summary>
 		public RopeTextReader(Rope<char> rope)
-			: this(rope, true)
-		{
-		}
-		
-		// We force the user to iterate through a clone of the rope to keep the API contract of RopeTextReader simple
-		// (what happens when a rope is modified while iterating through it?)
-		// However, internally we use the RopeTextReader without publishing the nodes
-		internal RopeTextReader(Rope<char> rope, bool publishRope)
 		{
 			if (rope == null)
 				throw new ArgumentNullException("rope");
-			if (publishRope)
-				rope.root.Publish();
+			
+			// We force the user to iterate through a clone of the rope to keep the API contract of RopeTextReader simple
+			// (what happens when a rope is modified while iterating through it?)
+			rope.root.Publish();
+			
 			// special case for the empty rope:
 			// leave currentNode initialized to null (RopeTextReader doesn't support empty nodes)
 			if (rope.Length != 0) {

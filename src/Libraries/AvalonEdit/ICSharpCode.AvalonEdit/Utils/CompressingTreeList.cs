@@ -18,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// Based on this "compression", it also supports efficient InsertRange/SetRange/RemoveRange operations.
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
-	                                                 Justification = "It's a list, not a collection")]
+	                                                 Justification = "It's an IList<T> implementation")]
 	public sealed class CompressingTreeList<T> : IList<T>
 	{
 		// Further optimization: this tree could work without parent pointers. But that

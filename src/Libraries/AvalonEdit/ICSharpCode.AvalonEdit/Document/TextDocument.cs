@@ -60,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		#endregion
 		
 		#region Fields + Constructor
-		readonly Rope<char> rope = new Rope<char>();
+		readonly Rope<char> rope;
 		readonly DocumentLineTree lineTree;
 		readonly LineManager lineManager;
 		readonly TextAnchorTree anchorTree;
@@ -69,11 +69,22 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Create an empty text document.
 		/// </summary>
 		public TextDocument()
+			: this(string.Empty)
 		{
+		}
+		
+		/// <summary>
+		/// Create a new text document with the specified initial text.
+		/// </summary>
+		public TextDocument(IEnumerable<char> initialText)
+		{
+			if (initialText == null)
+				throw new ArgumentNullException("initialText");
+			rope = new Rope<char>(initialText);
 			lineTree = new DocumentLineTree(this);
 			lineManager = new LineManager(rope, lineTree, this);
 			lineTrackers.CollectionChanged += delegate {
-				lineManager.lineTrackers = lineTrackers.ToArray();
+				lineManager.UpdateListOfLineTrackers();
 			};
 			
 			anchorTree = new TextAnchorTree(this);
@@ -489,7 +500,7 @@ namespace ICSharpCode.AvalonEdit.Document
 					// optimize replacing the whole document
 					rope.Clear();
 					rope.InsertText(0, text);
-					lineManager.Rebuild(text);
+					lineManager.Rebuild();
 				} else {
 					rope.RemoveRange(offset, length);
 					lineManager.Remove(offset, length);

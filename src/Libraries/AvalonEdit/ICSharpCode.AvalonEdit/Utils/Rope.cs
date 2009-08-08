@@ -13,9 +13,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
 
-using ICSharpCode.AvalonEdit.Utils;
-
-namespace ICSharpCode.AvalonEdit.Document
+namespace ICSharpCode.AvalonEdit.Utils
 {
 	/// <summary>
 	/// A kind of List&lt;T&gt;, but more efficient for random insertions/removal.

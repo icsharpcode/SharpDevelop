@@ -9,10 +9,9 @@ using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
-using ICSharpCode.AvalonEdit.Utils;
 using System.Text;
 
-namespace ICSharpCode.AvalonEdit.Document
+namespace ICSharpCode.AvalonEdit.Utils
 {
 	// Class used to represent a node in the tree.
 	// There are three types of nodes:
@@ -157,13 +156,14 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		internal void Rebalance()
 		{
-			// the tree is always balanced before sharing, so a shared node cannot be unbalanced
-			if (isShared)
-				return;
-			// leaf nodes are always balanced (we don't use 'height' to detect leaf nodes here because Balance is supposed to recompute the height).
+			// Rebalance() shouldn't be called on shared nodes - it's only called after modifications!
+			Debug.Assert(!isShared);
+			// leaf nodes are always balanced (we don't use 'height' to detect leaf nodes here
+			// because Balance is supposed to recompute the height).
 			if (left == null)
 				return;
 			
+			// ensure we didn't miss a MergeIfPossible step
 			Debug.Assert(this.length > NodeSize);
 			
 			// We need to loop until it's balanced. Rotations might cause two small leaves to combine to a larger one,
@@ -298,6 +298,7 @@ namespace ICSharpCode.AvalonEdit.Document
 					result.left = result.left.StoreElements(index, array, arrayIndex, amountInLeft);
 					result.right = result.right.StoreElements(0, array, arrayIndex + amountInLeft, count - amountInLeft);
 				}
+				result.Rebalance(); // tree layout might have changed if function nodes were replaced with their content
 			}
 			return result;
 		}
@@ -335,10 +336,13 @@ namespace ICSharpCode.AvalonEdit.Document
 			// result of CloneIfShared() is leaf or concat node
 			if (result.height == 0) {
 				result.contents[offset] = value;
-			} else if (offset < result.left.length) {
-				result.left = result.left.SetElement(offset, value);
 			} else {
-				result.right = result.right.SetElement(offset - result.left.length, value);
+				if (offset < result.left.length) {
+					result.left = result.left.SetElement(offset, value);
+				} else {
+					result.right = result.right.SetElement(offset - result.left.length, value);
+				}
+				result.Rebalance(); // tree layout might have changed if function nodes were replaced with their content
 			}
 			return result;
 		}

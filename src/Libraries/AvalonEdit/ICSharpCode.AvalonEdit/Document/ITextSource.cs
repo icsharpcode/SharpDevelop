@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.IO;
 
@@ -225,6 +226,18 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (rope == null)
 				throw new ArgumentNullException("rope");
 			this.rope = rope;
+		}
+		
+		/// <summary>
+		/// Returns a clone of the rope used for this text source.
+		/// </summary>
+		/// <remarks>
+		/// RopeTextSource only publishes a copy of the contained rope to ensure that the underlying rope cannot be modified.
+		/// Unless the creator of the RopeTextSource still has a reference on the rope, RopeTextSource is immutable.
+		/// </remarks>
+		public Rope<char> GetRope()
+		{
+			return rope.Clone();
 		}
 		
 		// Change event is not supported

@@ -31,11 +31,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		public DocumentLineTree(TextDocument document)
 		{
 			this.document = document;
-			Clear();
-		}
-		
-		public void Clear()
-		{
+			
 			DocumentLine emptyLine = new DocumentLine(document);
 			root = emptyLine.InitLineNode();
 			#if DEBUG

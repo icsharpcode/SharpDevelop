@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,14 +27,21 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// A copy of the line trackers. We need a copy so that line trackers may remove themselves
 		/// while being notified (used e.g. by WeakLineTracker)
 		/// </summary>
-		internal ILineTracker[] lineTrackers;
+		ILineTracker[] lineTrackers;
+		
+		internal void UpdateListOfLineTrackers()
+		{
+			this.lineTrackers = document.LineTrackers.ToArray();
+		}
 		
 		public LineManager(IList<char> textBuffer, DocumentLineTree documentLineTree, TextDocument document)
 		{
 			this.document = document;
 			this.textBuffer = textBuffer;
 			this.documentLineTree = documentLineTree;
-			this.lineTrackers = document.LineTrackers.ToArray();
+			UpdateListOfLineTrackers();
+			
+			Rebuild();
 		}
 		#endregion
 		
@@ -83,11 +91,11 @@ namespace ICSharpCode.AvalonEdit.Document
 		#endregion
 		
 		#region Rebuild
-		public void Rebuild(string text)
+		public void Rebuild()
 		{
 			// keep the first document line
 			DocumentLine ls = documentLineTree.GetByNumber(1);
-			SimpleSegment ds = NewLineFinder.NextNewLine(text, 0);
+			SimpleSegment ds = NewLineFinder.NextNewLine(textBuffer, 0);
 			List<DocumentLine> lines = new List<DocumentLine>();
 			int lastDelimiterEnd = 0;
 			while (ds != SimpleSegment.Invalid) {
@@ -97,10 +105,10 @@ namespace ICSharpCode.AvalonEdit.Document
 				lines.Add(ls);
 				
 				ls = new DocumentLine(document);
-				ds = NewLineFinder.NextNewLine(text, lastDelimiterEnd);
+				ds = NewLineFinder.NextNewLine(textBuffer, lastDelimiterEnd);
 			}
 			ls.ResetLine();
-			ls.TotalLength = text.Length - lastDelimiterEnd;
+			ls.TotalLength = textBuffer.Count - lastDelimiterEnd;
 			lines.Add(ls);
 			documentLineTree.RebuildTree(lines);
 			foreach (ILineTracker lineTracker in lineTrackers)

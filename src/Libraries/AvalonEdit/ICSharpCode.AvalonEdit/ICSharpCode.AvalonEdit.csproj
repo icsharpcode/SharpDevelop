@@ -89,7 +89,6 @@
     <Compile Include="CodeCompletion\IOverloadProvider.cs" />
     <Compile Include="CodeCompletion\OverloadInsightWindow.cs" />
     <Compile Include="CodeCompletion\OverloadViewer.cs" />
-    <Compile Include="Document\CharRope.cs" />
     <Compile Include="Document\DocumentChangeOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
@@ -104,9 +103,6 @@
     </Compile>
     <Compile Include="Document\NewLineFinder.cs" />
     <Compile Include="Document\OffsetChangeMap.cs" />
-    <Compile Include="Document\Rope.cs" />
-    <Compile Include="Document\RopeNode.cs" />
-    <Compile Include="Document\RopeTextReader.cs" />
     <Compile Include="Document\TextDocumentWeakEventManager.cs">
       <DependentUpon>TextDocument.cs</DependentUpon>
     </Compile>
@@ -290,6 +286,7 @@
     </Compile>
     <Compile Include="TextViewPosition.cs" />
     <Compile Include="Utils\Boxes.cs" />
+    <Compile Include="Utils\CharRope.cs" />
     <Compile Include="Utils\CompressingTreeList.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Utils\DelayedEvents.cs" />
@@ -302,6 +299,9 @@
     <Compile Include="Utils\NullSafeCollection.cs" />
     <Compile Include="Utils\ObserveAddRemoveCollection.cs" />
     <Compile Include="Utils\PropertyChangedWeakEventManager.cs" />
+    <Compile Include="Utils\Rope.cs" />
+    <Compile Include="Utils\RopeNode.cs" />
+    <Compile Include="Utils\RopeTextReader.cs" />
     <Compile Include="Utils\TextUtilities.cs" />
     <Compile Include="Utils\WeakEventManagerBase.cs" />
     <Compile Include="Utils\PixelSnapHelpers.cs" />
