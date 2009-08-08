@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Xml;
-using System.Xml.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
@@ -143,27 +141,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public static void LogDom(string format, params object[] args)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("XML DOM: " + format, args));
-		}
-		
-		public static void LogLinq(string format, params object[] args)
-		{
-			System.Diagnostics.Debug.WriteLine(string.Format("XML Linq: " + format, args));
-		}
-		
-		protected XName EncodeXName(string name)
-		{
-			if (string.IsNullOrEmpty(name)) name = "_";
-			
-			string namesapce = string.Empty;
-			int colonIndex = name.IndexOf(':');
-			if (colonIndex != -1) {
-				namesapce = name.Substring(0, colonIndex);
-				name = name.Substring(colonIndex + 1);
-			}
-			
-			name = XmlConvert.EncodeLocalName(name);
-			namesapce = XmlConvert.EncodeLocalName(namesapce);
-			return XName.Get(name, namesapce);
 		}
 		
 		#region Helpper methods
@@ -542,34 +519,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			visitor.VisitDocument(this);
 		}
 		
-		XDocument xDoc;
-		
-		public XDocument GetXDocument()
-		{
-			if (xDoc == null) {
-				LogLinq("Creating XDocument");
-				xDoc = new XDocument();
-				xDoc.AddAnnotation(this);
-				UpdateXDocumentChildren(true);
-				this.Children.CollectionChanged += delegate { UpdateXDocumentChildren(false); };
-			}
-			return xDoc;
-		}
-		
-		void UpdateXDocumentChildren(bool firstUpdate)
-		{
-			if (!firstUpdate) LogLinq("Updating XDocument Children");
-			
-			RawElement root = this.Children.OfType<RawElement>().FirstOrDefault(x => x.StartTag.OpeningBracket == "<");
-			if (xDoc.Root.GetRawObject() != root) {
-				if (root != null) {
-					xDoc.ReplaceNodes(root.GetXElement());
-				} else {
-					xDoc.RemoveNodes();
-				}
-			}
-		}
-		
 		public override string ToString()
 		{
 			return string.Format("[{0} Chld:{1}]", base.ToString(), this.Children.Count);
@@ -738,65 +687,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			visitor.VisitElement(this);
 		}
 		
-		XElement xElem;
-		
-		public XElement GetXElement()
-		{
-			if (xElem == null) {
-				LogLinq("Creating XElement '{0}'", this.StartTag.Name);
-				xElem = new XElement(EncodeXName(this.StartTag.Name));
-				xElem.AddAnnotation(this);
-				UpdateXElement(true);
-				UpdateXElementAttributes(true);
-				UpdateXElementChildren(true);
-				this.StartTag.Changed += delegate { UpdateXElement(false); };
-				this.StartTag.Children.CollectionChanged += delegate { UpdateXElementAttributes(false); };
-				this.Children.CollectionChanged += delegate { UpdateXElementChildren(false); };
-			}
-			return xElem;
-		}
-
-		void UpdateXElement(bool firstUpdate)
-		{
-			if (!firstUpdate) LogLinq("Updating XElement '{0}'", this.StartTag.Name);
-			
-			xElem.Name = EncodeXName(this.StartTag.Name);
-		}
-		
-		internal void UpdateXElementAttributes(bool firstUpdate)
-		{
-			if (!firstUpdate) LogLinq("Updating XElement Attributes of '{0}'", this.StartTag.Name);
-			
-			// TODO:  Investigate null
-			if (xElem != null) {
-				xElem.ReplaceAttributes(); // Otherwise we get duplicate item exception
-				XAttribute[] attrs = this.StartTag.Children.OfType<RawAttribute>().Select(x => x.GetXAttribute()).Distinct(new AttributeNameComparer()).ToArray();
-				xElem.ReplaceAttributes(attrs);
-			}
-		}
-		
-		void UpdateXElementChildren(bool firstUpdate)
-		{
-			if (!firstUpdate) LogLinq("Updating XElement Children of '{0}'", this.StartTag.Name);
-			
-			xElem.ReplaceNodes(
-				this.Children.OfType<RawElement>().Select(x => x.GetXElement()).ToArray()
-			);
-		}
-		
-		class AttributeNameComparer: IEqualityComparer<XAttribute>
-		{
-			public bool Equals(XAttribute x, XAttribute y)
-			{
-				return x.Name == y.Name;
-			}
-			
-			public int GetHashCode(XAttribute obj)
-			{
-				return obj.Name.GetHashCode();
-			}
-		}
-		
 		public override string ToString()
 		{
 			return string.Format("[{0} '{1}{2}{3}' Attr:{4} Chld:{5}]", base.ToString(), this.StartTag.OpeningBracket, this.StartTag.Name, this.StartTag.ClosingBracket, this.StartTag.Children.Count, this.Children.Count);
@@ -882,36 +772,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		XAttribute xAttr;
-		
-		public XAttribute GetXAttribute()
-		{
-			if (xAttr == null) {
-				LogLinq("Creating XAttribute '{0}={1}'", this.Name, this.QuotedValue);
-				xAttr = new XAttribute(EncodeXName(this.Name), string.Empty);
-				xAttr.AddAnnotation(this);
-				bool deleted = false;
-				UpdateXAttribute(true, ref deleted);
-				this.Changed += delegate { if (!deleted) UpdateXAttribute(false, ref deleted); };
-			}
-			return xAttr;
-		}
-		
-		void UpdateXAttribute(bool firstUpdate, ref bool deleted)
-		{
-			if (!firstUpdate) LogLinq("Updating XAttribute '{0}={1}'", this.Name, this.QuotedValue);
-			
-			if (xAttr.Name == EncodeXName(this.Name)) {
-				xAttr.Value = this.QuotedValue ?? string.Empty;
-			} else {
-				XElement xParent = xAttr.Parent;
-				if (xAttr.Parent != null) xAttr.Remove(); // Duplicate items are not added
-				xAttr = null;
-				deleted = true; // No longer get events for this instance
-				((RawElement)this.Parent.Parent).UpdateXElementAttributes(false);
-			}
-		}
-		
 		public override string ToString()
 		{
 			return string.Format("[{0} '{1}{2}{3}']", base.ToString(), this.Name, this.EqualsSign, this.QuotedValue);
@@ -966,34 +826,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		public XText CreateXText(bool autoUpdate)
-		{
-			LogLinq("Creating XText Length={0}", this.Value.Length);
-			XText text = new XText(string.Empty);
-			text.AddAnnotation(this);
-			UpdateXText(text, autoUpdate);
-			if (autoUpdate) this.Changed += delegate { UpdateXText(text, autoUpdate); };
-			return text;
-		}
-		
-		void UpdateXText(XText text, bool autoUpdate)
-		{
-			LogLinq("Updating XText Length={0}", this.Value.Length);
-			text.Value = this.Value;
-		}
-		
 		public override string ToString()
 		{
 			return string.Format("[{0} Text.Length={1}]", base.ToString(), this.Value.Length);
-		}
-	}
-	
-	public static class RawUtils
-	{
-		public static RawObject GetRawObject(this XObject xObj)
-		{
-			if (xObj == null) return null;
-			return xObj.Annotation<RawObject>();
 		}
 	}
 }

@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Xml.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
@@ -93,7 +92,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		// TODO: Rewrite ReadText
 		
 		RawDocument userDocument;
-		XDocument userLinqDocument;
 		TextDocument textDocument;
 		
 		List<DocumentChangeEventArgs> changesSinceLastParse = new List<DocumentChangeEventArgs>();
@@ -146,7 +144,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			this.input = input;
 			this.userDocument = new RawDocument();
-			this.userLinqDocument = userDocument.GetXDocument();
 			this.SyntaxErrors = new TextSegmentCollection<SyntaxError>();
 			userDocument.ObjectAttached += delegate(object sender, RawObjectEventArgs e) {
 				foreach(SyntaxError error in e.Object.SyntaxErrors) {
