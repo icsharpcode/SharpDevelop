@@ -83,7 +83,7 @@ namespace XmlDOM
 				MessageBox.Show("Error - Original and pretty printed version of XML differ");
 			}
 			markerService.RemoveAll(m => true);
-			foreach(var error in parser.SyntaxErrors) {
+			foreach(var error in doc.SyntaxErrors) {
 				var marker = markerService.Create(error.StartOffset, error.EndOffset - error.StartOffset);
 				marker.Tag = error.Message;
 				marker.BackgroundColor = Color.FromRgb(255, 150, 150);

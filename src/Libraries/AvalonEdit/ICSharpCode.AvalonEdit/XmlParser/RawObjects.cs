@@ -27,6 +27,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public abstract class RawObject: TextSegment
 	{
+		/// <summary> Constant "".  The namespace used if there is no "xmlns" specified </summary>
+		public static readonly string NoNamespace = string.Empty;
+		
+		/// <summary> Constant "http://www.w3.org/XML/1998/namespace" </summary>
+		public static readonly string XmlNamespace = "http://www.w3.org/XML/1998/namespace";
+		
+		/// <summary> Constant "http://www.w3.org/2000/xmlns/" </summary>
+		public static readonly string XmlnsNamespace = "http://www.w3.org/2000/xmlns/";
+		
 		/// <summary>
 		/// Unique identifier for the specific call of parsing read function.  
 		/// It is used to uniquely identify all object data (including nested).
@@ -56,40 +65,57 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary> Occurs when the value of any local properties changes.  Nested changes do not cause the event to occur </summary>
-		public event EventHandler Changed;
+		/// <summary> Occurs before the value of any local properties changes.  Nested changes do not cause the event to occur </summary>
+		public event EventHandler<RawObjectEventArgs> Changing;
 		
+		/// <summary> Occurs after the value of any local properties changed.  Nested changes do not cause the event to occur </summary>
+		public event EventHandler<RawObjectEventArgs> Changed;
+		
+		/// <summary> Raises Changing event </summary>
+		protected void OnChanging()
+		{
+			LogDom("Changing {0}", this);
+			if (Changing != null) {
+				Changing(this, new RawObjectEventArgs() { Object = this } );
+			}
+			RawDocument doc = this.Document;
+			if (doc != null) {
+				doc.OnObjectChanging(this);
+			}
+		}
+		
+		/// <summary> Raises Changed event </summary>
 		protected void OnChanged()
 		{
 			LogDom("Changed {0}", this);
 			if (Changed != null) {
-				Changed(this, EventArgs.Empty);
+				Changed(this, new RawObjectEventArgs() { Object = this } );
 			}
 			RawDocument doc = this.Document;
 			if (doc != null) {
-				Document.OnObjectChanged(this);
+				doc.OnObjectChanged(this);
 			}
 		}
 		
-		List<XmlParser.SyntaxError> syntaxErrors;
+		List<SyntaxError> syntaxErrors;
 		
 		/// <summary>
 		/// The error that occured in the context of this node (excluding nested nodes)
 		/// </summary>
-		public IEnumerable<XmlParser.SyntaxError> SyntaxErrors {
+		public IEnumerable<SyntaxError> SyntaxErrors {
 			get {
 				if (syntaxErrors == null) {
-					return new XmlParser.SyntaxError[] {};
+					return new SyntaxError[] {};
 				} else {
 					return syntaxErrors;
 				}
 			}
 		}
 		
-		internal void AddSyntaxError(XmlParser.SyntaxError error)
+		internal void AddSyntaxError(SyntaxError error)
 		{
 			Assert(error.Object == this);
-			if (this.syntaxErrors == null) this.syntaxErrors = new List<XmlParser.SyntaxError>();
+			if (this.syntaxErrors == null) this.syntaxErrors = new List<SyntaxError>();
 			syntaxErrors.Add(error);
 		}
 		
@@ -122,13 +148,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			// Do not bother comparing - assume changed if non-null
 			if (this.syntaxErrors != null || source.syntaxErrors != null) {
-				this.syntaxErrors = new List<XmlParser.SyntaxError>();
+				// May be called again in derived class - oh, well, nevermind
+				OnChanging();
+				this.syntaxErrors = new List<SyntaxError>();
 				foreach(var error in source.SyntaxErrors) {
 					// The object differs, so create our own copy
 					// The source still might need it in the future and we do not want to break it
 					this.AddSyntaxError(error.Clone(this));
 				}
-				// May be called again in derived class - oh, well, nevermind
 				OnChanged();
 			}
 		}
@@ -480,6 +507,28 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 	}
 	
+	/// <summary> Information about syntax error that occured during parsing </summary>
+	public class SyntaxError: TextSegment
+	{
+		/// <summary> Object for which the error occured </summary>
+		public RawObject Object { get; internal set; }
+		/// <summary> Textual description of the error </summary>
+		public string Message { get; internal set; }
+		/// <summary> Any user data </summary>
+		public object Tag { get; set; }
+		
+		internal SyntaxError Clone(RawObject newOwner)
+		{
+			return new SyntaxError {
+				Object = newOwner,
+				Message = Message,
+				Tag = Tag,
+				StartOffset = StartOffset,
+				EndOffset = EndOffset,
+			};
+		}
+	}
+	
 	/// <summary>
 	/// The root object of the XML document
 	/// </summary>
@@ -492,26 +541,59 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		internal bool IsParsed { get; set; }
 		
+		/// <summary>
+		/// All syntax errors in the document
+		/// </summary>
+		public new TextSegmentCollection<SyntaxError> SyntaxErrors { get; private set; }
+		
 		/// <summary> Occurs when object is added to the document </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectAttached;
 		/// <summary> Occurs when object is removed from the document </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectDettached;
-		/// <summary> Occurs when local data of object changes </summary>
+		/// <summary> Occurs before local data of object changes </summary>
+		public event EventHandler<RawObjectEventArgs> ObjectChanging;
+		/// <summary> Occurs after local data of object changed </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectChanged;
 		
 		internal void OnObjectAttached(RawObject obj)
 		{
+			Assert(!IsParsed);
+			foreach(SyntaxError error in obj.SyntaxErrors) {
+				this.SyntaxErrors.Add(error);
+			}
 			if (ObjectAttached != null) ObjectAttached(this, new RawObjectEventArgs() { Object = obj } );
 		}
 		
 		internal void OnObjectDettached(RawObject obj)
 		{
+			Assert(!IsParsed);
+			foreach(SyntaxError error in obj.SyntaxErrors) {
+				this.SyntaxErrors.Remove(error);
+			}
 			if (ObjectDettached != null) ObjectDettached(this, new RawObjectEventArgs() { Object = obj } );
+		}
+		
+		internal void OnObjectChanging(RawObject obj)
+		{
+			Assert(!IsParsed);
+			foreach(SyntaxError error in obj.SyntaxErrors) {
+				this.SyntaxErrors.Remove(error);
+			}
+			if (ObjectChanging != null) ObjectChanging(this, new RawObjectEventArgs() { Object = obj } );
 		}
 		
 		internal void OnObjectChanged(RawObject obj)
 		{
+			Assert(!IsParsed);
+			foreach(SyntaxError error in obj.SyntaxErrors) {
+				this.SyntaxErrors.Add(error);
+			}
 			if (ObjectChanged != null) ObjectChanged(this, new RawObjectEventArgs() { Object = obj } );
+		}
+		
+		public RawDocument()
+		{
+			this.SyntaxErrors = new TextSegmentCollection<SyntaxError>();
 		}
 		
 		public override void AcceptVisitor(IXmlVisitor visitor)
@@ -559,6 +641,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				this.Name != src.Name ||
 				this.ClosingBracket != src.ClosingBracket)
 			{
+				OnChanging();
 				this.OpeningBracket = src.OpeningBracket;
 				this.Name = src.Name;
 				this.ClosingBracket = src.ClosingBracket;
@@ -617,8 +700,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		/// <summary> Name with namespace prefix - exactly as in source </summary>
+		public string Name {
+			get {
+				return this.StartTag.Name;
+			}
+		}
+		
 		/// <summary> The part of name before ":".  Empty string if not found </summary>
-		public string NamespacePrefix {
+		public string Prefix {
 			get {
 				return GetNamespacePrefix(this.StartTag.Name);
 			}
@@ -631,49 +721,74 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary> Resolved namespace of the name.  String empty if not found </summary>
+		/// <summary> Resolved namespace of the name.  Empty string if prefix not found </summary>
 		public string Namespace {
 			get {
-				return ResloveNamespacePrefix(this.NamespacePrefix);
+				string prefix = this.Prefix;
+				if (string.IsNullOrEmpty(prefix)) {
+					return FindDefaultNamesapce();
+				} else {
+					return ReslovePrefix(prefix);
+				}
 			}
 		}
 		
 		/// <summary>
-		/// Recursively resolve given prefix in this context.
-		/// If prefix is empty find "xmlns" namespace.
+		/// Find the defualt namesapce for this context
 		/// </summary>
-		public string ResloveNamespacePrefix(string prefix)
+		public string FindDefaultNamesapce()
 		{
-			string definition = string.IsNullOrEmpty(prefix) ? "xmlns" : "xmlns:" + prefix;
 			RawElement current = this;
 			while(current != null) {
-				string namesapce = current.GetAttributeValue(definition);
+				string namesapce = current.GetAttributeValue(NoNamespace, "xmlns");
 				if (namesapce != null) return namesapce;
 				current = current.Parent as RawElement;
 			}
-			return string.Empty; // Default or undefined
+			return string.Empty; // "" namesapce
 		}
 		
 		/// <summary>
-		/// Get unqoted value of attribute or null if not found.
-		/// It will match the local name in any namesapce.
+		/// Recursively resolve given prefix in this context.  Prefix must have some value.
+		/// Returns empty string if prefix is not found.
+		/// </summary>
+		public string ReslovePrefix(string prefix)
+		{
+			if (string.IsNullOrEmpty(prefix)) throw new ArgumentException("No prefix given", "prefix");
+			
+			// Implicit namesapces
+			if (prefix == "xml") return XmlNamespace;
+			if (prefix == "xmlns") return XmlnsNamespace;
+			
+			RawElement current = this;
+			while(current != null) {
+				string namesapce = current.GetAttributeValue(XmlnsNamespace, prefix);
+				if (namesapce != null) return namesapce;
+				current = current.Parent as RawElement;
+			}
+			return NoNamespace; // Can not find prefix
+		}
+		
+		/// <summary>
+		/// Get unquoted value of attribute or null if not found.
+		/// It looks in the empty "" namespace.
 		/// </summary>
 		public string GetAttributeValue(string localName)
 		{
-			return GetAttributeValue(null, localName);
+			return GetAttributeValue(NoNamespace, localName);
 		}
 		
 		/// <summary>
-		/// Get unqoted value of attribute or null if not found
+		/// Get unquoted value of attribute or null if not found
 		/// </summary>
-		/// <param name="namespace">Namespace.  Empty stirng to match default.  Null to match any.</param>
+		/// <param name="namespace">Namespace.  Can be the "" no namepace, which is default for attributes.</param>
 		/// <param name="localName">Local name - text after ":"</param>
 		/// <returns></returns>
 		public string GetAttributeValue(string @namespace, string localName)
 		{
+			@namespace = @namespace ?? string.Empty;
 			// TODO: More efficient
 			foreach(RawAttribute attr in this.Attributes) {
-				if (attr.LocalName == localName && (@namespace == null || attr.Namespace == @namespace)) {
+				if (attr.LocalName == localName && attr.Namespace == @namespace) {
 					return attr.Value;
 				}
 			}
@@ -698,7 +813,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public class RawAttribute: RawObject
 	{
-		/// <summary> The raw name - exactly as in source file </summary>
+		/// <summary> Name with namespace prefix - exactly as in source file </summary>
 		public string Name { get; set; }
 		/// <summary> Equals sign and surrounding whitespace </summary>
 		public string EqualsSign { get; set; }
@@ -708,7 +823,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		#region Helpper methods
 		
 		/// <summary> The part of name before ":".  Empty string if not found </summary>
-		public string NamespacePrefix {
+		public string Prefix {
 			get {
 				return GetNamespacePrefix(this.Name);
 			}
@@ -721,24 +836,29 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary> Resolved namespace of the name.  String empty if not found </summary>
+		/// <summary>
+		/// Resolved namespace of the name.  Empty string if not found
+		/// From the specification: "The namespace name for an unprefixed attribute name always has no value."
+		/// </summary>
 		public string Namespace {
 			get {
+				if (string.IsNullOrEmpty(this.Prefix)) return NoNamespace;
+				
 				RawTag tag = this.Parent as RawTag;
 				if (tag != null) {
 					RawElement elem = tag.Parent as RawElement;
 					if (elem != null) {
-						return elem.ResloveNamespacePrefix(this.NamespacePrefix);
+						return elem.ReslovePrefix(this.Prefix);
 					}
 				}
-				return string.Empty; // Orphaned
+				return NoNamespace; // Orphaned attribute
 			}
 		}
 		
 		/// <summary> Attribute is declaring namespace ("xmlns" or "xmlns:*") </summary>
 		public bool IsNamespaceDeclaration {
 			get {
-				return this.Name == "xmlns" || this.NamespacePrefix == "xmlns";
+				return this.Name == "xmlns" || this.Prefix == "xmlns";
 			}
 		}
 		
@@ -765,6 +885,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				this.EqualsSign != src.EqualsSign ||
 				this.QuotedValue != src.QuotedValue)
 			{
+				OnChanging();
 				this.Name = src.Name;
 				this.EqualsSign = src.EqualsSign;
 				this.QuotedValue = src.QuotedValue;
@@ -821,6 +942,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			base.UpdateDataFrom(source);
 			RawText src = (RawText)source;
 			if (this.Value != src.Value) {
+				OnChanging();
 				this.Value = src.Value;
 				OnChanged();
 			}

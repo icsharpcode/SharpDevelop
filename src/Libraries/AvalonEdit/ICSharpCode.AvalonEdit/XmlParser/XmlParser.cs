@@ -111,60 +111,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary>
-		/// All syntax errors in the user document
-		/// </summary>
-		public TextSegmentCollection<SyntaxError> SyntaxErrors { get; private set; }
-		
-		/// <summary> Information about syntax error that occured during parsing </summary>
-		public class SyntaxError: TextSegment
-		{
-			/// <summary> Object for which the error occured </summary>
-			public RawObject Object { get; internal set; }
-			/// <summary> Textual description of the error </summary>
-			public string Message { get; internal set; }
-			/// <summary> Any user data </summary>
-			public object Tag { get; set; }
-			
-			internal SyntaxError Clone(RawObject newOwner)
-			{
-				return new SyntaxError {
-					Object = newOwner,
-					Message = Message,
-					Tag = Tag,
-					StartOffset = StartOffset,
-					EndOffset = EndOffset,
-				};
-			}
-		}
-		
-		/// <summary>
 		/// Create new parser, but do not parse the text yet.
 		/// </summary>
 		public XmlParser(string input)
 		{
 			this.input = input;
 			this.userDocument = new RawDocument();
-			this.SyntaxErrors = new TextSegmentCollection<SyntaxError>();
-			userDocument.ObjectAttached += delegate(object sender, RawObjectEventArgs e) {
-				foreach(SyntaxError error in e.Object.SyntaxErrors) {
-					this.SyntaxErrors.Add(error);
-				}
-			};
-			userDocument.ObjectDettached += delegate(object sender, RawObjectEventArgs e) {
-				foreach(SyntaxError error in e.Object.SyntaxErrors) {
-					this.SyntaxErrors.Remove(error);
-				}
-			};
-			userDocument.ObjectChanged += delegate(object sender, RawObjectEventArgs e) {
-				foreach(SyntaxError error in this.SyntaxErrors.ToList()) {
-					if (error.Object == e.Object) {
-						this.SyntaxErrors.Remove(error);
-					}
-				}
-				foreach(SyntaxError error in e.Object.SyntaxErrors) {
-					this.SyntaxErrors.Add(error);
-				}
-			};
 		}
 		
 		/// <summary>
@@ -193,7 +145,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				// Update offsets of all items
 				parsedItems.UpdateOffsets(change);
 				touchedMemoryRanges.UpdateOffsets(change);
-				this.SyntaxErrors.UpdateOffsets(change);
+				userDocument.SyntaxErrors.UpdateOffsets(change);
 				
 				// Remove any items affected by the change
 				Log("Changed offset {0}", change.Offset);
