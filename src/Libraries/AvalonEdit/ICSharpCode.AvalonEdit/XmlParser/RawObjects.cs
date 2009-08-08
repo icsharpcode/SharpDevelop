@@ -672,13 +672,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		#region Helpper methods
 		
-		ObservableCollection<RawAttribute> attributes;
+		AttributeCollection attributes;
 		
 		/// <summary> Gets attributes of the element </summary>
-		public ObservableCollection<RawAttribute> Attributes {
+		public AttributeCollection Attributes {
 			get {
 				if (attributes == null) {
-					attributes = new FilteredCollection<RawAttribute, ChildrenCollection<RawObject>>(this.StartTag.Children);
+					attributes = new AttributeCollection(this.StartTag.Children);
 				}
 				return attributes;
 			}
@@ -786,9 +786,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public string GetAttributeValue(string @namespace, string localName)
 		{
 			@namespace = @namespace ?? string.Empty;
-			// TODO: More efficient
-			foreach(RawAttribute attr in this.Attributes) {
-				if (attr.LocalName == localName && attr.Namespace == @namespace) {
+			foreach(RawAttribute attr in this.Attributes.GetByLocalName(localName)) {
+				Assert(attr.LocalName == localName);
+				if (attr.Namespace == @namespace) {
 					return attr.Value;
 				}
 			}
