@@ -88,9 +88,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </remarks>
 	public class XmlParser
 	{
-		// TODO: Error reporting
 		// TODO: Simple tag matching heuristic
-		// TODO: Backtracking for unclosed long Text sections
 		// TODO: Delete some read functions and optimize performance
 		// TODO: Rewrite ReadText
 		
@@ -100,16 +98,45 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		List<DocumentChangeEventArgs> changesSinceLastParse = new List<DocumentChangeEventArgs>();
 		
-		// Stored parsed items as long as they are valid
+		/// <summary> Previously parsed items as long as they are valid  </summary>
 		TextSegmentCollection<RawObject> parsedItems = new TextSegmentCollection<RawObject>();
 		
-		// Is used to identify what memory range was touched by object
-		// The default is (StartOffset, EndOffset + 1) which is not stored
+		/// <summary>
+		/// Is used to identify what memory range was touched by object
+		/// The default is (StartOffset, EndOffset + 1) which is not stored
+		/// </summary>
 		TextSegmentCollection<TouchedMemoryRange> touchedMemoryRanges = new TextSegmentCollection<TouchedMemoryRange>();
 		
 		class TouchedMemoryRange: TextSegment
 		{
 			public RawObject TouchedByObject { get; set; }
+		}
+		
+		/// <summary>
+		/// All syntax errors in the user document
+		/// </summary>
+		public TextSegmentCollection<SyntaxError> SyntaxErrors { get; private set; }
+		
+		/// <summary> Information about syntax error that occured during parsing </summary>
+		public class SyntaxError: TextSegment
+		{
+			/// <summary> Object for which the error occured </summary>
+			public RawObject Object { get; internal set; }
+			/// <summary> Textual description of the error </summary>
+			public string Message { get; internal set; }
+			/// <summary> Any user data </summary>
+			public object Tag { get; set; }
+			
+			internal SyntaxError Clone(RawObject newOwner)
+			{
+				return new SyntaxError {
+					Object = newOwner,
+					Message = Message,
+					Tag = Tag,
+					StartOffset = StartOffset,
+					EndOffset = EndOffset,
+				};
+			}
 		}
 		
 		/// <summary>
@@ -120,6 +147,27 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.input = input;
 			this.userDocument = new RawDocument();
 			this.userLinqDocument = userDocument.GetXDocument();
+			this.SyntaxErrors = new TextSegmentCollection<SyntaxError>();
+			userDocument.ObjectAttached += delegate(object sender, RawObjectEventArgs e) {
+				foreach(SyntaxError error in e.Object.SyntaxErrors) {
+					this.SyntaxErrors.Add(error);
+				}
+			};
+			userDocument.ObjectDettached += delegate(object sender, RawObjectEventArgs e) {
+				foreach(SyntaxError error in e.Object.SyntaxErrors) {
+					this.SyntaxErrors.Remove(error);
+				}
+			};
+			userDocument.ObjectChanged += delegate(object sender, RawObjectEventArgs e) {
+				foreach(SyntaxError error in this.SyntaxErrors.ToList()) {
+					if (error.Object == e.Object) {
+						this.SyntaxErrors.Remove(error);
+					}
+				}
+				foreach(SyntaxError error in e.Object.SyntaxErrors) {
+					this.SyntaxErrors.Add(error);
+				}
+			};
 		}
 		
 		/// <summary>
@@ -148,6 +196,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				// Update offsets of all items
 				parsedItems.UpdateOffsets(change);
 				touchedMemoryRanges.UpdateOffsets(change);
+				this.SyntaxErrors.UpdateOffsets(change);
 				
 				// Remove any items affected by the change
 				Log("Changed offset {0}", change.Offset);
@@ -172,11 +221,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			RawDocument parsedDocument = ReadDocument();
 			// Just in case parse method was called redundantly
-			if (parsedDocument.ReadCallID != userDocument.ReadCallID) {
-				PrintStringCacheStats();
-				RawObject.LogDom("Updating main DOM tree...");
-			}
+			PrintStringCacheStats();
+			RawObject.LogDom("Updating main DOM tree...");
 			userDocument.UpdateDataFrom(parsedDocument);
+			userDocument.CheckLinksConsistency();
 			return userDocument;
 		}
 		
@@ -265,6 +313,23 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		void PrintStringCacheStats()
 		{
 			Log("String cache: Requested {0} ({1} bytes);  Saved {2} ({3} bytes); {4}% Saved", stringCacheRequestedCount, stringCacheRequestedSize, stringCacheSavedCount, stringCacheSavedSize, stringCacheRequestedSize == 0 ? 0 : stringCacheSavedSize * 100 / stringCacheRequestedSize);
+		}
+		
+		void OnSyntaxError(RawObject obj, string message, params object[] args)
+		{
+			OnSyntaxError(obj, currentLocation, currentLocation + 1, message, args);
+		}
+		
+		void OnSyntaxError(RawObject obj, int start, int end, string message, params object[] args)
+		{
+			if (end <= start) end = start + 1;
+			Log("Syntax error ({0}-{1}): {2}", start, end, string.Format(message, args));
+			obj.AddSyntaxError(new SyntaxError() {
+			                   	Object = obj,
+			                   	StartOffset = start,
+			                   	EndOffset = end,
+			                   	Message = string.Format(message, args),
+			                   });
 		}
 		
 		string input;
@@ -369,10 +434,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		bool TryPeek(string text)
 		{
-			if (currentLocation + text.Length > readingEnd) return false;
-			// Early exit
-			if (!TryPeek(text[0])) return false;
+			if (!TryPeek(text[0])) return false; // Early exit
+			
 			maxTouchedLocation = Math.Max(maxTouchedLocation, currentLocation + (text.Length - 1));
+			// The following comparison 'touches' the end of file
+			if (currentLocation + text.Length > readingEnd) return false;
+			
 			return input.Substring(currentLocation, text.Length) == text;
 		}
 		
@@ -458,6 +525,16 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		bool IsValidName(string name)
+		{
+			try {
+				System.Xml.XmlConvert.VerifyName(name);
+				return true;
+			} catch (System.Xml.XmlException) {
+				return false;
+			}
+		}
+		
 		/// <summary>
 		/// Context: any
 		/// </summary>
@@ -465,6 +542,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			RawDocument doc;
 			if (TryReadFromCacheOrNew(out doc)) return doc;
+			doc.IsParsed = true;
 			
 			// TODO: Errors in document structure
 			doc.StartOffset = currentLocation;
@@ -517,21 +595,24 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (element.StartTag.ClosingBracket == ">") {
 				while(true) {
 					if (IsEndOfFile()) {
+						OnSyntaxError(element, "Closing tag for '{0}' expected", element.StartTag.Name);
 						break;
 					} else if (TryPeek('<')) {
 						RawObject content = ReadElementOrTag();
 						element.AddChild(content);
-						if (content is RawTag && ((RawTag)content).IsEndTag) break;
+						RawTag endTag = content as RawTag;
+						if (endTag != null && endTag.IsEndTag) {
+							if (endTag.Name != element.StartTag.Name) {
+								OnSyntaxError(element, endTag.StartOffset + 2, endTag.StartOffset + 2 + endTag.Name.Length, "Name '{0}' expected.  End tag must have same name as start tag.", element.StartTag.Name);
+							}
+							break;
+						}
 					} else {
 						element.AddChildren(ReadText(RawTextType.CharacterData));
 					}
 				}
 			}
 			element.EndOffset = currentLocation;
-			// TODO: Closing tag matches
-			// TODO: Heuristic on closing
-			
-			// TODO: ERROR - attribute name may not apper multiple times
 			
 			OnParsed(element);
 			return element;
@@ -553,15 +634,20 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			// It identifies the type of tag and parsing behavior for the rest of it
 			tag.OpeningBracket = ReadOpeningBracket();
 			
-			if (tag.IsStartTag || tag.IsEndTag) {
+			if (tag.IsStartTag || tag.IsEndTag || tag.IsProcessingInstruction) {
 				// Read the name
 				string name;
-				if (TryReadName(out name)) tag.Name = name;
-				// TODO: Error - bad name
-				// TODO: Error - no name?
-				
-				// TODO: Error - = or " or ' not expected
-				
+				if (TryReadName(out name)) {
+					tag.Name = name;
+					if (!IsValidName(tag.Name)) {
+						OnSyntaxError(tag, currentLocation - tag.Name.Length, currentLocation, "The name '{0}' is invalid", tag.Name);
+					}
+				} else {
+					OnSyntaxError(tag, "Element name expected");
+				}
+			}
+			
+			if (tag.IsStartTag || tag.IsEndTag) {
 				// Read attributes for the tag
 				while(true) {					
 					// Chech for all forbiden 'name' charcters first - see ReadName
@@ -576,34 +662,66 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					// We have "=\'\"" or name - read attribute
 					tag.AddChild(ReadAttribulte());
 				}
-			} else if (tag.IsComment) {
-				// TODO: Backtrack if file end reached
-				tag.AddChildren(ReadText(RawTextType.Comment));
-			} else if (tag.IsCData) {
-				// TODO: Backtrack if file end reached
-				tag.AddChildren(ReadText(RawTextType.CData));
-			} else if (tag.IsProcessingInstruction) {
-				string name;
-				if (TryReadName(out name)) tag.Name = name;
-				// TODO: Error - bad name
-				// TODO: Error - no name?
-				// TODO: Backtrack if file end reached
-				tag.AddChildren(ReadText(RawTextType.ProcessingInstruction));
-			} else if (tag.IsUnknownBang) {
-				// TODO: Backtack if '<' (or end of file)
-				tag.AddChildren(ReadText(RawTextType.UnknownBang));
 			} else if (tag.IsDocumentType) {
 				tag.AddChildren(ReadContentOfDTD());
 			} else {
-				throw new Exception(string.Format("Unknown opening bracket '{0}'", tag.OpeningBracket));
+				int start = currentLocation;
+				IEnumerable<RawObject> text;
+				if (tag.IsComment) {
+					text = ReadText(RawTextType.Comment);
+				} else if (tag.IsCData) {
+					text = ReadText(RawTextType.CData);
+				} else if (tag.IsProcessingInstruction) {
+					text = ReadText(RawTextType.ProcessingInstruction);
+				} else if (tag.IsUnknownBang) {
+					text = ReadText(RawTextType.UnknownBang);
+				} else {
+					throw new Exception(string.Format("Unknown opening bracket '{0}'", tag.OpeningBracket));
+				}
+				// Enumerate
+				text = text.ToList();
+				// Backtrack at complete start
+				if (IsEndOfFile() || (tag.IsUnknownBang && TryPeek('<'))) {
+					GoBack(start);
+				} else {
+					tag.AddChildren(text);
+				}
 			}
 			
 			// Read closing bracket
 			string bracket;
-			if (TryReadClosingBracket(out bracket)) tag.ClosingBracket = bracket;
-			// TODO: else ERROR - Missing closing bracket
-			// TODO: check correct closing bracket (special case if end of file)
-				
+			if (TryReadClosingBracket(out bracket)) {
+				tag.ClosingBracket = bracket;
+			}
+			
+			// Error check
+			int brStart = currentLocation - (tag.ClosingBracket ?? string.Empty).Length;
+			if (tag.Name == null) {
+				// One error was reported already
+			} else if (tag.IsStartTag) {
+				if (tag.ClosingBracket != ">" && tag.ClosingBracket != "/>") OnSyntaxError(tag, brStart, currentLocation, "'>' or '/>' expected");
+			} else if (tag.IsEndTag) {
+				if (tag.ClosingBracket != ">") OnSyntaxError(tag, brStart, currentLocation, "'>' expected");
+			} else if (tag.IsComment) {
+				if (tag.ClosingBracket != "-->") OnSyntaxError(tag, brStart, currentLocation, "'-->' expected");
+			} else if (tag.IsCData) {
+				if (tag.ClosingBracket != "]]>") OnSyntaxError(tag, brStart, currentLocation, "']]>' expected");
+			} else if (tag.IsProcessingInstruction) {
+				if (tag.ClosingBracket != "?>") OnSyntaxError(tag, brStart, currentLocation, "'?>' expected");
+			} else if (tag.IsUnknownBang) {
+				if (tag.ClosingBracket != ">") OnSyntaxError(tag, brStart, currentLocation, "'>' expected");
+			} else if (tag.IsDocumentType) {
+				if (tag.ClosingBracket != ">") OnSyntaxError(tag, brStart, currentLocation, "'>' expected");
+			} else {
+				throw new Exception(string.Format("Unknown opening bracket '{0}'", tag.OpeningBracket));
+			}
+			
+			// Attribute name may not apper multiple times
+			var duplicates = tag.Children.OfType<RawAttribute>().GroupBy(attr => attr.Name).SelectMany(g => g.Skip(1));
+			foreach(RawAttribute attr in duplicates) {
+				OnSyntaxError(tag, attr.StartOffset, attr.EndOffset, "Attribute with name '{0}' already exists", attr.Name);
+			}
+			
 			tag.EndOffset = currentLocation;
 			
 			OnParsed(tag);
@@ -633,7 +751,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 							// the dtdName includes "<!"
 							if (TryRead(dtdName.Remove(0, 2))) return dtdName;
 						}
-						// TODO: Error - unkown bang tag
 						return "<!";
 					}
 				} else {
@@ -716,8 +833,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			// Read name
 			string name;
-			if (TryReadName(out name)) attr.Name = name;
-			// TODO:  else ERROR - attribute name expected
+			if (TryReadName(out name)) {
+				attr.Name = name;
+				if (!IsValidName(attr.Name)) {
+					OnSyntaxError(attr, attr.StartOffset, currentLocation, "The name '{0}' is invalid", attr.Name);
+				}
+			} else {
+				OnSyntaxError(attr, "Attribute name expected");
+			}
 			
 			// Read equals sign and surrounding whitespace
 			int checkpoint = currentLocation;
@@ -732,7 +855,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				attr.EqualsSign = GetText(checkpoint, currentLocation);
 			} else {
 				GoBack(checkpoint);
-				// TODO: ERROR - Equals expected
+				OnSyntaxError(attr, "'=' expected");
 			}
 			
 			// Read attribute value
@@ -748,19 +871,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 							GoBack(valueStart);
 							ReadAttributeValue(quoteChar);
 							if (TryRead(quoteChar)) {
-								// TODO: ERROR - Attribute value not followed by white space of tag end
+								OnSyntaxError(attr, "White space or end of tag expected");
 							} else {
-								// TODO: ERROR - Quote missing or ws missing after next one
+								OnSyntaxError(attr, "Quote {0} expected (or add whitespace after the following one)", quoteChar);
 							}
 						} else {
-							// TODO: ERROR - Attribute value not followed by white space of tag end
+							OnSyntaxError(attr, "White space or end of tag expected");
 						}
 					}
 				} else {
 					// '<' or end of file
-					// TODO: ERROR - Attribute value not closed
 					GoBack(valueStart);
 					ReadAttributeValue(quoteChar);
+					OnSyntaxError(attr, "Quote {0} expected", quoteChar);
 				}
 			} else {
 				int valueStart = currentLocation;
@@ -768,14 +891,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				TryRead('\"');
 				TryRead('\'');
 				if (valueStart == currentLocation) {
-					// TODO: ERROR - Attribute value expected - quote \" \'
+					OnSyntaxError(attr, "Attribute value expected");
 				} else {
-					// TODO: ERROR - Attribute value must be quoted in \" or \'
+					OnSyntaxError(attr, valueStart, currentLocation, "Attribute value must be quoted");
 				}
 			}
 			attr.Value = GetText(start, currentLocation);
-			
-			// TODO: Normalize attribute values
 			
 			attr.EndOffset = currentLocation;
 			
@@ -841,7 +962,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		/// <summary>
 		/// Reads text and optionaly separates it into fragments.
-		/// It can also return empty set for no appropriate text input
+		/// It can also return empty set for no appropriate text input.
+		/// Make sure you enumerate it only once
 		/// </summary>
 		IEnumerable<RawObject> ReadText(RawTextType type)
 		{
@@ -881,11 +1003,29 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				if (type == RawTextType.WhiteSpace) {
 					TryMoveToNonWhiteSpace();
 				} else if (type == RawTextType.CharacterData) {
-					// TODO: "]]>" is error
-					TryMoveTo('<');
+					while(true) {
+						TryMoveToAnyOf('<', ']');
+						if (IsEndOfFile()) break;
+						if (TryPeek('<')) break;
+						if (TryPeek(']')) {
+							if (TryPeek("]]>")) {
+								OnSyntaxError(text, currentLocation, currentLocation + 3, "']]>' is not allowed in text");
+							}
+							TryMoveNext();
+							continue;
+						}
+					}
 				} else 	if (type == RawTextType.Comment) {
-					// TODO: "--" is error
-					TryMoveTo("-->");
+					while(true) {
+						if (TryMoveTo('-')) {
+							if (TryPeek("-->")) break;
+							if (TryPeek("--")) {
+								OnSyntaxError(text, currentLocation, currentLocation + 2, "'--' is not allowed in comment");
+							}
+							TryMoveNext();
+						}
+						if (IsEndOfFile()) break;
+					}
 				} else if (type == RawTextType.CData) {
 					TryMoveTo("]]>");
 				} else if (type == RawTextType.ProcessingInstruction) {

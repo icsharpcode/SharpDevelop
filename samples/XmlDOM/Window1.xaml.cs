@@ -5,7 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Document;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -16,7 +18,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.XmlParser;
 
 namespace XmlDOM
@@ -35,8 +36,14 @@ namespace XmlDOM
 			InitializeComponent();
 		}
 		
+		TextMarkerService markerService;
+		
 		protected override void OnInitialized(EventArgs e)
 		{
+			markerService = new TextMarkerService(editor.TextArea);
+			
+			editor.TextArea.TextView.MouseMove += new MouseEventHandler(editor_TextArea_TextView_MouseMove);
+			
 			editor.Document.Changed += delegate { textDirty = true; };
 			parser = new XmlParser(editor.Document);
 
@@ -46,6 +53,20 @@ namespace XmlDOM
 			timer.Start();
 			
 			base.OnInitialized(e);
+		}
+
+		void editor_TextArea_TextView_MouseMove(object sender, MouseEventArgs e)
+		{
+			var pos = editor.TextArea.TextView.GetPosition(e.GetPosition(editor.TextArea.TextView));
+			if (pos.HasValue) {
+				int offset = editor.Document.GetOffset(new TextLocation(pos.Value.Line, pos.Value.Column));
+				var marker = markerService.markers.FindSegmentsContaining(offset).FirstOrDefault();
+				if (marker != null) {
+					errorText.Text = (string)marker.Tag;
+				} else {
+					errorText.Text = string.Empty;
+				}
+			}
 		}
 		
 		void Button_Click(object sender, RoutedEventArgs e)
@@ -59,16 +80,22 @@ namespace XmlDOM
 			visitor.VisitDocument(doc);
 			string prettyPrintedText = visitor.Output;
 			if (prettyPrintedText != editor.Document.Text) {
-				MessageBox.Show("Original and pretty printer version of XML differ");
+				MessageBox.Show("Error - Original and pretty printed version of XML differ");
+			}
+			markerService.RemoveAll(m => true);
+			foreach(var error in parser.SyntaxErrors) {
+				var marker = markerService.Create(error.StartOffset, error.EndOffset - error.StartOffset);
+				marker.Tag = error.Message;
+				marker.BackgroundColor = Color.FromRgb(255, 150, 150);
 			}
 			textDirty = false;
 		}
-		
+
 		void BindObject(object sender, EventArgs e)
 		{
 			TextBlock textBlock = (TextBlock)sender;
 			RawObject node = (RawObject)textBlock.DataContext;
-			node.LocalDataChanged += delegate {
+			node.Changed += delegate {
 				BindingOperations.GetBindingExpression(textBlock, TextBlock.TextProperty).UpdateTarget();
 				textBlock.Background = new SolidColorBrush(Colors.LightGreen);
 				Storyboard sb = ((Storyboard)this.FindResource("anim"));
@@ -81,7 +108,7 @@ namespace XmlDOM
 		{
 			TextBlock textBlock = (TextBlock)sender;
 			RawElement node = (RawElement)textBlock.DataContext;
-			node.StartTag.LocalDataChanged += delegate {
+			node.StartTag.Changed += delegate {
 				BindingOperations.GetBindingExpression(textBlock, TextBlock.TextProperty).UpdateTarget();
 				textBlock.Background = new SolidColorBrush(Colors.LightGreen);
 				Storyboard sb = ((Storyboard)this.FindResource("anim"));

@@ -112,6 +112,12 @@ namespace ICSharpCode.AvalonEdit.Document
 			get {
 				return StartOffset + Length;
 			}
+			set {
+				int newLength = value - StartOffset;
+				if (newLength < 0)
+					throw new ArgumentOutOfRangeException("value", "EndOffset must be greater or equal to StartOffset");
+				Length = newLength;
+			}
 		}
 		
 		/// <summary>

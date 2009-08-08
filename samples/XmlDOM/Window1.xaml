@@ -31,7 +31,10 @@
 			<ColumnDefinition Width="2*"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-		<ic:TextEditor x:Name="editor"/>
+		<DockPanel Grid.Column="0">
+			<TextBlock DockPanel.Dock="Top" Name="errorText" Margin="2" Background="WhiteSmoke"/>
+			<ic:TextEditor x:Name="editor"/>
+		</DockPanel>
 		<DockPanel Grid.Column="1">
 			<Button DockPanel.Dock="Top" Content="Parse" Click="Button_Click"/>
 			<TreeView  Name="treeView"/>

@@ -35,8 +35,17 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		internal object ReadCallID { get; private set; }
 		
+		/// <summary>
+		/// Parent node.
+		/// 
+		/// Some constraints:
+		///  - Reachable childs shall have parent pointer (except Document)
+		///  - Parser tree can reuse data of other trees as long as it does not modify them
+		///    (that, it can not set parent pointer if non-null)
+		/// </summary>
 		public RawObject Parent { get; set; }
 		
+		// TODO: Performance
 		public RawDocument Document {
 			get {
 				if (this.Parent != null) {
@@ -50,28 +59,52 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Occurs when the value of any local properties changes.  Nested changes do not cause the event to occur </summary>
-		public event EventHandler LocalDataChanged;
+		public event EventHandler Changed;
 		
-		protected void OnLocalDataChanged()
+		protected void OnChanged()
 		{
-			LogDom("Local data changed for {0}", this);
-			if (LocalDataChanged != null) {
-				LocalDataChanged(this, EventArgs.Empty);
+			LogDom("Changed {0}", this);
+			if (Changed != null) {
+				Changed(this, EventArgs.Empty);
+			}
+			RawDocument doc = this.Document;
+			if (doc != null) {
+				Document.OnObjectChanged(this);
 			}
 		}
 		
-		public new int EndOffset {
+		List<XmlParser.SyntaxError> syntaxErrors;
+		
+		/// <summary>
+		/// The error that occured in the context of this node (excluding nested nodes)
+		/// </summary>
+		public IEnumerable<XmlParser.SyntaxError> SyntaxErrors {
 			get {
-				return this.StartOffset + this.Length;
+				if (syntaxErrors == null) {
+					return new XmlParser.SyntaxError[] {};
+				} else {
+					return syntaxErrors;
+				}
 			}
-			set {
-				this.Length = value - this.StartOffset;
-			}
+		}
+		
+		internal void AddSyntaxError(XmlParser.SyntaxError error)
+		{
+			Assert(error.Object == this);
+			if (this.syntaxErrors == null) this.syntaxErrors = new List<XmlParser.SyntaxError>();
+			syntaxErrors.Add(error);
 		}
 		
 		public RawObject()
 		{
 			this.ReadCallID = new object();
+		}
+		
+		protected static void Assert(bool condition)
+		{
+			if (!condition) {
+				throw new Exception("Consistency assertion failed");
+			}
 		}
 		
 		public virtual IEnumerable<RawObject> GetSelfAndAllChildren()
@@ -88,6 +121,18 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			// type and sequential position hoping to be luckily right
 			this.StartOffset = source.StartOffset;
 			this.EndOffset = source.EndOffset;
+			
+			// Do not bother comparing - assume changed if non-null
+			if (this.syntaxErrors != null || source.syntaxErrors != null) {
+				this.syntaxErrors = new List<XmlParser.SyntaxError>();
+				foreach(var error in source.SyntaxErrors) {
+					// The object differs, so create our own copy
+					// The source still might need it in the future and we do not want to break it
+					this.AddSyntaxError(error.Clone(this));
+				}
+				// May be called again in derived class - oh, well, nevermind
+				OnChanged();
+			}
 		}
 		
 		public override string ToString()
@@ -180,62 +225,132 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		// Only these four methods should be used to modify the collection
 		
+		// See constriants of Parent pointer
+		
+		/// <summary>
+		/// To be used exlucively by the parser
+		/// </summary>
 		internal void AddChild(RawObject item)
 		{
-			this.InsertChildren(this.Children.Count, new RawObject[] {item}.ToList());
-		}
-		
-		internal void AddChildren(IEnumerable<RawObject> items)
-		{
-			this.InsertChildren(this.Children.Count, items.ToList());
+			AddChildren(new RawObject[] {item}.ToList());
 		}
 		
 		/// <summary>
-		/// Insert children, set parent for them and notify the document
+		/// To be used exlucively by the parser
+		/// </summary>
+		internal void AddChildren(IEnumerable<RawObject> items)
+		{
+			// Childs can be only added to newly parsed items
+			Assert(this.Parent == null);
+			
+			// Read the list just once
+			items = items.ToList();
+			
+			foreach(RawObject item in items) {
+				// Are we adding some cached item?
+				// We can *not* modify data of other tree
+				// It might resurect user deleted nodes, but that is fine
+				if (item.Parent == null) item.Parent = this;
+			}
+			
+			this.Children.InsertItems(this.Children.Count, items.ToList());
+		}
+		
+		/// <summary>
+		/// To be used exclusively by UpdateChildrenFrom.
+		/// Insert children and keep links consistent.
+		/// Note: If the nodes are in other part of the document, they will be moved
 		/// </summary>
 		void InsertChildren(int index, IList<RawObject> items)
 		{
-			if (items.Count == 1) {
-				LogDom("Inserting {0} at index {1}", items[0], index);
-			} else {
-				LogDom("Inserting at index {0}:", index);
-				foreach(RawObject item in items) LogDom("  {0}", item);
-			}
-			foreach(RawObject item in items) item.Parent = this;
-			this.Children.InsertItems(index, items);
 			RawDocument document = this.Document;
-			if (document != null) {
-				foreach(RawObject item in items)  {
-					foreach(RawObject obj in item.GetSelfAndAllChildren()) {
-						document.OnObjectAttached(obj);
-					}
+			Assert(document != null);
+			Assert(!document.IsParsed);
+			
+			List<RawObject> attachedObjects = new List<RawObject>();
+			
+			// Remove from the old location and set parent
+			foreach(RawObject item in items) {
+				if (item.Parent == null) {
+					// Dangling object - it was probably just removed from the document during update
+					LogDom("Inserting dangling {0}", item);
+					item.Parent = this;
+					attachedObjects.Add(item);
+				} else if (item.Document.IsParsed) {
+					// Adding from parser tree - steal pointer; keep in the parser tree
+					LogDom("Inserting {0} from parser tree", item);
+					item.Parent = this;
+					attachedObjects.Add(item);
+				} else {
+					// Adding from user other document location
+					Assert(item.Document == document);  // The parser was reusing object from other document?
+					LogDom("Inserting {0} from other document location", item);
+					// Remove from other location
+					var owingList = ((RawContainer)item.Parent).Children;
+					owingList.RemoveItems(owingList.IndexOf(item), 1);
+					// No detach / attach notifications
+					item.Parent = this;
+				}
+			}
+			
+			// Add it
+			this.Children.InsertItems(index, items);
+			
+			// Notify document - do last so that the handler sees up-to-date tree
+			foreach(RawObject item in attachedObjects)  {
+				foreach(RawObject obj in item.GetSelfAndAllChildren()) {
+					document.OnObjectAttached(obj);
 				}
 			}
 		}
 		
 		/// <summary>
+		/// To be used exclusively by UpdateChildrenFrom.
 		/// Remove children, set parent to null for them and notify the document
 		/// </summary>
 		void RemoveChildrenAt(int index, int count)
 		{
+			RawDocument document = this.Document;
+			Assert(document != null);
+			Assert(!document.IsParsed);
+			
 			List<RawObject> removed = new List<RawObject>(count);
 			for(int i = 0; i < count; i++) {
 				removed.Add(this.Children[index + i]);
 			}
+			
+			// Log the action
 			if (count == 1) {
 				LogDom("Removing {0} at index {1}", removed[0], index);
 			} else {
 				LogDom("Removing at index {0}:", index);
 				foreach(RawObject item in removed) LogDom("  {0}", item);
 			}
-			foreach(RawObject item in removed) item.Parent = null;
+			
+			// Null parent pointer
+			foreach(RawObject item in removed) {
+				Assert(item.Parent != null);
+				item.Parent = null;
+			}
+			
+			// Remove
 			this.Children.RemoveItems(index, count);
-			RawDocument document = this.Document;
-			if (document != null) {
-				foreach(RawObject item in removed) {
-					foreach(RawObject obj in item.GetSelfAndAllChildren()) {
-						document.OnObjectDettached(obj);
-					}
+			
+			// Notify document - do last so that the handler sees up-to-date tree
+			foreach(RawObject item in removed) {
+				foreach(RawObject obj in item.GetSelfAndAllChildren()) {
+					document.OnObjectDettached(obj);
+				}
+			}
+		}
+		
+		internal void CheckLinksConsistency()
+		{
+			foreach(RawObject child in this.Children) {
+				if (child.Parent == null) throw new Exception("Null parent reference");
+				if (!(child.Parent == this)) throw new Exception("Inccorect parent reference");
+				if (child is RawContainer) {
+					((RawContainer)child).CheckLinksConsistency();
 				}
 			}
 		}
@@ -331,8 +446,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public class RawDocument: RawContainer
 	{
+		/// <summary>
+		/// Parser tree (as opposed to some user tree).
+		/// Parser tree can reuse data of other trees as long as it does not modify them
+		/// (that, it can not set parent pointer if non-null)
+		/// </summary>
+		internal bool IsParsed { get; set; }
+		
+		/// <summary> Occurs when object is added to the document </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectAttached;
+		/// <summary> Occurs when object is removed from the document </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectDettached;
+		/// <summary> Occurs when local data of object changes </summary>
+		public event EventHandler<RawObjectEventArgs> ObjectChanged;
 		
 		internal void OnObjectAttached(RawObject obj)
 		{
@@ -342,6 +468,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		internal void OnObjectDettached(RawObject obj)
 		{
 			if (ObjectDettached != null) ObjectDettached(this, new RawObjectEventArgs() { Object = obj } );
+		}
+		
+		internal void OnObjectChanged(RawObject obj)
+		{
+			if (ObjectChanged != null) ObjectChanged(this, new RawObjectEventArgs() { Object = obj } );
 		}
 		
 		public override void AcceptVisitor(IXmlVisitor visitor)
@@ -420,7 +551,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				this.OpeningBracket = src.OpeningBracket;
 				this.Name = src.Name;
 				this.ClosingBracket = src.ClosingBracket;
-				OnLocalDataChanged();
+				OnChanged();
 			}
 		}
 		
@@ -470,7 +601,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				UpdateXElement(true);
 				UpdateXElementAttributes(true);
 				UpdateXElementChildren(true);
-				this.StartTag.LocalDataChanged += delegate { UpdateXElement(false); };
+				this.StartTag.Changed += delegate { UpdateXElement(false); };
 				this.StartTag.Children.CollectionChanged += delegate { UpdateXElementAttributes(false); };
 				this.Children.CollectionChanged += delegate { UpdateXElementChildren(false); };
 			}
@@ -552,7 +683,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				this.Name = src.Name;
 				this.EqualsSign = src.EqualsSign;
 				this.Value = src.Value;
-				OnLocalDataChanged();
+				OnChanged();
 			}
 		}
 		
@@ -566,7 +697,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				xAttr.AddAnnotation(this);
 				bool deleted = false;
 				UpdateXAttribute(true, ref deleted);
-				this.LocalDataChanged += delegate { if (!deleted) UpdateXAttribute(false, ref deleted); };
+				this.Changed += delegate { if (!deleted) UpdateXAttribute(false, ref deleted); };
 			}
 			return xAttr;
 		}
@@ -636,7 +767,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			RawText src = (RawText)source;
 			if (this.Value != src.Value) {
 				this.Value = src.Value;
-				OnLocalDataChanged();
+				OnChanged();
 			}
 		}
 		
@@ -646,7 +777,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			XText text = new XText(string.Empty);
 			text.AddAnnotation(this);
 			UpdateXText(text, autoUpdate);
-			if (autoUpdate) this.LocalDataChanged += delegate { UpdateXText(text, autoUpdate); };
+			if (autoUpdate) this.Changed += delegate { UpdateXText(text, autoUpdate); };
 			return text;
 		}
 		
