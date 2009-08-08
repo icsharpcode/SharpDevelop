@@ -40,7 +40,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				throw new ArgumentNullException("rope");
 			if (publishRope)
 				rope.root.Publish();
-			// special case for the empty rope: 
+			// special case for the empty rope:
 			// leave currentNode initialized to null (RopeTextReader doesn't support empty nodes)
 			if (rope.Length != 0) {
 				currentNode = rope.root;
@@ -50,10 +50,17 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		void GoToLeftMostLeaf()
 		{
-			while (currentNode.left != null) {
+			while (currentNode.contents == null) {
+				if (currentNode.height == 0) {
+					// this is a function node - move to its contained rope
+					currentNode = currentNode.GetContentNode();
+					continue;
+				}
+				Debug.Assert(currentNode.right != null);
 				stack.Push(currentNode.right);
 				currentNode = currentNode.left;
 			}
+			Debug.Assert(currentNode.height == 0);
 		}
 		
 		/// <inheritdoc/>

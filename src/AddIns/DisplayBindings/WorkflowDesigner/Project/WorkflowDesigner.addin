@@ -1,6 +1,7 @@
 <AddIn name        = "Workflow Designer"
        author      = "Daniel Grunwald"
-       description = "Windows Workflow Foundation 4.0 Designer">
+       description = "Windows Workflow Foundation 4.0 Designer"
+       addInManagerHidden="preinstalled">
 	
 	<Runtime>
 		<Import assembly = "WorkflowDesigner.dll"/>

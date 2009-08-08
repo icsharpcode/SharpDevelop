@@ -18,6 +18,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+	[Serializable]
 	public sealed class ImmutableStack<T> : IEnumerable<T>
 	{
 		/// <summary>

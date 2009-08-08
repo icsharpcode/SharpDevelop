@@ -1,11 +1,10 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel
- * Date: 03.08.2009
- * Time: 20:43
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald"/>
+//     <version>$Revision$</version>
+// </file>
+
 using System;
 using System.Globalization;
 using System.Text;
@@ -39,9 +38,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			if (rope == null)
 				throw new ArgumentNullException("rope");
-			StringBuilder b = new StringBuilder(length);
-			rope.WriteTo(b, startIndex, length);
-			return b.ToString();
+			char[] buffer = new char[length];
+			rope.CopyTo(startIndex, buffer, 0, length);
+			return new string(buffer);
 		}
 		
 		/// <summary>
@@ -102,8 +101,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (text.Length == 0) {
 				return RopeNode<char>.emptyRopeNode;
 			}
-			int nodeCount = (text.Length + RopeNode<char>.NodeSize - 1) / RopeNode<char>.NodeSize;
-			RopeNode<char> node = RopeNode<char>.CreateNodes(nodeCount);
+			RopeNode<char> node = RopeNode<char>.CreateNodes(text.Length);
 			// TODO: store data
 			return node;
 			 */
@@ -112,8 +110,13 @@ namespace ICSharpCode.AvalonEdit.Document
 		internal static void WriteTo(this RopeNode<char> node, int index, StringBuilder output, int count)
 		{
 			if (node.height == 0) {
-				// leaf node: append data
-				output.Append(node.contents, index, count);
+				if (node.contents == null) {
+					// function node
+					node.GetContentNode().WriteTo(index, output, count);
+				} else {
+					// leaf node: append data
+					output.Append(node.contents, index, count);
+				}
 			} else {
 				// concat node: do recursive calls
 				if (index + count <= node.left.length) {
@@ -127,36 +130,5 @@ namespace ICSharpCode.AvalonEdit.Document
 				}
 			}
 		}
-		
-		/*
-		internal static RopeNode<char> Insert(this RopeNode<char> node, int offset, string newText)
-		{
-			if (node.height == 0) {
-				if (node.length + newText.Length < RopeNode<char>.NodeSize) {
-					RopeNode<char> result = node.CloneIfShared();
-					int lengthAfterOffset = node.length - offset;
-					char[] arr = result.contents;
-					for (int i = lengthAfterOffset; i >= 0; i--) {
-						arr[i + offset + newText.Length] = arr[i + offset];
-					}
-					newText.CopyTo(0, arr, offset, newText.Length);
-					result.length += newText.Length;
-					return result;
-				} else {
-					// TODO: implement this more efficiently
-					return node.Insert(offset, InitFromString(newText));
-				}
-			} else {
-				RopeNode<char> result = node.CloneIfShared();
-				if (offset < result.left.length) {
-					result.left = result.left.Insert(offset, newText);
-				} else {
-					result.right = result.right.Insert(offset - result.left.length, newText);
-				}
-				result.length += newText.Length;
-				result.Rebalance();
-				return result;
-			}
-		}*/
 	}
 }

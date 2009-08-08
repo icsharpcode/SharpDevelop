@@ -67,6 +67,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets/Sets the start offset of the segment.
 		/// </summary>
+		/// <remarks>
+		/// When setting the start offset, the end offset will change, too: the Length of the segment will stay constant.
+		/// </remarks>
 		public int StartOffset {
 			get {
 				// If the segment is not connected to a tree, we store the offset in "nodeLength".

@@ -75,6 +75,52 @@ namespace ICSharpCode.AvalonEdit.Document
 			this.root.CheckInvariants();
 		}
 		
+		/// <summary>
+		/// Creates a rope from a part of the array.
+		/// This operation runs in O(N).
+		/// </summary>
+		/// <exception cref="ArgumentNullException">input is null.</exception>
+		public Rope(T[] array, int arrayIndex, int count)
+		{
+			VerifyArrayWithRange(array, arrayIndex, count);
+			this.root = RopeNode<T>.CreateFromArray(array, arrayIndex, count);
+			this.root.CheckInvariants();
+		}
+		
+		/// <summary>
+		/// Creates a new rope that lazily initalizes its content.
+		/// </summary>
+		/// <param name="length">The length of the rope that will be lazily loaded.</param>
+		/// <param name="initializer">
+		/// The callback that provides the content for this rope.
+		/// <paramref name="initializer"/> will be called exactly once when the content of this rope is first requested.
+		/// It must return a rope with the specified length.
+		/// Because the initializer function is not called when a rope is cloned, and such clones may be used on another threads,
+		/// it is possible for the initializer callback to occur on any thread.
+		/// </param>
+		/// <remarks>
+		/// Any modifications inside the rope will also cause the content to be initialized.
+		/// However, insertions at the beginning and the end, as well as inserting this rope into another or
+		/// using the <see cref="Concat(Rope{T},Rope{T})"/> method, allows constructions of larger ropes where parts are
+		/// lazyly loaded.
+		/// However, even methods like Concat may sometimes cause the initializer function to be called, e.g. when
+		/// two short ropes are concatenated.
+		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public Rope(int length, Func<Rope<T>> initializer)
+		{
+			if (initializer == null)
+				throw new ArgumentNullException("initializer");
+			if (length < 0)
+				throw new ArgumentOutOfRangeException("length", length, "Length must not be negative");
+			if (length == 0) {
+				this.root = RopeNode<T>.emptyRopeNode;
+			} else {
+				this.root = new FunctionNode<T>(length, initializer);
+			}
+			this.root.CheckInvariants();
+		}
+		
 		static T[] ToArray(IEnumerable<T> input)
 		{
 			T[] arr = input as T[];
@@ -148,8 +194,6 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 			if (newElements == null)
 				throw new ArgumentNullException("newElements");
-			if (newElements.Length == 0)
-				return;
 			newElements.root.Publish();
 			root = root.Insert(index, newElements.root);
 			OnChanged();
@@ -186,17 +230,17 @@ namespace ICSharpCode.AvalonEdit.Document
 				throw new ArgumentOutOfRangeException("index", index, "0 <= index <= " + this.Length.ToString(CultureInfo.InvariantCulture));
 			}
 			VerifyArrayWithRange(array, arrayIndex, count);
-			if (count == 0)
-				return;
-			root = root.Insert(index, array, arrayIndex, count);
-			OnChanged();
+			if (count > 0) {
+				root = root.Insert(index, array, arrayIndex, count);
+				OnChanged();
+			}
 		}
 		
 		/// <summary>
 		/// Inserts a piece of text in this rope.
 		/// Runs in O(lg N + M), where M is the length of the new text.
 		/// </summary>
-		/// <exception cref="ArgumentNullException">newText is null.</exception>
+		/// <exception cref="ArgumentNullException">newElements is null.</exception>
 		public void AddRange(IEnumerable<T> newElements)
 		{
 			InsertRange(this.Length, newElements);
@@ -213,6 +257,16 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
+		/// Appends new elements to the end of this rope.
+		/// Runs in O(lg N + M).
+		/// </summary>
+		/// <exception cref="ArgumentNullException">array is null.</exception>
+		public void AddRange(T[] array, int arrayIndex, int count)
+		{
+			InsertRange(this.Length, array, arrayIndex, count);
+		}
+		
+		/// <summary>
 		/// Removes a piece of text from the rope.
 		/// Runs in O(lg N).
 		/// </summary>
@@ -220,14 +274,24 @@ namespace ICSharpCode.AvalonEdit.Document
 		public void RemoveRange(int index, int count)
 		{
 			VerifyRange(index, count);
-			if (count == 0)
-				return;
-			if (index == 0 && count == this.Length) {
-				Clear();
-				return;
+			if (count > 0) {
+				root = root.RemoveRange(index, count);
+				OnChanged();
 			}
-			root = root.RemoveRange(index, count);
-			OnChanged();
+		}
+		
+		/// <summary>
+		/// Copies a range of the specified array into the rope, overwriting existing elements.
+		/// Runs in O(lg N + M).
+		/// </summary>
+		public void SetRange(int index, T[] array, int arrayIndex, int count)
+		{
+			VerifyRange(index, count);
+			VerifyArrayWithRange(array, arrayIndex, count);
+			if (count > 0) {
+				root = root.StoreElements(index, array, arrayIndex, count);
+				OnChanged();
+			}
 		}
 		
 		/// <summary>
@@ -312,8 +376,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		#endregion
 		 */
 		
-		/*
-		#region Operator +
 		/// <summary>
 		/// Concatenates two ropes. The input ropes are not modified.
 		/// Runs in O(lg N + lg M).
@@ -321,42 +383,34 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <remarks>
 		/// This method counts as a read access and may be called concurrently to other read accesses.
 		/// </remarks>
-		public static Rope operator +(Rope left, Rope right)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
+		public static Rope<T> Concat(Rope<T> left, Rope<T> right)
 		{
+			if (left == null)
+				throw new ArgumentNullException("left");
+			if (right == null)
+				throw new ArgumentNullException("right");
 			left.root.Publish();
 			right.root.Publish();
-			return new Rope(RopeNode.Concat(left.root, right.root));
+			return new Rope<T>(RopeNode<T>.Concat(left.root, right.root));
 		}
 		
 		/// <summary>
-		/// Concatenates a rope and a string. The input rope is not modified.
-		/// Runs in O(lg N + M).
+		/// Concatenates multiple ropes. The input ropes are not modified.
 		/// </summary>
 		/// <remarks>
 		/// This method counts as a read access and may be called concurrently to other read accesses.
 		/// </remarks>
-		public static Rope operator +(Rope left, string right)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
+		public static Rope<T> Concat(params Rope<T>[] ropes)
 		{
-			Rope result = left.Clone();
-			result.AppendInPlace(right);
+			if (ropes == null)
+				throw new ArgumentNullException("ropes");
+			Rope<T> result = new Rope<T>();
+			foreach (Rope<T> r in ropes)
+				result.AddRange(r);
 			return result;
 		}
-		
-		/// <summary>
-		/// Concatenates a string and a rope. The input rope is not modified.
-		/// Runs in O(N + lg M).
-		/// </summary>
-		/// <remarks>
-		/// This method counts as a read access and may be called concurrently to other read accesses.
-		/// </remarks>
-		public static Rope operator +(string left, Rope right)
-		{
-			Rope result = right.Clone();
-			result.InsertInPlace(0, left);
-			return result;
-		}
-		#endregion
-		 */
 		
 		#region Caches / Changed event
 		struct RopeCacheEntry
@@ -377,6 +431,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		// cached pointer to 'last used node', used to speed up accesses by index that are close together
+		[NonSerialized]
 		volatile ImmutableStack<RopeCacheEntry> lastUsedNodeStack;
 		
 		internal void OnChanged()
@@ -413,6 +468,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				/* Here's a try at implementing the setter using the cached node stack (UNTESTED code!).
 				 * However I don't use the code because it's complicated and doesn't integrate correctly with change notifications.
 				 * Instead, I'll use the much easier to understand recursive solution.
+				 * Oh, and it also doesn't work correctly with function nodes.
 				ImmutableStack<RopeCacheEntry> nodeStack = FindNodeUsingCache(offset);
 				RopeCacheEntry entry = nodeStack.Peek();
 				if (!entry.node.isShared) {
@@ -464,9 +520,18 @@ namespace ICSharpCode.AvalonEdit.Document
 				stack = stack.Pop();
 			while (true) {
 				RopeCacheEntry entry = stack.Peek();
-				// check if we've reached the leaf node
-				if (entry.node.height == 0)
-					break;
+				// check if we've reached a leaf or function node
+				if (entry.node.height == 0) {
+					if (entry.node.contents == null) {
+						// this is a function node - go down into its subtree
+						entry = new RopeCacheEntry(entry.node.GetContentNode(), entry.nodeStartIndex);
+						// entry is now guaranteed NOT to be another function node
+					}
+					if (entry.node.contents != null) {
+						// this is a node containing actual content, so we're done
+						break;
+					}
+				}
 				// go down towards leaves
 				if (index - entry.nodeStartIndex >= entry.node.left.length)
 					stack = stack.Push(new RopeCacheEntry(entry.node.right, entry.nodeStartIndex + entry.node.left.length));
@@ -482,7 +547,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 			
 			// this method guarantees that it finds a leaf node
-			Debug.Assert(stack.Peek().node.height == 0);
+			Debug.Assert(stack.Peek().node.contents != null);
 			return stack;
 		}
 		#endregion
@@ -557,6 +622,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Runs in O(N).
 		/// </summary>
 		/// <returns>The index of the first occurance of item, or -1 if it cannot be found.</returns>
+		/// <remarks>
+		/// This method counts as a read access and may be called concurrently to other read accesses.
+		/// </remarks>
 		public int IndexOf(T item)
 		{
 			int index = 0;
@@ -599,6 +667,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Searches the item in the rope.
 		/// Runs in O(N).
 		/// </summary>
+		/// <remarks>
+		/// This method counts as a read access and may be called concurrently to other read accesses.
+		/// </remarks>
 		public bool Contains(T item)
 		{
 			return IndexOf(item) >= 0;
@@ -608,6 +679,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Copies the whole content of the rope into the specified array.
 		/// Runs in O(N).
 		/// </summary>
+		/// <remarks>
+		/// This method counts as a read access and may be called concurrently to other read accesses.
+		/// </remarks>
 		public void CopyTo(T[] array, int arrayIndex)
 		{
 			CopyTo(0, array, arrayIndex, this.Length);
@@ -617,6 +691,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Copies the a part of the rope into the specified array.
 		/// Runs in O(lg N + M).
 		/// </summary>
+		/// <remarks>
+		/// This method counts as a read access and may be called concurrently to other read accesses.
+		/// </remarks>
 		public void CopyTo(int index, T[] array, int arrayIndex, int count)
 		{
 			VerifyRange(index, count);
@@ -641,8 +718,11 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Retrieves an enumerator to iterate through the rope.
 		/// The enumerator will reflect the state of the rope from the GetEnumerator() call, further modifications
-		/// to the rope will not be reflected in the enumerator.
+		/// to the rope will not be visible to the enumerator.
 		/// </summary>
+		/// <remarks>
+		/// This method counts as a read access and may be called concurrently to other read accesses.
+		/// </remarks>
 		public IEnumerator<T> GetEnumerator()
 		{
 			this.root.Publish();
@@ -653,6 +733,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Creates an array and copies the contents of the rope into it.
 		/// Runs in O(N).
 		/// </summary>
+		/// <remarks>
+		/// This method counts as a read access and may be called concurrently to other read accesses.
+		/// </remarks>
 		public T[] ToArray()
 		{
 			T[] arr = new T[this.Length];
@@ -664,6 +747,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Creates an array and copies the contents of the rope into it.
 		/// Runs in O(N).
 		/// </summary>
+		/// <remarks>
+		/// This method counts as a read access and may be called concurrently to other read accesses.
+		/// </remarks>
 		public T[] ToArray(int startIndex, int count)
 		{
 			VerifyRange(startIndex, count);
@@ -675,9 +761,15 @@ namespace ICSharpCode.AvalonEdit.Document
 		static IEnumerator<T> Enumerate(RopeNode<T> node)
 		{
 			Stack<RopeNode<T>> stack = new Stack<RopeNode<T>>();
-			while (true) {
+			while (node != null) {
 				// go to leftmost node, pushing the right parts that we'll have to visit later
-				while (node.left != null) {
+				while (node.contents == null) {
+					if (node.height == 0) {
+						// go down into function nodes
+						node = node.GetContentNode();
+						continue;
+					}
+					Debug.Assert(node.right != null);
 					stack.Push(node.right);
 					node = node.left;
 				}
@@ -689,7 +781,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				if (stack.Count > 0)
 					node = stack.Pop();
 				else
-					break;
+					node = null;
 			}
 		}
 		

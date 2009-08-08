@@ -122,7 +122,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				if (b != null)
 					element.TextRunProperties.SetForegroundBrush(b);
 			}
-			if (color.FontWeight != null) {
+			if (color.FontStyle != null || color.FontWeight != null) {
 				Typeface tf = element.TextRunProperties.Typeface;
 				element.TextRunProperties.SetTypeface(new Typeface(
 					tf.FontFamily,
