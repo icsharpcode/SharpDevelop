@@ -174,15 +174,21 @@ namespace ICSharpCode.Python.Build.Tasks
 		/// Matches the syntax exception SourcePath against filenames being compiled. The 
 		/// syntax exception only contains the file name without its path and without its file extension.
 		/// </summary>
-		static string GetFileName(SyntaxErrorException ex, ITaskItem[] sources)
+		string GetFileName(SyntaxErrorException ex, ITaskItem[] sources)
 		{
+			if (ex.SourcePath == null) {
+				return null;
+			}
+			
+			string sourcePath = ex.SourcePath.Replace('\\', '.');
 			foreach (ITaskItem item in sources) {
 				string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(item.ItemSpec);
-				if (fileNameWithoutExtension == ex.SourcePath) {
+				if (fileNameWithoutExtension == sourcePath) {
 					return item.ItemSpec;
 				}
 			}
-			return null;
+			string fileName = sourcePath + ".py";
+			return Path.Combine(GetCurrentFolder(), fileName);
 		}
 		
 		/// <summary>

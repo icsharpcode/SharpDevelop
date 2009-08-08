@@ -75,7 +75,10 @@
     <Compile Include="PythonCompilerTests.cs" />
     <Compile Include="RelativeReferenceTestFixture.cs" />
     <Compile Include="RelativeResourceFileTestFixture.cs" />
+    <Compile Include="SyntaxErrorFileNameWithDotCharTestFixture.cs" />
+    <Compile Include="SyntaxErrorNullFileNameTestFixture.cs" />
     <Compile Include="SyntaxErrorTestFixture.cs" />
+    <Compile Include="SyntaxErrorUnknownFileNameTestFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\Python.Build.Tasks.csproj">
