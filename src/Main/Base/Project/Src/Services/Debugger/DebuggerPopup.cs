@@ -24,6 +24,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			this.contentControl.containingPopup = this;
 			this.Child = this.contentControl;
 			this.IsLeaf = false;
+			//this.AllowsTransparency = true;
+			//this.PopupAnimation = PopupAnimation.Slide;
 		}
 		
 		public IEnumerable<ITreeNode> ItemsSource

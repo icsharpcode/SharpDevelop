@@ -23,6 +23,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	/// </summary>
 	public partial class DebuggerTooltipControl : UserControl, ITooltip
 	{
+		private readonly double ChildPopupOpenXOffet = 16;
+		private readonly double ChildPopupOpenYOffet = 15;
+		
 		public DebuggerTooltipControl()
 		{
 			InitializeComponent();
@@ -147,8 +150,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 			else
 			{
-				// leaf closed because of click inside this control - stop the closing chaing
-				if (this.expandedButton != null)
+				// leaf closed because of click inside this control - stop the closing chain
+				if (this.expandedButton != null && !this.expandedButton.IsMouseOver)
 				{
 					this.expandedButton.IsChecked = false;
 					this.expandedButton = null;
@@ -178,8 +181,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					this.containingPopup.IsLeaf = false;
 				}
 				this.childPopup.IsLeaf = true;
-				this.childPopup.HorizontalOffset = buttonPos.X + 15;
-				this.childPopup.VerticalOffset = buttonPos.Y + 15;
+				this.childPopup.HorizontalOffset = buttonPos.X + ChildPopupOpenXOffet;
+				this.childPopup.VerticalOffset = buttonPos.Y + ChildPopupOpenYOffet;
 				this.childPopup.ItemsSource = clickedNode.ChildNodes;
 				this.childPopup.Open();
 			}

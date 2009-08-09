@@ -176,7 +176,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.MouseHover += textEditor_MouseHover;
 			textEditor.MouseHoverStopped += textEditor_MouseHoverStopped;
 			textEditor.MouseLeave += textEditor_MouseLeave;
-			textView.MouseDown += textEditor_MouseDown;
+			textView.MouseDown += textView_MouseDown;
 			textEditor.TextArea.Caret.PositionChanged += caret_PositionChanged;
 			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
@@ -292,6 +292,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void JumpTo(int line, int column)
 		{
+			tryCloseExistingPopup(true);
+			
 			// the adapter sets the caret position and takes care of scrolling
 			this.ActiveTextEditorAdapter.JumpTo(line, column);
 			this.ActiveTextEditor.Focus();
@@ -327,6 +329,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						// when popup content decides to close, close the popup
 						contentToShowITooltip.Closed += (closedSender, closedArgs) => { popup.IsOpen = false; };
 						popup.Child = (UIElement)args.ContentToShow;
+						//ICSharpCode.SharpDevelop.Debugging.DebuggerService.CurrentDebugger.IsProcessRunningChanged
 						setPopupPosition(popup, textEditor, e);
 						popup.IsOpen = true;
 					}
@@ -412,11 +415,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void textEditor_MouseDown(object sender, MouseButtonEventArgs e)
+		void textView_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			// close existing popup on text editor mouse down
+			// close existing popup immediately on text editor mouse down
 			tryCloseExistingPopup(false);
 		}
+		
+		/*void textArea_GotFocus(object sender, RoutedEventArgs e)
+		{
+			// close popup whenever TextEditor.TextArea gets focus - eg. on debugger step (CodeEditor.JumpTo calls focus)
+		}*/
 
 		void toolTip_Closed(object sender, RoutedEventArgs e)
 		{
