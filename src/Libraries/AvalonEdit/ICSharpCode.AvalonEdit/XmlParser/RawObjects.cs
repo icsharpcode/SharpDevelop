@@ -201,32 +201,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary> Remove quoting from the given string </summary>
-		protected static string Unquote(string quoted)
-		{
-			if (string.IsNullOrEmpty(quoted)) return string.Empty;
-			char first = quoted[0];
-			if (quoted.Length == 1) return (first == '"' || first == '\'') ? string.Empty : quoted;
-			char last  = quoted[quoted.Length - 1];
-			if (first == '"' || first == '\'') {
-				if (first == last) {
-					// Remove both quotes
-					return quoted.Substring(1, quoted.Length - 2);
-				} else {
-					// Remove first quote
-					return quoted.Remove(0, 1);
-				}
-			} else {
-				if (last == '"' || last == '\'') {
-					// Remove last quote
-					return quoted.Substring(0, quoted.Length - 1);
-				} else {
-					// Keep whole string
-					return quoted;
-				}
-			}
-		}
-		
 		#endregion
 	}
 	
@@ -849,8 +823,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public string Name { get; set; }
 		/// <summary> Equals sign and surrounding whitespace </summary>
 		public string EqualsSign { get; set; }
-		/// <summary> The raw value - exactly as in source file (*probably* quoted) </summary>
+		/// <summary> The raw value - exactly as in source file (*probably* quoted and escaped) </summary>
 		public string QuotedValue { get; set; }
+		/// <summary> Unquoted and dereferenced value of the attribute </summary>
+		public string Value { get; set; }
 		
 		#region Helpper methods
 		
@@ -903,13 +879,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary> Unquoted value of the attribute </summary>
-		public string Value {
-			get {
-				return Unquote(this.QuotedValue);
-			}
-		}
-		
 		#endregion
 		
 		/// <inheritdoc/>
@@ -926,12 +895,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			RawAttribute src = (RawAttribute)source;
 			if (this.Name != src.Name ||
 				this.EqualsSign != src.EqualsSign ||
-				this.QuotedValue != src.QuotedValue)
+				this.QuotedValue != src.QuotedValue ||
+				this.Value != src.Value)
 			{
 				OnChanging();
 				this.Name = src.Name;
 				this.EqualsSign = src.EqualsSign;
 				this.QuotedValue = src.QuotedValue;
+				this.Value = src.Value;
 				OnChanged();
 			}
 		}
@@ -939,7 +910,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("[{0} '{1}{2}{3}']", base.ToString(), this.Name, this.EqualsSign, this.QuotedValue);
+			return string.Format("[{0} '{1}{2}{3}']", base.ToString(), this.Name, this.EqualsSign, this.Value);
 		}
 	}
 	
@@ -976,6 +947,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> The context in which the text occured </summary>
 		public RawTextType Type { get; set; }
 		/// <summary> The text exactly as in source </summary>
+		public string EscapedValue { get; set; }
+		/// <summary> The text with all entity references resloved </summary>
 		public string Value { get; set; }
 		
 		/// <inheritdoc/>
@@ -990,8 +963,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (this.ReadCallID == source.ReadCallID) return;
 			base.UpdateDataFrom(source);
 			RawText src = (RawText)source;
-			if (this.Value != src.Value) {
+			if (this.EscapedValue != src.EscapedValue ||
+			    this.Value != src.Value)
+			{
 				OnChanging();
+				this.EscapedValue = src.EscapedValue;
 				this.Value = src.Value;
 				OnChanged();
 			}
@@ -1000,7 +976,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("[{0} Text.Length={1}]", base.ToString(), this.Value.Length);
+			return string.Format("[{0} Text.Length={1}]", base.ToString(), this.EscapedValue.Length);
 		}
 	}
 }

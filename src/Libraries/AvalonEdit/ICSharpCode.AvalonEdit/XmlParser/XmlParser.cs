@@ -8,7 +8,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 
 using ICSharpCode.AvalonEdit.Document;
 
@@ -507,16 +509,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		bool IsValidName(string name)
-		{
-			try {
-				System.Xml.XmlConvert.VerifyName(name);
-				return true;
-			} catch (System.Xml.XmlException) {
-				return false;
-			}
-		}
-		
 		string GetText(int start, int end)
 		{
 			if (end > currentLocation) throw new Exception("Reading ahead of current location");
@@ -596,7 +588,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						element.AddChild(content);
 						RawTag endTag = content as RawTag;
 						if (endTag != null && endTag.IsEndTag) {
-							if (endTag.Name != element.StartTag.Name) {
+							if (endTag != null && endTag.Name != element.StartTag.Name) {
 								OnSyntaxError(element, endTag.StartOffset + 2, endTag.StartOffset + 2 + endTag.Name.Length, "Name '{0}' expected.  End tag must have same name as start tag.", element.StartTag.Name);
 							}
 							break;
@@ -855,7 +847,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			// Read attribute value
 			int start = currentLocation;
 			char quoteChar = TryPeek('"') ? '"' : '\'';
+			bool startsWithQuote;
 			if (TryRead(quoteChar)) {
+				startsWithQuote = true;
 				int valueStart = currentLocation;
 				TryMoveToAnyOf(quoteChar, '<');
 				if (TryRead(quoteChar)) {
@@ -880,6 +874,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					OnSyntaxError(attr, "Quote {0} expected", quoteChar);
 				}
 			} else {
+				startsWithQuote = false;
 				int valueStart = currentLocation;
 				ReadAttributeValue(null);
 				TryRead('\"');
@@ -891,6 +886,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				}
 			}
 			attr.QuotedValue = GetText(start, currentLocation);
+			attr.Value = Unquote(attr.QuotedValue);
+			attr.Value = Dereference(attr, attr.Value, startsWithQuote ? start + 1 : start);
 			
 			attr.EndOffset = currentLocation;
 			
@@ -943,7 +940,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			RawText text = new RawText() {
 				StartOffset = start,
 				EndOffset = end,
-				Value = GetText(start, end),
+				EscapedValue = GetText(start, end),
 				Type = RawTextType.Other
 			};
 			
@@ -951,7 +948,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return text;
 		}
 		
-		const int maxEntityLenght = 12; // The longest build-in one is 10 ("&#x10FFFF;")
+		const int maxEntityLength = 12; // The longest build-in one is 10 ("&#1114111;")
 		const int maxTextFragmentSize = 8;
 		const int lookAheadLenght = (3 * maxTextFragmentSize) / 2; // More so that we do not get small "what was inserted" fragments
 		
@@ -980,7 +977,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				// we hit that chache point.  It is expensive so it is off for the first run
 				if (lookahead) {
 					int nextFragmentIndex = GetStartOfCachedObject<RawText>(t => t.Type == type, currentLocation, lookAheadLenght);
-					if (nextFragmentIndex != -1) {
+					// Found and would fit whole entity
+					if (nextFragmentIndex != -1 && nextFragmentIndex > currentLocation + maxEntityLength) {
 						fragmentEnd = Math.Min(nextFragmentIndex, inputLength);
 						Log("Parsing only text ({0}-{1}) because later text was already processed", currentLocation, fragmentEnd);
 					}
@@ -1044,7 +1042,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					// We have to continue reading more text fragments
 					
 					// If there is entity reference, make sure the next segment starts with it to prevent framentation
-					int entitySearchStart = Math.Max(start + 1 /* data for us */, currentLocation - maxEntityLenght);
+					int entitySearchStart = Math.Max(start + 1 /* data for us */, currentLocation - maxEntityLength);
 					int entitySearchLength = currentLocation - entitySearchStart;
 					if (entitySearchLength > 0) {
 						// Note that LastIndexOf works backward
@@ -1055,10 +1053,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					}
 				}
 				
-				text.Value = GetText(start, currentLocation);
+				text.EscapedValue = GetText(start, currentLocation);
+				if (type == RawTextType.CharacterData) {
+					text.Value = Dereference(text, text.EscapedValue, start);
+				} else {
+					text.Value = text.EscapedValue;
+				}
 				text.EndOffset = currentLocation;
 				
-				if (text.Value.Length > 0) {
+				if (text.EscapedValue.Length > 0) {
 					OnParsed(text);
 					yield return text;
 				}
@@ -1068,5 +1071,145 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				}
 			}
 		}
+		
+		#region Helper methods
+		
+		static bool IsValidName(string name)
+		{
+			try {
+				System.Xml.XmlConvert.VerifyName(name);
+				return true;
+			} catch (System.Xml.XmlException) {
+				return false;
+			}
+		}
+		
+		/// <summary> Remove quoting from the given string </summary>
+		static string Unquote(string quoted)
+		{
+			if (string.IsNullOrEmpty(quoted)) return string.Empty;
+			char first = quoted[0];
+			if (quoted.Length == 1) return (first == '"' || first == '\'') ? string.Empty : quoted;
+			char last  = quoted[quoted.Length - 1];
+			if (first == '"' || first == '\'') {
+				if (first == last) {
+					// Remove both quotes
+					return quoted.Substring(1, quoted.Length - 2);
+				} else {
+					// Remove first quote
+					return quoted.Remove(0, 1);
+				}
+			} else {
+				if (last == '"' || last == '\'') {
+					// Remove last quote
+					return quoted.Substring(0, quoted.Length - 1);
+				} else {
+					// Keep whole string
+					return quoted;
+				}
+			}
+		}
+		
+		string Dereference(RawObject owner, string text, int textLocation)
+		{
+			StringBuilder sb = null;  // The dereferenced text so far (all up to 'curr')
+			int curr = 0;
+			while(true) {
+				// Reached end of input
+				if (curr == text.Length) {
+					if (sb != null) {
+						return sb.ToString();
+					} else {
+						return text;
+					}
+				}
+				
+				// Try to find reference
+				int start = text.IndexOf('&', curr);
+				
+				// No more references found
+				if (start == -1) {
+					if (sb != null) {
+						sb.Append(text, curr, text.Length - curr); // Add rest
+						return sb.ToString();
+					} else {
+						return text;
+					}
+				}
+				
+				// Append text before the enitiy reference
+				if (sb == null) sb = new StringBuilder(text.Length);
+				sb.Append(text, curr, start - curr);
+				curr = start;
+				
+				// Process the entity
+				int errorLoc = textLocation + sb.Length;
+				          
+				// Find entity name
+				int end = text.IndexOfAny(new char[] {'&', ';'}, start + 1, Math.Min(maxEntityLength, text.Length - (start + 1)));
+				if (end == -1 || text[end] == '&') {
+					// Not found
+					OnSyntaxError(owner, errorLoc, errorLoc + 1, "Entity reference must be terminated with ';'");
+					// Keep '&'
+					sb.Append('&');
+					curr++;
+					continue;  // Restart and next character location
+				}
+				string name = text.Substring(start + 1, end - (start + 1));
+				
+				// Resolve the name
+				string replacement;
+				if (name == "amp") {
+					replacement = "&";
+				} else if (name == "lt") {
+					replacement = "<";
+				} else if (name == "gt") {
+					replacement = ">";
+				} else if (name == "apos") {
+					replacement = "'";
+				} else if (name == "quot") {
+					replacement = "\"";
+				} else if (name.Length > 0 && name[0] == '#') {
+					int num;
+					if (name.Length > 1 && name[1] == 'x') {
+						if (!int.TryParse(name.Substring(2), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture.NumberFormat, out num)) {
+							num = -1;
+							OnSyntaxError(owner, errorLoc + 3, errorLoc + 1 + name.Length, "Hexadecimal code of unicode character expected");
+						}
+					} else {
+						if (!int.TryParse(name.Substring(1), NumberStyles.None, CultureInfo.InvariantCulture.NumberFormat, out num)) {
+							num = -1;
+							OnSyntaxError(owner, errorLoc + 2, errorLoc + 1 + name.Length, "Numeric code of unicode character expected");
+						}
+					}
+					if (num != -1) {
+						try {
+							replacement = char.ConvertFromUtf32(num);
+						} catch (ArgumentOutOfRangeException) {
+							replacement = null;
+							OnSyntaxError(owner, errorLoc + 2, errorLoc + 1 + name.Length, "Invalid unicode character U+{0:X} ({0})", num);
+						}
+					} else {
+						replacement = null;
+					}
+				} else {
+					replacement = null;
+					OnSyntaxError(owner, errorLoc, errorLoc + 1 + name.Length + 1, "Unknown entity reference '{0}'", name);
+				}
+				
+				// Append the replacement to output
+				if (replacement != null) {
+					sb.Append(replacement);
+				} else {
+					sb.Append('&');
+					sb.Append(name);
+					sb.Append(';');
+				}
+				curr = end + 1;
+				continue;
+			}
+		}
+		
+		#endregion
 	}
 }

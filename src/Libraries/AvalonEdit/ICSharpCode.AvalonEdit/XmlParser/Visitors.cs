@@ -115,7 +115,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> Visit RawText </summary>
 		public override void VisitText(RawText text)
 		{
-			sb.Append(text.Value);
+			sb.Append(text.EscapedValue);
 		}
 	}
 }
