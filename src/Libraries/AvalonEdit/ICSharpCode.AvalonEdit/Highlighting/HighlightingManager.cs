@@ -151,14 +151,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 						Debug.Assert(xshd.Extensions.Count == 0);
 					
 					// round-trip xshd:
-					using (XmlTextWriter writer = new XmlTextWriter("c:\\temp\\" + resourceName, System.Text.Encoding.UTF8)) {
+					string resourceFileName = Path.Combine(Path.GetTempPath(), resourceName);
+					using (XmlTextWriter writer = new XmlTextWriter(resourceFileName, System.Text.Encoding.UTF8)) {
 						writer.Formatting = Formatting.Indented;
 						new Xshd.SaveXshdVisitor(writer).WriteDefinition(xshd);
 					}
-					using (FileStream fs = File.Create("c:\\temp\\" + resourceName + ".bin")) {
+					using (FileStream fs = File.Create(resourceFileName + ".bin")) {
 						new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(fs, xshd);
 					}
-					using (FileStream fs = File.Create("c:\\temp\\" + resourceName + ".compiled")) {
+					using (FileStream fs = File.Create(resourceFileName + ".compiled")) {
 						new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(fs, Xshd.HighlightingLoader.Load(xshd, this));
 					}
 					
