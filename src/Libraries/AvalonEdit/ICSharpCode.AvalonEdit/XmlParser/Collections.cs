@@ -12,9 +12,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 
-// Missing XML comment
-#pragma warning disable 1591
-
 namespace ICSharpCode.AvalonEdit.XmlParser
 {
 	/// <summary>
@@ -23,8 +20,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public class ChildrenCollection<T>: Collection<T>, INotifyCollectionChanged
 	{
+		/// <summary> Occurs when the collection is changed </summary>
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		
+		/// <summary> Raises <see cref="CollectionChanged"/> event </summary>
 		protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			if (CollectionChanged != null) {
@@ -32,21 +31,25 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		/// <inheritdoc/>
 		protected override void ClearItems()
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		protected override void InsertItem(int index, T item)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		protected override void RemoveItem(int index)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		protected override void SetItem(int index, T item)
 		{
 			throw new NotSupportedException();
@@ -173,8 +176,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		Predicate<object> condition;
 		List<int> srcPtrs = new List<int>(); // Index to the original collection
 		
+		/// <summary> Wrap the given collection.  Items of type other then T are filtered </summary>
 		public FilteredCollection(C source) : this (source, x => true) { }
 		
+		/// <summary> Wrap the given collection.  Items of type other then T are filtered.  Items not matching the condition are filtered. </summary>
 		public FilteredCollection(C source, Predicate<object> condition)
 		{
 			this.source = source;
@@ -254,6 +259,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		C a;
 		C b;
 		
+		/// <summary> Create a wrapper containing elements of 'a' and then 'b' </summary>
 		public MergedCollection(C a, C b)
 		{
 			this.a = a;

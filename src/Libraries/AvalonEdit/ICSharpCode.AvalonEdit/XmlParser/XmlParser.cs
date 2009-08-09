@@ -922,7 +922,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				string name;
 				if (TryReadName(out name)) {
 					int nameEnd = currentLocation;
-					if (TryMoveToNonWhiteSpace() && TryPeek("=")) {
+					if (TryMoveToNonWhiteSpace() && TryRead("=") &&
+					    TryMoveToNonWhiteSpace() && TryPeekAnyOf('"', '\''))
+					{
 						// Start of attribute.  Great
 						GoBack(start);
 						return;  // Done

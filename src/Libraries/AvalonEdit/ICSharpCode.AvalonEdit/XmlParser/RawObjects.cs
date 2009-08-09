@@ -12,13 +12,12 @@ using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
-// TODO: Missing XML comment
-#pragma warning disable 1591
-
 namespace ICSharpCode.AvalonEdit.XmlParser
 {
+	/// <summary> Holds event args for event caused by <see cref="RawObject"/> </summary>
 	public class RawObjectEventArgs: EventArgs
 	{
+		/// <summary> The object that cause the event </summary>
 		public RawObject Object { get; set; }
 	}
 	
@@ -52,7 +51,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		public RawObject Parent { get; set; }
 		
-		// TODO: Performance
+		/// <summary>
+		/// Gets the document owning this object or null if orphaned
+		/// </summary>
 		public RawDocument Document {
 			get {
 				if (this.Parent != null) {
@@ -119,11 +120,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			syntaxErrors.Add(error);
 		}
 		
-		public RawObject()
+		/// <summary> Create new object </summary>
+		protected RawObject()
 		{
 			this.ReadCallID = new object();
 		}
 		
+		/// <summary> Throws exception if condition is false </summary>
 		protected static void Assert(bool condition)
 		{
 			if (!condition) {
@@ -131,14 +134,17 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		/// <summary> Recursively gets self and all nested nodes. </summary>
 		public virtual IEnumerable<RawObject> GetSelfAndAllChildren()
 		{
 			return new RawObject[] { this };
 		}
 		
+		/// <summary> Call appropriate visit method on the given visitor </summary>
 		public abstract void AcceptVisitor(IXmlVisitor visitor);
 		
-		public virtual void UpdateDataFrom(RawObject source)
+		/// <summary> Copy all data from the 'source' to this object </summary>
+		internal virtual void UpdateDataFrom(RawObject source)
 		{
 			this.ReadCallID = source.ReadCallID;
 			// In some cases we are just updating objects of that same
@@ -160,12 +166,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0}({1}-{2})", this.GetType().Name.Remove(0, 3), this.StartOffset, this.EndOffset);
 		}
 		
-		public static void LogDom(string format, params object[] args)
+		internal static void LogDom(string format, params object[] args)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("XML DOM: " + format, args));
 		}
@@ -234,6 +241,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		public ChildrenCollection<RawObject> Children { get; private set; }
 		
+		/// <summary> Create new container </summary>
 		public RawContainer()
 		{
 			this.Children = new ChildrenCollection<RawObject>();
@@ -255,7 +263,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		#endregion
 		
-		public override void UpdateDataFrom(RawObject source)
+		/// <inheritdoc/>
+		internal override void UpdateDataFrom(RawObject source)
 		{
 			if (this.ReadCallID == source.ReadCallID) return;
 			base.UpdateDataFrom(source);
@@ -263,6 +272,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			UpdateChildrenFrom(src.Children);
 		}
 		
+		/// <inheritdoc/>
 		public override IEnumerable<RawObject> GetSelfAndAllChildren()
 		{
 			return Enumerable.Union(
@@ -272,13 +282,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary>
-		/// Gets a child at the given document offset.
+		/// Gets a child fully containg the given offset.
 		/// Goes recursively down the tree.
+		/// Specail case if at the end of attribute
 		/// </summary>
 		public RawObject GetChildAtOffset(int offset)
 		{
 			foreach(RawObject child in this.Children) {
-				if (child.StartOffset <= offset && offset <= child.EndOffset) {
+				if (child is RawAttribute && offset == child.EndOffset) return child;
+				if (child.StartOffset < offset && offset < child.EndOffset) {
 					if (child is RawContainer) {
 						return ((RawContainer)child).GetChildAtOffset(offset);
 					} else {
@@ -591,16 +603,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (ObjectChanged != null) ObjectChanged(this, new RawObjectEventArgs() { Object = obj } );
 		}
 		
+		/// <summary> Create new document </summary>
 		public RawDocument()
 		{
 			this.SyntaxErrors = new TextSegmentCollection<SyntaxError>();
 		}
 		
+		/// <inheritdoc/>
 		public override void AcceptVisitor(IXmlVisitor visitor)
 		{
 			visitor.VisitDocument(this);
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("[{0} Chld:{1}]", base.ToString(), this.Children.Count);
@@ -612,27 +627,41 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public class RawTag: RawContainer
 	{
+		/// <summary> These identify the start of DTD elements </summary>
 		public static readonly string[] DTDNames = new string[] {"<!DOCTYPE", "<!NOTATION", "<!ELEMENT", "<!ATTLIST", "<!ENTITY"};
 		
+		/// <summary> Opening bracket - usually "&lt;" </summary>
 		public string OpeningBracket { get; set; }
+		/// <summary> Name following the opening bracket </summary>
 		public string Name { get; set; }
+		/// <summary> Opening bracket - usually "&gt;" </summary>
 		public string ClosingBracket { get; set; }
 		
 		// Exactly one of the folling will be true
+		
+		/// <summary> True if tag starts with "&lt;" </summary>
 		public bool IsStartTag              { get { return OpeningBracket == "<"; } }
+		/// <summary> True if tag starts with "&lt;/" </summary>
 		public bool IsEndTag                { get { return OpeningBracket == "</"; } }
+		/// <summary> True if tag starts with "&lt;?" </summary>
 		public bool IsProcessingInstruction { get { return OpeningBracket == "<?"; } }
+		/// <summary> True if tag starts with "&lt;!--" </summary>
 		public bool IsComment               { get { return OpeningBracket == "<!--"; } }
+		/// <summary> True if tag starts with "&lt;![CDATA[" </summary>
 		public bool IsCData                 { get { return OpeningBracket == "<![CDATA["; } }
+		/// <summary> True if tag starts with one of the DTD starts </summary>
 		public bool IsDocumentType          { get { return DTDNames.Contains(OpeningBracket); } }
+		/// <summary> True if tag starts with "&lt;!" </summary>
 		public bool IsUnknownBang           { get { return OpeningBracket == "<!"; } }
 		
+		/// <inheritdoc/>
 		public override void AcceptVisitor(IXmlVisitor visitor)
 		{
 			visitor.VisitTag(this);
 		}
 		
-		public override void UpdateDataFrom(RawObject source)
+		/// <inheritdoc/>
+		internal override void UpdateDataFrom(RawObject source)
 		{
 			if (this.ReadCallID == source.ReadCallID) return;
 			base.UpdateDataFrom(source);
@@ -649,6 +678,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("[{0} '{1}{2}{3}' Attr:{4}]", base.ToString(), this.OpeningBracket, this.Name, this.ClosingBracket, this.Children.Count);
@@ -797,11 +827,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		#endregion
 		
+		/// <inheritdoc/>
 		public override void AcceptVisitor(IXmlVisitor visitor)
 		{
 			visitor.VisitElement(this);
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("[{0} '{1}{2}{3}' Attr:{4} Chld:{5}]", base.ToString(), this.StartTag.OpeningBracket, this.StartTag.Name, this.StartTag.ClosingBracket, this.StartTag.Children.Count, this.Children.Count);
@@ -821,6 +853,18 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public string QuotedValue { get; set; }
 		
 		#region Helpper methods
+		
+		/// <summary> The element containing this attribute </summary>
+		/// <returns> Null if orphaned </returns>
+		public RawElement ParentElement {
+			get {
+				RawTag tag = this.Parent as RawTag;
+				if (tag != null) {
+					return tag.Parent as RawElement;
+				}
+				return null;
+			}
+		}
 		
 		/// <summary> The part of name before ":".  Empty string if not found </summary>
 		public string Prefix {
@@ -844,12 +888,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			get {
 				if (string.IsNullOrEmpty(this.Prefix)) return NoNamespace;
 				
-				RawTag tag = this.Parent as RawTag;
-				if (tag != null) {
-					RawElement elem = tag.Parent as RawElement;
-					if (elem != null) {
-						return elem.ReslovePrefix(this.Prefix);
-					}
+				RawElement elem = this.ParentElement;
+				if (elem != null) {
+					return elem.ReslovePrefix(this.Prefix);
 				}
 				return NoNamespace; // Orphaned attribute
 			}
@@ -871,12 +912,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		#endregion
 		
+		/// <inheritdoc/>
 		public override void AcceptVisitor(IXmlVisitor visitor)
 		{
 			visitor.VisitAttribute(this);
 		}
 		
-		public override void UpdateDataFrom(RawObject source)
+		/// <inheritdoc/>
+		internal override void UpdateDataFrom(RawObject source)
 		{
 			if (this.ReadCallID == source.ReadCallID) return;
 			base.UpdateDataFrom(source);
@@ -893,12 +936,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("[{0} '{1}{2}{3}']", base.ToString(), this.Name, this.EqualsSign, this.QuotedValue);
 		}
 	}
 	
+	/// <summary> Identifies the context in which the text occured </summary>
 	public enum RawTextType
 	{
 		/// <summary> Ends with non-whitespace </summary>
@@ -928,15 +973,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public class RawText: RawObject
 	{
+		/// <summary> The context in which the text occured </summary>
 		public RawTextType Type { get; set; }
+		/// <summary> The text exactly as in source </summary>
 		public string Value { get; set; }
 		
+		/// <inheritdoc/>
 		public override void AcceptVisitor(IXmlVisitor visitor)
 		{
 			visitor.VisitText(this);
 		}
 		
-		public override void UpdateDataFrom(RawObject source)
+		/// <inheritdoc/>
+		internal override void UpdateDataFrom(RawObject source)
 		{
 			if (this.ReadCallID == source.ReadCallID) return;
 			base.UpdateDataFrom(source);
@@ -948,6 +997,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("[{0} Text.Length={1}]", base.ToString(), this.Value.Length);
