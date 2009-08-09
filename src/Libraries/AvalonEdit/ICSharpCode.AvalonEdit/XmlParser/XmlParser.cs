@@ -88,8 +88,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	public class XmlParser
 	{
 		// TODO: Simple tag matching heuristic
-		// TODO: Delete some read functions and optimize performance
-		// TODO: Rewrite ReadText
 		
 		RawDocument userDocument;
 		TextDocument textDocument;
@@ -166,7 +164,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			currentLocation = 0;
 			maxTouchedLocation = 0;
-			readingEnd = input.Length;
+			inputLength = input.Length;
 			
 			RawDocument parsedDocument = ReadDocument();
 			// Just in case parse method was called redundantly
@@ -281,8 +279,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			                   });
 		}
 		
+		#region Text reading methods
+		
 		string input;
-		int    readingEnd;
+		int    inputLength;
 		// Do not ever set the value from parsing methods
 		// most importantly do not backtrack except with GoBack(int)
 		int    currentLocation;
@@ -295,24 +295,24 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		bool IsEndOfFile()
 		{
-			return currentLocation == readingEnd;
+			return currentLocation == inputLength;
 		}
 		
 		bool HasMoreData()
 		{
-			return currentLocation < readingEnd;
+			return currentLocation < inputLength;
 		}
 		
 		void AssertHasMoreData()
 		{
-			if (currentLocation == readingEnd) {
-				throw new Exception("Unexpected end of files");
+			if (currentLocation == inputLength) {
+				throw new Exception("Unexpected end of file");
 			}
 		}
 		
 		bool TryMoveNext()
 		{
-			if (currentLocation == readingEnd) return false;
+			if (currentLocation == inputLength) return false;
 			
 			currentLocation++;
 			return true;
@@ -327,9 +327,21 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		bool TryRead(char c)
 		{
-			if (currentLocation == readingEnd) return false;
+			if (currentLocation == inputLength) return false;
 			
 			if (input[currentLocation] == c) {
+				currentLocation++;
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		bool TryReadAnyOf(params char[] c)
+		{
+			if (currentLocation == inputLength) return false;
+			
+			if (c.Contains(input[currentLocation])) {
 				currentLocation++;
 				return true;
 			} else {
@@ -347,21 +359,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary> Returns true if at least one character was read </summary>
-		bool TryReadPartOf(string text)
-		{
-			if (TryPeek(text[0])) {
-				// Keep reading until character differs or we have end of file
-				foreach(char c in text) if (!TryRead(c)) break;
-				return true;
-			} else {
-				return false;
-			}
-		}
-		
 		bool TryPeekPrevious(char c, int back)
 		{
-			if (currentLocation - back == readingEnd) return false;
+			if (currentLocation - back == inputLength) return false;
 			if (currentLocation - back < 0 ) return false;
 			
 			return input[currentLocation - back] == c;
@@ -369,14 +369,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		bool TryPeek(char c)
 		{
-			if (currentLocation == readingEnd) return false;
+			if (currentLocation == inputLength) return false;
 			
 			return input[currentLocation] == c;
 		}
 		
 		bool TryPeekAnyOf(params char[] chars)
 		{
-			if (currentLocation == readingEnd) return false;
+			if (currentLocation == inputLength) return false;
 			
 			return chars.Contains(input[currentLocation]);
 		}
@@ -386,69 +386,87 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (!TryPeek(text[0])) return false; // Early exit
 			
 			maxTouchedLocation = Math.Max(maxTouchedLocation, currentLocation + (text.Length - 1));
-			// The following comparison 'touches' the end of file
-			if (currentLocation + text.Length > readingEnd) return false;
+			// The following comparison 'touches' the end of file - it does depend on the end being there
+			if (currentLocation + text.Length > inputLength) return false;
 			
 			return input.Substring(currentLocation, text.Length) == text;
 		}
 		
-		bool TryMoveTo(char c)
+		bool TryPeekWhiteSpace()
 		{
-			while(true) {
-				if (currentLocation == readingEnd) return false;
-				if (input[currentLocation] == c) return true;
-				currentLocation++;
-			}
+			if (currentLocation == inputLength) return false;
+			
+			char c = input[currentLocation];
+			return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 		}
 		
-		bool TryMoveTo(string text)
+		// The move functions do not have to move if already at target
+		// The move functions allow 'overriding' of the document length
+		
+		bool TryMoveTo(char c)
 		{
-			while(true) {
-				if (!TryMoveTo(text[0])) return false; // End of file
-				if (TryPeek(text)) return true;
-				currentLocation++;
+			return TryMoveTo(c, inputLength);
+		}
+		
+		bool TryMoveTo(char c, int inputLength)
+		{
+			if (currentLocation == inputLength) return false;
+			int index = input.IndexOf(c, currentLocation, inputLength - currentLocation);
+			if (index != -1) {
+				currentLocation = index;
+				return true;
+			} else {
+				currentLocation = inputLength;
+				return false;
 			}
 		}
 		
 		bool TryMoveToAnyOf(params char[] c)
 		{
-			while(true) {
-				if (currentLocation == readingEnd) return false;
-				if (c.Contains(input[currentLocation])) return true;
-				currentLocation++;
+			return TryMoveToAnyOf(c, inputLength);
+		}
+		
+		bool TryMoveToAnyOf(char[] c, int inputLength)
+		{
+			if (currentLocation == inputLength) return false;
+			int index = input.IndexOfAny(c, currentLocation, inputLength - currentLocation);
+			if (index != -1) {
+				currentLocation = index;
+				return true;
+			} else {
+				currentLocation = inputLength;
+				return false;
+			}
+		}
+		
+		bool TryMoveTo(string text)
+		{
+			return TryMoveTo(text, inputLength);
+		}
+		
+		bool TryMoveTo(string text, int inputLength)
+		{
+			if (currentLocation == inputLength) return false;
+			int index = input.IndexOf(text, currentLocation, inputLength - currentLocation, StringComparison.Ordinal);
+			if (index != -1) {
+				maxTouchedLocation = index + text.Length - 1;
+				currentLocation = index;
+				return true;
+			} else {
+				currentLocation = inputLength;
+				return false;
 			}
 		}
 		
 		bool TryMoveToNonWhiteSpace()
 		{
-			while (TryPeekWhiteSpace()) TryMoveNext();
+			return TryMoveToNonWhiteSpace(inputLength);
+		}
+		
+		bool TryMoveToNonWhiteSpace(int inputLength)
+		{
+			while(TryPeekWhiteSpace()) currentLocation++;
 			return HasMoreData();
-		}
-		
-		string GetText(int start, int end)
-		{
-			if (start == readingEnd && end == readingEnd) {
-				return string.Empty;
-			} else {
-				return GetCachedString(input.Substring(start, end - start));
-			}
-		}
-		
-		static char[] WhiteSpaceChars = new char[] {' ', '\n', '\r', '\t'};
-		static char[] WhiteSpaceAndReservedChars = new char[] {' ', '\n', '\r', '\t', '=', '\'', '"', '<', '>', '/', '?'};
-		
-		bool TryPeekWhiteSpace()
-		{
-			if (currentLocation == readingEnd) return false;
-			
-			return WhiteSpaceChars.Contains(input[currentLocation]);
-		}
-		
-		bool TryPeekNameChar()
-		{
-			if (currentLocation == readingEnd) return false;
-			
-			return !WhiteSpaceAndReservedChars.Contains(input[currentLocation]);
 		}
 		
 		/// <summary>
@@ -457,19 +475,34 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		///   ""         End of file
 		///   " \n\r\t"  Whitesapce
 		///   "=\'\""    Attribute value
-		///   "&lt;"     Openning Tag
-		///   ">/?"      Closing Tag
+		///   "&lt;>/?"  Tags
 		/// </summary>
+		/// <returns> True if read at least one character </returns>
 		bool TryReadName(out string res)
 		{
 			int start = currentLocation;
-			TryMoveToAnyOf(WhiteSpaceAndReservedChars.ToArray());
+			// Keep reading up to invalid character
+			while(true) {
+				if (currentLocation == inputLength) break;              // Reject end of file
+				char c = input[currentLocation];
+				if (0x41 <= (int)c && (int)c <= 0x7A) {                 // Accpet 0x41-0x7A (A-Z[\]^_`a-z)
+					currentLocation++;
+					continue;
+				}
+				if (c == ' ' || c == '\n' || c == '\r' || c == '\t' ||  // Reject whitesapce
+				    c == '=' || c == '\'' || c == '"'  ||               // Reject attributes
+				    c == '<' || c == '>'  || c == '/'  || c == '?') {   // Reject tags
+					break;
+				} else {
+					currentLocation++;
+					continue;                                            // Accept other character
+				}
+			}
 			if (start == currentLocation) {
 				res = null;
 				return false;
 			} else {
 				res = GetText(start, currentLocation);
-				// TODO: Check that it is valid XML name
 				return true;
 			}
 		}
@@ -483,6 +516,18 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				return false;
 			}
 		}
+		
+		string GetText(int start, int end)
+		{
+			if (end > currentLocation) throw new Exception("Reading ahead of current location");
+			if (start == inputLength && end == inputLength) {
+				return string.Empty;
+			} else {
+				return GetCachedString(input.Substring(start, end - start));
+			}
+		}
+		
+		#endregion
 		
 		/// <summary>
 		/// Context: any
@@ -906,8 +951,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		const int maxEntityLenght = 12; // The longest build-in one is 10 ("&#x10FFFF;")
 		const int maxTextFragmentSize = 8;
-		const int lookAheadLenght = (3 * maxTextFragmentSize) / 2;
-		const int backtrackLenght = 4;  // 2: get back over "]]"   1: so that we have some data   1: safety
+		const int lookAheadLenght = (3 * maxTextFragmentSize) / 2; // More so that we do not get small "what was inserted" fragments
 		
 		/// <summary>
 		/// Reads text and optionaly separates it into fragments.
@@ -916,8 +960,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		IEnumerable<RawObject> ReadText(RawTextType type)
 		{
-			// TODO: Rewrite
-			
 			bool lookahead = false;
 			while(true) {
 				RawText text;
@@ -929,18 +971,16 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				text.Type = type;
 				
 				// Limit the reading to just a few characters
-				int realReadingEnd = readingEnd;
-				readingEnd = Math.Min(realReadingEnd, currentLocation + maxTextFragmentSize);
+				// (the first character not to be read)
+				int fragmentEnd = Math.Min(currentLocation + maxTextFragmentSize, inputLength);
 				
 				// Look if some futher text has been already processed and align so that
 				// we hit that chache point.  It is expensive so it is off for the first run
 				if (lookahead) {
 					int nextFragmentIndex = GetStartOfCachedObject<RawText>(t => t.Type == type, currentLocation, lookAheadLenght);
 					if (nextFragmentIndex != -1) {
-						// Consider adding "aaa]" before cached fragment "]>bbb"
-						// We must not use cache then - so the overshoot acutally makes sense
-						readingEnd = Math.Min(realReadingEnd, nextFragmentIndex + backtrackLenght);
-						Log("Parsing only text ({0}-{1}) because later text was already processed", currentLocation, readingEnd);
+						fragmentEnd = Math.Min(nextFragmentIndex, inputLength);
+						Log("Parsing only text ({0}-{1}) because later text was already processed", currentLocation, fragmentEnd);
 					}
 				}
 				lookahead = true;
@@ -950,11 +990,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				
 				// Try move to the terminator given by the context
 				if (type == RawTextType.WhiteSpace) {
-					TryMoveToNonWhiteSpace();
+					TryMoveToNonWhiteSpace(fragmentEnd);
 				} else if (type == RawTextType.CharacterData) {
 					while(true) {
-						TryMoveToAnyOf('<', ']');
-						if (IsEndOfFile()) break;
+						if (!TryMoveToAnyOf(new char[] {'<', ']'}, fragmentEnd)) break; // End of fragment
 						if (TryPeek('<')) break;
 						if (TryPeek(']')) {
 							if (TryPeek("]]>")) {
@@ -963,50 +1002,57 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 							TryMoveNext();
 							continue;
 						}
+						throw new Exception("Infinite loop");
 					}
 				} else 	if (type == RawTextType.Comment) {
+					// Do not report too many errors
+					bool errorReported = false;
 					while(true) {
-						if (TryMoveTo('-')) {
-							if (TryPeek("-->")) break;
-							if (TryPeek("--")) {
-								OnSyntaxError(text, currentLocation, currentLocation + 2, "'--' is not allowed in comment");
-							}
-							TryMoveNext();
+						if (!TryMoveTo('-', fragmentEnd)) break; // End of fragment
+						if (TryPeek("-->")) break;
+						if (TryPeek("--") && !errorReported) {
+							OnSyntaxError(text, currentLocation, currentLocation + 2, "'--' is not allowed in comment");
+							errorReported = true;
 						}
-						if (IsEndOfFile()) break;
+						TryMoveNext();
 					}
 				} else if (type == RawTextType.CData) {
-					TryMoveTo("]]>");
+					while(true) {
+						// We can not use use TryMoveTo("]]>", fragmentEnd) because it may incorectly accept "]" at the end of fragment
+						if (!TryMoveTo(']', fragmentEnd)) break; // End of fragment
+						if (TryPeek("]]>")) break;
+						TryMoveNext();
+					}
 				} else if (type == RawTextType.ProcessingInstruction) {
-					TryMoveTo("?>");
+					while(true) {
+						if (!TryMoveTo('?', fragmentEnd)) break; // End of fragment
+						if (TryPeek("?>")) break;
+						TryMoveNext();
+					}
 				} else if (type == RawTextType.UnknownBang) {
-					TryMoveToAnyOf('<', '>');
+					TryMoveToAnyOf(new char[] {'<', '>'}, fragmentEnd);
 				} else {
 					throw new Exception("Uknown type " + type);
 				}
 				
 				// Terminal found or real end was reached;
-				bool finished = currentLocation < readingEnd || currentLocation == realReadingEnd;
-				
-				// Finished reading - restore the old reading end
-				readingEnd = realReadingEnd;
+				bool finished = currentLocation < fragmentEnd || IsEndOfFile();
 				
 				if (!finished) {
 					// We have to continue reading more text fragments
 					
-					// We have to backtrack a bit because we just might ended with "]]" and the ">" was cut
-					int backtrack = currentLocation - backtrackLenght;
-					
 					// If there is entity reference, make sure the next segment starts with it to prevent framentation
-					int entitySearchStart = Math.Max(start + 1 /* data for us */, backtrack - maxEntityLenght);
-					// Note that LastIndexOf works backward
-					int entityIndex = input.LastIndexOf('&', backtrack, backtrack - entitySearchStart);
-					if (entityIndex != -1) {
-						backtrack = entityIndex;
+					int entitySearchStart = Math.Max(start + 1 /* data for us */, currentLocation - maxEntityLenght);
+					int entitySearchLength = currentLocation - entitySearchStart;
+					if (entitySearchLength > 0) {
+						// Note that LastIndexOf works backward
+						int entityIndex = input.LastIndexOf('&', currentLocation - 1, entitySearchLength);
+						if (entityIndex != -1) {
+							GoBack(entityIndex);
+						}
 					}
-					
-					GoBack(Math.Max(start + 1, backtrack)); // Max-just in case
 				}
+				
 				text.Value = GetText(start, currentLocation);
 				text.EndOffset = currentLocation;
 				
