@@ -176,14 +176,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="action">The action that caused this event. This can only be set to <see cref="NotifyBindingsChangedAction.EnforceUpdates" /></param>
 		public NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction action)
 		{
-			if(action != NotifyBindingsChangedAction.EnforceUpdates) {
-				throw new ArgumentException(
-					string.Format(
-						"This constructor only supports '{0}' action (got '{1}')",
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), NotifyBindingsChangedAction.EnforceUpdates),
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), action)
-					   ));
-			}
+			ValidateAction(NotifyBindingsChangedAction.EnforceUpdates, action);
 			
 			_action = action;
 		}
@@ -198,14 +191,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="newElements">Collection of <see cref="Type" />s associated with provided name after modification</param>
 		public NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction action, string typeName, ICollection<Type> oldTypes, ICollection<Type> newTypes)
 		{
-			if(action != NotifyBindingsChangedAction.NamedTypeModified) {
-				throw new ArgumentException(
-					string.Format(
-						"This constructor only supports '{0}' action (got '{1}')",
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), NotifyBindingsChangedAction.NamedTypeModified),
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), action)
-					   ));
-			}
+			ValidateAction(NotifyBindingsChangedAction.NamedTypeModified, action);
 			
 			if(typeName == null) {
 				throw new ArgumentNullException("typeName");
@@ -249,14 +235,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="newElements">Collection of <see cref="UIElement" /> instances associated with provided name after modification</param>
 		public NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction action, string elementName, ICollection<UIElement> oldElements, ICollection<UIElement> newElements)
 		{
-			if(action != NotifyBindingsChangedAction.NamedInstanceModified) {
-				throw new ArgumentException(
-					string.Format(
-						"This constructor only supports '{0}' action (got '{1}')",
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), NotifyBindingsChangedAction.NamedInstanceModified),
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), action)
-					   ));
-			}
+			ValidateAction(NotifyBindingsChangedAction.NamedInstanceModified, action);
 			
 			if(elementName == null) {
 				throw new ArgumentNullException("elementName");
@@ -297,14 +276,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="routedCommandName">Registered or unregistered <see cref="RoutedUICommand" /> name</param>
 		public NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction action, string routedCommandName)
 		{
-			if(action != NotifyBindingsChangedAction.RoutedUICommandModified) {
-				throw new ArgumentException(
-					string.Format(
-						"This constructor only supports '{0}' action (got '{1}')",
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), NotifyBindingsChangedAction.RoutedUICommandModified),
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), action)
-					   ));
-			}
+			ValidateAction(NotifyBindingsChangedAction.RoutedUICommandModified, action);
 			
 			if(routedCommandName == null) {
 				throw new ArgumentNullException("routedCommandName");
@@ -322,14 +294,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="templates">Collection of <see cref="BindingInfoTemplate" />s describing modified <see cref="CommandBindingInfo" />s or <see cref="InputBindingInfo" />s</param>
 		public NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction action, IEnumerable<BindingInfoTemplate> templates)
 		{
-			if(action != NotifyBindingsChangedAction.BindingInfoModified) {
-				throw new ArgumentException(
-					string.Format(
-						"This constructor only supports '{0}' action (got '{1}')",
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), NotifyBindingsChangedAction.BindingInfoModified),
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), action)
-					   ));
-			}
+			ValidateAction(NotifyBindingsChangedAction.BindingInfoModified, action);
 			
 			if(templates == null) {
 				throw new ArgumentNullException("templates");
@@ -349,14 +314,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="attachedInstances">Collection instances (un)registered in <see cref="BindingGroup" /></param>
 		public NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction action, BindingGroupCollection groups, ICollection<UIElement> attachedInstances)
 		{
-			if(action != NotifyBindingsChangedAction.GroupAttachmendsModified) {
-				throw new ArgumentException(
-					string.Format(
-						"This constructor only supports '{0}' action (got '{1}')",
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), NotifyBindingsChangedAction.GroupAttachmendsModified),
-					    Enum.GetName(typeof(NotifyBindingsChangedAction), action)
-					   ));
-			}
+			ValidateAction(NotifyBindingsChangedAction.GroupAttachmendsModified, action);
 			
 			if(groups == null) {
 				throw new ArgumentNullException("groups");
@@ -372,6 +330,17 @@ namespace ICSharpCode.Core.Presentation
 			_attachedInstances = new HashSet<UIElement>(attachedInstances);
 		}
 		
+		private void ValidateAction(NotifyBindingsChangedAction expectedAction, NotifyBindingsChangedAction receivedAction)
+		{
+			if(receivedAction != expectedAction) {
+				throw new ArgumentException(
+					string.Format(
+						"This constructor only supports '{0}' action (got '{1}')",
+					    Enum.GetName(typeof(NotifyBindingsChangedAction), expectedAction),
+					    Enum.GetName(typeof(NotifyBindingsChangedAction), receivedAction)
+					   ));
+			}
+		}
 	}
 	
 	/// <summary>

@@ -31,7 +31,6 @@ namespace ICSharpCode.Core.Presentation
 			ActiveInputBindings = new InputBindingCollection();
 			DefaultGestures = new ObservableInputGestureCollection();
 			Categories = new InputBindingCategoryCollection();
-			Groups = new BindingGroupCollection();
 		}
 		
 		/// <summary>

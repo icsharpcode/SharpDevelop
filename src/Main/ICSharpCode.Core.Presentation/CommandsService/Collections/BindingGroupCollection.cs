@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Data;
 using System.Linq;
 using System.Windows;
 
@@ -14,19 +15,88 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public class BindingGroupCollection : IObservableCollection<BindingGroup>
 	{
-		private ObservableCollection<BindingGroup> _bindingGroups = new ObservableCollection<BindingGroup>();
+		private bool forwardEvents = true;
+		
+		private ObservableCollection<BindingGroup> _bindingGroups;
 		private event NotifyCollectionChangedEventHandler _bindingGroupsCollectionChanged;
+		private bool _isReadOnly;
+		
+		/// <summary>
+		/// Creates instance of read-write <see cref="BindingGroupCollection" />
+		/// </summary>
+		public BindingGroupCollection() : this(false, null)
+		{
+		}
+		
+		/// <summary>
+		/// Creates instance of <see cref="BindingGroupCollection" />
+		/// </summary>
+		/// <param name="isReadOnly">Specifies whether collection is read-only or not</param>
+		/// <param name="groups">Prefilled groups</param>
+		public BindingGroupCollection(bool isReadOnly, ICollection<BindingGroup> groups)
+		{
+			_isReadOnly = isReadOnly;
+			
+			var observableBindingGroups = new ObservableCollection<BindingGroup>(groups == null ? new List<BindingGroup>() : groups.ToList());
+			observableBindingGroups.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e) {  
+				if(_bindingGroupsCollectionChanged != null && forwardEvents) {
+					_bindingGroupsCollectionChanged.Invoke(this, e);
+				}
+			};
+			
+			_bindingGroups = observableBindingGroups;
+		}
+		
+		/// <summary>
+		/// Gets read-only collection of attached instances
+		/// </summary>
+		public ICollection<UIElement> AttachedInstances
+		{
+			get {
+				var attachments = new HashSet<UIElement>();
+				foreach(var group in this) {
+					foreach(var groupAttachment in group.AttachedInstances) {
+						attachments.Add(groupAttachment);
+					}
+				}
+				
+				return new ReadOnlyCollection<UIElement>(attachments.ToList());
+			}
+		}
+		
+		/// <summary>
+		/// Gets single-level collection containing attached instances from this group and all sub-groups
+		/// </summary>
+		public ICollection<UIElement> FlatNestedAttachedInstances
+		{
+			get {
+				var attachments = new HashSet<UIElement>();
+				foreach(var group in this.FlatNesteGroups) {
+					foreach(var groupAttachment in group.AttachedInstances) {
+						attachments.Add(groupAttachment);
+					}
+				}
+				
+				return new ReadOnlyCollection<UIElement>(attachments.ToArray());
+			}
+		}
 		
 		/// <inheritdoc />
 		public event NotifyCollectionChangedEventHandler CollectionChanged
 		{
 			add {
+				if(_isReadOnly) {
+					throw new ReadOnlyException("This BindingGroupCollection is read-only");
+				}
+				
 				_bindingGroupsCollectionChanged += value;
-				_bindingGroups.CollectionChanged += value;
 			}
 			remove {
+				if(_isReadOnly) {
+					throw new ReadOnlyException("This BindingGroupCollection is read-only");
+				}
+				
 				_bindingGroupsCollectionChanged -= value;
-				_bindingGroups.CollectionChanged -= value;
 			}
 		}
 		
@@ -41,10 +111,7 @@ namespace ICSharpCode.Core.Presentation
 					bindingGroup.FlattenNestedGroups(bindingGroup, flatGroups);
 				}
 				
-				var flatBindingGroupCollection = new BindingGroupCollection();
-				flatBindingGroupCollection.AddRange(flatGroups);
-				
-				return flatBindingGroupCollection;
+				return new BindingGroupCollection(true, flatGroups);
 			}
 		}
 		
@@ -128,10 +195,19 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Returns returns read-only copy of <see cref="BindingGroupCollection" />
+		/// </summary>
+		/// <returns>Read-only <see cref="BindingGroupCollection" /></returns>
+		public BindingGroupCollection AsReadOnly()
+		{
+			return new BindingGroupCollection(true, this);
+		}
+		
 		/// <inheritdoc />
 		public bool IsReadOnly {
 			get {
-				return false;
+				return _isReadOnly;
 			}
 		}
 		
@@ -141,6 +217,10 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="bindingGroup"></param>
 		public void Add(BindingGroup bindingGroup)
 		{
+			if(_isReadOnly) {
+				throw new ReadOnlyException("This BindingGroupCollection is read-only");
+			}
+			
 			if(bindingGroup == null) {
 				throw new ArgumentNullException("bindingGroup");
 			}
@@ -155,20 +235,16 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public void Clear()
 		{
-			var itemsBackup = _bindingGroups;
-			
-			_bindingGroups = new ObservableCollection<BindingGroup>();
-			foreach(NotifyCollectionChangedEventHandler handler in _bindingGroupsCollectionChanged.GetInvocationList()) {
-				_bindingGroups.CollectionChanged += handler;
+			if(_isReadOnly) {
+				throw new ReadOnlyException("This BindingGroupCollection is read-only");
 			}
+
+			var groupsBackup = FlatNesteGroups.ToArray();
+			forwardEvents = false;
+			_bindingGroups.Clear();
+			forwardEvents = true;
 			
-			if(_bindingGroupsCollectionChanged != null) {
-				_bindingGroupsCollectionChanged.Invoke(
-					this,
-					new NotifyCollectionChangedEventArgs(
-						NotifyCollectionChangedAction.Remove,
-						itemsBackup));
-			}
+			InvokeCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, groupsBackup));
 		}
 		
 		/// <summary>
@@ -177,6 +253,10 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="bindingGroups"></param>
 		public void AddRange(IEnumerable<BindingGroup> bindingGroups)
 		{
+			if(_isReadOnly) {
+				throw new ReadOnlyException("This BindingGroupCollection is read-only");
+			}
+			
 			foreach(var bindingGroup in bindingGroups) {
 				Add(bindingGroup);
 			}
@@ -210,6 +290,10 @@ namespace ICSharpCode.Core.Presentation
 		/// <returns><code>True</code> if item was added; otherwise <code>false</code></returns>
 		public bool Remove(BindingGroup bindingGroup)
 		{
+			if(_isReadOnly) {
+				throw new ReadOnlyException("This BindingGroupCollection is read-only");
+			}
+			
 			return _bindingGroups.Remove(bindingGroup);
 		}
 		
@@ -224,5 +308,13 @@ namespace ICSharpCode.Core.Presentation
 		{
 			return _bindingGroups.GetEnumerator();
 		}
+		
+		private void InvokeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) 
+		{
+			if(_bindingGroupsCollectionChanged != null && forwardEvents) {
+				_bindingGroupsCollectionChanged.Invoke(this, e);
+			}
+		}
+		
 	}
 }

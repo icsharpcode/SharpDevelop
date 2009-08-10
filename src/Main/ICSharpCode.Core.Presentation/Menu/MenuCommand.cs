@@ -138,14 +138,15 @@ namespace ICSharpCode.Core.Presentation
 				tplOwnerType = codon.Properties["ownertype"];
 			}
 			
-			var bindingTemplate = BindingInfoTemplate.Create(tplOwnerInstance, tplOwnerType, tplRoutedCommandName);
+			bindingTemplate = BindingInfoTemplate.Create(tplOwnerInstance, tplOwnerType, tplRoutedCommandName);
 
 			var routedCommand = CommandManager.GetRoutedUICommand(tplRoutedCommandName);
 			if(routedCommand != null) {
 				this.Command = routedCommand;
 			}
 			
-			var gestures = CommandManager.FindInputGestures(bindingTemplate);
+			var gestures = CommandManager.FindInputGestures(bindingTemplate, null);
+			
 			this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
 			
 			CommandManager.GesturesChanged += MenuCommand_GesturesChanged;
@@ -159,7 +160,7 @@ namespace ICSharpCode.Core.Presentation
 					&& (bindingTemplate.OwnerTypeName == null || bindingTemplate.OwnerTypeName == temp.OwnerTypeName)
 					&& (bindingTemplate.RoutedCommandName == null || bindingTemplate.RoutedCommandName == temp.RoutedCommandName)) {
 
-					var updatedGestures = CommandManager.FindInputGestures(bindingTemplate);
+					var updatedGestures = CommandManager.FindInputGestures(bindingTemplate, null);
 					this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 				}
 			}

@@ -159,7 +159,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			foreach(var pair in this) {
 				var template = pair.Key;
-				var newGestures = SDCommandManager.FindInputGestures(template);
+				var newGestures = SDCommandManager.FindInputGestures(template, null);
 				
 				descriptions.Add(
 					new GesturesModificationDescription(
@@ -197,7 +197,7 @@ namespace ICSharpCode.Core.Presentation
 			var newGestures = inputGestureCollection;
 			
 			if(oldGestures == null || newGestures == null) {
-				var defaultGestures = SDCommandManager.FindInputGestures(identifier);
+				var defaultGestures = SDCommandManager.FindInputGestures(identifier, null);
 				
 				oldGestures = oldGestures ?? defaultGestures;
 				newGestures = newGestures ?? defaultGestures;

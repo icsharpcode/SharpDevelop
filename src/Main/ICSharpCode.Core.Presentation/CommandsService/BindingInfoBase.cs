@@ -22,6 +22,14 @@ namespace ICSharpCode.Core.Presentation
 		private AddIn _addIn;
 		
 		/// <summary>
+		/// Creates instance of <see cref="BindingInfoBase" />
+		/// </summary>
+		public BindingInfoBase() 
+		{
+			Groups = new BindingGroupCollection();
+		}
+			 
+		/// <summary>
 		/// Get or sets binding groups
 		/// 
 		/// If <see cref="BindingInfoBase" /> instance has a group assigned 

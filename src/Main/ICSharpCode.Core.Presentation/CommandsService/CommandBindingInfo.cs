@@ -34,8 +34,6 @@ namespace ICSharpCode.Core.Presentation
 		public CommandBindingInfo()
 		{
 			ActiveCommandBindings = new CommandBindingCollection();
-			
-			Groups = new BindingGroupCollection();
 		}
 		
 		/// <summary>
@@ -51,8 +49,12 @@ namespace ICSharpCode.Core.Presentation
 				return commandTypeName;
 			}
 			set {
-				if(commandInstance != null || commandTypeName != null || canExecuteEventHandler != null || executedEventHandler != null) {
-					throw new ArgumentException("Executed or CanExecute command handlers are already specified");
+				if(canExecuteEventHandler != null || executedEventHandler != null || (commandTypeName == null && commandInstance != null)) {
+					throw new ArgumentException("Executed, CanExecute or CommandInstance property has already been set");   	
+				}
+				
+				if(IsRegistered) {
+					throw new ArgumentException("Can not change command type name while binding info is registered");
 				}
 				
 				commandTypeName = value;
@@ -86,8 +88,12 @@ namespace ICSharpCode.Core.Presentation
 				return command;
 			}
 			set {
-				if(commandInstance != null || commandTypeName != null || canExecuteEventHandler != null || executedEventHandler != null) {
-					throw new ArgumentException("Executed or CanExecute command handlers are already specified");
+				if(canExecuteEventHandler != null || executedEventHandler != null || commandTypeName != null) {
+					throw new ArgumentException("Executed, CanExecute or CommandTypeName property has already been set");   	
+				}
+				
+				if(IsRegistered) {
+					throw new ArgumentException("Can not change command instance while binding info is registered");
 				}
 				
 				commandInstance = value;
@@ -106,6 +112,14 @@ namespace ICSharpCode.Core.Presentation
 				return executedEventHandler;
 			}
 			set {
+				if(commandTypeName != null || commandInstance != null) {
+					throw new ArgumentException("CommandTypeName or CommandInstance property has already been set");   	
+				}
+				
+				if(IsRegistered) {
+					throw new ArgumentException("Can not change \"Executed\" event handler while binding info is registered");
+				}
+				
 				if(commandInstance != null || commandTypeName != null) {
 					throw new ArgumentException("Command class is already provided");
 				}
@@ -126,8 +140,12 @@ namespace ICSharpCode.Core.Presentation
 				return canExecuteEventHandler;
 			}
 			set {
-				if(commandInstance != null || commandTypeName != null) {
-					throw new ArgumentException("Command class is already provided");
+				if(commandTypeName != null || commandInstance != null) {
+					throw new ArgumentException("CommandTypeName or CommandInstance property has already been set");   	
+				}
+				
+				if(IsRegistered) {
+					throw new ArgumentException("Can not change \"CanExecute\" event handler while binding info is registered");
 				}
 				
 				canExecuteEventHandler = value;

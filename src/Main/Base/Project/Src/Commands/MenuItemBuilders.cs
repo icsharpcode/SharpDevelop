@@ -244,7 +244,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}		
 				
 				var gesturesTemplate = BindingInfoTemplate.Create(null, SDCommandManager.DefaultOwnerTypeName, routedCommandName);
-				var updatedGestures = SDCommandManager.FindInputGestures(gesturesTemplate);
+				var updatedGestures = SDCommandManager.FindInputGestures(gesturesTemplate, null);
 				var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 				
 				items[i].InputGestureText = updatedGesturesText;					
@@ -556,7 +556,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					item.Command = SDCommandManager.GetRoutedUICommand(routedCommandName);
 					
 					var gesturesTemplate = BindingInfoTemplate.Create(null, SDCommandManager.DefaultOwnerTypeName, routedCommandName);
-					var updatedGestures = SDCommandManager.FindInputGestures(gesturesTemplate);
+					var updatedGestures = SDCommandManager.FindInputGestures(gesturesTemplate, null);
 					var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 					item.InputGestureText = updatedGesturesText;
 					

@@ -169,7 +169,7 @@ namespace SearchAndReplace
 		Keys[] GetKeyBoardShortcut(string routedCommandName)
 		{
 			var template = BindingInfoTemplate.Create(null, null, routedCommandName);
-			var gestureCollection = SDCommandManager.FindInputGestures(template);
+			var gestureCollection = SDCommandManager.FindInputGestures(template, null);
 			var keyCollection = new Keys[gestureCollection.Count];
 			
 			var i = 0;

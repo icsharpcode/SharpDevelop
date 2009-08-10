@@ -102,7 +102,7 @@ namespace ICSharpCode.Core.Presentation
 				var bindingInfoTemplate = changedGesture.Key;
 				InputGestureCollection defaultUserGesture = null;
 				if(changedGesture.Value.Item1 == null || changedGesture.Value.Item2 == null) {
-					defaultUserGesture = FindInputGestures(bindingInfoTemplate);
+					defaultUserGesture = FindInputGestures(bindingInfoTemplate, null);
 				}
 				
 				var oldGestures = changedGesture.Value.Item1 ?? defaultUserGesture;
@@ -404,7 +404,7 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			var similarTemplate = BindingInfoTemplate.CreateFromIBindingInfo(inputBindingInfo);
-			var similarInputBinding = FindInputBindingInfos(similarTemplate).FirstOrDefault();
+			var similarInputBinding = FindInputBindingInfos(similarTemplate, null).FirstOrDefault();
 			
 			if(similarInputBinding != null) {
 				foreach(InputGesture gesture in inputBindingInfo.DefaultGestures) {
@@ -505,7 +505,7 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		/// <param name="addIn">Add-in</param>
 		public static void LoadAddinCommands(AddIn addIn) {		
-			foreach(CommandBindingInfo binding in FindCommandBindingInfos(new BindingInfoTemplate())) {
+			foreach(CommandBindingInfo binding in FindCommandBindingInfos(new BindingInfoTemplate(), null)) {
 				if(binding.AddIn != addIn) continue;
 		
 				if(binding.CommandTypeName != null && !commands.ContainsKey(binding.CommandTypeName)){
@@ -575,27 +575,40 @@ namespace ICSharpCode.Core.Presentation
 		/// Get list of all <see cref="CommandBindingInfo" />  matched by provided <see cref="BindingInfoTemplate" />
 		/// </summary>
 		/// <param name="template">Template to match against</param>
+		/// <param name="filteredGroups">Groups contained in matched bindings. If this value is not null only bindings which have one of the specified grops assigned are filtered</param>
 		/// <returns>Collection of matched <see cref="CommandBindingInfo" /> instances</returns>
-		public static ICollection<CommandBindingInfo> FindCommandBindingInfos(BindingInfoTemplate template)
+		public static ICollection<CommandBindingInfo> FindCommandBindingInfos(BindingInfoTemplate template, BindingGroupCollection filteredGroups)
 		{
-			return FindBindingInfos(commandBindings, template).Cast<CommandBindingInfo>().ToList();
+			return FindBindingInfos(commandBindings, template, filteredGroups).Cast<CommandBindingInfo>().ToList();
 		}
 		
 		/// <summary>
 		/// Get list of all <see cref="InputBindingInfo" />  matched by provided <see cref="BindingInfoTemplate" />
 		/// </summary>
 		/// <param name="template">Template to match against</param>
+		/// <param name="filteredGroups">Groups contained in matched bindings. If this value is not null only bindings which have one of the specified grops assigned are filtered</param>
 		/// <returns>Collection of matched <see cref="InputBindingInfo" /> instances</returns>
-		public static ICollection<InputBindingInfo> FindInputBindingInfos(BindingInfoTemplate template)
+		public static ICollection<InputBindingInfo> FindInputBindingInfos(BindingInfoTemplate template, BindingGroupCollection filteredGroups)
 		{
-			return FindBindingInfos(inputBidnings, template).Cast<InputBindingInfo>().ToList();
+			return FindBindingInfos(inputBidnings, template, filteredGroups).Cast<InputBindingInfo>().ToList();
 		}
 		
-		private static ICollection<BindingInfoBase> FindBindingInfos(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfos, BindingInfoTemplate template)
+		private static ICollection<BindingInfoBase> FindBindingInfos(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfos, BindingInfoTemplate template, BindingGroupCollection filteredGroups)
 		{
 			var items = bindingInfos.FindItems(template);
+			ICollection<BindingInfoBase> returnedItems = new List<BindingInfoBase>();
+			
+			if(filteredGroups != null && items != null) {
+				foreach(var item in items) {
+					if(item.Groups.ContainsAnyFromCollection(filteredGroups)) {
+						returnedItems.Add(item);
+					}
+				}
+			} else {
+				returnedItems = items ?? new List<BindingInfoBase>();
+			}
 		
-			return items ?? new List<BindingInfoBase>();
+			return returnedItems;
 		}
 		
 		/// <summary>
@@ -603,9 +616,10 @@ namespace ICSharpCode.Core.Presentation
 		/// provided <see cref="BindingInfoTemplate" />
 		/// </summary>
 		/// <param name="template">Template to match against</param>
+		/// <param name="filteredGroups">Groups contained in matched bindings. If this value is not null only gestures registered in bindings which have one of the specified grops assigned are filtered</param>
 		/// <returns>Collection of matched <see cref="System.Windows.Input.InputGesture" /> instances</returns>
-		public static InputGestureCollection FindInputGestures(BindingInfoTemplate template) {
-			var bindings = FindInputBindingInfos(template);
+		public static InputGestureCollection FindInputGestures(BindingInfoTemplate template, BindingGroupCollection filteredGroups) {
+			var bindings = FindInputBindingInfos(template, filteredGroups);
 			var gestures = new InputGestureCollection();
 			
 			foreach(InputBindingInfo bindingInfo in bindings) {

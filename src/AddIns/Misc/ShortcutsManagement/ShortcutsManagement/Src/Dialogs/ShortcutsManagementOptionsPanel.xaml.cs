@@ -178,7 +178,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 				}
 			}
 			
-			var inputBindingInfos = SDCommandManager.FindInputBindingInfos(new BindingInfoTemplate());
+			var inputBindingInfos = SDCommandManager.FindInputBindingInfos(new BindingInfoTemplate(), null);
 			foreach (var inputBindingInfo in inputBindingInfos) {
 				// Get shortcut entry text. Normaly shortcut entry text is equal to routed command text
 				// but this value can be overriden through InputBindingInfo.RoutedCommandText value

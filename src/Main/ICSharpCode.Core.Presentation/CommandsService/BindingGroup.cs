@@ -31,6 +31,7 @@ namespace ICSharpCode.Core.Presentation
 		public BindingGroup(string name)
 		{
 			_name = name;
+			_nestedGroups.CollectionChanged += _nestedGroups_CollectionChanged;
 		}
 		
 		/// <summary>
@@ -40,6 +41,26 @@ namespace ICSharpCode.Core.Presentation
 		{
 			get {
 				return _name;
+			}
+		}
+		
+		/// <summary>
+		/// Gets read-only collection of attached instances
+		/// </summary>
+		public ICollection<UIElement> AttachedInstances
+		{
+			get {
+				return new ReadOnlyCollection<UIElement>((from wr in _attachedInstances where wr.Target != null select (UIElement)wr.Target).ToList());
+			}
+		}
+		
+		/// <summary>
+		/// Gets single-level collection containing attached instances from this group and all sub-groups
+		/// </summary>
+		public ICollection<UIElement> FlatNestedAttachedInstances
+		{
+			get {
+				return FlatNestedGroups.AttachedInstances;
 			}
 		}
 		
@@ -66,7 +87,7 @@ namespace ICSharpCode.Core.Presentation
 		public void RegisterHandledInstance(UIElement instance)
 		{
 			RegisterHandledInstanceWithoutInvoke(instance);
-			InvokeBindingUpdateHandlers(instance, true);
+			InvokeBindingUpdateHandlers(FlatNestedGroups, FlatNestedAttachedInstances.ToArray());
 		}
 		
 		private void RegisterHandledInstanceWithoutInvoke(UIElement instance)
@@ -84,8 +105,11 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="instance">Registered instance</param>
 		public void UnregisterHandledInstance(UIElement instance)
 		{
+			var modifiedGroups = FlatNestedGroups;
+			var modifiedInstances = FlatNestedAttachedInstances.ToArray();
+			
 			UnregisterHandledInstanceWithoutInvoke(instance);
-			InvokeBindingUpdateHandlers(instance, false);
+			InvokeBindingUpdateHandlers(modifiedGroups, modifiedInstances);
 		}
 		
 		
@@ -102,14 +126,14 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		private void InvokeBindingUpdateHandlers(UIElement instance, bool attaching)
+		private void InvokeBindingUpdateHandlers(BindingGroupCollection modifiedGroups, ICollection<UIElement> modifiedInstances)
 		{
 			SDCommandManager.InvokeBindingsChanged(
 				this, 
 				new NotifyBindingsChangedEventArgs(
 					NotifyBindingsChangedAction.GroupAttachmendsModified, 
-					FlatNestedGroups, 
-					new []{instance}));
+					modifiedGroups,
+					modifiedInstances));
 		}
 		
 		/// <summary>
@@ -165,7 +189,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Gets all sub-groups of this group flattened into single level <see cref="BindingGroupCollection" />
+		/// Gets single-level collection containing this group and all sub-groups of this group <see cref="BindingGroupCollection" />
 		/// </summary>
 		public BindingGroupCollection FlatNestedGroups
 		{
@@ -173,9 +197,7 @@ namespace ICSharpCode.Core.Presentation
 				var foundNestedGroups = new HashSet<BindingGroup>();
 				FlattenNestedGroups(this, foundNestedGroups);
 				
-				var groups = new BindingGroupCollection();
-				groups.AddRange(foundNestedGroups);
-				return groups;
+				return new BindingGroupCollection(true, foundNestedGroups);
 			}
 		}
 		
@@ -193,6 +215,20 @@ namespace ICSharpCode.Core.Presentation
 					FlattenNestedGroups(nestedGroup, foundGroups);
 				}
 			}
+		}
+		
+		private void _nestedGroups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			var modifiedGroups = new BindingGroupCollection();
+			modifiedGroups.AddRange(FlatNestedGroups);
+			
+			if(e.OldItems != null) {
+				modifiedGroups.AddRange(e.OldItems.Cast<BindingGroup>());
+			}
+			
+			var modifiedInstances = modifiedGroups.FlatNestedAttachedInstances;
+			
+			InvokeBindingUpdateHandlers(modifiedGroups, modifiedInstances);
 		}
     }
 }
