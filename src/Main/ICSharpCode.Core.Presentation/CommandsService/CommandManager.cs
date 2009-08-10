@@ -403,6 +403,11 @@ namespace ICSharpCode.Core.Presentation
 				throw new ArgumentException("Routed command name must be specified");
 			}
 			
+			if(inputBindingInfo.RoutedCommandName == "SDBuildCommands.BuildSolution")
+			{
+				
+			}
+			
 			var similarTemplate = BindingInfoTemplate.CreateFromIBindingInfo(inputBindingInfo);
 			var similarInputBinding = FindInputBindingInfos(similarTemplate, null).FirstOrDefault();
 			

@@ -131,9 +131,8 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 				profilesTextBox.SelectedIndex = -1;
 				profilesTextBox.Text = "";
 			}
-			
 		}
-			
+		
 		private void BindShortcuts()
 		{
 			shortcutsMap.Clear();
@@ -154,11 +153,10 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 				var categoryName = Regex.Replace(StringParser.Parse(bindingCategory.Text), @"&([^\s])", @"$1");
 				var shortcutCategory = new ShortcutCategory(categoryName);
 				categoriesMap.Add(bindingCategory, shortcutCategory);
-			
+				
 			AddCategory:
 				var currentDepth = bindingCategory.Path.Split('/').Length - 1;
-				if (currentDepth > previousDepth)
-				{
+				if (currentDepth > previousDepth) {
 					previousDepth++;
 					
 					if (previousDepth > 1) {
@@ -173,7 +171,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 						parentCategories.RemoveLast();
 						previousDepth--;   
 					}
-				
+					
 					goto AddCategory;
 				}
 			}
@@ -251,7 +249,9 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 		
 		public object Control 
 		{
-			get { return this; }
+			get { 
+				return this; 
+			}
 		}
 		
 		private void profilesTextBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -264,9 +264,9 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 			if (userGestureProfileAction != null) {
 				if (userGestureProfileAction.Name == "Delete" && SelectedProfile != null) {
 					var result = MessageBox.Show(
-					StringParser.Parse("${res:ShortcutsManagement.ShortcutsManagementOptionsPanel.ConfirmDeleteProfileMessage}"),
-					StringParser.Parse("${res:ShortcutsManagement.ShortcutsManagementOptionsPanel.ConfirmDeleteProfileMessageWindowName}"),
-					MessageBoxButton.YesNo);
+						StringParser.Parse("${res:ShortcutsManagement.ShortcutsManagementOptionsPanel.ConfirmDeleteProfileMessage}"),
+						StringParser.Parse("${res:ShortcutsManagement.ShortcutsManagementOptionsPanel.ConfirmDeleteProfileMessageWindowName}"),
+						MessageBoxButton.YesNo);
 					
 					if(MessageBoxResult.Yes == result) {
 						profiles.Remove(SelectedProfile);
@@ -299,7 +299,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 						SelectedProfile = loadedProfile;
 					}
 				}
-				
+			
 				if (userGestureProfileAction.Name == "Reset") {
 					SelectedProfile = null;
 				}
@@ -324,7 +324,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 								newProfile[pair.Key] = pair.Value;
 							}
 						}
-						
+					
 						profiles.Add(newProfile);
 						
 						SelectedProfile = newProfile;
@@ -345,29 +345,23 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 		{
 			var selectedShortcut = (Shortcut)shortcutsManagementOptionsPanel.shortcutsTreeView.SelectedItem;
 			
-			if(SelectedProfile == null)
-			{
+			if(SelectedProfile == null) {
 				MessageBox.Show(StringParser.Parse("${res:ShortcutsManagement.ShortcutsManagementOptionsPanel.NoProfileSelectedMessage}"));
 				return;
 			}
 			
-			if(SelectedProfile.ReadOnly)
-			{
+			if(SelectedProfile.ReadOnly) {
 				MessageBox.Show(StringParser.Parse("${res:ShortcutsManagement.ShortcutsManagementOptionsPanel.SelectedProfileIsReadOnlyMessage}"));
 				return;
 			}
 			
 			Shortcut shortcutCopy = null;            
-			ICollection<IShortcutTreeEntry> rootEntriesCopy = new ObservableCollection<IShortcutTreeEntry>();
 			
-			// Make a deep copy of all add-ins, categories and shortcuts
-			foreach (var entry in rootEntries) {
-				var clonedRootEntry = (IShortcutTreeEntry)entry.Clone();
-				rootEntriesCopy.Add(clonedRootEntry);
-				
-				// Find copy of modified shortcut in copied add-ins collection
+			var cloner = new IShortcutTreeEntryCloner();
+			var rootEntriesCopy = cloner.CloneShortcutTree(rootEntries);
+			foreach(var clonedEntry in rootEntriesCopy) {
 				if (shortcutCopy == null) {
-					shortcutCopy = clonedRootEntry.FindShortcut(selectedShortcut.Id);
+					shortcutCopy = clonedEntry.FindShortcut(selectedShortcut.Id);
 				}
 			}
 			

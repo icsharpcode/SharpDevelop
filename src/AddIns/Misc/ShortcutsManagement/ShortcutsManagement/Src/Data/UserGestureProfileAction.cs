@@ -1,12 +1,12 @@
 ﻿namespace ICSharpCode.ShortcutsManagement.Data
 {
     /// <summary>
-    /// Represents action over UserGestureProfile
+    /// Represents action <see cref="UserGestureProfile" /> action
     /// </summary>
     class UserGestureProfileAction
     {
         /// <summary>
-        /// Action name
+        /// Gets or sets action name
         /// </summary>
         public string Name
         {
@@ -15,7 +15,7 @@
         }
 
         /// <summary>
-        /// Action text
+        /// Gets or sets action text
         /// </summary>
         public object Text
         {

@@ -25,6 +25,8 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -41,6 +43,10 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug in SharpDevelop' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\VSC\SharpDevelop40\SharpDevelop\bin\SharpDevelop.exe</StartProgram>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -56,9 +62,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Src\Converters\AdditionConverter.cs" />
     <Compile Include="Src\Converters\BoolToVisibilityConverter.cs" />
@@ -71,6 +74,7 @@
     <Compile Include="Src\Converters\TypeNameConverter.cs" />
     <Compile Include="Src\Data\AddIn.cs" />
     <Compile Include="Src\Data\IShortcutTreeEntry.cs" />
+    <Compile Include="Src\Data\IShortcutTreeEntryCloner.cs" />
     <Compile Include="Src\Data\MapTable.cs" />
     <Compile Include="Src\Data\SeparatorData.cs" />
     <Compile Include="Src\Data\Shortcut.cs" />
@@ -94,9 +98,6 @@
     </Compile>
     <Compile Include="Src\Extensions\TextBlockBehavior.cs" />
     <Compile Include="Src\Extensions\TreeViewExtensions.cs" />
-    <Compile Include="Window1.xaml.cs">
-      <DependentUpon>Window1.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources" />
@@ -129,7 +130,6 @@
     <EmbeddedResource Include="Resources\StringResources.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="App.xaml" />
     <Page Include="Src\Dialogs\CreateNewProfilePrompt.xaml" />
     <Page Include="Src\Dialogs\MultiKeyGestureTextBox.xaml" />
     <Page Include="Src\Dialogs\Resources.xaml" />
@@ -137,7 +137,6 @@
     <Page Include="Src\Dialogs\ShortcutsManagementOptionsPanel.xaml" />
     <Page Include="Src\Dialogs\ShortcutsTreeView.xaml" />
     <Page Include="Themes\Generic.xaml" />
-    <Page Include="Window1.xaml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
