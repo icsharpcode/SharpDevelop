@@ -42,7 +42,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		public IEnumerable<PropertyNode> FlattenPropertyNodes()
 		{
-			return Utils.TreeFlattener.Flatten(this).Where((node) => { return node is PropertyNode; }).Cast<PropertyNode>();
+			return Utils.TreeFlattener.Flatten(this).OfType<PropertyNode>();
 		}
 	}
 }

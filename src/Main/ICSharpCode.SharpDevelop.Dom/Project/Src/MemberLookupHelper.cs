@@ -250,7 +250,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (methods.Count == 0)
 				return null;
 			return (IMethod)CSharp.OverloadResolution.FindOverload(
-				methods.Cast<IMethodOrProperty>().ToList(),
+				methods,
 				arguments,
 				false,
 				true,
@@ -263,7 +263,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return null;
 			bool acceptableMatch;
 			return (IProperty)CSharp.OverloadResolution.FindOverload(
-				properties.Cast<IMethodOrProperty>().ToList(),
+				properties,
 				arguments,
 				false,
 				false,

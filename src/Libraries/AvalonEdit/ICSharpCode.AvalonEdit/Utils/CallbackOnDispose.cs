@@ -16,7 +16,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// </summary>
 	/// <remarks>
 	/// This class ensures the callback is invoked at most once,
-	/// even when Dispose is called on multiple theadeds.
+	/// even when Dispose is called on multiple threads.
 	/// </remarks>
 	sealed class CallbackOnDispose : IDisposable
 	{

@@ -23,9 +23,16 @@ namespace ICSharpCode.AvalonEdit.Document
 		public int Offset { get; private set; }
 		
 		/// <summary>
+		/// The text that was inserted.
+		/// </summary>
+		public string RemovedText { get; private set; }
+		
+		/// <summary>
 		/// The number of characters removed.
 		/// </summary>
-		public int RemovalLength { get; private set; }
+		public int RemovalLength {
+			get { return RemovedText.Length; }
+		}
 		
 		/// <summary>
 		/// The text that was inserted.
@@ -85,31 +92,44 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Creates a new DocumentChangeEventArgs object.
 		/// </summary>
-		public DocumentChangeEventArgs(int offset, int removalLength, string insertedText)
-			: this(offset, removalLength, insertedText, null)
+		public DocumentChangeEventArgs(int offset, string removedText, string insertedText)
+			: this(offset, removedText, insertedText, null)
 		{
 		}
 		
 		/// <summary>
 		/// Creates a new DocumentChangeEventArgs object.
 		/// </summary>
-		public DocumentChangeEventArgs(int offset, int removalLength, string insertedText, OffsetChangeMap offsetChangeMap)
+		public DocumentChangeEventArgs(int offset, string removedText, string insertedText, OffsetChangeMap offsetChangeMap)
 		{
 			ThrowUtil.CheckNotNegative(offset, "offset");
-			ThrowUtil.CheckNotNegative(removalLength, "removalLength");
+			ThrowUtil.CheckNotNull(removedText, "removedText");
 			ThrowUtil.CheckNotNull(insertedText, "insertedText");
 			
 			this.Offset = offset;
-			this.RemovalLength = removalLength;
+			this.RemovedText = removedText;
 			this.InsertedText = insertedText;
 			
 			if (offsetChangeMap != null) {
 				if (!offsetChangeMap.IsFrozen)
 					throw new ArgumentException("The OffsetChangeMap must be frozen before it can be used in DocumentChangeEventArgs");
-				if (!offsetChangeMap.IsValidForDocumentChange(offset, removalLength, insertedText.Length))
+				if (!offsetChangeMap.IsValidForDocumentChange(offset, removedText.Length, insertedText.Length))
 					throw new ArgumentException("OffsetChangeMap is not valid for this document change", "offsetChangeMap");
 				this.offsetChangeMap = offsetChangeMap;
 			}
+		}
+		
+		/// <summary>
+		/// Creates DocumentChangeEventArgs for the reverse change.
+		/// </summary>
+		public DocumentChangeEventArgs Invert()
+		{
+			OffsetChangeMap map = this.OffsetChangeMapOrNull;
+			if (map != null) {
+				map = map.Invert();
+				map.Freeze();
+			}
+			return new DocumentChangeEventArgs(this.Offset, this.InsertedText, this.RemovedText, map);
 		}
 	}
 }

@@ -77,16 +77,6 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Casts the elements in input to B.
-		/// This method can be removed in .NET 4.0 - it's no longer necessary with covariance.
-		/// </summary>
-		public static IEnumerable<B> UpCast<A, B>(this IEnumerable<A> input) where A : B
-		{
-			foreach (A o in input)
-				yield return o;
-		}
-		
-		/// <summary>
 		/// Adds all <paramref name="elements"/> to <paramref name="list"/>.
 		/// </summary>
 		public static void AddRange<T>(this ICollection<T> list, IEnumerable<T> elements)

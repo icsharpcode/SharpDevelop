@@ -38,6 +38,8 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			if (rope == null)
 				throw new ArgumentNullException("rope");
+			if (length == 0)
+				return string.Empty;
 			char[] buffer = new char[length];
 			rope.CopyTo(startIndex, buffer, 0, length);
 			return new string(buffer);

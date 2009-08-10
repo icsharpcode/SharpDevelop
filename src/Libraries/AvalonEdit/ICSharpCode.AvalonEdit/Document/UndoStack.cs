@@ -271,12 +271,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		void document_Changing(object sender, DocumentChangeEventArgs e)
 		{
 			TextDocument document = (TextDocument)sender;
-			Push(new DocumentChangeOperation(
-				document,
-				e.Offset,
-				document.GetText(e.Offset, e.RemovalLength),
-				e.InsertedText,
-				e.OffsetChangeMapOrNull));
+			Push(new DocumentChangeOperation(document, e));
 		}
 		
 		/// <summary>

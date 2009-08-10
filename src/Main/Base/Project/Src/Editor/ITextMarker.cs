@@ -76,6 +76,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		IEnumerable<ITextMarker> TextMarkers { get; }
 		
 		/// <summary>
+		/// Removes the specified text marker.
+		/// </summary>
+		void Remove(ITextMarker marker);
+		
+		/// <summary>
 		/// Removes all text markers that match the condition.
 		/// </summary>
 		void RemoveAll(Predicate<ITextMarker> predicate);

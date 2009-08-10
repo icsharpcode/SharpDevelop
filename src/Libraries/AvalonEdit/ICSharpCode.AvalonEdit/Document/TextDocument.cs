@@ -64,6 +64,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		readonly DocumentLineTree lineTree;
 		readonly LineManager lineManager;
 		readonly TextAnchorTree anchorTree;
+		ChangeTrackingCheckpoint currentCheckpoint;
 		
 		/// <summary>
 		/// Create an empty text document.
@@ -191,7 +192,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Creates a snapshot of the current text.
 		/// </summary>
-		/// <returns>Returns a copy of the document's text as a rope.</returns>
 		/// <remarks>
 		/// Unlike all other TextDocument methods, this method may be called from any thread; even when the owning thread
 		/// is concurrently writing to the document.
@@ -201,6 +201,26 @@ namespace ICSharpCode.AvalonEdit.Document
 		public ITextSource CreateSnapshot()
 		{
 			lock (rope) {
+				return new RopeTextSource(rope.Clone());
+			}
+		}
+		
+		/// <summary>
+		/// Creates a snapshot of the current text.
+		/// Additionally, creates a checkpoint that allows tracking document changes.
+		/// </summary>
+		/// <remarks>
+		/// Unlike all other TextDocument methods, this method may be called from any thread; even when the owning thread
+		/// is concurrently writing to the document.
+		/// This special thread-safety guarantee is valid only for TextDocument.CreateSnapshot(), not necessarily for other
+		/// classes implementing ITextSource.CreateSnapshot().
+		/// </remarks>
+		public ITextSource CreateSnapshot(out ChangeTrackingCheckpoint checkpoint)
+		{
+			lock (rope) {
+				if (currentCheckpoint == null)
+					currentCheckpoint = new ChangeTrackingCheckpoint(this);
+				checkpoint = currentCheckpoint;
 				return new RopeTextSource(rope.Clone());
 			}
 		}
@@ -473,18 +493,19 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
-		void DoReplace(int offset, int length, string text, OffsetChangeMap offsetChangeMap)
+		void DoReplace(int offset, int length, string newText, OffsetChangeMap offsetChangeMap)
 		{
-			if (length == 0 && text.Length == 0)
+			if (length == 0 && newText.Length == 0)
 				return;
 			
 			// trying to replace a single character in 'Normal' mode?
 			// for single characters, 'CharacterReplace' mode is equivalent, but more performant
 			// (we don't have to touch the anchorTree at all in 'CharacterReplace' mode)
-			if (length == 1 && text.Length == 1 && offsetChangeMap == null)
+			if (length == 1 && newText.Length == 1 && offsetChangeMap == null)
 				offsetChangeMap = OffsetChangeMap.Empty;
 			
-			DocumentChangeEventArgs args = new DocumentChangeEventArgs(offset, length, text, offsetChangeMap);
+			string removedText = rope.ToString(offset, length);
+			DocumentChangeEventArgs args = new DocumentChangeEventArgs(offset, removedText, newText, offsetChangeMap);
 			
 			// fire DocumentChanging event
 			if (Changing != null)
@@ -495,11 +516,16 @@ namespace ICSharpCode.AvalonEdit.Document
 			DelayedEvents delayedEvents = new DelayedEvents();
 			
 			lock (rope) {
+				// create linked list of checkpoints, if required
+				if (currentCheckpoint != null) {
+					currentCheckpoint = currentCheckpoint.Append(args);
+				}
+				
 				// now update the textBuffer and lineTree
 				if (offset == 0 && length == rope.Length) {
 					// optimize replacing the whole document
 					rope.Clear();
-					rope.InsertText(0, text);
+					rope.InsertText(0, newText);
 					lineManager.Rebuild();
 				} else {
 					rope.RemoveRange(offset, length);
@@ -507,8 +533,8 @@ namespace ICSharpCode.AvalonEdit.Document
 					#if DEBUG
 					lineTree.CheckProperties();
 					#endif
-					rope.InsertText(offset, text);
-					lineManager.Insert(offset, text);
+					rope.InsertText(offset, newText);
+					lineManager.Insert(offset, newText);
 					#if DEBUG
 					lineTree.CheckProperties();
 					#endif

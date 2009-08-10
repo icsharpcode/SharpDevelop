@@ -35,6 +35,12 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// If a document change causes a segment to be deleted completely, it will be reduced to length 0, but segments are
 	/// never automatically removed.
 	/// </summary>
+	/// <remarks>
+	/// Thread-safety: a TextSegmentCollection that is connected to a TextDocument may only be used on that document's owner thread.
+	/// A disconnected TextSegmentCollection is safe for concurrent reads, but concurrent access is not safe when there are writes.
+	/// Keep in mind that reading the Offset properties of a <see cref="TextSegment"/> inside the collection is a read access on the
+	/// collection; and setting an Offset property of a <see cref="TextSegment"/> is a write access on the collection.
+	/// </remarks>
 	public sealed class TextSegmentCollection<T> : ICollection<T>, ISegmentTree, IWeakEventListener where T : TextSegment
 	{
 		// Implementation: this is basically a mixture of an augmented interval tree

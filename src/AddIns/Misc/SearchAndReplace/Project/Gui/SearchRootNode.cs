@@ -46,7 +46,7 @@ namespace SearchAndReplace
 			this.results = results.Select(r => new SearchResultNode(r)).ToArray();
 			
 			fileCount = results.GroupBy(r => r.FileName, new FileNameComparer()).Count();
-			this.Children = this.results.UpCast<SearchResultNode, SearchNode>();
+			this.Children = this.results;
 			this.IsExpanded = true;
 		}
 		

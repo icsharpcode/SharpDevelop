@@ -89,6 +89,7 @@
     <Compile Include="CodeCompletion\IOverloadProvider.cs" />
     <Compile Include="CodeCompletion\OverloadInsightWindow.cs" />
     <Compile Include="CodeCompletion\OverloadViewer.cs" />
+    <Compile Include="Document\ChangeTrackingCheckpoint.cs" />
     <Compile Include="Document\DocumentChangeOperation.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>

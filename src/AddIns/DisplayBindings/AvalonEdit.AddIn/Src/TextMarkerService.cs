@@ -60,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public IEnumerable<ITextMarker> TextMarkers {
-			get { return markers.UpCast<TextMarker, ITextMarker>(); }
+			get { return markers; }
 		}
 		
 		public void RemoveAll(Predicate<ITextMarker> predicate)
@@ -69,14 +69,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				throw new ArgumentNullException("predicate");
 			foreach (TextMarker m in markers.ToArray()) {
 				if (predicate(m))
-					m.Delete();
+					Remove(m);
 			}
 		}
 		
-		internal void Remove(TextMarker marker)
+		public void Remove(ITextMarker marker)
 		{
-			markers.Remove(marker);
-			Redraw(marker);
+			if (marker == null)
+				throw new ArgumentNullException("marker");
+			TextMarker m = marker as TextMarker;
+			if (markers.Remove(m)) {
+				Redraw(m);
+				m.OnDeleted();
+			}
 		}
 		
 		/// <summary>
@@ -173,11 +178,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void Delete()
 		{
-			if (this.IsConnectedToCollection) {
-				service.Remove(this);
-				if (Deleted != null)
-					Deleted(this, EventArgs.Empty);
-			}
+			service.Remove(this);
+		}
+		
+		internal void OnDeleted()
+		{
+			if (Deleted != null)
+				Deleted(this, EventArgs.Empty);
 		}
 		
 		void Redraw()

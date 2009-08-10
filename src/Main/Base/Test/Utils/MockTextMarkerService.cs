@@ -47,6 +47,11 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			return m;
 		}
 		
+		public void Remove(ITextMarker marker)
+		{
+			marker.Delete();
+		}
+		
 		public void RemoveAll(Predicate<ITextMarker> predicate)
 		{
 			foreach (ITextMarker m in markers.ToArray()) {

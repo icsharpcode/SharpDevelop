@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Document\ChangeTrackingTest.cs" />
     <Compile Include="Document\TextAnchorTest.cs" />
     <Compile Include="Document\TextSegmentTreeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -15,28 +15,23 @@ namespace ICSharpCode.AvalonEdit.Document
 	sealed class DocumentChangeOperation : IUndoableOperation
 	{
 		TextDocument document;
-		int offset;
-		string removedText;
-		string insertedText;
-		OffsetChangeMap offsetChangeMap;
+		DocumentChangeEventArgs change;
 		
-		public DocumentChangeOperation(TextDocument document, int offset, string removedText, string insertedText, OffsetChangeMap offsetChangeMap)
+		public DocumentChangeOperation(TextDocument document, DocumentChangeEventArgs change)
 		{
 			this.document = document;
-			this.offset = offset;
-			this.removedText = removedText;
-			this.insertedText = insertedText;
-			this.offsetChangeMap = offsetChangeMap;
+			this.change = change;
 		}
 		
 		public void Undo()
 		{
-			document.Replace(offset, insertedText.Length, removedText, offsetChangeMap != null ? offsetChangeMap.Invert() : null);
+			OffsetChangeMap map = change.OffsetChangeMapOrNull;
+			document.Replace(change.Offset, change.InsertionLength, change.RemovedText, map != null ? map.Invert() : null);
 		}
 		
 		public void Redo()
 		{
-			document.Replace(offset, removedText.Length, insertedText, offsetChangeMap);
+			document.Replace(change.Offset, change.RemovalLength, change.InsertedText, change.OffsetChangeMapOrNull);
 		}
 	}
 }

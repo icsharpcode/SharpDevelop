@@ -338,7 +338,6 @@ namespace ICSharpCode.XamlBinding
 							typeName.GetProperties()
 							.Where(p => p.IsPublic && p.CanSet)
 							.Select(prop => new XamlCodeCompletionItem(prop))
-							.Cast<ICompletionItem>()
 						);
 						break;
 					case "Event":
@@ -346,7 +345,6 @@ namespace ICSharpCode.XamlBinding
 							typeName.GetEvents()
 							.Where(e => e.IsPublic)
 							.Select(evt => new XamlCodeCompletionItem(evt))
-							.Cast<ICompletionItem>()
 						);
 						break;
 					case "Handler":
