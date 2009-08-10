@@ -138,30 +138,31 @@
                             <DataTemplate>
                                 <Grid Background="White">
                                     <StackPanel VerticalAlignment="Center">
-                                        <ToggleButton x:Name="btnExpander" Style="{StaticResource ExpandCollapseToggleStyle}" Click="btnExpander_Click" Padding="0" Margin="0 0 0 0" />
+                                        <ToggleButton x:Name="btnExpander" Style="{StaticResource ExpandCollapseToggleStyle}" Click="btnExpander_Click" Padding="0" Margin="0" />
                                     </StackPanel>
                                 </Grid>
                                 <DataTemplate.Triggers>
                                     <DataTrigger Binding="{Binding Path=HasChildNodes}" Value="False">
                                         <Setter TargetName="btnExpander"
-                                                    Property="Visibility" Value="Hidden"/>
+                                                    Property="Visibility" Value="Collapsed"/>
                                     </DataTrigger>
                                 </DataTemplate.Triggers>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>	
-                	  																<!-- Icon
+                	  																<!-- Icon -->
 					  <DataGridTemplateColumn>
                 	  		<DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
+                	  				<Image Source="{Binding ImageSource}"></Image>
 							   </DataTemplate>
                           </DataGridTemplateColumn.CellTemplate>
-                 	  </DataGridTemplateColumn>	 -->
+                 	  </DataGridTemplateColumn>
                     <DataGridTemplateColumn MinWidth="20" Header="Name">		<!-- Name -->
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Border BorderBrush="#FFDDDDDD"  BorderThickness="0 0 1 0">
-                                    <TextBlock Margin="6 0" Text="{Binding Path=Name, Mode=OneWay}" VerticalAlignment="Center"></TextBlock>
+                                    <TextBlock Margin="6 0" Text="{Binding Path=Name, Mode=OneWay}" VerticalAlignment="Top"></TextBlock>
                                 </Border>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -177,7 +178,7 @@
                 	  <DataGridTemplateColumn MinWidth="20" Header="Text">	    <!-- Text (value) -->
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                        			<TextBlock Margin="6 0" Text="{Binding Path=Text, Mode=OneWay}" VerticalAlignment="Center"></TextBlock>
+                        			<TextBlock Margin="6 0" Text="{Binding Path=Text, Mode=OneWay}" VerticalAlignment="Top"></TextBlock>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

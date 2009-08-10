@@ -301,7 +301,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		ToolTip toolTip;
 		Popup popup;
-		bool settingFocus = false;
 
 		void textEditor_MouseHover(object sender, MouseEventArgs e)
 		{

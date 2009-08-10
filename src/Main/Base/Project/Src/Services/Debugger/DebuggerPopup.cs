@@ -4,10 +4,12 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.Core;
 using System;
 using System.Collections.Generic;
 using System.Windows.Controls.Primitives;
+
+using ICSharpCode.Core;
+using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -24,6 +26,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			this.contentControl.containingPopup = this;
 			this.Child = this.contentControl;
 			this.IsLeaf = false;
+			
+			this.contentControl.Focusable = true;
+			Keyboard.Focus(this.contentControl);
 			//this.AllowsTransparency = true;
 			//this.PopupAnimation = PopupAnimation.Slide;
 		}
