@@ -30,6 +30,10 @@ namespace ICSharpCode.PythonBinding
 				base.AppendMethodCallWithArrayParameter(codeBuilder, propertyOwnerName, propertyOwner, propertyDescriptor);
 			}
 		}
+
+		protected override bool ShouldAppendCollectionContent {
+			get { return false; }
+		}
 		
 		bool IsStylesProperty(string name)
 		{

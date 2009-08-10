@@ -51,6 +51,10 @@ namespace ICSharpCode.PythonBinding
 			AppendComponentProperties(codeBuilder, true, false);
 		}
 		
+		protected override bool ShouldAppendCollectionContent {
+			get { return false; }
+		}
+		
 		void AppendCreateInstance(PythonCodeBuilder codeBuilder, List<PythonDesignerTreeNode> nodes)
 		{
 			object[] parameters = new object[0];

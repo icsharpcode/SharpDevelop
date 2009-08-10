@@ -58,6 +58,10 @@ namespace ICSharpCode.PythonBinding
 			AppendListViewGroupProperties(codeBuilder);
 			AppendComponentProperties(codeBuilder, true, false);
 		}
+
+		protected override bool ShouldAppendCollectionContent {
+			get { return false; }
+		}
 		
 		/// <summary>
 		/// Gets the parameters to the ListViewItem constructor.

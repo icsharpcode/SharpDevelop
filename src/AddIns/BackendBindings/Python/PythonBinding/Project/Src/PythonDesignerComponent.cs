@@ -24,6 +24,8 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonDesignerComponent
 	{		
+		delegate void AppendCollectionContent(PythonCodeBuilder codeBuilder, object item, int count);
+
 		IComponent component;
 		static readonly Attribute[] notDesignOnlyFilter = new Attribute[] { DesignOnlyAttribute.No };
 		static readonly DesignerSerializationVisibility[] notHiddenDesignerVisibility = new DesignerSerializationVisibility[] { DesignerSerializationVisibility.Content, DesignerSerializationVisibility.Visible };
@@ -208,19 +210,14 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public virtual void AppendCreateInstance(PythonCodeBuilder codeBuilder)
 		{			
+			string parameters = String.Empty;
 			if (HasIContainerConstructor()) {
 				codeBuilder.InsertCreateComponentsContainer();
-				AppendCreateInstance(codeBuilder, "self._components");
-			} else {
-				AppendComponentCreation(codeBuilder, component);
-			}
-		}
-		
-		public void AppendCreateInstance(PythonCodeBuilder codeBuilder, string parameters)
-		{
+				parameters = "self._components";
+			} 
 			AppendComponentCreation(codeBuilder, component, parameters);
 		}
-		
+				
 		/// <summary>
 		/// Appends the code to create the child components.
 		/// </summary>
@@ -420,12 +417,15 @@ namespace ICSharpCode.PythonBinding
 		{
 			AppendComponentCreation(codeBuilder, component, String.Empty);
 		}
-
+		
 		/// <summary>
 		/// Appends the code to create the specified IComponent
 		/// </summary>
 		public void AppendComponentCreation(PythonCodeBuilder codeBuilder, IComponent component, string parameters)
 		{
+			if (ShouldAppendCollectionContent) {
+				AppendForEachCollectionContent(codeBuilder, component, AppendCollectionContentCreation);
+			}
 			codeBuilder.AppendIndentedLine("self._" + component.Site.Name + " = " + component.GetType().FullName + "(" + parameters + ")");
 		}
 				
@@ -472,6 +472,24 @@ namespace ICSharpCode.PythonBinding
 		}
 
 		/// <summary>
+		/// Looks for any collections that have objects that should be created as local variables
+		/// in the InitializeComponent method.
+		/// </summary>
+		public void	AppendCollectionContentCreation(PythonCodeBuilder codeBuilder, object item, int count)
+		{
+			AppendCreateInstance(codeBuilder, item, count, new object[0]);
+		}
+
+		/// <summary>
+		/// Looks for any collections that have objects that will have been added as local variables
+		/// and appends their property values.
+		/// </summary>
+		public void	AppendCollectionContentProperties(PythonCodeBuilder codeBuilder, object item, int count)
+		{
+			AppendProperties(codeBuilder, GetVariableName(item, count), item);
+		}
+			
+		/// <summary>
 		/// Gets the variable name for the specified type.
 		/// </summary>
 		/// <remarks>
@@ -501,7 +519,6 @@ namespace ICSharpCode.PythonBinding
 		/// </remarks>
 		public static void AppendMethodCallWithArrayParameter(PythonCodeBuilder codeBuilder, string propertyOwnerName, object propertyOwner, PropertyDescriptor propertyDescriptor, bool reverse)
 		{			
-			IComponent component = propertyOwner as IComponent;
 			ICollection collectionProperty = propertyDescriptor.GetValue(propertyOwner) as ICollection;
 			if (collectionProperty != null) {
 				MethodInfo addRangeMethod = GetAddRangeSerializationMethod(collectionProperty);
@@ -529,7 +546,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void AppendProperty(PythonCodeBuilder codeBuilder, string propertyOwnerName, object obj, PropertyDescriptor propertyDescriptor)
 		{			
-			object propertyValue = propertyDescriptor.GetValue(obj);			
+			object propertyValue = propertyDescriptor.GetValue(obj);		
 			ExtenderProvidedPropertyAttribute extender = GetExtenderAttribute(propertyDescriptor);
 			if (extender != null) {
 				AppendExtenderProperty(codeBuilder, propertyOwnerName, extender, propertyDescriptor, propertyValue);
@@ -601,6 +618,10 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void AppendProperties(PythonCodeBuilder codeBuilder, string propertyOwnerName, object obj)
 		{
+			if (ShouldAppendCollectionContent) {
+				AppendForEachCollectionContent(codeBuilder, obj, AppendCollectionContentProperties);
+			}
+			
 			foreach (PropertyDescriptor property in GetSerializableProperties(obj)) {
 				if (!IgnoreProperty(property)) {
 					AppendProperty(codeBuilder, propertyOwnerName, obj, property);
@@ -781,6 +802,10 @@ namespace ICSharpCode.PythonBinding
 			return false;
 		}
 		
+		protected virtual bool ShouldAppendCollectionContent {
+			get { return true; }
+		}
+		
 		static bool HasSitedComponents(PythonDesignerComponent[] components)
 		{	
 			foreach (PythonDesignerComponent component in components) {
@@ -899,5 +924,27 @@ namespace ICSharpCode.PythonBinding
 			}
 			return false;
 		}
+		
+		/// <summary>
+		/// Calls the AppendCollectionContent method for every item in all collections that need their content
+		/// serialized.
+		/// </summary>
+		void AppendForEachCollectionContent(PythonCodeBuilder codeBuilder, object component, AppendCollectionContent appendCollectionContent)
+		{
+			foreach (PropertyDescriptor propertyDescriptor in GetSerializableContentProperties(component)) {
+				ICollection collection = propertyDescriptor.GetValue(component) as ICollection;
+				if (collection != null) {
+					int count = 1;
+					foreach (object item in collection) {
+						if (item is IComponent) {
+							// Ignore.
+						} else {
+							appendCollectionContent(codeBuilder, item, count);
+						}
+						++count;
+					}
+				}
+			}
+		}		
 	}
 }

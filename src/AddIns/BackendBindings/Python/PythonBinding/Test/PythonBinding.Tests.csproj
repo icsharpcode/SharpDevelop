@@ -189,6 +189,7 @@
     <Compile Include="Designer\GenerateComboBoxItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateContextMenuStripTestFixture.cs" />
     <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateCustomCollectionItemsTestFixture.cs" />
     <Compile Include="Designer\GenerateDataSetTestFixture.cs" />
     <Compile Include="Designer\GeneratedControlOrderingTestFixture.cs" />
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
@@ -327,6 +328,7 @@
     <Compile Include="Utils\ConvertedFile.cs" />
     <Compile Include="Utils\CreatedComponent.cs" />
     <Compile Include="Utils\CreatedInstance.cs" />
+    <Compile Include="Utils\CustomUserControl.cs" />
     <Compile Include="Utils\DerivedAddInOptions.cs" />
     <Compile Include="Utils\DerivedApplicationSettingsPanel.cs" />
     <Compile Include="Utils\DerivedCompilingOptionsPanel.cs" />
@@ -337,6 +339,7 @@
     <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
+    <Compile Include="Utils\FooItemCollection.cs" />
     <Compile Include="Utils\MockClass.cs" />
     <Compile Include="Utils\MockComponentCreator.cs" />
     <Compile Include="Utils\MockDebugger.cs" />
