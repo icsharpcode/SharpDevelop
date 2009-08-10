@@ -120,6 +120,7 @@
     <Compile Include="Src\Service\DebuggerEventForm.Designer.cs">
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\TreeModel\DebuggerResourceService.cs" />
     <Compile Include="Src\Visualizers\Common\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Common\IEvaluate.cs" />
     <Compile Include="Src\Visualizers\Common\IListValuesProvider.cs" />

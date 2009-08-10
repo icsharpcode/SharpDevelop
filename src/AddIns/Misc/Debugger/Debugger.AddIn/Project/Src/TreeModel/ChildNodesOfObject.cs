@@ -25,9 +25,10 @@ namespace Debugger.AddIn.TreeModel
 			DebugType baseType = shownType.BaseType;
 			if (baseType != null) {
 				yield return new TreeNode(
-					IconService.GetBitmap("Icons.16x16.Class"),
+					DebuggerResourceService.GetImage("Icons.16x16.Class"),
 					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}"),
-					string.Empty,
+					//string.Empty,
+					baseType.Name,
 					baseType.FullName,
 					baseType.FullName == "System.Object" ? null : Utils.LazyGetChildNodesOfObject(targetObject, baseType)
 				);

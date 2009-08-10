@@ -82,9 +82,9 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public ExpressionNode(Image image, string name, Expression expression)
+		public ExpressionNode(IImage image, string name, Expression expression)
 		{
-			this.Image = image;
+			this.IconImage = image;
 			this.Name = name;
 			this.expression = expression;
 		}
@@ -123,7 +123,7 @@ namespace Debugger.AddIn.TreeModel
 			} else if (val.Type.IsPointer) {
 				Value deRef = val.Dereference();
 				if (deRef != null) {
-					this.ChildNodes = new ExpressionNode [] { new ExpressionNode(this.Image, "*" + this.Name, this.Expression.AppendDereference()) };
+					this.ChildNodes = new ExpressionNode [] { new ExpressionNode(this.IconImage, "*" + this.Name, this.Expression.AppendDereference()) };
 				}
 			}
 			
@@ -171,27 +171,27 @@ namespace Debugger.AddIn.TreeModel
 			return false;
 		}
 		
-		public static Image GetImageForThis()
+		public static IImage GetImageForThis()
 		{
-			return IconService.GetBitmap("Icons.16x16.Parameter");
+			return DebuggerResourceService.GetImage("Icons.16x16.Parameter");
 		}
 		
-		public static Image GetImageForParameter()
+		public static IImage GetImageForParameter()
 		{
-			return IconService.GetBitmap("Icons.16x16.Parameter");
+			return DebuggerResourceService.GetImage("Icons.16x16.Parameter");
 		}
 		
-		public static Image GetImageForLocalVariable()
+		public static IImage GetImageForLocalVariable()
 		{
-			return IconService.GetBitmap("Icons.16x16.Local");
+			return DebuggerResourceService.GetImage("Icons.16x16.Local");
 		}
 		
-		public static Image GetImageForArrayIndexer()
+		public static IImage GetImageForArrayIndexer()
 		{
-			return IconService.GetBitmap("Icons.16x16.Field");
+			return DebuggerResourceService.GetImage("Icons.16x16.Field");
 		}
 		
-		public static Image GetImageForMember(MemberInfo memberInfo)
+		public static IImage GetImageForMember(MemberInfo memberInfo)
 		{
 			string name = string.Empty;
 			if (memberInfo.IsPublic) {
@@ -211,7 +211,7 @@ namespace Debugger.AddIn.TreeModel
 			} else {
 				throw new DebuggerException("Unknown member type " + memberInfo.GetType().FullName);
 			}
-			return IconService.GetBitmap("Icons.16x16." + name);
+			return DebuggerResourceService.GetImage("Icons.16x16." + name);
 		}
 		
 		public ContextMenuStrip GetContextMenu()

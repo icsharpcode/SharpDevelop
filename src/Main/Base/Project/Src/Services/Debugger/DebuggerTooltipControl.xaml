@@ -122,7 +122,7 @@
                 </DataGrid.RowStyle>
                 <DataGrid.CellStyle>
                     <Style TargetType="{x:Type DataGridCell}">
-                        <Setter Property="Focusable" Value="false" />
+                        <Setter Property="Focusable" Value="true" />
                         <Setter Property="BorderThickness" Value="0" />
                 			 <Style.Triggers>  
     	                    	<Trigger Property="IsSelected" Value="True">	<!-- disable selection highlight -->

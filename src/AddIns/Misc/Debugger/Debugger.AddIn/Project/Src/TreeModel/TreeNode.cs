@@ -7,6 +7,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Media;
+
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn.TreeModel
@@ -17,15 +20,36 @@ namespace Debugger.AddIn.TreeModel
 	/// </summary>
 	public class TreeNode: IComparable<TreeNode>, ITreeNode
 	{
-		Image  image = null;
+		IImage iconImage = null;
 		string name  = string.Empty;
 		string text  = string.Empty;
 		string type  = string.Empty;
 		IEnumerable<TreeNode> childNodes = null;
 		
+		/// <summary>
+		/// The image displayed for this node.
+		/// </summary>
+		public IImage IconImage {
+			get { return iconImage; }
+			protected set { iconImage = value; }
+		} 
+		
+		/// <summary>
+		/// System.Windows.Media.ImageSource version of <see cref="IconImage"/>.
+		/// </summary>
+		public ImageSource ImageSource {
+			get { 
+				return iconImage == null ? null : iconImage.ImageSource;
+			}
+		}
+		
+		/// <summary>
+		/// System.Drawing.Image version of <see cref="IconImage"/>.
+		/// </summary>
 		public Image Image {
-			get { return image; }
-			protected set { image = value; }
+			get { 
+				return iconImage == null ? null : iconImage.Bitmap;
+			}
 		}
 		
 		public string Name {
@@ -61,9 +85,9 @@ namespace Debugger.AddIn.TreeModel
 		{
 		}
 		
-		public TreeNode(Image image, string name, string text, string type, IEnumerable<TreeNode> childNodes)
+		public TreeNode(IImage iconImage, string name, string text, string type, IEnumerable<TreeNode> childNodes)
 		{
-			this.image = image;
+			this.iconImage = iconImage;
 			this.name = name;
 			this.text = text;
 			this.type = type;

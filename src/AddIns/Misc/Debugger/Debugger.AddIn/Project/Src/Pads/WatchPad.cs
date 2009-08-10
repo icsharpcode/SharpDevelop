@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	{
 		public ErrorInfoNode(string name, string text) : base(name, text)
 		{
-			Image = IconService.GetBitmap("Icons.16x16.Error");
+			IconImage = DebuggerResourceService.GetImage("Icons.16x16.Error");
 		}
 	}
 	

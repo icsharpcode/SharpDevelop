@@ -6,6 +6,7 @@
 // </file>
 using System;
 using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -19,6 +20,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		string Text { get; }
 		
 		string Type { get; }
+		
+		ImageSource ImageSource { get; }
 		
 		IEnumerable<ITreeNode> ChildNodes { get; }
 		
