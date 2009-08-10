@@ -617,11 +617,7 @@ namespace ICSharpCode.PythonBinding
 		/// Appends the properties of the object to the code builder.
 		/// </summary>
 		public void AppendProperties(PythonCodeBuilder codeBuilder, string propertyOwnerName, object obj)
-		{
-			if (ShouldAppendCollectionContent) {
-				AppendForEachCollectionContent(codeBuilder, obj, AppendCollectionContentProperties);
-			}
-			
+		{			
 			foreach (PropertyDescriptor property in GetSerializableProperties(obj)) {
 				if (!IgnoreProperty(property)) {
 					AppendProperty(codeBuilder, propertyOwnerName, obj, property);
@@ -634,6 +630,10 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void AppendProperties(PythonCodeBuilder codeBuilder)
 		{
+			if (ShouldAppendCollectionContent) {
+				AppendForEachCollectionContent(codeBuilder, component, AppendCollectionContentProperties);
+			}
+
 			AppendProperties(codeBuilder, GetPropertyOwnerName(), component);
 		}
 		
@@ -932,7 +932,8 @@ namespace ICSharpCode.PythonBinding
 		void AppendForEachCollectionContent(PythonCodeBuilder codeBuilder, object component, AppendCollectionContent appendCollectionContent)
 		{
 			foreach (PropertyDescriptor propertyDescriptor in GetSerializableContentProperties(component)) {
-				ICollection collection = propertyDescriptor.GetValue(component) as ICollection;
+				object propertyValue = propertyDescriptor.GetValue(component);
+				ICollection collection = propertyValue as ICollection;
 				if (collection != null) {
 					int count = 1;
 					foreach (object item in collection) {
@@ -943,6 +944,9 @@ namespace ICSharpCode.PythonBinding
 						}
 						++count;
 					}
+				} else {
+					// Try child collections.
+					AppendForEachCollectionContent(codeBuilder, propertyValue, appendCollectionContent);
 				}
 			}
 		}		

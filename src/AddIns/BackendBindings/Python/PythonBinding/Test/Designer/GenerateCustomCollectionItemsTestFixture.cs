@@ -47,6 +47,8 @@ namespace PythonBinding.Tests.Designer
 				userControl.ClientSize = new Size(200, 100);
 				userControl.FooItems.Add(new FooItem("aa"));
 				userControl.FooItems.Add(new FooItem("bb"));
+				userControl.ParentComponent.ParentBarItems.Add(new BarItem("cc"));
+				userControl.ParentComponent.ParentBarItems.Add(new BarItem("dd"));
 				form.Controls.Add(userControl);
 				
 				PythonControl pythonForm = new PythonControl("    ");
@@ -60,6 +62,8 @@ namespace PythonBinding.Tests.Designer
 			string expectedCode = "def InitializeComponent(self):\r\n" +
 								"    fooItem1 = PythonBinding.Tests.Utils.FooItem()\r\n" +
 								"    fooItem2 = PythonBinding.Tests.Utils.FooItem()\r\n" +
+								"    barItem1 = PythonBinding.Tests.Utils.BarItem()\r\n" +
+								"    barItem2 = PythonBinding.Tests.Utils.BarItem()\r\n" +
 								"    self._userControl1 = PythonBinding.Tests.Utils.CustomUserControl()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
@@ -67,11 +71,16 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    fooItem1.Text = \"aa\"\r\n" +
 								"    fooItem2.Text = \"bb\"\r\n" +
+								"    barItem1.Text = \"cc\"\r\n" +
+								"    barItem2.Text = \"dd\"\r\n" +
 								"    self._userControl1.FooItems.AddRange(System.Array[PythonBinding.Tests.Utils.FooItem](\r\n" +
 								"        [fooItem1,\r\n" +
 								"        fooItem2]))\r\n" +
 								"    self._userControl1.Location = System.Drawing.Point(0, 0)\r\n" +
 								"    self._userControl1.Name = \"userControl1\"\r\n" +
+								"    self._userControl1.ParentComponent.ParentBarItems.AddRange(System.Array[PythonBinding.Tests.Utils.BarItem](\r\n" +
+								"        [barItem1,\r\n" +
+								"        barItem2]))\r\n" +
 								"    self._userControl1.Size = System.Drawing.Size(200, 100)\r\n" +
 								"    self._userControl1.TabIndex = 0\r\n" +
 								"    # \r\n" +

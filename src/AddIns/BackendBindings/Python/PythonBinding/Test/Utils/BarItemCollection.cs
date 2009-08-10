@@ -13,15 +13,15 @@ using System.Windows.Forms;
 
 namespace PythonBinding.Tests.Utils
 {
-	public class FooItem
+	public class BarItem
 	{
 		string text = String.Empty;
 		
-		public FooItem()
+		public BarItem()
 		{
 		}
 		
-		public FooItem(string text)
+		public BarItem(string text)
 		{
 			this.text = text;
 		}
@@ -32,27 +32,27 @@ namespace PythonBinding.Tests.Utils
 		}
 	}
 	
-	public class FooItemCollection : Collection<FooItem>
+	public class BarItemCollection : Collection<BarItem>
 	{
-		public FooItemCollection()
+		public BarItemCollection()
 		{
 		}
 		
-		public void AddRange(FooItem[] items)
+		public void AddRange(BarItem[] items)
 		{
-			foreach (FooItem item in items) {
+			foreach (BarItem item in items) {
 				Add(item);
 			}
 		}
 	}
 	
-	public class FooItemCollectionParentComponent : Component
+	public class BarItemCollectionParentComponent : Component
 	{
-		FooItemCollection fooItems = new FooItemCollection();
+		BarItemCollection barItems = new BarItemCollection();
 		
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-		public FooItemCollection ParentFooItems {
-			get { return fooItems; }
+		public BarItemCollection ParentBarItems {
+			get { return barItems; }
 		}
 	}
 }

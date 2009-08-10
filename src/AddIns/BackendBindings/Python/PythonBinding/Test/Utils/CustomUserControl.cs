@@ -14,6 +14,7 @@ namespace PythonBinding.Tests.Utils
 	public class CustomUserControl : UserControl
 	{
 		FooItemCollection fooItems = new FooItemCollection();
+		BarItemCollectionParentComponent component = new BarItemCollectionParentComponent();
 		
 		public CustomUserControl()
 		{
@@ -22,6 +23,11 @@ namespace PythonBinding.Tests.Utils
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
 		public FooItemCollection FooItems {
 			get { return fooItems; }
+		}
+				
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+		public BarItemCollectionParentComponent ParentComponent {
+			get { return component; }
 		}
 	}
 }
