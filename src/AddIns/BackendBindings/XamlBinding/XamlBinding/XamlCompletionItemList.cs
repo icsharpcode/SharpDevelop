@@ -53,7 +53,7 @@ namespace ICSharpCode.XamlBinding
 				
 				XamlCompletionContext xamlContext = CompletionDataHelper.ResolveCompletionContext(context.Editor, context.CompletionChar);
 				
-				if (xamlContext.Description == XamlContextDescription.None)
+				if (xamlContext.Description == XamlContextDescription.None && (context.StartOffset <= 0 || context.Editor.Document.GetCharAt(context.StartOffset - 1) != '<'))
 					context.Editor.Document.Insert(context.StartOffset, "<");
 				
 				if (item is XamlCodeCompletionItem) {

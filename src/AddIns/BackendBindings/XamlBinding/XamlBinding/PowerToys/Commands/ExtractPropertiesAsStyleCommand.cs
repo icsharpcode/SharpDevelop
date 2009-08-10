@@ -73,7 +73,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		static IMember Resolve(XAttribute attribute, ITextEditor editor)
 		{
 			XamlContext context = CompletionDataHelper.ResolveContext(editor.Document.Text, editor.FileName,
-			                                                          attribute.GetLineNumber(), attribute.GetLinePosition());
+			                                                          Utils.GetOffsetFromFilePos(editor.Document.Text, attribute.GetLineNumber(), attribute.GetLinePosition()));
 			string prefix = context.XmlnsDefinitions.GetKeyByValue(attribute.Name.NamespaceName);
 			if (!string.IsNullOrEmpty(prefix))
 				prefix += ":";
@@ -87,7 +87,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		static IMember Resolve(XElement element, ITextEditor editor)
 		{
 			XamlContext context = CompletionDataHelper.ResolveContext(editor.Document.Text, editor.FileName,
-			                                                          element.GetLineNumber(), element.GetLinePosition());
+			                                                          Utils.GetOffsetFromFilePos(editor.Document.Text, element.GetLineNumber(), element.GetLinePosition()));
 			string prefix = context.XmlnsDefinitions.GetKeyByValue(element.Name.NamespaceName);
 			if (!string.IsNullOrEmpty(prefix))
 				prefix += ":";

@@ -1,6 +1,7 @@
 <Window x:Class="ICSharpCode.XamlBinding.PowerToys.Dialogs.SourceClassFormEditor"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ICSharpCode.XamlBinding.PowerToys.Dialogs"
 	Title="Create Business Form for Class: " WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
 	<Window.Resources>
 		<Style TargetType="{x:Type ListBox}">
@@ -47,6 +48,7 @@
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
+			<local:FieldEditor />
 		</Grid>
 	</Grid>
 </Window>

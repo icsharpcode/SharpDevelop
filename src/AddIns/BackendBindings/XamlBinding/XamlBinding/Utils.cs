@@ -77,21 +77,6 @@ namespace ICSharpCode.XamlBinding
 			return null;
 		}
 		
-		public static int GetOffsetFromValueStart(string xaml, int offset)
-		{
-			if (xaml == null)
-				throw new ArgumentNullException("xaml");
-			if (offset < 0 || offset > xaml.Length)
-				throw new ArgumentOutOfRangeException("offset", offset, "Value must be between 0 and " + xaml.Length);
-			
-			int start = offset;
-			
-			while (start > 0 && XmlParser.IsInsideAttributeValue(xaml, start))
-				start--;
-			
-			return offset - start - 1;
-		}
-		
 		public static string[] GetListOfExistingAttributeNames(string text, int line, int col)
 		{
 			List<string> list = new List<string>();
@@ -175,31 +160,6 @@ namespace ICSharpCode.XamlBinding
 			return offset + col - 1;
 		}
 		
-		static QualifiedNameWithLocation ResolveCurrentElement(string text, int offset, Dictionary<string, string> xmlnsDefinitions)
-		{
-			if (offset < 0)
-				return null;
-			
-			string elementName = text.GetWordAfterOffset(offset + 1).Trim('>', '<');
-			
-			string prefix = "";
-			string element = "";
-			
-			Location location = GetLocationInfoFromOffset(text, offset + 1);
-			
-			if (elementName.IndexOf(':') > -1) {
-				string[] data = elementName.Split(':');
-				prefix = data[0];
-				element = data[1];
-			} else {
-				element = elementName;
-			}
-			
-			string xmlns = xmlnsDefinitions.ContainsKey(prefix) ? xmlnsDefinitions[prefix] : string.Empty;
-			
-			return new QualifiedNameWithLocation(element, xmlns, prefix, location.Line, location.Column);
-		}
-		
 		public static Location GetLocationInfoFromOffset(string text, int offset)
 		{
 			string[] lines = text.Substring(0, offset).Split('\n');
@@ -211,92 +171,6 @@ namespace ICSharpCode.XamlBinding
 		class IgnoredXmlnsWrapper {
 			public IEnumerable<string> Items { get; set; }
 			public QualifiedNameWithLocation Item { get; set; }
-		}
-		
-		public 	static LookupInfo LookupInfoAtTarget(string fileContent, int caretLine, int caretColumn, int offset)
-		{
-			Stack<QualifiedNameWithLocation> stack = new Stack<QualifiedNameWithLocation>();
-			Stack<IgnoredXmlnsWrapper> ignoredXmlnsStack = new Stack<IgnoredXmlnsWrapper>();
-			
-			var isRoot = false;
-
-			XmlTextReader r = new XmlTextReader(new StringReader(fileContent));
-			r.XmlResolver = null;
-			
-			char[] separators = new char[] {
-				' ', '\t', '\n', '\r'
-			};
-			
-			var ignoredXmlns = new List<string>();
-			Dictionary<string, string> xmlns;
-
-			try {
-				r.WhitespaceHandling = WhitespaceHandling.Significant;
-				// move reader to correct position
-				while (r.Read() && !IsReaderAtTarget(r, caretLine, caretColumn)) {
-					switch (r.NodeType) {
-						case XmlNodeType.EndElement:
-							var stackItem = stack.PopOrDefault();
-							if (ignoredXmlnsStack.Count > 0 && ignoredXmlnsStack.Peek().Item == stackItem)
-								ignoredXmlnsStack.PopOrDefault();
-							break;
-						case XmlNodeType.Element:
-							if (!r.IsEmptyElement) {
-								var item = new QualifiedNameWithLocation(r.LocalName, r.NamespaceURI, r.Prefix, r.LineNumber, r.LinePosition);
-								stack.Push(item);
-								if (r.HasAttributes) {
-									r.MoveToFirstAttribute();
-									do {
-										if (r.NamespaceURI == CompletionDataHelper.MarkupCompatibilityNamespace) {
-											if (r.LocalName == "Ignorable") {
-												ignoredXmlnsStack.Push(
-													new IgnoredXmlnsWrapper() { Items = r.Value.Split(separators, StringSplitOptions.RemoveEmptyEntries), Item = item }
-												);
-											} else if (r.LocalName == "ProcessContent") {
-												// TODO : add support for ProcessContent
-											}
-										}
-									} while (r.MoveToNextAttribute());
-								}
-							}
-							break;
-					}
-				}
-			} catch (XmlException) {
-			} finally {
-				ignoredXmlns = ignoredXmlnsStack.SelectMany(item => item.Items).ToList();
-				xmlns = new Dictionary<string, string>(r.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml));
-			}
-			
-			var activeElementStartIndex = XmlParser.GetActiveElementStartIndex(fileContent, Math.Min(offset + 1, fileContent.Length - 1));
-			
-			var active = ResolveCurrentElement(fileContent, activeElementStartIndex, xmlns);
-			var parent = stack.PopOrDefault();
-			
-			if (active == parent)
-				parent = stack.PopOrDefault();
-			
-			if (parent == null)
-				isRoot = true;
-			
-			if (active == null)
-				active = parent;
-			
-			if (parent != null)
-				stack.Push(parent);
-			
-			if (active != null && active != parent)
-				stack.Push(active);
-			
-			return new LookupInfo() {
-				Active = active,
-				ActiveElementStartIndex = activeElementStartIndex,
-				IgnoredXmlns = ignoredXmlns,
-				IsRoot = isRoot,
-				Parent = parent,
-				Ancestors = stack,
-				XmlnsDefinitions = xmlns
-			};
 		}
 		
 		public 	static XmlTextReader CreateReaderAtTarget(string fileContent, int caretLine, int caretColumn)

@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="ICSharpCode.XamlBinding.PowerToys.Dialogs.FieldEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Border>
+    <Grid>
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Left" Text="Path" />
+        <TextBlock DockPanel.Dock="Left" Text="Id" />
+        <TextBlock DockPanel.Dock="Left" Text="Integer" />
+        <ComboBox DockPanel.Dock="Right" />
+        <TextBlock DockPanel.Dock="Right" Text="Control" />
+      </DockPanel>
+      <DockPanel></DockPanel>
+      <DockPanel></DockPanel>
+    </Grid>
+  </Border>
+</UserControl>

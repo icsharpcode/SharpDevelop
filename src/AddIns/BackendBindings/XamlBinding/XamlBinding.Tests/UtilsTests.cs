@@ -18,30 +18,6 @@ namespace ICSharpCode.XamlBinding.Tests
 	public class UtilsTests
 	{
 		[Test]
-		public void DiffTestSimple()
-		{
-			string xaml = "<Test val1=\"Test\" />";
-			int offset = "<Test val1=\"Te".Length;
-			int expectedResult = offset - "<Test val1=\"".Length;
-			
-			int actualResult = Utils.GetOffsetFromValueStart(xaml, offset);
-			
-			Assert.AreEqual(expectedResult, actualResult);
-		}
-		
-		[Test]
-		public void DiffTestSimple2()
-		{
-			string xaml = "<Test val1=\"Test\" />";
-			int offset = "<Test val1=\"".Length;
-			int expectedResult = offset - "<Test val1=\"".Length;
-			
-			int actualResult = Utils.GetOffsetFromValueStart(xaml, offset);
-			
-			Assert.AreEqual(expectedResult, actualResult);
-		}
-		
-		[Test]
 		public void GetOffsetTest1()
 		{
 			string text = @"SharpDevelop uses the MSBuild

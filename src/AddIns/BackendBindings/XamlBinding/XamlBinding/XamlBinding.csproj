@@ -99,6 +99,10 @@
       <DependentUpon>ExtractPropertiesAsStyleDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PowerToys\Dialogs\FieldEditor.xaml.cs">
+      <DependentUpon>FieldEditor.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PowerToys\Dialogs\GridLengthEditor.xaml.cs">
       <DependentUpon>GridLengthEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -201,6 +205,7 @@
     <Page Include="Options\CodeCompletion.xaml" />
     <Page Include="PowerToys\Dialogs\EditGridColumnsAndRowsDialog.xaml" />
     <Page Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml" />
+    <Page Include="PowerToys\Dialogs\FieldEditor.xaml" />
     <Page Include="PowerToys\Dialogs\GridLengthEditor.xaml" />
     <Page Include="PowerToys\Dialogs\SelectSourceClassDialog.xaml" />
     <Page Include="PowerToys\Dialogs\SourceClassFormEditor.xaml" />

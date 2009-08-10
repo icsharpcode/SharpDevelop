@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.XmlParser;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
 using System.Xml.Linq;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
@@ -120,6 +120,16 @@ namespace ICSharpCode.XamlBinding
 		public static IEnumerable<T> Add<T>(this IEnumerable<T> items, params T[] addItems)
 		{
 			return items.Concat(addItems);
+		}
+		
+		public static QualifiedNameWithLocation ToQualifiedName(this RawAttribute thisValue)
+		{
+			return new QualifiedNameWithLocation(thisValue.LocalName, thisValue.Namespace, thisValue.Prefix, thisValue.StartOffset);
+		}
+		
+		public static QualifiedNameWithLocation ToQualifiedName(this RawElement thisValue)
+		{
+			return new QualifiedNameWithLocation(thisValue.LocalName, thisValue.Namespace, thisValue.Prefix, thisValue.StartOffset);
 		}
 		
 		public static string GetWordBeforeCaretExtended(this ITextEditor editor)

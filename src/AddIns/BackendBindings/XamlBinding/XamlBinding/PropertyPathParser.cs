@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace ICSharpCode.XamlBinding
@@ -73,12 +72,7 @@ namespace ICSharpCode.XamlBinding
 				} else {
 					token += v;
 				}
-				
-				Debug.Print("inBrace: " + inBrace + " token: '" + token + "'");
 			}
-			
-			Debug.Print("inBrace: " + inBrace + " token: '" + token + "' lastToken: '" + lastToken + "'");
-
 			
 			if (inBrace && !string.IsNullOrEmpty(token)) {
 				yield return new PropertyPathSegment(SegmentKind.AttachedProperty, "(" + token.Trim('.', '/'));

@@ -14,7 +14,8 @@ namespace ICSharpCode.XamlBinding.Tests
 	[TestFixture]
 	public class DependencyPropertiesTests : TextEditorBasedTests
 	{
-		//[Test]
+		[Test]
+		[Ignore]
 		public void NormalDependencyPropertiesTest()
 		{
 			string fileContent = @"<Window x:Class='XamlTest.Window1'

@@ -112,7 +112,21 @@ namespace SearchAndReplace
 		
 		public override void ActivateItem()
 		{
-			FileService.JumpToFilePosition(result.FileName, lineNumber, column);
+			ITextEditorProvider provider = FileService.JumpToFilePosition(result.FileName, lineNumber, column) as ITextEditorProvider;
+			if (provider != null) {
+				ITextMarkerService markerService = provider.TextEditor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+				if (markerService != null) {
+					ITextMarker marker = markerService.Create(provider.TextEditor.Document.PositionToOffset(lineNumber, column), result.Length);
+					marker.BackgroundColor = Colors.Orange;
+					marker.Tag = this;
+					EventHandler remover = null;
+					remover = (sender, e) => {
+						marker.Delete();
+						provider.TextEditor.Caret.PositionChanged -= remover;
+					};
+					provider.TextEditor.Caret.PositionChanged += remover;
+				}
+			}
 		}
 	}
 }

@@ -134,5 +134,8 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="CompletionTestsBase.xaml" />
+    <None Include="Test5.xaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

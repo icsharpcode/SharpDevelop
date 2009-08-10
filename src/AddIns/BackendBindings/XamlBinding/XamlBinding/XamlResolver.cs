@@ -38,7 +38,7 @@ namespace ICSharpCode.XamlBinding
 			this.caretLine = expressionResult.Region.BeginLine;
 			this.caretColumn = expressionResult.Region.BeginColumn;
 			this.callingClass = parseInfo.BestCompilationUnit.GetInnermostClass(caretLine, caretColumn);
-			this.context = expressionResult.Context as XamlContext ?? CompletionDataHelper.ResolveContext(fileContent, parseInfo.MostRecentCompilationUnit.FileName, caretLine, caretColumn);
+			this.context = expressionResult.Context as XamlContext ?? CompletionDataHelper.ResolveContext(fileContent, parseInfo.MostRecentCompilationUnit.FileName, Utils.GetOffsetFromFilePos(fileContent, caretLine, caretColumn));
 			
 			switch (this.context.Description) {
 				case XamlContextDescription.AtTag:
@@ -47,7 +47,7 @@ namespace ICSharpCode.XamlBinding
 				case XamlContextDescription.InTag:
 					return ResolveAttribute(resolveExpression) ?? ResolveElementName(resolveExpression);
 				case XamlContextDescription.InAttributeValue:
-					MemberResolveResult mrr = ResolveAttribute(context.AttributeName.FullXmlName);
+					MemberResolveResult mrr = ResolveAttribute(context.Attribute.Name);
 					if (mrr != null) {
 						var rr = ResolveAttributeValue(mrr.ResolvedMember, resolveExpression) ?? mrr;
 						return rr;
@@ -213,8 +213,8 @@ namespace ICSharpCode.XamlBinding
 				return ResolveProperty(attributeXmlNamespace, className, attributeName, true);
 			}
 			else {
-				QualifiedNameWithLocation lastElement = context.ActiveElement;
-				return ResolveProperty(lastElement.Namespace, lastElement.Name, attributeName, false);
+				var lastElement = context.ActiveElement;
+				return ResolveProperty(lastElement.Namespace, lastElement.LocalName, attributeName, false);
 			}
 		}
 

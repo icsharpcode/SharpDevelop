@@ -44,7 +44,9 @@ namespace ICSharpCode.XamlBinding.Tests
 			this.textEditor.Caret.Offset = fileHeader.Length;
 			this.textEditor.CreateParseInformation();
 						
-			XamlCodeCompletionBinding.Instance.CtrlSpace(textEditor);
+			bool invoked = XamlCodeCompletionBinding.Instance.CtrlSpace(textEditor);
+			
+			Assert.IsTrue(invoked);
 			
 			ICompletionItemList list = this.textEditor.LastCompletionItemList;
 			

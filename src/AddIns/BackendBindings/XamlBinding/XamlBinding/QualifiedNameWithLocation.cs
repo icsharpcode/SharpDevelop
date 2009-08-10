@@ -16,7 +16,8 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public class QualifiedNameWithLocation : IEquatable<QualifiedNameWithLocation> {
 		public QualifiedName QualifiedName { get; private set; }
-		public Location Location { get; private set; }
+		
+		public int Offset { get; private set; }
 		
 		public string Name {
 			get {
@@ -48,14 +49,9 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		public QualifiedNameWithLocation(string localName, string namespaceName, string prefix, int line, int column)
-			: this(localName, namespaceName, prefix, new Location(column, line))
-		{
-		}
-		
-		public QualifiedNameWithLocation(string localName, string namespaceName, string prefix, Location location) {
+		public QualifiedNameWithLocation(string localName, string namespaceName, string prefix, int offset) {
 			QualifiedName = new QualifiedName(localName, namespaceName, prefix);
-			Location = location;
+			Offset = offset;
 		}
 		
 		public override bool Equals(object obj)
@@ -65,7 +61,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public override int GetHashCode()
 		{
-			return Name.GetHashCode() ^ Location.GetHashCode();
+			return QualifiedName.GetHashCode() ^ Offset.GetHashCode();
 		}
 		
 		public bool Equals(QualifiedNameWithLocation other)
@@ -74,7 +70,7 @@ namespace ICSharpCode.XamlBinding
 				return false;
 			
 			return other.QualifiedName == QualifiedName &&
-				other.Location == Location;
+				other.Offset == Offset;
 		}
 		
 		public static bool operator ==(QualifiedNameWithLocation lhs, QualifiedNameWithLocation rhs)
@@ -94,7 +90,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public override string ToString()
 		{
-			return this.QualifiedName + " " + Location;
+			return this.QualifiedName + " Offset: " + Offset;
 		}
 	}
 }

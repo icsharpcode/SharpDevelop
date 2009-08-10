@@ -5,13 +5,13 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.XmlParser;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml;
-
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
@@ -21,10 +21,10 @@ using ICSharpCode.XmlEditor;
 namespace ICSharpCode.XamlBinding
 {
 	public class XamlContext : ExpressionContext {
-		public QualifiedNameWithLocation ActiveElement { get; set; }
-		public QualifiedNameWithLocation ParentElement { get; set; }
-		public List<QualifiedNameWithLocation> Ancestors { get; set; }
-		public QualifiedNameWithLocation AttributeName { get; set; }
+		public RawElement ActiveElement { get; set; }
+		public RawElement ParentElement { get; set; }
+		public List<RawElement> Ancestors { get; set; }
+		new public RawAttribute Attribute { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public string RawAttributeValue { get; set; }
 		public int ValueStartOffset { get; set; }
@@ -49,7 +49,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			this.ActiveElement = context.ActiveElement;
 			this.Ancestors = context.Ancestors;
-			this.AttributeName = context.AttributeName;
+			this.Attribute = context.Attribute;
 			this.AttributeValue = context.AttributeValue;
 			this.Description = context.Description;
 			this.ParentElement = context.ParentElement;
@@ -90,6 +90,10 @@ namespace ICSharpCode.XamlBinding
 		/// <summary>
 		/// Inside '&lt;!-- --&gt;'
 		/// </summary>
-		InComment
+		InComment,
+		/// <summary>
+		/// Inside '&lt;![CDATA[]]&gt;'
+		/// </summary>
+		InCData
 	}
 }

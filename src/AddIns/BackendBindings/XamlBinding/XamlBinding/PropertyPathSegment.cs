@@ -34,6 +34,12 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
+		[System.Security.SecuritySafeCriticalAttribute()]
+		public override int GetHashCode()
+		{
+			return GetHashCode(this);
+		}
+		
 		public bool Equals(PropertyPathSegment other)
 		{
 			if (other == null)

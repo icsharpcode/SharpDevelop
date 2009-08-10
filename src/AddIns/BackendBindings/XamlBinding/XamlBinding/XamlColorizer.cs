@@ -131,17 +131,17 @@ namespace ICSharpCode.XamlBinding
 				List<HighlightingInfo> infos = new List<HighlightingInfo>();
 				
 				do {
-					if (index + 1 >= LineText.Length) 
+					if (index + 1 >= LineText.Length)
 						break;
 
 					index = LineText.IndexOfAny(index + 1, '=', '.');
 					if (index > -1) {
-						context = CompletionDataHelper.ResolveContext(FileContent, FileName, LineNumber, index);
+						context = CompletionDataHelper.ResolveContext(FileContent, FileName, Offset + index);
 						if (context.ActiveElement == null)
 							continue;
-						string elementName = context.ActiveElement.FullXmlName;
+						string elementName = context.ActiveElement.Name;
 						int propertyNameIndex = elementName.IndexOf('.');
-						string attribute = (context.AttributeName != null) ? context.AttributeName.FullXmlName : string.Empty;
+						string attribute = (context.Attribute != null) ? context.Attribute.Name : string.Empty;
 						if (attribute.Contains(".")) {
 							int tmp = attribute.IndexOf('.');
 							index += attribute.Substring(tmp).Length;
@@ -151,7 +151,7 @@ namespace ICSharpCode.XamlBinding
 						}
 						if (context.Description != XamlContextDescription.InComment && !string.IsNullOrEmpty(attribute)) {
 							int startIndex = LineText.Substring(0, Math.Min(index, LineText.Length)).LastIndexOf(attribute, StringComparison.Ordinal);
-							if (startIndex >= 0) {
+							if (startIndex >= 0 && !XmlParser.IsInsideAttributeValue(this.FileContent, this.Offset + startIndex)) {
 								if (propertyNameIndex > -1)
 									infos.Add(new HighlightingInfo(attribute.Trim('/'), startIndex + propertyNameIndex + 1, startIndex + attribute.TrimEnd('/').Length, Offset, context));
 								else
@@ -245,21 +245,23 @@ namespace ICSharpCode.XamlBinding
 		
 		void ColorizeMember(HighlightingInfo info, DocumentLine line, IMember member)
 		{
-			if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":", StringComparison.OrdinalIgnoreCase))) {
-				ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightIgnored);
-			} else {
-				if (member != null) {
-					if (member is IEvent)
-						ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
-					else
-						ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
+			try {
+				if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":", StringComparison.OrdinalIgnoreCase))) {
+					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightIgnored);
 				} else {
-					if (info.Token.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase) || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":", StringComparison.OrdinalIgnoreCase))
-						ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
-					else
-						Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);
+					if (member != null) {
+						if (member is IEvent)
+							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
+						else
+							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
+					} else {
+						if (info.Token.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase) || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":", StringComparison.OrdinalIgnoreCase))
+							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
+						else
+							Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);
+					}
 				}
-			}
+			} catch (ArgumentOutOfRangeException) {}
 		}
 		
 		void ColorizeInvalidated()

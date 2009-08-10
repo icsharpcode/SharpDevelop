@@ -20,7 +20,8 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void ContextNoneDescriptionTest()
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 2, 1);
+			int offset = "<Grid>\n".Length;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual(XamlContextDescription.None, context.Description);
 		}
@@ -29,7 +30,8 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void ContextNoneDescriptionTest2()
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 1, 7);
+			int offset = "<Grid>".Length;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual(XamlContextDescription.None, context.Description);
 		}
@@ -38,7 +40,8 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void ContextNoneDescriptionTest3()
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 3, 1);
+			int offset = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n".Length;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual(XamlContextDescription.None, context.Description);
 		}
@@ -47,7 +50,18 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void ContextAtTagDescriptionTest()
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 1, 2);
+			int offset = "<G".Length;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			
+			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
+		}
+		
+		[Test]
+		public void ContextAtTagDescriptionTest1()
+		{
+			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" /> <\n</Grid>";
+			int offset = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" /> <".Length;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
 		}
@@ -56,7 +70,18 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void ContextAtTagDescriptionTest2()
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 2, 11);
+			int offset = "<Grid>\n".Length + 11;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			
+			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
+		}
+		
+		[Test]
+		public void ContextAtTagDescriptionTest4()
+		{
+			string xaml = "<Grid>\n\t<\n</Grid>";
+			int offset = "<Grid>\n\t<".Length;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
 		}
@@ -65,7 +90,8 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void ContextInTagDescriptionTest()
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 2, 26);
+			int offset = "<Grid>\n".Length + 26;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual(XamlContextDescription.InTag, context.Description);
 		}
@@ -74,7 +100,8 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void ElementNameWithDotTest1()
 		{
 			string xaml = "<Grid>\n\t<Grid.ColumnDefinitions />\n</Grid>";
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 2, 12);
+			int offset = "<Grid>\n".Length + 12;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual("Grid.ColumnDefinitions", context.ActiveElement.Name);
 		}
@@ -83,16 +110,62 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void ContextAtTagDescriptionTest3()
 		{
 			string xaml = File.ReadAllText("Test4.xaml");
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 13, 8);
+			int offset = 413;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
+		}
+		
+		[Test]
+		public void ContextInMarkupExtensionTest()
+		{
+			string xaml = "<Test attr=\"{Test}\" />";
+			int offset = "<Test attr=\"{Te".Length;
+			
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			
+			Assert.AreEqual(XamlContextDescription.InMarkupExtension, context.Description);
+		}
+		
+		[Test]
+		public void ContextInMarkupExtensionTest2()
+		{
+			string xaml = "<Test attr=\"Test\" />";
+			int offset = "<Test attr=\"Te".Length;
+			
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			
+			Assert.AreEqual(XamlContextDescription.InAttributeValue, context.Description);
+		}
+		
+		[Test]
+		public void ContextInMarkupExtensionTest3()
+		{
+			string xaml = "<Test attr=\"{}{Test}\" />";
+			int offset = "<Test attr=\"{}{Te".Length;
+			
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			
+			Assert.AreEqual(XamlContextDescription.InAttributeValue, context.Description);
+		}
+		
+		[Test]
+		public void ContextInMarkupExtensionTest4()
+		{
+			string xaml = "<Test attr=\"Test />";
+			int offset = "<Test attr=\"Te".Length;
+			
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			
+			Assert.AreEqual(XamlContextDescription.InAttributeValue, context.Description);
 		}
 		
 		[Test]
 		public void ParentElementTestSimple1()
 		{
 			string xaml = File.ReadAllText("Test1.xaml");
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 8, 12);
+			int offset = 272;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual("CheckBox", context.ActiveElement.Name);
 			Assert.AreEqual("Grid", context.ParentElement.Name);
@@ -102,7 +175,8 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void ParentElementTestSimple2()
 		{
 			string xaml = File.ReadAllText("Test4.xaml");
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 13, 8);
+			int offset = 413;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual("Grid", context.ActiveElement.Name);
 			Assert.AreEqual("Grid", context.ParentElement.Name);
@@ -112,7 +186,8 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void RootElementTest()
 		{
 			string xaml = File.ReadAllText("Test1.xaml");
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 2, 9);
+			int offset = 31;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual("Window", context.ActiveElement.Name);
 			Assert.AreEqual(null, context.ParentElement);
@@ -122,7 +197,8 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void IgnoredXmlnsTest1()
 		{
 			string xaml = File.ReadAllText("Test2.xaml");
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", 11, 24);
+			int offset = 447;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual(1, context.IgnoredXmlns.Count);
 			Assert.AreEqual("d", context.IgnoredXmlns[0]);
@@ -131,47 +207,15 @@ namespace ICSharpCode.XamlBinding.Tests
 		[Test]
 		public void AncestorDetectionTest1()
 		{
-			string xaml = @"<Window x:Class='XamlTest.Window1'
-	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
-	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
-	Title='XamlTest' Height='300' Width='300'>
-	<Window.Resources>
-		<Style TargetType='Button'>
-			<Setter Property='Background' Value='Blue' />
-		</Style>
-	</Window.Resources>
-	<Grid>
-      <!-- The width of this button is animated. -->
-      <Button Name='myWidthAnimatedButton'
-        Height='30' Width='200' HorizontalAlignment='Left'>
-        A Button   
-        <Button.Triggers>
-          <!-- Animates the width of the first button 
-               from 200 to 300. -->         
-          <EventTrigger RoutedEvent='Button.Click'>
-            <BeginStoryboard>
-              <Storyboard>         <!-- line 20 -->  
-                <DoubleAnimation Storyboard.TargetName='myWidthAnimatedButton'
-                  Storyboard.TargetProperty='Width' 
-                  From='200' To='300' Duration='0:0:3' />
-              </Storyboard>
-            </BeginStoryboard>
-          </EventTrigger>
-        </Button.Triggers>
-      </Button>
-	</Grid>
-</Window>";
-			
-			int line = 22;
-			int column = 43;
-			
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, string.Empty, line, column);
+			string xaml = File.ReadAllText("Test5.xaml");
+			int offset = 881;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			string[] ancestors = new string[] {
 				"DoubleAnimation", "Storyboard",
-				"BeginStoryboard", "EventTrigger", 
-				"Button.Triggers", "Button", 
-				"Grid", "Window" 
+				"BeginStoryboard", "EventTrigger",
+				"Button.Triggers", "Button",
+				"Grid", "Window"
 			};
 			
 			Assert.AreEqual("DoubleAnimation", context.ActiveElement.Name);

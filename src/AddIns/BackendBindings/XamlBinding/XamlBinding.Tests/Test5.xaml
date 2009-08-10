@@ -1,0 +1,30 @@
+﻿<Window x:Class='XamlTest.Window1'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+	Title='XamlTest' Height='300' Width='300'>
+	<Window.Resources>
+		<Style TargetType='Button'>
+			<Setter Property='Background' Value='Blue' />
+		</Style>
+	</Window.Resources>
+	<Grid>
+      <!-- The width of this button is animated. -->
+      <Button Name='myWidthAnimatedButton'
+        Height='30' Width='200' HorizontalAlignment='Left'>
+        A Button
+        <Button.Triggers>
+          <!-- Animates the width of the first button
+               from 200 to 300. -->
+          <EventTrigger RoutedEvent='Button.Click'>
+            <BeginStoryboard>
+              <Storyboard>
+                <DoubleAnimation Storyboard.TargetName='myWidthAnimatedButton'
+                  Storyboard.TargetProperty='Width'
+                  From='200' To='300' Duration='0:0:3' />
+              </Storyboard>
+            </BeginStoryboard>
+          </EventTrigger>
+        </Button.Triggers>
+      </Button>
+	</Grid>
+</Window>
