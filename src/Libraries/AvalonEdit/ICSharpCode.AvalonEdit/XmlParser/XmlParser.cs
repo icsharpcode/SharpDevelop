@@ -1257,10 +1257,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				return ReadSingleObject(objStream);
 			} else {
 				RawTag currTag = (RawTag)curr;
-				if (currTag.IsStartTag || currTag == StartTagPlaceholder) {
+				if (currTag == StartTagPlaceholder) {
+					return ReadElement(objStream);
+				} else if (currTag.IsStartTag && currTag.ClosingBracket == ">") {
 					return ReadElement(objStream);
 				} else {
-					throw new Exception("Tag must be start tag");
+					return ReadSingleObject(objStream);
 				}
 			}
 		}
