@@ -539,7 +539,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						inputBindingInfo.RoutedCommandName = routedCommandName;
 						inputBindingInfo.DefaultGestures.AddRange(gestures);
 						
-						var categoryPath = "/MainMenu/View" + (Category == padContent.Category && padContent.Category != "Main" ? "/" + padContent.Class : "");
+						var categoryPath = "/MainMenu/View" + (Category == padContent.Category && padContent.Category != "Main" ? "/" + padContent.Category : "");
 						var category = ICSharpCode.Core.Presentation.CommandManager.GetInputBindingCategory(categoryPath, false);
 						if(category == null) {
 							category = new InputBindingCategory(categoryPath, padContent.Category);
