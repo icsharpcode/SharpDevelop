@@ -46,6 +46,9 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="PresentationFramework.Aero">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -218,14 +221,15 @@
     <Compile Include="Src\Project\Solution\ProjectTypeGuids.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
-    <Compile Include="Src\Services\Debugger\DebuggerPopup.cs" />
-    <Compile Include="Src\Services\Debugger\DebuggerTooltipControl.xaml.cs">
+    <Compile Include="Src\Services\Debugger\Tooltips\DebuggerPopup.cs" />
+    <Compile Include="Src\Services\Debugger\Tooltips\DebuggerTooltipControl.xaml.cs">
       <DependentUpon>DebuggerTooltipControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Services\Debugger\ITreeNode.cs" />
-    <Compile Include="Src\Services\Debugger\LazyItemsControl.cs" />
-    <Compile Include="Src\Services\Debugger\VirtualizingIEnumerable.cs" />
+    <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
+    <Compile Include="Src\Services\Debugger\Tooltips\LazyItemsControl.cs" />
+    <Compile Include="Src\Services\Debugger\Tooltips\VirtualizingIEnumerable.cs" />
+    <Compile Include="Src\Services\Debugger\Tooltips\VisualizerPicker.cs" />
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
@@ -848,6 +852,7 @@
     </Content>
     <Folder Include="Src\Editor" />
     <Folder Include="Src\Project\MSBuildEngine" />
+    <Folder Include="Src\Services\Debugger\Tooltips" />
     <Folder Include="Src\Services\LanguageBinding" />
     <Folder Include="Src\Services\Profiler" />
     <Folder Include="Src\Util" />
@@ -878,7 +883,8 @@
     <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />
     <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
-    <Page Include="Src\Services\Debugger\DebuggerTooltipControl.xaml" />
+    <Page Include="Src\Services\Debugger\Tooltips\DebuggerTooltipControl.xaml" />
+    <Page Include="Src\Services\Debugger\Tooltips\VisualizerPicker.xaml" />
     <Page Include="Src\TextEditor\Gui\Dialogs\GotoDialog.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
