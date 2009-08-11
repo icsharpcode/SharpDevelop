@@ -82,8 +82,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 			SDCommandManager.RegisterCommandBindingInfo(commandBinding);
 		}
 		
-		static EditingCommandHandler()
+		private static bool bindingsRegistered;
+		
+		public static void RegisterBindings()
 		{
+			if(bindingsRegistered) return;
+			bindingsRegistered = true;
+			
 			ClassWideBindingGroup = new BindingGroup("EditingCommandHandler");
 			classWideInputBindingCategory = new InputBindingCategory("/EditingCommands", "Editing commands");
 			SDCommandManager.RegisterInputBindingCategory(classWideInputBindingCategory);

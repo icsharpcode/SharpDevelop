@@ -6,10 +6,18 @@ using System.Collections;
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// Description of InputGestureCollectionExtensions.
+	/// Contains utility methods for work with <see cref="InputGestureCollection" />
 	/// </summary>
 	public static class InputGestureCollectionExtensions
 	{
+		/// <summary>
+		/// Determines whether any item from first <see cref="InputGestureCollection" /> is qualified as template for
+		/// any item from second <see cref="InputGestureCollection" /> when examining using specific <see cref="GestureCompareMode" /> 
+		/// </summary>
+		/// <param name="inputGestureTemplateCollection">Collection of examined templates</param>
+		/// <param name="testedInputGestureCollection">Collection of examined gestures</param>
+		/// <param name="mode">Additional comparing rules. See <see cref="GestureCompareMode" /> for details</param>
+		/// <returns><code>true</code> if first collection contains item which can be qualified as template for any item from second collection; otherwise <code>false</code></returns>
 		public static bool ContainsTemplateForAny(this InputGestureCollection inputGestureTemplateCollection, InputGestureCollection testedInputGestureCollection, GestureCompareMode mode) {
 			if((inputGestureTemplateCollection == null || inputGestureTemplateCollection.Count == 0) && (testedInputGestureCollection == null || testedInputGestureCollection.Count == 0)) {
 				return true;
@@ -23,7 +31,14 @@ namespace ICSharpCode.Core.Presentation
 			return false;
 		}
 		
-		
+		/// <summary>
+		/// Determines whether any item from first <see cref="InputGestureCollection" /> is qualified as template for
+		/// provided <see cref="InputGesture" /> when examining using specific <see cref="GestureCompareMode" /> 
+		/// </summary>
+		/// <param name="inputGestureTemplateCollection">Collection of examined templates</param>
+		/// <param name="testedInputGestureCollection">Examined Gesture</param>
+		/// <param name="mode">Additional comparing rules. See <see cref="GestureCompareMode" /> for details</param>
+		/// <returns><code>true</code> if collection contains template which match provided <see cref="InputGesture" />; otherwise <code>false</code></returns>
 		public static bool ContainsTemplateFor(this InputGestureCollection inputGestureTemplateCollection, InputGesture testedGesture, GestureCompareMode mode) {
 			foreach (InputGesture template in inputGestureTemplateCollection) {
 				if (template.IsTemplateFor(testedGesture, mode)) {
@@ -35,9 +50,12 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Sort key gestures within input gesture collection by length and type
-		/// Shorter gestures should be first so they could be matched first.
+		/// Sort bindings in <see cref="InputBindingCollection" /> according to number of chords each <see cref="InputBinding" />
+		/// contains. 
+		/// 
+		/// Bindings associated with gestures having more chords should be on top.
 		/// </summary>
+		/// <param name="inputGestureCollection"></param>
 		public static void SortByChords(this InputBindingCollection inputGestureCollection) 
 		{
 			ArrayList.Adapter(inputGestureCollection).Sort(new ChordsCountComparer());

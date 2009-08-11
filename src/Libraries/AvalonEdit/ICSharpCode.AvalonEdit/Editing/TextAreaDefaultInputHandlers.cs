@@ -38,12 +38,20 @@ namespace ICSharpCode.AvalonEdit.Editing
 			get; private set;
 		}
 		
-		static TextAreaDefaultInputHandler()
+		private static bool bindingsRegistered;
+		
+		public static void RegisterBindings()
 		{
+			if(bindingsRegistered) return;
+			bindingsRegistered = true;
+			
 			ClassWideBindingGroup = new BindingGroup("TextAreaDefaultInputHandler");	
 			
 			AddCommandBinding("ApplicationCommands.Undo", CanExecuteUndo, ExecuteUndo);
 			AddCommandBinding("ApplicationCommands.Redo", CanExecuteRedo, ExecuteRedo);
+			
+			CaretNavigationCommandHandler.RegisterBindings();
+			EditingCommandHandler.RegisterBindings();
 		}
 		
 		static void AddCommandBinding(string routedCommandName, CanExecuteRoutedEventHandler canExecuteHandler, ExecutedRoutedEventHandler executedHandler)

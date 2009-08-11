@@ -90,6 +90,7 @@
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="DropDownButton.cs" />
     <Compile Include="GetBitmapExtension.cs" />
+    <Compile Include="Input\GestureCompareMode.cs" />
     <Compile Include="Input\InputGestureCollectionConverter.cs" />
     <Compile Include="Input\ObservableInputGestureCollection.cs" />
     <Compile Include="IOptionBindingContainer.cs" />

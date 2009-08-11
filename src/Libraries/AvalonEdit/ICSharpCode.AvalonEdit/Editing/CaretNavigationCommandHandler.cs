@@ -73,8 +73,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 			SDCommandManager.RegisterCommandBindingInfo(commandBinding);
 		}
 		
-		static CaretNavigationCommandHandler()
+		private static bool bindingsRegistered;
+		
+		public static void RegisterBindings()
 		{
+			if(bindingsRegistered) return;
+			bindingsRegistered = true;
+			
 			ClassWideBindingGroup = new BindingGroup("CaretNavigationCommandHandler");
 			classWideInputBindingCategory = new InputBindingCategory("/CaretNavigation", "Caret navigation commands");
 			SDCommandManager.RegisterInputBindingCategory(classWideInputBindingCategory);

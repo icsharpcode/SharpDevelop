@@ -1,9 +1,3 @@
-/*
- * Created by SharpDevelop.
- * User: Sergej Andrejev
- * Date: 7/17/2009
- * Time: 8:56 AM
- */
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,33 +8,40 @@ using System.Windows.Input;
 namespace ICSharpCode.Core.Presentation
 {
     /// <summary>
-    /// Description of ObservableInputBindingCollection.
+    /// Represents observable collection of <see cref="InputGesture" />
     /// </summary>
     public class ObservableInputGestureCollection : IList<InputGesture>, INotifyCollectionChanged, IEnumerable<InputGesture>, ICollection<InputGesture>
     {
 		private ObservableCollection<InputGesture> observedInputGestures;
     	
+		/// <summary>
+		/// Creates new instance of <see cref="ObservableInputGestureCollection" />
+		/// </summary>
 		public ObservableInputGestureCollection()
 		{
 			observedInputGestures = new ObservableCollection<InputGesture>();
 			observedInputGestures.CollectionChanged += observedInputGestures_CollectionChanged;
 		}
 		
+		/// <inheritdoc /> 
 		public void Add(InputGesture item)
 		{
 			observedInputGestures.Add(item);
 		}
 		
+		/// <inheritdoc />
 		public void Insert(int index, InputGesture item)
 		{
 			observedInputGestures.Insert(index, item);
 		}
 		
+		/// <inheritdoc />
 		public void RemoveAt(int index)
 		{
 			observedInputGestures.RemoveAt(index);
 		}
 		
+		/// <inheritdoc />
 		public InputGesture this[int index] 
 		{
 			get {
@@ -51,6 +52,7 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <inheritdoc />
 		public bool IsReadOnly
 		{
 			get {
@@ -58,6 +60,7 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <inheritdoc />
 		public int Count
 		{
 			get {
@@ -65,57 +68,74 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <inheritdoc />
 		public bool Remove(InputGesture item)
 		{
 			return observedInputGestures.Remove(item);
 		}
 		
+		/// <inheritdoc />
 		public void Clear()
 		{
 			observedInputGestures.Clear();
 		}
 		
+		/// <inheritdoc />
 		public bool Contains(InputGesture item)
 		{
 			return observedInputGestures.Contains(item);
 		}
 		
-		public void AddRange(InputGestureCollection items)
+		/// <summary>
+		/// Add all instances from another <see cref="InputGestureCollection" />
+		/// </summary>
+		/// <param name="gestures">Collection of gestures</param>
+		public void AddRange(InputGestureCollection gestures)
 		{
-			foreach(InputGesture item in items) {
+			foreach(InputGesture item in gestures) {
 				Add(item);
 			}
 		}
 		
-		public void AddRange(IEnumerable<InputGesture> items)
+		/// <summary>
+		/// Add all <see cref="InputGesture" /> instances from enumerable collection
+		/// </summary>
+		/// <param name="gestures">Collection of gestures</param>
+		public void AddRange(IEnumerable<InputGesture> gestures)
 		{
-			foreach(InputGesture item in items) {
+			foreach(InputGesture item in gestures) {
 				Add(item);
 			}
 		}
 		
+		/// <inheritdoc />
 		public void CopyTo(InputGesture[] array, int arrayIndex)
 		{
 			observedInputGestures.CopyTo(array, arrayIndex);
 		}
 		
+		/// <inheritdoc />
 		public IEnumerator<InputGesture> GetEnumerator()
 		{
 			return observedInputGestures.GetEnumerator();
 		}
 		
+		/// <inheritdoc />
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			return observedInputGestures.GetEnumerator();
 		}
 
+		/// <inheritdoc />
 		public int IndexOf(InputGesture value)
 		{
 			return observedInputGestures.IndexOf(value);
 		}
 		
+		/// <inheritdoc />
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		
+		/// <inheritdoc />
 		private void observedInputGestures_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if(CollectionChanged != null) {
@@ -123,6 +143,9 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		/// <summary>
+		/// Gets <see cref="InputGestureCollection" /> containing all items from this observable collection
+		/// </summary>
 		public InputGestureCollection InputGesturesCollection
 		{
 			get {

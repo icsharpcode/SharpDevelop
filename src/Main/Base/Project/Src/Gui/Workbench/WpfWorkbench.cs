@@ -76,7 +76,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Initialize()
 		{	
-			
 			// Use shortened assembly qualified name to not lose user defined gestures
 			// when sharp develop is updated
 			SDCommandManager.DefaultOwnerTypeName =  SDCommandManager.GetShortAssemblyQualifiedName(GetType());
@@ -100,6 +99,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					ShowPad(content);
 				}
 			}
+			
+			// Hack: Later on bindings should be created from *.addin file
+			ICSharpCode.AvalonEdit.Editing.TextAreaDefaultInputHandler.RegisterBindings();
 			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath);
 			
