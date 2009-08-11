@@ -353,6 +353,7 @@ namespace ICSharpCode.TextEditor
 					p.Y = (p.Y - cp.Y) + (lineNumber * this.TextView.FontHeight) - this.virtualTop.Y;
 				}
 				p.Offset(3, 3);
+				toolTip.Owner = this.FindForm();
 				toolTip.Location = p;
 				toolTip.Description = text;
 				toolTip.HideOnClick = true;
