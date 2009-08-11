@@ -5,13 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-
 using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.XmlParser
@@ -111,12 +111,18 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary>
+		/// Generate syntax error when seeing enity reference other then the build-in ones
+		/// </summary>
+		public bool EntityReferenceIsError { get; set; }
+		
+		/// <summary>
 		/// Create new parser, but do not parse the text yet.
 		/// </summary>
 		public XmlParser(string input)
 		{
 			this.input = input;
 			this.userDocument = new RawDocument();
+			this.EntityReferenceIsError = true;
 		}
 		
 		/// <summary>
@@ -128,6 +134,24 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.textDocument.Changed += delegate(object sender, DocumentChangeEventArgs e) {
 				changesSinceLastParse.Add(e);
 			};
+		}
+		
+		/// <summary> Throws exception if condition is false </summary>
+		[Conditional("Debug")]
+		protected static void Assert(bool condition)
+		{
+			if (!condition) {
+				throw new Exception("Assertion failed");
+			}
+		}
+		
+		/// <summary> Throws exception if condition is false </summary>
+		[Conditional("Debug")]
+		protected static void Assert(bool condition, string message)
+		{
+			if (!condition) {
+				throw new Exception("Assertion failed: " + message);
+			}
 		}
 		
 		/// <summary>
@@ -153,10 +177,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				// FindOverlappingSegments apparently removes any segment intersecting of touching
 				// so that conviniently takes care of the +1 byte
 				foreach(RawObject obj in parsedItems.FindOverlappingSegments(change.Offset, 0)) {
+					// TODO: Self and ancestors
 					parsedItems.Remove(obj);
 					Log("Removed cached item {0}", obj);
 				}
 				foreach(TouchedMemoryRange memory in touchedMemoryRanges.FindOverlappingSegments(change.Offset, 0)) {
+					// TODO: Self and ancestors
 					parsedItems.Remove(memory.TouchedByObject);
 					touchedMemoryRanges.Remove(memory);
 					Log("Removed cached item {0} - depended on memory ({1}-{2})", memory.TouchedByObject, memory.StartOffset, memory.EndOffset);
@@ -173,7 +199,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			PrintStringCacheStats();
 			RawObject.LogDom("Updating main DOM tree...");
 			userDocument.UpdateDataFrom(parsedDocument);
-			userDocument.CheckLinksConsistency();
+			userDocument.CheckConsistency();
 			return userDocument;
 		}
 		
@@ -501,7 +527,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				}
 			}
 			if (start == currentLocation) {
-				res = null;
+				res = string.Empty;
 				return false;
 			} else {
 				res = GetText(start, currentLocation);
@@ -522,86 +548,24 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		#endregion
 		
 		/// <summary>
-		/// Context: any
+		/// Get flat hiearchy of the document.
+		/// Returns only Text, Tag or properly nested Element
 		/// </summary>
-		RawDocument ReadDocument()
+		List<RawObject> ReadFlatObjects()
 		{
-			RawDocument doc;
-			if (TryReadFromCacheOrNew(out doc)) return doc;
-			doc.IsParsed = true;
+			List<RawObject> stream = new List<RawObject>();
 			
-			// TODO: Errors in document structure
-			doc.StartOffset = currentLocation;
 			while(true) {
 				if (IsEndOfFile()) {
 					break;
 				} else if (TryPeek('<')) {
-					doc.AddChild(ReadElementOrTag());
+					stream.Add(ReadTag());
 				} else {
-					doc.AddChildren(ReadText(RawTextType.CharacterData));
+					stream.AddRange(ReadText(RawTextType.CharacterData));
 				}
 			}
-			doc.EndOffset = currentLocation;
 			
-			OnParsed(doc);
-			return doc;
-		}
-		
-		/// <summary>
-		/// Context: "&lt;"
-		/// </summary>
-		RawObject ReadElementOrTag()
-		{
-			AssertHasMoreData();
-			
-			if (TryPeek("<!") || TryPeek("</") || TryPeek("<?")) {
-				return ReadTag();
-			} else if (TryPeek('<')) {
-				return ReadElement();
-			} else {
-				throw new Exception("'<' expected");
-			}
-		}
-		
-		/// <summary>
-		/// Context: "&lt;"
-		/// </summary>
-		RawElement ReadElement()
-		{
-			AssertHasMoreData();
-			
-			RawElement element;
-			if (TryReadFromCacheOrNew(out element)) return element;
-			
-			element.StartOffset = currentLocation;
-			// Read start tag
-			element.AddChild(ReadTag());
-			Debug.Assert(element.StartTag.IsStartTag);
-			// Read content and end tag (only if properly closed)
-			if (element.StartTag.ClosingBracket == ">") {
-				while(true) {
-					if (IsEndOfFile()) {
-						OnSyntaxError(element, "Closing tag for '{0}' expected", element.StartTag.Name);
-						break;
-					} else if (TryPeek('<')) {
-						RawObject content = ReadElementOrTag();
-						element.AddChild(content);
-						RawTag endTag = content as RawTag;
-						if (endTag != null && endTag.IsEndTag) {
-							if (endTag != null && endTag.Name != element.StartTag.Name) {
-								OnSyntaxError(element, endTag.StartOffset + 2, endTag.StartOffset + 2 + endTag.Name.Length, "Name '{0}' expected.  End tag must have same name as start tag.", element.StartTag.Name);
-							}
-							break;
-						}
-					} else {
-						element.AddChildren(ReadText(RawTextType.CharacterData));
-					}
-				}
-			}
-			element.EndOffset = currentLocation;
-			
-			OnParsed(element);
-			return element;
+			return stream;
 		}
 		
 		/// <summary>
@@ -624,13 +588,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				// Read the name
 				string name;
 				if (TryReadName(out name)) {
-					tag.Name = name;
-					if (!IsValidName(tag.Name)) {
-						OnSyntaxError(tag, currentLocation - tag.Name.Length, currentLocation, "The name '{0}' is invalid", tag.Name);
+					if (!IsValidName(name)) {
+						OnSyntaxError(tag, currentLocation - name.Length, currentLocation, "The name '{0}' is invalid", name);
 					}
 				} else {
 					OnSyntaxError(tag, "Element name expected");
 				}
+				tag.Name = name;
 			}
 			
 			if (tag.IsStartTag || tag.IsEndTag) {
@@ -676,9 +640,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			// Read closing bracket
 			string bracket;
-			if (TryReadClosingBracket(out bracket)) {
-				tag.ClosingBracket = bracket;
-			}
+			TryReadClosingBracket(out bracket);
+			tag.ClosingBracket = bracket;
 			
 			// Error check
 			int brStart = currentLocation - (tag.ClosingBracket ?? string.Empty).Length;
@@ -766,7 +729,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			} else if (TryRead("]]>")) {
 				bracket = "]]>";
 			} else {
-				bracket = null;
+				bracket = string.Empty;
 				return false;
 			}
 			return true;
@@ -820,13 +783,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			// Read name
 			string name;
 			if (TryReadName(out name)) {
-				attr.Name = name;
-				if (!IsValidName(attr.Name)) {
-					OnSyntaxError(attr, attr.StartOffset, currentLocation, "The name '{0}' is invalid", attr.Name);
+				if (!IsValidName(name)) {
+					OnSyntaxError(attr, currentLocation - name.Length, currentLocation, "The name '{0}' is invalid", name);
 				}
 			} else {
 				OnSyntaxError(attr, "Attribute name expected");
 			}
+			attr.Name = name;
 			
 			// Read equals sign and surrounding whitespace
 			int checkpoint = currentLocation;
@@ -842,6 +805,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			} else {
 				GoBack(checkpoint);
 				OnSyntaxError(attr, "'=' expected");
+				attr.EqualsSign = string.Empty;
 			}
 			
 			// Read attribute value
@@ -937,6 +901,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		RawText MakeText(int start, int end)
 		{
+			Assert(end > start);
+			
 			RawText text = new RawText() {
 				StartOffset = start,
 				EndOffset = end,
@@ -1194,7 +1160,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					}
 				} else {
 					replacement = null;
-					OnSyntaxError(owner, errorLoc, errorLoc + 1 + name.Length + 1, "Unknown entity reference '{0}'", name);
+					if (this.EntityReferenceIsError) {
+						OnSyntaxError(owner, errorLoc, errorLoc + 1 + name.Length + 1, "Unknown entity reference '{0}'", name);
+					}
 				}
 				
 				// Append the replacement to output
@@ -1208,6 +1176,317 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				curr = end + 1;
 				continue;
 			}
+		}
+		
+		#endregion
+		
+		#region Object stream reading
+		
+		// TODO: Caching, RawElement.IsPropertlyNested
+		
+		string PrintObjects(IEnumerable<RawObject> objs)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach(RawObject obj in objs) {
+				if (obj is RawTag) {
+					if (obj == StartTagPlaceholder) {
+						sb.Append("#StartTag#");
+					} else if (obj == EndTagPlaceholder) {
+						sb.Append("#EndTag#");
+					} else {
+						sb.Append(((RawTag)obj).OpeningBracket);
+						sb.Append(((RawTag)obj).Name);
+						sb.Append(((RawTag)obj).ClosingBracket);
+					}
+				} else if (obj is RawElement) {
+					sb.Append('[');
+					sb.Append(PrintObjects(((RawElement)obj).Children));
+					sb.Append(']');
+				} else if (obj is RawText) {
+					sb.Append('~');
+				} else {
+					throw new Exception("Should not be here: " + obj);
+				}
+			}
+			return sb.ToString();
+		}
+		
+		RawDocument ReadDocument()
+		{
+			RawDocument doc = new RawDocument();
+			doc.IsParsed = true;
+			
+			List<RawObject> objs = ReadFlatObjects();
+			Log("Flat stream: {0}", PrintObjects(objs));
+			List<RawObject> valid = MatchTags(objs);
+			Log("Fixed stream: {0}", PrintObjects(valid));
+			IEnumerator<RawObject> validStream = valid.GetEnumerator();
+			validStream.MoveNext(); // Move to first
+			while(true) {
+				// End of stream?
+				try {
+					if (validStream.Current == null) break;
+				} catch (InvalidCastException) {
+					break;
+				}
+				doc.AddChild(ReadTextOrElement(validStream));
+			}
+			
+			if (doc.Children.Count > 0) {
+				doc.StartOffset = doc.FirstChild.StartOffset;
+				doc.EndOffset = doc.LastChild.EndOffset;
+			}
+			
+			OnParsed(doc);
+			return doc;
+		}
+		
+		RawObject ReadSingleObject(IEnumerator<RawObject> objStream)
+		{
+			RawObject obj = objStream.Current;
+			objStream.MoveNext();
+			return obj;
+		}
+		
+		RawObject ReadTextOrElement(IEnumerator<RawObject> objStream)
+		{
+			Assert(IsEndOfFile());
+			
+			RawObject curr = objStream.Current;
+			if (curr is RawText || curr is RawElement) {
+				return ReadSingleObject(objStream);
+			} else {
+				RawTag currTag = (RawTag)curr;
+				if (currTag.IsStartTag || currTag == StartTagPlaceholder) {
+					return ReadElement(objStream);
+				} else {
+					throw new Exception("Tag must be start tag");
+				}
+			}
+		}
+		
+		RawElement ReadElement(IEnumerator<RawObject> objStream)
+		{
+			Assert(IsEndOfFile());
+			
+			RawElement element = new RawElement();
+			
+			// Read start tag
+			RawTag startTag = ReadSingleObject(objStream) as RawTag;
+			Assert(startTag != null);
+			Assert(startTag.IsStartTag || startTag == StartTagPlaceholder);
+			if (startTag == StartTagPlaceholder) {
+				int offset = objStream.Current.StartOffset; // This the next object
+				element.AddChild(new RawTag() {
+					OpeningBracket = string.Empty,
+					Name = string.Empty,
+					ClosingBracket = string.Empty,
+					StartOffset = offset,
+					EndOffset = offset,
+				});
+				OnSyntaxError(element, objStream.Current.StartOffset, objStream.Current.EndOffset,
+				              "Matching openning tag was not found");
+			} else {
+				element.AddChild(startTag);
+			}
+			
+			// Read content and end tag
+			if (element.StartTag.ClosingBracket == ">" || startTag == StartTagPlaceholder) {
+				while(true) {
+					RawTag currTag = objStream.Current as RawTag; // Peek
+					if (currTag == EndTagPlaceholder) {
+						OnSyntaxError(element, element.LastChild.EndOffset, element.LastChild.EndOffset,
+						              "Closing tag for '{0}' expected", element.StartTag.Name);
+						ReadSingleObject(objStream);
+						break;
+					} else if (currTag != null && currTag.IsEndTag) {
+						if (currTag.Name != element.StartTag.Name) {
+							OnSyntaxError(element, currTag.StartOffset + 2, currTag.StartOffset + 2 + currTag.Name.Length,
+							              "Name '{0}' expected.  End tag must have same name as start tag.", element.StartTag.Name);
+						}
+						element.AddChild(ReadSingleObject(objStream));
+						break;
+					}
+					element.AddChild(ReadTextOrElement(objStream));
+				}
+			}
+			
+			element.StartOffset = element.FirstChild.StartOffset;
+			element.EndOffset = element.LastChild.EndOffset;
+			
+			OnParsed(element);
+			return element;
+		}
+		
+		#endregion
+		
+		#region Matching heuristics
+		
+		const int maxConfigurationCount = 10;
+		
+		/// <summary>
+		/// Stack of still unmatched start tags.
+		/// It includes the cost and backtack information.
+		/// </summary>
+		class Configuration
+		{
+			/// <summary> Unmatched start tags </summary>
+			public ImmutableStack<RawTag> StartTags { get; set; }
+			/// <summary> Properly nested tags </summary>
+			public ImmutableStack<RawObject> Document { get; set; }
+			/// <summary> Number of needed modificaitons to the document </summary>
+			public int Cost { get; set; }
+		}
+		
+		/// <summary>
+		/// Dictionary which stores the cheapest configuration
+		/// </summary>
+		class Configurations: Dictionary<ImmutableStack<RawTag>, Configuration>
+		{
+			public Configurations()
+			{
+			}
+			
+			public Configurations(IEnumerable<Configuration> configs)
+			{
+				foreach(Configuration config in configs) {
+					this.Add(config);
+				}
+			}
+			
+			/// <summary> Overwrite only if cheaper </summary>
+			public void Add(Configuration newConfig)
+			{
+				Configuration oldConfig;
+				if (this.TryGetValue(newConfig.StartTags, out oldConfig)) {
+					if (newConfig.Cost < oldConfig.Cost) {
+						this[newConfig.StartTags] = newConfig;
+					}
+				} else {
+					base.Add(newConfig.StartTags, newConfig);
+				}
+			}
+			
+			public override string ToString()
+			{
+				StringBuilder sb = new StringBuilder();
+				foreach(var kvp in this) {
+					sb.Append("\n - '");
+					foreach(RawTag startTag in kvp.Value.StartTags.Reverse()) {
+						sb.Append('<');
+						sb.Append(startTag.Name);
+						sb.Append('>');
+					}
+					sb.AppendFormat("' = {0}", kvp.Value.Cost);
+				}
+				return sb.ToString();
+			}
+		}
+		
+		// Tags used to guide the element creation
+		readonly RawTag StartTagPlaceholder = new RawTag();
+		readonly RawTag EndTagPlaceholder = new RawTag();
+		
+		/// <summary>
+		/// Add start or end tag placeholders so that the documment is properly nested
+		/// </summary>
+		List<RawObject> MatchTags(IEnumerable<RawObject> objs)
+		{
+			Configurations configurations = new Configurations();
+			configurations.Add(new Configuration {
+				StartTags = ImmutableStack<RawTag>.Empty,
+				Document = ImmutableStack<RawObject>.Empty,
+				Cost = 0,
+			});
+			foreach(RawObject obj in objs) {
+				configurations = ProcessObject(configurations, obj);
+			}
+			// Close any remaining start tags
+			foreach(Configuration conifg in configurations.Values) {
+				while(!conifg.StartTags.IsEmpty) {
+					conifg.StartTags = conifg.StartTags.Pop();
+					conifg.Document = conifg.Document.Push(EndTagPlaceholder);
+					conifg.Cost += 1;
+				}
+			}
+			Log("Configurations after closing all remaining tags:" + configurations.ToString());
+			Configuration bestConfig = configurations.Values.OrderBy(v => v.Cost).First();
+			Log("Best configuration has cost {0}", bestConfig.Cost);
+			
+			return bestConfig.Document.Reverse().ToList();
+		}
+		
+		/// <summary> Get posible configurations after considering fiven object </summary>
+		Configurations ProcessObject(Configurations oldConfigs, RawObject obj)
+		{
+			Log("Processing {0}", obj);
+			
+			RawTag tag = obj as RawTag;
+			if (!(obj is RawTag || obj is RawText || obj is RawElement))
+				throw new Exception(obj.GetType().Name + " not expected");
+			// TODO: Assert Element properly nested
+			
+			Configurations newConfigs = new Configurations();
+			
+			foreach(var kvp in oldConfigs) {
+				Configuration oldConfig = kvp.Value;
+				var oldStartTags = oldConfig.StartTags;
+				var oldDocument = oldConfig.Document;
+				int oldCost = oldConfig.Cost;
+				
+				if (tag != null && tag.IsStartTag && tag.ClosingBracket == ">") {
+					newConfigs.Add(new Configuration {                    // Push start-tag (cost 0)
+						StartTags = oldStartTags.Push(tag),
+						Document = oldDocument.Push(tag),
+						Cost = oldCost,
+					});
+				} else if (tag != null && tag.IsEndTag) {
+					newConfigs.Add(new Configuration {                    // Ignore (cost 1)
+						StartTags = oldStartTags,
+						Document = oldDocument.Push(StartTagPlaceholder).Push(tag),
+						Cost = oldCost + 1,
+	               });
+					if (!oldStartTags.IsEmpty && oldStartTags.Peek().Name != tag.Name) {
+						newConfigs.Add(new Configuration {                // Pop 1 item (cost 1) - not mathcing
+							StartTags = oldStartTags.Pop(),
+							Document = oldDocument.Push(tag),
+							Cost = oldCost + 1,
+		               });
+					}
+					int popedCount = 0;
+					var startTags = oldStartTags;
+					var doc = oldDocument;
+					foreach(RawTag poped in oldStartTags) {
+						popedCount++;
+						if (poped.Name == tag.Name) {
+							newConfigs.Add(new Configuration {             // Pop 'x' items (cost x-1) - last one is matching
+								StartTags = startTags.Pop(),
+								Document = doc.Push(tag),
+								Cost = oldCost + popedCount - 1,
+							});
+						}
+						startTags = startTags.Pop();
+						doc = doc.Push(EndTagPlaceholder);
+					}
+				} else {
+					// Empty tag  or  other tag type  or  text  or  properly nested element
+					newConfigs.Add(new Configuration {                    // Ignore (cost 0)
+						StartTags = oldStartTags,
+						Document = oldDocument.Push(obj),
+						Cost = oldCost,
+	               });
+				}
+			}
+			
+			// Log("New configurations:" + newConfigs.ToString());
+			
+			Configurations bestNewConfigurations = new Configurations(
+				newConfigs.Values.OrderBy(v => v.Cost).Take(maxConfigurationCount)
+			);
+			
+			Log("Best new configurations:" + bestNewConfigurations.ToString());
+			
+			return bestNewConfigurations;
 		}
 		
 		#endregion

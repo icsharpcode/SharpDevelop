@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -26,13 +27,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public abstract class RawObject: TextSegment
 	{
-		/// <summary> Constant "".  The namespace used if there is no "xmlns" specified </summary>
+		/// <summary> Empty string.  The namespace used if there is no "xmlns" specified </summary>
 		public static readonly string NoNamespace = string.Empty;
 		
-		/// <summary> Constant "http://www.w3.org/XML/1998/namespace" </summary>
+		/// <summary> Namespace for "xml:" prefix: "http://www.w3.org/XML/1998/namespace" </summary>
 		public static readonly string XmlNamespace = "http://www.w3.org/XML/1998/namespace";
 		
-		/// <summary> Constant "http://www.w3.org/2000/xmlns/" </summary>
+		/// <summary> Namesapce for "xmlns:" prefix: "http://www.w3.org/2000/xmlns/" </summary>
 		public static readonly string XmlnsNamespace = "http://www.w3.org/2000/xmlns/";
 		
 		/// <summary>
@@ -127,10 +128,20 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
+		[Conditional("Debug")]
 		protected static void Assert(bool condition)
 		{
 			if (!condition) {
-				throw new Exception("Consistency assertion failed");
+				throw new Exception("Assertion failed");
+			}
+		}
+		
+		/// <summary> Throws exception if condition is false </summary>
+		[Conditional("Debug")]
+		protected static void Assert(bool condition, string message)
+		{
+			if (!condition) {
+				throw new Exception("Assertion failed: " + message);
 			}
 		}
 		
@@ -166,6 +177,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
+		[Conditional("Debug")]
+		internal virtual void CheckConsistency()
+		{
+			
+		}
+		
 		/// <inheritdoc/>
 		public override string ToString()
 		{
@@ -182,6 +199,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> The part of name before ":".  Empty string if not found </summary>
 		protected static string GetNamespacePrefix(string name)
 		{
+			if (string.IsNullOrEmpty(name)) return string.Empty;
 			int colonIndex = name.IndexOf(':');
 			if (colonIndex != -1) {
 				return name.Substring(0, colonIndex);
@@ -193,6 +211,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> The part of name after ":".  Whole name if not found </summary>
 		protected static string GetLocalName(string name)
 		{
+			if (string.IsNullOrEmpty(name)) return string.Empty;
 			int colonIndex = name.IndexOf(':');
 			if (colonIndex != -1) {
 				return name.Remove(0, colonIndex + 1);
@@ -232,6 +251,18 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					elements = new FilteredCollection<RawElement, ChildrenCollection<RawObject>>(this.Children);
 				}
 				return elements;
+			}
+		}
+		
+		internal RawObject FirstChild {
+			get {
+				return this.Children[0];
+			}
+		}
+		
+		internal RawObject LastChild {
+			get {
+				return this.Children[this.Children.Count - 1];
 			}
 		}
 		
@@ -323,26 +354,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			// Remove from the old location and set parent
 			foreach(RawObject item in items) {
-				if (item.Parent == null) {
-					// Dangling object - it was probably just removed from the document during update
-					LogDom("Inserting dangling {0}", item);
-					item.Parent = this;
-					attachedObjects.Add(item);
-				} else if (item.Document.IsParsed) {
-					// Adding from parser tree - steal pointer; keep in the parser tree
-					LogDom("Inserting {0} from parser tree", item);
-					item.Parent = this;
-					attachedObjects.Add(item);
-				} else {
-					// Adding from user other document location
-					Assert(item.Document == document);  // The parser was reusing object from other document?
-					LogDom("Inserting {0} from other document location", item);
-					// Remove from other location
-					var owingList = ((RawContainer)item.Parent).Children;
-					owingList.RemoveItems(owingList.IndexOf(item), 1);
-					// No detach / attach notifications
-					item.Parent = this;
-				}
+				EnsureOwing(document, item, attachedObjects);
 			}
 			
 			// Add it
@@ -350,9 +362,40 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			// Notify document - do last so that the handler sees up-to-date tree
 			foreach(RawObject item in attachedObjects)  {
-				foreach(RawObject obj in item.GetSelfAndAllChildren()) {
-					document.OnObjectAttached(obj);
+				document.OnObjectAttached(item);
+			}
+		}
+		
+		/// <summary>
+		/// Make sure that you own the item and no-one else does
+		/// </summary>
+		void EnsureOwing(RawDocument myDocument, RawObject item, List<RawObject> attachedObjects)
+		{
+			if (item.Document == null) {
+				// TODO: Maybe taking only part of dangling tree
+				// Dangling object - it was probably just removed from the document during update
+				LogDom("Inserting dangling {0}", item);
+				attachedObjects.AddRange(item.GetSelfAndAllChildren());
+				item.Parent = this;
+			} else if (item.Document.IsParsed) {
+				// Adding from parser tree - steal pointer; keep in the parser tree
+				LogDom("Inserting {0} from parser tree", item);
+				attachedObjects.Add(item);
+				if (item is RawContainer) {
+					foreach(RawObject child in ((RawContainer)item).Children) {
+						((RawContainer)item).EnsureOwing(myDocument, child, attachedObjects);
+					}
 				}
+				item.Parent = this;  // Do after recursion so the Document.IsParser == true for children
+			} else {
+				// Adding from user other document location
+				Assert(item.Document == myDocument);  // The parser was reusing object from other document?
+				LogDom("Inserting {0} from other document location", item);
+				// Remove from other location
+				var owingList = ((RawContainer)item.Parent).Children;
+				owingList.RemoveItems(owingList.IndexOf(item), 1);
+				// No detach / attach notifications
+				item.Parent = this;
 			}
 		}
 		
@@ -396,14 +439,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		internal void CheckLinksConsistency()
+		internal override void CheckConsistency()
 		{
+			base.CheckConsistency();
 			foreach(RawObject child in this.Children) {
-				if (child.Parent == null) throw new Exception("Null parent reference");
-				if (!(child.Parent == this)) throw new Exception("Inccorect parent reference");
-				if (child is RawContainer) {
-					((RawContainer)child).CheckLinksConsistency();
-				}
+				Assert(child.Parent != null, "Null parent reference");
+				Assert(child.Parent == this, "Inccorect parent reference");
+				child.CheckConsistency();
 			}
 		}
 		
@@ -541,9 +583,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> Occurs after local data of object changed </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectChanged;
 		
+		/// <summary> The total number of objects in this document including the document itself </summary>
+		public int ObjectCount { get; private set; }
+		
 		internal void OnObjectAttached(RawObject obj)
 		{
 			Assert(!IsParsed);
+			ObjectCount++;
 			foreach(SyntaxError error in obj.SyntaxErrors) {
 				this.SyntaxErrors.Add(error);
 			}
@@ -553,6 +599,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		internal void OnObjectDettached(RawObject obj)
 		{
 			Assert(!IsParsed);
+			ObjectCount--;
 			foreach(SyntaxError error in obj.SyntaxErrors) {
 				this.SyntaxErrors.Remove(error);
 			}
@@ -581,6 +628,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public RawDocument()
 		{
 			this.SyntaxErrors = new TextSegmentCollection<SyntaxError>();
+		}
+		
+		internal override void CheckConsistency()
+		{
+			base.CheckConsistency();
+			Assert(ObjectCount == this.GetSelfAndAllChildren().Count(), "Number of attach/detach calls incorrect");
 		}
 		
 		/// <inheritdoc/>
@@ -628,6 +681,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> True if tag starts with "&lt;!" </summary>
 		public bool IsUnknownBang           { get { return OpeningBracket == "<!"; } }
 		
+		internal override void CheckConsistency()
+		{
+			Assert(OpeningBracket != null);
+			Assert(Name != null);
+			Assert(ClosingBracket != null);
+			base.CheckConsistency();
+		}
+		
 		/// <inheritdoc/>
 		public override void AcceptVisitor(IXmlVisitor visitor)
 		{
@@ -672,6 +733,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				if (this.Children.Count == 0) return null;
 				return (RawTag)this.Children[0];
 			}
+		}
+		
+		internal override void CheckConsistency()
+		{
+			Assert(Children.Count > 0, "No children");
+			base.CheckConsistency();
 		}
 		
 		#region Helpper methods
@@ -827,6 +894,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public string QuotedValue { get; set; }
 		/// <summary> Unquoted and dereferenced value of the attribute </summary>
 		public string Value { get; set; }
+		
+		internal override void CheckConsistency()
+		{
+			Assert(Name != null);
+			Assert(EqualsSign != null);
+			Assert(QuotedValue != null);
+			base.CheckConsistency();
+		}
 		
 		#region Helpper methods
 		
