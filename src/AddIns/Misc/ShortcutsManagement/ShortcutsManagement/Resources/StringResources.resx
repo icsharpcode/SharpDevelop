@@ -203,6 +203,9 @@
   <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.ProfileResetAction" xml:space="preserve">
     <value>Reset to defaults</value>
   </data>
+  <data name="ShortcutsManagement.ShortcutManagementWindow.ResetToDefaults" xml:space="preserve">
+    <value>Reset</value>
+  </data>
   <data name="ShortcutsManagement.ShortcutsManagementOptionsPanel.ProfilesLabel" xml:space="preserve">
     <value>Profiles:</value>
   </data>

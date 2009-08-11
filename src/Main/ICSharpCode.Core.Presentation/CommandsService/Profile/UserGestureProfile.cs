@@ -206,7 +206,11 @@ namespace ICSharpCode.Core.Presentation
 			var args = new NotifyGesturesChangedEventArgs(
 				new GesturesModificationDescription(identifier, oldGestures, newGestures));
 			
-			userDefinedGestures[identifier] = inputGestureCollection;
+			if(inputGestureCollection != null) {
+				userDefinedGestures[identifier] = inputGestureCollection;
+			} else {
+				userDefinedGestures.Remove(identifier);
+			}
 			
 			InvokeGesturesChanged(this, args);
 		}

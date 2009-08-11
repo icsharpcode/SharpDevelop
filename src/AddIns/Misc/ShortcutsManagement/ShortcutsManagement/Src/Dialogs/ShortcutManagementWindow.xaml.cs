@@ -218,5 +218,10 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 		{
 			Close();
 		}
+		
+		void DefaultButton_Click(object sender, RoutedEventArgs e)
+		{
+			Shortcut.ResetToDefaults();
+		}
 	}
 }

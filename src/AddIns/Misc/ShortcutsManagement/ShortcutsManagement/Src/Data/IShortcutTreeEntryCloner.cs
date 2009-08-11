@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace ICSharpCode.ShortcutsManagement.Data
 {
@@ -86,12 +87,11 @@ namespace ICSharpCode.ShortcutsManagement.Data
         	if(clonedShortcuts.ContainsKey(shortcut.Id)) {
         		return clonedShortcuts[shortcut.Id];
         	} else {
-	        	var clonedShortcut = new Shortcut(shortcut.Name, null);
-				clonedShortcut.Id = shortcut.Id;
-				
-				foreach (var gesture in shortcut.Gestures) {
-					clonedShortcut.Gestures.Add(gesture);
-				}
+				var clonedShortcut = new Shortcut(
+					shortcut.Id,
+					shortcut.Name, 
+					new InputGestureCollection(shortcut.Gestures), 
+					new InputGestureCollection(shortcut.DefaultGestures));
 				
 				clonedShortcuts.Add(clonedShortcut.Id, clonedShortcut);
 				

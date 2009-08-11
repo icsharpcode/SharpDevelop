@@ -191,12 +191,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 				// Strip this sign from shortcut entry text
 				shortcutText = Regex.Replace(shortcutText, @"&([^\s])", @"$1");
 				
-				var shortcutGestures = inputBindingInfo.DefaultGestures.InputGesturesCollection;
-				if(SelectedProfile != null && SelectedProfile[BindingInfoTemplate.CreateFromIBindingInfo(inputBindingInfo)] != null) {
-					shortcutGestures = new InputGestureCollection(SelectedProfile[BindingInfoTemplate.CreateFromIBindingInfo(inputBindingInfo)]);
-				}
-				
-				var shortcut = new Shortcut(shortcutText, shortcutGestures);
+				var shortcut = new Shortcut(shortcutText, inputBindingInfo.ActiveGestures, inputBindingInfo.DefaultGestures.InputGesturesCollection);
 				shortcutsMap.Add(shortcut, inputBindingInfo);
 				
 				// Assign shortcut to all categories it is registered in
@@ -378,7 +373,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 							originalRelatedShortcut.Gestures.AddRange(relatedShortcutCopy.Gestures);
 							
 							var id = BindingInfoTemplate.CreateFromIBindingInfo(shortcutsMap.MapForward(originalRelatedShortcut));
-							SelectedProfile[id] = new InputGestureCollection(relatedShortcutCopy.Gestures);
+							SelectedProfile[id] = relatedShortcutCopy.DoesUseDefault ? null : new InputGestureCollection(relatedShortcutCopy.Gestures);
 						}
 					}
 				}

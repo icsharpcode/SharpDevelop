@@ -11,22 +11,25 @@ namespace ICSharpCode.Core.Presentation
 	public static class InputGestureCollectionExtensions
 	{
 		public static bool ContainsTemplateForAny(this InputGestureCollection inputGestureTemplateCollection, InputGestureCollection testedInputGestureCollection, GestureCompareMode mode) {
-	        foreach (InputGesture template in inputGestureTemplateCollection) {
-	            if (template.IsTemplateForAny(testedInputGestureCollection, mode)) {
-	                return true;
-	            }   
-	        }
+			if((inputGestureTemplateCollection == null || inputGestureTemplateCollection.Count == 0) && (testedInputGestureCollection == null || testedInputGestureCollection.Count == 0)) {
+				return true;
+			}
+			foreach (InputGesture template in inputGestureTemplateCollection) {
+				if (template.IsTemplateForAny(testedInputGestureCollection, mode)) {
+					return true;
+				}   
+			}
 			
 			return false;
 		}
-
+		
 		
 		public static bool ContainsTemplateFor(this InputGestureCollection inputGestureTemplateCollection, InputGesture testedGesture, GestureCompareMode mode) {
 			foreach (InputGesture template in inputGestureTemplateCollection) {
-	            if (template.IsTemplateFor(testedGesture, mode)) {
-	                return true;
-	            }   
-	        }
+				if (template.IsTemplateFor(testedGesture, mode)) {
+					return true;
+				}   
+			}
 			
 			return false;
 		}
@@ -46,7 +49,7 @@ namespace ICSharpCode.Core.Presentation
 			{
 				var xInputBinding = (InputBinding)x;
 				var yInputBinding = (InputBinding)y;
-
+				
 				var xMultiKeyGesture = xInputBinding.Gesture as MultiKeyGesture;
 				var yMultiKeyGesture = yInputBinding.Gesture as MultiKeyGesture;
 				

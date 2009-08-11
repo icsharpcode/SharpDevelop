@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
-
+using ICSharpCode.Core.Presentation;
+using System.Linq;
+using System.Collections.Specialized;
 
 namespace ICSharpCode.ShortcutsManagement.Data
 {
@@ -18,6 +21,27 @@ namespace ICSharpCode.ShortcutsManagement.Data
 		{
 			get;
 			private set;
+		}
+		
+		/// <summary>
+		/// Gets collection of default input suggested assigned by developer
+		/// </summary>
+		public ReadOnlyCollection<InputGesture> DefaultGestures
+		{
+			get;
+			private set;
+		}
+		
+		private bool _doesUseDefault;
+		
+		/// <summary>
+		/// Gets or sets value which specifies whether default gestures should be used or those assigned by user
+		/// </summary>
+		public bool DoesUseDefault
+		{
+			get {
+				return _doesUseDefault;
+			}
 		}
 		
 		private string _name;
@@ -82,15 +106,37 @@ namespace ICSharpCode.ShortcutsManagement.Data
 		public event PropertyChangedEventHandler PropertyChanged;
 		
 		/// <summary>
-		/// Create new instance of shortcut
+		/// Create new instance of <see cref="Shortcut" />
 		/// </summary>
+		/// <param name="id">Shortcut id. Used to identify shortcut clones</param>
+		/// <param name="gestures">Active gestures</param>
+		/// <param name="defaultGestures">Default gestures suggest by developer</param>
+		public Shortcut(string shortcutText, InputGestureCollection gestures, InputGestureCollection defaultGestures)
+			: this(Guid.NewGuid().ToString(), shortcutText, gestures, defaultGestures)
+		{
+			
+		}
+		
+		/// <summary>
+		/// Create new instance of <see cref="Shortcut" />
+		/// </summary>
+		/// <param name="id">Shortcut id. Used to identify shortcut clones</param>
 		/// <param name="shortcutText">Shortcut action name (displayed to user)</param>
-		/// <param name="gestures">Gestures</param>
-		public Shortcut(string shortcutText, InputGestureCollection gestures)
+		/// <param name="gestures">Active gestures</param>
+		/// <param name="defaultGestures">Default gestures suggest by developer</param>
+		public Shortcut(string id, string shortcutText, InputGestureCollection gestures, InputGestureCollection defaultGestures)
 		{
 			IsVisible = true;
-			Id = Guid.NewGuid().ToString();
+			Id = id;
 			Name = shortcutText;
+			
+			if(defaultGestures != null) {
+				var defaultGesturesArray = new InputGesture[defaultGestures.Count]; 
+				defaultGestures.CopyTo(defaultGesturesArray, 0);
+				DefaultGestures = new ReadOnlyCollection<InputGesture>(defaultGesturesArray);
+			} else {
+				DefaultGestures = new ReadOnlyCollection<InputGesture>(new List<InputGesture>());
+			}
 			
 			Gestures = new ObservableCollection<InputGesture>();
 			if(gestures != null) {
@@ -99,8 +145,19 @@ namespace ICSharpCode.ShortcutsManagement.Data
 				}
 			}
 			
-			// On changes in gestures collection notify that whole property has changed
-			Gestures.CollectionChanged += delegate { InvokePropertyChanged("Gestures"); };
+			_doesUseDefault = new InputGestureCollection(Gestures).ContainsTemplateForAny(new InputGestureCollection(DefaultGestures), GestureCompareMode.ExactlyMatches);
+			Gestures.CollectionChanged += Gestures_CollectionChanged;
+		}
+
+		void Gestures_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			var newDoesUseDefaultValue = new InputGestureCollection(Gestures).ContainsTemplateForAny(new InputGestureCollection(DefaultGestures), GestureCompareMode.ExactlyMatches);
+			if(_doesUseDefault != newDoesUseDefaultValue) {
+				_doesUseDefault = newDoesUseDefaultValue;
+				InvokePropertyChanged("DoesUseDefault");
+			}
+			
+			InvokePropertyChanged("Gestures");
 		}
 		
 		/// <summary>
@@ -159,6 +216,19 @@ namespace ICSharpCode.ShortcutsManagement.Data
 		{
 			if (PropertyChanged != null) {
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		/// <summary>
+		/// Resets active gestures assigned to this shortcut to default <see cref="InputGestureCollection" /> suggested by developer
+		/// </summary>
+		public void ResetToDefaults() 
+		{
+			_doesUseDefault = true;
+			
+			Gestures.Clear();
+			foreach(var gesture in DefaultGestures) {
+				Gestures.Add(gesture);
 			}
 		}
 	}
