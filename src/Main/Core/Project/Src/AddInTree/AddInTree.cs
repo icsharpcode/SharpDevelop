@@ -35,11 +35,10 @@ namespace ICSharpCode.Core
 			doozers.Add("Include", new IncludeDoozer());
 			
 			// Command manager doozers
-			doozers.Add("InputBinding", new InputBindingDoozer());
+			doozers.Add("InputBindingInfo", new InputBindingInfoDoozer());
 			doozers.Add("InputBindingCategory", new InputBindingCategoryDoozer());
-			doozers.Add("CommandBinding", new CommandBindingDoozer());
+			doozers.Add("CommandBindingInfo", new CommandBindingInfoDoozer());
 			doozers.Add("RoutedUICommand", new RoutedUICommandDoozer());
-			doozers.Add("GesturesPlaceHolder", new GesturesPlaceHolderDoozer());
 			doozers.Add("MenuLocation", new MenuLocationDoozer());
 			
 			conditionEvaluators.Add("Compare", new CompareConditionEvaluator());

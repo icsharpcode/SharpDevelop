@@ -76,16 +76,16 @@ namespace ICSharpCode.Core.Presentation
 			
 			Name = rootNode.Attributes["name"].Value;
 			Text = rootNode.Attributes["text"].Value;
-			ReadOnly = Convert.ToBoolean(rootNode.Attributes["read-only"].Value);
+			ReadOnly = Convert.ToBoolean(rootNode.Attributes["readonly"].Value);
 
 			foreach(XmlElement bindingInfoNode in xmlDocument.SelectNodes("//InputBinding")) {
 				string identifierInstanceName = null;
 				string identifierTypeName = null;
-				var ownerInstanceAttribute = bindingInfoNode.Attributes["owner-instance"];
+				var ownerInstanceAttribute = bindingInfoNode.Attributes["ownerinstance"];
 				if(ownerInstanceAttribute != null) {
 					identifierInstanceName = ownerInstanceAttribute.Value;
 				} else {
-					var ownerTypeAttribute = bindingInfoNode.Attributes["owner-type"];
+					var ownerTypeAttribute = bindingInfoNode.Attributes["ownertype"];
 					identifierTypeName = ownerTypeAttribute.Value;
 				}
 				
@@ -111,7 +111,7 @@ namespace ICSharpCode.Core.Presentation
 			textAttribute.Value = Text;
 			rootNode.Attributes.Append(textAttribute);
 			
-			var readOnlyAttribute = xmlDocument.CreateAttribute("read-only");
+			var readOnlyAttribute = xmlDocument.CreateAttribute("readonly");
 			readOnlyAttribute.Value = Convert.ToString(ReadOnly);
 			rootNode.Attributes.Append(readOnlyAttribute);
 			
@@ -119,7 +119,7 @@ namespace ICSharpCode.Core.Presentation
 				var bindingInfoNode = xmlDocument.CreateElement("InputBinding");
 				
 				if(definedGestures.Key.RoutedCommandName != null) {
-					var routedCommandAttribute = xmlDocument.CreateAttribute("routed-command");
+					var routedCommandAttribute = xmlDocument.CreateAttribute("routedcommand");
 					routedCommandAttribute.Value = definedGestures.Key.RoutedCommandName;
 					bindingInfoNode.Attributes.Append(routedCommandAttribute);
 				} else {
@@ -127,11 +127,11 @@ namespace ICSharpCode.Core.Presentation
 				}
 				
 				if(definedGestures.Key.OwnerInstanceName != null) {
-					var ownerInstanceAttribute = xmlDocument.CreateAttribute("owner-instance");
+					var ownerInstanceAttribute = xmlDocument.CreateAttribute("ownerinstance");
 					ownerInstanceAttribute.Value = definedGestures.Key.OwnerInstanceName;
 					bindingInfoNode.Attributes.Append(ownerInstanceAttribute);
 				} else if(definedGestures.Key.OwnerTypeName != null) {
-					var ownerTypeAttribute = xmlDocument.CreateAttribute("owner-type");
+					var ownerTypeAttribute = xmlDocument.CreateAttribute("ownertype");
 					ownerTypeAttribute.Value = definedGestures.Key.OwnerTypeName;
 					bindingInfoNode.Attributes.Append(ownerTypeAttribute);
 				} else {

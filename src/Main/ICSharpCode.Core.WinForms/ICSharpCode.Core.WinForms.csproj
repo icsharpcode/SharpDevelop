@@ -50,7 +50,6 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CommandsService\GesturePlaceHolderRegistry.cs" />
     <Compile Include="CommandsService\KeysCollectionConverter.cs" />
     <Compile Include="Menu\IStatusUpdate.cs" />
     <Compile Include="Menu\ISubmenuBuilder.cs" />

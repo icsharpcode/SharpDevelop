@@ -1,48 +1,43 @@
-/*
- * Created by SharpDevelop.
- * User: Administrator
- * Date: 7/3/2009
- * Time: 4:50 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ICSharpCode.Core
 {
+	/// <attribute name="id" use="required">
+	/// Category Id used in category path
+	/// </attribute>
+	/// <attribute name="name" use="required">
+	/// Category name displayed to user
+	/// </attribute>
+	/// <usage>Only in /SharpDevelop/CommandManager/InputBindingCategories</usage>
+	/// <returns>
+	/// InputBindingCategory object
+	/// </returns>
 	/// <summary>
-	/// Description of InputBindingInfoCategory.
+	/// Creates descriptor containing data describing ICSharpCode.Core.Presentation.InputBindingCategory
 	/// </summary>
 	public class InputBindingCategoryDoozer : IDoozer
 	{
-		/// <see cref="IDoozer.HandleConditions" />
+		/// <inheritdoc />
 		public bool HandleConditions {
 			get {
 				return true;
 			}
 		}
 		
-		/// <see cref="IDoozer.BuildItem(object, Codon, System.Collections.ArrayList)">
-		/// Builds InputBindingDescriptor
-		/// </see>
+		/// <summary>
+		/// Builds instance of <see cref="InputBindingCategoryDescriptor" /> from codon
+		/// </summary>
+		/// <param name="caller">Caller object</param>
+		/// <param name="codon">Codon</param>
+		/// <param name="subItems">Codon sub-items</param>
+		/// <returns>Instance of <see cref="InputBindingCategoryDescriptor" /></returns>
 		public object BuildItem(object caller, Codon codon, System.Collections.ArrayList subItems)
 		{
 			return new InputBindingCategoryDescriptor(codon, subItems);
 		}
 	}
 	
-	public class InputBindingCategoryDescriptor
-	{
-		public string Id;
-		public string Text;
-		public List<InputBindingCategoryDescriptor> Children;
-		
-		public InputBindingCategoryDescriptor(Codon codon, System.Collections.ArrayList subItems) {
-			Id = codon.Properties["id"]; 
-			Text = codon.Properties["text"];
-			Children = subItems != null ? subItems.Cast<InputBindingCategoryDescriptor>().ToList() : new List<InputBindingCategoryDescriptor>();
-		}
-	}
+
 }

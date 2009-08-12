@@ -20,10 +20,10 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/CommandManager/CommandBindings">
-		<CommandBinding command="SDSearchAndReplace.Find" class="SearchAndReplace.Find" lazy="true" gestures="Ctrl+F" />
-		<CommandBinding command="SDSearchAndReplace.FindNext" class="SearchAndReplace.FindNext" lazy="true" gestures="F3" />
-		<CommandBinding command="SDSearchAndReplace.FindNextSelected" class="SearchAndReplace.FindNextSelected" lazy="true" gestures="Ctrl+F3" />
-		<CommandBinding command="SDSearchAndReplace.Replace" class="SearchAndReplace.Replace" lazy="true" gestures="Ctrl+R" />
+		<CommandBindingInfo command="SDSearchAndReplace.Find" class="SearchAndReplace.Find" lazy="true" gestures="Ctrl+F" />
+		<CommandBindingInfo command="SDSearchAndReplace.FindNext" class="SearchAndReplace.FindNext" lazy="true" gestures="F3" />
+		<CommandBindingInfo command="SDSearchAndReplace.FindNextSelected" class="SearchAndReplace.FindNextSelected" lazy="true" gestures="Ctrl+F3" />
+		<CommandBindingInfo command="SDSearchAndReplace.Replace" class="SearchAndReplace.Replace" lazy="true" gestures="Ctrl+R" />
 	</Path>
 	<!-- Commands registry test -->
 	

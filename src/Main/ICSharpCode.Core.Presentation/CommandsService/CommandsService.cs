@@ -194,7 +194,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="path">Path to codons</param>
 		public static void RegisterCommandBindings(object caller, string path) 
 		{
-			var descriptors = AddInTree.BuildItems<CommandBindingDescriptor>(path, caller, false);
+			var descriptors = AddInTree.BuildItems<CommandBindingInfoDescriptor>(path, caller, false);
 			foreach(var desc in descriptors) {
 				var commandBindingInfoName = new StringBuilder();
 				
@@ -259,7 +259,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="path">Path to codons</param>
 		public static void RegisterInputBindings(object caller, string path) 
 		{
-			var descriptors = AddInTree.BuildItems<InputBindingDescriptor>(path, caller, false);
+			var descriptors = AddInTree.BuildItems<InputBindingInfoDescriptor>(path, caller, false);
 			foreach(var desc in descriptors) {
 				var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromString(desc.Gestures);
 				
