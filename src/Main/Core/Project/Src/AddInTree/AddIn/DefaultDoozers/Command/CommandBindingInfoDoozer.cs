@@ -8,8 +8,8 @@ namespace ICSharpCode.Core
 	/// or in addin file using RoutedUICommand node
 	/// </attribute>
 	/// <attribute name="class" use="required">
-	/// Command class performing some action
-	/// The class should implement System.Window.Input.ICommand or ICSharpCode.Core.ICommand class.
+	/// Full name of the command class (should implement ICSharpCode.Core.ICommand or System.Window.Input.ICommand) containing user instructions associated with
+	/// System.Windows.Input.CommandBinding
 	/// </attribute>
 	/// <attribute name="ownertype" use="optional">
 	/// Name of binding owner type. 
@@ -50,7 +50,7 @@ namespace ICSharpCode.Core
 	/// CommandBindingInfoDescriptor object
 	/// </returns>
 	/// <summary>
-	/// Creates descriptor containing data describing ICSharpCode.Core.Presentation.CommandBindingInfo
+	/// Registers ICSharpCode.Core.Presentation.CommandBindingInfo with specified pa
 	/// </summary>
 	public class CommandBindingInfoDoozer : IDoozer
 	{

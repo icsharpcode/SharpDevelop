@@ -89,7 +89,7 @@ namespace ICSharpCode.Core.Presentation
 					identifierTypeName = ownerTypeAttribute.Value;
 				}
 				
-				var identifier = BindingInfoTemplate.Create(identifierInstanceName, identifierTypeName, bindingInfoNode.Attributes["routed-command"].Value);
+				var identifier = BindingInfoTemplate.Create(identifierInstanceName, identifierTypeName, bindingInfoNode.Attributes["routedcommand"].Value);
 				var gestures = (InputGestureCollection)new InputGestureCollectionConverter().ConvertFromInvariantString(bindingInfoNode.Attributes["gestures"].Value);
 				this[identifier] = gestures;
 			}

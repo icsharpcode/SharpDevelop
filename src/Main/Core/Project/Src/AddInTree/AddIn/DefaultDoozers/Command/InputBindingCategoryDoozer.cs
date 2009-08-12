@@ -15,7 +15,7 @@ namespace ICSharpCode.Core
 	/// InputBindingCategory object
 	/// </returns>
 	/// <summary>
-	/// Creates descriptor containing data describing ICSharpCode.Core.Presentation.InputBindingCategory
+	/// Associates ICSharpCode.Core.Presentation.InputBindingCategory with path which can later be used to reference created ICSharpCode.Core.Presentation.InputBindingCategory
 	/// </summary>
 	public class InputBindingCategoryDoozer : IDoozer
 	{

@@ -10,28 +10,23 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Gets codon used to create this descriptor
 		/// </summary>
-		public Codon Codon 
-		{
+		public Codon Codon {
 			get; private set;
 		}
 		
 		/// <summary>
-		/// Gets full name of the command class containing user instructions
-		/// 
-		/// The class must implement <see cref="System.Windows.Input.ICommand" /> or <see cref="ICSharpCode.Core.ICommand" />
-		/// classes
+		/// Gets full name of the command class (should implement ICSharpCode.Core.ICommand or System.Window.Input.ICommand) containing user instructions associated with
+		/// <see cref="System.Windows.Input.CommandBinding" />
 		/// </summary>
-		public string Class 
-		{
+		public string Class {
 			get; private set;
 		}
 		
 		/// <summary>
 		/// Gets name of <see cref="System.Window.Input.RoutedUICommand" /> associated with descriptor
-		/// The name should be associated to a command in code using <see cref="ICSharpCode.Core.Presentation.CommandManager" />
+		/// A name should be associated to a command in code using <see cref="ICSharpCode.Core.Presentation.CommandManager" />
 		/// </summary>
-		public string Command 
-		{
+		public string Command {
 			get; private set;
 		}
 		
@@ -40,8 +35,7 @@ namespace ICSharpCode.Core
 		/// 
 		/// If not provided <see cref="System.Window.Input.RoutedUICommand.Text" /> property value is used
 		/// </summary>
-		public string CommandText 
-		{
+		public string CommandText {
 			get; private set;
 		}
 		
@@ -52,8 +46,7 @@ namespace ICSharpCode.Core
 		/// If this property is set then <see cref="OwnerTypeName" /> property can be ignored
 		/// If neither owner type nor owner instance is specified default owner type is applied
 		/// </summary>
-		public string OwnerInstanceName 
-		{
+		public string OwnerInstanceName {
 			get; private set;
 		}
 		

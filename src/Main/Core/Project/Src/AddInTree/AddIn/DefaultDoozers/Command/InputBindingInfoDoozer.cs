@@ -42,20 +42,25 @@ namespace ICSharpCode.Core
 	/// CommandBindingInfoDescriptor object
 	/// </returns>
 	/// <summary>
-	/// Creates descriptor containing data describing ICSharpCode.Core.Presentation.InputBindingInfo
+	/// Registers ICSharpCode.Core.Presentation.InputBindingInfo with specified parameters
 	/// </summary>
 	public class InputBindingInfoDoozer : IDoozer
 	{
-		/// <see cref="IDoozer.HandleConditions" />
-		public bool HandleConditions {
+		/// <inheritdoc />
+		public bool HandleConditions 
+		{
 			get {
 				return true;
 			}
 		}
 		
-		/// <see cref="IDoozer.BuildItem(object, Codon, System.Collections.ArrayList)">
-		/// Builds InputBindingInfoDescriptor
-		/// </see>
+		/// <summary>
+		/// Builds instance of <see cref="InputBindingInfoDescriptor" /> from codon
+		/// </summary>
+		/// <param name="caller">Caller object</param>
+		/// <param name="codon">Codon</param>
+		/// <param name="subItems">Codon sub-items</param>
+		/// <returns>Instance of <see cref="InputBindingInfoDescriptor" /></returns>
 		public object BuildItem(object caller, Codon codon, System.Collections.ArrayList subItems)
 		{
 			return new InputBindingInfoDescriptor(codon);

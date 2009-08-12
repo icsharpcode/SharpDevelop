@@ -3,32 +3,34 @@ using System;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Stores information about routed UI command loaded from add-in tree
+	/// Describes <see cref="System.Windows.Input.RoutedUICommand" /> 
 	/// </summary>
 	public class RoutedUICommandDescriptor
 	{
 		private Codon codon;
 		
 		/// <summary>
-		/// Text presented to user
+		/// Gets text with routed command purpose description
 		/// </summary>
-		public string Text {
+		public string Text 
+		{
 			get {
 				return codon.Properties["text"];
 			}
 		}
 		
 		/// <summary>
-		/// Routed command name
+		/// Get routed command name
 		/// </summary>
-		public string Name {
+		public string Name 
+		{
 			get {
 				return codon.Properties["name"];
 			}
 		}
 		
 		/// <summary>
-		/// Constructor
+		/// Creates instance of <see cref="RoutedUICommandDescriptor" />
 		/// </summary>
 		/// <param name="codon">Reference to codon used to create this descriptor</param>
 		public RoutedUICommandDescriptor(Codon codon)

@@ -10,7 +10,8 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Codon used to create this descriptor
 		/// </summary>
-		public Codon Codon {
+		public Codon Codon 
+		{
 			get; private set;
 		}
 		
@@ -18,7 +19,8 @@ namespace ICSharpCode.Core
 		/// Gets name of <see cref="System.Window.Input.RoutedUICommand" /> associated with descriptor
 		/// The name should be associated to a command in code using <see cref="ICSharpCode.Core.Presentation.CommandManager" />
 		/// </summary>
-		public string Command {
+		public string Command 
+		{
 			get; private set;
 		}
 		
@@ -28,7 +30,8 @@ namespace ICSharpCode.Core
 		/// 
 		/// If not provided <see cref="System.Window.Input.RoutedUICommand.Text" /> property value is used
 		/// </summary>
-		public string CommandText {
+		public string CommandText 
+		{
 			get; private set;
 		}
 		

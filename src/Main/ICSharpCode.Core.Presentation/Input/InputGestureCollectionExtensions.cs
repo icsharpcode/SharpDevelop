@@ -20,7 +20,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <returns><code>true</code> if first collection contains item which can be qualified as template for any item from second collection; otherwise <code>false</code></returns>
 		public static bool ContainsTemplateForAny(this InputGestureCollection inputGestureTemplateCollection, InputGestureCollection testedInputGestureCollection, GestureCompareMode mode) {
 			if((inputGestureTemplateCollection == null || inputGestureTemplateCollection.Count == 0) && (testedInputGestureCollection == null || testedInputGestureCollection.Count == 0)) {
-				return true;
+				return mode != GestureCompareMode.Conflicting;
 			}
 			foreach (InputGesture template in inputGestureTemplateCollection) {
 				if (template.IsTemplateForAny(testedInputGestureCollection, mode)) {

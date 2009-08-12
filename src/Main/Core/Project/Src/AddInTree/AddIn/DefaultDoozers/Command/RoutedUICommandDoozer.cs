@@ -3,30 +3,34 @@ using System;
 namespace ICSharpCode.Core
 {
 	/// <attribute name="name" use="required">
-	/// Routed UI command name
+	/// System.Window.Input.RoutedUICommand unique name
 	/// </attribute>
 	/// <attribute name="text" use="required">
-	/// Routed UI command displayed name
+	/// Displayed text associated with created System.Window.Input.RoutedUICommand 
 	/// </attribute>
-	/// <usage>Only in /SharpDevelop/Workbench/CommandBindings</usage>
+	/// <usage>Only in /SharpDevelop/CommandManager/RoutedUICommands</usage>
 	/// <returns>
 	/// RoutedUICommandDescriptor object
 	/// </returns>
 	/// <summary>
-	/// Creates descriptor containing information about routed UI command
+	/// Creates new System.Window.Input.RoutedUICommand and associates it with a unique name which can be used later to reference routed command
 	/// </summary>
 	public class RoutedUICommandDoozer : IDoozer
 	{
-		/// <see cref="IDoozer.HandleConditions" />
+		/// <inheritdoc />
 		public bool HandleConditions {
 			get {
 				return false;
 			}
 		}
 		
-		/// <see cref="IDoozer.BuildItem(object, Codon, System.Collections.ArrayList)">
-		/// Builds RoutedUICommandDescriptor
-		/// </see>
+		/// <summary>
+		/// Builds instance of <see cref="RoutedUICommandDescriptor" /> from codon
+		/// </summary>
+		/// <param name="caller">Caller object</param>
+		/// <param name="codon">Codon</param>
+		/// <param name="subItems">Codon sub-items</param>
+		/// <returns>Instance of <see cref="RoutedUICommandDescriptor" /></returns>
 		public object BuildItem(object caller, Codon codon, System.Collections.ArrayList subItems)
 		{
 			return new RoutedUICommandDescriptor(codon);

@@ -12,24 +12,21 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Gets category Id used to create category path
 		/// </summary>
-		public string Id 
-		{
+		public string Id {
 			get; private set;
 		}
 		
 		/// <summary>
 		/// Gets category name displayed to user
 		/// </summary>
-		public string Text
-		{
+		public string Text {
 			get; private set;
 		}
 		
 		/// <summary>
 		/// Gets children category descriptors
 		/// </summary>
-		public List<InputBindingCategoryDescriptor> Children
-		{
+		public List<InputBindingCategoryDescriptor> Children {
 			get; private set;
 		}
 		
@@ -38,7 +35,8 @@ namespace ICSharpCode.Core
 		/// </summary>
 		/// <param name="codon">Reference to codon used to create this descriptor</param>
 		/// <param name="subItems">List of sub-category descriptors</param>
-		public InputBindingCategoryDescriptor(Codon codon, System.Collections.ArrayList subItems) {
+		public InputBindingCategoryDescriptor(Codon codon, System.Collections.ArrayList subItems) 
+		{
 			Id = codon.Properties["id"]; 
 			Text = codon.Properties["text"];
 			Children = subItems != null ? subItems.Cast<InputBindingCategoryDescriptor>().ToList() : new List<InputBindingCategoryDescriptor>();

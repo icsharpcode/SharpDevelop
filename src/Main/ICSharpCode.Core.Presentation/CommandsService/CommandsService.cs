@@ -25,7 +25,7 @@ namespace ICSharpCode.Core.Presentation
 		{
 			var menuRoots = AddInTree.BuildItems<MenuLocationDescriptor>(menuRootsLocationPath, caller);
 			foreach(var menuRoot in menuRoots) {
-				CommandsService.RegisterSingleMenuBindings(menuRoot.Path, caller, menuRoot.Category);
+				CommandsService.RegisterSingleMenuBindings(menuRoot.MenuPath, caller, menuRoot.CategoryPaths);
 			}
 		}
 		

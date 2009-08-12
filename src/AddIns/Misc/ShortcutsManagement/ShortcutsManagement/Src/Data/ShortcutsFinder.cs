@@ -161,7 +161,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
 		{
 			// Apply filter to sub-categories
 			var isSubElementVisible = false;
-				foreach (var subCategory in category.SubCategories) {
+			foreach (var subCategory in category.SubCategories) {
 				if (FilterGesture(subCategory, inputGestureTemplateCollection, mode)) {
 					isSubElementVisible = true;
 				}
@@ -174,8 +174,7 @@ namespace ICSharpCode.ShortcutsManagement.Data
 				if (gestureMatched) {
 					shortcut.IsVisible = true;
 					isSubElementVisible = true;
-				}
-				else {
+				} else {
 					shortcut.IsVisible = false;
 				}
 			}

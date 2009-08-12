@@ -74,20 +74,20 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/CommandManager/MenuLocations">
-		<MenuLocation path="/SharpDevelop/Workbench/MainMenu" category="/MainMenu" />
+		<MenuLocation menupath="/SharpDevelop/Workbench/MainMenu" categorypaths="/MainMenu" />
 	
-		<MenuLocation path="/SharpDevelop/ViewContent/AvalonEdit/ContextMenu" category="/ContextMenus/TextEditor" />
-		<MenuLocation path="/SharpDevelop/ViewContent/TextEditor/ContextMenu" category="/ContextMenus/TextEditor" />
-		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu" category="/ContextMenus/TextEditor" />
-		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu" category="/ContextMenus/TextEditor" />
+		<MenuLocation menupath="/SharpDevelop/ViewContent/AvalonEdit/ContextMenu" categorypaths="/ContextMenus/TextEditor" />
+		<MenuLocation menupath="/SharpDevelop/ViewContent/TextEditor/ContextMenu" categorypaths="/ContextMenus/TextEditor" />
+		<MenuLocation menupath="/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu" categorypaths="/ContextMenus/TextEditor" />
+		<MenuLocation menupath="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu" categorypaths="/ContextMenus/TextEditor" />
 		
-		<MenuLocation path="/SharpDevelop/Workbench/OpenFileTab/ContextMenu" category="/ContextMenus/TextEditor/Tabs" />
+		<MenuLocation menupath="/SharpDevelop/Workbench/OpenFileTab/ContextMenu" categorypaths="/ContextMenus/TextEditor/Tabs" />
 		
-		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common" category="/ContextMenus/TextEditor/Refactoring" />
-		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Parameter" category="/ContextMenus/TextEditor/Refactoring" />
-		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariable" category="/ContextMenus/TextEditor/Refactoring" />
-		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition" category="/ContextMenus/TextEditor/Refactoring" />
-		<MenuLocation path="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariableDefinition" category="/ContextMenus/TextEditor/Refactoring" />
+		<MenuLocation menupath="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common" categorypaths="/ContextMenus/TextEditor/Refactoring" />
+		<MenuLocation menupath="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Parameter" categorypaths="/ContextMenus/TextEditor/Refactoring" />
+		<MenuLocation menupath="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariable" categorypaths="/ContextMenus/TextEditor/Refactoring" />
+		<MenuLocation menupath="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition" categorypaths="/ContextMenus/TextEditor/Refactoring" />
+		<MenuLocation menupath="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariableDefinition" categorypaths="/ContextMenus/TextEditor/Refactoring" />
 	</Path>
 	
 	
