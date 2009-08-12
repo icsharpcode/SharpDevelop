@@ -4,13 +4,14 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Debugger.AddIn.Visualizers;
+using Debugger.AddIn.Visualizers.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
@@ -76,10 +77,46 @@ namespace Debugger.AddIn.TreeModel
 		}
 		
 		public override bool HasChildNodes {
-			get { 
+			get {
 				if (!evaluated) EvaluateExpression();
-				return base.HasChildNodes; 
+				return base.HasChildNodes;
 			}
+		}
+		
+		/// <summary> Used to determine available VisualizerCommands </summary>
+		private DebugType expressionType;
+		/// <summary> Used to determine available VisualizerCommands </summary>
+		private bool valueIsNull = true;
+		
+		private IEnumerable<IVisualizerCommand> visualizerCommands;
+		public override IEnumerable<IVisualizerCommand> VisualizerCommands {
+			get {
+				if (visualizerCommands == null) {
+					visualizerCommands = getAvailableVisualizerCommands();
+				}
+				return visualizerCommands;
+			}
+		}
+		
+		private IEnumerable<IVisualizerCommand> getAvailableVisualizerCommands()
+		{
+			if (!evaluated) EvaluateExpression();
+			
+			if (this.expressionType == null) {
+				// no visualizers if EvaluateExpression failed
+				yield break;
+			}
+			if (this.valueIsNull) {
+				// no visualizers if evaluated value is null
+				yield break;
+			}
+			if (this.expressionType.IsPrimitive || this.expressionType.IsSystemDotObject() || this.expressionType.IsEnum()) {
+				// no visualizers for primitive types
+				yield break;
+			}
+			// these should be obtained from AddIn tree so that it is possible to write add-in for Debugger.AddIn with new visualizers
+			yield return new GridVisualizerCommand(this);
+			yield return new ObjectGraphVisualizerCommand(this);
 		}
 		
 		public ExpressionNode(IImage image, string name, Expression expression)
@@ -112,7 +149,9 @@ namespace Debugger.AddIn.TreeModel
 				fullText = val.AsString;
 			}
 			
+			this.expressionType = val.Type;
 			this.Type = val.Type.Name;
+			this.valueIsNull = val.IsNull;
 			
 			// Note that these return enumerators so they are lazy-evaluated
 			if (val.IsNull) {

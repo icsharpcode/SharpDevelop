@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Media;
+using System.Linq;
 
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -79,6 +80,18 @@ namespace Debugger.AddIn.TreeModel
 		
 		public virtual bool HasChildNodes {
 			get { return childNodes != null; }
+		}
+		
+		public virtual IEnumerable<IVisualizerCommand> VisualizerCommands {
+			get {
+				return null;
+			}
+		}
+		
+		public virtual bool HasVisualizerCommands {
+			get {
+				return (VisualizerCommands != null) && (VisualizerCommands.Count() > 0);
+			}
 		}
 		
 		public TreeNode()

@@ -66,7 +66,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			Value permanentReference = value.GetPermanentReference();
 			result.PermanentReference = permanentReference;
 			
-			// cannot use GetMemberValues because memberValue does not have CodeTail anymore - we need the name of the member
+			// cannot use GetMemberValues because memberValue does not have CodeTail anymore - but we need the name of the member
 			/*foreach(MemberInfo memberInfo in permanentReference.Type.GetMembers(bindingFlags))
 			{
 				Value memberValue = permanentReference.GetMemberValue(memberInfo);

@@ -4,10 +4,11 @@
 //     <owner name="Martin Koníèek" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.Core;
+using Debugger.AddIn.Visualizers.GridVisualizer;
 using System;
+using ICSharpCode.Core;
 
-namespace Debugger.AddIn.Visualizers.GridVisualizer
+namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
 	/// Description of ShowGridVisualizerCommand.

@@ -26,5 +26,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		IEnumerable<ITreeNode> ChildNodes { get; }
 		
 		bool HasChildNodes { get; }
+		
+		IEnumerable<IVisualizerCommand> VisualizerCommands { get; }
+		
+		bool HasVisualizerCommands { get; }
 	}
 }

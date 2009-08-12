@@ -207,12 +207,5 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			this.lazyGrid.ScrollViewer.ScrollDown(1);
 		}
-		
-		void VisualizerPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			var clickedVisualizer = (VisualizerPicker)e.OriginalSource;
-			var clickedNode = (ITreeNode)clickedVisualizer.DataContext;
-
-		}
 	}
 }

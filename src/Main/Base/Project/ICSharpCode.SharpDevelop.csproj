@@ -227,6 +227,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
+    <Compile Include="Src\Services\Debugger\Tooltips\IVisualizerCommand.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\LazyItemsControl.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\VirtualizingIEnumerable.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\VisualizerPicker.cs" />

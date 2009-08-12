@@ -132,7 +132,7 @@
                 </DataGrid.RowStyle>
                 <DataGrid.CellStyle>
                     <Style TargetType="{x:Type DataGridCell}">
-                        <Setter Property="Focusable" Value="true" />
+                        <Setter Property="Focusable" Value="false" />	   <!-- Focusable=true blocks shortcuts if cell is focused -->
                         <Setter Property="BorderThickness" Value="0" />
                 			 <Style.Triggers>  
     	                    	<Trigger Property="IsSelected" Value="True">	<!-- disable selection highlight -->
@@ -181,7 +181,12 @@
 					  <DataGridTemplateColumn>
                 	  		<DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                	  			  <debugging:VisualizerPicker Margin="4 0 0 0" SelectionChanged="VisualizerPicker_SelectionChanged"></debugging:VisualizerPicker>
+                	  			  <debugging:VisualizerPicker Focusable="False" x:Name="visPicker" ItemsSource="{Binding Path=VisualizerCommands, Mode=OneWay}" Margin="4 0 0 0"></debugging:VisualizerPicker>
+                	  			  <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Path=HasVisualizerCommands}" Value="False">
+                                        <Setter TargetName="visPicker" Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                </DataTemplate.Triggers>
 							   </DataTemplate>
                           </DataGridTemplateColumn.CellTemplate>
                  	  </DataGridTemplateColumn>	

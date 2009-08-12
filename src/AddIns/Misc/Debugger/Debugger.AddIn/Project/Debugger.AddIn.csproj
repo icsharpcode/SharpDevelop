@@ -121,6 +121,11 @@
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\TreeModel\DebuggerResourceService.cs" />
+    <Compile Include="Src\Visualizers\Commands\ExpressionNodeVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\Commands\GridVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\Commands\ObjectGraphVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\Commands\ShowGridVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\Commands\ShowObjectGraphVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Common\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Common\IEvaluate.cs" />
     <Compile Include="Src\Visualizers\Common\IListValuesProvider.cs" />
@@ -232,13 +237,11 @@
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphBuilder.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphNode.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\ObjectGraphProperty.cs" />
-    <Compile Include="Src\Visualizers\Graph\ShowObjectGraphVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\GridVisualizerWindow.xaml.cs">
       <DependentUpon>GridVisualizerWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Visualizers\GridVisualizer\ObjectValue.cs" />
-    <Compile Include="Src\Visualizers\GridVisualizer\ShowGridVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\VirtualizingIEnumerable.cs" />
@@ -347,6 +350,7 @@
     <Folder Include="Src\Visualizers\GridVisualizer\ValueProviders" />
     <Folder Include="Src\Visualizers\Controls" />
     <Folder Include="Src\Visualizers\Common" />
+    <Folder Include="Src\Visualizers\Commands" />
     <Folder Include="Src\Visualizers\Utils" />
     <Folder Include="Src\Visualizers\GridVisualizer" />
     <Folder Include="Src\Visualizers\PresentationBindings" />

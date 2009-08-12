@@ -27,8 +27,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			this.Child = this.contentControl;
 			this.IsLeaf = false;
 			
-			this.contentControl.Focusable = true;
-			Keyboard.Focus(this.contentControl);
+			//this.contentControl.Focusable = true;
+			//Keyboard.Focus(this.contentControl);
 			//this.AllowsTransparency = true;
 			//this.PopupAnimation = PopupAnimation.Slide;
 		}

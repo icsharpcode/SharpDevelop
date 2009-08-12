@@ -24,6 +24,22 @@ namespace Debugger.AddIn.Visualizers.Utils
 		}
 		
 		/// <summary>
+		/// Returns true if this type is enum.
+		/// </summary>
+		public static bool IsEnum(this DebugType type)
+		{
+			return (type.BaseType != null) && (type.BaseType.FullName == "System.Enum");
+		}
+		
+		/// <summary>
+		/// Returns true is this type is just System.Object.
+		/// </summary>
+		public static bool IsSystemDotObject(this DebugType type)
+		{
+			return type.FullName == "System.Object";
+		}
+		
+		/// <summary>
 		/// Evaluates expression and gets underlying address of object in the debuggee.
 		/// </summary>
 		public static ulong GetObjectAddress(this Expression expr)
