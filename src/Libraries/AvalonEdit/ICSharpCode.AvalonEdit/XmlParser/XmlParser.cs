@@ -197,7 +197,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			// Just in case parse method was called redundantly
 			PrintStringCacheStats();
 			RawObject.LogDom("Updating main DOM tree...");
-			userDocument.UpdateDataFrom(parsedDocument);
+			userDocument.UpdateTreeFrom(parsedDocument);
 			// TODO: Bug fixing
 			// userDocument.CheckConsistency();
 			return userDocument;
@@ -1272,6 +1272,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				doc.EndOffset = doc.LastChild.EndOffset;
 			}
 			
+			OnParsed(doc);
 			return doc;
 		}
 		
@@ -1350,8 +1351,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			element.StartOffset = element.FirstChild.StartOffset;
 			element.EndOffset = element.LastChild.EndOffset;
 			
-			Log("Constructed {0}", element);
-			
+			OnParsed(element); // Need all elements in cache for offset tracking
 			return element;
 		}
 		
@@ -1360,7 +1360,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			int myIndention = GetIndentLevel(elem);
 			// If has virtual end and is indented
 			if (string.IsNullOrEmpty(((RawTag)elem.LastChild).ClosingBracket) && myIndention != -1) {
-				bool acceptedJustText = true;
 				int lastAccepted = 0; // Accept start tag
 				while (lastAccepted + 1 < elem.Children.Count - 1 /* no end tag */) {
 					RawObject nextItem = elem.Children[lastAccepted + 1];
@@ -1369,14 +1368,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					} else {
 						// Include all more indented items
 						if (GetIndentLevel(nextItem) > myIndention) {
-							acceptedJustText = false;
 							lastAccepted++; continue;  // Accept
 						} else {
 							break;  // Reject
 						}
 					}
 				}
-				if (acceptedJustText) lastAccepted = 0;
 				// Accepted everything?
 				if (lastAccepted + 1 == elem.Children.Count - 1) {
 					yield return elem;
@@ -1389,7 +1386,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				topHalf.StartOffset = topHalf.FirstChild.StartOffset;
 				topHalf.EndOffset = topHalf.LastChild.EndOffset;
 				OnSyntaxError(topHalf, topHalf.LastChild.EndOffset, topHalf.LastChild.EndOffset,
-						              "Expected 2 '</{0}>'", topHalf.StartTag.Name);
+						              "Expected '</{0}>'", topHalf.StartTag.Name);
 				
 				Log("Constructed {0}", topHalf);
 				yield return topHalf;

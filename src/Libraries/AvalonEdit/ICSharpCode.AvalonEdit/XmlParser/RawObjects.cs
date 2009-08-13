@@ -284,15 +284,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		#endregion
 		
 		/// <inheritdoc/>
-		internal override void UpdateDataFrom(RawObject source)
-		{
-			if (this.ReadCallID == source.ReadCallID) return;
-			base.UpdateDataFrom(source);
-			RawContainer src = (RawContainer)source;
-			UpdateChildrenFrom(src.Children);
-		}
-		
-		/// <inheritdoc/>
 		public override IEnumerable<RawObject> GetSelfAndAllChildren()
 		{
 			return Enumerable.Union(
@@ -481,90 +472,55 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary>
-		/// Copy items from source list over to destination list.  
-		/// Prefer updating items with matching offsets.
-		/// </summary>
-		public void UpdateChildrenFrom(IList<RawObject> srcList)
+		internal void UpdateTreeFrom(RawContainer srcContainer)
 		{
-			IList<RawObject> dstList = this.Children;
-			
-			// Items up to 'i' shall be matching
-			int i = 0;
-			while(i < srcList.Count) {
-				// Item is missing - 'i' is invalid index
-				if (i >= dstList.Count) {
-					// Add the rest of the items
-					List<RawObject> itemsToAdd = new List<RawObject>();
-					for(int j = i; j < srcList.Count; j++) {
-						itemsToAdd.Add(srcList[j]);
-					}
-					InsertChildren(i, itemsToAdd);
-					i++; continue;
-				}
-				RawObject srcItem = srcList[i];
-				RawObject dstItem = dstList[i];
-				// Matching and updated
-				if (srcItem.ReadCallID == dstItem.ReadCallID) {
-					i++; continue;
-				}
-				// Offsets and types are matching
-				if (srcItem.StartOffset == dstItem.StartOffset &&
-				    srcItem.GetType() == dstItem.GetType())
+			RemoveChildrenNotIn(srcContainer.Children);
+			InsertAndUpdateChildrenFrom(srcContainer.Children);
+		}
+		
+		void RemoveChildrenNotIn(IList<RawObject> srcList)
+		{
+			Dictionary<int, RawObject> srcChildren = srcList.ToDictionary(i => i.StartOffset);
+			for(int i = 0; i < this.Children.Count;) {
+				RawObject child = this.Children[i];
+				RawObject srcChild;
+				
+				// Keep the item if offest and type matches and if the item is editable
+				if (srcChildren.TryGetValue(child.StartOffset, out srcChild) &&
+				    srcChild.GetType() == child.GetType() &&
+				    !child.IsInCache)
 				{
-					if (dstItem.IsInCache) {
-						// Cached item can not be edited so replace it instead
-						RemoveChildrenAt(i, 1);
-						InsertChildren(i, new RawObject[] { srcItem } );
-					} else {
-						dstItem.UpdateDataFrom(srcItem);
-					}
-					i++; continue;
-				}
-				// Try to be smart by inserting or removing items
-				// Dst offset matches with future src
-				for(int srcItemIndex = i; srcItemIndex < srcList.Count; srcItemIndex++) {
-					RawObject src = srcList[srcItemIndex];
-					if (src.StartOffset == dstItem.StartOffset && src.GetType() == dstItem.GetType()) {
-						List<RawObject> itemsToAdd = new List<RawObject>();
-						for(int j = i; j < srcItemIndex; j++) {
-							itemsToAdd.Add(srcList[j]);
-						}
-						InsertChildren(i, itemsToAdd);
-						i = srcItemIndex;
-						goto continue2;
-					}
-				}
-				// Scr offset matches with future dst
-				for(int dstItemIndex = i; dstItemIndex < dstList.Count; dstItemIndex++) {
-					RawObject dst = dstList[dstItemIndex];
-					if (srcItem.StartOffset == dst.StartOffset && srcItem.GetType() == dst.GetType()) {
-						RemoveChildrenAt(i, dstItemIndex - i);
-						goto continue2;
-					}
-				}
-				// No matches found - just update
-				//   Do not override items in cache - they might be properly used elsewhere
-				if (dstItem.GetType() == srcItem.GetType() && !dstItem.IsInCache) {
-					dstItem.UpdateDataFrom(srcItem);
-					i++; continue;
-				}
-				// Remove fluf in hope that element/attribute update will occur next
-				if (!(dstItem is RawElement) && !(dstItem is RawAttribute)) {
+					// Keep
+					srcChildren.Remove(child.StartOffset);  // In case we have two children with same offset
+					if (child is RawContainer)
+						((RawContainer)child).RemoveChildrenNotIn(((RawContainer)srcChild).Children);
+					i++;
+				} else {
 					RemoveChildrenAt(i, 1);
+				}
+			}
+		}
+		
+		void InsertAndUpdateChildrenFrom(IList<RawObject> srcList)
+		{
+			for(int i = 0; i < srcList.Count; i++) {
+				// End of our list?
+				if (i == this.Children.Count) {
+					InsertChildren(i, new RawObject[] { srcList[i] } );
 					continue;
 				}
-				// Otherwise just add the item
+				RawObject child = this.Children[i];
+				RawObject srcChild = srcList[i];
+				
+				if (child.StartOffset == srcChild.StartOffset &&
+				    child.GetType() == srcChild.GetType())
 				{
-					InsertChildren(i, new RawObject[] {srcList[i]}.ToList());
-					i++; continue;
+					child.UpdateDataFrom(srcChild);
+					if (child is RawContainer)
+						((RawContainer)child).InsertAndUpdateChildrenFrom(((RawContainer)srcChild).Children);
+				} else {
+					InsertChildren(i, new RawObject[] { srcChild } );
 				}
-				// Continue for inner loops
-				continue2:;
-			}
-			// Remove extra items
-			if (dstList.Count > srcList.Count) {
-				RemoveChildrenAt(srcList.Count, dstList.Count - srcList.Count);
 			}
 		}
 	}
