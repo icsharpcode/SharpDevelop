@@ -49,7 +49,6 @@ namespace ICSharpCode.AvalonEdit.Utils
 			
 			string htmlStart = @"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">" + Environment.NewLine
 				+ "<HTML>" + Environment.NewLine
-				+ "<HEAD><TITLE>Copied from AvalonEdit</TITLE></HEAD>" + Environment.NewLine
 				+ "<BODY>" + Environment.NewLine
 				+ "<!--StartFragment-->" + Environment.NewLine;
 			string htmlEnd = "<!--EndFragment-->" + Environment.NewLine + "</BODY>" + Environment.NewLine + "</HTML>" + Environment.NewLine;

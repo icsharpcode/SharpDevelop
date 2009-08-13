@@ -352,15 +352,17 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// (when the caret is not in the selection, we'll clear the selection)
 		/// 
 		/// This method is invoked using the Dispatcher so that code may temporarily violate this rule
-		/// (e.g. most 'exten selection' methods work by first setting the caret, then the selection),
+		/// (e.g. most 'extend selection' methods work by first setting the caret, then the selection),
 		/// it's sufficient to fix it after any event handlers have run.
 		/// </summary>
 		void EnsureSelectionValid()
 		{
 			ensureSelectionValidRequested = false;
 			if (allowCaretOutsideSelection == 0) {
-				if (!selection.Contains(caret.Offset))
+				if (!selection.Contains(caret.Offset)) {
+					Debug.WriteLine("Resetting selection because caret is outside");
 					this.Selection = Selection.Empty;
+				}
 			}
 		}
 		
@@ -694,7 +696,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (this.Document == null)
 				throw ThrowUtil.NoDocumentAssigned();
-			selection.RemoveSelectedText(this);
+			selection.ReplaceSelectionWithText(this, string.Empty);
 			#if DEBUG
 			if (!selection.IsEmpty) {
 				foreach (ISegment s in selection.Segments) {
@@ -710,14 +712,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				throw new ArgumentNullException("newText");
 			if (this.Document == null)
 				throw ThrowUtil.NoDocumentAssigned();
-			using (this.Document.RunUpdate()) {
-				RemoveSelectedText();
-				if (newText.Length > 0) {
-					if (ReadOnlySectionProvider.CanInsert(Caret.Offset)) {
-						this.Document.Insert(Caret.Offset, newText);
-					}
-				}
-			}
+			selection.ReplaceSelectionWithText(this, newText);
 		}
 		#endregion
 		

@@ -151,6 +151,9 @@
     <Compile Include="Editing\NoReadOnlySections.cs">
       <DependentUpon>IReadOnlySectionProvider.cs</DependentUpon>
     </Compile>
+    <Compile Include="Editing\RectangleSelection.cs">
+      <DependentUpon>Selection.cs</DependentUpon>
+    </Compile>
     <Compile Include="Editing\Selection.cs" />
     <Compile Include="Editing\SelectionColorizer.cs">
       <DependentUpon>Selection.cs</DependentUpon>
@@ -159,6 +162,9 @@
       <DependentUpon>Selection.cs</DependentUpon>
     </Compile>
     <Compile Include="Editing\SelectionMouseHandler.cs">
+      <DependentUpon>Selection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editing\SimpleSelection.cs">
       <DependentUpon>Selection.cs</DependentUpon>
     </Compile>
     <Compile Include="Editing\TextArea.cs" />

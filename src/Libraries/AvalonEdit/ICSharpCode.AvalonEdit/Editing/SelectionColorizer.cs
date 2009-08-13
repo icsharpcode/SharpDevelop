@@ -32,9 +32,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 				int segmentStart = segment.Offset;
 				int segmentEnd = segment.Offset + segment.Length;
 				if (segmentEnd <= lineStartOffset)
-					return;
+					continue;
 				if (segmentStart >= lineEndOffset)
-					return;
+					continue;
 				int startColumn = context.VisualLine.GetVisualColumn(Math.Max(0, segmentStart - lineStartOffset));
 				int endColumn = context.VisualLine.GetVisualColumn(segmentEnd - lineStartOffset);
 				ChangeVisualElements(

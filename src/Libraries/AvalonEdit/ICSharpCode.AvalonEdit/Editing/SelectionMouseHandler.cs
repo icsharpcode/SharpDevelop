@@ -46,9 +46,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 			/// </summary>
 			Normal,
 			/// <summary>
-			/// whole-word selection (double click+drag)
+			/// whole-word selection (double click+drag or ctrl+click+drag)
 			/// </summary>
-			WholeWord
+			WholeWord,
+			/// <summary>
+			/// rectangular selection (alt+click+drag)
+			/// </summary>
+			Rectangular
 		}
 		#endregion
 		
@@ -348,9 +352,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 					textArea.Selection = Selection.Empty;
 				}
 				if (textArea.CaptureMouse()) {
-					if (e.ClickCount == 1 && ((modifiers & ModifierKeys.Control) == 0)) {
+					if ((modifiers & ModifierKeys.Alt) == ModifierKeys.Alt) {
+						mode = SelectionMode.Rectangular;
+						if (shift && textArea.Selection is RectangleSelection) {
+							textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldOffset, textArea.Caret.Offset);
+						}
+					} else if (e.ClickCount == 1 && ((modifiers & ModifierKeys.Control) == 0)) {
 						mode = SelectionMode.Normal;
-						if (shift) {
+						if (shift && !(textArea.Selection is RectangleSelection)) {
 							textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldOffset, textArea.Caret.Offset);
 						}
 					} else {
@@ -439,7 +448,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (e.Handled)
 				return;
-			if (mode == SelectionMode.Normal || mode == SelectionMode.WholeWord) {
+			if (mode == SelectionMode.Normal || mode == SelectionMode.WholeWord || mode == SelectionMode.Rectangular) {
 				e.Handled = true;
 				if (textArea.TextView.VisualLinesValid) {
 					// If the visual lines are not valid, don't extend the selection.
@@ -481,9 +490,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 		void ExtendSelectionToMouse(MouseEventArgs e)
 		{
 			int oldOffset = textArea.Caret.Offset;
-			if (mode == SelectionMode.Normal) {
+			if (mode == SelectionMode.Normal || mode == SelectionMode.Rectangular) {
 				SetCaretOffsetToMousePosition(e);
-				textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldOffset, textArea.Caret.Offset);
+				if (mode == SelectionMode.Normal && textArea.Selection is RectangleSelection)
+					textArea.Selection = new SimpleSelection(oldOffset, textArea.Caret.Offset);
+				else if (mode == SelectionMode.Rectangular && !(textArea.Selection is RectangleSelection))
+					textArea.Selection = new RectangleSelection(textArea.Document, oldOffset, textArea.Caret.Offset);
+				else
+					textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldOffset, textArea.Caret.Offset);
 			} else if (mode == SelectionMode.WholeWord) {
 				var newWord = GetWordAtMousePosition(e);
 				if (newWord != SimpleSegment.Invalid) {
@@ -509,7 +523,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				// -> this was not a drag start (mouse didn't move after mousedown)
 				SetCaretOffsetToMousePosition(e);
 				textArea.Selection = Selection.Empty;
-			} else if (mode == SelectionMode.Normal || mode == SelectionMode.WholeWord) {
+			} else if (mode == SelectionMode.Normal || mode == SelectionMode.WholeWord || mode == SelectionMode.Rectangular) {
 				ExtendSelectionToMouse(e);
 			}
 			mode = SelectionMode.None;

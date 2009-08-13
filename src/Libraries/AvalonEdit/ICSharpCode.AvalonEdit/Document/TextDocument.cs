@@ -599,6 +599,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		public int GetOffset(TextLocation location)
 		{
 			DocumentLine line = GetLineByNumber(location.Line);
+			if (location.Column < 0)
+				return line.Offset;
+			if (location.Column > line.Length)
+				return line.EndOffset;
 			return line.Offset + location.Column - 1;
 		}
 		

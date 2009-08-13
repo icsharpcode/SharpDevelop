@@ -19,8 +19,7 @@ namespace ICSharpCode.AvalonEdit.Document.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			//int seed = Environment.TickCount;
-			int seed = 12792296;
+			int seed = Environment.TickCount;
 			Console.WriteLine("TextSegmentTreeTest Seed: " + seed);
 			rnd = new Random(seed);
 		}
