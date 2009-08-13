@@ -44,12 +44,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		/// <summary>
 		/// Parent node.
-		/// 
-		/// Some constraints:
-		///  - Reachable childs shall have parent pointer (except Document)
-		///  - Parser tree can reuse data of other trees as long as it does not modify them
-		///    (that, it can not set parent pointer if non-null)
 		/// </summary>
+		/// <remarks>
+		/// New cached items start with null parent.  (inconsistent)
+		/// Cache constraint:
+		///   If cached item has parent set, then the whole subtree must be consistent
+		/// </remarks>
 		public RawObject Parent { get; set; }
 		
 		/// <summary>
@@ -151,12 +151,25 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return new RawObject[] { this };
 		}
 		
+		/// <summary> Get all ancestors of this node </summary>
+		public IEnumerable<RawObject> GetAncestors()
+		{
+			RawObject curr = this.Parent;
+			while(curr != null) {
+				yield return curr;
+				curr = curr.Parent;
+			}
+		}
+		
 		/// <summary> Call appropriate visit method on the given visitor </summary>
 		public abstract void AcceptVisitor(IXmlVisitor visitor);
 		
 		/// <summary> Copy all data from the 'source' to this object </summary>
 		internal virtual void UpdateDataFrom(RawObject source)
 		{
+			if (this.IsInCache)
+				throw new Exception("Can not update cached item");
+			
 			this.ReadCallID = source.ReadCallID;
 			// In some cases we are just updating objects of that same
 			// type and sequential position hoping to be luckily right
@@ -193,6 +206,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("XML DOM: " + format, args));
 		}
+		
+		internal bool IsInCache { get; set; }
 		
 		#region Helpper methods
 		
@@ -308,8 +323,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		// Only these four methods should be used to modify the collection
 		
-		// See constriants of Parent pointer
-		
 		/// <summary>
 		/// To be used exlucively by the parser
 		/// </summary>
@@ -326,15 +339,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			// Childs can be only added to newly parsed items
 			Assert(this.Parent == null);
 			
-			// Read the list just once
-			items = items.ToList();
-			
-			foreach(RawObject item in items) {
-				// Are we adding some cached item?
-				// We can *not* modify data of other tree
-				// It might resurect user deleted nodes, but that is fine
-				if (item.Parent == null) item.Parent = this;
-			}
+			// Do not set parent pointer
 			
 			this.Children.InsertItems(this.Children.Count, items.ToList());
 		}
@@ -348,54 +353,73 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			RawDocument document = this.Document;
 			Assert(document != null);
-			Assert(!document.IsParsed);
 			
-			List<RawObject> attachedObjects = new List<RawObject>();
+			List<RawObject> attached = new List<RawObject>();
 			
 			// Remove from the old location and set parent
 			foreach(RawObject item in items) {
-				EnsureOwing(document, item, attachedObjects);
+				Steal(document, item, attached, true);
 			}
 			
 			// Add it
 			this.Children.InsertItems(index, items);
 			
-			// Notify document - do last so that the handler sees up-to-date tree
-			foreach(RawObject item in attachedObjects)  {
+			foreach(RawObject item in attached) {
 				document.OnObjectAttached(item);
 			}
 		}
 		
 		/// <summary>
-		/// Make sure that you own the item and no-one else does
+		/// Steal the item from parser tree or from some other node
 		/// </summary>
-		void EnsureOwing(RawDocument myDocument, RawObject item, List<RawObject> attachedObjects)
+		/// <remarks>
+		/// Cache constraint:
+		///   If cached item has parent set, then the whole subtree must be consistent
+		/// </remarks>
+		void Steal(RawDocument myDocument, RawObject item, List<RawObject> attached, bool allowSealFromSelf)
 		{
-			if (item.Document == null) {
-				// TODO: Maybe taking only part of dangling tree
-				// Dangling object - it was probably just removed from the document during update
+			// All items are in parser cache
+			if (item.Parent == null) {
+				// Dangling object - either a new parser object or removed tree (still cached)
 				LogDom("Inserting dangling {0}", item);
-				attachedObjects.AddRange(item.GetSelfAndAllChildren());
 				item.Parent = this;
-			} else if (item.Document.IsParsed) {
-				// Adding from parser tree - steal pointer; keep in the parser tree
-				LogDom("Inserting {0} from parser tree", item);
-				attachedObjects.Add(item);
+				attached.Add(item);
 				if (item is RawContainer) {
 					foreach(RawObject child in ((RawContainer)item).Children) {
-						((RawContainer)item).EnsureOwing(myDocument, child, attachedObjects);
+						// Note: What if node is attached and then detached
+						//       -> the root has null parent, but childs are pointing to it
+						if (child.Parent == item) {
+							// Whole child subtree is consistent
+							// Do not steal from self - no recursion
+							attached.AddRange(child.GetSelfAndAllChildren());
+						} else {
+							// Null parent or someone else owns it
+							((RawContainer)item).Steal(myDocument, child, attached, false);
+						}
 					}
 				}
-				item.Parent = this;  // Do after recursion so the Document.IsParser == true for children
 			} else {
-				// Adding from user other document location
-				Assert(item.Document == myDocument);  // The parser was reusing object from other document?
-				LogDom("Inserting {0} from other document location", item);
-				// Remove from other location
+				// The object is in the cache and the cache is/was used in the document.
+				// Verify cache constraint - subtree consistent
+				item.CheckConsistency();
+				// The parent (or any futher parents) can not be part of parsed document
+				//   becuase otherwise this item would be included twice
+				//   -> So it safe to remove it from parent
+				//   - The parent may be even us
+				if (item.Parent == this && !allowSealFromSelf)
+					throw new Exception("You can not steal from yourself");
+				// Maintain cache constraint by removing parents from cache
+				myDocument.Parser.RemoveFromCache(item.Parent); // Document of the item may be null
+				// Remove from the other location
 				var owingList = ((RawContainer)item.Parent).Children;
 				owingList.RemoveItems(owingList.IndexOf(item), 1);
-				// No detach / attach notifications
+				// If connected to the document
+				if (item.Document != myDocument) {
+					// Sealing from dangling tree
+					attached.AddRange(item.GetSelfAndAllChildren());
+				}
 				item.Parent = this;
+				// Rest of the tree is consistent - do not recurse
 			}
 		}
 		
@@ -407,7 +431,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			RawDocument document = this.Document;
 			Assert(document != null);
-			Assert(!document.IsParsed);
 			
 			List<RawObject> removed = new List<RawObject>(count);
 			for(int i = 0; i < count; i++) {
@@ -424,7 +447,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			// Null parent pointer
 			foreach(RawObject item in removed) {
-				Assert(item.Parent != null);
+				Assert(item.Parent == this);
 				item.Parent = null;
 			}
 			
@@ -445,6 +468,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			foreach(RawObject child in this.Children) {
 				Assert(child.Parent != null, "Null parent reference");
 				Assert(child.Parent == this, "Inccorect parent reference");
+				Assert(this.StartOffset <= child.StartOffset && child.EndOffset <= this.EndOffset);
+				if (this.IsInCache) {
+					Assert(child.IsInCache, "Child not in cache");
+				}
 				child.CheckConsistency();
 			}
 		}
@@ -459,11 +486,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			// Items up to 'i' shall be matching
 			int i = 0;
-			// Do not do anything smart with the start tag
-			if (this is RawElement) {
-				dstList[0].UpdateDataFrom(srcList[0]);
-				i++;
-			}
 			while(i < srcList.Count) {
 				// Item is missing - 'i' is invalid index
 				if (i >= dstList.Count) {
@@ -485,7 +507,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				if (srcItem.StartOffset == dstItem.StartOffset &&
 				    srcItem.GetType() == dstItem.GetType())
 				{
-					dstItem.UpdateDataFrom(srcItem);
+					if (dstItem.IsInCache) {
+						// Cached item can not be edited so replace it instead
+						RemoveChildrenAt(i, 1);
+						InsertChildren(i, new RawObject[] { srcItem } );
+					} else {
+						dstItem.UpdateDataFrom(srcItem);
+					}
 					i++; continue;
 				}
 				// Try to be smart by inserting or removing items
@@ -511,7 +539,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					}
 				}
 				// No matches found - just update
-				if (dstItem.GetType() == srcItem.GetType()) {
+				//   Do not override items in cache - they might be properly used elsewhere
+				if (dstItem.GetType() == srcItem.GetType() && !dstItem.IsInCache) {
 					dstItem.UpdateDataFrom(srcItem);
 					i++; continue;
 				}
@@ -563,11 +592,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	public class RawDocument: RawContainer
 	{
 		/// <summary>
-		/// Parser tree (as opposed to some user tree).
-		/// Parser tree can reuse data of other trees as long as it does not modify them
-		/// (that, it can not set parent pointer if non-null)
+		/// Parser that produced this document
 		/// </summary>
-		internal bool IsParsed { get; set; }
+		internal XmlParser Parser { get; set; }
 		
 		/// <summary>
 		/// All syntax errors in the document
@@ -588,7 +615,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		internal void OnObjectAttached(RawObject obj)
 		{
-			Assert(!IsParsed);
 			ObjectCount++;
 			foreach(SyntaxError error in obj.SyntaxErrors) {
 				this.SyntaxErrors.Add(error);
@@ -598,7 +624,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		internal void OnObjectDettached(RawObject obj)
 		{
-			Assert(!IsParsed);
 			ObjectCount--;
 			foreach(SyntaxError error in obj.SyntaxErrors) {
 				this.SyntaxErrors.Remove(error);
@@ -608,7 +633,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		internal void OnObjectChanging(RawObject obj)
 		{
-			Assert(!IsParsed);
 			foreach(SyntaxError error in obj.SyntaxErrors) {
 				this.SyntaxErrors.Remove(error);
 			}
@@ -617,7 +641,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		internal void OnObjectChanged(RawObject obj)
 		{
-			Assert(!IsParsed);
 			foreach(SyntaxError error in obj.SyntaxErrors) {
 				this.SyntaxErrors.Add(error);
 			}

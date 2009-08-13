@@ -23,7 +23,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// The created tree fully describes the document and thus the orginal XML file can be
 	/// exactly reproduced.
 	/// 
-	/// Any further parses will reparse only the changed parts and the existing three will
+	/// Any further parses will reparse only the changed parts and the existing tree will
 	/// be updated with the changes.  The user can add event handlers to be notified of
 	/// the changes.  The parser tries to minimize the number of changes to the tree.
 	/// (for example, it will add a single child at the start of collection rather than
@@ -89,8 +89,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </remarks>
 	public class XmlParser
 	{
-		// TODO: Simple tag matching heuristic
-		
 		RawDocument userDocument;
 		TextDocument textDocument;
 		
@@ -121,7 +119,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public XmlParser(string input)
 		{
 			this.input = input;
-			this.userDocument = new RawDocument();
+			this.userDocument = new RawDocument() { Parser = this };
 			this.EntityReferenceIsError = true;
 		}
 		
@@ -176,16 +174,17 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				// Removing will cause one of the end to be set to change.Offset
 				// FindOverlappingSegments apparently removes any segment intersecting of touching
 				// so that conviniently takes care of the +1 byte
-				foreach(RawObject obj in parsedItems.FindOverlappingSegments(change.Offset, 0)) {
-					// TODO: Self and ancestors
-					parsedItems.Remove(obj);
-					Log("Removed cached item {0}", obj);
+				while(true) {
+					RawObject obj = parsedItems.FindOverlappingSegments(change.Offset, 0).FirstOrDefault();
+					if (obj == null) break;
+					RemoveFromCache(obj);
 				}
-				foreach(TouchedMemoryRange memory in touchedMemoryRanges.FindOverlappingSegments(change.Offset, 0)) {
-					// TODO: Self and ancestors
-					parsedItems.Remove(memory.TouchedByObject);
+				while(true) {
+					TouchedMemoryRange memory = touchedMemoryRanges.FindOverlappingSegments(change.Offset, 0).FirstOrDefault();
+					if (memory == null) break;
+					Log("Found that {0} dependeds on memory ({1}-{2})", memory.TouchedByObject, memory.StartOffset, memory.EndOffset);
+					RemoveFromCache(memory.TouchedByObject);
 					touchedMemoryRanges.Remove(memory);
-					Log("Removed cached item {0} - depended on memory ({1}-{2})", memory.TouchedByObject, memory.StartOffset, memory.EndOffset);
 				}
 			}
 			changesSinceLastParse.Clear();
@@ -201,6 +200,36 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			userDocument.UpdateDataFrom(parsedDocument);
 			userDocument.CheckConsistency();
 			return userDocument;
+		}
+		
+		List<RawObject> FindParents(RawObject child)
+		{
+			List<RawObject> parents = new List<RawObject>();
+			foreach(RawObject parent in parsedItems.FindOverlappingSegments(child.StartOffset, 0)) {
+				// Parent is anyone wholy containg the child
+				if (parent.StartOffset <= child.StartOffset && child.EndOffset <= parent.EndOffset && parent != child) {
+					parents.Add(parent);
+				}
+			}
+			return parents;
+		}
+		
+		/// <summary> Remove from cache including all parents </summary>
+		internal void RemoveFromCache(RawObject obj)
+		{
+			List<RawObject> parents = FindParents(obj);
+			
+			if (parsedItems.Remove(obj)) {
+				obj.IsInCache = false;
+				Log("Removed cached item {0}", obj);
+			}
+			
+			foreach(RawObject r in parents) {
+				if (parsedItems.Remove(r)) {
+					r.IsInCache = false;
+					Log("Removing cached item {0} (it is parent)", r);
+				}
+			}
 		}
 		
 		bool TryReadFromCacheOrNew<T>(out T res) where T: RawObject, new()
@@ -238,10 +267,16 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		void OnParsed(RawObject obj)
 		{
-			if (obj.Length == 0 && !(obj is RawDocument)) {
+			if (obj.Length == 0 && !(obj is RawDocument))
 				throw new Exception(string.Format("Could not parse {0}.  It has zero length.", obj));
+			if (obj is RawContainer) {
+				foreach(RawObject child in ((RawContainer)obj).Children) {
+					if (!(obj.StartOffset <= child.StartOffset && child.EndOffset <= obj.EndOffset))
+						throw new Exception("Wrong nesting");
+				}
 			}
 			parsedItems.Add(obj);
+			obj.IsInCache = true;
 			Log("Parsed {0}", obj);
 			if (maxTouchedLocation > currentLocation) {
 				// location is assumed to be read so the range ends at (location + 1)
@@ -1213,8 +1248,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		RawDocument ReadDocument()
 		{
-			RawDocument doc = new RawDocument();
-			doc.IsParsed = true;
+			RawDocument doc = new RawDocument() { Parser = this };
 			
 			List<RawObject> objs = ReadFlatObjects();
 			Log("Flat stream: {0}", PrintObjects(objs));
