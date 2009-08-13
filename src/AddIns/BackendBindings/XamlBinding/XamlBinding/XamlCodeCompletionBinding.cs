@@ -190,7 +190,7 @@ namespace ICSharpCode.XamlBinding
 			
 			if (context.ActiveElement != null) {
 				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && context.Description != XamlContextDescription.InAttributeValue) {
-					var list = CompletionDataHelper.CreateListForContext(context) as XamlCompletionItemList;
+					XamlCompletionItemList list = CompletionDataHelper.CreateListForContext(context);
 					string starter = editor.GetWordBeforeCaretExtended().TrimStart('/');
 					if (context.Description != XamlContextDescription.None && !string.IsNullOrEmpty(starter)) {
 						if (starter.Contains("."))
@@ -240,8 +240,8 @@ namespace ICSharpCode.XamlBinding
 							
 							ICompletionListWindow window = editor.ShowCompletionWindow(completionList);
 							
-							if (context.Attribute.Prefix.Equals("xmlns", StringComparison.OrdinalIgnoreCase) ||
-							    context.Attribute.Name.Equals("xmlns", StringComparison.OrdinalIgnoreCase))
+							if ((context.Attribute.Prefix.Equals("xmlns", StringComparison.OrdinalIgnoreCase) ||
+							     context.Attribute.Name.Equals("xmlns", StringComparison.OrdinalIgnoreCase)) && window != null)
 								window.Width = 400;
 						}
 						return true;

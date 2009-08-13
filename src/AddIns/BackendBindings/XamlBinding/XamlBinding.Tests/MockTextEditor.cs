@@ -80,9 +80,16 @@ namespace ICSharpCode.XamlBinding.Tests
 			return null;
 		}
 		
+		IEnumerable<IInsightItem> lastInsightItems;
+		
+		public IEnumerable<IInsightItem> LastInsightItems {
+			get { return lastInsightItems; }
+		}
+		
 		public override IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
 		{
-			throw new NotImplementedException();
+			this.lastInsightItems = items;
+			return null;
 		}
 	}
 

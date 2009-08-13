@@ -62,29 +62,19 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			if (this.colDefitions.Parent != null)
 				this.colDefitions.Remove();
 			
-			this.rowDefitions
-				.Elements()
-				.Select(row => row.Attribute("Height"))
-				.ForEach(
-					height => {
-						if (height.Value.Trim() == "1*")
-							height.Value = "*";
-						else
-							height.Value = height.Value.Trim();
-					}
-				);
+			foreach (var height in this.rowDefitions.Elements().Select(row => row.Attribute("Height"))) {
+				if (height.Value.Trim() == "1*")
+					height.Value = "*";
+				else
+					height.Value = height.Value.Trim();
+			}
 			
-			this.colDefitions
-				.Elements()
-				.Select(col => col.Attribute("Width"))
-				.ForEach(
-					width => {
-						if (width.Value.Trim() == "1*")
-							width.Value = "*";
-						else
-							width.Value = width.Value.Trim();
-					}
-				);
+			foreach (var width in this.colDefitions.Elements().Select(col => col.Attribute("Width"))) {
+				if (width.Value.Trim() == "1*")
+					width.Value = "*";
+				else
+					width.Value = width.Value.Trim();
+			}
 			
 			this.additionalProperties = gridTree.Elements().Where(e => e.Name.LocalName.Contains(".")).ToList();
 			this.additionalProperties.ForEach(item => { if (item.Parent != null) item.Remove(); });

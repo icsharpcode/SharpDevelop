@@ -70,7 +70,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void ContextAtTagDescriptionTest2()
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
-			int offset = "<Grid>\n".Length + 11;
+			int offset = "<Grid>\n".Length + 10;
 			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);

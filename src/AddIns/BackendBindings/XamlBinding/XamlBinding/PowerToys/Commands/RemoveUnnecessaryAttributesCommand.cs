@@ -20,15 +20,9 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override bool Refactor(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, System.Xml.Linq.XDocument document)
 		{
-			// TODO : use selection
 			RemoveRecursive(document.Root, "Margin");
-			// TODO : do a usage check first
-//			RemoveRecursive(document, "Name");
-//			RemoveRecursive(document, "Name", CompletionDataHelper.XamlNamespace);
 			RemoveRecursive(document.Root, "MinWidth");
-			RemoveRecursive(document.Root, "MinHeight");
-			// set all row and column definitions to Auto
-			
+			RemoveRecursive(document.Root, "MinHeight");			
 			return true;
 		}
 	}

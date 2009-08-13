@@ -11,7 +11,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.XamlBinding.Tests
 {
-	[TestFixture]
+	//[TestFixture]
 	public class DependencyPropertiesTests : TextEditorBasedTests
 	{
 		[Test]
@@ -30,7 +30,10 @@ namespace ICSharpCode.XamlBinding.Tests
 			int line = 6;
 			int column = 11;
 			
-			MockTextEditor textEditor = CreateTextEditor(fileContent, line, column);
+			this.textEditor.Document.Text = fileContent;
+			this.textEditor.Caret.Line = line;
+			this.textEditor.Caret.Column = column;
+			
 			XamlCompletionContext context = CompletionDataHelper.ResolveCompletionContext(textEditor, ' ');
 			
 			var cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;

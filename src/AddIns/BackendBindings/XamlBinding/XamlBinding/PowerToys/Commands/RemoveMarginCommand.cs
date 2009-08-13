@@ -25,7 +25,6 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override bool Refactor(ITextEditor editor, XDocument document)
 		{
-			// TODO : use selection
 			RemoveRecursive(document.Root, "Margin");
 			return true;
 		}

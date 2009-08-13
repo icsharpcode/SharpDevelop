@@ -1259,7 +1259,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				RawTag currTag = (RawTag)curr;
 				if (currTag == StartTagPlaceholder) {
 					return ReadElement(objStream);
-				} else if (currTag.IsStartTag && currTag.ClosingBracket == ">") {
+				} else if (currTag.IsStartTag) {
 					return ReadElement(objStream);
 				} else {
 					return ReadSingleObject(objStream);

@@ -5,24 +5,54 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 
 namespace ICSharpCode.XamlBinding.Tests
 {
 	public class TextEditorBasedTests
 	{
-		protected MockTextEditor CreateTextEditor(string fileContent, int line, int column)
+		protected MockTextEditor textEditor;
+		
+		[SetUp]
+		[STAThread]
+		public void SetupTest()
 		{
-			MockTextEditor textEditor = new MockTextEditor();
+			this.textEditor = new MockTextEditor();
+		}
+		
+		[STAThread]
+		protected void TestCtrlSpace(string fileHeader, string fileFooter, Action<ICompletionItemList> constraint)
+		{
+			this.textEditor.Document.Text = fileHeader + fileFooter;
+			this.textEditor.Caret.Offset = fileHeader.Length;
+			this.textEditor.CreateParseInformation();
 			
-			textEditor.Document.Text = fileContent;
-			textEditor.Caret.Line = line;
-			textEditor.Caret.Column = column;
-			textEditor.CreateParseInformation();
+			bool invoked = XamlCodeCompletionBinding.Instance.CtrlSpace(textEditor);
 			
-			return textEditor;
+			Assert.IsTrue(invoked);
+			
+			ICompletionItemList list = this.textEditor.LastCompletionItemList;
+			
+			constraint(list);
+		}
+		
+		[STAThread]
+		protected void TestKeyPress(string fileHeader, string fileFooter, char keyPressed, CodeCompletionKeyPressResult keyPressResult, Action<ICompletionItemList> constraint)
+		{
+			this.textEditor.Document.Text = fileHeader + fileFooter;
+			this.textEditor.Caret.Offset = fileHeader.Length;
+			this.textEditor.CreateParseInformation();
+			
+			CodeCompletionKeyPressResult result = XamlCodeCompletionBinding.Instance.HandleKeyPress(textEditor, keyPressed);
+			
+			Assert.AreEqual(keyPressResult, result);
+			
+			ICompletionItemList list = this.textEditor.LastCompletionItemList;
+			
+			constraint(list);
 		}
 	}
 }

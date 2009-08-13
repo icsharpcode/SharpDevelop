@@ -294,7 +294,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public RawObject GetChildAtOffset(int offset)
 		{
 			foreach(RawObject child in this.Children) {
-				if (child is RawAttribute && offset == child.EndOffset) return child;
+				if ((child is RawAttribute || child is RawText) && offset == child.EndOffset) return child;
 				if (child.StartOffset < offset && offset < child.EndOffset) {
 					if (child is RawContainer) {
 						return ((RawContainer)child).GetChildAtOffset(offset);

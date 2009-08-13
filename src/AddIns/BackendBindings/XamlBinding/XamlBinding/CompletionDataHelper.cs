@@ -8,10 +8,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Xml.Linq;
 
 using ICSharpCode.AvalonEdit.XmlParser;
 using ICSharpCode.SharpDevelop;
@@ -19,7 +21,6 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
-using System.Xml.Linq;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -200,13 +201,13 @@ namespace ICSharpCode.XamlBinding
 				return emptyList;
 			
 			if (lastElement.LocalName.EndsWith(".", StringComparison.OrdinalIgnoreCase) || context.PressedKey == '.') {
-				if (context.ParentElement.LocalName.StartsWith(lastElement.LocalName.TrimEnd('.'), StringComparison.OrdinalIgnoreCase))
-					AddAttributes(rt, list, includeEvents);
-				else if (rt != null && rt.GetUnderlyingClass() != null) {
-					string key = string.IsNullOrEmpty(lastElement.Prefix) ? "" : lastElement.Prefix + ":";
+				string key = string.IsNullOrEmpty(lastElement.Prefix) ? "" : lastElement.Prefix + ":";
 
+				if (context.ParentElement.LocalName.StartsWith(lastElement.LocalName.TrimEnd('.'), StringComparison.OrdinalIgnoreCase)) {
+					AddAttributes(rt, list, includeEvents);
 					AddAttachedProperties(rt.GetUnderlyingClass(), list, key, lastElement.Name.Trim('.'));
-				}
+				} else if (rt != null && rt.GetUnderlyingClass() != null)
+					AddAttachedProperties(rt.GetUnderlyingClass(), list, key, lastElement.Name.Trim('.'));
 			} else {
 				if (rt == null) {
 					list.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, "Uid"));
@@ -228,9 +229,8 @@ namespace ICSharpCode.XamlBinding
 				return;
 			
 			foreach (IProperty p in rt.GetProperties()) {
-				if (p.IsPublic && (p.IsPubliclySetable() || p.ReturnType.IsCollectionReturnType())) {
+				if (p.IsPublic && (p.IsPubliclySetable() || p.ReturnType.IsCollectionReturnType()))
 					list.Add(new XamlCodeCompletionItem(p));
-				}
 			}
 			
 			if (includeEvents) {
@@ -269,6 +269,8 @@ namespace ICSharpCode.XamlBinding
 				if (!string.IsNullOrEmpty(@namespace))
 					list.Add(new XmlnsCompletionItem(@namespace, false));
 			}
+			
+			list.Add(new XmlnsCompletionItem(MarkupCompatibilityNamespace, true));
 			
 			return list
 				.Distinct(new XmlnsEqualityComparer())
@@ -1206,23 +1208,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public static void AddAttachedProperties(IClass c, List<ICompletionItem> result, string key, string prefix)
 		{
-			var attachedProperties = c.Fields
-				.Where(f =>
-				       f.IsPublic &&
-				       f.IsStatic &&
-				       f.IsReadonly &&
-				       f.ReturnType != null &&
-				       f.ReturnType.FullyQualifiedName == "System.Windows.DependencyProperty" &&
-				       f.Name.Length > "Property".Length &&
-				       f.Name.EndsWith("Property", StringComparison.Ordinal) &&
-				       c.Methods.Any(m =>
-				                     m.IsPublic &&
-				                     m.IsStatic &&
-				                     m.Name.Length > 3 &&
-				                     (m.Name.StartsWith("Get", StringComparison.Ordinal) || m.Name.StartsWith("Set", StringComparison.Ordinal)) &&
-				                     m.Name.Remove(0, 3) == f.Name.Remove(f.Name.Length - "Property".Length)
-				                    )
-				      );
+			var attachedProperties = c.Fields.Where(f => f.IsAttached(true, false));
 			
 			int prefixLength = (prefix.Length > 0) ? prefix.Length + 1 : 0;
 			
@@ -1239,16 +1225,7 @@ namespace ICSharpCode.XamlBinding
 		
 		static void AddAttachedEvents(IClass c, List<ICompletionItem> result, string key, string prefix)
 		{
-			var attachedEvents = c.Fields
-				.Where(f =>
-				       f.IsPublic &&
-				       f.IsStatic &&
-				       f.IsReadonly &&
-				       f.ReturnType != null &&
-				       f.ReturnType.FullyQualifiedName == "System.Windows.RoutedEvent" &&
-				       f.Name.Length > "Event".Length &&
-				       f.Name.EndsWith("Event", StringComparison.Ordinal)
-				      );
+			var attachedEvents = c.Fields.Where(f => f.IsAttached(false, true));
 			
 			int prefixLength = (prefix.Length > 0) ? prefix.Length + 1 : 0;
 			

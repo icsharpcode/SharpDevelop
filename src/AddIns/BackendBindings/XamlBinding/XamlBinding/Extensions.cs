@@ -270,38 +270,46 @@ namespace ICSharpCode.XamlBinding
 				return false;
 			
 			foreach (IField field in thisValue.Fields) {
-				if (!field.IsPublic || !field.IsStatic || !field.IsReadonly || field.ReturnType == null)
-					continue;
-				
-				bool foundMethod = false;
-				
-				if (lookForProperties && field.ReturnType.FullyQualifiedName == "System.Windows.DependencyProperty") {
-					if (field.Name.Length <= "Property".Length)
-						continue;
-					if (!field.Name.EndsWith("Property", StringComparison.Ordinal))
-						continue;
-					
-					string fieldName = field.Name.Remove(field.Name.Length - "Property".Length);
-					
-					foreach (IMethod method in thisValue.Methods) {
-						if (!method.IsPublic || !method.IsStatic || method.Name.Length <= 3)
-							continue;
-						if (!method.Name.StartsWith("Get") && !method.Name.StartsWith("Set"))
-							continue;
-						foundMethod = method.Name.Remove(0, 3) == fieldName;
-						if (foundMethod)
-							return true;
-					}
-				}
-				
-				if (lookForEvents && !foundMethod && field.ReturnType.FullyQualifiedName == "System.Windows.RoutedEvent") {
-					if (field.Name.Length <= "Event".Length)
-						continue;
-					if (!field.Name.EndsWith("Event", StringComparison.Ordinal))
-						continue;
-					
+				if (field.IsAttached(lookForProperties, lookForEvents))
 					return true;
+			}
+			
+			return false;
+		}
+		
+		public static bool IsAttached(this IField field, bool lookForProperties, bool lookForEvents)
+		{
+			if (!field.IsPublic || !field.IsStatic || !field.IsReadonly || field.ReturnType == null)
+				return false;
+			
+			bool foundMethod = false;
+			
+			if (lookForProperties && field.ReturnType.FullyQualifiedName == "System.Windows.DependencyProperty") {
+				if (field.Name.Length <= "Property".Length)
+					return false;
+				if (!field.Name.EndsWith("Property", StringComparison.Ordinal))
+					return false;
+				
+				string fieldName = field.Name.Remove(field.Name.Length - "Property".Length);
+				
+				foreach (IMethod method in field.DeclaringType.Methods) {
+					if (!method.IsPublic || !method.IsStatic || method.Name.Length <= 3)
+						continue;
+					if (!method.Name.StartsWith("Get") && !method.Name.StartsWith("Set"))
+						continue;
+					foundMethod = method.Name.Remove(0, 3) == fieldName;
+					if (foundMethod)
+						return true;
 				}
+			}
+			
+			if (lookForEvents && !foundMethod && field.ReturnType.FullyQualifiedName == "System.Windows.RoutedEvent") {
+				if (field.Name.Length <= "Event".Length)
+					return false;
+				if (!field.Name.EndsWith("Event", StringComparison.Ordinal))
+					return false;
+				
+				return true;
 			}
 			
 			return false;
