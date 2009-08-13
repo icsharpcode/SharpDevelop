@@ -32,8 +32,10 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// intersecting with another segment.
 	/// 
 	/// When the document changes, the offsets of all text segments in the collection will be adjusted accordingly.
+	/// Start offsets move like AnchorMovementType.AfterInsertion, end offsets move like AnchorMovementType.BeforeInsertion
+	/// (i.e. the segment will always stay as small as possible).
 	/// If a document change causes a segment to be deleted completely, it will be reduced to length 0, but segments are
-	/// never automatically removed.
+	/// never automatically removed. Segments with length 0 will never expand due to document changes and move as AfterInsertion.
 	/// </summary>
 	/// <remarks>
 	/// Thread-safety: a TextSegmentCollection that is connected to a TextDocument may only be used on that document's owner thread.
@@ -69,7 +71,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		#region Constructor
 		/// <summary>
-		/// Creates a new TextSegmentCollection that needs manual calls to <see cref="UpdateOffsets"/>.
+		/// Creates a new TextSegmentCollection that needs manual calls to <see cref="UpdateOffsets(DocumentChangeEventArgs)"/>.
 		/// </summary>
 		public TextSegmentCollection()
 		{
@@ -92,7 +94,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		#endregion
 		
-		#region OnDocumentChanged
+		#region OnDocumentChanged / UpdateOffsets
 		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextDocumentWeakEventManager.Changed)) {
@@ -113,19 +115,46 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (isConnectedToDocument)
 				throw new InvalidOperationException("This TextSegmentCollection will automatically update offsets; do not call UpdateOffsets manually!");
 			OnDocumentChanged(e);
+			CheckProperties();
 		}
 		
 		void OnDocumentChanged(DocumentChangeEventArgs e)
 		{
-			foreach (OffsetChangeMapEntry entry in e.OffsetChangeMap) {
-				// TODO: this needs improvement: separate remove+insert steps don't handle text replacements correctly
-				RemoveText(entry.Offset, entry.RemovalLength);
-				InsertText(entry.Offset, entry.InsertionLength);
+			OffsetChangeMap map = e.OffsetChangeMapOrNull;
+			if (map != null) {
+				foreach (OffsetChangeMapEntry entry in map) {
+					UpdateOffsetsInternal(entry);
+				}
+			} else {
+				UpdateOffsetsInternal(e.CreateSingleChangeMapEntry());
 			}
+		}
+		
+		/// <summary>
+		/// Updates the start and end offsets of all segments stored in this collection.
+		/// </summary>
+		/// <param name="change">OffsetChangeMapEntry instance describing the change to the document.</param>
+		public void UpdateOffsets(OffsetChangeMapEntry change)
+		{
+			if (isConnectedToDocument)
+				throw new InvalidOperationException("This TextSegmentCollection will automatically update offsets; do not call UpdateOffsets manually!");
+			UpdateOffsetsInternal(change);
+			CheckProperties();
 		}
 		#endregion
 		
-		#region Insert Text
+		#region UpdateOffsets (implementation)
+		void UpdateOffsetsInternal(OffsetChangeMapEntry change)
+		{
+			// Special case pure insertions, because they don't always cause a text segment to increase in size when the replaced region
+			// is inside a segment (when offset is at start or end of a text semgent).
+			if (change.RemovalLength == 0) {
+				InsertText(change.Offset, change.InsertionLength);
+			} else {
+				ReplaceText(change);
+			}
+		}
+		
 		void InsertText(int offset, int length)
 		{
 			if (length == 0)
@@ -145,37 +174,36 @@ namespace ICSharpCode.AvalonEdit.Document
 				UpdateAugmentedData(node);
 			}
 		}
-		#endregion
 		
-		#region Remove Text
-		void RemoveText(int offset, int length)
+		void ReplaceText(OffsetChangeMapEntry change)
 		{
-			if (length == 0)
-				return;
-			
-			foreach (TextSegment segment in FindOverlappingSegments(offset, length)) {
-				if (segment.StartOffset < offset) {
-					if (segment.EndOffset > offset + length) {
-						// removal in middle of segment: shorten segment by length
-						segment.Length -= length;
+			Debug.Assert(change.RemovalLength > 0);
+			int offset = change.Offset;
+			foreach (TextSegment segment in FindOverlappingSegments(offset, change.RemovalLength)) {
+				if (segment.StartOffset <= offset) {
+					if (segment.EndOffset >= offset + change.RemovalLength) {
+						// Replacement inside segment: adjust segment length
+						segment.Length += change.InsertionLength - change.RemovalLength;
 					} else {
-						// removal at end of segment: set segment end to removal position
+						// Replacement starting inside segment and ending after segment end: set segment end to removal position
 						//segment.EndOffset = offset;
 						segment.Length = offset - segment.StartOffset;
 					}
 				} else {
-					int lengthLeft = segment.EndOffset - (offset + length);
+					// Replacement starting in front of text segment and running into segment.
+					// Keep segment.EndOffset constant and move segment.StartOffset to the end of the replacement
+					int remainingLength = segment.EndOffset - (offset + change.RemovalLength);
 					RemoveSegment(segment);
-					segment.StartOffset = offset + length;
-					segment.Length = Math.Max(0, lengthLeft);
+					segment.StartOffset = offset + change.RemovalLength;
+					segment.Length = Math.Max(0, remainingLength);
 					AddSegment(segment);
 				}
 			}
-			// move start offsets of all segments >= offset
-			TextSegment node = FindFirstSegmentWithStartAfter(offset);
+			// move start offsets of all segments > offset
+			TextSegment node = FindFirstSegmentWithStartAfter(offset + 1);
 			if (node != null) {
-				Debug.Assert(node.nodeLength >= length);
-				node.nodeLength -= length;
+				Debug.Assert(node.nodeLength >= change.RemovalLength);
+				node.nodeLength += change.InsertionLength - change.RemovalLength;
 				UpdateAugmentedData(node);
 			}
 		}
@@ -273,15 +301,13 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (startOffset <= 0)
 				return (T)root.LeftMost;
 			TextSegment s = FindNode(ref startOffset);
-			if (s == null && startOffset == 0) {
-				s = root.RightMost;
-				startOffset += s.nodeLength;
-			}
-			while (s != null && startOffset == 0) {
-				startOffset += s.nodeLength;
-				TextSegment p = s.Predecessor;
-				if (p == null)
-					break;
+			// startOffset means that the previous segment is starting at the offset we were looking for
+			while (startOffset == 0) {
+				TextSegment p = (s == null) ? root.RightMost : s.Predecessor;
+				// There must always be a predecessor: if we were looking for the first node, we would have already
+				// returned it as root.LeftMost above.
+				Debug.Assert(p != null);
+				startOffset += p.nodeLength;
 				s = p;
 			}
 			return (T)s;
@@ -329,7 +355,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
-		/// Finds all segments that overlap with the given segment.
+		/// Finds all segments that overlap with the given segment (including touching segments).
 		/// </summary>
 		public ReadOnlyCollection<T> FindOverlappingSegments(ISegment segment)
 		{
@@ -339,7 +365,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
-		/// Finds all segments that overlap with the given segment.
+		/// Finds all segments that overlap with the given segment (including touching segments).
 		/// Segments are returned in the order given by GetNextSegment/GetPreviousSegment.
 		/// </summary>
 		public ReadOnlyCollection<T> FindOverlappingSegments(int offset, int length)

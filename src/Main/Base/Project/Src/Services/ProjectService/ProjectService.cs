@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	public static class ProjectService
 	{
 		static Solution openSolution;
-		static IProject currentProject;
+		volatile static IProject currentProject;
 		
 		public static Solution OpenSolution {
 			[System.Diagnostics.DebuggerStepThrough]
@@ -28,12 +28,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Gets/Sets the active project.
+		/// The getter is thread-safe; the setter may only be called on the main thread.
+		/// </summary>
 		public static IProject CurrentProject {
 			[System.Diagnostics.DebuggerStepThrough]
 			get {
 				return currentProject;
 			}
 			set {
+				WorkbenchSingleton.AssertMainThread();
 				if (currentProject != value) {
 					LoggingService.Info("CurrentProject changed to " + (value == null ? "null" : value.Name));
 					currentProject = value;

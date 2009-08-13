@@ -34,9 +34,6 @@ namespace ICSharpCode.AvalonEdit.Document
 			
 			DocumentLine emptyLine = new DocumentLine(document);
 			root = emptyLine.InitLineNode();
-			#if DEBUG
-			CheckProperties();
-			#endif
 		}
 		#endregion
 		

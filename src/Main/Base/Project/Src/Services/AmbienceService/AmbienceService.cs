@@ -75,8 +75,6 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		static IAmbience defaultAmbience;
-		
 		/// <summary>
 		/// Gets the current ambience.
 		/// This method is thread-safe.

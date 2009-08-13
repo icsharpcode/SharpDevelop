@@ -41,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 			get { return right.height - left.height; }
 		}
 		
-		[Conditional("DEBUG")]
+		[Conditional("DATACONSISTENCYTEST")]
 		internal void CheckInvariants()
 		{
 			if (height == 0) {
