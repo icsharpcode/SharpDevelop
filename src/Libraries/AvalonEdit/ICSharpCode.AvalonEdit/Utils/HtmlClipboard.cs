@@ -109,8 +109,13 @@ namespace ICSharpCode.AvalonEdit.Utils
 				throw new ArgumentNullException("options");
 			DocumentHighlighter highlighter = textArea.GetService(typeof(DocumentHighlighter)) as DocumentHighlighter;
 			StringBuilder html = new StringBuilder();
+			bool first = true;
 			foreach (ISegment selectedSegment in textArea.Selection.Segments) {
-				html.AppendLine(CreateHtmlFragment(textArea.Document, highlighter, selectedSegment, options));
+				if (first)
+					first = false;
+				else
+					html.AppendLine("<br>");
+				html.Append(CreateHtmlFragment(textArea.Document, highlighter, selectedSegment, options));
 			}
 			return html.ToString();
 		}

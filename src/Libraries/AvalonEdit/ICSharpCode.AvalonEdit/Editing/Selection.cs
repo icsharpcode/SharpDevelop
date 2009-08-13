@@ -11,6 +11,7 @@ using System.Text;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using System.Windows;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -140,6 +141,23 @@ namespace ICSharpCode.AvalonEdit.Editing
 				}
 			}
 			return false;
+		}
+		
+		/// <summary>
+		/// Creates a data object containing the selection's text.
+		/// </summary>
+		public virtual DataObject CreateDataObject(TextArea textArea)
+		{
+			string text = GetText(textArea.Document);
+			// Ensure we use the appropriate newline sequence for the OS
+			DataObject data = new DataObject(NewLineFinder.NormalizeNewLines(text, Environment.NewLine));
+			// we cannot use DataObject.SetText - then we cannot drag to SciTe
+			// (but dragging to Word works in both cases)
+			
+			// Also copy text in HTML format to clipboard - good for pasting text into Word
+			// or to the SharpDevelop forums.
+			HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragmentForSelection(textArea, new HtmlOptions(textArea.Options)));
+			return data;
 		}
 	}
 }

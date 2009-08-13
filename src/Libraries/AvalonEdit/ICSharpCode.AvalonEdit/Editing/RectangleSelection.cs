@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
@@ -55,13 +57,25 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <inheritdoc/>
 		public override bool Contains(int offset)
 		{
-			if (StartOffset <= offset && offset <= EndOffset) {
+			if (Math.Min(StartOffset, EndOffset) <= offset && offset <= Math.Max(StartOffset, EndOffset)) {
 				foreach (ISegment s in this.Segments) {
 					if (s.Contains(offset))
 						return true;
 				}
 			}
 			return false;
+		}
+		
+		/// <inheritdoc/>
+		public override string GetText(TextDocument document)
+		{
+			StringBuilder b = new StringBuilder();
+			foreach (ISegment s in this.Segments) {
+				if (b.Length > 0)
+					b.AppendLine();
+				b.Append(document.GetText(s));
+			}
+			return b.ToString();
 		}
 		
 		/// <inheritdoc/>
@@ -125,7 +139,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <inheritdoc/>
 		public override Selection UpdateOnDocumentChange(DocumentChangeEventArgs e)
 		{
-			return Selection.Empty;
+			return new RectangleSelection(document,
+			                              e.GetNewOffset(StartOffset, AnchorMovementType.AfterInsertion),
+			                              e.GetNewOffset(EndOffset, AnchorMovementType.BeforeInsertion));
 		}
 		
 		/// <inheritdoc/>
@@ -139,31 +155,118 @@ namespace ICSharpCode.AvalonEdit.Editing
 				TextLocation start = document.GetLocation(StartOffset);
 				TextLocation end = document.GetLocation(EndOffset);
 				int editColumn = Math.Min(start.Column, end.Column);
-				foreach (ISegment lineSegment in this.Segments.Reverse()) {
-					if (lineSegment.Length == 0) {
-						if (newText.Length > 0 && textArea.ReadOnlySectionProvider.CanInsert(lineSegment.Offset)) {
-							textArea.Document.Insert(lineSegment.Offset, newText);
-						}
-					} else {
-						var segmentsToDelete = textArea.ReadOnlySectionProvider.GetDeletableSegments(lineSegment).ToList();
-						for (int i = segmentsToDelete.Count - 1; i >= 0; i--) {
-							if (i == segmentsToDelete.Count - 1) {
-								textArea.Document.Replace(segmentsToDelete[i], newText);
-							} else {
-								textArea.Document.Remove(segmentsToDelete[i]);
-							}
-						}
-					}
-				}
 				if (NewLineFinder.NextNewLine(newText, 0) == SimpleSegment.Invalid) {
+					// insert same text into every line
+					foreach (ISegment lineSegment in this.Segments.Reverse()) {
+						ReplaceSingleLineText(textArea, lineSegment, newText);
+					}
+					
 					TextLocation newStart = new TextLocation(start.Line, editColumn + newText.Length);
 					TextLocation newEnd = new TextLocation(end.Line, editColumn + newText.Length);
 					textArea.Caret.Location = newEnd;
 					textArea.Selection = new RectangleSelection(document, document.GetOffset(newStart), document.GetOffset(newEnd));
 				} else {
-					textArea.Selection = Selection.Empty;
+					// convert all segment start/ends to anchors
+					var segments = this.Segments.Select(s => new AnchorSegment(this.document, s)).ToList();
+					SimpleSegment ds = NewLineFinder.NextNewLine(newText, 0);
+					// we'll check whether all lines have the same length. If so, we can continue using a rectangular selection.
+					int commonLength = -1;
+					// now insert lines into rectangular selection
+					int lastDelimiterEnd = 0;
+					bool isAtEnd = false;
+					int i;
+					for (i = 0; i < segments.Count; i++) {
+						string lineText;
+						if (ds == SimpleSegment.Invalid || (i == segments.Count - 1)) {
+							lineText = newText.Substring(lastDelimiterEnd);
+							isAtEnd = true;
+							// if we have more lines to insert than this selection is long, we cannot continue using a rectangular selection
+							if (ds != SimpleSegment.Invalid)
+								commonLength = -1;
+						} else {
+							lineText = newText.Substring(lastDelimiterEnd, ds.Offset - lastDelimiterEnd);
+						}
+						if (i == 0) {
+							commonLength = lineText.Length;
+						} else if (commonLength != lineText.Length) {
+							commonLength = -1;
+						}
+						ReplaceSingleLineText(textArea, segments[i], lineText);
+						if (isAtEnd)
+							break;
+						lastDelimiterEnd = ds.EndOffset;
+						ds = NewLineFinder.NextNewLine(newText, lastDelimiterEnd);
+					}
+					if (commonLength >= 0) {
+						TextLocation newStart = new TextLocation(start.Line, editColumn + commonLength);
+						TextLocation newEnd = new TextLocation(start.Line + i, editColumn + commonLength);
+						textArea.Selection = new RectangleSelection(document, document.GetOffset(newStart), document.GetOffset(newEnd));
+					} else {
+						textArea.Selection = Selection.Empty;
+					}
 				}
 			}
+		}
+		
+		void ReplaceSingleLineText(TextArea textArea, ISegment lineSegment, string newText)
+		{
+			if (lineSegment.Length == 0) {
+				if (newText.Length > 0 && textArea.ReadOnlySectionProvider.CanInsert(lineSegment.Offset)) {
+					textArea.Document.Insert(lineSegment.Offset, newText);
+				}
+			} else {
+				var segmentsToDelete = textArea.ReadOnlySectionProvider.GetDeletableSegments(lineSegment).ToList();
+				for (int i = segmentsToDelete.Count - 1; i >= 0; i--) {
+					if (i == segmentsToDelete.Count - 1) {
+						textArea.Document.Replace(segmentsToDelete[i], newText);
+					} else {
+						textArea.Document.Remove(segmentsToDelete[i]);
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Performs a rectangular paste operation.
+		/// </summary>
+		public static bool PerformRectangularPaste(TextArea textArea, int startOffset, string text, bool selectInsertedText)
+		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
+			if (text == null)
+				throw new ArgumentNullException("text");
+			int newLineCount = text.Count(c => c == '\n');
+			TextLocation startLocation = textArea.Document.GetLocation(startOffset);
+			TextLocation endLocation = new TextLocation(startLocation.Line + newLineCount, startLocation.Column);
+			if (endLocation.Line <= textArea.Document.LineCount) {
+				int endOffset = textArea.Document.GetOffset(endLocation);
+				if (textArea.Document.GetLocation(endOffset) == endLocation) {
+					RectangleSelection rsel = new RectangleSelection(textArea.Document, startOffset, endOffset);
+					rsel.ReplaceSelectionWithText(textArea, text);
+					if (selectInsertedText && textArea.Selection is RectangleSelection) {
+						RectangleSelection sel = (RectangleSelection)textArea.Selection;
+						textArea.Selection = new RectangleSelection(textArea.Document, startOffset, sel.EndOffset);
+					}
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Gets the name of the entry in the DataObject that signals rectangle selections.
+		/// </summary>
+		public const string RectangularSelectionDataType = "AvalonEditRectangularSelection";
+		
+		/// <inheritdoc/>
+		public override System.Windows.DataObject CreateDataObject(TextArea textArea)
+		{
+			var data = base.CreateDataObject(textArea);
+			
+			MemoryStream isRectangle = new MemoryStream(1);
+			isRectangle.WriteByte(1);
+			data.SetData(RectangularSelectionDataType, isRectangle, false);
+			return data;
 		}
 		
 		/// <inheritdoc/>

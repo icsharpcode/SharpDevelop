@@ -291,13 +291,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		static void CopySelectedText(TextArea textArea)
 		{
-			string text = textArea.Selection.GetText(textArea.Document);
-			// Ensure we use the appropriate newline sequence for the OS
-			DataObject data = new DataObject(NewLineFinder.NormalizeNewLines(text, Environment.NewLine));
-			// Also copy text in HTML format to clipboard - good for pasting text into Word
-			// or to the SharpDevelop forums.
-			HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragmentForSelection(textArea, new HtmlOptions(textArea.Options)));
-			Clipboard.SetDataObject(data, true);
+			Clipboard.SetDataObject(textArea.Selection.CreateDataObject(textArea), true);
 		}
 		
 		const string LineSelectedType = "MSDEVLineSelect";  // This is the type VS 2003 and 2005 use for flagging a whole line copy
@@ -343,9 +337,15 @@ namespace ICSharpCode.AvalonEdit.Editing
 				
 				if (!string.IsNullOrEmpty(text)) {
 					bool fullLine = textArea.Options.CutCopyWholeLine && Clipboard.ContainsData(LineSelectedType);
+					bool rectangular = Clipboard.ContainsData(RectangleSelection.RectangularSelectionDataType);
 					if (fullLine) {
 						DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-						textArea.Document.Insert(currentLine.Offset, text);
+						if (textArea.ReadOnlySectionProvider.CanInsert(currentLine.Offset)) {
+							textArea.Document.Insert(currentLine.Offset, text);
+						}
+					} else if (rectangular && textArea.Selection.IsEmpty) {
+						if (!RectangleSelection.PerformRectangularPaste(textArea, textArea.Caret.Offset, text, false))
+							textArea.ReplaceSelectionWithText(text);
 					} else {
 						textArea.ReplaceSelectionWithText(text);
 					}

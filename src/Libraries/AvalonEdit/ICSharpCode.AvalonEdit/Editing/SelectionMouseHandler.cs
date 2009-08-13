@@ -180,6 +180,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 						} else {
 							Debug.WriteLine("Drop: insert at " + start);
 							
+							bool rectangular = e.Data.GetDataPresent(RectangleSelection.RectangularSelectionDataType);
+							
 							string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
 							text = NewLineFinder.NormalizeNewLines(text, newLine);
 							
@@ -188,8 +190,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 							// the undo groups when text is moved.
 							textArea.Document.UndoStack.StartUndoGroup(this.currentDragDescriptor);
 							try {
-								textArea.Document.Insert(start, text);
-								textArea.Selection = new SimpleSelection(start, start + text.Length);
+								if (rectangular && RectangleSelection.PerformRectangularPaste(textArea, start, text, true)) {
+									
+								} else {
+									textArea.Document.Insert(start, text);
+									textArea.Selection = new SimpleSelection(start, start + text.Length);
+								}
 							} finally {
 								textArea.Document.UndoStack.EndUndoGroup();
 							}
@@ -243,15 +249,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			// mouse capture and Drag'n'Drop doesn't mix
 			textArea.ReleaseMouseCapture();
 			
-			string text = textArea.Selection.GetText(textArea.Document);
-			text = NewLineFinder.NormalizeNewLines(text, Environment.NewLine);
-			DataObject dataObject = new DataObject(text);
-			// we cannot use DataObject.SetText - then we cannot drag to SciTe
-			// (but dragging to Word works in both cases)
-			
-			// also copy as HTML - adds syntax highlighting when dragging to Word
-			string htmlFragment = HtmlClipboard.CreateHtmlFragmentForSelection(textArea, new HtmlOptions(textArea.Options));
-			HtmlClipboard.SetHtml(dataObject, htmlFragment);
+			DataObject dataObject = textArea.Selection.CreateDataObject(textArea);
 			
 			DragDropEffects allowedEffects = DragDropEffects.All;
 			var deleteOnMove = textArea.Selection.Segments.Select(s => new AnchorSegment(textArea.Document, s)).ToList();
