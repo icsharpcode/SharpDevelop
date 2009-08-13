@@ -348,9 +348,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			
 			RawDocument document = this.Document;
 			Assert(document != null);
+			Assert(item.Parent != this, "Can not own item twice");
 			
 			// Remove from the old location and set parent
-			Steal(document, item, true);
+			SetParentPointersInTree(document, item);
 			
 			this.Children.InsertItemAt(index, item);
 			
@@ -362,39 +363,36 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		/// <remarks>
 		/// Cache constraint:
-		///   If cached item has parent set, then the whole subtree must be consistent
+		///    If cached item has parent set, then the whole subtree must be consistent
 		/// </remarks>
-		void Steal(RawDocument myDocument, RawObject item, bool allowSealFromSelf)
+		void SetParentPointersInTree(RawDocument myDocument, RawObject item)
 		{
-			// All items are in parser cache
+			// All items come from the parser cache
+			
 			if (item.Parent == null) {
 				// Dangling object - either a new parser object or removed tree (still cached)
 				item.Parent = this;
 				if (item is RawContainer) {
 					foreach(RawObject child in ((RawContainer)item).Children) {
-						// Note: What if node is attached and then detached
-						//       -> the root has null parent, but childs are pointing to it
-						if (child.Parent != item) {
-							// Null parent or someone else owns it
-							((RawContainer)item).Steal(myDocument, child, false);
-						}
+						((RawContainer)item).SetParentPointersInTree(myDocument, child);
 					}
 				}
+			} else if (item.Parent == this) {
+				// If node is attached and then deattached, it will have null parent pointer
+				//   but valid subtree - so its children will alredy have correct parent pointer
+				//   like in this case
+				item.CheckConsistency();
+				// Rest of the tree is consistent - do not recurse
 			} else {
-				// The object is in the cache and the cache is/was used in the document.
-				// Verify cache constraint - subtree consistent
+				// From cache & parent set => consitent subtree
 				item.CheckConsistency();
 				// The parent (or any futher parents) can not be part of parsed document
-				//   becuase otherwise this item would be included twice
-				//   -> So it safe to remove it from parent
-				//   - The parent may be even us
-				if (item.Parent == this && !allowSealFromSelf)
-					throw new Exception("You can not steal from yourself");
-				// Maintain cache constraint by removing parents from cache
-				myDocument.Parser.RemoveFromCache(item.Parent); // Document of the item may be null
-				// Remove from the other location
-				var owingList = ((RawContainer)item.Parent).Children;
-				owingList.RemoveItemAt(owingList.IndexOf(item));
+				//   becuase otherwise this item would be included twice => safe to change parents
+				Assert(item.Document == null);
+				// Maintain cache constraint by setting parents to null
+				foreach(RawObject ancest in item.GetAncestors().ToList()) {
+					ancest.Parent = null; 
+				}
 				item.Parent = this;
 				// Rest of the tree is consistent - do not recurse
 			}
