@@ -31,7 +31,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -57,7 +57,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -82,7 +82,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -107,7 +107,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -131,7 +131,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</DockPanel>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -157,7 +157,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -185,7 +185,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -211,7 +211,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -236,7 +236,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -260,7 +260,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -283,7 +283,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	</Grid>
 </Window>";
 			
-			TestCtrlSpace(fileHeader, fileFooter,
+			TestCtrlSpace(fileHeader, fileFooter, true,
 			              list => {
 			              	Assert.AreEqual(0, list.PreselectionLength);
 			              	Assert.IsNull(list.SuggestedItem);
@@ -294,6 +294,227 @@ namespace ICSharpCode.XamlBinding.Tests
 			              	Assert.Contains("http://schemas.openxmlformats.org/markup-compatibility/2006", items);
 			              	Assert.Contains("System (mscorlib)", items);
 			              	Assert.Contains("ICSharpCode.XamlBinding.Tests", items);
+			              });
+		}
+		
+		[Test]
+		[STAThread]
+		public void CtrlSpaceTest12()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='{";
+			string fileFooter = @"}' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              	var items = list.Items.Select(item => item.Text).ToArray();
+			              	Assert.Contains("Binding", items);
+			              	Assert.Contains("x:Type", items);
+			              });
+		}
+		
+		[Test]
+		[STAThread]
+		public void CtrlSpaceTest13()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='{x:Type ";
+			string fileFooter = @"}' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              	var items = list.Items.Select(item => item.Text).ToArray();
+			              	Assert.Contains("Button", items);
+			              	Assert.Contains("CheckBox", items);
+			              	Assert.Contains("Type=", items);
+			              	Assert.Contains("TypeName=", items);
+			              });
+		}
+		
+		[Test]
+		[STAThread]
+		public void CtrlSpaceTest14()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='{x:Static ";
+			string fileFooter = @"}' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              	var items = list.Items.Select(item => item.Text).ToArray();
+			              	Assert.Contains("AlignmentX", items);
+			              	Assert.Contains("AlignmentY", items);
+			              });
+		}
+		
+		[Test]
+		[STAThread]
+		public void CtrlSpaceTest15()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='{x:Static Align";
+			string fileFooter = @"}' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(5, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              	var items = list.Items.Select(item => item.Text).ToArray();
+			              	Assert.Contains("AlignmentX", items);
+			              	Assert.Contains("AlignmentY", items);
+			              });
+		}
+		
+		[Test]
+		[STAThread]
+		public void CtrlSpaceTest16()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='{x:Static AlignmentX.";
+			string fileFooter = @"}' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              	var items = list.Items.Select(item => item.Text).ToArray();
+			              	Assert.Contains("Center", items);
+			              	Assert.Contains("Left", items);
+			              	Assert.Contains("Right", items);
+			              });
+		}
+		
+		[Test]
+		[STAThread]
+		public void CtrlSpaceTest17()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='{x:Static AlignmentX.Le";
+			string fileFooter = @"}' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(2, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              	var items = list.Items.Select(item => item.Text).ToArray();
+			              	Assert.Contains("Center", items);
+			              	Assert.Contains("Left", items);
+			              	Assert.Contains("Right", items);
+			              });
+		}
+		
+		[Test]
+		[STAThread]
+		public void CtrlSpaceTest18()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='{x:Type Type=";
+			string fileFooter = @"}' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              	var items = list.Items.Select(item => item.Text).ToArray();
+			              	Assert.Contains("Button", items);
+			              	Assert.Contains("CheckBox", items);
+			              	Assert.Contains("ComboBox", items);
+			              });
+		}
+		
+		[Test]
+		[STAThread]
+		public void CtrlSpaceTest19()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='{Binding ";
+			string fileFooter = @"}' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              	var items = list.Items.Select(item => item.Text).ToArray();
+			              	foreach (var item in items)
+			              		Assert.IsTrue(item.EndsWith("="));
+			              });
+		}
+		
+		[Test]
+		[STAThread]
+		public void CtrlSpaceTest20()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='{x:Type TypeName=Button, ";
+			string fileFooter = @"}' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              	var items = list.Items.Select(item => item.Text).ToArray();
+			              	foreach (var item in items)
+			              		Assert.IsTrue(item.EndsWith("="));
 			              });
 		}
 		
@@ -349,6 +570,139 @@ namespace ICSharpCode.XamlBinding.Tests
 			             	Assert.Contains("ColumnSpan", items);
 			             	Assert.Contains("Row", items);
 			             });
+		}
+		
+		[Test]
+		[STAThread]
+		public void ElementAttributeDotPressTest03()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button Grid";
+			string fileFooter = @"
+	</Grid>
+</Window>";
+			
+			TestKeyPress(fileHeader, fileFooter, '.', CodeCompletionKeyPressResult.Completed,
+			             list => {
+			             	Assert.AreEqual(0, list.PreselectionLength);
+			             	Assert.IsNull(list.SuggestedItem);
+			             	Assert.IsTrue(list.Items.Any());
+			             	var items = list.Items.Select(item => item.Text).ToArray();
+			             	Assert.Contains("Column", items);
+			             	Assert.Contains("ColumnSpan", items);
+			             	Assert.Contains("Row", items);
+			             });
+		}
+		
+		[Test]
+		[STAThread]
+		public void ElementAttributeDotPressTest04()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button ";
+			string fileFooter = @"
+	</Grid>
+</Window>";
+			
+			TestKeyPress(fileHeader, fileFooter, '.', CodeCompletionKeyPressResult.Completed,
+			             list => {
+			             	Assert.AreEqual(0, list.PreselectionLength);
+			             	Assert.IsNull(list.SuggestedItem);
+			             	Assert.IsFalse(list.Items.Any());
+			             });
+		}
+		
+		[Test]
+		[STAThread]
+		public void LowerThanPressedTest()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		";
+			string fileFooter = @"
+	</Grid>
+</Window>";
+			
+			TestKeyPress(fileHeader, fileFooter, '<', CodeCompletionKeyPressResult.Completed,
+			             list => {
+			             	Assert.AreEqual(0, list.PreselectionLength);
+			             	Assert.IsNull(list.SuggestedItem);
+			             	Assert.IsTrue(list.Items.Any());
+			             	var items = list.Items.Select(item => item.Text).ToArray();
+			             	Assert.Contains("!--", items);
+			             	Assert.Contains("![CDATA[", items);
+			             	Assert.Contains("Button", items);
+			             	Assert.Contains("CheckBox", items);
+			             	Assert.Contains("Grid", items);
+			             });
+		}
+		
+		[Test]
+		[STAThread]
+		public void InCommentPressTest()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<!--";
+			string fileFooter = @" -->
+	</Grid>
+</Window>";
+			
+			TestKeyPress(fileHeader, fileFooter, '<', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, '.', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, ':', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, '/', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, 'a', CodeCompletionKeyPressResult.None, list => {});
+		}
+		
+		[Test]
+		[STAThread]
+		public void InCDataPressTest()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<![CDATA[";
+			string fileFooter = @" ]]>
+	</Grid>
+</Window>";
+			
+			TestKeyPress(fileHeader, fileFooter, '<', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, '.', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, ':', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, '/', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, 'a', CodeCompletionKeyPressResult.None, list => {});
+		}
+		
+		[Test]
+		[STAThread]
+		public void InPlainTextPressTest()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		";
+			string fileFooter = @"
+	</Grid>
+</Window>";
+			
+			TestKeyPress(fileHeader, fileFooter, '.', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, ':', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, '/', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, 'a', CodeCompletionKeyPressResult.None, list => {});
+			TestKeyPress(fileHeader, fileFooter, '<', CodeCompletionKeyPressResult.Completed, list => {});
 		}
 	}
 }

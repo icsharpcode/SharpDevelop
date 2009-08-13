@@ -86,15 +86,20 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				case '.':
-					if (context.ActiveElement != null && !XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
-						list = CompletionDataHelper.CreateListForContext(context);
-						editor.ShowCompletionWindow(list);
-						return CodeCompletionKeyPressResult.Completed;
-					} else {
-						if (context.Description == XamlContextDescription.InMarkupExtension) {
+					switch (context.Description) {
+						case XamlContextDescription.AtTag:
+						case XamlContextDescription.InTag:
+							if (context.ActiveElement != null && !XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
+								list = CompletionDataHelper.CreateListForContext(context);
+								editor.ShowCompletionWindow(list);
+								return CodeCompletionKeyPressResult.Completed;
+							}
+							break;
+						case XamlContextDescription.InMarkupExtension:
 							if (DoMarkupExtensionCompletion(context))
 								return CodeCompletionKeyPressResult.Completed;
-						} else if (context.Description == XamlContextDescription.InAttributeValue) {
+							break;
+						case XamlContextDescription.InAttributeValue:
 							if (editor.SelectionLength != 0)
 								editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
 							
@@ -102,7 +107,6 @@ namespace ICSharpCode.XamlBinding
 							
 							this.CtrlSpace(editor);
 							return CodeCompletionKeyPressResult.EatKey;
-						}
 					}
 					break;
 				case '(':
@@ -389,8 +393,9 @@ namespace ICSharpCode.XamlBinding
 				if (!XamlBindingOptions.UseExtensionCompletion)
 					return false;
 				XamlCompletionItemList completionList = CompletionDataHelper.CreateMarkupExtensionCompletion(context) as XamlCompletionItemList;
-				if (context.PressedKey != '.' && context.PressedKey != '=' && completionList.PreselectionLength == 0)
-					completionList.PreselectionLength = context.Editor.GetWordBeforeCaretExtended().Length;
+				string word = context.Editor.GetWordBeforeCaretExtended();
+				if (context.PressedKey != '.' && context.PressedKey != '=' && !word.EndsWith(".") && completionList.PreselectionLength == 0)
+					completionList.PreselectionLength = word.Length;
 				context.Editor.ShowCompletionWindow(completionList);
 				var insightList = CompletionDataHelper.CreateMarkupExtensionInsight(context);
 				context.Editor.ShowInsightWindow(insightList);

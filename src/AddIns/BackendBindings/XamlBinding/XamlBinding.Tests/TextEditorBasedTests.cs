@@ -24,7 +24,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[STAThread]
-		protected void TestCtrlSpace(string fileHeader, string fileFooter, Action<ICompletionItemList> constraint)
+		protected void TestCtrlSpace(string fileHeader, string fileFooter, bool expected, Action<ICompletionItemList> constraint)
 		{
 			this.textEditor.Document.Text = fileHeader + fileFooter;
 			this.textEditor.Caret.Offset = fileHeader.Length;
@@ -32,7 +32,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			
 			bool invoked = XamlCodeCompletionBinding.Instance.CtrlSpace(textEditor);
 			
-			Assert.IsTrue(invoked);
+			Assert.AreEqual(expected, invoked);
 			
 			ICompletionItemList list = this.textEditor.LastCompletionItemList;
 			

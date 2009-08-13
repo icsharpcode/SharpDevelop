@@ -63,6 +63,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		public void CreateParseInformation()
 		{
 			var parser = new XamlBinding.XamlParser();
+			parser.LexerTags = new string[0];
 			var cu = parser.Parse(pc, this.FileName, this.Document.Text);
 			ParserService.RegisterParseInformation(this.FileName, cu);
 			pc.UpdateCompilationUnit(null, cu, this.FileName);
