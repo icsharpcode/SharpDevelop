@@ -135,7 +135,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
-		[Conditional("Debug")]
+		[Conditional("DEBUG")]
 		protected static void Assert(bool condition)
 		{
 			if (!condition) {
@@ -144,7 +144,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
-		[Conditional("Debug")]
+		[Conditional("DEBUG")]
 		protected static void Assert(bool condition, string message)
 		{
 			if (!condition) {
@@ -198,7 +198,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			PrintStringCacheStats();
 			RawObject.LogDom("Updating main DOM tree...");
 			userDocument.UpdateDataFrom(parsedDocument);
-			userDocument.CheckConsistency();
+			// TODO: Bug fixing
+			// userDocument.CheckConsistency();
 			return userDocument;
 		}
 		
@@ -1271,7 +1272,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				doc.EndOffset = doc.LastChild.EndOffset;
 			}
 			
-			OnParsed(doc);
 			return doc;
 		}
 		
@@ -1313,13 +1313,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			Assert(startTag.IsStartTag || startTag == StartTagPlaceholder);
 			if (startTag == StartTagPlaceholder) {
 				int offset = objStream.Current.StartOffset; // This the next object
-				element.AddChild(new RawTag() {
-					OpeningBracket = string.Empty,
-					Name = string.Empty,
-					ClosingBracket = string.Empty,
-					StartOffset = offset,
-					EndOffset = offset,
-				});
+				element.AddChild(RawTag.MakeEmpty(offset));
 				OnSyntaxError(element, objStream.Current.StartOffset, objStream.Current.EndOffset,
 				              "Matching openning tag was not found");
 			} else {
@@ -1332,26 +1326,100 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					RawTag currTag = objStream.Current as RawTag; // Peek
 					if (currTag == EndTagPlaceholder) {
 						OnSyntaxError(element, element.LastChild.EndOffset, element.LastChild.EndOffset,
-						              "Closing tag for '{0}' expected", element.StartTag.Name);
+						              "Expected '</{0}>'", element.StartTag.Name);
 						ReadSingleObject(objStream);
+						element.AddChild(RawTag.MakeEmpty(element.LastChild.EndOffset));
 						break;
 					} else if (currTag != null && currTag.IsEndTag) {
 						if (currTag.Name != element.StartTag.Name) {
 							OnSyntaxError(element, currTag.StartOffset + 2, currTag.StartOffset + 2 + currTag.Name.Length,
-							              "Name '{0}' expected.  End tag must have same name as start tag.", element.StartTag.Name);
+							              "Expected '{0}'.  End tag must have same name as start tag.", element.StartTag.Name);
 						}
 						element.AddChild(ReadSingleObject(objStream));
 						break;
 					}
-					element.AddChild(ReadTextOrElement(objStream));
+					RawObject nested = ReadTextOrElement(objStream);
+					if (nested is RawElement) {
+						element.AddChildren(Split((RawElement)nested).ToList());
+					} else {
+						element.AddChild(nested);
+					}
 				}
 			}
 			
 			element.StartOffset = element.FirstChild.StartOffset;
 			element.EndOffset = element.LastChild.EndOffset;
 			
-			OnParsed(element);
+			Log("Constructed {0}", element);
+			
 			return element;
+		}
+		
+		IEnumerable<RawObject> Split(RawElement elem)
+		{
+			int myIndention = GetIndentLevel(elem);
+			// If has virtual end and is indented
+			if (string.IsNullOrEmpty(((RawTag)elem.LastChild).ClosingBracket) && myIndention != -1) {
+				bool acceptedJustText = true;
+				int lastAccepted = 0; // Accept start tag
+				while (lastAccepted + 1 < elem.Children.Count - 1 /* no end tag */) {
+					RawObject nextItem = elem.Children[lastAccepted + 1];
+					if (nextItem is RawText) {
+						lastAccepted++; continue;  // Accept
+					} else {
+						// Include all more indented items
+						if (GetIndentLevel(nextItem) > myIndention) {
+							acceptedJustText = false;
+							lastAccepted++; continue;  // Accept
+						} else {
+							break;  // Reject
+						}
+					}
+				}
+				if (acceptedJustText) lastAccepted = 0;
+				// Accepted everything?
+				if (lastAccepted + 1 == elem.Children.Count - 1) {
+					yield return elem;
+					yield break;
+				}
+				Log("Splitting {0} - take {1} of {2} nested", elem, lastAccepted, elem.Children.Count - 2);
+				RawElement topHalf = new RawElement();
+				topHalf.AddChildren(elem.Children.Take(lastAccepted + 1));    // Start tag + nested
+				topHalf.AddChild(RawTag.MakeEmpty(topHalf.LastChild.EndOffset)); // End tag
+				topHalf.StartOffset = topHalf.FirstChild.StartOffset;
+				topHalf.EndOffset = topHalf.LastChild.EndOffset;
+				OnSyntaxError(topHalf, topHalf.LastChild.EndOffset, topHalf.LastChild.EndOffset,
+						              "Expected 2 '</{0}>'", topHalf.StartTag.Name);
+				
+				Log("Constructed {0}", topHalf);
+				yield return topHalf;
+				for(int i = lastAccepted + 1; i < elem.Children.Count - 1; i++) {
+					yield return elem.Children[i];
+				}
+			} else {
+				yield return elem;
+			}
+		}
+		
+		int GetIndentLevel(RawObject obj)
+		{
+			int offset = obj.StartOffset - 1;
+			int level = 0;
+			while(true) {
+				if (offset < 0) break;
+				char c = input[offset];
+				if (c == ' ') {
+					level++;
+				} else if (c == '\t') {
+					level += 4;
+				} else if (c == '\r' || c == '\n') {
+					break;
+				} else {
+					return -1;
+				}
+				offset--;
+			}
+			return level;
 		}
 		
 		#endregion

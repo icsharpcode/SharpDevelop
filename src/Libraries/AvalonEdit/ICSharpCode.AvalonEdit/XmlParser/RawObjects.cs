@@ -128,7 +128,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
-		[Conditional("Debug")]
+		[Conditional("DEBUG")]
 		protected static void Assert(bool condition)
 		{
 			if (!condition) {
@@ -137,7 +137,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
-		[Conditional("Debug")]
+		[Conditional("DEBUG")]
 		protected static void Assert(bool condition, string message)
 		{
 			if (!condition) {
@@ -190,7 +190,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		[Conditional("Debug")]
+		[Conditional("DEBUG")]
 		internal virtual void CheckConsistency()
 		{
 			
@@ -465,14 +465,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		internal override void CheckConsistency()
 		{
 			base.CheckConsistency();
+			RawObject prevChild = null;
 			foreach(RawObject child in this.Children) {
 				Assert(child.Parent != null, "Null parent reference");
 				Assert(child.Parent == this, "Inccorect parent reference");
-				Assert(this.StartOffset <= child.StartOffset && child.EndOffset <= this.EndOffset);
+				Assert(this.StartOffset <= child.StartOffset && child.EndOffset <= this.EndOffset, "Child not within parent text range");
 				if (this.IsInCache) {
 					Assert(child.IsInCache, "Child not in cache");
 				}
+				if (prevChild != null) {
+					Assert(prevChild.EndOffset <= child.StartOffset, "Overlaping childs");
+				}
 				child.CheckConsistency();
+				prevChild = child;
 			}
 		}
 		
@@ -610,7 +615,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> Occurs after local data of object changed </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectChanged;
 		
-		/// <summary> The total number of objects in this document including the document itself </summary>
+		/// <summary> The total number of objects in this document </summary>
 		public int ObjectCount { get; private set; }
 		
 		internal void OnObjectAttached(RawObject obj)
@@ -656,7 +661,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		internal override void CheckConsistency()
 		{
 			base.CheckConsistency();
-			Assert(ObjectCount == this.GetSelfAndAllChildren().Count(), "Number of attach/detach calls incorrect");
+			Assert(ObjectCount + 1 == this.GetSelfAndAllChildren().Count(), "Number of attach/detach calls incorrect");
 		}
 		
 		/// <inheritdoc/>
@@ -704,6 +709,17 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> True if tag starts with "&lt;!" </summary>
 		public bool IsUnknownBang           { get { return OpeningBracket == "<!"; } }
 		
+		internal static RawTag MakeEmpty(int offset)
+		{
+			return new RawTag() {
+				OpeningBracket = string.Empty,
+				Name = string.Empty,
+				ClosingBracket = string.Empty,
+				StartOffset = offset,
+				EndOffset = offset,
+			};
+		}
+		
 		internal override void CheckConsistency()
 		{
 			Assert(OpeningBracket != null);
@@ -749,11 +765,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	public class RawElement: RawContainer
 	{
 		/// <summary>
-		/// StartTag of an element.  It is always the first child and its identity does not change.
+		/// StartTag of an element.
 		/// </summary>
 		public RawTag StartTag {
 			get {
-				if (this.Children.Count == 0) return null;
 				return (RawTag)this.Children[0];
 			}
 		}
