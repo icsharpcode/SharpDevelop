@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 
@@ -319,7 +320,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// </summary>
 		internal void AddChild(RawObject item)
 		{
-			AddChildren(new RawObject[] {item}.ToList());
+			// Childs can be only added to newly parsed items
+			Assert(this.Parent == null);
+			// Do not set parent pointer
+			this.Children.InsertItemAt(this.Children.Count, item);
 		}
 		
 		/// <summary>
@@ -329,10 +333,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			// Childs can be only added to newly parsed items
 			Assert(this.Parent == null);
-			
 			// Do not set parent pointer
-			
-			this.Children.InsertItems(this.Children.Count, items.ToList());
+			this.Children.InsertItemsAt(this.Children.Count, items.ToList());
 		}
 		
 		/// <summary>
@@ -340,24 +342,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// Insert children and keep links consistent.
 		/// Note: If the nodes are in other part of the document, they will be moved
 		/// </summary>
-		void InsertChildren(int index, IList<RawObject> items)
+		void InsertChild(int index, RawObject item)
 		{
+			LogDom("Inserting {0} at index {1}", item, index);
+			
 			RawDocument document = this.Document;
 			Assert(document != null);
 			
-			List<RawObject> attached = new List<RawObject>();
-			
 			// Remove from the old location and set parent
-			foreach(RawObject item in items) {
-				Steal(document, item, attached, true);
-			}
+			Steal(document, item, true);
 			
-			// Add it
-			this.Children.InsertItems(index, items);
+			this.Children.InsertItemAt(index, item);
 			
-			foreach(RawObject item in attached) {
-				document.OnObjectAttached(item);
-			}
+			document.OnObjectInserted(index, item);
 		}
 		
 		/// <summary>
@@ -367,25 +364,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// Cache constraint:
 		///   If cached item has parent set, then the whole subtree must be consistent
 		/// </remarks>
-		void Steal(RawDocument myDocument, RawObject item, List<RawObject> attached, bool allowSealFromSelf)
+		void Steal(RawDocument myDocument, RawObject item, bool allowSealFromSelf)
 		{
 			// All items are in parser cache
 			if (item.Parent == null) {
 				// Dangling object - either a new parser object or removed tree (still cached)
-				LogDom("Inserting dangling {0}", item);
 				item.Parent = this;
-				attached.Add(item);
 				if (item is RawContainer) {
 					foreach(RawObject child in ((RawContainer)item).Children) {
 						// Note: What if node is attached and then detached
 						//       -> the root has null parent, but childs are pointing to it
-						if (child.Parent == item) {
-							// Whole child subtree is consistent
-							// Do not steal from self - no recursion
-							attached.AddRange(child.GetSelfAndAllChildren());
-						} else {
+						if (child.Parent != item) {
 							// Null parent or someone else owns it
-							((RawContainer)item).Steal(myDocument, child, attached, false);
+							((RawContainer)item).Steal(myDocument, child, false);
 						}
 					}
 				}
@@ -403,12 +394,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				myDocument.Parser.RemoveFromCache(item.Parent); // Document of the item may be null
 				// Remove from the other location
 				var owingList = ((RawContainer)item.Parent).Children;
-				owingList.RemoveItems(owingList.IndexOf(item), 1);
-				// If connected to the document
-				if (item.Document != myDocument) {
-					// Sealing from dangling tree
-					attached.AddRange(item.GetSelfAndAllChildren());
-				}
+				owingList.RemoveItemAt(owingList.IndexOf(item));
 				item.Parent = this;
 				// Rest of the tree is consistent - do not recurse
 			}
@@ -418,39 +404,18 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// To be used exclusively by UpdateChildrenFrom.
 		/// Remove children, set parent to null for them and notify the document
 		/// </summary>
-		void RemoveChildrenAt(int index, int count)
+		void RemoveChild(int index)
 		{
-			RawDocument document = this.Document;
-			Assert(document != null);
-			
-			List<RawObject> removed = new List<RawObject>(count);
-			for(int i = 0; i < count; i++) {
-				removed.Add(this.Children[index + i]);
-			}
-			
-			// Log the action
-			if (count == 1) {
-				LogDom("Removing {0} at index {1}", removed[0], index);
-			} else {
-				LogDom("Removing at index {0}:", index);
-				foreach(RawObject item in removed) LogDom("  {0}", item);
-			}
+			RawObject removed = this.Children[index];
+			LogDom("Removing {0} at index {1}", removed, index);
 			
 			// Null parent pointer
-			foreach(RawObject item in removed) {
-				Assert(item.Parent == this);
-				item.Parent = null;
-			}
+			Assert(removed.Parent == this);
+			removed.Parent = null;
 			
-			// Remove
-			this.Children.RemoveItems(index, count);
+			this.Children.RemoveItemAt(index);
 			
-			// Notify document - do last so that the handler sees up-to-date tree
-			foreach(RawObject item in removed) {
-				foreach(RawObject obj in item.GetSelfAndAllChildren()) {
-					document.OnObjectDettached(obj);
-				}
-			}
+			this.Document.OnObjectRemoved(index, removed);
 		}
 		
 		internal override void CheckConsistency()
@@ -496,7 +461,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						((RawContainer)child).RemoveChildrenNotIn(((RawContainer)srcChild).Children);
 					i++;
 				} else {
-					RemoveChildrenAt(i, 1);
+					RemoveChild(i);
 				}
 			}
 		}
@@ -506,7 +471,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			for(int i = 0; i < srcList.Count; i++) {
 				// End of our list?
 				if (i == this.Children.Count) {
-					InsertChildren(i, new RawObject[] { srcList[i] } );
+					InsertChild(i, srcList[i]);
 					continue;
 				}
 				RawObject child = this.Children[i];
@@ -519,7 +484,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					if (child is RawContainer)
 						((RawContainer)child).InsertAndUpdateChildrenFrom(((RawContainer)srcChild).Children);
 				} else {
-					InsertChildren(i, new RawObject[] { srcChild } );
+					InsertChild(i, srcChild);
 				}
 			}
 		}
@@ -552,72 +517,40 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public class RawDocument: RawContainer
 	{
-		/// <summary>
-		/// Parser that produced this document
-		/// </summary>
+		/// <summary> Parser that produced this document </summary>
 		internal XmlParser Parser { get; set; }
 		
-		/// <summary>
-		/// All syntax errors in the document
-		/// </summary>
-		public new TextSegmentCollection<SyntaxError> SyntaxErrors { get; private set; }
-		
-		/// <summary> Occurs when object is added to the document </summary>
-		public event EventHandler<RawObjectEventArgs> ObjectAttached;
-		/// <summary> Occurs when object is removed from the document </summary>
-		public event EventHandler<RawObjectEventArgs> ObjectDettached;
+		/// <summary> Occurs when object is added to any part of the document </summary>
+		public event EventHandler<NotifyCollectionChangedEventArgs> ObjectInserted;
+		/// <summary> Occurs when object is removed from any part of the document </summary>
+		public event EventHandler<NotifyCollectionChangedEventArgs> ObjectRemoved;
 		/// <summary> Occurs before local data of object changes </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectChanging;
 		/// <summary> Occurs after local data of object changed </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectChanged;
 		
-		/// <summary> The total number of objects in this document </summary>
-		public int ObjectCount { get; private set; }
-		
-		internal void OnObjectAttached(RawObject obj)
+		internal void OnObjectInserted(int index, RawObject obj)
 		{
-			ObjectCount++;
-			foreach(SyntaxError error in obj.SyntaxErrors) {
-				this.SyntaxErrors.Add(error);
-			}
-			if (ObjectAttached != null) ObjectAttached(this, new RawObjectEventArgs() { Object = obj } );
+			if (ObjectInserted != null)
+				ObjectInserted(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new RawObject[] { obj }.ToList(), index));
 		}
 		
-		internal void OnObjectDettached(RawObject obj)
+		internal void OnObjectRemoved(int index, RawObject obj)
 		{
-			ObjectCount--;
-			foreach(SyntaxError error in obj.SyntaxErrors) {
-				this.SyntaxErrors.Remove(error);
-			}
-			if (ObjectDettached != null) ObjectDettached(this, new RawObjectEventArgs() { Object = obj } );
+			if (ObjectRemoved != null)
+				ObjectRemoved(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new RawObject[] { obj }.ToList(), index));
 		}
 		
 		internal void OnObjectChanging(RawObject obj)
 		{
-			foreach(SyntaxError error in obj.SyntaxErrors) {
-				this.SyntaxErrors.Remove(error);
-			}
-			if (ObjectChanging != null) ObjectChanging(this, new RawObjectEventArgs() { Object = obj } );
+			if (ObjectChanging != null)
+				ObjectChanging(this, new RawObjectEventArgs() { Object = obj } );
 		}
 		
 		internal void OnObjectChanged(RawObject obj)
 		{
-			foreach(SyntaxError error in obj.SyntaxErrors) {
-				this.SyntaxErrors.Add(error);
-			}
-			if (ObjectChanged != null) ObjectChanged(this, new RawObjectEventArgs() { Object = obj } );
-		}
-		
-		/// <summary> Create new document </summary>
-		public RawDocument()
-		{
-			this.SyntaxErrors = new TextSegmentCollection<SyntaxError>();
-		}
-		
-		internal override void CheckConsistency()
-		{
-			base.CheckConsistency();
-			Assert(ObjectCount + 1 == this.GetSelfAndAllChildren().Count(), "Number of attach/detach calls incorrect");
+			if (ObjectChanged != null)
+				ObjectChanged(this, new RawObjectEventArgs() { Object = obj } );
 		}
 		
 		/// <inheritdoc/>

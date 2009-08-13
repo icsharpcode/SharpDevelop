@@ -167,7 +167,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				// Update offsets of all items
 				parsedItems.UpdateOffsets(change);
 				touchedMemoryRanges.UpdateOffsets(change);
-				userDocument.SyntaxErrors.UpdateOffsets(change);
 				
 				// Remove any items affected by the change
 				Log("Changed offset {0}", change.Offset);
