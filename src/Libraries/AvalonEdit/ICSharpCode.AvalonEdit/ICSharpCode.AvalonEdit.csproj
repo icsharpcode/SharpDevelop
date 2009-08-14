@@ -334,7 +334,7 @@
     <Compile Include="Xml\FilteredCollection.cs" />
     <Compile Include="Xml\IAXmlVisitor.cs" />
     <Compile Include="Xml\MergedCollection.cs" />
-    <Compile Include="Xml\PrettyPrintXmlVisitor.cs" />
+    <Compile Include="Xml\PrettyPrintAXmlVisitor.cs" />
     <Compile Include="Xml\SyntaxError.cs" />
     <Compile Include="Xml\TagMatchingHeuristics.cs">
       <DependentUpon>AXmlParser.cs</DependentUpon>
