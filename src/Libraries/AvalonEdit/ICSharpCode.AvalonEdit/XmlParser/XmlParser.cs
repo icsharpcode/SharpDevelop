@@ -296,22 +296,22 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		Dictionary<string, string> stringCache = new Dictionary<string, string>();
 		int stringCacheRequestedCount;
 		int stringCacheRequestedSize;
-		int stringCacheSavedCount;
-		int stringCacheSavedSize;
+		int stringCacheStoredCount;
+		int stringCacheStoredSize;
 		
 		string GetCachedString(string cached)
 		{
 			stringCacheRequestedCount += 1;
 			stringCacheRequestedSize += 8 + 2 * cached.Length;
 			// Do not bother with long strings
-			//if (cached.Length <= 32) return cached;
+			if (cached.Length <= 32) return cached;
 			if (stringCache.ContainsKey(cached)) {
 				// Get the instance from the cache instead
-				stringCacheSavedCount += 1;
-				stringCacheSavedSize += 8 + 2 * cached.Length;
 				return stringCache[cached];
 			} else {
 				// Add to cache
+				stringCacheStoredCount += 1;
+				stringCacheStoredSize += 8 + 2 * cached.Length;
 				stringCache.Add(cached, cached);
 				return cached;
 			}
@@ -319,7 +319,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		void PrintStringCacheStats()
 		{
-			Log("String cache: Requested {0} ({1} bytes);  Saved {2} ({3} bytes); {4}% Saved", stringCacheRequestedCount, stringCacheRequestedSize, stringCacheSavedCount, stringCacheSavedSize, stringCacheRequestedSize == 0 ? 0 : stringCacheSavedSize * 100 / stringCacheRequestedSize);
+			Log("String cache: Requested {0} ({1} bytes);  Actaully stored {2} ({3} bytes); {4}% stored", stringCacheRequestedCount, stringCacheRequestedSize, stringCacheStoredCount, stringCacheStoredSize, stringCacheRequestedSize == 0 ? 0 : stringCacheStoredSize * 100 / stringCacheRequestedSize);
 		}
 		
 		void OnSyntaxError(RawObject obj, string message, params object[] args)
@@ -594,7 +594,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				if (IsEndOfFile()) {
 					break;
 				} else if (TryPeek('<')) {
-					stream.Add(ReadTag());
+					RawElement elem;
+					if (TryReadFromCacheOrNew(e => e.IsProperlyNested, out elem)) {
+						stream.Add(elem);
+					} else {
+						stream.Add(ReadTag());
+					}
 				} else {
 					stream.AddRange(ReadText(RawTextType.CharacterData));
 				}
@@ -619,7 +624,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			// It identifies the type of tag and parsing behavior for the rest of it
 			tag.OpeningBracket = ReadOpeningBracket();
 			
-			if (tag.IsStartTag || tag.IsEndTag || tag.IsProcessingInstruction) {
+			if (tag.IsStartOrEmptyTag || tag.IsEndTag || tag.IsProcessingInstruction) {
 				// Read the name
 				string name;
 				if (TryReadName(out name)) {
@@ -632,7 +637,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				tag.Name = name;
 			}
 			
-			if (tag.IsStartTag || tag.IsEndTag) {
+			if (tag.IsStartOrEmptyTag || tag.IsEndTag) {
 				// Read attributes for the tag
 				while(true) {					
 					// Chech for all forbiden 'name' charcters first - see ReadName
@@ -682,7 +687,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			int brStart = currentLocation - (tag.ClosingBracket ?? string.Empty).Length;
 			if (tag.Name == null) {
 				// One error was reported already
-			} else if (tag.IsStartTag) {
+			} else if (tag.IsStartOrEmptyTag) {
 				if (tag.ClosingBracket != ">" && tag.ClosingBracket != "/>") OnSyntaxError(tag, brStart, currentLocation, "'>' or '/>' expected");
 			} else if (tag.IsEndTag) {
 				if (tag.ClosingBracket != ">") OnSyntaxError(tag, brStart, currentLocation, "'>' expected");
@@ -1217,8 +1222,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		#region Object stream reading
 		
-		// TODO: Caching, RawElement.IsPropertlyNested
-		
 		string PrintObjects(IEnumerable<RawObject> objs)
 		{
 			StringBuilder sb = new StringBuilder();
@@ -1293,7 +1296,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				RawTag currTag = (RawTag)curr;
 				if (currTag == StartTagPlaceholder) {
 					return ReadElement(objStream);
-				} else if (currTag.IsStartTag) {
+				} else if (currTag.IsStartOrEmptyTag) {
 					return ReadElement(objStream);
 				} else {
 					return ReadSingleObject(objStream);
@@ -1306,29 +1309,32 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			AssertIsEndOfFile();
 			
 			RawElement element = new RawElement();
+			element.IsProperlyNested = true;
 			
 			// Read start tag
 			RawTag startTag = ReadSingleObject(objStream) as RawTag;
 			DebugAssert(startTag != null, "Start tag expected");
-			DebugAssert(startTag.IsStartTag || startTag == StartTagPlaceholder, "Start tag expected");
+			DebugAssert(startTag.IsStartOrEmptyTag || startTag == StartTagPlaceholder, "Start tag expected");
 			if (startTag == StartTagPlaceholder) {
-				int offset = objStream.Current.StartOffset; // This the next object
-				element.AddChild(RawTag.MakeEmpty(offset));
+				element.HasStartOrEmptyTag = false;
+				element.IsProperlyNested = false;
 				OnSyntaxError(element, objStream.Current.StartOffset, objStream.Current.EndOffset,
 				              "Matching openning tag was not found");
 			} else {
+				element.HasStartOrEmptyTag = true;
 				element.AddChild(startTag);
 			}
 			
 			// Read content and end tag
-			if (element.StartTag.ClosingBracket == ">" || startTag == StartTagPlaceholder) {
+			if (element.StartTag.IsStartTag || startTag == StartTagPlaceholder) {
 				while(true) {
 					RawTag currTag = objStream.Current as RawTag; // Peek
 					if (currTag == EndTagPlaceholder) {
 						OnSyntaxError(element, element.LastChild.EndOffset, element.LastChild.EndOffset,
 						              "Expected '</{0}>'", element.StartTag.Name);
 						ReadSingleObject(objStream);
-						element.AddChild(RawTag.MakeEmpty(element.LastChild.EndOffset));
+						element.HasEndTag = false;
+						element.IsProperlyNested = false;
 						break;
 					} else if (currTag != null && currTag.IsEndTag) {
 						if (currTag.Name != element.StartTag.Name) {
@@ -1336,15 +1342,20 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 							              "Expected '{0}'.  End tag must have same name as start tag.", element.StartTag.Name);
 						}
 						element.AddChild(ReadSingleObject(objStream));
+						element.HasEndTag = true;
 						break;
 					}
 					RawObject nested = ReadTextOrElement(objStream);
 					if (nested is RawElement) {
+						if (!((RawElement)nested).IsProperlyNested)
+							element.IsProperlyNested = false;
 						element.AddChildren(Split((RawElement)nested).ToList());
 					} else {
 						element.AddChild(nested);
 					}
 				}
+			} else {
+				element.HasEndTag = false;
 			}
 			
 			element.StartOffset = element.FirstChild.StartOffset;
@@ -1358,7 +1369,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			int myIndention = GetIndentLevel(elem);
 			// If has virtual end and is indented
-			if (string.IsNullOrEmpty(((RawTag)elem.LastChild).ClosingBracket) && myIndention != -1) {
+			if (!elem.HasEndTag && myIndention != -1) {
 				int lastAccepted = 0; // Accept start tag
 				while (lastAccepted + 1 < elem.Children.Count - 1 /* no end tag */) {
 					RawObject nextItem = elem.Children[lastAccepted + 1];
@@ -1380,8 +1391,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				}
 				Log("Splitting {0} - take {1} of {2} nested", elem, lastAccepted, elem.Children.Count - 2);
 				RawElement topHalf = new RawElement();
+				topHalf.HasStartOrEmptyTag = elem.HasStartOrEmptyTag;
+				topHalf.HasEndTag = elem.HasEndTag;
 				topHalf.AddChildren(elem.Children.Take(lastAccepted + 1));    // Start tag + nested
-				topHalf.AddChild(RawTag.MakeEmpty(topHalf.LastChild.EndOffset)); // End tag
 				topHalf.StartOffset = topHalf.FirstChild.StartOffset;
 				topHalf.EndOffset = topHalf.LastChild.EndOffset;
 				OnSyntaxError(topHalf, topHalf.LastChild.EndOffset, topHalf.LastChild.EndOffset,
@@ -1522,9 +1534,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			Log("Processing {0}", obj);
 			
 			RawTag tag = obj as RawTag;
-			if (!(obj is RawTag || obj is RawText || obj is RawElement))
-				throw new Exception(obj.GetType().Name + " not expected");
-			// TODO: Assert Element properly nested
+			Assert(obj is RawTag || obj is RawText || obj is RawElement, obj.GetType().Name + " not expected");
+			if (obj is RawElement)
+				Assert(((RawElement)obj).IsProperlyNested, "Element not proprly nested");
 			
 			Configurations newConfigs = new Configurations();
 			
@@ -1534,7 +1546,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				var oldDocument = oldConfig.Document;
 				int oldCost = oldConfig.Cost;
 				
-				if (tag != null && tag.IsStartTag && tag.ClosingBracket == ">") {
+				if (tag != null && tag.IsStartTag) {
 					newConfigs.Add(new Configuration {                    // Push start-tag (cost 0)
 						StartTags = oldStartTags.Push(tag),
 						Document = oldDocument.Push(tag),

@@ -586,7 +586,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public string ClosingBracket { get; internal set; }
 		
 		/// <summary> True if tag starts with "&lt;" </summary>
-		public bool IsStartTag              { get { return OpeningBracket == "<"; } }
+		public bool IsStartOrEmptyTag       { get { return OpeningBracket == "<"; } }
+		/// <summary> True if tag starts with "&lt;" and ends with "&gt;" </summary>
+		public bool IsStartTag              { get { return OpeningBracket == "<" && ClosingBracket == ">"; } }
+		/// <summary> True if tag starts with "&lt;" and does not end with "&gt;" </summary>
+		public bool IsEmptyTag              { get { return OpeningBracket == "<" && ClosingBracket != ">" ; } }
 		/// <summary> True if tag starts with "&lt;/" </summary>
 		public bool IsEndTag                { get { return OpeningBracket == "</"; } }
 		/// <summary> True if tag starts with "&lt;?" </summary>
@@ -599,18 +603,6 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public bool IsDocumentType          { get { return DTDNames.Contains(OpeningBracket); } }
 		/// <summary> True if tag starts with "&lt;!" </summary>
 		public bool IsUnknownBang           { get { return OpeningBracket == "<!"; } }
-		
-		// TODO: Remove
-		internal static RawTag MakeEmpty(int offset)
-		{
-			return new RawTag() {
-				OpeningBracket = string.Empty,
-				Name = string.Empty,
-				ClosingBracket = string.Empty,
-				StartOffset = offset,
-				EndOffset = offset,
-			};
-		}
 		
 		internal override void DebugCheckConsistency(bool allowNullParent)
 		{
@@ -659,6 +651,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// </summary>
 	public class RawElement: RawContainer
 	{
+		/// <summary> No tags are missing anywhere within this element (recursive) </summary>
+		public bool IsProperlyNested { get; set; }
+		/// <returns> True in wellformed XML </returns>
+		public bool HasStartOrEmptyTag { get; set; }
+		/// <returns> True in wellformed XML </returns>
+		public bool HasEndTag { get; set; }
+		
 		/// <summary>  StartTag of an element.  </summary>
 		public RawTag StartTag {
 			get {
@@ -811,7 +810,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("[{0} '{1}{2}{3}' Attr:{4} Chld:{5}]", base.ToString(), this.StartTag.OpeningBracket, this.StartTag.Name, this.StartTag.ClosingBracket, this.StartTag.Children.Count, this.Children.Count);
+			return string.Format("[{0} '{1}{2}{3}' Attr:{4} Chld:{5} Nest:{6}]", base.ToString(), this.StartTag.OpeningBracket, this.StartTag.Name, this.StartTag.ClosingBracket, this.StartTag.Children.Count, this.Children.Count, this.IsProperlyNested ? "Ok" : "Bad");
 		}
 	}
 	
