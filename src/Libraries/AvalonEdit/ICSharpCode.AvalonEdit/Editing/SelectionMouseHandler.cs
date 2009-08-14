@@ -144,13 +144,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (offset >= 0) {
 					textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(offset), visualColumn);
 					textArea.Caret.DesiredXPos = double.NaN;
-					if ((e.AllowedEffects & DragDropEffects.Move) == DragDropEffects.Move
-					    && (e.KeyStates & DragDropKeyStates.ControlKey) != DragDropKeyStates.ControlKey
-					    && textArea.ReadOnlySectionProvider.CanInsert(offset))
-					{
-						return DragDropEffects.Move;
-					} else {
-						return e.AllowedEffects & DragDropEffects.Copy;
+					if (textArea.ReadOnlySectionProvider.CanInsert(offset)) {
+						if ((e.AllowedEffects & DragDropEffects.Move) == DragDropEffects.Move
+						    && (e.KeyStates & DragDropKeyStates.ControlKey) != DragDropKeyStates.ControlKey)
+						{
+							return DragDropEffects.Move;
+						} else {
+							return e.AllowedEffects & DragDropEffects.Copy;
+						}
 					}
 				}
 			}
@@ -159,9 +160,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		void textArea_DragLeave(object sender, DragEventArgs e)
 		{
-			e.Handled = true;
-			if (!textArea.IsKeyboardFocusWithin)
-				textArea.Caret.Hide();
+			try {
+				e.Handled = true;
+				if (!textArea.IsKeyboardFocusWithin)
+					textArea.Caret.Hide();
+			} catch (Exception ex) {
+				OnDragException(ex);
+			}
 		}
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -221,20 +226,28 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		void textArea_GiveFeedback(object sender, GiveFeedbackEventArgs e)
 		{
-			e.UseDefaultCursors = true;
-			e.Handled = true;
+			try {
+				e.UseDefaultCursors = true;
+				e.Handled = true;
+			} catch (Exception ex) {
+				OnDragException(ex);
+			}
 		}
 		
 		void textArea_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
 		{
-			if (e.EscapePressed) {
-				e.Action = DragAction.Cancel;
-			} else if ((e.KeyStates & DragDropKeyStates.LeftMouseButton) != DragDropKeyStates.LeftMouseButton) {
-				e.Action = DragAction.Drop;
-			} else {
-				e.Action = DragAction.Continue;
+			try {
+				if (e.EscapePressed) {
+					e.Action = DragAction.Cancel;
+				} else if ((e.KeyStates & DragDropKeyStates.LeftMouseButton) != DragDropKeyStates.LeftMouseButton) {
+					e.Action = DragAction.Drop;
+				} else {
+					e.Action = DragAction.Continue;
+				}
+				e.Handled = true;
+			} catch (Exception ex) {
+				OnDragException(ex);
 			}
-			e.Handled = true;
 		}
 		#endregion
 		
@@ -253,6 +266,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			DragDropEffects allowedEffects = DragDropEffects.All;
 			var deleteOnMove = textArea.Selection.Segments.Select(s => new AnchorSegment(textArea.Document, s)).ToList();
+			foreach (ISegment s in deleteOnMove) {
+				ISegment[] result = textArea.ReadOnlySectionProvider.GetDeletableSegments(s).ToArray();
+				if (result.Length != 1 || result[0].Offset != s.Offset || result[0].EndOffset != s.EndOffset) {
+					allowedEffects &= ~DragDropEffects.Move;
+				}
+			}
 			
 			object dragDescriptor = new object();
 			this.currentDragDescriptor = dragDescriptor;
@@ -277,7 +296,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			this.currentDragDescriptor = null;
 			
-			if (deleteOnMove != null && resultEffect == DragDropEffects.Move) {
+			if (deleteOnMove != null && resultEffect == DragDropEffects.Move && (allowedEffects & DragDropEffects.Move) == DragDropEffects.Move) {
 				bool draggedInsideSingleDocument = (dragDescriptor == textArea.Document.UndoStack.LastGroupDescriptor);
 				if (draggedInsideSingleDocument)
 					textArea.Document.UndoStack.StartContinuedUndoGroup(null);

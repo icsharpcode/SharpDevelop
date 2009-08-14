@@ -667,7 +667,7 @@ namespace ICSharpCode.AvalonEdit
 			get {
 				TextArea textArea = this.TextArea;
 				if (textArea != null)
-					return textArea.Selection.Length;
+					return textArea.Selection.SurroundingSegment.Length;
 				else
 					return 0;
 			}
