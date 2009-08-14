@@ -1,0 +1,147 @@
+﻿<UserControl x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType.TypeBaseDesigner"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:windowsBase="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:localControls="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls"
+    xmlns:localControlsMenu="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.ContextMenu"
+    xmlns:localControlsCSDLType="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType"
+    xmlns:localBindingConverter="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.Converters"
+    xmlns:csdlDomainModel="http://icsharpcode.net/data/edmdesigner/csdl"
+    Focusable="True"
+    PreviewKeyDown="UserControl_PreviewKeyDown"
+    PreviewMouseDown="UserControl_PreviewMouseDown"
+    GotFocus="TypeBaseDesigner_GotFocus">
+
+    <UserControl.Resources>
+        <localBindingConverter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverterHidden" Hidden="Hidden" />
+        <localBindingConverter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverterCollapsed" />
+        <localBindingConverter:IUITypeToBackgroundConverter x:Key="IUITypeToBackgroundConverter" />
+        <localBindingConverter:IUITypeToBorderBrushConverter x:Key="IUITypeToBorderBrushConverter" />
+        <localBindingConverter:UIPropertyToOpacityConverter x:Key="UIPropertyToOpacityConverter" />
+        <localBindingConverter:UIPropertyFontStyleConverter x:Key="UIPropertyFontStyleConverter" />
+        <localBindingConverter:IsTypeOfConverter x:Key="IsTypeOfConverter" ReturnVisibility="True" />
+        <CollectionViewSource x:Key="propertiesCollectionView" Source="{Binding Properties}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="PropertyType" />
+            </CollectionViewSource.GroupDescriptions>
+            <CollectionViewSource.SortDescriptions>
+                <windowsBase:SortDescription PropertyName="PropertyTypeValue" />
+                <windowsBase:SortDescription PropertyName="Index" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+        <localControlsMenu:ContextMenu x:Key="ContextMenu">
+            <localControlsMenu:MenuItem x:Name="addMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.AddPropertyText}">
+                <localControlsMenu:MenuItem x:Name="addScalarPropertyMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.AddScalarPropertyText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.AddScalarPropertyCommand}" />
+                <localControlsMenu:MenuItem x:Name="addComplexPropertyMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.AddComplexPropertyText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.AddComplexPropertyCommand}" />
+                <localControlsMenu:MenuItem x:Name="addNavigationPropertyMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.AddNavigationPropertyText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.AddNavigationPropertyCommand}" />
+            </localControlsMenu:MenuItem>
+            <localControlsMenu:MenuItem x:Name="renameMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.RenameText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.RenameCommand}" InputGestureText="F2" />
+            <localControlsMenu:MenuItem x:Name="deleteMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.DeleteText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.DeleteCommand}" InputGestureText="Del">
+                <localControlsMenu:MenuItem.Icon>
+                    <Image Source="Resources/Delete.png" Width="16" Height="16" />
+                </localControlsMenu:MenuItem.Icon>
+            </localControlsMenu:MenuItem>
+            <localControlsMenu:MenuItem x:Name="removeFromDesignerMenuItem" Header="{x:Static localControls:DesignerCanvas.RemoveFromDesignerText}" Command="{x:Static localControls:DesignerCanvas.RemoveFromDesignerCommand}" InputGestureText="BackSpace" />
+            <localControlsMenu:MenuSeparator/>
+            <localControlsMenu:MenuItem x:Name="cutMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.CutText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.CutCommand}" InputGestureText="Ctrl+X">
+                <localControlsMenu:MenuItem.Icon>
+                    <Image Source="Resources/Cut.png" Width="16" Height="16" />
+                </localControlsMenu:MenuItem.Icon>
+            </localControlsMenu:MenuItem>
+            <localControlsMenu:MenuItem x:Name="copyMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.CopyText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.CopyCommand}" InputGestureText="Ctrl+C">
+                <localControlsMenu:MenuItem.Icon>
+                    <Image Source="Resources/Copy.png" Width="16" Height="16" />
+                </localControlsMenu:MenuItem.Icon>
+            </localControlsMenu:MenuItem>
+            <localControlsMenu:MenuItem x:Name="pasteMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.PasteText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.PasteCommand}" InputGestureText="Ctrl+V">
+                <localControlsMenu:MenuItem.Icon>
+                    <localControls:GreyableImage Source="Resources/Paste.png" />
+                </localControlsMenu:MenuItem.Icon>
+            </localControlsMenu:MenuItem>
+            <localControlsMenu:MenuSeparator/>
+            <localControlsMenu:MenuItem x:Name="propertiesMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.PropertiesText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.PropertiesCommand}" InputGestureText="F4" />
+            <localControlsMenu:MenuItem x:Name="mappingMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.MappingText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.MappingCommand}" InputGestureText="Ctrl+Shift+M" />
+            <localControlsMenu:MenuSeparator />
+            <localControlsMenu:MenuItem x:Name="showBaseMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.ShowBaseText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.ShowBaseTypeCommand}" />
+            <localControlsMenu:MenuItem x:Name="showRelatedMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.ShowRelatedText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.ShowRelatedTypeCommand}" />
+            <localControlsMenu:MenuSeparator />
+            <localControlsMenu:MenuItem x:Name="showOtherTabsMenuItem" Header="{x:Static localControlsCSDLType:TypeBaseDesigner.ShowOtherTabsText}" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.ShowOtherTabsCommand}">
+                <localControlsMenu:MenuItem.ItemTemplate>
+                    <DataTemplate>
+                        <MenuItem Command="{x:Static localControlsCSDLType:TypeBaseDesigner.ShowOtherTabsItemCommand}" CommandParameter="{Binding}">
+                            <MenuItem.Header>
+                                <Grid Background="DarkGray" Margin="-30,0,-120,0">
+                                    <StackPanel>
+                                        <TextBlock Margin="10,5" x:Name="otherTabTextBlock" Text="{Binding Name}" Background="DarkGray" Foreground="White" FontWeight="Bold" />
+                                        <Grid Margin="2">
+                                            <localControls:DesignerCanvasPreview x:Name="otherTabDesignerCanvas" Width="150" Height="100" DesignerView="{Binding}" />
+                                            <Grid Opacity="0" Background="White" Width="150" Height="100" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </MenuItem.Header>
+                        </MenuItem>
+                    </DataTemplate>
+                </localControlsMenu:MenuItem.ItemTemplate>
+            </localControlsMenu:MenuItem>
+        </localControlsMenu:ContextMenu>
+    </UserControl.Resources>
+
+    <UserControl.InputBindings>
+        <KeyBinding Key="Delete" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.DeleteCommand}" />
+        <KeyBinding Key="Back" Command="{x:Static localControls:DesignerCanvas.RemoveFromDesignerCommand}" />
+        <KeyBinding Key="F2" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.RenameCommand}" />
+        <KeyBinding Key="X" Modifiers="CTRL" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.CutCommand}" />
+        <KeyBinding Key="C" Modifiers="CTRL" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.CopyCommand}" />
+        <KeyBinding Key="V" Modifiers="CTRL" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.PasteCommand}" />
+        <KeyBinding Key="F4" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.PropertiesCommand}" />
+        <KeyBinding Key="M" Modifiers="CTRL+Shift" Command="{x:Static localControlsCSDLType:TypeBaseDesigner.MappingCommand}" />
+    </UserControl.InputBindings>
+
+    <Grid>
+        <localControlsCSDLType:TypeBaseExpander x:Name="entityTypeExpander" Margin="2,2,2,2" Background="{Binding Converter={StaticResource IUITypeToBackgroundConverter}, Mode=OneTime}" BorderBrush="{Binding Converter={StaticResource IUITypeToBorderBrushConverter}}" IsExpanded="True" ContextMenu="{StaticResource ContextMenu}" Click="EntityTypeExpander_Click" Collapsed="EntityTypeExpander_CollapsedOrExpand" Expanded="EntityTypeExpander_CollapsedOrExpand">
+            <localControlsCSDLType:TypeBaseExpander.Header>
+                <localControls:EditableTextBlock x:Name="entityHeaderEditableTextBlock" Margin="0,5,0,5" FontWeight="Bold" Text="{Binding Name, Mode=TwoWay}" />
+            </localControlsCSDLType:TypeBaseExpander.Header>
+            <ListView x:Name="propertiesListView" Margin="0,0,0,10" BorderThickness="0,1,0,1" BorderBrush="Olive" Background="Azure"
+                ItemsSource="{Binding Source={StaticResource propertiesCollectionView}}" Cursor="Arrow" SelectionChanged="PropertiesListView_SelectionChanged" GotFocus="PropertiesListView_GotFocus" LostFocus="PropertiesListView_LostFocus">
+                <ListView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <Grid Background="Honeydew" PreviewMouseRightButtonDown="Grid_PreviewMouseRightButtonDown">
+                                    <TextBlock Margin="2" Text="{Binding Name}" />
+                                </Grid>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListView.GroupStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="0,-1,0,-2">
+                            <Grid>
+                                <Image Width="16" Height="16" Margin="-5,0,0,0" Source="pack://application:,,,/ICSharpCode.Data.Core.UI;component/Images/Icons/table.png" Stretch="Uniform" />
+                                <Image Width="16" Height="16" Margin="-5,0,0,0" Source="pack://application:,,,/ICSharpCode.Data.Core.UI;component/Images/Icons/table_key.png" Stretch="Uniform" Visibility="{Binding Path=IsKey, Converter={StaticResource BoolToVisibilityConverterHidden}}" />
+                                <Image Width="16" Height="16" Margin="-5,0,0,0" Source="pack://application:,,,/ICSharpCode.Data.Core.UI;component/Images/Icons/table_go.png" Stretch="Uniform" Visibility="{Binding Path=This.BusinessInstance, Converter={StaticResource IsTypeOfConverter}, ConverterParameter={x:Type csdlDomainModel:NavigationProperty}}" />
+                            </Grid>
+                            <localControls:EditableTextBlock Margin="2,0,0,0" Text="{Binding Name, Mode=TwoWay}" Opacity="{Binding Converter={StaticResource UIPropertyToOpacityConverter}, ConverterParameter=0.45}" FontStyle="{Binding Converter={StaticResource UIPropertyFontStyleConverter}}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </localControlsCSDLType:TypeBaseExpander>
+        <Grid x:Name="rectangles" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsCSDLType:TypeBaseDesigner}}, Path=IsSelected, Converter={StaticResource BoolToVisibilityConverterHidden}, Mode=TwoWay}">
+            <Grid.Resources>
+                <ResourceDictionary>
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="..\SelectionRectangleResourceDictionary.xaml" />
+                    </ResourceDictionary.MergedDictionaries>
+                </ResourceDictionary>
+            </Grid.Resources>
+            <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left" />
+            <Rectangle VerticalAlignment="Top" HorizontalAlignment="Right" />
+            <Rectangle VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+            <Rectangle VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+        </Grid>
+    </Grid>
+</UserControl>

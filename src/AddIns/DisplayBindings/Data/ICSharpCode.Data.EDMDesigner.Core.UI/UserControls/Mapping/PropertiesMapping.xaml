@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Mapping.PropertiesMapping"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localControlsMapping="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Mapping">
+
+    <DataGrid x:Name="propertiesGrid" ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:PropertiesMapping}}, Path=MappingEnumerable}">
+        <DataGrid.Columns>
+            <DataGridTemplateColumn Header="{x:Static localControlsMapping:PropertiesMapping.Property}">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Property}" VerticalAlignment="Center" Margin="5,0" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="{x:Static localControlsMapping:PropertiesMapping.Column}">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <localControlsMapping:PropertyMappingColumnComboBox Column="{Binding Column}" Table="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:TableMapping}}, Path=Table, Mode=OneTime}" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+        </DataGrid.Columns>
+    </DataGrid>
+</UserControl>

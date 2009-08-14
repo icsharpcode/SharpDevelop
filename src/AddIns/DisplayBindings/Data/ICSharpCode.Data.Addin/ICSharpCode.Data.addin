@@ -1,0 +1,43 @@
+﻿<AddIn name        = "Data Addin"
+       author      = "Philipp Maihart"
+       url         = "http://www.pmnet.info"
+       description = "Database Tools Addin for SharpDevelop">
+    
+  <Runtime>
+    <Import assembly="ICSharpCode.Data.Addin.dll" />
+    <Import assembly="ICSharpCode.Data.Core.dll" />
+    <Import assembly="ICSharpCode.Data.Core.UI.dll" />
+    <Import assembly="ICSharpCode.Data.SQLServer.dll" />
+    <Import assembly="ICSharpCode.Data.EDMDesigner.Core.dll" />
+    <Import assebmly="ICSharpCode.Data.EDMDesigner.Core.UI.dll" />
+  </Runtime>
+  
+  <Manifest>
+      <Identity name="ICSharpCode.Data.Addin" version="@ICSharpCode.Data.Addin.dll" />
+      <Dependency addin="SharpDevelop" version="4.0" />
+  </Manifest>
+
+  <Path name="/SharpDevelop/Workbench/FileFilter">
+    <FileFilter id="EntityFramework"
+                insertbefore="AllFiles"
+                name="Entity Framework Files (*.edmx)"
+                extensions="*.edmx" />
+  </Path>
+
+  <Path name="/SharpDevelop/Workbench/Pads">
+      <Pad id="DatabaseExplorer"
+          icon="Icons.16x16.SharpQuery.Refresh"
+          category="Tools"
+          title="DatabaseExplorer"
+          shortcut="Control|Alt|D"
+          class="ICSharpCode.Data.Addin.Pad.DatabasesTreeViewPad" />
+  </Path>
+
+  <Path name="/SharpDevelop/Workbench/DisplayBindings">
+    <DisplayBinding id="EDMDesignerDisplayBinding"
+  	                class="ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding.EDMDesignerDisplayBinding"
+  	                insertbefore="Text"
+  	                fileNamePattern="\.(edmx)$"
+  	                languagePattern="^Edmx$" />
+  </Path>
+</AddIn>

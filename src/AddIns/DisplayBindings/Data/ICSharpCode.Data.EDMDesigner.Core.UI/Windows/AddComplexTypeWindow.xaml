@@ -1,0 +1,32 @@
+﻿<Window x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.Windows.AddComplexTypeWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localControlsAddTypeWindows="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.Windows"
+    Title="Add complex type" 
+    Width="250" 
+    Height="110" 
+    ResizeMode="NoResize"   
+    WindowStartupLocation="CenterOwner"
+    Loaded="Window_Loaded">
+
+    <Grid Margin="5,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" VerticalAlignment="Center">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Name" Margin="0,5,5,5" />
+                <TextBox x:Name="complexTypeNameTextBox" Grid.Column="1" Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsAddTypeWindows:AddComplexTypeWindow}}, Path=ComplexTypeName, UpdateSourceTrigger=PropertyChanged}" Height="25" TabIndex="0" />
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Row="1" Margin="0,0,0,10" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Width="80" Height="25" Margin="0,0,5,0" Content="Cancel" IsCancel="True" Click="CancelButton_Click" TabIndex="2" />
+            <Button Width="80" Height="25" Content="OK" IsDefault="True" Click="OkButton_Click" TabIndex="3" IsEnabled="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsAddTypeWindows:AddComplexTypeWindow}}, Path=AllowOk}" />
+        </StackPanel>
+    </Grid>
+</Window>

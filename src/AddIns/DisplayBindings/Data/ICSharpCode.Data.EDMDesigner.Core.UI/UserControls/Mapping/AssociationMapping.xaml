@@ -1,0 +1,67 @@
+﻿<localControlsMapping:TableMapping x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Mapping.AssociationMapping"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:wpfToolKit="http://schemas.microsoft.com/wpf/2008/toolkit"
+    xmlns:localControls="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls"
+    xmlns:localControlsMapping="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Mapping"
+    xmlns:localControlsUtil="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Common"
+    xmlns:localBindingConverter="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.Converters"
+    xmlns:dmSSDL="http://icsharpcode.net/data/edmdesigner/ssdl"
+    xmlns:dmDesigner="http://icsharpcode.net/data/edmdesigner/designer">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MappingResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <localBindingConverter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <localBindingConverter:ObjectToVisibilityConverter x:Key="ObjectToVisibilityConverter" />
+            <localBindingConverter:ConditionOperatorToVisibilityConverter x:Key="ConditionOperatorToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel Margin="0,5">
+        <localControls:ComboBoxEditableWhenFocused x:Name="tablesComboBox" SelectedValue="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:AssociationMapping}}, Path=TableComboBoxValue.ComboSelectedValue}" HorizontalAlignment="Left" />
+        <StackPanel Margin="0,5" Visibility="{Binding ElementName=tablesComboBox, Path=SelectedValue, Converter={StaticResource ObjectToVisibilityConverter}}">
+            <TreeView x:Name="tableMappingTreeView">
+                <localControlsMapping:TreeViewItemMapping x:Name="conditionsTreeViewItem" Header="{x:Static localControlsMapping:AssociationMapping.Conditions}">
+                    <StackPanel>
+                        <DataGrid x:Name="columnConditionsGrid" ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:AssociationMapping}}, Path=ColumnConditionsMapping}" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:AssociationMapping}}, Path=ColumnConditionMappingVisible, Converter={StaticResource BoolToVisibilityConverter}}" HorizontalAlignment="Stretch" Width="Auto" Margin="-20,0,0,0" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="{x:Static localControlsMapping:AssociationMapping.Column}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <localControlsMapping:ColumnConditionComboBox Column="{Binding Column}" Table="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:AssociationMapping}}, Path=Table, Mode=OneTime}" Deleted="ColumnConditionMapping_ConditionDeleted" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="{x:Static localControlsMapping:AssociationMapping.Operator}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <localControls:ComboBoxEditableWhenFocused x:Name="columnConditionsOperatorComboBox" ItemsSource="{x:Static dmDesigner:ConditionOperatorList.Instance}" DisplayMemberPath="Text" SelectedValuePath="Value" SelectedValue="{Binding Operator}" HorizontalAlignment="Center" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="{x:Static localControlsMapping:AssociationMapping.Value}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox x:Name="columnConditionsValueTextBox" Visibility="{Binding Path=Operator, Converter={StaticResource ConditionOperatorToVisibilityConverter}}" Text="{Binding Value}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Button x:Name="addColumnConditionButton" Content="{x:Static localControlsMapping:AssociationMapping.AddColumnConditionMapping}" Margin="-20,0,0,0" Foreground="Gray" Background="Transparent" BorderBrush="Transparent" Click="AddColumnConditionButton_Click" />
+                    </StackPanel>
+                </localControlsMapping:TreeViewItemMapping>
+                <localControlsMapping:TreeViewItemMapping Header="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:AssociationMapping}}, Path=Association.PropertyEnd1.Name}" IsExpanded="True">
+                    <localControlsMapping:PropertiesMapping x:Name="propertiesMappingNavigationProperty1" Mappings="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:AssociationMapping}}, Path=PropertiesMapping1}" />
+                </localControlsMapping:TreeViewItemMapping>
+                <localControlsMapping:TreeViewItemMapping Header="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:AssociationMapping}}, Path=Association.PropertyEnd2.Name}" IsExpanded="True">
+                    <localControlsMapping:PropertiesMapping x:Name="propertiesMappingNavigationProperty2" Mappings="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:AssociationMapping}}, Path=PropertiesMapping2}" />
+                </localControlsMapping:TreeViewItemMapping>
+            </TreeView>
+        </StackPanel>
+    </StackPanel>
+</localControlsMapping:TableMapping>

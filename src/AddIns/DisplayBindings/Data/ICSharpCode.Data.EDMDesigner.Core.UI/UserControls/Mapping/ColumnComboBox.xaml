@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Mapping.ColumnComboBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localControls="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls"
+    xmlns:localControlsMapping="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Mapping"
+    xmlns:localControlsUtil="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Common"
+    xmlns:dmSSDL="http://icsharpcode.net/data/edmdesigner/ssdl">
+
+    <localControls:ComboBoxEditableWhenFocused x:Name="columnComboBox" SelectedValue="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:ColumnComboBox}}, Path=ColumnComboBoxValue.ComboSelectedValue}" HorizontalAlignment="Stretch">
+        <ComboBox.ItemsSource>
+            <CompositeCollection>
+                <CollectionContainer x:Name="columnNullValues" />
+                <CollectionContainer x:Name="columns" />
+            </CompositeCollection>
+        </ComboBox.ItemsSource>
+        <ComboBox.Resources>
+            <DataTemplate DataType="{x:Type localControlsUtil:NullValue}" >
+                <TextBlock Text="{Binding NullText}" FontStyle="Italic" Foreground="Gray" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type dmSSDL:Property}">
+                <TextBlock Text="{Binding Name}" />
+            </DataTemplate>
+        </ComboBox.Resources>
+    </localControls:ComboBoxEditableWhenFocused>
+</UserControl>

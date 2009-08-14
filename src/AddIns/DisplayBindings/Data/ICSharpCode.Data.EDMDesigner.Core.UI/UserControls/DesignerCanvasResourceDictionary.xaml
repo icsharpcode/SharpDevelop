@@ -1,0 +1,36 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localControls="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls"
+    xmlns:localControlsMenu="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.ContextMenu">
+
+    <Style TargetType="{x:Type localControls:DesignerCanvas}">
+        <Style.Resources>
+            <localControlsMenu:ContextMenu x:Key="ContextMenu">
+                <localControlsMenu:MenuItem Header="{x:Static localControls:DesignerCanvas.AddEntityTypeText}" Command="{x:Static localControls:DesignerCanvas.AddEntityTypeCommand}" />
+                <localControlsMenu:MenuItem Header="{x:Static localControls:DesignerCanvas.AddComplexTypeText}" Command="{x:Static localControls:DesignerCanvas.AddComplexTypeCommand}" />
+                <localControlsMenu:MenuItem Header="{x:Static localControls:DesignerCanvas.AddAssociationText}" Command="{x:Static localControls:DesignerCanvas.AddAssociationCommand}" />
+                <localControlsMenu:MenuItem Header="{x:Static localControls:DesignerCanvas.RemoveFromDesignerText}" Command="{x:Static localControls:DesignerCanvas.RemoveFromDesignerCommand}" InputGestureText="BackSpace" />
+                <localControlsMenu:MenuSeparator />
+                <localControlsMenu:MenuItem Header="{x:Static localControls:DesignerCanvas.SelectAllText}" Command="{x:Static localControls:DesignerCanvas.SelectAllCommand}" InputGestureText="CTRL+A" />
+                <localControlsMenu:MenuSeparator />
+                <StackPanel x:Name="zoomStackPanel" Orientation="Horizontal">
+                    <TextBlock Text="{x:Static localControls:DesignerCanvas.ZoomText}" VerticalAlignment="Center" />
+                    <TextBox x:Name="zoomTextBox" Margin="5,0,0,0" />
+                    <TextBlock Text="%" VerticalAlignment="Center" />
+                </StackPanel>
+            </localControlsMenu:ContextMenu>
+            
+            <InputBindingCollection x:Key="InputBindings">
+                <KeyBinding Key="A" Modifiers="CTRL" Command="{x:Static localControls:DesignerCanvas.SelectAllCommand}" />
+            </InputBindingCollection>
+            
+            <Style x:Key="FocusableStyle" />
+        </Style.Resources>
+
+        <Setter Property="Focusable" Value="True" />
+        <Setter Property="ContextMenu" Value="{StaticResource ContextMenu}" />
+        <Setter Property="InputBindings" Value="{StaticResource InputBindings}" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusableStyle}" />
+    </Style>
+
+</ResourceDictionary>

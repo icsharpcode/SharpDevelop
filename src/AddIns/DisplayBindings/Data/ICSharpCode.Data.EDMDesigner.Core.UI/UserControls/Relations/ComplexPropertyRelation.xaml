@@ -1,0 +1,46 @@
+﻿<localControlsRelations:RelationBase x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Relations.ComplexPropertyRelation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localControlsRelations="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Relations"
+    xmlns:localBindindingConverter="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.Converters">
+
+    <UserControl.Resources>
+        <localBindindingConverter:ComplexPropertyRelationToVisibleConverter x:Key="ComplexPropertyRelationToVisibleConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Line x:Name="line" Stroke="Black" TargetUpdated="line_TargetUpdated"
+              X1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=X1, NotifyOnTargetUpdated=True}"
+              X2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=X2, NotifyOnTargetUpdated=True}"
+              Y1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=Y1, NotifyOnTargetUpdated=True}"
+              Y2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=Y2, NotifyOnTargetUpdated=True}"/>
+        <Line x:Name="line2" Stroke="Black" TargetUpdated="line_TargetUpdated"
+              X1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=X2, NotifyOnTargetUpdated=True}"
+              X2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=X3, NotifyOnTargetUpdated=True}"
+              Y1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=Y2, NotifyOnTargetUpdated=True}"
+              Y2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=Y3, NotifyOnTargetUpdated=True}"
+              Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Converter={StaticResource ComplexPropertyRelationToVisibleConverter}, ConverterParameter=3}"/>
+        <Line x:Name="line3" Stroke="Black" TargetUpdated="line_TargetUpdated"
+              X1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=X3, NotifyOnTargetUpdated=True}"
+              X2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=X4, NotifyOnTargetUpdated=True}"
+              Y1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=Y3, NotifyOnTargetUpdated=True}"
+              Y2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=Y4, NotifyOnTargetUpdated=True}"
+              Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Converter={StaticResource ComplexPropertyRelationToVisibleConverter}}"/>
+        <Line x:Name="line4" Stroke="Black" TargetUpdated="line_TargetUpdated"
+              X1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=X4, NotifyOnTargetUpdated=True}"
+              X2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=X5, NotifyOnTargetUpdated=True}"
+              Y1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=Y4, NotifyOnTargetUpdated=True}"
+              Y2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=Y5, NotifyOnTargetUpdated=True}"
+              Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Converter={StaticResource ComplexPropertyRelationToVisibleConverter}}"/>
+        <Line x:Name="lineArrow1" Stroke="Black" TargetUpdated="line_TargetUpdated"
+              X1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=X1Arrow, NotifyOnTargetUpdated=True}"
+              X2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=XLast, NotifyOnTargetUpdated=True}"
+              Y1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=Y1Arrow, NotifyOnTargetUpdated=True}"
+              Y2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=YLast, NotifyOnTargetUpdated=True}"/>
+        <Line x:Name="lineArrow2" Stroke="Black" TargetUpdated="line_TargetUpdated"
+              X1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=X2Arrow, NotifyOnTargetUpdated=True}"
+              X2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=XLast, NotifyOnTargetUpdated=True}"
+              Y1="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=Y2Arrow, NotifyOnTargetUpdated=True}"
+              Y2="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsRelations:ComplexPropertyRelation}}, Path=YLast, NotifyOnTargetUpdated=True}"/>
+    </Grid>
+</localControlsRelations:RelationBase>

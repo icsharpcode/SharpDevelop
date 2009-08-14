@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="ICSharpCode.Data.Addin.Pad.DatabasesTreeViewUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:data="http://icsharpcode.org/data">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <ToolBar>
+            <Button Click="btnAddConnection_Click">Add connection...</Button>
+        </ToolBar>
+        
+        <DockPanel x:Name="dockPanel" Grid.Row="1" VerticalAlignment="Stretch" />
+    </Grid>
+</UserControl>

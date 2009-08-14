@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="ICSharpCode.Data.Core.UI.UserControls.ErrorRetryButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="This" Visibility="Collapsed">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Images/ImageDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid x:Name="grd">
+        <Image x:Name="imgError" Source="{StaticResource ErrorImage}" ToolTip="{Binding Exception.Message, ElementName=This}" Width="16" Height="16" Visibility="Collapsed" />
+        <Image x:Name="imgExclamation" Source="{StaticResource ExclamationImage}" ToolTip="{Binding Exception.Message, ElementName=This}" Width="16" Height="16" Visibility="Collapsed" />
+        <Image x:Name="imgRefresh" Source="{StaticResource RefreshImage}" ToolTip="{Binding Exception.Message, ElementName=This}" Width="16" Height="16" Opacity="0"
+            Cursor="Hand" />
+        <Grid.Triggers>
+            <EventTrigger SourceName="grd" RoutedEvent="Grid.MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="imgError" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.5" />
+                        <DoubleAnimation Storyboard.TargetName="imgRefresh" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.5" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger SourceName="grd" RoutedEvent="Grid.MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="imgExclamation" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.5" />
+                        <DoubleAnimation Storyboard.TargetName="imgRefresh" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.5" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger SourceName="grd" RoutedEvent="Grid.MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="imgError" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.5" />
+                        <DoubleAnimation Storyboard.TargetName="imgRefresh" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.5" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger SourceName="grd" RoutedEvent="Grid.MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="imgExclamation" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.5" />
+                        <DoubleAnimation Storyboard.TargetName="imgRefresh" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.5" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
+    </Grid>
+</UserControl>

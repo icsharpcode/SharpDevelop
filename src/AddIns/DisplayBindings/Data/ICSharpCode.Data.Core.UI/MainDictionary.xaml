@@ -1,0 +1,8 @@
+﻿<ResourceDictionary x:Class="ICSharpCode.Data.Core.UI.MainDictionary"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Images/ImageDictionary.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

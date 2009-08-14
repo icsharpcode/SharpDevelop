@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Mapping.Mapping"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localControls="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls"
+    xmlns:localBindingConverter="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.Converters"
+    xmlns:localControlsMapping="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Mapping">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MappingResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <localBindingConverter:ObjectToVisibilityConverter x:Key="ObjectToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel x:Name="stackPanel">
+        <TextBlock x:Name="nameTextBlock" Padding="5" Background="LightGray" FontWeight="Bold" HorizontalAlignment="Stretch" />
+        <TreeView x:Name="mappingTreeView" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:Mapping}}, Path=EntityType, Converter={StaticResource ObjectToVisibilityConverter}}">
+            <localControlsMapping:TreeViewItemMapping x:Name="tablesTreeViewItem" Header="{x:Static localControlsMapping:Mapping.Tables}" IsExpanded="True">
+                <Button x:Name="addTableButton" Content="{x:Static localControlsMapping:Mapping.AddTableOrView}" Click="Button_Click" />
+            </localControlsMapping:TreeViewItemMapping>
+        </TreeView>
+    </StackPanel>
+</UserControl>

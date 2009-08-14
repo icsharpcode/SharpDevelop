@@ -1,0 +1,44 @@
+﻿<ResourceDictionary x:Class="ICSharpCode.Data.Core.UI.ImageDictionary"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <BitmapImage x:Key="ErrorImage" UriSource="Icons/error.png" />
+    <BitmapImage x:Key="ExclamationImage" UriSource="Icons/exclamation.png" />
+    <BitmapImage x:Key="RefreshImage" UriSource="Icons/refresh.png" />
+    
+    <BitmapImage x:Key="DatabaseImage" UriSource="Icons/database.png" />
+    <BitmapImage x:Key="DatabaseAddImage" UriSource="Icons/database_add.png" />
+    <BitmapImage x:Key="DatabaseConnectImage" UriSource="Icons/database_connect.png" />
+    <BitmapImage x:Key="DatabaseDeleteImage" UriSource="Icons/database_delete.png" />
+    <BitmapImage x:Key="DatabaseEditImage" UriSource="Icons/database_edit.png" />
+    <BitmapImage x:Key="DatabaseErrorImage" UriSource="Icons/database_error.png" />
+    <BitmapImage x:Key="DatabaseGearImage" UriSource="Icons/database_gear.png" />
+    <BitmapImage x:Key="DatabaseGoImage" UriSource="Icons/database_go.png" />
+    <BitmapImage x:Key="DatabaseKeyImage" UriSource="Icons/database_key.png" />
+    <BitmapImage x:Key="DatabaseLightningImage" UriSource="Icons/database_lightning.png" />
+    <BitmapImage x:Key="DatabaseLinkImage" UriSource="Icons/database_link.png" />
+    <BitmapImage x:Key="DatabaseRefreshImage" UriSource="Icons/database_refresh.png" />
+    <BitmapImage x:Key="DatabaseSaveImage" UriSource="Icons/database_save.png" />
+    <BitmapImage x:Key="DatabaseTableImage" UriSource="Icons/database_table.png" />
+    
+    <BitmapImage x:Key="TableImage" UriSource="Icons/table.png" />
+    <BitmapImage x:Key="TableAddImage" UriSource="Icons/table_add.png" />
+    <BitmapImage x:Key="TableDeleteImage" UriSource="Icons/table_delete.png" />
+    <BitmapImage x:Key="TableEditImage" UriSource="Icons/table_edit.png" />
+    <BitmapImage x:Key="TableErrorImage" UriSource="Icons/table_error.png" />
+    <BitmapImage x:Key="TableForeignKeyImage" UriSource="Icons/table_fkey.png" />
+    <BitmapImage x:Key="TableGearImage" UriSource="Icons/table_gear.png" />
+    <BitmapImage x:Key="TableGoImage" UriSource="Icons/table_go.png" />
+    <BitmapImage x:Key="TableKeyImage" UriSource="Icons/table_key.png" />
+    <BitmapImage x:Key="TableLightningImage" UriSource="Icons/table_lightning.png" />
+    <BitmapImage x:Key="TableLinkImage" UriSource="Icons/table_link.png" />
+    <BitmapImage x:Key="TableMultipleImage" UriSource="Icons/table_multiple.png" />
+    <BitmapImage x:Key="TableRefreshImage" UriSource="Icons/table_refresh.png" />
+    <BitmapImage x:Key="TableRelationshipImage" UriSource="Icons/table_relationship.png" />
+    <BitmapImage x:Key="TableRowDeleteImage" UriSource="Icons/table_row_delete.png" />
+    <BitmapImage x:Key="TableRowInsertImage" UriSource="Icons/table_row_insert.png" />
+    <BitmapImage x:Key="TableSaveImage" UriSource="Icons/table_save.png" />
+    <BitmapImage x:Key="TableSortImage" UriSource="Icons/table_sort.png" />
+    
+    <BitmapImage x:Key="ProcedureImage" UriSource="Icons/Procedure.png" /> 
+</ResourceDictionary>

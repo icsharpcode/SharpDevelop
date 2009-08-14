@@ -1,0 +1,289 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BAD94D6E-4159-4CB6-B991-486F412D9BB6}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ICSharpCode.Data.Core.UI</RootNamespace>
+    <AssemblyName>ICSharpCode.Data.Core.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsFormsIntegration">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MainDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Images\ImageDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\DatabaseTreeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\DatabasesTreeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\DatabaseTreeViewResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ErrorRetryButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\LoadingCircle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\ConnectionWizardWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\WizardWindowInnards.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Helpers\DragDropInterop.cs" />
+    <Compile Include="Helpers\VisualHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="UserControls\DatabaseTreeView.xaml.cs">
+      <DependentUpon>DatabaseTreeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\DatabasesTreeView.xaml.cs">
+      <DependentUpon>DatabasesTreeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\DatabaseTreeViewDataTemplateSelector.cs" />
+    <Compile Include="UserControls\DatabaseTreeViewResources.xaml.cs">
+      <DependentUpon>DatabaseTreeViewResources.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ErrorRetryButton.xaml.cs">
+      <DependentUpon>ErrorRetryButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\IDatabasesTreeViewAdditionalNode.cs" />
+    <Compile Include="UserControls\LoadingCircle.xaml.cs">
+      <DependentUpon>LoadingCircle.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\WizardUserControl.cs" />
+    <Compile Include="Windows\ConnectionWizardWindow.xaml.cs">
+      <DependentUpon>ConnectionWizardWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\WizardWindow.cs" />
+    <Compile Include="Windows\WizardWindowInnards.xaml.cs">
+      <DependentUpon>WizardWindowInnards.xaml</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_connect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_error.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_gear.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_go.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_key.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_lightning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_link.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\database_table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\table.png" />
+    <Resource Include="Images\Icons\table_add.png" />
+    <Resource Include="Images\Icons\table_delete.png" />
+    <Resource Include="Images\Icons\table_edit.png" />
+    <Resource Include="Images\Icons\table_error.png" />
+    <Resource Include="Images\Icons\table_gear.png" />
+    <Resource Include="Images\Icons\table_go.png" />
+    <Resource Include="Images\Icons\table_key.png" />
+    <Resource Include="Images\Icons\table_lightning.png" />
+    <Resource Include="Images\Icons\table_link.png" />
+    <Resource Include="Images\Icons\table_multiple.png" />
+    <Resource Include="Images\Icons\table_refresh.png" />
+    <Resource Include="Images\Icons\table_relationship.png" />
+    <Resource Include="Images\Icons\table_row_delete.png" />
+    <Resource Include="Images\Icons\table_row_insert.png" />
+    <Resource Include="Images\Icons\table_save.png" />
+    <Resource Include="Images\Icons\table_sort.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\table_fkey.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\procedure.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\error.png" />
+    <Resource Include="Images\Icons\exclamation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons\refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\src\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\src\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.Data.Core\ICSharpCode.Data.Core.csproj">
+      <Project>{B7823AE9-4B43-4859-8796-2EBDC116FBB8}</Project>
+      <Name>ICSharpCode.Data.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

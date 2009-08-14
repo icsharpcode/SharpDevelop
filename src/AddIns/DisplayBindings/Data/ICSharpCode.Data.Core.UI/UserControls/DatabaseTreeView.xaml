@@ -1,0 +1,54 @@
+<TreeView x:Class="ICSharpCode.Data.Core.UI.UserControls.DatabaseTreeView"
+    x:Name="This"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:data="http://icsharpcode.net/data"
+    xmlns:local="clr-namespace:ICSharpCode.Data.Core.UI.UserControls">
+    <TreeView.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="DatabaseTreeViewResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </TreeView.Resources>
+    
+    <TreeViewItem ItemsSource="{Binding Database.Tables, ElementName=This}" ItemTemplateSelector="{StaticResource DatabaseTreeViewDataTemplateSelector}">
+        <TreeViewItem.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                
+                <CheckBox Margin="2" Click="chkIsSelected_Click" IsChecked="True" Tag="{Binding Database.Tables, ElementName=This}" />
+                <TextBlock Grid.Column="1" Margin="2">Tables</TextBlock>
+            </Grid>
+        </TreeViewItem.Header>
+    </TreeViewItem>
+    <TreeViewItem ItemsSource="{Binding Database.Views, ElementName=This}" ItemTemplateSelector="{StaticResource DatabaseTreeViewDataTemplateSelector}">
+        <TreeViewItem.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox Margin="2" Click="chkIsSelected_Click" IsChecked="True" Tag="{Binding Database.Views, ElementName=This}" />
+                <TextBlock Grid.Column="1" Margin="2">Views</TextBlock>
+            </Grid>
+        </TreeViewItem.Header>
+    </TreeViewItem>
+    <TreeViewItem ItemsSource="{Binding Database.Procedures, ElementName=This}" ItemTemplateSelector="{StaticResource DatabaseTreeViewDataTemplateSelector}">
+        <TreeViewItem.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox Margin="2" Click="chkIsSelected_Click" IsChecked="True" Tag="{Binding Database.Procedures, ElementName=This}" />
+                <TextBlock Grid.Column="1" Margin="2">Procedures</TextBlock>
+            </Grid>
+        </TreeViewItem.Header>
+    </TreeViewItem>
+</TreeView>

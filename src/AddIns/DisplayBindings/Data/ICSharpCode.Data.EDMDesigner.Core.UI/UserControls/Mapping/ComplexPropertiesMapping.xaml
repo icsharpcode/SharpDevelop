@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Mapping.ComplexPropertiesMapping"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:wpfToolKit="http://schemas.microsoft.com/wpf/2008/toolkit"
+    xmlns:localControlsMapping="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Mapping"
+    xmlns:localBindingConverter="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.Converters"
+    xmlns:dmDesigner="http://icsharpcode.net/data/edmdesigner/designer">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MappingResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <localBindingConverter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <localBindingConverter:IEnumerableToVisibilityConverter x:Key="IEnumerableToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <TreeView>
+        <localControlsMapping:TreeViewItemMapping x:Name="complexPropertiesTreeViewItem" Header="{x:Static localControlsMapping:ComplexPropertiesMapping.ComplexPropertiesMappingHeader}" IsExpanded="True" ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsMapping:ComplexPropertiesMapping}}, Path=Mappings.Mappings}">
+            <TreeViewItem.Resources>
+                <DataTemplate DataType="{x:Type dmDesigner:ComplexPropertyMapping}">
+                    <TreeView Margin="-20,0,0,0">
+                        <localControlsMapping:TreeViewItemMapping Header="{Binding Path=ComplexProperty.Name}" IsExpanded="True">
+                            <StackPanel Margin="-20,0,0,0">
+                                <localControlsMapping:EntityPropertiesMapping MappingEnumerable="{Binding Mappings, Mode=OneTime}" />
+                                <localControlsMapping:ComplexPropertiesMapping Mappings="{Binding ComplexPropertiesMapping}" Visibility="{Binding Path=ComplexPropertiesMapping.Mappings, Converter={StaticResource IEnumerableToVisibilityConverter}}" />
+                            </StackPanel>
+                        </localControlsMapping:TreeViewItemMapping>
+                    </TreeView>
+                </DataTemplate>
+            </TreeViewItem.Resources>
+        </localControlsMapping:TreeViewItemMapping>
+    </TreeView>
+</UserControl>

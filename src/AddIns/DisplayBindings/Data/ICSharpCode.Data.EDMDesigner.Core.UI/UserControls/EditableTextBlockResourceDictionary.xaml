@@ -1,0 +1,20 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localControls="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls">
+
+    <Style TargetType="{x:Type localControls:EditableTextBlock}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type localControls:EditableTextBlock}">
+                    <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType={x:Type localControls:EditableTextBlock}}}" BorderThickness="{Binding BorderThickness, RelativeSource={RelativeSource AncestorType={x:Type localControls:EditableTextBlock}}}">
+                        <Grid x:Name="PART_GridContainer" Background="{TemplateBinding Background}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                            <TextBlock x:Name="PART_TbDisplayText" Margin="5,3,0,0" Visibility="Visible" Background="{Binding TextBlockBackgroundColor, RelativeSource={RelativeSource AncestorType={x:Type localControls:EditableTextBlock}}}" Foreground="{Binding TextBlockForegroundColor, RelativeSource={RelativeSource AncestorType={x:Type localControls:EditableTextBlock}}}" Text="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type localControls:EditableTextBlock}}, Mode=TwoWay}" />
+                            <TextBox x:Name="PART_TbEditText" Visibility="Hidden" Background="{Binding TextBoxBackgroundColor, RelativeSource={RelativeSource AncestorType={x:Type localControls:EditableTextBlock}}}" Foreground="{Binding TextBoxForegroundColor, RelativeSource={RelativeSource AncestorType={x:Type localControls:EditableTextBlock}}}" Text="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type localControls:EditableTextBlock}}, Mode=TwoWay}" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

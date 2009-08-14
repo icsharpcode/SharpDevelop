@@ -1,0 +1,57 @@
+﻿<Window x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.Windows.AddEntityTypeWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localControls="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls"
+    xmlns:localControlsAddTypeWindows="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.Windows"
+    xmlns:localControlsUtil="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Common"
+    xmlns:dmDesigner="http://icsharpcode.net/data/edmdesigner/designer"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    Title="Add entity type" 
+    Width="250" 
+    Height="140" 
+    ResizeMode="NoResize"   
+    WindowStartupLocation="CenterOwner"
+    Loaded="Window_Loaded">
+
+    <Grid Margin="5,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" VerticalAlignment="Center">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35" />
+                    <RowDefinition Height="35" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="Entity type name" Margin="0,10,5,5" />
+                <TextBox x:Name="entityTypeNameTextBox" Grid.Column="1" Grid.Row="0" Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsAddTypeWindows:AddEntityTypeWindow}}, Path=EntityTypeName, UpdateSourceTrigger=PropertyChanged}" Height="25" TabIndex="0" />
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="Base type" Margin="0,10,5,5" />
+                <localControls:ComboBoxEditableWhenFocused x:Name="baseEntityTypeComboBox" Grid.Column="1" Grid.Row="1" SelectedValue="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsAddTypeWindows:AddEntityTypeWindow}}, Path=BaseEntityTypeObj, UpdateSourceTrigger=PropertyChanged}" Height="25" TabIndex="1">
+                    <ComboBox.ItemsSource>
+                        <CompositeCollection>
+                            <CollectionContainer x:Name="nullEntityTypeCollection" />
+                            <CollectionContainer x:Name="entityTypeCollection" />
+                        </CompositeCollection>
+                    </ComboBox.ItemsSource>
+                    <ComboBox.Resources>
+                        <DataTemplate DataType="{x:Type localControlsUtil:NullValue}" >
+                            <TextBlock Text="{Binding NullText}" FontStyle="Italic" Foreground="Gray" />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type dmDesigner:UIEntityType}">
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.Resources>
+                </localControls:ComboBoxEditableWhenFocused>
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Row="1" Margin="0,0,0,10" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Width="80" Height="25" Margin="0,0,5,0" Content="Cancel" IsCancel="True" Click="CancelButton_Click" TabIndex="2" />
+            <Button Width="80" Height="25" Content="Ok" IsDefault="True" Click="OkButton_Click" TabIndex="3" IsEnabled="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type localControlsAddTypeWindows:AddEntityTypeWindow}}, Path=AllowOk}" />
+        </StackPanel>
+    </Grid>
+</Window>

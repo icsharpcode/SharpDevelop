@@ -1,0 +1,6 @@
+﻿<UserControl x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Relations.RelationContener"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localBindindingConverter="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.Converters"
+    Content="{Binding RelativeSource={RelativeSource Self}, Path=RelationControl, Mode=OneTime}">
+</UserControl>

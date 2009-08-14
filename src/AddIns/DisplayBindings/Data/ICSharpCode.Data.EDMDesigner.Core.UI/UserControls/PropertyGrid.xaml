@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.PropertyGrid"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localControls="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls"
+    xmlns:localControlsUtil="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Common">
+
+    <UserControl.Resources>
+        <Style x:Key="ExtendedPanelStyle" TargetType="{x:Type localControls:ExtendedPanel}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsFocusedIncludingChildren, RelativeSource={x:Static RelativeSource.Self}}" Value="true">
+                    <Setter Property="Background" Value="DarkBlue" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsEnabled, RelativeSource={x:Static RelativeSource.Self}}" Value="false">
+                    <Setter Property="Foreground" Value="Gray" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsReadOnly, RelativeSource={x:Static RelativeSource.Self}}" Value="true">
+                    <Setter Property="Foreground" Value="Gray" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ComboBoxStyle" TargetType="{x:Type localControls:ComboBoxEditableWhenFocused}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsReadOnly, RelativeSource={x:Static RelativeSource.Self}}" Value="true">
+                    <Setter Property="Foreground" Value="Gray" />
+                </DataTrigger>
+            </Style.Triggers>
+            <Style.Resources>
+                <DataTemplate DataType="{x:Type localControlsUtil:NullValue}" >
+                    <TextBlock Text="{Binding NullText}" FontStyle="Italic" Foreground="Gray" />
+                </DataTemplate>
+            </Style.Resources>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="80" />
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock x:Name="nameTextBlock" Grid.Row="0" Padding="5" Background="LightGray" FontWeight="Bold" HorizontalAlignment="Stretch" />
+            <Grid x:Name="propertiesGrid" SizeChanged="PropertiesGrid_SizeChanged">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" MinWidth="80" />
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </StackPanel>
+        <GridSplitter Grid.Row="0" Margin="0,2" />
+        <StackPanel Background="LightGray" Grid.Row="1">
+            <TextBlock Text="{x:Static localControls:PropertyGrid.Description}" FontWeight="Bold" />
+            <TextBlock x:Name="descriptionTextBlock" VerticalAlignment="Stretch" Background="LightGray" />
+        </StackPanel>
+    </Grid>
+</UserControl>
