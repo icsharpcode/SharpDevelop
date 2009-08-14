@@ -61,7 +61,7 @@ namespace SearchAndReplace
 						                                       0);
 					}
 				}
-				string fileContent;
+				ITextBuffer fileContent;
 				try {
 					fileContent = ParserService.GetParseableFileContent(fileName);
 				} catch (Exception) {

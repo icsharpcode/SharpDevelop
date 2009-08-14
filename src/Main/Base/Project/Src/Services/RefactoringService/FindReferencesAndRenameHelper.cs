@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			LanguageProperties language = c.ProjectContent.Language;
 			string classFileName = c.CompilationUnit.FileName;
-			string existingClassCode = ParserService.GetParseableFileContent(classFileName);
+			string existingClassCode = ParserService.GetParseableFileContent(classFileName).Text;
 			
 			// build the new interface...
 			string newInterfaceCode = language.RefactoringProvider.GenerateInterfaceForClass(extractInterface.NewInterfaceName,
@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
-			string fileContent = ParserService.GetParseableFileContent(fileName);
+			ITextBuffer fileContent = ParserService.GetParseableFileContent(fileName);
 			return new ProvidedDocumentInformation(fileContent, fileName, 0);
 		}
 		
@@ -415,7 +415,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (entry.Value.ViewContent is IEditable) {
 					ParserService.ParseViewContent(entry.Value.ViewContent);
 				} else {
-					ParserService.ParseFile(entry.Value.OpenedFile.FileName, entry.Key.Text, !entry.Value.OpenedFile.IsUntitled);
+					ParserService.ParseFile(entry.Value.OpenedFile.FileName, entry.Key.CreateSnapshot(), !entry.Value.OpenedFile.IsUntitled);
 				}
 			}
 		}
@@ -423,7 +423,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static void MoveClassToFile(IClass c, string newFileName)
 		{
 			LanguageProperties language = c.ProjectContent.Language;
-			string existingCode = ParserService.GetParseableFileContent(c.CompilationUnit.FileName);
+			string existingCode = ParserService.GetParseableFileContent(c.CompilationUnit.FileName).Text;
 			DomRegion fullRegion = language.RefactoringProvider.GetFullCodeRangeForType(existingCode, c);
 			if (fullRegion.IsEmpty) return;
 			

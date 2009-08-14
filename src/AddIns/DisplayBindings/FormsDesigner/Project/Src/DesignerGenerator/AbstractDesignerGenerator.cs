@@ -293,7 +293,7 @@ namespace ICSharpCode.FormsDesigner
 			// we must not modify the c.Fields collection while it is enumerated
 			removedFields.ForEach(RemoveField);
 			
-			ParserService.EnqueueForParsing(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument.Text);
+			ParserService.EnqueueForParsing(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument);
 		}
 		
 		/// <summary>
@@ -382,7 +382,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			// Reparse all source files for the designed form
 			foreach (KeyValuePair<OpenedFile, IDocument> entry in this.ViewContent.SourceFiles) {
-				parsings.Add(entry.Key, ParserService.ParseFile(entry.Key.FileName, entry.Value.Text, false));
+				parsings.Add(entry.Key, ParserService.ParseFile(entry.Key.FileName, entry.Value, false));
 			}
 			
 			// Update currentClassPart from PrimaryFile

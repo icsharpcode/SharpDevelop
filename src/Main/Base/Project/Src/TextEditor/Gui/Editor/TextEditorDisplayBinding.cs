@@ -128,11 +128,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// Creates a snapshot of the editor content.
 		/// This method is thread-safe.
 		/// </summary>
-		public ICSharpCode.SharpDevelop.Editor.ITextBuffer CreateSnapshot()
+		public ITextBuffer CreateSnapshot()
 		{
 			string content = WorkbenchSingleton.SafeThreadFunction<string>(GetText);
-			return new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditTextSourceAdapter(
-				new ICSharpCode.AvalonEdit.Document.StringTextSource(content));
+			return new StringTextBuffer(content);
 		}
 		
 		string IEditable.Text {
@@ -405,7 +404,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
 				if (parseInfo == null) {
 					parseInfo = ParserService.ParseFile(fileName,
-					                                    textEditorControl.Document.TextContent, false);
+					                                    new StringTextBuffer(textEditorControl.Document.TextContent), false);
 				}
 				textEditorControl.Document.FoldingManager.UpdateFoldings(fileName, parseInfo);
 				//UpdateClassMemberBookmarks(parseInfo);

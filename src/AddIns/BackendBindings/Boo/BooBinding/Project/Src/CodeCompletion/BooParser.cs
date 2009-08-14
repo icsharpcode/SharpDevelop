@@ -16,8 +16,10 @@ using Boo.Lang.Compiler.Pipelines;
 using Boo.Lang.Compiler.Steps;
 using Boo.Lang.Parser;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
+
 namespace Grunwald.BooBinding.CodeCompletion
 {
 	public class BooParser : IParser
@@ -54,8 +56,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return project.Language == BooProjectBinding.LanguageName;
 		}
 		
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
+		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContentBuffer)
 		{
+			string fileContent = fileContentBuffer.Text;
 			LoggingService.Debug("Parse " + fileName);
 			int lineCount = 1;
 			foreach (char c in fileContent) {

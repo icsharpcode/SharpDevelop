@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	{
 		ITextEditor textEditor;
 		IDocument document;
-		string textBuffer;
+		ITextBuffer textBuffer;
 		string fileName;
 		int currentOffset;
 		
@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			get {
 				if (document == null) {
 					TextDocument textDocument = new TextDocument();
-					textDocument.Text = textBuffer;
+					textDocument.Text = textBuffer.Text;
 					textDocument.UndoStack.ClearAll();
 					document = new AvalonEditDocumentAdapter(textDocument, null);
 					this.textBuffer = null;
@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			this.endOffset = this.CurrentOffset;
 		}
 		
-		public ProvidedDocumentInformation(string textBuffer, string fileName, int currentOffset)
+		public ProvidedDocumentInformation(ITextBuffer textBuffer, string fileName, int currentOffset)
 		{
 			this.textBuffer    = textBuffer;
 			this.fileName      = fileName;

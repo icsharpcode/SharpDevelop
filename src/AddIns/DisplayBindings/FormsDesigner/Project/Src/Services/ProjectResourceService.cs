@@ -119,7 +119,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			// that is not possible without getting dependent on the programming language.
 			
 			IDocument doc = new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditDocumentAdapter();
-			doc.Text = ParserService.GetParseableFileContent(resourceClass.CompilationUnit.FileName);
+			doc.Text = ParserService.GetParseableFileContent(resourceClass.CompilationUnit.FileName).Text;
 			
 			int startOffset = doc.PositionToOffset(prop.GetterRegion.BeginLine, prop.GetterRegion.BeginColumn);
 			int endOffset   = doc.PositionToOffset(prop.GetterRegion.EndLine, prop.GetterRegion.EndColumn);

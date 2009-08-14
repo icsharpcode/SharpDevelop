@@ -88,9 +88,9 @@ namespace VBNetBinding.Parser
 			}
 		}
 		
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
+		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ICSharpCode.SharpDevelop.ITextBuffer fileContent)
 		{
-			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(fileContent))) {
+			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(ICSharpCode.NRefactory.SupportedLanguage.VBNet, fileContent.CreateReader())) {
 				return Parse(p, fileName, projectContent);
 			}
 		}

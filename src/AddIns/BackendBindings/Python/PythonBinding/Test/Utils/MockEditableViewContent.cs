@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace PythonBinding.Tests.Utils
@@ -26,9 +27,9 @@ namespace PythonBinding.Tests.Utils
 			set { text = value; }
 		}		
 		
-		public ICSharpCode.SharpDevelop.Editor.ITextBuffer CreateSnapshot()
+		public ITextBuffer CreateSnapshot()
 		{
-			return ICSharpCode.SharpDevelop.Editor.DocumentUtilitites.GetBufferForString(text);
+			return new StringTextBuffer(text);
 		}
 	}
 }

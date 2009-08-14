@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.IO;
 using ICSharpCode.SharpDevelop;
@@ -80,9 +81,9 @@ namespace CSharpBinding.Parser
 			}
 		}
 		
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
+		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
 		{
-			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader(fileContent))) {
+			using (ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(ICSharpCode.NRefactory.SupportedLanguage.CSharp, fileContent.CreateReader())) {
 				return Parse(p, fileName, projectContent);
 			}
 		}

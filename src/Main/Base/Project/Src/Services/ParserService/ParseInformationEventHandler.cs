@@ -55,11 +55,11 @@ namespace ICSharpCode.SharpDevelop
 	public class ParserUpdateStepEventArgs : EventArgs
 	{
 		string fileName;
-		string content;
+		ITextBuffer content;
 		bool updated;
 		ParseInformation parseInformation;
 		
-		public ParserUpdateStepEventArgs(string fileName, string content, bool updated, ParseInformation parseInformation)
+		public ParserUpdateStepEventArgs(string fileName, ITextBuffer content, bool updated, ParseInformation parseInformation)
 		{
 			this.fileName = fileName;
 			this.content = content;
@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop
 				return fileName;
 			}
 		}
-		public string Content {
+		public ITextBuffer Content {
 			get {
 				return content;
 			}

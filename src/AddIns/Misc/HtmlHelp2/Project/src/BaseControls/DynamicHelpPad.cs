@@ -211,7 +211,7 @@ namespace HtmlHelp2
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			if (expressionFinder == null) return null;
 			Caret caret = ctl.ActiveTextAreaControl.Caret;
-			string content = (e == null) ? ctl.Text : e.Content;
+			string content = (e == null) ? ctl.Text : e.Content.Text;
 			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
 			if (expr.Expression == null) return null;
 

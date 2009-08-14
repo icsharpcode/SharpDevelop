@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.PythonBinding;
 using IronPython.Compiler.Ast;
@@ -66,7 +67,7 @@ namespace PythonBinding.Tests.Designer
 		ClassDefinition GetClassDefinition(string code)
 		{
 			PythonParser parser = new PythonParser();
-			PythonAst ast = parser.CreateAst(@"test.py", code);
+			PythonAst ast = parser.CreateAst(@"test.py", new StringTextBuffer(code));
 			SuiteStatement suite = ast.Body as SuiteStatement;
 			return suite.Statements[0] as ClassDefinition;
 		}

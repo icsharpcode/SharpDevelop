@@ -53,7 +53,7 @@ namespace Grunwald.BooBinding.Designer
 		
 		CodeCompileUnit ParseForm()
 		{
-			ParseInformation parseInfo = ParserService.ParseFile(this.Generator.ViewContent.DesignerCodeFile.FileName, this.Generator.ViewContent.DesignerCodeFileContent, false);
+			ParseInformation parseInfo = ParserService.ParseFile(this.Generator.ViewContent.DesignerCodeFile.FileName, new StringTextBuffer(this.Generator.ViewContent.DesignerCodeFileContent), false);
 			Module module = ParseFormAsModule();
 			
 			#if DEBUG
@@ -85,7 +85,7 @@ namespace Grunwald.BooBinding.Designer
 			
 			lastTextContent = this.Generator.ViewContent.DesignerCodeFileContent;
 			
-			ParseInformation parseInfo = ParserService.ParseFile(this.Generator.ViewContent.DesignerCodeFile.FileName, this.Generator.ViewContent.DesignerCodeFileContent, false);
+			ParseInformation parseInfo = ParserService.ParseFile(this.Generator.ViewContent.DesignerCodeFile.FileName, new StringTextBuffer(this.Generator.ViewContent.DesignerCodeFileContent), false);
 			// ensure that there are no syntax errors in the file:
 			Module mainModule = Parse(this.Generator.ViewContent.DesignerCodeFile.FileName, lastTextContent);
 			

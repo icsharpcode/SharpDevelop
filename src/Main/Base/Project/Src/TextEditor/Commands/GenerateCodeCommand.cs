@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			ParseInformation parseInformation;
 			
 			if (viewContent.PrimaryFile.IsUntitled) {
-				parseInformation = ParserService.ParseFile(textEditorControl.FileName, textEditorControl.Document.TextContent);
+				parseInformation = ParserService.ParseFile(textEditorControl.FileName, new StringTextBuffer(textEditorControl.Document.TextContent));
 			} else {
 				parseInformation = ParserService.GetParseInformation(textEditorControl.FileName);
 			}

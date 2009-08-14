@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.PythonBinding;
 using IronPython.Compiler.Ast;
@@ -36,7 +37,7 @@ namespace PythonBinding.Tests.Utils
 		static Statement GetFirstStatement(string code)
 		{
 			PythonParser parser = new PythonParser();
-			PythonAst ast = parser.CreateAst(@"snippet.py", code);
+			PythonAst ast = parser.CreateAst(@"snippet.py", new StringTextBuffer(code));
 			SuiteStatement suiteStatement = (SuiteStatement)ast.Body;
 			return suiteStatement.Statements[0];
 		}

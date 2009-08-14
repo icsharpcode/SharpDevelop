@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		bool CanParse(IProject project);
 		
-		ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent);
+		ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent);
 		
 		IResolver CreateResolver();
 	}

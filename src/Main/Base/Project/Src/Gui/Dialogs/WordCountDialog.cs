@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (!File.Exists(filename)) return null;
 			
-			return GetReport(filename, new StringReader(ParserService.GetParseableFileContent(filename)));
+			return GetReport(filename, ParserService.GetParseableFileContent(filename).CreateReader());
 		}
 		
 		Report GetReport(IViewContent content, TextReader reader)

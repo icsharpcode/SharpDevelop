@@ -338,12 +338,12 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
-		static Queue<KeyValuePair<string, string>> parseQueue = new Queue<KeyValuePair<string, string>>();
+		static Queue<KeyValuePair<string, ITextBuffer>> parseQueue = new Queue<KeyValuePair<string, ITextBuffer>>();
 		
 		static void ParseQueue()
 		{
 			while (true) {
-				KeyValuePair<string, string> entry;
+				KeyValuePair<string, ITextBuffer> entry;
 				lock (parseQueue) {
 					if (parseQueue.Count == 0)
 						return;
@@ -358,10 +358,11 @@ namespace ICSharpCode.SharpDevelop
 			EnqueueForParsing(fileName, GetParseableFileContent(fileName));
 		}
 		
-		public static void EnqueueForParsing(string fileName, string fileContent)
+		public static void EnqueueForParsing(string fileName, ITextBuffer fileContent)
 		{
+			fileContent = fileContent.CreateSnapshot();
 			lock (parseQueue) {
-				parseQueue.Enqueue(new KeyValuePair<string, string>(fileName, fileContent));
+				parseQueue.Enqueue(new KeyValuePair<string, ITextBuffer>(fileName, fileContent));
 			}
 		}
 		
@@ -440,34 +441,26 @@ namespace ICSharpCode.SharpDevelop
 			}
 			IEditable editable = activeViewContent as IEditable;
 			if (editable != null) {
-				string text = null;
-				
 				if (!(fileName == null || fileName.Length == 0)) {
 					ParseInformation parseInformation = null;
 					bool updated = false;
-					if (text == null) {
-						text = editable.Text;
-						if (text == null) return;
-					}
-					int hash = text.GetHashCode();
-					if (!lastUpdateHash.ContainsKey(fileName) || lastUpdateHash[fileName] != hash) {
-						parseInformation = ParseFile(fileName, text, !isUntitled);
-						lastUpdateHash[fileName] = hash;
-						updated = true;
-					}
+					ITextBuffer fileContent = editable.CreateSnapshot();
+					if (fileContent == null) return;
+					parseInformation = ParseFile(fileName, fileContent, !isUntitled);
+					updated = true;
 					if (updated) {
 						if (parseInformation != null && editable is IParseInformationListener) {
 							((IParseInformationListener)editable).ParseInformationUpdated(parseInformation);
 						}
 					}
-					OnParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, text, updated, parseInformation));
+					OnParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, fileContent, updated, parseInformation));
 				}
 			}
 		}
 		
 		public static void ParseViewContent(IViewContent viewContent)
 		{
-			string text = ((IEditable)viewContent).Text;
+			ITextBuffer text = ((IEditable)viewContent).CreateSnapshot();
 			ParseInformation parseInformation = ParseFile(viewContent.PrimaryFileName,
 			                                              text, !viewContent.PrimaryFile.IsUntitled);
 			if (parseInformation != null && viewContent is IParseInformationListener) {
@@ -495,7 +488,7 @@ namespace ICSharpCode.SharpDevelop
 			return ParseFile(fileName, null);
 		}
 		
-		public static ParseInformation ParseFile(string fileName, string fileContent)
+		public static ParseInformation ParseFile(string fileName, ITextBuffer fileContent)
 		{
 			return ParseFile(fileName, fileContent, true);
 		}
@@ -563,12 +556,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static ParseInformation ParseFile(string fileName, string fileContent, bool updateCommentTags)
+		public static ParseInformation ParseFile(string fileName, ITextBuffer fileContent, bool updateCommentTags)
 		{
 			return ParseFile(null, fileName, fileContent, updateCommentTags);
 		}
 		
-		public static ParseInformation ParseFile(IProjectContent fileProjectContent, string fileName, string fileContent, bool updateCommentTags)
+		public static ParseInformation ParseFile(IProjectContent fileProjectContent, string fileName, ITextBuffer fileContent, bool updateCommentTags)
 		{
 			if (fileName == null) throw new ArgumentNullException("fileName");
 			
@@ -626,14 +619,14 @@ namespace ICSharpCode.SharpDevelop
 		/// Gets the content of the file using encoding auto-detection (or DefaultFileEncoding, if that fails).
 		/// If the file is already open, gets the text in the opened view content.
 		/// </summary>
-		public static string GetParseableFileContent(string fileName)
+		public static ITextBuffer GetParseableFileContent(string fileName)
 		{
 			IViewContent viewContent = FileService.GetOpenFile(fileName);
 			IEditable editable = viewContent as IEditable;
 			if (editable != null) {
-				return editable.Text;
+				return editable.CreateSnapshot();
 			}
-			//string res = project.GetParseableFileContent(fileName);
+			//ITextBuffer res = project.GetParseableFileContent(fileName);
 			//if (res != null)
 			//	return res;
 			
@@ -643,19 +636,19 @@ namespace ICSharpCode.SharpDevelop
 				if (p != null) {
 					IDocument document = p.GetDocumentForFile(file);
 					if (document != null) {
-						return document.Text;
+						return document.CreateSnapshot();
 					}
 				}
 				
 				using(Stream s = file.OpenRead()) {
 					// load file
 					Encoding encoding = DefaultFileEncoding;
-					return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(s, ref encoding);
+					return new StringTextBuffer(ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(s, ref encoding));
 				}
 			}
 			
 			// load file
-			return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, DefaultFileEncoding);
+			return new StringTextBuffer(ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, DefaultFileEncoding));
 		}
 		
 		public static Encoding DefaultFileEncoding {

@@ -191,7 +191,7 @@ namespace CSharpBinding.FormattingStrategy
 			string fileName = editor.FileName;
 			object nextElement = null;
 			if (fileName != null && fileName.Length > 0 ) {
-				ParseInformation parseInfo = ParserService.ParseFile(fileName, editor.Document.Text);
+				ParseInformation parseInfo = ParserService.ParseFile(fileName, editor.Document.CreateSnapshot());
 				if (parseInfo != null) {
 					ICompilationUnit currentCompilationUnit = parseInfo.BestCompilationUnit;
 					if (currentCompilationUnit != null) {

@@ -190,7 +190,7 @@ namespace Hornung.ResourceToolkit
 		public static string GetParsableFileContent(string fileName)
 		{
 			if (fileContents == null) {
-				return ParserService.GetParseableFileContent(fileName);
+				return ParserService.GetParseableFileContent(fileName).Text;
 			} else {
 				return fileContents[fileName];
 			}

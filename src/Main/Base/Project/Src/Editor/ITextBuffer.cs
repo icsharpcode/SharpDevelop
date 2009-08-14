@@ -9,7 +9,8 @@
 using System;
 using System.IO;
 
-namespace ICSharpCode.SharpDevelop.Editor
+// not in Editor namespace because it's also used for the IParser interface etc.
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// A read-only view on a (potentially mutable) text buffer.
@@ -69,5 +70,13 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <remarks>This is the same as Text.Substring, but is more efficient because
 		///  it doesn't require creating a String object for the whole document.</remarks>
 		string GetText(int offset, int length);
+	}
+	
+	public class StringTextBuffer : Editor.AvalonEdit.AvalonEditTextSourceAdapter
+	{
+		public StringTextBuffer(string text)
+			: base(new AvalonEdit.Document.StringTextSource(text))
+		{
+		}
 	}
 }

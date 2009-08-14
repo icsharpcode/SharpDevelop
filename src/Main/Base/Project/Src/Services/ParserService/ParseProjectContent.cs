@@ -257,7 +257,7 @@ namespace ICSharpCode.SharpDevelop
 					if ((i % 5) == 2)
 						progressMonitor.WorkDone = progressStart + i;
 					
-					ParserService.ParseFile(this, enumerator.CurrentFileName, enumerator.CurrentFileContent, true);
+					ParserService.ParseFile(this, enumerator.CurrentFileName, new StringTextBuffer(enumerator.CurrentFileContent), true);
 					
 					if (!initializing) return;
 				}

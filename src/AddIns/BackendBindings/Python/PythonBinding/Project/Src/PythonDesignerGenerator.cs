@@ -217,7 +217,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		protected virtual ParseInformation ParseFile(string fileName, string textContent)
 		{
-			return ParserService.ParseFile(fileName, textContent);
+			return ParserService.ParseFile(fileName, new StringTextBuffer(textContent));
 		}
 		
 		/// <summary>

@@ -110,7 +110,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		protected virtual string GetParseableFileContent(string fileName)
 		{
-			return ParserService.GetParseableFileContent(fileName);
+			return ParserService.GetParseableFileContent(fileName).Text;
 		}
 		
 		/// <summary>

@@ -71,7 +71,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		protected virtual ParseInformation GetParseInfo(string fileName, string textContent, bool updateCommentTags)
 		{
-			return ParserService.ParseFile(fileName, textContent, updateCommentTags);
+			return ParserService.ParseFile(fileName, new StringTextBuffer(textContent), updateCommentTags);
 		}
 		
 		/// <summary>

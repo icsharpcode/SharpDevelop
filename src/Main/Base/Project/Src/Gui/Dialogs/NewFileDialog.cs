@@ -398,7 +398,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					File.WriteAllBytes(parsedFileName, binaryContent);
 				else
 					File.WriteAllText(parsedFileName, parsedContent, ParserService.DefaultFileEncoding);
-				ParserService.ParseFile(parsedFileName, parsedContent);
+				ParserService.ParseFile(parsedFileName, new StringTextBuffer(parsedContent));
 			} else {
 				if (binaryContent != null) {
 					LoggingService.Warn("binary file was skipped");

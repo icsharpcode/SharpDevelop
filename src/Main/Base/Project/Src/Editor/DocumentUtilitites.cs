@@ -21,14 +21,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 	public static class DocumentUtilitites
 	{
 		/// <summary>
-		/// Gets a ITextBuffer implementation representing the specified string.
-		/// </summary>
-		public static ITextBuffer GetBufferForString(string text)
-		{
-			return new AvalonEdit.AvalonEditTextSourceAdapter(new ICSharpCode.AvalonEdit.Document.StringTextSource(text));
-		}
-		
-		/// <summary>
 		/// Gets the word in front of the caret.
 		/// </summary>
 		public static string GetWordBeforeCaret(this ITextEditor editor)

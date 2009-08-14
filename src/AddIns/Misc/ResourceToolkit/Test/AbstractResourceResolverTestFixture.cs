@@ -37,7 +37,7 @@ namespace ResourceToolkit.Tests
 			if (parseFile) {
 				IParser parser = ResourceResolverService.GetParser(fileName);
 				Assert.IsNotNull(parser, "Could not get parser for " + fileName+ ".");
-				ICompilationUnit cu = parser.Parse(this.DefaultProjectContent, fileName, code);
+				ICompilationUnit cu = parser.Parse(this.DefaultProjectContent, fileName, new StringTextBuffer(code));
 				cu.Freeze();
 				Assert.IsFalse(cu.ErrorsDuringCompile, "Errors while parsing test program.");
 				ParserService.RegisterParseInformation(fileName, cu);

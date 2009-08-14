@@ -11,6 +11,7 @@ using Microsoft.Scripting.Runtime;
 using System;
 using System.IO;
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using IronPython;
@@ -78,14 +79,14 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Parses a python file and creates a PythonAst.
 		/// </summary>
-		public PythonAst CreateAst(string fileName, string fileContent)
+		public PythonAst CreateAst(string fileName, ITextBuffer fileContent)
 		{
 			if (scriptEngine == null) {
 				scriptEngine = IronPython.Hosting.Python.CreateEngine();
 			}
 
 			PythonCompilerSink sink = new PythonCompilerSink();
-			SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, fileContent);
+			SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, fileContent.Text);
 			CompilerContext context = new CompilerContext(source, new PythonCompilerOptions(), sink);
 			using (Parser parser = Parser.CreateParser(context, new PythonOptions())) {
 				return parser.ParseFile(false);	
@@ -96,6 +97,11 @@ namespace ICSharpCode.PythonBinding
 		/// Parses the python code and returns an ICompilationUnit.
 		/// </summary>
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
+		{
+			return Parse(projectContent, fileName, new StringTextBuffer(fileContent));
+		}
+		
+		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
 		{
 			if (fileContent != null) {
 				try { 

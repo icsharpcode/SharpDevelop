@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
@@ -47,7 +48,7 @@ namespace PythonBinding.Tests.Parsing
 		public void CreateAstShouldThrowInvalidCastException()
 		{
 			PythonParser parser = new PythonParser();
-			PythonAst ast = parser.CreateAst(@"d:\projects\test\test.py", code);
+			PythonAst ast = parser.CreateAst(@"d:\projects\test\test.py", new StringTextBuffer(code));
 		}
 		
 		[Test]

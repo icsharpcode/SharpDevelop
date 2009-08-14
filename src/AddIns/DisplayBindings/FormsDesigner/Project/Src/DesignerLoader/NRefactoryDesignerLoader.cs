@@ -116,16 +116,16 @@ namespace ICSharpCode.FormsDesigner
 				}
 				if (found) continue;
 				
-				string fileContent;
+				ITextBuffer fileContent;
 				if (FileUtility.IsEqualFileName(fileName, this.Generator.ViewContent.PrimaryFileName)) {
 					fileContent = this.Generator.ViewContent.PrimaryFileContent;
 				} else if (FileUtility.IsEqualFileName(fileName, this.Generator.ViewContent.DesignerCodeFile.FileName)) {
-					fileContent = this.Generator.ViewContent.DesignerCodeFileContent;
+					fileContent = new StringTextBuffer(this.Generator.ViewContent.DesignerCodeFileContent);
 				} else {
 					fileContent = ParserService.GetParseableFileContent(fileName);
 				}
 				
-				ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(language, new StringReader(fileContent));
+				ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(language, fileContent.CreateReader());
 				p.Parse();
 				if (p.Errors.Count > 0) {
 					throw new FormsDesignerLoadException("Syntax errors in " + fileName + ":\r\n" + p.Errors.ErrorOutput);
@@ -285,7 +285,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected override CodeDomLocalizationModel GetCurrentLocalizationModelFromDesignedFile()
 		{
-			ParseInformation parseInfo = ParserService.ParseFile(this.Generator.ViewContent.DesignerCodeFile.FileName, this.Generator.ViewContent.DesignerCodeFileContent, false);
+			ParseInformation parseInfo = ParserService.ParseFile(this.Generator.ViewContent.DesignerCodeFile.FileName, new StringTextBuffer(this.Generator.ViewContent.DesignerCodeFileContent), false);
 			
 			IClass formClass;
 			bool isFirstClassInFile;
@@ -296,7 +296,7 @@ namespace ICSharpCode.FormsDesigner
 			         .Where(n => n != null)
 			         .Distinct(StringComparer.OrdinalIgnoreCase)) {
 				
-				ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(language, new StringReader(ParserService.GetParseableFileContent(fileName)));
+				ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(language, ParserService.GetParseableFileContent(fileName).CreateReader());
 				p.Parse();
 				if (p.Errors.Count > 0) {
 					throw new FormsDesignerLoadException("Syntax errors in " + fileName +  ":\r\n" + p.Errors.ErrorOutput);

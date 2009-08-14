@@ -108,7 +108,7 @@ namespace PythonBinding.Tests.Parsing
 		public void ParseWithNullFileContent()
 		{
 			DefaultProjectContent projectContent = new DefaultProjectContent();
-			ICompilationUnit unit = parser.Parse(projectContent, null, null);
+			ICompilationUnit unit = parser.Parse(projectContent, null, (ICSharpCode.SharpDevelop.ITextBuffer)null);
 			Assert.IsInstanceOf(typeof(DefaultCompilationUnit), unit);
 		}
 		

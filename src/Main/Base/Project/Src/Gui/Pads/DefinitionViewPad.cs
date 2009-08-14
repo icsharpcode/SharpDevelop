@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(editor.FileName);
 			if (expressionFinder == null) return null;
 			ITextEditorCaret caret = editor.Caret;
-			string content = (e == null) ? editor.Document.Text : e.Content;
+			string content = (e == null) ? editor.Document.Text : e.Content.Text;
 			if (caret.Offset > content.Length) {
 				LoggingService.Debug("caret.Offset = " + caret.Offset + ", content.Length=" + content.Length);
 				return null;

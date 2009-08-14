@@ -20,7 +20,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		/// <summary>
 		/// Thread-safe access to the text in the view content.
-		/// Do not use this property.
 		/// </summary>
 		string Text {
 			get;

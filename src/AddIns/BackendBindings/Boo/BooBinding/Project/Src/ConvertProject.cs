@@ -48,7 +48,7 @@ namespace Grunwald.BooBinding
 				Module module;
 				IList<ICSharpCode.NRefactory.ISpecial> specials;
 				CompileUnit compileUnit = new CompileUnit();
-				using (StringReader r = new StringReader(ParserService.GetParseableFileContent(sourceItem.FileName))) {
+				using (TextReader r = ParserService.GetParseableFileContent(sourceItem.FileName).CreateReader()) {
 					module = Parser.ParseModule(compileUnit, r, ConvertBuffer.ApplySettings(sourceItem.VirtualName, errors, warnings), out specials);
 				}
 				if (module == null) {

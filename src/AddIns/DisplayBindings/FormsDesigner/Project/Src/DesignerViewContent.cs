@@ -67,9 +67,8 @@ namespace ICSharpCode.FormsDesigner
 			get { return this.sourceCodeStorage[this.PrimaryFile]; }
 		}
 		
-		public string PrimaryFileContent {
-			get { return this.PrimaryFileDocument.Text; }
-			set { this.PrimaryFileDocument.Text = value; }
+		public ITextBuffer PrimaryFileContent {
+			get { return this.PrimaryFileDocument.CreateSnapshot(); }
 		}
 		
 		public IDocument DesignerCodeFileDocument {

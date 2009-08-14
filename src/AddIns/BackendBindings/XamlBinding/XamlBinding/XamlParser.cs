@@ -47,12 +47,12 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
+		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ICSharpCode.SharpDevelop.ITextBuffer fileContent)
 		{
 			XamlCompilationUnit cu = new XamlCompilationUnit(projectContent);
 			cu.FileName = fileName;
 			try {
-				using (XmlTextReader r = new XmlTextReader(new StringReader(fileContent))) {
+				using (XmlTextReader r = new XmlTextReader(fileContent.CreateReader())) {
 					r.WhitespaceHandling = WhitespaceHandling.Significant;
 					r.Read();
 					r.MoveToContent();
